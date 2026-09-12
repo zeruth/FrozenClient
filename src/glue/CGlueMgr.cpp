@@ -1070,7 +1070,7 @@ void CGlueMgr::Resume() {
 
     CWOWClientStatus status;
 
-    if (!SLogCreate("Logs\\GlueXML.log", 0, status.m_logFile)) {
+    if (!SLogCreate("Logs\\GlueXML.log", 0, &status.m_logFile)) {
         SysMsgPrintf(SYSMSG_WARNING, "Cannot create WOWClient log file \"%s\"!", "Logs\\GlueXML.log");
     }
 

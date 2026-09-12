@@ -257,7 +257,7 @@ int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5,
     size_t tocBytes;
 
     if (!SFile::Load(nullptr, tocPath, &tocBuffer, &tocBytes, 1, 1, nullptr)) {
-        status->Add(STATUS_ERROR, "Couldn't open %s", a2);
+        status->Add(STATUS_ERROR, "Couldn't open %s", tocPath);
         return 0;
     }
 
@@ -322,13 +322,12 @@ int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5,
 
     SFile::Unload(tocBuffer);
 
-    // TODO
-    // if (s_debugLevel > 0 || v25 > 0) {
-    //     v21.Prepend(STATUS_INFO, "** Loading table of contents %s", v5);
-    // }
+    // TODO s_debugLevel
+    if (v21.m_entries.Head()) {
+        v21.Prepend(STATUS_INFO, "** Loading table of contents %s", v5);
+    }
 
-    // TODO
-    // status->Add(v21);
+    status->Add(v21);
 
     return 1;
 }

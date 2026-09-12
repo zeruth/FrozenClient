@@ -11,7 +11,16 @@ enum SYSMSG_TYPE {
     SYSMSG_NUMTYPES     = 0x4
 };
 
-bool SLogCreate(const char*, uint32_t, void*);
+typedef void* HSLOG;
+
+// Creates (or truncates) a log file. Returns 0 and leaves *log null on failure.
+int32_t SLogCreate(const char* filename, uint32_t flags, HSLOG* log);
+
+void SLogClose(HSLOG log);
+
+void SLogFlush(HSLOG log);
+
+void SLogWrite(HSLOG log, const char* format, ...);
 
 void SysMsgPrintf(SYSMSG_TYPE, const char*, ...);
 
