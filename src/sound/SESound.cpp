@@ -1,6 +1,8 @@
 #include "sound/SESound.hpp"
 #include "event/Event.hpp"
 #include "console/CVar.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/Types.hpp"
 #include "util/SFile.hpp"
 #include <common/Time.hpp>
 #include <storm/Memory.hpp>
@@ -238,6 +240,139 @@ float SESound::GetChannelGroupVolume(const char* name) {
     return channelGroup->m_volume * channelGroup->m_muteVolume;
 }
 
+TSGrowableArray<SEDRIVERNAME> SESound::s_GameOutputDrivers;
+TSGrowableArray<SEDRIVERNAME> SESound::s_ChatOutputDrivers;
+TSGrowableArray<SEDRIVERNAME> SESound::s_ChatInputDrivers;
+void (*SESound::s_DeviceListChangedCallback)() = nullptr;
+
+// Fills entry 0 of a driver table with the localized system default name
+static void s_SetSystemDefaultName(SEDRIVERNAME& entry) {
+    char text[64];
+    SStrCopy(text, FrameScript_GetText("SYSTEM_DEFAULT", -1, GENDER_NOT_APPLICABLE), sizeof(text));
+
+    if (*text) {
+        SStrCopy(entry.name, text, sizeof(entry.name));
+    } else {
+        SStrCopy(entry.name, "System Default", sizeof(entry.name));
+    }
+}
+
+// FMOD system callback (0x87A9B0 in the original): rebuilds the driver tables when the device
+// list changes and notifies the client
+#if defined(WHOA_FMOD_CORE)
+static FMOD_RESULT F_CALLBACK s_SystemCallback(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACK_TYPE type, void* commandData1, void* commandData2, void* userData) {
+    if (type == FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED) {
+        SESound::EnumerateDrivers();
+    }
+
+    return FMOD_OK;
+}
+#else
+static FMOD_RESULT F_CALLBACK s_SystemCallback(FMOD_SYSTEM* system, FMOD_SYSTEM_CALLBACKTYPE type, void* commandData1, void* commandData2) {
+    if (type == FMOD_SYSTEM_CALLBACKTYPE_DEVICELISTCHANGED) {
+        SESound::EnumerateDrivers();
+    }
+
+    return FMOD_OK;
+}
+#endif
+
+void SESound::EnumerateDrivers() {
+    // Game output drivers
+
+    int32_t numGameOutputDrivers = 0;
+
+    if (SESound::s_pGameSystem) {
+        int32_t numDrivers = 0;
+        SESound::s_pGameSystem->getNumDrivers(&numDrivers);
+        numGameOutputDrivers = numDrivers + 1;
+    }
+
+    SESound::s_GameOutputDrivers.Clear();
+
+    for (int32_t i = 0; i < numGameOutputDrivers; ++i) {
+        SEDRIVERNAME& entry = *SESound::s_GameOutputDrivers.New();
+
+        if (i == 0) {
+            s_SetSystemDefaultName(entry);
+        } else {
+#if defined(WHOA_FMOD_CORE)
+            SESound::s_pGameSystem->getDriverInfo(i - 1, entry.name, sizeof(entry.name), nullptr, nullptr, nullptr, nullptr);
+#else
+            SESound::s_pGameSystem->getDriverInfo(i - 1, entry.name, sizeof(entry.name), nullptr);
+#endif
+        }
+    }
+
+    // Chat output and input drivers
+    // TODO the original enumerates these from the voice chat FMOD system, which Whoa does not
+    // create yet
+
+    SESound::s_ChatOutputDrivers.Clear();
+    SESound::s_ChatInputDrivers.Clear();
+
+    if (SESound::s_DeviceListChangedCallback) {
+        SESound::s_DeviceListChangedCallback();
+    }
+}
+
+// 0x878360 in the original
+int32_t SESound::GetNumInputDrivers() {
+    return SESound::s_ChatInputDrivers.Count();
+}
+
+// 0x8783B0 in the original
+int32_t SESound::GetInputDriverName(int32_t index, char* buffer, size_t bufferSize) {
+    if (index < 0 || static_cast<uint32_t>(index) >= SESound::s_ChatInputDrivers.Count()) {
+        return 0;
+    }
+
+    if (index == 0) {
+        SStrCopy(buffer, FrameScript_GetText("SYSTEM_DEFAULT", -1, GENDER_NOT_APPLICABLE), bufferSize);
+    } else {
+        SStrCopy(buffer, SESound::s_ChatInputDrivers[index].name, bufferSize);
+    }
+
+    return 1;
+}
+
+// 0x879290 in the original
+int32_t SESound::GetNumOutputDrivers(int32_t chatSystem) {
+    return chatSystem
+        ? SESound::s_ChatOutputDrivers.Count()
+        : SESound::s_GameOutputDrivers.Count();
+}
+
+// 0x8792B0 in the original
+int32_t SESound::GetOutputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem) {
+    auto& drivers = chatSystem ? SESound::s_ChatOutputDrivers : SESound::s_GameOutputDrivers;
+
+    if (!drivers.Count() || !SESound::s_pGameSystem) {
+        return 0;
+    }
+
+    if (index > 0 && static_cast<uint32_t>(index) < drivers.Count()) {
+        SStrCopy(buffer, drivers[index].name, bufferSize);
+    } else {
+        SStrCopy(buffer, FrameScript_GetText("SYSTEM_DEFAULT", -1, GENDER_NOT_APPLICABLE), bufferSize);
+    }
+
+    return 1;
+}
+
+// 0x87ACC0 in the original
+void SESound::SetDeviceListChangedCallback(void (*callback)()) {
+    SESound::s_DeviceListChangedCallback = callback;
+
+    if (SESound::s_pGameSystem) {
+#if defined(WHOA_FMOD_CORE)
+        SESound::s_pGameSystem->setCallback(&s_SystemCallback, FMOD_SYSTEM_CALLBACK_DEVICELISTCHANGED);
+#else
+        SESound::s_pGameSystem->setCallback(&s_SystemCallback);
+#endif
+    }
+}
+
 int32_t SESound::Heartbeat(const void* data, void* param) {
     if (!SESound::s_Initialized) {
         SESound::s_pGameSystem->update();
@@ -266,7 +401,7 @@ int32_t SESound::Heartbeat(const void* data, void* param) {
     return 1;
 }
 
-void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void* a8, int32_t a9) {
+void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9) {
     SESound::s_Initialized = 0;
 
     // TODO
@@ -361,6 +496,11 @@ void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32
     }
 
     // TODO
+
+    // Driver tables and device change notification
+
+    SESound::SetDeviceListChangedCallback(deviceListChangedCallback);
+    SESound::EnumerateDrivers();
 
     // Set doppler scale, distance factor, rolloff scale
 

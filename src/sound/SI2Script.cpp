@@ -39,19 +39,49 @@ int32_t Script_StopMusic(lua_State* L) {
 }
 
 int32_t Script_Sound_GameSystem_GetNumInputDrivers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, SI2::GetNumInputDrivers(0));
+
+    return 1;
 }
 
 int32_t Script_Sound_GameSystem_GetInputDriverNameByIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: Sound_GameSystem_GetInputDriverNameByIndex(InputDriverIndex)");
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    char name[2048];
+    name[0] = '\0';
+
+    SI2::GetInputDriverName(index, name, sizeof(name), 0);
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 int32_t Script_Sound_GameSystem_GetNumOutputDrivers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, SI2::GetNumOutputDrivers(0));
+
+    return 1;
 }
 
 int32_t Script_Sound_GameSystem_GetOutputDriverNameByIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: Sound_GetOutputDriverNameByIndex(OutputDriverIndex)");
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    char name[2048];
+    name[0] = '\0';
+
+    SI2::GetOutputDriverName(index, name, sizeof(name), 0);
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 int32_t Script_Sound_GameSystem_RestartSoundSystem(lua_State* L) {
@@ -59,19 +89,53 @@ int32_t Script_Sound_GameSystem_RestartSoundSystem(lua_State* L) {
 }
 
 int32_t Script_Sound_ChatSystem_GetNumInputDrivers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, SI2::GetNumInputDrivers(1));
+
+    return 1;
 }
 
 int32_t Script_Sound_ChatSystem_GetInputDriverNameByIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: Sound_ChatSystem_GetInputDriverNameByIndex(InputDriverIndex)");
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    char name[2048];
+    name[0] = '\0';
+
+    if (index >= 0 && index <= SI2::GetNumInputDrivers(1)) {
+        SI2::GetInputDriverName(index, name, sizeof(name), 1);
+    }
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 int32_t Script_Sound_ChatSystem_GetNumOutputDrivers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, SI2::GetNumOutputDrivers(1));
+
+    return 1;
 }
 
 int32_t Script_Sound_ChatSystem_GetOutputDriverNameByIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: Sound_ChatSystem_GetOutputDriverNameByIndex(OutputDriverIndex)");
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    char name[2048];
+    name[0] = '\0';
+
+    if (index >= 0 && index <= SI2::GetNumOutputDrivers(1)) {
+        SI2::GetOutputDriverName(index, name, sizeof(name), 1);
+    }
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 int32_t Script_VoiceChat_StartCapture(lua_State* L) {

@@ -83,6 +83,30 @@ int32_t SI2::GlueMusicUpdate(const void* data, void* param) {
     return 1;
 }
 
+// 0x4C5A80 in the original
+int32_t SI2::GetInputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem) {
+    return SESound::GetInputDriverName(index, buffer, bufferSize);
+}
+
+// 0x4C5A60 in the original
+int32_t SI2::GetNumInputDrivers(int32_t chatSystem) {
+    return SESound::GetNumInputDrivers();
+}
+
+// 0x4C5AB0 in the original
+int32_t SI2::GetNumOutputDrivers(int32_t chatSystem) {
+    return SESound::GetNumOutputDrivers(chatSystem);
+}
+
+// 0x4C5AF0 in the original
+int32_t SI2::GetOutputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem) {
+    if (index < 0) {
+        index = 0;
+    }
+
+    return SESound::GetOutputDriverName(index, buffer, bufferSize, chatSystem);
+}
+
 int32_t SI2::Init(int32_t a1) {
     // TODO
     // if (CmdLineGetBool(26)) {

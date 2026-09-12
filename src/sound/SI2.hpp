@@ -22,6 +22,10 @@ class SI2 {
 
         // Static functions
         static int32_t CreditsMusicUpdate(const void* data, void* param);
+        static int32_t GetInputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem);
+        static int32_t GetNumInputDrivers(int32_t chatSystem);
+        static int32_t GetNumOutputDrivers(int32_t chatSystem);
+        static int32_t GetOutputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem);
         static SOUNDKITDEF* GetSoundKitDef(int32_t id);
         static int32_t GetSoundKitID(const char* name);
         static int32_t GlueMusicUpdate(const void* data, void* param);

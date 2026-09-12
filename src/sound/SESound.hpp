@@ -13,6 +13,12 @@ struct SOUND_INTERNAL_LOOKUP : TSHashObject<SOUND_INTERNAL_LOOKUP, HASHKEY_NONE>
     SESoundInternal* m_internal;
 };
 
+#define SE_DRIVER_NAME_LENGTH 256
+
+struct SEDRIVERNAME {
+    char name[SE_DRIVER_NAME_LENGTH];
+};
+
 class SESound {
     public:
         // Public static variables
@@ -26,6 +32,13 @@ class SESound {
         static HASHKEY_NONE s_InternalLookupKey;
         static SCritSect s_LoadingCritSect;
         static FMOD::System* s_pGameSystem;
+
+        // Driver name tables, rebuilt whenever FMOD reports a device list change. Index 0 is the
+        // localized "System Default" entry, so a table holds one more entry than FMOD reports.
+        static TSGrowableArray<SEDRIVERNAME> s_GameOutputDrivers;
+        static TSGrowableArray<SEDRIVERNAME> s_ChatOutputDrivers;
+        static TSGrowableArray<SEDRIVERNAME> s_ChatInputDrivers;
+        static void (*s_DeviceListChangedCallback)();
         static STORM_EXPLICIT_LIST(SEDiskSound, m_readyLink) s_ReadyDiskSounds;
         static uint32_t s_UniqueID;
 
@@ -33,8 +46,14 @@ class SESound {
         static FMOD::SoundGroup* CreateSoundGroup(const char* name, int32_t maxAudible);
         static SEChannelGroup* GetChannelGroup(const char* name, bool create, bool createInMaster);
         static float GetChannelGroupVolume(const char* name);
+        static void EnumerateDrivers();
+        static int32_t GetInputDriverName(int32_t index, char* buffer, size_t bufferSize);
+        static int32_t GetNumInputDrivers();
+        static int32_t GetNumOutputDrivers(int32_t chatSystem);
+        static int32_t GetOutputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem);
         static int32_t Heartbeat(const void* data, void* param);
-        static void Init(int32_t maxChannels, int32_t (*a2), int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*a8), int32_t a9);
+        static void Init(int32_t maxChannels, int32_t (*a2), int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9);
+        static void SetDeviceListChangedCallback(void (*callback)());
         static int32_t IsInitialized();
         static void Log_Write(int32_t line, const char* file, FMOD_RESULT result, const char* fmt, ...);
         static void MuteChannelGroup(const char* name, bool mute);
