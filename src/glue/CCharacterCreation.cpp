@@ -5,6 +5,7 @@
 #include "component/Types.hpp"
 #include "db/Db.hpp"
 #include "glue/CGlueLoading.hpp"
+#include "glue/Character.hpp"
 #include "glue/CGlueMgr.hpp"
 #include "model/CM2Shared.hpp"
 #include "net/Connection.hpp"
@@ -70,7 +71,9 @@ void CCharacterCreation::CreateCharacter(const char* name) {
         return;
     }
 
-    // TODO the original runs the name through ClientServices name validation here
+    // The original validates the name here as well but does not act on the result; the server
+    // performs the authoritative check
+    ValidateName(name);
 
     auto& data = CCharacterCreation::s_character->m_data;
 
@@ -210,7 +213,94 @@ void CCharacterCreation::CycleCharCustomization(int32_t index, int32_t delta) {
 }
 
 void CCharacterCreation::Dress() {
-    // TODO
+    auto character = CCharacterCreation::s_character;
+
+    if (CCharacterCreation::s_existingCharacterIndex >= 0 && CCharacterSelection::GetCharacterDisplay(CCharacterCreation::s_existingCharacterIndex)) {
+        // TODO dress from the existing character's equipment
+
+        return;
+    }
+
+    // Strip whatever the component wore before
+
+    for (int32_t itemSlot = 0; itemSlot < NUM_ITEM_SLOT; itemSlot++) {
+        character->RemoveItem(static_cast<ITEM_SLOT>(itemSlot));
+    }
+
+    auto model = character->m_data.model;
+
+    CCharacterComponent::RemoveHandItem(model, INVSLOT_MAINHAND, SHEATHE_0, false);
+    CCharacterComponent::RemoveHandItem(model, INVSLOT_OFFHAND, SHEATHE_0, false);
+    CCharacterComponent::RemoveHandItem(model, INVSLOT_OFFHAND, SHEATHE_0, true);
+    CCharacterComponent::RemoveHandItem(model, INVSLOT_RANGED, SHEATHE_0, false);
+
+    // Put on the starting outfit for the race, class, and sex
+
+    auto& data = character->m_data;
+    auto classID = CCharacterCreation::s_selectedClassID;
+
+    const CharStartOutfitRec* outfitRec = nullptr;
+
+    for (int32_t i = 0; i < g_charStartOutfitDB.GetNumRecords(); i++) {
+        auto rec = g_charStartOutfitDB.GetRecordByIndex(i);
+
+        if (rec->m_raceID == data.raceID && rec->m_classID == classID && rec->m_sexID == data.sexID) {
+            outfitRec = rec;
+            break;
+        }
+    }
+
+    if (!outfitRec) {
+        return;
+    }
+
+    for (int32_t i = 0; i < CharStartOutfitRec::NUM_ITEMS; i++) {
+        auto displayID = outfitRec->m_displayItemID[i];
+        auto inventoryType = outfitRec->m_inventoryType[i];
+
+        if (displayID <= 0 || inventoryType == INVTYPE_HEAD) {
+            continue;
+        }
+
+        // Hunters show their ranged weapon and quiver instead of melee weapons
+        if (classID == 3) {
+            switch (inventoryType) {
+            case INVTYPE_WEAPON:
+            case INVTYPE_2HWEAPON:
+            case INVTYPE_WEAPONMAINHAND:
+            case INVTYPE_WEAPONOFFHAND:
+                continue;
+
+            case INVTYPE_RANGED:
+            case INVTYPE_RANGEDRIGHT: {
+                auto displayRec = g_itemDisplayInfoDB.GetRecord(displayID);
+
+                if (displayRec) {
+                    CCharacterComponent::AddHandItem(model, displayRec, INVSLOT_RANGED, SHEATHE_0, false, false, inventoryType == INVTYPE_RANGEDRIGHT, 0);
+
+                    // TODO animate the bow string
+                }
+
+                break;
+            }
+
+            case INVTYPE_BAG: {
+                auto displayRec = g_itemDisplayInfoDB.GetRecord(displayID);
+
+                if (displayRec && *displayRec->m_modelName[0]) {
+                    character->AddItem(ITEMSLOT_11, displayRec, 0);
+                }
+
+                break;
+            }
+
+            default:
+                break;
+            }
+        }
+
+        character->AddItemByInventoryType(inventoryType, displayID);
+    }
 }
 
 int32_t CCharacterCreation::GetRandomClassID() {

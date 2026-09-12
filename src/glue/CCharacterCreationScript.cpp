@@ -3,6 +3,7 @@
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
 #include "glue/CCharacterCreation.hpp"
+#include "glue/Character.hpp"
 #include "net/Connection.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "ui/FrameScript.hpp"
@@ -365,9 +366,7 @@ int32_t Script_GetRandomName(lua_State* L) {
         if (!length) {
             break;
         }
-
-        // TODO the original also rejects names that fail ClientServices name validation
-    } while (length < 4 || length > 10);
+    } while (ValidateName(name) != CHAR_NAME_SUCCESS || length < 4 || length > 10);
 
     lua_pushstring(L, name);
 

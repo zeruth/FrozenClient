@@ -1,0 +1,42 @@
+#include "db/rec/ChatProfanityRec.hpp"
+#include "util/SFile.hpp"
+
+const char* ChatProfanityRec::GetFilename() {
+    return "DBFilesClient\\ChatProfanity.dbc";
+}
+
+uint32_t ChatProfanityRec::GetNumColumns() {
+    return 3;
+}
+
+uint32_t ChatProfanityRec::GetRowSize() {
+    return 12;
+}
+
+bool ChatProfanityRec::NeedIDAssigned() {
+    return false;
+}
+
+int32_t ChatProfanityRec::GetID() {
+    return this->m_ID;
+}
+
+void ChatProfanityRec::SetID(int32_t id) {
+    this->m_ID = id;
+}
+
+bool ChatProfanityRec::Read(SFile* f, const char* stringBuffer) {
+    uint32_t nameOfs;
+
+    if (
+        !SFile::Read(f, &this->m_ID, sizeof(this->m_ID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &nameOfs, sizeof(uint32_t), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_language, sizeof(this->m_language), nullptr, nullptr, nullptr)
+    ) {
+        return false;
+    }
+
+    this->m_name = nameOfs ? &stringBuffer[nameOfs] : "";
+
+    return true;
+}

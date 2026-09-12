@@ -1476,6 +1476,157 @@ int32_t CCharacterComponent::RandomSkinColor(COMPONENT_CONTEXT context) {
     return 1;
 }
 
+void CCharacterComponent::RemoveHandItem(CM2Model* model, INVENTORY_SLOTS invSlot, SHEATHE_TYPE sheatheType, bool shield) {
+    if (!model || invSlot < INVSLOT_BACK || invSlot > INVSLOT_TABARD) {
+        return;
+    }
+
+    auto itemLink = ATTACH_NONE;
+    auto sheatheLink = ATTACH_NONE;
+
+    if (invSlot == INVSLOT_MAINHAND) {
+        itemLink = ATTACH_HANDR;
+        sheatheLink = CCharacterComponent::GetSheatheLink(sheatheType, true);
+    } else if (invSlot == INVSLOT_OFFHAND || invSlot == INVSLOT_RANGED) {
+        itemLink = shield ? ATTACH_SHIELD : ATTACH_HANDL;
+        sheatheLink = CCharacterComponent::GetSheatheLink(sheatheType, false);
+    }
+
+    CCharacterComponent::RemoveLinkpt(model, itemLink);
+    CCharacterComponent::RemoveLinkpt(model, sheatheLink);
+}
+
+void CCharacterComponent::RemoveItem(ITEM_SLOT itemSlot) {
+    if (!this->m_items[itemSlot]) {
+        return;
+    }
+
+    this->m_flags |= 0x4;
+
+    switch (itemSlot) {
+    case ITEMSLOT_0: {
+        // Helm: restore the hair and facial geosets it replaced
+        this->m_data.geosets[0] = ComponentGetHairGeoset(&this->m_data);
+
+        // TODO detach the helm model
+
+        auto facialHairStyleRec = ComponentGetFacialHairStyleRecord(&this->m_data);
+
+        if (facialHairStyleRec) {
+            this->m_data.geosets[1] = 100 + facialHairStyleRec->m_geoset[0];
+            this->m_data.geosets[3] = 300 + facialHairStyleRec->m_geoset[1];
+            this->m_data.geosets[2] = 200 + facialHairStyleRec->m_geoset[2];
+            this->m_data.geosets[7] = 702;
+            this->m_data.geosets[16] = 1600 + facialHairStyleRec->m_geoset[3];
+            this->m_data.geosets[17] = 1700 + facialHairStyleRec->m_geoset[4];
+        }
+
+        this->m_items[itemSlot] = 0;
+
+        return;
+    }
+
+    case ITEMSLOT_1:
+        // TODO detach the shoulder models
+
+        this->m_items[itemSlot] = 0;
+
+        return;
+
+    case ITEMSLOT_3:
+        this->m_flags &= ~0x20;
+        break;
+
+    case ITEMSLOT_9:
+        if (this->m_flags & 0x40) {
+            this->m_items[itemSlot] = 0;
+
+            return;
+        }
+
+        this->m_data.geosets[15] = 1501;
+        this->ClearTorsoItemDisplays(4);
+
+        break;
+
+    case ITEMSLOT_10:
+        this->m_data.geosets[15] = 1501;
+        this->m_items[itemSlot] = 0;
+
+        return;
+
+    case ITEMSLOT_11:
+        // TODO detach the quiver model
+
+        this->m_items[itemSlot] = 0;
+
+        return;
+
+    default:
+        break;
+    }
+
+    auto displayRec = g_itemDisplayInfoDB.GetRecord(this->m_items[itemSlot]);
+
+    this->m_items[itemSlot] = 0;
+
+    for (int32_t section = 0; section < NUM_COMPONENT_SECTIONS; section++) {
+        (this->*CCharacterComponent::s_itemFunc[section])(itemSlot, displayRec, false);
+    }
+}
+
+void CCharacterComponent::RemoveItemByInventoryType(int32_t inventoryType) {
+    switch (inventoryType) {
+    case INVTYPE_HEAD:
+        this->RemoveItem(ITEMSLOT_0);
+        break;
+
+    case INVTYPE_SHOULDER:
+        this->RemoveItem(ITEMSLOT_1);
+        break;
+
+    case INVTYPE_BODY:
+        this->RemoveItem(ITEMSLOT_2);
+        break;
+
+    case INVTYPE_CHEST:
+    case INVTYPE_ROBE:
+        this->RemoveItem(ITEMSLOT_3);
+        break;
+
+    case INVTYPE_WAIST:
+        this->RemoveItem(ITEMSLOT_4);
+        break;
+
+    case INVTYPE_LEGS:
+        this->RemoveItem(ITEMSLOT_5);
+        break;
+
+    case INVTYPE_FEET:
+        this->RemoveItem(ITEMSLOT_6);
+        break;
+
+    case INVTYPE_WRISTS:
+        this->RemoveItem(ITEMSLOT_7);
+        break;
+
+    case INVTYPE_HANDS:
+        this->RemoveItem(ITEMSLOT_8);
+        break;
+
+    case INVTYPE_CLOAK:
+        this->RemoveItem(ITEMSLOT_10);
+        break;
+
+    case INVTYPE_TABARD:
+        this->RemoveItem(ITEMSLOT_9);
+        break;
+
+    default:
+        break;
+    }
+}
+
 void CCharacterComponent::RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link) {
     if (link == ATTACH_NONE) {
         return;
@@ -1740,6 +1891,90 @@ void CCharacterComponent::AddItemBySlot(INVENTORY_SLOTS invSlot, int32_t display
     }
 }
 
+void CCharacterComponent::AddItemByInventoryType(int32_t inventoryType, int32_t displayID) {
+    this->RemoveItemByInventoryType(inventoryType);
+
+    if (displayID <= 0) {
+        return;
+    }
+
+    switch (inventoryType) {
+    case INVTYPE_HEAD:
+        this->AddItem(ITEMSLOT_0, displayID, 0);
+        break;
+
+    case INVTYPE_SHOULDER:
+        this->AddItem(ITEMSLOT_1, displayID, 0);
+        break;
+
+    case INVTYPE_BODY:
+        this->AddItem(ITEMSLOT_2, displayID, 0);
+        break;
+
+    case INVTYPE_CHEST:
+    case INVTYPE_ROBE:
+        this->AddItem(ITEMSLOT_3, displayID, 0);
+        break;
+
+    case INVTYPE_WAIST:
+        this->AddItem(ITEMSLOT_4, displayID, 0);
+        break;
+
+    case INVTYPE_LEGS:
+        this->AddItem(ITEMSLOT_5, displayID, 0);
+        break;
+
+    case INVTYPE_FEET:
+        this->AddItem(ITEMSLOT_6, displayID, 0);
+        break;
+
+    case INVTYPE_WRISTS:
+        this->AddItem(ITEMSLOT_7, displayID, 0);
+        break;
+
+    case INVTYPE_HANDS:
+        this->AddItem(ITEMSLOT_8, displayID, 0);
+        break;
+
+    case INVTYPE_WEAPON:
+    case INVTYPE_2HWEAPON:
+    case INVTYPE_WEAPONMAINHAND:
+        this->AddHandItemDisplay(displayID, 0, INVSLOT_MAINHAND, false);
+        break;
+
+    case INVTYPE_SHIELD:
+        this->AddHandItemDisplay(displayID, 1, INVSLOT_OFFHAND, true);
+        break;
+
+    case INVTYPE_CLOAK:
+        this->AddItem(ITEMSLOT_10, displayID, 0);
+        break;
+
+    case INVTYPE_TABARD:
+        this->AddItem(ITEMSLOT_9, displayID, 0);
+        break;
+
+    case INVTYPE_WEAPONOFFHAND:
+        this->AddHandItemDisplay(displayID, 1, INVSLOT_OFFHAND, false);
+        break;
+
+    default:
+        break;
+    }
+}
+
+void CCharacterComponent::AddHandItemDisplay(int32_t displayID, int32_t handIndex, INVENTORY_SLOTS invSlot, bool shield) {
+    auto displayRec = g_itemDisplayInfoDB.GetRecord(displayID);
+
+    if (!displayRec) {
+        return;
+    }
+
+    this->m_handItems[handIndex] = displayID;
+
+    CCharacterComponent::AddHandItem(this->m_data.model, displayRec, invSlot, SHEATHE_0, false, shield, false, 0);
+}
+
 void CCharacterComponent::ClearItemDisplay(COMPONENT_SECTIONS section, int32_t priority) {
     if (priority == -1) {
         return;
@@ -1753,6 +1988,20 @@ void CCharacterComponent::ClearItemDisplay(COMPONENT_SECTIONS section, int32_t p
     this->m_itemDisplays[section].displayID[priority] = 0;
 
     this->m_itemDisplays[section].priorityDirty &= ~(1 << priority);
+}
+
+void CCharacterComponent::ClearTorsoItemDisplays(int32_t fromPriority) {
+    // Drops the shirt, chest, and tabard layers from the torso sections
+    for (int32_t priority = fromPriority; priority > 1; priority--) {
+        this->ClearItemDisplay(SECTION_TORSO_UPPER, priority);
+        this->ClearItemDisplay(SECTION_TORSO_LOWER, priority);
+    }
+
+    this->m_sectionDirty |= (1 << SECTION_TORSO_UPPER) | (1 << SECTION_TORSO_LOWER);
+
+    // TODO component request logic
+
+    this->m_flags &= ~0x8;
 }
 
 void CCharacterComponent::CreateBaseTexture() {

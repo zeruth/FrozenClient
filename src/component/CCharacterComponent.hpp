@@ -70,6 +70,7 @@ class CCharacterComponent {
         static void PasteTransparent1Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs);
         static void PasteTransparent4Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs);
         static void PasteTransparent8Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs);
+        static void RemoveHandItem(CM2Model* model, INVENTORY_SLOTS invSlot, SHEATHE_TYPE sheatheType, bool shield);
         static void RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link);
         static void ReplaceMonsterSkin(CM2Model* model, const CreatureDisplayInfoRec* displayInfoRec, const CreatureModelDataRec* modelDataRec);
         static void UpdateBaseTexture(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels);
@@ -85,13 +86,17 @@ class CCharacterComponent {
         void* m_texture[NUM_COMPONENT_VARIATIONS * 3] = {};
         ComponentItemDisplay m_itemDisplays[NUM_COMPONENT_SECTIONS] = {};
         int32_t m_items[NUM_ITEM_SLOT] = {};
+        int32_t m_handItems[2] = {};
 
         // Member functions
         ~CCharacterComponent();
         void AddItem(ITEM_SLOT itemSlot, int32_t displayID, int32_t a4);
         void AddItem(ITEM_SLOT itemSlot, const ItemDisplayInfoRec* displayRec, int32_t a4);
         void AddItemBySlot(INVENTORY_SLOTS invSlot, int32_t displayID, int32_t a4);
+        void AddItemByInventoryType(int32_t inventoryType, int32_t displayID);
+        void AddHandItemDisplay(int32_t displayID, int32_t handIndex, INVENTORY_SLOTS invSlot, bool shield);
         void ClearItemDisplay(COMPONENT_SECTIONS section, int32_t priority);
+        void ClearTorsoItemDisplays(int32_t fromPriority);
         void CreateBaseTexture();
         void* CreateTexture(const ItemDisplayInfoRec* displayRec, int32_t section);
         void GeosRenderPrep();
@@ -129,6 +134,8 @@ class CCharacterComponent {
         void RenderPrepTU();
         void RenderPrepAll();
         void RenderPrepSections();
+        void RemoveItem(ITEM_SLOT itemSlot);
+        void RemoveItemByInventoryType(int32_t inventoryType);
         void ReplaceExtraSkinTexture(const char* a2);
         void ReplaceHairTexture(int32_t hairStyleID, const char* a3);
         void SetBeardStyle(int32_t facialHairStyleID, bool a3, const char* a4);
