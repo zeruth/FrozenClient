@@ -73,6 +73,7 @@ class CCharacterComponent {
         static void RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link);
         static void ReplaceMonsterSkin(CM2Model* model, const CreatureDisplayInfoRec* displayInfoRec, const CreatureModelDataRec* modelDataRec);
         static void UpdateBaseTexture(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels);
+        static void ValidateComponentData(ComponentData* data, COMPONENT_CONTEXT context);
 
         // Member variables
         uint32_t m_flags = 0x1 | 0x2 | 0x4;
@@ -99,7 +100,22 @@ class CCharacterComponent {
         int32_t Init(ComponentData* data, const char* a3);
         int32_t ItemsLoaded(int32_t a2);
         void LoadBaseVariation(COMPONENT_VARIATIONS sectionIndex, int32_t textureIndex, int32_t variationIndex, int32_t colorIndex, COMPONENT_SECTIONS section, const char* a7);
+        int32_t NextBeardStyle(COMPONENT_CONTEXT context);
+        int32_t NextFace(COMPONENT_CONTEXT context, int32_t colorOffset);
+        int32_t NextHairColor(COMPONENT_CONTEXT context);
+        int32_t NextHairStyle(COMPONENT_CONTEXT context);
+        int32_t NextSkinColor(COMPONENT_CONTEXT context);
         void PrepSections();
+        int32_t PrevBeardStyle(COMPONENT_CONTEXT context);
+        int32_t PrevFace(COMPONENT_CONTEXT context, int32_t colorOffset);
+        int32_t PrevHairColor(COMPONENT_CONTEXT context);
+        int32_t PrevHairStyle(COMPONENT_CONTEXT context);
+        int32_t PrevSkinColor(COMPONENT_CONTEXT context);
+        int32_t RandomBeardStyle(COMPONENT_CONTEXT context);
+        int32_t RandomFace(COMPONENT_CONTEXT context);
+        int32_t RandomHairColor(COMPONENT_CONTEXT context);
+        int32_t RandomHairStyle(COMPONENT_CONTEXT context);
+        int32_t RandomSkinColor(COMPONENT_CONTEXT context);
         int32_t RenderPrep(int32_t a2);
         void RenderPrepAL();
         void RenderPrepAU();

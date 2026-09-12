@@ -10,10 +10,12 @@
 #include "model/CM2Scene.hpp"
 #include "object/Types.hpp"
 #include "util/CStatus.hpp"
+#include "util/Random.hpp"
 #include "util/Unimplemented.hpp"
 #include <common/ObjectAlloc.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include <tempest/Random.hpp>
 
 uint32_t* CCharacterComponent::s_characterFacialHairStylesList;
 st_race* CCharacterComponent::s_chrVarArray;
@@ -358,10 +360,26 @@ void CCharacterComponent::Initialize() {
         DEBUG
     );
 
-    // TODO
+    auto textureLevel = s_componentTextureLevelCvar->GetInt();
+    auto compress = s_componentCompressCvar->GetInt();
 
-    // TODO proper implementation
-    CCharacterComponent::Initialize(GxTex_Rgb565, 9, 0, 0);
+    // The original composes character textures on a worker thread when componentThread is set
+    // and the machine has more than one CPU, which is also what allows compression and texture
+    // level 9. Composition here always happens on the main thread, so take the single threaded
+    // path: no compression and at most texture level 8.
+    int32_t thread = 0;
+
+    if (textureLevel > 8) {
+        textureLevel = 8;
+    }
+
+    compress = 0;
+
+    if (textureLevel < 7) {
+        textureLevel = 7;
+    }
+
+    CCharacterComponent::Initialize(GxTex_Rgb565, textureLevel, thread, compress);
 }
 
 void CCharacterComponent::Initialize(EGxTexFormat textureFormat, uint32_t textureLevel, int32_t thread, int32_t compress) {
@@ -444,6 +462,263 @@ void CCharacterComponent::InitDbData() {
 
     BuildComponentArray(varArrayLength, &CCharacterComponent::s_chrVarArray);
     CountFacialFeatures(varArrayLength, &CCharacterComponent::s_characterFacialHairStylesList);
+}
+
+int32_t CCharacterComponent::NextBeardStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+
+    bool found;
+    this->GetSectionsRecord(VARIATION_FACIAL_HAIR, data.facialHairStyleID, data.hairColorID, &found);
+
+    // Facial features without sections (e.g. tauren horns) are simply numbered
+    if (!found) {
+        auto numStyles = static_cast<int32_t>(CCharacterComponent::s_characterFacialHairStylesList[data.raceID * UNITSEX_NUM_SEXES + data.sexID]);
+        auto style = data.facialHairStyleID + 1;
+
+        this->SetBeardStyle(style < numStyles ? style : 0, true, nullptr);
+
+        return 1;
+    }
+
+    auto numStyles = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACIAL_HAIR);
+
+    if (numStyles <= 0) {
+        return 0;
+    }
+
+    auto style = data.facialHairStyleID + 1;
+
+    if (style >= numStyles) {
+        style = 0;
+    }
+
+    while (style != data.facialHairStyleID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACIAL_HAIR, style);
+
+        for (int32_t color = 0; color < numColors; color++) {
+            auto rec = this->GetSectionsRecord(VARIATION_FACIAL_HAIR, style, color, nullptr);
+
+            if (!rec || !ComponentCheckSectionFlags(rec->m_flags, selection)) {
+                continue;
+            }
+
+            // Keep the current hair color if the new style supports it
+            auto currentColorRec = this->GetSectionsRecord(VARIATION_FACIAL_HAIR, style, data.hairColorID, nullptr);
+
+            if (currentColorRec && ComponentCheckSectionFlags(currentColorRec->m_flags, selection)) {
+                this->SetBeardStyle(currentColorRec->m_variationIndex, true, nullptr);
+                return 1;
+            }
+
+            this->SetHairColor(rec->m_colorIndex, false, nullptr);
+            this->SetBeardStyle(rec->m_variationIndex, true, nullptr);
+
+            return 1;
+        }
+
+        style++;
+
+        if (style >= numStyles) {
+            style = 0;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::NextFace(COMPONENT_CONTEXT context, int32_t colorOffset) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numFaces = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACE);
+
+    if (numFaces <= 0) {
+        return 0;
+    }
+
+    auto face = data.faceID + 1;
+
+    if (face >= numFaces) {
+        face = 0;
+    }
+
+    while (face != data.faceID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACE, face);
+
+        // Start the color search at the preferred skin color
+        for (int32_t color = 0; color < numColors; color++) {
+            color = (color + colorOffset) % numColors;
+
+            auto faceRec = this->GetSectionsRecord(VARIATION_FACE, face, color, nullptr);
+            auto skinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, color, nullptr);
+            auto underwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, color, nullptr);
+
+            bool valid = faceRec && ComponentCheckSectionFlags(faceRec->m_flags, selection)
+                && skinRec && ComponentCheckSectionFlags(skinRec->m_flags, selection)
+                && (context == CONTEXT_2 || (underwearRec && ComponentCheckSectionFlags(underwearRec->m_flags, selection)));
+
+            if (!valid) {
+                continue;
+            }
+
+            // Keep the current skin color if the new face supports it
+            auto currentFaceRec = this->GetSectionsRecord(VARIATION_FACE, face, data.skinColorID, nullptr);
+            auto currentSkinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, data.skinColorID, nullptr);
+            auto currentUnderwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, data.skinColorID, nullptr);
+
+            bool currentValid = currentFaceRec && ComponentCheckSectionFlags(currentFaceRec->m_flags, selection)
+                && currentSkinRec && ComponentCheckSectionFlags(currentSkinRec->m_flags, selection)
+                && (context == CONTEXT_2 || (currentUnderwearRec && ComponentCheckSectionFlags(currentUnderwearRec->m_flags, selection)));
+
+            if (currentValid) {
+                this->SetFace(face, true, nullptr);
+                return 1;
+            }
+
+            this->SetSkinColor(color, false, true, nullptr);
+            this->SetFace(face, true, nullptr);
+
+            return 1;
+        }
+
+        face++;
+
+        if (face >= numFaces) {
+            face = 0;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::NextHairColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR, data.hairStyleID);
+
+    if (numColors <= 0) {
+        return 0;
+    }
+
+    auto color = data.hairColorID + 1;
+
+    if (color >= numColors) {
+        color = 0;
+    }
+
+    while (color != data.hairColorID) {
+        auto rec = this->GetSectionsRecord(VARIATION_HAIR, data.hairStyleID, color, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            this->SetHairColor(rec->m_colorIndex, true, nullptr);
+            return 1;
+        }
+
+        color++;
+
+        if (color >= numColors) {
+            color = 0;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::NextHairStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numStyles = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR);
+
+    if (numStyles <= 0) {
+        return 0;
+    }
+
+    auto style = data.hairStyleID + 1;
+
+    if (style >= numStyles) {
+        style = 0;
+    }
+
+    while (style != data.hairStyleID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR, style);
+
+        for (int32_t color = 0; color < numColors; color++) {
+            auto rec = this->GetSectionsRecord(VARIATION_HAIR, style, color, nullptr);
+
+            if (!rec || !ComponentCheckSectionFlags(rec->m_flags, selection)) {
+                continue;
+            }
+
+            // Keep the current hair color if the new style supports it
+            auto currentColorRec = this->GetSectionsRecord(VARIATION_HAIR, style, data.hairColorID, nullptr);
+
+            if (currentColorRec && ComponentCheckSectionFlags(currentColorRec->m_flags, selection)) {
+                this->SetHairStyle(currentColorRec->m_variationIndex, nullptr);
+                return 1;
+            }
+
+            this->SetHairColor(rec->m_colorIndex, true, nullptr);
+            this->SetHairStyle(rec->m_variationIndex, nullptr);
+
+            // The new hair color may invalidate the facial hair style
+            selection = GetSelectionFromContext(context, data.classID);
+
+            auto facialHairStyle = ComponentGetFacialHairStyleByIndex(data.raceID, data.sexID, data.classID, data.hairColorID, data.facialHairStyleID, 0, selection);
+
+            if (facialHairStyle >= 0) {
+                this->SetBeardStyle(facialHairStyle, true, nullptr);
+            }
+
+            return 1;
+        }
+
+        style++;
+
+        if (style >= numStyles) {
+            style = 0;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::NextSkinColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_SKIN, 0);
+
+    if (numColors <= 0) {
+        return 0;
+    }
+
+    auto color = data.skinColorID + 1;
+
+    if (color >= numColors) {
+        color = 0;
+    }
+
+    while (color != data.skinColorID) {
+        auto skinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, color, nullptr);
+        auto faceRec = this->GetSectionsRecord(VARIATION_FACE, data.faceID, color, nullptr);
+        auto underwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, color, nullptr);
+
+        bool valid = skinRec && ComponentCheckSectionFlags(skinRec->m_flags, selection)
+            && faceRec && ComponentCheckSectionFlags(faceRec->m_flags, selection)
+            && (context == CONTEXT_2 || (underwearRec && ComponentCheckSectionFlags(underwearRec->m_flags, selection)));
+
+        if (valid) {
+            this->SetSkinColor(skinRec->m_colorIndex, true, true, nullptr);
+            return 1;
+        }
+
+        color++;
+
+        if (color >= numColors) {
+            color = 0;
+        }
+    }
+
+    return 0;
 }
 
 void CCharacterComponent::Paste(void* srcTexture, MipBits* dstMips, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel) {
@@ -862,6 +1137,343 @@ void CCharacterComponent::PasteTransparent8Bit(void* srcTexture, const BlpPalPix
 
         curSrcHeight /= 2;
     }
+}
+
+int32_t CCharacterComponent::PrevBeardStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+
+    bool found;
+    this->GetSectionsRecord(VARIATION_FACIAL_HAIR, data.facialHairStyleID, data.hairColorID, &found);
+
+    // Facial features without sections (e.g. tauren horns) are simply numbered
+    if (!found) {
+        auto numStyles = static_cast<int32_t>(CCharacterComponent::s_characterFacialHairStylesList[data.raceID * UNITSEX_NUM_SEXES + data.sexID]);
+        auto style = data.facialHairStyleID - 1;
+
+        this->SetBeardStyle(style >= 0 ? style : numStyles - 1, true, nullptr);
+
+        return 1;
+    }
+
+    auto numStyles = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACIAL_HAIR);
+
+    if (numStyles <= 0) {
+        return 0;
+    }
+
+    auto style = data.facialHairStyleID - 1;
+
+    if (style < 0) {
+        style = numStyles - 1;
+    }
+
+    while (style != data.facialHairStyleID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACIAL_HAIR, style);
+
+        for (int32_t color = 0; color < numColors; color++) {
+            auto rec = this->GetSectionsRecord(VARIATION_FACIAL_HAIR, style, color, nullptr);
+
+            if (!rec || !ComponentCheckSectionFlags(rec->m_flags, selection)) {
+                continue;
+            }
+
+            // Keep the current hair color if the new style supports it
+            auto currentColorRec = this->GetSectionsRecord(VARIATION_FACIAL_HAIR, style, data.hairColorID, nullptr);
+
+            if (currentColorRec && ComponentCheckSectionFlags(currentColorRec->m_flags, selection)) {
+                this->SetBeardStyle(currentColorRec->m_variationIndex, true, nullptr);
+                return 1;
+            }
+
+            this->SetHairColor(rec->m_colorIndex, false, nullptr);
+            this->SetBeardStyle(rec->m_variationIndex, true, nullptr);
+
+            return 1;
+        }
+
+        style--;
+
+        if (style < 0) {
+            style = numStyles - 1;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::PrevFace(COMPONENT_CONTEXT context, int32_t colorOffset) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numFaces = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACE);
+
+    if (numFaces <= 0) {
+        return 0;
+    }
+
+    auto face = data.faceID - 1;
+
+    if (face < 0) {
+        face = numFaces - 1;
+    }
+
+    while (face != data.faceID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_FACE, face);
+
+        // Start the color search at the preferred skin color
+        for (int32_t color = 0; color < numColors; color++) {
+            color = (color + colorOffset) % numColors;
+
+            auto faceRec = this->GetSectionsRecord(VARIATION_FACE, face, color, nullptr);
+            auto skinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, color, nullptr);
+            auto underwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, color, nullptr);
+
+            bool valid = faceRec && ComponentCheckSectionFlags(faceRec->m_flags, selection)
+                && skinRec && ComponentCheckSectionFlags(skinRec->m_flags, selection)
+                && (context == CONTEXT_2 || (underwearRec && ComponentCheckSectionFlags(underwearRec->m_flags, selection)));
+
+            if (!valid) {
+                continue;
+            }
+
+            // Keep the current skin color if the new face supports it
+            auto currentFaceRec = this->GetSectionsRecord(VARIATION_FACE, face, data.skinColorID, nullptr);
+            auto currentSkinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, data.skinColorID, nullptr);
+            auto currentUnderwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, data.skinColorID, nullptr);
+
+            bool currentValid = currentFaceRec && ComponentCheckSectionFlags(currentFaceRec->m_flags, selection)
+                && currentSkinRec && ComponentCheckSectionFlags(currentSkinRec->m_flags, selection)
+                && (context == CONTEXT_2 || (currentUnderwearRec && ComponentCheckSectionFlags(currentUnderwearRec->m_flags, selection)));
+
+            if (currentValid) {
+                this->SetFace(face, true, nullptr);
+                return 1;
+            }
+
+            this->SetSkinColor(color, false, true, nullptr);
+            this->SetFace(face, true, nullptr);
+
+            return 1;
+        }
+
+        face--;
+
+        if (face < 0) {
+            face = numFaces - 1;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::PrevHairColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR, data.hairStyleID);
+
+    if (numColors <= 0) {
+        return 0;
+    }
+
+    auto color = data.hairColorID - 1;
+
+    if (color < 0) {
+        color = numColors - 1;
+    }
+
+    while (color != data.hairColorID) {
+        auto rec = this->GetSectionsRecord(VARIATION_HAIR, data.hairStyleID, color, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            this->SetHairColor(rec->m_colorIndex, true, nullptr);
+            return 1;
+        }
+
+        color--;
+
+        if (color < 0) {
+            color = numColors - 1;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::PrevHairStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numStyles = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR);
+
+    if (numStyles <= 0) {
+        return 0;
+    }
+
+    auto style = data.hairStyleID - 1;
+
+    if (style < 0) {
+        style = numStyles - 1;
+    }
+
+    while (style != data.hairStyleID) {
+        auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_HAIR, style);
+
+        for (int32_t color = 0; color < numColors; color++) {
+            auto rec = this->GetSectionsRecord(VARIATION_HAIR, style, color, nullptr);
+
+            if (!rec || !ComponentCheckSectionFlags(rec->m_flags, selection)) {
+                continue;
+            }
+
+            // Keep the current hair color if the new style supports it
+            auto currentColorRec = this->GetSectionsRecord(VARIATION_HAIR, style, data.hairColorID, nullptr);
+
+            if (currentColorRec && ComponentCheckSectionFlags(currentColorRec->m_flags, selection)) {
+                this->SetHairStyle(currentColorRec->m_variationIndex, nullptr);
+                return 1;
+            }
+
+            this->SetHairColor(rec->m_colorIndex, true, nullptr);
+            this->SetHairStyle(rec->m_variationIndex, nullptr);
+
+            // The new hair color may invalidate the facial hair style
+            selection = GetSelectionFromContext(context, data.classID);
+
+            auto facialHairStyle = ComponentGetFacialHairStyleByIndex(data.raceID, data.sexID, data.classID, data.hairColorID, data.facialHairStyleID, 0, selection);
+
+            if (facialHairStyle >= 0) {
+                this->SetBeardStyle(facialHairStyle, true, nullptr);
+            }
+
+            return 1;
+        }
+
+        style--;
+
+        if (style < 0) {
+            style = numStyles - 1;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::PrevSkinColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumColors(CCharacterComponent::s_chrVarArray, data.raceID, data.sexID, VARIATION_SKIN, 0);
+
+    if (numColors <= 0) {
+        return 0;
+    }
+
+    auto color = data.skinColorID - 1;
+
+    if (color < 0) {
+        color = numColors - 1;
+    }
+
+    while (color != data.skinColorID) {
+        auto skinRec = this->GetSectionsRecord(VARIATION_SKIN, 0, color, nullptr);
+        auto faceRec = this->GetSectionsRecord(VARIATION_FACE, data.faceID, color, nullptr);
+        auto underwearRec = this->GetSectionsRecord(VARIATION_UNDERWEAR, 0, color, nullptr);
+
+        bool valid = skinRec && ComponentCheckSectionFlags(skinRec->m_flags, selection)
+            && faceRec && ComponentCheckSectionFlags(faceRec->m_flags, selection)
+            && (context == CONTEXT_2 || (underwearRec && ComponentCheckSectionFlags(underwearRec->m_flags, selection)));
+
+        if (valid) {
+            this->SetSkinColor(skinRec->m_colorIndex, true, true, nullptr);
+            return 1;
+        }
+
+        color--;
+
+        if (color < 0) {
+            color = numColors - 1;
+        }
+    }
+
+    return 0;
+}
+
+int32_t CCharacterComponent::RandomBeardStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numStyles = ComponentGetNumFacialHairStyles(data.raceID, data.sexID, data.classID, data.hairColorID, context);
+    auto index = numStyles > 0 ? CRandom::dice(numStyles, g_rndSeed) : 0;
+    auto style = ComponentGetFacialHairStyleByIndex(data.raceID, data.sexID, data.classID, data.hairColorID, data.facialHairStyleID, index, selection);
+
+    if (style < 0) {
+        return 0;
+    }
+
+    this->SetBeardStyle(style, true, nullptr);
+
+    return 1;
+}
+
+int32_t CCharacterComponent::RandomFace(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numFaces = ComponentGetNumFaces(data.raceID, data.sexID, data.classID, data.skinColorID, context);
+    auto index = numFaces > 0 ? CRandom::dice(numFaces, g_rndSeed) : 0;
+    auto face = ComponentGetFaceByIndex(data.raceID, data.sexID, data.skinColorID, index, selection);
+
+    if (face < 0) {
+        return 0;
+    }
+
+    this->SetFace(face, true, nullptr);
+
+    return 1;
+}
+
+int32_t CCharacterComponent::RandomHairColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumHairColors(data.raceID, data.sexID, data.classID, data.hairStyleID, context);
+    auto index = numColors > 0 ? CRandom::dice(numColors, g_rndSeed) : 0;
+    auto color = ComponentGetHairColorByIndex(data.raceID, data.sexID, data.hairStyleID, index, selection);
+
+    if (color < 0) {
+        return 0;
+    }
+
+    this->SetHairColor(color, true, nullptr);
+
+    return 1;
+}
+
+int32_t CCharacterComponent::RandomHairStyle(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numStyles = ComponentGetNumHairStyles(data.raceID, data.sexID, data.classID, data.hairColorID, context);
+    auto index = numStyles > 0 ? CRandom::dice(numStyles, g_rndSeed) : 0;
+    auto style = ComponentGetHairStyleByIndex(data.raceID, data.sexID, data.hairColorID, index, selection);
+
+    if (style < 0) {
+        return 0;
+    }
+
+    this->SetHairStyle(style, nullptr);
+
+    return 1;
+}
+
+int32_t CCharacterComponent::RandomSkinColor(COMPONENT_CONTEXT context) {
+    auto& data = this->m_data;
+    auto selection = GetSelectionFromContext(context, data.classID);
+    auto numColors = ComponentGetNumSkinColors(data.raceID, data.sexID, data.classID, context);
+    auto index = numColors > 0 ? CRandom::dice(numColors, g_rndSeed) : 0;
+    auto color = ComponentGetSkinColorByIndex(data.raceID, data.sexID, index, selection);
+
+    if (color < 0) {
+        return 0;
+    }
+
+    this->SetSkinColor(color, true, true, nullptr);
+
+    return 1;
 }
 
 void CCharacterComponent::RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link) {
@@ -1305,9 +1917,46 @@ int32_t CCharacterComponent::ItemsLoaded(int32_t a2) {
         return 1;
     }
 
-    // TODO
+    // Without forcing, report whether every item texture has finished loading
 
-    return 1;
+    int32_t loaded = 1;
+
+    TCTEXTUREINFO info;
+
+    for (int32_t section = 0; section < NUM_COMPONENT_SECTIONS; section++) {
+        if (!(this->m_sectionDirty & (1 << section))) {
+            continue;
+        }
+
+        auto& itemDisplay = this->m_itemDisplays[section];
+
+        for (int32_t priority = 0; priority < 7; priority++) {
+            if (!itemDisplay.displayID[priority] && !itemDisplay.texture[priority]) {
+                continue;
+            }
+
+            if (itemDisplay.displayID[priority] && !itemDisplay.texture[priority]) {
+                auto displayRec = g_itemDisplayInfoDB.GetRecord(itemDisplay.displayID[priority]);
+
+                if (displayRec) {
+                    itemDisplay.texture[priority] = this->CreateTexture(displayRec, section);
+                }
+            }
+
+            if (!TextureCacheGetInfo(itemDisplay.texture[priority], info, 0)) {
+                loaded = 0;
+                continue;
+            }
+
+            if (TextureCacheHasMips(itemDisplay.texture[priority])) {
+                itemDisplay.priorityDirty |= (1 << priority);
+            } else {
+                itemDisplay.priorityDirty &= ~(1 << priority);
+            }
+        }
+    }
+
+    return loaded;
 }
 
 void CCharacterComponent::LoadBaseVariation(COMPONENT_VARIATIONS sectionIndex, int32_t textureIndex, int32_t variationIndex, int32_t colorIndex, COMPONENT_SECTIONS section, const char* a7) {
@@ -1315,6 +1964,7 @@ void CCharacterComponent::LoadBaseVariation(COMPONENT_VARIATIONS sectionIndex, i
 
     if (this->m_texture[index]) {
         TextureCacheDestroyTexture(this->m_texture[index]);
+        this->m_texture[index] = nullptr;
     }
 
     auto valid = ComponentValidateBase(
@@ -1345,8 +1995,53 @@ void CCharacterComponent::LoadBaseVariation(COMPONENT_VARIATIONS sectionIndex, i
     this->m_flags &= ~0x8;
 }
 
+static void UpdateBaseTextureRect(HTEXTURE baseTexture, const C2iVector& pos, const C2iVector& size) {
+    auto gxTex = TextureGetGxTex(baseTexture, 1, nullptr);
+
+    if (gxTex) {
+        GxTexUpdate(gxTex, pos.x, pos.y, pos.x + size.x, pos.y + size.y, 1);
+    }
+}
+
 void CCharacterComponent::PrepSections() {
-    // TODO
+    // Composite each dirty section into the shared texture buffer and push it to the base texture
+
+    for (int32_t section = 0; section < NUM_COMPONENT_SECTIONS; section++) {
+        if (!(this->m_sectionDirty & (1 << section))) {
+            continue;
+        }
+
+        (this->*CCharacterComponent::s_prepFunc[section])();
+
+        if (!(this->m_flags & 0x1) && this->m_textureFormat != GxTex_Dxt1) {
+            auto& sectionInfo = CCharacterComponent::s_sectionInfo[section];
+            UpdateBaseTextureRect(this->m_baseTexture, sectionInfo.pos, sectionInfo.size);
+        }
+    }
+
+    if (!(this->m_flags & 0x1) && this->m_textureFormat != GxTex_Dxt1) {
+        return;
+    }
+
+    if (this->m_textureFormat == GxTex_Dxt1) {
+        // TODO compress s_textureBuffer into s_textureBufferCompressed
+    }
+
+    // Flag 0x1 means the whole texture changed (e.g. a new skin color)
+    if (this->m_flags & 0x1) {
+        C2iVector pos = { 0, 0 };
+        C2iVector size = { static_cast<int32_t>(CCharacterComponent::s_textureSize), static_cast<int32_t>(CCharacterComponent::s_textureSize) };
+        UpdateBaseTextureRect(this->m_baseTexture, pos, size);
+
+        return;
+    }
+
+    for (int32_t section = 0; section < NUM_COMPONENT_SECTIONS; section++) {
+        if (this->m_sectionDirty & (1 << section)) {
+            auto& sectionInfo = CCharacterComponent::s_sectionInfo[section];
+            UpdateBaseTextureRect(this->m_baseTexture, sectionInfo.pos, sectionInfo.size);
+        }
+    }
 }
 
 int32_t CCharacterComponent::RenderPrep(int32_t a2) {
@@ -1640,7 +2335,18 @@ void CCharacterComponent::RenderPrepSections() {
 
     this->m_sectionDirty = 0;
 
-    // TODO
+    // Item textures have been composited, so release them until the section changes again
+
+    for (auto& itemDisplay : this->m_itemDisplays) {
+        for (int32_t priority = 0; priority < 7; priority++) {
+            if (itemDisplay.displayID[priority] && itemDisplay.texture[priority]) {
+                TextureCacheDestroyTexture(itemDisplay.texture[priority]);
+                itemDisplay.texture[priority] = nullptr;
+            }
+        }
+    }
+
+    // TODO component request logic
 
     s_bInRenderPrep = 0;
 }
@@ -2053,6 +2759,92 @@ int32_t CCharacterComponent::UpdateItemDisplay(COMPONENT_SECTIONS section, const
     this->m_itemDisplays[section].displayID[priority] = newDisplayRec->m_ID;
 
     return 1;
+}
+
+void CCharacterComponent::ValidateComponentData(ComponentData* data, COMPONENT_CONTEXT context) {
+    auto selection = GetSelectionFromContext(context, data->classID);
+
+    // Skin color
+
+    if (!ComponentValidateSkin(data->raceID, data->sexID, data->classID, data->skinColorID, context)) {
+        auto numColors = ComponentGetNumSkinColors(data->raceID, data->sexID, data->classID, context);
+
+        data->skinColorID = numColors > 0
+            ? ComponentGetSkinColorByIndex(data->raceID, data->sexID, data->skinColorID % numColors, selection)
+            : 0;
+    }
+
+    // Face
+
+    if (!ComponentValidateFace(data->raceID, data->sexID, data->classID, data->skinColorID, data->faceID, context)) {
+        auto numFaces = ComponentGetNumFaces(data->raceID, data->sexID, data->classID, data->skinColorID, context);
+
+        data->faceID = numFaces > 0
+            ? ComponentGetFaceByIndex(data->raceID, data->sexID, data->skinColorID, data->faceID % numFaces, selection)
+            : 0;
+    }
+
+    // Hair style and color
+
+    if (!ComponentValidateHair(data->raceID, data->sexID, data->classID, data->hairColorID, data->hairStyleID, context)) {
+        auto numStyles = ComponentGetNumHairStyles(data->raceID, data->sexID, data->classID, data->hairColorID, context);
+
+        if (numStyles > 0) {
+            data->hairStyleID = ComponentGetHairStyleByIndex(data->raceID, data->sexID, data->hairColorID, data->hairStyleID % numStyles, selection);
+        } else {
+            // No style supports the current hair color, so pick a style that has valid colors
+            // and a color that style supports
+            auto numVariations = ComponentGetNumVariations(CCharacterComponent::s_chrVarArray, data->raceID, data->sexID, VARIATION_HAIR);
+
+            TSFixedArray<int32_t> numColors;
+            numColors.SetCount(numVariations);
+
+            int32_t numValidStyles = 0;
+
+            for (int32_t style = 0; style < numVariations; style++) {
+                numColors[style] = ComponentGetNumHairColors(data->raceID, data->sexID, data->classID, style, context);
+
+                if (numColors[style] > 0) {
+                    numValidStyles++;
+                }
+            }
+
+            if (numValidStyles > 0) {
+                int32_t chosenStyle = -1;
+
+                for (int32_t style = 0; style < numVariations; style++) {
+                    if (numColors[style] > 0 && data->hairStyleID % numValidStyles == style) {
+                        chosenStyle = style;
+                        break;
+                    }
+                }
+
+                if (chosenStyle < 0 || numColors[chosenStyle] <= 0) {
+                    for (int32_t style = 0; style < numVariations; style++) {
+                        if (numColors[style] > 0) {
+                            chosenStyle = style;
+                            break;
+                        }
+                    }
+                }
+
+                data->hairStyleID = chosenStyle;
+                data->hairColorID = ComponentGetHairColorByIndex(data->raceID, data->sexID, chosenStyle, data->hairColorID % numColors[chosenStyle], selection);
+            } else {
+                data->hairStyleID = 0;
+            }
+        }
+    }
+
+    // Facial hair
+
+    if (!ComponentValidateFacialHair(data->raceID, data->sexID, data->classID, data->hairColorID, data->facialHairStyleID, context)) {
+        auto numStyles = ComponentGetNumFacialHairStyles(data->raceID, data->sexID, data->classID, data->hairColorID, context);
+
+        data->facialHairStyleID = numStyles > 0
+            ? ComponentGetFacialHairStyleByIndex(data->raceID, data->sexID, data->classID, data->hairColorID, data->facialHairStyleID, data->facialHairStyleID % numStyles, selection)
+            : 0;
+    }
 }
 
 int32_t CCharacterComponent::VariationsLoaded(int32_t a2) {

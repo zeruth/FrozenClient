@@ -1,4 +1,5 @@
 #include "component/Util.hpp"
+#include "component/CCharacterComponent.hpp"
 #include "component/ComponentData.hpp"
 #include "component/Types.hpp"
 #include "db/Db.hpp"
@@ -130,6 +131,112 @@ int32_t BuildComponentArray(uint32_t varArrayLength, st_race** varArrayPtr) {
     return 1;
 }
 
+bool ComponentCheckSectionFlags(int32_t flags, COMPONENT_SELECTION selection) {
+    switch (selection) {
+        case SELECTION_0:
+            return (flags & 0x1) && !(flags & 0xC);
+
+        case SELECTION_1:
+            return (flags & 0x1) && (flags & 0x14) && !(flags & 0x8);
+
+        case SELECTION_2:
+            return (flags & 0x3) && !(flags & 0xC);
+
+        case SELECTION_3:
+            return (flags & 0x3) && (flags & 0x14) && !(flags & 0x8);
+
+        case SELECTION_4:
+            return true;
+
+        case SELECTION_5:
+            return !(flags & 0xC);
+
+        case SELECTION_6:
+            return (flags & 0x14) && !(flags & 0x8);
+
+        default:
+            return false;
+    }
+}
+
+int32_t ComponentGetFaceByIndex(int32_t raceId, int32_t sexId, int32_t skinColorId, int32_t index, COMPONENT_SELECTION selection) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto numFaces = ComponentGetNumVariations(varArray, raceId, sexId, VARIATION_FACE);
+
+    int32_t validIndex = 0;
+
+    for (int32_t i = 0; i < numFaces; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACE, i, skinColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            if (index == validIndex) {
+                return rec->m_variationIndex;
+            }
+
+            validIndex++;
+        }
+    }
+
+    return -1;
+}
+
+int32_t ComponentGetFacialHairStyleByIndex(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairColorId, int32_t facialHairStyleId, int32_t index, COMPONENT_SELECTION selection) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+
+    bool found;
+    ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACIAL_HAIR, facialHairStyleId, hairColorId, &found);
+
+    // Races whose facial features are pure geometry (e.g. tauren horns) have no facial hair
+    // sections, so their styles are simply numbered
+    if (!found) {
+        if (index < static_cast<int32_t>(CCharacterComponent::s_characterFacialHairStylesList[raceId * UNITSEX_NUM_SEXES + sexId])) {
+            return index;
+        }
+
+        return -1;
+    }
+
+    auto context = GetContextFromSelection(selection);
+    auto numStyles = ComponentGetNumFacialHairStyles(raceId, sexId, classId, hairColorId, context);
+
+    int32_t validIndex = 0;
+
+    for (int32_t i = 0; i < numStyles; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACIAL_HAIR, i, hairColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            if (index == validIndex) {
+                return rec->m_variationIndex;
+            }
+
+            validIndex++;
+        }
+    }
+
+    return -1;
+}
+
+int32_t ComponentGetHairColorByIndex(int32_t raceId, int32_t sexId, int32_t hairStyleId, int32_t index, COMPONENT_SELECTION selection) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto numColors = ComponentGetNumColors(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId);
+
+    int32_t validIndex = 0;
+
+    for (int32_t i = 0; i < numColors; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId, i, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            if (index == validIndex) {
+                return rec->m_colorIndex;
+            }
+
+            validIndex++;
+        }
+    }
+
+    return -1;
+}
+
 CharacterFacialHairStylesRec* ComponentGetFacialHairStyleRecord(ComponentData* data) {
     for (int32_t i = 0; i < g_characterFacialHairStylesDB.GetNumRecords(); i++) {
         auto facialHairStyleRec = g_characterFacialHairStylesDB.GetRecordByIndex(i);
@@ -155,6 +262,27 @@ int32_t ComponentGetHairGeoset(ComponentData* data) {
     return 1;
 }
 
+int32_t ComponentGetHairStyleByIndex(int32_t raceId, int32_t sexId, int32_t hairColorId, int32_t index, COMPONENT_SELECTION selection) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto numStyles = ComponentGetNumVariations(varArray, raceId, sexId, VARIATION_HAIR);
+
+    int32_t validIndex = 0;
+
+    for (int32_t i = 0; i < numStyles; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_HAIR, i, hairColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            if (index == validIndex) {
+                return rec->m_variationIndex;
+            }
+
+            validIndex++;
+        }
+    }
+
+    return -1;
+}
+
 int32_t ComponentGetNumColors(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex) {
     auto& section = varArray[(raceId * UNITSEX_NUM_SEXES + sexId)].sections[sectionIndex];
 
@@ -167,6 +295,131 @@ int32_t ComponentGetNumColors(st_race* varArray, int32_t raceId, int32_t sexId, 
     }
 
     return section.variationArray[variationIndex].colorCount;
+}
+
+int32_t ComponentGetNumFaces(int32_t raceId, int32_t sexId, int32_t classId, int32_t skinColorId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto selection = GetSelectionFromContext(context, classId);
+    auto numFaces = ComponentGetNumVariations(varArray, raceId, sexId, VARIATION_FACE);
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < numFaces; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACE, i, skinColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int32_t ComponentGetNumFacialHairStyles(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairColorId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto selection = GetSelectionFromContext(context, classId);
+    auto numStyles = ComponentGetNumVariations(varArray, raceId, sexId, VARIATION_FACIAL_HAIR);
+
+    if (numStyles == 0) {
+        return CCharacterComponent::s_characterFacialHairStylesList[raceId * UNITSEX_NUM_SEXES + sexId];
+    }
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < numStyles; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACIAL_HAIR, i, hairColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int32_t ComponentGetNumHairColors(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairStyleId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto selection = GetSelectionFromContext(context, classId);
+    auto numColors = ComponentGetNumColors(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId);
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < numColors; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId, i, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int32_t ComponentGetNumHairStyles(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairColorId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto selection = GetSelectionFromContext(context, classId);
+    auto numStyles = ComponentGetNumVariations(varArray, raceId, sexId, VARIATION_HAIR);
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < numStyles; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_HAIR, i, hairColorId, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int32_t ComponentGetNumSkinColors(int32_t raceId, int32_t sexId, int32_t classId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto selection = GetSelectionFromContext(context, classId);
+    auto numColors = ComponentGetNumColors(varArray, raceId, sexId, VARIATION_SKIN, 0);
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < numColors; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_SKIN, 0, i, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int32_t ComponentGetNumVariations(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex) {
+    auto& section = varArray[(raceId * UNITSEX_NUM_SEXES + sexId)].sections[sectionIndex];
+
+    if (!section.variationArray) {
+        return 0;
+    }
+
+    return section.variationCount;
+}
+
+int32_t ComponentGetSkinColorByIndex(int32_t raceId, int32_t sexId, int32_t index, COMPONENT_SELECTION selection) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto numColors = ComponentGetNumColors(varArray, raceId, sexId, VARIATION_SKIN, 0);
+
+    int32_t validIndex = 0;
+
+    for (int32_t i = 0; i < numColors; i++) {
+        auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_SKIN, 0, i, nullptr);
+
+        if (rec && ComponentCheckSectionFlags(rec->m_flags, selection)) {
+            if (index == validIndex) {
+                return rec->m_colorIndex;
+            }
+
+            validIndex++;
+        }
+    }
+
+    return -1;
 }
 
 CharSectionsRec* ComponentGetSectionsRecord(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex, int32_t colorIndex, bool* found) {
@@ -211,6 +464,84 @@ int32_t ComponentValidateBase(st_race* varArray, int32_t raceId, int32_t sexId, 
     return 1;
 }
 
+bool ComponentValidateFace(int32_t raceId, int32_t sexId, int32_t classId, int32_t skinColorId, int32_t faceId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+
+    if (!ComponentValidateBase(varArray, raceId, sexId, VARIATION_FACE, faceId, skinColorId)) {
+        return false;
+    }
+
+    auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_FACE, faceId, skinColorId, nullptr);
+
+    if (!rec) {
+        return false;
+    }
+
+    return ComponentCheckSectionFlags(rec->m_flags, GetSelectionFromContext(context, classId));
+}
+
+bool ComponentValidateFacialHair(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairColorId, int32_t facialHairStyleId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+    auto listIndex = raceId * UNITSEX_NUM_SEXES + sexId;
+
+    if (facialHairStyleId < 0 || facialHairStyleId > static_cast<int32_t>(CCharacterComponent::s_characterFacialHairStylesList[listIndex])) {
+        return false;
+    }
+
+    // Facial features without sections (e.g. tauren horns) only need to be within the style count
+    auto& section = varArray[listIndex].sections[VARIATION_FACIAL_HAIR];
+
+    if (facialHairStyleId >= section.variationCount || section.variationCount == 0 || hairColorId < 0) {
+        return true;
+    }
+
+    auto& variation = section.variationArray[facialHairStyleId];
+
+    if (hairColorId >= variation.colorCount || variation.colorCount == 0) {
+        return true;
+    }
+
+    auto rec = variation.colorArray[hairColorId].rec;
+
+    if (!rec) {
+        return false;
+    }
+
+    return ComponentCheckSectionFlags(rec->m_flags, GetSelectionFromContext(context, classId));
+}
+
+bool ComponentValidateHair(int32_t raceId, int32_t sexId, int32_t classId, int32_t hairColorId, int32_t hairStyleId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+
+    if (!ComponentValidateBase(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId, hairColorId)) {
+        return false;
+    }
+
+    auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_HAIR, hairStyleId, hairColorId, nullptr);
+
+    if (!rec) {
+        return false;
+    }
+
+    return ComponentCheckSectionFlags(rec->m_flags, GetSelectionFromContext(context, classId));
+}
+
+bool ComponentValidateSkin(int32_t raceId, int32_t sexId, int32_t classId, int32_t skinColorId, COMPONENT_CONTEXT context) {
+    auto varArray = CCharacterComponent::s_chrVarArray;
+
+    if (!ComponentValidateBase(varArray, raceId, sexId, VARIATION_SKIN, 0, skinColorId)) {
+        return false;
+    }
+
+    auto rec = ComponentGetSectionsRecord(varArray, raceId, sexId, VARIATION_SKIN, 0, skinColorId, nullptr);
+
+    if (!rec) {
+        return false;
+    }
+
+    return ComponentCheckSectionFlags(rec->m_flags, GetSelectionFromContext(context, classId));
+}
+
 int32_t CountFacialFeatures(uint32_t varArrayLength, uint32_t** featuresListPtr) {
     auto featuresList = static_cast<uint32_t*>(STORM_ALLOC_ZERO(sizeof(uint32_t) * varArrayLength));
 
@@ -230,6 +561,24 @@ int32_t CountFacialFeatures(uint32_t varArrayLength, uint32_t** featuresListPtr)
     *featuresListPtr = featuresList;
 
     return 1;
+}
+
+COMPONENT_CONTEXT GetContextFromSelection(COMPONENT_SELECTION selection) {
+    switch (selection) {
+        case SELECTION_2:
+        case SELECTION_3:
+            return CONTEXT_1;
+
+        case SELECTION_4:
+            return CONTEXT_2;
+
+        case SELECTION_5:
+        case SELECTION_6:
+            return CONTEXT_3;
+
+        default:
+            return CONTEXT_CHAR_CREATE;
+    }
 }
 
 COMPONENT_SELECTION GetSelectionFromContext(COMPONENT_CONTEXT context, int32_t classID) {
