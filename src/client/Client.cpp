@@ -1,5 +1,6 @@
 #include "client/Client.hpp"
 #include "async/AsyncFile.hpp"
+#include "client/Archive.hpp"
 #include "client/ClientHandlers.hpp"
 #include "client/ClientServices.hpp"
 #include "component/CCharacterComponent.hpp"
@@ -19,14 +20,25 @@
 #include "ui/FrameScript.hpp"
 #include "ui/FrameXML.hpp"
 #include "ui/Game.hpp"
+#include "util/Filesystem.hpp"
 #include "util/Random.hpp"
+#include "util/SFile.hpp"
 #include "world/World.hpp"
+#include <cstdlib>
+#include <storm/Array.hpp>
+#include <storm/Memory.hpp>
+#include <storm/String.hpp>
 #include <bc/Debug.hpp>
 #include <common/Prop.hpp>
 #include <common/Time.hpp>
 #include <storm/Error.hpp>
 
 CVar* Client::g_accountNameVar;
+CVar* Client::g_readTOSVar;
+CVar* Client::g_readEULAVar;
+CVar* Client::g_readTerminationWithoutNoticeVar;
+CVar* Client::g_readScanningVar;
+CVar* Client::g_readContestVar;
 CVar* Client::g_accountListVar;
 HEVENTCONTEXT Client::g_clientEventContext;
 
@@ -158,6 +170,12 @@ void ClientRegisterConsoleCommands() {
         false
     );
 
+    Client::g_readTOSVar = CVar::Register("readTOS", "Status of the TOS", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    Client::g_readEULAVar = CVar::Register("readEULA", "Status of the EULA", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    Client::g_readTerminationWithoutNoticeVar = CVar::Register("readTerminationWithoutNotice", "Status of the Termination without Notice notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    Client::g_readScanningVar = CVar::Register("readScanning", "Status of the Scanning notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    Client::g_readContestVar = CVar::Register("readContest", "Status of the Contest notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
+
     // TODO
 
     s_desktopGammaCvar = CVar::Register(
@@ -287,9 +305,45 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
     return 1;
 }
 
+static int32_t AddRunOnceFile(const OSFILEENTRY* entry, void* param) {
+    auto files = static_cast<TSGrowableArray<char*>*>(param);
+    *files->New() = SStrDupA(entry->name, __FILE__, __LINE__);
+    return 0;
+}
+
+static int CompareRunOnceFiles(const void* a, const void* b) {
+    return SStrCmp(*static_cast<const char* const*>(a), *static_cast<const char* const*>(b), STORM_MAX_STR);
+}
+
+// Applies every WTF\RunOnce*.wtf in name order, then discards the list (0x406740 in the original)
+static void LoadRunOnceFiles(int32_t (*load)(const char*)) {
+    char basePath[STORM_MAX_PATH];
+    SFile::GetBasePath(basePath, sizeof(basePath));
+
+    char dir[STORM_MAX_PATH];
+    SStrPrintf(dir, sizeof(dir), "%sWTF\\", basePath);
+
+    TSGrowableArray<char*> files;
+    OsFileEnumerate(dir, "RunOnce*.wtf", &AddRunOnceFile, &files, 1);
+
+    if (files.Count() > 1) {
+        qsort(files.m_data, files.Count(), sizeof(char*), &CompareRunOnceFiles);
+    }
+
+    for (uint32_t i = 0; i < files.Count(); ++i) {
+        load(files[i]);
+        SMemFree(files[i], __FILE__, __LINE__, 0);
+    }
+}
+
 // TODO name this (maybe something like InitializeLocale?)
 void Sub405DD0() {
     // TODO
+
+    ClientOpenArchives();
+
+    // TODO
+    // - Wow.ini handling
 
     // TODO get this from the soupy mess of locale checks above
     auto locale = "enUS";
@@ -332,16 +386,7 @@ int32_t InitializeGlobal() {
 
     // sub_7663F0();
 
-    // v18 = 0;
-    // v19 = 0;
-    // ptr = 0;
-    // v21 = 0;
-
-    // sub_406740(&v18, &CVar::Load);
-
-    // if (ptr) {
-    //     SMemFree(ptr, a_pad, -2, 0);
-    // }
+    LoadRunOnceFiles(&CVar::Load);
 
     // CVar::Register("dbCompress", "Database compression", 0, "-1", 0, 5, 0, 0, 0);
 
@@ -383,9 +428,9 @@ int32_t InitializeGlobal() {
 
     // CVar::Set(v2, &a1a, 1, 0, 0, 1);
 
-    // SStrPrintf(dest, 260, "%s%s", *(_DWORD *)off_AB6158, v2->m_stringValue.m_str);
-
-    // sub_421B50(dest);
+    char localePath[STORM_MAX_PATH];
+    SStrPrintf(localePath, sizeof(localePath), "%s%s", "Data\\", localeVar->GetString());
+    SFile::SetLocalePath(localePath);
 
     // sub_423D70();
 

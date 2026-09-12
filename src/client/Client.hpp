@@ -10,6 +10,11 @@ class CVar;
 namespace Client {
     extern CVar* g_accountNameVar;
     extern CVar* g_accountListVar;
+    extern CVar* g_readTOSVar;
+    extern CVar* g_readEULAVar;
+    extern CVar* g_readTerminationWithoutNoticeVar;
+    extern CVar* g_readScanningVar;
+    extern CVar* g_readContestVar;
     extern HEVENTCONTEXT g_clientEventContext;
 }
 
