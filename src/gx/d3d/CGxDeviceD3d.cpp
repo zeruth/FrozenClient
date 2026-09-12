@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include "gx/Texture.hpp"
 #include "gx/Blit.hpp"
 #include "gx/CGxBatch.hpp"
 #include "gx/texture/CGxTex.hpp"
@@ -1888,10 +1889,25 @@ void CGxDeviceD3d::ITexUpload(CGxTex* texId) {
 
             C2iVector size = { rect.right - rect.left, rect.bottom - rect.top };
 
+            // The latched texels cover the whole mip level, so step the source to the update rect
+            auto srcTexels = static_cast<const uint8_t*>(texels);
+
+            if (srcTexels) {
+                bool srcCompressed = texId->m_dataFormat == GxTex_Dxt1 || texId->m_dataFormat == GxTex_Dxt3 || texId->m_dataFormat == GxTex_Dxt5;
+
+                if (srcCompressed) {
+                    uint32_t blockBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 4);
+                    srcTexels += (rect.top >> 2) * texelStrideInBytes + (rect.left >> 2) * blockBytes;
+                } else {
+                    uint32_t texelBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 1);
+                    srcTexels += rect.top * texelStrideInBytes + rect.left * texelBytes;
+                }
+            }
+
             Blit(
                 size,
                 BlitAlpha_0,
-                texels,
+                srcTexels,
                 texelStrideInBytes,
                 GxGetBlitFormat(texId->m_dataFormat),
                 lockedRect.pBits,
