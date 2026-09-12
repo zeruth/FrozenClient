@@ -3,6 +3,7 @@
 #include "util/android/OsAndroid.hpp"
 #include <android_native_app_glue.h>
 #include <android/log.h>
+#include <jni.h>
 #include <pthread.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -66,6 +67,48 @@ static void RedirectOutputToLog() {
     pthread_detach(thread);
 }
 
+// FMOD's Android build needs org.fmod.FMOD.init(context) before the system is created and
+// close() when done. The class lives in fmod.jar, which the activity's class loader can find
+// even though this thread was never attached to the VM.
+static void FmodJavaCall(android_app* app, const char* method) {
+#if defined(WHOA_FMOD_ANDROID)
+    JavaVM* vm = app->activity->vm;
+    JNIEnv* env = nullptr;
+
+    if (vm->AttachCurrentThread(&env, nullptr) != JNI_OK || !env) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Cannot attach to the Java VM for FMOD.%s", method);
+        return;
+    }
+
+    jobject activity = app->activity->clazz;
+    jclass activityClass = env->GetObjectClass(activity);
+    jmethodID getClassLoader = env->GetMethodID(activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;");
+    jobject loader = env->CallObjectMethod(activity, getClassLoader);
+    jclass loaderClass = env->FindClass("java/lang/ClassLoader");
+    jmethodID loadClass = env->GetMethodID(loaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+    jstring className = env->NewStringUTF("org.fmod.FMOD");
+    auto fmodClass = static_cast<jclass>(env->CallObjectMethod(loader, loadClass, className));
+
+    if (env->ExceptionCheck() || !fmodClass) {
+        env->ExceptionClear();
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "org.fmod.FMOD is not in the APK; is fmod.jar vendored?");
+    } else if (!strcmp(method, "init")) {
+        jmethodID init = env->GetStaticMethodID(fmodClass, "init", "(Landroid/content/Context;)V");
+        env->CallStaticVoidMethod(fmodClass, init, activity);
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "FMOD Java glue initialized");
+    } else {
+        jmethodID close = env->GetStaticMethodID(fmodClass, "close", "()V");
+        env->CallStaticVoidMethod(fmodClass, close);
+    }
+
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    }
+
+    vm->DetachCurrentThread();
+#endif
+}
+
 // Native activity entry point. The activity thread waits for its window, moves into the app's
 // external files directory (where Data\ and WTF\ live, exactly like the desktop layout), and then
 // runs the same client main as the other platforms.
@@ -98,7 +141,11 @@ void android_main(android_app* app) {
         }
     }
 
+    FmodJavaCall(app, "init");
+
     CommonMain();
+
+    FmodJavaCall(app, "close");
 
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Client main returned");
 }

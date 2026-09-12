@@ -61,6 +61,7 @@ if(WHOA_SYSTEM_ANDROID)
             gx
             net
             util
+            fmod
             android
             log
             EGL

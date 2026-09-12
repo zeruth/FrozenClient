@@ -1596,8 +1596,9 @@ void CGxDeviceGLES::IUpdateWindowSize() {
         return;
     }
 
+    // The default window rect is what input positions are normalized against
     CRect rect = { 0.0f, 0.0f, static_cast<float>(height), static_cast<float>(width) };
-    this->DeviceSetCurWindow(rect);
+    this->DeviceSetDefWindow(rect);
 
     this->m_format.size.x = width;
     this->m_format.size.y = height;

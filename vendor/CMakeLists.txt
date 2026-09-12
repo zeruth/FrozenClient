@@ -6,9 +6,19 @@ add_subdirectory(stormlib-9.31)
 # FMOD
 
 if(WHOA_SYSTEM_ANDROID)
-    # TODO vendor the FMOD Core Android libraries; until then a silent stub stands in for them
-    # so the sound module compiles and links against the FMOD headers
-    add_library(fmod STATIC fmod-stub/FmodStub.cpp)
+    # The FMOD Engine Android package is not redistributable, so it is picked up from
+    # fmodcore-2.02.18/android when present (inc/, lib/<abi>/libfmod.so, lib/fmod.jar) and a
+    # silent stub stands in for it otherwise
+    set(FMOD_ANDROID_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fmodcore-2.02.18/android")
+
+    if(EXISTS "${FMOD_ANDROID_DIR}/lib/${ANDROID_ABI}/libfmod.so")
+        set(WHOA_FMOD_ANDROID 1)
+        add_library(fmod SHARED IMPORTED GLOBAL)
+        message(STATUS "Using FMOD Core for Android from ${FMOD_ANDROID_DIR}")
+    else()
+        add_library(fmod STATIC fmod-stub/FmodStub.cpp)
+        message(STATUS "FMOD Core for Android not found under ${FMOD_ANDROID_DIR}; sound is stubbed out")
+    endif()
 else()
     add_library(fmod SHARED IMPORTED GLOBAL)
 endif()
@@ -38,7 +48,15 @@ else()
 endif()
 
 if(WHOA_SYSTEM_ANDROID)
-    target_include_directories(fmod PUBLIC ${FMOD_DIR}/linux-x86_64/inc)
+    if(WHOA_FMOD_ANDROID)
+        set_target_properties(fmod PROPERTIES
+            IMPORTED_LOCATION ${FMOD_ANDROID_DIR}/lib/${ANDROID_ABI}/libfmod.so
+            INTERFACE_INCLUDE_DIRECTORIES ${FMOD_ANDROID_DIR}/inc
+        )
+        target_compile_definitions(fmod INTERFACE -DWHOA_FMOD_ANDROID=1)
+    else()
+        target_include_directories(fmod PUBLIC ${FMOD_DIR}/linux-x86_64/inc)
+    endif()
 elseif(WHOA_SYSTEM_WIN)
     if(WHOA_ARCH_32)
         if(WHOA_FMOD_EX)

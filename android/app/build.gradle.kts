@@ -2,6 +2,11 @@ plugins {
     id("com.android.application")
 }
 
+// FMOD Engine for Android (not redistributable): vendor/fmodcore-2.02.18/android holds inc/,
+// lib/<abi>/libfmod.so, and lib/fmod.jar when the user has downloaded it
+val fmodAndroid = file("../../vendor/fmodcore-2.02.18/android")
+val fmodJar = fmodAndroid.resolve("lib/fmod.jar")
+
 android {
     namespace = "com.frozenclient.app"
     compileSdk = 35
@@ -17,6 +22,9 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
+
+        // The FMOD Java glue is the only Java code in the app
+        manifestPlaceholders["hasCode"] = fmodJar.exists().toString()
 
         externalNativeBuild {
             cmake {
@@ -34,9 +42,28 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs(fmodAndroid.resolve("lib"))
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // The library is also an imported CMake target
+            pickFirsts += listOf("**/libfmod.so", "**/libfmodL.so")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
         }
+    }
+}
+
+dependencies {
+    if (fmodJar.exists()) {
+        implementation(files(fmodJar))
     }
 }

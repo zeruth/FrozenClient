@@ -7,7 +7,7 @@
 
     <application
         android:label="FrozenClient"
-        android:hasCode="false"
+        android:hasCode="${hasCode}"
         android:allowBackup="false"
         android:allowNativeHeapPointerTagging="false"
         android:memtagMode="off">
