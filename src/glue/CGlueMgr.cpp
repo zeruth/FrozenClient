@@ -466,6 +466,10 @@ static void s_AcceptAgreement(int32_t& accepted, int32_t& showNotice, CVar* var)
     } else {
         var->Set("1", true, false, false, true);
     }
+
+    // Persist right away: the config is otherwise only written on a clean shutdown, which a
+    // phone rarely gives the client
+    CVar::Save();
 }
 
 // Reads an agreement's cvar: 1 means accepted, negative values mean the notice should be shown

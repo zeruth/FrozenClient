@@ -1,4 +1,5 @@
 #include "event/Input.hpp"
+#include "console/CVar.hpp"
 #include "util/android/OsAndroid.hpp"
 #include <android_native_app_glue.h>
 #include <android/input.h>
@@ -114,6 +115,14 @@ void OsAndroidOnAppCommand(android_app* app, int32_t cmd) {
 
     case APP_CMD_LOST_FOCUS:
         OsQueuePut(OS_INPUT_FOCUS, 0, 0, 0, 0);
+        break;
+
+    case APP_CMD_PAUSE:
+    case APP_CMD_STOP:
+        // The activity may be killed without ever returning, so settings are written here
+        if (CVar::m_initialized) {
+            CVar::Save();
+        }
         break;
 
     case APP_CMD_DESTROY:
