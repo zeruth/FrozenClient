@@ -67,16 +67,31 @@ static void RedirectOutputToLog() {
     pthread_detach(thread);
 }
 
-// FMOD's Android build needs org.fmod.FMOD.init(context) before the system is created and
-// close() when done. The class lives in fmod.jar, which the activity's class loader can find
-// even though this thread was never attached to the VM.
+#if defined(WHOA_FMOD_ANDROID)
+static bool JavaFailed(JNIEnv* env, const char* step) {
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "FMOD Java glue failed at %s", step);
+        return true;
+    }
+
+    return false;
+}
+#endif
+
+// FMOD's Android library caches the Java VM in its JNI_OnLoad, which the runtime only runs when
+// Java loads the library, and it needs org.fmod.FMOD.init(context) before the system is created
+// and close() when done. Both happen in the app's FmodBootstrap class, which the activity's class
+// loader can find even though this thread was never attached to the VM.
 static void FmodJavaCall(android_app* app, const char* method) {
 #if defined(WHOA_FMOD_ANDROID)
+    // The activity thread is attached for the client's whole life (see android_main)
     JavaVM* vm = app->activity->vm;
     JNIEnv* env = nullptr;
 
-    if (vm->AttachCurrentThread(&env, nullptr) != JNI_OK || !env) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Cannot attach to the Java VM for FMOD.%s", method);
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK || !env) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "The client thread is not attached to the Java VM for FMOD %s", method);
         return;
     }
 
@@ -86,26 +101,29 @@ static void FmodJavaCall(android_app* app, const char* method) {
     jobject loader = env->CallObjectMethod(activity, getClassLoader);
     jclass loaderClass = env->FindClass("java/lang/ClassLoader");
     jmethodID loadClass = env->GetMethodID(loaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-    jstring className = env->NewStringUTF("org.fmod.FMOD");
-    auto fmodClass = static_cast<jclass>(env->CallObjectMethod(loader, loadClass, className));
+    jstring className = env->NewStringUTF("com.frozenclient.app.FmodBootstrap");
+    auto bootstrapClass = static_cast<jclass>(env->CallObjectMethod(loader, loadClass, className));
 
-    if (env->ExceptionCheck() || !fmodClass) {
-        env->ExceptionClear();
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "org.fmod.FMOD is not in the APK; is fmod.jar vendored?");
+    if (JavaFailed(env, "FmodBootstrap lookup") || !bootstrapClass) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "FmodBootstrap is not in the APK");
     } else if (!strcmp(method, "init")) {
-        jmethodID init = env->GetStaticMethodID(fmodClass, "init", "(Landroid/content/Context;)V");
-        env->CallStaticVoidMethod(fmodClass, init, activity);
-        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "FMOD Java glue initialized");
+        jmethodID init = env->GetStaticMethodID(bootstrapClass, "init", "(Landroid/content/Context;)V");
+
+        if (!JavaFailed(env, "FmodBootstrap.init lookup") && init) {
+            env->CallStaticVoidMethod(bootstrapClass, init, activity);
+
+            if (!JavaFailed(env, "FmodBootstrap.init")) {
+                __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "FMOD Java glue initialized");
+            }
+        }
     } else {
-        jmethodID close = env->GetStaticMethodID(fmodClass, "close", "()V");
-        env->CallStaticVoidMethod(fmodClass, close);
-    }
+        jmethodID close = env->GetStaticMethodID(bootstrapClass, "close", "()V");
 
-    if (env->ExceptionCheck()) {
-        env->ExceptionClear();
+        if (!JavaFailed(env, "FmodBootstrap.close lookup") && close) {
+            env->CallStaticVoidMethod(bootstrapClass, close);
+            JavaFailed(env, "FmodBootstrap.close");
+        }
     }
-
-    vm->DetachCurrentThread();
 #endif
 }
 
@@ -141,11 +159,18 @@ void android_main(android_app* app) {
         }
     }
 
+    // FMOD calls into Java from the thread that drives it, so the client thread stays attached
+    // to the VM for as long as the client runs
+    JNIEnv* env = nullptr;
+    app->activity->vm->AttachCurrentThread(&env, nullptr);
+
     FmodJavaCall(app, "init");
 
     CommonMain();
 
     FmodJavaCall(app, "close");
+
+    app->activity->vm->DetachCurrentThread();
 
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Client main returned");
 }

@@ -10,6 +10,12 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "util/Filesystem.hpp"
+#include "util/Log.hpp"
+#include <fmod_errors.h>
+#include <cstdarg>
+#include <cstdio>
+
 #define LOG_WRITE(result, ...) \
     SESound::Log_Write(__LINE__, __FILE__, result, __VA_ARGS__);
 
@@ -421,7 +427,13 @@ void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32
 
     LOG_WRITE(FMOD_OK, " - FMOD Memory Init");
 
+#if defined(WHOA_SYSTEM_ANDROID)
+    // FMOD on arm64 needs 16 byte aligned blocks from a custom allocator, which Storm's does not
+    // promise, and System_Create fails outright with it; FMOD's own allocator is used instead
+    LOG_WRITE(FMOD_OK, " - FMOD allocator left at its default on Android");
+#else
     FMOD::Memory_Initialize(nullptr, 0, &FSoundAllocCallback, &FSoundReallocCallback, &FSoundFreeCallback);
+#endif
 
     // TODO
 
@@ -718,8 +730,40 @@ int32_t SESound::LoadDiskSound(FMOD::System* fmodSystem, const char* filename, F
     return 1;
 }
 
+// Writes to Logs\Sound.log like the original client; on Android the line also goes to the
+// system log so it can be read without pulling the file
 void SESound::Log_Write(int32_t line, const char* file, FMOD_RESULT result, const char* fmt, ...) {
-    // TODO
+    static HSLOG s_log = nullptr;
+    static int32_t s_logTried = 0;
+
+    if (!s_logTried) {
+        s_logTried = 1;
+        OsCreateDirectory("Logs", 0);
+        SLogCreate("Logs\\Sound.log", 0, &s_log);
+    }
+
+    char message[1024];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(message, sizeof(message), fmt, args);
+    va_end(args);
+
+    char text[1200];
+
+    if (result == FMOD_OK) {
+        SStrPrintf(text, sizeof(text), "%s", message);
+    } else {
+        SStrPrintf(text, sizeof(text), "%s [FMOD error %d: %s]", message, result, FMOD_ErrorString(result));
+    }
+
+    if (s_log) {
+        SLogWrite(s_log, "%s", text);
+        SLogFlush(s_log);
+    }
+
+#if defined(WHOA_SYSTEM_ANDROID)
+    printf("Sound: %s\n", text);
+#endif
 }
 
 void SESound::MuteChannelGroup(const char* name, bool mute) {

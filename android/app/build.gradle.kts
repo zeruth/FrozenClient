@@ -46,6 +46,11 @@ android {
     sourceSets {
         getByName("main") {
             jniLibs.srcDirs(fmodAndroid.resolve("lib"))
+
+            // The bootstrap class references org.fmod.FMOD, so it only compiles with the jar
+            if (!fmodJar.exists()) {
+                java.setSrcDirs(emptyList<String>())
+            }
         }
     }
 
