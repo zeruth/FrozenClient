@@ -274,9 +274,9 @@ CVar* CVar::Register(const char* name, const char* help, uint32_t flags, const c
         bool setReset = var->m_resetValue.GetString() == nullptr;
         bool setDefault = var->m_defaultValue.GetString() == nullptr;
 
-        var->m_flags = flags;
-
-        var->m_flags |= (var->m_flags & 0xFFFFFFCF);
+        // A cvar that Config.wtf created ahead of its registration keeps its flags (the archive
+        // bit above all) apart from the category bits, which the registration supplies
+        var->m_flags = flags | (var->m_flags & 0xFFFFFFCF);
 
         var->m_callback = fcn;
         var->m_arg = arg;
