@@ -26,6 +26,19 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(lib/system/cmake/system.cmake)
 
+# The NDK toolchain reports its own system name. For everything whoa cares about Android is a
+# POSIX system like Linux, so it takes the Linux paths plus its own flag for the differences.
+if(ANDROID)
+    set(WHOA_SYSTEM_LINUX 1)
+    set(WHOA_SYSTEM_ANDROID 1)
+    set(WHOA_SYSTEM_VERSION ${WHOA_LINUX_UNK})
+    add_definitions(
+        -DWHOA_SYSTEM_LINUX=1
+        -DWHOA_SYSTEM_ANDROID=1
+        -DWHOA_SYSTEM_VERSION=${WHOA_SYSTEM_VERSION}
+    )
+endif()
+
 # Some templates abuse offsetof
 if(WHOA_SYSTEM_LINUX OR WHOA_SYSTEM_MAC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")

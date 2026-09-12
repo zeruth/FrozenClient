@@ -37,7 +37,21 @@ if(WHOA_SYSTEM_MAC)
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mac/MainMenu.nib DESTINATION "bin")
 endif()
 
-if(WHOA_SYSTEM_LINUX)
+if(WHOA_SYSTEM_ANDROID)
+    file(GLOB PRIVATE_SOURCES "android/*.cpp")
+
+    # The client is loaded by the Android app as a shared library
+    add_library(Whoa SHARED ${PRIVATE_SOURCES})
+
+    target_link_libraries(Whoa
+        PRIVATE
+            client
+            event
+            gx
+            net
+            util
+    )
+elseif(WHOA_SYSTEM_LINUX)
     file(GLOB PRIVATE_SOURCES "linux/*.cpp")
 
     add_executable(Whoa ${PRIVATE_SOURCES})

@@ -55,3 +55,8 @@ target_include_directories(WhoaTest
 )
 
 install(TARGETS WhoaTest DESTINATION "bin")
+
+if(WHOA_SYSTEM_ANDROID)
+    # Catch2 writes through the Android log
+    target_link_libraries(WhoaTest PRIVATE log)
+endif()

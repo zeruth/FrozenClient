@@ -5,7 +5,13 @@ add_subdirectory(stormlib-9.31)
 
 # FMOD
 
-add_library(fmod SHARED IMPORTED GLOBAL)
+if(WHOA_SYSTEM_ANDROID)
+    # TODO vendor the FMOD Core Android libraries; until then only the headers are available,
+    # which is enough to compile the sound module
+    add_library(fmod INTERFACE)
+else()
+    add_library(fmod SHARED IMPORTED GLOBAL)
+endif()
 
 # Determine which flavor of FMOD to use:
 # - macOS versions from 10.9 down prefer FMOD Ex
@@ -31,7 +37,9 @@ else()
     set(FMOD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/fmodcore-2.02.18")
 endif()
 
-if(WHOA_SYSTEM_WIN)
+if(WHOA_SYSTEM_ANDROID)
+    target_include_directories(fmod INTERFACE ${FMOD_DIR}/linux-x86_64/inc)
+elseif(WHOA_SYSTEM_WIN)
     if(WHOA_ARCH_32)
         if(WHOA_FMOD_EX)
             set_target_properties(fmod PROPERTIES
