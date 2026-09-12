@@ -30,6 +30,7 @@ class SFile {
         static int32_t Close(SFile* file);
         static int32_t CloseArchive(SArchive* archive);
         static int32_t FileExists(const char* filename);
+        static SArchive* FirstArchive();
         static int32_t GetBasePath(char* buffer, size_t buffersize);
         static size_t GetFileSize(SFile* file, size_t* filesizeHigh);
         static int32_t IsStreamingMode();

@@ -217,6 +217,10 @@ int32_t SFile::FileExists(const char* filename) {
     return SFileLocalExists(filename);
 }
 
+SArchive* SFile::FirstArchive() {
+    return s_archiveList;
+}
+
 int32_t SFile::GetBasePath(char* buffer, size_t buffersize) {
     SStrCopy(buffer, s_basePath, buffersize);
     return 1;

@@ -112,7 +112,9 @@ void IEvtSchedulerInitialize(int32_t threadCount, int32_t netServer) {
 }
 
 void IEvtSchedulerProcess() {
-    #if defined(WHOA_SYSTEM_WIN)
+    #if defined(WHOA_SYSTEM_WIN) || defined(WHOA_SYSTEM_LINUX)
+        // The calling thread becomes the first scheduler thread; on Android that keeps the
+        // activity looper on the thread that owns it
         Event::s_startEvent.Set();
 
         SchedulerThreadProc(reinterpret_cast<void*>(1));

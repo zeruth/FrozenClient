@@ -87,3 +87,21 @@ target_include_directories(Whoa
 )
 
 install(TARGETS Whoa DESTINATION "bin")
+
+if(WHOA_SYSTEM_WIN)
+    # Developer tool for listing and extracting client archive contents
+    add_executable(MpqTool tools/MpqTool.cpp)
+
+    target_include_directories(MpqTool
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(MpqTool
+        PRIVATE
+            client
+            console
+            util
+            stormlib-9.31
+    )
+endif()

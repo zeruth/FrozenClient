@@ -44,3 +44,9 @@ target_include_directories(lua-5.1
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
+if(ANDROID)
+    # Lua stores string bytes directly after the TString header. Bionic's fortified strchr
+    # treats that pointer as a zero-size object and aborts inside the garbage collector.
+    target_compile_options(lua-5.1 PRIVATE -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0)
+endif()
