@@ -4,6 +4,7 @@
 #include "object/Client.hpp"
 #include "ui/CScriptObject.hpp"
 #include "ui/FrameXML.hpp"
+#include "gx/LoadingScreen.hpp"
 #include "ui/Key.hpp"
 #include "ui/game/ActionBarScript.hpp"
 #include "ui/game/BattlefieldInfoScript.hpp"
@@ -117,6 +118,10 @@ WOWGUID& CGGameUI::GetLockedTarget() {
     return CGGameUI::s_lockedTarget;
 }
 
+static void GameUILoadProgress(float progress, void* param) {
+    LoadingScreenSetProgress(progress);
+}
+
 void CGGameUI::Initialize() {
     // TODO
 
@@ -181,11 +186,16 @@ void CGGameUI::Initialize() {
     MD5_CTX md5;
     MD5Init(&md5);
 
-    // TODO file count and progress bar logic
+    // The loading bar advances with each interface file
+    // TODO the original also counts the files of enabled addons
+    auto numFiles = FrameXML_CountFiles("Interface\\FrameXML\\FrameXML.toc");
+    FrameXML_SetProgressCallback(&GameUILoadProgress, nullptr, numFiles);
 
     FrameXML_FreeHashNodes();
 
     FrameXML_CreateFrames("Interface\\FrameXML\\FrameXML.toc", nullptr, &md5, &status);
+
+    FrameXML_SetProgressCallback(nullptr, nullptr, 0);
 
     // TODO CGUIBindings::s_bindings->Load("Interface\\FrameXML\\Bindings.xml", &md5, &status);
 

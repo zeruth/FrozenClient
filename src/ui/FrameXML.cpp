@@ -230,6 +230,46 @@ CSimpleFrame* FrameXML_CreateFrame(XMLNode* node, CSimpleFrame* parent, CStatus*
     }
 }
 
+static void (*s_progressCallback)(float, void*) = nullptr;
+static void* s_progressParam = nullptr;
+static uint32_t s_progressFiles = 0;
+static uint32_t s_progressTotal = 0;
+
+// Counts the entries in a table of contents, for sizing the loading progress
+uint32_t FrameXML_CountFiles(const char* tocPath) {
+    void* tocBuffer;
+    size_t tocBytes;
+
+    if (!SFile::Load(nullptr, tocPath, &tocBuffer, &tocBytes, 1, 1, nullptr)) {
+        return 0;
+    }
+
+    const char* tocData = static_cast<char*>(tocBuffer);
+
+    if (*tocData == static_cast<char>(0xEF) && *(tocData + 1) == static_cast<char>(0xBB) && *(tocData + 2) == static_cast<char>(0xBF)) {
+        tocData = tocData + 3;
+    }
+
+    uint32_t count = 0;
+    char tocLine[1024];
+
+    while (true) {
+        SStrTokenize(&tocData, tocLine, sizeof(tocLine), "\r\n", 0);
+
+        if (!*tocLine) {
+            break;
+        }
+
+        if (*tocLine != '#') {
+            count++;
+        }
+    }
+
+    SFile::Unload(tocBuffer);
+
+    return count;
+}
+
 int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5, CStatus* status) {
     if (!status) {
         status = new CStatus;
@@ -307,14 +347,10 @@ int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5,
 
         FrameXML_ProcessFile(tocEntryPath, a2, md5, &v21);
 
-        // TODO
-        // if (s_progressCallback && s_progressFiles < s_progressTotal) {
-        //     ++s_progressFiles;
-        //     v20 = s_progressTotal;
-        //     v13 = (double)(unsigned int)s_progressFiles / (double)(unsigned int)s_progressTotal;
-        //     s_progressCallback(LODWORD(v13), s_progressParam);
-        //     v5 = a2;
-        // }
+        if (s_progressCallback && s_progressFiles < s_progressTotal) {
+            ++s_progressFiles;
+            s_progressCallback(static_cast<float>(s_progressFiles) / static_cast<float>(s_progressTotal), s_progressParam);
+        }
     } while (*tocLine);
 
     // TODO
@@ -559,6 +595,13 @@ void FrameXML_RegisterDefault() {
 void FrameXML_ReleaseHashNode(const char* name) {
     HashedNode* hashedNode = FrameXML::s_nodeHash.Ptr(name);
     hashedNode->locked = false;
+}
+
+void FrameXML_SetProgressCallback(void (*callback)(float, void*), void* param, uint32_t total) {
+    s_progressCallback = callback;
+    s_progressParam = param;
+    s_progressFiles = 0;
+    s_progressTotal = total;
 }
 
 void FrameXML_StoreHashNode(XMLNode* node, const char* name, const char* a3, CStatus* status) {

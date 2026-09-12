@@ -4,6 +4,7 @@
 #include "client/ClientHandlers.hpp"
 #include "client/ClientServices.hpp"
 #include "component/CCharacterComponent.hpp"
+#include "console/Console.hpp"
 #include "console/CVar.hpp"
 #include "console/Device.hpp"
 #include "console/Initialize.hpp"
@@ -14,9 +15,12 @@
 #include "gx/LoadingScreen.hpp"
 #include "gx/Screen.hpp"
 #include "gx/Texture.hpp"
+#include "model/CM2Model.hpp"
 #include "model/Model2.hpp"
 #include "net/Poll.hpp"
 #include "object/Client.hpp"
+#include "object/client/CGObject_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "sound/Interface.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/FrameXML.hpp"
@@ -111,6 +115,17 @@ int32_t ClientIdle(const void* data, void* param) {
     return 1;
 }
 
+// The loading screen stays up until the player's model has loaded (0x409800 in the original)
+static int32_t ClientPlayerModelReady() {
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    if (!player || !player->m_model) {
+        return 0;
+    }
+
+    return player->m_model->IsLoaded(0, 0);
+}
+
 void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     // TODO
 
@@ -120,6 +135,8 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     // TODO
 
     CGGameUI::InitializeGame();
+
+    LoadingScreenSetPlayerReadyCallback(&ClientPlayerModelReady);
 
     // TODO
 
@@ -136,10 +153,18 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     ClientServices::SetMessageHandler(SMSG_LOGIN_VERIFY_WORLD, LoginVerifyWorldHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_KICK_REASON, CGlueMgr::OnKickReasonMsg, nullptr);
 
-    // TODO
-
+    // Load the map the character is on; the loading bar's second half tracks it
     auto mapRec = g_mapDB.GetRecord(mapId);
-    CWorld::LoadMap(mapRec->m_directory, position, mapId);
+
+    if (!mapRec) {
+        char message[64];
+        SStrPrintf(message, sizeof(message), "Bad zone ID %i", mapId);
+        ConsoleWrite(message, DEFAULT_COLOR);
+    } else {
+        CWorld::SetLoadProgressCallback(&LoadingScreenSetProgress3);
+        CWorld::LoadMap(mapRec->m_directory, position, mapId);
+        CWorld::SetLoadProgressCallback(nullptr);
+    }
 
     // TODO
 }

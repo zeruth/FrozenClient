@@ -69,6 +69,7 @@ class CWorld {
         static void LoadMap(const char* mapName, const C3Vector& position, int32_t mapID);
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
         static void SetFarClip(float farClip);
+        static void SetLoadProgressCallback(void (*callback)(float));
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
         static void Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos);
 
@@ -81,6 +82,7 @@ class CWorld {
         static float s_gameTimeSec;
         static CM2Scene* s_m2Scene;
         static float s_nearClip;
+        static void (*s_loadProgressCallback)(float);
         static float s_prevFarClip;
         static uint32_t s_tickTimeFixed;
         static uint32_t s_tickTimeMs;

@@ -34,6 +34,8 @@ XMLNode* FrameXML_AcquireHashNode(const char* name, const char*& tainted, bool& 
 
 int32_t FrameXML_CheckSignature(const char* tocPath, const char* a2, const unsigned char* key, unsigned char* digest);
 
+uint32_t FrameXML_CountFiles(const char* tocPath);
+
 CSimpleFrame* FrameXML_CreateFrame(XMLNode* node, CSimpleFrame* parent, CStatus* status);
 
 int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5, CStatus* status);
@@ -49,6 +51,8 @@ void FrameXML_RegisterDefault();
 int32_t FrameXML_RegisterFactory(const char* type, CSimpleFrame* (*factory)(CSimpleFrame*), bool);
 
 void FrameXML_ReleaseHashNode(const char* name);
+
+void FrameXML_SetProgressCallback(void (*callback)(float, void*), void* param, uint32_t total);
 
 void FrameXML_StoreHashNode(XMLNode* node, const char* name, const char* a3, CStatus* status);
 

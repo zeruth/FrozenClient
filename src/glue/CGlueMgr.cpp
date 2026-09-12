@@ -213,7 +213,36 @@ void CGlueMgr::EnterWorld() {
     ClientServices::SetAccountName(CGlueMgr::m_accountName);
     ClientServices::SetCharacterInfo(&CGlueMgr::m_characterInfo->m_info);
 
-    // TODO game tip
+    // Game tip: cycle through GameTips.dbc, remembering the position in the gameTip cvar
+    static CVar* s_gameTipCvar = nullptr;
+    static CVar* s_showGameTipsCvar = nullptr;
+
+    if (!s_gameTipCvar) {
+        s_gameTipCvar = CVar::Register("gameTip", "", 0, "0", nullptr, DEFAULT);
+    }
+
+    if (!s_showGameTipsCvar) {
+        s_showGameTipsCvar = CVar::Register("showGameTips", "", 0, "1", nullptr, DEFAULT);
+    }
+
+    // TODO the original skips the tip for characters flagged in m_info
+    if (s_showGameTipsCvar->GetInt()) {
+        auto numTips = g_gameTipsDB.GetNumRecords();
+        auto tipIndex = s_gameTipCvar->GetInt();
+
+        if (tipIndex < 0 || tipIndex >= numTips) {
+            tipIndex = 0;
+        }
+
+        if (numTips > 0) {
+            auto tipRec = g_gameTipsDB.GetRecordByIndex(tipIndex);
+            LoadingScreenSetTip(tipRec->m_text);
+
+            char nextTip[40];
+            SStrPrintf(nextTip, sizeof(nextTip), "%d", tipIndex + 1);
+            s_gameTipCvar->Set(nextTip, true, false, false, true);
+        }
+    }
 
     LoadingScreenStart(character->m_info.mapID, 1);
 

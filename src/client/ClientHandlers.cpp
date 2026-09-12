@@ -2,6 +2,7 @@
 #include "Client.hpp"
 #include "console/Console.hpp"
 #include "db/Db.hpp"
+#include "gx/LoadingScreen.hpp"
 #include "object/Client.hpp"
 #include "util/Time.hpp"
 #include "util/Unimplemented.hpp"
@@ -22,7 +23,9 @@ void LoadNewWorld(const void* eventData, void* param) {
 
     // TODO
 
+    CWorld::SetLoadProgressCallback(&LoadingScreenSetProgress3);
     CWorld::LoadMap(s_newMapname, s_newPosition, s_newZoneID);
+    CWorld::SetLoadProgressCallback(nullptr);
 
     // TODO
 };

@@ -16,6 +16,7 @@ uint32_t CWorld::s_gameTimeFixed;
 float CWorld::s_gameTimeSec;
 CM2Scene* CWorld::s_m2Scene;
 float CWorld::s_nearClip = 0.1f;
+void (*CWorld::s_loadProgressCallback)(float) = nullptr;
 float CWorld::s_prevFarClip;
 uint32_t CWorld::s_tickTimeFixed;
 uint32_t CWorld::s_tickTimeMs;
@@ -173,7 +174,12 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
 
     CMap::Load(mapName, mapID);
 
-    // TODO
+    // TODO the terrain, map objects, and doodads around the position are loaded here, and the
+    // original reports their progress through the callback as they come in
+
+    if (CWorld::s_loadProgressCallback) {
+        CWorld::s_loadProgressCallback(1.0f);
+    }
 }
 
 int32_t CWorld::OnTick(const EVENT_DATA_TICK* data, void* param) {
@@ -198,6 +204,10 @@ void CWorld::SetFarClip(float farClip) {
 
     // TODO dword_D1C410 = 1;
     // TODO dword_ADEEE0 = 1;
+}
+
+void CWorld::SetLoadProgressCallback(void (*callback)(float)) {
+    CWorld::s_loadProgressCallback = callback;
 }
 
 void CWorld::SetUpdateTime(float tickTimeSec, uint32_t curTimeMs) {

@@ -8,7 +8,12 @@
 #include "gx/Draw.hpp"
 #include "gx/Gx.hpp"
 #include "gx/RenderState.hpp"
+#include "gx/Coordinate.hpp"
 #include "gx/Screen.hpp"
+#include "gx/Shader.hpp"
+#include "gx/font/GxuFont.hpp"
+#include "gx/font/TextBlock.hpp"
+#include "util/Filesystem.hpp"
 #include "gx/Texture.hpp"
 #include "gx/Transform.hpp"
 #include "gx/texture/CGxTex.hpp"
@@ -31,6 +36,10 @@
 #define LOADING_SCREEN_KEEP_ALIVE_MS    30000
 #define LOADING_SCREEN_MIN_PAINT_MS     250
 #define LOADING_SCREEN_NUM_BAR_TEXTURES 2
+#define LOADING_SCREEN_FINISH_PROGRESS  0.99f
+#define LOADING_SCREEN_TIP_HEIGHT       0.018f
+#define LOADING_SCREEN_TIP_BOTTOM       0.1f
+#define LOADING_SCREEN_TIP_LINE_SPACING 0.005f
 
 struct LOADINGBARELEMENT {
     const char* texturePath;
@@ -50,6 +59,13 @@ static const LOADINGBARELEMENT s_barElements[LOADING_SCREEN_NUM_BAR_TEXTURES] = 
 static HLAYER s_layer = nullptr;
 static HTEXTURE s_barTextures[LOADING_SCREEN_NUM_BAR_TEXTURES] = { nullptr, nullptr };
 static HTEXTURE s_backgroundTexture = nullptr;
+static CGxShader* s_vertexShaders[2] = { nullptr, nullptr };
+static CGxShader* s_pixelShader = nullptr;
+static HTEXTFONT s_tipFont = nullptr;
+static CGxString* s_tipString = nullptr;
+static CGxStringBatch* s_tipBatch = nullptr;
+static int32_t (*s_playerReadyCallback)() = nullptr;
+static int32_t s_finishPending = 0;
 static int32_t s_widescreen = 0;
 static int32_t s_mapID = -1;
 static int32_t s_isLogin = 0;
@@ -84,6 +100,16 @@ static int32_t SizeEventHandler(const void* data, void* param) {
     return 0;
 }
 
+// Finishing is deferred to idle so the layer is not destroyed while layers are being painted
+static int32_t IdleEventHandler(const void* data, void* param) {
+    if (s_finishPending) {
+        s_finishPending = 0;
+        LoadingScreenFinish();
+    }
+
+    return 1;
+}
+
 // 0x407B00 in the original
 static void RegisterEvents() {
     for (auto id : s_swallowedEvents) {
@@ -91,6 +117,7 @@ static void RegisterEvents() {
     }
 
     EventRegisterEx(EVENT_ID_SIZE, &SizeEventHandler, nullptr, LOADING_SCREEN_EVENT_PRIORITY);
+    EventRegisterEx(EVENT_ID_IDLE, &IdleEventHandler, nullptr, LOADING_SCREEN_EVENT_PRIORITY);
 
     s_sizeEventPending = 0;
     s_eventsRegistered = 1;
@@ -107,6 +134,7 @@ static void UnregisterEvents() {
     }
 
     EventUnregisterEx(EVENT_ID_SIZE, &SizeEventHandler, nullptr, 0);
+    EventUnregisterEx(EVENT_ID_IDLE, &IdleEventHandler, nullptr, 0);
 
     s_eventsRegistered = 0;
 
@@ -250,6 +278,90 @@ static void DrawTexturedQuad(HTEXTURE texture, float left, float right, float bo
     GxPrimUnlockVertexPtrs();
 }
 
+
+// Renders the game tip into a font batch drawn above the loading bar (part of 0x40AB70)
+static void DestroyTip() {
+    if (s_tipBatch) {
+        GxuFontDestroyBatch(s_tipBatch);
+        s_tipBatch = nullptr;
+    }
+
+    if (s_tipString) {
+        GxuFontDestroyString(s_tipString);
+    }
+
+    if (s_tipFont) {
+        HandleClose(s_tipFont);
+        s_tipFont = nullptr;
+    }
+}
+
+static void CreateTip() {
+    char fontFile[STORM_MAX_PATH];
+    OsBuildFontFilePath("FRIZQT__.TTF", fontFile, sizeof(fontFile));
+
+
+    if (!*fontFile) {
+        return;
+    }
+
+    // The tip block is 515 units of a 1024 wide line, corrected for the aspect ratio
+    float blockWidth = 515.0f / (CoordinateGetAspectCompensation() * 1024.0f);
+    float fontSize = NDCToDDCHeight(blockWidth);
+
+    s_tipFont = TextBlockGenerateFont(fontFile, 0x1, fontSize);
+
+    auto face = s_tipFont ? TextBlockGetFontPtr(s_tipFont) : nullptr;
+
+    if (!face) {
+        return;
+    }
+
+    // Copy the tip and drop trailing line breaks
+    char text[1024];
+    SStrCopy(text, s_tip, sizeof(text));
+
+    for (auto end = text + SStrLen(text); end > text && (end[-1] == '\r' || end[-1] == '\n'); end--) {
+        end[-1] = '\0';
+    }
+
+    // Centered above the loading bar, moved up with the letterbox on narrow windows
+    float ratio = WindowAspect();
+    float letterbox = ratio < 1.0f ? (1.0f - ratio) * 0.5f : 0.0f;
+
+    C3Vector position = { (1.0f - blockWidth) * 0.5f, letterbox + LOADING_SCREEN_TIP_BOTTOM, 1.0f };
+    CImVector color = { 0xC8, 0xC8, 0xC8, 0xD7 };
+
+    GxuFontCreateString(
+        face,
+        text,
+        LOADING_SCREEN_TIP_HEIGHT,
+        position,
+        blockWidth,
+        1.0f,
+        LOADING_SCREEN_TIP_LINE_SPACING,
+        s_tipString,
+        GxVJ_Bottom,
+        GxHJ_Left,
+        0x0,
+        color,
+        0.0f,
+        1.0f
+    );
+
+    if (!s_tipString) {
+        return;
+    }
+
+    CImVector shadowColor = { 0x00, 0x00, 0x00, 0xFF };
+    C2Vector shadowOffset = { 0.001f, -0.001f };
+    GxuFontAddShadow(s_tipString, shadowColor, shadowOffset);
+
+    s_tipBatch = GxuFontCreateBatch(false, false);
+    GxuFontAddToBatch(s_tipBatch, s_tipString);
+
+}
+
 // Draws the loading bar (0x4090C0 in the original)
 static void DrawBar() {
     for (int32_t i = 0; i < LOADING_SCREEN_NUM_BAR_TEXTURES; ++i) {
@@ -278,8 +390,11 @@ static void Paint(void* param, const RECTF* rect, const RECTF* visible, float el
         return;
     }
 
-    // TODO the original stops painting once progress is nearly complete and the player object
-    // is not ready yet
+    // Once loading is nearly complete, the screen comes down as soon as the player's model is in
+    if (s_displayProgress > LOADING_SCREEN_FINISH_PROGRESS && s_playerReadyCallback && s_playerReadyCallback()) {
+        s_finishPending = 1;
+        return;
+    }
 
     if (!s_backgroundTexture && s_mapID != -1 && !LoadBackgroundTexture()) {
         s_mapID = -1;
@@ -338,6 +453,21 @@ static void Paint(void* param, const RECTF* rect, const RECTF* visible, float el
     GxRsSet(GxRs_Culling, 0);
     GxRsSet(GxRs_BlendingMode, GxBlend_Opaque);
 
+    // The device draws through the UI shaders, like the frame renderer
+    auto vertexShader = g_theGxDevicePtr->StereoEnabled() ? s_vertexShaders[1] : s_vertexShaders[0];
+
+    if (vertexShader && vertexShader->Valid()) {
+        GxRsSet(GxRs_VertexShader, vertexShader);
+
+        C44Matrix viewProj;
+        GxXformViewProjNativeTranspose(viewProj);
+        GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<float*>(&viewProj), 4);
+    }
+
+    if (s_pixelShader && s_pixelShader->Valid()) {
+        GxRsSet(GxRs_PixelShader, s_pixelShader);
+    }
+
     if (s_backgroundTexture) {
         DrawTexturedQuad(s_backgroundTexture, 0.0f, 1.0f, 0.0f, 1.0f);
     }
@@ -348,6 +478,10 @@ static void Paint(void* param, const RECTF* rect, const RECTF* visible, float el
     GxRsSet(GxRs_AlphaRef, CGxDevice::s_alphaRef[GxBlend_Alpha]);
 
     DrawBar();
+
+    if (s_tipBatch) {
+        GxuFontRenderBatch(s_tipBatch);
+    }
 
     GxRsPop();
 
@@ -360,6 +494,11 @@ static void Begin(int32_t isLogin) {
     s_progress[1] = 0.0f;
     s_progress[2] = 0.0f;
     s_isLogin = isLogin;
+
+    if (!s_pixelShader && g_theGxDevicePtr) {
+        g_theGxDevicePtr->ShaderCreate(s_vertexShaders, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
+        g_theGxDevicePtr->ShaderCreate(&s_pixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
+    }
 
     if (!s_layer) {
         for (int32_t i = 0; i < LOADING_SCREEN_NUM_BAR_TEXTURES; ++i) {
@@ -404,7 +543,9 @@ void LoadingScreenFinish() {
 
     UnregisterEvents();
 
-    // TODO dynamic elements and tip text resources
+    DestroyTip();
+
+    // TODO dynamic elements
 
     s_tip = nullptr;
     s_mapID = -1;
@@ -447,6 +588,10 @@ void LoadingScreenSetProgress3(float progress) {
     LoadingScreenUpdate(progress == 1.0f);
 }
 
+void LoadingScreenSetPlayerReadyCallback(int32_t (*callback)()) {
+    s_playerReadyCallback = callback;
+}
+
 // 0x407E30 in the original
 void LoadingScreenSetTip(const char* tip) {
     s_tip = tip;
@@ -454,7 +599,11 @@ void LoadingScreenSetTip(const char* tip) {
 
 // 0x40AB70 in the original
 void LoadingScreenStart(int32_t mapID, int32_t isLogin) {
-    // TODO render the tip text into its font layer
+    DestroyTip();
+
+    if (s_tip && *s_tip) {
+        CreateTip();
+    }
 
     s_mapID = mapID;
 

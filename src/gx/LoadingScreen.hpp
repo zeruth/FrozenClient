@@ -19,6 +19,8 @@ void LoadingScreenSetProgress2(float progress);
 
 void LoadingScreenSetProgress3(float progress);
 
+void LoadingScreenSetPlayerReadyCallback(int32_t (*callback)());
+
 void LoadingScreenSetTip(const char* tip);
 
 void LoadingScreenStart(int32_t mapID, int32_t isLogin);
