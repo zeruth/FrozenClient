@@ -22,6 +22,7 @@
 #include "db/rec/ItemVisualsRec.hpp"
 #include "db/rec/LoadingScreensRec.hpp"
 #include "db/rec/MapRec.hpp"
+#include "db/rec/NameGenRec.hpp"
 #include "db/rec/PaperDollItemFrameRec.hpp"
 #include "db/rec/SoundEntriesRec.hpp"
 #include "db/rec/SoundEntriesAdvancedRec.hpp"
@@ -47,6 +48,7 @@ extern WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
 extern WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 extern WowClientDB<LoadingScreensRec> g_loadingScreensDB;
 extern WowClientDB<MapRec> g_mapDB;
+extern WowClientDB<NameGenRec> g_nameGenDB;
 extern WowClientDB<PaperDollItemFrameRec> g_paperDollItemFrameDB;
 extern WowClientDB<SoundEntriesRec> g_soundEntriesDB;
 extern WowClientDB<SoundEntriesAdvancedRec> g_soundEntriesAdvancedDB;

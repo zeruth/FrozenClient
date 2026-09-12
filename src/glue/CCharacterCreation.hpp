@@ -1,6 +1,7 @@
 #ifndef GLUE_C_CHARACTER_CREATION_HPP
 #define GLUE_C_CHARACTER_CREATION_HPP
 
+#include "glue/CNameGenerator.hpp"
 #include <storm/Array.hpp>
 #include <cstdint>
 
@@ -20,6 +21,12 @@ class CCharacterCreation {
         static CharacterPreferences* s_charPreferences[22][2];
         static TSFixedArray<const ChrClassesRec*> s_classes;
         static int32_t s_existingCharacterIndex;
+        static CNameGenerator s_nameGenerator;
+        static int32_t s_prevFaceID;
+        static int32_t s_prevFacialHairStyleID;
+        static int32_t s_prevHairColorID;
+        static int32_t s_prevHairStyleID;
+        static int32_t s_prevSkinColorID;
         static int32_t s_raceIndex;
         static TSGrowableArray<int32_t> s_races;
         static int32_t s_selectedClassID;
@@ -28,9 +35,11 @@ class CCharacterCreation {
         static void CalcClasses(int32_t raceID);
         static void CreateCharacter(const char* name);
         static void CreateComponent(ComponentData* data, bool randomize);
+        static void CycleCharCustomization(int32_t index, int32_t delta);
         static void Dress();
         static int32_t GetRandomClassID();
         static void GetRandomRaceAndSex(ComponentData* data);
+        static void RandomizeCharCustomization();
         static int32_t GetSelectedRaceID();
         static void Initialize();
         static bool IsClassValid(int32_t classID);
@@ -42,6 +51,7 @@ class CCharacterCreation {
         static void SetSelectedClass(int32_t classID);
         static void SetSelectedRace(int32_t raceIndex);
         static void SetSelectedSex(int32_t sexID);
+        static void TrackVariations();
 };
 
 #endif

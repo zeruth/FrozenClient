@@ -21,6 +21,12 @@ float CCharacterCreation::s_charFacing;
 CharacterPreferences* CCharacterCreation::s_charPreferences[22][2];
 TSFixedArray<const ChrClassesRec*> CCharacterCreation::s_classes;
 int32_t CCharacterCreation::s_existingCharacterIndex;
+CNameGenerator CCharacterCreation::s_nameGenerator;
+int32_t CCharacterCreation::s_prevFaceID;
+int32_t CCharacterCreation::s_prevFacialHairStyleID;
+int32_t CCharacterCreation::s_prevHairColorID;
+int32_t CCharacterCreation::s_prevHairStyleID;
+int32_t CCharacterCreation::s_prevSkinColorID;
 int32_t CCharacterCreation::s_raceIndex;
 TSGrowableArray<int32_t> CCharacterCreation::s_races;
 int32_t CCharacterCreation::s_selectedClassID;
@@ -121,10 +127,14 @@ void CCharacterCreation::CreateComponent(ComponentData* data, bool randomize) {
     CCharacterCreation::s_character->Init(data, nullptr);
 
     if (randomize) {
-        // TODO select random variations
+        CCharacterCreation::s_character->RandomSkinColor(CONTEXT_CHAR_CREATE);
+        CCharacterCreation::s_character->RandomHairColor(CONTEXT_CHAR_CREATE);
+        CCharacterCreation::s_character->RandomHairStyle(CONTEXT_CHAR_CREATE);
+        CCharacterCreation::s_character->RandomFace(CONTEXT_CHAR_CREATE);
+        CCharacterCreation::s_character->RandomBeardStyle(CONTEXT_CHAR_CREATE);
     }
 
-    // TODO track previous variations
+    CCharacterCreation::TrackVariations();
 
     CCharacterCreation::SetFacing(CCharacterCreation::s_charFacing);
 
@@ -135,6 +145,68 @@ void CCharacterCreation::CreateComponent(ComponentData* data, bool randomize) {
     if (CCharacterCreation::s_charCustomizeFrame->m_model) {
         model->AttachToParent(CCharacterCreation::s_charCustomizeFrame->m_model, 0, nullptr, 0);
     }
+}
+
+void CCharacterCreation::CycleCharCustomization(int32_t index, int32_t delta) {
+    if (!delta) {
+        return;
+    }
+
+    auto character = CCharacterCreation::s_character;
+
+    switch (index) {
+    case 0:
+        if (delta > 0) {
+            character->NextSkinColor(CONTEXT_CHAR_CREATE);
+        } else {
+            character->PrevSkinColor(CONTEXT_CHAR_CREATE);
+        }
+
+        CCharacterCreation::s_prevSkinColorID = character->m_data.skinColorID;
+
+        break;
+
+    case 1:
+        if (delta > 0) {
+            character->NextFace(CONTEXT_CHAR_CREATE, CCharacterCreation::s_prevSkinColorID);
+        } else {
+            character->PrevFace(CONTEXT_CHAR_CREATE, CCharacterCreation::s_prevSkinColorID);
+        }
+
+        break;
+
+    case 2:
+        if (delta > 0) {
+            character->NextHairStyle(CONTEXT_CHAR_CREATE);
+        } else {
+            character->PrevHairStyle(CONTEXT_CHAR_CREATE);
+        }
+
+        break;
+
+    case 3:
+        if (delta > 0) {
+            character->NextHairColor(CONTEXT_CHAR_CREATE);
+        } else {
+            character->PrevHairColor(CONTEXT_CHAR_CREATE);
+        }
+
+        break;
+
+    case 4:
+        if (delta > 0) {
+            character->NextBeardStyle(CONTEXT_CHAR_CREATE);
+        } else {
+            character->PrevBeardStyle(CONTEXT_CHAR_CREATE);
+        }
+
+        break;
+
+    default:
+        break;
+    }
+
+    CGlueLoading::StartLoad(character, true);
 }
 
 void CCharacterCreation::Dress() {
@@ -258,6 +330,22 @@ bool CCharacterCreation::IsRaceClassValid(int32_t raceID, int32_t classID) {
     return false;
 }
 
+void CCharacterCreation::RandomizeCharCustomization() {
+    auto character = CCharacterCreation::s_character;
+
+    character->RandomSkinColor(CONTEXT_CHAR_CREATE);
+    character->RandomFace(CONTEXT_CHAR_CREATE);
+    character->RandomHairColor(CONTEXT_CHAR_CREATE);
+    character->RandomHairStyle(CONTEXT_CHAR_CREATE);
+    character->RandomBeardStyle(CONTEXT_CHAR_CREATE);
+
+    CCharacterCreation::TrackVariations();
+
+    CCharacterCreation::Dress();
+
+    CGlueLoading::StartLoad(character, true);
+}
+
 void CCharacterCreation::ResetCharCustomizeInfo() {
     if (!CCharacterCreation::s_charCustomizeFrame) {
         return;
@@ -291,7 +379,7 @@ void CCharacterCreation::ResetCharCustomizeInfo() {
         }
     }
 
-    // TODO name gen stuff
+    CCharacterCreation::s_nameGenerator.Initialize(CCharacterCreation::s_character->m_data.raceID, CCharacterCreation::s_character->m_data.sexID);
 
     CGlueLoading::StartLoad(CCharacterCreation::s_character, true);
 }
@@ -368,7 +456,7 @@ void CCharacterCreation::SetSelectedClass(int32_t classID) {
     data.facialHairStyleID = CCharacterCreation::s_character->m_data.facialHairStyleID;
     data.faceID = CCharacterCreation::s_character->m_data.faceID;
 
-    // TODO CCharacterComponent::ValidateComponentData(&data, 0);
+    CCharacterComponent::ValidateComponentData(&data, CONTEXT_CHAR_CREATE);
 
     CCharacterCreation::CreateComponent(&data, false);
 
@@ -427,7 +515,7 @@ void CCharacterCreation::SetSelectedRace(int32_t raceIndex) {
 
         data.classID = CCharacterCreation::s_selectedClassID;
 
-        // TODO CCharacterComponent::ValidateComponentData(&data, 0);
+        CCharacterComponent::ValidateComponentData(&data, CONTEXT_CHAR_CREATE);
 
         CCharacterCreation::CreateComponent(&data, false);
     } else {
@@ -445,7 +533,7 @@ void CCharacterCreation::SetSelectedRace(int32_t raceIndex) {
         CCharacterCreation::CreateComponent(&data, true);
     }
 
-    // TODO name gen stuff
+    CCharacterCreation::s_nameGenerator.Initialize(raceID, CCharacterCreation::s_character->m_data.sexID);
 
     CCharacterCreation::Dress();
 
@@ -499,7 +587,7 @@ void CCharacterCreation::SetSelectedSex(int32_t sexID) {
         data.SetPreferences(preferences);
         data.classID = currentClassID;
 
-        // TODO CCharacterComponent::ValidateComponentData(&data, 0);
+        CCharacterComponent::ValidateComponentData(&data, CONTEXT_CHAR_CREATE);
 
         CCharacterCreation::CreateComponent(&data, false);
     } else {
@@ -510,7 +598,17 @@ void CCharacterCreation::SetSelectedSex(int32_t sexID) {
         CCharacterCreation::CreateComponent(&data, true);
     }
 
-    // TODO name gen stuff
+    CCharacterCreation::s_nameGenerator.Initialize(CCharacterCreation::s_character->m_data.raceID, CCharacterCreation::s_character->m_data.sexID);
 
     CGlueLoading::StartLoad(CCharacterCreation::s_character, true);
+}
+
+void CCharacterCreation::TrackVariations() {
+    auto& data = CCharacterCreation::s_character->m_data;
+
+    CCharacterCreation::s_prevSkinColorID = data.skinColorID;
+    CCharacterCreation::s_prevFaceID = data.faceID;
+    CCharacterCreation::s_prevHairColorID = data.hairColorID;
+    CCharacterCreation::s_prevHairStyleID = data.hairStyleID;
+    CCharacterCreation::s_prevFacialHairStyleID = data.facialHairStyleID;
 }

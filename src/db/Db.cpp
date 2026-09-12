@@ -21,6 +21,7 @@ WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
 WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 WowClientDB<LoadingScreensRec> g_loadingScreensDB;
 WowClientDB<MapRec> g_mapDB;
+WowClientDB<NameGenRec> g_nameGenDB;
 WowClientDB<PaperDollItemFrameRec> g_paperDollItemFrameDB;
 WowClientDB<SoundEntriesRec> g_soundEntriesDB;
 WowClientDB<SoundEntriesAdvancedRec> g_soundEntriesAdvancedDB;
@@ -51,6 +52,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_itemVisualsDB, __FILE__, __LINE__);
     loadFn(&g_loadingScreensDB, __FILE__, __LINE__);
     loadFn(&g_mapDB, __FILE__, __LINE__);
+    loadFn(&g_nameGenDB, __FILE__, __LINE__);
     loadFn(&g_paperDollItemFrameDB, __FILE__, __LINE__);
     loadFn(&g_soundEntriesDB, __FILE__, __LINE__);
     loadFn(&g_soundEntriesAdvancedDB, __FILE__, __LINE__);

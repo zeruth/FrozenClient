@@ -11,6 +11,7 @@
 #include "ui/simple/CSimpleModelFFX.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <storm/String.hpp>
 #include <cstdint>
 
 int32_t Script_SetCharCustomizeFrame(lua_State* L) {
@@ -302,7 +303,9 @@ int32_t Script_SetSelectedClass(lua_State* L) {
 }
 
 int32_t Script_UpdateCustomizationBackground(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CCharacterCreation::SetSelectedRace(CCharacterCreation::s_raceIndex);
+
+    return 0;
 }
 
 int32_t Script_UpdateCustomizationScene(lua_State* L) {
@@ -312,11 +315,23 @@ int32_t Script_UpdateCustomizationScene(lua_State* L) {
 }
 
 int32_t Script_CycleCharCustomization(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: CycleCharCustomization(index, delta)");
+        return 0;
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 1)) - 1;
+    auto delta = static_cast<int32_t>(lua_tonumber(L, 2));
+
+    CCharacterCreation::CycleCharCustomization(index, delta);
+
+    return 0;
 }
 
 int32_t Script_RandomizeCharCustomization(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CCharacterCreation::RandomizeCharCustomization();
+
+    return 0;
 }
 
 int32_t Script_GetCharacterCreateFacing(lua_State* L) {
@@ -339,7 +354,24 @@ int32_t Script_SetCharacterCreateFacing(lua_State* L) {
 }
 
 int32_t Script_GetRandomName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    char name[14];
+    size_t length;
+
+    do {
+        CCharacterCreation::s_nameGenerator.Generate(name, sizeof(name));
+
+        length = SStrLen(name);
+
+        if (!length) {
+            break;
+        }
+
+        // TODO the original also rejects names that fail ClientServices name validation
+    } while (length < 4 || length > 10);
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 // 0x4E0C60 in the original
