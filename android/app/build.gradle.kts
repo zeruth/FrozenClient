@@ -4,8 +4,9 @@ plugins {
 
 // FMOD Engine for Android (not redistributable): vendor/fmodcore-2.02.18/android holds inc/,
 // lib/<abi>/libfmod.so, and lib/fmod.jar when the user has downloaded it
-val fmodAndroid = file("../../vendor/fmodcore-2.02.18/android")
+val fmodAndroid = rootProject.file("../vendor/fmodcore-2.02.18/android")
 val fmodJar = fmodAndroid.resolve("lib/fmod.jar")
+logger.lifecycle("FMOD for Android at ${fmodAndroid}: ${if (fmodJar.exists()) "found" else "not found, sound is stubbed"}")
 
 android {
     namespace = "com.frozenclient.app"

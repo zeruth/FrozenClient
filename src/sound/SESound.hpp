@@ -6,6 +6,11 @@
 #include "sound/SEUserData.hpp"
 #include <cstdint>
 #include <fmod.hpp>
+
+// FMOD 2.03 dropped the callback calling convention macro
+#if !defined(F_CALLBACK)
+    #define F_CALLBACK F_CALL
+#endif
 #include <storm/Hash.hpp>
 #include <storm/Thread.hpp>
 
