@@ -1234,6 +1234,14 @@ void CGlueMgr::SetLoginStateAndResult(LOGIN_STATE state, LOGIN_RESULT result, co
 
 void CGlueMgr::SetScreen(const char* screen) {
     FrameScript_SignalEvent(0, "%s", screen);
+
+#if defined(WHOA_SYSTEM_ANDROID)
+    // Development convenience while the device has no text input: the login screen's OnShow has
+    // run by now, so fill in the test account after it cleared the fields
+    if (!SStrCmpI(screen, "login", STORM_MAX_STR)) {
+        FrameScript_Execute("AccountLoginAccountEdit:SetText(\"TEST\"); AccountLoginPasswordEdit:SetText(\"TEST\")", "DevLogin", nullptr);
+    }
+#endif
 }
 
 void CGlueMgr::Shutdown() {
