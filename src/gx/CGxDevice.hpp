@@ -78,6 +78,9 @@ class CGxDevice {
 #if defined(WHOA_SYSTEM_MAC)
         static CGxDevice* NewGLL();
 #endif
+#if defined(WHOA_SYSTEM_ANDROID)
+        static CGxDevice* NewGLES();
+#endif
         static CGxDevice* NewOpenGl();
         static void OpenGlAdapterFormats(TSGrowableArray<CGxFormat>& adapterFormats);
         static uint32_t PrimCalcCount(EGxPrim primType, uint32_t count);

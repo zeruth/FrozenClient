@@ -40,8 +40,19 @@ endif()
 if(WHOA_SYSTEM_ANDROID)
     file(GLOB PRIVATE_SOURCES "android/*.cpp")
 
-    # The client is loaded by the Android app as a shared library
+    # The client is loaded by the native activity as a shared library, with the NDK's glue
+    # providing the activity callbacks and the native thread
+    list(APPEND PRIVATE_SOURCES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+
     add_library(Whoa SHARED ${PRIVATE_SOURCES})
+
+    target_include_directories(Whoa
+        PRIVATE
+            ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+
+    # Keep the glue's activity entry point even though nothing in the library references it
+    target_link_options(Whoa PRIVATE -u ANativeActivity_onCreate)
 
     target_link_libraries(Whoa
         PRIVATE
@@ -50,6 +61,10 @@ if(WHOA_SYSTEM_ANDROID)
             gx
             net
             util
+            android
+            log
+            EGL
+            GLESv3
     )
 elseif(WHOA_SYSTEM_LINUX)
     file(GLOB PRIVATE_SOURCES "linux/*.cpp")

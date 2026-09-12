@@ -6,9 +6,9 @@ add_subdirectory(stormlib-9.31)
 # FMOD
 
 if(WHOA_SYSTEM_ANDROID)
-    # TODO vendor the FMOD Core Android libraries; until then only the headers are available,
-    # which is enough to compile the sound module
-    add_library(fmod INTERFACE)
+    # TODO vendor the FMOD Core Android libraries; until then a silent stub stands in for them
+    # so the sound module compiles and links against the FMOD headers
+    add_library(fmod STATIC fmod-stub/FmodStub.cpp)
 else()
     add_library(fmod SHARED IMPORTED GLOBAL)
 endif()
@@ -38,7 +38,7 @@ else()
 endif()
 
 if(WHOA_SYSTEM_ANDROID)
-    target_include_directories(fmod INTERFACE ${FMOD_DIR}/linux-x86_64/inc)
+    target_include_directories(fmod PUBLIC ${FMOD_DIR}/linux-x86_64/inc)
 elseif(WHOA_SYSTEM_WIN)
     if(WHOA_ARCH_32)
         if(WHOA_FMOD_EX)

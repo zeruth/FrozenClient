@@ -9,3 +9,12 @@
 
 /test/fixture/*
 !/test/fixture/README.md
+
+# Android
+/android/.gradle
+/android/build
+/android/app/build
+/android/app/.cxx
+/android/local.properties
+/build-android
+/build-rwdi

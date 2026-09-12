@@ -17,7 +17,12 @@ if(WHOA_SYSTEM_MAC)
     list(APPEND PRIVATE_SOURCES ${MAC_SOURCES})
 endif()
 
-if(WHOA_SYSTEM_LINUX)
+if(WHOA_SYSTEM_ANDROID)
+    file(GLOB ANDROID_SOURCES
+        "gui/android/*.cpp"
+    )
+    list(APPEND PRIVATE_SOURCES ${ANDROID_SOURCES})
+elseif(WHOA_SYSTEM_LINUX)
     file(GLOB LINUX_SOURCES
         "gui/linux/*.cpp"
     )

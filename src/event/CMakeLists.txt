@@ -15,7 +15,12 @@ if(WHOA_SYSTEM_MAC)
     list(APPEND PRIVATE_SOURCES ${MAC_SOURCES})
 endif()
 
-if(WHOA_SYSTEM_LINUX)
+if(WHOA_SYSTEM_ANDROID)
+    file(GLOB ANDROID_SOURCES
+        "android/*.cpp"
+    )
+    list(APPEND PRIVATE_SOURCES ${ANDROID_SOURCES})
+elseif(WHOA_SYSTEM_LINUX)
     file(GLOB LINUX_SOURCES
         "linux/*.cpp"
     )
@@ -40,3 +45,16 @@ target_link_libraries(event
         storm
         tempest
 )
+
+if(WHOA_SYSTEM_ANDROID)
+    target_include_directories(event
+        PRIVATE
+            ${ANDROID_NDK}/sources/android/native_app_glue
+    )
+
+    target_link_libraries(event
+        PRIVATE
+            android
+            log
+    )
+endif()

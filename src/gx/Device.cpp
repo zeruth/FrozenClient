@@ -29,6 +29,11 @@ CGxDevice* GxDevCreate(EGxApi api, int32_t (*windowProc)(void* window, uint32_t 
         }
     #endif
 
+    #if defined(WHOA_SYSTEM_ANDROID)
+        // Every API request lands on OpenGL ES
+        device = CGxDevice::NewGLES();
+    #endif
+
     g_theGxDevicePtr = device;
 
     if (g_theGxDevicePtr->DeviceCreate(windowProc, format)) {

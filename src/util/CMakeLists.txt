@@ -14,6 +14,12 @@ if(WHOA_SYSTEM_MAC)
     list(APPEND PRIVATE_SOURCES ${MAC_SOURCES})
 endif()
 
+if(WHOA_SYSTEM_ANDROID)
+    file(GLOB ANDROID_SOURCES "android/*.cpp")
+
+    list(APPEND PRIVATE_SOURCES ${ANDROID_SOURCES})
+endif()
+
 add_library(util STATIC
     ${PRIVATE_SOURCES}
 )

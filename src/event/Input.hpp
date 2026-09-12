@@ -68,6 +68,17 @@ int32_t OsQueueGet(OSINPUT* id, int32_t* param0, int32_t* param1, int32_t* param
 
 void OsQueuePut(OSINPUT id, int32_t param0, int32_t param1, int32_t param2, int32_t param3);
 
+#if defined(WHOA_SYSTEM_ANDROID)
+struct android_app;
+struct AInputEvent;
+
+void OsAndroidOnAppCommand(android_app* app, int32_t cmd);
+
+int32_t OsAndroidOnInputEvent(android_app* app, AInputEvent* event);
+
+void OsAndroidPollEvents(int32_t timeoutMs);
+#endif
+
 void OsQueueSetParam(int32_t index, int32_t param);
 
 int32_t OsWindowProc(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam);

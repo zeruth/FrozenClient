@@ -30,6 +30,14 @@ if(WHOA_SYSTEM_MAC)
     list(APPEND GX_SOURCES ${MAC_SOURCES})
 endif()
 
+if(WHOA_SYSTEM_ANDROID)
+    file(GLOB ANDROID_SOURCES
+        "gles/*.cpp"
+    )
+
+    list(APPEND GX_SOURCES ${ANDROID_SOURCES})
+endif()
+
 add_library(gx STATIC ${GX_SOURCES})
 
 target_include_directories(gx
@@ -62,5 +70,15 @@ if(WHOA_SYSTEM_MAC)
         PRIVATE
             "-framework AppKit"
             "-framework OpenGL"
+    )
+endif()
+
+if(WHOA_SYSTEM_ANDROID)
+    target_link_libraries(gx
+        PRIVATE
+            EGL
+            GLESv3
+            android
+            log
     )
 endif()

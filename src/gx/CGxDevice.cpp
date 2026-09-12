@@ -23,6 +23,12 @@
     #include <OpenGL/OpenGL.h>
 #endif
 
+#if defined(WHOA_SYSTEM_ANDROID)
+    #include "gx/gles/CGxDeviceGLES.hpp"
+    #include "util/android/OsAndroid.hpp"
+    #include <android/native_window.h>
+#endif
+
 uint32_t CGxDevice::s_alphaRef[] = {
     0,      // GxBlend_Opaque
     224,    // GxBlend_AlphaKey
@@ -119,6 +125,27 @@ int32_t CGxDevice::AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapte
         CGxDevice::GLLAdapterFormats(adapterFormats);
     }
 
+#elif defined(WHOA_SYSTEM_ANDROID)
+
+    // The activity window is the only mode there is
+    auto window = OsAndroidGetWindow();
+
+    if (window) {
+        CGxFormat format = {};
+        format.hwTnL = true;
+        format.window = 1;
+        format.maximize = 0;
+        format.depthFormat = CGxFormat::Fmt_Ds248;
+        format.size.x = ANativeWindow_getWidth(window);
+        format.size.y = ANativeWindow_getHeight(window);
+        format.multisampleCount = 1;
+        format.colorFormat = CGxFormat::Fmt_Argb8888;
+        format.refreshRate = 60;
+        format.vsync = 1;
+
+        *adapterFormats.New() = format;
+    }
+
 #elif defined(WHOA_SYSTEM_LINUX)
 
     // TODO
@@ -146,11 +173,27 @@ int32_t CGxDevice::AdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorM
         return CGxDevice::GLLAdapterMonitorModes(monitorModes);
     }
 
-#elif defined(WHOA_SYSTEM_LINUX)
+#elif defined(WHOA_SYSTEM_ANDROID)
 
-    // TODO
+    monitorModes.SetCount(0);
+
+    auto window = OsAndroidGetWindow();
+
+    if (!window) {
+        return 0;
+    }
+
+    auto mode = monitorModes.New();
+    mode->size.x = ANativeWindow_getWidth(window);
+    mode->size.y = ANativeWindow_getHeight(window);
+    mode->bpp = 32;
+    mode->refreshRate = 60;
+
+    return 1;
 
 #else
+
+    // TODO
 
     return 0;
 
@@ -227,6 +270,13 @@ CGxDevice* CGxDevice::NewD3d9Ex() {
 CGxDevice* CGxDevice::NewGLL() {
     auto m = SMemAlloc(sizeof(CGxDeviceGLL), __FILE__, __LINE__, 0x0);
     return new (m) CGxDeviceGLL();
+}
+#endif
+
+#if defined(WHOA_SYSTEM_ANDROID)
+CGxDevice* CGxDevice::NewGLES() {
+    auto m = SMemAlloc(sizeof(CGxDeviceGLES), __FILE__, __LINE__, 0x0);
+    return new (m) CGxDeviceGLES();
 }
 #endif
 

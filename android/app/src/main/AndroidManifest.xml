@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:glEsVersion="0x00030000" android:required="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="FrozenClient"
+        android:hasCode="false"
+        android:allowBackup="false"
+        android:allowNativeHeapPointerTagging="false"
+        android:memtagMode="off">
+
+        <!-- Storm marks the end of its intrusive lists with the bitwise NOT of a node address and
+             tests for it with a signed comparison, which needs untagged (positive) heap pointers -->
+
+        <!-- Pure native app: the NDK glue creates the activity and runs android_main in libWhoa.so -->
+        <activity
+            android:name="android.app.NativeActivity"
+            android:label="FrozenClient"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:exported="true">
+            <meta-data android:name="android.app.lib_name" android:value="Whoa" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
