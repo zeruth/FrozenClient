@@ -143,6 +143,9 @@ int32_t OsAndroidOnInputEvent(android_app* app, AInputEvent* event) {
         auto x = static_cast<int32_t>(AMotionEvent_getX(event, 0));
         auto y = static_cast<int32_t>(AMotionEvent_getY(event, 0));
 
+        // Surface pixels to render pixels (the render target may be letterboxed on the surface)
+        OsAndroidMapTouch(x, y);
+
         switch (action) {
         case AMOTION_EVENT_ACTION_DOWN:
             // Move the cursor under the finger first so hover state matches the press

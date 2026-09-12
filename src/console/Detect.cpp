@@ -43,6 +43,29 @@ void ConsoleDetectGetResolutions(TSGrowableArray<C2iVector>& resolutions, int32_
         }
     }
 
+#if defined(WHOA_SYSTEM_ANDROID)
+    // The surface's own size is always offered, whatever its aspect ratio; it is the last mode
+    {
+        TSGrowableArray<CGxMonitorMode> monitorModes;
+        GxAdapterMonitorModes(monitorModes);
+
+        if (monitorModes.Count()) {
+            auto& native = monitorModes[monitorModes.Count() - 1].size;
+            bool present = false;
+
+            for (uint32_t i = 0; i < resolutions.Count(); i++) {
+                if (resolutions[i].x == native.x && resolutions[i].y == native.y) {
+                    present = true;
+                }
+            }
+
+            if (!present) {
+                AddResolution(resolutions, native);
+            }
+        }
+    }
+#endif
+
     // Fallback resolutions
 
     if (!widescreen || resolutions.Count() == 0) {

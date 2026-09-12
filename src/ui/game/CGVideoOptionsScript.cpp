@@ -3,10 +3,13 @@
 #include "console/Detect.hpp"
 #include "gx/Adapter.hpp"
 #include "gx/Gx.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
 #include "ui/Types.hpp"
 #include "ui/game/CGVideoOptions.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <storm/String.hpp>
 #include <tempest/Vector.hpp>
 
 static TSGrowableArray<C3iVector> s_multisampleFormats;
@@ -154,7 +157,39 @@ int32_t Script_GetCurrentResolution(lua_State* L) {
 }
 
 int32_t Script_SetScreenResolution(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SetupResolutions();
+
+    if (!lua_isnumber(L, 1)) {
+        return luaL_error(L, "Usage: SetScreenResolution(index)");
+    }
+
+    auto index = static_cast<uint32_t>(lua_tonumber(L, 1)) - 1;
+
+    if (index >= s_screenResolutions.Count()) {
+        return 0;
+    }
+
+    auto& resolution = s_screenResolutions[index];
+
+    char value[32];
+    SStrPrintf(value, sizeof(value), "%dx%d", resolution.x, resolution.y);
+
+    auto resolutionVar = CVar::Lookup("gxResolution");
+
+    if (resolutionVar) {
+        resolutionVar->Set(value, true, false, false, true);
+    }
+
+#if defined(WHOA_SYSTEM_ANDROID)
+    // Applied live; the other platforms pick it up on the next start
+    if (g_theGxDevicePtr) {
+        CGxFormat format = g_theGxDevicePtr->m_format;
+        format.size = resolution;
+        g_theGxDevicePtr->DeviceSetFormat(format);
+    }
+#endif
+
+    return 0;
 }
 
 int32_t Script_GetRefreshRates(lua_State* L) {

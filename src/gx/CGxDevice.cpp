@@ -183,9 +183,26 @@ int32_t CGxDevice::AdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorM
         return 0;
     }
 
+    // Common sizes the surface can hold, then the surface itself
+    static const C2iVector s_commonSizes[] = {
+        { 800, 600 }, { 1024, 768 }, { 1152, 864 }, { 1280, 720 }, { 1280, 800 }, { 1280, 960 },
+        { 1280, 1024 }, { 1366, 768 }, { 1440, 900 }, { 1600, 900 }, { 1600, 1200 }, { 1680, 1050 },
+        { 1920, 1080 }, { 1920, 1200 }, { 2560, 1440 }, { 2560, 1600 },
+    };
+
+    C2iVector native = { ANativeWindow_getWidth(window), ANativeWindow_getHeight(window) };
+
+    for (auto& size : s_commonSizes) {
+        if (size.x <= native.x && size.y <= native.y && (size.x != native.x || size.y != native.y)) {
+            auto mode = monitorModes.New();
+            mode->size = size;
+            mode->bpp = 32;
+            mode->refreshRate = 60;
+        }
+    }
+
     auto mode = monitorModes.New();
-    mode->size.x = ANativeWindow_getWidth(window);
-    mode->size.y = ANativeWindow_getHeight(window);
+    mode->size = native;
     mode->bpp = 32;
     mode->refreshRate = 60;
 

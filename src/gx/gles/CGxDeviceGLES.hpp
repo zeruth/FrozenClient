@@ -77,6 +77,15 @@ class CGxDeviceGLES : public CGxDevice {
         int32_t m_hasAnisotropic = 0;
         float m_maxAnisotropy = 1.0f;
         int32_t m_shaderFailures = 0;
+        GLuint m_offscreenFramebuffer = 0;
+        GLuint m_offscreenColor = 0;
+        GLuint m_offscreenDepth = 0;
+        C2iVector m_renderSize = { 0, 0 };
+        C2iVector m_surfaceSize = { 0, 0 };
+        int32_t m_presentX = 0;
+        int32_t m_presentY = 0;
+        int32_t m_presentWidth = 0;
+        int32_t m_presentHeight = 0;
 
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*);
@@ -105,6 +114,8 @@ class CGxDeviceGLES : public CGxDevice {
         int32_t ICreateContext();
         void IDestroyContext();
         void IUpdateWindowSize();
+        void IOffscreenSetup();
+        void IOffscreenDestroy();
         char* IBufLock(CGxBuf* buf);
         void IBufUnlock(CGxBuf* buf);
         GlesPool* IPoolGet(CGxPool* pool);

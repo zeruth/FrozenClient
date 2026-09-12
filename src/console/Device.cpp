@@ -378,10 +378,20 @@ void ConsoleDeviceInitialize(const char* title) {
 
     // TODO
 
-    // TODO
-    // - source the size values correctly
+    // The saved resolution, when it parses
     s_requestedFormat.size.x = 1024;
     s_requestedFormat.size.y = 768;
+
+    if (s_cvGxResolution && s_cvGxResolution->GetString()) {
+        int32_t width = 0;
+        int32_t height = 0;
+        char sep = 0;
+
+        if (sscanf(s_cvGxResolution->GetString(), "%d%c%d", &width, &sep, &height) == 3 && width > 0 && height > 0) {
+            s_requestedFormat.size.x = width;
+            s_requestedFormat.size.y = height;
+        }
+    }
     s_requestedFormat.colorFormat = CGxFormat::Fmt_Argb8888;
     s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds248;
 

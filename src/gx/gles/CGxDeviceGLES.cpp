@@ -308,7 +308,8 @@ int32_t CGxDeviceGLES::DeviceCreate(int32_t (*windowProc)(void* window, uint32_t
 int32_t CGxDeviceGLES::DeviceSetFormat(const CGxFormat& format) {
     CGxDevice::DeviceSetFormat(format);
 
-    // The activity owns the window; the format cannot change its size or mode
+    // The activity owns the window, so only the resolution is honored: the client renders at
+    // the requested size and the result is presented letterboxed on the surface
     this->m_format.window = 1;
     this->m_format.maximize = 0;
 
@@ -343,7 +344,29 @@ void CGxDeviceGLES::ScenePresent() {
 
     CGxDevice::ScenePresent();
 
+    if (this->m_offscreenFramebuffer) {
+        // Scale the frame onto the surface, keeping its aspect ratio, with black bars around it
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, this->m_offscreenFramebuffer);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glDisable(GL_SCISSOR_TEST);
+        glViewport(0, 0, this->m_surfaceSize.x, this->m_surfaceSize.y);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBlitFramebuffer(
+            0, 0, this->m_renderSize.x, this->m_renderSize.y,
+            this->m_presentX, this->m_presentY, this->m_presentX + this->m_presentWidth, this->m_presentY + this->m_presentHeight,
+            GL_COLOR_BUFFER_BIT,
+            GL_LINEAR
+        );
+    }
+
     eglSwapBuffers(this->m_eglDisplay, this->m_eglSurface);
+
+    if (this->m_offscreenFramebuffer) {
+        glBindFramebuffer(GL_FRAMEBUFFER, this->m_offscreenFramebuffer);
+        this->IRsSendToHw(GxRs_ScissorTest);
+        this->intF6C = 1;
+    }
 }
 
 void CGxDeviceGLES::SceneClear(uint32_t mask, CImVector color) {
@@ -363,7 +386,6 @@ void CGxDeviceGLES::SceneClear(uint32_t mask, CImVector color) {
         glDepthMask(GL_TRUE);
         glClearDepthf(1.0f);
         glMask |= GL_DEPTH_BUFFER_BIT;
-        this->IRsForceUpdate(GxRs_DepthWrite);
     }
 
     if (mask & 0x4) {
@@ -374,7 +396,8 @@ void CGxDeviceGLES::SceneClear(uint32_t mask, CImVector color) {
     if (glMask) {
         glDisable(GL_SCISSOR_TEST);
         glClear(glMask);
-        this->IRsForceUpdate(GxRs_ScissorTest);
+        this->IRsSendToHw(GxRs_ScissorTest);
+        this->IRsSendToHw(GxRs_DepthWrite);
     }
 }
 
@@ -1596,16 +1619,100 @@ void CGxDeviceGLES::IUpdateWindowSize() {
         return;
     }
 
-    // The default window rect is what input positions are normalized against
-    CRect rect = { 0.0f, 0.0f, static_cast<float>(height), static_cast<float>(width) };
-    this->DeviceSetDefWindow(rect);
+    this->m_surfaceSize.x = width;
+    this->m_surfaceSize.y = height;
 
-    this->m_format.size.x = width;
-    this->m_format.size.y = height;
+    // The requested resolution is rendered as is; zero or anything the surface cannot hold
+    // means native
+    int32_t renderWidth = this->m_format.size.x;
+    int32_t renderHeight = this->m_format.size.y;
 
-    if (this->m_eglContext != EGL_NO_CONTEXT) {
-        glViewport(0, 0, width, height);
+    if (renderWidth <= 0 || renderHeight <= 0 || renderWidth > width || renderHeight > height) {
+        renderWidth = width;
+        renderHeight = height;
     }
 
+    this->m_renderSize.x = renderWidth;
+    this->m_renderSize.y = renderHeight;
+    this->m_format.size.x = renderWidth;
+    this->m_format.size.y = renderHeight;
+
+    // Fit the frame on the surface keeping its aspect ratio
+    float scale = std::min(static_cast<float>(width) / renderWidth, static_cast<float>(height) / renderHeight);
+    this->m_presentWidth = static_cast<int32_t>(renderWidth * scale + 0.5f);
+    this->m_presentHeight = static_cast<int32_t>(renderHeight * scale + 0.5f);
+    this->m_presentX = (width - this->m_presentWidth) / 2;
+    this->m_presentY = (height - this->m_presentHeight) / 2;
+
+    // Touches come in surface pixels with y from the top
+    OsAndroidSetPresentRect(this->m_presentX, height - (this->m_presentY + this->m_presentHeight), this->m_presentWidth, this->m_presentHeight, renderWidth, renderHeight);
+
+    // The default window rect is what the UI lays out against and input positions are
+    // normalized against
+    CRect rect = { 0.0f, 0.0f, static_cast<float>(renderHeight), static_cast<float>(renderWidth) };
+    this->DeviceSetDefWindow(rect);
+
+    if (this->m_eglContext != EGL_NO_CONTEXT) {
+        this->IOffscreenSetup();
+        glViewport(0, 0, renderWidth, renderHeight);
+    }
+
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Rendering %dx%d on a %dx%d surface at %d,%d %dx%d", renderWidth, renderHeight, width, height, this->m_presentX, this->m_presentY, this->m_presentWidth, this->m_presentHeight);
+
     this->intF6C = 1;
+}
+
+void CGxDeviceGLES::IOffscreenDestroy() {
+    if (this->m_offscreenFramebuffer) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, &this->m_offscreenFramebuffer);
+        this->m_offscreenFramebuffer = 0;
+    }
+
+    if (this->m_offscreenColor) {
+        glDeleteTextures(1, &this->m_offscreenColor);
+        this->m_offscreenColor = 0;
+    }
+
+    if (this->m_offscreenDepth) {
+        glDeleteRenderbuffers(1, &this->m_offscreenDepth);
+        this->m_offscreenDepth = 0;
+    }
+}
+
+// Creates the render target for the configured resolution; at native size the surface itself
+// is drawn to
+void CGxDeviceGLES::IOffscreenSetup() {
+    this->IOffscreenDestroy();
+
+    if (this->m_renderSize.x == this->m_surfaceSize.x && this->m_renderSize.y == this->m_surfaceSize.y) {
+        return;
+    }
+
+    glGenTextures(1, &this->m_offscreenColor);
+    glActiveTexture(GL_TEXTURE0 + SCRATCH_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D, this->m_offscreenColor);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, this->m_renderSize.x, this->m_renderSize.y);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glGenRenderbuffers(1, &this->m_offscreenDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, this->m_offscreenDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, this->m_renderSize.x, this->m_renderSize.y);
+
+    glGenFramebuffers(1, &this->m_offscreenFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->m_offscreenFramebuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->m_offscreenColor, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->m_offscreenDepth);
+
+    auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "Offscreen framebuffer incomplete (0x%x); rendering at native size", status);
+        this->IOffscreenDestroy();
+        this->m_renderSize = this->m_surfaceSize;
+        this->m_format.size = this->m_surfaceSize;
+    }
 }
