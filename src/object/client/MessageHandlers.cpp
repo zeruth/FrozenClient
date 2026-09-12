@@ -573,7 +573,8 @@ int32_t ObjectUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataS
 
     // Garbage collect objects disabled more than 2 minutes ago (catch all)
 
-    for (int32_t typeID = ID_OBJECT; typeID < NUM_CLIENT_OBJECT_TYPES; typeID++) {
+    // The cleanup FIFOs only exist for the concrete types (ID_ITEM onward)
+    for (int32_t typeID = ID_ITEM; typeID < NUM_CLIENT_OBJECT_TYPES; typeID++) {
         GarbageCollect(static_cast<OBJECT_TYPE_ID>(typeID), 120000);
     }
 
