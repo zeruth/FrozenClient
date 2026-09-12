@@ -104,4 +104,12 @@ if(WHOA_SYSTEM_WIN)
             util
             stormlib-9.31
     )
+
+    # Developer tool for checking the ARB to GLSL ES translation used by the Android device
+    add_executable(ArbTool tools/ArbTool.cpp ${CMAKE_SOURCE_DIR}/src/gx/gles/ArbToGlsl.cpp)
+
+    target_include_directories(ArbTool
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/src
+    )
 endif()

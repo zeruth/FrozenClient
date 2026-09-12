@@ -13,7 +13,7 @@ class CGxPool : public TSLinkedNode<CGxPool> {
         EGxPoolUsage m_usage;
         int32_t m_size;
         void* m_apiSpecific;
-        void* m_mem;
+        void* m_mem = nullptr;
         int32_t unk1C; // TODO
         TSList<CGxBuf, TSGetLink<CGxBuf>> m_bufList;
         EGxPoolHintBits m_hint;
