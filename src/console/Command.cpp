@@ -1,6 +1,69 @@
 #include "console/Command.hpp"
 #include "console/CommandHandlers.hpp"
+#include "console/Console.hpp"
 #include <storm/Error.hpp>
+#include <storm/Memory.hpp>
+#include <storm/String.hpp>
+#include <storm/Unicode.hpp>
+
+// Name of the command most recently parsed by ConsoleCommandExecute
+static char s_commandName[MAX_CMD_LENGTH];
+
+// Splits command into the command name (first word, at most MAX_CMD_LENGTH - 1 bytes, honoring
+// UTF-8 sequences) and the remaining arguments with surrounding spaces trimmed. Returns the
+// registered command for the name, if any. (0x768900 in the original)
+static CONSOLECOMMAND* ConsoleCommandParse(const char* command, const char** name, char* arguments, size_t argumentsSize) {
+    char* out = s_commandName;
+    int32_t remaining = MAX_CMD_LENGTH - 1;
+    const char* cursor = command;
+
+    while (remaining > 0) {
+        int32_t length = 0;
+        uint32_t code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(cursor), &length);
+
+        if (code == 0xFFFFFFFF || code == ' ' || length > remaining) {
+            break;
+        }
+
+        remaining -= length;
+
+        while (length-- > 0) {
+            *out++ = *cursor++;
+        }
+    }
+
+    *out = '\0';
+
+    if (name) {
+        *name = s_commandName;
+    }
+
+    if (arguments) {
+        int32_t length = 0;
+        uint32_t code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(cursor), &length);
+
+        while (code != 0xFFFFFFFF && code == ' ') {
+            cursor += length;
+            code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(cursor), &length);
+        }
+
+        SStrCopy(arguments, cursor, argumentsSize);
+
+        size_t argumentsLength = SStrLen(arguments);
+
+        while (argumentsLength > 0 && arguments[argumentsLength - 1] == ' ') {
+            arguments[--argumentsLength] = '\0';
+        }
+    }
+
+    return g_consoleCommandHash.Ptr(s_commandName);
+}
+
+// Records a command line in the history ring (0x76B3B0 in the original)
+static void ConsoleCommandHistoryAdd(const char* command) {
+    SStrCopy(g_commandHistory[g_commandHistoryIndex], command, CMD_BUFFER_SIZE);
+    g_commandHistoryIndex = (g_commandHistoryIndex + 1) & (HISTORY_DEPTH - 1);
+}
 
 int32_t ValidateFileName(const char* filename) {
     if (SStrStr(filename, "..") || SStrStr(filename, "\\")) {
@@ -26,6 +89,50 @@ uint32_t g_commandHistoryIndex;
 
 void ConsoleCommandDestroy() {
     g_consoleCommandHash.Clear();
+}
+
+// 0x7658A0 in the original
+void ConsoleCommandExecute(const char* command, int32_t addToHistory) {
+    // TODO the original first offers the line to the console's file capture mode ("run" command
+    // recording), which can consume it
+
+    while (*command == ' ') {
+        ++command;
+    }
+
+    if (addToHistory) {
+        const char* last = ConsoleCommandHistory(0);
+
+        if (!*last || SStrCmp(command, last, STORM_MAX_STR) != 0) {
+            ConsoleCommandHistoryAdd(command);
+        }
+    }
+
+    auto arguments = static_cast<char*>(SMemAlloc(CMD_BUFFER_SIZE, __FILE__, __LINE__, 0));
+
+    const char* name = nullptr;
+    CONSOLECOMMAND* commandPtr = ConsoleCommandParse(command, &name, arguments, CMD_BUFFER_SIZE);
+
+    if (!commandPtr) {
+        // TODO the original consults an optional default handler installed by the script system
+        // before falling back to "run"
+
+        commandPtr = g_consoleCommandHash.Ptr("run");
+
+        if (commandPtr) {
+            // Unknown commands are handed to "run" as a script line
+            name = "";
+            SStrCopy(arguments, command, CMD_BUFFER_SIZE);
+        } else {
+            ConsoleWrite("Unknown command", DEFAULT_COLOR);
+        }
+    }
+
+    if (commandPtr) {
+        commandPtr->handler(name, arguments);
+    }
+
+    SMemFree(arguments, __FILE__, __LINE__, 0);
 }
 
 char* ConsoleCommandHistory(uint32_t index) {

@@ -25,6 +25,11 @@ extern char g_ExecBuffer[EXEC_BUFFER_SIZE];
 
 void ConsoleCommandDestroy();
 
+// Parses command into a command name and arguments and runs the registered handler. When
+// addToHistory is set the line is recorded in the command history unless it repeats the most
+// recent entry.
+void ConsoleCommandExecute(const char* command, int32_t addToHistory);
+
 char* ConsoleCommandHistory(uint32_t index);
 
 uint32_t ConsoleCommandHistoryDepth();

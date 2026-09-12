@@ -1,20 +1,109 @@
 #include "console/CVar.hpp"
 #include "console/Command.hpp"
 #include "console/CVarHandlers.hpp"
+#include "util/Filesystem.hpp"
+#include "util/SFile.hpp"
+#include <cstdio>
+#include <cstring>
+#include <storm/Memory.hpp>
 #include <storm/String.hpp>
+
+// Files up to this size are parsed from a stack buffer
+#define CVAR_LOAD_STACK_BUFFER_SIZE 0x2000
 
 bool CVar::m_initialized;
 bool CVar::m_needsSave;
 TSHashTable<CVar, HASHKEY_STRI> CVar::s_registeredCVars;
 
+// Creates every directory along path (0x766320 in the original)
+static int32_t s_CreatePathDirectories(const char* path) {
+    if (!path || !*path) {
+        return 0;
+    }
+
+    for (const char* separator = SStrChr(path + 1, '\\'); separator; separator = SStrChr(separator + 1, '\\')) {
+        size_t length = separator - path;
+
+        if (length >= STORM_MAX_PATH) {
+            return 0;
+        }
+
+        char directory[STORM_MAX_PATH];
+        memcpy(directory, path, length);
+        directory[length] = '\0';
+
+        if (!OsDirectoryExists(directory)) {
+            OsCreateDirectory(directory, 0);
+
+            if (!OsDirectoryExists(directory)) {
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
+// Feeds every "SET" line of an open config file through the console (0x766400 in the original)
+static int32_t s_LoadFromFile(FILE* file) {
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    if (fileSize <= 0) {
+        return 1;
+    }
+
+    auto size = static_cast<size_t>(fileSize);
+
+    char stackBuffer[CVAR_LOAD_STACK_BUFFER_SIZE];
+    char* buffer = stackBuffer;
+    bool heapBuffer = size >= CVAR_LOAD_STACK_BUFFER_SIZE;
+
+    if (heapBuffer) {
+        buffer = static_cast<char*>(SMemAlloc(size + 1, __FILE__, __LINE__, 0));
+    }
+
+    size_t bytesRead = fread(buffer, 1, size, file);
+    int32_t result = 0;
+
+    if (bytesRead) {
+        buffer[bytesRead] = '\0';
+
+        const char* cursor = buffer;
+
+        // Skip a UTF-8 byte order mark
+        if (bytesRead > 2 && static_cast<uint8_t>(buffer[0]) == 0xEF && static_cast<uint8_t>(buffer[1]) == 0xBB && static_cast<uint8_t>(buffer[2]) == 0xBF) {
+            cursor = buffer + 3;
+        }
+
+        char line[2048];
+
+        do {
+            SStrTokenize(&cursor, line, sizeof(line), "\r\n", nullptr);
+
+            if (SStrCmpI(line, "SET ", 4) == 0) {
+                ConsoleCommandExecute(line, 0);
+            }
+        } while (cursor && *cursor);
+
+        result = 1;
+    }
+
+    if (heapBuffer) {
+        SMemFree(buffer, __FILE__, __LINE__, 0);
+    }
+
+    return result;
+}
+
 void CVar::Initialize() {
     CVar::m_initialized = true;
 
     char basePath[STORM_MAX_PATH];
-    // TODO
-    // SFile::GetBasePath(basePath, 260);
-    // SStrPrintf(basePath, sizeof(basePath), "%s%s\\", basePath, "WTF");
-    // s_CreatePathDirectories(basePath);
+    SFile::GetBasePath(basePath, sizeof(basePath));
+    SStrPrintf(basePath, sizeof(basePath), "%s%s\\", basePath, "WTF");
+    s_CreatePathDirectories(basePath);
 
     ConsoleCommandRegister("set", CVarSetCommandHandler, DEFAULT, "Set the value of a CVar");
     ConsoleCommandRegister("cvar_reset", CVarResetCommandHandler, DEFAULT, "Set the value of a CVar to it's startup value");
@@ -22,9 +111,40 @@ void CVar::Initialize() {
     ConsoleCommandRegister("cvarlist", CVarListCommandHandler, DEFAULT, "List cvars");
 }
 
+// Loads filename as given, then from the WTF directory (0x766530 in the original)
 int32_t CVar::Load(const char* filename) {
-    // TODO
-    return 0;
+    char path[STORM_MAX_PATH];
+    SStrCopy(path, filename, sizeof(path));
+
+    for (char* c = path; *c; ++c) {
+        if (*c == '\\') {
+            *c = '/';
+        }
+    }
+
+    FILE* file = fopen(path, "rb");
+
+    if (!file) {
+        SStrPrintf(path, sizeof(path), "WTF/%s", filename);
+
+        for (char* c = path; *c; ++c) {
+            if (*c == '\\') {
+                *c = '/';
+            }
+        }
+
+        file = fopen(path, "rb");
+
+        if (!file) {
+            return 0;
+        }
+    }
+
+    int32_t result = s_LoadFromFile(file);
+
+    fclose(file);
+
+    return result;
 }
 
 CVar* CVar::Lookup(const char* name) {
