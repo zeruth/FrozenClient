@@ -5,11 +5,14 @@
 #include "component/Types.hpp"
 #include "db/Db.hpp"
 #include "glue/CGlueLoading.hpp"
+#include "glue/CGlueMgr.hpp"
 #include "model/CM2Shared.hpp"
 #include "net/Connection.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "ui/FrameScript.hpp"
 #include "ui/simple/CSimpleModelFFX.hpp"
 #include "util/Random.hpp"
+#include <storm/String.hpp>
 #include <tempest/Random.hpp>
 
 CCharacterComponent* CCharacterCreation::s_character;
@@ -47,6 +50,37 @@ void CCharacterCreation::CalcClasses(int32_t raceID) {
         auto classRec = g_chrClassesDB.GetRecord(infoRec->m_classID);
         CCharacterCreation::s_classes[classIndex++] = classRec;
     }
+}
+
+// Submits the character being customized (0x4E0380 in the original)
+void CCharacterCreation::CreateCharacter(const char* name) {
+    // TODO when s_existingCharacterIndex is set this is a customization, race change, or faction
+    // change of an existing character rather than a creation
+
+    if (!name) {
+        auto prompt = FrameScript_GetText(ClientServices::GetErrorToken(89), -1, GENDER_NOT_APPLICABLE);
+        FrameScript_SignalEvent(3, "%s%s", "OKAY", prompt);
+
+        return;
+    }
+
+    // TODO the original runs the name through ClientServices name validation here
+
+    auto& data = CCharacterCreation::s_character->m_data;
+
+    CHARACTER_CREATE_INFO info;
+    SStrCopy(info.name, name, sizeof(info.name));
+    info.raceID = static_cast<uint8_t>(data.raceID);
+    info.classID = static_cast<uint8_t>(CCharacterCreation::s_selectedClassID);
+    info.sexID = static_cast<uint8_t>(data.sexID);
+    info.skinColorID = static_cast<uint8_t>(data.skinColorID);
+    info.faceID = static_cast<uint8_t>(data.faceID);
+    info.hairStyleID = static_cast<uint8_t>(data.hairStyleID);
+    info.hairColorID = static_cast<uint8_t>(data.hairColorID);
+    info.facialHairStyleID = static_cast<uint8_t>(data.facialHairStyleID);
+    info.outfitID = 0;
+
+    CGlueMgr::CreateCharacter(&info);
 }
 
 void CCharacterCreation::CreateComponent(ComponentData* data, bool randomize) {

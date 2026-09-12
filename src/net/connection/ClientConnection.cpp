@@ -64,6 +64,28 @@ void ClientConnection::Connect() {
     ClientServices::LoginConnection()->GetRealmList();
 }
 
+// 0x6B1620 in the original
+void ClientConnection::CreateCharacter(const CHARACTER_CREATE_INFO* info) {
+    this->Initiate(COP_CREATE_CHARACTER, 46, nullptr);
+
+    if (this->m_connected) {
+        this->RequestCharacterCreate(info);
+    } else {
+        this->Cancel(4);
+    }
+}
+
+// 0x6B1A70 in the original
+void ClientConnection::DeleteCharacter(uint64_t guid) {
+    this->Initiate(COP_DELETE_CHARACTER, 70, nullptr);
+
+    if (this->m_connected) {
+        this->RequestCharacterDelete(guid);
+    } else {
+        this->Cancel(4);
+    }
+}
+
 int32_t ClientConnection::Disconnect() {
     this->NetClient::Disconnect();
 

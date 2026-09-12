@@ -342,8 +342,13 @@ int32_t Script_GetRandomName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// 0x4E0C60 in the original
 int32_t Script_CreateCharacter(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const char* name = lua_isstring(L, 1) ? lua_tostring(L, 1) : nullptr;
+
+    CCharacterCreation::CreateCharacter(name);
+
+    return 0;
 }
 
 int32_t Script_CustomizeExistingCharacter(lua_State* L) {

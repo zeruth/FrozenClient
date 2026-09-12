@@ -37,6 +37,8 @@ class ClientConnection : public RealmConnection {
         void Cleanup();
         void Complete(int32_t result, int32_t errorCode);
         void Connect();
+        void CreateCharacter(const CHARACTER_CREATE_INFO* info);
+        void DeleteCharacter(uint64_t guid);
         int32_t Disconnect();
         void EnumerateCharacters(ENUMERATE_CHARACTERS_CALLBACK callback, void* param);
         void GetCharacterList();

@@ -322,6 +322,37 @@ void RealmConnection::RequestCharacterEnum() {
     this->Send(&msg);
 }
 
+void RealmConnection::RequestCharacterCreate(const CHARACTER_CREATE_INFO* info) {
+    CDataStore msg;
+
+    msg.Put(static_cast<uint32_t>(CMSG_CHAR_CREATE));
+    msg.PutString(info->name);
+    msg.Put(info->raceID);
+    msg.Put(info->classID);
+    msg.Put(info->sexID);
+    msg.Put(info->skinColorID);
+    msg.Put(info->faceID);
+    msg.Put(info->hairStyleID);
+    msg.Put(info->hairColorID);
+    msg.Put(info->facialHairStyleID);
+    msg.Put(info->outfitID);
+
+    msg.Finalize();
+
+    this->Send(&msg);
+}
+
+void RealmConnection::RequestCharacterDelete(uint64_t guid) {
+    CDataStore msg;
+
+    msg.Put(static_cast<uint32_t>(CMSG_CHAR_DELETE));
+    msg.Put(guid);
+
+    msg.Finalize();
+
+    this->Send(&msg);
+}
+
 void RealmConnection::RequestCharacterLogin(uint64_t guid, int32_t a2) {
     CDataStore msg;
 

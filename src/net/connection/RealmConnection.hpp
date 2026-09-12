@@ -55,6 +55,8 @@ class RealmConnection : public NetClient {
         int32_t HandleCharEnum(uint32_t msgId, uint32_t time, CDataStore* msg);
         int32_t CreateCharHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
         int32_t DeleteCharHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
+        void RequestCharacterCreate(const CHARACTER_CREATE_INFO* info);
+        void RequestCharacterDelete(uint64_t guid);
         void RequestCharacterEnum();
         void RequestCharacterLogin(uint64_t guid, int32_t a2);
         void SetSelectedRealm(uint32_t a2, uint32_t a3, uint32_t a4);

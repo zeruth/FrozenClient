@@ -466,6 +466,34 @@ void CGlueMgr::AcceptTOS() {
     s_AcceptAgreement(CGlueMgr::m_acceptedTOS, CGlueMgr::m_showTOSNotice, Client::g_readTOSVar);
 }
 
+// 0x4D8C60 in the original
+void CGlueMgr::CreateCharacter(const CHARACTER_CREATE_INFO* info) {
+    if (!info) {
+        return;
+    }
+
+    CGlueMgr::SetIdleState(IDLE_CREATE_CHARACTER);
+
+    auto status = FrameScript_GetText(ClientServices::GetErrorToken(46), -1, GENDER_NOT_APPLICABLE);
+    FrameScript_SignalEvent(3, "%s%s", "CANCEL", status);
+
+    ClientServices::Connection()->CreateCharacter(info);
+}
+
+// 0x4D8CC0 in the original
+void CGlueMgr::DeleteCharacter(uint64_t guid) {
+    if (!guid) {
+        return;
+    }
+
+    CGlueMgr::SetIdleState(IDLE_DELETE_CHARACTER);
+
+    auto status = FrameScript_GetText(ClientServices::GetErrorToken(70), -1, GENDER_NOT_APPLICABLE);
+    FrameScript_SignalEvent(3, "%s%s", "CANCEL", status);
+
+    ClientServices::Connection()->DeleteCharacter(guid);
+}
+
 void CGlueMgr::Initialize() {
     CGlueMgr::m_initialized = 1;
 
