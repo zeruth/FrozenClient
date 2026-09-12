@@ -61,6 +61,9 @@ class CGxDeviceGLES : public CGxDevice {
         EGLDisplay m_eglDisplay = EGL_NO_DISPLAY;
         EGLSurface m_eglSurface = EGL_NO_SURFACE;
         EGLContext m_eglContext = EGL_NO_CONTEXT;
+        EGLConfig m_eglConfig = nullptr;
+        EGLint m_nativeFormat = 0;
+        uint32_t m_windowGeneration = 0;
         GLuint m_constantBuffers[2] = { 0, 0 };
         std::unordered_map<uint64_t, GlesProgram> m_programs;
         GlesProgram* m_curProgram = nullptr;
@@ -115,6 +118,7 @@ class CGxDeviceGLES : public CGxDevice {
         void IDestroyContext();
         void IUpdateWindowSize();
         void IOffscreenSetup();
+        int32_t ICreateSurface();
         void IOffscreenDestroy();
         char* IBufLock(CGxBuf* buf);
         void IBufUnlock(CGxBuf* buf);

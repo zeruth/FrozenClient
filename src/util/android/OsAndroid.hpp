@@ -17,6 +17,10 @@ void OsAndroidSetApp(android_app* app);
 
 void OsAndroidSetWindow(ANativeWindow* window);
 
+// Bumped every time the activity provides a window, so the graphics device can tell a new
+// window from a resized one even when the pointer is reused
+uint32_t OsAndroidGetWindowGeneration();
+
 // The graphics device renders at the configured resolution and presents it letterboxed on the
 // surface; touches arrive in surface pixels and are mapped into render pixels through this rect
 // (x, y from the top left of the surface)

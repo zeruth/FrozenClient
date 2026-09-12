@@ -15,8 +15,18 @@ void OsAndroidSetApp(android_app* app) {
     s_app = app;
 }
 
+static uint32_t s_windowGeneration = 0;
+
 void OsAndroidSetWindow(ANativeWindow* window) {
     s_window = window;
+
+    if (window) {
+        s_windowGeneration++;
+    }
+}
+
+uint32_t OsAndroidGetWindowGeneration() {
+    return s_windowGeneration;
 }
 
 static int32_t s_presentX = 0;

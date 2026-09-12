@@ -1,5 +1,7 @@
 #include "event/Input.hpp"
 #include "console/CVar.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
 #include "util/android/OsAndroid.hpp"
 #include <android_native_app_glue.h>
 #include <android/input.h>
@@ -16,6 +18,12 @@ static void QueueWindowSize() {
 
     if (!window) {
         return;
+    }
+
+    // The device re-reads its surface (and recreates it on a new window) right away; this runs
+    // on the client thread, which owns the GL context
+    if (g_theGxDevicePtr) {
+        g_theGxDevicePtr->DeviceWM(GxWM_Size, 0, 0);
     }
 
     auto width = ANativeWindow_getWidth(window);

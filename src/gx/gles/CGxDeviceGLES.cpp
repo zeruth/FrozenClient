@@ -323,10 +323,19 @@ void* CGxDeviceGLES::DeviceWindow() {
 }
 
 void CGxDeviceGLES::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
-    if (wm == GxWM_Size) {
-        this->IUpdateWindowSize();
-        this->intF6C = 1;
+    if (wm != GxWM_Size || this->m_eglDisplay == EGL_NO_DISPLAY) {
+        return;
     }
+
+    // A fold or unfold can hand the activity a new window; the surface must follow it
+    if (OsAndroidGetWindow() && OsAndroidGetWindowGeneration() != this->m_windowGeneration) {
+        if (!this->ICreateSurface()) {
+            return;
+        }
+    }
+
+    this->IUpdateWindowSize();
+    this->intF6C = 1;
 }
 
 void CGxDeviceGLES::CapsWindowSize(CRect& rect) {
@@ -1537,16 +1546,8 @@ int32_t CGxDeviceGLES::ICreateContext() {
         return 0;
     }
 
-    EGLint nativeFormat;
-    eglGetConfigAttrib(this->m_eglDisplay, config, EGL_NATIVE_VISUAL_ID, &nativeFormat);
-    ANativeWindow_setBuffersGeometry(window, 0, 0, nativeFormat);
-
-    this->m_eglSurface = eglCreateWindowSurface(this->m_eglDisplay, config, window, nullptr);
-
-    if (this->m_eglSurface == EGL_NO_SURFACE) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglCreateWindowSurface failed");
-        return 0;
-    }
+    this->m_eglConfig = config;
+    eglGetConfigAttrib(this->m_eglDisplay, config, EGL_NATIVE_VISUAL_ID, &this->m_nativeFormat);
 
     const EGLint contextAttribs[] = {
         EGL_CONTEXT_CLIENT_VERSION, 3,
@@ -1560,8 +1561,7 @@ int32_t CGxDeviceGLES::ICreateContext() {
         return 0;
     }
 
-    if (!eglMakeCurrent(this->m_eglDisplay, this->m_eglSurface, this->m_eglSurface, this->m_eglContext)) {
-        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglMakeCurrent failed");
+    if (!this->ICreateSurface()) {
         return 0;
     }
 
@@ -1581,6 +1581,40 @@ int32_t CGxDeviceGLES::ICreateContext() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_DITHER);
+
+    return 1;
+}
+
+// Creates the window surface on the activity's current window and makes it current, replacing
+// any previous surface
+int32_t CGxDeviceGLES::ICreateSurface() {
+    auto window = OsAndroidGetWindow();
+
+    if (!window) {
+        return 0;
+    }
+
+    if (this->m_eglSurface != EGL_NO_SURFACE) {
+        eglMakeCurrent(this->m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, this->m_eglContext);
+        eglDestroySurface(this->m_eglDisplay, this->m_eglSurface);
+        this->m_eglSurface = EGL_NO_SURFACE;
+    }
+
+    ANativeWindow_setBuffersGeometry(window, 0, 0, this->m_nativeFormat);
+
+    this->m_eglSurface = eglCreateWindowSurface(this->m_eglDisplay, this->m_eglConfig, window, nullptr);
+
+    if (this->m_eglSurface == EGL_NO_SURFACE) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglCreateWindowSurface failed");
+        return 0;
+    }
+
+    if (!eglMakeCurrent(this->m_eglDisplay, this->m_eglSurface, this->m_eglSurface, this->m_eglContext)) {
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "eglMakeCurrent failed");
+        return 0;
+    }
+
+    this->m_windowGeneration = OsAndroidGetWindowGeneration();
 
     return 1;
 }
