@@ -638,6 +638,14 @@ void GxuFontWindowSizeChanged() {
     g_indentPixelWidth = 15.0f;
     g_indentNormWidth = 15.0f / (rect.maxX - rect.minX);
 
-    // TODO
-    // - walk s_fonts and trigger HandleScreenSizeChange
+    // Every face rasterizes for a pixel size derived from the window height, so the glyph caches
+    // are dropped and the sizes recomputed; the strings drawn with them relayout on next use
+    for (auto font = g_fonts.Head(); font; font = g_fonts.Next(font)) {
+        font->ClearGlyphs();
+        font->UpdateDimensions();
+
+        for (auto string = font->m_strings.Head(); string; string = font->m_strings.Next(string)) {
+            string->HandleScreenSizeChange();
+        }
+    }
 }
