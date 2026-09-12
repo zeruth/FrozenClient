@@ -115,3 +115,42 @@ TEST_CASE("ConsoleCommandExecute", "[console]") {
         CHECK(strcmp(ConsoleCommandHistory(2), "set cvarTestHistory \"1\"") != 0);
     }
 }
+
+TEST_CASE("CVar::Save", "[console]") {
+    EnsureConsole();
+
+    CVar::s_filename = "cvar-test-save.wtf";
+    remove("WTF/cvar-test-save.wtf");
+
+    SECTION("does nothing when no saved cvar changed") {
+        CVar::m_needsSave = false;
+        CHECK(CVar::Save() == 1);
+        CHECK(!fopen("WTF/cvar-test-save.wtf", "rb"));
+    }
+
+    SECTION("writes saved cvars that differ from their default") {
+        CVar* saved = CVar::Register("cvarTestSaved", "", 0x1, "default", nullptr, DEFAULT, false, nullptr, false);
+        CVar* untouched = CVar::Register("cvarTestUntouched", "", 0x1, "default", nullptr, DEFAULT, false, nullptr, false);
+        // 0x80 marks a cvar that is never written out
+        CVar* notSaved = CVar::Register("cvarTestNotSaved", "", 0x80, "default", nullptr, DEFAULT, false, nullptr, false);
+
+        saved->Set("changed", true, false, false, true);
+        notSaved->Set("changed", true, false, false, true);
+        (void)untouched;
+
+        REQUIRE(CVar::Save() == 1);
+
+        FILE* file = fopen("WTF/cvar-test-save.wtf", "rb");
+        REQUIRE(file != nullptr);
+
+        char contents[4096] = {};
+        fread(contents, 1, sizeof(contents) - 1, file);
+        fclose(file);
+
+        CHECK(strstr(contents, "SET cvarTestSaved \"changed\"\n") != nullptr);
+        CHECK(strstr(contents, "cvarTestUntouched") == nullptr);
+        CHECK(strstr(contents, "cvarTestNotSaved") == nullptr);
+    }
+
+    remove("WTF/cvar-test-save.wtf");
+}

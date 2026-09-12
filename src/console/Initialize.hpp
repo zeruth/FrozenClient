@@ -5,4 +5,6 @@ void ConsoleInitializeClientCommand();
 
 void ConsoleInitializeClientCVar(const char* filename);
 
+void ConsoleDestroyClientCVar();
+
 #endif

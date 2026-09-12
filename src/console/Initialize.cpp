@@ -23,8 +23,24 @@ void ConsoleInitializeClientCommand() {
 
 void ConsoleInitializeClientCVar(const char* filename) {
     s_filename = filename;
+    CVar::s_filename = filename;
 
     CVar::Initialize();
 
     CVar::Load(s_filename);
+}
+
+// 0x7673F0 in the original
+void ConsoleDestroyClientCVar() {
+    CVar::m_initialized = false;
+
+    CVar::Save();
+
+    ConsoleCommandUnregister("set");
+    ConsoleCommandUnregister("cvar_reset");
+    ConsoleCommandUnregister("cvar_default");
+    ConsoleCommandUnregister("cvarlist");
+
+    // TODO
+    // sub_591990(0);
 }

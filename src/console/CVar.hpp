@@ -12,6 +12,7 @@ class CVar : public TSHashObject<CVar, HASHKEY_STRI> {
         static bool m_initialized;
         static TSHashTable<CVar, HASHKEY_STRI> s_registeredCVars;
         static bool m_needsSave;
+        static const char* s_filename;
 
         // Static functions
         static void Initialize();
@@ -19,6 +20,8 @@ class CVar : public TSHashObject<CVar, HASHKEY_STRI> {
         static CVar* Lookup(const char* name);
         static CVar* LookupRegistered(const char* name);
         static CVar* Register(const char* name, const char* help, uint32_t flags, const char* value, bool (*fcn)(CVar*, const char*, const char*, void*), uint32_t category, bool a7 = false, void* arg = nullptr, bool a9 = false);
+        static int32_t RemoveFile(const char* filename);
+        static int32_t Save();
 
         // Member variables
         uint32_t m_category = 0;

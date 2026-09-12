@@ -316,7 +316,7 @@ static int CompareRunOnceFiles(const void* a, const void* b) {
 }
 
 // Applies every WTF\RunOnce*.wtf in name order, then discards the list (0x406740 in the original)
-static void LoadRunOnceFiles(int32_t (*load)(const char*)) {
+static void ProcessRunOnceFiles(int32_t (*callback)(const char*)) {
     char basePath[STORM_MAX_PATH];
     SFile::GetBasePath(basePath, sizeof(basePath));
 
@@ -331,9 +331,23 @@ static void LoadRunOnceFiles(int32_t (*load)(const char*)) {
     }
 
     for (uint32_t i = 0; i < files.Count(); ++i) {
-        load(files[i]);
+        callback(files[i]);
         SMemFree(files[i], __FILE__, __LINE__, 0);
     }
+}
+
+// Client shutdown (0x406B70 in the original)
+static void Sub406B70() {
+    // TODO
+    // - misc shutdown
+
+    ProcessRunOnceFiles(&CVar::RemoveFile);
+
+    ConsoleDestroyClientCVar();
+
+    // TODO
+    // - misc shutdown
+    // - display any pending fatal error
 }
 
 // TODO name this (maybe something like InitializeLocale?)
@@ -386,7 +400,7 @@ int32_t InitializeGlobal() {
 
     // sub_7663F0();
 
-    LoadRunOnceFiles(&CVar::Load);
+    ProcessRunOnceFiles(&CVar::Load);
 
     // CVar::Register("dbCompress", "Database compression", 0, "-1", 0, 5, 0, 0, 0);
 
@@ -556,8 +570,7 @@ void CommonMain() {
     if (InitializeGlobal()) {
         EventDoMessageLoop();
 
-        // TODO
-        // sub_406B70();
+        Sub406B70();
     }
 
     // TODO

@@ -13,6 +13,7 @@
 
 bool CVar::m_initialized;
 bool CVar::m_needsSave;
+const char* CVar::s_filename = nullptr;
 TSHashTable<CVar, HASHKEY_STRI> CVar::s_registeredCVars;
 
 // Creates every directory along path (0x766320 in the original)
@@ -141,6 +142,106 @@ int32_t CVar::Load(const char* filename) {
     }
 
     int32_t result = s_LoadFromFile(file);
+
+    fclose(file);
+
+    return result;
+}
+
+// Writes every saveable cvar whose category bits match as a SET line (0x767030 with the
+// 0x766640 writer in the original). Cvars with the 0x80 flag, cvars still at their default value,
+// and cvars matching excludeFlags are skipped.
+static int32_t s_WriteCVars(uint32_t categoryFlags, uint32_t excludeFlags, FILE* file) {
+    for (auto var = CVar::s_registeredCVars.Head(); var; var = CVar::s_registeredCVars.Next(var)) {
+        if (!(var->m_flags & 0x1) || (var->m_flags & 0x80)) {
+            continue;
+        }
+
+        if ((var->m_flags & 0x30) != categoryFlags || (var->m_flags & excludeFlags)) {
+            continue;
+        }
+
+        const char* value = var->m_latchedValue.GetString();
+
+        if (!value) {
+            value = var->m_stringValue.GetString();
+        }
+
+        if (!value) {
+            value = var->m_defaultValue.GetString();
+        }
+
+        if (!value) {
+            continue;
+        }
+
+        const char* defaultValue = var->m_defaultValue.GetString();
+
+        if (defaultValue && !SStrCmpI(value, defaultValue, STORM_MAX_STR)) {
+            continue;
+        }
+
+        if (fprintf(file, "SET %s \"%s\"\n", var->m_key.GetString(), value) < 0) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// Deletes filename, looking in the WTF directory when it isn't found as given (0x7665D0 in the
+// original)
+int32_t CVar::RemoveFile(const char* filename) {
+    char path[STORM_MAX_PATH];
+    SStrCopy(path, filename, sizeof(path));
+
+    if (!OsFileExists(path)) {
+        SStrPrintf(path, sizeof(path), "WTF\\%s", filename);
+
+        if (!OsFileExists(path)) {
+            return 0;
+        }
+    }
+
+    for (char* c = path; *c; ++c) {
+        if (*c == '\\') {
+            *c = '/';
+        }
+    }
+
+    remove(path);
+
+    return 1;
+}
+
+// Writes the config file when a saved cvar changed (0x767100 in the original)
+int32_t CVar::Save() {
+    if (!CVar::m_needsSave) {
+        return 1;
+    }
+
+    CVar::m_needsSave = 0;
+
+    if (!CVar::s_filename) {
+        return 0;
+    }
+
+    char path[STORM_MAX_PATH];
+    SStrPrintf(path, sizeof(path), "WTF/%s", CVar::s_filename);
+
+    for (char* c = path; *c; ++c) {
+        if (*c == '\\') {
+            *c = '/';
+        }
+    }
+
+    FILE* file = fopen(path, "wb");
+
+    if (!file) {
+        return 0;
+    }
+
+    int32_t result = s_WriteCVars(0, 0, file);
 
     fclose(file);
 
