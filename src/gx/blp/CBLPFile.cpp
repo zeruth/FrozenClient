@@ -152,8 +152,7 @@ int32_t CBLPFile::LockChain2(const char* fileName, PIXEL_FORMAT format, MipBits*
             v14 = 1;
         }
 
-        // TODO
-        // MippedImgSet(format, v14, v13, mipLevel);
+        MippedImgSet(images, format, v14, v13);
     } else {
         uint32_t v9 = this->m_header.height >> mipLevel;
 

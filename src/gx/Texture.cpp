@@ -539,6 +539,22 @@ uint32_t MippedImgCalcSize(uint32_t fourCC, uint32_t width, uint32_t height) {
     return imgSize;
 }
 
+// Lays out the mip pointers of an existing image buffer (e.g. Texture::s_mipBits) for a given
+// format and size, the same way MippedImgAllocA does for a freshly allocated one
+void MippedImgSet(MipBits* images, uint32_t fourCC, uint32_t width, uint32_t height) {
+    uint32_t levelCount = CalcLevelCount(width, height);
+
+    auto imageData = reinterpret_cast<char*>(images);
+    auto mipBase = imageData + (sizeof(MipBits::mip) * levelCount);
+    auto alignedMipBase = static_cast<char*>(ALIGN_PTR(mipBase, MIPPED_IMG_ALIGN));
+
+    uint32_t levelOffset = 0;
+    for (uint32_t level = 0; level < levelCount; level++) {
+        images->mip[level] = reinterpret_cast<C4Pixel*>(alignedMipBase + levelOffset);
+        levelOffset += CalcLevelSize(level, width, height, fourCC);
+    }
+}
+
 // TODO
 // - order: width, height or height, width?
 void RequestImageDimensions(uint32_t* width, uint32_t* height, uint32_t* bestMip) {
@@ -1121,7 +1137,7 @@ void TextureIncreasePriority(CTexture* texture) {
 }
 
 void TextureInitialize() {
-    uint32_t v0 = MippedImgCalcSize(2, 1024, 1024);
+    uint32_t v0 = MippedImgCalcSize(PIXEL_ARGB8888, 1024, 1024) + MIPPED_IMG_ALIGN;
     Texture::s_mipBits = reinterpret_cast<MipBits*>(SMemAlloc(v0, __FILE__, __LINE__, 0));
 
     // TODO
