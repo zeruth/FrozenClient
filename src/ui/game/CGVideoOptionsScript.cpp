@@ -1,6 +1,7 @@
 #include "ui/game/CGVideoOptionsScript.hpp"
 #include "console/CVar.hpp"
 #include "console/Detect.hpp"
+#include "event/Input.hpp"
 #include "gx/Adapter.hpp"
 #include "gx/Gx.hpp"
 #include "gx/CGxDevice.hpp"
@@ -186,6 +187,10 @@ int32_t Script_SetScreenResolution(lua_State* L) {
         CGxFormat format = g_theGxDevicePtr->m_format;
         format.size = resolution;
         g_theGxDevicePtr->DeviceSetFormat(format);
+
+        // The size event is what makes the UI and the font cache lay out for the new size,
+        // which a window resize would have delivered on the desktop
+        OsQueuePut(OS_INPUT_SIZE, g_theGxDevicePtr->m_format.size.x, g_theGxDevicePtr->m_format.size.y, 0, 0);
     }
 #endif
 
