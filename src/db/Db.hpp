@@ -20,6 +20,7 @@
 #include "db/rec/FactionTemplateRec.hpp"
 #include "db/rec/ItemDisplayInfoRec.hpp"
 #include "db/rec/ItemVisualsRec.hpp"
+#include "db/rec/LoadingScreensRec.hpp"
 #include "db/rec/MapRec.hpp"
 #include "db/rec/PaperDollItemFrameRec.hpp"
 #include "db/rec/SoundEntriesRec.hpp"
@@ -44,6 +45,7 @@ extern WowClientDB<FactionGroupRec> g_factionGroupDB;
 extern WowClientDB<FactionTemplateRec> g_factionTemplateDB;
 extern WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
 extern WowClientDB<ItemVisualsRec> g_itemVisualsDB;
+extern WowClientDB<LoadingScreensRec> g_loadingScreensDB;
 extern WowClientDB<MapRec> g_mapDB;
 extern WowClientDB<PaperDollItemFrameRec> g_paperDollItemFrameDB;
 extern WowClientDB<SoundEntriesRec> g_soundEntriesDB;

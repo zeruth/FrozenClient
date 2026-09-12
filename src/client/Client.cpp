@@ -11,6 +11,7 @@
 #include "db/Db.hpp"
 #include "glue/CGlueMgr.hpp"
 #include "glue/GlueScriptEvents.hpp"
+#include "gx/LoadingScreen.hpp"
 #include "gx/Screen.hpp"
 #include "gx/Texture.hpp"
 #include "model/Model2.hpp"
@@ -612,7 +613,7 @@ void WowClientInit() {
     ClientRegisterConsoleCommands();
     ClientDBInitialize();
 
-    // LoadingScreenInitialize();
+    LoadingScreenInitialize();
 
     FrameScript_Initialize(0);
     SI2::Init(0);

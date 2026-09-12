@@ -214,8 +214,10 @@ void CGlueMgr::EnterWorld() {
     ClientServices::SetCharacterInfo(&CGlueMgr::m_characterInfo->m_info);
 
     // TODO game tip
-    // TODO loading screen
-    // TODO save all cvars
+
+    LoadingScreenStart(character->m_info.mapID, 1);
+
+    CVar::Save();
 
     if (ClientServices::LoginConnection()->GetLoginServerType() == 0) {
         ClientServices::LoginConnection()->Logoff();
