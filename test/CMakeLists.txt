@@ -2,6 +2,7 @@ if(WHOA_SYSTEM_MAC)
     file(GLOB PRIVATE_SOURCES
         "Test.cpp"
         "stub/Mac.mm"
+        "console/*.cpp"
         "gx/*.cpp"
         "gx/font/*.cpp"
         "util/*.cpp"
@@ -29,6 +30,7 @@ endif()
 if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
     file(GLOB PRIVATE_SOURCES
         "Test.cpp"
+        "console/*.cpp"
         "gx/*.cpp"
         "gx/font/*.cpp"
         "util/*.cpp"
@@ -42,6 +44,7 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
             event
             gx
             util
+            stormlib-9.31
     )
 endif()
 

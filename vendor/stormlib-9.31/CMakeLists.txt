@@ -1,0 +1,302 @@
+# StormLib 9.31 (MIT), used as the MPQ reading backend for SFile.
+#
+# The sources live in squall's vendor directory (lib/squall/vendor/stormlib-9.31),
+# which is vendored there but not built by squall itself. This target compiles
+# them in place. Only the archive read path is exercised by Whoa; the write/
+# create path is compiled for use in tests.
+#
+# Whoa's own zlib (vendor/zlib-1.2.2) is used in place of StormLib's bundled
+# copy to avoid duplicate symbols in the final link.
+
+set(STORMLIB_SRC_DIR "${CMAKE_SOURCE_DIR}/lib/squall/vendor/stormlib-9.31/src")
+
+set(STORMLIB_SRC_FILES
+    ${STORMLIB_SRC_DIR}/adpcm/adpcm.cpp
+    ${STORMLIB_SRC_DIR}/huffman/huff.cpp
+    ${STORMLIB_SRC_DIR}/jenkins/lookup3.c
+    ${STORMLIB_SRC_DIR}/lzma/C/LzFind.c
+    ${STORMLIB_SRC_DIR}/lzma/C/LzmaDec.c
+    ${STORMLIB_SRC_DIR}/lzma/C/LzmaEnc.c
+    ${STORMLIB_SRC_DIR}/pklib/explode.c
+    ${STORMLIB_SRC_DIR}/pklib/implode.c
+    ${STORMLIB_SRC_DIR}/sparse/sparse.cpp
+    ${STORMLIB_SRC_DIR}/FileStream.cpp
+    ${STORMLIB_SRC_DIR}/SBaseCommon.cpp
+    ${STORMLIB_SRC_DIR}/SBaseDumpData.cpp
+    ${STORMLIB_SRC_DIR}/SBaseFileTable.cpp
+    ${STORMLIB_SRC_DIR}/SBaseSubTypes.cpp
+    ${STORMLIB_SRC_DIR}/SCompression.cpp
+    ${STORMLIB_SRC_DIR}/SFileAddFile.cpp
+    ${STORMLIB_SRC_DIR}/SFileAttributes.cpp
+    ${STORMLIB_SRC_DIR}/SFileCompactArchive.cpp
+    ${STORMLIB_SRC_DIR}/SFileCreateArchive.cpp
+    ${STORMLIB_SRC_DIR}/SFileExtractFile.cpp
+    ${STORMLIB_SRC_DIR}/SFileFindFile.cpp
+    ${STORMLIB_SRC_DIR}/SFileGetFileInfo.cpp
+    ${STORMLIB_SRC_DIR}/SFileListFile.cpp
+    ${STORMLIB_SRC_DIR}/SFileOpenArchive.cpp
+    ${STORMLIB_SRC_DIR}/SFileOpenFileEx.cpp
+    ${STORMLIB_SRC_DIR}/SFilePatchArchives.cpp
+    ${STORMLIB_SRC_DIR}/SFileReadFile.cpp
+    ${STORMLIB_SRC_DIR}/SFileVerify.cpp
+    ${STORMLIB_SRC_DIR}/SMemUtf8.cpp
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_verify_simple.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_libc.c
+)
+
+set(STORMLIB_TOMCRYPT_FILES
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/hashes/hash_memory.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/hashes/md5.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/hashes/sha1.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/hashes/sha256.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/math/ltm_desc.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/math/multi.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/math/rand_prime.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/base64_decode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_argchk.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_find_hash.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_find_prng.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_hash_descriptor.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_hash_is_valid.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_ltc_mp_descriptor.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_prng_descriptor.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_prng_is_valid.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_register_hash.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/crypt_register_prng.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/misc/zeromem.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_bit_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_boolean.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_choice.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_ia5_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_object_identifier.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_octet_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_printable_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_sequence_ex.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_sequence_flexi.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_sequence_multi.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_short_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_utctime.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_decode_utf8_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_bit_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_boolean.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_ia5_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_object_identifier.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_octet_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_printable_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_sequence_ex.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_sequence_multi.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_set.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_setof.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_short_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_utctime.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_encode_utf8_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_bit_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_boolean.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_ia5_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_object_identifier.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_octet_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_printable_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_sequence.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_utctime.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_sequence_free.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_utf8_string.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/asn1/der_length_short_integer.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_map.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_mul2add.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_mulmod.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_points.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_projective_add_point.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/ecc/ltc_ecc_projective_dbl_point.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_mgf1.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_oaep_decode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_pss_decode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_pss_encode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_v1_5_decode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/pkcs1/pkcs_1_v1_5_encode.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_exptmod.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_free.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_import.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_make_key.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_sign_hash.c
+    ${STORMLIB_SRC_DIR}/libtomcrypt/src/pk/rsa/rsa_verify_hash.c
+)
+
+set(STORMLIB_TOMMATH_FILES
+    ${STORMLIB_SRC_DIR}/libtommath/bncore.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_fast_mp_invmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_fast_mp_montgomery_reduce.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_fast_s_mp_mul_digs.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_fast_s_mp_mul_high_digs.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_fast_s_mp_sqr.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_2expt.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_abs.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_add.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_addmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_add_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_and.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_clamp.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_clear.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_clear_multi.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_cmp.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_cmp_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_cmp_mag.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_cnt_lsb.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_copy.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_count_bits.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_div.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_div_2.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_div_2d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_div_3.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_div_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_dr_is_modulus.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_dr_reduce.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_dr_setup.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_exch.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_exptmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_exptmod_fast.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_expt_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_exteuclid.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_fread.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_fwrite.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_gcd.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_get_int.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_grow.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init_copy.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init_multi.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init_set.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init_set_int.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_init_size.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_invmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_invmod_slow.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_is_square.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_jacobi.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_karatsuba_mul.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_karatsuba_sqr.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_lcm.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_lshd.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mod_2d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mod_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_montgomery_calc_normalization.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_montgomery_reduce.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_montgomery_setup.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mul.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mulmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mul_2.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mul_2d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_mul_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_neg.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_n_root.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_or.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_fermat.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_is_divisible.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_is_prime.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_miller_rabin.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_next_prime.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_rabin_miller_trials.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_prime_random_ex.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_radix_size.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_radix_smap.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_rand.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_read_radix.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_read_signed_bin.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_read_unsigned_bin.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_2k.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_2k_l.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_2k_setup.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_2k_setup_l.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_is_2k.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_is_2k_l.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_reduce_setup.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_rshd.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_set.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_set_int.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_shrink.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_signed_bin_size.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_sqr.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_sqrmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_sqrt.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_sub.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_submod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_sub_d.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_toom_mul.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_toom_sqr.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_toradix.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_toradix_n.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_to_signed_bin.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_to_signed_bin_n.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_to_unsigned_bin.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_to_unsigned_bin_n.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_unsigned_bin_size.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_xor.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_mp_zero.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_prime_tab.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_reverse.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_add.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_exptmod.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_mul_digs.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_mul_high_digs.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_sqr.c
+    ${STORMLIB_SRC_DIR}/libtommath/bn_s_mp_sub.c
+)
+
+set(STORMLIB_BZIP2_FILES
+    ${STORMLIB_SRC_DIR}/bzip2/blocksort.c
+    ${STORMLIB_SRC_DIR}/bzip2/bzlib.c
+    ${STORMLIB_SRC_DIR}/bzip2/compress.c
+    ${STORMLIB_SRC_DIR}/bzip2/crctable.c
+    ${STORMLIB_SRC_DIR}/bzip2/decompress.c
+    ${STORMLIB_SRC_DIR}/bzip2/huffman.c
+    ${STORMLIB_SRC_DIR}/bzip2/randtable.c
+)
+
+add_library(stormlib-9.31 STATIC
+    ${STORMLIB_SRC_FILES}
+    ${STORMLIB_TOMCRYPT_FILES}
+    ${STORMLIB_TOMMATH_FILES}
+    ${STORMLIB_BZIP2_FILES}
+)
+
+target_include_directories(stormlib-9.31
+    PUBLIC
+        ${STORMLIB_SRC_DIR}
+)
+
+# StormLib carries its own SErrGetLastError / SErrSetLastError, which collide with Storm's on
+# platforms whose ABI does not mangle return types. They are renamed here; consumers including
+# StormLib.h must apply the same two defines first (see util/SFile.cpp).
+target_compile_definitions(stormlib-9.31
+    PRIVATE
+        _7ZIP_ST
+        BZ_STRICT_ANSI
+        __SYS_ZLIB
+        SErrGetLastError=StormLib_SErrGetLastError
+        SErrSetLastError=StormLib_SErrSetLastError
+    INTERFACE
+        __STORMLIB_NO_STATIC_LINK__
+)
+
+target_link_libraries(stormlib-9.31
+    PRIVATE
+        zlib-1.2
+)
+
+if(MSVC)
+    target_compile_definitions(stormlib-9.31
+        PRIVATE
+            _CRT_SECURE_NO_WARNINGS
+    )
+    # Vendored third-party code; keep its warnings out of Whoa's build output
+    target_compile_options(stormlib-9.31 PRIVATE /w)
+else()
+    target_compile_options(stormlib-9.31 PRIVATE -w)
+endif()
+
+if(WHOA_SYSTEM_LINUX OR WHOA_SYSTEM_MAC)
+    set_target_properties(stormlib-9.31 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()

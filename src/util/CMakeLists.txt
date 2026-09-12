@@ -31,6 +31,7 @@ target_link_libraries(util
         storm
         tempest
     PRIVATE
+        stormlib-9.31
         zlib-1.2
 )
 
