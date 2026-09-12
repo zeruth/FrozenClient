@@ -31,9 +31,9 @@ std::vector<unsigned char> MakePalettizedBlp(char alphaSize, const unsigned char
     };
 
     for (int i = 0; i < 4; i++) {
-        header.extended.palette[i].b = static_cast<char>(colors[i][0]);
-        header.extended.palette[i].g = static_cast<char>(colors[i][1]);
-        header.extended.palette[i].r = static_cast<char>(colors[i][2]);
+        header.extended.palette[i].b = colors[i][0];
+        header.extended.palette[i].g = colors[i][1];
+        header.extended.palette[i].r = colors[i][2];
         header.extended.palette[i].pad = 0;
     }
 

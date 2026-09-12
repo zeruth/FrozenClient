@@ -763,9 +763,9 @@ void CCharacterComponent::PasteTransparent4Bit(void* srcTexture, const BlpPalPix
                 uint8_t invAlpha = 0xFF - alpha;
 
                 // Blend src color with dst
-                dst->b = (src.b * alpha + dst->b * invAlpha) / 0xFF;
-                dst->g = (src.g * alpha + dst->g * invAlpha) / 0xFF;
-                dst->r = (src.r * alpha + dst->r * invAlpha) / 0xFF;
+                dst->b = (src.b * alpha + dst->b * invAlpha) >> 8;
+                dst->g = (src.g * alpha + dst->g * invAlpha) >> 8;
+                dst->r = (src.r * alpha + dst->r * invAlpha) >> 8;
                 dst->a = 0xFF;
 
                 dst++;
@@ -833,9 +833,9 @@ void CCharacterComponent::PasteTransparent8Bit(void* srcTexture, const BlpPalPix
                 uint8_t invAlpha = 0xFF - alpha;
 
                 // Blend src color with dst
-                dst->b = (src.b * alpha + dst->b * invAlpha) / 0xFF;
-                dst->g = (src.g * alpha + dst->g * invAlpha) / 0xFF;
-                dst->r = (src.r * alpha + dst->r * invAlpha) / 0xFF;
+                dst->b = (src.b * alpha + dst->b * invAlpha) >> 8;
+                dst->g = (src.g * alpha + dst->g * invAlpha) >> 8;
+                dst->r = (src.r * alpha + dst->r * invAlpha) >> 8;
                 dst->a = 0xFF;
 
                 dst++;
