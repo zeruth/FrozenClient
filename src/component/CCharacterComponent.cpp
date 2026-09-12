@@ -720,7 +720,78 @@ void CCharacterComponent::PasteTransparent1Bit(void* srcTexture, const BlpPalPix
 }
 
 void CCharacterComponent::PasteTransparent4Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs) {
-    WHOA_UNIMPLEMENTED();
+    // Prepare first mip level
+
+    C2iVector curSrcSize = srcSize;
+
+    C2iVector curSrcPos = srcPos;
+    C2iVector curDstPos = dstPos;
+
+    uint32_t curSrcWidth = srcInfo.width >> srcMipLevel;
+    uint32_t curDstWidth = dstWidth;
+
+    uint32_t curSrcHeight = srcInfo.height >> srcMipLevel;
+
+    // Paste texture for each mip level
+
+    for (int32_t curMipLevel = srcMipLevel; curMipLevel < srcInfo.mipCount; curMipLevel++) {
+        auto srcMip = TextureCacheGetMip(srcTexture, curMipLevel);
+        auto srcRow = &srcMip[(curSrcPos.y * curSrcWidth) + curSrcPos.x];
+
+        // Two texels of alpha per byte, the first texel in the low nibble
+        uint32_t srcTexelIndex = (curSrcPos.y * curSrcWidth) + curSrcPos.x;
+        auto srcAlphaPlane = &srcMip[curSrcWidth * curSrcHeight];
+
+        auto dstMip = reinterpret_cast<uint8_t*>(dstMips->mip[curMipLevel + dstMipLevelOfs]);
+        auto dstRow = &dstMip[(curDstPos.y * curDstWidth) + (curDstPos.x * 4)];
+
+        // Calculate the end of the source region
+        auto srcEnd = srcRow + curSrcWidth * curSrcSize.y;
+
+        // Copy each row
+        while (srcRow < srcEnd) {
+            auto dst = reinterpret_cast<C4Pixel*>(dstRow);
+
+            for (uint32_t x = 0; x < curSrcSize.x; x++) {
+                // Get palette entry
+                auto& src = srcPal[srcRow[x]];
+
+                // Get alpha
+                uint32_t texelIndex = srcTexelIndex + x;
+                uint8_t packedAlpha = srcAlphaPlane[texelIndex / 2];
+                uint8_t alpha = ((texelIndex & 1) ? (packedAlpha >> 4) : (packedAlpha & 0xF)) * 0x11;
+                uint8_t invAlpha = 0xFF - alpha;
+
+                // Blend src color with dst
+                dst->b = (src.b * alpha + dst->b * invAlpha) / 0xFF;
+                dst->g = (src.g * alpha + dst->g * invAlpha) / 0xFF;
+                dst->r = (src.r * alpha + dst->r * invAlpha) / 0xFF;
+                dst->a = 0xFF;
+
+                dst++;
+            }
+
+            // Move to next row
+            srcRow += curSrcWidth;
+            srcTexelIndex += curSrcWidth;
+            dstRow += curDstWidth;
+        }
+
+        // Prepare next mip level
+
+        curSrcSize.x = std::max(1, curSrcSize.x / 2);
+        curSrcSize.y = std::max(1, curSrcSize.y / 2);
+
+        curSrcPos.x /= 2;
+        curSrcPos.y /= 2;
+        curDstPos.x /= 2;
+        curDstPos.y /= 2;
+
+        curDstWidth /= 2;
+        curSrcWidth /= 2;
+
+        curSrcHeight /= 2;
+    }
 }
 
 void CCharacterComponent::PasteTransparent8Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs) {

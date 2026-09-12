@@ -28,9 +28,65 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
     size_t mipSize = this->m_header.mipSizes[mipLevel];
 
     switch (this->m_header.colorEncoding) {
-        case COLOR_PAL:
-            // TODO
-            return 0;
+        case COLOR_PAL: {
+            // Palettized images are expanded to ARGB8888: one palette index per texel followed
+            // by an alpha plane of 0, 1, 4, or 8 bits per texel.
+            if (format != PIXEL_ARGB8888) {
+                // TODO conversion to 16 bit formats
+                return 0;
+            }
+
+            uint32_t width = this->m_header.width >> mipLevel;
+            uint32_t height = this->m_header.height >> mipLevel;
+
+            if (width < 1) {
+                width = 1;
+            }
+
+            if (height < 1) {
+                height = 1;
+            }
+
+            uint32_t texelCount = width * height;
+            const unsigned char* indices = mipData;
+            const unsigned char* alpha = mipData + texelCount;
+            const BlpPalPixel* palette = this->m_header.extended.palette;
+
+            if (mipSize < texelCount) {
+                return 0;
+            }
+
+            for (uint32_t i = 0; i < texelCount; i++) {
+                const BlpPalPixel& color = palette[indices[i]];
+
+                unsigned char a;
+
+                switch (this->m_header.alphaSize) {
+                    case 1:
+                        a = (alpha[i >> 3] >> (i & 7)) & 1 ? 0xFF : 0x00;
+                        break;
+
+                    case 4:
+                        a = ((alpha[i >> 1] >> ((i & 1) * 4)) & 0xF) * 0x11;
+                        break;
+
+                    case 8:
+                        a = alpha[i];
+                        break;
+
+                    default:
+                        a = 0xFF;
+                        break;
+                }
+
+                data[i * 4 + 0] = color.b;
+                data[i * 4 + 1] = color.g;
+                data[i * 4 + 2] = color.r;
+                data[i * 4 + 3] = a;
+            }
+
+            return 1;
+        }
 
         case COLOR_DXT:
             switch (format) {

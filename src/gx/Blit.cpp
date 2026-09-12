@@ -67,20 +67,76 @@ void Blit_Argb8888_Argb8888(const C2iVector& size, const void* in, uint32_t inSt
     Blit_uint32_uint32(size, in, inStride, out, outStride);
 }
 
+// Copies ARGB8888 texels, collapsing alpha to fully opaque or fully transparent
 void Blit_Argb8888_Argb8888_A1(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    auto inRow = static_cast<const uint8_t*>(in);
+    auto outRow = static_cast<uint8_t*>(out);
+
+    for (int32_t row = 0; row < size.y; row++) {
+        for (int32_t col = 0; col < size.x; col++) {
+            outRow[col * 4 + 0] = inRow[col * 4 + 0];
+            outRow[col * 4 + 1] = inRow[col * 4 + 1];
+            outRow[col * 4 + 2] = inRow[col * 4 + 2];
+            outRow[col * 4 + 3] = inRow[col * 4 + 3] >= 0x80 ? 0xFF : 0x00;
+        }
+
+        inRow += inStride;
+        outRow += outStride;
+    }
 }
 
 void Blit_Argb8888_Argb8888_A8(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    Blit_uint32_uint32(size, in, inStride, out, outStride);
 }
 
 void Blit_Argb8888_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    auto inRow = static_cast<const uint8_t*>(in);
+    auto outRow = static_cast<uint8_t*>(out);
+
+    for (int32_t row = 0; row < size.y; row++) {
+        for (int32_t col = 0; col < size.x; col++) {
+            // Each ARGB8888 pixel is 4 bytes: [B, G, R, A]
+            uint8_t b = inRow[col * 4 + 0];
+            uint8_t g = inRow[col * 4 + 1];
+            uint8_t r = inRow[col * 4 + 2];
+            uint8_t a = inRow[col * 4 + 3];
+
+            uint16_t px = ((a & 0xF0) << 8)     // Alpha: bits 15-12
+                        | ((r & 0xF0) << 4)     // Red: bits 11-8
+                        | (g & 0xF0)            // Green: bits 7-4
+                        | (b >> 4);             // Blue: bits 3-0
+
+            *(reinterpret_cast<uint16_t*>(&outRow[col * 2])) = px;
+        }
+
+        inRow += inStride;
+        outRow += outStride;
+    }
 }
 
 void Blit_Argb8888_Argb1555(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    auto inRow = static_cast<const uint8_t*>(in);
+    auto outRow = static_cast<uint8_t*>(out);
+
+    for (int32_t row = 0; row < size.y; row++) {
+        for (int32_t col = 0; col < size.x; col++) {
+            // Each ARGB8888 pixel is 4 bytes: [B, G, R, A]
+            uint8_t b = inRow[col * 4 + 0];
+            uint8_t g = inRow[col * 4 + 1];
+            uint8_t r = inRow[col * 4 + 2];
+            uint8_t a = inRow[col * 4 + 3];
+
+            uint16_t px = (a >= 0x80 ? 0x8000 : 0x0000)   // Alpha: bit 15
+                        | ((r & 0xF8) << 7)                 // Red: bits 14-10
+                        | ((g & 0xF8) << 2)                 // Green: bits 9-5
+                        | (b >> 3);                         // Blue: bits 4-0
+
+            *(reinterpret_cast<uint16_t*>(&outRow[col * 2])) = px;
+        }
+
+        inRow += inStride;
+        outRow += outStride;
+    }
 }
 
 void Blit_Argb8888_Rgb565(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
