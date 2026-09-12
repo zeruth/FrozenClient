@@ -38,11 +38,16 @@
 #include <common/MD5.hpp>
 #include <cstdio>
 
-int32_t CGlueMgr::m_acceptedContest = 1; // TODO
-int32_t CGlueMgr::m_acceptedEULA = 1; // TODO
-int32_t CGlueMgr::m_acceptedScanning = 1; // TODO
+int32_t CGlueMgr::m_acceptedContest;
+int32_t CGlueMgr::m_acceptedEULA;
+int32_t CGlueMgr::m_acceptedScanning;
 int32_t CGlueMgr::m_acceptedTerminationWithoutNotice;
-int32_t CGlueMgr::m_acceptedTOS = 1; // TODO
+int32_t CGlueMgr::m_acceptedTOS;
+int32_t CGlueMgr::m_showContestNotice;
+int32_t CGlueMgr::m_showEULANotice;
+int32_t CGlueMgr::m_showScanningNotice;
+int32_t CGlueMgr::m_showTerminationWithoutNoticeNotice;
+int32_t CGlueMgr::m_showTOSNotice;
 int32_t CGlueMgr::m_accountMsgAvailable;
 char CGlueMgr::m_accountName[1280];
 float CGlueMgr::m_aspect;
@@ -419,11 +424,56 @@ int32_t CGlueMgr::Idle(const void* a1, void* a2) {
     return 1;
 }
 
+// Marks an agreement as accepted and records it in its cvar. A value of -2 means the agreement
+// text changed since it was last accepted, in which case the record becomes -1 rather than 1.
+static void s_AcceptAgreement(int32_t& accepted, int32_t& showNotice, CVar* var) {
+    accepted = 1;
+    showNotice = 0;
+
+    if (var->GetInt() == -2) {
+        var->Set("-1", true, false, false, true);
+    } else {
+        var->Set("1", true, false, false, true);
+    }
+}
+
+// Reads an agreement's cvar: 1 means accepted, negative values mean the notice should be shown
+static void s_InitializeAgreement(int32_t& accepted, int32_t& showNotice, CVar* var) {
+    accepted = var->GetInt() == 1;
+
+    if (var->GetInt() < 0) {
+        showNotice = 1;
+    }
+}
+
+void CGlueMgr::AcceptContest() {
+    s_AcceptAgreement(CGlueMgr::m_acceptedContest, CGlueMgr::m_showContestNotice, Client::g_readContestVar);
+}
+
+void CGlueMgr::AcceptEULA() {
+    s_AcceptAgreement(CGlueMgr::m_acceptedEULA, CGlueMgr::m_showEULANotice, Client::g_readEULAVar);
+}
+
+void CGlueMgr::AcceptScanning() {
+    s_AcceptAgreement(CGlueMgr::m_acceptedScanning, CGlueMgr::m_showScanningNotice, Client::g_readScanningVar);
+}
+
+void CGlueMgr::AcceptTerminationWithoutNotice() {
+    s_AcceptAgreement(CGlueMgr::m_acceptedTerminationWithoutNotice, CGlueMgr::m_showTerminationWithoutNoticeNotice, Client::g_readTerminationWithoutNoticeVar);
+}
+
+void CGlueMgr::AcceptTOS() {
+    s_AcceptAgreement(CGlueMgr::m_acceptedTOS, CGlueMgr::m_showTOSNotice, Client::g_readTOSVar);
+}
+
 void CGlueMgr::Initialize() {
     CGlueMgr::m_initialized = 1;
 
-    // TODO
-    // - cvar stuff (tou, etc)
+    s_InitializeAgreement(CGlueMgr::m_acceptedTOS, CGlueMgr::m_showTOSNotice, Client::g_readTOSVar);
+    s_InitializeAgreement(CGlueMgr::m_acceptedEULA, CGlueMgr::m_showEULANotice, Client::g_readEULAVar);
+    s_InitializeAgreement(CGlueMgr::m_acceptedTerminationWithoutNotice, CGlueMgr::m_showTerminationWithoutNoticeNotice, Client::g_readTerminationWithoutNoticeVar);
+    s_InitializeAgreement(CGlueMgr::m_acceptedScanning, CGlueMgr::m_showScanningNotice, Client::g_readScanningVar);
+    s_InitializeAgreement(CGlueMgr::m_acceptedContest, CGlueMgr::m_showContestNotice, Client::g_readContestVar);
 
     CRect windowSize;
     g_theGxDevicePtr->CapsWindowSize(windowSize);

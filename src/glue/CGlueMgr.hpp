@@ -37,6 +37,11 @@ class CGlueMgr {
         static int32_t m_acceptedScanning;
         static int32_t m_acceptedTerminationWithoutNotice;
         static int32_t m_acceptedTOS;
+        static int32_t m_showContestNotice;
+        static int32_t m_showEULANotice;
+        static int32_t m_showScanningNotice;
+        static int32_t m_showTerminationWithoutNoticeNotice;
+        static int32_t m_showTOSNotice;
         static int32_t m_accountMsgAvailable;
         static char m_accountName[];
         static float m_aspect;
@@ -75,6 +80,11 @@ class CGlueMgr {
         static int32_t HandleBattlenetDisconnect();
         static int32_t HandleDisplaySizeChanged(const CSizeEvent& event);
         static int32_t Idle(const void* a1, void* a2); // TODO a1: const EVENT_DATA_IDLE*
+        static void AcceptContest();
+        static void AcceptEULA();
+        static void AcceptScanning();
+        static void AcceptTerminationWithoutNotice();
+        static void AcceptTOS();
         static void Initialize();
         static void InitializeFFX();
         static void LoginServerLogin(const char* accountName, const char* password);

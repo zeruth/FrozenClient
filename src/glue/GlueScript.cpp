@@ -170,37 +170,65 @@ int32_t Script_LaunchURL(lua_State* L) {
 }
 
 int32_t Script_ShowTOSNotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGlueMgr::m_showTOSNotice) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_TOSAccepted(lua_State* L) {
-    // TODO
-    lua_pushboolean(L, 1);
+    if (CGlueMgr::m_acceptedTOS) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
 
 int32_t Script_AcceptTOS(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CGlueMgr::AcceptTOS();
+
+    return 0;
 }
 
 int32_t Script_ShowEULANotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGlueMgr::m_showEULANotice) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_EULAAccepted(lua_State* L) {
-    // TODO
-    lua_pushboolean(L, 1);
+    if (CGlueMgr::m_acceptedEULA) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
 
 int32_t Script_AcceptEULA(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CGlueMgr::AcceptEULA();
+
+    return 0;
 }
 
 int32_t Script_ShowTerminationWithoutNoticeNotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGlueMgr::m_showTerminationWithoutNoticeNotice) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_TerminationWithoutNoticeAccepted(lua_State* L) {
@@ -214,11 +242,19 @@ int32_t Script_TerminationWithoutNoticeAccepted(lua_State* L) {
 }
 
 int32_t Script_AcceptTerminationWithoutNotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CGlueMgr::AcceptTerminationWithoutNotice();
+
+    return 0;
 }
 
 int32_t Script_ShowScanningNotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGlueMgr::m_showScanningNotice) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_ScanningAccepted(lua_State* L) {
@@ -232,11 +268,19 @@ int32_t Script_ScanningAccepted(lua_State* L) {
 }
 
 int32_t Script_AcceptScanning(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CGlueMgr::AcceptScanning();
+
+    return 0;
 }
 
 int32_t Script_ShowContestNotice(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGlueMgr::m_showContestNotice) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_ContestAccepted(lua_State* L) {
@@ -250,7 +294,9 @@ int32_t Script_ContestAccepted(lua_State* L) {
 }
 
 int32_t Script_AcceptContest(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CGlueMgr::AcceptContest();
+
+    return 0;
 }
 
 int32_t Script_DefaultServerLogin(lua_State* L) {
