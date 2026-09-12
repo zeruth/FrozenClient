@@ -13,6 +13,7 @@
 #include "gx/Shader.hpp"
 #include "gx/font/GxuFont.hpp"
 #include "gx/font/TextBlock.hpp"
+#include "util/CStatus.hpp"
 #include "util/Filesystem.hpp"
 #include "gx/Texture.hpp"
 #include "gx/Transform.hpp"
@@ -162,6 +163,7 @@ static float WindowAspect() {
 // Picks the loading art for the current map (0x409ED0 in the original). Widescreen variants are
 // named with a "Wide" suffix before the extension and are used when the window is wider than 4:3.
 static bool LoadBackgroundTexture() {
+    CStatus status;
     s_widescreen = 0;
     s_backgroundTexture = nullptr;
 
@@ -185,8 +187,9 @@ static bool LoadBackgroundTexture() {
             }
 
             if (SFile::FileExists(widePath)) {
+
                 // TODO trial client restrictions on streamed files
-                s_backgroundTexture = TextureCreate(widePath, CGxTexFlags(), nullptr, 1);
+                s_backgroundTexture = TextureCreate(widePath, CGxTexFlags(), &status, 1);
 
                 if (s_backgroundTexture) {
                     s_widescreen = 1;
@@ -195,12 +198,12 @@ static bool LoadBackgroundTexture() {
         }
 
         if (!s_backgroundTexture && SFile::FileExists(screenRec->m_fileName)) {
-            s_backgroundTexture = TextureCreate(screenRec->m_fileName, CGxTexFlags(), nullptr, 1);
+            s_backgroundTexture = TextureCreate(screenRec->m_fileName, CGxTexFlags(), &status, 1);
         }
     }
 
     if (!s_backgroundTexture) {
-        s_backgroundTexture = TextureCreate("Interface\\Glues\\loading", CGxTexFlags(), nullptr, 1);
+        s_backgroundTexture = TextureCreate("Interface\\Glues\\loading", CGxTexFlags(), &status, 1);
     }
 
     return s_backgroundTexture != nullptr;
@@ -490,6 +493,7 @@ static void Paint(void* param, const RECTF* rect, const RECTF* visible, float el
 
 // Creates the layer and draws the first frame (0x40A990 in the original)
 static void Begin(int32_t isLogin) {
+    CStatus status;
     s_progress[0] = 0.0f;
     s_progress[1] = 0.0f;
     s_progress[2] = 0.0f;
@@ -503,7 +507,8 @@ static void Begin(int32_t isLogin) {
     if (!s_layer) {
         for (int32_t i = 0; i < LOADING_SCREEN_NUM_BAR_TEXTURES; ++i) {
             if (!s_barTextures[i]) {
-                s_barTextures[i] = TextureCreate(s_barElements[i].texturePath, CGxTexFlags(), nullptr, 0);
+
+                s_barTextures[i] = TextureCreate(s_barElements[i].texturePath, CGxTexFlags(), &status, 0);
             }
         }
 

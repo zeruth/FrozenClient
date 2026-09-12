@@ -787,6 +787,8 @@ WC_SEND_RESULT WowConnection::Send(CDataStore* msg, int32_t a3) {
     written = send(this->m_sock, reinterpret_cast<char*>(sn->data), sn->size, 0x0);
 #elif defined(WHOA_SYSTEM_MAC)
     written = write(this->m_sock, sn->data, sn->size);
+#elif defined(WHOA_SYSTEM_LINUX)
+    written = send(this->m_sock, sn->data, sn->size, MSG_NOSIGNAL);
 #endif
 
     if (written == sn->size) {
@@ -933,6 +935,9 @@ void WowConnection::StartConnect() {
 
     uint32_t opt = 1;
     setsockopt(this->m_sock, SOL_SOCKET, 4130, &opt, sizeof(opt));
+#elif defined(WHOA_SYSTEM_LINUX)
+    // The worker reads until EAGAIN with the connection lock held, so the socket must not block
+    fcntl(this->m_sock, F_SETFL, fcntl(this->m_sock, F_GETFL, 0) | O_NONBLOCK);
 #endif
 
     sockaddr_in addr;
@@ -958,7 +963,7 @@ void WowConnection::StartConnect() {
 
         return;
     }
-#elif defined(WHOA_SYSTEM_MAC)
+#elif defined(WHOA_SYSTEM_MAC) || defined(WHOA_SYSTEM_LINUX)
     if (errno == EAGAIN || errno == EINTR || errno == EINPROGRESS) {
         this->m_lock.Leave();
 

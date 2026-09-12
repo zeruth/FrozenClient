@@ -49,7 +49,9 @@ void GruntLogin::GetLogonMethod() {
     logon.version[2] = 5;
     logon.build = 12340;
 
-#if defined(WHOA_SYSTEM_WIN)
+#if defined(WHOA_SYSTEM_WIN) || defined(WHOA_SYSTEM_ANDROID)
+    // Android presents as the Windows client: servers keep the platform in three characters
+    // and treat anything else as unknown
     logon.osID = '\0Win';
 #elif defined(WHOA_SYSTEM_MAC)
     logon.osID = '\0OSX';

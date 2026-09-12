@@ -5,6 +5,7 @@
 #include <android/log.h>
 #include <jni.h>
 #include <pthread.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <cstdio>
@@ -132,6 +133,9 @@ static void FmodJavaCall(android_app* app, const char* method) {
 // runs the same client main as the other platforms.
 void android_main(android_app* app) {
     RedirectOutputToLog();
+
+    // A send on a connection the server closed must fail with EPIPE instead of killing the app
+    signal(SIGPIPE, SIG_IGN);
 
     OsAndroidSetApp(app);
 
