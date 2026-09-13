@@ -1,3 +1,4 @@
+#include "util/Lua.hpp"
 #include "ui/game/UIBindingsScript.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
@@ -57,7 +58,8 @@ int32_t Script_ClearOverrideBindings(lua_State* L) {
 }
 
 int32_t Script_GetBindingKey(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO key bindings
+    return 0;
 }
 
 int32_t Script_GetBindingAction(lua_State* L) {
@@ -97,7 +99,9 @@ int32_t Script_SetModifiedClick(lua_State* L) {
 }
 
 int32_t Script_GetModifiedClick(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_IsModifiedClick(lua_State* L) {

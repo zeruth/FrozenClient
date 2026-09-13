@@ -1,3 +1,6 @@
+#include "object/client/ObjMgr.hpp"
+#include "glue/CharacterSelectionDisplay.hpp"
+#include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
@@ -270,7 +273,9 @@ int32_t Script_UnitIsPVPSanctuary(lua_State* L) {
 }
 
 int32_t Script_UnitIsPVPFreeForAll(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitFactionGroup(lua_State* L) {
@@ -352,7 +357,9 @@ int32_t Script_UnitIsFriend(lua_State* L) {
 }
 
 int32_t Script_UnitCanCooperate(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t Script_UnitCanAssist(lua_State* L) {
@@ -440,7 +447,35 @@ int32_t Script_UnitGUID(lua_State* L) {
 }
 
 int32_t Script_UnitName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitName(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    if (!unit) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 2;
+    }
+
+    // TODO the name cache; the player's own name comes from the selected character
+    const char* name = "Unknown";
+
+    if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        auto selected = CCharacterSelection::GetSelectedCharacter();
+
+        if (selected) {
+            name = selected->m_info.name;
+        }
+    }
+
+    lua_pushstring(L, name);
+    lua_pushnil(L);
+
+    return 2;
 }
 
 int32_t Script_UnitPVPName(lua_State* L) {
@@ -866,11 +901,13 @@ int32_t Script_UnitCharacterPoints(lua_State* L) {
 }
 
 int32_t Script_UnitBuff(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO auras
+    return 0;
 }
 
 int32_t Script_UnitDebuff(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO auras
+    return 0;
 }
 
 int32_t Script_UnitAura(lua_State* L) {
@@ -926,7 +963,8 @@ int32_t Script_UnitHasRelicSlot(lua_State* L) {
 }
 
 int32_t Script_SetPortraitTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO portraits
+    return 0;
 }
 
 int32_t Script_HasFullControl(lua_State* L) {
@@ -934,7 +972,9 @@ int32_t Script_HasFullControl(lua_State* L) {
 }
 
 int32_t Script_GetComboPoints(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_IsInGuild(lua_State* L) {
@@ -1064,11 +1104,16 @@ int32_t Script_GetPVPLifetimeStats(lua_State* L) {
 }
 
 int32_t Script_UnitPVPRank(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetPVPRankInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
 }
 
 int32_t Script_GetPVPRankProgress(lua_State* L) {
@@ -1156,7 +1201,11 @@ int32_t Script_GetPowerRegen(lua_State* L) {
 }
 
 int32_t Script_GetRuneCooldown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 1.0);
+
+    return 3;
 }
 
 int32_t Script_GetRuneCount(lua_State* L) {
@@ -1164,7 +1213,11 @@ int32_t Script_GetRuneCount(lua_State* L) {
 }
 
 int32_t Script_GetRuneType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // 1 blood, 2 unholy, 3 frost, 4 death; runes 1-2 blood, 3-4 unholy, 5-6 frost
+    int32_t rune = lua_isnumber(L, 1) ? static_cast<int32_t>(lua_tonumber(L, 1)) : 1;
+    lua_pushnumber(L, rune <= 2 ? 1 : rune <= 4 ? 2 : 3);
+
+    return 1;
 }
 
 int32_t Script_ReportPlayerIsPVPAFK(lua_State* L) {
@@ -1184,7 +1237,9 @@ int32_t Script_GetExpertisePercent(lua_State* L) {
 }
 
 int32_t Script_UnitInBattleground(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitInRange(lua_State* L) {
@@ -1294,7 +1349,9 @@ int32_t Script_GetVehicleUIIndicatorSeat(lua_State* L) {
 }
 
 int32_t Script_UnitThreatSituation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitDetailedThreatSituation(lua_State* L) {

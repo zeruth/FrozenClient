@@ -19,7 +19,11 @@ int32_t Script_GetActionCount(lua_State* L) {
 }
 
 int32_t Script_GetActionCooldown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 3;
 }
 
 int32_t Script_GetActionAutocast(lua_State* L) {

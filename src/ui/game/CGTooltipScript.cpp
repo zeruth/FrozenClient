@@ -59,7 +59,24 @@ int32_t CGTooltip_IsOwned(lua_State* L) {
 }
 
 int32_t CGTooltip_GetOwner(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGTooltip::GetObjectType();
+    auto tooltip = static_cast<CGTooltip*>(FrameScript_GetObjectThis(L, type));
+
+    auto owner = tooltip->m_owner;
+
+    if (!owner) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!owner->lua_registered) {
+        owner->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, owner->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CGTooltip_SetOwner(lua_State* L) {

@@ -1,3 +1,4 @@
+#include <storm/String.hpp>
 #include "ui/simple/CSimpleButtonScript.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/Util.hpp"
@@ -123,7 +124,31 @@ int32_t CSimpleButton_GetButtonState(lua_State* L) {
 }
 
 int32_t CSimpleButton_SetButtonState(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetButtonState(\"state\" [, lock])", button->GetDisplayName());
+    }
+
+    auto stateName = lua_tostring(L, 2);
+    CSimpleButtonState state;
+
+    if (!SStrCmpI(stateName, "NORMAL", STORM_MAX_STR)) {
+        state = BUTTONSTATE_NORMAL;
+    } else if (!SStrCmpI(stateName, "PUSHED", STORM_MAX_STR)) {
+        state = BUTTONSTATE_PUSHED;
+    } else if (!SStrCmpI(stateName, "DISABLED", STORM_MAX_STR)) {
+        state = BUTTONSTATE_DISABLED;
+    } else {
+        return luaL_error(L, "%s:SetButtonState(): Unknown button state %s", button->GetDisplayName(), stateName);
+    }
+
+    int32_t lock = lua_isnumber(L, 3) ? lua_tonumber(L, 3) != 0.0 : lua_toboolean(L, 3);
+
+    button->SetButtonState(state, lock);
+
+    return 0;
 }
 
 int32_t CSimpleButton_SetNormalFontObject(lua_State* L) {

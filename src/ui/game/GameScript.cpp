@@ -1,3 +1,4 @@
+#include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
 #include "event/Event.hpp"
 #include "gx/Device.hpp"
@@ -296,11 +297,15 @@ int32_t Script_GetCVarDefault(lua_State* L) {
 }
 
 int32_t Script_GetCVarMin(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetCVarMax(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetCVarAbsoluteMin(lua_State* L) {
@@ -791,7 +796,13 @@ int32_t Script_GetCursorPosition(lua_State* L) {
 }
 
 int32_t Script_GetNetStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // bandwidth in, bandwidth out, home latency, world latency
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 4;
 }
 
 int32_t Script_SitStandOrDescendStart(lua_State* L) {
@@ -859,15 +870,24 @@ int32_t Script_NotWhileDeadError(lua_State* L) {
 }
 
 int32_t Script_GetRestState(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // 1 rested, 2 normal
+    lua_pushnumber(L, 2.0);
+    lua_pushstring(L, "Normal");
+    lua_pushnumber(L, 1.0);
+
+    return 3;
 }
 
 int32_t Script_GetXPExhaustion(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetTimeToWellRested(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GMRequestPlayerInfo(lua_State* L) {
@@ -1005,7 +1025,25 @@ int32_t Script_GetRealmName(lua_State* L) {
 }
 
 int32_t Script_GetItemQualityColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Poor, common, uncommon, rare, epic, legendary, artifact, heirloom
+    static const uint32_t s_colors[] = { 0x9D9D9D, 0xFFFFFF, 0x1EFF00, 0x0070DD, 0xA335EE, 0xFF8000, 0xE6CC80, 0xE6CC80 };
+
+    int32_t quality = lua_isnumber(L, 1) ? static_cast<int32_t>(lua_tonumber(L, 1)) : 1;
+
+    if (quality < 0 || quality > 7) {
+        quality = 1;
+    }
+
+    uint32_t color = s_colors[quality];
+    char hex[16];
+    SStrPrintf(hex, sizeof(hex), "|cff%06x", color);
+
+    lua_pushnumber(L, ((color >> 16) & 0xFF) / 255.0);
+    lua_pushnumber(L, ((color >> 8) & 0xFF) / 255.0);
+    lua_pushnumber(L, (color & 0xFF) / 255.0);
+    lua_pushstring(L, hex);
+
+    return 4;
 }
 
 int32_t Script_GetItemInfo(lua_State* L) {
@@ -1165,11 +1203,17 @@ int32_t Script_IsAddOnLoadOnDemand(lua_State* L) {
 }
 
 int32_t Script_IsAddOnLoaded(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_LoadAddOn(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO addons; none can be loaded
+    lua_pushnil(L);
+    lua_pushstring(L, "MISSING");
+
+    return 2;
 }
 
 int32_t Script_PartialPlayTime(lua_State* L) {
@@ -1193,7 +1237,10 @@ int32_t Script_ResetInstances(lua_State* L) {
 }
 
 int32_t Script_IsInInstance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+    lua_pushstring(L, "none");
+
+    return 2;
 }
 
 int32_t Script_GetInstanceDifficulty(lua_State* L) {
@@ -1305,7 +1352,9 @@ int32_t Script_SetUIVisibility(lua_State* L) {
 }
 
 int32_t Script_IsReferAFriendLinked(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_CanGrantLevel(lua_State* L) {
@@ -1329,7 +1378,7 @@ int32_t Script_GetSummonFriendCooldown(lua_State* L) {
 }
 
 int32_t Script_GetTotemInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
 int32_t Script_GetTotemTimeLeft(lua_State* L) {
@@ -1385,7 +1434,9 @@ int32_t Script_GetThreatStatusColor(lua_State* L) {
 }
 
 int32_t Script_IsThreatWarningEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_ConsoleAddMessage(lua_State* L) {

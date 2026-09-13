@@ -1,3 +1,7 @@
+#include "world/CWorld.hpp"
+#include "model/CM2Scene.hpp"
+#include "gx/shader/CShaderEffect.hpp"
+#include "gx/Draw.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Shader.hpp"
@@ -88,7 +92,21 @@ void CGWorldFrame::OnFrameSizeChanged(const CRect& rect) {
 }
 
 void CGWorldFrame::OnWorldRender() {
-    // TODO
+    // TODO terrain, map objects, sky, and lighting; for now the scene is cleared and the models
+    // in the world drawn
+
+    CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
+    GxSceneClear(0x3, clearColor);
+
+    CShaderEffect::UpdateProjMatrix();
+
+    auto scene = CWorld::GetM2Scene();
+
+    if (scene) {
+        scene->Animate(this->m_camera->Position());
+        scene->Draw(M2PASS_0);
+        scene->Draw(M2PASS_1);
+    }
 }
 
 void CGWorldFrame::OnWorldUpdate() {

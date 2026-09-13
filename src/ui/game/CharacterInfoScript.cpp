@@ -102,7 +102,9 @@ int32_t Script_SocketInventoryItem(lua_State* L) {
 }
 
 int32_t Script_IsInventoryItemLocked(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_PutItemInBag(lua_State* L) {
@@ -134,7 +136,9 @@ int32_t Script_GetGuildInfo(lua_State* L) {
 }
 
 int32_t Script_GetInventoryAlertStatus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_UpdateInventoryAlertStatus(lua_State* L) {
@@ -166,7 +170,8 @@ int32_t Script_ClearInspectPlayer(lua_State* L) {
 }
 
 int32_t Script_GetWeaponEnchantInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO temporary weapon enchants; none
+    return 0;
 }
 
 int32_t Script_HasWandEquipped(lua_State* L) {

@@ -17,15 +17,21 @@ int32_t Script_GetRealNumPartyMembers(lua_State* L) {
 }
 
 int32_t Script_GetPartyMember(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetPartyLeaderIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_IsPartyLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_IsRealPartyLeader(lua_State* L) {
@@ -37,7 +43,12 @@ int32_t Script_LeaveParty(lua_State* L) {
 }
 
 int32_t Script_GetLootMethod(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO group loot state; a lone player is on group loot
+    lua_pushstring(L, "group");
+    lua_pushnil(L);
+    lua_pushnil(L);
+
+    return 3;
 }
 
 int32_t Script_SetLootMethod(lua_State* L) {

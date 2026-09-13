@@ -1,3 +1,4 @@
+#include "util/Lua.hpp"
 #include "ui/game/BattlefieldInfoScript.hpp"
 #include "ui/game/CGBattlefieldInfo.hpp"
 #include "ui/FrameScript.hpp"
@@ -22,7 +23,9 @@ int32_t Script_IsBattlefieldArena(lua_State* L) {
 }
 
 int32_t Script_IsActiveBattlefieldArena(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_JoinBattlefield(lua_State* L) {
@@ -42,7 +45,9 @@ int32_t Script_AcceptBattlefieldPort(lua_State* L) {
 }
 
 int32_t Script_GetBattlefieldStatus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushstring(L, "none");
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldPortExpiration(lua_State* L) {
@@ -164,7 +169,9 @@ int32_t Script_CanHearthAndResurrectFromArea(lua_State* L) {
 }
 
 int32_t Script_GetNumBattlegroundTypes(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetBattlegroundInfo(lua_State* L) {
@@ -176,7 +183,9 @@ int32_t Script_RequestBattlegroundInstanceInfo(lua_State* L) {
 }
 
 int32_t Script_GetNumArenaOpponents(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_BattlefieldMgrEntryInviteResponse(lua_State* L) {

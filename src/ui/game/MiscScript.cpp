@@ -104,6 +104,19 @@ int32_t Script_ReturnNil(lua_State* L) {
     return 1;
 }
 
+int32_t Script_ReturnEmptyString(lua_State* L) {
+    lua_pushstring(L, "");
+
+    return 1;
+}
+
+int32_t Script_ReturnTwoZeros(lua_State* L) {
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
+}
+
 int32_t Script_GetRepairAllCost(lua_State* L) {
     lua_pushnumber(L, 0.0);
     lua_pushboolean(L, 0);
@@ -167,6 +180,27 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetNumMutes",                    &Script_ReturnZero },
     { "GetNumDisplayChannels",          &Script_ReturnZero },
     { "GetNumSavedInstances",           &Script_ReturnZero },
+    { "GetLFGInfoServer",               &Script_ReturnNothing },
+    { "HasCompletedAnyAchievement",     &Script_ReturnNil },
+    { "GetVoiceCurrentSessionID",       &Script_ReturnNil },
+    { "GetChannelDisplayInfo",          &Script_ReturnNothing },
+    { "SetMapToCurrentZone",            &Script_ReturnNothing },
+    { "SetAbandonQuest",                &Script_ReturnNothing },
+    { "RequestRaidInfo",                &Script_ReturnNothing },
+    { "IsPetAttackAction",              &Script_ReturnNil },
+    { "InitWorldMapPing",               &Script_ReturnNothing },
+    { "HasPetSpells",                   &Script_ReturnNil },
+    { "GetVoiceSessionInfo",            &Script_ReturnNothing },
+    { "GetPossessInfo",                 &Script_ReturnNothing },
+    { "GetNumSkillLines",               &Script_ReturnZero },
+    { "GetNumLanguages",                &Script_ReturnZero },
+    { "GetNumBankSlots",                &Script_ReturnZero },
+    { "GetLFGQueuedList",               &Script_ReturnNothing },
+    { "GetLFGDeserterExpiration",       &Script_ReturnNil },
+    { "GetGuildRosterMOTD",             &Script_ReturnEmptyString },
+    { "GetCurrentArenaSeason",          &Script_ReturnZero },
+    { "GetContainerNumFreeSlots",       &Script_ReturnTwoZeros },
+    { "CalendarGetNumPendingInvites",   &Script_ReturnZero },
 };
 
 } // namespace

@@ -10,11 +10,29 @@ int32_t CSimpleScrollFrame_SetScrollChild(lua_State* L) {
 }
 
 int32_t CSimpleScrollFrame_GetScrollChild(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleScrollFrame::GetObjectType();
+    auto scrollFrame = static_cast<CSimpleScrollFrame*>(FrameScript_GetObjectThis(L, type));
+
+    auto child = scrollFrame->m_scrollChild;
+
+    if (!child) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!child->lua_registered) {
+        child->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, child->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CSimpleScrollFrame_SetHorizontalScroll(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO horizontal scrolling; nothing in the shipped interface scrolls sideways
+    return 0;
 }
 
 int32_t CSimpleScrollFrame_SetVerticalScroll(lua_State* L) {

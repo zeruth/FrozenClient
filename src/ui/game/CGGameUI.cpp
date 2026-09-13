@@ -258,6 +258,27 @@ void CGGameUI::RegisterFrameFactories() {
 void CGGameUI::RegisterGameCVars() {
     // TODO
 
+    // Interface option cvars read by the options panels
+    CVar::Register("UnitNameOwn", "Show your own name", 0x10, "0", nullptr, GAME);
+    CVar::Register("assistAttack", "Attack on assist", 0x10, "0", nullptr, GAME);
+    CVar::Register("buffDurations", "Show buff durations", 0x10, "1", nullptr, GAME);
+    CVar::Register("cameraSmoothStyle", "Camera smoothing style", 0x10, "4", nullptr, GAME);
+    CVar::Register("cameraSmoothTrackingStyle", "Camera tracking style", 0x10, "3", nullptr, GAME);
+    CVar::Register("cameraYawSmoothSpeed", "Camera yaw smoothing speed", 0x10, "180", nullptr, GAME);
+    CVar::Register("deselectOnClick", "Deselect on click", 0x10, "1", nullptr, GAME);
+    CVar::Register("displayWorldPVPObjectives", "Display world PvP objectives", 0x10, "1", nullptr, GAME);
+    CVar::Register("equipmentManager", "Equipment manager", 0x10, "0", nullptr, GAME);
+    CVar::Register("lockActionBars", "Lock action bars", 0x10, "0", nullptr, GAME);
+    CVar::Register("mouseInvertPitch", "Invert mouse pitch", 0x10, "0", nullptr, GAME);
+    CVar::Register("profanityFilter", "Profanity filter", 0x10, "1", nullptr, GAME);
+    CVar::Register("questFadingDisable", "Disable quest text fading", 0x10, "0", nullptr, GAME);
+    CVar::Register("rotateMinimap", "Rotate the minimap", 0x10, "0", nullptr, GAME);
+    CVar::Register("showTutorials", "Show tutorials", 0x10, "1", nullptr, GAME);
+    CVar::Register("targetOfTargetMode", "Target of target mode", 0x10, "5", nullptr, GAME);
+    CVar::Register("threatWarning", "Threat warning mode", 0x10, "3", nullptr, GAME);
+    CVar::Register("useUiScale", "Use the UI scale", 0x10, "0", nullptr, GAME);
+    CVar::Register("uiScale", "UI scale", 0x10, "1", nullptr, GAME);
+
     CVar::Register("enableCombatText", "Whether to show floating combat text", 0x10, "1", nullptr, GAME);
     CVar::Register("combatTextFloatMode", "The combat text float mode", 0x10, "1", nullptr, GAME);
     CVar::Register("fctCombatState", nullptr, 0x10, "0", nullptr, GAME);

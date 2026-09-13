@@ -37,7 +37,9 @@ int32_t Script_IsRealRaidLeader(lua_State* L) {
 }
 
 int32_t Script_IsRaidOfficer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_SetRaidSubgroup(lua_State* L) {
@@ -85,7 +87,9 @@ int32_t Script_GetReadyCheckTimeLeft(lua_State* L) {
 }
 
 int32_t Script_GetReadyCheckStatus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 }
