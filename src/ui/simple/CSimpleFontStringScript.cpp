@@ -1,3 +1,4 @@
+#include "ui/CScriptObject.hpp"
 #include "ui/simple/CSimpleFontStringScript.hpp"
 #include "ui/Util.hpp"
 #include "ui/simple/CSimpleFont.hpp"
@@ -7,11 +8,29 @@
 #include <cstdint>
 
 int32_t CSimpleFontString_IsObjectType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:IsObjectType(\"type\")", string->GetDisplayName());
+    }
+
+    if (static_cast<CScriptObject*>(string)->IsA(lua_tostring(L, 2))) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFontString_GetObjectType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, string->GetObjectTypeName());
+
+    return 1;
 }
 
 int32_t CSimpleFontString_GetDrawLayer(lua_State* L) {
@@ -19,7 +38,22 @@ int32_t CSimpleFontString_GetDrawLayer(lua_State* L) {
 }
 
 int32_t CSimpleFontString_SetDrawLayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetDrawLayer(\"layer\")", string->GetDisplayName());
+    }
+
+    int32_t drawlayer = string->m_drawlayer;
+
+    if (!StringToDrawLayer(lua_tostring(L, 2), drawlayer)) {
+        return luaL_error(L, "%s:SetDrawLayer(): Unknown layer %s", string->GetDisplayName(), lua_tostring(L, 2));
+    }
+
+    string->SetFrame(string->m_parent, drawlayer, string->m_shown);
+
+    return 0;
 }
 
 int32_t CSimpleFontString_SetVertexColor(lua_State* L) {
@@ -47,7 +81,8 @@ int32_t CSimpleFontString_GetAlpha(lua_State* L) {
 }
 
 int32_t CSimpleFontString_SetAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Region alpha is not tracked separately yet
+    return 0;
 }
 
 int32_t CSimpleFontString_SetAlphaGradient(lua_State* L) {
@@ -308,7 +343,16 @@ int32_t CSimpleFontString_GetSpacing(lua_State* L) {
 }
 
 int32_t CSimpleFontString_SetSpacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetSpacing(spacing)", string->GetDisplayName());
+    }
+
+    string->SetSpacing(static_cast<float>(lua_tonumber(L, 2)));
+
+    return 0;
 }
 
 int32_t CSimpleFontString_SetTextHeight(lua_State* L) {

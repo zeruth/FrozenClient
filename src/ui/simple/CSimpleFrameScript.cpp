@@ -213,7 +213,22 @@ int32_t CSimpleFrame_GetFrameStrata(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetFrameStrata(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetFrameStrata(\"strata\")", frame->GetDisplayName());
+    }
+
+    FRAME_STRATA strata;
+
+    if (!StringToFrameStrata(lua_tostring(L, 2), strata)) {
+        return luaL_error(L, "%s:SetFrameStrata(): Unknown strata %s", frame->GetDisplayName(), lua_tostring(L, 2));
+    }
+
+    frame->SetFrameStrata(strata);
+
+    return 0;
 }
 
 int32_t CSimpleFrame_GetFrameLevel(lua_State* L) {
@@ -699,7 +714,22 @@ int32_t CSimpleFrame_GetHitRectInsets(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetHitRectInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3) || !lua_isnumber(L, 4) || !lua_isnumber(L, 5)) {
+        return luaL_error(L, "Usage: %s:SetHitRectInsets(left, right, top, bottom)", frame->GetDisplayName());
+    }
+
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+    float left = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale);
+    float right = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale);
+    float top = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 4)) / scale);
+    float bottom = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 5)) / scale);
+
+    frame->SetHitRectInsets(left, right, top, bottom);
+
+    return 0;
 }
 
 int32_t CSimpleFrame_GetClampRectInsets(lua_State* L) {
@@ -707,7 +737,8 @@ int32_t CSimpleFrame_GetClampRectInsets(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetClampRectInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Clamping keeps a movable frame on screen; movement is not ported
+    return 0;
 }
 
 int32_t CSimpleFrame_GetMinResize(lua_State* L) {
@@ -767,7 +798,9 @@ int32_t CSimpleFrame_SetUserPlaced(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsUserPlaced(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetClampedToScreen(lua_State* L) {
@@ -806,7 +839,16 @@ int32_t CSimpleFrame_RegisterForDrag(lua_State* L) {
 }
 
 int32_t CSimpleFrame_EnableKeyboard(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_toboolean(L, 2)) {
+        frame->EnableEvent(SIMPLE_EVENT_KEY, -1);
+    } else {
+        frame->DisableEvent(SIMPLE_EVENT_KEY);
+    }
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsKeyboardEnabled(lua_State* L) {
@@ -837,7 +879,16 @@ int32_t CSimpleFrame_IsMouseEnabled(lua_State* L) {
 }
 
 int32_t CSimpleFrame_EnableMouseWheel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_toboolean(L, 2)) {
+        frame->EnableEvent(SIMPLE_EVENT_MOUSEWHEEL, -1);
+    } else {
+        frame->DisableEvent(SIMPLE_EVENT_MOUSEWHEEL);
+    }
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsMouseWheelEnabled(lua_State* L) {
@@ -909,7 +960,8 @@ int32_t CSimpleFrame_GetEffectiveDepth(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IgnoreDepth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Depth ignore only affects 3D-projected frames, which are not ported
+    return 0;
 }
 
 int32_t CSimpleFrame_IsIgnoringDepth(lua_State* L) {
