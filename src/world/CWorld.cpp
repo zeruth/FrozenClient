@@ -1,3 +1,4 @@
+#include "model/CM2Lighting.hpp"
 #include "world/CWorld.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
@@ -204,6 +205,16 @@ void CWorld::SetFarClip(float farClip) {
 
     // TODO dword_D1C410 = 1;
     // TODO dword_ADEEE0 = 1;
+}
+
+// TODO the day/night cycle's light; until then every world model gets a fixed sun
+void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
+    C3Vector ambient = { 0.45f, 0.45f, 0.5f };
+    C3Vector diffuse = { 0.9f, 0.85f, 0.75f };
+    C3Vector direction = { -0.4f, -0.3f, 0.86f };
+
+    lighting->AddAmbient(ambient);
+    lighting->AddDiffuse(diffuse, direction);
 }
 
 void CWorld::SetLoadProgressCallback(void (*callback)(float)) {

@@ -1,3 +1,5 @@
+#include <cmath>
+#include "object/client/CGObject_C.hpp"
 #include "ui/game/CGCamera.hpp"
 #include "common/Time.hpp"
 #include "console/CVar.hpp"
@@ -107,7 +109,27 @@ void CGCamera::CalcModelCamera(uint32_t timestamp) {
 }
 
 void CGCamera::CalcTargetCamera(CGObject_C* target, uint32_t timestamp) {
-    // TODO
+    // TODO smoothing, collision with the world, and the camera cvars; this places the camera
+    // behind and above the target at the view's distance and pitch, looking at its chest
+
+    auto targetPos = target->GetPosition();
+    C3Vector focus = { targetPos.x, targetPos.y, targetPos.z + 1.6f };
+
+    float yaw = target->GetFacing() + this->m_yaw;
+    float pitch = this->m_pitch * CMath::DEG2RAD;
+    float distance = std::max(this->m_distance, 0.5f);
+
+    // The camera sits opposite the facing direction, raised by the pitch
+    C3Vector back = { -cosf(yaw), -sinf(yaw), 0.0f };
+
+    this->m_position = {
+        focus.x + back.x * distance * cosf(pitch),
+        focus.y + back.y * distance * cosf(pitch),
+        focus.z + distance * sinf(pitch)
+    };
+
+    C3Vector forward = { focus.x - this->m_position.x, focus.y - this->m_position.y, focus.z - this->m_position.z };
+    this->SetFacing(forward);
 }
 
 void CGCamera::CheckUnderwater() {

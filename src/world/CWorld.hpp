@@ -7,6 +7,7 @@
 #include <cstdint>
 
 class CM2Model;
+class CM2Lighting;
 class CM2Scene;
 class Weather;
 
@@ -70,6 +71,7 @@ class CWorld {
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
         static void SetFarClip(float farClip);
         static void SetLoadProgressCallback(void (*callback)(float));
+        static void LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg);
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
         static void Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos);
 

@@ -56,7 +56,10 @@ int32_t Script_SetLootMethod(lua_State* L) {
 }
 
 int32_t Script_GetLootThreshold(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Uncommon
+    lua_pushnumber(L, 2.0);
+
+    return 1;
 }
 
 int32_t Script_SetLootThreshold(lua_State* L) {

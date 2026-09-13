@@ -105,19 +105,83 @@ int32_t CScriptRegion_GetCenter(lua_State* L) {
 }
 
 int32_t CScriptRegion_GetLeft(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsResizePending()) {
+        region->Resize(1);
+    }
+
+    CRect rect;
+
+    if (region->GetRect(&rect)) {
+        float ddc = CoordinateGetAspectCompensation() * 1024.0f * (rect.minX / region->m_layoutScale);
+        lua_pushnumber(L, DDCToNDCWidth(ddc));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CScriptRegion_GetRight(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsResizePending()) {
+        region->Resize(1);
+    }
+
+    CRect rect;
+
+    if (region->GetRect(&rect)) {
+        float ddc = CoordinateGetAspectCompensation() * 1024.0f * (rect.maxX / region->m_layoutScale);
+        lua_pushnumber(L, DDCToNDCWidth(ddc));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CScriptRegion_GetTop(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsResizePending()) {
+        region->Resize(1);
+    }
+
+    CRect rect;
+
+    if (region->GetRect(&rect)) {
+        float ddc = CoordinateGetAspectCompensation() * 1024.0f * (rect.maxY / region->m_layoutScale);
+        lua_pushnumber(L, DDCToNDCWidth(ddc));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CScriptRegion_GetBottom(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsResizePending()) {
+        region->Resize(1);
+    }
+
+    CRect rect;
+
+    if (region->GetRect(&rect)) {
+        float ddc = CoordinateGetAspectCompensation() * 1024.0f * (rect.minY / region->m_layoutScale);
+        lua_pushnumber(L, DDCToNDCWidth(ddc));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CScriptRegion_GetWidth(lua_State* L) {

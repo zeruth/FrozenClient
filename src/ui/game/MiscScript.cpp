@@ -110,11 +110,35 @@ int32_t Script_ReturnEmptyString(lua_State* L) {
     return 1;
 }
 
+int32_t Script_ReturnTwo(lua_State* L) {
+    lua_pushnumber(L, 2.0);
+
+    return 1;
+}
+
+int32_t Script_ReturnThreeZeros(lua_State* L) {
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 3;
+}
+
 int32_t Script_ReturnTwoZeros(lua_State* L) {
     lua_pushnumber(L, 0.0);
     lua_pushnumber(L, 0.0);
 
     return 2;
+}
+
+// TODO the spell book; one empty general tab
+int32_t Script_GetSpellTabInfo(lua_State* L) {
+    lua_pushstring(L, "General");
+    lua_pushstring(L, "Interface\\Icons\\INV_Misc_QuestionMark");
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 4;
 }
 
 int32_t Script_GetRepairAllCost(lua_State* L) {
@@ -160,7 +184,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetTrackingTexture",             &Script_ReturnNil },
     { "GetLFGProposal",                 &Script_ReturnNothing },
     { "CalendarGetDate",                &Script_CalendarGetDate },
-    { "GetSpellTabInfo",                &Script_ReturnNothing },
+    { "GetSpellTabInfo",                &Script_GetSpellTabInfo },
     { "GetPetActionInfo",               &Script_ReturnNothing },
     { "GetNumWorldStateUI",             &Script_ReturnZero },
     { "GetCompanionInfo",               &Script_ReturnNothing },
@@ -201,6 +225,12 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetCurrentArenaSeason",          &Script_ReturnZero },
     { "GetContainerNumFreeSlots",       &Script_ReturnTwoZeros },
     { "CalendarGetNumPendingInvites",   &Script_ReturnZero },
+    { "GetLFGRoleUpdate",               &Script_ReturnNothing },
+    { "GetQuestLogSelection",           &Script_ReturnZero },
+    { "GetPetActionCooldown",           &Script_ReturnThreeZeros },
+    { "GetMapInfo",                     &Script_ReturnNil },
+    { "GetAdjustedSkillPoints",         &Script_ReturnZero },
+    { "GetNumSpellTabs",                &Script_ReturnOne },
 };
 
 } // namespace

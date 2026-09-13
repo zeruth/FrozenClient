@@ -1276,7 +1276,15 @@ int32_t Script_ReportSuggestion(lua_State* L) {
 }
 
 int32_t Script_GetMirrorTimerInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // timer, value, maxvalue, scale, paused, label
+    lua_pushstring(L, "UNKNOWN");
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushstring(L, "");
+
+    return 6;
 }
 
 int32_t Script_GetMirrorTimerProgress(lua_State* L) {

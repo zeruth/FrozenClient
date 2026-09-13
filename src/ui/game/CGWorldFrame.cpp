@@ -1,3 +1,6 @@
+#include "model/CM2Model.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "model/CM2Scene.hpp"
 #include "gx/shader/CShaderEffect.hpp"
@@ -130,5 +133,15 @@ void CGWorldFrame::OnWorldUpdate() {
 
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
-    // TODO
+    // TODO the map entities carry this in the original; until CMap is ported every visible object
+    // places its model itself
+    auto objMgr = ClntObjMgrGetCurrent();
+
+    if (objMgr) {
+        for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
+            if (object->m_model) {
+                object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), 1.0f);
+            }
+        }
+    }
 }

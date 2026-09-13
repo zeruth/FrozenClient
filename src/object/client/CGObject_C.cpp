@@ -34,6 +34,7 @@ void CGObject_C::AddWorldObject() {
         const char* fileName;
         if (this->GetModelFileName(fileName)) {
             auto model = CWorld::GetM2Scene()->CreateModel(fileName, 0);
+            model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
             this->SetModel(model);
             model->Release();
         }
