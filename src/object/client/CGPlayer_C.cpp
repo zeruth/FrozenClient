@@ -1,3 +1,6 @@
+#include "model/CM2Model.hpp"
+#include "component/ComponentData.hpp"
+#include "component/CCharacterComponent.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "db/Db.hpp"
 #include "object/Types.hpp"
@@ -85,6 +88,40 @@ void CGPlayer_C::SetStorage(uint32_t* storage, uint32_t* saved) {
 
     this->m_player = reinterpret_cast<CGPlayerData*>(&storage[CGPlayer::GetBaseOffset()]);
     this->m_playerSaved = &saved[CGPlayer::GetBaseOffsetSaved()];
+}
+
+// Assembles the composited body texture (skin, face, hair, facial hair) for the player's model
+// from its appearance fields, the same component pipeline character creation uses. Equipment is
+// not applied yet. (0x???? in the original CGPlayer_C::Initialize)
+void CGPlayer_C::BuildCharacterComponent() {
+    if (!this->m_model || !this->m_player) {
+        return;
+    }
+
+    auto unit = this->Unit();
+
+    if (!unit) {
+        return;
+    }
+
+    ComponentData data;
+    data.raceID = unit->pad1 & 0xFF;
+    data.classID = (unit->pad1 >> 8) & 0xFF;
+    data.sexID = (unit->pad1 >> 16) & 0xFF;
+    data.skinColorID = this->m_player->skinID;
+    data.faceID = this->m_player->faceID;
+    data.hairStyleID = this->m_player->hairStyleID;
+    data.hairColorID = this->m_player->hairColorID;
+    data.facialHairStyleID = this->m_player->facialHairStyleID;
+
+    // The component borrows the model; keep our own reference balanced
+    this->m_model->AddRef();
+    data.model = this->m_model;
+    data.flags |= 0x2;
+
+    this->m_characterComponent = CCharacterComponent::AllocComponent();
+    this->m_characterComponent->Init(&data, nullptr);
+    this->m_characterComponent->RenderPrep(0);
 }
 
 void CGPlayer_C::UpdatePartyMemberState() {

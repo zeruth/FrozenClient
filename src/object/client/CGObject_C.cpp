@@ -1,3 +1,4 @@
+#include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGObject_C.hpp"
 #include "model/Model2.hpp"
 #include "object/client/ObjMgr.hpp"
@@ -36,6 +37,11 @@ void CGObject_C::AddWorldObject() {
             auto model = CWorld::GetM2Scene()->CreateModel(fileName, 0);
             model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
             this->SetModel(model);
+
+            // Players wear a composited character body; other units keep their creature skin
+            if (this->IsA(TYPE_PLAYER)) {
+                static_cast<CGPlayer_C*>(this)->BuildCharacterComponent();
+            }
 
             // Units and creatures idle in their stand animation (sequence 0); it is queued if the
             // model is still loading. Movement-driven animation is not ported yet.

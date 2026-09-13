@@ -7,6 +7,7 @@
 #include <cstdint>
 
 class CreatureModelDataRec;
+class CCharacterComponent;
 
 class CGPlayer_C : public CGUnit_C, public CGPlayer {
     public:
@@ -25,6 +26,9 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         void PostInitActivePlayer();
         void SetStorage(uint32_t* storage, uint32_t* saved);
         void UpdatePartyMemberState();
+        void BuildCharacterComponent();
+
+        CCharacterComponent* m_characterComponent = nullptr;
 };
 
 uint32_t Player_C_GetDisplayId(uint32_t race, uint32_t sex);
