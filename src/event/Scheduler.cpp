@@ -340,7 +340,7 @@ int32_t SchedulerThreadProcProcess(uint32_t a1) {
     if (context->m_schedFlags & 0x4) {
         nextDelay = 0;
     } else {
-        int32_t v15 = IEvtTimerGetNextTime(context, currTime);
+        uint32_t v15 = IEvtTimerGetNextTime(context, currTime);
         int32_t v16 = context->m_schedIdleTime;
 
         nextDelay = v15;
@@ -349,10 +349,15 @@ int32_t SchedulerThreadProcProcess(uint32_t a1) {
             nextDelay = context->m_schedIdleTime;
         }
 
-        nextDelay = std::min(
-            nextDelay,
-            std::max((uint32_t)0, v16 + context->m_schedLastIdle - currTime)
-        );
+        // Time left until the next idle, in signed arithmetic: a frame that ran past its idle
+        // interval must wake again right away rather than sleep for a wrapped delay
+        int32_t idleRemaining = static_cast<int32_t>(v16 + context->m_schedLastIdle - currTime);
+
+        if (idleRemaining < 0) {
+            idleRemaining = 0;
+        }
+
+        nextDelay = std::min(nextDelay, static_cast<uint32_t>(idleRemaining));
     }
 
     OsCallResetContext(context->m_callContext);

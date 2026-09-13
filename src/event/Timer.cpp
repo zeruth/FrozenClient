@@ -19,8 +19,10 @@ uint32_t IEvtTimerGetNextTime(EvtContext* context, uint32_t currTime) {
     if (context->m_timerQueue.Count()) {
         auto queue = static_cast<EvtTimer*>(context->m_timerQueue[0]);
         auto targetTime = queue->targetTime.m_val;
-        nextTime = targetTime - currTime;
-        nextTime = nextTime < 0 ? 0 : nextTime;
+
+        // An overdue timer is due now, not in four billion milliseconds
+        int32_t remaining = static_cast<int32_t>(targetTime - currTime);
+        nextTime = remaining < 0 ? 0 : remaining;
     }
 
     context->m_critsect.Leave();
