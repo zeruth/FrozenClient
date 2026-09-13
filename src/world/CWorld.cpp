@@ -1,5 +1,6 @@
 #include "model/CM2Lighting.hpp"
 #include "world/CWorld.hpp"
+#include "world/Terrain.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
 #include "model/Model2.hpp"
@@ -174,6 +175,7 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
     // TODO
 
     CMap::Load(mapName, mapID);
+    TerrainLoad(mapName, mapID);
 
     // TODO the terrain, map objects, and doodads around the position are loaded here, and the
     // original reports their progress through the callback as they come in

@@ -2,6 +2,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
+#include "world/Terrain.hpp"
 #include "model/CM2Scene.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include "gx/Draw.hpp"
@@ -148,6 +149,8 @@ void CGWorldFrame::OnWorldRender() {
 
     CShaderEffect::UpdateProjMatrix();
 
+    TerrainRender();
+
     auto scene = CWorld::GetM2Scene();
 
     if (scene) {
@@ -182,6 +185,8 @@ void CGWorldFrame::OnWorldUpdate() {
         : this->m_camera->Position();
 
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
+
+    TerrainUpdate(this->m_camera->Position());
 
     // TODO the map entities carry this in the original; until CMap is ported every visible object
     // places its model itself
