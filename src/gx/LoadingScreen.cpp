@@ -21,6 +21,7 @@
 #include "net/Types.hpp"
 #include "util/SFile.hpp"
 #include <cstring>
+#include <cstdio>
 #include <common/DataStore.hpp>
 #include <common/Handle.hpp>
 #include <common/Time.hpp>
@@ -130,12 +131,14 @@ static void UnregisterEvents() {
         return;
     }
 
+    // The flags select what an unregistration matches on (id, handler, param); with none set
+    // it would strip every handler the client has
     for (auto id : s_swallowedEvents) {
-        EventUnregisterEx(id, &SwallowEventHandler, nullptr, 0);
+        EventUnregister(id, &SwallowEventHandler);
     }
 
-    EventUnregisterEx(EVENT_ID_SIZE, &SizeEventHandler, nullptr, 0);
-    EventUnregisterEx(EVENT_ID_IDLE, &IdleEventHandler, nullptr, 0);
+    EventUnregister(EVENT_ID_SIZE, &SizeEventHandler);
+    EventUnregister(EVENT_ID_IDLE, &IdleEventHandler);
 
     s_eventsRegistered = 0;
 
@@ -281,7 +284,6 @@ static void DrawTexturedQuad(HTEXTURE texture, float left, float right, float bo
     GxPrimUnlockVertexPtrs();
 }
 
-
 // Renders the game tip into a font batch drawn above the loading bar (part of 0x40AB70)
 static void DestroyTip() {
     if (s_tipBatch) {
@@ -302,7 +304,6 @@ static void DestroyTip() {
 static void CreateTip() {
     char fontFile[STORM_MAX_PATH];
     OsBuildFontFilePath("FRIZQT__.TTF", fontFile, sizeof(fontFile));
-
 
     if (!*fontFile) {
         return;

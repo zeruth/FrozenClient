@@ -253,6 +253,8 @@ int32_t SchedulerThreadProcProcess(uint32_t a1) {
         if (v11 < 0) {
             v11 = 0;
         }
+    } else {
+        v11 = 0;
     }
 
     uint32_t v14;
