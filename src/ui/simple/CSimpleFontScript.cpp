@@ -1,6 +1,8 @@
 #include "ui/simple/CSimpleFontScript.hpp"
 #include "ui/simple/CSimpleFont.hpp"
 #include "util/Lua.hpp"
+#include "gx/font/TextBlock.hpp"
+#include <storm/String.hpp>
 #include "util/Unimplemented.hpp"
 #include <cstdint>
 
@@ -33,7 +35,30 @@ int32_t CSimpleFont_SetFont(lua_State* L) {
 }
 
 int32_t CSimpleFont_GetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+
+    auto& attributes = font->m_attributes;
+    auto fontFlags = attributes.m_fontFlags;
+    char flags[64] = "";
+
+    if (fontFlags & FONT_OUTLINE) {
+        SStrPack(flags, (fontFlags & FONT_THICKOUTLINE) ? "THICKOUTLINE" : "OUTLINE", sizeof(flags));
+    }
+
+    if (fontFlags & FONT_MONOCHROME) {
+        if (*flags) {
+            SStrPack(flags, ",", sizeof(flags));
+        }
+
+        SStrPack(flags, "MONOCHROME", sizeof(flags));
+    }
+
+    lua_pushstring(L, attributes.m_font.GetString());
+    lua_pushnumber(L, attributes.m_fontHeight);
+    lua_pushstring(L, flags);
+
+    return 3;
 }
 
 int32_t CSimpleFont_SetAlpha(lua_State* L) {

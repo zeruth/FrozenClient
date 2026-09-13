@@ -94,14 +94,14 @@ class CGUnit {
         C3Vector GetPosition() const;
         float GetRawFacing() const;
 
+        // The unit fields, for the script layer's unit queries
+        CGUnitData* Unit() const;
+
     protected:
         // Protected member variables
         CGUnitData* m_unit;
         uint32_t* m_unitSaved;
         CMovement_C* m_move;
-
-        // Protected member functions
-        CGUnitData* Unit() const;
 };
 
 #endif

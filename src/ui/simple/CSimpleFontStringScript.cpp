@@ -154,11 +154,72 @@ int32_t CSimpleFontString_SetFontObject(lua_State* L) {
 }
 
 int32_t CSimpleFontString_GetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto fontName = string->GetFontName();
+
+    if (!fontName) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    auto fontFlags = string->GetFontFlags();
+    char flags[64] = "";
+
+    if (fontFlags & FONT_OUTLINE) {
+        SStrPack(flags, (fontFlags & FONT_THICKOUTLINE) ? "THICKOUTLINE" : "OUTLINE", sizeof(flags));
+    }
+
+    if (fontFlags & FONT_MONOCHROME) {
+        if (*flags) {
+            SStrPack(flags, ",", sizeof(flags));
+        }
+
+        SStrPack(flags, "MONOCHROME", sizeof(flags));
+    }
+
+    lua_pushstring(L, fontName);
+    lua_pushnumber(L, string->GetFontHeight(false));
+    lua_pushstring(L, flags);
+
+    return 3;
 }
 
 int32_t CSimpleFontString_SetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:SetFont(\"font\", fontHeight [, flags])", string->GetDisplayName());
+    }
+
+    uint32_t fontFlags = 0;
+
+    if (lua_isstring(L, 4)) {
+        auto flagsStr = lua_tostring(L, 4);
+
+        if (SStrStr(flagsStr, "THICKOUTLINE")) {
+            fontFlags |= FONT_OUTLINE | FONT_THICKOUTLINE;
+        } else if (SStrStr(flagsStr, "OUTLINE")) {
+            fontFlags |= FONT_OUTLINE;
+        }
+
+        if (SStrStr(flagsStr, "MONOCHROME")) {
+            fontFlags |= FONT_MONOCHROME;
+        }
+    }
+
+    if (!string->SetFont(lua_tostring(L, 2), static_cast<float>(lua_tonumber(L, 3)), fontFlags, false)) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFontString_GetText(lua_State* L) {

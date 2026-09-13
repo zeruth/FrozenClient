@@ -18,6 +18,7 @@
 #include "ui/game/CGTabardModelFrame.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/MiscScript.hpp"
 #include "ui/game/CharacterInfoScript.hpp"
 #include "ui/game/GMTicketInfoScript.hpp"
 #include "ui/game/GameScript.hpp"
@@ -51,6 +52,7 @@ void LoadScriptFunctions() {
     CGQuestPOIFrame::CreateScriptMetaTable();
 
     GameScriptRegisterFunctions();
+    MiscScriptRegisterFunctions();
     UIBindingsRegisterScriptFunctions();
 
     // TODO

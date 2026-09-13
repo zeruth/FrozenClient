@@ -1,4 +1,6 @@
 #include "ui/game/ScriptEvents.hpp"
+#include <storm/String.hpp>
+#include "object/client/CGUnit_C.hpp"
 #include "db/Db.hpp"
 #include "object/Client.hpp"
 #include "ui/FrameScript.hpp"
@@ -34,11 +36,39 @@ int32_t Script_UnitExists(lua_State* L) {
 }
 
 int32_t Script_UnitIsVisible(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsVisible(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (unit != nullptr) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsUnit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: UnitIsUnit(\"unit\", \"otherUnit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto other = Script_GetUnitFromName(lua_tostring(L, 2));
+
+    if (unit && unit == other) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPlayer(lua_State* L) {
@@ -62,11 +92,39 @@ int32_t Script_UnitIsInMyGuild(lua_State* L) {
 }
 
 int32_t Script_UnitIsCorpse(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsCorpse(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPartyLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsPartyLeader(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitGroupRolesAssigned(lua_State* L) {
@@ -74,11 +132,39 @@ int32_t Script_UnitGroupRolesAssigned(lua_State* L) {
 }
 
 int32_t Script_UnitIsRaidOfficer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsRaidOfficer(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitInParty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitInParty(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitPlayerOrPetInParty(lua_State* L) {
@@ -86,7 +172,21 @@ int32_t Script_UnitPlayerOrPetInParty(lua_State* L) {
 }
 
 int32_t Script_UnitInRaid(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitInRaid(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitPlayerOrPetInRaid(lua_State* L) {
@@ -94,19 +194,75 @@ int32_t Script_UnitPlayerOrPetInRaid(lua_State* L) {
 }
 
 int32_t Script_UnitPlayerControlled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitPlayerControlled(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (unit && unit->IsA(TYPE_PLAYER)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsAFK(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsAFK(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsDND(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsDND(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPVP(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsPVP(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && (data->flags & 0x1000)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPVPSanctuary(lua_State* L) {
@@ -118,19 +274,81 @@ int32_t Script_UnitIsPVPFreeForAll(lua_State* L) {
 }
 
 int32_t Script_UnitFactionGroup(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitFactionGroup(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    auto raceRec = data ? g_chrRacesDB.GetRecord(data->pad1 & 0xFF) : nullptr;
+
+    if (!raceRec) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 2;
+    }
+
+    if (raceRec->m_alliance) {
+        lua_pushstring(L, "Horde");
+        lua_pushstring(L, "Horde");
+    } else {
+        lua_pushstring(L, "Alliance");
+        lua_pushstring(L, "Alliance");
+    }
+
+    return 2;
 }
 
 int32_t Script_UnitReaction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitReaction(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // TODO faction reactions; 5 is neutral
+    lua_pushnumber(L, unit ? 5.0 : 0.0);
+
+    return 1;
 }
 
 int32_t Script_UnitIsEnemy(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsEnemy(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // TODO faction reactions
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitIsFriend(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsFriend(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // TODO faction reactions; everyone is a friend until they are ported
+    if (unit) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitCanCooperate(lua_State* L) {
@@ -142,11 +360,36 @@ int32_t Script_UnitCanAssist(lua_State* L) {
 }
 
 int32_t Script_UnitCanAttack(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitCanAttack(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // TODO faction reactions
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitIsCharmed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsCharmed(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && data->charmedBy != 0) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPossessed(lua_State* L) {
@@ -158,7 +401,17 @@ int32_t Script_PlayerCanTeleport(lua_State* L) {
 }
 
 int32_t Script_UnitClassification(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitClassification(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushstring(L, "normal");
+
+    return 1;
 }
 
 int32_t Script_UnitSelectionColor(lua_State* L) {
@@ -166,7 +419,24 @@ int32_t Script_UnitSelectionColor(lua_State* L) {
 }
 
 int32_t Script_UnitGUID(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitGUID(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!unit) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    char guid[32];
+    SStrPrintf(guid, sizeof(guid), "0x%016llX", static_cast<unsigned long long>(unit->GetGUID()));
+    lua_pushstring(L, guid);
+
+    return 1;
 }
 
 int32_t Script_UnitName(lua_State* L) {
@@ -217,32 +487,129 @@ int32_t Script_UnitXPMax(lua_State* L) {
     return 1;
 }
 
+// Race, class, gender, and power type share UNIT_FIELD_BYTES_0
+static int32_t Script_UnitPowerTypeOf(const CGUnitData* data) {
+    return (data->pad1 >> 24) & 0xFF;
+}
+
 int32_t Script_UnitHealth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitHealth(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnumber(L, data ? data->health : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitHealthMax(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitHealthMax(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnumber(L, data ? data->maxHealth : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitMana(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitMana(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnumber(L, data ? data->power[0] : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitManaMax(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitManaMax(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnumber(L, data ? data->maxPower[0] : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitPower(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitPower(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // An explicit power type, else the unit's own
+    int32_t type = data ? Script_UnitPowerTypeOf(data) : 0;
+
+    if (lua_isnumber(L, 2)) {
+        type = static_cast<int32_t>(lua_tonumber(L, 2));
+    }
+
+    lua_pushnumber(L, data && type >= 0 && type < 7 ? data->power[type] : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitPowerMax(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitPowerMax(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    int32_t type = data ? Script_UnitPowerTypeOf(data) : 0;
+
+    if (lua_isnumber(L, 2)) {
+        type = static_cast<int32_t>(lua_tonumber(L, 2));
+    }
+
+    lua_pushnumber(L, data && type >= 0 && type < 7 ? data->maxPower[type] : 0);
+
+    return 1;
 }
 
 int32_t Script_UnitPowerType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitPowerType(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    static const char* s_powerTokens[] = { "MANA", "RAGE", "FOCUS", "ENERGY", "HAPPINESS", "RUNES", "RUNIC_POWER" };
+
+    int32_t type = data ? Script_UnitPowerTypeOf(data) : 0;
+
+    if (type < 0 || type >= 7) {
+        type = 0;
+    }
+
+    lua_pushnumber(L, type);
+    lua_pushstring(L, s_powerTokens[type]);
+
+    return 2;
 }
 
 int32_t Script_UnitOnTaxi(lua_State* L) {
@@ -254,31 +621,122 @@ int32_t Script_UnitIsFeignDeath(lua_State* L) {
 }
 
 int32_t Script_UnitIsDead(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsDead(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && data->health == 0) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsGhost(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsGhost(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsDeadOrGhost(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsDeadOrGhost(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && data->health == 0) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsConnected(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsConnected(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (unit != nullptr) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitAffectingCombat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitAffectingCombat(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && (data->flags & 0x80000)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitSex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitSex(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // 1 neuter, 2 male, 3 female
+    lua_pushnumber(L, data ? 2 + ((data->pad1 >> 16) & 0xFF) : 1);
+
+    return 1;
 }
 
 int32_t Script_UnitLevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitLevel(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnumber(L, data ? data->level : 0);
+
+    return 1;
 }
 
 int32_t Script_GetMoney(lua_State* L) {
@@ -302,11 +760,57 @@ int32_t Script_GetArenaCurrency(lua_State* L) {
 }
 
 int32_t Script_UnitRace(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitRace(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    auto raceRec = data ? g_chrRacesDB.GetRecord(data->pad1 & 0xFF) : nullptr;
+
+    if (!raceRec) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    auto sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+    lua_pushstring(L, CGUnit_C::GetDisplayRaceNameFromRecord(raceRec, sex, nullptr));
+    lua_pushstring(L, raceRec->m_clientFileString);
+    lua_pushnumber(L, raceRec->m_ID);
+
+    return 3;
 }
 
 int32_t Script_UnitClass(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitClass(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    auto classRec = data ? g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF) : nullptr;
+
+    if (!classRec) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    auto sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+    lua_pushstring(L, CGUnit_C::GetDisplayClassNameFromRecord(classRec, sex, nullptr));
+    lua_pushstring(L, classRec->m_filename);
+    lua_pushnumber(L, classRec->m_ID);
+
+    return 3;
 }
 
 int32_t Script_UnitClassBase(lua_State* L) {
@@ -374,7 +878,21 @@ int32_t Script_UnitAura(lua_State* L) {
 }
 
 int32_t Script_UnitIsTapped(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsTapped(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsTappedByPlayer(lua_State* L) {
@@ -386,7 +904,21 @@ int32_t Script_UnitIsTappedByAllThreatList(lua_State* L) {
 }
 
 int32_t Script_UnitIsTrivial(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsTrivial(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitHasRelicSlot(lua_State* L) {
@@ -498,7 +1030,17 @@ int32_t Script_GetAttackPowerForStat(lua_State* L) {
 }
 
 int32_t Script_UnitCreatureType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitCreatureType(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_UnitCreatureFamily(lua_State* L) {
@@ -658,7 +1200,21 @@ int32_t Script_GetUnitPitch(lua_State* L) {
 }
 
 int32_t Script_UnitInVehicle(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitInVehicle(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitUsingVehicle(lua_State* L) {
@@ -666,7 +1222,21 @@ int32_t Script_UnitUsingVehicle(lua_State* L) {
 }
 
 int32_t Script_UnitControllingVehicle(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitControllingVehicle(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitInVehicleControlSeat(lua_State* L) {
@@ -674,7 +1244,21 @@ int32_t Script_UnitInVehicleControlSeat(lua_State* L) {
 }
 
 int32_t Script_UnitHasVehicleUI(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitHasVehicleUI(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (false) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitTargetsVehicleInRaidUI(lua_State* L) {

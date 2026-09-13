@@ -63,11 +63,13 @@ int32_t Script_IsUsableAction(lua_State* L) {
 }
 
 int32_t Script_IsConsumableAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO consumable actions; nothing is until item actions are ported
+    return 0;
 }
 
 int32_t Script_IsStackableAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO stackable actions
+    return 0;
 }
 
 int32_t Script_IsEquippedAction(lua_State* L) {
@@ -89,7 +91,10 @@ int32_t Script_GetBonusBarOffset(lua_State* L) {
 }
 
 int32_t Script_GetMultiCastBarOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO the totem bar page; 0 until the multi cast bar is ported
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_ChangeActionBarPage(lua_State* L) {

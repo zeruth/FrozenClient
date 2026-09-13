@@ -779,7 +779,30 @@ int32_t CSimpleFrame_IsClampedToScreen(lua_State* L) {
 }
 
 int32_t CSimpleFrame_RegisterForDrag(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    uint32_t buttons = 0;
+
+    for (int32_t i = 2; lua_isstring(L, i); i++) {
+        auto name = lua_tostring(L, i);
+
+        if (!SStrCmpI(name, "LeftButton", STORM_MAX_STR)) {
+            buttons |= MOUSE_BUTTON_LEFT;
+        } else if (!SStrCmpI(name, "RightButton", STORM_MAX_STR)) {
+            buttons |= MOUSE_BUTTON_RIGHT;
+        } else if (!SStrCmpI(name, "MiddleButton", STORM_MAX_STR)) {
+            buttons |= MOUSE_BUTTON_MIDDLE;
+        } else if (!SStrCmpI(name, "Button4", STORM_MAX_STR)) {
+            buttons |= MOUSE_BUTTON_XBUTTON1;
+        } else if (!SStrCmpI(name, "Button5", STORM_MAX_STR)) {
+            buttons |= MOUSE_BUTTON_XBUTTON2;
+        }
+    }
+
+    frame->m_lookForDrag = buttons;
+
+    return 0;
 }
 
 int32_t CSimpleFrame_EnableKeyboard(lua_State* L) {

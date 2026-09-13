@@ -1,4 +1,7 @@
 #include "ui/game/GameScript.hpp"
+#include "event/Event.hpp"
+#include "gx/Device.hpp"
+#include "gx/Gx.hpp"
 #include "console/CVar.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/FrameScript.hpp"
@@ -16,7 +19,12 @@ int32_t Script_FrameXML_Debug(lua_State* L) {
 }
 
 int32_t Script_GetBuildInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushstring(L, "3.3.5");
+    lua_pushstring(L, "12340");
+    lua_pushstring(L, "Jun 24 2010");
+    lua_pushnumber(L, 30300.0);
+
+    return 4;
 }
 
 int32_t Script_ReloadUI(lua_State* L) {
@@ -36,43 +44,103 @@ int32_t Script_SetLayoutMode(lua_State* L) {
 }
 
 int32_t Script_IsModifierKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LSHIFT) || EventIsKeyDown(KEY_RSHIFT) || EventIsKeyDown(KEY_LCONTROL) || EventIsKeyDown(KEY_RCONTROL) || EventIsKeyDown(KEY_LALT) || EventIsKeyDown(KEY_RALT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsLeftShiftKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LSHIFT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsRightShiftKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_RSHIFT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsShiftKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LSHIFT) || EventIsKeyDown(KEY_RSHIFT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsLeftControlKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LCONTROL)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsRightControlKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_RCONTROL)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsControlKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LCONTROL) || EventIsKeyDown(KEY_RCONTROL)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsLeftAltKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LALT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsRightAltKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_RALT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsAltKeyDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (EventIsKeyDown(KEY_LALT) || EventIsKeyDown(KEY_RALT)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsMouseButtonDown(lua_State* L) {
@@ -96,7 +164,10 @@ int32_t Script_Screenshot(lua_State* L) {
 }
 
 int32_t Script_GetFramerate(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // TODO the measured frame rate
+    lua_pushnumber(L, 60.0);
+
+    return 1;
 }
 
 int32_t Script_TogglePerformanceDisplay(lua_State* L) {
@@ -635,11 +706,22 @@ int32_t Script_ArenaTeamDisband(lua_State* L) {
 }
 
 int32_t Script_GetScreenWidth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The UI's coordinate space is 768 units tall at any window size
+    CRect rect;
+    GxCapsWindowSize(rect);
+
+    float width = rect.maxX - rect.minX;
+    float height = rect.maxY - rect.minY;
+
+    lua_pushnumber(L, height > 0.0f ? 768.0f * width / height : 1024.0f);
+
+    return 1;
 }
 
 int32_t Script_GetScreenHeight(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 768.0);
+
+    return 1;
 }
 
 int32_t Script_GetDamageBonusStat(lua_State* L) {
@@ -841,7 +923,9 @@ int32_t Script_SetPortraitToTexture(lua_State* L) {
 }
 
 int32_t Script_GetLocale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushstring(L, "enUS");
+
+    return 1;
 }
 
 int32_t Script_GetGMTicketCategories(lua_State* L) {
