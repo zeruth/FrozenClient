@@ -121,7 +121,11 @@ void CGPlayer_C::BuildCharacterComponent() {
 
     this->m_characterComponent = CCharacterComponent::AllocComponent();
     this->m_characterComponent->Init(&data, nullptr);
-    this->m_characterComponent->RenderPrep(0);
+
+    // RenderPrep(1) is what actually composites the skin sections and binds the body texture;
+    // RenderPrep(0) only defers. The glue's loading step does the same.
+    this->m_characterComponent->RenderPrep(1);
+    this->m_model->IsDrawable(1, 1);
 }
 
 void CGPlayer_C::UpdatePartyMemberState() {
