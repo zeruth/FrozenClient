@@ -1,3 +1,4 @@
+#include <windowsx.h>
 #include "event/Input.hpp"
 #include "client/Gui.hpp"
 #include <storm/Error.hpp>
@@ -534,6 +535,16 @@ int32_t OsWindowProc(void* window, uint32_t message, uintptr_t wparam, intptr_t 
             return xbutton ? 1 : 0;
         }
 
+        break;
+    }
+
+    case WM_MOUSEWHEEL: {
+        // The wheel delta arrives in multiples of WHEEL_DELTA (120); one notch is one step. The
+        // position is in screen coordinates and must be converted to client
+        int32_t notches = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
+        POINT wheelPos = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+        ScreenToClient(hwnd, &wheelPos);
+        OsQueuePut(OS_INPUT_MOUSE_WHEEL, notches, wheelPos.x, wheelPos.y, 0);
         break;
     }
 

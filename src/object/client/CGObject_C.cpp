@@ -36,6 +36,13 @@ void CGObject_C::AddWorldObject() {
             auto model = CWorld::GetM2Scene()->CreateModel(fileName, 0);
             model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
             this->SetModel(model);
+
+            // Units and creatures idle in their stand animation (sequence 0); it is queued if the
+            // model is still loading. Movement-driven animation is not ported yet.
+            if (this->IsA(TYPE_UNIT)) {
+                model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
+            }
+
             model->Release();
         }
     }
