@@ -153,6 +153,10 @@ const WOWGUID& CGCamera::GetTarget() const {
     return this->m_target;
 }
 
+void CGCamera::SetTarget(const WOWGUID& target) {
+    this->m_target = target;
+}
+
 int32_t CGCamera::HasModel() const {
     return this->m_model != nullptr;
 }

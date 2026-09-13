@@ -106,14 +106,19 @@ void CGWorldFrame::OnWorldRender() {
     auto scene = CWorld::GetM2Scene();
 
     if (scene) {
+        scene->AdvanceTime(CWorld::GetTickTimeMs());
         scene->Animate(this->m_camera->Position());
         scene->Draw(M2PASS_0);
         scene->Draw(M2PASS_1);
     }
+
 }
 
 void CGWorldFrame::OnWorldUpdate() {
-    // TODO
+    // The camera follows the active player until targeting is driven by the game
+    if (!this->m_camera->GetTarget()) {
+        this->m_camera->SetTarget(ClntObjMgrGetActivePlayer());
+    }
 
     auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
 
@@ -141,6 +146,18 @@ void CGWorldFrame::OnWorldUpdate() {
         for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
             if (object->m_model) {
                 object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), 1.0f);
+
+                // A world model is drawn when it is animating, visible, and flagged for draw,
+                // the same set the character preview uses; the animate list is drained each frame
+                // so this runs every update
+                object->m_model->SetAnimating(1);
+                object->m_model->SetVisible(1);
+
+                if (object->m_model->m_attachParent) {
+                    object->m_model->m_flag20000 = 1;
+                } else {
+                    object->m_model->m_flag10000 = 1;
+                }
             }
         }
     }
