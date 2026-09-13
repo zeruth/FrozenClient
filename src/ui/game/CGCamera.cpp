@@ -98,7 +98,7 @@ CGCamera::CGCamera() : CSimpleCamera(CWorld::GetNearClip(), CWorld::GetFarClip()
 
     this->m_distance = SStrToFloat(CGCamera::s_cameraViewDataDefault[this->m_view].m_distance);
     this->m_yaw = 0.0f;
-    this->m_pitch = SStrToFloat(CGCamera::s_cameraViewDataDefault[this->m_view].m_pitch);
+    this->m_pitch = SStrToFloat(CGCamera::s_cameraViewDataDefault[this->m_view].m_pitch) * CMath::DEG2RAD;
     this->m_roll = 0.0f;
 
     this->m_fovOffset = 0.0f;
@@ -116,7 +116,7 @@ void CGCamera::CalcTargetCamera(CGObject_C* target, uint32_t timestamp) {
     C3Vector focus = { targetPos.x, targetPos.y, targetPos.z + 1.6f };
 
     float yaw = target->GetFacing() + this->m_yaw;
-    float pitch = this->m_pitch * CMath::DEG2RAD;
+    float pitch = this->m_pitch;
     float distance = std::max(this->m_distance, 0.5f);
 
     // The camera sits opposite the facing direction, raised by the pitch
@@ -155,6 +155,17 @@ const WOWGUID& CGCamera::GetTarget() const {
 
 void CGCamera::SetTarget(const WOWGUID& target) {
     this->m_target = target;
+}
+
+void CGCamera::Rotate(float deltaYaw, float deltaPitch) {
+    this->m_yaw += deltaYaw;
+
+    // Keep the pitch just short of straight up or down so the view never flips
+    this->m_pitch = std::min(std::max(this->m_pitch + deltaPitch, -1.4f), 1.4f);
+}
+
+void CGCamera::Zoom(float deltaDistance) {
+    this->m_distance = std::min(std::max(this->m_distance + deltaDistance, 0.0f), 50.0f);
 }
 
 int32_t CGCamera::HasModel() const {

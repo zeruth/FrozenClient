@@ -11,6 +11,7 @@
 #include "gx/Transform.hpp"
 #include "object/Client.hpp"
 #include "ui/game/CGCamera.hpp"
+#include "event/CEvent.hpp"
 #include "ui/game/PlayerName.hpp"
 #include "world/World.hpp"
 #include <storm/Memory.hpp>
@@ -92,6 +93,50 @@ void CGWorldFrame::OnFrameSizeChanged(const CRect& rect) {
     this->m_viewport.minY = std::max(this->m_viewport.minY, 0.0f);
     this->m_viewport.maxX = std::min(this->m_viewport.maxX, 1.0f);
     this->m_viewport.maxY = std::min(this->m_viewport.maxY, 1.0f);
+}
+
+// Right or left drag rotates the camera; the wheel zooms it
+int32_t CGWorldFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
+    if (btn) {
+        return this->CSimpleFrame::OnLayerMouseDown(evt, btn);
+    }
+
+    this->m_cameraDragging = 1;
+    this->m_dragLastX = evt.x;
+    this->m_dragLastY = evt.y;
+
+    return this->CSimpleFrame::OnLayerMouseDown(evt, btn);
+}
+
+int32_t CGWorldFrame::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
+    this->m_cameraDragging = 0;
+
+    return this->CSimpleFrame::OnLayerMouseUp(evt, btn);
+}
+
+int32_t CGWorldFrame::OnLayerTrackUpdate(const CMouseEvent& evt) {
+    if (this->m_cameraDragging && this->m_camera) {
+        // The event position is normalized to the window; a full sweep turns roughly one turn
+        float deltaX = evt.x - this->m_dragLastX;
+        float deltaY = evt.y - this->m_dragLastY;
+
+        this->m_dragLastX = evt.x;
+        this->m_dragLastY = evt.y;
+
+        // Screen y runs bottom to top, so dragging up should pitch the view up
+        this->m_camera->Rotate(-deltaX * 6.28318f, deltaY * 3.14159f);
+    }
+
+    return this->CSimpleFrame::OnLayerTrackUpdate(evt);
+}
+
+int32_t CGWorldFrame::OnLayerMouseWheel(const CMouseEvent& evt) {
+    if (this->m_camera) {
+        // One wheel notch is a couple of yards
+        this->m_camera->Zoom(evt.wheelDistance * -2.0f);
+    }
+
+    return 1;
 }
 
 void CGWorldFrame::OnWorldRender() {

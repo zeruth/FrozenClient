@@ -342,7 +342,17 @@ int32_t CSimpleTop::OnMouseUp(const EVENT_DATA_MOUSE* pMouseData, void* param) {
 }
 
 int32_t CSimpleTop::OnMouseWheel(const EVENT_DATA_MOUSE* pMouseData, void* param) {
-    // TODO
+    CSimpleTop* top = static_cast<CSimpleTop*>(param);
+
+    CMouseEvent mouseEvent;
+    mouseEvent = *pMouseData;
+    mouseEvent.id = 0x400500CC;
+
+    // Deliver to the frame under the cursor
+    if (top->m_mouseFocus) {
+        top->m_mouseFocus->OnLayerMouseWheel(mouseEvent);
+    }
+
     return 0;
 }
 

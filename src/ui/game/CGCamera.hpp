@@ -36,6 +36,8 @@ class CGCamera : public CSimpleCamera {
         void CheckUnderwater();
         const WOWGUID& GetTarget() const;
         void SetTarget(const WOWGUID& target);
+        void Rotate(float deltaYaw, float deltaPitch);
+        void Zoom(float deltaDistance);
         int32_t HasModel() const;
         C33Matrix ParentToWorld() const;
         void SetupWorldProjection(const CRect& projRect);

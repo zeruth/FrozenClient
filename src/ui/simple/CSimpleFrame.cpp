@@ -1258,6 +1258,11 @@ int32_t CSimpleFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) 
     return 0;
 }
 
+int32_t CSimpleFrame::OnLayerMouseWheel(const CMouseEvent& evt) {
+    // Frames handle the wheel through their scripted OnMouseWheel; the world frame overrides this
+    return 0;
+}
+
 int32_t CSimpleFrame::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
     if (!btn) {
         if (this->m_lookForDrag & evt.button) {

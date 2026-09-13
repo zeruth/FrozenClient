@@ -112,6 +112,7 @@ class CSimpleFrame : public CScriptRegion {
         virtual int32_t OnLayerKeyUp(const CKeyEvent& evt);
         virtual int32_t OnLayerMouseDown(const CMouseEvent& evt, const char* btn);
         virtual int32_t OnLayerMouseUp(const CMouseEvent& evt, const char* btn);
+        virtual int32_t OnLayerMouseWheel(const CMouseEvent& evt);
         virtual void PostLoadXML(const XMLNode* node, CStatus* status);
         virtual void UnregisterRegion(CSimpleRegion* region);
         virtual int32_t GetBoundsRect(CRect& bounds);
