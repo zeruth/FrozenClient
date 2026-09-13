@@ -21,6 +21,7 @@ WowClientDB<FactionGroupRec> g_factionGroupDB;
 WowClientDB<FactionTemplateRec> g_factionTemplateDB;
 WowClientDB<GameTipsRec> g_gameTipsDB;
 WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
+WowClientDB<ItemRec> g_itemDB;
 WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 WowClientDB<LoadingScreensRec> g_loadingScreensDB;
 WowClientDB<MapRec> g_mapDB;
@@ -57,6 +58,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_factionTemplateDB, __FILE__, __LINE__);
     loadFn(&g_gameTipsDB, __FILE__, __LINE__);
     loadFn(&g_itemDisplayInfoDB, __FILE__, __LINE__);
+    loadFn(&g_itemDB, __FILE__, __LINE__);
     loadFn(&g_itemVisualsDB, __FILE__, __LINE__);
     loadFn(&g_loadingScreensDB, __FILE__, __LINE__);
     loadFn(&g_mapDB, __FILE__, __LINE__);

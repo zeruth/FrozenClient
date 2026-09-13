@@ -122,8 +122,26 @@ void CGPlayer_C::BuildCharacterComponent() {
     this->m_characterComponent = CCharacterComponent::AllocComponent();
     this->m_characterComponent->Init(&data, nullptr);
 
-    // RenderPrep(1) is what actually composites the skin sections and binds the body texture;
-    // RenderPrep(0) only defers. The glue's loading step does the same.
+    // Apply the equipped items. Each visible slot carries an item entry; Item.dbc turns it into
+    // the display info and inventory type the component paints onto the body and attaches.
+    for (int32_t slot = 0; slot < 19; slot++) {
+        auto entryID = this->m_player->visibleItems[slot].entryID;
+
+        if (!entryID) {
+            continue;
+        }
+
+        auto itemRec = g_itemDB.GetRecord(entryID);
+
+        if (!itemRec || itemRec->m_displayInfoID <= 0) {
+            continue;
+        }
+
+        this->m_characterComponent->AddItemByInventoryType(itemRec->m_inventoryType, itemRec->m_displayInfoID);
+    }
+
+    // RenderPrep(1) is what actually composites the skin and item sections and binds the body
+    // texture; RenderPrep(0) only defers. The glue's loading step does the same.
     this->m_characterComponent->RenderPrep(1);
     this->m_model->IsDrawable(1, 1);
 }
