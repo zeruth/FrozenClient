@@ -3,6 +3,7 @@
 
 #include "object/client/CClientObjCreate.hpp"
 #include "object/client/CGObject_C.hpp"
+#include "net/Types.hpp"
 #include "object/client/CGUnit.hpp"
 #include "object/client/CMovement_C.hpp"
 #include "object/Types.hpp"
@@ -70,6 +71,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // Duration (ms) of the model's animation with the given AnimationData id, or 0 if it has none.
         uint32_t GetSequenceDuration(int32_t animID);
+        void PlayEmote(uint32_t emoteID);
 
     protected:
         // Protected member functions
@@ -90,6 +92,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // TODO
         CCharacterComponent* m_characterComponent = nullptr; // composited body for humanoid NPCs
         int32_t m_animSeq = -1;         // last idle sequence applied by UpdateIdleAnimation (-1 = none yet)
+        // A one-shot emote from SMSG_EMOTE. Unlike UNIT_NPC_EMOTESTATE, which is a looping pose the
+        // unit holds, this plays once and then the unit returns to whatever pose it was in -- it is
+        // how a scripted creature does a gesture, e.g. the Lich King planting his sword.
+        int32_t m_emoteSeq = 0;         // AnimationData id currently playing, 0 = none
+        uint32_t m_emoteEndMs = 0;      // scene clock time the one-shot finishes
         bool m_wasDead = false;         // dead state last update, to detect the moment of death
         uint32_t m_deathStartTime = 0;  // scene time (ms) the Death fall began
         uint32_t m_deathDuration = 0;   // duration (ms) of the model's Death animation
@@ -98,5 +105,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         float m_smoothFacing;
         // TODO
 };
+
+int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 
 #endif

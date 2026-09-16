@@ -384,6 +384,7 @@ void CGUnit_C::UpdateIdleAnimation() {
     // kneel/submerged loop; otherwise an emote state resolves through Emotes.dbc -> AnimationData id;
     // otherwise plain Stand. Animation ids are AnimationData.dbc entries SetBoneSequence resolves.
     auto unitData = this->Unit();
+    uint32_t now = this->m_model && this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
     bool dead = unitData && unitData->maxHealth > 0 && unitData->health <= 0;
     int32_t standState = unitData ? (unitData->pad2 & 0xFF) : 0;
     int32_t seq;
@@ -393,8 +394,6 @@ void CGUnit_C::UpdateIdleAnimation() {
         // in the world) settles straight into the Dead pose. A unit that dies while we are watching
         // plays the Death fall (AnimationData 1) once, then settles into Dead (6) when it ends -- we
         // time the fall off the model's own Death duration rather than assuming a non-looping hold.
-        uint32_t now = this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
-
         if (!this->m_wasDead && this->m_animSeq != -1) {
             uint32_t deathDuration = this->GetSequenceDuration(1);
 
@@ -428,6 +427,11 @@ void CGUnit_C::UpdateIdleAnimation() {
                 case 9: seq = 202; break;  // SUBMERGED        -> Submerged
                 default: seq = 0; break;
             }
+        } else if (this->m_emoteSeq && now < this->m_emoteEndMs) {
+            // A one-shot emote outranks the resting pose while it is still running, but NOT death
+            // or a scripted stand state -- a unit that is sitting or dead should not be interrupted
+            // by a gesture.
+            seq = this->m_emoteSeq;
         } else if (unitData && unitData->emoteState) {
             auto emote = g_emotesDB.GetRecord(unitData->emoteState);
             seq = (emote && emote->m_animID > 0) ? emote->m_animID : 0;
@@ -445,10 +449,37 @@ void CGUnit_C::UpdateIdleAnimation() {
 
     // Only restart the sequence when it actually changes; re-issuing it every frame would keep
     // resetting the animation to frame 0 and freeze it.
+    if (this->m_emoteSeq && now >= this->m_emoteEndMs) {
+        this->m_emoteSeq = 0;
+    }
+
     if (seq != this->m_animSeq) {
         this->m_model->SetBoneSequence(-1, seq, -1, 0, 1.0f, 0, 1);
         this->m_animSeq = seq;
     }
+}
+
+// SMSG_EMOTE: play an emote once.
+//
+// Emotes.dbc maps the emote id to an AnimationData id, the same table UNIT_NPC_EMOTESTATE resolves
+// through. A model that has no animation for it is left alone rather than snapped to Stand.
+void CGUnit_C::PlayEmote(uint32_t emoteID) {
+    auto emote = g_emotesDB.GetRecord(static_cast<int32_t>(emoteID));
+
+    if (!emote || emote->m_animID <= 0) {
+        return;
+    }
+
+    uint32_t duration = this->GetSequenceDuration(emote->m_animID);
+
+    if (!duration) {
+        return;
+    }
+
+    uint32_t now = this->m_model && this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
+
+    this->m_emoteSeq = emote->m_animID;
+    this->m_emoteEndMs = now + duration;
 }
 
 void CGUnit_C::RefreshDataPointers() {
@@ -513,4 +544,35 @@ void CGUnit_C::SetStorage(uint32_t* storage, uint32_t* saved) {
 
     this->m_unit = reinterpret_cast<CGUnitData*>(&storage[CGUnit::GetBaseOffset()]);
     this->m_unitSaved = &saved[CGUnit::GetBaseOffsetSaved()];
+}
+
+// SMSG_EMOTE (0x103): uint32 emoteID, then the caster's guid as a plain 8-byte value.
+//
+// The opcode was declared in src/net/Types.hpp and never handled, so every scripted gesture a
+// creature makes -- the Lich King planting his sword, a guard saluting -- was read off the wire and
+// dropped. UNIT_NPC_EMOTESTATE was already handled; that is the looping pose, not this.
+int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    if (!msg) {
+        return 1;
+    }
+
+    uint32_t emoteID = 0;
+    uint64_t guid = 0;
+
+    msg->Get(emoteID);
+    msg->Get(guid);
+
+    if (!emoteID || !guid) {
+        return 1;
+    }
+
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__);
+
+    if (!object) {
+        return 1;
+    }
+
+    static_cast<CGUnit_C*>(object)->PlayEmote(emoteID);
+
+    return 1;
 }
