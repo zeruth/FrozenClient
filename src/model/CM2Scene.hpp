@@ -51,6 +51,12 @@ class CM2Scene {
         void Animate(const C3Vector& cameraPos);
         CM2Model* CreateModel(const char* file, uint32_t a3);
         int32_t Draw(M2PASS pass);
+
+        // Draw the opaque pass into the shadow map, with the reference's ShadowMap / ShadowMapSL
+        // effect in place of each batch's own. lightView maps absolute world space into the light's
+        // view; bone matrices are camera-relative, so the rebase applied per bone is
+        // m_viewInv * lightView.
+        int32_t DrawShadowCasters(const C44Matrix& lightView);
         void SelectLights(CM2Lighting* lighting);
 };
 

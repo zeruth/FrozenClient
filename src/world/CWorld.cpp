@@ -1,4 +1,5 @@
 #include "model/CM2Lighting.hpp"
+#include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
 #include "world/Terrain.hpp"
 #include "gx/Gx.hpp"
@@ -7,7 +8,13 @@
 #include "world/CWorldParam.hpp"
 #include "world/Map.hpp"
 #include "world/Weather.hpp"
+#include "db/Db.hpp"
+#include "client/Client.hpp"
 #include <storm/Memory.hpp>
+#include <storm/String.hpp>
+#include <cstdio>
+#include <cmath>
+#include <vector>
 
 uint32_t CWorld::s_curTimeMs;
 float CWorld::s_curTimeSec;
@@ -24,6 +31,524 @@ uint32_t CWorld::s_tickTimeFixed;
 uint32_t CWorld::s_tickTimeMs;
 float CWorld::s_tickTimeSec;
 Weather* CWorld::s_weather;
+C3Vector CWorld::s_outdoorAmbient = { 0.45f, 0.45f, 0.5f };
+C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
+// Unit-length: CM2Lighting::AddDiffuse and the terrain/WMO bake dot this straight into N.L without
+// renormalising, so a non-unit vector would scale every outdoor diffuse term. {-0.4,-0.3,0.86} has
+// length 0.9948; normalised it keeps the same (still-placeholder) direction at exactly length 1.
+C3Vector CWorld::s_outdoorDirection = { -0.402096f, -0.301572f, 0.864504f };
+bool CWorld::s_cameraUnderLiquid = false;
+C3Vector CWorld::s_cameraDir = { 1.0f, 0.0f, 0.0f };
+C3Vector CWorld::s_skyColors[5] = {
+    { 0.5f, 0.6f, 0.8f }, { 0.45f, 0.55f, 0.78f }, { 0.4f, 0.5f, 0.75f }, { 0.3f, 0.42f, 0.7f }, { 0.2f, 0.35f, 0.65f }
+};
+int32_t CWorld::s_outdoorParamsID = 0;
+C3Vector CWorld::s_fogColor = { 0.5f, 0.5f, 0.5f };
+// The reference keeps its outdoor fog as [colour, start, end, rate] and holds the rate at 1.5 --
+// read live from its fog block, and the same in both copies of it. The three-argument SetFog
+// overload whoa was calling defaults the density to 1.0, so fog fell off on a different curve from
+// the reference's even once start and end matched exactly.
+float CWorld::s_fogRate = 1.5f;
+float CWorld::s_floatBand2 = 0.0f;
+float CWorld::s_floatBand4 = 0.0f;
+float CWorld::s_floatBand5 = 0.0f;
+C3Vector CWorld::s_bodyTint = { 1.0f, 1.0f, 1.0f };
+C3Vector CWorld::s_sunColor = { 1.0f, 1.0f, 1.0f };
+C3Vector CWorld::s_cloudColor1 = { 1.0f, 1.0f, 1.0f };
+C3Vector CWorld::s_cloudColor2 = { 1.0f, 1.0f, 1.0f };
+C3Vector CWorld::s_lightBands12to17[6] = {};
+float CWorld::s_cloudDensity = 0.5f;
+float CWorld::s_fogStart = 0.0f;
+float CWorld::s_fogEnd = 0.0f;
+
+namespace {
+
+// Interpolate a LightIntBand colour (band 0 = diffuse, 1 = ambient, 7 = fog) at the given time.
+// A LightParams owns 18 consecutive band rows; row IDs are 1-based, so band b of params P is at
+// LightIntBand id (P-1)*18 + b + 1. Colours are stored BGRA.
+// Band times are half-minutes, so a full day is 1440 x 2.
+const int32_t DAY_HALF_MINUTES = 2880;
+
+void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
+    auto rec = g_lightIntBandDB.GetRecord((P - 1) * 18 + band + 1);
+
+    if (!rec || rec->m_num == 0) {
+        return;
+    }
+
+    uint32_t num = rec->m_num;
+    uint32_t v = rec->m_values[num - 1];
+
+    if (num == 1 || t <= static_cast<int32_t>(rec->m_times[0])) {
+        v = rec->m_values[0];
+    } else if (t >= static_cast<int32_t>(rec->m_times[num - 1])) {
+        // Past the last key the band WRAPS to the first one across the end of the day -- it does
+        // not hold. Most params carry only two keys, midnight and noon, so clamping instead left
+        // every afternoon and evening frozen at the noon colour: measured against the reference at
+        // 18:12, whoa's ambient was 58,99,102 (exactly the noon key) where the reference had
+        // 28,88,88, which is that key interpolated 51.7% of the way back toward midnight.
+        int32_t t0 = static_cast<int32_t>(rec->m_times[num - 1]);
+        int32_t t1 = static_cast<int32_t>(rec->m_times[0]) + DAY_HALF_MINUTES;
+        float f = t1 != t0 ? static_cast<float>(t - t0) / (t1 - t0) : 0.0f;
+        uint32_t a = rec->m_values[num - 1];
+        uint32_t c = rec->m_values[0];
+        uint32_t R = static_cast<uint32_t>(((a >> 16) & 0xFF) * (1 - f) + ((c >> 16) & 0xFF) * f);
+        uint32_t G = static_cast<uint32_t>(((a >> 8) & 0xFF) * (1 - f) + ((c >> 8) & 0xFF) * f);
+        uint32_t B = static_cast<uint32_t>((a & 0xFF) * (1 - f) + (c & 0xFF) * f);
+        v = (R << 16) | (G << 8) | B;
+    } else {
+        for (uint32_t i = 0; i + 1 < num; i++) {
+            int32_t t0 = static_cast<int32_t>(rec->m_times[i]);
+            int32_t t1 = static_cast<int32_t>(rec->m_times[i + 1]);
+
+            if (t >= t0 && t <= t1) {
+                float f = t1 != t0 ? static_cast<float>(t - t0) / (t1 - t0) : 0.0f;
+                uint32_t a = rec->m_values[i];
+                uint32_t c = rec->m_values[i + 1];
+                uint32_t R = static_cast<uint32_t>(((a >> 16) & 0xFF) * (1 - f) + ((c >> 16) & 0xFF) * f);
+                uint32_t G = static_cast<uint32_t>(((a >> 8) & 0xFF) * (1 - f) + ((c >> 8) & 0xFF) * f);
+                uint32_t B = static_cast<uint32_t>((a & 0xFF) * (1 - f) + (c & 0xFF) * f);
+                v = (R << 16) | (G << 8) | B;
+                break;
+            }
+        }
+    }
+
+    out.x = ((v >> 16) & 0xFF) / 255.0f;
+    out.y = ((v >> 8) & 0xFF) / 255.0f;
+    out.z = (v & 0xFF) / 255.0f;
+}
+
+// Interpolate a LightFloatBand scalar (band 0 = fog end, band 1 = fog start scalar) at time t.
+// A LightParams owns 6 consecutive float-band rows; row IDs are 1-based.
+float InterpFloatBand(int32_t P, int32_t band, int32_t t) {
+    auto rec = g_lightFloatBandDB.GetRecord((P - 1) * 6 + band + 1);
+
+    if (!rec || rec->m_num == 0) {
+        return 0.0f;
+    }
+
+    uint32_t num = rec->m_num;
+
+    if (num == 1 || t <= static_cast<int32_t>(rec->m_times[0])) {
+        return rec->m_values[0];
+    }
+
+    // Same wrap as the colour bands: past the last key, run back to the first across midnight.
+    if (t >= static_cast<int32_t>(rec->m_times[num - 1])) {
+        int32_t t0 = static_cast<int32_t>(rec->m_times[num - 1]);
+        int32_t t1 = static_cast<int32_t>(rec->m_times[0]) + DAY_HALF_MINUTES;
+        float f = t1 != t0 ? static_cast<float>(t - t0) / (t1 - t0) : 0.0f;
+
+        return rec->m_values[num - 1] * (1.0f - f) + rec->m_values[0] * f;
+    }
+
+    for (uint32_t i = 0; i + 1 < num; i++) {
+        int32_t t0 = static_cast<int32_t>(rec->m_times[i]);
+        int32_t t1 = static_cast<int32_t>(rec->m_times[i + 1]);
+
+        if (t >= t0 && t <= t1) {
+            float f = t1 != t0 ? static_cast<float>(t - t0) / (t1 - t0) : 0.0f;
+            return rec->m_values[i] * (1.0f - f) + rec->m_values[i + 1] * f;
+        }
+    }
+
+    return rec->m_values[num - 1];
+}
+
+// A full set of interpolated outdoor colours for one LightParams at one time of day.
+struct LightColors {
+    C3Vector ambient;
+    C3Vector diffuse;
+    C3Vector sky[5];
+    C3Vector fog;
+    C3Vector bodyTint; // LightIntBand band 9: the sun/moon disc tint
+    C3Vector sunColor;   // band 8: the reference keeps this at DayNight slot 2
+    C3Vector cloudColor1; // band 10: DayNight slot 10
+    C3Vector cloudColor2; // band 11: DayNight slot 11
+    C3Vector extraBands[6]; // bands 12..17, at DayNight slots 12..17
+    float cloudDensity;  // LightFloatBand band 3
+    float floatBand2;    // reference keeps it at 0x00d38c30, immediately before cloud density
+    float floatBand4;    // 0x00d38c38
+    float floatBand5;    // 0x00d38c3c
+    float fogEnd;
+    float fogStartScalar;
+};
+
+// Interpolate every band of one LightParams at time t into a LightColors.
+void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
+    InterpBandColor(P, 0, t, out.diffuse);
+    InterpBandColor(P, 1, t, out.ambient);
+    InterpBandColor(P, 6, t, out.sky[0]);
+    InterpBandColor(P, 5, t, out.sky[1]);
+    InterpBandColor(P, 4, t, out.sky[2]);
+    InterpBandColor(P, 3, t, out.sky[3]);
+    InterpBandColor(P, 2, t, out.sky[4]);
+    InterpBandColor(P, 7, t, out.fog);
+    InterpBandColor(P, 9, t, out.bodyTint);
+
+    // Bands the reference reads and whoa did not. Identified by computing every band from the DBC
+    // at the live clock and matching values against the reference's DayNight block, rather than by
+    // guessing addresses -- slot 2 is band 8, slots 10 and 11 are bands 10 and 11.
+    InterpBandColor(P, 8, t, out.sunColor);
+    InterpBandColor(P, 10, t, out.cloudColor1);
+    InterpBandColor(P, 11, t, out.cloudColor2);
+
+    // Bands 12..17 sit at DayNight slots 12..17 in the reference and whoa read none of them.
+    //
+    // Bands 14..17 are the LIQUID COLOURS, confirmed in FUN_008a2bf0: it reads a colour pair at
+    // base+0x10c and base+0x110 indexed by `type * 8`, and interpolates each pair across a
+    // 512-entry gradient using alphas from base+0x140..0x14c.
+    //
+    // Which type is which comes from those alphas, not from the colours. base+0x140..0x14c hold
+    // LightParams columns 5..8 -- waterShallow, waterDeep, oceanShallow, oceanDeep -- and the
+    // function pairs type 0 with 0x148/0x14c (the OCEAN alphas) and type 1 with 0x140/0x144 (the
+    // water ones). The byte order is the giveaway: CONCAT11(a, b) puts b at index 0, so index 0
+    // selects 0x148 rather than 0x140.
+    //
+    // So: 14 = ocean shallow, 15 = ocean deep, 16 = river shallow, 17 = river deep -- the OPPOSITE
+    // of what the colour values alone suggested. whoa's liquid rendering has never had any of them.
+    // This rests on the documented LightParams column order; if that is ever shown wrong, the two
+    // pairs swap back.
+    for (int32_t b = 0; b < 6; b++) {
+        InterpBandColor(P, 12 + b, t, out.extraBands[b]);
+    }
+    // Fog distances come straight out of the float band in yards and are clamped to the view
+    // distance, so fog always terminates at the far clip rather than at some absolute distance:
+    // fogEnd = min(farClip, band0), fogStart = fogEnd * band1, with the start scalar clamped to
+    // [-1, 1] (reference: the DayNight fog update FUN_007f16f0 and the fog state setter
+    // FUN_00781610). The earlier 1/36 scaling here was inferred from the raw magnitudes rather
+    // than from the code, and produced fog that ended well inside the view distance.
+    out.cloudDensity = InterpFloatBand(P, 3, t);
+
+    // Bands 2, 4 and 5 are read but not yet used for anything. The reference stores all four
+    // consecutively (0x00d38c30..0x00d38c3c, cloud density third), which is how they were located:
+    // band 4's 0.95 had exactly one match in that region and the rest fell out of the layout.
+    // Reading them makes them comparable, which is the prerequisite for finding out what they drive.
+    out.floatBand2 = InterpFloatBand(P, 2, t);
+    out.floatBand4 = InterpFloatBand(P, 4, t);
+    out.floatBand5 = InterpFloatBand(P, 5, t);
+    out.fogEnd = InterpFloatBand(P, 0, t);
+    float startScalar = InterpFloatBand(P, 1, t);
+    out.fogStartScalar = startScalar < -1.0f ? -1.0f : (startScalar > 1.0f ? 1.0f : startScalar);
+}
+
+// One Light.dbc row cached for the current map so per-frame position selection never rescans the DBC.
+struct CachedLight {
+    int32_t params;   // clear-weather LightParams id
+    int32_t paramsUnder; // underwater LightParams id (Light.dbc params[1]), 0 if none
+    float x, y, z;    // world anchor (0,0,0 marks the map default)
+    float falloffStart;
+    float falloffEnd;
+    bool isDefault;
+};
+
+std::vector<CachedLight> s_mapLights;
+int32_t s_defaultParams = 0;
+int32_t s_defaultParamsUnder = 0;
+C3Vector s_lightPos = { 0.0f, 0.0f, 0.0f };
+char s_skyboxPath[260] = { 0 }; // sky model for the current light (LightParams -> LightSkybox), or empty
+
+// Resolve the skybox model path for a LightParams id: LightParams.lightSkyboxID -> LightSkybox.name.
+void ResolveSkybox(int32_t params) {
+    s_skyboxPath[0] = '\0';
+
+    if (params <= 0) {
+        return;
+    }
+
+    auto lp = g_lightParamsDB.GetRecord(params);
+
+    if (!lp || lp->m_lightSkyboxID <= 0) {
+        return;
+    }
+
+    auto sb = g_lightSkyboxDB.GetRecord(lp->m_lightSkyboxID);
+
+    if (sb && sb->m_name && sb->m_name[0]) {
+        SStrCopy(s_skyboxPath, sb->m_name, sizeof(s_skyboxPath));
+    }
+}
+
+}
+
+void CWorld::ComputeOutdoorLight(int32_t mapID) {
+    // Cache every Light.dbc row for this map: the default (anchored at the origin) plus the
+    // positional lights (each with a falloff radius). Per-frame the update below picks the light
+    // for the player's position and blends it over the default, exactly as the reference does, so a
+    // zone with its own atmosphere (like the Death Knight start) is lit by its own light, not the
+    // generic map default.
+    s_mapLights.clear();
+    s_defaultParams = 0;
+    s_defaultParamsUnder = 0;
+
+    int32_t n = g_lightDB.GetNumRecords();
+
+    for (int32_t i = 0; i < n; i++) {
+        auto l = g_lightDB.GetRecordByIndex(i);
+
+        if (!l || l->m_mapID != mapID || l->m_params[0] <= 0) {
+            continue;
+        }
+
+        bool isDefault = (l->m_x == 0.0f && l->m_y == 0.0f && l->m_z == 0.0f);
+
+        // Light.dbc anchors and falloffs are stored in 1/36-yard units and in the ADT corner frame;
+        // convert them to the same centred world coordinates the camera uses with the doodad/WMO
+        // placement transform (world.x = CORNER - z, world.y = CORNER - x, world.z = y), so the
+        // per-frame distance test below is in real yards. Verified: map 609's Acherus light (params
+        // 748) resolves to ~(2452,-5579,496), right on the Death Knight spawn.
+        const float CORNER = 17066.666f;
+        const float S = 1.0f / 36.0f;
+        float wx = CORNER - l->m_z * S;
+        float wy = CORNER - l->m_x * S;
+        float wz = l->m_y * S;
+        s_mapLights.push_back({ l->m_params[0], l->m_params[1], wx, wy, wz, l->m_falloffStart * S, l->m_falloffEnd * S, isDefault });
+
+        if (isDefault) {
+            s_defaultParams = l->m_params[0];
+            s_defaultParamsUnder = l->m_params[1];
+        }
+    }
+
+    CWorld::s_outdoorParamsID = s_defaultParams;
+    CWorld::UpdateOutdoorLight();
+
+    fprintf(stderr, "Outdoor light map %d default params %d, %zu lights: ambient(%.2f,%.2f,%.2f) diffuse(%.2f,%.2f,%.2f)\n",
+        mapID, s_defaultParams, s_mapLights.size(), CWorld::s_outdoorAmbient.x, CWorld::s_outdoorAmbient.y, CWorld::s_outdoorAmbient.z,
+        CWorld::s_outdoorDiffuse.x, CWorld::s_outdoorDiffuse.y, CWorld::s_outdoorDiffuse.z);
+}
+
+void CWorld::UpdateOutdoorLight() {
+    if (s_defaultParams <= 0) {
+        return;
+    }
+
+    // Actual game time of day (LightIntBand times are in half-minutes, so minutes x 2)
+    int32_t minutes = g_clientGameTime.GetHourAndMinutes();
+    int32_t t = (minutes >= 0 ? minutes : 720) * 2;
+
+    // Base colours from the map default light. Light.dbc carries eight parameter sets per light;
+    // set 1 is the underwater one the reference switches to while the camera is submerged.
+    bool under = CWorld::s_cameraUnderLiquid;
+    int32_t defaultParams = (under && s_defaultParamsUnder > 0) ? s_defaultParamsUnder : s_defaultParams;
+
+    LightColors result;
+    ComputeLightColors(defaultParams, t, result);
+    CWorld::s_outdoorParamsID = defaultParams;
+
+    // Pick the positional light with the strongest falloff weight at the player's position and blend
+    // it over the default. Weight is 1 inside falloffStart, ramps to 0 at falloffEnd.
+    float bestWeight = 0.0f;
+    int32_t bestParams = 0;
+
+    for (const CachedLight& cl : s_mapLights) {
+        if (cl.isDefault) {
+            continue;
+        }
+
+        float dx = cl.x - s_lightPos.x;
+        float dy = cl.y - s_lightPos.y;
+        float dz = cl.z - s_lightPos.z;
+        float d = sqrtf(dx * dx + dy * dy + dz * dz);
+
+        float weight;
+
+        if (d <= cl.falloffStart) {
+            weight = 1.0f;
+        } else if (d < cl.falloffEnd && cl.falloffEnd > cl.falloffStart) {
+            weight = (cl.falloffEnd - d) / (cl.falloffEnd - cl.falloffStart);
+        } else {
+            weight = 0.0f;
+        }
+
+        if (weight > bestWeight) {
+            bestWeight = weight;
+            bestParams = (under && cl.paramsUnder > 0) ? cl.paramsUnder : cl.params;
+        }
+    }
+
+    if (bestParams > 0 && bestWeight > 0.0f) {
+        LightColors local;
+        ComputeLightColors(bestParams, t, local);
+
+        float w = bestWeight;
+        float iw = 1.0f - w;
+
+        result.ambient.x = result.ambient.x * iw + local.ambient.x * w;
+        result.ambient.y = result.ambient.y * iw + local.ambient.y * w;
+        result.ambient.z = result.ambient.z * iw + local.ambient.z * w;
+        result.diffuse.x = result.diffuse.x * iw + local.diffuse.x * w;
+        result.diffuse.y = result.diffuse.y * iw + local.diffuse.y * w;
+        result.diffuse.z = result.diffuse.z * iw + local.diffuse.z * w;
+
+        for (int32_t k = 0; k < 5; k++) {
+            result.sky[k].x = result.sky[k].x * iw + local.sky[k].x * w;
+            result.sky[k].y = result.sky[k].y * iw + local.sky[k].y * w;
+            result.sky[k].z = result.sky[k].z * iw + local.sky[k].z * w;
+        }
+
+        result.fog.x = result.fog.x * iw + local.fog.x * w;
+        result.fog.y = result.fog.y * iw + local.fog.y * w;
+        result.fog.z = result.fog.z * iw + local.fog.z * w;
+        result.bodyTint.x = result.bodyTint.x * iw + local.bodyTint.x * w;
+        result.bodyTint.y = result.bodyTint.y * iw + local.bodyTint.y * w;
+        result.bodyTint.z = result.bodyTint.z * iw + local.bodyTint.z * w;
+        result.sunColor.x = result.sunColor.x * iw + local.sunColor.x * w;
+        result.sunColor.y = result.sunColor.y * iw + local.sunColor.y * w;
+        result.sunColor.z = result.sunColor.z * iw + local.sunColor.z * w;
+        result.cloudColor1.x = result.cloudColor1.x * iw + local.cloudColor1.x * w;
+        result.cloudColor1.y = result.cloudColor1.y * iw + local.cloudColor1.y * w;
+        result.cloudColor1.z = result.cloudColor1.z * iw + local.cloudColor1.z * w;
+        result.cloudColor2.x = result.cloudColor2.x * iw + local.cloudColor2.x * w;
+        result.cloudColor2.y = result.cloudColor2.y * iw + local.cloudColor2.y * w;
+        result.cloudColor2.z = result.cloudColor2.z * iw + local.cloudColor2.z * w;
+
+        for (int32_t b = 0; b < 6; b++) {
+            result.extraBands[b].x = result.extraBands[b].x * iw + local.extraBands[b].x * w;
+            result.extraBands[b].y = result.extraBands[b].y * iw + local.extraBands[b].y * w;
+            result.extraBands[b].z = result.extraBands[b].z * iw + local.extraBands[b].z * w;
+        }
+        result.cloudDensity = result.cloudDensity * iw + local.cloudDensity * w;
+        result.floatBand2 = result.floatBand2 * iw + local.floatBand2 * w;
+        result.floatBand4 = result.floatBand4 * iw + local.floatBand4 * w;
+        result.floatBand5 = result.floatBand5 * iw + local.floatBand5 * w;
+        result.fogEnd = result.fogEnd * iw + local.fogEnd * w;
+        result.fogStartScalar = result.fogStartScalar * iw + local.fogStartScalar * w;
+
+        if (w >= 0.5f) {
+            CWorld::s_outdoorParamsID = bestParams;
+        }
+    }
+
+    CWorld::s_outdoorDiffuse = result.diffuse;
+    CWorld::s_outdoorAmbient = result.ambient;
+
+    for (int32_t k = 0; k < 5; k++) {
+        CWorld::s_skyColors[k] = result.sky[k];
+    }
+
+    CWorld::s_fogColor = result.fog;
+    CWorld::s_bodyTint = result.bodyTint;
+    CWorld::s_sunColor = result.sunColor;
+    CWorld::s_cloudColor1 = result.cloudColor1;
+    CWorld::s_cloudColor2 = result.cloudColor2;
+
+    for (int32_t b = 0; b < 6; b++) {
+        CWorld::s_lightBands12to17[b] = result.extraBands[b];
+    }
+    CWorld::s_cloudDensity = result.cloudDensity;
+    CWorld::s_floatBand2 = result.floatBand2;
+    CWorld::s_floatBand4 = result.floatBand4;
+    CWorld::s_floatBand5 = result.floatBand5;
+    CWorld::s_fogEnd = result.fogEnd > CWorld::s_farClip ? CWorld::s_farClip : result.fogEnd;
+    // The scalar itself is genuinely negative in the data for many params (452 of 838 band-1 rows
+    // carry one), and wrapping past the last key can land on it -- but fog may not start behind the
+    // camera. Measured at the same spot and clock: the reference reports a fog start of 0 where the
+    // raw product here is -190. Clamping the product, not the scalar, keeps the [-1, 1] scalar
+    // range the decompiled fog update implies.
+    CWorld::s_fogStart = CWorld::s_fogEnd * result.fogStartScalar;
+
+    if (CWorld::s_fogStart < 0.0f) {
+        CWorld::s_fogStart = 0.0f;
+    }
+
+    // The outdoor light direction is not a real sun arc and does not come from Light.dbc: the
+    // reference (FUN_007eea90, reached from the DayNight update via FUN_007f3920) holds the
+    // azimuth at a constant 225 degrees and wobbles only the zenith angle between 127 and 110
+    // degrees twice a day, from a hard-coded four-key band over the day fraction. The vector it
+    // stores points AWAY from the light; whoa's lighting dots the direction TO the light, so this
+    // is the negation.
+    {
+        float day = CWorld::GetDayProgress();
+        static const float s_thetaKeys[4] = { 0.0f, 0.25f, 0.5f, 0.75f };
+        static const float s_thetaValues[4] = { 2.2165682f, 1.9198622f, 2.2165682f, 1.9198622f };
+
+        int32_t k = 0;
+
+        for (int32_t i = 0; i < 4; i++) {
+            if (day >= s_thetaKeys[i]) {
+                k = i;
+            }
+        }
+
+        int32_t next = (k + 1) % 4;
+        float span = (next == 0) ? (1.0f - s_thetaKeys[k]) : (s_thetaKeys[next] - s_thetaKeys[k]);
+        float f = span > 0.0f ? (day - s_thetaKeys[k]) / span : 0.0f;
+
+        if (f < 0.0f) f = 0.0f;
+        if (f > 1.0f) f = 1.0f;
+
+        float theta = s_thetaValues[k] + (s_thetaValues[next] - s_thetaValues[k]) * f;
+        const float phi = 3.9269910f; // 225 degrees, constant everywhere
+        float st = sinf(theta);
+
+        CWorld::s_outdoorDirection.x = -(cosf(phi) * st);
+        CWorld::s_outdoorDirection.y = -(sinf(phi) * st);
+        CWorld::s_outdoorDirection.z = -cosf(theta);
+    }
+
+    // The active light may name a sky model (skybox) to draw instead of a plain gradient.
+    ResolveSkybox(CWorld::s_outdoorParamsID);
+}
+
+void CWorld::SetCameraUnderLiquid(bool under) {
+    CWorld::s_cameraUnderLiquid = under;
+}
+
+bool CWorld::IsCameraUnderLiquid() {
+    return CWorld::s_cameraUnderLiquid;
+}
+
+const char* CWorld::GetSkyboxPath() {
+    return s_skyboxPath[0] ? s_skyboxPath : nullptr;
+}
+
+float CWorld::GetDayProgress() {
+    // Fraction of the day (0 at midnight .. 1). Skyboxes hold a full-day animation the client seeks
+    // to this position rather than playing it in real time.
+    int32_t minutes = g_clientGameTime.GetHourAndMinutes();
+
+    if (minutes < 0) {
+        minutes = 720;
+    }
+
+    return (minutes % 1440) / 1440.0f;
+}
+
+const C3Vector& CWorld::GetOutdoorAmbient() {
+    return CWorld::s_outdoorAmbient;
+}
+
+const C3Vector& CWorld::GetOutdoorDiffuse() {
+    return CWorld::s_outdoorDiffuse;
+}
+
+const C3Vector& CWorld::GetOutdoorDirection() {
+    return CWorld::s_outdoorDirection;
+}
+
+const C3Vector& CWorld::GetFogColor() {
+    return CWorld::s_fogColor;
+}
+
+float CWorld::GetFogStart() {
+    return CWorld::s_fogStart;
+}
+
+float CWorld::GetFogEnd() {
+    return CWorld::s_fogEnd;
+}
+
+const C3Vector& CWorld::GetSkyColor(int32_t index) {
+    if (index < 0) {
+        index = 0;
+    } else if (index > 4) {
+        index = 4;
+    }
+
+    return CWorld::s_skyColors[index];
+}
 
 namespace {
 
@@ -83,6 +608,27 @@ float CWorld::GetCurTimeSec() {
 
 float CWorld::GetFarClip() {
     return CWorld::s_farClip;
+}
+
+// How far the world itself is drawn, which is NOT farclip.
+//
+// `farclip` is where fog ends and where the client stops bothering with doodads. The terrain,
+// water and buildings behind that go out to `farclip * horizonFarclipScale` -- the CVar is
+// registered with a default of 4.0 and, until now, was never read by anything: its callback is a
+// bare TODO. So the camera's far plane was farclip, and every piece of distant geometry was
+// frustum-culled the moment it passed it: a hard, sudden edge that took terrain and water with it,
+// which is exactly what the user described and is not something fog can explain.
+float CWorld::GetHorizonFarClip() {
+    float scale = CWorldParam::cvar_horizonFarClip
+        ? CWorldParam::cvar_horizonFarClip->GetFloat()
+        : 4.0f;
+
+    // A scale below 1 would pull the world IN of the fog, which cannot be what was meant.
+    if (scale < 1.0f) {
+        scale = 1.0f;
+    }
+
+    return CWorld::s_farClip * scale;
 }
 
 uint32_t CWorld::GetFixedPrecisionTime(float timeSec) {
@@ -167,10 +713,39 @@ void CWorld::Initialize() {
     // TODO
 }
 
+int32_t CWorld::GetOutdoorParamsID() {
+    return CWorld::s_outdoorParamsID;
+}
+
+float CWorld::GetLiquidAlpha(int32_t oceanic, int32_t deep) {
+    auto lp = g_lightParamsDB.GetRecord(CWorld::s_outdoorParamsID);
+
+    if (!lp) {
+        return deep ? 1.0f : 0.75f;
+    }
+
+    if (oceanic) {
+        return deep ? lp->m_oceanDeepAlpha : lp->m_oceanShallowAlpha;
+    }
+
+    return deep ? lp->m_waterDeepAlpha : lp->m_waterShallowAlpha;
+}
+
+const C3Vector& CWorld::GetLiquidShallow(int32_t oceanic) {
+    // Band 14 (index 2) is ocean, band 16 (index 4) is river.
+    return CWorld::s_lightBands12to17[oceanic ? 2 : 4];
+}
+
+const C3Vector& CWorld::GetLiquidDeep(int32_t oceanic) {
+    return CWorld::s_lightBands12to17[oceanic ? 3 : 5];
+}
+
 void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapID) {
     CWorld::s_farClip = AdjustFarClip(CWorldParam::cvar_farClip->GetFloat(), mapID);
     CWorld::s_nearClip = 0.2f;
     CWorld::s_prevFarClip = CWorld::s_farClip;
+
+    CWorld::ComputeOutdoorLight(mapID);
 
     // TODO
 
@@ -211,12 +786,30 @@ void CWorld::SetFarClip(float farClip) {
 
 // TODO the day/night cycle's light; until then every world model gets a fixed sun
 void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
-    C3Vector ambient = { 0.45f, 0.45f, 0.5f };
-    C3Vector diffuse = { 0.9f, 0.85f, 0.75f };
-    C3Vector direction = { -0.4f, -0.3f, 0.86f };
+    // Fog the model with the same data-driven distance fog the terrain and WMOs use. M2 materials
+    // fog in the shader from the model's own lighting (the scene render turns the fixed-function fog
+    // off), so it has to be set here or entities stay crisp against fogged terrain.
+    if (CWorld::s_fogEnd > 1.0f && CWorld::s_fogEnd > CWorld::s_fogStart && CWorld::s_fogStart < CWorld::s_farClip) {
+        lighting->SetFog(CWorld::s_fogColor, CWorld::s_fogStart, CWorld::s_fogEnd, CWorld::s_fogRate);
+    }
 
-    lighting->AddAmbient(ambient);
-    lighting->AddDiffuse(diffuse, direction);
+    // A unit standing inside a WMO is lit by that building's interior lighting, not the outdoor sun,
+    // exactly as the reference switches a model's lighting by the volume it occupies. The model's
+    // world position is the translation column of its placement matrix.
+    if (model) {
+        C3Vector pos = { model->matrixB4.d0, model->matrixB4.d1, model->matrixB4.d2 };
+        C3Vector interior;
+
+        if (TerrainInteriorAmbientAt(pos, interior)) {
+            lighting->AddAmbient(interior);
+            return;
+        }
+    }
+
+    // Outdoors: ambient and diffuse from Light.dbc (via ComputeOutdoorLight); the sun direction is
+    // still fixed until the time-of-day arc is ported.
+    lighting->AddAmbient(CWorld::s_outdoorAmbient);
+    lighting->AddDiffuse(CWorld::s_outdoorDiffuse, CWorld::s_outdoorDirection);
 }
 
 void CWorld::SetLoadProgressCallback(void (*callback)(float)) {
@@ -238,5 +831,30 @@ void CWorld::SetUpdateTime(float tickTimeSec, uint32_t curTimeMs) {
 }
 
 void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos) {
-    // TODO
+    // The outdoor light is selected by the viewer's position (see UpdateOutdoorLight), so record the
+    // camera each frame; the light and fog then reflect the zone the player is actually standing in.
+    s_lightPos = cameraPos;
+
+    C3Vector d = { cameraTarget.x - cameraPos.x, cameraTarget.y - cameraPos.y, cameraTarget.z - cameraPos.z };
+    float len = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
+
+    if (len > 1e-4f) {
+        CWorld::s_cameraDir = { d.x / len, d.y / len, d.z / len };
+    }
+}
+
+float CWorld::GetCloudDensity() {
+    return CWorld::s_cloudDensity;
+}
+
+const C3Vector& CWorld::GetBodyTint() {
+    return CWorld::s_bodyTint;
+}
+
+const C3Vector& CWorld::GetCameraPos() {
+    return s_lightPos;
+}
+
+const C3Vector& CWorld::GetCameraDir() {
+    return CWorld::s_cameraDir;
 }

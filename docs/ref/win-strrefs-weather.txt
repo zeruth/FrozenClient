@@ -1,0 +1,11 @@
+Weather | 00a02e3c "Weather changed to %d, intensity %f\n" | from 00526aeb in FUN_00526530 @ 00526530
+Weather | 00a2a9b8 "Override Weather" | from 00ad8388 in ?
+Weather | 00a3e958 "textures\\Weather\\RainDrop01.blp" | from 00783ba0 in FUN_00783b90 @ 00783b90
+weather | 00a3ea60 "force-weather-type-on" | from 007878d2 in FUN_00787780 @ 00787780
+Weather | 00a3ea78 "useWeatherShaders" | from 007878bb in FUN_00787780 @ 00787780
+weather | 00a3ea8c "weatherDensity" | from 0078e38e in FUN_0078e1a0 @ 0078e1a0
+weather | 00a3ea8c "weatherDensity" | from 0078789e in FUN_00787780 @ 00787780
+Weather | 00a3ec28 "textures\\Weather\\SnowMist01.blp" | from 0078cafe in FUN_0078ca90 @ 0078ca90
+Weather | 00a3ec28 "textures\\Weather\\SnowMist01.blp" | from 0078cd9e in FUN_0078cd30 @ 0078cd30
+Weather | 00a3ec64 "textures\\Weather\\WeatherMistGrainy01.blp" | from 0078cf8e in FUN_0078cf20 @ 0078cf20
+Weather | 00a5b2d4 "DBFilesClient\\Weather.dbc" | from 008bb6f0 in FUN_008bb6f0 @ 008bb6f0

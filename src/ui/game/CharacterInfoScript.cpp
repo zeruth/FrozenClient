@@ -120,7 +120,10 @@ int32_t Script_PickupBagFromSlot(lua_State* L) {
 }
 
 int32_t Script_CursorCanGoInSlot(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_ShowInventorySellCursor(lua_State* L) {
@@ -146,7 +149,10 @@ int32_t Script_UpdateInventoryAlertStatus(lua_State* L) {
 }
 
 int32_t Script_OffhandHasWeapon(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_HasInspectHonorData(lua_State* L) {
@@ -170,12 +176,26 @@ int32_t Script_ClearInspectPlayer(lua_State* L) {
 }
 
 int32_t Script_GetWeaponEnchantInfo(lua_State* L) {
-    // TODO temporary weapon enchants; none
-    return 0;
+    // 6 values, typed from what the caller destructures them into:
+    //   hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
+    // The data behind this is not available yet, so each position takes the neutral
+    // value for its type -- 0 where the caller does arithmetic, false where it
+    // branches, nil where it expects a name or a texture and already handles absence.
+    lua_pushboolean(L, 0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushboolean(L, 0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 6;
 }
 
 int32_t Script_HasWandEquipped(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 }

@@ -1,0 +1,184 @@
+farclip | 009f579d " f@farclip" | (no references)
+farClip | 00a3f048 "farClipOverride must be 0 or 1." | from 0078dc47 in FUN_0078dc30 @ 0078dc30
+farClip | 00a3f7ac "farClipOverride" | from 0078e419 in FUN_0078e400 @ 0078e400
+farClip | 00a455d8 "shared->nearClip < shared->farClip" | from 008335eb in FUN_00832ea0 @ 00832ea0
+farClip | 00a45610 "shared->farClip" | from 008335d8 in FUN_00832ea0 @ 00832ea0
+nearClip | 00a455d8 "shared->nearClip < shared->farClip" | from 008335eb in FUN_00832ea0 @ 00832ea0
+nearClip | 00a455fc "shared->nearClip" | from 008335e6 in FUN_00832ea0 @ 00832ea0
+shadowLevel | 00a0c800 "shadowLevel" | from 0054eb93 in FUN_0054eb40 @ 0054eb40
+shadowLevel | 00a0c800 "shadowLevel" | from 0054eb13 in FUN_0054eb10 @ 0054eb10
+shadowLevel | 00a0c800 "shadowLevel" | from 0078e4ba in FUN_0078e400 @ 0078e400
+mapShadows | 00a3f75c "mapShadows" | from 0078e467 in FUN_0078e400 @ 0078e400
+groundEffectDensity | 00a3f460 "groundEffectDensity" | from 0078e77f in FUN_0078e400 @ 0078e400
+groundEffectDist | 00a3f438 "groundEffectDist" | from 0078e7a5 in FUN_0078e400 @ 0078e400
+weatherDensity | 00a3ea8c "weatherDensity" | from 0078e38e in FUN_0078e1a0 @ 0078e1a0
+weatherDensity | 00a3ea8c "weatherDensity" | from 0078789e in FUN_00787780 @ 00787780
+particleDensity | 00a3f644 "particleDensity" | from 0078e5b3 in FUN_0078e400 @ 0078e400
+detailDoodadAlpha | 00a3e7a8 "detailDoodadAlpha" | from 00781406 in FUN_00780f50 @ 00780f50
+environmentDetail | 00a3f3bc "environmentDetail" | from 0078e820 in FUN_0078e400 @ 0078e400
+projectedTextures | 00a3f350 "projectedTextures" | from 0078e8a3 in FUN_0078e400 @ 0078e400
+showfootprints | 00a3f56c "showfootprints" | from 0078e681 in FUN_0078e400 @ 0078e400
+ffxGlow | 00a3f2d8 "ffxGlow" | from 008bfeca in FUN_008bfe80 @ 008bfe80
+ffxGlow | 00a3f2d8 "ffxGlow" | from 0078e3d7 in FUN_0078e1a0 @ 0078e1a0
+ffxDeath | 00a3f2e0 "ffxDeath" | from 007ea298 in FUN_007ea260 @ 007ea260
+ffxDeath | 00a3f2e0 "ffxDeath" | from 0078e3bf in FUN_0078e1a0 @ 0078e1a0
+FFXGlow | 00a9428a "@@FFXGlow" | (no references)
+FFXGlow | 00a942c0 "FFXGlowWave" | from 008c2e94 in FUN_008c2ce0 @ 008c2ce0
+FFXFogCombine | 00a417d8 "FFXFogCombine" | from 007e8278 in FUN_007e81b0 @ 007e81b0
+FFXPropagateFog | 00a417b0 "FFXPropagateFog" | from 007e811f in FUN_007e80b0 @ 007e80b0
+SkyCloudLOD | 00a41ccc "SkyCloudLOD set to %i" | from 007f1d08 in FUN_007f1cd0 @ 007f1cd0
+SkyCloudLOD | 00a41d04 "SkyCloudLOD" | from 007f29da in FUN_007f2790 @ 007f2790
+SkySunGlare | 00a41ce4 "ùP.º=«ª*=SkySunGlare" | from 007f3597 in FUN_007f3230 @ 007f3230
+moonGlare | 00a41bdc "~Ò?«ªr?«ª
+>|ðA@Textures\moonGlare.blp" | from 007ee2e0 in FUN_007ee230 @ 007ee230
+moonGlare | 00a41bdc "~Ò?«ªr?«ª
+>|ðA@Textures\moonGlare.blp" | from 007eefb0 in FUN_007eecc0 @ 007eecc0
+DNClouds | 00a41cb0 "ÊÔæ@DNClouds1" | from 007f1ab5 in FUN_007f16f0 @ 007f16f0
+DNClouds | 00a41cc0 "DNClouds0" | from 007f1c6b in FUN_007f1b10 @ 007f1b10
+proceduralOceanDepthTex | 00a59450 "proceduralOceanDepthTex" | from 008a2e91 in FUN_008a2e20 @ 008a2e20
+ShadowBlob | 00a411f0 "Textures\ShadowBlob.blp" | from 007e4a8e in FUN_007e4a40 @ 007e4a40
+ShadowMap | 00a3e750 "ShadowMap.wfx" | from 007811b6 in FUN_00780f50 @ 00780f50
+ShadowMap | 00a400f8 "UTG¿o9ShadowMapRenderSL" | from 007bb4c4 in FUN_007bb460 @ 007bb460
+Particle_Unlit | 00a45470 "Particle_Unlit" | from 0081f3e9 in FUN_0081f330 @ 0081f330
+TogglePortals | 009fe2a4 "TogglePortals" | data-only ref from 00ac8228
+PassGlow | 00a942ac "Ã¸2>.\PassGlow.cpp" | from 008c24d2 in FUN_008c2350 @ 008c2350
+PassGlow | 00a942cc "PassGlowWave" | from 008c2e2a in FUN_008c2ce0 @ 008c2ce0
+LightSkybox | 00a5d278 "DBFilesClient\LightSkybox.dbc" | from 008bdfc0 in FUN_008bdfc0 @ 008bdfc0
+MapShadow.cpp | 00a400e6 "úD.\MapShadow.cpp" | (no references)
+MapWeather.cpp | 00a3e9da "úF.\MapWeather.cpp" | (no references)
+MapObj.cpp | 00a3fe0e "A.\MapObj.cpp" | (no references)
+MapObjGroup.cpp | 00a403a0 "UU@.\MapObjGroup.cpp" | from 007c9de3 in FUN_007c9dd0 @ 007c9dd0
+MapObjGroup.cpp | 00a403a0 "UU@.\MapObjGroup.cpp" | from 007c8cae in FUN_007c8c60 @ 007c8c60
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007cc4ba in FUN_007cc310 @ 007cc310
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c64db in FUN_007c64b0 @ 007c64b0
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c5262 in FUN_007c5220 @ 007c5220
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007cdf9b in FUN_007cdf80 @ 007cdf80
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007d9ab3 in FUN_007d9a70 @ 007d9a70
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007f3bd1 in FUN_007f3b90 @ 007f3b90
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 0079c745 in FUN_0079c360 @ 0079c360
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 0079a8e6 in FUN_0079a870 @ 0079a870
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 0079aa44 in FUN_0079a870 @ 0079a870
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 0079a81d in FUN_0079a790 @ 0079a790
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c3f3c in FUN_007c3f30 @ 007c3f30
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c462c in FUN_007c4620 @ 007c4620
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c4975 in FUN_007c4960 @ 007c4960
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007c4f2b in FUN_007c4f10 @ 007c4f10
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007d5173 in FUN_007d5150 @ 007d5150
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007fc43a in FUN_007fc220 @ 007fc220
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007906cb in FUN_007906c0 @ 007906c0
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007f429c in FUN_007f3f40 @ 007f3f40
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 007f5acc in FUN_007f5930 @ 007f5930
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 0077ee2d in FUN_0077ed40 @ 0077ed40
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 00783c1d in FUN_00783c10 @ 00783c10
+World.cpp | 00a3e554 "UUB.\World.cpp" | from 00783d0f in FUN_00783ce0 @ 00783ce0
+WorldScene.cpp | 00a3f850 "Âõ<9ã<$tÉfff¿®Gáz®ï¿®Gáz®ï?.\WorldScene.cpp" | (no references)
+WorldFrame.cpp | 009f9876 "a6:«ªª?.\WorldFrame.cpp" | (no references)
+WorldText.cpp | 00a41646 "?.\WorldText.cpp" | (no references)
+MapLowDetail.cpp | 00a403da "C.\MapLowDetail.cpp" | (no references)
+ParticleSystem2.cpp | 00aa2cec "EJ:.\ParticleSystem2.cpp" | from 0075c6fd in FUN_0075c6f0 @ 0075c6f0
+ParticleSystem2.cpp | 00aa2cec "EJ:.\ParticleSystem2.cpp" | from 0097cd02 in FUN_0097be80 @ 0097be80
+WorldParam.cpp | 00a3f1a8 ".\WorldParam.cpp" | from 0078dfdb in FUN_0078df90 @ 0078df90
+Environments\Stars | 00aa9842 "Environments\Stars\stars.mdl" | (no references)
+_d.adt | (no occurrence in memory)
+.wdt | 00a402bc "%s\%s.wdt" | from 007bfd31 in FUN_007bfce0 @ 007bfce0
+DayNight | (no occurrence in memory)
+Terrain | 009f0e64 "TerrainBlend" | from 007b7abb in FUN_007b7a70 @ 007b7a70
+Terrain | 009f0e64 "TerrainBlend" | data-only ref from 00ac330c
+Terrain | 00a0b438 "DungeonUsesTerrainMap" | data-only ref from 00accf48
+Terrain | 00a0c6c0 "SetTerrainMip" | data-only ref from 00acd380
+Terrain | 00a0c6d0 "GetTerrainMip" | data-only ref from 00acd378
+Terrain | 00a0c80c "Usage: SetTerrainMip(value)" | from 0054eb59 in FUN_0054eb40 @ 0054eb40
+Terrain | 00a1e574 "cameraTerrainTiltTimeMax" | from 005fdffd in FUN_005fd910 @ 005fd910
+Terrain | 00a1e590 "cameraTerrainTiltTimeMin" | from 005fdfd5 in FUN_005fd910 @ 005fd910
+Terrain | 00a1e5b0 "cameraTerrainTilt" | from 005fdf04 in FUN_005fd910 @ 005fd910
+Terrain | 00a1e5b0 "cameraTerrainTilt" | from 005fdfb5 in FUN_005fd910 @ 005fd910
+Terrain | 00a3e598 "Terrain culling enabled." | via data 0077f675 from 0077f659 in ?
+Terrain | 00a3e5b4 "Terrain culling disabled." | data-only ref from 0077f65b
+Terrain | 00a3e640 "Terrain shadow enabled." | via data 0077f805 from 0077f7e9 in ?
+Terrain | 00a3e658 "Terrain shadow disabled." | data-only ref from 0077f7eb
+Terrain | 00a3e674 "Terrain low detail enabled." | via data 0077f84b from 0077f82c in ?
+Terrain | 00a3e690 "Terrain low detail disabled." | data-only ref from 0077f82e
+Terrain | 00a3ec96 "´BTerrain LOD disabled." | (no references)
+Terrain | 00a3ecb0 "Terrain LOD enabled." | from 0078d622 in FUN_0078d610 @ 0078d610
+Terrain | 00a3ecc8 "Terrain shadows disabled." | from 0078d68a in FUN_0078d660 @ 0078d660
+Terrain | 00a3ece4 "Terrain shadows enabled." | from 0078d672 in FUN_0078d660 @ 0078d660
+Terrain | 00a3f4a4 "Terrain alpha map bit depth" | from 0078e74d in FUN_0078e400 @ 0078e400
+Terrain | 00a3f710 "Terrain shadow map mip level" | from 0078e4b5 in FUN_0078e400 @ 0078e400
+Terrain | 00a3fbe8 "Terrain3" | from 0079e5a8 in FUN_0079e4f0 @ 0079e4f0
+Terrain | 00a3fbf4 "Terrain3_pcf" | from 0079e594 in FUN_0079e4f0 @ 0079e4f0
+Terrain | 00a3fc04 "Terrain2" | from 0079e568 in FUN_0079e4f0 @ 0079e4f0
+Terrain | 00a3fc10 "Terrain2_pcf" | from 0079e561 in FUN_0079e4f0 @ 0079e4f0
+Terrain | 00a3fcec "TerrainSM" | from 0079ebdc in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fcf8 "Terrain1w_4" | from 0079eb81 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fcf8 "Terrain1w_4" | from 0079eb96 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd04 "Terrain1w_3" | from 0079eb3b in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd04 "Terrain1w_3" | from 0079eb5e in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd10 "Terrain1w_2" | from 0079eaf5 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd10 "Terrain1w_2" | from 0079eb18 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd1c "Terrain1w_1" | from 0079eaaf in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd1c "Terrain1w_1" | from 0079ead2 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd28 "Terrain1w" | from 0079ea3f in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd34 "Terrain1" | from 0079ea2a in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd34 "Terrain1" | from 0079ebab in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd34 "Terrain1" | from 0079ea8c in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd34 "Terrain1" | from 0079ea65 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd40 "Terrain0_env" | from 0079e9dc in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd50 "Terrain0" | from 0079e9b9 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd5c "Terrain" | from 0079e989 in FUN_0079e7c0 @ 0079e7c0
+Terrain | 00a3fd5c "Terrain" | from 007a2ff6 in FUN_007a2c60 @ 007a2c60
+Terrain | 00a59eb4 "DBFilesClient\FootstepTerrainLookup.dbc" | from 008af9f0 in FUN_008af9f0 @ 008af9f0
+Terrain | 00a5b0cc "DBFilesClient\TerrainType.dbc" | from 008ba1a0 in FUN_008ba1a0 @ 008ba1a0
+Terrain | 00a5b0ec "DBFilesClient\TerrainTypeSounds.dbc" | from 008ba2b0 in FUN_008ba2b0 @ 008ba2b0
+MapObj | 00a3e77c "MapObjU.wfx" | from 00781198 in FUN_00780f50 @ 00780f50
+MapObj | 00a3e788 "MapObj.wfx" | from 0078118e in FUN_00780f50 @ 00780f50
+MapObj | 00a3f118 "MapObjLightLOD must be 0-2" | from 0078deec in FUN_0078ded0 @ 0078ded0
+MapObj | 00a3fe0e "A.\MapObj.cpp" | (no references)
+MapObj | 00a3fe2c "MapObjUComposite" | from 007affdc in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe40 "MapObjUEnvMetal" | from 007affcd in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe50 "MapObjUOpaque" | from 007affbe in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe60 "MapObjUEnv" | from 007affaf in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe6c "MapObjUMetal" | from 007affa0 in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe7c "MapObjUSpecular" | from 007aff91 in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe8c "MapObjUDiffuse" | from 007aff7c in FUN_007afee0 @ 007afee0
+MapObj | 00a3fe9c "MapObjEnvMetal" | from 007aff6d in FUN_007afee0 @ 007afee0
+MapObj | 00a3feac "MapObjOpaque" | from 007aff5e in FUN_007afee0 @ 007afee0
+MapObj | 00a3febc "MapObjEnv" | from 007aff4f in FUN_007afee0 @ 007afee0
+MapObj | 00a3fec8 "MapObjMetal" | from 007aff40 in FUN_007afee0 @ 007afee0
+MapObj | 00a3fed4 "MapObjSpecular" | from 007aff31 in FUN_007afee0 @ 007afee0
+MapObj | 00a3fee4 "MapObjDiffuse" | from 007aff1d in FUN_007afee0 @ 007afee0
+MapObj | 00a3ff04 "CMapObj::Create(): mapObj->Read("%s") failed" | from 007b0d08 in FUN_007b0cc0 @ 007b0cc0
+MapObj | 00a403a0 "UU@.\MapObjGroup.cpp" | from 007c9de3 in FUN_007c9dd0 @ 007c9dd0
+MapObj | 00a403a0 "UU@.\MapObjGroup.cpp" | from 007c8cae in FUN_007c8c60 @ 007c8c60
+MapObj | 00a40596 "þBü©ñÒMbP¿.\MapObjRead.cpp" | (no references)
+MapObj | 00adf6c8 ".PAVCMapObjDefGroup@@" | from 0079230e in FUN_00792300 @ 00792300
+MapObj | 00adf6c8 ".PAVCMapObjDefGroup@@" | from 00790262 in FUN_00790250 @ 00790250
+MapObj | 00adf6c8 ".PAVCMapObjDefGroup@@" | from 00790281 in FUN_00790250 @ 00790250
+MapObj | 00adf6c8 ".PAVCMapObjDefGroup@@" | from 007902ce in FUN_00790250 @ 00790250
+MapObj | 00adf6c8 ".PAVCMapObjDefGroup@@" | from 007b453a in FUN_007b4500 @ 007b4500
+MapObj | 00aee018 ".?AV?$TSExplicitList@VCMapObj@@$0?CCCCCCCD@@@" | from 007b03ea in FUN_007b0370 @ 007b0370
+MapObj | 00aee018 ".?AV?$TSExplicitList@VCMapObj@@$0?CCCCCCCD@@@" | from 007b0408 in FUN_007b0370 @ 007b0370
+MapObj | 00aee018 ".?AV?$TSExplicitList@VCMapObj@@$0?CCCCCCCD@@@" | from 007b04b3 in FUN_007b0370 @ 007b0370
+MapObj | 00aee018 ".?AV?$TSExplicitList@VCMapObj@@$0?CCCCCCCD@@@" | from 007b0544 in FUN_007b04d0 @ 007b04d0
+MapObj | 00aee050 ".?AVCMapObj@@" | from 007b0810 in FUN_007b0800 @ 007b0800
+MapObj | 00aee050 ".?AVCMapObj@@" | from 007b0672 in FUN_007b0660 @ 007b0660
+MapObj | 00aeed08 ".?AV?$TSExplicitList@VCMapObjDef@@$0?CCCCCCCD@@@" | from 007be1ba in FUN_007be140 @ 007be140
+MapObj | 00aeed08 ".?AV?$TSExplicitList@VCMapObjDef@@$0?CCCCCCCD@@@" | from 007be1d8 in FUN_007be140 @ 007be140
+MapObj | 00aeed08 ".?AV?$TSExplicitList@VCMapObjDef@@$0?CCCCCCCD@@@" | from 007be283 in FUN_007be140 @ 007be140
+MapObj | 00aeed08 ".?AV?$TSExplicitList@VCMapObjDef@@$0?CCCCCCCD@@@" | from 007c0c44 in FUN_007c0bd0 @ 007c0bd0
+MapObj | 00aeed60 ".?AVCMapObjDef@@" | from 007c0de5 in FUN_007c0dd0 @ 007c0dd0
+MapObj | 00aeed60 ".?AVCMapObjDef@@" | from 007c0e10 in FUN_007c0e00 @ 007c0e00
+MapObj | 00aeeed8 ".?AUVertArray@CMapObjGroup@@" | from 007cb544 in FUN_007cb520 @ 007cb520
+MapObj | 00aeeed8 ".?AUVertArray@CMapObjGroup@@" | from 007cb6de in FUN_007cb680 @ 007cb680
+MapObj | 00aeef08 ".PAVCMapObjDef@@" | from 007cc032 in FUN_007cc020 @ 007cc020
+MapObj | 00aeef08 ".PAVCMapObjDef@@" | from 007cc051 in FUN_007cc020 @ 007cc020
+MapObj | 00aeef08 ".PAVCMapObjDef@@" | from 007cc09e in FUN_007cc020 @ 007cc020
+MapObj | 00aeef08 ".PAVCMapObjDef@@" | from 007cc2ae in FUN_007cc2a0 @ 007cc2a0
+LiquidWater | 00a59524 "psLiquidWater" | from 008a3fbf in FUN_008a3f70 @ 008a3f70
+LiquidWater | 00a59534 "vsLiquidWater" | from 008a3f9c in FUN_008a3f70 @ 008a3f70
+LiquidWater | 00a59550 "psLiquidWaterNoSpec" | from 008a40bf in FUN_008a4070 @ 008a4070
+LiquidWater | 00a59564 "vsLiquidWaterNoSpec" | from 008a409c in FUN_008a4070 @ 008a4070
+LiquidMagma | 00a59584 "psLiquidMagma" | from 008a41df in FUN_008a4190 @ 008a4190
+LiquidMagma | 00a59594 "vsLiquidMagma" | from 008a41bc in FUN_008a4190 @ 008a4190
+LiquidOcean | (no occurrence in memory)
+SetFogColor | 00a9f3d4 "SetFogColor" | data-only ref from 00b2cb90
+GetFogFar | 00a9f398 "GetFogFar" | data-only ref from 00b2cbb8

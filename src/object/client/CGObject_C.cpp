@@ -1,8 +1,13 @@
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGObject_C.hpp"
+#include "object/client/CGUnit_C.hpp"
 #include "model/Model2.hpp"
+#include "model/CM2Model.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "object/Types.hpp"
 #include "world/World.hpp"
+#include "component/CCharacterComponent.hpp"
+#include "db/Db.hpp"
 
 CGObject_C::CGObject_C(uint32_t time, CClientObjCreate& objCreate) {
     // TODO
@@ -43,10 +48,70 @@ void CGObject_C::AddWorldObject() {
                 static_cast<CGPlayer_C*>(this)->BuildCharacterComponent();
             }
 
-            // Units and creatures idle in their stand animation (sequence 0); it is queued if the
-            // model is still loading. Movement-driven animation is not ported yet.
+            // Set the unit's looping idle pose from its current state (dead / stand state / emote).
+            // The per-frame update in CGWorldFrame re-runs this so the pose tracks state changes; the
+            // sequence is queued inside the model if it is still loading.
             if (this->IsA(TYPE_UNIT)) {
-                model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
+                static_cast<CGUnit_C*>(this)->UpdateIdleAnimation();
+            }
+
+            // Non-player units carry their weapons in UNIT_VIRTUAL_ITEM_SLOT_ID; the reference
+            // attaches those to the creature's hands, the same way players equip weapons.
+            if (this->IsA(TYPE_UNIT) && !this->IsA(TYPE_PLAYER)) {
+                auto unitC = static_cast<CGUnit_C*>(this);
+                auto unit = unitC->Unit();
+
+                // A humanoid NPC (its display carries extended character data) is composited like a
+                // player from its CreatureDisplayInfoExtra; only ordinary creature models fall back
+                // to the monster skin/geoset path, exactly as the reference chooses between them.
+                if (!unitC->BuildNpcCharacterComponent()) {
+                    auto modelDataRec = unitC->GetModelData();
+                    auto displayInfoRec = g_creatureDisplayInfoDB.GetRecord(unitC->GetDisplayID());
+
+                    if (displayInfoRec) {
+                        CCharacterComponent::ApplyMonsterGeosets(model, displayInfoRec);
+                        CCharacterComponent::ReplaceMonsterSkin(model, displayInfoRec, modelDataRec);
+                    }
+                }
+
+                if (unit) {
+                    static const INVENTORY_SLOTS handSlots[3] = { INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED };
+                    bool sheathed = (unit->pad3 & 0xFF) == 0;
+
+                    for (int32_t i = 0; i < 3; i++) {
+                        int32_t entryID = unit->virtualItemSlotID[i];
+
+                        if (!entryID) {
+                            continue;
+                        }
+
+                        auto itemRec = g_itemDB.GetRecord(entryID);
+
+                        if (!itemRec || itemRec->m_displayInfoID <= 0) {
+                            continue;
+                        }
+
+                        auto displayRec = g_itemDisplayInfoDB.GetRecord(itemRec->m_displayInfoID);
+
+                        if (!displayRec) {
+                            continue;
+                        }
+
+                        bool shield = itemRec->m_inventoryType == INVTYPE_SHIELD;
+                        bool heldRight = itemRec->m_inventoryType == INVTYPE_RANGEDRIGHT || itemRec->m_inventoryType == INVTYPE_THROWN;
+
+                        CCharacterComponent::AddHandItem(
+                            model,
+                            displayRec,
+                            handSlots[i],
+                            static_cast<SHEATHE_TYPE>(itemRec->m_sheatheType),
+                            sheathed,
+                            shield,
+                            heldRight,
+                            0
+                        );
+                    }
+                }
             }
 
             model->Release();

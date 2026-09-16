@@ -265,6 +265,8 @@ enum NETMESSAGE {
     SMSG_COOLDOWN_EVENT                 = 0x0135,
     SMSG_EQUIPMENT_SET_ID               = 0x0137,
     SMSG_PET_CAST_FAILED                = 0x0138,
+    MSG_CHANNEL_START                   = 0x0139,
+    MSG_CHANNEL_UPDATE                  = 0x013A,
     SMSG_AI_REACTION                    = 0x013C,
     SMSG_ATTACK_START                   = 0x0143,
     SMSG_ATTACK_STOP                    = 0x0144,

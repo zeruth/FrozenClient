@@ -363,7 +363,10 @@ int32_t Script_IsStereoVideoAvailable(lua_State* L) {
 }
 
 int32_t Script_IsPlayerResolutionAvailable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 FrameScript_Method CGVideoOptions::s_ScriptFunctions[NUM_SCRIPT_FUNCTIONS_VIDEO_OPTIONS] = {

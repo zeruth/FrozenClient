@@ -4,6 +4,9 @@
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <cstdint>
+#include <cstring>
+#include <ctime>
+#include <storm/String.hpp>
 
 luaL_Reg FrameScriptInternal::extra_funcs[31] = {
     { "setglobal", &sub_8168D0 },
@@ -179,24 +182,232 @@ int32_t geterrorhandler(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Lua 5.1 exposes these from the os library; the interface uses them as plain globals. They were
+// stubbed, and date() returning nothing is what left the interface's own error frame unable to
+// format an error -- turning one error into an unbounded stream of them.
+
+namespace {
+
+void SetDateField(lua_State* L, const char* key, int32_t value) {
+    lua_pushstring(L, key);
+    lua_pushnumber(L, value);
+    lua_settable(L, -3);
+}
+
+void SetDateFlag(lua_State* L, const char* key, bool value) {
+    lua_pushstring(L, key);
+    lua_pushboolean(L, value);
+    lua_settable(L, -3);
+}
+
+int32_t GetDateField(lua_State* L, const char* key, int32_t fallback) {
+    lua_pushstring(L, key);
+    lua_gettable(L, -2);
+
+    int32_t value = fallback;
+
+    if (lua_type(L, -1) == LUA_TNUMBER) {
+        value = static_cast<int32_t>(lua_tonumber(L, -1));
+    }
+
+    lua_settop(L, -2);
+
+    return value;
+}
+
+} // namespace
+
 int32_t os_date(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const char* format = lua_type(L, 1) == LUA_TSTRING ? lua_tolstring(L, 1, nullptr) : "%c";
+
+    time_t when = lua_type(L, 2) == LUA_TNUMBER
+        ? static_cast<time_t>(lua_tonumber(L, 2))
+        : time(nullptr);
+
+    // A leading "!" asks for UTC rather than local time.
+    bool utc = *format == '!';
+
+    if (utc) {
+        format++;
+    }
+
+    struct tm parts;
+
+    if (utc ? gmtime_s(&parts, &when) : localtime_s(&parts, &when)) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    // "*t" asks for the broken-down time as a table instead of a formatted string.
+    if (!SStrCmp(format, "*t", STORM_MAX_STR)) {
+        lua_newtable(L);
+
+        SetDateField(L, "year", parts.tm_year + 1900);
+        SetDateField(L, "month", parts.tm_mon + 1);
+        SetDateField(L, "day", parts.tm_mday);
+        SetDateField(L, "hour", parts.tm_hour);
+        SetDateField(L, "min", parts.tm_min);
+        SetDateField(L, "sec", parts.tm_sec);
+        SetDateField(L, "wday", parts.tm_wday + 1);
+        SetDateField(L, "yday", parts.tm_yday + 1);
+        SetDateFlag(L, "isdst", parts.tm_isdst > 0);
+
+        return 1;
+    }
+
+    char text[256];
+
+    if (!strftime(text, sizeof(text), format, &parts)) {
+        text[0] = 0;
+    }
+
+    lua_pushstring(L, text);
+
+    return 1;
 }
 
 int32_t os_time(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // With no table argument this is just the current time.
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        lua_pushnumber(L, static_cast<double>(time(nullptr)));
+
+        return 1;
+    }
+
+    struct tm parts;
+    memset(&parts, 0, sizeof(parts));
+
+    lua_settop(L, 1);
+
+    parts.tm_year = GetDateField(L, "year", 1970) - 1900;
+    parts.tm_mon = GetDateField(L, "month", 1) - 1;
+    parts.tm_mday = GetDateField(L, "day", 1);
+    parts.tm_hour = GetDateField(L, "hour", 12);
+    parts.tm_min = GetDateField(L, "min", 0);
+    parts.tm_sec = GetDateField(L, "sec", 0);
+    parts.tm_isdst = -1;
+
+    time_t when = mktime(&parts);
+
+    if (when == static_cast<time_t>(-1)) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, static_cast<double>(when));
+    }
+
+    return 1;
 }
 
 int32_t os_difftime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto later = static_cast<time_t>(lua_tonumber(L, 1));
+    auto earlier = lua_type(L, 2) == LUA_TNUMBER
+        ? static_cast<time_t>(lua_tonumber(L, 2))
+        : static_cast<time_t>(0);
+
+    lua_pushnumber(L, difftime(later, earlier));
+
+    return 1;
 }
 
 int32_t debugstack(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Returns a printable call stack. Blizzard_DebugTools is the interface's own error handler and
+    // concatenates this into its message, so a stub that returns nothing turns every single error
+    // into a second error inside the handler -- 4173 of them in one run before this was written.
+    //
+    // debugstack([start[, count1[, count2]]]); the two counts select how many frames to show from
+    // the top and the bottom. Only the start and a combined limit are honoured here.
+    int32_t start = 1;
+    int32_t limit = 12;
+
+    if (lua_type(L, 1) == LUA_TNUMBER) {
+        start = static_cast<int32_t>(lua_tonumber(L, 1));
+    }
+
+    if (lua_type(L, 2) == LUA_TNUMBER) {
+        limit = static_cast<int32_t>(lua_tonumber(L, 2));
+    }
+
+    if (start < 1) {
+        start = 1;
+    }
+
+    char stack[4096];
+    stack[0] = 0;
+
+    size_t used = 0;
+    lua_Debug info;
+
+    for (int32_t level = start; level < start + limit; level++) {
+        if (!lua_getstack(L, level, &info)) {
+            break;
+        }
+
+        lua_getinfo(L, "Snl", &info);
+
+        const char* name = info.name;
+
+        if (!name || !*name) {
+            name = *info.what == 'm' ? "main chunk" : (*info.what == 'C' ? "?" : "function <anonymous>");
+        }
+
+        char entry[512];
+        SStrPrintf(entry, sizeof(entry), "%s:%d: in %s\n", info.short_src, info.currentline, name);
+
+        size_t length = SStrLen(entry);
+
+        if (used + length >= sizeof(stack)) {
+            break;
+        }
+
+        SStrCopy(&stack[used], entry, sizeof(stack) - used);
+        used += length;
+    }
+
+    lua_pushstring(L, stack);
+
+    return 1;
 }
 
 int32_t debuglocals(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Names and values of the locals visible at a stack level, as one printable block. Callers
+    // concatenate the result, so this must return a string even when there is nothing to show.
+    int32_t level = lua_type(L, 1) == LUA_TNUMBER ? static_cast<int32_t>(lua_tonumber(L, 1)) : 1;
+
+    char locals[2048];
+    locals[0] = 0;
+
+    size_t used = 0;
+    lua_Debug info;
+
+    if (lua_getstack(L, level, &info)) {
+        for (int32_t index = 1; ; index++) {
+            const char* name = lua_getlocal(L, &info, index);
+
+            if (!name) {
+                break;
+            }
+
+            // Skip the compiler's own temporaries, which are named "(*temporary)".
+            if (*name != '(') {
+                char entry[256];
+                SStrPrintf(entry, sizeof(entry), "%s = %s\n", name, luaL_typename(L, -1));
+
+                size_t length = SStrLen(entry);
+
+                if (used + length < sizeof(locals)) {
+                    SStrCopy(&locals[used], entry, sizeof(locals) - used);
+                    used += length;
+                }
+            }
+
+            lua_settop(L, -2);
+        }
+    }
+
+    lua_pushstring(L, locals);
+
+    return 1;
 }
 
 int32_t scrub(lua_State* L) {

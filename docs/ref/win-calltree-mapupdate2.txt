@@ -1,0 +1,238 @@
+# program=RunicWorldGame.exe depth=3
+==== root 007b5950
+FUN_007b5950 @ 007b5950
+  __alloca_probe_16 @ 0040ca10
+    __alloca_probe @ 0040bb50
+  FUN_007b53b0 @ 007b53b0
+  FUN_007b5420 @ 007b5420
+    FUN_007cde30 @ 007cde30
+      FUN_008a1710 @ 008a1710
+  FUN_007b5500 @ 007b5500
+    FUN_007b9830 @ 007b9830
+      FUN_007b5020 @ 007b5020
+  FUN_007b54a0 @ 007b54a0
+    FUN_007b0d40 @ 007b0d40
+    FUN_007b30d0 @ 007b30d0
+      FUN_005d0040 @ 005d0040
+      FUN_007b0e80 @ 007b0e80
+    FUN_007b3960 @ 007b3960
+      FUN_007b3780 @ 007b3780
+      FUN_004d3100 @ 004d3100
+  FUN_007c09f0 @ 007c09f0
+    FUN_006bb6d0 @ 006bb6d0
+    FUN_004d3100 @ 004d3100  (seen)
+  FUN_007c3700 @ 007c3700
+    FUN_007c35f0 @ 007c35f0
+      FUN_004b9ea0 @ 004b9ea0
+      FUN_007c09f0 @ 007c09f0  (seen)
+      FUN_007c3370 @ 007c3370
+      FUN_007c0180 @ 007c0180
+      FUN_0047bf30 @ 0047bf30
+    FUN_007c00a0 @ 007c00a0
+      FUN_004d3100 @ 004d3100  (seen)
+  FUN_007b4830 @ 007b4830
+  FUN_007d9a70 @ 007d9a70
+    FUN_007c07c0 @ 007c07c0
+      FUN_004d3330 @ 004d3330
+      FUN_006ded60 @ 006ded60
+      FUN_007d7050 @ 007d7050
+    FUN_007c0750 @ 007c0750
+      FUN_004d3330 @ 004d3330  (seen)
+      FUN_006ded60 @ 006ded60  (seen)
+    FUN_006ded60 @ 006ded60  (seen)
+  _qsort @ 0040be50
+    FUN_0041006d @ 0041006d
+      FUN_0040df16 @ 0040df16
+    FUN_0040c7a2 @ 0040c7a2
+      FUN_0040dd3d @ 0040dd3d
+      FUN_004111be @ 004111be
+      __invoke_watson @ 0040c684
+    shortsort @ 0040bdc0
+    swap @ 0040bd90
+  FUN_007d9a20 @ 007d9a20
+    FUN_0076f070 @ 0076f070
+      FUN_00771870 @ 00771870
+      FUN_0076f010 @ 0076f010
+    FUN_007d7150 @ 007d7150
+      FUN_007bd480 @ 007bd480
+      FUN_004218c0 @ 004218c0
+      FUN_007bfe40 @ 007bfe40
+      FUN_004ba170 @ 004ba170
+      FUN_004bab50 @ 004bab50
+  FUN_004ba060 @ 004ba060
+    FUN_00772aa0 @ 00772aa0
+      FUN_007729b0 @ 007729b0
+    FUN_00774640 @ 00774640
+      KERNEL32.DLL::EnterCriticalSection @ EXTERNAL:00000050
+    FUN_00774650 @ 00774650
+      KERNEL32.DLL::LeaveCriticalSection @ EXTERNAL:00000051
+    FUN_0079f820 @ 0079f820
+    FUN_007b5020 @ 007b5020  (seen)
+    FUN_00422130 @ 00422130
+      FUN_00428000 @ 00428000
+    FUN_0047add0 @ 0047add0
+    FUN_00421850 @ 00421850
+      FUN_00428670 @ 00428670
+    FUN_005eeb70 @ 005eeb70
+    FUN_004b9b20 @ 004b9b20
+      FUN_0086ae20 @ 0086ae20
+      FUN_00774640 @ 00774640  (seen)
+      FUN_00774650 @ 00774650  (seen)
+    FUN_0086b280 @ 0086b280
+      KERNEL32.DLL::Sleep @ EXTERNAL:00000054
+  FUN_007b4df0 @ 007b4df0
+    FUN_007d6bf0 @ 007d6bf0
+      FUN_007c09f0 @ 007c09f0  (seen)
+      FUN_007c35d0 @ 007c35d0
+      FUN_007d6b30 @ 007d6b30
+      FUN_007d6690 @ 007d6690
+      FUN_007c3e70 @ 007c3e70
+      FUN_007c5b20 @ 007c5b20
+    FUN_007b4df0 @ 007b4df0  (seen)
+    FUN_007d6a90 @ 007d6a90
+      FUN_007c09f0 @ 007c09f0  (seen)
+      FUN_007c35d0 @ 007c35d0  (seen)
+  FUN_004b9950 @ 004b9950
+    FUN_00774640 @ 00774640  (seen)
+  FUN_0078fb20 @ 0078fb20
+    FUN_009839e0 @ 009839e0
+  FUN_004ba3d0 @ 004ba3d0
+    FUN_004b6670 @ 004b6670
+  FUN_004b9970 @ 004b9970
+    FUN_00774650 @ 00774650  (seen)
+  FUN_007b4bc0 @ 007b4bc0
+    FUN_007944c0 @ 007944c0
+      FUN_00984ce0 @ 00984ce0
+      FUN_00792360 @ 00792360
+
+==== root 007b6110
+FUN_007b6110 @ 007b6110
+  FUN_007ae1c0 @ 007ae1c0
+    FUN_004ba060 @ 004ba060
+      FUN_00772aa0 @ 00772aa0
+      FUN_00774640 @ 00774640
+      FUN_00774650 @ 00774650
+      FUN_0079f820 @ 0079f820
+      FUN_007b5020 @ 007b5020
+      FUN_00422130 @ 00422130
+      FUN_0047add0 @ 0047add0
+      FUN_00421850 @ 00421850
+      FUN_005eeb70 @ 005eeb70
+      FUN_004b9b20 @ 004b9b20
+      FUN_0086b280 @ 0086b280
+  FUN_007b5d00 @ 007b5d00
+    FUN_007ae520 @ 007ae520
+    FUN_004c2300 @ 004c2300
+    FUN_007ae5e0 @ 007ae5e0
+    FUN_007f9430 @ 007f9430
+      FUN_007f9320 @ 007f9320
+    FUN_005d0040 @ 005d0040
+    FUN_007b4f10 @ 007b4f10
+      FUN_0076e5e0 @ 0076e5e0
+      FUN_0076e540 @ 0076e540
+      FUN_0076e5a0 @ 0076e5a0
+    FUN_007bde50 @ 007bde50
+      FUN_00791f30 @ 00791f30
+      FUN_007b3b70 @ 007b3b70
+      FUN_007c0910 @ 007c0910
+      FUN_007c0750 @ 007c0750
+      FUN_007ae670 @ 007ae670
+      FUN_004c2300 @ 004c2300  (seen)
+      FUN_007ae720 @ 007ae720
+      FUN_007f9430 @ 007f9430  (seen)
+      FUN_007ae7b0 @ 007ae7b0
+  FUN_007b48c0 @ 007b48c0
+  FUN_007aea80 @ 007aea80
+  FUN_007ae1a0 @ 007ae1a0
+    FUN_007d85e0 @ 007d85e0
+      _strrchr @ 004144a0
+      FUN_0076f070 @ 0076f070
+      FUN_007bd480 @ 007bd480
+      FUN_004218c0 @ 004218c0
+      FUN_0076e540 @ 0076e540  (seen)
+      FUN_007bd4d0 @ 007bd4d0
+      FUN_007d82e0 @ 007d82e0
+      FUN_00422910 @ 00422910
+      FUN_004ba170 @ 004ba170
+      FUN_004bab50 @ 004bab50
+      FUN_006ded60 @ 006ded60
+  FUN_007aeab0 @ 007aeab0
+    FUN_004ba060 @ 004ba060  (seen)
+  FUN_007bdd70 @ 007bdd70
+  FUN_007bf740 @ 007bf740
+    FUN_007aec30 @ 007aec30
+    FUN_007bef40 @ 007bef40
+      FUN_007bdd80 @ 007bdd80
+      FUN_007c01f0 @ 007c01f0
+      FUN_007bea70 @ 007bea70
+      FUN_006ded60 @ 006ded60  (seen)
+      FUN_004c2300 @ 004c2300  (seen)
+      FUN_004c1b30 @ 004c1b30
+      FUN_004c33c0 @ 004c33c0
+      FUN_004c1bf0 @ 004c1bf0
+      FUN_00407f80 @ 00407f80
+      FUN_004c2370 @ 004c2370
+      FUN_007c1ad0 @ 007c1ad0
+      FUN_0081f8f0 @ 0081f8f0
+      FUN_00824060 @ 00824060
+      FUN_00832ab0 @ 00832ab0
+    FUN_007c0750 @ 007c0750  (seen)
+    FUN_007b5020 @ 007b5020  (seen)
+  FUN_007c1f20 @ 007c1f20
+    FUN_007c09f0 @ 007c09f0
+      FUN_006bb6d0 @ 006bb6d0
+      FUN_004d3100 @ 004d3100
+  FUN_0078f370 @ 0078f370
+  FUN_00792ad0 @ 00792ad0
+    FUN_007ae7b0 @ 007ae7b0  (seen)
+    FUN_006ded60 @ 006ded60  (seen)
+    FUN_00790650 @ 00790650
+  FUN_004c21b0 @ 004c21b0
+  FUN_007927e0 @ 007927e0
+    FUN_007cc9a0 @ 007cc9a0
+      FUN_0076e540 @ 0076e540  (seen)
+    FUN_006ded60 @ 006ded60  (seen)
+  FUN_00794ad0 @ 00794ad0
+    FUN_0078f3e0 @ 0078f3e0
+    FUN_007946d0 @ 007946d0
+      FUN_0078f3e0 @ 0078f3e0  (seen)
+      FUN_004011d0 @ 004011d0
+      FUN_00792360 @ 00792360
+    FUN_00791eb0 @ 00791eb0
+      FUN_005d0040 @ 005d0040  (seen)
+      FUN_00790250 @ 00790250
+  FUN_007946d0 @ 007946d0  (seen)
+
+==== root 007b5630
+FUN_007b5630 @ 007b5630
+  FUN_00422130 @ 00422130
+    FUN_00428000 @ 00428000
+  FUN_00824f00 @ 00824f00
+    FUN_00823ed0 @ 00823ed0
+      FUN_004ba060 @ 004ba060
+      FUN_00832ea0 @ 00832ea0
+    FUN_00824f00 @ 00824f00  (seen)
+  FUN_00825150 @ 00825150
+    FUN_004b9950 @ 004b9950
+      FUN_00774640 @ 00774640
+    FUN_008250b0 @ 008250b0
+      FUN_004ba3d0 @ 004ba3d0
+      FUN_004b6c50 @ 004b6c50
+      FUN_008250b0 @ 008250b0  (seen)
+    FUN_004b9970 @ 004b9970
+      FUN_00774650 @ 00774650
+  FUN_007bdb10 @ 007bdb10
+    FUN_004f5e20 @ 004f5e20
+      FUN_00823ed0 @ 00823ed0  (seen)
+    FUN_004f5e80 @ 004f5e80
+      FUN_00823ed0 @ 00823ed0  (seen)
+    FUN_00823ed0 @ 00823ed0  (seen)
+    FUN_004c21b0 @ 004c21b0
+    FUN_007f9430 @ 007f9430
+      FUN_007f9320 @ 007f9320
+  FUN_007a06a0 @ 007a06a0
+    FUN_0079b440 @ 0079b440
+  FUN_007b55e0 @ 007b55e0
+    FUN_007b4fa0 @ 007b4fa0
+      FUN_00715130 @ 00715130
+

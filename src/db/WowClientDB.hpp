@@ -3,6 +3,7 @@
 
 #include "db/IDatabase.hpp"
 #include "db/WowClientDB_Common.hpp"
+#include <cstdio>
 #include <cstring>
 #include <storm/Error.hpp>
 #include <storm/Memory.hpp>
@@ -71,6 +72,14 @@ void WowClientDB<T>::Load(const char* filename, int32_t linenumber) {
 
     SFile* f;
     if (!SFile::OpenEx(nullptr, T::GetFilename(), 0x20000, &f)) {
+        // Say so. A database that failed to open is indistinguishable at every call site from one
+        // whose every field is zero, and that cost real time: LightFloatBand's name was written
+        // with an unescaped backslash, so it silently never loaded and fog distance and cloud
+        // density read as 0 for as long as the file existed. The reference aborts here; whoa cannot
+        // yet, because several DBCs it asks for are genuinely absent, so it complains instead.
+        fprintf(stderr, "DBC: could not open %s -- every lookup in it will return nothing\n",
+                T::GetFilename());
+
         // TODO
         // SErrDisplayAppFatalCustom(0x85100079, "Unable to open %s", T::GetFilename());
         return;

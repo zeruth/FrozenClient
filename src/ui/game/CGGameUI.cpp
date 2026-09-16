@@ -19,6 +19,7 @@
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/MiscScript.hpp"
+#include "ui/game/MiscScriptStubs.hpp"
 #include "ui/game/CharacterInfoScript.hpp"
 #include "ui/game/GMTicketInfoScript.hpp"
 #include "ui/game/GameScript.hpp"
@@ -30,6 +31,8 @@
 #include "ui/game/UIBindingsScript.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "util/CStatus.hpp"
+#include "util/Filesystem.hpp"
+#include "util/Log.hpp"
 #include <common/MD5.hpp>
 
 WOWGUID CGGameUI::s_currentObjectTrack;
@@ -53,6 +56,7 @@ void LoadScriptFunctions() {
 
     GameScriptRegisterFunctions();
     MiscScriptRegisterFunctions();
+    MiscScriptRegisterStubs();
     UIBindingsRegisterScriptFunctions();
 
     // TODO
@@ -105,6 +109,16 @@ void CGGameUI::EnterWorld() {
 
     FrameScript_SignalEvent(SCRIPT_PLAYER_ENTERING_WORLD, nullptr);
 
+    // FloatingChatFrame_Update applies a chat window's saved colour and alpha ONLY when it is
+    // called from the update event -- `if ( onUpdateEvent ) then FCF_SetWindowColor(...)`. Nothing
+    // signalled these, so every chat frame kept the opaque backdrop its XML template ships with,
+    // and frame.oldAlpha was never set either, which is what raised
+    // "bad argument #1 to 'max' (number expected, got nil)" in the fade path on every mouseover.
+    //
+    // 386 and 529 in g_scriptEvents; neither has a named constant.
+    FrameScript_SignalEvent(386, nullptr); // UPDATE_CHAT_WINDOWS
+    FrameScript_SignalEvent(529, nullptr); // UPDATE_FLOATING_CHAT_WINDOWS
+
     // TODO
 }
 
@@ -145,7 +159,17 @@ void CGGameUI::Initialize() {
 
     // TODO
 
-    CStatus status;
+    // The interface loader reports every failure -- a file it could not open, XML it could not
+    // parse, a frame type it does not know -- into this collector. A plain CStatus throws all of
+    // that away when it goes out of scope, which is why whoa loaded only part of FrameXML while
+    // reporting nothing at all. The glue path already logs the same way to Logs\GlueXML.log.
+    OsCreateDirectory("Logs", 0);
+
+    CWOWClientStatus status;
+
+    if (!SLogCreate("Logs\\FrameXML.log", 0, &status.m_logFile)) {
+        SysMsgPrintf(SYSMSG_WARNING, "Cannot create WOWClient log file \"%s\"!", "Logs\\FrameXML.log");
+    }
 
     // TODO
 
@@ -230,6 +254,10 @@ void CGGameUI::InitializeGame() {
 
 bool CGGameUI::IsLoggingIn() {
     return CGGameUI::s_loggingIn;
+}
+
+bool CGGameUI::IsInWorld() {
+    return CGGameUI::s_inWorld;
 }
 
 int32_t CGGameUI::IsRaidMember(const WOWGUID& guid) {

@@ -146,6 +146,12 @@ void BATCHEDRENDERFONTDESC::RenderBatch() {
     char* vertexData = g_theGxDevicePtr->BufLock(vertexStream);
     CGxVertexPCT* vertexBuf = reinterpret_cast<CGxVertexPCT*>(vertexData);
 
+    // The glyph writers below fill this pointer without ever testing it, so a failed lock is a
+    // write to address 0. Skipping the batch drops one frame of text.
+    if (!vertexBuf) {
+        return;
+    }
+
     for (int32_t lineIndex = 0; lineIndex < 8; lineIndex++) {
         auto& textureCache = this->m_face->m_textureCache[lineIndex];
         auto texture = textureCache.m_texture;
@@ -277,7 +283,15 @@ void CGxStringBatch::RenderBatch() {
         GxXformViewProjNativeTranspose(viewProjMat);
         GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<float*>(&viewProjMat), 4);
 
-        for (auto fontBatch = this->m_fontBatch.Head(); fontBatch; fontBatch = this->m_fontBatch.Next(fontBatch)) {
+        // Take the successor BEFORE the body, because the empty case unlinks the node the loop is
+        // standing on and the original then asked that unlinked node for its next pointer. Unlink
+        // clears the node's links, so the walk either stopped early or continued through whatever
+        // the freed link fields happened to hold.
+        auto fontBatch = this->m_fontBatch.Head();
+
+        while (fontBatch) {
+            auto next = this->m_fontBatch.Next(fontBatch);
+
             if (fontBatch->m_strings.Head()) {
                 fontBatch->RenderBatch();
 
@@ -287,6 +301,8 @@ void CGxStringBatch::RenderBatch() {
             } else {
                 this->m_fontBatch.Unlink(fontBatch);
             }
+
+            fontBatch = next;
         }
     }
 

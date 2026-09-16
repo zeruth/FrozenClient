@@ -1,0 +1,121 @@
+Raw Ghidra dumps used for docs/world-render-inventory.md (program RunicWorldGame.exe unless noted).
+Scripts: C:\Users\tyler\tools\ghidra-scripts (DecompileList, FindCallers, FindStringRefs, FindStringRefs2,
+ListSymbols, ListAllSymbols, CallTree, CallerTree, DataRefs, VtableFromRtti); wrapper C:\Users\tyler\tools\mac.sh
+runs a script against the Mac program (WoW-3.3.5a-mac-i386); decomp.sh/callers.sh/strrefs.sh target RunicWorldGame.exe.
+
+mac-symbols-render.txt         ListSymbols on WoW-3.3.5a-mac-i386: proves the Mac build is stripped (17 matches, all imports)
+win-symbols-rtti.txt           RTTI type descriptors (CWFrustum, CPortalView, Liquid::*, CParticle*, CGWorldFrame ...)
+win-strrefs-modules.txt        defined-string refs to source file names (link-order anchors)
+win-strrefs2-anchors.txt       memory-search string refs: CVars, shader names, module files, textures
+win-callers-anchors.txt        callers of glare/shadow/ffx/terrain-shader anchors
+win-callertree-anchors.txt     caller trees up to CGWorldFrame::OnFrameRender (FUN_004fb080)
+win-calltree-worldrender.txt   ordered call trees of FUN_004fb080 and FUN_004fabd0 (CGWorldFrame ctor)
+win-decomp-spine.txt           FUN_004fb080 OnFrameRender, FUN_004faf90 RenderWorld, FUN_004fa5f0, FUN_007831a0 CWorld::Update,
+                               FUN_007816f0 DayNight update, FUN_007f3920 glare, FUN_007ea5f0 FFX fog-combine ctor
+win-decomp-update.txt          CWorld::Update callees (FUN_00795400 scene camera, FUN_007b6b00 CMap::Update, FUN_0078d170 weather ...)
+win-calltree-update-render.txt ordered call trees: FUN_004f8ea0 OnWorldRender, FUN_00795400, FUN_007816f0, FUN_007e6480, FUN_007e7490
+win-decomp-render-callees.txt  OnWorldRender callees (FUN_007984a0 detail doodads, FUN_00790a80 liquid+, FUN_00823cb0 CM2Scene::Draw ...)
+win-calltree-scene-leaves.txt  call trees of WorldScene/DayNight/liquid leaves
+win-decomp-scene-leaves.txt    decompiles of those leaves + Gx helpers (GxRsPush/Pop/Set, GxPrim*, GxSceneClear, GxXformSetViewport)
+win-datarefs-lists.txt / win-datarefs-buckets2.txt  who touches the render-bucket globals 0xc5dfa8.. and scene lists
+win-decomp-buckets-map.txt     render buckets (FUN_00681b50/FUN_00682900), DetailDoodad draw, CMap::Update callees
+win-calltree-mapupdate*.txt    CMap::Update sub-trees
+win-decomp-shaderload-adders.txt  terrain/MapObj/liquid shader loaders, weather renderers, WorldScene adders, FUN_0079a870 CMap::Render
+win-calltree-cmap-render.txt   ordered call tree of CMap::Render FUN_0079a870 (depth 3)
+win-datarefs-shaders.txt       readers of the terrain/MapObj/liquid/detail-doodad shader handles
+win-decomp-cmap-render.txt / win-decomp-cmap-render2.txt  CMap::Render callees (chunks FUN_00798da0, WMOs FUN_007964a0, sky FUN_007f09b0,
+                               blob shadows FUN_00793980, WMO liquid FUN_00793d20, occluders FUN_00796c10 ...)
+win-callertree-leafdraws.txt / win-callertree-terrainshader.txt  caller trees locating the terrain chunk draw chain
+win-decomp-leafdraws.txt       FUN_007837f0 world destroy, sky draws FUN_009abd50/009ac660/009acb00/009acd40, blob shadow FUN_007e49e0 ...
+win-decomp-chunkrender.txt     terrain chunk chain FUN_00793b10/FUN_00793c30/FUN_007989c0/FUN_007d3e10/FUN_007d0050, CMap::Load FUN_007bfce0
+win-vtable-cgworldframe.txt    (empty) RTTI vtable lookup attempt for CGWorldFrame
+win-decomp-shadow-blob.txt     blob shadow chain: FUN_007e4480 projector+render states, FUN_007e4a40 ShadowInit,
+                               FUN_007e4370 projected-decal helper, FUN_0082ced0 anim bbox, FUN_0071ed80 unit shadow box,
+                               FUN_00824f00/00824fc0 model ready checks, FUN_0070bd20 box test
+win-decomp-shadow-blob2.txt    FUN_007e3e80 receiver gather+redraw, FUN_007e2d60 projector tex matrices, FUN_00616a30 GxXformSet,
+                               FUN_00408bf0/00408c30/00409670/00685f50/00685fb0/0058eb20 GxRs helpers,
+                               CShadowCache FUN_00875c10/00875f80/008750b0, MapShadow FUN_007bb3e0/00874010
+win-decomp-shadow-blob3.txt    FUN_007e35f0 gather, FUN_007e32f0/007e2fd0 dynamic-VB fill + CPU up-facing cull, FUN_007e3580 index fill,
+                               FUN_00829aa0 M2 projected batch draw (DrawBatchProj), FUN_007e36e0/007e3820 ShadowAdd/ShadowMod ramps,
+                               FUN_007e3a20 shadowLOD cvar handler
+win-decomp-shadow-blob4.txt    FUN_0077f350->007a2aa0 / FUN_0077f340->007a6af0 receiver gatherers, FUN_0077f1e0
+parity-shadows.md              write-up built from the four dumps above: reference mechanism, whoa gaps, task list
+win-decomp-sky-lightblock.txt  light block + fog appliers: FUN_007d9bd0 CLight ctor, FUN_00834f60 AddLight,
+                               FUN_008355d0 read-back, FUN_00872e40 VS light constants, FUN_00781610 fog RS,
+                               FUN_0077eed0 zone-light query, FUN_007f1010/007f1070/007ecf00
+win-decomp-sky-dome.txt        sky pass: FUN_007f09b0 draw, FUN_009acb00 gradient dome, FUN_009ac660 celestial
+                               disc, FUN_009acd40 clouds, FUN_007f2470 dome builder, FUN_007f20e0 cloud builder,
+                               FUN_007efd00 cloud update, FUN_009abd50 stars, FUN_007f0870/009ac400 glare,
+                               FUN_007f16f0 fog update, FUN_007f31c0 skybox slots
+win-decomp-dnbase-callers.txt  every FUN_007ecef0 caller of interest; locates FUN_004f8410 (WorldFrame.cpp) as
+                               the writer of DayNight +0x0c..+0x4c (camera pos/forward/time)
+win-decomp-lighting-api.txt    FUN_00834ae0 SetDirection, FUN_00834d90 AddAmbient, FUN_00834dc0 AddDiffuse,
+                               FUN_00834990 SetFog, FUN_007ee750 diffuse/ambient split, FUN_007ebff0 Light.dbc
+                               -> DNInfo slot map, FUN_007cfbe0 terrain shader constants
+win-callers-daynightbase.txt   callers of FUN_007ecef0
+win-datarefs-lightblock.txt / win-datarefs-lightdir.txt / win-datarefs-fog.txt
+                               refs to DAT_00ce04a8, the light direction DAT_00d38c9c.., and the fog fields
+parity-sky.md                  write-up: the outdoor light direction (FUN_007eea90), sky dome rings, clouds,
+                               glare, fog formulas, and the whoa task list
+
+win-strrefs-depth.txt          string refs for gxDepthBits/gxColorBits/nearclip/CGxDeviceD3d (locates the D3D device region)
+win-decomp-depth1.txt          FUN_00685130/006850e0 (RS list New), FUN_0078e400 WorldParam CVar registration (nearclip/farclip/
+                               footstepBias/horizon*clipScale), gxDepthBits readers, CGxDeviceD3d DeviceSetFormat/DeviceCreate
+win-decomp-depth2.txt          FUN_00823130 CM2SceneRender::Draw, FUN_007e3aa0/007e3e80/007e4ce0 Shadow.cpp projector,
+                               FUN_006865b0 CGxDevice RS defaults, Gx device helpers
+win-decomp-depth3.txt          FUN_00790440 / FUN_0081e400 (per-chunk transform helpers used by FUN_007d0050)
+win-decomp-depthbias.txt       FUN_006a4c30 / FUN_006a8bd0 CGxDeviceD3d9Ex::IRsSendToHw - the RS -> D3DRS switch
+                               (case 0 GxRs_PolygonOffset -> D3DRS_DEPTHBIAS negated; depth/cull/blend tables)
+win-callers-rsdirty.txt        all 132 callers of FUN_00685970 (the inlined GxRsSet dirty-marker)
+parity-depth.md                depth-buffer / z-fighting parity writeup built from the above
+
+win-dump-bodies1.txt           DISASM of FUN_007eecc0 (celestial bodies) + FUN_007f09b0 (the three
+                               FUN_009ac660 ECX args), FUN_005fe800 floor/frac split, FUN_007ed3b0
+                               band evaluator (ESI=count, EDI=table), FUN_007f2790 DayNight init,
+                               FUN_007edbe0/007edee0 disc quad + horizon clip, FUN_009abb60 billboard
+win-dump-bodies2.txt           FUN_007ece10 cloud texel callback, FUN_004b9200 callback texture,
+                               disasm of FUN_007f2790 / FUN_007efd00 / FUN_009ac660, FUN_007edb50
+                               density ramp, FUN_009ad0b0 texture load, FUN_007ef6e0 glare solver
+win-dump-bodies3.txt           FUN_007ee150/007ee230 sun+moon GLARE object init (sunGlare.blp /
+                               moonGlare.blp and every cone/fade constant), FUN_007ee0d0 star field,
+                               refs to the noise LUTs, FUN_0088d0c0 = pow
+win-dump-bodies4.txt           refs to the two cloud texture slots (0xd38e20/0xd38e24)
+win-dump-bodies5.txt           FUN_007f1d30 DayNight teardown, FUN_007ed250 (builds both cloud noise
+                               LUTs), disasm of FUN_007edb50
+win-dump-bodies6.txt           FUN_007ee460 cloud dtor
+win-dump-bodies7.txt           raw disasm after FUN_007f1010
+win-dump-bodies8.txt           refs to the cloud dtor thunk, disasm of FUN_007f20e0
+win-dump-bodies9.txt           FUN_007f04b0 cloud static ctor (octaves=4, animSpeed=2.0, format,
+                               rowsPerFrame=8)
+parity-sky-bodies.md           write-up: the sun/moon/second-moon disc positions (FUN_007eecc0 fully
+                               decoded with every band table), the disc quad + horizon clip/fade,
+                               the glare constants, and the cloud texture (procedural 4-octave value
+                               noise, DNClouds0/1 are texture debug names, not files) + task list
+
+win-dump-shadowmap1.txt        MAP SHADOW MAP pass 1: FUN_0079e4f0 terrain PS reload (Terrain2/3 vs _pcf
+                               chosen by hwPCF), the mapShadows/shadowLevel/extShadowQuality/hwPCF CVar
+                               handlers, disasm of FUN_00875c10 / FUN_007bb670 / FUN_008750b0, raw disasm
+                               at 007bb460, CShadowCache alloc FUN_00875d30, free FUN_00874240, params ctor
+                               FUN_008753f0, cascade refresh FUN_00874890 / FUN_00874fb0 / clear FUN_00875760,
+                               and data refs for the whole 0xd431xx-0xd434xx block
+win-dump-shadowmap2.txt        pass 2: the four CShadowCache callback setters (FUN_00873fa0..d0) and their
+                               single caller, quality validation FUN_008740d0 / FUN_00874210 / FUN_00873f60,
+                               the PCF tap table builder FUN_008742e0, the four constant binders
+                               FUN_008744e0 / 008745d0 / 00874660 / 00874760, hwPCF FUN_00872ad0,
+                               full disasm of FUN_00875f80
+win-dump-shadowmap3.txt        pass 3: FUN_007bd3a0 (registers FUN_007bac10/007bafd0/007bd200/007bbc50 and
+                               the shadowCull/shadowScissor/shadowInstancing CVars), FUN_007bbc50 the
+                               ShadowMapRenderSL draw, sub-rect clear FUN_007bb830, UpdateProjMatrix
+                               FUN_00872c10, plus refs locating which receiver uses which binder
+win-dump-shadowmap4.txt        pass 4: FUN_007bac10 the light view*ortho + depth bias (THE light volume),
+                               FUN_007bafd0 light camera/frustum, FUN_007bd200 caster gather,
+                               FUN_006c0050 LookAt, shader-effect select FUN_00876530, terrain call site
+parity-shadowmap.md            write-up: the light volume (dir clamp, eye 2000 back, +-20 ortho, far 4000,
+                               1/4000 linear depth, 0.1 bias), CShadowCache targets and the hwPCF layout,
+                               casters per quality tier, the 8-tap PCF kernel and the shadow texture matrix
+                               in terms a new whoa HLSL shader can implement, + the S0-S8 task list
+
+Tooling note: C:\Users\tyler\tools\dump.sh + ghidra-scripts\Dump.java replaces decomp.sh for new
+work - one headless run mixes d:<addr> decompile, a:<addr> disassemble a function, x:<addr> raw
+disassembly from an address, r:<addr> references to a data address. Use a:/x: whenever a callee
+takes arguments in registers (FUN_007ed3b0 does), since the decompiler silently drops them.

@@ -1,4 +1,7 @@
+#include <cstdio>
 #include "model/CM2Scene.hpp"
+#include "gx/shader/CShaderEffect.hpp"
+#include "gx/shader/CShaderEffectManager.hpp"
 #include "gx/Shader.hpp"
 #include "gx/Transform.hpp"
 #include "model/CM2Cache.hpp"
@@ -701,11 +704,67 @@ int32_t CM2Scene::Draw(M2PASS pass) {
 
     CM2SceneRender render(this);
 
+
     render.Draw(pass, this->m_elements.m_data, this->array54[pass].m_data, this->array54[pass].Count());
 
     if (pass == M2PASS_0) {
         render.Draw(pass, this->m_elements.m_data, this->array44.m_data, this->array44.Count());
     }
+
+    return 1;
+}
+
+int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
+    // The reference loads this pair through the effect ShadowMapRenderSL, declared in the archive
+    // file Shaders/Effects/ShadowMap.wfx as VertexShader(ShadowMap) + PixelShader(ShadowMapSL).
+    // Whoa has no .wfx parser, so the indirection is resolved here and the two shader libraries are
+    // requested by name directly; both ship in the reference archives with the same 90 / 16
+    // permutation counts InitEffect already asks for, so the element's own permutation indices
+    // select the matching program.
+    static CShaderEffect* effect = nullptr;
+    static bool tried = false;
+
+    if (!tried) {
+        tried = true;
+        effect = CShaderEffectManager::GetEffect("ShadowMapShadowMapSL");
+
+        if (!effect) {
+            effect = CShaderEffectManager::CreateEffect("ShadowMapShadowMapSL");
+            effect->InitEffect("ShadowMap", "ShadowMapSL");
+        }
+    }
+
+    if (!effect || !CShaderEffect::s_enableShaders) {
+        return 0;
+    }
+
+    C44Matrix rebase = this->m_viewInv * lightView;
+
+    // The shadow map pixel shader multiplies the light-space z it receives by c0.w, which is the
+    // reciprocal of the far plane; writer and reader have to agree on that constant.
+    C4Vector depthScale = { 0.0f, 0.0f, 0.0f, 1.0f / 4000.0f };
+    GxShaderConstantsSet(GxSh_Pixel, 0, reinterpret_cast<float*>(&depthScale), 1);
+
+    CM2SceneRender::s_shadowCasterEffect = effect;
+    CM2SceneRender::s_shadowCasterRebase = &rebase;
+
+    CM2SceneRender render(this);
+    uint32_t casters = this->array54[M2PASS_0].Count();
+
+    // Whether the map has any content at all is answerable without reading the texture back: if
+    // nothing is submitted, the map is the white it was cleared to. Reported once so a run says
+    // plainly whether shadows are being cast.
+    static bool reported = false;
+
+    if (!reported) {
+        reported = true;
+        fprintf(stderr, "MapShadow: caster pass submitting %u opaque model batches\n", casters);
+    }
+
+    render.Draw(M2PASS_0, this->m_elements.m_data, this->array54[M2PASS_0].m_data, casters);
+
+    CM2SceneRender::s_shadowCasterEffect = nullptr;
+    CM2SceneRender::s_shadowCasterRebase = nullptr;
 
     return 1;
 }

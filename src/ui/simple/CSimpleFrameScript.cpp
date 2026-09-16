@@ -193,23 +193,92 @@ int32_t CSimpleFrame_GetBoundsRect(lua_State* L) {
 }
 
 int32_t CSimpleFrame_GetNumRegions(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t count = 0;
+
+    for (auto region = frame->m_regions.Head(); region; region = frame->m_regions.Next(region)) {
+        count++;
+    }
+
+    lua_pushnumber(L, count);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetRegions(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t count = 0;
+
+    for (auto region = frame->m_regions.Head(); region; region = frame->m_regions.Next(region)) {
+        if (!region->lua_registered) {
+            region->RegisterScriptObject(0);
+        }
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, region->lua_objectRef);
+        count++;
+    }
+
+    return count;
 }
 
 int32_t CSimpleFrame_GetNumChildren(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t count = 0;
+
+    for (auto node = frame->m_children.Head(); node; node = node->Next()) {
+        count++;
+    }
+
+    lua_pushnumber(L, count);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetChildren(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // Every child pushed as a separate return value, which is what FrameXML's
+    // `local a, b, c = f:GetChildren()` and `{ f:GetChildren() }` both expect.
+    int32_t count = 0;
+
+    for (auto node = frame->m_children.Head(); node; node = node->Next()) {
+        auto child = node->frame;
+
+        if (!child) {
+            continue;
+        }
+
+        if (!child->lua_registered) {
+            child->RegisterScriptObject(0);
+        }
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, child->lua_objectRef);
+        count++;
+    }
+
+    return count;
 }
 
 int32_t CSimpleFrame_GetFrameStrata(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    const char* name = FrameStrataToString(frame->m_strata);
+
+    if (name) {
+        lua_pushstring(L, name);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetFrameStrata(lua_State* L) {
@@ -328,7 +397,30 @@ int32_t CSimpleFrame_UnregisterAllEvents(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsEventRegistered(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:IsEventRegistered(\"event\")", frame->GetDisplayName());
+    }
+
+    // The registry is per-event: each entry keeps the list of objects listening to it, which is the
+    // same list RegisterScriptEvent appends to.
+    auto event = FrameScript::s_scriptEventsHash.Ptr(lua_tostring(L, 2));
+    int32_t registered = 0;
+
+    if (event) {
+        for (auto node = event->listeners.Head(); node; node = node->Next()) {
+            if (node->listener == frame) {
+                registered = 1;
+                break;
+            }
+        }
+    }
+
+    lua_pushboolean(L, registered);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_AllowAttributeChanges(lua_State* L) {
@@ -534,11 +626,22 @@ int32_t CSimpleFrame_SetAttribute(lua_State* L) {
 }
 
 int32_t CSimpleFrame_GetEffectiveScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // The frame's own scale with every parent's folded in, which is what the layout already keeps.
+    lua_pushnumber(L, frame->m_layoutScale);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, frame->m_frameScale);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetScale(lua_State* L) {
@@ -572,7 +675,13 @@ int32_t CSimpleFrame_GetEffectiveAlpha(lua_State* L) {
 }
 
 int32_t CSimpleFrame_GetAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // SetAlpha stores the value as a byte; script works in 0..1.
+    lua_pushnumber(L, frame->m_alpha / 255.0f);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetAlpha(lua_State* L) {
@@ -620,19 +729,51 @@ int32_t CSimpleFrame_SetID(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetToplevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->SetFrameFlag(FRAME_FLAG_TOPLEVEL, StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsToplevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_flags & FRAME_FLAG_TOPLEVEL) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_EnableDrawLayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t layer;
+
+    if (!lua_isstring(L, 2) || !StringToDrawLayer(lua_tostring(L, 2), layer)) {
+        return luaL_error(L, "Usage: %s:EnableDrawLayer(\"layer\")", frame->GetDisplayName());
+    }
+
+    frame->EnableDrawLayer(layer);
+
+    return 0;
 }
 
 int32_t CSimpleFrame_DisableDrawLayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t layer;
+
+    if (!lua_isstring(L, 2) || !StringToDrawLayer(lua_tostring(L, 2), layer)) {
+        return luaL_error(L, "Usage: %s:DisableDrawLayer(\"layer\")", frame->GetDisplayName());
+    }
+
+    frame->DisableDrawLayer(layer);
+
+    return 0;
 }
 
 int32_t CSimpleFrame_Show(lua_State* L) {
@@ -758,11 +899,21 @@ int32_t CSimpleFrame_SetMaxResize(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetMovable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->SetFrameFlag(FRAME_FLAG_MOVABLE, StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsMovable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_flags & FRAME_FLAG_MOVABLE) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetDontSavePosition(lua_State* L) {
@@ -774,11 +925,21 @@ int32_t CSimpleFrame_GetDontSavePosition(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetResizable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->SetFrameFlag(FRAME_FLAG_RESIZABLE, StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsResizable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_flags & FRAME_FLAG_RESIZABLE) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_StartMoving(lua_State* L) {
@@ -794,7 +955,18 @@ int32_t CSimpleFrame_StopMovingOrSizing(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetUserPlaced(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // The reference refuses this unless the frame is movable or resizable, with this exact message
+    // (FUN_004a0c70 tests flags & 0x300 first).
+    if (!(frame->m_flags & (FRAME_FLAG_MOVABLE | FRAME_FLAG_RESIZABLE))) {
+        return luaL_error(L, "Frame %s is not movable or resizable", frame->GetDisplayName());
+    }
+
+    frame->SetFrameFlag(FRAME_FLAG_USER_PLACED, StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsUserPlaced(lua_State* L) {
@@ -852,7 +1024,12 @@ int32_t CSimpleFrame_EnableKeyboard(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsKeyboardEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_eventmask & (1 << SIMPLE_EVENT_KEY)) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_EnableMouse(lua_State* L) {
@@ -875,7 +1052,12 @@ int32_t CSimpleFrame_EnableMouse(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsMouseEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_eventmask & (1 << SIMPLE_EVENT_MOUSE)) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_EnableMouseWheel(lua_State* L) {
@@ -892,7 +1074,12 @@ int32_t CSimpleFrame_EnableMouseWheel(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsMouseWheelEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->m_eventmask & (1 << SIMPLE_EVENT_MOUSEWHEEL)) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_EnableJoystick(lua_State* L) {
@@ -900,7 +1087,13 @@ int32_t CSimpleFrame_EnableJoystick(lua_State* L) {
 }
 
 int32_t CSimpleFrame_IsJoystickEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // There is no joystick input path in this client, so it can never be enabled.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetBackdrop(lua_State* L) {

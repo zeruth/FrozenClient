@@ -1,0 +1,17 @@
+== refs to 00d38b30
+   FUN_007ef6e0 @ 007ef6e0  [READ from 007ef872]
+   FUN_007f2790 @ 007f2790  [WRITE from 007f2863]
+   FUN_007f3920 @ 007f3920  [READ from 007f3920]
+== refs to 00d38b34
+   FUN_007ef6e0 @ 007ef6e0  [READ from 007ef85e]
+   FUN_007f2790 @ 007f2790  [WRITE from 007f2868]
+   FUN_007f3920 @ 007f3920  [READ from 007f392a]
+== refs to 00d38b38
+   FUN_007ef6e0 @ 007ef6e0  [READ from 007ef867]
+   FUN_007f2790 @ 007f2790  [WRITE from 007f286e]
+   FUN_007f3920 @ 007f3920  [READ from 007f394d]
+== refs to 00d38b3c
+   FUN_007f0530 @ 007f0530  [READ from 007f063d]
+   FUN_007f2790 @ 007f2790  [WRITE from 007f2825]
+   FUN_007f3920 @ 007f3920  [WRITE from 007f3957]
+   FUN_007f3920 @ 007f3920  [WRITE from 007f396e]

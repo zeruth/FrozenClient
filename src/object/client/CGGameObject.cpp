@@ -28,3 +28,7 @@ uint32_t CGGameObject::TotalFieldsSaved() {
 CGGameObjectData* CGGameObject::GameObject() const {
     return this->m_gameObj;
 }
+
+int32_t CGGameObject::GetDisplayID() const {
+    return this->GameObject()->displayID;
+}

@@ -1527,7 +1527,11 @@ void CCharacterComponent::RemoveItem(ITEM_SLOT itemSlot) {
     }
 
     case ITEMSLOT_1:
-        // TODO detach the shoulder models
+        // Detach both shoulder pads.
+        if (this->m_data.model) {
+            this->m_data.model->DetachAllChildrenById(ATTACH_SHOULDERR);
+            this->m_data.model->DetachAllChildrenById(ATTACH_SHOULDERL);
+        }
 
         this->m_items[itemSlot] = 0;
 
@@ -1791,18 +1795,54 @@ void CCharacterComponent::AddItem(ITEM_SLOT itemSlot, const ItemDisplayInfoRec* 
         return;
     }
 
-    // Shoulders
-
+    // Shoulders: two separate pad models attached to the shoulder-right (5) and shoulder-left (6)
+    // attachment points, the same way the reference dresses a character. modelName/modelTexture[0]
+    // is the right pad, [1] the left.
     if (itemSlot == ITEMSLOT_1) {
-        // TODO handle shoulders
+        CM2Model* body = this->m_data.model;
+
+        if (body) {
+            static const GEOCOMPONENTLINKS shoulderLinks[2] = { ATTACH_SHOULDERR, ATTACH_SHOULDERL };
+
+            for (int32_t side = 0; side < 2; side++) {
+                if (!displayRec->m_modelName[side] || !*displayRec->m_modelName[side]) {
+                    continue;
+                }
+
+                SStrPrintf(s_buffer, sizeof(s_buffer), "Item\\ObjectComponents\\Shoulder\\%s", displayRec->m_modelName[side]);
+                SStrCopy(s_pathEnd, s_buffer);
+
+                SStrPrintf(s_buffer, sizeof(s_buffer), "Item\\ObjectComponents\\Shoulder\\%s.blp", displayRec->m_modelTexture[side]);
+                SStrCopy(s_pathEnd2, s_buffer);
+
+                CCharacterComponent::AddLink(body, shoulderLinks[side], s_path, s_path2, displayRec->m_itemVisual, displayRec);
+            }
+        }
 
         return;
     }
 
-    // Cape
-
+    // Cape: not an attached model but a body geoset (group 15) plus a dedicated cape texture painted
+    // onto it. The length variant is the cloak's geosetGroup[0] -> geoset 1500+variant (the skin has
+    // 1501-1506), and the texture (m_modelTexture[0], e.g. "Cape_Cloth_A_02Green") is the object-skin
+    // texture, type 2 on the body model -- both verified against the client data.
     if (itemSlot == ITEMSLOT_10) {
-        // TODO handle cape
+        int32_t variant = displayRec->m_geosetGroup[0];
+        this->m_data.geosets[15] = variant ? (1500 + variant) : 1501;
+
+        CM2Model* body = this->m_data.model;
+
+        if (body && displayRec->m_modelTexture[0] && *displayRec->m_modelTexture[0]) {
+            SStrPrintf(s_buffer, sizeof(s_buffer), "Item\\ObjectComponents\\Cape\\%s.blp", displayRec->m_modelTexture[0]);
+
+            auto textureFlags = CGxTexFlags(GxTex_LinearMipNearest, 0, 0, 0, 0, 0, 1);
+            auto texture = TextureCreate(s_buffer, textureFlags, &s_status, 0);
+
+            if (texture) {
+                body->ReplaceTexture(2, texture);
+                HandleClose(texture);
+            }
+        }
 
         return;
     }

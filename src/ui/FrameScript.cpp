@@ -42,6 +42,14 @@ getn = tab.getn
 tinsert = tab.insert
 tremove = tab.remove
 sort = tab.sort
+-- table.wipe is a Blizzard extension, not part of stock Lua 5.1, so aliasing it here bound `wipe`
+-- to nil and every caller threw "attempt to call field 'wipe'". Define it rather than alias it.
+function tab.wipe(t)
+	for k in pairs(t) do
+		t[k] = nil
+	end
+	return t
+end
 wipe = tab.wipe
 
 -------------------------------------------------------------------
@@ -585,6 +593,55 @@ int32_t FrameScript_GetVariable(const char* a1, const char** a2) {
     return v3;
 }
 
+// The frame an error was raised from, without requiring the call to have been a method call.
+//
+// FrameScript_GetCurrentObject only answers for a method call or a compiled script element, which
+// is right for its callers but leaves a plain global handler -- ScrollingEdit_OnUpdate(self, ...),
+// the shape most of FrameXML's shared templates use -- reported with no frame at all. Its first
+// local is still `self`, so this reads it directly and walks up a few levels until it finds one.
+static const char* ErrorFrameName(lua_State* L) {
+    lua_Debug info;
+
+    // Level 1 ONLY. An earlier version walked up to four levels and returned the first frame it
+    // found, which quietly attributed an error to an ancestor call's `self`: it named
+    // ScriptErrorsFrameScrollFrameText for 4392 errors, and tracing proved that frame's OnUpdate
+    // never runs at all. A wrong name is worse than no name -- it sent four rounds of work at the
+    // wrong object.
+    for (int32_t level = 1; level <= 1; level++) {
+        if (!lua_getstack(L, level, &info)) {
+            break;
+        }
+
+        if (!lua_getlocal(L, &info, 1)) {
+            continue;
+        }
+
+        const char* name = nullptr;
+
+        if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_rawgeti(L, -1, 0);
+            auto obj = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
+            lua_settop(L, -2);
+
+            if (obj) {
+                name = obj->GetName();
+
+                if (!name) {
+                    name = "<unnamed>";
+                }
+            }
+        }
+
+        lua_settop(L, -2);
+
+        if (name) {
+            return name;
+        }
+    }
+
+    return nullptr;
+}
+
 int32_t FrameScript_HandleError(lua_State* L) {
     if (!lua_isstring(L, -1)) {
         lua_pushstring(L, "UNKNOWN ERROR");
@@ -599,6 +656,12 @@ int32_t FrameScript_HandleError(lua_State* L) {
     // Remove temporary console debug logging
     if (v2 && objName) {
         printf("Error: %s%s\n", objName, v2 + 1);
+    } else if (const char* frameName = ErrorFrameName(L)) {
+        // An error raised inside a .lua file carries the file path rather than the "*:" marker of a
+        // compiled script element, so the branch above never fired for it and the frame went
+        // unnamed. Naming it is the difference between "UIPanelTemplates.lua:365" -- which says
+        // nothing about which of the four frames sharing that template is at fault -- and knowing.
+        printf("Error: [%s] %s\n", frameName, v1);
     } else {
         printf("Error: %s\n", v1);
     }

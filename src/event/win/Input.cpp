@@ -539,6 +539,7 @@ int32_t OsWindowProc(void* window, uint32_t message, uintptr_t wparam, intptr_t 
     }
 
     case WM_MOUSEWHEEL: {
+
         // The wheel delta arrives in multiples of WHEEL_DELTA (120); one notch is one step. The
         // position is in screen coordinates and must be converted to client
         int32_t notches = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;

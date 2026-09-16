@@ -1,3 +1,8 @@
+#include "world/Weather.hpp"
+#include "ui/game/CGActionBar.hpp"
+#include "object/client/AuraCache.hpp"
+#include "object/client/CastCache.hpp"
+#include "object/client/NameCache.hpp"
 #include "client/Client.hpp"
 #include "async/AsyncFile.hpp"
 #include "client/Archive.hpp"
@@ -103,6 +108,11 @@ void ClientInitializeGameTime() {
     ClientServices::SetMessageHandler(SMSG_GAME_TIME_UPDATE, &ReceiveGameTimeUpdate, nullptr);
     ClientServices::SetMessageHandler(SMSG_SERVERTIME, &ReceiveServerTime, nullptr);
     ClientServices::SetMessageHandler(SMSG_GAME_TIME_SET, &ReceiveNewGameTime, nullptr);
+    ClientServices::SetMessageHandler(SMSG_WEATHER, &ReceiveWeather, nullptr);
+    ClientServices::SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS, &ReceiveActionButtons, nullptr);
+    NameCacheRegisterHandlers();
+    AuraCacheRegisterHandlers();
+    CastCacheRegisterHandlers();
 
     // TODO initialize s_forcedChangeCallbacks
 }

@@ -19,4 +19,6 @@ void* GxDevWindow();
 
 int32_t GxMasterEnable(EGxMasterEnables state);
 
+int32_t GxScreenShot(const char* path);
+
 #endif

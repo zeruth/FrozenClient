@@ -133,6 +133,14 @@ class CGxDevice {
 
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*) = 0;
+        // Bind the slot's texture as the device's colour/depth target; null restores the default.
+        virtual void IRenderTargetSet(EGxBuffer, CGxTex*, uint32_t) {}
+
+        // Debug only: read a render target back and write it to a file. There is no equivalent in
+        // the reference, which had a debugger attached instead; whoa needs it because a shadow map
+        // that is never sampled correctly is indistinguishable from one that was never drawn.
+        virtual int32_t IRenderTargetDump(CGxTex*, const char*) { return 0; }
+        virtual int32_t IScreenShot(const char*) { return 0; }
         virtual void IRsSendToHw(EGxRenderState) = 0;
         virtual void ICursorCreate(const CGxFormat& format);
         virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat&);
@@ -187,6 +195,12 @@ class CGxDevice {
         void PrimVertexMask(uint32_t);
         void PrimVertexPtr(CGxBuf*, EGxVertexBufferFormat);
         void RenderTargetGet(EGxBuffer buffer, CGxTex*& gxTex);
+        // Redirect rendering into a texture (or back to the frame buffer with a null texture).
+        // The full-screen effects and the map shadow map both need this; until it existed the gx
+        // layer could only read the current target, never set one.
+        void RenderTargetSet(EGxBuffer buffer, CGxTex* gxTex, uint32_t plane = 0);
+        int32_t RenderTargetDump(CGxTex* gxTex, const char* path);
+        int32_t ScreenShot(const char* path);
         void RsGet(EGxRenderState, int32_t&);
         void RsSet(EGxRenderState, int32_t);
         void RsSet(EGxRenderState, void*);

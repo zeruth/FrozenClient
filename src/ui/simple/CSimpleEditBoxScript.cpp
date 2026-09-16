@@ -167,7 +167,24 @@ int32_t CSimpleEditBox_GetNumber(lua_State* L) {
 }
 
 int32_t CSimpleEditBox_HighlightText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // HighlightText() with no arguments selects everything; with a start and end it selects that
+    // range. The interface calls the one-argument form to clear a selection.
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t start = 0;
+    int32_t end = editBox->m_textLength;
+
+    if (lua_type(L, 2) == LUA_TNUMBER) {
+        start = static_cast<int32_t>(lua_tonumber(L, 2));
+        end = lua_type(L, 3) == LUA_TNUMBER ? static_cast<int32_t>(lua_tonumber(L, 3)) : start;
+    }
+
+    editBox->m_highlightLeft = start < 0 ? 0 : start;
+    editBox->m_highlightRight = end > editBox->m_textLength ? editBox->m_textLength : end;
+    editBox->m_dirtyFlags |= 0x2;
+
+    return 0;
 }
 
 int32_t CSimpleEditBox_AddHistoryLine(lua_State* L) {
@@ -257,11 +274,29 @@ int32_t CSimpleEditBox_IsInIMECompositionMode(lua_State* L) {
 }
 
 int32_t CSimpleEditBox_SetCursorPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not cosmetic. FrameXML's shared scrolling-edit template positions the cursor and then reads
+    // back self.cursorOffset, which only the OnCursorChanged script writes -- and that script only
+    // runs off the back of this call. Left unimplemented, the field stayed nil for ever and every
+    // error the script error frame displayed raised another error displaying it, ~4400 per run.
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_type(L, 2) != LUA_TNUMBER) {
+        return luaL_error(L, "Usage: %s:SetCursorPosition(position)", editBox->GetDisplayName());
+    }
+
+    editBox->SetCursorPosition(static_cast<int32_t>(lua_tonumber(L, 2)));
+
+    return 0;
 }
 
 int32_t CSimpleEditBox_GetCursorPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->m_cursorPos);
+
+    return 1;
 }
 
 int32_t CSimpleEditBox_GetUTF8CursorPosition(lua_State* L) {

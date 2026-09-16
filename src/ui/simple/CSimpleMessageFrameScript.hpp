@@ -1,0 +1,10 @@
+#ifndef UI_SIMPLE_C_SIMPLE_MESSAGE_FRAME_SCRIPT_HPP
+#define UI_SIMPLE_C_SIMPLE_MESSAGE_FRAME_SCRIPT_HPP
+
+#include "ui/FrameScript.hpp"
+
+#define NUM_SIMPLE_MESSAGE_FRAME_SCRIPT_METHODS 13
+
+extern FrameScript_Method SimpleMessageFrameMethods[NUM_SIMPLE_MESSAGE_FRAME_SCRIPT_METHODS];
+
+#endif

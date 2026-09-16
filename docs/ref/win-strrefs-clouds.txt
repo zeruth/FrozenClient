@@ -1,0 +1,4 @@
+Cloud | 00a41cb4 "DNClouds1" | from 007f1c8b in FUN_007f1b10 @ 007f1b10
+Cloud | 00a41cc0 "DNClouds0" | from 007f1c6b in FUN_007f1b10 @ 007f1b10
+Cloud | 00a41ccc "SkyCloudLOD set to %i" | from 007f1d08 in FUN_007f1cd0 @ 007f1cd0
+Cloud | 00a41d04 "SkyCloudLOD" | from 007f29da in FUN_007f2790 @ 007f2790

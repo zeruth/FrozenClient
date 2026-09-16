@@ -1,0 +1,33 @@
+== refs to 00c5dfa0
+   ?  [WRITE from 009cc828]
+== refs to 00c5dfa4
+   ?  [WRITE from 009cc847]
+   FUN_00682900 @ 00682900  [DATA from 00682941]
+== refs to 00c5dfb0
+   ?  [WRITE from 009cc856]
+== refs to 00c5dfb4
+   ?  [WRITE from 009cc85b]
+== refs to 00c5dfb8
+   ?  [WRITE from 009cc860]
+== refs to 00c5dfbc
+   ?  [WRITE from 009cc865]
+   FUN_009da680 @ 009da680  [READ from 009da690]
+== refs to 00c5dfc0
+   ?  [WRITE from 009cc86a]
+== refs to 00cdaf54
+   FUN_00792fa0 @ 00792fa0  [DATA from 00792fa7]
+   FUN_007984a0 @ 007984a0  [READ from 00798531]
+== refs to 00cdaf58
+== refs to 00cdb0b8
+   FUN_00797280 @ 00797280  [READ from 00797283]
+== refs to 00cd85f8
+   FUN_0078f510 @ 0078f510  [DATA from 0078f511]
+   FUN_0078f510 @ 0078f510  [READ from 0078f516]
+   FUN_0078f510 @ 0078f510  [WRITE from 0078f521]
+   FUN_00794b50 @ 00794b50  [DATA from 00794b90]
+   FUN_00794b50 @ 00794b50  [READ from 00794b98]
+   FUN_00794b50 @ 00794b50  [READ from 00794c16]
+   FUN_00794b50 @ 00794b50  [READ from 00794c40]
+   FUN_00794b50 @ 00794b50  [READ from 00794c61]
+   FUN_00794b50 @ 00794b50  [READ from 00794c70]
+   FUN_00794b50 @ 00794b50  [READ from 00794c92]

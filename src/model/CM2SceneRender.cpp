@@ -1,4 +1,5 @@
 #include "model/CM2SceneRender.hpp"
+#include "gx/Device.hpp"
 #include "gx/Draw.hpp"
 #include "gx/RenderState.hpp"
 #include "gx/Shader.hpp"
@@ -67,7 +68,17 @@ int32_t CM2SceneRender::s_shadedList[M2BLEND_COUNT] = {
     0   // M2BLEND_MOD_2X
 };
 
+const C44Matrix* CM2SceneRender::s_shadowCasterRebase = nullptr;
+CShaderEffect* CM2SceneRender::s_shadowCasterEffect = nullptr;
+
 void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, uint32_t count) {
+
+    // Only the OPAQUE pass. Pass 1/2 are the transparent ones, which legitimately run with depth
+    // write off -- capturing those was measuring the wrong thing three times running.
+    // The shadow-caster sweep also runs as M2PASS_0, rebased into light space with the shadow
+    // map's orthographic projection. Capturing that instead of the camera pass has now happened
+    // twice; s_shadowCasterRebase is what tells them apart.
+
     if (!count) {
         return;
     }
@@ -105,6 +116,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
 
     for (int32_t i = 0; i < count; i++) {
         auto element = &elements[indices[i]];
+
 
         if (element->type == 2 || element->type == 4 || !element->model->m_flag2000) {
             this->m_curElement = element;
@@ -181,6 +193,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
 
     GxRsPop();
     GxRsSet(GxRs_Fog, 0);
+
 }
 
 void CM2SceneRender::DrawBatch() {
@@ -190,15 +203,23 @@ void CM2SceneRender::DrawBatch() {
     this->m_curSkinSection = element->skinSection;
     this->m_curMaterial = &this->m_data->materials[element->batch->materialIndex];
 
-    element->effect->SetCurrent();
-    this->SetupLighting();
-    this->SetupMaterial();
-    this->SetupTextures();
+    // Casting into the shadow map needs geometry and nothing else: no lighting, no material, no
+    // textures. The effect is swapped rather than the draw reimplemented so that vertex streams,
+    // index buffers and bone constants all follow exactly the path the visible pass uses.
+    if (CM2SceneRender::s_shadowCasterEffect) {
+        CM2SceneRender::s_shadowCasterEffect->SetCurrent();
+    } else {
+        element->effect->SetCurrent();
+        this->SetupLighting();
+        this->SetupMaterial();
+        this->SetupTextures();
+    }
 
     if (
         CShaderEffect::s_enableShaders
         && (
-            this->m_curType != this->m_prevType
+            CM2SceneRender::s_shadowCasterRebase
+            || this->m_curType != this->m_prevType
             || this->m_curModel != this->m_prevModel
             || this->m_curSkinSection->boneComboIndex != this->m_prevSkinSection->boneComboIndex
         )
@@ -208,9 +229,17 @@ void CM2SceneRender::DrawBatch() {
         for (int32_t i = 0; i < this->m_curSkinSection->boneCount; i++) {
             auto& boneMatrix = this->m_curModel->m_boneMatrices[this->m_data->boneCombos[this->m_curSkinSection->boneComboIndex + i]];
 
-            constants[31 + (i * 3) + 0] = { boneMatrix.a0, boneMatrix.b0, boneMatrix.c0, boneMatrix.d0 };
-            constants[31 + (i * 3) + 1] = { boneMatrix.a1, boneMatrix.b1, boneMatrix.c1, boneMatrix.d1 };
-            constants[31 + (i * 3) + 2] = { boneMatrix.a2, boneMatrix.b2, boneMatrix.c2, boneMatrix.d2 };
+
+            // In caster mode the bone is lifted out of the camera's view and into the light's. The
+            // cached-upload shortcut above is disabled in that mode because the same bone yields a
+            // different matrix here than it did in the visible pass.
+            C44Matrix bone = CM2SceneRender::s_shadowCasterRebase
+                ? boneMatrix * *CM2SceneRender::s_shadowCasterRebase
+                : boneMatrix;
+
+            constants[31 + (i * 3) + 0] = { bone.a0, bone.b0, bone.c0, bone.d0 };
+            constants[31 + (i * 3) + 1] = { bone.a1, bone.b1, bone.c1, bone.d1 };
+            constants[31 + (i * 3) + 2] = { bone.a2, bone.b2, bone.c2, bone.d2 };
         }
 
         GxShaderConstantsUnlock(GxSh_Vertex, 31, this->m_curSkinSection->boneCount * 3);
@@ -246,6 +275,7 @@ void CM2SceneRender::DrawBatch() {
         batch.m_count = skinSection->indexCount;
         batch.m_minIndex = skinSection->vertexStart;
         batch.m_maxIndex = skinSection->vertexStart + skinSection->vertexCount - 1;
+
 
         GxDraw(&batch, 1);
     } else if (v9) {
@@ -453,6 +483,7 @@ void CM2SceneRender::SetupMaterial() {
 
             if (this->m_curBatch->colorIndex < this->m_data->colors.Count()) {
                 auto& modelColor = this->m_curModel->m_colors[this->m_curBatch->colorIndex];
+
 
                 modelDiffuse.x *= modelColor.colorTrack.currentValue.x;
                 modelDiffuse.y *= modelColor.colorTrack.currentValue.y;

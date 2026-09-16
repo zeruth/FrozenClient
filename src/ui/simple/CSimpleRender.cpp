@@ -87,6 +87,14 @@ void CSimpleRender::DrawBatch(CRenderBatch* batch) {
             char* indexData = g_theGxDevicePtr->BufLock(indexStream);
             uint16_t* indexBuf = reinterpret_cast<uint16_t*>(indexData);
 
+            // Neither lock was checked, and the loops below write through both. A failed lock
+            // therefore wrote to a null pointer, which is what killed the client in the UI render
+            // pass. Dropping the batch costs one frame of one widget; writing through null costs
+            // the session. This is the fourth place in the graphics layer with this exact shape.
+            if (!vertexBuf || !indexBuf) {
+                continue;
+            }
+
             if (mesh->indices) {
                 for (int32_t i = 0; i < mesh->posCount; i++) {
                     C3Vector* p = &mesh->position[i];

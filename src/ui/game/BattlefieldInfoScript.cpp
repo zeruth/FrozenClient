@@ -19,7 +19,10 @@ int32_t Script_GetBattlefieldInstanceInfo(lua_State* L) {
 }
 
 int32_t Script_IsBattlefieldArena(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsActiveBattlefieldArena(lua_State* L) {
@@ -99,7 +102,11 @@ int32_t Script_LeaveBattlefield(lua_State* L) {
 }
 
 int32_t Script_GetNumBattlefieldStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldStatInfo(lua_State* L) {
@@ -141,7 +148,10 @@ int32_t Script_GetBattlefieldVehicleInfo(lua_State* L) {
 }
 
 int32_t Script_CanJoinBattlefieldAsGroup(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldMapIconScale(lua_State* L) {
@@ -165,7 +175,10 @@ int32_t Script_HearthAndResurrectFromArea(lua_State* L) {
 }
 
 int32_t Script_CanHearthAndResurrectFromArea(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetNumBattlegroundTypes(lua_State* L) {

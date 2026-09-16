@@ -52,7 +52,11 @@ int32_t Script_BNGetSelectedFriend(lua_State* L) {
 }
 
 int32_t Script_BNGetNumFriendInvites(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_BNGetFriendInviteInfo(lua_State* L) {
@@ -120,7 +124,11 @@ int32_t Script_BNSendConversationMessage(lua_State* L) {
 }
 
 int32_t Script_BNGetNumConversationMembers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_BNGetConversationMemberInfo(lua_State* L) {
@@ -168,7 +176,10 @@ int32_t Script_BNGetBlockedToonInfo(lua_State* L) {
 }
 
 int32_t Script_BNIsToonBlocked(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_BNSetToonBlocked(lua_State* L) {
@@ -239,11 +250,17 @@ int32_t Script_BNGetMatureLanguageFilter(lua_State* L) {
 }
 
 int32_t Script_BNIsSelf(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_BNIsFriend(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_BNGetMaxPlayersInConversation(lua_State* L) {

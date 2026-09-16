@@ -1,0 +1,181 @@
+// ===== FUN_007ee150 @ 007ee150 (requested d:7ee150) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_007ee150(void)
+
+{
+  FUN_009ad000("Textures\\sunGlare.blp");
+  _DAT_00d38ec8 = 0x3f800000;
+  _DAT_00d38f50 = &DAT_00d38e28;
+  _DAT_00d38ed4 = _DAT_00a41bc0;
+  _DAT_00d38eb0 = 1;
+  _DAT_00d38ee0 = 1;
+  _DAT_00d38ed0 = _DAT_009e8d2c;
+  _DAT_00d38f44 = _DAT_009e2ec4;
+  _DAT_00d38f48 = 0x3f800000;
+  _DAT_00d38f38 = _DAT_009ebbc4;
+  _DAT_00d38f3c = _DAT_009f281c;
+  _DAT_00d38f40 = _DAT_009e2ec0;
+  _DAT_00d38f4c = 0;
+  _DAT_00d38f18 = _DAT_00a41bbc;
+  _DAT_00d38f1c = 0;
+  _DAT_00d38f20 = _DAT_00a41bb8;
+  _DAT_00d38f24 = 0x3f800000;
+  _DAT_00d38f28 = _DAT_00a41bb4;
+  _DAT_00d38f2c = 0x3f800000;
+  _DAT_00d38f30 = _DAT_00a41bb0;
+  _DAT_00d38f34 = 0;
+  return;
+}
+
+
+
+// ===== FUN_007ee230 @ 007ee230 (requested d:7ee230) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_007ee230(void)
+
+{
+  FUN_009ad000("Textures\\moonGlare.blp");
+  _DAT_00d38f78 = _DAT_00a4040c;
+  _DAT_00d39000 = &DAT_00d38e48;
+  _DAT_00d38f84 = _DAT_00a41bc0;
+  _DAT_00d38f60 = 1;
+  _DAT_00d38f90 = 1;
+  _DAT_00d38f80 = _DAT_00a41be8;
+  _DAT_00d38ff4 = _DAT_009e3004;
+  _DAT_00d38ff8 = 0x3f800000;
+  _DAT_00d38fe8 = 0x3f800000;
+  _DAT_00d38fec = 0x3f800000;
+  _DAT_00d38ff0 = _DAT_009e2ec0;
+  _DAT_00d38fc8 = _DAT_00a37f38;
+  _DAT_00d38fcc = 0x3f800000;
+  _DAT_00d38fd0 = _DAT_00a41be4;
+  _DAT_00d38fd4 = 0;
+  _DAT_00d38fd8 = _DAT_00a41be0;
+  _DAT_00d38fdc = 0;
+  _DAT_00d38fe0 = _DAT_00a41bdc;
+  _DAT_00d38fe4 = 0x3f800000;
+  _DAT_00d38ffc = 0;
+  return;
+}
+
+
+
+// ===== FUN_007ee0d0 @ 007ee0d0 (requested d:7ee0d0) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __fastcall FUN_007ee0d0(int param_1)
+
+{
+  float10 fVar1;
+  undefined1 local_c;
+  
+  *(undefined4 *)(param_1 + 0xc) = DAT_00d38b18;
+  *(undefined4 *)(param_1 + 0x10) = DAT_00d38b1c;
+  *(undefined4 *)(param_1 + 0x14) = DAT_00d38b20;
+  fVar1 = (float10)FUN_007ed3b0(_DAT_00d38b04);
+  local_c = (undefined1)(int)ROUND(fVar1 * (float10)_DAT_00a41bac + (float10)DAT_009e1130);
+  *(undefined1 *)(param_1 + 0xb) = local_c;
+  return;
+}
+
+
+
+// ===== REFS to 00d38188 =====
+   FUN_007ed250 @ 007ed250  [WRITE from 007ed2b3]
+   FUN_007efd00 @ 007efd00  [DATA from 007f010e]
+   FUN_007efd00 @ 007efd00  [DATA from 007f0137]
+   FUN_007efd00 @ 007efd00  [DATA from 007f014c]
+   FUN_007efd00 @ 007efd00  [DATA from 007f015c]
+
+// ===== REFS to 00d38688 =====
+   FUN_007ed250 @ 007ed250  [DATA from 007ed255]
+   FUN_007ed250 @ 007ed250  [WRITE from 007ed286]
+   FUN_007efd00 @ 007efd00  [DATA from 007f004c]
+   FUN_007efd00 @ 007efd00  [DATA from 007f0056]
+   FUN_007efd00 @ 007efd00  [DATA from 007f0084]
+   FUN_007efd00 @ 007efd00  [DATA from 007f008e]
+   FUN_007efd00 @ 007efd00  [DATA from 007f00bc]
+   FUN_007efd00 @ 007efd00  [DATA from 007f00c9]
+   FUN_007efd00 @ 007efd00  [DATA from 007f00f0]
+   FUN_007efd00 @ 007efd00  [DATA from 007f0104]
+
+// ===== REFS to 00d38d90 =====
+   ?  [DATA from 007f102a]
+   ?  [DATA from 007f104a]
+   ?  [DATA from 009d0740]
+   FUN_007f09b0 @ 007f09b0  [DATA from 007f0b75]
+   FUN_007f1010 @ 007f1010  [DATA from 007f1010]
+   FUN_007f1cd0 @ 007f1cd0  [DATA from 007f1cf7]
+   FUN_007f2790 @ 007f2790  [DATA from 007f28cb]
+   FUN_007f2790 @ 007f2790  [DATA from 007f28db]
+   FUN_007f2790 @ 007f2790  [DATA from 007f290a]
+   FUN_009dccd0 @ 009dccd0  [DATA from 009dccd0]
+
+// ===== REFS to 00d38dbc =====
+   FUN_007f2790 @ 007f2790  [WRITE from 007f2947]
+
+// ===== REFS to 00d38d9c =====
+
+// ===== FUN_0088d0c0 @ 0088d0c0 (requested d:88d0c0) =====
+
+void FUN_0088d0c0(void)
+
+{
+  ushort in_FPUControlWord;
+  float10 in_ST0;
+  float10 in_ST1;
+  
+  if ((DAT_00dd0340 != 0) && ((MXCSR & 0x1f80) == 0x1f80 && (in_FPUControlWord & 0x7f) == 0x7f)) {
+    FUN_00891a60();
+    return;
+  }
+  FUN_0088d11d((double)in_ST1,(double)in_ST0);
+  return;
+}
+
+
+
+// ===== DISASM FUN_007ee0d0 @ 007ee0d0 =====
+007ee0d0  PUSH EBP
+007ee0d1  MOV EBP,ESP
+007ee0d3  SUB ESP,0x8
+007ee0d6  MOV EAX,[0x00d38b18]    ; -> 00d38b18 (DAT_00d38b18) 
+007ee0db  PUSH EBX
+007ee0dc  MOV EBX,ECX
+007ee0de  MOV dword ptr [EBX + 0xc],EAX
+007ee0e1  MOV ECX,dword ptr [0x00d38b1c]    ; -> 00d38b1c (DAT_00d38b1c) 
+007ee0e7  MOV dword ptr [EBX + 0x10],ECX
+007ee0ea  MOV EDX,dword ptr [0x00d38b20]    ; -> 00d38b20 (DAT_00d38b20) 
+007ee0f0  PUSH ESI
+007ee0f1  PUSH EDI
+007ee0f2  MOV dword ptr [EBX + 0x14],EDX
+007ee0f5  FLD float ptr [0x00d38b04]    ; -> 00d38b04 (DAT_00d38b04) 
+007ee0fb  PUSH ECX
+007ee0fc  MOV ESI,0x4
+007ee101  FSTP float ptr [ESP]    ; -> Stack[-0x1c] 
+007ee104  MOV EDI,0xaf4c20    ; -> 00af4c20 (DAT_00af4c20) 
+007ee109  CALL 0x007ed3b0    ; -> 007ed3b0 (FUN_007ed3b0) 
+007ee10e  FMUL float ptr [0x00a41bac]    ; -> 00a41bac (DAT_00a41bac) 
+007ee114  FNSTCW word ptr [EBP + -0x2]    ; -> Stack[-0x6] 
+007ee117  ADD ESP,0x4
+007ee11a  MOVZX EAX,word ptr [EBP + -0x2]    ; -> Stack[-0x6] 
+007ee11e  FADD float ptr [0x009e1130]    ; -> 009e1130 (DAT_009e1130) 
+007ee124  OR EAX,0xc00
+007ee129  MOV dword ptr [EBP + -0x8],EAX    ; -> Stack[-0xc] 
+007ee12c  POP EDI
+007ee12d  POP ESI
+007ee12e  FLDCW word ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007ee131  FISTP dword ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007ee134  MOV AL,byte ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007ee137  MOV byte ptr [EBX + 0xb],AL
+007ee13a  POP EBX
+007ee13b  FLDCW word ptr [EBP + -0x2]    ; -> Stack[-0x6] 
+007ee13e  MOV ESP,EBP
+007ee140  POP EBP
+007ee141  RET
+

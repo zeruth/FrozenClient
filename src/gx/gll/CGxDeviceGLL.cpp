@@ -120,6 +120,13 @@ void CGxDeviceGLL::BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t
     CGxDevice::BufData(buf, data, size, offset);
 
     auto bufData = this->IBufLock(buf);
+
+    // Same unchecked lock as the D3D backend had: a null result makes &bufData[offset] a small
+    // address, and the memcpy writes through it.
+    if (!bufData) {
+        return;
+    }
+
     memcpy(&bufData[offset], data, size);
     this->IBufUnlock(buf);
 }

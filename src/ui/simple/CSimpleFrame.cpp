@@ -418,6 +418,12 @@ void CSimpleFrame::RunOnEnableScript() {
     }
 }
 
+void CSimpleFrame::RunOnDisableScript() {
+    if (this->m_onDisable.luaRef && !this->m_loading) {
+        this->RunScript(this->m_onDisable, 0, nullptr);
+    }
+}
+
 void CSimpleFrame::RunOnEnterScript(int32_t a2) {
     if (this->m_onEnter.luaRef) {
         auto L = FrameScript_GetContext();
@@ -981,6 +987,7 @@ void CSimpleFrame::LoadXML_Scripts(const XMLNode* root, CStatus* status) {
             }
 
             script->unk = nullptr;
+
 
             if (!SStrCmpI(node->GetName(), "OnChar", 0x7FFFFFFFu) && !(this->m_eventmask & 1)) {
                 if (this->m_visible) {

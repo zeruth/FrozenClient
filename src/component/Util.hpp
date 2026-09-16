@@ -11,7 +11,12 @@ struct ComponentData;
 struct st_variation;
 
 struct st_color {
-    CharSectionsRec* rec;
+    // Must default to null. BuildComponentArray allocates these with placement new over raw Storm
+    // memory and then fills only the (variation, colour) pairs CharSections.dbc actually carries.
+    // Without an initializer the gaps keep the allocator's fill pattern, and the lookups return
+    // that as a non-null record: the caller's null check passes and the deref faults. Sparse
+    // combinations only occur for non-playable races, which is why creature appearances hit it.
+    CharSectionsRec* rec = nullptr;
 };
 
 struct st_race {

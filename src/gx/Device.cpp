@@ -62,3 +62,11 @@ void* GxDevWindow() {
 int32_t GxMasterEnable(EGxMasterEnables state) {
     return g_theGxDevicePtr->MasterEnable(state);
 }
+
+int32_t GxScreenShot(const char* path) {
+    if (!g_theGxDevicePtr) {
+        return 0;
+    }
+
+    return g_theGxDevicePtr->ScreenShot(path);
+}

@@ -1,0 +1,34 @@
+gxDepthBits | 00a0c8dc "gxDepthBits" | from 0076a764 in FUN_0076a630 @ 0076a630
+gxDepthBits | 00a0c8dc "gxDepthBits" | from 0054f8d6 in FUN_0054f8b0 @ 0054f8b0
+gxDepthBits | 00a0c8dc "gxDepthBits" | from 0054fa10 in FUN_0054f980 @ 0054f980
+gxDepthBits | 00a0c8dc "gxDepthBits" | from 0054f28f in FUN_0054f1b0 @ 0054f1b0
+gxColorBits | 00a0c8e8 "gxColorBits" | from 0076a716 in FUN_0076a630 @ 0076a630
+gxColorBits | 00a0c8e8 "gxColorBits" | from 0054f8bc in FUN_0054f8b0 @ 0054f8b0
+gxColorBits | 00a0c8e8 "gxColorBits" | from 0054fa06 in FUN_0054f980 @ 0054f980
+gxColorBits | 00a0c8e8 "gxColorBits" | from 0054f272 in FUN_0054f1b0 @ 0054f1b0
+GxDeviceD3d | 00a2dfdc ".\\CGxDeviceD3d\\CGxDeviceD3d.cpp" | from 00689ef7 in FUN_00689ef0 @ 00689ef0
+DeviceD3d.cpp | 00a2dfdc ".\\CGxDeviceD3d\\CGxDeviceD3d.cpp" | from 00689ef7 in FUN_00689ef0 @ 00689ef0
+GxDeviceD3d | 00a2e2e8 ".\\CGxDeviceD3d9Ex\\CGxDeviceD3d9Ex.cpp" | from 0068c227 in FUN_0068c220 @ 0068c220
+GxDeviceD3d | 00a2e4e8 ".\\CGxDeviceD3d\\CGxD3dDevice.cpp" | from 0068e48e in ?
+GxDeviceD3d | 00a2e5c8 "CGxDeviceD3d::ILoadD3dLib(): unable to d3dCreateProc()" | from 0068edd0 in FUN_0068ed80 @ 0068ed80
+GxDeviceD3d | 00a2e600 "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()" | from 0068edbf in FUN_0068ed80 @ 0068ed80
+GxDeviceD3d | 00a2e648 "CGxDeviceD3d::ILoadD3dLib(): unable to LoadLibrary()" | from 0068eda8 in FUN_0068ed80 @ 0068ed80
+GxDeviceD3d | 00a2e8a4 "CGxDeviceD3d::DeviceSetFormat():" | from 006904d8 in FUN_006904d0 @ 006904d0
+GxDeviceD3d | 00a2e8c8 "CGxDeviceD3d::DeviceCreate(): WindowClassCreate() failed: %s" | from 006907ba in FUN_00690750 @ 00690750
+GxDeviceD3d | 00a2f428 ".\\CGxDeviceD3d9Ex\\CGxD3d9ExDevice.cpp" | from 0069fdfe in ?
+GxDeviceD3d | 00a2f450 "CGxDeviceD3d9Ex::ILoadD3dLib(): unable to d3dCreateProc()" | from 006a0af0 in FUN_006a0aa0 @ 006a0aa0
+GxDeviceD3d | 00a2f48c "CGxDeviceD3d9Ex::ILoadD3dLib(): unable to GetProcAddress()" | from 006a0adf in FUN_006a0aa0 @ 006a0aa0
+GxDeviceD3d | 00a2f4c8 "CGxDeviceD3d9Ex::ILoadD3dLib(): unable to LoadLibrary()" | from 006a0ac8 in FUN_006a0aa0 @ 006a0aa0
+GxDeviceD3d | 00a2f650 "CGxDeviceD3d9Ex::DeviceSetFormat(): unable to set format!" | from 006a20e0 in FUN_006a2040 @ 006a2040
+GxDeviceD3d | 00a2f68c "CGxDeviceD3d9Ex::DeviceSetFormat():" | from 006a2048 in FUN_006a2040 @ 006a2040
+GxDeviceD3d | 00a2f6b0 "CGxDeviceD3d9Ex::DeviceCreate(): WindowClassCreate() failed: %s" | from 006a232a in FUN_006a22c0 @ 006a22c0
+GxDeviceD3d | 00a2fab0 ".\\CGxDeviceD3d9Ex\\CGxD3d9ExTexture.cpp" | from 006a70d3 in FUN_006a7070 @ 006a7070
+nearclip | 00a3f6b4 "nearclip" | from 0078e53a in FUN_0078e400 @ 0078e400
+GxDeviceD3d | 00ad8d70 ".?AUGxVertexDecl@CGxDeviceD3d@@" | from 0068fe9a in FUN_0068fe80 @ 0068fe80
+GxDeviceD3d | 00ad8d70 ".?AUGxVertexDecl@CGxDeviceD3d@@" | from 006a54b5 in FUN_006a54a0 @ 006a54a0
+GxDeviceD3d | 00ad8d70 ".?AUGxVertexDecl@CGxDeviceD3d@@" | from 006a54d1 in FUN_006a54a0 @ 006a54a0
+GxDeviceD3d | 00ad8d70 ".?AUGxVertexDecl@CGxDeviceD3d@@" | from 006a551e in FUN_006a54a0 @ 006a54a0
+GxDeviceD3d | 00ad8ecc ".?AUGxVertexDecl@CGxDeviceD3d9Ex@@" | from 006a9455 in FUN_006a9440 @ 006a9440
+GxDeviceD3d | 00ad8ecc ".?AUGxVertexDecl@CGxDeviceD3d9Ex@@" | from 006a9471 in FUN_006a9440 @ 006a9440
+GxDeviceD3d | 00ad8ecc ".?AUGxVertexDecl@CGxDeviceD3d9Ex@@" | from 006a94be in FUN_006a9440 @ 006a9440
+GxDeviceD3d | 00ad8ecc ".?AUGxVertexDecl@CGxDeviceD3d9Ex@@" | from 006a1a72 in FUN_006a19d0 @ 006a19d0

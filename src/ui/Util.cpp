@@ -153,6 +153,23 @@ int32_t StringToDrawLayer(const char* string, int32_t& layer) {
     return false;
 }
 
+// The name FrameXML uses for an anchor point, for the queries that hand a point back to script.
+const char* FramePointToString(FRAMEPOINT point) {
+    static const char* const names[FRAMEPOINT_NUMPOINTS] = {
+        "TOPLEFT",
+        "TOP",
+        "TOPRIGHT",
+        "LEFT",
+        "CENTER",
+        "RIGHT",
+        "BOTTOMLEFT",
+        "BOTTOM",
+        "BOTTOMRIGHT",
+    };
+
+    return point >= 0 && point < FRAMEPOINT_NUMPOINTS ? names[point] : nullptr;
+}
+
 int32_t StringToFramePoint(const char* string, FRAMEPOINT& point) {
     struct FramePointEntry {
         const char* string;
@@ -179,6 +196,64 @@ int32_t StringToFramePoint(const char* string, FRAMEPOINT& point) {
     }
 
     return false;
+}
+
+// The name FrameXML uses for a strata, for GetFrameStrata.
+// GameTooltip anchor names, as FrameXML spells them.
+static const struct { const char* name; TOOLTIP_ANCHORPOINT value; } s_tooltipAnchors[] = {
+    { "ANCHOR_TOPLEFT",      TOOLTIP_ANCHOR_TOPLEFT },
+    { "ANCHOR_LEFT",         TOOLTIP_ANCHOR_LEFT },
+    { "ANCHOR_TOPRIGHT",     TOOLTIP_ANCHOR_TOPRIGHT },
+    { "ANCHOR_RIGHT",        TOOLTIP_ANCHOR_RIGHT },
+    { "ANCHOR_BOTTOMLEFT",   TOOLTIP_ANCHOR_BOTTOMLEFT },
+    { "ANCHOR_BOTTOM",       TOOLTIP_ANCHOR_BOTTOM },
+    { "ANCHOR_BOTTOMRIGHT",  TOOLTIP_ANCHOR_BOTTOMRIGHT },
+    { "ANCHOR_TOP",          TOOLTIP_ANCHOR_TOP },
+    { "ANCHOR_CURSOR",       TOOLTIP_ANCHOR_CURSOR },
+    { "ANCHOR_NONE",         TOOLTIP_ANCHOR_NONE },
+    { "ANCHOR_PRESERVE",     TOOLTIP_ANCHOR_PRESERVE },
+    { "ANCHOR_CURSOR_RIGHT", TOOLTIP_ANCHOR_CURSOR_RIGHT },
+};
+
+int32_t StringToTooltipAnchor(const char* string, TOOLTIP_ANCHORPOINT& anchor) {
+    for (const auto& entry : s_tooltipAnchors) {
+        if (!SStrCmpI(entry.name, string)) {
+            anchor = entry.value;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const char* TooltipAnchorToString(TOOLTIP_ANCHORPOINT anchor) {
+    for (const auto& entry : s_tooltipAnchors) {
+        if (entry.value == anchor) {
+            return entry.name;
+        }
+    }
+
+    return nullptr;
+}
+
+const char* FrameStrataToString(FRAME_STRATA strata) {
+    static const char* const names[] = {
+        "WORLD",
+        "BACKGROUND",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "DIALOG",
+        "FULLSCREEN",
+        "FULLSCREEN_DIALOG",
+        "TOOLTIP",
+    };
+
+    int32_t index = static_cast<int32_t>(strata);
+
+    return index >= 0 && index < static_cast<int32_t>(sizeof(names) / sizeof(names[0]))
+        ? names[index]
+        : nullptr;
 }
 
 int32_t StringToFrameStrata(const char* string, FRAME_STRATA& strata) {

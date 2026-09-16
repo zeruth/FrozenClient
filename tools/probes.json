@@ -1,0 +1,545 @@
+[
+  {
+    "group": "shadow-map constants",
+    "name": "map size (texels)",
+    "type": "i32",
+    "ref": "0x00d43150",
+    "note": "whoa hard-codes this; exposed via g_mapShadowConstants so it is compared, not assumed",
+    "whoa": "g_mapShadowConstants",
+    "whoa_offset": 0,
+    "whoa_type": "i32",
+    "tol": 0.001
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "map size as float",
+    "type": "f32",
+    "ref": "0x00d431bc"
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "1 / size",
+    "type": "f32",
+    "ref": "0x00d43200"
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "depth scale (1/farplane)",
+    "type": "f32",
+    "ref": "0x00d431c8",
+    "note": "whoa hard-codes this; exposed via g_mapShadowConstants so it is compared, not assumed",
+    "whoa": "g_mapShadowConstants",
+    "whoa_offset": 24,
+    "whoa_type": "f32",
+    "tol": 0.001
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "box half-extent",
+    "type": "f32",
+    "ref": "0x00d43258",
+    "note": "whoa hard-codes this; exposed via g_mapShadowConstants so it is compared, not assumed",
+    "whoa": "g_mapShadowConstants",
+    "whoa_offset": 4,
+    "whoa_type": "f32",
+    "tol": 0.001
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "up hint",
+    "type": "f32x3",
+    "ref": "0x00d43278",
+    "note": "whoa hard-codes this; exposed via g_mapShadowConstants so it is compared, not assumed",
+    "whoa": "g_mapShadowConstants",
+    "whoa_offset": 28,
+    "whoa_type": "f32x3",
+    "tol": 0.001
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "cascade extents",
+    "type": "f32x3",
+    "ref": "0x00b1d520",
+    "note": "expected 40 / 160 / 640; whoa has no cascades yet"
+  },
+  {
+    "group": "shadow-map constants",
+    "name": "cascade thresholds",
+    "type": "f32x3",
+    "ref": "0x00b1d52c",
+    "note": "expected 4 / 16 / 1024, squared re-centre distances"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "centre (cached)",
+    "type": "f32x3",
+    "ref": "0x00d43260",
+    "whoa": "g_mapShadowFocus",
+    "tol": 0.5,
+    "note": "the point the light volume is built around; whoa passes the player position, as the reference does"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "centre (current)",
+    "type": "f32x3",
+    "ref": "0x00d4326c"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "player z + 2",
+    "type": "f32",
+    "ref": "0x00d25304",
+    "note": "caster box height cut, written by FUN_007bb670"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "tex matrix col 0",
+    "type": "f32x4",
+    "ref": "0x00d43348",
+    "whoa": "s_texMatrix",
+    "whoa_gather": [
+      0,
+      16,
+      32,
+      48
+    ],
+    "note": "reference keeps three float4 columns; whoa keeps a row-major 4x4, hence the gather"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "tex matrix col 1",
+    "type": "f32x4",
+    "ref": "0x00d43358",
+    "whoa": "s_texMatrix",
+    "whoa_gather": [
+      4,
+      20,
+      36,
+      52
+    ]
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "tex matrix col 2",
+    "type": "f32x4",
+    "ref": "0x00d43368",
+    "whoa": "s_texMatrix",
+    "whoa_gather": [
+      8,
+      24,
+      40,
+      56
+    ],
+    "note": "linear light depth plus the -0.1 bias in the last element"
+  },
+  {
+    "group": "shadow-map per-frame",
+    "name": "PCF taps 0-3",
+    "type": "f32x8",
+    "ref": "0x00d431d0",
+    "note": "eight float4 with .zw zero; offsets in texels premultiplied by 1/size"
+  },
+  {
+    "group": "whoa-only (no reference address yet)",
+    "name": "light view row 0",
+    "type": "f32x4",
+    "whoa": "s_lightView",
+    "whoa_offset": 0
+  },
+  {
+    "group": "whoa-only (no reference address yet)",
+    "name": "light view row 3",
+    "type": "f32x4",
+    "whoa": "s_lightView",
+    "whoa_offset": 48,
+    "note": "translation: should be the light eye negated into light space"
+  },
+  {
+    "group": "whoa-only (no reference address yet)",
+    "name": "ortho row 0",
+    "type": "f32x4",
+    "whoa": "s_projection",
+    "whoa_offset": 0,
+    "note": "expected (1/20, 0, 0, 0)"
+  },
+  {
+    "group": "whoa-only (no reference address yet)",
+    "name": "ortho row 2",
+    "type": "f32x4",
+    "whoa": "s_projection",
+    "whoa_offset": 32,
+    "note": "expected (0, 0, 2/3999, 0): the [-1,1] depth convention the device remaps itself"
+  },
+  {
+    "group": "camera",
+    "name": "camera position",
+    "type": "f32x3",
+    "whoa": "s_cameraPos",
+    "note": "reference address not yet recovered; whoa side only, to confirm the probe plumbing"
+  },
+  {
+    "group": "camera",
+    "name": "fog active",
+    "type": "u8",
+    "whoa": "s_fogActive"
+  },
+  {
+    "group": "outdoor light",
+    "name": "sun direction",
+    "type": "f32x3",
+    "ref": "0x00ce04a8",
+    "whoa": "CWorld::s_outdoorDirection",
+    "tol": 0.02,
+    "note": "NEGATED is EXPECTED here and must not be 'fixed'. The reference stores the direction the light TRAVELS (pointing down) and negates at its use sites; whoa stores the direction TOWARD the light and dots it straight into N.L. Both are self-consistent. What this probe catches is a use site that forgets which convention it is in, which is exactly how the shadow camera ended up underground.",
+    "ref_deref": true,
+    "ref_offset": 124
+  },
+  {
+    "group": "outdoor light",
+    "name": "outdoor ambient",
+    "type": "f32x3",
+    "ref": "0x00ce04a8",
+    "whoa": "CWorld::s_outdoorAmbient",
+    "tol": 0.02,
+    "ref_deref": true,
+    "ref_offset": 136
+  },
+  {
+    "group": "outdoor light",
+    "name": "outdoor diffuse",
+    "type": "f32x3",
+    "ref": "0x00ce04a8",
+    "whoa": "CWorld::s_outdoorDiffuse",
+    "tol": 0.02,
+    "ref_deref": true,
+    "ref_offset": 148
+  },
+  {
+    "group": "fog",
+    "name": "fog end (whoa)",
+    "type": "f32",
+    "whoa": "CWorld::s_fogEnd"
+  },
+  {
+    "group": "fog",
+    "name": "fog start (whoa)",
+    "type": "f32",
+    "whoa": "CWorld::s_fogStart"
+  },
+  {
+    "group": "fog",
+    "name": "far clip (whoa)",
+    "type": "f32",
+    "whoa": "CWorld::s_farClip"
+  },
+  {
+    "group": "fog",
+    "name": "light params id (whoa)",
+    "type": "i32",
+    "whoa": "CWorld::s_outdoorParamsID",
+    "note": "index into LightFloatBand as (P-1)*6+band+1; a P of 0 makes that negative and every band reads 0"
+  },
+  {
+    "group": "fog",
+    "name": "cloud density (band 3)",
+    "type": "f32",
+    "whoa": "CWorld::s_cloudDensity",
+    "ref": "0xd38c34",
+    "tol": 0.02,
+    "note": "located by dumping the float-band run at 0x00d38c30..0x00d38c3c"
+  },
+  {
+    "group": "fog",
+    "name": "fog end",
+    "type": "f32",
+    "ref": "0x00d38b94",
+    "whoa": "CWorld::s_fogEnd",
+    "tol": 0.02,
+    "note": "the COMPUTED fog end, clamped to the far clip at DAT_00d38b40 (win-decomp-scene-leaves.txt)"
+  },
+  {
+    "group": "fog",
+    "name": "fog start",
+    "type": "f32",
+    "ref": "0x00d38b90",
+    "whoa": "CWorld::s_fogStart",
+    "tol": 0.02,
+    "note": "fog end times the LightFloatBand band 1 scalar"
+  },
+  {
+    "group": "fog",
+    "name": "fog colour",
+    "type": "u32",
+    "ref": "0x00d38b8c",
+    "whoa": "CWorld::s_fogColor",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "assigned as a single packed value in the reference; whoa keeps three floats",
+    "whoa_type": "f32x3"
+  },
+  {
+    "group": "fog",
+    "name": "fog rate",
+    "type": "f32",
+    "ref": "0x00d38b98",
+    "whoa": "CWorld::s_fogRate",
+    "tol": 0.001,
+    "note": "the reference holds 1.5; whoa was defaulting the SetFog density to 1.0"
+  },
+  {
+    "group": "fog",
+    "name": "far clip",
+    "type": "f32",
+    "ref": "0x00d38b40",
+    "whoa": "CWorld::s_farClip",
+    "tol": 0.02
+  },
+  {
+    "group": "fog",
+    "name": "outdoor band fog end",
+    "type": "f32",
+    "ref": "0x00d38c1c",
+    "note": "the OUTDOOR path: fog end starts at the far clip and is lowered to this if smaller"
+  },
+  {
+    "group": "fog",
+    "name": "outdoor start scalar",
+    "type": "f32",
+    "ref": "0x00d38c20",
+    "note": "the OUTDOOR scalar; fog start = fog end times this. Not DAT_00d38aac, which is the underwater override and reads 0"
+  },
+  {
+    "group": "sky bodies",
+    "name": "body tint",
+    "type": "u32",
+    "ref": "0x00d38bf8",
+    "whoa": "CWorld::s_bodyTint",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DNInfo[9], the sun/moon disc tint; the reference packs it, whoa keeps three floats",
+    "whoa_type": "f32x3"
+  },
+  {
+    "group": "sky bodies",
+    "name": "sun glare colour",
+    "type": "u32",
+    "ref": "0x00d38ec0",
+    "note": "note the ALPHA byte: 0 means the glare is fully transparent"
+  },
+  {
+    "group": "sky bodies",
+    "name": "celestial glow",
+    "type": "f32",
+    "ref": "0x00d38cd8"
+  },
+  {
+    "group": "time",
+    "name": "reference day/night clock",
+    "type": "i32",
+    "ref": "0x00d38b00",
+    "note": "FUN_007ecef0 returns &DAT_00d38b00: the base of the reference's DayNight state. Its first dword read 751 while whoa's light state corresponded to 895 game minutes, so this is very likely the game time in minutes. Probe it alongside a whoa snapshot taken within a minute to confirm."
+  },
+  {
+    "group": "sky dome",
+    "name": "sky ring 0 (band 6)",
+    "type": "u32",
+    "ref": "0xd38bf0",
+    "whoa": "CWorld::s_skyColors",
+    "whoa_offset": 0,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02
+  },
+  {
+    "group": "sky dome",
+    "name": "sky ring 1 (band 5)",
+    "type": "u32",
+    "ref": "0xd38bec",
+    "whoa": "CWorld::s_skyColors",
+    "whoa_offset": 12,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02
+  },
+  {
+    "group": "sky dome",
+    "name": "sky ring 2 (band 4)",
+    "type": "u32",
+    "ref": "0xd38be8",
+    "whoa": "CWorld::s_skyColors",
+    "whoa_offset": 24,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02
+  },
+  {
+    "group": "sky dome",
+    "name": "sky ring 3 (band 3)",
+    "type": "u32",
+    "ref": "0xd38be4",
+    "whoa": "CWorld::s_skyColors",
+    "whoa_offset": 36,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02
+  },
+  {
+    "group": "sky dome",
+    "name": "sky ring 4 (band 2)",
+    "type": "u32",
+    "ref": "0xd38be0",
+    "whoa": "CWorld::s_skyColors",
+    "whoa_offset": 48,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02
+  },
+  {
+    "group": "sky dome",
+    "name": "sun colour (band 8)",
+    "type": "u32",
+    "ref": "0xd38bdc",
+    "whoa": "CWorld::s_sunColor",
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 2, matched to LightIntBand band 8 by value"
+  },
+  {
+    "group": "sky dome",
+    "name": "cloud colour 1 (band 10)",
+    "type": "u32",
+    "ref": "0xd38bfc",
+    "whoa": "CWorld::s_cloudColor1",
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 10, matched to LightIntBand band 10 by value"
+  },
+  {
+    "group": "sky dome",
+    "name": "cloud colour 2 (band 11)",
+    "type": "u32",
+    "ref": "0xd38c00",
+    "whoa": "CWorld::s_cloudColor2",
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 11, matched to LightIntBand band 11 by value"
+  },
+  {
+    "group": "fog",
+    "name": "float band 2",
+    "type": "f32",
+    "ref": "0xd38c30",
+    "whoa": "CWorld::s_floatBand2",
+    "tol": 0.02,
+    "note": "read and compared; what it drives is not yet known"
+  },
+  {
+    "group": "fog",
+    "name": "float band 4",
+    "type": "f32",
+    "ref": "0xd38c38",
+    "whoa": "CWorld::s_floatBand4",
+    "tol": 0.02,
+    "note": "read and compared; what it drives is not yet known"
+  },
+  {
+    "group": "fog",
+    "name": "float band 5",
+    "type": "f32",
+    "ref": "0xd38c3c",
+    "whoa": "CWorld::s_floatBand5",
+    "tol": 0.02,
+    "note": "read and compared; what it drives is not yet known"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 12",
+    "type": "u32",
+    "ref": "0xd38c04",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 0,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 12; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 13",
+    "type": "u32",
+    "ref": "0xd38c08",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 12,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 13; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 14",
+    "type": "u32",
+    "ref": "0xd38c0c",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 24,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 14; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 15",
+    "type": "u32",
+    "ref": "0xd38c10",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 36,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 15; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 16",
+    "type": "u32",
+    "ref": "0xd38c14",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 48,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 16; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "sky dome",
+    "name": "light band 17",
+    "type": "u32",
+    "ref": "0xd38c18",
+    "whoa": "CWorld::s_lightBands12to17",
+    "whoa_offset": 60,
+    "whoa_type": "f32x3",
+    "ref_packed_rgb": true,
+    "tol": 0.02,
+    "note": "DayNight slot 17; bands 14/16 and 15/17 look like river/ocean shallow and deep pairs"
+  },
+  {
+    "group": "clouds",
+    "name": "cloud alpha threshold",
+    "type": "u8",
+    "ref": "0x00d38d98",
+    "whoa": "s_threshold",
+    "note": "SUSPECT ADDRESS -- do not read this DIFF as a cloud defect. Measured 2026-09-16: reference 79, whoa 127, while 'cloud density (band 3)' is 0.5 in BOTH and the reference's densityOverride is 0. round((1-0.5)*255) is 127/128, so 79 cannot be this formula's output from that density -- either cloudStruct+0x08 is not alphaThreshold or the formula differs. Bytes 127 and 128 do sit nearby (0x00d38dac, 0x00d38db4) at offsets that do not fit the documented layout. Needs the field located in the disassembly before it means anything.",
+    "tol": null
+  },
+  {
+    "group": "clouds",
+    "name": "cloud density override",
+    "type": "f32",
+    "ref": "0x00d38d94",
+    "note": "cloudStruct+0x04; 0 means the DNInfo band is in use. Reference-only: whoa has no override"
+  }
+]

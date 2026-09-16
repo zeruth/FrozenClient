@@ -1,12 +1,16 @@
 #include "ui/FrameXML.hpp"
 #include "ui/simple/CSimpleButton.hpp"
 #include "ui/simple/CSimpleCheckbox.hpp"
+#include "ui/simple/CSimpleColorSelect.hpp"
 #include "ui/simple/CSimpleEditBox.hpp"
 #include "ui/simple/CSimpleFont.hpp"
 #include "ui/simple/CSimpleFrame.hpp"
 #include "ui/simple/CSimpleHTML.hpp"
+#include "ui/simple/CSimpleMessageFrame.hpp"
 #include "ui/simple/CSimpleModel.hpp"
+#include "ui/simple/CSimpleMovieFrame.hpp"
 #include "ui/simple/CSimpleScrollFrame.hpp"
+#include "ui/simple/CSimpleScrollingMessageFrame.hpp"
 #include "ui/simple/CSimpleSlider.hpp"
 #include "ui/simple/CSimpleStatusBar.hpp"
 #include "util/CStatus.hpp"
@@ -53,9 +57,8 @@ CSimpleFrame* Create_SimpleFrame(CSimpleFrame* parent) {
 }
 
 CSimpleFrame* Create_SimpleMessageFrame(CSimpleFrame* parent) {
-    // TODO
-
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CSimpleMessageFrame), __FILE__, __LINE__, 0x0);
+    return new (m) CSimpleMessageFrame(parent);
 }
 
 CSimpleFrame* Create_SimpleModel(CSimpleFrame* parent) {
@@ -75,9 +78,8 @@ CSimpleFrame* Create_SimpleScrollFrame(CSimpleFrame* parent) {
 }
 
 CSimpleFrame* Create_SimpleScrollingMessageFrame(CSimpleFrame* parent) {
-    // TODO
-
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CSimpleScrollingMessageFrame), __FILE__, __LINE__, 0x0);
+    return new (m) CSimpleScrollingMessageFrame(parent);
 }
 
 CSimpleFrame* Create_SimpleSlider(CSimpleFrame* parent) {
@@ -103,15 +105,13 @@ CSimpleFrame* Create_SimpleStatusBar(CSimpleFrame* parent) {
 }
 
 CSimpleFrame* Create_SimpleColorSelect(CSimpleFrame* parent) {
-    // TODO
-
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CSimpleColorSelect), __FILE__, __LINE__, 0x0);
+    return new (m) CSimpleColorSelect(parent);
 }
 
 CSimpleFrame* Create_SimpleMovieFrame(CSimpleFrame* parent) {
-    // TODO
-
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CSimpleMovieFrame), __FILE__, __LINE__, 0x0);
+    return new (m) CSimpleMovieFrame(parent);
 }
 
 XMLNode* FrameXML_AcquireHashNode(const char* name, const char*& tainted, bool& locked) {
@@ -551,13 +551,15 @@ int32_t FrameXML_ProcessFile(const char* filePath, const char* a2, MD5_CTX* md5,
 
     XMLTree_Free(tree);
 
-    // TODO
-    // if (s_debugLevel > 0 || v34 > 0) {
-    //     unkStatus.Prepend(STATUS_INFO, "++ Loading file %s", v5);
-    // }
+    // Hand this file's problems back to the caller, naming the file they came from. Leaving this
+    // out discarded every warning the interface load produced -- including "Unable to create frame
+    // type" for each MessageFrame and ScrollingMessageFrame, whose factories are still stubs -- and
+    // made Logs\FrameXML.log come back empty, which reads as a clean load rather than a silent one.
+    if (unkStatus.m_entries.Head()) {
+        unkStatus.Prepend(STATUS_INFO, "++ Loading file %s", v5);
+    }
 
-    // TODO
-    // status->Unk8(unkStatus);
+    status->Add(unkStatus);
 
     return 1;
 }

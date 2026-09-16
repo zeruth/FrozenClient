@@ -53,7 +53,10 @@ int32_t Script_GetPlayerTradeMoney(lua_State* L) {
 }
 
 int32_t Script_GetTargetTradeMoney(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // No trade window, so there is never money in one.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_PickupTradeMoney(lua_State* L) {

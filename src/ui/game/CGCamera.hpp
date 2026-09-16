@@ -34,6 +34,7 @@ class CGCamera : public CSimpleCamera {
         void CalcModelCamera(uint32_t timestamp);
         void CalcTargetCamera(CGObject_C* target, uint32_t timestamp);
         void CheckUnderwater();
+        bool IsUnderwater() const { return this->m_underwater; }
         const WOWGUID& GetTarget() const;
         void SetTarget(const WOWGUID& target);
         void Rotate(float deltaYaw, float deltaPitch);
@@ -60,6 +61,7 @@ class CGCamera : public CSimpleCamera {
         float m_roll;
         // TODO
         float m_fovOffset;
+        bool m_underwater = false; // set by CheckUnderwater from the world's liquid query
 };
 
 void CameraRegisterCVars();

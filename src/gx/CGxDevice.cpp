@@ -995,6 +995,25 @@ void CGxDevice::RenderTargetGet(EGxBuffer buffer, CGxTex*& gxTex) {
     gxTex = this->m_textureTarget[buffer].m_texture;
 }
 
+void CGxDevice::RenderTargetSet(EGxBuffer buffer, CGxTex* gxTex, uint32_t plane) {
+    if (!this->m_context) {
+        return;
+    }
+
+    this->m_textureTarget[buffer].m_texture = gxTex;
+    this->m_textureTarget[buffer].m_plane = plane;
+
+    this->IRenderTargetSet(buffer, gxTex, plane);
+}
+
+int32_t CGxDevice::RenderTargetDump(CGxTex* gxTex, const char* path) {
+    return this->IRenderTargetDump(gxTex, path);
+}
+
+int32_t CGxDevice::ScreenShot(const char* path) {
+    return this->IScreenShot(path);
+}
+
 void CGxDevice::RsGet(EGxRenderState which, int32_t& value) {
     value = static_cast<int32_t>(this->m_appRenderStates[which].m_value);
 }

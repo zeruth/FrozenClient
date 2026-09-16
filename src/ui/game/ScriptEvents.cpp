@@ -1,3 +1,4 @@
+#include "object/client/NameCache.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
@@ -9,6 +10,9 @@
 #include "ui/FrameScript.hpp"
 #include "ui/ScriptFunctionsSystem.hpp"
 #include "ui/Util.hpp"
+#include "db/Db.hpp"
+#include "object/client/AuraCache.hpp"
+#include "object/client/CastCache.hpp"
 #include "ui/game/CGGameUI.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/game/Types.hpp"
@@ -91,7 +95,19 @@ int32_t Script_UnitIsPlayer(lua_State* L) {
 }
 
 int32_t Script_UnitIsInMyGuild(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsInMyGuild(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    // No guild data is received, so the client cannot know of any shared guild.
+    (void)unit;
+
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_UnitIsCorpse(lua_State* L) {
@@ -131,7 +147,15 @@ int32_t Script_UnitIsPartyLeader(lua_State* L) {
 }
 
 int32_t Script_UnitGroupRolesAssigned(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Three booleans, not the single role string the later API uses: both call sites in this
+    // FrameXML destructure `local isTank, isHealer, isDamage = UnitGroupRolesAssigned(unit)`
+    // (PartyMemberFrame.lua:223, PlayerFrame.lua:250). Roles are assigned through the LFG system,
+    // which does not exist here, so nobody holds one.
+    lua_pushboolean(L, 0);
+    lua_pushboolean(L, 0);
+    lua_pushboolean(L, 0);
+
+    return 3;
 }
 
 int32_t Script_UnitIsRaidOfficer(lua_State* L) {
@@ -363,7 +387,10 @@ int32_t Script_UnitCanCooperate(lua_State* L) {
 }
 
 int32_t Script_UnitCanAssist(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_UnitCanAttack(lua_State* L) {
@@ -400,11 +427,16 @@ int32_t Script_UnitIsCharmed(lua_State* L) {
 }
 
 int32_t Script_UnitIsPossessed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_PlayerCanTeleport(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_UnitClassification(lua_State* L) {
@@ -422,7 +454,44 @@ int32_t Script_UnitClassification(lua_State* L) {
 }
 
 int32_t Script_UnitSelectionColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitSelectionColor(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    if (!unit) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    // The standard reaction palette FrameXML mirrors in FACTION_BAR_COLORS: hostile red, neutral
+    // yellow, friendly green. UnitReaction currently answers 5 (neutral) for everything, so this
+    // will track it for free once real faction reactions land.
+    Script_UnitReaction(L);
+
+    int32_t reaction = lua_isnumber(L, -1) ? static_cast<int32_t>(lua_tonumber(L, -1)) : 5;
+    lua_settop(L, -2);
+
+    float r = 1.0f;
+    float g = 1.0f;
+    float b = 0.0f;
+
+    if (reaction <= 2) {
+        r = 1.0f; g = 0.0f; b = 0.0f;
+    } else if (reaction >= 5) {
+        r = 0.0f; g = 1.0f; b = 0.0f;
+    }
+
+    lua_pushnumber(L, r);
+    lua_pushnumber(L, g);
+    lua_pushnumber(L, b);
+
+    return 3;
 }
 
 int32_t Script_UnitGUID(lua_State* L) {
@@ -461,15 +530,33 @@ int32_t Script_UnitName(lua_State* L) {
         return 2;
     }
 
-    // TODO the name cache; the player's own name comes from the selected character
+    // Everyone, the player included, resolves through the name cache: it is keyed by GUID, and the
+    // server answers a name query for the player's own GUID like any other.
+    //
+    // The player used to be special-cased to the glue's selected character, which broke as soon as
+    // the world loaded: entering the world runs CGlueMgr::Suspend -> CCharacterSelection::Shutdown,
+    // which clears s_characterList, so GetSelectedCharacter() returns null and every lookup fell
+    // back to "Unknown" -- the name shown on the player frame for the whole session.
+    //
+    // The selection is still consulted first, because it is authoritative and immediate while the
+    // glue is up, whereas the cache only fills once the query reply lands.
     const char* name = "Unknown";
+    const char* resolved = nullptr;
 
     if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
         auto selected = CCharacterSelection::GetSelectedCharacter();
 
-        if (selected) {
-            name = selected->m_info.name;
+        if (selected && selected->m_info.name[0]) {
+            resolved = selected->m_info.name;
         }
+    }
+
+    if (!resolved) {
+        resolved = NameCacheGetName(unit);
+    }
+
+    if (resolved) {
+        name = resolved;
     }
 
     lua_pushstring(L, name);
@@ -479,7 +566,24 @@ int32_t Script_UnitName(lua_State* L) {
 }
 
 int32_t Script_UnitPVPName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitPVPName(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    if (!unit) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    // With no PVP title system, this is the plain name -- which is also what the reference returns
+    // for a character who has not earned a title, so the fallback is the common case rather than a
+    // stand-in. Calling the binding directly rather than through the Lua global, which an addon can
+    // replace.
+    return Script_UnitName(L);
 }
 
 int32_t Script_UnitXP(lua_State* L) {
@@ -900,18 +1004,115 @@ int32_t Script_UnitCharacterPoints(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+int32_t Script_UnitAura(lua_State* L);
+
+// UnitBuff and UnitDebuff are UnitAura with the filter fixed, and return the same list. Rather than
+// duplicate the record-to-Lua conversion, each forces the filter argument and defers.
+int32_t Script_UnitAuraFiltered(lua_State* L, const char* filter) {
+    // UnitBuff takes (unit, index [, filter]); the caller's own filter is replaced, since HELPFUL or
+    // HARMFUL is exactly what distinguishes these two from UnitAura.
+    lua_settop(L, 2);
+    lua_pushstring(L, filter);
+
+    return Script_UnitAura(L);
+}
+
 int32_t Script_UnitBuff(lua_State* L) {
-    // TODO auras
-    return 0;
+    return Script_UnitAuraFiltered(L, "HELPFUL");
 }
 
 int32_t Script_UnitDebuff(lua_State* L) {
-    // TODO auras
-    return 0;
+    return Script_UnitAuraFiltered(L, "HARMFUL");
 }
 
+// UnitAura("unit", index [, filter])
+//   -> name, rank, texture, count, debuffType, duration, expirationTime,
+//      unitCaster, isStealable, shouldConsolidate, spellID
+//
+// The shape FrameXML destructures in BuffFrame.lua. Durations are in SECONDS, and expirationTime is
+// absolute on GetTime()'s clock, which is why AuraCache stamps each record with OsGetAsyncTimeMs()
+// when it arrives rather than storing only the remaining time.
 int32_t Script_UnitAura(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitAura(\"unit\", index [, filter])");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    int32_t index = lua_isnumber(L, 2) ? static_cast<int32_t>(lua_tonumber(L, 2)) - 1 : 0;
+
+    uint8_t required = 0;
+    uint8_t forbidden = 0;
+
+    // The filter is a space or pipe separated list; only the two that select the aura set change
+    // which auras are visible, and BuffFrame passes exactly one of them.
+    if (lua_isstring(L, 3)) {
+        const char* filter = lua_tostring(L, 3);
+
+        if (SStrStrI(filter, "HELPFUL")) {
+            required = AURA_FLAG_POSITIVE;
+        } else if (SStrStrI(filter, "HARMFUL")) {
+            forbidden = AURA_FLAG_POSITIVE;
+        }
+    }
+
+    const ClientAura* aura = unit
+        ? AuraCacheGet(unit->GetGUID(), index, required, forbidden)
+        : nullptr;
+
+    if (!aura) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    auto spell = g_spellDB.GetRecord(aura->spellID);
+    const SpellIconRec* icon = spell && spell->m_spellIconID
+        ? g_spellIconDB.GetRecord(spell->m_spellIconID)
+        : nullptr;
+
+    // name
+    if (spell && spell->m_name && *spell->m_name) {
+        lua_pushstring(L, spell->m_name);
+    } else {
+        lua_pushnil(L);
+    }
+
+    // rank -- Spell.dbc carries it in a separate column that is not read yet
+    lua_pushnil(L);
+
+    // texture
+    if (icon && icon->m_textureFilename && *icon->m_textureFilename) {
+        lua_pushstring(L, icon->m_textureFilename);
+    } else {
+        lua_pushnil(L);
+    }
+
+    // count: the server sends stacks, or charges when the spell does not stack
+    lua_pushnumber(L, aura->stacks);
+
+    // debuffType: the dispel school, which needs a Spell.dbc column that is not read yet
+    lua_pushnil(L);
+
+    if (aura->flags & AURA_FLAG_DURATION) {
+        lua_pushnumber(L, aura->maxDuration / 1000.0);
+        lua_pushnumber(L, (aura->receivedMs + aura->duration) / 1000.0);
+    } else {
+        // A permanent aura reports 0 / 0, which is what FrameXML tests for to hide the timer.
+        lua_pushnumber(L, 0.0);
+        lua_pushnumber(L, 0.0);
+    }
+
+    // unitCaster: resolving a guid back to a unit token needs a reverse lookup that does not exist
+    lua_pushnil(L);
+
+    // isStealable, shouldConsolidate: both need spell attributes that are not read yet
+    lua_pushboolean(L, 0);
+    lua_pushboolean(L, 0);
+
+    lua_pushnumber(L, aura->spellID);
+
+    return 11;
 }
 
 int32_t Script_UnitIsTapped(lua_State* L) {
@@ -933,11 +1134,17 @@ int32_t Script_UnitIsTapped(lua_State* L) {
 }
 
 int32_t Script_UnitIsTappedByPlayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_UnitIsTappedByAllThreatList(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_UnitIsTrivial(lua_State* L) {
@@ -968,7 +1175,10 @@ int32_t Script_SetPortraitTexture(lua_State* L) {
 }
 
 int32_t Script_HasFullControl(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetComboPoints(lua_State* L) {
@@ -978,31 +1188,52 @@ int32_t Script_GetComboPoints(lua_State* L) {
 }
 
 int32_t Script_IsInGuild(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // There is no guild subsystem: no guild roster or membership is ever received, so from this
+    // client's point of view the player is in none.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsGuildLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsArenaTeamCaptain(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsInArenaTeam(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsResting(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetCombatRating(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetCombatRatingBonus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetMaxCombatRatingBonus(lua_State* L) {
@@ -1018,7 +1249,11 @@ int32_t Script_GetBlockChance(lua_State* L) {
 }
 
 int32_t Script_GetShieldBlock(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetParryChance(lua_State* L) {
@@ -1026,11 +1261,19 @@ int32_t Script_GetParryChance(lua_State* L) {
 }
 
 int32_t Script_GetCritChanceFromAgility(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetSpellCritChanceFromIntellect(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetCritChance(lua_State* L) {
@@ -1062,7 +1305,11 @@ int32_t Script_GetSpellPenetration(lua_State* L) {
 }
 
 int32_t Script_GetArmorPenetration(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetAttackPowerForStat(lua_State* L) {
@@ -1120,16 +1367,87 @@ int32_t Script_GetPVPRankProgress(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// UnitCastingInfo("unit")  -> name, rank, displayName, icon, startTime, endTime, isTradeSkill,
+//                             castID, notInterruptible
+// UnitChannelInfo("unit")  -> the same without castID.
+//
+// startTime and endTime are MILLISECONDS here, not seconds as in UnitAura: CastingBarFrame.lua
+// computes `GetTime() - (startTime / 1000)`, which fixes the unit. Getting this wrong would put the
+// bar off by three orders of magnitude rather than failing visibly.
+int32_t PushCastInfo(lua_State* L, bool channeled, bool withCastID) {
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: %s(\"unit\")", channeled ? "UnitChannelInfo" : "UnitCastingInfo");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    const ClientCast* cast = unit ? CastCacheGet(unit->GetGUID(), channeled) : nullptr;
+
+    if (!cast) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    auto spell = g_spellDB.GetRecord(cast->spellID);
+    const SpellIconRec* icon = spell && spell->m_spellIconID
+        ? g_spellIconDB.GetRecord(spell->m_spellIconID)
+        : nullptr;
+
+    const char* name = spell && spell->m_name && *spell->m_name ? spell->m_name : nullptr;
+
+    if (name) {
+        lua_pushstring(L, name);
+    } else {
+        lua_pushnil(L);
+    }
+
+    // rank -- a Spell.dbc column that is not read yet
+    lua_pushnil(L);
+
+    // displayName is the same string as name outside of a few special cases
+    if (name) {
+        lua_pushstring(L, name);
+    } else {
+        lua_pushnil(L);
+    }
+
+    if (icon && icon->m_textureFilename && *icon->m_textureFilename) {
+        lua_pushstring(L, icon->m_textureFilename);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, cast->startMs);
+    lua_pushnumber(L, cast->endMs);
+
+    // isTradeSkill -- needs a spell attribute that is not read yet
+    lua_pushboolean(L, 0);
+
+    if (withCastID) {
+        // The cast count byte is read off the wire but not kept; nothing in FrameXML compares it.
+        lua_pushnil(L);
+    }
+
+    // notInterruptible -- carried in the cast flags, which are not decoded yet
+    lua_pushboolean(L, 0);
+
+    return withCastID ? 9 : 8;
+}
+
 int32_t Script_UnitCastingInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushCastInfo(L, false, true);
 }
 
 int32_t Script_UnitChannelInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushCastInfo(L, true, false);
 }
 
 int32_t Script_IsLoggedIn(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // True once the world is up, which is what FrameXML gates its initial queries on.
+    lua_pushboolean(L, CGGameUI::IsInWorld());
+
+    return 1;
 }
 
 int32_t Script_IsFlyableArea(lua_State* L) {
@@ -1145,11 +1463,17 @@ int32_t Script_IsOutdoors(lua_State* L) {
 }
 
 int32_t Script_IsOutOfBounds(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsFalling(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsSwimming(lua_State* L) {
@@ -1169,27 +1493,57 @@ int32_t Script_IsStealthed(lua_State* L) {
 }
 
 int32_t Script_UnitIsSameServer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsSameServer(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    // This client talks to one realm, so any unit it can see is on it.
+    lua_pushboolean(L, unit != nullptr);
+
+    return 1;
 }
 
 int32_t Script_GetUnitHealthModifier(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetUnitMaxHealthModifier(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetUnitPowerModifier(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetUnitHealthRegenRateFromSpirit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetUnitManaRegenRateFromSpirit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetManaRegen(lua_State* L) {
@@ -1225,7 +1579,10 @@ int32_t Script_ReportPlayerIsPVPAFK(lua_State* L) {
 }
 
 int32_t Script_PlayerIsPVPInactive(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetExpertise(lua_State* L) {
@@ -1337,7 +1694,10 @@ int32_t Script_UnitSwitchToVehicleSeat(lua_State* L) {
 }
 
 int32_t Script_CanSwitchVehicleSeat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetVehicleUIIndicator(lua_State* L) {
@@ -1359,7 +1719,10 @@ int32_t Script_UnitDetailedThreatSituation(lua_State* L) {
 }
 
 int32_t Script_UnitIsControlling(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_EjectPassengerFromSeat(lua_State* L) {
@@ -1367,7 +1730,10 @@ int32_t Script_EjectPassengerFromSeat(lua_State* L) {
 }
 
 int32_t Script_CanEjectPassengerFromSeat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_RespondInstanceLock(lua_State* L) {
@@ -1375,7 +1741,17 @@ int32_t Script_RespondInstanceLock(lua_State* L) {
 }
 
 int32_t Script_GetPlayerFacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    if (!player) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, player->GetFacing());
+
+    return 1;
 }
 
 int32_t Script_GetPlayerInfoByGUID(lua_State* L) {
@@ -1391,7 +1767,10 @@ int32_t Script_GetItemStatDelta(lua_State* L) {
 }
 
 int32_t Script_IsXPUserDisabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Turning XP gain off is a server-side toggle this client never receives.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_FillLocalizedClassList(lua_State* L) {

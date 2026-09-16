@@ -100,7 +100,14 @@ int32_t CSimpleSlider_Enable(lua_State* L) {
 }
 
 int32_t CSimpleSlider_Disable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto slider = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    // 0x400 is the flag CSimpleSlider_IsEnabled tests and CSimpleSlider_Enable clears.
+    slider->SetFrameFlag(0x400, 1);
+    slider->RunOnDisableScript();
+
+    return 0;
 }
 
 int32_t CSimpleSlider_IsEnabled(lua_State* L) {

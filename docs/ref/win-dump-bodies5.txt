@@ -1,0 +1,207 @@
+// ===== FUN_007f1d30 @ 007f1d30 (requested d:7f1d30) =====
+
+void FUN_007f1d30(void)
+
+{
+  undefined4 uVar1;
+  uint uVar2;
+  uint uVar3;
+  int iVar4;
+  
+  iVar4 = 0;
+  if (((DAT_00d38d28 & 1) != 0) || (uVar2 = DAT_00d38d28, DAT_00d38d28 == 0)) {
+    uVar2 = 0;
+  }
+  while (((uVar2 & 1) == 0 && (uVar2 != 0))) {
+    uVar3 = *(uint *)(DAT_00d38d20 + 4 + uVar2);
+    if (((uVar3 & 1) != 0) || (uVar3 == 0)) {
+      uVar3 = 0;
+    }
+    if (*(int *)(uVar2 + 0x18) != 0) {
+      FUN_00824ed0();
+    }
+    FUN_00565030(uVar2);
+    (*(code *)*DAT_00d38d1c)(uVar2);
+    uVar2 = uVar3;
+  }
+  if (DAT_00d38ad4 != 0) {
+    FUN_00823040();
+  }
+  uVar2 = 0;
+  DAT_00d38ad4 = 0;
+  DAT_00d38b5c = 0;
+  DAT_00d38b64 = 0;
+  DAT_00d38b68 = 0;
+  DAT_00d38b6c = 0;
+  if (DAT_00d39018 != 0) {
+    do {
+      uVar1 = *(undefined4 *)(iVar4 + 4 + DAT_00d3901c);
+      FUN_005eeb70();
+      FUN_0095d1b0(uVar1,0,0);
+      uVar2 = uVar2 + 1;
+      iVar4 = iVar4 + 0x18;
+    } while (uVar2 < DAT_00d39018);
+  }
+  DAT_00d39018 = 0;
+  FUN_0095d0c0(s___AVLightRec___00af4d24,0xfffffffe,1);
+  if (DAT_00d38adc != 0) {
+    if (DAT_00d38e20 != 0) {
+      FUN_0047bf30(DAT_00d38e20);
+    }
+    if (DAT_00d38e24 != 0) {
+      FUN_0047bf30(DAT_00d38e24);
+    }
+    DAT_00d38e20 = 0;
+    DAT_00d38e24 = 0;
+    FUN_009abaf0();
+    FUN_009abaf0();
+    FUN_009abaf0();
+    FUN_009abac0();
+    FUN_009abac0();
+    FUN_009abb30();
+    DAT_00d38adc = 0;
+  }
+  return;
+}
+
+
+
+// ===== FUN_009dccd0 @ 009dccd0 (requested d:9dccd0) =====
+
+void FUN_009dccd0(void)
+
+{
+  FUN_007ee460();
+  return;
+}
+
+
+
+// ===== DISASM FUN_007edb50 @ 007edb50 =====
+007edb50  PUSH EBP
+007edb51  MOV EBP,ESP
+007edb53  SUB ESP,0xc
+007edb56  FLD float ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007edb59  PUSH ESI
+007edb5a  PUSH EDI
+007edb5b  MOV EDI,ECX
+007edb5d  MOVZX EAX,byte ptr [EDI + 0x8]
+007edb61  FSTP float ptr [EDI]
+007edb63  FLDZ
+007edb65  MOV ECX,0xff
+007edb6a  SUB ECX,EAX
+007edb6c  FST float ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007edb6f  MOV dword ptr [EBP + 0x8],ECX    ; -> Stack[0x4] 
+007edb72  XOR ESI,ESI
+007edb74  FILD dword ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007edb77  FMUL float ptr [0x00a3fdc8]    ; -> 00a3fdc8 (DAT_00a3fdc8) 
+007edb7d  FSTP float ptr [EBP + -0xc]    ; -> Stack[-0x10] 
+007edb80  FLD float ptr [EDI]
+007edb82  FXCH
+007edb84  CALL 0x0088d0c0    ; -> 0088d0c0 (FUN_0088d0c0) 
+007edb89  FLD float ptr [0x009e30c0]    ; -> 009e30c0 (DAT_009e30c0) 
+007edb8f  FNSTCW word ptr [EBP + 0xa]    ; -> Stack[0x6] 
+007edb92  ADD ESI,0x1
+007edb95  MOVZX EAX,word ptr [EBP + 0xa]    ; -> Stack[0x6] 
+007edb99  FMUL ST1
+007edb9b  OR EAX,0xc00
+007edba0  CMP ESI,0x100
+007edba6  MOV dword ptr [EBP + -0x8],EAX    ; -> Stack[-0xc] 
+007edba9  FSUBRP
+007edbab  FLDCW word ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007edbae  FISTP dword ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007edbb1  MOV DL,byte ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007edbb4  MOV byte ptr [ESI + 0xd38587],DL    ; -> 00d38588 (DAT_00d38588) 
+007edbba  FLDCW word ptr [EBP + 0xa]    ; -> Stack[0x6] 
+007edbbd  FLD float ptr [EBP + -0xc]    ; -> Stack[-0x10] 
+007edbc0  FADD float ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007edbc3  FST float ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007edbc6  JL 0x007edb80    ; -> 007edb80 (LAB_007edb80) 
+007edbc8  POP EDI
+007edbc9  FSTP ST0
+007edbcb  POP ESI
+007edbcc  MOV ESP,EBP
+007edbce  POP EBP
+007edbcf  RET 0x4
+
+// ===== FUN_007ed250 @ 007ed250 (requested d:7ed250) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_007ed250(void)
+
+{
+  int iVar1;
+  float *pfVar2;
+  float *pfVar3;
+  float10 fVar4;
+  float10 fVar5;
+  float10 fVar6;
+  int local_8;
+  
+  pfVar2 = (float *)&DAT_00d38688;
+  do {
+    iVar1 = _rand();
+    pfVar3 = pfVar2 + 1;
+    *pfVar2 = (float)((float10)1 -
+                     ((float10)iVar1 * (float10)_DAT_009ea0b4 +
+                     (float10)iVar1 * (float10)_DAT_009ea0b4));
+    pfVar2 = pfVar3;
+  } while ((int)pfVar3 < 0xd38a88);
+  fVar4 = (float10)_DAT_00a41ba8;
+  fVar5 = (float10)_DAT_009e2ec4;
+  local_8 = 0;
+  do {
+    fVar6 = (float10)local_8;
+    local_8 = local_8 + 1;
+    fVar6 = (float10)fcos(fVar6 * fVar4);
+    *(float *)(&DAT_00d38184 + local_8 * 4) = (float)(((float10)1 - fVar6) * fVar5);
+  } while (local_8 < 0x100);
+  return;
+}
+
+
+
+// ===== DISASM FUN_007ed250 @ 007ed250 =====
+007ed250  PUSH EBP
+007ed251  MOV EBP,ESP
+007ed253  PUSH ECX
+007ed254  PUSH ESI
+007ed255  MOV ESI,0xd38688    ; -> 00d38688 (DAT_00d38688) 
+007ed25a  JMP 0x007ed262    ; -> 007ed262 (LAB_007ed262) 
+007ed260  FSTP ST0
+007ed262  CALL 0x0088b867    ; -> 0088b867 (_rand) 
+007ed267  MOV dword ptr [EBP + -0x4],EAX    ; -> Stack[-0x8] 
+007ed26a  FILD dword ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007ed26d  ADD ESI,0x4
+007ed270  CMP ESI,0xd38a88    ; -> 00d38a88 (DAT_00d38a88) 
+007ed276  FMUL float ptr [0x009ea0b4]    ; -> 009ea0b4 (DAT_009ea0b4) 
+007ed27c  FADD ST0,ST0
+007ed27e  FLD1
+007ed280  FLD ST0
+007ed282  FSUBRP ST2,ST0
+007ed284  FXCH
+007ed286  FSTP float ptr [ESI + -0x4]    ; -> 00d38688 (DAT_00d38688) 
+007ed289  JL 0x007ed260    ; -> 007ed260 (LAB_007ed260) 
+007ed28b  FLD float ptr [0x00a41ba8]    ; -> 00a41ba8 (DAT_00a41ba8) 
+007ed291  XOR EAX,EAX
+007ed293  FLD float ptr [0x009e2ec4]    ; -> 009e2ec4 (DAT_009e2ec4) 
+007ed299  MOV dword ptr [EBP + -0x4],EAX    ; -> Stack[-0x8] 
+007ed29c  POP ESI
+007ed29d  FILD dword ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007ed2a0  ADD EAX,0x1
+007ed2a3  CMP EAX,0x100
+007ed2a8  MOV dword ptr [EBP + -0x4],EAX    ; -> Stack[-0x8] 
+007ed2ab  FMUL ST2
+007ed2ad  FCOS
+007ed2af  FSUBR ST0,ST3
+007ed2b1  FMUL ST1
+007ed2b3  FSTP float ptr [EAX*0x4 + 0xd38184]    ; -> 00d38188 (DAT_00d38188) -> 00d3818c (DAT_00d3818c) 
+007ed2ba  JL 0x007ed29d    ; -> 007ed29d (LAB_007ed29d) 
+007ed2bc  FSTP ST2
+007ed2be  FSTP ST0
+007ed2c0  FSTP ST0
+007ed2c2  MOV ESP,EBP
+007ed2c4  POP EBP
+007ed2c5  RET
+

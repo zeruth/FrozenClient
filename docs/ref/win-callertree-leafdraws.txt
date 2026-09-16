@@ -1,0 +1,109 @@
+==== callers of 0079f320
+FUN_0079f320 @ 0079f320
+  FUN_007837f0 @ 007837f0
+    <data/no-func ref from 00406701 UNCONDITIONAL_CALL>
+
+==== callers of 007ac6a0
+FUN_007ac6a0 @ 007ac6a0
+  FUN_007ad020 @ 007ad020
+    FUN_007b6b00 @ 007b6b00
+      FUN_007815c0 @ 007815c0
+      FUN_007831a0 @ 007831a0
+      FUN_007bd9f0 @ 007bd9f0
+      FUN_007bfce0 @ 007bfce0
+
+==== callers of 007ac9f0
+FUN_007ac9f0 @ 007ac9f0
+  FUN_007ad020 @ 007ad020
+    FUN_007b6b00 @ 007b6b00
+      FUN_007815c0 @ 007815c0
+      FUN_007831a0 @ 007831a0
+      FUN_007bd9f0 @ 007bd9f0
+      FUN_007bfce0 @ 007bfce0
+
+==== callers of 007b3480
+FUN_007b3480 @ 007b3480
+  FUN_0079f320 @ 0079f320
+    FUN_007837f0 @ 007837f0
+      <data/no-func ref from 00406701 UNCONDITIONAL_CALL>
+
+==== callers of 008a3fe0
+FUN_008a3fe0 @ 008a3fe0
+  FUN_008a47c0 @ 008a47c0
+    <data/no-func ref from 00a59544 DATA>
+
+==== callers of 007bd8a0
+FUN_007bd8a0 @ 007bd8a0
+  FUN_007bf8b0 @ 007bf8b0
+    FUN_007bfce0 @ 007bfce0
+      FUN_00781430 @ 00781430
+
+==== callers of 0079e1a0
+FUN_0079e1a0 @ 0079e1a0
+  FUN_0079e3c0 @ 0079e3c0
+    FUN_0079e7c0 @ 0079e7c0
+      FUN_00780f50 @ 00780f50
+
+==== callers of 0079e2d0
+FUN_0079e2d0 @ 0079e2d0
+  FUN_0079e460 @ 0079e460
+    FUN_0079f320 @ 0079f320
+      FUN_007837f0 @ 007837f0
+
+==== callers of 007e49e0
+FUN_007e49e0 @ 007e49e0
+  FUN_00793980 @ 00793980
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 009abd50
+FUN_009abd50 @ 009abd50
+  FUN_007f09b0 @ 007f09b0
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 009ac660
+FUN_009ac660 @ 009ac660
+  FUN_007f09b0 @ 007f09b0
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 009acb00
+FUN_009acb00 @ 009acb00
+  FUN_007f09b0 @ 007f09b0
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 009acd40
+FUN_009acd40 @ 009acd40
+  FUN_007f09b0 @ 007f09b0
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 007cfbe0
+FUN_007cfbe0 @ 007cfbe0
+  FUN_00798da0 @ 00798da0
+    FUN_0079a870 @ 0079a870
+      FUN_0077eff0 @ 0077eff0
+
+==== callers of 007e4370
+FUN_007e4370 @ 007e4370
+  FUN_004f8a40 @ 004f8a40
+    FUN_004f8ea0 @ 004f8ea0
+      FUN_004faf90 @ 004faf90
+  FUN_006fdfb0 @ 006fdfb0
+    FUN_004f8ea0 @ 004f8ea0  (seen)
+  FUN_007062f0 @ 007062f0
+    <data/no-func ref from 00a33234 DATA>
+  FUN_00725980 @ 00725980
+    <data/no-func ref from 00a32734 DATA>
+    <data/no-func ref from 00a34dfc DATA>
+  FUN_00725bf0 @ 00725bf0
+    <data/no-func ref from 00a32738 DATA>
+    <data/no-func ref from 00a34e00 DATA>
+  FUN_007275c0 @ 007275c0
+    <data/no-func ref from 0072b7e0 UNCONDITIONAL_CALL>
+  FUN_007e4480 @ 007e4480
+    FUN_007e49e0 @ 007e49e0
+      FUN_00793980 @ 00793980
+

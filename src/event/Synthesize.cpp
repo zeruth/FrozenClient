@@ -2,6 +2,8 @@
 #include "event/EvtContext.hpp"
 #include "event/Queue.hpp"
 #include <common/Time.hpp>
+#include <cstdio>
+#include <cstdlib>
 
 void SynthesizeDestroy(EvtContext* context) {
     // TODO
@@ -17,7 +19,15 @@ void SynthesizeDestroy(EvtContext* context) {
     IEvtQueueDispatch(context, EVENT_ID_DESTROY, nullptr);
 
     // TODO
-    exit(0);
+
+    // Leave without running static destructors. exit() runs them, and the client keeps its caches
+    // and lists in namespace-scope Storm containers whose nodes live in Storm/ObjectAlloc heaps;
+    // static destruction order across translation units is unspecified, so a container can walk
+    // nodes whose heap is already gone. That faulted on every clean exit (the component texture
+    // cache, then the connection list), each fix only exposing the next container. Everything that
+    // must persist has been written by the shutdown above, so nothing is left to release.
+    fflush(nullptr);
+    quick_exit(0);
 }
 
 void SynthesizeIdle(EvtContext* context, uint32_t currTime, float elapsedSec) {

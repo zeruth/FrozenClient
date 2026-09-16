@@ -6,7 +6,12 @@
 #include "util/SFile.hpp"
 #include <common/ObjectAlloc.hpp>
 
-TSHashTable<CACHEENTRY, HASHKEY_NONE> s_cacheTable;
+// Deliberately immortal: allocated once and never destroyed. Its nodes live in an ObjectAlloc
+// heap, and static destruction order across translation units is unspecified, so when this table
+// was a plain global its destructor could walk nodes whose heap had already been torn down --
+// which faulted on exit (freed-memory pattern in the node pointers). A process-lifetime cache has
+// nothing to release at exit anyway; the OS reclaims it.
+TSHashTable<CACHEENTRY, HASHKEY_NONE>& s_cacheTable = *new TSHashTable<CACHEENTRY, HASHKEY_NONE>();
 HASHKEY_NONE s_cacheKey;
 uint32_t* s_entryHeap;
 

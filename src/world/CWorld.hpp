@@ -13,6 +13,20 @@ class Weather;
 
 class CWorld {
     public:
+        // Bands 14..17, the liquid gradient endpoints (reference FUN_008a2bf0). Type 0 is OCEAN
+        // (bands 14/15), type 1 is river water (bands 16/17) -- established from which alpha pair
+        // each type takes, not from the colours.
+        static const C3Vector& GetLiquidShallow(int32_t oceanic);
+        static const C3Vector& GetLiquidDeep(int32_t oceanic);
+
+        // LightParams' own water/ocean shallow and deep alphas, which the reference interpolates
+        // across the same depth ramp as the colours.
+        static float GetLiquidAlpha(int32_t oceanic, int32_t deep);
+
+        // Which LightParams set the outdoor light is currently using. Liquid colours are baked per
+        // vertex, so the terrain watches this to know when to rebake.
+        static int32_t GetOutdoorParamsID();
+
         enum Enables {
             Enable_1 = 0x1,
             Enable_2 = 0x2,
@@ -59,9 +73,26 @@ class CWorld {
         static uint32_t GetCurTimeMs();
         static float GetCurTimeSec();
         static float GetFarClip();
+        static float GetHorizonFarClip();
         static uint32_t GetGameTimeFixed();
         static float GetGameTimeSec();
         static CM2Scene* GetM2Scene();
+        static const C3Vector& GetOutdoorAmbient();
+        static const C3Vector& GetOutdoorDiffuse();
+        static const C3Vector& GetOutdoorDirection();
+        static const C3Vector& GetSkyColor(int32_t index); // 0 = horizon .. 4 = zenith
+        static const char* GetSkyboxPath();                // sky model for the current light, or null
+        static float GetDayProgress();                     // 0..1 fraction of the day, for the skybox
+        static const C3Vector& GetFogColor();
+        static float GetFogStart();
+        static float GetFogEnd();
+        static void UpdateOutdoorLight();                  // recompute colours at the current time
+        static void SetCameraUnderLiquid(bool under);      // selects the underwater LightParams set
+        static bool IsCameraUnderLiquid();
+        static const C3Vector& GetCameraDir();             // unit view direction of the last Update
+        static const C3Vector& GetCameraPos();             // camera position of the last Update
+        static const C3Vector& GetBodyTint();              // LightIntBand band 9: sun/moon disc tint
+        static float GetCloudDensity();                    // LightFloatBand band 3: cloud cover
         static float GetNearClip();
         static uint32_t GetTickTimeFixed();
         static uint32_t GetTickTimeMs();
@@ -89,6 +120,29 @@ class CWorld {
         static uint32_t s_tickTimeFixed;
         static uint32_t s_tickTimeMs;
         static float s_tickTimeSec;
+        static C3Vector s_outdoorAmbient;
+        static C3Vector s_outdoorDiffuse;
+        static C3Vector s_outdoorDirection;
+        static bool s_cameraUnderLiquid;
+        static C3Vector s_cameraDir;
+        static float s_fogRate;
+        static float s_floatBand2;
+        static float s_floatBand4;
+        static float s_floatBand5;
+        static C3Vector s_bodyTint;
+        static C3Vector s_sunColor;    // LightIntBand band 8
+        static C3Vector s_cloudColor1; // LightIntBand band 10
+        static C3Vector s_cloudColor2; // LightIntBand band 11
+        static C3Vector s_lightBands12to17[6]; // LightIntBand bands 12..17
+
+
+        static float s_cloudDensity;
+        static C3Vector s_skyColors[5];
+        static C3Vector s_fogColor;
+        static float s_fogStart;
+        static float s_fogEnd;
+        static int32_t s_outdoorParamsID;
+        static void ComputeOutdoorLight(int32_t mapID);
 
         // Private static functions
         static uint32_t GetFixedPrecisionTime(float timeSec);

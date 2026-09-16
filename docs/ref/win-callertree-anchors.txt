@@ -1,0 +1,66 @@
+==== callers of 007f3230
+FUN_007f3230 @ 007f3230
+  FUN_007f3920 @ 007f3920
+    FUN_007816f0 @ 007816f0
+      FUN_007831a0 @ 007831a0
+        FUN_004fa5f0 @ 004fa5f0
+          FUN_004faf90 @ 004faf90
+            FUN_004fb080 @ 004fb080
+              <data/no-func ref from 009f9a5c DATA>
+      FUN_007e2730 @ 007e2730
+        FUN_007e28e0 @ 007e28e0
+          FUN_007e2bd0 @ 007e2bd0
+            FUN_00405540 @ 00405540
+              FUN_004dab40 @ 004dab40
+        FUN_007e2b40 @ 007e2b40
+          FUN_007e2bd0 @ 007e2bd0  (seen)
+
+==== callers of 007e4a40
+FUN_007e4a40 @ 007e4a40
+  FUN_00404130 @ 00404130
+    <data/no-func ref from 00404916 UNCONDITIONAL_CALL>
+
+==== callers of 007ea5f0
+FUN_007ea5f0 @ 007ea5f0
+  FUN_004fabd0 @ 004fabd0
+    FUN_0050f3f0 @ 0050f3f0
+      FUN_00521040 @ 00521040
+        FUN_0052a980 @ 0052a980
+          FUN_0052af40 @ 0052af40
+            FUN_00528f00 @ 00528f00
+              FUN_00529160 @ 00529160
+              FUN_0052af40 @ 0052af40  (seen)
+            FUN_0052a980 @ 0052a980  (seen)
+          FUN_0052b550 @ 0052b550
+            FUN_00405540 @ 00405540
+              FUN_004dab40 @ 004dab40
+
+==== callers of 007bb460
+FUN_007bb460 @ 007bb460
+  FUN_007bcc00 @ 007bcc00
+    FUN_007bd200 @ 007bd200
+      FUN_007bd3a0 @ 007bd3a0
+        FUN_00780f50 @ 00780f50
+          FUN_00404130 @ 00404130
+            <data/no-func ref from 00404916 UNCONDITIONAL_CALL>
+  FUN_007bcf20 @ 007bcf20
+    FUN_007bd200 @ 007bd200  (seen)
+
+==== callers of 007f16f0
+FUN_007f16f0 @ 007f16f0
+  FUN_007816f0 @ 007816f0
+    FUN_007831a0 @ 007831a0
+      FUN_004fa5f0 @ 004fa5f0
+        FUN_004faf90 @ 004faf90
+          FUN_004fb080 @ 004fb080
+            <data/no-func ref from 009f9a5c DATA>
+    FUN_007e2730 @ 007e2730
+      FUN_007e28e0 @ 007e28e0
+        FUN_007e2bd0 @ 007e2bd0
+          FUN_00405540 @ 00405540
+            FUN_004dab40 @ 004dab40
+              FUN_004db9f0 @ 004db9f0
+              FUN_004dbbc0 @ 004dbbc0
+      FUN_007e2b40 @ 007e2b40
+        FUN_007e2bd0 @ 007e2bd0  (seen)
+

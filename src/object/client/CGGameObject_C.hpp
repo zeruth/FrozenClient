@@ -9,6 +9,7 @@ class CGGameObject_C : public CGObject_C, public CGGameObject {
     public:
         // Virtual public member functions
         virtual ~CGGameObject_C();
+        virtual int32_t GetModelFileName(const char*& name) const;
 
         // Public member functions
         CGGameObject_C(uint32_t time, CClientObjCreate& objCreate);

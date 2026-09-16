@@ -1054,7 +1054,16 @@ int32_t CSimpleEditBox::PrevCharOffset(int32_t offset) {
 }
 
 void CSimpleEditBox::RunOnCursorChangedScript(float x, float y, float w, float h) {
-    // TODO
+    if (this->m_onCursorChanged.luaRef) {
+        auto L = FrameScript_GetContext();
+
+        lua_pushnumber(L, x);
+        lua_pushnumber(L, y);
+        lua_pushnumber(L, w);
+        lua_pushnumber(L, h);
+
+        this->RunScript(this->m_onCursorChanged, 4, nullptr);
+    }
 }
 
 void CSimpleEditBox::RunOnEditFocusGainedScript() {
@@ -1088,6 +1097,7 @@ void CSimpleEditBox::RunOnTabPressedScript() {
 }
 
 void CSimpleEditBox::RunOnTextChangedScript(int32_t userInput) {
+
     if (this->m_onTextChanged.luaRef) {
         auto L = FrameScript_GetContext();
         lua_pushboolean(L, userInput);
@@ -1112,6 +1122,19 @@ void CSimpleEditBox::SetCursorPosition(int32_t position) {
     }
 
     this->m_dirtyFlags |= 0x4;
+
+    // Update the cursor now instead of waiting for a layer update.
+    //
+    // The interface reads the result synchronously -- Blizzard_DebugTools does SetText /
+    // SetCursorPosition(0) and then calls ScrollingEdit_OnTextChanged, which reads
+    // self.cursorOffset, a field only OnCursorChanged ever writes. Frames that never receive layer
+    // updates (the script error frame is one) therefore never got a cursor position at all.
+    //
+    // UpdateVisibleCursor directly rather than UpdateDirtyBits: the latter also fires OnTextChanged,
+    // whose Lua handler can call back into SetCursorPosition, and a recursive path is not worth
+    // introducing here.
+    this->m_dirtyFlags &= ~0x4;
+    this->UpdateVisibleCursor();
 }
 
 void CSimpleEditBox::SetHistoryLines(int32_t a2) {
@@ -1167,7 +1190,9 @@ void CSimpleEditBox::StartHighlight() {
     // TODO
 }
 
+
 void CSimpleEditBox::UpdateDirtyBits() {
+
     int32_t textChanged = this->m_dirtyFlags & 0x1;
 
     if (this->m_dirtyFlags & 0x4) {
@@ -1279,6 +1304,17 @@ void CSimpleEditBox::UpdateVisibleCursor() {
 
     if (!cursorVisible) {
         this->m_cursor->Hide();
+
+        // Report the cursor even when it is off screen. ScrollingEdit_OnTextChanged sets
+        // handleCursorChange and then reads self.cursorOffset on every OnUpdate, and that field
+        // comes only from this script.
+        this->RunOnCursorChangedScript(
+            0.0f,
+            0.0f,
+            this->m_cursor->GetWidth(),
+            this->m_cursor->GetHeight()
+        );
+
         return;
     }
 

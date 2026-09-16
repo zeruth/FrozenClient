@@ -1,0 +1,85 @@
+// ===== FUN_007f04b0 @ 007f04b0 (requested d:7f04b0) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int __fastcall FUN_007f04b0(int param_1)
+
+{
+  undefined4 uVar1;
+  
+  *(undefined4 *)(param_1 + 0x30) = 0;
+  *(undefined4 *)(param_1 + 0x34) = 0;
+  *(undefined4 *)(param_1 + 0x38) = 0;
+  *(undefined4 *)(param_1 + 0x3c) = 0;
+  *(undefined4 *)(param_1 + 0x40) = 0;
+  *(undefined4 *)(param_1 + 0x44) = 0;
+  *(undefined4 *)(param_1 + 0x48) = 0;
+  *(undefined4 *)(param_1 + 0x4c) = 0;
+  *(undefined4 *)(param_1 + 0x50) = 0;
+  *(undefined4 *)(param_1 + 0x54) = 0;
+  *(undefined4 *)(param_1 + 0x58) = 0;
+  *(undefined4 *)(param_1 + 0x5c) = 0;
+  *(undefined4 *)(param_1 + 0x60) = 0;
+  *(undefined4 *)(param_1 + 100) = 0;
+  *(undefined4 *)(param_1 + 0x68) = 0;
+  *(undefined4 *)(param_1 + 0x6c) = 0;
+  *(undefined4 *)(param_1 + 0x70) = 0;
+  *(undefined4 *)(param_1 + 0x74) = 0;
+  *(undefined4 *)(param_1 + 0x78) = 0;
+  *(undefined4 *)(param_1 + 0x7c) = 0;
+  *(undefined4 *)(param_1 + 0x80) = 0;
+  FUN_007ed250();
+  *(undefined4 *)(param_1 + 0x8c) = 0;
+  *(undefined1 *)(param_1 + 0xb) = 0;
+  uVar1 = _DAT_00a4040c;
+  *(undefined1 *)(param_1 + 10) = 0;
+  *(undefined4 *)(param_1 + 0xc) = uVar1;
+  *(undefined4 *)(param_1 + 0x28) = 4;
+  *(undefined4 *)(param_1 + 0x18) = 2;
+  *(undefined4 *)(param_1 + 0x10) = 8;
+  return param_1;
+}
+
+
+
+// ===== DISASM FUN_007f04b0 @ 007f04b0 =====
+007f04b0  PUSH EBX
+007f04b1  XOR EBX,EBX
+007f04b3  PUSH ESI
+007f04b4  MOV ESI,ECX
+007f04b6  MOV dword ptr [ESI + 0x30],EBX
+007f04b9  MOV dword ptr [ESI + 0x34],EBX
+007f04bc  MOV dword ptr [ESI + 0x38],EBX
+007f04bf  MOV dword ptr [ESI + 0x3c],EBX
+007f04c2  MOV dword ptr [ESI + 0x40],EBX
+007f04c5  MOV dword ptr [ESI + 0x44],EBX
+007f04c8  MOV dword ptr [ESI + 0x48],EBX
+007f04cb  MOV dword ptr [ESI + 0x4c],EBX
+007f04ce  MOV dword ptr [ESI + 0x50],EBX
+007f04d1  MOV dword ptr [ESI + 0x54],EBX
+007f04d4  MOV dword ptr [ESI + 0x58],EBX
+007f04d7  MOV dword ptr [ESI + 0x5c],EBX
+007f04da  MOV dword ptr [ESI + 0x60],EBX
+007f04dd  MOV dword ptr [ESI + 0x64],EBX
+007f04e0  MOV dword ptr [ESI + 0x68],EBX
+007f04e3  MOV dword ptr [ESI + 0x6c],EBX
+007f04e6  MOV dword ptr [ESI + 0x70],EBX
+007f04e9  MOV dword ptr [ESI + 0x74],EBX
+007f04ec  MOV dword ptr [ESI + 0x78],EBX
+007f04ef  MOV dword ptr [ESI + 0x7c],EBX
+007f04f2  MOV dword ptr [ESI + 0x80],EBX
+007f04f8  CALL 0x007ed250    ; -> 007ed250 (FUN_007ed250) 
+007f04fd  FLDZ
+007f04ff  FSTP float ptr [ESI + 0x8c]
+007f0505  MOV byte ptr [ESI + 0xb],BL
+007f0508  FLD float ptr [0x00a4040c]    ; -> 00a4040c (DAT_00a4040c) 
+007f050e  MOV byte ptr [ESI + 0xa],BL
+007f0511  FSTP float ptr [ESI + 0xc]
+007f0514  MOV dword ptr [ESI + 0x28],0x4
+007f051b  MOV dword ptr [ESI + 0x18],0x2
+007f0522  MOV dword ptr [ESI + 0x10],0x8
+007f0529  MOV EAX,ESI
+007f052b  POP ESI
+007f052c  POP EBX
+007f052d  RET
+

@@ -22,6 +22,22 @@ struct FRAMEATTR : TSHashObject<FRAMEATTR, HASHKEY_STRI> {
     int32_t luaRef;
 };
 
+// CSimpleFrame::m_flags bits.
+//
+// Recovered from the reference rather than invented: its script method table at 0x00ac16f0 names
+// each binding beside its function, and the functions set the bit through the same flag setter --
+// SetToplevel 0x1 (FUN_0049fbb0), SetMovable 0x100 (FUN_004a0800), SetResizable 0x200
+// (FUN_004a0980), SetUserPlaced 0x1000 (FUN_004a0c70). IsMovable reads them back at frame + 0xb4,
+// which is the same field. 0x100 and 0x200 also match what this codebase's own XML loader already
+// used for the movable/resizable attributes, which is a second independent agreement.
+enum {
+    FRAME_FLAG_TOPLEVEL    = 0x0001,
+    FRAME_FLAG_MOVABLE     = 0x0100,
+    FRAME_FLAG_RESIZABLE   = 0x0200,
+    FRAME_FLAG_DISABLED    = 0x0400,
+    FRAME_FLAG_USER_PLACED = 0x1000,
+};
+
 class CSimpleFrame : public CScriptRegion {
     public:
         // Static members
@@ -151,6 +167,7 @@ class CSimpleFrame : public CScriptRegion {
         void RunOnAttributeChangedScript(const char* name, int32_t luaRef);
         void RunOnCharScript(const char* chr);
         void RunOnEnableScript();
+        void RunOnDisableScript();
         void RunOnEnterScript(int32_t a2);
         void RunOnHideScript();
         void RunOnKeyDownScript(const char* key);

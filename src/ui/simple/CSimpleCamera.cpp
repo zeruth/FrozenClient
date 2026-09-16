@@ -118,9 +118,9 @@ void CSimpleCamera::SetGxProjectionAndView(const CRect& projRect) {
 
     GxXformSetProjection(projMat);
 
-    // View
-
-    C3Vector eye;
+    // View: the scene is drawn camera-relative (models bake worldPos - cameraPos into their
+    // transforms), so the view sits at the origin looking along the facing.
+    C3Vector eye = { 0.0f, 0.0f, 0.0f };
     C44Matrix viewMat;
     GxuXformCreateLookAtSgCompat(eye, this->Forward(), this->Up(), viewMat);
 

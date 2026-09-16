@@ -1,0 +1,10 @@
+#ifndef UI_SIMPLE_C_SIMPLE_COLOR_SELECT_SCRIPT_HPP
+#define UI_SIMPLE_C_SIMPLE_COLOR_SELECT_SCRIPT_HPP
+
+#include "ui/FrameScript.hpp"
+
+#define NUM_SIMPLE_COLOR_SELECT_SCRIPT_METHODS 10
+
+extern FrameScript_Method SimpleColorSelectMethods[NUM_SIMPLE_COLOR_SELECT_SCRIPT_METHODS];
+
+#endif

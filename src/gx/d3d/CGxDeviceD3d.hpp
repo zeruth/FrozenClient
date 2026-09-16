@@ -8,6 +8,10 @@
 
 class CGxDeviceD3d : public CGxDevice {
     public:
+        // The cursor the window class was registered with, so WM_SETCURSOR can restore it.
+        static HCURSOR s_classCursor;
+
+    public:
     // Types
     enum EDeviceState {
         Ds_SrcBlend,
@@ -244,6 +248,9 @@ class CGxDeviceD3d : public CGxDevice {
 
     // Virtual member functions
     virtual void ITexMarkAsUpdated(CGxTex* texId);
+    virtual void IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane);
+    virtual int32_t IRenderTargetDump(CGxTex* texId, const char* path);
+    virtual int32_t IScreenShot(const char* path);
     virtual void IRsSendToHw(EGxRenderState which);
     virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format);
     virtual int32_t DeviceSetFormat(const CGxFormat& format);

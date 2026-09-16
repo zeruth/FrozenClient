@@ -4,7 +4,11 @@
 #include <cstdint>
 
 int32_t Script_GetAccountExpansionLevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The highest expansion the account may play. Nothing raises the cap above the build, so for a
+    // 3.3.5a client it is Wrath.
+    lua_pushnumber(L, 2.0);
+
+    return 1;
 }
 
 int32_t Script_IsLinuxClient(lua_State* L) {

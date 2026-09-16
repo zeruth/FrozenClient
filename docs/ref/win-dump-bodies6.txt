@@ -1,0 +1,93 @@
+// ===== FUN_007ee460 @ 007ee460 (requested d:7ee460) =====
+
+void __fastcall FUN_007ee460(int param_1)
+
+{
+  if (*(int *)(param_1 + 0x80) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x80),s__G_00acecc0,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x74) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x74),s___AVCImVector_NTempest___00acf5e0,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x68) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x68),s___AVC2Vector_NTempest___00aceccc,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x5c) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x5c),s___AVC3Vector_NTempest___00ab6560,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x50) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x50),s__M_00ab6580,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x44) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x44),s__E_00ad29d8,0xfffffffe,0);
+  }
+  if (*(int *)(param_1 + 0x38) != 0) {
+    FUN_0076e5a0(*(int *)(param_1 + 0x38),s___AVCImVector_NTempest___00acf5e0,0xfffffffe,0);
+  }
+  return;
+}
+
+
+
+// ===== DISASM FUN_007ee460 @ 007ee460 =====
+007ee460  PUSH ESI
+007ee461  MOV ESI,ECX
+007ee463  MOV EAX,dword ptr [ESI + 0x80]
+007ee469  TEST EAX,EAX
+007ee46b  JZ 0x007ee47c    ; -> 007ee47c (LAB_007ee47c) 
+007ee46d  PUSH 0x0
+007ee46f  PUSH -0x2
+007ee471  PUSH 0xacecc0    ; -> 00acecc0 (s_.G_00acecc0) 
+007ee476  PUSH EAX
+007ee477  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee47c  MOV EAX,dword ptr [ESI + 0x74]
+007ee47f  TEST EAX,EAX
+007ee481  JZ 0x007ee492    ; -> 007ee492 (LAB_007ee492) 
+007ee483  PUSH 0x0
+007ee485  PUSH -0x2
+007ee487  PUSH 0xacf5e0    ; -> 00acf5e0 (s_.?AVCImVector@NTempest@@_00acf5e0) 
+007ee48c  PUSH EAX
+007ee48d  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee492  MOV EAX,dword ptr [ESI + 0x68]
+007ee495  TEST EAX,EAX
+007ee497  JZ 0x007ee4a8    ; -> 007ee4a8 (LAB_007ee4a8) 
+007ee499  PUSH 0x0
+007ee49b  PUSH -0x2
+007ee49d  PUSH 0xaceccc    ; -> 00aceccc (s_.?AVC2Vector@NTempest@@_00aceccc) 
+007ee4a2  PUSH EAX
+007ee4a3  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee4a8  MOV EAX,dword ptr [ESI + 0x5c]
+007ee4ab  TEST EAX,EAX
+007ee4ad  JZ 0x007ee4be    ; -> 007ee4be (LAB_007ee4be) 
+007ee4af  PUSH 0x0
+007ee4b1  PUSH -0x2
+007ee4b3  PUSH 0xab6560    ; -> 00ab6560 (s_.?AVC3Vector@NTempest@@_00ab6560) 
+007ee4b8  PUSH EAX
+007ee4b9  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee4be  MOV EAX,dword ptr [ESI + 0x50]
+007ee4c1  TEST EAX,EAX
+007ee4c3  JZ 0x007ee4d4    ; -> 007ee4d4 (LAB_007ee4d4) 
+007ee4c5  PUSH 0x0
+007ee4c7  PUSH -0x2
+007ee4c9  PUSH 0xab6580    ; -> 00ab6580 (s_.M_00ab6580) 
+007ee4ce  PUSH EAX
+007ee4cf  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee4d4  MOV EAX,dword ptr [ESI + 0x44]
+007ee4d7  TEST EAX,EAX
+007ee4d9  JZ 0x007ee4ea    ; -> 007ee4ea (LAB_007ee4ea) 
+007ee4db  PUSH 0x0
+007ee4dd  PUSH -0x2
+007ee4df  PUSH 0xad29d8    ; -> 00ad29d8 (s_.E_00ad29d8) 
+007ee4e4  PUSH EAX
+007ee4e5  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee4ea  MOV ESI,dword ptr [ESI + 0x38]
+007ee4ed  TEST ESI,ESI
+007ee4ef  JZ 0x007ee500    ; -> 007ee500 (LAB_007ee500) 
+007ee4f1  PUSH 0x0
+007ee4f3  PUSH -0x2
+007ee4f5  PUSH 0xacf5e0    ; -> 00acf5e0 (s_.?AVCImVector@NTempest@@_00acf5e0) 
+007ee4fa  PUSH ESI
+007ee4fb  CALL 0x0076e5a0    ; -> 0076e5a0 (FUN_0076e5a0) 
+007ee500  POP ESI
+007ee501  RET
+

@@ -283,7 +283,26 @@ int32_t ComponentGetHairStyleByIndex(int32_t raceId, int32_t sexId, int32_t hair
     return -1;
 }
 
+// The variation array is indexed by (raceID * sexes + sexID) and sized from ChrRaces, so it only
+// covers playable races. Creature display data supplies arbitrary race and sex ids, and indexing
+// out of range returned an uninitialized slot whose record pointer was non-null garbage -- the
+// caller's null check passed and dereferencing it faulted on a non-canonical address. Every lookup
+// below validates the pair first.
+static bool ComponentValidateRaceSex(st_race* varArray, int32_t raceId, int32_t sexId) {
+    if (!varArray || raceId < 0 || sexId < 0 || sexId >= UNITSEX_NUM_SEXES) {
+        return false;
+    }
+
+    uint32_t index = static_cast<uint32_t>(raceId) * UNITSEX_NUM_SEXES + static_cast<uint32_t>(sexId);
+
+    return index < CCharacterComponent::s_chrVarArrayLength;
+}
+
 int32_t ComponentGetNumColors(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex) {
+    if (!ComponentValidateRaceSex(varArray, raceId, sexId)) {
+        return 0;
+    }
+
     auto& section = varArray[(raceId * UNITSEX_NUM_SEXES + sexId)].sections[sectionIndex];
 
     if (variationIndex >= section.variationCount || section.variationCount == 0) {
@@ -392,6 +411,10 @@ int32_t ComponentGetNumSkinColors(int32_t raceId, int32_t sexId, int32_t classId
 }
 
 int32_t ComponentGetNumVariations(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex) {
+    if (!ComponentValidateRaceSex(varArray, raceId, sexId)) {
+        return 0;
+    }
+
     auto& section = varArray[(raceId * UNITSEX_NUM_SEXES + sexId)].sections[sectionIndex];
 
     if (!section.variationArray) {
@@ -442,6 +465,10 @@ CharSectionsRec* ComponentGetSectionsRecord(st_race* varArray, int32_t raceId, i
 
 int32_t ComponentValidateBase(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex, int32_t colorIndex) {
     if (sectionIndex >= NUM_COMPONENT_VARIATIONS || variationIndex < 0) {
+        return 0;
+    }
+
+    if (!ComponentValidateRaceSex(varArray, raceId, sexId)) {
         return 0;
     }
 

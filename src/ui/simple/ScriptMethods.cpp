@@ -1,3 +1,7 @@
+#include "ui/simple/CSimpleColorSelect.hpp"
+#include "ui/simple/CSimpleMessageFrame.hpp"
+#include "ui/simple/CSimpleMovieFrame.hpp"
+#include "ui/simple/CSimpleScrollingMessageFrame.hpp"
 #include "ui/simple/ScriptMethods.hpp"
 #include "ui/FrameXML.hpp"
 #include "ui/Types.hpp"
@@ -184,7 +188,10 @@ void RegisterSimpleFrameScriptMethods() {
     CSimpleHTML::CreateScriptMetaTable();
 
     // TODO
-    // CSimpleMessageFrame::CreateScriptMetaTable();
+    CSimpleColorSelect::CreateScriptMetaTable();
+    CSimpleMessageFrame::CreateScriptMetaTable();
+    CSimpleMovieFrame::CreateScriptMetaTable();
+    CSimpleScrollingMessageFrame::CreateScriptMetaTable();
     // CSimpleMessageScrollFrame::CreateScriptMetaTable();
 
     CSimpleModel::CreateScriptMetaTable();

@@ -1,0 +1,47 @@
+==== callers of 0079e470
+FUN_0079e470 @ 0079e470
+  FUN_007d0050 @ 007d0050
+    FUN_007d20a0 @ 007d20a0
+      FUN_007d3e10 @ 007d3e10
+        FUN_00793b10 @ 00793b10
+        FUN_00793c30 @ 00793c30
+        FUN_007989c0 @ 007989c0
+    FUN_007d2520 @ 007d2520
+      FUN_007d3e10 @ 007d3e10  (seen)
+    FUN_007d2d70 @ 007d2d70
+      FUN_007989c0 @ 007989c0  (seen)
+    FUN_007d3240 @ 007d3240
+      FUN_00793b10 @ 00793b10  (seen)
+
+==== callers of 0079e4b0
+FUN_0079e4b0 @ 0079e4b0
+  FUN_007bd8a0 @ 007bd8a0
+    FUN_007bf8b0 @ 007bf8b0
+      FUN_007bfce0 @ 007bfce0
+        FUN_00781430 @ 00781430
+  FUN_007d3e10 @ 007d3e10
+    FUN_00793b10 @ 00793b10
+      FUN_00798da0 @ 00798da0
+        FUN_0079a870 @ 0079a870
+    FUN_00793c30 @ 00793c30
+      FUN_00798da0 @ 00798da0  (seen)
+    FUN_007989c0 @ 007989c0
+      FUN_00798da0 @ 00798da0  (seen)
+
+==== callers of 007bd8a0
+FUN_007bd8a0 @ 007bd8a0
+  FUN_007bf8b0 @ 007bf8b0
+    FUN_007bfce0 @ 007bfce0
+      FUN_00781430 @ 00781430
+        FUN_00403b70 @ 00403b70
+        FUN_00405540 @ 00405540
+
+==== callers of 008a5590
+FUN_008a5590 @ 008a5590
+
+==== callers of 0079e460
+FUN_0079e460 @ 0079e460
+  FUN_0079f320 @ 0079f320
+    FUN_007837f0 @ 007837f0
+      <data/no-func ref from 00406701 UNCONDITIONAL_CALL>
+

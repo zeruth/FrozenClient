@@ -1,0 +1,315 @@
+// ===== REFS to 009dccd0 =====
+   ?  [DATA from 009d074a]
+
+// ===== DISASM FUN_007f20e0 @ 007f20e0 =====
+007f20e0  PUSH EBP
+007f20e1  MOV EBP,ESP
+007f20e3  SUB ESP,0x4c
+007f20e6  FLD double ptr [0x009eaf48]    ; -> 009eaf48 (DAT_009eaf48) 
+007f20ec  PUSH EBX
+007f20ed  FCOS
+007f20ef  PUSH ESI
+007f20f0  PUSH EDI
+007f20f1  MOV EBX,ECX
+007f20f3  MOV EDI,0xc0
+007f20f8  PUSH EDI
+007f20f9  LEA ECX,[EBX + 0x54]
+007f20fc  MOV dword ptr [EBP + -0x2c],EBX    ; -> Stack[-0x30] 
+007f20ff  MOV dword ptr [EBP + -0x28],0x0    ; -> Stack[-0x2c] 
+007f2106  FCHS
+007f2108  FSTP float ptr [EBP + -0x30]    ; -> Stack[-0x34] 
+007f210b  FLDZ
+007f210d  FSTP float ptr [EBP + -0x20]    ; -> Stack[-0x24] 
+007f2110  CALL 0x006c0270    ; -> 006c0270 (FUN_006c0270) 
+007f2115  CMP dword ptr [EBX + 0x64],EDI
+007f2118  LEA ESI,[EBX + 0x60]
+007f211b  JZ 0x007f21a2    ; -> 007f21a2 (LAB_007f21a2) 
+007f2121  PUSH EDI
+007f2122  MOV ECX,ESI
+007f2124  CALL 0x0057e360    ; -> 0057e360 (FUN_0057e360) 
+007f2129  FLDZ
+007f212b  MOV EAX,dword ptr [ESI + 0x4]
+007f212e  MOV ECX,EDI
+007f2130  SUB ECX,EAX
+007f2132  CMP ECX,0x4
+007f2135  JL 0x007f2183    ; -> 007f2183 (LAB_007f2183) 
+007f2137  MOV EDX,dword ptr [ESI + 0x8]
+007f213a  LEA ECX,[EAX*0x8 + 0x0]
+007f2141  ADD EDX,ECX
+007f2143  JZ 0x007f214a    ; -> 007f214a (LAB_007f214a) 
+007f2145  FST float ptr [EDX]
+007f2147  FST float ptr [EDX + 0x4]
+007f214a  MOV EDX,dword ptr [ESI + 0x8]
+007f214d  LEA EDX,[EDX + ECX*0x1 + 0x8]
+007f2151  TEST EDX,EDX
+007f2153  JZ 0x007f215a    ; -> 007f215a (LAB_007f215a) 
+007f2155  FST float ptr [EDX]
+007f2157  FST float ptr [EDX + 0x4]
+007f215a  MOV EDX,dword ptr [ESI + 0x8]
+007f215d  ADD ECX,0x18
+007f2160  LEA EDX,[EDX + ECX*0x1 + -0x8]
+007f2164  TEST EDX,EDX
+007f2166  JZ 0x007f216d    ; -> 007f216d (LAB_007f216d) 
+007f2168  FST float ptr [EDX]
+007f216a  FST float ptr [EDX + 0x4]
+007f216d  MOV EDX,dword ptr [ESI + 0x8]
+007f2170  ADD EDX,ECX
+007f2172  JZ 0x007f2179    ; -> 007f2179 (LAB_007f2179) 
+007f2174  FST float ptr [EDX]
+007f2176  FST float ptr [EDX + 0x4]
+007f2179  ADD EAX,0x4
+007f217c  CMP EAX,0xbd
+007f2181  JC 0x007f2137    ; -> 007f2137 (LAB_007f2137) 
+007f2183  CMP EAX,EDI
+007f2185  JNC 0x007f219d    ; -> 007f219d (LAB_007f219d) 
+007f2187  MOV ECX,dword ptr [ESI + 0x8]
+007f218a  LEA ECX,[ECX + EAX*0x8]
+007f218d  TEST ECX,ECX
+007f218f  JZ 0x007f2196    ; -> 007f2196 (LAB_007f2196) 
+007f2191  FST float ptr [ECX]
+007f2193  FST float ptr [ECX + 0x4]
+007f2196  ADD EAX,0x1
+007f2199  CMP EAX,EDI
+007f219b  JC 0x007f2187    ; -> 007f2187 (LAB_007f2187) 
+007f219d  MOV dword ptr [ESI + 0x4],EDI
+007f21a0  JMP 0x007f21a4    ; -> 007f21a4 (LAB_007f21a4) 
+007f21a2  FLDZ
+007f21a4  CMP dword ptr [EBX + 0x70],EDI
+007f21a7  LEA ESI,[EBX + 0x6c]
+007f21aa  JZ 0x007f21dc    ; -> 007f21dc (LAB_007f21dc) 
+007f21ac  PUSH EDI
+007f21ad  FSTP ST0
+007f21af  MOV ECX,ESI
+007f21b1  CALL 0x00599030    ; -> 00599030 (FUN_00599030) 
+007f21b6  MOV EAX,dword ptr [ESI + 0x4]
+007f21b9  CMP EAX,EDI
+007f21bb  JNC 0x007f21d7    ; -> 007f21d7 (LAB_007f21d7) 
+007f21bd  LEA ECX,[ECX]
+007f21c0  MOV EDX,dword ptr [ESI + 0x8]
+007f21c3  LEA ECX,[EDX + EAX*0x4]
+007f21c6  TEST ECX,ECX
+007f21c8  JZ 0x007f21d0    ; -> 007f21d0 (LAB_007f21d0) 
+007f21ca  MOV dword ptr [ECX],0x0
+007f21d0  ADD EAX,0x1
+007f21d3  CMP EAX,EDI
+007f21d5  JC 0x007f21c0    ; -> 007f21c0 (LAB_007f21c0) 
+007f21d7  FLDZ
+007f21d9  MOV dword ptr [ESI + 0x4],EDI
+007f21dc  LEA ESI,[EBX + 0x78]
+007f21df  MOV EDI,0x176
+007f21e4  CMP dword ptr [ESI + 0x4],EDI
+007f21e7  JZ 0x007f21f8    ; -> 007f21f8 (LAB_007f21f8) 
+007f21e9  PUSH EDI
+007f21ea  FSTP ST0
+007f21ec  MOV ECX,ESI
+007f21ee  CALL 0x0057e400    ; -> 0057e400 (FUN_0057e400) 
+007f21f3  FLDZ
+007f21f5  MOV dword ptr [ESI + 0x4],EDI
+007f21f8  MOV EAX,dword ptr [EBX + 0x74]
+007f21fb  FLD float ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f21fe  MOV ESI,dword ptr [EBX + 0x5c]
+007f2201  FLD float ptr [0x009e2ec4]    ; -> 009e2ec4 (DAT_009e2ec4) 
+007f2207  MOV EDI,dword ptr [EBX + 0x68]
+007f220a  MOV EBX,dword ptr [EBX + 0x80]
+007f2210  MOV CL,0xff
+007f2212  MOV dword ptr [EBP + -0x18],EAX    ; -> Stack[-0x1c] 
+007f2215  XOR EAX,EAX
+007f2217  MOV dword ptr [EBP + -0x8],EAX    ; -> Stack[-0xc] 
+007f221a  MOV byte ptr [EBP + -0xc],CL    ; -> Stack[-0x10] 
+007f221d  MOV byte ptr [EBP + -0xb],CL    ; -> Stack[-0xf] 
+007f2220  MOV byte ptr [EBP + -0xa],CL    ; -> Stack[-0xe] 
+007f2223  JMP 0x007f222e    ; -> 007f222e (LAB_007f222e) 
+007f2225  FLDZ
+007f2227  MOV EAX,dword ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007f222a  FXCH ST2
+007f222c  FXCH
+007f222e  TEST EAX,EAX
+007f2230  FLD float ptr [EAX*0x4 + 0xa41ad4]    ; -> 00a41ad4 (DAT_00a41ad4) 
+007f2237  FMUL float ptr [0x00a41b14]    ; -> 00a41b14 (DAT_00a41b14) 
+007f223d  MOV dword ptr [EBP + -0x38],EAX    ; -> Stack[-0x3c] 
+007f2240  FST float ptr [EBP + -0x14]    ; -> Stack[-0x18] 
+007f2243  FLD ST0
+007f2245  FCOS
+007f2247  FLD ST1
+007f2249  FSIN
+007f224b  FSTP float ptr [EBP + -0x34]    ; -> Stack[-0x38] 
+007f224e  FILD dword ptr [EBP + -0x38]    ; -> Stack[-0x3c] 
+007f2251  JGE 0x007f2259    ; -> 007f2259 (LAB_007f2259) 
+007f2253  FADD float ptr [0x009e23ac]    ; -> 009e23ac (DAT_009e23ac) 
+007f2259  FMUL float ptr [0x00a41ce8]    ; -> 00a41ce8 (DAT_00a41ce8) 
+007f225f  MOV EDX,dword ptr [EBP + -0x2c]    ; -> Stack[-0x30] 
+007f2262  MOV ECX,ESI
+007f2264  SUB ECX,dword ptr [EDX + 0x5c]
+007f2267  FMULP ST3
+007f2269  MOV EAX,0x2aaaaaab
+007f226e  FXCH ST2
+007f2270  IMUL ECX
+007f2272  FSTP float ptr [EBP + -0x38]    ; -> Stack[-0x3c] 
+007f2275  FXCH ST3
+007f2277  FST float ptr [EBP + -0x10]    ; -> Stack[-0x14] 
+007f227a  FXCH
+007f227c  FMULP ST2
+007f227e  FXCH
+007f2280  SAR EDX,0x1
+007f2282  FADD float ptr [EBP + -0x30]    ; -> Stack[-0x34] 
+007f2285  MOV EAX,EDX
+007f2287  SUB ESP,0x8
+007f228a  SHR EAX,0x1f
+007f228d  FSTP float ptr [EBP + -0x44]    ; -> Stack[-0x48] 
+007f2290  ADD EAX,EDX
+007f2292  MOV dword ptr [EBP + -0x24],EAX    ; -> Stack[-0x28] 
+007f2295  FSTP float ptr [ESP + 0x4]    ; -> Stack[-0x60] 
+007f2299  MOV dword ptr [EBP + -0x1c],0x0    ; -> Stack[-0x20] 
+007f22a0  FSTP float ptr [ESP]    ; -> Stack[-0x64] 
+007f22a3  CALL 0x004c1cf0    ; -> 004c1cf0 (FUN_004c1cf0) 
+007f22a8  FLD float ptr [EBP + -0x10]    ; -> Stack[-0x14] 
+007f22ab  ADD ESP,0x8
+007f22ae  MOV byte ptr [EBP + -0x1],AL    ; -> Stack[-0x5] 
+007f22b1  FLD ST0
+007f22b3  MOV EDX,dword ptr [EBP + -0x44]    ; -> Stack[-0x48] 
+007f22b6  FCOS
+007f22b8  ADD ESI,0xc
+007f22bb  ADD EDI,0x8
+007f22be  FXCH
+007f22c0  FSIN
+007f22c2  FLD ST0
+007f22c4  FLD float ptr [EBP + -0x34]    ; -> Stack[-0x38] 
+007f22c7  FMUL ST1
+007f22c9  FLD float ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f22cc  FMUL ST2
+007f22ce  FXCH ST2
+007f22d0  FSTP float ptr [EBP + -0x4c]    ; -> Stack[-0x50] 
+007f22d3  MOV EAX,dword ptr [EBP + -0x4c]    ; -> Stack[-0x50] 
+007f22d6  MOV dword ptr [ESI + -0xc],EAX
+007f22d9  FMUL ST3
+007f22db  FMUL ST1
+007f22dd  FSTP float ptr [EBP + -0x48]    ; -> Stack[-0x4c] 
+007f22e0  MOV ECX,dword ptr [EBP + -0x48]    ; -> Stack[-0x4c] 
+007f22e3  FLD float ptr [EBP + -0x38]    ; -> Stack[-0x3c] 
+007f22e6  MOV dword ptr [ESI + -0x8],ECX
+007f22e9  MOV ECX,dword ptr [EBP + -0x18]    ; -> Stack[-0x1c] 
+007f22ec  FMUL ST2
+007f22ee  FLD float ptr [0x009e2ec4]    ; -> 009e2ec4 (DAT_009e2ec4) 
+007f22f4  MOV EAX,ECX
+007f22f6  ADD ECX,0x4
+007f22f9  CMP byte ptr [EBP + -0x1],0x0    ; -> Stack[-0x5] 
+007f22fd  FADD ST3,ST0
+007f22ff  FXCH ST3
+007f2301  MOV dword ptr [ESI + -0x4],EDX
+007f2304  MOV dword ptr [EBP + -0x18],ECX    ; -> Stack[-0x1c] 
+007f2307  MOV ECX,dword ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007f230a  FSTP float ptr [EBP + -0x40]    ; -> Stack[-0x44] 
+007f230d  MOV DL,byte ptr [ECX + 0xa41b04]    ; -> 00a41b04 (DAT_00a41b04) 
+007f2313  FMULP ST3
+007f2315  MOV byte ptr [EBP + -0x9],DL    ; -> Stack[-0xd] 
+007f2318  MOV ECX,dword ptr [EBP + -0xc]    ; -> Stack[-0x10] 
+007f231b  FXCH ST2
+007f231d  MOV EDX,dword ptr [EBP + -0x40]    ; -> Stack[-0x44] 
+007f2320  FADD ST0,ST1
+007f2322  MOV dword ptr [EAX],ECX
+007f2324  MOV dword ptr [EDI + -0x8],EDX
+007f2327  FSTP float ptr [EBP + -0x3c]    ; -> Stack[-0x40] 
+007f232a  MOV EAX,dword ptr [EBP + -0x3c]    ; -> Stack[-0x40] 
+007f232d  MOV dword ptr [EDI + -0x4],EAX
+007f2330  JNZ 0x007f23da    ; -> 007f23da (LAB_007f23da) 
+007f2336  FSTP ST1
+007f2338  SUB ESP,0x8
+007f233b  FSTP ST0
+007f233d  FLD float ptr [0x009f193c]    ; -> 009f193c (DAT_009f193c) 
+007f2343  FSTP float ptr [ESP + 0x4]    ; -> Stack[-0x60] 
+007f2347  FLD float ptr [EBP + -0x14]    ; -> Stack[-0x18] 
+007f234a  FSTP float ptr [ESP]    ; -> Stack[-0x64] 
+007f234d  CALL 0x004c1cf0    ; -> 004c1cf0 (FUN_004c1cf0) 
+007f2352  ADD ESP,0x8
+007f2355  TEST AL,AL
+007f2357  JNZ 0x007f2379    ; -> 007f2379 (LAB_007f2379) 
+007f2359  FLD float ptr [EBP + -0x10]    ; -> Stack[-0x14] 
+007f235c  MOV EAX,dword ptr [EBP + -0x1c]    ; -> Stack[-0x20] 
+007f235f  FADD float ptr [0x00a02d7c]    ; -> 00a02d7c (DAT_00a02d7c) 
+007f2365  ADD EAX,0x1
+007f2368  CMP EAX,0x10
+007f236b  MOV dword ptr [EBP + -0x1c],EAX    ; -> Stack[-0x20] 
+007f236e  FST float ptr [EBP + -0x10]    ; -> Stack[-0x14] 
+007f2371  JL 0x007f22b1    ; -> 007f22b1 (LAB_007f22b1) 
+007f2377  FSTP ST0
+007f2379  FLD float ptr [0x009e2ec4]    ; -> 009e2ec4 (DAT_009e2ec4) 
+007f237f  MOV dword ptr [EBP + -0x10],EDI    ; -> Stack[-0x14] 
+007f2382  FLD float ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f2385  FXCH
+007f2387  CMP dword ptr [EBP + -0x8],0x0    ; -> Stack[-0xc] 
+007f238b  JBE 0x007f241f    ; -> 007f241f (LAB_007f241f) 
+007f2391  FSTP ST1
+007f2393  SUB ESP,0x8
+007f2396  FSTP ST0
+007f2398  XOR EDI,EDI
+007f239a  FLDZ
+007f239c  FSTP float ptr [ESP + 0x4]    ; -> Stack[-0x60] 
+007f23a0  FLD float ptr [EBP + -0x20]    ; -> Stack[-0x24] 
+007f23a3  FSTP float ptr [ESP]    ; -> Stack[-0x64] 
+007f23a6  CALL 0x004c1cf0    ; -> 004c1cf0 (FUN_004c1cf0) 
+007f23ab  FLD float ptr [0x009f193c]    ; -> 009f193c (DAT_009f193c) 
+007f23b1  FSTP float ptr [ESP + 0x4]    ; -> Stack[-0x60] 
+007f23b5  MOV byte ptr [EBP + -0x1],AL    ; -> Stack[-0x5] 
+007f23b8  FLD float ptr [EBP + -0x14]    ; -> Stack[-0x18] 
+007f23bb  FSTP float ptr [ESP]    ; -> Stack[-0x64] 
+007f23be  CALL 0x004c1cf0    ; -> 004c1cf0 (FUN_004c1cf0) 
+007f23c3  ADD ESP,0x8
+007f23c6  MOV byte ptr [EBP + -0x2],AL    ; -> Stack[-0x6] 
+007f23c9  LEA ESP,[ESP]    ; -> Stack[-0x5c] 
+007f23d0  CMP byte ptr [EBP + -0x1],0x0    ; -> Stack[-0x5] 
+007f23d4  JZ 0x007f23df    ; -> 007f23df (LAB_007f23df) 
+007f23d6  XOR EAX,EAX
+007f23d8  JMP 0x007f23e4    ; -> 007f23e4 (LAB_007f23e4) 
+007f23da  MOV dword ptr [EBP + -0x10],EDI    ; -> Stack[-0x14] 
+007f23dd  JMP 0x007f2387    ; -> 007f2387 (LAB_007f2387) 
+007f23df  MOV EAX,EDI
+007f23e1  AND EAX,0xf
+007f23e4  CMP byte ptr [EBP + -0x2],0x0    ; -> Stack[-0x6] 
+007f23e8  JZ 0x007f23ee    ; -> 007f23ee (LAB_007f23ee) 
+007f23ea  XOR ECX,ECX
+007f23ec  JMP 0x007f23f3    ; -> 007f23f3 (LAB_007f23f3) 
+007f23ee  MOV ECX,EDI
+007f23f0  AND ECX,0xf
+007f23f3  MOV EDX,dword ptr [EBP + -0x28]    ; -> Stack[-0x2c] 
+007f23f6  ADD EDX,EAX
+007f23f8  MOV EAX,dword ptr [EBP + -0x24]    ; -> Stack[-0x28] 
+007f23fb  MOV word ptr [EBX],DX
+007f23fe  ADD EBX,0x2
+007f2401  ADD EAX,ECX
+007f2403  MOV word ptr [EBX],AX
+007f2406  ADD EDI,0x1
+007f2409  ADD EBX,0x2
+007f240c  CMP EDI,0x11
+007f240f  JL 0x007f23d0    ; -> 007f23d0 (LAB_007f23d0) 
+007f2411  FLD float ptr [0x009e2ec4]    ; -> 009e2ec4 (DAT_009e2ec4) 
+007f2417  MOV EDI,dword ptr [EBP + -0x10]    ; -> Stack[-0x14] 
+007f241a  FLD float ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f241d  FXCH
+007f241f  MOV EAX,dword ptr [EBP + -0x8]    ; -> Stack[-0xc] 
+007f2422  FLD float ptr [EBP + -0x14]    ; -> Stack[-0x18] 
+007f2425  MOV ECX,dword ptr [EBP + -0x24]    ; -> Stack[-0x28] 
+007f2428  FSTP float ptr [EBP + -0x20]    ; -> Stack[-0x24] 
+007f242b  ADD EAX,0x1
+007f242e  CMP EAX,0xc
+007f2431  MOV dword ptr [EBP + -0x28],ECX    ; -> Stack[-0x2c] 
+007f2434  MOV dword ptr [EBP + -0x8],EAX    ; -> Stack[-0xc] 
+007f2437  JC 0x007f2225    ; -> 007f2225 (LAB_007f2225) 
+007f243d  MOV ECX,dword ptr [EBP + -0x2c]    ; -> Stack[-0x30] 
+007f2440  FSTP ST1
+007f2442  SUB ESI,dword ptr [ECX + 0x5c]
+007f2445  FSTP ST0
+007f2447  MOV EAX,0x2aaaaaab
+007f244c  IMUL ESI
+007f244e  SAR EDX,0x1
+007f2450  MOV EAX,EDX
+007f2452  POP EDI
+007f2453  SHR EAX,0x1f
+007f2456  ADD EAX,EDX
+007f2458  POP ESI
+007f2459  MOV word ptr [ECX + 0x86],AX
+007f2460  MOV word ptr [ECX + 0x84],0x176
+007f2469  POP EBX
+007f246a  MOV ESP,EBP
+007f246c  POP EBP
+007f246d  RET 0x4
+

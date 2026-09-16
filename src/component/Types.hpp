@@ -81,6 +81,12 @@ enum GEOCOMPONENTLINKS {
     ATTACH_HANDR            = 1,
     ATTACH_HANDL            = 2,
     // TODO
+    ATTACH_SHOULDERR        = 5,
+    ATTACH_SHOULDERL        = 6,
+    // TODO
+    ATTACH_HELM             = 11,
+    ATTACH_BACK             = 12,
+    // TODO
     ATTACH_SHEATH_MAINHAND  = 26,
     ATTACH_SHEATH_OFFHAND   = 27,
     ATTACH_SHEATH_SHIELD    = 28,

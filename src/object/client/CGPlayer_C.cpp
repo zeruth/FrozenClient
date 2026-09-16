@@ -119,11 +119,32 @@ void CGPlayer_C::BuildCharacterComponent() {
     data.model = this->m_model;
     data.flags |= 0x2;
 
+    // A unit can be built more than once (respawn, tile reload, display change). Free any component
+    // it already carries first: the component heap is a fixed-size ObjectAlloc pool, and leaking
+    // into it eventually makes AllocComponent return null -- which then crashed in Init, since
+    // neither call site checked. Release the model reference taken just above if it does fail.
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
+
     this->m_characterComponent = CCharacterComponent::AllocComponent();
+
+    if (!this->m_characterComponent) {
+        this->m_model->Release();
+        return;
+    }
+
     this->m_characterComponent->Init(&data, nullptr);
 
-    // Apply the equipped items. Each visible slot carries an item entry; Item.dbc turns it into
-    // the display info and inventory type the component paints onto the body and attaches.
+    // UNIT_FIELD_BYTES_2 low byte is the sheathe state: 0 = stowed (weapons on the back/hip),
+    // 1 = melee drawn, 2 = ranged drawn. Idle units stow their weapons, like the reference.
+    int32_t sheatheState = unit->pad3 & 0xFF;
+    bool sheathed = sheatheState == 0;
+
+    // Apply the equipped items. Armour slots are composited onto the body; weapons and shields are
+    // separate models attached to the hand/shield points, exactly as the character-select display
+    // does it in the reference.
     for (int32_t slot = 0; slot < 19; slot++) {
         auto entryID = this->m_player->visibleItems[slot].entryID;
 
@@ -134,6 +155,41 @@ void CGPlayer_C::BuildCharacterComponent() {
         auto itemRec = g_itemDB.GetRecord(entryID);
 
         if (!itemRec || itemRec->m_displayInfoID <= 0) {
+            continue;
+        }
+
+        bool isHand = slot == INVSLOT_MAINHAND || slot == INVSLOT_OFFHAND || slot == INVSLOT_RANGED;
+
+        if (isHand) {
+            // Hunters carry the ranged weapon; everyone else carries their melee weapons
+            if ((slot == INVSLOT_MAINHAND || slot == INVSLOT_OFFHAND) && data.classID == 3) {
+                continue;
+            }
+
+            if (slot == INVSLOT_RANGED && data.classID != 3) {
+                continue;
+            }
+
+            auto displayRec = g_itemDisplayInfoDB.GetRecord(itemRec->m_displayInfoID);
+
+            if (!displayRec) {
+                continue;
+            }
+
+            bool shield = itemRec->m_inventoryType == INVTYPE_SHIELD;
+            bool heldRight = itemRec->m_inventoryType == INVTYPE_RANGEDRIGHT || itemRec->m_inventoryType == INVTYPE_THROWN;
+
+            CCharacterComponent::AddHandItem(
+                this->m_model,
+                displayRec,
+                static_cast<INVENTORY_SLOTS>(slot),
+                static_cast<SHEATHE_TYPE>(itemRec->m_sheatheType),
+                sheathed,
+                shield,
+                heldRight,
+                0
+            );
+
             continue;
         }
 

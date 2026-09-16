@@ -29,7 +29,10 @@ int32_t Script_GetRaidRosterSelection(lua_State* L) {
 }
 
 int32_t Script_IsRaidLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsRealRaidLeader(lua_State* L) {

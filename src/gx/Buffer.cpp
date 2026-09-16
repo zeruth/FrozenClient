@@ -277,6 +277,15 @@ void GxPrimVertexPtr(uint32_t vertexCount, const C3Vector* pos, uint32_t posStri
     auto buf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, vertexSize, vertexCount);
     auto bufData = g_theGxDevicePtr->BufLock(buf);
 
+    // A failed lock used to be written through anyway. The copy loop below dereferences this
+    // pointer for every vertex, so a null here is an access violation on the first write, which is
+    // exactly the intermittent crash seen about ten seconds after entering the world: an
+    // 8-byte store to a near-null address in the position copy. Dropping the batch loses one
+    // draw; writing through a null loses the client.
+    if (!bufData) {
+        return;
+    }
+
     C3Vector emptyNormal = { 0.0f, 0.0f, 0.0f };
     CImVector emptyColor = { 0x00, 0x00, 0x00, 0x00 };
     C2Vector emptyTex0 = { 0.0f, 0.0f };

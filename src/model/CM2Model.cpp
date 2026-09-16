@@ -209,6 +209,7 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 
     this->matrixF4 = this->matrixB4 * *view;
 
+
     this->float88 = !this->m_attachParent || this->m_attachParent->m_flags & 0x1
         ? this->matrixF4.d2 * this->matrixF4.d2 + this->matrixF4.d1 * this->matrixF4.d1 + this->matrixF4.d0 * this->matrixF4.d0
         : this->m_attachParent->float88;
@@ -368,8 +369,71 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             this->m_boneMatrices[i] = *boneParentMatrix;
         }
 
-        if (boneFlags & (0x8 | 0x10 | 0x20 | 0x40)) {
-            // TODO
+        if (boneFlags & 0x8) {
+            // Spherical billboard. The bone matrix is already in view space (its parent chain roots
+            // at matrixF4 = model x view), so replacing its rotation with the view axes makes the
+            // geometry face the screen from any camera angle -- exactly what a glow/flare sprite
+            // needs. Keep the animated per-axis scale (row lengths) and the view-space position;
+            // drop only the orientation, mapping the sprite's local X/Y onto camera right/up like the
+            // reference does. Non-billboard bones are untouched.
+            C44Matrix& m = this->m_boneMatrices[i];
+
+            float sx = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
+            float sy = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
+            float sz = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
+
+            m.a0 = sx;   m.a1 = 0.0f; m.a2 = 0.0f;
+            m.b0 = 0.0f; m.b1 = sy;   m.b2 = 0.0f;
+            m.c0 = 0.0f; m.c1 = 0.0f; m.c2 = sz;
+        } else if (boneFlags & (0x10 | 0x20 | 0x40)) {
+            // Cylindrical billboard: keep one axis locked (e.g. a candle flame stays vertical) and
+            // spin the geometry around it to face the screen. Still in view space, so the locked
+            // axis is its own row and "toward the screen" is view +Z. By cyclic order the locked
+            // axis is the sprite's up, the next axis its width (right), the third its normal:
+            // lockX -> up=X,right=Y,normal=Z ; lockY -> up=Y,right=Z,normal=X ; lockZ -> up=Z,right=X,normal=Y.
+            C44Matrix& m = this->m_boneMatrices[i];
+
+            float ux, uy, uz;
+            if (boneFlags & 0x10) { ux = m.a0; uy = m.a1; uz = m.a2; }
+            else if (boneFlags & 0x20) { ux = m.b0; uy = m.b1; uz = m.b2; }
+            else { ux = m.c0; uy = m.c1; uz = m.c2; }
+
+            float ul = sqrtf(ux * ux + uy * uy + uz * uz);
+
+            if (ul > 1e-6f) {
+                ux /= ul; uy /= ul; uz /= ul; // normalized locked (up) axis
+
+                // right = normalize(cross(up, viewZ)), viewZ = (0,0,1): a horizontal screen axis
+                // perpendicular to up. If up is parallel to the view direction, pick any horizontal.
+                float rx = uy, ry = -ux, rz = 0.0f;
+                float rl = sqrtf(rx * rx + ry * ry + rz * rz);
+
+                if (rl < 1e-6f) { rx = 1.0f; ry = 0.0f; rz = 0.0f; rl = 1.0f; }
+
+                rx /= rl; ry /= rl; rz /= rl;
+
+                // normal = cross(up, right) -> keeps X x Y = Z (right handed) and faces the screen
+                float nx = uy * rz - uz * ry;
+                float ny = uz * rx - ux * rz;
+                float nz = ux * ry - uy * rx;
+
+                if (boneFlags & 0x10) {        // lock X: right -> Y row, normal -> Z row
+                    float rs = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
+                    float ns = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
+                    m.b0 = rx * rs; m.b1 = ry * rs; m.b2 = rz * rs;
+                    m.c0 = nx * ns; m.c1 = ny * ns; m.c2 = nz * ns;
+                } else if (boneFlags & 0x20) { // lock Y: right -> Z row, normal -> X row
+                    float rs = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
+                    float ns = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
+                    m.c0 = rx * rs; m.c1 = ry * rs; m.c2 = rz * rs;
+                    m.a0 = nx * ns; m.a1 = ny * ns; m.a2 = nz * ns;
+                } else {                       // lock Z: right -> X row, normal -> Y row
+                    float rs = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
+                    float ns = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
+                    m.a0 = rx * rs; m.a1 = ry * rs; m.a2 = rz * rs;
+                    m.b0 = nx * ns; m.b1 = ny * ns; m.b2 = nz * ns;
+                }
+            }
         }
 
         // TODO
@@ -1847,6 +1911,14 @@ LABEL_29:
     v16 = v32;
 
 LABEL_30:
+    // A sequence the model does not carry leaves the not-found marker (0xFFFF) in v16: the lookup
+    // above yields it, and Sub826E60 (which resolves the variation in the original) is still a
+    // stub here, so nothing clears it. Indexing sequences[] with it read far out of bounds and
+    // crashed the client whenever a unit asked for an animation its model lacks.
+    if (v16 >= this->m_shared->m_data->sequences.Count()) {
+        return;
+    }
+
     if (this->m_shared->m_data->sequences[v16].flags & 0x20) {
         if (this->Sub8269C0(boneId, boneIndex)) {
             this->CancelDeferredSequences(boneIndex, a8 != 0);

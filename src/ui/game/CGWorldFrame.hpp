@@ -9,7 +9,10 @@ class CGCamera;
 class CGWorldFrame : public CSimpleFrame {
     public:
         // Static variables
-        CGWorldFrame* s_currentWorldFrame;
+        // Declared under "Static variables" and assigned in the constructor as the one current
+        // frame, but it was missing the keyword, so every instance carried its own copy and the
+        // qualified writes in member functions silently meant "this->".
+        static CGWorldFrame* s_currentWorldFrame;
 
         // Static functions
         static CSimpleFrame* Create(CSimpleFrame* parent);
@@ -37,6 +40,14 @@ class CGWorldFrame : public CSimpleFrame {
         float m_dragLastX = 0.0f;
         float m_dragLastY = 0.0f;
         CRect m_viewport;
+
+    public:
+        // The world's viewport rect (NDC). The world text pass runs after OnWorldRender has
+        // restored the UI viewport, so it needs this to place screen-space text correctly when the
+        // WorldFrame does not fill the window.
+        static const CRect* GetWorldViewport();
+
+    protected:
         // TODO
         CGCamera* m_camera;
         // TODO

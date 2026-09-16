@@ -1,6 +1,12 @@
+#include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
 #include "event/Event.hpp"
+#include "db/Db.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGObject_C.hpp"
+#include "object/Types.hpp"
+#include "world/Terrain.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
@@ -11,7 +17,10 @@
 #include "ui/game/CGGameUI.hpp"
 #include "ui/game/Types.hpp"
 #include "ui/simple/CSimpleTop.hpp"
+#include "gx/Screen.hpp"
+#include "util/Filesystem.hpp"
 #include "util/Unimplemented.hpp"
+#include <ctime>
 
 namespace {
 
@@ -161,7 +170,38 @@ int32_t Script_SetConsoleKey(lua_State* L) {
 }
 
 int32_t Script_Screenshot(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Screenshots/WoWScrnShot_MMDDYY_HHMMSS.tga, the name the reference writes. The interface calls
+    // this from a binding, and FrameXML has no way to name the file, so the name is made here.
+    if (!OsDirectoryExists("Screenshots")) {
+        OsCreateDirectory("Screenshots", 0);
+    }
+
+    time_t now = time(nullptr);
+    struct tm parts;
+
+    #if defined(WHOA_SYSTEM_WIN)
+        localtime_s(&parts, &now);
+    #else
+        localtime_r(&now, &parts);
+    #endif
+
+    char path[260];
+
+    SStrPrintf(path, sizeof(path), "Screenshots\\WoWScrnShot_%02d%02d%02d_%02d%02d%02d.tga",
+               parts.tm_mon + 1, parts.tm_mday, parts.tm_year % 100,
+               parts.tm_hour, parts.tm_min, parts.tm_sec);
+
+    // Hand the name to the layer code and let it capture just before the frame is presented. The
+    // interface is still drawing at this point, so grabbing the back buffer here would catch a
+    // half-composed frame.
+    SStrCopy(Screen::s_capturePath, path, sizeof(Screen::s_capturePath));
+    Screen::s_captureScreen = 1;
+
+    // Index 171 from g_scriptEvents. The capture has not happened yet, so this reports that one was
+    // requested; there is no path by which the layer code can report back a failure today.
+    FrameScript_SignalEvent(171, nullptr);
+
+    return 0;
 }
 
 int32_t Script_GetFramerate(lua_State* L) {
@@ -393,7 +433,10 @@ int32_t Script_ClearCursor(lua_State* L) {
 }
 
 int32_t Script_CursorHasItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_CursorHasSpell(lua_State* L) {
@@ -520,20 +563,100 @@ int32_t Script_ToggleSheath(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// The AreaTable row the player is standing on, and its parent zone.
+//
+// AreaTable is a two-level hierarchy: a subzone ("Acherus: The Ebon Hold") carries a parentAreaID
+// pointing at the zone that contains it, and a top-level zone has parentAreaID 0. The four zone-text
+// bindings are all views on that pair, which is why they share one resolver.
+void ResolveArea(const AreaTableRec** area, const AreaTableRec** zone) {
+    *area = nullptr;
+    *zone = nullptr;
+
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    if (!player) {
+        return;
+    }
+
+    uint32_t areaID = TerrainAreaIDAt(player->GetPosition());
+
+    if (!areaID) {
+        return;
+    }
+
+    auto rec = g_areaTableDB.GetRecord(static_cast<int32_t>(areaID));
+
+    if (!rec) {
+        return;
+    }
+
+    *area = rec;
+    *zone = rec;
+
+    // Walk up to the top-level zone. Bounded rather than while(true): a malformed DBC with a cycle
+    // in parentAreaID would otherwise hang the client on every frame the zone text updates.
+    for (int32_t depth = 0; depth < 8 && (*zone)->m_parentAreaID; depth++) {
+        auto parent = g_areaTableDB.GetRecord((*zone)->m_parentAreaID);
+
+        if (!parent) {
+            break;
+        }
+
+        *zone = parent;
+    }
+}
+
+void PushAreaName(lua_State* L, const AreaTableRec* rec) {
+    if (rec && rec->m_areaName && *rec->m_areaName) {
+        lua_pushstring(L, rec->m_areaName);
+    } else {
+        lua_pushstring(L, "");
+    }
+}
+
 int32_t Script_GetZoneText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const AreaTableRec* area;
+    const AreaTableRec* zone;
+    ResolveArea(&area, &zone);
+
+    // The containing zone, which is what the map and the zone banner show.
+    PushAreaName(L, zone);
+
+    return 1;
 }
 
 int32_t Script_GetRealZoneText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const AreaTableRec* area;
+    const AreaTableRec* zone;
+    ResolveArea(&area, &zone);
+
+    // Identical to GetZoneText outside instances, where the reference substitutes the instance name.
+    PushAreaName(L, zone);
+
+    return 1;
 }
 
 int32_t Script_GetSubZoneText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const AreaTableRec* area;
+    const AreaTableRec* zone;
+    ResolveArea(&area, &zone);
+
+    // Empty when the player is standing in the zone itself rather than a subzone of it, which is
+    // what FrameXML tests to decide whether to show the second line at all.
+    PushAreaName(L, area == zone ? nullptr : area);
+
+    return 1;
 }
 
 int32_t Script_GetMinimapZoneText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    const AreaTableRec* area;
+    const AreaTableRec* zone;
+    ResolveArea(&area, &zone);
+
+    // The minimap label prefers the most specific name available.
+    PushAreaName(L, area ? area : zone);
+
+    return 1;
 }
 
 int32_t Script_InitiateTrade(lua_State* L) {
@@ -577,11 +700,17 @@ int32_t Script_ResurrectGetOfferer(lua_State* L) {
 }
 
 int32_t Script_ResurrectHasSickness(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_ResurrectHasTimer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_BeginTrade(lua_State* L) {
@@ -651,7 +780,10 @@ int32_t Script_UseSoulstone(lua_State* L) {
 }
 
 int32_t Script_HasKey(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GuildInvite(lua_State* L) {
@@ -830,7 +962,10 @@ int32_t Script_OpeningCinematic(lua_State* L) {
 }
 
 int32_t Script_InCinematic(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_AcceptXPLoss(lua_State* L) {
@@ -907,7 +1042,10 @@ int32_t Script_GetCoinTextureString(lua_State* L) {
 }
 
 int32_t Script_IsSubZonePVPPOI(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetZonePVPInfo(lua_State* L) {
@@ -931,7 +1069,10 @@ int32_t Script_GetPVPTimer(lua_State* L) {
 }
 
 int32_t Script_IsPVPTimerRunning(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // No PVP flag timer is tracked, so none can be counting down.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_ConfirmBindOnUse(lua_State* L) {
@@ -1016,8 +1157,32 @@ int32_t Script_CancelAreaSpiritHeal(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// The frame the cursor is currently over, or nil.
+//
+// CSimpleTop already tracks this: OnMouseMove walks the mouse event queue by strata and stores the
+// first frame whose hit test passes in m_mouseFocus, firing OnEnter/OnLeave off the same value. The
+// binding just had no way to read it.
+//
+// 3.3.5a FrameXML calls this exactly once (VehicleMenuBar.lua), so it is NOT what drives tooltips --
+// those come from each frame's own OnEnter script. Cheap to implement correctly, but do not expect
+// it to change anything visible.
 int32_t Script_GetMouseFocus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto top = CSimpleTop::s_instance;
+    auto focus = top ? top->m_mouseFocus : nullptr;
+
+    if (!focus) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!focus->lua_registered) {
+        focus->RegisterScriptObject(0);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, focus->lua_objectRef);
+
+    return 1;
 }
 
 int32_t Script_GetRealmName(lua_State* L) {
@@ -1103,11 +1268,17 @@ int32_t Script_IsConsumableItem(lua_State* L) {
 }
 
 int32_t Script_IsEquippableItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsEquippedItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsEquippedItemType(lua_State* L) {
@@ -1115,7 +1286,10 @@ int32_t Script_IsEquippedItemType(lua_State* L) {
 }
 
 int32_t Script_IsDressableItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_ItemHasRange(lua_State* L) {
@@ -1203,29 +1377,52 @@ int32_t Script_IsAddOnLoadOnDemand(lua_State* L) {
 }
 
 int32_t Script_IsAddOnLoaded(lua_State* L) {
-    lua_pushnil(L);
+    const char* name = lua_tolstring(L, 1, nullptr);
+
+    if (AddOnIsLoaded(name)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
 
 int32_t Script_LoadAddOn(lua_State* L) {
-    // TODO addons; none can be loaded
+    const char* name = lua_tolstring(L, 1, nullptr);
+    const char* reason = nullptr;
+
+    if (AddOnLoad(name, &reason)) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
     lua_pushnil(L);
-    lua_pushstring(L, "MISSING");
+    lua_pushstring(L, reason ? reason : "MISSING");
 
     return 2;
 }
 
 int32_t Script_PartialPlayTime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_NoPlayTime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The play-time limit is a regional restriction the server never sends, so it can never be on.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetBillingTimeRested(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_CanShowResetInstances(lua_State* L) {
@@ -1252,7 +1449,11 @@ int32_t Script_GetInstanceInfo(lua_State* L) {
 }
 
 int32_t Script_GetDungeonDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // 1 is normal. There is no difficulty system to change it, so normal is not a default here --
+    // it is the only state this client can be in.
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t Script_SetDungeonDifficulty(lua_State* L) {
@@ -1260,7 +1461,9 @@ int32_t Script_SetDungeonDifficulty(lua_State* L) {
 }
 
 int32_t Script_GetRaidDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t Script_SetRaidDifficulty(lua_State* L) {
@@ -1292,7 +1495,11 @@ int32_t Script_GetMirrorTimerProgress(lua_State* L) {
 }
 
 int32_t Script_GetNumTitles(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
+    // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetCurrentTitle(lua_State* L) {
@@ -1304,7 +1511,10 @@ int32_t Script_SetCurrentTitle(lua_State* L) {
 }
 
 int32_t Script_IsTitleKnown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GetTitleName(lua_State* L) {
@@ -1324,7 +1534,10 @@ int32_t Script_GetExistingLocales(lua_State* L) {
 }
 
 int32_t Script_InCombatLockdown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_StartAttack(lua_State* L) {
@@ -1366,7 +1579,10 @@ int32_t Script_IsReferAFriendLinked(lua_State* L) {
 }
 
 int32_t Script_CanGrantLevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_GrantLevel(lua_State* L) {
@@ -1382,11 +1598,30 @@ int32_t Script_SummonFriend(lua_State* L) {
 }
 
 int32_t Script_GetSummonFriendCooldown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Returns start, duration. The interface does `start + duration - GetTime()` on the result
+    // without checking it, so returning nothing made every unit dropdown throw as it was built --
+    // twelve of them per run. A cooldown that has never been used is (0, 0), which is what the
+    // reference reports too until the spell is cast.
+    // TODO the real values once the RAF summon cooldown is tracked
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
 }
 
 int32_t Script_GetTotemInfo(lua_State* L) {
-    return 0;
+    // 5 values, typed from what the caller destructures them into:
+    //   haveTotem, name, startTime, duration, icon
+    // The data behind this is not available yet, so each position takes the neutral
+    // value for its type -- 0 where the caller does arithmetic, false where it
+    // branches, nil where it expects a name or a texture and already handles absence.
+    lua_pushboolean(L, 0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnil(L);
+
+    return 5;
 }
 
 int32_t Script_GetTotemTimeLeft(lua_State* L) {
@@ -1468,7 +1703,10 @@ int32_t Script_CanMapChangeDifficulty(lua_State* L) {
 }
 
 int32_t Script_GetExpansionLevel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // This client is 3.3.5a, which IS Wrath: 0 vanilla, 1 Burning Crusade, 2 Wrath.
+    lua_pushnumber(L, 2.0);
+
+    return 1;
 }
 
 int32_t Script_GetAllowLowLevelRaid(lua_State* L) {

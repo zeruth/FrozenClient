@@ -1,0 +1,3 @@
+gxRestart | 009f5708 "gxRestart" | from 0076ac35 in FUN_0076ab80 @ 0076ab80
+gxRestart | 009f5708 "gxRestart" | from 004dd402 in FUN_004dd400 @ 004dd400
+gxRestart | 00a3895c "GxApi set pending gxRestart" | from 007694fe in FUN_007693b0 @ 007693b0

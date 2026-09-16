@@ -1,0 +1,122 @@
+// ===== RAW DISASM from 007f1010 =====
+007f1010  MOV ECX,0xd38d90    ; -> 00d38d90 
+007f1015  JMP 0x007efd00    ; -> 007efd00 
+007f1020  FLD1
+007f1022  PUSH ECX
+007f1023  ADD ECX,0xc
+007f1026  FSTP float ptr [ESP]
+007f1029  PUSH ECX
+007f102a  MOV ECX,0xd38d90    ; -> 00d38d90 
+007f102f  CALL 0x007efa30    ; -> 007efa30 
+007f1034  FLD1
+007f1036  FSUBRP
+007f1038  RET
+007f1040  FLD1
+007f1042  PUSH ECX
+007f1043  ADD ECX,0xc
+007f1046  FSTP float ptr [ESP]
+007f1049  PUSH ECX
+007f104a  MOV ECX,0xd38d90    ; -> 00d38d90 
+007f104f  CALL 0x007efa30    ; -> 007efa30 
+007f1054  FSUB float ptr [0x009e2ec4]    ; -> 009e2ec4 
+007f105a  FADD ST0,ST0
+007f105c  FABS
+007f105e  FLD1
+007f1060  FSUBRP
+007f1062  RET
+007f1070  PUSH EBP
+007f1071  MOV EBP,ESP
+007f1073  FLDZ
+007f1075  XOR EAX,EAX
+007f1077  CMP byte ptr [EBP + 0x8],AL    ; -> Stack[0x4] 
+007f107a  FSTP float ptr [0x00d38b9c]    ; -> 00d38b9c 
+007f1080  MOV [0x00d38bc0],EAX    ; -> 00d38bc0 
+007f1085  MOV [0x00d38bc8],EAX    ; -> 00d38bc8 
+007f108a  JZ 0x007f1093    ; -> 007f1093 
+007f108c  MOV byte ptr [0x00d38d9a],0x1    ; -> 00d38d9a 
+007f1093  POP EBP
+007f1094  RET
+007f10a0  PUSH EBP
+007f10a1  MOV EBP,ESP
+007f10a3  PUSH ECX
+007f10a4  MOV ECX,dword ptr [0x00af4a38]    ; -> 00af4a38 
+007f10aa  MOV EAX,dword ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f10ad  CMP EAX,ECX
+007f10af  MOV EDX,dword ptr [0x00af4a48]    ; -> 00af4a48 
+007f10b5  PUSH ESI
+007f10b6  MOV ESI,dword ptr [0x00af4a34]    ; -> 00af4a34 
+007f10bc  JL 0x007f10cc    ; -> 007f10cc 
+007f10be  CMP EAX,ESI
+007f10c0  JG 0x007f10cc    ; -> 007f10cc 
+007f10c2  SUB EAX,ECX
+007f10c4  MOV EAX,dword ptr [EDX + EAX*0x4]
+007f10c7  MOV dword ptr [EBP + -0x4],EAX    ; -> Stack[-0x8] 
+007f10ca  JMP 0x007f10d3    ; -> 007f10d3 
+007f10cc  MOV dword ptr [EBP + -0x4],0x0    ; -> Stack[-0x8] 
+007f10d3  MOV EAX,dword ptr [EBP + 0xc]    ; -> Stack[0x8] 
+007f10d6  CMP EAX,ECX
+007f10d8  JL 0x007f10e5    ; -> 007f10e5 
+007f10da  CMP EAX,ESI
+007f10dc  JG 0x007f10e5    ; -> 007f10e5 
+007f10de  SUB EAX,ECX
+007f10e0  MOV ESI,dword ptr [EDX + EAX*0x4]
+007f10e3  JMP 0x007f10e7    ; -> 007f10e7 
+007f10e5  XOR ESI,ESI
+007f10e7  CMP dword ptr [EBP + -0x4],0x0    ; -> Stack[-0x8] 
+007f10eb  JZ 0x007f119a    ; -> 007f119a 
+007f10f1  TEST ESI,ESI
+007f10f3  JZ 0x007f119a    ; -> 007f119a 
+007f10f9  PUSH EBX
+007f10fa  PUSH -0x2
+007f10fc  PUSH 0xaf4d24    ; -> 00af4d24 
+007f1101  PUSH 0x0
+007f1103  MOV ECX,0xd38d7c    ; -> 00d38d7c 
+007f1108  CALL 0x0095d110    ; -> 0095d110 
+007f110d  MOV EBX,EAX
+007f110f  TEST EBX,EBX
+007f1111  JZ 0x007f1199    ; -> 007f1199 
+007f1117  PUSH EDI
+007f1118  MOV ECX,EBX
+007f111a  CALL 0x008b7da0    ; -> 008b7da0 
+007f111f  MOV EAX,dword ptr [EBP + -0x4]    ; -> Stack[-0x8] 
+007f1122  MOV ECX,0xf
+007f1127  MOV EDI,EBX
+007f1129  MOVSD.REP ES:EDI,ESI
+007f112b  FLD float ptr [EAX + 0x8]
+007f112e  FSTP float ptr [EBX + 0x8]
+007f1131  FLD float ptr [EAX + 0xc]
+007f1134  FSTP float ptr [EBX + 0xc]
+007f1137  FLD float ptr [EAX + 0x10]
+007f113a  FSTP float ptr [EBX + 0x10]
+007f113d  FLD float ptr [EAX + 0x14]
+007f1140  FSTP float ptr [EBX + 0x14]
+007f1143  FLD float ptr [EAX + 0x18]
+007f1146  FSTP float ptr [EBX + 0x18]
+007f1149  MOV ECX,0xd39014    ; -> 00d39014 
+007f114e  CALL 0x007f0cc0    ; -> 007f0cc0 
+007f1153  MOV ESI,EAX
+007f1155  XOR EDI,EDI
+007f1157  CMP ESI,EDI
+007f1159  JZ 0x007f1198    ; -> 007f1198 
+007f115b  MOV ECX,dword ptr [EBP + 0x8]    ; -> Stack[0x4] 
+007f115e  FLDZ
+007f1160  MOV dword ptr [ESI + 0x4],EBX
+007f1163  FSTP float ptr [ESI + 0x8]
+007f1166  MOV EBX,0x1
+007f116b  MOV dword ptr [ESI],ECX
+007f116d  MOV dword ptr [ESI + 0xc],EBX
+007f1170  CALL 0x0086ae20    ; -> 0086ae20 
+007f1175  FLDZ
+007f1177  MOV EDX,dword ptr [EBP + 0x10]    ; -> Stack[0xc] 
+007f117a  MOV dword ptr [ESI + 0x10],EAX
+007f117d  MOV dword ptr [ESI + 0x14],EDX
+007f1180  FSTP float ptr [0x00d38b9c]    ; -> 00d38b9c 
+007f1186  MOV dword ptr [0x00d38bc0],EDI    ; -> 00d38bc0 
+007f118c  MOV dword ptr [0x00d38bc8],EDI    ; -> 00d38bc8 
+007f1192  MOV byte ptr [0x00d38d9a],BL    ; -> 00d38d9a 
+007f1198  POP EDI
+007f1199  POP EBX
+007f119a  POP ESI
+007f119b  MOV ESP,EBP
+007f119d  POP EBP
+

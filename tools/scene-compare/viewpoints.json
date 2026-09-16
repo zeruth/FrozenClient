@@ -1,0 +1,29 @@
+[
+  {
+    "name": "dk-start-interior",
+    "map": 609,
+    "x": 2358.44,
+    "y": -5666.9,
+    "z": 426.023,
+    "o": 3.66,
+    "note": "Ebon Hold interior: WMO groups, interior lighting, IceCrownSky skybox through the windows"
+  },
+  {
+    "name": "northshire",
+    "map": 0,
+    "x": -8949.95,
+    "y": -132.49,
+    "z": 83.53,
+    "o": 0.0,
+    "note": "Human start: outdoor terrain, abbey WMO, trees, sky dome and fog"
+  },
+  {
+    "name": "goldshire",
+    "map": 0,
+    "x": -9464.0,
+    "y": 62.0,
+    "z": 56.0,
+    "o": 0.0,
+    "note": "Elwynn: open terrain with multiple texture layers, inn WMO, many doodads and NPCs"
+  }
+]

@@ -16,7 +16,20 @@
 #include "db/rec/ChrRacesRec.hpp"
 #include "db/rec/CreatureDisplayInfoRec.hpp"
 #include "db/rec/CreatureDisplayInfoExtraRec.hpp"
+#include "db/rec/GameObjectDisplayInfoRec.hpp"
+#include "db/rec/SpellRec.hpp"
+#include "db/rec/SpellIconRec.hpp"
 #include "db/rec/CreatureModelDataRec.hpp"
+#include "db/rec/EmotesRec.hpp"
+#include "db/rec/LightRec.hpp"
+#include "db/rec/LightParamsRec.hpp"
+#include "db/rec/LightSkyboxRec.hpp"
+#include "db/rec/LiquidTypeRec.hpp"
+#include "db/rec/WeatherRec.hpp"
+#include "db/rec/GroundEffectTextureRec.hpp"
+#include "db/rec/GroundEffectDoodadRec.hpp"
+#include "db/rec/LightIntBandRec.hpp"
+#include "db/rec/LightFloatBandRec.hpp"
 #include "db/rec/CreatureSoundDataRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
 #include "db/rec/FactionTemplateRec.hpp"
@@ -48,7 +61,20 @@ extern WowClientDB<ChrClassesRec> g_chrClassesDB;
 extern WowClientDB<ChrRacesRec> g_chrRacesDB;
 extern WowClientDB<CreatureDisplayInfoRec> g_creatureDisplayInfoDB;
 extern WowClientDB<CreatureDisplayInfoExtraRec> g_creatureDisplayInfoExtraDB;
+extern WowClientDB<GameObjectDisplayInfoRec> g_gameObjectDisplayInfoDB;
+extern WowClientDB<SpellRec> g_spellDB;
+extern WowClientDB<SpellIconRec> g_spellIconDB;
 extern WowClientDB<CreatureModelDataRec> g_creatureModelDataDB;
+extern WowClientDB<EmotesRec> g_emotesDB;
+extern WowClientDB<LightRec> g_lightDB;
+extern WowClientDB<LightParamsRec> g_lightParamsDB;
+extern WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
+extern WowClientDB<LiquidTypeRec> g_liquidTypeDB;
+extern WowClientDB<WeatherRec> g_weatherDB;
+extern WowClientDB<GroundEffectTextureRec> g_groundEffectTextureDB;
+extern WowClientDB<GroundEffectDoodadRec> g_groundEffectDoodadDB;
+extern WowClientDB<LightIntBandRec> g_lightIntBandDB;
+extern WowClientDB<LightFloatBandRec> g_lightFloatBandDB;
 extern WowClientDB<CreatureSoundDataRec> g_creatureSoundDataDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;
 extern WowClientDB<FactionTemplateRec> g_factionTemplateDB;

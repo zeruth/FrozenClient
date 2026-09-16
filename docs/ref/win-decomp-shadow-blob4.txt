@@ -1,0 +1,38 @@
+// ===== FUN_0077f350 @ 0077f350 (requested 0077f350) =====
+
+void FUN_0077f350(void)
+
+{
+  FUN_007a2aa0();
+  return;
+}
+
+
+
+// ===== FUN_0077f340 @ 0077f340 (requested 0077f340) =====
+
+void FUN_0077f340(void)
+
+{
+  FUN_007a6af0();
+  return;
+}
+
+
+
+// ===== FUN_0077f1e0 @ 0077f1e0 (requested 0077f1e0) =====
+
+undefined4 FUN_0077f1e0(int param_1,uint *param_2,undefined4 *param_3,undefined4 *param_4)
+
+{
+  if ((param_1 != 0) && ((*(byte *)(param_1 + 0x7c) & 0x20) != 0)) {
+    *param_3 = *(undefined4 *)(param_1 + 0x80);
+    *param_2 = (uint)*(ushort *)(param_1 + 0xbc);
+    *param_4 = 0;
+    return 1;
+  }
+  return 0;
+}
+
+
+

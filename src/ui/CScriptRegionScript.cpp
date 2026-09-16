@@ -1,5 +1,6 @@
 #include "ui/CScriptRegionScript.hpp"
 #include "gx/Coordinate.hpp"
+#include "ui/CFramePoint.hpp"
 #include "ui/CScriptRegion.hpp"
 #include "ui/FrameScript_Object.hpp"
 #include "ui/Util.hpp"
@@ -307,16 +308,126 @@ int32_t CScriptRegion_SetSize(lua_State* L) {
     return 0;
 }
 
+// Width and height together, in the same units GetWidth and GetHeight report them. FrameXML calls
+// this far more often than the singular pair, and a stub returned nothing at all -- so every caller
+// unpacked two nils and did arithmetic on them.
 int32_t CScriptRegion_GetSize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    float width = region->GetWidth();
+    float height = region->GetHeight();
+
+    // A region that has never been laid out reports zero; resolve it the way GetWidth does rather
+    // than handing back a zero that is merely "not measured yet".
+    if ((width == 0.0f || height == 0.0f) && !StringToBOOL(L, 2, 0)) {
+        if (region->IsResizePending()) {
+            region->Resize(1);
+        }
+
+        CRect rect = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+        if (region->GetRect(&rect)) {
+            if (width == 0.0f) {
+                width = (rect.maxX - rect.minX) / region->m_layoutScale;
+            }
+
+            if (height == 0.0f) {
+                height = (rect.maxY - rect.minY) / region->m_layoutScale;
+            }
+        }
+    }
+
+    float aspect = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(aspect * width));
+    lua_pushnumber(L, DDCToNDCWidth(aspect * height));
+
+    return 2;
 }
 
 int32_t CScriptRegion_GetNumPoints(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t count = 0;
+
+    for (int32_t i = 0; i < FRAMEPOINT_NUMPOINTS; i++) {
+        if (region->m_points[i]) {
+            count++;
+        }
+    }
+
+    lua_pushnumber(L, count);
+
+    return 1;
 }
 
+// GetPoint(index) -> point, relativeTo, relativePoint, offsetX, offsetY.
+//
+// The index is 1-based and counts only the points that are actually set, so it is a position in the
+// occupied subset rather than a FRAMEPOINT value -- m_points is a sparse array indexed by the point
+// itself.
 int32_t CScriptRegion_GetPoint(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t wanted = lua_isnumber(L, 2) ? static_cast<int32_t>(lua_tonumber(L, 2)) : 1;
+
+    if (wanted < 1) {
+        return luaL_error(L, "%s:GetPoint(): Invalid point index", region->GetDisplayName());
+    }
+
+    CFramePoint* found = nullptr;
+    FRAMEPOINT foundPoint = FRAMEPOINT_TOPLEFT;
+    int32_t seen = 0;
+
+    for (int32_t i = 0; i < FRAMEPOINT_NUMPOINTS; i++) {
+        if (!region->m_points[i]) {
+            continue;
+        }
+
+        if (++seen == wanted) {
+            found = region->m_points[i];
+            foundPoint = static_cast<FRAMEPOINT>(i);
+            break;
+        }
+    }
+
+    if (!found) {
+        return 0;
+    }
+
+    lua_pushstring(L, FramePointToString(foundPoint));
+
+    auto relative = found->GetRelative();
+
+    // CSimpleTop is the other CLayoutFrame subclass and is NOT a CScriptRegion, so casting one to
+    // CScriptRegion* would adjust the pointer past a base that isn't there and read a garbage
+    // lua_objectRef. It is the internal root above UIParent and is not exposed to script at all, so
+    // nil is the honest answer for it.
+    if (relative && relative != static_cast<CLayoutFrame*>(CSimpleTop::s_instance)) {
+        auto region = static_cast<CScriptRegion*>(relative);
+
+        if (!region->lua_registered) {
+            region->RegisterScriptObject(0);
+        }
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, region->lua_objectRef);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushstring(L, FramePointToString(static_cast<FRAMEPOINT>(found->m_framePoint)));
+
+    // SetPoint converts the script's offsets into DDC on the way in; undo exactly that, so a value
+    // handed to SetPoint comes back out of GetPoint unchanged.
+    float aspect = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(found->m_offset.x) * aspect);
+    lua_pushnumber(L, DDCToNDCWidth(found->m_offset.y) * aspect);
+
+    return 5;
 }
 
 int32_t CScriptRegion_SetPoint(lua_State* L) {
@@ -375,7 +486,13 @@ int32_t CScriptRegion_SetPoint(lua_State* L) {
     }
 
     if (relative->IsResizeDependency(region)) {
-        return luaL_error(L, "%s:SetPoint(): %s is dependent on this", region->GetDisplayName(), static_cast<CScriptRegion*>(relative)->GetDisplayName());
+        // Same hazard as in GetPoint: only a CScriptRegion has a display name, and CSimpleTop is not
+        // one. This is an error path, so it would have crashed exactly when something already had.
+        const char* relativeName = relative == static_cast<CLayoutFrame*>(CSimpleTop::s_instance)
+            ? "UIParent"
+            : static_cast<CScriptRegion*>(relative)->GetDisplayName();
+
+        return luaL_error(L, "%s:SetPoint(): %s is dependent on this", region->GetDisplayName(), relativeName);
     }
 
     FRAMEPOINT relativePoint = point;
@@ -490,8 +607,49 @@ int32_t CScriptRegion_IsDragging(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// IsMouseOver([top, bottom, left, right]) -> is the cursor inside this region.
+//
+// The optional arguments are edge offsets in the units SetPoint takes, added to their own edge, so
+// FrameXML's IsMouseOver(1, -1, -1, 1) grows the rect by one unit all round. Callers use this only
+// in conditions, so while it was a stub it read as false and those branches -- buff consolidation,
+// chat fade -- simply never fired.
+//
+// The mouse position and a region's rect are in the same space: CSimpleTop stores the mouse event
+// straight into m_mousePosition, and CSimpleFrame::TestHitRect compares that event's x/y against
+// m_hitRect without converting. So the only conversion needed is on the offsets coming from script.
 int32_t CScriptRegion_IsMouseOver(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    CRect rect = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    if (!CSimpleTop::s_instance || !region->GetRect(&rect)) {
+        lua_pushboolean(L, 0);
+
+        return 1;
+    }
+
+    float aspect = CoordinateGetAspectCompensation() * 1024.0f;
+
+    // Same conversion SetPoint applies to its offsets, so an inset means the same thing here as the
+    // offset that placed the region.
+    auto offset = [&](int32_t index) {
+        return lua_isnumber(L, index)
+            ? NDCToDDCWidth(static_cast<float>(lua_tonumber(L, index)) / aspect)
+            : 0.0f;
+    };
+
+    rect.maxY += offset(2);
+    rect.minY += offset(3);
+    rect.minX += offset(4);
+    rect.maxX += offset(5);
+
+    C2Vector point = { CSimpleTop::s_instance->m_mousePosition.x,
+                       CSimpleTop::s_instance->m_mousePosition.y };
+
+    lua_pushboolean(L, rect.IsPointInside(point));
+
+    return 1;
 }
 
 FrameScript_Method ScriptRegionMethods[NUM_SCRIPT_REGION_SCRIPT_METHODS] = {

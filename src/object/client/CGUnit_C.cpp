@@ -2,6 +2,8 @@
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
 #include "model/Model2.hpp"
+#include "model/CM2Shared.hpp"
+#include "model/M2Data.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
 #include <storm/Error.hpp>
@@ -110,7 +112,13 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 }
 
 CGUnit_C::~CGUnit_C() {
-    // TODO
+    // Free the composited body built for a humanoid NPC (players keep their own component in
+    // CGPlayer_C, so this only ever fires for NPCs). Units stream in and out with the tiles, so a
+    // leak here would grow unbounded.
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
 }
 
 int32_t CGUnit_C::CanHighlight() {
@@ -180,6 +188,104 @@ int32_t CGUnit_C::GetModelFileName(const char*& name) const {
     return modelDataRec->m_modelName ? true : false;
 }
 
+float CGUnit_C::GetModelScale() const {
+    // The reference scales a creature by its display's model scale times the model data's scale
+    auto disp = g_creatureDisplayInfoDB.GetRecord(this->GetDisplayID());
+
+    if (!disp) {
+        return 1.0f;
+    }
+
+    float scale = disp->m_creatureModelScale;
+
+    auto model = g_creatureModelDataDB.GetRecord(disp->m_modelID);
+
+    if (model) {
+        scale *= model->m_modelScale;
+    }
+
+    return scale > 0.0f ? scale : 1.0f;
+}
+
+bool CGUnit_C::BuildNpcCharacterComponent() {
+    if (!this->m_model) {
+        return false;
+    }
+
+    auto disp = g_creatureDisplayInfoDB.GetRecord(this->GetDisplayID());
+
+    if (!disp || disp->m_extendedDisplayInfoID <= 0) {
+        return false; // an ordinary creature model, not a character
+    }
+
+    auto extra = g_creatureDisplayInfoExtraDB.GetRecord(disp->m_extendedDisplayInfoID);
+
+    if (!extra) {
+        return false;
+    }
+
+    // Dress it exactly like a player character, but from the creature's extended (character) data.
+    ComponentData data;
+    data.raceID = extra->m_displayRaceID;
+    data.sexID = extra->m_displaySexID;
+    data.classID = 1; // class does not affect appearance; a valid value keeps the component happy
+    data.skinColorID = extra->m_skinID;
+    data.faceID = extra->m_faceID;
+    data.hairStyleID = extra->m_hairStyleID;
+    data.hairColorID = extra->m_hairColorID;
+    data.facialHairStyleID = extra->m_facialHairID;
+
+    this->m_model->AddRef();
+    data.model = this->m_model;
+    data.flags |= 0x2;
+
+    // A unit can be built more than once (respawn, tile reload, display change). Free any component
+    // it already carries first: the component heap is a fixed-size ObjectAlloc pool, and leaking
+    // into it eventually makes AllocComponent return null -- which then crashed in Init, since
+    // neither call site checked. Release the model reference taken just above if it does fail.
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
+
+    this->m_characterComponent = CCharacterComponent::AllocComponent();
+
+    if (!this->m_characterComponent) {
+        this->m_model->Release();
+        return false;
+    }
+
+    this->m_characterComponent->Init(&data, nullptr);
+
+    // NPCItemDisplay[11] holds ItemDisplayInfo ids for the visible armour slots, in this order.
+    static const int32_t s_slotInvType[11] = {
+        1,  // head
+        3,  // shoulders
+        4,  // shirt (body)
+        5,  // chest
+        6,  // waist
+        7,  // legs
+        8,  // feet
+        9,  // wrists
+        10, // hands
+        16, // back (cloak)
+        19  // tabard
+    };
+
+    for (int32_t i = 0; i < 11; i++) {
+        int32_t displayID = extra->m_npcitemDisplay[i];
+
+        if (displayID > 0) {
+            this->m_characterComponent->AddItemByInventoryType(s_slotInvType[i], displayID);
+        }
+    }
+
+    this->m_characterComponent->RenderPrep(1);
+    this->m_model->IsDrawable(1, 1);
+
+    return true;
+}
+
 C3Vector CGUnit_C::GetPosition() const {
     return this->CGUnit::GetPosition();
 }
@@ -221,6 +327,128 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
 
 void CGUnit_C::PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeMover) {
     // TODO
+}
+
+float CGUnit_C::GetAnimFootprint() const {
+    if (!this->m_model || !this->m_model->m_shared || !this->m_model->m_shared->m_m2DataLoaded || !this->m_model->m_shared->m_data) {
+        return 0.0f;
+    }
+
+    auto& sequences = this->m_model->m_shared->m_data->sequences;
+
+    if (this->m_animSeq < 0 || !sequences.Count()) {
+        return 0.0f;
+    }
+
+    // m_animSeq is an AnimationData id, not an index, so find the sequence that carries it.
+    for (uint32_t i = 0; i < sequences.Count(); i++) {
+        if (sequences[i].id != this->m_animSeq) {
+            continue;
+        }
+
+        const CAaBox& e = sequences[i].bounds.extent;
+        float ex = (e.t.x - e.b.x) * 0.5f;
+        float ey = (e.t.y - e.b.y) * 0.5f;
+        float extent = ex > ey ? ex : ey;
+
+        // Degenerate per-sequence bounds are common; let the caller fall back to the model box.
+        return extent > 0.01f ? extent : 0.0f;
+    }
+
+    return 0.0f;
+}
+
+uint32_t CGUnit_C::GetSequenceDuration(int32_t animID) {
+    if (!this->m_model || !this->m_model->m_shared || !this->m_model->m_shared->m_m2DataLoaded || !this->m_model->m_shared->m_data) {
+        return 0;
+    }
+
+    auto& sequences = this->m_model->m_shared->m_data->sequences;
+
+    for (uint32_t i = 0; i < sequences.Count(); i++) {
+        if (sequences[i].id == animID) {
+            return sequences[i].duration;
+        }
+    }
+
+    return 0;
+}
+
+void CGUnit_C::UpdateIdleAnimation() {
+    if (!this->m_model) {
+        return;
+    }
+
+    // Same priority order the reference uses for a unit's looping pose: a dead unit holds Dead;
+    // otherwise a scripted stand state (UNIT_FIELD_BYTES_1 byte 0) picks the matching sit/sleep/
+    // kneel/submerged loop; otherwise an emote state resolves through Emotes.dbc -> AnimationData id;
+    // otherwise plain Stand. Animation ids are AnimationData.dbc entries SetBoneSequence resolves.
+    auto unitData = this->Unit();
+    bool dead = unitData && unitData->maxHealth > 0 && unitData->health <= 0;
+    int32_t standState = unitData ? (unitData->pad2 & 0xFF) : 0;
+    int32_t seq;
+
+    if (dead) {
+        // Match the reference's death handling. A unit already dead when first seen (a corpse placed
+        // in the world) settles straight into the Dead pose. A unit that dies while we are watching
+        // plays the Death fall (AnimationData 1) once, then settles into Dead (6) when it ends -- we
+        // time the fall off the model's own Death duration rather than assuming a non-looping hold.
+        uint32_t now = this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
+
+        if (!this->m_wasDead && this->m_animSeq != -1) {
+            uint32_t deathDuration = this->GetSequenceDuration(1);
+
+            if (deathDuration > 0) {
+                seq = 1; // Death fall
+                this->m_deathStartTime = now;
+                this->m_deathDuration = deathDuration;
+            } else {
+                seq = 6; // model has no Death animation -> straight to Dead
+            }
+        } else if (this->m_animSeq == 1 && (now - this->m_deathStartTime) < this->m_deathDuration) {
+            seq = 1; // still falling
+        } else {
+            seq = 6; // Dead (settled, or spawned as a corpse)
+        }
+
+        this->m_wasDead = true;
+    } else {
+        this->m_wasDead = false;
+
+        if (standState != 0) {
+            switch (standState) {
+                case 1: seq = 97; break;   // SIT              -> SitGround
+                case 2: seq = 103; break;  // SIT_CHAIR        -> SitChairMed
+                case 3: seq = 100; break;  // SLEEP            -> Sleep
+                case 4: seq = 102; break;  // SIT_LOW_CHAIR    -> SitChairLow
+                case 5: seq = 103; break;  // SIT_MEDIUM_CHAIR -> SitChairMed
+                case 6: seq = 104; break;  // SIT_HIGH_CHAIR   -> SitChairHigh
+                case 7: seq = 6; break;    // DEAD             -> Dead
+                case 8: seq = 115; break;  // KNEEL            -> KneelLoop
+                case 9: seq = 202; break;  // SUBMERGED        -> Submerged
+                default: seq = 0; break;
+            }
+        } else if (unitData && unitData->emoteState) {
+            auto emote = g_emotesDB.GetRecord(unitData->emoteState);
+            seq = (emote && emote->m_animID > 0) ? emote->m_animID : 0;
+        } else {
+            seq = 0; // Stand
+        }
+    }
+
+    // A model that has no animation for the requested pose falls back to Stand, the way the
+    // reference does: most creatures carry no SitChair/Sleep/Submerged or emote animation, and
+    // asking for one leaves them in whatever pose they held.
+    if (seq != 0 && !this->GetSequenceDuration(seq)) {
+        seq = 0;
+    }
+
+    // Only restart the sequence when it actually changes; re-issuing it every frame would keep
+    // resetting the animation to frame 0 and freeze it.
+    if (seq != this->m_animSeq) {
+        this->m_model->SetBoneSequence(-1, seq, -1, 0, 1.0f, 0, 1);
+        this->m_animSeq = seq;
+    }
 }
 
 void CGUnit_C::RefreshDataPointers() {

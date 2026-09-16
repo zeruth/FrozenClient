@@ -133,7 +133,11 @@ void CGCamera::CalcTargetCamera(CGObject_C* target, uint32_t timestamp) {
 }
 
 void CGCamera::CheckUnderwater() {
-    // TODO
+    // The world tracks which liquid (if any) the camera is inside, from the loaded surfaces --
+    // TerrainUpdate runs the point query every frame and CWorld records the result. Mirroring it
+    // here gives the camera a real submerged state instead of the stub, and keeps one source of
+    // truth rather than a second query that could disagree with the one driving the lighting.
+    this->m_underwater = CWorld::IsCameraUnderLiquid();
 }
 
 float CGCamera::FOV() const {

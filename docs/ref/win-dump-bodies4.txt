@@ -1,0 +1,15 @@
+// ===== REFS to 00d38db8 =====
+
+// ===== REFS to 00d38d9c =====
+
+// d:7f1020: no function here
+// d:7f1040: no function here
+// a:7f1020: no function here
+// ===== REFS to 00d38e20 =====
+   FUN_007f1d30 @ 007f1d30  [READ from 007f1e21]
+   FUN_007f1d30 @ 007f1d30  [WRITE from 007f1e4a]
+
+// ===== REFS to 00d38e24 =====
+   FUN_007f1d30 @ 007f1d30  [READ from 007f1e33]
+   FUN_007f1d30 @ 007f1d30  [WRITE from 007f1e50]
+

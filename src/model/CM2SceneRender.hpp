@@ -10,6 +10,7 @@ class CM2Cache;
 class CM2Lighting;
 class CM2Model;
 class CM2Shared;
+class CShaderEffect;
 struct M2Batch;
 struct M2Data;
 struct M2Element;
@@ -23,6 +24,19 @@ class CM2SceneRender {
         static int32_t s_fogModeList[M2BLEND_COUNT];
         static EGxBlend s_gxBlend[M2PASS_COUNT][M2BLEND_COUNT];
         static int32_t s_shadedList[M2BLEND_COUNT];
+
+        // Shadow map caster mode. When set, batches are drawn with the reference's ShadowMap /
+        // ShadowMapSL effect instead of their own material effect, and the bone matrices are
+        // rebased from the camera's view into the light's. Null means normal rendering.
+        //
+        // The rebase is needed because whoa bakes the view into the bone matrices
+        // (CM2Model::AnimateMT: matrixF4 = matrixB4 * view), which is what the model shaders
+        // expect. The reference's ShadowMap vertex shader instead carries a second matrix at
+        // c14..c16 for exactly this correction, but only in its bone-blended permutations;
+        // rebasing on the CPU covers the unskinned ones too, at the cost of one matrix multiply
+        // per bone per caster.
+        static const C44Matrix* s_shadowCasterRebase;
+        static CShaderEffect* s_shadowCasterEffect;
 
         // Member variables
         C44Matrix matrix0;

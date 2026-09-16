@@ -91,11 +91,17 @@ int32_t Script_SetOptOutOfLoot(lua_State* L) {
 }
 
 int32_t Script_GetOptOutOfLoot(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // No loot system, so the player cannot have opted out of it.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_CanChangePlayerDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_ChangePlayerDifficulty(lua_State* L) {
@@ -103,11 +109,17 @@ int32_t Script_ChangePlayerDifficulty(lua_State* L) {
 }
 
 int32_t Script_IsPartyLFG(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // There is no LFG system, so no group can have been formed by it.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_HasLFGRestrictions(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 }

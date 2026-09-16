@@ -1,6 +1,7 @@
 #include "gx/Screen.hpp"
 #include "event/Event.hpp"
 #include "gx/Coordinate.hpp"
+#include "gx/Device.hpp"
 #include "gx/Draw.hpp"
 #include "gx/Font.hpp"
 #include "gx/Gx.hpp"
@@ -10,6 +11,7 @@
 #include <tempest/Matrix.hpp>
 
 int32_t Screen::s_captureScreen = 0;
+char Screen::s_capturePath[260] = { 0 };
 float Screen::s_elapsedSec = 0.0f;
 int32_t Screen::s_presentDisable = 0;
 static HOBJECT s_stockObjects[SCRNSTOCKOBJECTS];
@@ -113,11 +115,16 @@ int32_t OnPaint(const void* a1, void* a2) {
 
     if (!Screen::s_presentDisable) {
         if (Screen::s_captureScreen) {
-            // TODO
+            // Grab the finished frame before it is presented, then present it as usual. Capturing
+            // here rather than inside the Lua binding is what makes the image a whole frame: at the
+            // moment the binding runs, the interface is still being drawn on top of the world.
+            if (Screen::s_capturePath[0]) {
+                GxScreenShot(Screen::s_capturePath);
+            }
+
+            Screen::s_captureScreen = 0;
 
             GxSub682A00();
-
-            // TODO
 
             return 1;
         }

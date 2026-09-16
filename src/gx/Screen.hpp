@@ -32,6 +32,7 @@ class CSRgn {
 
 namespace Screen {
     extern int32_t s_captureScreen;
+    extern char s_capturePath[260];
     extern float s_elapsedSec;
     extern int32_t s_presentDisable;
 }

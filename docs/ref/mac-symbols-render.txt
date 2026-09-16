@@ -1,0 +1,18 @@
+# program=WoW-3.3.5a-mac-i386 functions=28431 matched=17
+Fog | _glFogf @ 011225dc size=1
+Fog | _glFogfv @ 011225e1 size=1
+Fog | _glFogi @ 011225e6 size=1
+Render | _AudioUnitRender @ 01121696 size=1
+Render | _CGLDescribeRenderer @ 01121871 size=1
+Render | _CGLDestroyRendererInfo @ 01121876 size=1
+Render | _CGLQueryRendererInfo @ 01121894 size=1
+Render | _aglDescribeRenderer @ 01122195 size=1
+Render | _aglDestroyRendererInfo @ 011221a9 size=1
+Render | _aglNextRendererInfo @ 011221c7 size=1
+Render | _aglQueryRendererInfo @ 011221cc size=1
+Render | _glBindRenderbufferEXT @ 01122456 size=1
+Render | _glDeleteRenderbuffersEXT @ 01122546 size=1
+Render | _glFlushRenderAPPLE @ 011225d2 size=1
+Render | _glFramebufferRenderbufferEXT @ 011225eb size=1
+Render | _glGenRenderbuffersEXT @ 01122622 size=1
+Render | _glRenderbufferStorageEXT @ 011226f9 size=1

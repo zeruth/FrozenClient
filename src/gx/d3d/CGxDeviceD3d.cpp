@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include <cstdio>
 #include "gx/Texture.hpp"
 #include "gx/Blit.hpp"
 #include "gx/CGxBatch.hpp"
@@ -6,6 +7,9 @@
 #include "math/Utils.hpp"
 #include <algorithm>
 #include <directxmath.h>
+
+
+HCURSOR CGxDeviceD3d::s_classCursor = nullptr;
 
 int32_t CGxDeviceD3d::s_clientAdjustWidth;
 int32_t CGxDeviceD3d::s_clientAdjustHeight;
@@ -214,8 +218,15 @@ ATOM WindowClassCreate() {
     wc.hCursor = LoadCursor(instance, TEXT("BlizzardCursor.cur"));
 
     if (!wc.hCursor) {
-        wc.hCursor = LoadCursor(instance, IDC_ARROW);
+        // A STANDARD cursor must be loaded with a null module handle. Passing `instance` makes
+        // LoadCursor look for a resource named IDC_ARROW inside the exe, which does not exist, so it
+        // returned NULL -- and a window class with no cursor leaves whatever the previous window
+        // set, which at startup is the "app starting" arrow-and-spinner. That is why the cursor was
+        // a spinning wheel over the whole window for the life of the process.
+        wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     }
+
+    CGxDeviceD3d::s_classCursor = wc.hCursor;
 
     return RegisterClassEx(&wc);
 }
@@ -334,9 +345,19 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
 
     case WM_SETCURSOR: {
-        // TODO
+        // Returning TRUE means "handled, do not change the cursor". Doing that without ever calling
+        // SetCursor left whatever cursor was last set in place -- the other half of the spinning
+        // wheel. Set it for the client area, and let DefWindowProc handle the frame so the resize
+        // borders still get their own arrows.
+        if (LOWORD(lParam) == HTCLIENT) {
+            if (CGxDeviceD3d::s_classCursor) {
+                SetCursor(CGxDeviceD3d::s_classCursor);
+            }
 
-        return 1;
+            return 1;
+        }
+
+        break;
     }
 
     case WM_DISPLAYCHANGE: {
@@ -399,6 +420,14 @@ void CGxDeviceD3d::BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t
     CGxDevice::BufData(buf, data, size, offset);
 
     auto bufData = this->IBufLock(buf);
+
+    // A failed lock returns null, and &bufData[offset] is then a small address rather than an
+    // obviously bad one: this crashed as a write to 0x20, which is simply offset 0x20 from null.
+    // That is the third place in this backend where an unchecked lock result was written through.
+    if (!bufData) {
+        return;
+    }
+
     memcpy(&bufData[offset], data, size);
     this->IBufUnlock(buf);
 }
@@ -512,12 +541,45 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
             this->DeviceSetDefWindow(windowRect);
 
             if (this->m_d3dDevice && this->m_context) {
+                D3DPRESENT_PARAMETERS wanted;
+                this->ISetPresentParms(wanted, this->m_format);
+
+                // Resetting a device whose back buffer already matches the window is pointless,
+                // and not free. Windows sends a WM_SIZE on entering the world with the size
+                // unchanged; resetting on it failed with D3DERR_INVALIDCALL, which cleared
+                // m_context, and nothing ever set it again -- so the client rendered at full rate
+                // and presented nothing for the rest of the run. The window kept its last frame,
+                // which looks exactly like a hang and is not one.
+                uint32_t haveWidth = 0;
+                uint32_t haveHeight = 0;
+
+                LPDIRECT3DSURFACE9 back = nullptr;
+
+                if (SUCCEEDED(this->m_d3dDevice->GetRenderTarget(0, &back)) && back) {
+                    D3DSURFACE_DESC desc;
+
+                    if (SUCCEEDED(back->GetDesc(&desc))) {
+                        haveWidth = desc.Width;
+                        haveHeight = desc.Height;
+                    }
+
+                    back->Release();
+                }
+
+                if (haveWidth == wanted.BackBufferWidth && haveHeight == wanted.BackBufferHeight) {
+                    this->intF6C = 1;
+
+                    return;
+                }
+
                 this->IReleaseD3dResources(0);
 
                 D3DPRESENT_PARAMETERS d3dpp;
                 this->ISetPresentParms(d3dpp, this->m_format);
 
-                if (SUCCEEDED(this->m_d3dDevice->Reset(&d3dpp))) {
+                HRESULT resetResult = this->m_d3dDevice->Reset(&d3dpp);
+
+                if (SUCCEEDED(resetResult)) {
                     this->IStateSetD3dDefaults();
                     // TODO
 
@@ -530,6 +592,18 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
 
                     return;
                 } else {
+                    // Name the failure instead of guessing. D3DERR_INVALIDCALL means something in
+                    // D3DPOOL_DEFAULT is still alive; D3DERR_DEVICELOST means the device is not
+                    // ready to be reset and retrying right now cannot help. Those two want opposite
+                    // responses, so the distinction is worth printing.
+                    fprintf(stderr, "Reset FAILED 0x%08lX (%s)\n", resetResult,
+                            resetResult == D3DERR_INVALIDCALL
+                                ? "INVALIDCALL - a default-pool resource is still alive"
+                            : resetResult == D3DERR_DEVICELOST ? "DEVICELOST - device not ready"
+                            : resetResult == D3DERR_DRIVERINTERNALERROR ? "DRIVERINTERNALERROR"
+                            : resetResult == D3DERR_OUTOFVIDEOMEMORY ? "OUTOFVIDEOMEMORY"
+                            : "unknown");
+
                     this->m_context = 0;
                 }
             }
@@ -542,7 +616,21 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
     }
 }
 
+int32_t g_terrZEnable = -1;
+int32_t g_terrZFunc = -1;
+int32_t g_terrZWrite = -1;
+int32_t g_terrHasDepth = -1;
+int32_t g_modelZEnable = -1;
+int32_t g_modelZFunc = -1;
+int32_t g_modelZWrite = -1;
+int32_t g_modelHasDepth = -1;
+int32_t g_d3dZEnable = -1;
+int32_t g_d3dZFunc = -1;
+int32_t g_d3dZWrite = -1;
+int32_t g_d3dHasDepthSurface = -1;
+
 void CGxDeviceD3d::Draw(CGxBatch* batch, int32_t indexed) {
+
     if (!this->m_context || this->intF5C) {
         return;
     }
@@ -1033,7 +1121,106 @@ void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
     }
 }
 
+namespace {
+
+// Direct3D destroys every D3DPOOL_DEFAULT resource on a device reset, and a render target texture
+// has to be in that pool. Nothing here tracked them, so after the first window resize their CGxTex
+// still held the dead pointer with m_needsCreation clear, and every later bind and read-back used
+// it. The symptom was baffling: the texture reported 1024x1024 in the right format, yet
+// GetLevelCount() answered 0 and GetSurfaceLevel returned D3DERR_INVALIDCALL, because the object
+// behind the pointer was gone. The shadow map had therefore not rendered at all since that reset.
+//
+// A flat array is enough: there are only ever a handful of render targets, and they are created
+// once.
+const int32_t MAX_TRACKED_TARGETS = 32;
+CGxTex* s_renderTargets[MAX_TRACKED_TARGETS] = { nullptr };
+
+void TrackRenderTarget(CGxTex* texId) {
+    if (!texId->m_flags.m_renderTarget) {
+        return;
+    }
+
+    for (int32_t i = 0; i < MAX_TRACKED_TARGETS; i++) {
+        if (s_renderTargets[i] == texId) {
+            return;
+        }
+
+        if (!s_renderTargets[i]) {
+            s_renderTargets[i] = texId;
+            return;
+        }
+    }
+
+    fprintf(stderr, "ITexCreate: more than %d render targets; the rest will not survive a device reset\n",
+            MAX_TRACKED_TARGETS);
+}
+
+void ForgetRenderTargets() {
+    for (int32_t i = 0; i < MAX_TRACKED_TARGETS; i++) {
+        auto texId = s_renderTargets[i];
+
+        if (!texId) {
+            continue;
+        }
+
+        if (texId->m_apiSpecificData) {
+            // Through IUnknown: the tracker holds plain, cube and depth-stencil textures, and they
+            // are not all LPDIRECT3DTEXTURE9. Release lives on IUnknown, so this is correct for all
+            // three instead of relying on the vtables happening to line up.
+            static_cast<IUnknown*>(texId->m_apiSpecificData)->Release();
+            texId->m_apiSpecificData = nullptr;
+        }
+
+        // Rebuilt lazily: every bind already calls ITexCreate when this is set.
+        texId->m_needsCreation = 1;
+    }
+}
+
+} // namespace
+
 void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
+    static int32_t releases = 0;
+
+    // Only the first few are interesting; printing every call is what made the runaway retry loop
+    // visible in the first place (4847 calls in one session), but it floods the log after that.
+    if (++releases <= 8) {
+        fprintf(stderr, "IReleaseD3dResources call %d\n", releases);
+    }
+
+    // Unbind first. A surface that is still the device's render target or depth-stencil keeps a
+    // reference alive no matter how many times its texture is released, and Reset then fails with
+    // D3DERR_INVALIDCALL -- which is exactly what was happening: the shadow map stayed bound, the
+    // reset failed once, m_context was cleared, and the client rendered for ever without presenting.
+    if (this->m_d3dDevice) {
+        if (this->m_defColorSurface) {
+            this->m_d3dDevice->SetRenderTarget(0, this->m_defColorSurface);
+        }
+
+        this->m_d3dDevice->SetDepthStencilSurface(this->m_defDepthSurface);
+
+        // Textures hold references too; drop every stage before releasing the objects behind them.
+        for (uint32_t stage = 0; stage < 8; stage++) {
+            this->m_d3dDevice->SetTexture(stage, nullptr);
+        }
+
+        // Same for the vertex and index buffers: releasing a buffer that is still SET as a stream
+        // source or index buffer does not drop its last reference, and Reset then fails with
+        // INVALIDCALL exactly as a bound render target does. Clear the bindings, and the device's
+        // cached copies of them, so the pool release below really is the last reference.
+        for (uint32_t stream = 0; stream < 8; stream++) {
+            this->m_d3dDevice->SetStreamSource(stream, nullptr, 0, 0);
+            this->m_d3dVertexStreamBuf[stream] = nullptr;
+            this->m_d3dVertexStreamOfs[stream] = -1;
+            this->m_d3dVertexStreamStride[stream] = -1;
+        }
+
+        this->m_d3dDevice->SetIndices(nullptr);
+        this->m_d3dCurrentIndexBuf = nullptr;
+    }
+
+    // Then drop the tracked render-target textures, so the reset leaves no dangling handles.
+    ForgetRenderTargets();
+
     // TODO
 
     this->IReleaseD3dPools(a2);
@@ -1138,6 +1325,46 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
     case GxRs_ScissorTest: {
         auto scissorTestEnable = static_cast<uint32_t>(state->m_value) != 0;
         this->m_d3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, scissorTestEnable);
+
+        break;
+    }
+
+    case GxRs_PolygonOffset: {
+        // Depth bias for coplanar decals. The reference sets one state, negated, and only when the
+        // device reports the capability; it never touches D3DRS_SLOPESCALEDEPTHBIAS. Used only by
+        // decal-style draws (footprints, post-liquid decals, projected decals) -- models set it to
+        // zero. Until now this state was accepted and silently dropped by every D3D draw.
+        if (this->m_caps.m_depthBias) {
+            float offset = -static_cast<float>(state->m_value);
+            this->m_d3dDevice->SetRenderState(D3DRS_DEPTHBIAS, *reinterpret_cast<DWORD*>(&offset));
+        }
+
+        break;
+    }
+
+    case GxRs_Fog: {
+        auto fogEnable = static_cast<uint32_t>(state->m_value) != 0;
+        this->m_d3dDevice->SetRenderState(D3DRS_FOGENABLE, fogEnable);
+
+        break;
+    }
+
+    case GxRs_FogColor: {
+        this->m_d3dDevice->SetRenderState(D3DRS_FOGCOLOR, static_cast<uint32_t>(state->m_value));
+
+        break;
+    }
+
+    case GxRs_FogStart: {
+        float fogStart = static_cast<float>(state->m_value);
+        this->m_d3dDevice->SetRenderState(D3DRS_FOGSTART, *reinterpret_cast<DWORD*>(&fogStart));
+
+        break;
+    }
+
+    case GxRs_FogEnd: {
+        float fogEnd = static_cast<float>(state->m_value);
+        this->m_d3dDevice->SetRenderState(D3DRS_FOGEND, *reinterpret_cast<DWORD*>(&fogEnd));
 
         break;
     }
@@ -1545,6 +1772,9 @@ void CGxDeviceD3d::IStateSetD3dDefaults() {
     this->m_d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
     this->m_d3dDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
     this->m_d3dDevice->SetRenderState(D3DRS_FOGDENSITY, 0);
+    // Linear pixel (table) fog so fog applies to shader-lit geometry by view depth; only takes
+    // effect while D3DRS_FOGENABLE is on (set per-frame during the world render).
+    this->m_d3dDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
 
     for (uint32_t tmu = 0; tmu < 16; tmu++) {
         this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_ADDRESSW, D3DTADDRESS_CLAMP);
@@ -1750,6 +1980,12 @@ void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
         if (SUCCEEDED(this->m_d3dDevice->CreateCubeTexture(width, endLevel - startLevel, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
             texId->m_apiSpecificData = d3dTexture;
             texId->m_needsCreation = 0;
+
+            // Anything created in D3DPOOL_DEFAULT has to be tracked, or the reset that destroys it
+            // cannot happen: Reset fails with D3DERR_INVALIDCALL while it is still alive.
+            if (d3dPool == D3DPOOL_DEFAULT) {
+                TrackRenderTarget(texId);
+            }
         }
 
         return;
@@ -1764,6 +2000,13 @@ void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
         if (SUCCEEDED(this->m_d3dDevice->CreateTexture(width, height, 1, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
             texId->m_apiSpecificData = d3dTexture;
             texId->m_needsCreation = 0;
+
+            // THE resize bug: a depth-stencil texture for a render target lives in D3DPOOL_DEFAULT
+            // exactly like the colour one, but this branch returned before tracking it. It survived
+            // every IReleaseD3dResources, so Reset always answered D3DERR_INVALIDCALL.
+            if (d3dPool == D3DPOOL_DEFAULT) {
+                TrackRenderTarget(texId);
+            }
         }
 
         return;
@@ -1777,7 +2020,17 @@ void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
         texId->m_apiSpecificData = d3dTexture;
         texId->m_needsCreation = 0;
 
+        TrackRenderTarget(texId);
+
         return;
+    }
+
+    // A render target that fails to create is worth saying out loud: the caller keeps its CGxTex
+    // and every later bind and read-back of it fails for reasons that look unrelated to the format
+    // the device actually refused.
+    if (texId->m_flags.m_renderTarget) {
+        fprintf(stderr, "ITexCreate: RENDER TARGET %ux%u format %u (D3D %u) refused; trying fallback\n",
+                width, height, static_cast<unsigned>(texId->m_format), static_cast<unsigned>(d3dFormat));
     }
 
     // TODO flag check SLOBYTE(texId->m_flags)
@@ -1790,7 +2043,251 @@ void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
     if (SUCCEEDED(this->m_d3dDevice->CreateTexture(width, height, endLevel - startLevel, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
         texId->m_apiSpecificData = d3dTexture;
         texId->m_needsCreation = 0;
+    } else if (texId->m_flags.m_renderTarget) {
+        fprintf(stderr, "ITexCreate: RENDER TARGET fallback format %u ALSO refused; texture unusable\n",
+                static_cast<unsigned>(d3dFormat));
     }
+}
+
+// Point the device at a texture's surface, or back at the frame buffer when the texture is null.
+// The default surfaces are captured at device creation (m_defColorSurface / m_defDepthSurface), so
+// restoring never has to guess. A depth target is bound as the depth-stencil surface; a colour
+// target goes to slot 0.
+void CGxDeviceD3d::IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane) {
+    if (!this->m_d3dDevice) {
+        return;
+    }
+
+    LPDIRECT3DSURFACE9 surface = nullptr;
+
+    if (texId) {
+        if (texId->m_needsCreation) {
+            this->ITexCreate(texId);
+
+            fprintf(stderr, "IRenderTargetSet: rebuilt texture, handle now %p\n",
+                    texId->m_apiSpecificData);
+        }
+
+        auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
+
+        if (!d3dTexture || FAILED(d3dTexture->GetSurfaceLevel(plane, &surface))) {
+            return;
+        }
+    }
+
+    if (buffer == GxBuffers_Depth) {
+        this->m_d3dDevice->SetDepthStencilSurface(surface ? surface : this->m_defDepthSurface);
+    } else {
+        this->m_d3dDevice->SetRenderTarget(0, surface ? surface : this->m_defColorSurface);
+    }
+
+    if (surface) {
+        surface->Release(); // the device holds its own reference
+    }
+}
+
+// Debug only: pull a render target back into system memory and write it out as a greyscale TGA.
+// D3D9 cannot lock a D3DPOOL_DEFAULT render target directly, so the surface has to be copied into
+// an offscreen plain surface first. R32F is the shadow map's own format and carries a normalized
+// depth, so it is scaled straight to 0..255; Argb8888 is reduced to its red channel so the same
+// viewer works for both.
+// Capture the back buffer to an uncompressed 24-bit TGA.
+//
+// This is the only honest way to see what the client actually drew. Grabbing the desktop with a
+// screen-capture API returns whatever window happens to be on top -- which, on a machine someone is
+// using, is not this one.
+//
+// GetRenderTargetData is the documented route off a D3DPOOL_DEFAULT surface: it needs a
+// system-memory staging surface of the same size and format, and it is the reason a back buffer
+// cannot simply be locked. GetBackBuffer rather than GetRenderTarget, so a pass that left an
+// offscreen target bound cannot redirect the capture.
+int32_t CGxDeviceD3d::IScreenShot(const char* path) {
+    if (!this->m_d3dDevice || !path) {
+        return 0;
+    }
+
+    LPDIRECT3DSURFACE9 source = nullptr;
+
+    if (FAILED(this->m_d3dDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &source)) || !source) {
+        return 0;
+    }
+
+    D3DSURFACE_DESC desc;
+    source->GetDesc(&desc);
+
+    LPDIRECT3DSURFACE9 staging = nullptr;
+
+    HRESULT hr = this->m_d3dDevice->CreateOffscreenPlainSurface(
+        desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &staging, nullptr);
+
+    if (FAILED(hr)) {
+        fprintf(stderr, "ScreenShot: CreateOffscreenPlainSurface(%ux%u fmt %u) failed 0x%08lX\n",
+                desc.Width, desc.Height, static_cast<unsigned>(desc.Format), hr);
+        source->Release();
+        return 0;
+    }
+
+    hr = this->m_d3dDevice->GetRenderTargetData(source, staging);
+
+    if (FAILED(hr)) {
+        fprintf(stderr, "ScreenShot: GetRenderTargetData failed 0x%08lX\n", hr);
+        staging->Release();
+        source->Release();
+        return 0;
+    }
+
+    D3DLOCKED_RECT locked;
+    int32_t result = 0;
+
+    if (SUCCEEDED(staging->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
+        FILE* out = fopen(path, "wb");
+
+        if (out) {
+            uint32_t w = desc.Width;
+            uint32_t h = desc.Height;
+
+            unsigned char header[18] = { 0 };
+            header[2] = 2; // uncompressed true-colour
+            header[12] = static_cast<unsigned char>(w & 0xFF);
+            header[13] = static_cast<unsigned char>((w >> 8) & 0xFF);
+            header[14] = static_cast<unsigned char>(h & 0xFF);
+            header[15] = static_cast<unsigned char>((h >> 8) & 0xFF);
+            header[16] = 24;
+            header[17] = 0x20; // top-down, so the file reads the way the frame was drawn
+            fwrite(header, 1, sizeof(header), out);
+
+            // The back buffer is X8R8G8B8 or A8R8G8B8; both are BGRA in memory, which is already
+            // the byte order TGA wants, so the three colour bytes copy straight across.
+            for (uint32_t y = 0; y < h; y++) {
+                auto row = static_cast<const unsigned char*>(locked.pBits)
+                    + static_cast<size_t>(y) * locked.Pitch;
+
+                for (uint32_t x = 0; x < w; x++) {
+                    fwrite(row + x * 4, 1, 3, out);
+                }
+            }
+
+            fclose(out);
+            result = 1;
+        } else {
+            fprintf(stderr, "ScreenShot: could not open %s for writing\n", path);
+        }
+
+        staging->UnlockRect();
+    }
+
+    staging->Release();
+    source->Release();
+
+    return result;
+}
+
+int32_t CGxDeviceD3d::IRenderTargetDump(CGxTex* texId, const char* path) {
+    if (!this->m_d3dDevice || !texId) {
+        return 0;
+    }
+
+    // Create it first if it is pending, exactly as IRenderTargetSet does. Every other consumer of a
+    // CGxTex honours m_needsCreation; this one did not, so it read a null handle and bailed while
+    // the texture was merely waiting to be rebuilt after the device reset.
+    if (texId->m_needsCreation) {
+        this->ITexCreate(texId);
+    }
+
+    auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
+
+    if (!d3dTexture) {
+        return 0;
+    }
+
+    LPDIRECT3DSURFACE9 source = nullptr;
+
+    fprintf(stderr, "RenderTargetDump: tex %p needsCreation %u %ux%u fmt %u target %u levels %u\n",
+            static_cast<void*>(d3dTexture), texId->m_needsCreation, texId->m_width, texId->m_height,
+            static_cast<unsigned>(texId->m_format), static_cast<unsigned>(texId->m_target),
+            d3dTexture->GetLevelCount());
+
+    HRESULT hr = d3dTexture->GetSurfaceLevel(0, &source);
+
+    if (FAILED(hr)) {
+        fprintf(stderr, "RenderTargetDump: GetSurfaceLevel failed 0x%08lX\n", hr);
+        return 0;
+    }
+
+    D3DSURFACE_DESC desc;
+    source->GetDesc(&desc);
+
+    LPDIRECT3DSURFACE9 staging = nullptr;
+
+    hr = this->m_d3dDevice->CreateOffscreenPlainSurface(
+        desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &staging, nullptr);
+
+    if (FAILED(hr)) {
+        fprintf(stderr, "RenderTargetDump: CreateOffscreenPlainSurface(%ux%u fmt %u) failed 0x%08lX\n",
+                desc.Width, desc.Height, static_cast<unsigned>(desc.Format), hr);
+        source->Release();
+        return 0;
+    }
+
+    hr = this->m_d3dDevice->GetRenderTargetData(source, staging);
+
+    if (FAILED(hr)) {
+        fprintf(stderr, "RenderTargetDump: GetRenderTargetData failed 0x%08lX\n", hr);
+        staging->Release();
+        source->Release();
+        return 0;
+    }
+
+    D3DLOCKED_RECT locked;
+    int32_t result = 0;
+
+    if (SUCCEEDED(staging->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
+        FILE* out = fopen(path, "wb");
+
+        if (out) {
+            uint32_t w = desc.Width;
+            uint32_t h = desc.Height;
+
+            // Uncompressed 8-bit greyscale TGA.
+            unsigned char header[18] = { 0 };
+            header[2] = 3;
+            header[12] = static_cast<unsigned char>(w & 0xFF);
+            header[13] = static_cast<unsigned char>((w >> 8) & 0xFF);
+            header[14] = static_cast<unsigned char>(h & 0xFF);
+            header[15] = static_cast<unsigned char>((h >> 8) & 0xFF);
+            header[16] = 8;
+            header[17] = 0x20; // top-down, so the image reads the way the map was rendered
+            fwrite(header, 1, sizeof(header), out);
+
+            for (uint32_t y = 0; y < h; y++) {
+                auto row = static_cast<const unsigned char*>(locked.pBits) + static_cast<size_t>(y) * locked.Pitch;
+
+                for (uint32_t x = 0; x < w; x++) {
+                    float value;
+
+                    if (desc.Format == D3DFMT_R32F) {
+                        value = reinterpret_cast<const float*>(row)[x];
+                    } else {
+                        value = row[x * 4 + 2] / 255.0f;
+                    }
+
+                    value = value < 0.0f ? 0.0f : (value > 1.0f ? 1.0f : value);
+                    unsigned char texel = static_cast<unsigned char>(value * 255.0f);
+                    fwrite(&texel, 1, 1, out);
+                }
+            }
+
+            fclose(out);
+            result = 1;
+        }
+
+        staging->UnlockRect();
+    }
+
+    staging->Release();
+    source->Release();
+
+    return result;
 }
 
 void CGxDeviceD3d::ITexMarkAsUpdated(CGxTex* texId) {
@@ -1991,7 +2488,34 @@ void CGxDeviceD3d::IXformSetViewport() {
 }
 
 void CGxDeviceD3d::PoolSizeSet(CGxPool* pool, uint32_t size) {
-    // TODO
+    // This was an empty stub, and that single omission is the root of every null-buffer crash in
+    // this client. BufStream calls it when a draw needs more room than the stream pool has; with
+    // the call doing nothing, the pool kept its old size, IBufLock then asked Direct3D to lock a
+    // range larger than the buffer actually is, the lock failed, and the null came back to callers
+    // that did not check it. It surfaced as writes to address 0 and to 0x20 in four different
+    // places -- the vertex submit, the buffer upload, the interface batch and the font batch --
+    // which all looked like separate bugs.
+    if (!pool || static_cast<int32_t>(size) <= pool->m_size) {
+        return;
+    }
+
+    // Release the old buffer and build one at the new size. Anything already written into it is
+    // discarded, which is correct for a stream pool: its contents only ever live for the draw
+    // being assembled, and the caller re-fills it immediately after this returns.
+    if (pool->m_apiSpecific) {
+        if (pool->m_target == GxPoolTarget_Vertex) {
+            static_cast<LPDIRECT3DVERTEXBUFFER9>(pool->m_apiSpecific)->Release();
+        } else if (pool->m_target == GxPoolTarget_Index) {
+            static_cast<LPDIRECT3DINDEXBUFFER9>(pool->m_apiSpecific)->Release();
+        }
+
+        pool->m_apiSpecific = nullptr;
+    }
+
+    pool->m_size = size;
+    pool->unk1C = 0;
+
+    this->CreatePoolAPI(pool);
 }
 
 void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
@@ -2019,6 +2543,25 @@ void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
 }
 
 void CGxDeviceD3d::ScenePresent() {
+    // A lost context is recoverable and must be retried. Previously one failed Reset cleared
+    // m_context and nothing ever set it again: the client kept rendering at full speed while
+    // presenting nothing, so the window held its last frame for ever. That reads as a hang.
+    if (!this->m_context && this->m_d3dDevice) {
+        HRESULT coop = this->m_d3dDevice->TestCooperativeLevel();
+
+        if (coop == D3DERR_DEVICENOTRESET || coop == D3D_OK) {
+            this->IReleaseD3dResources(0);
+
+            D3DPRESENT_PARAMETERS d3dpp;
+            this->ISetPresentParms(d3dpp, this->m_format);
+
+            if (SUCCEEDED(this->m_d3dDevice->Reset(&d3dpp))) {
+                this->IStateSetD3dDefaults();
+                this->m_context = 1;
+            }
+        }
+    }
+
     if (this->m_context) {
         CGxDevice::ScenePresent();
         this->ISceneEnd();
@@ -2029,7 +2572,10 @@ void CGxDeviceD3d::ScenePresent() {
 
         // TODO
 
-        if (FAILED(this->m_d3dDevice->Present(nullptr, nullptr, nullptr, nullptr))) {
+        HRESULT presented = this->m_d3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
+
+        if (FAILED(presented)) {
+            // Recoverable: the retry at the top of this function resets and sets m_context again.
             this->m_context = 0;
         }
 

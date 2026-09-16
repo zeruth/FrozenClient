@@ -31,6 +31,7 @@
 #include "ui/simple/CSimpleModelFFX.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "ui/simple/ScriptMethods.hpp"
+#include <cstdlib>
 #include "util/Filesystem.hpp"
 #include "util/Locale.hpp"
 #include "util/Log.hpp"
@@ -375,11 +376,80 @@ int32_t CGlueMgr::HandleDisplaySizeChanged(const CSizeEvent& event) {
     return 1;
 }
 
+// Walk the glue to the world without a human at the keyboard, when WHOA_AUTO_LOGIN is set to
+// "account:password".
+//
+// This exists for the reference-comparison harness: every in-world memory comparison needs both
+// clients standing in the same place, and typing into the glue from outside is unreliable (the
+// window is deliberately never given focus, so posted input can be dropped). It is a test hook, not
+// a behaviour change -- with the variable unset nothing below runs, which is the normal case.
+//
+// Each step is retried rather than fired once: the login screen is reachable before the account
+// screen will accept a login, and the character list arrives some frames after the realm does.
+static void GlueAutoAdvance() {
+    static const char* s_credentials = getenv("WHOA_AUTO_LOGIN");
+
+    if (!s_credentials || !*s_credentials) {
+        return;
+    }
+
+    static int32_t s_throttle = 0;
+
+    // Roughly twice a second at any sane frame rate; the polls it drives are not free.
+    if (++s_throttle < 30) {
+        return;
+    }
+
+    s_throttle = 0;
+
+    if (!SStrCmpI(CGlueMgr::m_currentScreen, "login", STORM_MAX_STR)) {
+        char account[64];
+        char password[64];
+
+        const char* split = SStrChr(s_credentials, ':');
+
+        if (!split) {
+            return;
+        }
+
+        size_t nameLen = split - s_credentials;
+
+        if (!nameLen || nameLen >= sizeof(account)) {
+            return;
+        }
+
+        SStrCopy(account, s_credentials, nameLen + 1);
+        SStrCopy(password, split + 1, sizeof(password));
+
+        CGlueMgr::LoginServerLogin(account, password);
+    } else if (!SStrCmpI(CGlueMgr::m_currentScreen, "charselect", STORM_MAX_STR)) {
+        // Optionally pick a character by name. An account can hold several, and the comparison
+        // harness needs a specific one -- the Ebon Hold scene is only populated for the Death
+        // Knight, and the first character in the list is not necessarily it.
+        static const char* s_wanted = getenv("WHOA_AUTO_CHARACTER");
+
+        if (s_wanted && *s_wanted) {
+            for (int32_t i = 0; i < CCharacterSelection::s_characterList.Count(); i++) {
+                const char* name = CCharacterSelection::s_characterList[i].m_info.name;
+
+                if (name && !SStrCmpI(name, s_wanted, STORM_MAX_STR)) {
+                    CCharacterSelection::s_selectionIndex = i;
+                    break;
+                }
+            }
+        }
+
+        CGlueMgr::EnterWorld();
+    }
+}
+
 // TODO a1: const EVENT_DATA_IDLE*
 int32_t CGlueMgr::Idle(const void* a1, void* a2) {
     // TODO
 
     if (CGlueMgr::m_idleState == IDLE_NONE) {
+        GlueAutoAdvance();
+
         if (CGlueMgr::m_reload) {
             if (!CGlueMgr::m_suspended) {
                 CGlueMgr::Suspend();

@@ -1,3 +1,4 @@
+#include "util/Lua.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGTooltipScript.hpp"
 
@@ -41,4 +42,74 @@ bool CGTooltip::IsA(int32_t type) {
         || type == CSimpleFrame::s_objectType
         || type == CScriptRegion::s_objectType
         || type == CScriptObject::s_objectType;
+}
+
+FrameScript_Object::ScriptIx* CGTooltip::GetScriptByName(const char* name, ScriptData& data) {
+    if (!SStrCmpI(name, "OnTooltipSetDefaultAnchor")) {
+        return &this->m_onTooltipSetDefaultAnchor;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipAddMoney")) {
+        data.wrapper = "return function(self, money) %s end";
+        return &this->m_onTooltipAddMoney;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipCleared")) {
+        return &this->m_onTooltipCleared;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipSetUnit")) {
+        return &this->m_onTooltipSetUnit;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipSetItem")) {
+        return &this->m_onTooltipSetItem;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipSetSpell")) {
+        return &this->m_onTooltipSetSpell;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipSetQuest")) {
+        return &this->m_onTooltipSetQuest;
+    }
+
+    if (!SStrCmpI(name, "OnTooltipSetAchievement")) {
+        return &this->m_onTooltipSetAchievement;
+    }
+
+    return CSimpleFrame::GetScriptByName(name, data);
+}
+
+void CGTooltip::RunOnTooltipSetDefaultAnchorScript() {
+    if (this->m_onTooltipSetDefaultAnchor.luaRef) {
+        this->RunScript(this->m_onTooltipSetDefaultAnchor, 0, nullptr);
+    }
+}
+
+void CGTooltip::RunOnTooltipAddMoneyScript(int32_t money) {
+    if (this->m_onTooltipAddMoney.luaRef) {
+        auto L = FrameScript_GetContext();
+        lua_pushnumber(L, money);
+
+        this->RunScript(this->m_onTooltipAddMoney, 1, nullptr);
+    }
+}
+
+void CGTooltip::RunOnTooltipClearedScript() {
+    if (this->m_onTooltipCleared.luaRef) {
+        this->RunScript(this->m_onTooltipCleared, 0, nullptr);
+    }
+}
+
+void CGTooltip::RunOnTooltipSetUnitScript() {
+    if (this->m_onTooltipSetUnit.luaRef) {
+        this->RunScript(this->m_onTooltipSetUnit, 0, nullptr);
+    }
+}
+
+void CGTooltip::RunOnTooltipSetItemScript() {
+    if (this->m_onTooltipSetItem.luaRef) {
+        this->RunScript(this->m_onTooltipSetItem, 0, nullptr);
+    }
 }

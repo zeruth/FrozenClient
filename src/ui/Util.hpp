@@ -21,7 +21,14 @@ uint64_t StringToClickAction(const char* string);
 
 int32_t StringToDrawLayer(const char* string, int32_t& layer);
 
+const char* FramePointToString(FRAMEPOINT point);
+
 int32_t StringToFramePoint(const char* string, FRAMEPOINT& point);
+
+int32_t StringToTooltipAnchor(const char* string, TOOLTIP_ANCHORPOINT& anchor);
+const char* TooltipAnchorToString(TOOLTIP_ANCHORPOINT anchor);
+
+const char* FrameStrataToString(FRAME_STRATA strata);
 
 int32_t StringToFrameStrata(const char* string, FRAME_STRATA& strata);
 

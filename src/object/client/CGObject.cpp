@@ -47,3 +47,13 @@ int32_t CGObject::IsExactlyA(OBJECT_TYPE_ID typeID) const {
 CGObjectData* CGObject::Obj() const {
     return this->m_obj;
 }
+
+int32_t CGObject::GetEntryID() const {
+    return this->m_obj ? this->m_obj->m_entryID : 0;
+}
+
+float CGObject::GetScale() const {
+    // OBJECT_FIELD_SCALE_X, the per-object scale the reference applies to the model
+    float scale = this->m_obj ? this->m_obj->m_scale : 1.0f;
+    return scale > 0.0f ? scale : 1.0f;
+}
