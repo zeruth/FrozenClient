@@ -3,6 +3,11 @@
 #include <storm/String.hpp>
 
 CGGameObject_C::CGGameObject_C(uint32_t time, CClientObjCreate& objCreate) : CGObject_C(time, objCreate) {
+    // UPDATEFLAG_STATIONARY_POSITION (0x40) puts the placement here; CClientObjCreate already parses
+    // it into the movement status for every object type, game objects included.
+    this->m_position = objCreate.move.status.position28;
+    this->m_facing = objCreate.move.status.facing34;
+
     // TODO
 }
 
@@ -48,4 +53,12 @@ int32_t CGGameObject_C::GetModelFileName(const char*& name) const {
     }
 
     return true;
+}
+
+C3Vector CGGameObject_C::GetPosition() const {
+    return this->m_position;
+}
+
+float CGGameObject_C::GetFacing() const {
+    return this->m_facing;
 }

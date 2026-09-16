@@ -1,4 +1,5 @@
 #include "model/CM2Model.hpp"
+#include <vector>
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
 #include "object/client/CGUnit_C.hpp"
@@ -397,6 +398,28 @@ void CGWorldFrame::OnWorldRender() {
             GxRsSet(GxRs_Fog, 1);
         }
 
+        // Which models are drawing this frame, captured BEFORE Animate.
+        //
+        // m_flag8 is the "queued for drawing" flag, and CM2Scene::Animate CLEARS it on every model
+        // as it walks the draw list. The particle update below used to test it afterwards, so it was
+        // always 0 and no emitter was ever stepped -- no fires, no braziers, no torches. Same trap
+        // that stopped the skybox drawing. The update still runs after Animate, so the bone sequence
+        // state it samples is current; only the visibility answer is taken from before.
+        static std::vector<CM2Model*> s_emitterModels;
+        s_emitterModels.clear();
+
+        for (auto object = objMgr ? objMgr->m_visibleObjects.Head() : nullptr; object; object = objMgr->m_visibleObjects.Next(object)) {
+            if (object->m_model && object->m_model->m_flag8) {
+                s_emitterModels.push_back(object->m_model);
+            }
+        }
+
+        TerrainForEachDoodad([](CM2Model* model, void* arg) {
+            if (model->m_flag8) {
+                static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
+            }
+        }, &s_emitterModels);
+
         if (scene) {
             scene->AdvanceTime(CWorld::GetTickTimeMs());
             scene->Animate(this->m_camera->Position());
@@ -428,17 +451,9 @@ void CGWorldFrame::OnWorldRender() {
                 dt = 0.1f;
             }
 
-            for (auto object = objMgr ? objMgr->m_visibleObjects.Head() : nullptr; object; object = objMgr->m_visibleObjects.Next(object)) {
-                if (object->m_model && object->m_model->m_flag8) {
-                    ParticleFxUpdateModel(object->m_model, dt);
-                }
+            for (auto model : s_emitterModels) {
+                ParticleFxUpdateModel(model, dt);
             }
-
-            TerrainForEachDoodad([](CM2Model* model, void* arg) {
-                if (model->m_flag8) {
-                    ParticleFxUpdateModel(model, *static_cast<float*>(arg));
-                }
-            }, &dt);
         }
 
         // Reference (CGWorldFrame::OnWorldRender FUN_004f8ea0): opaque pass 0 after the map, then
