@@ -1,4 +1,8 @@
 #include "model/CM2Model.hpp"
+#include <storm/String.hpp>
+#include <cstdio>
+#include "db/Db.hpp"
+#include <cstdlib>
 #include "async/AsyncFileRead.hpp"
 #include "math/Types.hpp"
 #include "model/CM2Scene.hpp"
@@ -77,8 +81,67 @@ bool CM2Model::Sub825E00(M2Data* data, uint32_t a2) {
 }
 
 uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
-    // TODO
-    return -1;
+    // Resolve an animation id to a sequence index, then walk `a3` links down the variation chain.
+    //
+    // The sequences of one animation are stored as a linked list threaded through variationNext:
+    // the hash (or the linear scan when the model carries no hash) finds variation 0, and each
+    // further variation is one hop along that chain. Returning 0xFFFF when the chain is shorter
+    // than asked is what lets SetBoneSequence fall back to picking a variation at random.
+    uint32_t index;
+
+    if (data->sequenceIdxHashById.Count() == 0) {
+        index = 0xFFFF;
+
+        for (uint32_t i = 0; i < data->sequences.Count(); i++) {
+            if (data->sequences[i].id == sequenceId) {
+                index = i;
+                break;
+            }
+        }
+    } else {
+        uint32_t slot = sequenceId % data->sequenceIdxHashById.Count();
+        uint16_t probe = data->sequenceIdxHashById[slot];
+
+        index = 0xFFFF;
+
+        if (probe != 0xFFFF) {
+            int32_t step = 1;
+
+            while (data->sequences[probe].id != sequenceId) {
+                slot = (slot + step * step) % data->sequenceIdxHashById.Count();
+                probe = data->sequenceIdxHashById[slot];
+
+                if (probe == 0xFFFF) {
+                    break;
+                }
+
+                step++;
+            }
+
+            if (probe != 0xFFFF) {
+                index = probe;
+            }
+        }
+    }
+
+    uint32_t count = data->sequences.Count();
+
+    if (index < count) {
+        while (a3) {
+            index = data->sequences[index].variationNext;
+            a3--;
+
+            if (index >= count) {
+                break;
+            }
+        }
+
+        if (index < count && a3 == 0) {
+            return static_cast<uint16_t>(index);
+        }
+    }
+
+    return 0xFFFF;
 }
 
 CM2Model::~CM2Model() {
@@ -1673,8 +1736,162 @@ void CM2Model::OptimizeVisibleGeometry() {
 }
 
 int32_t CM2Model::ProcessCallbacks() {
-    // TODO
+    // Notice the bone sequences that finished during the frame just stepped, and let each one pick
+    // its next variation. This is what keeps a standing NPC alive: the model's Stand animation is a
+    // chain of variations weighted by frequency, and a new one is rolled every time the current one
+    // runs out. Returns 0 when the model was destroyed while handling a callback.
+    if (!this->m_flag400000 || !this->m_loaded || !this->m_shared || !this->m_shared->m_m2DataLoaded) {
+        return 1;
+    }
+
+    auto data = this->m_shared->m_data;
+    int32_t now = this->m_scene->m_time;
+    int32_t previous = now - this->m_scene->uint10;
+
+    for (uint32_t boneIndex = this->m_boneSeqList; boneIndex != 0xFFFF; ) {
+        auto& modelBone = this->m_bones[boneIndex];
+
+        // Read the link before the handler runs: re-issuing a sequence can relink the bone.
+        uint32_t next = modelBone.word96;
+
+        if (!modelBone.sequence.uintA && modelBone.sequence.uint8 < data->sequences.Count()) {
+            auto& sequence = data->sequences[modelBone.sequence.uint8];
+
+            // The sequence plays at float18's rate, so its wall-clock length is the authored
+            // duration scaled by it.
+            uint32_t duration = sequence.duration;
+
+            if (fabsf(fabsf(modelBone.sequence.float18) - 1.0f) >= 0.0000099999997f) {
+                duration = static_cast<uint32_t>(
+                    floorf(static_cast<float>(sequence.duration) * fabsf(modelBone.sequence.float18) + 0.5f));
+            }
+
+            if (duration) {
+                int32_t endTime;
+
+                if (sequence.flags & 0x1) {
+                    // Plays once: SetupBoneSequence already worked out when it stops.
+                    endTime = modelBone.sequence.uint10;
+                } else {
+                    // Loops: the end of whichever repetition the frame is inside.
+                    int32_t from = static_cast<int32_t>(modelBone.sequence.uintC);
+
+                    if (previous - from >= 0) {
+                        from = previous;
+                    }
+
+                    uint32_t loops = static_cast<uint32_t>(from - static_cast<int32_t>(modelBone.sequence.uintC)) / duration;
+                    endTime = modelBone.sequence.uintC + (loops + 1) * duration - 1;
+                }
+
+                if (endTime - previous > 0 && endTime - now <= 0) {
+                    this->SequenceFinished(
+                        static_cast<uint16_t>(boneIndex),
+                        static_cast<uint32_t>(now - endTime),
+                        modelBone.sequence.uint8,
+                        modelBone.sequence.uintC
+                    );
+
+                    // A callback may have released the model out from under us; the caller holds
+                    // one reference of its own, so anything less means it is already gone.
+                    if (this->m_refCount <= 1) {
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        boneIndex = next;
+    }
+
     return 1;
+}
+
+// One bone sequence has just run out. Roll the next variation of the same animation and start it,
+// carrying the overshoot so the new sequence begins where the old one actually ended rather than at
+// the frame boundary.
+void CM2Model::SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas) {
+    auto data = this->m_shared->m_data;
+
+    // Only key bones (and the root) drive sequence callbacks in the reference, and the callback is
+    // addressed by bone *id*, which resolves back to the canonical bone for that id.
+    if (boneIndex >= data->bones.Count()) {
+        return;
+    }
+
+    if (data->bones[boneIndex].boneId == 0xFFFFFFFF && boneIndex != 0) {
+        return;
+    }
+
+    uint32_t boneId = (data->bones[boneIndex].parentIndex == 0xFFFF) ? 0xFFFFFFFF : data->bones[boneIndex].boneId;
+    uint16_t resolved;
+
+    if (boneId == 0xFFFFFFFF) {
+        resolved = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        resolved = data->boneIndicesById[boneId];
+    } else {
+        return;
+    }
+
+    if (resolved >= data->bones.Count()) {
+        return;
+    }
+
+    auto& modelBone = this->m_bones[resolved];
+    uint16_t seqIndex = modelBone.sequence.uint8;
+
+    // The bone may have been handed something else in the meantime; only the sequence that actually
+    // ended gets to choose what follows it.
+    if (seqIndex != seqIndexWas || modelBone.sequence.uintC != startTimeWas || seqIndex == 0xFFFF) {
+        return;
+    }
+
+    auto& sequence = data->sequences[seqIndex];
+
+    if (sequence.flags & 0x1) {
+        // Plays once and holds its last frame -- nothing follows it.
+        modelBone.sequence.uintA = 1;
+
+        return;
+    }
+
+    // Nothing to roll when the animation has a single variation, and nothing to roll when the
+    // variation was chosen explicitly rather than at random (uintB).
+    if (!modelBone.sequence.uintB || (sequence.variationIndex == 0 && sequence.variationNext == 0xFFFF)) {
+        return;
+    }
+
+    float rate = modelBone.sequence.float14;
+
+    M2SequenceFallback fallback;
+    this->Sub826350(fallback, modelBone.uint90);
+
+    uint32_t index = CM2Model::Sub8260C0(data, fallback.uint0, 0);
+    uint32_t variation = 0;
+    this->Sub826E60(&variation, &index);
+
+    if (index >= data->sequences.Count()) {
+        return;
+    }
+
+    // The overshoot is measured in scene milliseconds; a sequence playing at a rate other than 1
+    // consumes it faster or slower.
+    uint32_t time = overshoot;
+
+    if (fabsf(rate - 1.0f) >= 0.0000099999997f) {
+        time = static_cast<uint32_t>(floorf(static_cast<float>(overshoot) * modelBone.sequence.float18 + 0.5f));
+    }
+
+    if (data->sequences[index].flags & 0x20) {
+        modelBone.uint94 = static_cast<uint16_t>(variation);
+
+        this->SetPrimaryBoneSequence(static_cast<uint16_t>(index), resolved, fallback, time, rate, 1);
+
+        return;
+    }
+
+    this->SetBoneSequenceDeferred(static_cast<uint16_t>(index), data, resolved, time, rate, fallback, 1, 1, 1);
 }
 
 void CM2Model::ProcessCallbacksRecursive() {
@@ -2049,18 +2266,20 @@ void CM2Model::SetPrimaryBoneSequence(uint16_t sequenceIndex, uint16_t boneIndex
         modelBone.sequence.uintA = 1;
     }
 
-    // TODO
-    // if (!modelBone.dword98) {
-    //     modelBone.dword98 = (DWORD)&this->dword14;
-    //     v14 = this->dword14;
-    //     v15 = &smodelBone.word96;
-    //     *v15 = v14;
-    //     if (v14 != 0xFFFF) {
-    //         this->m_bones[v14].dword98 = v15;
-    //     }
-    //     LOWORD(v13) = a3;
-    //     LOWORD(this->dword14) = a3;
-    // }
+    // Link the bone into the model's animating-bone list the first time it is given a sequence, so
+    // ProcessCallbacks can find it again when that sequence ends. Without this list nothing ever
+    // noticed a finished animation, and a unit held whichever variation it was first handed.
+    if (!modelBone.dword98) {
+        modelBone.dword98 = &this->m_boneSeqList;
+        modelBone.word96 = this->m_boneSeqList;
+
+        if (modelBone.word96 != 0xFFFF) {
+            this->m_bones[modelBone.word96].dword98 = &modelBone.word96;
+        }
+
+        this->m_boneSeqList = boneIndex;
+        this->m_flag400000 = 1;
+    }
 }
 
 void CM2Model::SetSecondaryBoneSequence(uint16_t a2, uint16_t boneIndex, M2SequenceFallback fallback, uint32_t time, float a6) {
@@ -2181,7 +2400,70 @@ void CM2Model::Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId) {
         return;
     }
 
-    // TODO
+    // The model does not carry this animation, so follow AnimationData.dbc's fallback chain until
+    // it reaches one the model does have. Two flags on the records passed through decide how the
+    // result is played: 0x10 reverses the direction (a "close" animation is the "open" one run
+    // backwards), 0x20 stops it dead on its last frame (a hold pose). uint2 encodes that as
+    // 0 = forwards, 1 = backwards, 2 = hold at the start, 3 = hold at the end.
+    //
+    // The visited set is bounded at 506 entries the way the reference bounds it -- its own scratch
+    // array is 0x7E8 bytes -- so a cyclic or out-of-range chain terminates instead of spinning.
+    uint32_t visited[506];
+    memset(visited, 0, sizeof(visited));
+
+    int32_t direction = 1;
+    int32_t held = 0;
+    uint32_t animID = sequenceId;
+    uint32_t result = v12;
+    uint32_t next = 0;
+
+    while (1) {
+        auto record = g_animationDataDB.GetRecord(animID);
+
+        result = v12;
+
+        if (animID >= 506 || visited[animID] || !record || record->m_fallback == static_cast<int32_t>(animID)) {
+            break;
+        }
+
+        next = static_cast<uint32_t>(record->m_fallback);
+        visited[animID] = 1;
+
+        if (record->m_flags & 0x10) {
+            held += direction;
+            direction = -direction;
+        }
+
+        if (record->m_flags & 0x20) {
+            held += direction;
+            direction = 0;
+        }
+
+        animID = next;
+
+        if (CM2Model::Sub825E00(data, animID)) {
+            // Found one the model carries. A still-positive direction means the chain only renamed
+            // the animation, so it plays normally and falls through to the plain result below.
+            result = animID;
+
+            if (direction < 0) {
+                fallback.uint0 = animID;
+                fallback.uint2 = 1;
+                return;
+            }
+
+            if (direction == 0) {
+                fallback.uint0 = animID;
+                fallback.uint2 = (held > 0) + 2;
+                return;
+            }
+
+            break;
+        }
+    }
+
+    fallback.uint0 = result;
+    fallback.uint2 = 0;
 }
 
 int32_t CM2Model::Sub8269C0(uint32_t boneId, uint16_t boneIndex) {
@@ -2190,7 +2472,44 @@ int32_t CM2Model::Sub8269C0(uint32_t boneId, uint16_t boneIndex) {
 }
 
 void CM2Model::Sub826E60(uint32_t* a2, uint32_t* a3) {
-    // TODO
+    // Choose which variation of an animation to play, weighted by M2Sequence::frequency.
+    //
+    // The frequencies of one animation's variations sum to 0x7FFF, which is exactly RAND_MAX here,
+    // so a single rand() walks the chain subtracting each variation's weight until it lands inside
+    // one. This is what gives an NPC its rare idle flourishes -- without it every unit sits on
+    // variation 0 forever, which is why the world looked frozen.
+    *a2 = 0;
+
+    uint32_t roll = rand();
+    uint32_t index = *a3;
+    int32_t variation = 0;
+
+    if (index == 0xFFFF) {
+        return;
+    }
+
+    auto& sequences = this->m_shared->m_data->sequences;
+
+    while (1) {
+        uint32_t frequency = sequences[index].frequency;
+
+        if (roll < frequency) {
+            break;
+        }
+
+        roll -= frequency;
+        index = sequences[index].variationNext;
+        variation++;
+
+        // Ran off the end of the chain (every variation weighted zero, or weights that do not sum
+        // to RAND_MAX): leave the caller's sequence index alone.
+        if (index == 0xFFFF) {
+            return;
+        }
+    }
+
+    *a3 = index;
+    *a2 = variation;
 }
 
 void CM2Model::UnlinkFromAnimateList() {

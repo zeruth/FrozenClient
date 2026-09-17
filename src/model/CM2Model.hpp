@@ -91,6 +91,11 @@ class CM2Model {
         CM2Model** m_attachPrev = nullptr;
         CM2Model* m_attachNext = nullptr;
         uint32_t m_time = 0;
+
+        // Head of the animating-bone list (see M2ModelBone::word96). 0xFFFF when no bone is playing
+        // anything.
+        uint16_t m_boneSeqList = 0xFFFF;
+
         CM2Model** m_drawPrev = nullptr;
         CM2Model* m_drawNext = nullptr;
         uint32_t* m_loops = nullptr;
@@ -196,6 +201,7 @@ class CM2Model {
         void SetupLighting();
         void SetVisible(int32_t visible);
         void SetWorldTransform(const C3Vector& position, float orientation, float scale);
+        void SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas);
         void Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId);
         int32_t Sub8269C0(uint32_t boneId, uint16_t boneIndex);
         void Sub826E60(uint32_t* a2, uint32_t* a3);

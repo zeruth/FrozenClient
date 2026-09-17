@@ -47,6 +47,13 @@ struct M2ModelBone {
     uint32_t flags = 0;
     uint32_t uint90 = -1;
     uint16_t uint94 = 0;
+
+    // Intrusive list of the bones that currently carry a sequence, threaded through the model's
+    // m_boneSeqList head. CM2Model::ProcessCallbacks walks it once a frame to notice a sequence
+    // that has just ended, so it does not have to scan every bone of every model.
+    uint16_t word96 = 0xFFFF;
+    uint16_t* dword98 = nullptr;
+
     uint32_t uint9C = 0;
     float floatA0 = 0.0f;
     float floatA4 = 1.0f;
