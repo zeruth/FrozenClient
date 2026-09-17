@@ -29,6 +29,11 @@ class CSimpleTexture : public CSimpleRegion {
 
         // Member variables
         HTEXTURE m_texture = nullptr;
+
+        // The path the texture was set from. HTEXTURE gives no way back to a file name, and
+        // GetTexture() has to answer with one -- FrameXML compares it to decide whether a button's
+        // art needs changing, so answering nothing makes it re-set the texture every frame.
+        char m_texturePath[260] = {};
         EGxBlend m_alphaMode = GxBlend_Alpha;
         CGxShader* m_shader = s_imageModePixelShaders[0];
         C3Vector m_position[4];

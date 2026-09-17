@@ -1,6 +1,14 @@
 #include "ui/game/ActionBarScript.hpp"
 #include "ui/FrameScript.hpp"
 #include "db/Db.hpp"
+#include "object/client/SpellBook.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "net/Types.hpp"
+#include <common/DataStore.hpp>
+#include "object/Types.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "object/client/ClntObjMgr.hpp"
+#include "client/ClientServices.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
@@ -40,8 +48,59 @@ const char* ActionTexture(int32_t slot) {
         : nullptr;
 }
 
+// The action types the server packs into the high byte, as AzerothCore's ActionButtonType names
+// them. Lua wants the string form.
+const char* ActionTypeName(uint32_t type) {
+    switch (type) {
+        case CGActionBar::ACTION_BUTTON_SPELL:
+        case CGActionBar::ACTION_BUTTON_C:
+            return "spell";
+
+        case CGActionBar::ACTION_BUTTON_EQSET:
+            return "equipmentset";
+
+        case CGActionBar::ACTION_BUTTON_MACRO:
+        case CGActionBar::ACTION_BUTTON_CMACRO:
+            return "macro";
+
+        case CGActionBar::ACTION_BUTTON_ITEM:
+            return "item";
+
+        default:
+            return nullptr;
+    }
+}
+
 int32_t Script_GetActionInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t slot = ActionSlot(L, 1);
+    uint32_t packed = CGActionBar::GetAction(slot);
+
+    if (!packed) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    const char* name = ActionTypeName(CGActionBar::GetActionType(slot));
+
+    if (!name) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 3;
+    }
+
+    lua_pushstring(L, name);
+    lua_pushnumber(L, CGActionBar::GetActionID(slot));
+
+    // subType: the reference returns the macro body id or the companion type here. Neither is
+    // resolved yet, and FrameXML only reads it for those two, so nil is the honest answer.
+    lua_pushnil(L);
+
+    return 3;
 }
 
 int32_t Script_GetActionTexture(lua_State* L) {
@@ -57,7 +116,11 @@ int32_t Script_GetActionTexture(lua_State* L) {
 }
 
 int32_t Script_GetActionCount(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The stack size drawn in the corner. Only item actions carry one; a spell is always 0, and
+    // FrameXML hides the count text when it is.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetActionCooldown(lua_State* L) {
@@ -104,7 +167,36 @@ int32_t Script_HasAction(lua_State* L) {
 }
 
 int32_t Script_UseAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // CMSG_CAST_SPELL: uint8 castCount, uint32 spellId, uint8 castFlags, then SpellCastTargets,
+    // which begins with a uint32 mask. Mask 0 is a self / no-target cast; TARGET_FLAG_UNIT (0x2)
+    // is followed by the target's packed GUID.
+    int32_t slot = ActionSlot(L, 1);
+    uint32_t type = CGActionBar::GetActionType(slot);
+    uint32_t id = CGActionBar::GetActionID(slot);
+
+    if (!id || (type != CGActionBar::ACTION_BUTTON_SPELL && type != CGActionBar::ACTION_BUTTON_C)) {
+        return 0;
+    }
+
+    // onSelf is UseAction's third argument; it forces the cast onto the player regardless of target.
+    bool onSelf = lua_toboolean(L, 3) != 0;
+    WOWGUID target = 0;
+
+    if (!onSelf) {
+        auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__);
+
+        if (player) {
+            auto unit = static_cast<CGUnit_C*>(player)->Unit();
+
+            if (unit) {
+                target = unit->target;
+            }
+        }
+    }
+
+    SpellBookCast(id, target);
+
+    return 0;
 }
 
 int32_t Script_PickupAction(lua_State* L) {
@@ -137,7 +229,24 @@ int32_t Script_IsAutoRepeatAction(lua_State* L) {
 }
 
 int32_t Script_IsUsableAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Returns isUsable, notEnoughMana. ActionButton_UpdateUsable darkens the icon whenever the
+    // first is false, which is why every button came up greyed: a stub returned nothing at all.
+    //
+    // Power costs and spell requirements are not evaluated yet, so a slot that holds a spell the
+    // player actually knows reads as usable. That is the same answer the reference gives for a
+    // spell with no cost and no unmet requirement, and it is much closer than "never usable".
+    int32_t slot = ActionSlot(L, 1);
+    uint32_t type = CGActionBar::GetActionType(slot);
+    uint32_t id = CGActionBar::GetActionID(slot);
+
+    bool usable = id != 0
+        && (type == CGActionBar::ACTION_BUTTON_SPELL || type == CGActionBar::ACTION_BUTTON_C)
+        && g_spellDB.GetRecord(static_cast<int32_t>(id)) != nullptr;
+
+    lua_pushboolean(L, usable);
+    lua_pushboolean(L, 0);
+
+    return 2;
 }
 
 int32_t Script_IsConsumableAction(lua_State* L) {
@@ -159,11 +268,20 @@ int32_t Script_IsEquippedAction(lua_State* L) {
 }
 
 int32_t Script_ActionHasRange(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // SpellRange.dbc is not loaded, so no action can be range-checked. False keeps
+    // ActionButton_UpdateRangeIndicator from colouring the button at all, which is what the
+    // reference does for a spell with no range requirement.
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_IsActionInRange(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // nil means "no range requirement / cannot tell", and is distinct from 0, which FrameXML draws
+    // as out-of-range red.
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetBonusBarOffset(lua_State* L) {
@@ -193,12 +311,28 @@ int32_t Script_GetActionBarPage(lua_State* L) {
     return 1;
 }
 
+// Which of the four optional action bars are shown, plus "always show the bar art". The reference
+// persists these per character; nothing is persisted yet, so they start off, the way a fresh
+// character's do.
+bool s_barToggles[5] = { false, false, false, false, true };
+
 int32_t Script_GetActionBarToggles(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    for (int32_t i = 0; i < 5; i++) {
+        lua_pushboolean(L, s_barToggles[i]);
+    }
+
+    return 5;
 }
 
 int32_t Script_SetActionBarToggles(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    for (int32_t i = 0; i < 5; i++) {
+        // FrameXML passes nil for "leave alone" on some calls, so only a real boolean counts.
+        if (!lua_isnone(L, i + 1)) {
+            s_barToggles[i] = lua_toboolean(L, i + 1) != 0;
+        }
+    }
+
+    return 0;
 }
 
 int32_t Script_IsPossessBarVisible(lua_State* L) {

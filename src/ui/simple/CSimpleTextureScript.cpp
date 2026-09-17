@@ -11,7 +11,12 @@ int32_t CSimpleTexture_IsObjectType(lua_State* L) {
 }
 
 int32_t CSimpleTexture_GetObjectType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, texture->GetObjectTypeName());
+
+    return 1;
 }
 
 int32_t CSimpleTexture_GetDrawLayer(lua_State* L) {
@@ -93,7 +98,14 @@ int32_t CSimpleTexture_SetAlpha(lua_State* L) {
 }
 
 int32_t CSimpleTexture_GetAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    // The region keeps one alpha byte per corner; SetAlpha writes all four, so corner 0 is what
+    // Lua last set.
+    lua_pushnumber(L, texture->m_alpha[0] / 255.0f);
+
+    return 1;
 }
 
 int32_t CSimpleTexture_Show(lua_State* L) {
@@ -141,7 +153,18 @@ int32_t CSimpleTexture_IsShown(lua_State* L) {
 }
 
 int32_t CSimpleTexture_GetTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    // nil, not "", when the texture came from a colour or was never set: FrameXML tests this for
+    // truth before comparing it against a path.
+    if (texture->m_texturePath[0]) {
+        lua_pushstring(L, texture->m_texturePath);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleTexture_SetTexture(lua_State* L) {

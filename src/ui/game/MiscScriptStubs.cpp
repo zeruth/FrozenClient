@@ -387,7 +387,6 @@ WHOA_LUA_STUB(CameraZoomIn)
 WHOA_LUA_STUB(CameraZoomOut)
 WHOA_LUA_STUB(CastPetAction)
 WHOA_LUA_STUB(CastShapeshiftForm)
-WHOA_LUA_STUB(CastSpell)
 WHOA_LUA_STUB(CastSpellByID)
 WHOA_LUA_STUB(CastSpellByName)
 WHOA_LUA_STUB(ChangeChatColor)
@@ -532,7 +531,6 @@ WHOA_LUA_STUB(GetAchievementNumCriteria)
 WHOA_LUA_STUB(GetAchievementNumRewards)
 WHOA_LUA_STUB(GetAchievementReward)
 WHOA_LUA_STUB(GetActiveLevel)
-WHOA_LUA_STUB(GetActiveTalentGroup)
 WHOA_LUA_STUB(GetActiveTitle)
 WHOA_LUA_STUB(GetActiveVoiceChannel)
 WHOA_LUA_STUB(GetArenaTeamGdfInfo)
@@ -660,7 +658,6 @@ WHOA_LUA_STUB(GetInboxItem)
 WHOA_LUA_STUB(GetInboxItemLink)
 WHOA_LUA_STUB(GetInboxNumItems)
 WHOA_LUA_STUB(GetInboxText)
-WHOA_LUA_STUB(GetKnownSlotFromHighestRankSlot)
 WHOA_LUA_STUB(GetLFDChoiceCollapseState)
 WHOA_LUA_STUB(GetLFDChoiceEnabledState)
 WHOA_LUA_STUB(GetLFDChoiceInfo)
@@ -772,7 +769,6 @@ WHOA_LUA_STUB(GetPetitionItemInfo)
 WHOA_LUA_STUB(GetPetitionNameInfo)
 WHOA_LUA_STUB(GetPlayerMapPosition)
 WHOA_LUA_STUB(GetPrevCompleatedTutorial)
-WHOA_LUA_STUB(GetPreviewTalentPointsSpent)
 WHOA_LUA_STUB(GetPreviousAchievement)
 WHOA_LUA_STUB(GetProgressText)
 WHOA_LUA_STUB(GetQuestBackgroundMaterial)
@@ -851,13 +847,7 @@ WHOA_LUA_STUB(GetSocketItemBoundTradeable)
 WHOA_LUA_STUB(GetSocketItemInfo)
 WHOA_LUA_STUB(GetSocketItemRefundable)
 WHOA_LUA_STUB(GetSocketTypes)
-WHOA_LUA_STUB(GetSpellAutocast)
-WHOA_LUA_STUB(GetSpellCooldown)
 WHOA_LUA_STUB(GetSpellCount)
-WHOA_LUA_STUB(GetSpellInfo)
-WHOA_LUA_STUB(GetSpellLink)
-WHOA_LUA_STUB(GetSpellName)
-WHOA_LUA_STUB(GetSpellTexture)
 int32_t Script_Stub_GetStablePetFoodTypes(lua_State* L) {
     // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
     // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
@@ -874,7 +864,6 @@ WHOA_LUA_STUB(GetTabardInfo)
 WHOA_LUA_STUB(GetTalentInfo)
 WHOA_LUA_STUB(GetTalentLink)
 WHOA_LUA_STUB(GetTalentPrereqs)
-WHOA_LUA_STUB(GetTalentTabInfo)
 WHOA_LUA_STUB(GetTitleText)
 WHOA_LUA_STUB(GetTotalAchievementPoints)
 WHOA_LUA_STUB(GetTrackingInfo)
@@ -916,7 +905,6 @@ WHOA_LUA_STUB(GetTrainerServiceStepReq)
 WHOA_LUA_STUB(GetTrainerServiceTypeFilter)
 WHOA_LUA_STUB(GetTrainerSkillLineFilter)
 WHOA_LUA_STUB(GetTrainerSkillLines)
-WHOA_LUA_STUB(GetUnspentTalentPoints)
 WHOA_LUA_STUB(GetVoiceSessionMemberInfoBySessionID)
 WHOA_LUA_STUB(GetWatchedFactionInfo)
 WHOA_LUA_STUB(GetWhoInfo)
@@ -1161,7 +1149,6 @@ int32_t Script_Stub_UnitIsTalking(lua_State* L) {
 }
 WHOA_LUA_STUB(UnstablePet)
 WHOA_LUA_STUB(UpdateMapHighlight)
-WHOA_LUA_STUB(UpdateSpells)
 WHOA_LUA_STUB(UpdateWorldMapArrowFrames)
 WHOA_LUA_STUB(VehicleAimDecrement)
 WHOA_LUA_STUB(VehicleAimDownStart)
@@ -1194,7 +1181,6 @@ WHOA_LUA_STUB(VoiceSelectCaptureDevice)
 WHOA_LUA_STUB(VoiceSelectOutputDevice)
 WHOA_LUA_STUB(WithdrawGuildBankMoney)
 WHOA_LUA_STUB(ZoomOut)
-WHOA_LUA_STUB(wipe)
 
 struct ScriptFunction {
     const char* name;
@@ -1546,7 +1532,6 @@ const ScriptFunction s_stubs[] = {
     { "CameraZoomOut",                           &Script_Stub_CameraZoomOut },
     { "CastPetAction",                           &Script_Stub_CastPetAction },
     { "CastShapeshiftForm",                      &Script_Stub_CastShapeshiftForm },
-    { "CastSpell",                               &Script_Stub_CastSpell },
     { "CastSpellByID",                           &Script_Stub_CastSpellByID },
     { "CastSpellByName",                         &Script_Stub_CastSpellByName },
     { "ChangeChatColor",                         &Script_Stub_ChangeChatColor },
@@ -1680,7 +1665,6 @@ const ScriptFunction s_stubs[] = {
     { "GetAchievementNumRewards",                &Script_Stub_GetAchievementNumRewards },
     { "GetAchievementReward",                    &Script_Stub_GetAchievementReward },
     { "GetActiveLevel",                          &Script_Stub_GetActiveLevel },
-    { "GetActiveTalentGroup",                    &Script_Stub_GetActiveTalentGroup },
     { "GetActiveTitle",                          &Script_Stub_GetActiveTitle },
     { "GetActiveVoiceChannel",                   &Script_Stub_GetActiveVoiceChannel },
     { "GetArenaTeamGdfInfo",                     &Script_Stub_GetArenaTeamGdfInfo },
@@ -1762,7 +1746,6 @@ const ScriptFunction s_stubs[] = {
     { "GetGossipOptions",                        &Script_Stub_GetGossipOptions },
     { "GetGossipText",                           &Script_Stub_GetGossipText },
     { "GetGreetingText",                         &Script_Stub_GetGreetingText },
-    { "GetGroupPreviewTalentPointsSpent",        &Script_Stub_GetGroupPreviewTalentPointsSpent },
     { "GetGuildBankItemInfo",                    &Script_Stub_GetGuildBankItemInfo },
     { "GetGuildBankItemLink",                    &Script_Stub_GetGuildBankItemLink },
     { "GetGuildBankMoney",                       &Script_Stub_GetGuildBankMoney },
@@ -1789,7 +1772,6 @@ const ScriptFunction s_stubs[] = {
     { "GetInboxItemLink",                        &Script_Stub_GetInboxItemLink },
     { "GetInboxNumItems",                        &Script_Stub_GetInboxNumItems },
     { "GetInboxText",                            &Script_Stub_GetInboxText },
-    { "GetKnownSlotFromHighestRankSlot",         &Script_Stub_GetKnownSlotFromHighestRankSlot },
     { "GetLFDChoiceCollapseState",               &Script_Stub_GetLFDChoiceCollapseState },
     { "GetLFDChoiceEnabledState",                &Script_Stub_GetLFDChoiceEnabledState },
     { "GetLFDChoiceInfo",                        &Script_Stub_GetLFDChoiceInfo },
@@ -1872,7 +1854,6 @@ const ScriptFunction s_stubs[] = {
     { "GetPetitionNameInfo",                     &Script_Stub_GetPetitionNameInfo },
     { "GetPlayerMapPosition",                    &Script_Stub_GetPlayerMapPosition },
     { "GetPrevCompleatedTutorial",               &Script_Stub_GetPrevCompleatedTutorial },
-    { "GetPreviewTalentPointsSpent",             &Script_Stub_GetPreviewTalentPointsSpent },
     { "GetPreviousAchievement",                  &Script_Stub_GetPreviousAchievement },
     { "GetProgressText",                         &Script_Stub_GetProgressText },
     { "GetQuestBackgroundMaterial",              &Script_Stub_GetQuestBackgroundMaterial },
@@ -1945,13 +1926,7 @@ const ScriptFunction s_stubs[] = {
     { "GetSocketItemInfo",                       &Script_Stub_GetSocketItemInfo },
     { "GetSocketItemRefundable",                 &Script_Stub_GetSocketItemRefundable },
     { "GetSocketTypes",                          &Script_Stub_GetSocketTypes },
-    { "GetSpellAutocast",                        &Script_Stub_GetSpellAutocast },
-    { "GetSpellCooldown",                        &Script_Stub_GetSpellCooldown },
     { "GetSpellCount",                           &Script_Stub_GetSpellCount },
-    { "GetSpellInfo",                            &Script_Stub_GetSpellInfo },
-    { "GetSpellLink",                            &Script_Stub_GetSpellLink },
-    { "GetSpellName",                            &Script_Stub_GetSpellName },
-    { "GetSpellTexture",                         &Script_Stub_GetSpellTexture },
     { "GetStablePetFoodTypes",                   &Script_Stub_GetStablePetFoodTypes },
     { "GetStablePetInfo",                        &Script_Stub_GetStablePetInfo },
     { "GetStationeryInfo",                       &Script_Stub_GetStationeryInfo },
@@ -1962,7 +1937,6 @@ const ScriptFunction s_stubs[] = {
     { "GetTalentInfo",                           &Script_Stub_GetTalentInfo },
     { "GetTalentLink",                           &Script_Stub_GetTalentLink },
     { "GetTalentPrereqs",                        &Script_Stub_GetTalentPrereqs },
-    { "GetTalentTabInfo",                        &Script_Stub_GetTalentTabInfo },
     { "GetTitleText",                            &Script_Stub_GetTitleText },
     { "GetTotalAchievementPoints",               &Script_Stub_GetTotalAchievementPoints },
     { "GetTrackingInfo",                         &Script_Stub_GetTrackingInfo },
@@ -2004,7 +1978,6 @@ const ScriptFunction s_stubs[] = {
     { "GetTrainerServiceTypeFilter",             &Script_Stub_GetTrainerServiceTypeFilter },
     { "GetTrainerSkillLineFilter",               &Script_Stub_GetTrainerSkillLineFilter },
     { "GetTrainerSkillLines",                    &Script_Stub_GetTrainerSkillLines },
-    { "GetUnspentTalentPoints",                  &Script_Stub_GetUnspentTalentPoints },
     { "GetVoiceSessionMemberInfoBySessionID",    &Script_Stub_GetVoiceSessionMemberInfoBySessionID },
     { "GetWatchedFactionInfo",                   &Script_Stub_GetWatchedFactionInfo },
     { "GetWhoInfo",                              &Script_Stub_GetWhoInfo },
@@ -2178,7 +2151,6 @@ const ScriptFunction s_stubs[] = {
     { "UnitIsTalking",                           &Script_Stub_UnitIsTalking },
     { "UnstablePet",                             &Script_Stub_UnstablePet },
     { "UpdateMapHighlight",                      &Script_Stub_UpdateMapHighlight },
-    { "UpdateSpells",                            &Script_Stub_UpdateSpells },
     { "UpdateWorldMapArrowFrames",               &Script_Stub_UpdateWorldMapArrowFrames },
     { "VehicleAimDecrement",                     &Script_Stub_VehicleAimDecrement },
     { "VehicleAimDownStart",                     &Script_Stub_VehicleAimDownStart },
@@ -2206,7 +2178,6 @@ const ScriptFunction s_stubs[] = {
     { "VoiceSelectOutputDevice",                 &Script_Stub_VoiceSelectOutputDevice },
     { "WithdrawGuildBankMoney",                  &Script_Stub_WithdrawGuildBankMoney },
     { "ZoomOut",                                 &Script_Stub_ZoomOut },
-    { "wipe",                                    &Script_Stub_wipe },
 };
 
 } // namespace

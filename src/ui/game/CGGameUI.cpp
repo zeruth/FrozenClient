@@ -1,4 +1,6 @@
 #include "ui/game/CGGameUI.hpp"
+#include <storm/String.hpp>
+#include "ui/FrameScript.hpp"
 #include "client/Client.hpp"
 #include "console/CVar.hpp"
 #include "object/Client.hpp"
@@ -107,6 +109,7 @@ void CGGameUI::EnterWorld() {
         // TODO CGLCD::Login();
     }
 
+
     FrameScript_SignalEvent(SCRIPT_PLAYER_ENTERING_WORLD, nullptr);
 
     // FloatingChatFrame_Update applies a chat window's saved colour and alpha ONLY when it is
@@ -118,6 +121,22 @@ void CGGameUI::EnterWorld() {
     // 386 and 529 in g_scriptEvents; neither has a named constant.
     FrameScript_SignalEvent(386, nullptr); // UPDATE_CHAT_WINDOWS
     FrameScript_SignalEvent(529, nullptr); // UPDATE_FLOATING_CHAT_WINDOWS
+
+    // Those two events are what finally give each chat window its name, and a tab is sized from the
+    // width of its label. During FrameXML load ChatFrame1's tab has no text at all, so it measures
+    // zero wide and FCFDock_UpdateTabs anchors every other tab on top of it -- the dock comes up
+    // with all the tabs stacked in one place.
+    //
+    // FCF_SetWindowName only marks the dock dirty; the re-layout it needs afterwards rides on the
+    // dock's OnUpdate, which is installed solely by FCFDock_SetPrimary's OnSizeChanged hook and so
+    // never runs here. Clicking a tab goes through FCFDock_SelectWindow and fixes it, which is
+    // exactly how the stacking looked: wrong until touched.
+    //
+    // FCF_DockUpdate is FrameXML's own forced re-layout (FCFDock_UpdateTabs with forceUpdate set),
+    // and FloatingChatFrame.lua calls it for the same reason when leaving simple chat -- "we need
+    // to update now". Guarded so a UI without it is not a Lua error.
+    static const char* dockUpdate = "if FCF_DockUpdate then FCF_DockUpdate() end";
+    FrameScript_ExecuteBuffer(dockUpdate, SStrLen(dockUpdate), "@FCF_DockUpdate", nullptr, nullptr);
 
     // TODO
 }

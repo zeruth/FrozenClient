@@ -532,6 +532,12 @@ int32_t CSimpleTexture::SetTexture(const char* fileName, bool wrapU, bool wrapV,
 
     this->m_texture = texture;
 
+    if (fileName && *fileName) {
+        SStrCopy(this->m_texturePath, fileName, sizeof(this->m_texturePath));
+    } else {
+        this->m_texturePath[0] = '\0';
+    }
+
     this->OnRegionChanged();
 
     return 1;
@@ -539,6 +545,9 @@ int32_t CSimpleTexture::SetTexture(const char* fileName, bool wrapU, bool wrapV,
 
 int32_t CSimpleTexture::SetTexture(const CImVector& color) {
     HTEXTURE texture = TextureCreateSolid(color);
+
+    // A solid colour has no file behind it, so GetTexture() must stop naming the old one.
+    this->m_texturePath[0] = '\0';
 
     if (this->m_texture) {
         HandleClose(this->m_texture);

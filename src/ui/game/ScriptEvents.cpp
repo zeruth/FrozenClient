@@ -891,11 +891,16 @@ int32_t Script_GetMoney(lua_State* L) {
 }
 
 int32_t Script_GetHonorCurrency(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Honour points held. Compared and formatted as a number throughout the PVP and vendor panes.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetArenaCurrency(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_UnitRace(lua_State* L) {
@@ -1001,7 +1006,12 @@ int32_t Script_UnitArmor(lua_State* L) {
 }
 
 int32_t Script_UnitCharacterPoints(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Unspent talent points. The talent frame does arithmetic on this the moment it opens, so a
+    // stub that returned nothing errored there. Talents are not ported, so the player has none
+    // unspent.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_UnitAura(lua_State* L);
@@ -1339,15 +1349,29 @@ int32_t Script_GetResSicknessDuration(lua_State* L) {
 }
 
 int32_t Script_GetPVPSessionStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // honorableKills, dishonorableKills
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
 }
 
 int32_t Script_GetPVPYesterdayStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // honorableKills, dishonorableKills, honorGained
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 3;
 }
 
 int32_t Script_GetPVPLifetimeStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // honorableKills, dishonorableKills, highestRank
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 3;
 }
 
 int32_t Script_UnitPVPRank(lua_State* L) {
@@ -1364,7 +1388,10 @@ int32_t Script_GetPVPRankInfo(lua_State* L) {
 }
 
 int32_t Script_GetPVPRankProgress(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // A 0..1 fraction the rank bar sets its value from directly.
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 // UnitCastingInfo("unit")  -> name, rank, displayName, icon, startTime, endTime, isTradeSkill,

@@ -4,7 +4,13 @@
 // missing global. They move to their subsystem files as those get ported.
 
 #include "ui/game/MiscScript.hpp"
+#include <cstdio>
 #include "ui/FrameScript.hpp"
+#include "object/client/SpellBook.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "object/Types.hpp"
+#include "db/Db.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
@@ -84,6 +90,70 @@ int32_t Script_GetChatTypeIndex(lua_State* L) {
     lua_pushnumber(L, found->second);
 
     return 1;
+}
+
+// wipe(table) -- empties a table in place and hands it back. A stock Lua global in the 3.3.5a
+// client, used all over FrameXML to recycle scratch tables; without it those call sites error and
+// take the rest of their function with them.
+//
+// Clearing fields during a next() traversal is explicitly allowed in Lua 5.1: setting an existing
+// key to nil is fine, only adding new keys is not.
+int32_t Script_Wipe(lua_State* L) {
+    if (!lua_istable(L, 1)) {
+        return luaL_error(L, "Usage: wipe(table)");
+    }
+
+    lua_pushnil(L);
+
+    while (lua_next(L, 1)) {
+        lua_pop(L, 1);          // drop the value, leaving the key on top
+        lua_pushvalue(L, -1);   // duplicate it: one copy for rawset, one for the next iteration
+        lua_pushnil(L);
+        lua_rawset(L, 1);
+    }
+
+    lua_pushvalue(L, 1);
+
+    return 1;
+}
+
+// Talents are not ported. These answer the way a character with no talent data does, rather than
+// nothing at all: every one of them is destructured straight into arithmetic or an index, so a stub
+// that pushed no values was taking down the talent frame and all three spec tabs.
+
+// GetUnspentTalentPoints(inspect, pet, talentGroup) -> points
+int32_t Script_GetUnspentTalentPoints(lua_State* L) {
+    lua_pushnumber(L, 0.0);
+
+    return 1;
+}
+
+// GetPreviewTalentPointsSpent(pet, talentGroup) -> points
+int32_t Script_GetPreviewTalentPointsSpent(lua_State* L) {
+    lua_pushnumber(L, 0.0);
+
+    return 1;
+}
+
+// GetActiveTalentGroup(inspect, pet) -> which of the two specs is active, numbered from 1.
+int32_t Script_GetActiveTalentGroup(lua_State* L) {
+    lua_pushnumber(L, 1.0);
+
+    return 1;
+}
+
+// GetTalentTabInfo(tab, inspect, pet, talentGroup)
+//   -> name, iconTexture, pointsSpent, background, previewPointsSpent
+// The two counts are summed by the caller; the three strings are only displayed, and nil is how the
+// reference reports a tab it has no data for.
+int32_t Script_GetTalentTabInfo(lua_State* L) {
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_pushnumber(L, 0.0);
+    lua_pushnil(L);
+    lua_pushnumber(L, 0.0);
+
+    return 5;
 }
 
 int32_t Script_ReturnNothing(lua_State* L) {
@@ -169,14 +239,270 @@ int32_t Script_ReturnTwoZeros(lua_State* L) {
 // The spellbook itself is not populated yet -- there is no known-spell list -- so the counts are
 // zero. That is a tab with no spells in it, which the interface handles; nil is what it cannot.
 int32_t Script_GetSpellTabInfo(lua_State* L) {
-    lua_pushstring(L, "General");
-    lua_pushstring(L, "Interface\\Icons\\INV_Misc_QuestionMark");
-    lua_pushnumber(L, 0.0);
-    lua_pushnumber(L, 0.0);
-    lua_pushnumber(L, 0.0);
-    lua_pushnumber(L, 0.0);
+    // -> name, texture, offset, numSpells, highestRankOffset, highestRankNumSpells
+    //
+    // Offsets are 0-based slot bases the way the reference reports them; FrameXML adds 1 when it
+    // asks for a slot. The highest-rank view sits after the all-ranks view in slot space, so its
+    // offsets are shifted by the book size.
+    if (!lua_isnumber(L, 1)) {
+        return 0;
+    }
+
+    auto tab = SpellBookTabAt(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    if (!tab) {
+        return 0;
+    }
+
+    const char* icon = "Interface\\Icons\\INV_Misc_QuestionMark";
+
+    if (tab->iconID) {
+        auto rec = g_spellIconDB.GetRecord(tab->iconID);
+
+        if (rec && rec->m_textureFilename && *rec->m_textureFilename) {
+            icon = rec->m_textureFilename;
+        }
+    }
+
+    lua_pushstring(L, tab->name);
+    lua_pushstring(L, icon);
+    lua_pushnumber(L, tab->offset);
+    lua_pushnumber(L, tab->count);
+    lua_pushnumber(L, SpellBookCount() + tab->highestOffset);
+    lua_pushnumber(L, tab->highestCount);
 
     return 6;
+}
+
+int32_t Script_GetNumSpellTabs(lua_State* L) {
+    lua_pushnumber(L, SpellBookTabCount());
+
+    return 1;
+}
+
+// Spellbook slot -> Spell.dbc row. Lua slots count from 1; the book from 0. Returns null for an
+// empty slot or an id the DBC does not know.
+const SpellRec* SpellAtSlot(lua_State* L, int32_t index) {
+    if (!lua_isnumber(L, index)) {
+        return nullptr;
+    }
+
+    uint32_t id = SpellBookSpellAt(static_cast<int32_t>(lua_tonumber(L, index)) - 1);
+
+    return id ? g_spellDB.GetRecord(static_cast<int32_t>(id)) : nullptr;
+}
+
+const char* SpellIconPath(const SpellRec* spell) {
+    if (!spell || !spell->m_spellIconID) {
+        return nullptr;
+    }
+
+    auto icon = g_spellIconDB.GetRecord(spell->m_spellIconID);
+
+    return icon && icon->m_textureFilename && *icon->m_textureFilename ? icon->m_textureFilename : nullptr;
+}
+
+// GetSpellName(slot, bookType) -> name, rank
+int32_t Script_GetSpellName(lua_State* L) {
+    auto spell = SpellAtSlot(L, 1);
+
+    if (!spell) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 2;
+    }
+
+    lua_pushstring(L, spell->m_name);
+
+    // An unranked spell hands back nil rather than "", which is what FrameXML tests for.
+    if (spell->m_rank && *spell->m_rank) {
+        lua_pushstring(L, spell->m_rank);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 2;
+}
+
+// GetSpellTexture(slot, bookType) -> texture path
+int32_t Script_GetSpellTexture(lua_State* L) {
+    const char* path = SpellIconPath(SpellAtSlot(L, 1));
+
+    if (path) {
+        lua_pushstring(L, path);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+// GetSpellInfo(spellId | "name") -> name, rank, icon, cost, isFunnel, powerType, castTime,
+//                                    minRange, maxRange
+// Costs, cast time and range live in Spell.dbc columns that are not read yet; those report as zero.
+int32_t Script_GetSpellInfo(lua_State* L) {
+    const SpellRec* spell = nullptr;
+
+    if (lua_isnumber(L, 1)) {
+        spell = g_spellDB.GetRecord(static_cast<int32_t>(lua_tonumber(L, 1)));
+    } else if (lua_isstring(L, 1)) {
+        // By name: the highest known rank, the way the reference resolves a bare name.
+        const char* name = lua_tostring(L, 1);
+
+        for (int32_t i = 0; i < SpellBookHighestRankCount(); i++) {
+            auto candidate = g_spellDB.GetRecord(static_cast<int32_t>(SpellBookSpellAt(SpellBookCount() + i)));
+
+            if (candidate && candidate->m_name && !SStrCmpI(candidate->m_name, name, STORM_MAX_STR)) {
+                spell = candidate;
+                break;
+            }
+        }
+    }
+
+    if (!spell) {
+        return 0;
+    }
+
+    lua_pushstring(L, spell->m_name);
+
+    if (spell->m_rank && *spell->m_rank) {
+        lua_pushstring(L, spell->m_rank);
+    } else {
+        lua_pushnil(L);
+    }
+
+    const char* icon = SpellIconPath(spell);
+
+    if (icon) {
+        lua_pushstring(L, icon);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, 0.0);   // cost
+    lua_pushboolean(L, 0);    // isFunnel
+    lua_pushnumber(L, 0.0);   // powerType
+    lua_pushnumber(L, 0.0);   // castTime (ms)
+    lua_pushnumber(L, 0.0);   // minRange
+    lua_pushnumber(L, 0.0);   // maxRange
+
+    return 9;
+}
+
+// GetSpellCooldown(slot, bookType) -> start, duration, enable. No cooldown tracking yet, so
+// every spell reads as ready -- the enable flag set with a zero duration is "ready" in FrameXML.
+int32_t Script_GetSpellCooldown(lua_State* L) {
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 1.0);
+
+    return 3;
+}
+
+// GetSpellAutocast(slot, bookType) -> autocastable, autostate. Only pet spells autocast.
+int32_t Script_GetSpellAutocast(lua_State* L) {
+    lua_pushnil(L);
+    lua_pushnil(L);
+
+    return 2;
+}
+
+// IsPassiveSpell(slot | spellId, bookType) -> 1 or nil. SPELL_ATTR0_PASSIVE is bit 0x40 of
+// Spell.dbc Attributes.
+int32_t Script_IsPassiveSpell(lua_State* L) {
+    const SpellRec* spell = SpellAtSlot(L, 1);
+
+    // FrameXML also calls this with a spell id when no bookType is given.
+    if (!spell && lua_isnumber(L, 1) && lua_isnoneornil(L, 2)) {
+        spell = g_spellDB.GetRecord(static_cast<int32_t>(lua_tonumber(L, 1)));
+    }
+
+    if (spell && (spell->m_attributes & 0x40)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+// CastSpell(slot, bookType): cast on the current target, or self when there is none.
+int32_t Script_CastSpell(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        return 0;
+    }
+
+    uint32_t id = SpellBookSpellAt(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    if (!id) {
+        return 0;
+    }
+
+    uint64_t target = 0;
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__);
+
+    if (player) {
+        auto unit = static_cast<CGUnit_C*>(player)->Unit();
+
+        if (unit) {
+            target = unit->target;
+        }
+    }
+
+    SpellBookCast(id, target);
+
+    return 0;
+}
+
+// GetSpellLink(slot, bookType) -> "|cff71d5ff|Hspell:ID|h[Name]|h|r", the chat link for a spell.
+int32_t Script_GetSpellLink(lua_State* L) {
+    auto spell = SpellAtSlot(L, 1);
+
+    if (!spell || !spell->m_name) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    char link[512];
+    SStrPrintf(link, sizeof(link), "|cff71d5ff|Hspell:%d|h[%s]|h|r", spell->m_ID, spell->m_name);
+    lua_pushstring(L, link);
+
+    return 1;
+}
+
+// UpdateSpells(): FrameXML calls this after turning a spellbook page and expects the book to be
+// redrawn in response -- the reference answers it with SPELLS_CHANGED, and SpellBookFrame_OnEvent
+// redraws on that. Without the event the page number changed and the buttons did not.
+int32_t Script_UpdateSpells(lua_State* L) {
+    FrameScript_SignalEvent(242, nullptr); // SPELLS_CHANGED
+
+    return 0;
+}
+
+// GetKnownSlotFromHighestRankSlot(slot) -> the same spell's slot in the all-ranks view.
+int32_t Script_GetKnownSlotFromHighestRankSlot(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        return 0;
+    }
+
+    int32_t slot = static_cast<int32_t>(lua_tonumber(L, 1)) - 1;
+    lua_pushnumber(L, SpellBookKnownSlotFromHighestRankSlot(slot) + 1);
+
+    return 1;
+}
+
+// CombatLog_Object_IsA(unitFlags, mask) -> true when the flags fall inside the mask. A client
+// function the combat log addon captures as an upvalue at load, so its absence was a nil call
+// rather than a missing global.
+int32_t Script_CombatLog_Object_IsA(lua_State* L) {
+    uint32_t flags = lua_isnumber(L, 1) ? static_cast<uint32_t>(lua_tonumber(L, 1)) : 0;
+    uint32_t mask = lua_isnumber(L, 2) ? static_cast<uint32_t>(lua_tonumber(L, 2)) : 0;
+
+    lua_pushboolean(L, (flags & mask) != 0);
+
+    return 1;
 }
 
 int32_t Script_GetRepairAllCost(lua_State* L) {
@@ -223,6 +549,17 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetLFGProposal",                 &Script_ReturnNothing },
     { "CalendarGetDate",                &Script_CalendarGetDate },
     { "GetSpellTabInfo",                &Script_GetSpellTabInfo },
+    { "GetSpellName",                   &Script_GetSpellName },
+    { "GetSpellTexture",                &Script_GetSpellTexture },
+    { "GetSpellInfo",                   &Script_GetSpellInfo },
+    { "GetSpellCooldown",               &Script_GetSpellCooldown },
+    { "GetSpellAutocast",               &Script_GetSpellAutocast },
+    { "IsPassiveSpell",                 &Script_IsPassiveSpell },
+    { "CastSpell",                      &Script_CastSpell },
+    { "GetSpellLink",                   &Script_GetSpellLink },
+    { "UpdateSpells",                   &Script_UpdateSpells },
+    { "GetKnownSlotFromHighestRankSlot", &Script_GetKnownSlotFromHighestRankSlot },
+    { "CombatLog_Object_IsA",           &Script_CombatLog_Object_IsA },
     { "GetPetActionInfo",               &Script_ReturnNothing },
     { "GetNumWorldStateUI",             &Script_ReturnZero },
     { "GetCompanionInfo",               &Script_ReturnNothing },
@@ -268,7 +605,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetPetActionCooldown",           &Script_ReturnThreeZeros },
     { "GetMapInfo",                     &Script_ReturnNil },
     { "GetAdjustedSkillPoints",         &Script_ReturnZero },
-    { "GetNumSpellTabs",                &Script_ReturnOne },
+    { "GetNumSpellTabs",                &Script_GetNumSpellTabs },
 
     // Registered because FrameXML CALLS them and a missing global is a hard Lua error, not a
     // no-op: each of these was observed throwing "attempt to call a nil value" in a real session
@@ -351,7 +688,6 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "IsInLFGDungeon",                      &Script_ReturnNil },
     { "IsLFGDungeonJoinable",                &Script_ReturnNil },
     { "IsMuted",                             &Script_ReturnNil },
-    { "IsPassiveSpell",                      &Script_ReturnNil },
     { "IsPetAttackActive",                   &Script_ReturnNil },
     { "IsQuestCompletable",                  &Script_ReturnNil },
     { "IsQuestLogSpecialItemInRange",        &Script_ReturnNil },
@@ -435,6 +771,12 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetNumStableSlots",                   &Script_ReturnZero },
     { "GetNumStationeries",                  &Script_ReturnZero },
     { "GetNumTalentGroups",                  &Script_ReturnZero },
+    { "wipe",                                &Script_Wipe },
+    { "GetUnspentTalentPoints",              &Script_GetUnspentTalentPoints },
+    { "GetPreviewTalentPointsSpent",         &Script_GetPreviewTalentPointsSpent },
+    { "GetGroupPreviewTalentPointsSpent",    &Script_GetPreviewTalentPointsSpent },
+    { "GetActiveTalentGroup",                &Script_GetActiveTalentGroup },
+    { "GetTalentTabInfo",                    &Script_GetTalentTabInfo },
     { "GetNumTalentTabs",                    &Script_ReturnZero },
     { "GetNumTalents",                       &Script_ReturnZero },
     { "GetNumTrackedAchievements",           &Script_ReturnZero },

@@ -1049,7 +1049,15 @@ int32_t Script_IsSubZonePVPPOI(lua_State* L) {
 }
 
 int32_t Script_GetZonePVPInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // pvpType, isSubZonePVP, factionName.
+    //
+    // nil for the type is what the reference answers in a normal contested zone, and is the value
+    // the zone-text colouring already handles; it is not a placeholder for "unknown".
+    lua_pushnil(L);
+    lua_pushboolean(L, 0);
+    lua_pushnil(L);
+
+    return 3;
 }
 
 int32_t Script_TogglePVP(lua_State* L) {
@@ -1445,7 +1453,19 @@ int32_t Script_GetInstanceDifficulty(lua_State* L) {
 }
 
 int32_t Script_GetInstanceInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic
+    //
+    // FrameXML compares instanceType against the string "none" for the open world, so that has to
+    // be a real string rather than nil -- the raid and difficulty UI branches on it.
+    lua_pushnil(L);
+    lua_pushstring(L, "none");
+    lua_pushnumber(L, 0.0);
+    lua_pushstring(L, "");
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushboolean(L, 0);
+
+    return 7;
 }
 
 int32_t Script_GetDungeonDifficulty(lua_State* L) {
@@ -1503,7 +1523,11 @@ int32_t Script_GetNumTitles(lua_State* L) {
 }
 
 int32_t Script_GetCurrentTitle(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The equipped title's id. -1 is the reference's "no title selected", and is what the title
+    // dropdown compares against; 0 would select the first real title instead.
+    lua_pushnumber(L, -1.0);
+
+    return 1;
 }
 
 int32_t Script_SetCurrentTitle(lua_State* L) {

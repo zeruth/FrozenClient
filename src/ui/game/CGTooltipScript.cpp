@@ -1,4 +1,7 @@
 #include "ui/game/CGTooltipScript.hpp"
+#include "ui/game/CGActionBar.hpp"
+#include "object/client/SpellBook.hpp"
+#include "db/Db.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "ui/simple/CSimpleTop.hpp"
@@ -303,8 +306,42 @@ int32_t CGTooltip_SetHyperlink(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Fill the tooltip for a spell: its name on the first line, rank on the right of it. Costs, cast
+// time, range and the description are Spell.dbc columns not read yet, so the tooltip stops there.
+int32_t TooltipSetSpellRec(lua_State* L, CGTooltip* tooltip, const SpellRec* spell) {
+    if (!spell || !spell->m_name || !*spell->m_name) {
+        return 0;
+    }
+
+    tooltip->m_lineCount = 1;
+
+    if (spell->m_rank && *spell->m_rank) {
+        TooltipSetLine(tooltip, 1, false, spell->m_name);
+        TooltipSetLine(tooltip, 1, true, spell->m_rank);
+    } else {
+        TooltipSetLine(tooltip, 1, false, spell->m_name);
+    }
+
+    return 0;
+}
+
+// SetAction(slot): the tooltip for an action button. Only spell actions resolve today.
 int32_t CGTooltip_SetAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        return 0;
+    }
+
+    int32_t slot = static_cast<int32_t>(lua_tonumber(L, 2)) - 1;
+    uint32_t type = CGActionBar::GetActionType(slot);
+    uint32_t id = CGActionBar::GetActionID(slot);
+
+    if (!id || (type != CGActionBar::ACTION_BUTTON_SPELL && type != CGActionBar::ACTION_BUTTON_C)) {
+        return 0;
+    }
+
+    return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(static_cast<int32_t>(id)));
 }
 
 int32_t CGTooltip_SetPetAction(lua_State* L) {
@@ -323,12 +360,27 @@ int32_t CGTooltip_SetTracking(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// SetSpell(slot, bookType): a spellbook entry.
 int32_t CGTooltip_SetSpell(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        return 0;
+    }
+
+    uint32_t id = SpellBookSpellAt(static_cast<int32_t>(lua_tonumber(L, 2)) - 1);
+
+    return TooltipSetSpellRec(L, tooltip, id ? g_spellDB.GetRecord(static_cast<int32_t>(id)) : nullptr);
 }
 
 int32_t CGTooltip_SetSpellByID(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        return 0;
+    }
+
+    return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(static_cast<int32_t>(lua_tonumber(L, 2))));
 }
 
 int32_t CGTooltip_SetGlyph(lua_State* L) {

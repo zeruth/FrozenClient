@@ -1,5 +1,6 @@
 #include "ui/game/CGActionBar.hpp"
 #include "net/Types.hpp"
+#include "db/Db.hpp"
 #include "util/CStatus.hpp"
 #include <common/DataStore.hpp>
 #include <cstdio>

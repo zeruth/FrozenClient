@@ -12,7 +12,13 @@ int32_t Script_BNGetInfo(lua_State* L) {
 }
 
 int32_t Script_BNGetNumFriends(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // numFriends, numOnline. FriendsMicroButton:OnLoad does arithmetic on the second one the moment
+    // the UI loads, so a stub that returned nothing errored before anything was on screen. There is
+    // no Battle.net connection, so both are zero -- which is also what they are when signed out.
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
 }
 
 int32_t Script_BNGetFriendInfo(lua_State* L) {

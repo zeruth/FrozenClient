@@ -360,11 +360,21 @@ int32_t CSimpleFontString_SetTextHeight(lua_State* L) {
 }
 
 int32_t CSimpleFontString_GetStringWidth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, string->GetStringWidth());
+
+    return 1;
 }
 
 int32_t CSimpleFontString_GetStringHeight(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, string->GetStringHeight());
+
+    return 1;
 }
 
 int32_t CSimpleFontString_GetJustifyH(lua_State* L) {
