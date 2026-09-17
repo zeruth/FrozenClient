@@ -1,0 +1,152 @@
+// ===== FUN_0097d370 @ 0097d370 (requested 0x0097d370) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __fastcall FUN_0097d370(int param_1)
+
+{
+  uint *puVar1;
+  char cVar2;
+  int iVar3;
+  undefined4 *puVar4;
+  short sVar5;
+  uint uVar6;
+  undefined1 local_38 [16];
+  undefined4 local_28;
+  undefined4 local_24;
+  undefined4 local_20;
+  undefined4 local_1c;
+  uint local_18;
+  uint local_14;
+  uint local_10;
+  uint local_c;
+  uint local_8;
+  
+  local_18 = **(uint **)(param_1 + 0xd8);
+  if ((((3 < local_18) || (local_18 == 0)) || (local_8 = **(uint **)(param_1 + 0xdc), 3 < local_8))
+     || (local_8 == 0)) {
+    return;
+  }
+  puVar1 = *(uint **)(param_1 + 0xe0);
+  local_c = *puVar1;
+  if (3 < local_c) {
+    return;
+  }
+  if (local_c == 0) {
+    return;
+  }
+  local_10 = **(uint **)(param_1 + 0xec);
+  if (4 < local_10) {
+    return;
+  }
+  if ((local_10 == 4) &&
+     (uVar6 = (*(uint **)(param_1 + 0xec))[1], *(short *)(uVar6 + 2) != *(short *)(uVar6 + 4))) {
+    return;
+  }
+  local_14 = **(uint **)(param_1 + 0xf0);
+  if (4 < local_14) {
+    return;
+  }
+  if ((local_14 == 4) &&
+     (uVar6 = (*(uint **)(param_1 + 0xf0))[1], *(short *)(uVar6 + 2) != *(short *)(uVar6 + 4))) {
+    return;
+  }
+  if (*(float *)(param_1 + 0xa8) != 0.0) {
+    return;
+  }
+  if ((local_10 == 0) && ((*(uint *)(param_1 + 0x134) & 0x100000) != 0)) {
+    return;
+  }
+  local_28 = 0;
+  local_24 = 0;
+  local_20 = 0;
+  local_1c = 0;
+  FUN_00978e90(param_1 + 0xe4);
+  cVar2 = FUN_004f5d90(local_38,&local_28);
+  if (cVar2 != '\0') {
+    return;
+  }
+  uVar6 = 0;
+  if (puVar1[2] != 0) {
+    puVar4 = (undefined4 *)puVar1[3];
+    do {
+      cVar2 = FUN_00482900(*puVar4,puVar4[1]);
+      if (cVar2 != '\0') {
+        return;
+      }
+      uVar6 = uVar6 + 1;
+      puVar4 = puVar4 + 2;
+    } while (uVar6 < *(uint *)(*(int *)(param_1 + 0xe0) + 8));
+  }
+  sVar5 = 0;
+  if (local_18 == 3) {
+    iVar3 = *(int *)(param_1 + 0xd8);
+  }
+  else {
+    if (local_8 == 3) {
+      sVar5 = *(short *)(*(int *)(*(int *)(param_1 + 0xdc) + 4) + 2);
+      goto LAB_0097d510;
+    }
+    if (local_c == 3) {
+      iVar3 = *(int *)(param_1 + 0xe0);
+    }
+    else {
+      if (2 < local_10) {
+        sVar5 = *(short *)(*(int *)(*(int *)(param_1 + 0xec) + 4) + 2);
+        goto LAB_0097d510;
+      }
+      if (local_14 < 3) goto LAB_0097d510;
+      iVar3 = *(int *)(param_1 + 0xf0);
+    }
+  }
+  sVar5 = *(short *)(*(int *)(iVar3 + 4) + 2);
+LAB_0097d510:
+  if (((((local_8 != 3) || (*(short *)(*(int *)(*(int *)(param_1 + 0xdc) + 4) + 2) == sVar5)) &&
+       ((local_c != 3 || (*(short *)(*(int *)(*(int *)(param_1 + 0xe0) + 4) + 2) == sVar5)))) &&
+      ((local_10 < 3 || (*(short *)(*(int *)(*(int *)(param_1 + 0xec) + 4) + 2) == sVar5)))) &&
+     ((local_14 < 3 || (*(short *)(*(int *)(*(int *)(param_1 + 0xf0) + 4) + 2) == sVar5)))) {
+    iVar3 = FUN_0076e540(0x58,".\\ParticleSystem2.cpp",0x9bf,0);
+    if (iVar3 == 0) {
+      iVar3 = 0;
+    }
+    else {
+      FUN_004011d0(iVar3,0x2c,2,&LAB_0097b9c0);
+    }
+    *(int *)(param_1 + 0x11c) = iVar3;
+    if (iVar3 != 0) {
+      *(uint *)(param_1 + 0x134) = *(uint *)(param_1 + 0x134) | 0x1000000;
+      local_18 = (uint)sVar5;
+      *(float *)(param_1 + 0x118) = (float)(int)local_18 * _DAT_009ea0b4;
+      FUN_0097aff0();
+      FUN_0097b440();
+      FUN_0097b5f0();
+      FUN_0097b6c0();
+      FUN_0097b840();
+    }
+  }
+  return;
+}
+
+
+
+// ===== FUN_00979170 @ 00979170 (requested 0x00979170) =====
+
+void FUN_00979170(void)
+
+{
+  if (DAT_00dce680 == 0) {
+    if (DAT_00dce890 != '\0') {
+      DAT_00dce680 = 1;
+      DAT_00dce688 = 0;
+      DAT_00dce684 = 0;
+      return;
+    }
+    DAT_00dce688 = FUN_006876d0(1,0,0x3fff0,2,"CParticleEmitter2_idx");
+    DAT_00dce684 = FUN_00687660(DAT_00dce688,2,0x1fff8,0);
+  }
+  DAT_00dce680 = DAT_00dce680 + 1;
+  return;
+}
+
+
+

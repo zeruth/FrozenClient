@@ -1,0 +1,364 @@
+// ===== FUN_0097aff0 @ 0097aff0 (requested 0x0097aff0) =====
+
+void __fastcall FUN_0097aff0(int param_1)
+
+{
+  undefined1 *puVar1;
+  int iVar2;
+  byte *pbVar3;
+  int iVar4;
+  char *pcVar5;
+  float *pfVar6;
+  undefined1 local_14;
+  undefined1 local_10;
+  undefined1 local_c;
+  
+  if ((*(byte *)(param_1 + 0x134) & 0x10) != 0) {
+    local_c = (undefined1)(int)ROUND(*(float *)(param_1 + 0xfc));
+    local_10 = (undefined1)(int)ROUND(*(float *)(param_1 + 0xf8));
+    local_14 = (undefined1)(int)ROUND(*(float *)(param_1 + 0xf4));
+    puVar1 = *(undefined1 **)(param_1 + 0x11c);
+    puVar1[2] = local_14;
+    puVar1[1] = local_10;
+    *puVar1 = local_c;
+    local_c = (undefined1)(int)ROUND(*(float *)(param_1 + 0x108));
+    local_10 = (undefined1)(int)ROUND(*(float *)(param_1 + 0x104));
+    iVar2 = *(int *)(param_1 + 0x11c);
+    local_14 = (undefined1)(int)ROUND(*(float *)(param_1 + 0x100));
+    *(undefined1 *)(iVar2 + 0x2e) = local_14;
+    *(undefined1 *)(iVar2 + 0x2c) = local_c;
+    *(undefined1 *)(iVar2 + 0x2d) = local_10;
+    iVar2 = *(int *)(param_1 + 0x11c);
+    *(uint *)(iVar2 + 4) = (uint)*(byte *)(iVar2 + 0x2e) - (uint)*(byte *)(iVar2 + 2);
+    iVar2 = *(int *)(param_1 + 0x11c);
+    *(uint *)(iVar2 + 8) = (uint)*(byte *)(iVar2 + 0x2d) - (uint)*(byte *)(iVar2 + 1);
+    pbVar3 = *(byte **)(param_1 + 0x11c);
+    *(uint *)(pbVar3 + 0xc) = (uint)pbVar3[0x2c] - (uint)*pbVar3;
+    *(uint *)(*(int *)(param_1 + 0x11c) + 0x30) =
+         ((int)ROUND(*(float *)(param_1 + 0x10c)) & 0xffU) -
+         (uint)*(byte *)(*(int *)(param_1 + 0x11c) + 0x2e);
+    *(uint *)(*(int *)(param_1 + 0x11c) + 0x34) =
+         ((int)ROUND(*(float *)(param_1 + 0x110)) & 0xffU) -
+         (uint)*(byte *)(*(int *)(param_1 + 0x11c) + 0x2d);
+    *(uint *)(*(int *)(param_1 + 0x11c) + 0x38) =
+         ((int)ROUND(*(float *)(param_1 + 0x114)) & 0xffU) -
+         (uint)*(byte *)(*(int *)(param_1 + 0x11c) + 0x2c);
+    return;
+  }
+  local_c = (undefined1)(int)ROUND(*(float *)(*(int *)(*(int *)(param_1 + 0xd8) + 0xc) + 8));
+  local_10 = (undefined1)(int)ROUND(*(float *)(*(int *)(*(int *)(param_1 + 0xd8) + 0xc) + 4));
+  local_14 = (undefined1)(int)ROUND(**(float **)(*(int *)(param_1 + 0xd8) + 0xc));
+  puVar1 = *(undefined1 **)(param_1 + 0x11c);
+  puVar1[2] = local_14;
+  puVar1[1] = local_10;
+  *puVar1 = local_c;
+  iVar2 = *(int *)(param_1 + 0xd8);
+  iVar4 = *(int *)(iVar2 + 8);
+  if (iVar4 == 1) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 4) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 8) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0xc) = 0;
+  }
+  else if (iVar4 == 2) {
+    *(int *)(*(int *)(param_1 + 0x11c) + 4) =
+         (int)ROUND(((*(float **)(iVar2 + 0xc))[3] - **(float **)(iVar2 + 0xc)) *
+                    *(float *)(param_1 + 0x118));
+    iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 8) =
+         (int)ROUND((*(float *)(iVar2 + 0x10) - *(float *)(iVar2 + 4)) * *(float *)(param_1 + 0x118)
+                   );
+    iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 0xc) =
+         (int)ROUND((*(float *)(iVar2 + 0x14) - *(float *)(iVar2 + 8)) * *(float *)(param_1 + 0x118)
+                   );
+  }
+  else if (iVar4 == 3) {
+    *(int *)(*(int *)(param_1 + 0x11c) + 4) =
+         (int)ROUND((*(float **)(iVar2 + 0xc))[3] - **(float **)(iVar2 + 0xc));
+    iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 8) =
+         (int)ROUND(*(float *)(iVar2 + 0x10) - *(float *)(iVar2 + 4));
+    iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 0xc) =
+         (int)ROUND(*(float *)(iVar2 + 0x14) - *(float *)(iVar2 + 8));
+  }
+  iVar2 = *(int *)(param_1 + 0x11c);
+  *(char *)(iVar2 + 0x2e) = *(char *)(iVar2 + 4) + *(char *)(iVar2 + 2);
+  iVar2 = *(int *)(param_1 + 0x11c);
+  *(char *)(iVar2 + 0x2d) = *(char *)(iVar2 + 8) + *(char *)(iVar2 + 1);
+  pcVar5 = *(char **)(param_1 + 0x11c);
+  pcVar5[0x2c] = pcVar5[0xc] + *pcVar5;
+  iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 8);
+  if (iVar2 == 1) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x30) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x34) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x38) = 0;
+  }
+  else {
+    if (iVar2 == 2) {
+      pfVar6 = *(float **)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x30) =
+           (int)ROUND((1.0 - *(float *)(param_1 + 0x118)) * (pfVar6[3] - *pfVar6));
+      iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x34) =
+           (int)ROUND((1.0 - *(float *)(param_1 + 0x118)) *
+                      (*(float *)(iVar2 + 0x10) - *(float *)(iVar2 + 4)));
+      iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x38) =
+           (int)ROUND((1.0 - *(float *)(param_1 + 0x118)) *
+                      (*(float *)(iVar2 + 0x14) - *(float *)(iVar2 + 8)));
+      return;
+    }
+    if (iVar2 == 3) {
+      iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x30) =
+           (int)ROUND(*(float *)(iVar2 + 0x18) - *(float *)(iVar2 + 0xc));
+      iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x34) =
+           (int)ROUND(*(float *)(iVar2 + 0x1c) - *(float *)(iVar2 + 0x10));
+      iVar2 = *(int *)(*(int *)(param_1 + 0xd8) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x38) =
+           (int)ROUND(*(float *)(iVar2 + 0x20) - *(float *)(iVar2 + 0x14));
+      return;
+    }
+  }
+  return;
+}
+
+
+
+// ===== FUN_0097b440 @ 0097b440 (requested 0x0097b440) =====
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void __fastcall FUN_0097b440(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  short *psVar3;
+  undefined1 local_8;
+  
+  local_8 = (undefined1)
+            (int)ROUND((float)(int)**(short **)(*(int *)(param_1 + 0xdc) + 0xc) * _DAT_009ea0b4 *
+                       DAT_009e30c0);
+  *(undefined1 *)(*(int *)(param_1 + 0x11c) + 3) = local_8;
+  iVar1 = *(int *)(param_1 + 0xdc);
+  iVar2 = *(int *)(iVar1 + 8);
+  if (iVar2 == 1) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x10) = 0;
+  }
+  else if (iVar2 == 2) {
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x10) =
+         (int)ROUND((float)(int)(short)((*(short **)(iVar1 + 0xc))[1] - **(short **)(iVar1 + 0xc)) *
+                    _DAT_009ea0b4 * *(float *)(param_1 + 0x118) * DAT_009e30c0);
+  }
+  else if (iVar2 == 3) {
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x10) =
+         (int)ROUND((float)(int)(short)((*(short **)(iVar1 + 0xc))[1] - **(short **)(iVar1 + 0xc)) *
+                    _DAT_009ea0b4 * DAT_009e30c0);
+  }
+  iVar1 = *(int *)(param_1 + 0x11c);
+  *(char *)(iVar1 + 0x2f) = *(char *)(iVar1 + 0x10) + *(char *)(iVar1 + 3);
+  iVar1 = *(int *)(*(int *)(param_1 + 0xdc) + 8);
+  if (iVar1 == 1) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x3c) = 0;
+  }
+  else {
+    if (iVar1 == 2) {
+      psVar3 = *(short **)(*(int *)(param_1 + 0xdc) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x3c) =
+           (int)ROUND((float)(int)(short)(psVar3[1] - *psVar3) * _DAT_009ea0b4 *
+                      (1.0 - *(float *)(param_1 + 0x118)) * DAT_009e30c0);
+      return;
+    }
+    if (iVar1 == 3) {
+      iVar1 = *(int *)(*(int *)(param_1 + 0xdc) + 0xc);
+      *(int *)(*(int *)(param_1 + 0x11c) + 0x3c) =
+           (int)ROUND((float)(int)(short)(*(short *)(iVar1 + 4) - *(short *)(iVar1 + 2)) *
+                      _DAT_009ea0b4 * DAT_009e30c0);
+      return;
+    }
+  }
+  return;
+}
+
+
+
+// ===== FUN_0097b5f0 @ 0097b5f0 (requested 0x0097b5f0) =====
+
+void __fastcall FUN_0097b5f0(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  float fVar3;
+  
+  *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x14) =
+       **(undefined4 **)(*(int *)(param_1 + 0xe0) + 0xc);
+  iVar1 = *(int *)(param_1 + 0xe0);
+  iVar2 = *(int *)(iVar1 + 8);
+  fVar3 = 0.0;
+  if (iVar2 == 1) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x18) = 0;
+  }
+  else if (iVar2 == 2) {
+    *(float *)(*(int *)(param_1 + 0x11c) + 0x18) =
+         ((*(float **)(iVar1 + 0xc))[2] - **(float **)(iVar1 + 0xc)) * *(float *)(param_1 + 0x118);
+  }
+  else if (iVar2 == 3) {
+    *(float *)(*(int *)(param_1 + 0x11c) + 0x18) =
+         (*(float **)(iVar1 + 0xc))[2] - **(float **)(iVar1 + 0xc);
+  }
+  iVar1 = *(int *)(param_1 + 0x11c);
+  *(float *)(iVar1 + 0x40) = *(float *)(iVar1 + 0x18) + *(float *)(iVar1 + 0x14);
+  iVar1 = *(int *)(param_1 + 0xe0);
+  iVar2 = *(int *)(iVar1 + 8);
+  if (iVar2 != 1) {
+    if (iVar2 == 2) {
+      *(float *)(*(int *)(param_1 + 0x11c) + 0x44) =
+           ((*(float **)(iVar1 + 0xc))[2] - **(float **)(iVar1 + 0xc)) *
+           (1.0 - *(float *)(param_1 + 0x118));
+      return;
+    }
+    if (iVar2 != 3) {
+      return;
+    }
+    fVar3 = *(float *)(*(int *)(iVar1 + 0xc) + 0x10) - *(float *)(*(int *)(iVar1 + 0xc) + 8);
+  }
+  *(float *)(*(int *)(param_1 + 0x11c) + 0x44) = fVar3;
+  return;
+}
+
+
+
+// ===== FUN_0097b6c0 @ 0097b6c0 (requested 0x0097b6c0) =====
+
+void __fastcall FUN_0097b6c0(int param_1)
+
+{
+  ushort *puVar1;
+  int iVar2;
+  int iVar3;
+  
+  iVar2 = 0;
+  if (*(int *)(*(int *)(param_1 + 0xec) + 8) == 0) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x1c) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x20) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x48) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x4c) = 0;
+    return;
+  }
+  *(uint *)(*(int *)(param_1 + 0x11c) + 0x1c) = (uint)**(ushort **)(*(int *)(param_1 + 0xec) + 0xc);
+  switch(*(undefined4 *)(*(int *)(param_1 + 0xec) + 8)) {
+  case 1:
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x20) = 0;
+    goto switchD_0097b71c_default;
+  case 2:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xec) + 0xc);
+    iVar3 = (int)ROUND((float)(int)((uint)puVar1[1] - (uint)*puVar1) * *(float *)(param_1 + 0x118));
+    break;
+  case 3:
+  case 4:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xec) + 0xc);
+    iVar3 = (uint)puVar1[1] - (uint)*puVar1;
+    break;
+  default:
+    goto switchD_0097b71c_default;
+  }
+  *(int *)(*(int *)(param_1 + 0x11c) + 0x20) = iVar3;
+switchD_0097b71c_default:
+  iVar3 = *(int *)(param_1 + 0x11c);
+  *(int *)(iVar3 + 0x48) = *(int *)(iVar3 + 0x20) + *(int *)(iVar3 + 0x1c);
+  switch(*(undefined4 *)(*(int *)(param_1 + 0xec) + 8)) {
+  case 1:
+    goto switchD_0097b796_caseD_1;
+  case 2:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xec) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x4c) =
+         (int)ROUND((1.0 - *(float *)(param_1 + 0x118)) *
+                    (float)(int)((uint)puVar1[1] - (uint)*puVar1));
+    return;
+  case 3:
+    iVar2 = *(int *)(*(int *)(param_1 + 0xec) + 0xc);
+    *(uint *)(*(int *)(param_1 + 0x11c) + 0x4c) =
+         (uint)*(ushort *)(iVar2 + 4) - (uint)*(ushort *)(iVar2 + 2);
+    return;
+  case 4:
+    iVar2 = *(int *)(*(int *)(param_1 + 0xec) + 0xc);
+    iVar2 = (uint)*(ushort *)(iVar2 + 6) - (uint)*(ushort *)(iVar2 + 4);
+switchD_0097b796_caseD_1:
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x4c) = iVar2;
+    return;
+  default:
+    return;
+  }
+}
+
+
+
+// ===== FUN_0097b840 @ 0097b840 (requested 0x0097b840) =====
+
+void __fastcall FUN_0097b840(int param_1)
+
+{
+  ushort *puVar1;
+  int iVar2;
+  int iVar3;
+  
+  iVar2 = 0;
+  if (*(int *)(*(int *)(param_1 + 0xf0) + 8) == 0) {
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x24) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x28) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x50) = 0;
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x54) = 0;
+    return;
+  }
+  *(uint *)(*(int *)(param_1 + 0x11c) + 0x24) = (uint)**(ushort **)(*(int *)(param_1 + 0xf0) + 0xc);
+  switch(*(undefined4 *)(*(int *)(param_1 + 0xf0) + 8)) {
+  case 1:
+    *(undefined4 *)(*(int *)(param_1 + 0x11c) + 0x28) = 0;
+    goto switchD_0097b89c_default;
+  case 2:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xf0) + 0xc);
+    iVar3 = (int)ROUND((float)(int)((uint)puVar1[1] - (uint)*puVar1) * *(float *)(param_1 + 0x118));
+    break;
+  case 3:
+  case 4:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xf0) + 0xc);
+    iVar3 = (uint)puVar1[1] - (uint)*puVar1;
+    break;
+  default:
+    goto switchD_0097b89c_default;
+  }
+  *(int *)(*(int *)(param_1 + 0x11c) + 0x28) = iVar3;
+switchD_0097b89c_default:
+  iVar3 = *(int *)(param_1 + 0x11c);
+  *(int *)(iVar3 + 0x50) = *(int *)(iVar3 + 0x28) + *(int *)(iVar3 + 0x24);
+  switch(*(undefined4 *)(*(int *)(param_1 + 0xf0) + 8)) {
+  case 1:
+    goto switchD_0097b916_caseD_1;
+  case 2:
+    puVar1 = *(ushort **)(*(int *)(param_1 + 0xf0) + 0xc);
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x54) =
+         (int)ROUND((1.0 - *(float *)(param_1 + 0x118)) *
+                    (float)(int)((uint)puVar1[1] - (uint)*puVar1));
+    return;
+  case 3:
+    iVar2 = *(int *)(*(int *)(param_1 + 0xf0) + 0xc);
+    *(uint *)(*(int *)(param_1 + 0x11c) + 0x54) =
+         (uint)*(ushort *)(iVar2 + 4) - (uint)*(ushort *)(iVar2 + 2);
+    return;
+  case 4:
+    iVar2 = *(int *)(*(int *)(param_1 + 0xf0) + 0xc);
+    iVar2 = (uint)*(ushort *)(iVar2 + 6) - (uint)*(ushort *)(iVar2 + 4);
+switchD_0097b916_caseD_1:
+    *(int *)(*(int *)(param_1 + 0x11c) + 0x54) = iVar2;
+    return;
+  default:
+    return;
+  }
+}
+
+
+

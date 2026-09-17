@@ -439,7 +439,8 @@ float DoodadCullRadius(CM2Model* m, float scale) {
         }
     }
 
-    return r;
+    // A prop with emitters reaches past its mesh: a brazier's sphere is its bowl, not its flames.
+    return r + ParticleFxCullExtent(m, scale);
 }
 
 // The world-space centre of a doodad's bounding sphere. The sphere is centred on the mesh (often
@@ -4522,7 +4523,9 @@ void TerrainUpdateView() {
 
         for (uint32_t i = 0; i < tile.doodadCount; i++) {
             C3Vector c = DoodadCullCenter(tile.doodads[i]);
-            bool vis = SphereVisible(c, DoodadCullRadius(tile.doodads[i], tile.doodadScale[i]));
+            float r = DoodadCullRadius(tile.doodads[i], tile.doodadScale[i]);
+            bool vis = SphereVisible(c, r);
+
             tile.doodads[i]->SetVisible(vis ? 1 : 0);
             tile.doodads[i]->SetAnimating(vis ? 1 : 0);
         }
@@ -4533,7 +4536,9 @@ void TerrainUpdateView() {
 
                 for (uint32_t i = 0; i < w.doodadCount; i++) {
                     C3Vector c = DoodadCullCenter(w.doodads[i]);
-                    bool vis = SphereVisible(c, DoodadCullRadius(w.doodads[i], w.doodadScale[i]));
+                    float r = DoodadCullRadius(w.doodads[i], w.doodadScale[i]);
+                    bool vis = SphereVisible(c, r);
+
                     w.doodads[i]->SetVisible(vis ? 1 : 0);
                     w.doodads[i]->SetAnimating(vis ? 1 : 0);
                 }
@@ -5224,6 +5229,7 @@ void BlobShadowsEnd() {
 bool TerrainSphereVisible(const C3Vector& center, float radius) {
     return SphereVisible(center, radius);
 }
+
 
 int32_t TerrainCameraLiquidKind() {
     return s_cameraLiquidKind;

@@ -1,4 +1,5 @@
 #include "world/ParticleFx.hpp"
+#include <cstdio>
 #include "world/Terrain.hpp"
 #include "world/CWorld.hpp"
 #include "model/CM2Model.hpp"
@@ -15,12 +16,19 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <common/Time.hpp>
 #include <vector>
 
 namespace {
 
 const uint32_t MAX_PARTICLES_PER_EMITTER = 96;
-const uint32_t MAX_QUADS_PER_FRAME = 6000;
+// Per-frame quad ceiling. The reference has none -- it thins by the particleDensity CVar -- so this
+// only exists to bound a pathological frame. It is spent NEAREST FIRST (see ParticleFxRender):
+// when it was handed out in map order, which is pointer order, whichever emitters happened to sit
+// first in memory took the whole 6000 and the fires in front of the camera got nothing. Which
+// ones lost out changed with what was in view, so it looked like flames vanishing as the camera
+// moved.
+const uint32_t MAX_QUADS_PER_FRAME = 24000;
 
 struct Particle {
     C3Vector pos;
@@ -39,7 +47,25 @@ struct EmitterState {
 struct ModelParticles {
     std::vector<EmitterState> emitters;
     uint32_t lastFrame = 0;
+
+    // Farthest any live particle sat from the model origin at the last step, plus its half size.
+    float liveExtent = 0.0f;
 };
+
+// Static reach per M2Data, computed once from the emitter definitions.
+std::map<const M2Data*, float> s_staticExtent;
+
+// First key of a float track, or the default when the track is empty. Emitter tracks are almost
+// always constant, so the first key is the value; for an animated one it is still a fair estimate.
+float TrackFirstKey(const M2Track<float>& track, float def) {
+    if (!track.sequenceKeys.Count()) {
+        return def;
+    }
+
+    const auto& keys = track.sequenceKeys[0].keys;
+
+    return keys.Count() ? keys[0] : def;
+}
 
 std::map<CM2Model*, ModelParticles> s_models;
 uint32_t s_frame = 0;
@@ -164,6 +190,58 @@ void ParticleFxForgetModel(CM2Model* model) {
     s_models.erase(model);
 }
 
+float ParticleFxCullExtent(CM2Model* model, float scale) {
+    if (!model || !model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
+        return 0.0f;
+    }
+
+    M2Data* data = model->m_shared->m_data;
+    uint32_t emitterCount = data->particles.Count();
+
+    if (!emitterCount) {
+        return 0.0f;
+    }
+
+    auto cached = s_staticExtent.find(data);
+    float reach;
+
+    if (cached != s_staticExtent.end()) {
+        reach = cached->second;
+    } else {
+        reach = 0.0f;
+
+        for (uint32_t e = 0; e < emitterCount; e++) {
+            const M2Particle& def = data->particles[e];
+
+            float speed = TrackFirstKey(def.speedTrack, 1.0f);
+            float life = TrackFirstKey(def.lifeTrack, 1.0f);
+            float width = TrackFirstKey(def.widthTrack, 0.0f);
+            float length = TrackFirstKey(def.lengthTrack, 0.0f);
+            float offset = sqrtf(def.position.x * def.position.x + def.position.y * def.position.y + def.position.z * def.position.z);
+
+            // Gravity and variation can carry a particle further than speed x life; the halved
+            // extra covers the common case without turning every torch into a 40 yard sphere.
+            float r = offset + fabsf(speed) * fabsf(life) * 1.5f + (fabsf(width) + fabsf(length)) * 0.5f;
+
+            if (r > reach) {
+                reach = r;
+            }
+        }
+
+        s_staticExtent[data] = reach;
+    }
+
+    reach *= scale;
+
+    auto live = s_models.find(model);
+
+    if (live != s_models.end() && live->second.liveExtent > reach) {
+        reach = live->second.liveExtent;
+    }
+
+    return reach;
+}
+
 void ParticleFxUpdateModel(CM2Model* model, float dt) {
     // m_data is assigned when the async read lands, but the array offsets inside it are only
     // patched by M2Init afterwards, and m_m2DataLoaded is set only once that succeeds. Touching a
@@ -188,6 +266,7 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
     }
 
     const C44Matrix& M = model->matrixB4; // model -> world
+    float liveExtent = 0.0f;
 
     for (uint32_t e = 0; e < emitterCount; e++) {
         const M2Particle& def = data->particles[e];
@@ -234,6 +313,17 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
             p.pos.x += p.vel.x * dt;
             p.pos.y += p.vel.y * dt;
             p.pos.z += p.vel.z * dt;
+
+            {
+                float dx = p.pos.x - M.d0;
+                float dy = p.pos.y - M.d1;
+                float dz = p.pos.z - M.d2;
+                float d = sqrtf(dx * dx + dy * dy + dz * dz) + (fabsf(width) + fabsf(length)) * 0.5f;
+
+                if (d > liveExtent) {
+                    liveExtent = d;
+                }
+            }
             i++;
         }
 
@@ -279,6 +369,8 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
             st.particles.push_back(p);
         }
     }
+
+    mp.liveExtent = liveExtent;
 }
 
 void ParticleFxEndFrame() {
@@ -337,11 +429,23 @@ void ParticleFxRender() {
 
     s_quads.clear();
 
+    // Walk the live emitter models nearest first, so if the quad ceiling is ever hit it is the far
+    // ones that go without.
+    //
+    // Only models whose owner updated them THIS frame are known to be alive: the map is keyed on a
+    // raw CM2Model*, and a unit that despawns releases its model without telling us, so
+    // dereferencing a stale key is a use-after-free. Stale entries are aged out by key alone in
+    // ParticleFxEndFrame, which never touches the pointer.
+    struct LiveModel {
+        float dist;
+        CM2Model* model;
+        ModelParticles* mp;
+    };
+
+    static std::vector<LiveModel> s_live;
+    s_live.clear();
+
     for (auto& entry : s_models) {
-        // Only models whose owner updated them THIS frame are known to be alive: the map is keyed
-        // on a raw CM2Model*, and a unit that despawns releases its model without telling us, so
-        // dereferencing a stale key is a use-after-free. Stale entries are aged out by key alone
-        // in ParticleFxEndFrame, which never touches the pointer.
         if (entry.second.lastFrame != s_frame) {
             continue;
         }
@@ -352,8 +456,21 @@ void ParticleFxRender() {
             continue;
         }
 
+        float dx = model->matrixB4.d0 - cameraPos.x;
+        float dy = model->matrixB4.d1 - cameraPos.y;
+        float dz = model->matrixB4.d2 - cameraPos.z;
+
+        s_live.push_back({ dx * dx + dy * dy + dz * dz, model, &entry.second });
+    }
+
+    std::sort(s_live.begin(), s_live.end(), [](const LiveModel& a, const LiveModel& b) {
+        return a.dist < b.dist;
+    });
+
+    for (const LiveModel& lm : s_live) {
+        CM2Model* model = lm.model;
         M2Data* data = model->m_shared->m_data;
-        ModelParticles& mp = entry.second;
+        ModelParticles& mp = *lm.mp;
 
         for (size_t e = 0; e < mp.emitters.size() && e < data->particles.Count(); e++) {
             const M2Particle& def = data->particles[e];
@@ -433,8 +550,27 @@ void ParticleFxRender() {
         return;
     }
 
-    // Farthest first, then by texture to keep state changes down among equals
+    // Order: additive quads (3, 4 -- fire, glow) are order-independent, so they group by texture
+    // and are drawn first, in as few batches as their textures allow. Everything alpha-blended
+    // follows, farthest first, since for those the order is the picture. Walking the nearest
+    // models first and then sorting purely by distance produced one batch per texture change --
+    // thousands of draw calls a frame with a fortress of candles in view -- which was the lag.
     std::sort(s_quads.begin(), s_quads.end(), [](const Quad& a, const Quad& b) {
+        bool addA = a.blend == 3 || a.blend == 4;
+        bool addB = b.blend == 3 || b.blend == 4;
+
+        if (addA != addB) {
+            return addA;
+        }
+
+        if (addA) {
+            if (a.texture != b.texture) {
+                return a.texture < b.texture;
+            }
+
+            return a.blend < b.blend;
+        }
+
         return a.dist > b.dist;
     });
 
@@ -451,13 +587,22 @@ void ParticleFxRender() {
 
     size_t i = 0;
 
+    // Largest batch handed to the device at once. s_vi holds 16-bit indices, so a batch can never
+    // address more than 65536 vertices; well below that, a lock of several thousand quads is what
+    // used to stall the frame. A run larger than this is drawn in consecutive slices, in order --
+    // the old code stopped at the cap and then skipped the REST OF THE RUN, and since the quads are
+    // sorted farthest first the quads it dropped were the nearest ones. With the camera low enough
+    // to see a whole fortress of candles and torches, which all share one flame texture, that was
+    // every nearby fire disappearing at once.
+    const size_t MAX_BATCH_QUADS = 2048;
+
     while (i < s_quads.size()) {
-        // Run of quads sharing texture and blend
+        // Run of quads sharing texture and blend, capped at one batch
         size_t j = i;
         HTEXTURE texture = s_quads[i].texture;
         uint8_t blend = s_quads[i].blend;
 
-        while (j < s_quads.size() && s_quads[j].texture == texture && s_quads[j].blend == blend) {
+        while (j < s_quads.size() && j - i < MAX_BATCH_QUADS && s_quads[j].texture == texture && s_quads[j].blend == blend) {
             j++;
         }
 
@@ -466,13 +611,6 @@ void ParticleFxRender() {
         for (size_t k = i; k < j; k++) {
             const Quad& q = s_quads[k];
             uint16_t base = static_cast<uint16_t>(s_vp.size());
-
-            // s_vi holds 16-bit indices, so a batch cannot address more than 65536 vertices.
-            // Without this the base index silently wraps and the quads reference whatever sits at
-            // the start of the batch, and the oversized stream buffer is what fails to lock.
-            if (s_vp.size() + 4 > 0xFFFF) {
-                break;
-            }
 
             for (int32_t c = 0; c < 4; c++) {
                 s_vp.push_back(q.pos[c]);
@@ -512,6 +650,7 @@ void ParticleFxRender() {
         );
         GxDrawLockedElements(GxPrim_Triangles, static_cast<uint32_t>(s_vi.size()), s_vi.data());
         GxPrimUnlockVertexPtrs();
+
 
         i = j;
     }

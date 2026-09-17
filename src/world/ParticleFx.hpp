@@ -2,6 +2,7 @@
 #define WORLD_PARTICLE_FX_HPP
 
 #include <cstdint>
+#include <tempest/Vector.hpp>
 
 class CM2Model;
 
@@ -22,5 +23,18 @@ void ParticleFxRender();
 
 // Simulations of models not updated for a while are released; call once per frame
 void ParticleFxEndFrame();
+
+// How far, in world yards, this model's emitters can reach beyond its origin; 0 for a model with no
+// emitters. Add it to the model's cull radius.
+//
+// A model's own bounding sphere covers its mesh, and for a brazier or a torch that is the base, not
+// the flames. Emitters were only stepped and drawn for models that passed the frustum test, so the
+// moment a fire's base left the screen its flames vanished -- and came back with a jolt when the
+// base returned. The reference merges each emitter's own bounding box into the model's animated
+// bounds; this is the same idea: the reach is the larger of a static estimate from the emitter
+// definitions (speed x life, plus the quad size, from the model's origin) and the live extent of
+// the particles from the last step.
+float ParticleFxCullExtent(CM2Model* model, float scale);
+
 
 #endif
