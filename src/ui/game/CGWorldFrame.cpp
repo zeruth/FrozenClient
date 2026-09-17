@@ -7,6 +7,13 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "world/Terrain.hpp"
+#include "world/OverheadIcons.hpp"
+#include "gx/Texture.hpp"
+#include "component/CCharacterComponent.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include <common/Time.hpp>
+#include <cstdio>
+#include "object/client/QuestStatusCache.hpp"
 #include "world/MapShadow.hpp"
 #include "world/ParticleFx.hpp"
 #include "model/CM2Scene.hpp"
@@ -273,6 +280,10 @@ void CGWorldFrame::OnWorldRender() {
                         radius = 2.0f;
                     }
 
+                    // Emitters reach past the mesh (a fire's sphere is its base, not its flames), and
+                    // they are only stepped for models that pass this test.
+                    radius += ParticleFxCullExtent(object->m_model, scale);
+
                     // The bounding sphere is centred on the mesh (usually mid-height), not the feet
                     // where the object sits, so offset the cull centre by the model-space box centre
                     // rotated by the facing and scaled. Without this a tall model pops out when its
@@ -291,6 +302,7 @@ void CGWorldFrame::OnWorldRender() {
                 }
 
                 bool vis = TerrainSphereVisible(center, radius);
+
                 object->m_model->SetVisible(vis ? 1 : 0);
                 object->m_model->SetAnimating(vis ? 1 : 0);
             }
@@ -475,9 +487,11 @@ void CGWorldFrame::OnWorldRender() {
             LiquidRender(1);
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
+            OverheadIconsRender();
         } else {
             if (scene) { scene->Draw(M2PASS_2); }
-            ParticleFxRender(); // the emitters' quads belong with pass 2 in the reference
+            ParticleFxRender();
+            OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
             LiquidRender(1); // transparent water/ocean, sorted farthest first (liquid bucket 1)
             WeatherRender();
             if (scene) { scene->Draw(M2PASS_1); }
@@ -529,6 +543,9 @@ void CGWorldFrame::OnWorldUpdate() {
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
     TerrainUpdate(this->m_camera->Position());
+
+    // Poll the server for questgiver status; nothing populates the overhead markers otherwise.
+    QuestStatusUpdate(OsGetAsyncTimeMs());
 
     // TODO the map entities carry this in the original; until CMap is ported every visible object
     // places its model itself

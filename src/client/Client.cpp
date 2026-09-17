@@ -2,6 +2,8 @@
 #include "ui/game/CGActionBar.hpp"
 #include "object/client/AuraCache.hpp"
 #include "object/client/CastCache.hpp"
+#include "object/client/QuestStatusCache.hpp"
+#include "object/client/SpellBook.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/NameCache.hpp"
 #include "client/Client.hpp"
@@ -114,6 +116,8 @@ void ClientInitializeGameTime() {
     NameCacheRegisterHandlers();
     AuraCacheRegisterHandlers();
     CastCacheRegisterHandlers();
+    QuestStatusRegisterHandlers();
+    SpellBookRegisterHandlers();
     ClientServices::SetMessageHandler(SMSG_EMOTE, &ReceiveEmote, nullptr);
 
     // TODO initialize s_forcedChangeCallbacks
