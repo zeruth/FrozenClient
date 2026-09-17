@@ -20,7 +20,10 @@
 #include "db/rec/SpellRec.hpp"
 #include "db/rec/SpellIconRec.hpp"
 #include "db/rec/CreatureModelDataRec.hpp"
+#include "db/rec/AnimationDataRec.hpp"
 #include "db/rec/EmotesRec.hpp"
+#include "db/rec/SkillLineRec.hpp"
+#include "db/rec/SkillLineAbilityRec.hpp"
 #include "db/rec/LightRec.hpp"
 #include "db/rec/LightParamsRec.hpp"
 #include "db/rec/LightSkyboxRec.hpp"
@@ -65,7 +68,10 @@ extern WowClientDB<GameObjectDisplayInfoRec> g_gameObjectDisplayInfoDB;
 extern WowClientDB<SpellRec> g_spellDB;
 extern WowClientDB<SpellIconRec> g_spellIconDB;
 extern WowClientDB<CreatureModelDataRec> g_creatureModelDataDB;
+extern WowClientDB<AnimationDataRec> g_animationDataDB;
 extern WowClientDB<EmotesRec> g_emotesDB;
+extern WowClientDB<SkillLineRec> g_skillLineDB;
+extern WowClientDB<SkillLineAbilityRec> g_skillLineAbilityDB;
 extern WowClientDB<LightRec> g_lightDB;
 extern WowClientDB<LightParamsRec> g_lightParamsDB;
 extern WowClientDB<LightSkyboxRec> g_lightSkyboxDB;

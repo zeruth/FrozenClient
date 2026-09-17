@@ -2,7 +2,7 @@
 #include "util/SFile.hpp"
 
 const char* SpellRec::GetFilename() {
-    return "DBFilesClient\Spell.dbc";
+    return "DBFilesClient\\Spell.dbc";
 }
 
 uint32_t SpellRec::GetNumColumns() {
@@ -37,6 +37,8 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
     this->m_ID = static_cast<int32_t>(columns[0]);
     this->m_spellIconID = static_cast<int32_t>(columns[SpellRec::COLUMN_ICON]);
     this->m_name = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_NAME]] : "";
+    this->m_rank = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_RANK]] : "";
+    this->m_attributes = columns[SpellRec::COLUMN_ATTRIBUTES];
 
     return true;
 }

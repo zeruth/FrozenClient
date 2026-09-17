@@ -17,12 +17,16 @@ class SFile;
 class SpellRec {
     public:
         static const int32_t COLUMN_COUNT = 234;
+        static const int32_t COLUMN_ATTRIBUTES = 4;   // SPELL_ATTR0_*; 0x40 is PASSIVE
         static const int32_t COLUMN_ICON = 133;
-        static const int32_t COLUMN_NAME = 136;
+        static const int32_t COLUMN_NAME = 136;       // 17 locale columns, then
+        static const int32_t COLUMN_RANK = 153;       // "Rank N", or "" for an unranked spell
 
         int32_t m_ID;
         int32_t m_spellIconID;
         const char* m_name;
+        const char* m_rank;
+        uint32_t m_attributes;
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

@@ -2,7 +2,7 @@
 #include "util/SFile.hpp"
 
 const char* SpellIconRec::GetFilename() {
-    return "DBFilesClient\SpellIcon.dbc";
+    return "DBFilesClient\\SpellIcon.dbc";
 }
 
 uint32_t SpellIconRec::GetNumColumns() {
