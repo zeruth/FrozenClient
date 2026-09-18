@@ -1012,7 +1012,23 @@ def queue_next(args, refs, whoa, m):
     def weight(a):
         return (refs[a]['callers'] + 1) * refs[a]['size']
 
-    if args.fix:
+    if args.cluster:
+        # a subsystem: the root plus every unlinked function reachable through its callees, to
+        # --depth levels, so what one port needs is decompiled in one run instead of one at a time
+        root = args.cluster.lower().replace('0x', '').zfill(8)
+        seen, frontier, pool = {root}, [root], [root]
+        for _ in range(args.depth):
+            nxt = []
+            for a in frontier:
+                for c in refs.get(a, {}).get('callees', []):
+                    if c in refs and c not in seen and not refs[c]['thunk'] and not refs[c]['excluded']:
+                        seen.add(c)
+                        if c not in m:
+                            pool.append(c)
+                            nxt.append(c)
+            frontier = nxt
+        args.next = max(args.next or 0, len(pool))
+    elif args.fix:
         pool = [a for a in m if a in real and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
     elif args.helpers:
         # the small, everywhere-called leaves (allocators, string ops, CVar lookup): every one of
@@ -1024,7 +1040,8 @@ def queue_next(args, refs, whoa, m):
         pool = [a for a in pool if a in sp]
     if args.module:
         pool = [a for a in pool if refs[a]['module'].lower() == args.module.lower()]
-    pool.sort(key=(lambda a: refs[a]['callers']) if args.helpers else weight, reverse=True)
+    if not args.cluster:
+        pool.sort(key=(lambda a: refs[a]['callers']) if args.helpers else weight, reverse=True)
     picks = pool[:args.next]
     if not picks:
         print('nothing to queue')
@@ -1068,6 +1085,8 @@ def main():
     ap.add_argument('--module', metavar='FILE.cpp', help='with --next: only functions anchored to this reference module')
     ap.add_argument('--fix', action='store_true', help='with --next: queue linked-but-unfaithful ports instead of unlinked functions')
     ap.add_argument('--helpers', action='store_true', help='with --next: queue the most-called unlinked leaves (allocators, string ops ...)')
+    ap.add_argument('--cluster', metavar='ADDR', help='decompile this reference function and every unlinked function it reaches within --depth calls')
+    ap.add_argument('--depth', type=int, default=2, help='with --cluster: how many call levels to follow (default 2)')
     args = ap.parse_args()
 
     if args.export or not os.path.exists(REF_JSONL):
@@ -1109,7 +1128,7 @@ def main():
         show(args.show, refs, whoa, m)
         return
 
-    if args.next:
+    if args.next or args.cluster:
         queue_next(args, refs, whoa, m)
         return
 

@@ -111,5 +111,11 @@
   "0076e760": { "whoa": "SStrCmp", "status": "ported", "note": "case-sensitive compare used by CVarCommandHandler to decide whether default/reset/pending differ" },
   "0076fb80": { "whoa": "SStrToFloat", "status": "ported", "note": "CVarCommandHandler stores it as m_floatValue next to SStrToInt (0076f0d0)" },
 
+  "00832840": { "whoa": "CM2Model::UnsetBoneSequence", "status": "ported", "note": "SetBoneSequence's sequenceId == -1 path; deferred as call type 6 when not loaded" },
+  "00831ec0": { "whoa": "CM2Model::CancelDeferredSequences", "status": "ported" },
+  "00826c40": { "whoa": "CM2Model::SetPrimaryBoneSequence", "status": "ported" },
+  "00826dd0": { "whoa": "CM2Model::SetSecondaryBoneSequence", "status": "ported" },
+  "00831c30": { "whoa": "CM2Model::SetBoneSequenceDeferred", "status": "stub", "note": "the path for sequences without flag 0x20 (alias chains via +0x3e when flag 0x10): queues a CM2SequencePlayBack {model, bone, time, speed, fallback, flags} on the shared model's per-sequence playback list (FUN_0083da10 finds/creates it; the RTTI name is .?AUCM2SequencePlayBack@@). That list is the external .anim sequence-loading subsystem, which whoa lacks; port it as a unit (--cluster 00831c30), not piecemeal" },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }

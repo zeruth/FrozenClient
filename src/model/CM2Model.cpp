@@ -2004,6 +2004,7 @@ void CM2Model::SetAnimating(int32_t animating) {
     }
 }
 
+// ref: FUN_00832ab0
 void CM2Model::SetBoneSequence(uint32_t boneId, uint32_t sequenceId, uint32_t a4, uint32_t time, float a6, int32_t a7, int32_t a8) {
     if (sequenceId == -1) {
         this->UnsetBoneSequence(boneId, a7, a8);

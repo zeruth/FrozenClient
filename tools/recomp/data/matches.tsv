@@ -1109,9 +1109,14 @@ addr	how	whoa	evidence
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
 008269c0	annotated	CM2Model::Sub8269C0	tag in src/model/CM2Model.cpp
+00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence
+00826c40	override	CM2Model::SetPrimaryBoneSequence	
+00826dd0	override	CM2Model::SetSecondaryBoneSequence	
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
 00831630	callgraph	CM2Model::AttachToParent	only unmatched callee of 004e0040=CCharacterCreation::SetCharCustomizeModel
-00832840	callorder	CM2Model::UnsetBoneSequence	same slot between linked calls in 00832ab0=CM2Model::SetBoneSequence
+00831c30	override	CM2Model::SetBoneSequenceDeferred	
+00831ec0	override	CM2Model::CancelDeferredSequences	
+00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"

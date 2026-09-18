@@ -16712,6 +16712,51 @@
   "whoa": "CM2Model::Sub8269C0",
   "whoaSize": 0
  },
+ "00826b00": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 319,
+  "status": "ported",
+  "whoa": "CM2Model::SetupBoneSequence",
+  "whoaSize": 0
+ },
+ "00826c40": {
+  "branchRatio": 0.643,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 400,
+  "status": "ported",
+  "whoa": "CM2Model::SetPrimaryBoneSequence",
+  "whoaSize": 932
+ },
+ "00826dd0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 132,
+  "status": "ported",
+  "whoa": "CM2Model::SetSecondaryBoneSequence",
+  "whoaSize": 0
+ },
  "00826e60": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -16742,6 +16787,36 @@
   "whoa": "CM2Model::AttachToParent",
   "whoaSize": 919
  },
+ "00831c30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 487,
+  "status": "stub",
+  "whoa": "CM2Model::SetBoneSequenceDeferred",
+  "whoaSize": 0
+ },
+ "00831ec0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 246,
+  "status": "ported",
+  "whoa": "CM2Model::CancelDeferredSequences",
+  "whoaSize": 0
+ },
  "00832840": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -16750,7 +16825,7 @@
   "files": [
    "src/model/CM2Model.cpp"
   ],
-  "how": "callorder",
+  "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
   "status": "ported",
@@ -16760,8 +16835,8 @@
  "00832ab0": {
   "branchRatio": 0.909,
   "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/model/CM2Model.cpp"
   ],
