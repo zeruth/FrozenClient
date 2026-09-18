@@ -3,7 +3,8 @@
 A from-scratch reimplementation of the World of Warcraft 3.3.5a (build 12340) client in C++, forked
 from [whoa](https://github.com/whoahq/whoa). `origin` is the user's fork (FrozenClient); work lands
 on `develop` as scoped `type(subsystem)` commits per CONTRIBUTING.md. The long-term goal is an
-Android port; the near-term goal is **rendering parity with the reference client**.
+Android port; the goal for **1.0.0 is 100% accuracy against the reference client**, measured
+function by function by the recomp cycle below; rendering parity is the first visible milestone.
 
 Read CONTRIBUTING.md before writing code: this is a decompilation project, so match the original's
 function names, signatures, layouts and behaviour. When the original name is unknown, name by
@@ -46,6 +47,84 @@ runs as a service. Test account TEST/TEST; the scene-compare harness uses SCENE/
   Say plainly what has and has not been observed; do not describe unverified work as working.
 - Prefer one change, one run, one observation over batching many unverified changes. A long run of
   unverified iterations on 2026-09-14 produced a client that crashed on the first launch.
+
+## The recomp cycle: road to 1.0.0
+
+**1.0.0 means 100% accuracy against the reference 3.3.5a (12340) client**, function for function.
+Not "looks right" -- every reference function has a whoa counterpart that makes the same calls in
+the same order, and the ones that matter have been seen behaving the same at runtime. Guessing an
+implementation from what the screen looks like is how the graphics bugs got in; it is no longer an
+acceptable way to write code here. **Decompile it, port it, tag it, measure it, verify it.**
+
+### The instrument
+
+`tools/recomp/` (README there) links the reference's 27k functions to whoa's and writes
+`docs/recomp/REPORT.md` -- the single source of truth for where the port stands. It tracks three
+percentages that are never rolled into one:
+
+| number | meaning | how it moves |
+|---|---|---|
+| **linked** | a reference function has a known whoa counterpart | a `// ref: FUN_xxxxxxxx` tag, an `overrides.json` entry, or an automatic match |
+| **faithful** | linked, not a stub, and the port reproduces >= 80% of the reference's call sequence in order (plus branch/constant checks as they land) | porting from the decompilation instead of from memory |
+| **verified** | a run showed it behaving like the reference | a trace or scene compare, recorded in `overrides.json` with a note |
+
+The report also gives Lua binding coverage per table (the reference registers 2,512 names),
+coverage per reference module, the ranked queue of what to port next, and a history table with one
+row per run -- that table is the progress log. Read it before deciding what to do.
+
+### One cycle
+
+```
+python tools/recomp/recomp.py                    # 1. where are we (report + history row)
+python tools/recomp/recomp.py --next 20 --spine  # 2. decompile the next batch -> docs/recomp/queue/<addr>.c
+                                                 #    (--helpers for the most-called leaves, --fix for
+                                                 #     linked-but-unfaithful ports, --module Map.cpp to focus)
+# 3. for each queued function: read the decompilation, find or write the whoa counterpart,
+#    matching names/signatures/layouts (CONTRIBUTING.md), put  // ref: FUN_<addr>  above it.
+#    Identified-but-not-ported? Still tag it (or add it to overrides.json with a note).
+#    CRT / STL / fmod / nullsub? overrides.json status "excluded" so it leaves the denominator.
+cmake --build build --config Release --target Whoa   # 4. build; install exe + PDB with the timestamp guard
+python tools/recomp/recomp.py --pdb                   # 5. re-measure; the totals line prints the delta
+git commit                                            # 6. one scoped commit per cycle; put the delta in the
+                                                      #    message, e.g. "linked 1425->1490, faithful 129->160"
+```
+
+Gates that end a cycle early: the build fails; a previously linked function lost fidelity; a Lua
+binding disappeared; the report's delta is negative. Fix, or revert the cycle -- do not commit past a
+regression.
+
+### Verification runs
+
+Static fidelity says "same structure"; only a run says "same behaviour". Ports accumulate over
+cycles and get verified in batches: `tools/scene-compare/` for pixels, and the call tracers (in
+progress: a breakpoint tracer on the reference via `tools/crashstack.py`'s debugger attach, and a
+`WHOA_TRACE` entry log in whoa over the same map) for per-frame call sequences. A function becomes
+`verified` only through one of those, recorded in `overrides.json` with what was seen. Launching
+clients for this is still governed by the working agreement above: only when the user has said so.
+
+### Priorities, in order
+
+1. **Seeds.** The most-called unlinked leaves (`--next 40 --helpers`): each one identified lifts the
+   fidelity of hundreds of callers and feeds the call-graph matchers. Cheap, do a batch every few
+   cycles.
+2. **The world spine** (`--next 20 --spine`): everything reachable from `CGWorldFrame::OnFrameRender`,
+   `CWorld::Update`, `CMap::Render`, biggest and most-called first. This is the M2 model code, the
+   map, the scene -- where the visible bugs live.
+3. **Unfaithful ports** (`--next 20 --fix`): things whoa already has that do not make the reference's
+   calls. These are the guesses; re-port them from the decompilation.
+4. **Lua tables** with the most missing names (report section), so FrameXML stops hitting nil.
+
+### Rules that keep the measurement honest
+
+- Never edit `docs/recomp/REPORT.md` or `data/map.json`; they are generated. Facts go in
+  `overrides.json` or `// ref:` tags.
+- A tag is a claim that the whoa function IS that reference function. Do not tag a "similar" one.
+- `verified` needs a run. A clean build, a passing fidelity score, or a plausible reading of the
+  decompilation is not verification.
+- When a port must diverge (platform, 64-bit, a reference bug not worth reproducing), record it as
+  `status: "diverged"` with the reason. Silent divergence is a bug.
+- Re-export the reference (`--export`) only after re-analysing in Ghidra; commit the new
+  `data/ref-functions.jsonl` with it.
 
 ## Debugging tools
 
