@@ -33,13 +33,17 @@ addr	how	whoa	evidence
 0047afe0	override	CDataStore::Put	
 0047b0a0	override	CDataStore::Put	
 0047b100	override	CDataStore::Put	
+0047b1c0	callorder	CDataStore::PutArray	same slot between linked calls in 0047b300=CDataStore::PutString
 0047b290	override	CDataStore::FetchRead	
+0047b300	override	CDataStore::PutString	
 0047b340	override	CDataStore::Get	
 0047b3c0	override	CDataStore::Get	
 0047b400	override	CDataStore::Get	
 0047b440	override	CDataStore::Get	
 0047b480	override	CDataStore::GetString	
 0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
+0047bf50	callorder	HandleCreate	same slot between linked calls in 004b8c80=TextureCreate
+0047bf90	callorder	CoordinateSetAspectRatio	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	callorder	NDCToDDC	same slot between linked calls in 00510a10=Script_GetCursorPosition
 0047c050	callgraph	CSimpleScrollFrame::GetObjectType	only unmatched callee of 00972630=CSimpleScrollFrame_GetHorizontalScroll, 00972690=CSimpleScrollFrame_GetVerticalScroll, 009726f0=CSimpleScrollFrame_GetHorizontalScrollRange
@@ -124,7 +128,7 @@ addr	how	whoa	evidence
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	string	CSimpleFrame::LoadXML	unique "Attributes"
-00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject
+00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
@@ -231,6 +235,7 @@ addr	how	whoa	evidence
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004d1050	string	SI2::RegisterCVars	unique "Enables Hardware"
 004d1600	string	SI2::RegisterUserCVars	unique "1048576"
+004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 0079e7c0=CMap::MapMemInitialize, 0081c6e0=M2Initialize
 004d3790	override	ClntObjMgrGetActivePlayer	
 004d4ac0	string	ClntObjMgrInitializeShared	score 0.50 shared ObjUsage
 004d4db0	override	ClntObjMgrObjectPtr	
@@ -292,6 +297,7 @@ addr	how	whoa	evidence
 004e0b50	string	Script_CycleCharCustomization	unique "Usage: CycleCharCustomization(index, delta)"
 004e0c10	string	Script_SetCharacterCreateFacing	unique "Usage: SetCharacterCreateFacing(degrees)"
 004e0d00	string	Script_IsRaceClassValid	unique "Usage: IsRaceClassValid(raceIndex, classIndex)"
+004e1540	callgraph	CCharacterCreation::SetSelectedSex	only unmatched callee of 004e1a60=Script_SetSelectedSex
 004e1880	table	Script_GetAvailableRaces	binding "GetAvailableRaces" in s_ScriptFunctions ~ table 00ac4240
 004e19a0	table	Script_GetClassesForRace	binding "GetClassesForRace" in s_ScriptFunctions ~ table 00ac4240
 004e1a60	table	Script_SetSelectedSex	binding "SetSelectedSex" in s_ScriptFunctions ~ table 00ac4240
@@ -319,6 +325,7 @@ addr	how	whoa	evidence
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	string	CCharacterComponent::Initialize	unique "CCharacterComponent"
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
+004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f8ea0	override	CGWorldFrame::OnWorldRender	
 004faf90	override	CGWorldFrame::RenderWorld	
 004fb080	override	CGWorldFrame::OnFrameRender	
@@ -697,7 +704,9 @@ addr	how	whoa	evidence
 0060a450	table	Script_IsLoggedIn	binding "IsLoggedIn" in s_UnitFunctions ~ table 00ad21d8
 0060a490	table	Script_GetPlayerFacing	binding "GetPlayerFacing" in s_UnitFunctions ~ table 00ad21d8
 0060a510	string	Script_FillLocalizedClassList	unique "Usage: FillLocalizedClassList(classTable[, isFemale])"
-0060abf0	string	Script_GetGUIDFromToken	unique "arenapet"
+0060a630	annotated	Script_GetGUIDFromString	tag in src/ui/game/ScriptUtil.cpp
+0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
+0060abf0	annotated	Script_GetGUIDFromToken	tag in src/ui/game/ScriptUtil.cpp
 0060c1c0	callgraph	TooltipThis	only unmatched callee of 0061da20=CGTooltip_IsUnit
 0060c2a0	table	Script_UnitExists	binding "UnitExists" in s_UnitFunctions ~ table 00ad21d8
 0060c350	table	Script_UnitIsVisible	binding "UnitIsVisible" in s_UnitFunctions ~ table 00ad21d8
@@ -940,6 +949,7 @@ addr	how	whoa	evidence
 006909a0	string	CGxDeviceGLES::ISetCaps	unique "GL_EXT_texture_compression_s3tc"
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
+006b0b50	callgraph	lua_type	only unmatched callee of 005a8290=Script_SetActionBarToggles
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
 006b0f40	callorder	CGlueMgr::SetIdleState	same slot between linked calls in 004d8cc0=CGlueMgr::DeleteCharacter
@@ -966,8 +976,10 @@ addr	how	whoa	evidence
 00769c90	string	ConsoleDeviceStereoInitialize	unique "Set stereoscopic rendering convergence depth"
 0076a630	string	RegisterGxCVars	unique "Allow widescreen support"
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
+0076e540	override	SMemAlloc	
 0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
+0076e6e0	override	SStrChr	
 0076e720	callorder	SStrChrR	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0076e780	callgraph	SStrCmpI	only unmatched callee of 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName, 00814f60=StringToDrawLayer
 0076ed20	callgraph	SStrCopy	only unmatched callee of 007714e0=GetExceptionNameWin32
@@ -976,6 +988,7 @@ addr	how	whoa	evidence
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 0076a630=RegisterGxCVars, 0086bd80=OsBuildFontFilePath
 0076f0d0	override	SStrToInt	
+0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
 0076f700	callorder	SStrStr	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0076fb80	callorder	SStrToFloat	same slot between linked calls in 00497070=CSimpleFont::LoadXML, 00815600=LoadXML_Value, 00815740=LoadXML_Dimensions
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
@@ -983,6 +996,7 @@ addr	how	whoa	evidence
 007729b0	callgraph	printf	only unmatched callee of 00772a80=SErrDisplayError
 00772a80	override	SErrDisplayError	
 00772aa0	override	SErrDisplayAppFatal	
+00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
 00774640	override	SCritSect::Enter	
 00774650	callorder	SCritSect::Leave	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 00774740	callorder	SThread::Create	same slot between linked calls in 00469320=WowConnectionNet::Start
@@ -1044,6 +1058,7 @@ addr	how	whoa	evidence
 0081bab0	table	Script_GetNumFrames	binding "GetNumFrames" in s_ScriptFunctions ~ table 00af5848
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	table	Script_GetFramesRegisteredForEvent	binding "GetFramesRegisteredForEvent" in s_ScriptFunctions ~ table 00af5848
+0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
 00824f00	override	CM2Model::IsLoaded	
@@ -1054,6 +1069,7 @@ addr	how	whoa	evidence
 008269c0	annotated	CM2Model::Sub8269C0	tag in src/model/CM2Model.cpp
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
 00831630	callorder	CM2Model::AttachToParent	same slot between linked calls in 004e0040=CCharacterCreation::SetCharCustomizeModel
+00832840	callorder	CM2Model::UnsetBoneSequence	same slot between linked calls in 00832ab0=CM2Model::SetBoneSequence
 00832ab0	override	CM2Model::SetBoneSequence	
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
@@ -1062,22 +1078,27 @@ addr	how	whoa	evidence
 0084dbd0	callorder	lua_gettop	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 0084dbf0	override	lua_settop	
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError
-0084deb0	callorder	lua_type	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject, 0049f610=CSimpleFrame_SetAttribute, 004a2010=CSimpleFrame_CreateTexture
+0084dd70	callorder	lua_replace	same slot between linked calls in 00819730=FrameScript_HandleError
 0084df20	callgraph	lua_pushnumber	only unmatched callee of 005e7fa0=Script_GetInventoryAlertStatus, 0060ddb0=Script_GetCombatRating
 0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
+0084e070	override	lua_tointeger	
 0084e0e0	override	lua_tolstring	
 0084e1c0	callorder	lua_touserdata	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject, 0049db10=CScriptRegion_SetPoint, 0049de40=CScriptRegion_SetAllPoints
 0084e280	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 004a0850=CSimpleFrame_IsMovable, 004a09d0=CSimpleFrame_IsResizable, 004a0f60=CSimpleFrame_IsKeyboardEnabled
 0084e2a0	callgraph	fprintf	only unmatched callee of 0048bc70=CSimpleFontString_GetFieldSize, 0048c7f0=CSimpleTexture_GetTexCoord, 0048d9e0=CSimpleFontString_GetShadowColor
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
+0084e3a0	override	lua_pushvfstring	
 0084e4d0	override	lua_pushboolean	
-0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName, 00818010=FrameScript_GetVariable
+0084e600	callorder	lua_rawget	same slot between linked calls in 00818010=FrameScript_GetVariable
 0084e670	override	lua_rawgeti	
 0084e8d0	callorder	lua_settable	same slot between linked calls in 0060a510=Script_FillLocalizedClassList
 0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError
-0084f280	callgraph	luaL_error	only unmatched callee of 00510bb0=Script_AccessDenied
+0084ef30	override	lua_error	
+0084ef90	override	lua_concat	
+0084f210	override	luaL_where	
+0084f280	override	luaL_error	
 0084f9f0	callorder	luaL_checklstring	same slot between linked calls in 00818070=FrameScript_Sprintf
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
 0084fdd0	callorder	luaL_register	same slot between linked calls in 00819bb0=FrameScript_Initialize
@@ -1096,8 +1117,10 @@ addr	how	whoa	evidence
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 00878360	callgraph	SESound::GetNumInputDrivers	only unmatched callee of 004c5a60=SI2::GetNumInputDrivers
 00879290	callgraph	SESound::GetNumOutputDrivers	only unmatched callee of 004c5ab0=SI2::GetNumOutputDrivers
+0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087b5f0	string	SEDiskSound::CompleteNonBlockingLoad	unique "CNBL: playSound Failed"
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
+0087ebc0	callorder	SEDiskSound::SEDiskSound	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
 0088b9c0	callgraph	lua_isnumber	only unmatched callee of 004deaf0=Script_GetNumRealms
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
@@ -1196,7 +1219,7 @@ addr	how	whoa	evidence
 009651f0	callorder	CSimpleEditBox::ClearKeyboardFocus	same slot between linked calls in 00976450=CSimpleEditBox_ClearFocus
 00966580	callorder	CSimpleEditBox::SetText	same slot between linked calls in 00975e80=CSimpleEditBox_SetText
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
-009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
+00969300	callgraph	This	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
 0096a920	callgraph	CSimpleScrollingMessageFrame::ScrollToTop	only unmatched callee of 009733f0=CSimpleScrollingMessageFrame_ScrollToTop
 0096a950	callgraph	CSimpleScrollingMessageFrame::ScrollToBottom	only unmatched callee of 00973430=CSimpleScrollingMessageFrame_ScrollToBottom
 0096b0b0	string	CSimpleScrollFrame::GetScriptByName	unique "OnHorizontalScroll"
@@ -1211,9 +1234,7 @@ addr	how	whoa	evidence
 0096e9c0	string	StringToClickAction	unique "LeftButtonDown"
 0096f200	string	CSimpleButton::GetScriptByName	unique "OnClick"
 0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText
-0096f9b0	callorder	CSimpleButton::SetHighlight	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
-00970370	callorder	CSimpleButton::SetStateTexture	same slot between linked calls in 00977a70=CSimpleButton_SetStateTexture
 00970660	table	CSimpleMovieFrame_StartMovie	binding "StartMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970730	table	CSimpleMovieFrame_StopMovie	binding "StopMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970770	table	CSimpleMovieFrame_EnableSubtitles	binding "EnableSubtitles" in SimpleMovieFrameMethods ~ table 00b2cd30

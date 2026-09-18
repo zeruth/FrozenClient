@@ -31,9 +31,6 @@
   "0047b3c0": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(uint32&), 1477 callers" },
   "0047b400": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(uint64&)" },
 
-  "00422530": { "whoa": "SFile::Read", "status": "ported", "note": "(file, buf, bytes, bytesRead, overlapped); switch on file kind; SErrSetLastError(0x26) on short read" },
-  "00424b50": { "whoa": "SFile::OpenEx", "status": "ported", "note": "SFile2-Core.cpp:0x3df allocates the SFile (0x30 bytes, 'SFile'); streaming path first" },
-  "00422910": { "whoa": "SFile::Close", "status": "ported", "note": "frees the four sub-blocks then the SFile" },
 
   "0084d9c0": { "whoa": "index2adr", "status": "ported", "note": "Lua 5.1 lapi.c" },
   "0084e030": { "whoa": "lua_tonumber", "status": "ported", "note": "tt != LUA_TNUMBER -> luaV_tonumber" },
@@ -77,6 +74,36 @@
   "007f2790": { "status": "unlinked", "note": "string-matched to SkyBodiesRender but the reference never calls it per frame; the sun/moon draws are FUN_009abd50/009ac660/009acb00/009acd40 (docs/ref/INDEX.txt)" },
   "009abb00": { "status": "unlinked", "note": "string-matched to SkyRender but never called per frame in the reference; CMap::Render's sky call is FUN_007f09b0" },
   "007f09b0": { "whoa": "SkyRender", "status": "ported", "note": "CMap::Render's sky draw (docs/ref/INDEX.txt win-decomp-cmap-render); confirm by trace" },
+
+  "0076e540": { "whoa": "SMemAlloc", "status": "ported", "note": "(bytes, file, line, flags): 8-byte round-up, calloc when flags & 8, OOM handler 0076e4e0; 1763 callers" },
+  "0084f280": { "whoa": "luaL_error", "status": "ported", "note": "luaL_where(L,1) + lua_pushvfstring + lua_concat(L,2) + lua_error; 1543 callers" },
+  "0084f210": { "whoa": "luaL_where", "status": "ported" },
+  "0084e3a0": { "whoa": "lua_pushvfstring", "status": "ported" },
+  "0084ef90": { "whoa": "lua_concat", "status": "ported" },
+  "0084ef30": { "whoa": "lua_error", "status": "ported" },
+  "007cecd0": { "status": "excluded", "note": "TSList<>::UnlinkAll instantiation, COMDAT-folded across every element type (1883 callers); whoa has it as the storm template, not a linkable function" },
+  "006d7ba0": { "status": "excluded", "note": "TSList<> head/next helper (link & 1 -> null), folded template" },
+  "006ded60": { "status": "excluded", "note": "TSList<>::LinkToTail, folded template" },
+  "006714a0": { "status": "excluded", "note": "TSList<>::LinkNode (unlink + insert before/after), folded template" },
+  "0065c290": { "status": "excluded", "note": "WowClientDB<T>::GetRecord (min/max id -> row pointer), folded template" },
+  "006f6020": { "status": "excluded", "note": "TSHashTable<>::Ptr(key) bucket walk, folded template" },
+  "005d0040": { "status": "excluded", "note": "TSHashTable<> slot-count normaliser (power of two, max 0x40), folded template" },
+  "005bd800": { "status": "excluded", "note": "TSList<>::UnlinkAll variant, folded template" },
+  "004c21b0": { "status": "excluded", "note": "C3Vector * C44Matrix (affine transform), tempest inline operator" },
+
+  "0047b300": { "whoa": "CDataStore::PutString", "status": "ported", "note": "SStrLen + PutData(len+1); SErrSetLastError(0x57) on null" },
+  "0076e6e0": { "whoa": "SStrChr", "status": "ported", "note": "strchr with the 0x57 error on null" },
+  "0084e070": { "whoa": "lua_tointeger", "status": "ported" },
+  "00532af0": { "status": "excluded", "note": "7-byte accessor (this + 0x214), folded" },
+  "00591990": { "status": "excluded", "note": "TSHashTable<>::Clear/Destroy walking the bucket lists, folded template" },
+  "007ae270": { "status": "excluded", "note": "TSHashTable<> slot-count normaliser (max 0x15), folded template" },
+  "007b5020": { "status": "excluded", "note": "TSList<>::LinkToTail variant, folded template" },
+  "008d2430": { "status": "excluded", "note": "fmod internal (fmod_os_misc.cpp)" },
+  "008d1fa0": { "status": "excluded", "note": "fmod internal (fmod_os_misc.cpp)" },
+  "008e77c0": { "status": "excluded", "note": "fmod internal (fmod_file.cpp)" },
+  "00422530": { "whoa": "SFile::Read", "status": "diverged", "note": "whoa's SFile is a reimplementation over StormLib: same contract (file, buf, bytes, bytesRead, overlapped), different internals, so call-order fidelity is not expected" },
+  "00424b50": { "whoa": "SFile::OpenEx", "status": "diverged", "note": "StormLib-backed; see 00422530" },
+  "00422910": { "whoa": "SFile::Close", "status": "diverged", "note": "StormLib-backed; see 00422530" },
 
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }
