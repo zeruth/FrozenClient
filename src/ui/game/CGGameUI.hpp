@@ -17,6 +17,8 @@ class CGGameUI {
         static WOWGUID& GetCurrentObjectTrack();
         static uint32_t GetCursorMoney();
         static WOWGUID& GetLockedTarget();
+        static void DisplayError(uint32_t errorCode, ...);
+        static char s_lastError[3000];  // the last formatted error text (reference DAT_00bcfb90)
         static void Initialize();
         static void InitializeGame();
         static bool IsLoggingIn();

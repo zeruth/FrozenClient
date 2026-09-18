@@ -44,12 +44,12 @@ void ConsoleWrite(const char* text, COLOR_T color) {
 }
 
 // ref: FUN_00765360
-void ConsolePrintf(const char* format, ...) {
+void ConsoleWriteA(const char* format, COLOR_T color, ...) {
     char buffer[1024];
     va_list args;
-    va_start(args, format);
+    va_start(args, color);
     SStrVPrintf(buffer, sizeof(buffer), format, args);
     va_end(args);
 
-    ConsoleWrite(buffer, DEFAULT_COLOR);
+    ConsoleWrite(buffer, color);
 }

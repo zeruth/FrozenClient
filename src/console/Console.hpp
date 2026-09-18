@@ -23,6 +23,6 @@ void ConsoleSetResizeState(CONSOLERESIZESTATE state);
 
 void ConsoleWrite(const char* text, COLOR_T color);
 
-void ConsolePrintf(const char* format, ...);
+void ConsoleWriteA(const char* format, COLOR_T color, ...);
 
 #endif  // ifndef CONSOLE_CONSOLE_HPP

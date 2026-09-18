@@ -35,7 +35,7 @@ bool ValidateCameraView(CVar* var, const char* oldValue, const char* value, void
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 7.0);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0, 7.0);
 
     return false;
 }
@@ -48,7 +48,7 @@ bool ValidateCameraDistance(CVar* var, const char* oldValue, const char* value, 
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 50.0);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0, 50.0);
 
     return false;
 }
@@ -64,7 +64,7 @@ bool ValidateCameraPitch(CVar* var, const char* oldValue, const char* value, voi
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", static_cast<double>(min), static_cast<double>(max));
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,static_cast<double>(min), static_cast<double>(max));
 
     return false;
 }
@@ -77,7 +77,7 @@ bool ValidateCameraTime(CVar* var, const char* oldValue, const char* value, void
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0010000000474974513, 300.0);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0010000000474974513, 300.0);
 
     return false;
 }
@@ -90,7 +90,7 @@ bool ValidateCameraYaw(CVar* var, const char* oldValue, const char* value, void*
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 360.00001422012247);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0, 360.00001422012247);
 
     return false;
 }
@@ -103,7 +103,7 @@ bool ValidateCameraAngleSpeed(CVar* var, const char* oldValue, const char* value
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.10000000039264378, 360.00001422012247);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.10000000039264378, 360.00001422012247);
 
     return false;
 }
@@ -116,7 +116,7 @@ bool ValidateCameraSpeed(CVar* var, const char* oldValue, const char* value, voi
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0027777778450399637, 50.0);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0027777778450399637, 50.0);
 
     return false;
 }
@@ -129,7 +129,7 @@ bool ValidateCameraSmoothStyle(CVar* var, const char* oldValue, const char* valu
         return true;
     }
 
-    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 5.0);
+    ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR,0.0, 5.0);
 
     return false;
 }
