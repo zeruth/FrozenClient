@@ -1,0 +1,73 @@
+{
+  "_": "Hand-confirmed reference -> whoa links. Keys are reference addresses; whoa is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no whoa name). recomp.py trusts this file over every automatic match. One whoa name may serve several addresses (overload sets, COMDAT copies).",
+
+  "004fb080": { "whoa": "CGWorldFrame::OnFrameRender", "status": "ported", "note": "frame entry; docs/world-render-inventory.md" },
+  "004faf90": { "whoa": "CGWorldFrame::RenderWorld", "status": "ported", "note": "docs/world-render-inventory.md" },
+  "004f8ea0": { "whoa": "CGWorldFrame::OnWorldRender", "status": "ported", "note": "pass order ported 2026-09; transparent block verified on screen (fires, water)" },
+
+  "0040bb80": { "status": "excluded", "note": "CRT _memset (Ghidra FID)" },
+  "0040cb10": { "status": "excluded", "note": "CRT _memcpy" },
+  "0040c8fa": { "status": "excluded", "note": "CRT _atexit" },
+  "0040c7c6": { "status": "excluded", "note": "CRT: calls 0040c7a2(0,0,0,0,0), startup helper" },
+  "0041006d": { "status": "excluded", "note": "CRT _errno: per-thread block or static fallback" },
+  "0088b9c0": { "status": "excluded", "note": "CRT _ftol2 (float -> int64 with rounding)" },
+  "005eeb70": { "status": "excluded", "note": "nullsub: 1-byte ret, used as a no-op log callback" },
+  "008b7da0": { "status": "excluded", "note": "3-byte 'return ecx' identity" },
+  "00407f80": { "status": "excluded", "note": "16-dword struct copy (C44Matrix operator=), inlined in whoa" },
+
+  "0076e5e0": { "whoa": "SMemReAlloc", "status": "ported", "note": "REALLOC trace string; 0xb00beee5 sentinel; SMemAlloc fallback when ptr null" },
+  "00771870": { "whoa": "SErrSetLastError", "status": "ported", "note": "stores to DAT_00cad834 then SetLastError" },
+  "00772a80": { "whoa": "SErrDisplayError", "status": "ported", "note": "(code, fmt, va) -> 007729b0" },
+  "00772aa0": { "whoa": "SErrDisplayAppFatal", "status": "ported", "note": "code 0x85100086 -> 007729b0" },
+  "00774640": { "whoa": "SCritSect::Enter", "status": "ported", "note": "EnterCriticalSection thunk, __fastcall this" },
+  "0047cc90": { "whoa": "operator delete", "status": "ported", "note": "if (p) SMemFree(p, \"delete\", -1, 0)" },
+
+  "0047ae50": { "whoa": "CDataStore::InternalDestroy", "status": "ported", "note": "SMemFree(base, CDataStore.h:0x107) when alloc && base; zero base/alloc/size" },
+  "0047afe0": { "whoa": "CDataStore::Put", "status": "ported", "note": "Put(uint8): InternalFetchWrite via vtable+0xc when out of window" },
+  "0047b0a0": { "whoa": "CDataStore::Put", "status": "ported", "note": "Put(uint32), 1185 callers" },
+  "0047b100": { "whoa": "CDataStore::Put", "status": "ported", "note": "Put(uint64)" },
+  "0047b290": { "whoa": "CDataStore::FetchRead", "status": "ported", "note": "(pos, bytes) -> bool; callee of every Get" },
+  "0047b340": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(uint8&)" },
+  "0047b3c0": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(uint32&), 1477 callers" },
+  "0047b400": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(uint64&)" },
+
+  "00422530": { "whoa": "SFile::Read", "status": "ported", "note": "(file, buf, bytes, bytesRead, overlapped); switch on file kind; SErrSetLastError(0x26) on short read" },
+  "00424b50": { "whoa": "SFile::OpenEx", "status": "ported", "note": "SFile2-Core.cpp:0x3df allocates the SFile (0x30 bytes, 'SFile'); streaming path first" },
+  "00422910": { "whoa": "SFile::Close", "status": "ported", "note": "frees the four sub-blocks then the SFile" },
+
+  "0084d9c0": { "whoa": "index2adr", "status": "ported", "note": "Lua 5.1 lapi.c" },
+  "0084e030": { "whoa": "lua_tonumber", "status": "ported", "note": "tt != LUA_TNUMBER -> luaV_tonumber" },
+  "0084e0e0": { "whoa": "lua_tolstring", "status": "ported", "note": "tt != LUA_TSTRING -> luaV_tostring + luaC_checkGC" },
+  "0084e4d0": { "whoa": "lua_pushboolean", "status": "ported", "note": "setbvalue + api_incr_top" },
+  "00856e50": { "whoa": "luaV_tonumber", "status": "ported" },
+  "00856ea0": { "whoa": "luaV_tostring", "status": "ported" },
+  "0085b950": { "whoa": "luaC_step", "status": "ported" },
+
+  "004d3790": { "whoa": "ClntObjMgrGetActivePlayer", "status": "ported", "note": "returns the 64-bit active player guid; used before every ClntObjMgrObjectPtr(guid, TYPE_PLAYER, Player_C.h ...)" },
+  "004d4db0": { "whoa": "ClntObjMgrObjectPtr", "status": "ported", "note": "(guid, typeMask, file, line) 82 bytes, 1905 callers" },
+
+  "0088b0e8": { "status": "excluded", "note": "CRT __CxxFrameHandler3" },
+  "0041d4f0": { "status": "excluded", "note": "STL std::string::_Tidy" },
+  "0041d680": { "status": "excluded", "note": "STL std::string::assign(str, off, count)" },
+  "0041c654": { "status": "excluded", "note": "delay-load thunk (kernel32 GetProcAddress)" },
+  "0040c7a2": { "status": "excluded", "note": "CRT _invalid_parameter" },
+  "008cff30": { "status": "excluded", "note": "fmod internal (whoa links the fmod binary)" },
+  "008cfff0": { "status": "excluded", "note": "fmod internal" },
+  "008e73c0": { "status": "excluded", "note": "fmod internal (fmod_file.cpp)" },
+  "008e78e0": { "status": "excluded", "note": "fmod internal (fmod_file.cpp)" },
+
+  "0076f0d0": { "whoa": "SStrToInt", "status": "ported", "note": "sign, digits, SErrSetLastError(0x57) on null" },
+  "0047bfe0": { "whoa": "CoordinateGetAspectCompensation", "status": "ported", "note": "returns the float global at 00ac0cbc; structure match (getter of a coordinate global, paired with 0047c070)" },
+  "0047c070": { "whoa": "DDCToNDCWidth", "status": "ported", "note": "x * global 00ac0cb4 (reciprocal of Coordinate::s_x); structure match" },
+  "00685f50": { "whoa": "CGxDevice::RsSet", "status": "ported", "note": "(which, CGxTex*): m_context check, IRsDirty, texture-state (0x15..0x24) flag 0x80/+0x5a -> vtable[0]" },
+  "0084dbf0": { "whoa": "lua_settop", "status": "ported" },
+  "0084e670": { "whoa": "lua_rawgeti", "status": "ported", "note": "index2adr + luaH_getnum + copy TValue to top" },
+  "0085c3a0": { "whoa": "luaH_getnum", "status": "ported" },
+  "004b6cb0": { "whoa": "TextureGetGxTex", "status": "ported", "note": "'textureptr' null check, SErrSetLastError(0x57); async flag 4, +0x40 pending, +0x5c blob" },
+  "0047b440": { "whoa": "CDataStore::Get", "status": "ported", "note": "Get(int32&/float&), 4-byte fetch" },
+  "0047b480": { "whoa": "CDataStore::GetString", "status": "ported", "note": "(buf, max) byte-wise copy through FetchRead until NUL; SErrSetLastError(0x57) when buf null and max != 0" },
+  "00403880": { "whoa": "CDataStore::~CDataStore", "status": "ported", "note": "sets vtable 009e0e24, InternalDestroy via vtable slot 1 unless m_alloc == -1" },
+  "00824f00": { "whoa": "CM2Model::IsLoaded", "status": "ported", "note": "(wait, attachments): flags 0x20 branch, WaitForLoad, recursion over m_attachList (+0x58/+0x60), sets 0x100" },
+
+  "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
+}
