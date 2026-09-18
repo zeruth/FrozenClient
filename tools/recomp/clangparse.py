@@ -22,6 +22,12 @@ import time
 
 import clang.cindex as ci
 
+# The pip libclang (18) predates the MSVC STL's "Clang 20 or newer" gate, so TUs that touch the
+# STL error out and lose their member calls. Prefer the LLVM install's libclang (22) when present.
+SYSTEM_LIBCLANG = r'C:\Program Files\LLVM\bin\libclang.dll'
+if os.path.exists(SYSTEM_LIBCLANG):
+    ci.Config.set_library_file(SYSTEM_LIBCLANG)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'whoa-clang.json')
@@ -107,6 +113,13 @@ def walk_body(body, out):
 
 def parse_file(index, path, args, text):
     tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
+    errors = [d for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
+    if errors and len(sys.argv) > 1:
+        # a TU that does not compile under libclang loses calls (unresolved member calls have no
+        # referenced decl); print the first few so the flags or headers can be fixed
+        print('  %d errors in %s' % (len(errors), os.path.relpath(path, ROOT)))
+        for d in errors[:5]:
+            print('    %s:%d: %s' % (os.path.basename(str(d.location.file)), d.location.line, d.spelling[:120]))
     fns = {}
     norm = os.path.normcase(os.path.abspath(path))
     for c in tu.cursor.walk_preorder():
