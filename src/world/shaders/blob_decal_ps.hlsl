@@ -27,9 +27,14 @@ float4 main(float2 t0 : TEXCOORD0, float2 t1 : TEXCOORD1, float4 d0 : COLOR0) : 
 
     float4 texel = tex2D(blobTexture, uv);
 
-    // Coverage is the blob's alpha; the clamped sampler leaves it at the transparent border value
-    // outside the footprint, so untouched ground multiplies by white.
-    float coverage = saturate(texel.a * decal.w);
+    // Textures\ShadowBlob.blp is a palettised RGB blob -- white at the rim falling to 0xA0 grey at
+    // the centre -- with only a 1-bit alpha plane. The reference modulates the receiver by that
+    // RGB (GxBlend_Mod: dest *= src.rgb), so the darkening and its soft falloff both come from
+    // the texture itself. Using the alpha instead multiplied the whole footprint uniformly, which
+    // is the solid black disc this used to draw. The clamped sampler returns the white rim outside
+    // the footprint, so untouched ground multiplies by 1. decal.w scales the effect: 1 is the
+    // texture's own strength, 0 is no shadow.
+    float3 shade = lerp(float3(1.0f, 1.0f, 1.0f), texel.rgb, decal.w);
 
-    return float4(1.0f - coverage, 1.0f - coverage, 1.0f - coverage, 1.0f);
+    return float4(shade, 1.0f);
 }

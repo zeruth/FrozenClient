@@ -988,7 +988,16 @@ void ParseChunk(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
     RebakeChunkColors(chunk);
 
     // Chunk-local copy of the mesh for drawing (see TerrainChunk::localPos)
+    //
+    // The origin is snapped to a 5-yard grid in XY. terrain_vs tiles the layer textures from
+    // position.xy * 0.2, and that position is chunk-LOCAL; a chunk is 33.33 yards, 6.67 repeats,
+    // so an origin at the chunk corner restarted the tiling two thirds of a repeat off from the
+    // neighbouring chunk -- every chunk read as its own square with a seam at each edge. With the
+    // origin on the 5-yard grid, local * 0.2 differs from world * 0.2 by a whole number of repeats
+    // and the phase is continuous across the map. Z is unaffected (it does not feed the UV).
     chunk.origin = chunk.position[0];
+    chunk.origin.x = floorf(chunk.origin.x / 5.0f) * 5.0f;
+    chunk.origin.y = floorf(chunk.origin.y / 5.0f) * 5.0f;
 
     for (int32_t k = 0; k < 145; k++) {
         chunk.localPos[k].x = chunk.position[k].x - chunk.origin.x;
