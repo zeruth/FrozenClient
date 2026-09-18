@@ -3,9 +3,20 @@ addr	how	whoa	evidence
 00401280	handler	NotifyHandler	SetMessageHandler(SMSG_NOTIFICATION) on both sides
 00401390	handler	PlayedTimeHandler	SetMessageHandler(SMSG_PLAYED_TIME) on both sides
 00401480	handler	TransferPendingHandler	SetMessageHandler(SMSG_TRANSFER_PENDING) on both sides
+00401a30	cvar	GammaCallback	callback of CVar::Register("Gamma") on both sides
+00401a80	cvar	DesktopGammaCallback	callback of CVar::Register("DesktopGamma") on both sides
 00401b60	string	ClientRegisterConsoleCommands	unique "DesktopGamma"
+004021c0	cvar	M2FasterChanged	callback of CVar::Register("M2Faster") on both sides
+00402210	cvar	M2DebugFasterChanged	callback of CVar::Register("M2FasterDebug") on both sides
+00402250	cvar	UIFasterCalllback	callback of CVar::Register("UIFaster") on both sides
+00402320	cvar	TextureCacheSizeCallback	callback of CVar::Register("textureCacheSize") on both sides
+004023c0	cvar	TextureFilteringCallback	callback of CVar::Register("textureFilteringMode") on both sides
+00402410	cvar	BatchDoodadsCallback	callback of CVar::Register("M2BatchDoodads") on both sides
+00402470	cvar	BatchParticlesCallback	callback of CVar::Register("M2BatchParticles") on both sides
+004024d0	cvar	ForceAdditiveParticleSortCallback	callback of CVar::Register("M2ForceAdditiveParticleSort") on both sides
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
+00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
 00403880	override	CDataStore::~CDataStore	
 00403910	handler	TransferAbortedHandler	SetMessageHandler(SMSG_TRANSFER_ABORTED) on both sides
 00403b70	callorder	LoadNewWorld	same slot between linked calls in 00403de0=LoginVerifyWorldHandler
@@ -271,7 +282,13 @@ addr	how	whoa	evidence
 004c5af0	annotated	SI2::GetOutputDriverName	tag in src/sound/SI2.cpp
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
+004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
+004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
+004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
+004d0e60	cvar	MasterVolume_CVarCallback	callback of CVar::Register("Sound_MasterVolume") on both sides
 004d0e80	override	SFXVolume_CVarCallback	
+004d0eb0	cvar	MusicVolume_CVarCallback	callback of CVar::Register("Sound_MusicVolume") on both sides
+004d0ef0	cvar	AmbienceVolume_CVarCallback	callback of CVar::Register("Sound_AmbienceVolume") on both sides
 004d1050	string	SI2::RegisterCVars	unique "Enables Hardware"
 004d13e0	override	EnableAllSound_CVarCallback	
 004d14e0	override	EnableSFX_CVarCallback	
@@ -1056,7 +1073,21 @@ addr	how	whoa	evidence
 00768900	annotated	ConsoleCommandParse	tag in src/console/Command.cpp
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
+00769240	cvar	CVGxColorBitsCallback	callback of CVar::Register("gxColorBits") on both sides
+007692d0	cvar	CVGxDepthBitsCallback	callback of CVar::Register("gxDepthBits") on both sides
+00769360	cvar	CVGxTripleBufferCallback	callback of CVar::Register("gxTripleBuffer") on both sides
+00769520	cvar	CVGxVSyncCallback	callback of CVar::Register("gxVSync") on both sides
+00769550	cvar	CVGxWindowCallback	callback of CVar::Register("gxWindow") on both sides
+007695b0	cvar	CVGxMaximizeCallback	callback of CVar::Register("gxMaximize") on both sides
+007695e0	cvar	CVGxCursorCallback	callback of CVar::Register("gxCursor") on both sides
+007696a0	cvar	CVGxFixLagCallback	callback of CVar::Register("gxFixLag") on both sides
+00769890	cvar	CVWindowResizeLockCallback	callback of CVar::Register("windowResizeLock") on both sides
+00769c00	cvar	CVGxStereoEnabledCallback	callback of CVar::Register("gxStereoEnabled") on both sides
+00769c30	cvar	CVGxStereoConvergenceCallback	callback of CVar::Register("gxStereoConvergence") on both sides
+00769c60	cvar	CVGxStereoSeparationCallback	callback of CVar::Register("gxStereoSeparation") on both sides
 00769c90	string	ConsoleDeviceStereoInitialize	unique "Set stereoscopic rendering convergence depth"
+0076a220	cvar	CVGxResolutionCallback	callback of CVar::Register("gxResolution") on both sides
+0076a580	cvar	CVGxRefreshCallback	callback of CVar::Register("gxRefresh") on both sides
 0076a630	string	RegisterGxCVars	unique "Allow widescreen support"
 0076b3b0	annotated	ConsoleCommandHistoryAdd	tag in src/console/Command.cpp
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
@@ -1091,11 +1122,45 @@ addr	how	whoa	evidence
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
+00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
 00787780	string	Weather::Weather	unique "useWeatherShaders"
+0078d660	cvar	CWorldParam::MapShadowsCallback	callback of CVar::Register("mapShadows") on both sides
+0078d6b0	cvar	CWorldParam::MaxLightsCallback	callback of CVar::Register("MaxLights") on both sides
+0078d6f0	cvar	CWorldParam::ShadowLevelCallback	callback of CVar::Register("shadowLevel") on both sides
+0078d730	cvar	CWorldParam::TextureLodBiasCallback	callback of CVar::Register("texLodBias") on both sides
+0078d7a0	cvar	CWorldParam::NearClipCallback	callback of CVar::Register("nearclip") on both sides
+0078d7c0	cvar	CWorldParam::HorizonFarClipScaleCallback	callback of CVar::Register("horizonFarclipScale") on both sides
+0078d810	cvar	CWorldParam::HorizonNearClipScaleCallback	callback of CVar::Register("horizonNearclipScale") on both sides
+0078d860	cvar	CWorldParam::ParticleDensityCallback	callback of CVar::Register("particleDensity") on both sides
+0078d8b0	cvar	CWorldParam::WaterLODCallback	callback of CVar::Register("waterLOD") on both sides
+0078d8f0	cvar	CWorldParam::ShowFootprintsCallback	callback of CVar::Register("showfootprints") on both sides
+0078d940	cvar	CWorldParam::FootstepBiasCallback	callback of CVar::Register("footstepBias") on both sides
+0078d9d0	cvar	CWorldParam::OcclusionCallback	callback of CVar::Register("occlusion") on both sides
+0078da10	cvar	CWorldParam::WorldPoolUsageCallback	callback of CVar::Register("worldPoolUsage") on both sides
+0078da50	cvar	CWorldParam::TerrainAlphaBitDepthCallback	callback of CVar::Register("terrainAlphaBitDepth") on both sides
+0078dab0	cvar	CWorldParam::GroundEffectDensityCallback	callback of CVar::Register("groundEffectDensity") on both sides
+0078db10	cvar	CWorldParam::GroundEffectDistCallback	callback of CVar::Register("groundEffectDist") on both sides
+0078db90	cvar	CWorldParam::ObjectFadeCallback	callback of CVar::Register("objectFade") on both sides
+0078dbe0	cvar	CWorldParam::ObjectFadeZFillCallback	callback of CVar::Register("objectFadeZFill") on both sides
+0078dc30	cvar	CWorldParam::FarClipOverrideCallback	callback of CVar::Register("farClipOverride") on both sides
+0078dc60	cvar	CWorldParam::EnvironmentDetailCallback	callback of CVar::Register("environmentDetail") on both sides
+0078dcb0	cvar	CWorldParam::ExtShadowQualityCallback	callback of CVar::Register("extShadowQuality") on both sides
+0078dcf0	cvar	CWorldParam::ProjectedTexturesCallback	callback of CVar::Register("projectedTextures") on both sides
+0078de60	cvar	CWorldParam::SpecularCallback	callback of CVar::Register("specular") on both sides
+0078ded0	cvar	CWorldParam::MapObjLightLODCallback	callback of CVar::Register("mapObjLightLOD") on both sides
+0078df00	cvar	CWorldParam::BaseMipCallback	callback of CVar::Register("baseMip") on both sides
+0078df90	cvar	CWorldParam::BSPCacheCallback	callback of CVar::Register("bspcache") on both sides
+0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
+0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007dc010	string	GetButtonName	score 14.05 shared Button10; Button11; Button12
+007dc770	cvar	EnableMicrophoneHandler	callback of CVar::Register("EnableMicrophone") on both sides
+007dcec0	cvar	InboundChatVolumeHandler	callback of CVar::Register("InboundChatVolume") on both sides
+007dcf20	cvar	VoiceChatModeHandler	callback of CVar::Register("VoiceChatMode") on both sides
+007dcfe0	cvar	VoiceActivationSensitivityHandler	callback of CVar::Register("VoiceActivationSensitivity") on both sides
+007dd060	cvar	SelfMuteHandler	callback of CVar::Register("VoiceChatSelfMute") on both sides
 007e18c0	string	ValidateNameInitialize	score 0.50 shared forceEnglishNames
 007e2840	handler	ReceiveNewGameSpeed	SetMessageHandler(SMSG_GAME_SPEED_SET) on both sides
 007e28e0	handler	ReceiveNewTimeSpeed	SetMessageHandler(SMSG_LOGIN_SET_TIME_SPEED) on both sides
@@ -1229,8 +1294,9 @@ addr	how	whoa	evidence
 008783b0	annotated	SESound::GetInputDriverName	tag in src/sound/SESound.cpp
 00879290	annotated	SESound::GetNumOutputDrivers	tag in src/sound/SESound.cpp
 008792b0	annotated	SESound::GetOutputDriverName	tag in src/sound/SESound.cpp
+00879460	callgraph	SESound::SetMasterVolume	only unmatched callee of 004d0e60=MasterVolume_CVarCallback
 0087a6f0	callgraph	SESound::GetChannelGroup	only unmatched callee of 0087a850=SESound::SetChannelGroupVolume
-0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback
+0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback, 004d0eb0=MusicVolume_CVarCallback, 004d0ef0=AmbienceVolume_CVarCallback
 0087a9b0	annotated	s_SystemCallback	tag in src/sound/SESound.cpp
 0087acc0	annotated	SESound::SetDeviceListChangedCallback	tag in src/sound/SESound.cpp
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -1238,6 +1304,7 @@ addr	how	whoa	evidence
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
 0087ebc0	callorder	SEDiskSound::SEDiskSound	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
+008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"
@@ -1289,6 +1356,7 @@ addr	how	whoa	evidence
 008be100	string	LightIntBandRec::GetFilename	unique "DBFilesClient\LightIntBand.dbc"
 008be1a0	string	LightFloatBandRec::GetFilename	unique "DBFilesClient\LightFloatBand.dbc"
 008bfe80	string	EffectGlow::EffectGlow	unique "full screen glow effect"
+008c02a0	cvar	FFXDeathCallback	callback of CVar::Register("ffxDeath") on both sides
 008c8de0	callgraph	CSimpleModel::GetObjectType	only unmatched callee of 009610e0=CSimpleModel_AdvanceTime
 008ce200	string	FindPatchPrefix_SC2_ArchiveName	score 0.50 shared Battle.net
 008cf7a0	string	Grunt::Timer::Timer	unique "GruntTimerEvt"

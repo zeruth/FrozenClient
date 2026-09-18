@@ -1,0 +1,446 @@
+{"caller":"006ec2c0","site":"006ec377","args":["0xa3284c","str:toggles use of spline coll optimization","0x1","0x9e1464","?","?","?","?","?"]}
+{"caller":"00401b60","site":"00401ba7","args":["str:accountName","str:Saved account name","0x40","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401bcf","args":["str:accountList","str:List of wow accounts for saved Blizzard account","0x0","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401bf4","args":["str:g_accountUsesToken","str:Saved whether uses authenticator","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401c1c","args":["str:movie","str:Show movie on startup","0x0","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401c41","args":["str:expansionMovie","str:Show expansion movie on startup","0x0","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401c69","args":["str:movieSubtitle","str:Show movie subtitles","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401c8e","args":["str:checkAddonVersion","str:Check interface addon version number","0x0","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401cd0","args":["str:mouseSpeed","0x0","0x0","?","fn:004015e0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401cf5","args":["str:Errors","0x0","0x0","0x9e14a0","fn:00401600","0x0","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401d1d","args":["str:ShowErrors","0x0","0x0","0x9e1464","fn:00401650","0x0","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401d42","args":["str:ErrorLevelMin","0x0","0x0","0x9e1384","fn:004017c0","0x0","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401d6a","args":["str:ErrorLevelMax","0x0","0x0","0x9e1370","fn:00401800","0x0","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401d8f","args":["str:ErrorFilter","0x0","0x0","0x9e1124","fn:00401a10","0x0","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401db7","args":["str:DesktopGamma","0x0","0x0","0x9e14a0","fn:00401a80","0x1","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401ddc","args":["str:Gamma","0x0","0x0","0x9e1340","fn:00401a30","0x1","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401e04","args":["str:lastCharacterIndex","str:Last character selected","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401e29","args":["str:readTOS","str:Status of the TOS","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401e51","args":["str:readEULA","str:Status of the EULA","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401e76","args":["str:readTerminationWithoutNotice","str:Status of the Termination without Notice notice","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401e9e","args":["str:readScanning","str:Status of the Scanning notice","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401ec3","args":["str:readContest","str:Status of the Contest notice","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401eee","args":["str:screenshotFormat","str:Set the format of screenshots","0x1","0x9e121c","fn:00401b20","0x1","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401f16","args":["str:screenshotQuality","str:Set the quality of screenshots (1 - 10)","0x1","0x9e1370","fn:00401b40","0x1","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401f3e","args":["str:showToolsUI","str:Display the launcher when starting the game","0x0","0x9e11a8","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401f8a","args":["str:converted","str:Trial to Retail","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401b60","site":"00401fba","args":["0x9e1138","str:Account Type","0x0","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"00401ff0","site":"00402011","args":["str:componentTextureLevel","str:Number of mip levels used for character component textures","0x1","0x9e15ec","fn:008a1420","0x0","0x0","0x0","0x0"]}
+{"caller":"00401ff0","site":"00402039","args":["str:componentThread","str:Multi thread character component processing","0x1","0x9e1464","fn:008a1420","0x0","0x0","0x0","0x0"]}
+{"caller":"00401ff0","site":"00402064","args":["str:componentCompress","str:Character component texture compression","0x1","0x9e1464","fn:008a1420","0x0","0x0","0x0","0x0"]}
+{"caller":"007f2790","site":"007f29f1","args":["str:SkyCloudLOD","?","?","0x9e14a0","fn:007f1cd0","?","?","?","?"]}
+{"caller":"0052a980","site":"0052a9ab","args":["str:taintLog","str:Whether taint logging is enabled","?","0x9e14a0","fn:0052a930","0x5","?","?","?"]}
+{"caller":"0052a980","site":"0052a9cb","args":["str:scriptProfile","str:Whether or not script profiling is enabled","?","0x9e14a0","?","0x5","?","?","?"]}
+{"caller":"0051d9b0","site":"0051d9d4","args":["str:deselectOnClick","str:Clear the target when clicking on terrain","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051da0f","args":["str:autoInteract","str:Toggles auto-move to interact target","0x10","?","fn:00512700","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051da34","args":["str:autoStand","str:Automatically stand when needed","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051da5c","args":["str:autoDismount","str:Automatically dismount when needed","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051da81","args":["str:autoDismountFlying","str:If enabled, your character will automatically dismount before casting while flying","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051daa9","args":["str:autoUnshift","str:Automatically leave shapeshift form when needed","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dace","args":["str:autoClearAFK","str:Automatically clear AFK when moving or chatting","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051daf6","args":["str:blockTrades","str:Whether to automatically block trade requests","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051db1b","args":["str:lootUnderMouse","str:Whether the loot window should open under the mouse","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051db43","args":["str:autoLootDefault","str:Automatically loot items when the loot window opens","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051db68","args":["str:alwaysCompareItems","str:Always show item comparison tooltips","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051db8b","args":["str:equipmentManager","str:Enables the equipment management UI","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dbab","args":["str:assistAttack","str:Whether to start attacking after an assist","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dbd3","args":["str:autoRangedCombat","str:Whether your character will automatically switch between auto attack and auto shot","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dbf8","args":["str:autoSelfCast","str:Whether spells should automatically be cast on you if you don't have a valid target","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dc20","args":["str:stopAutoAttackOnTargetChange","str:Whether to stop attacking when changing targets","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dc45","args":["str:showTargetOfTarget","str:Whether the target of target frame should be shown","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dc6d","args":["str:targetOfTargetMode","str:The conditions under which target of target should be shown","0x10","0xa02548","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dc92","args":["str:showTargetCastbar","str:Show the spell your current target is casting","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dcba","args":["str:showVKeyCastbar","str:If the V key display is up for your current target, show the enemy cast bar with the target's health bar in the game field","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dcdf","args":["str:rotateMinimap","str:Whether to rotate the entire minimap instead of the player arrow","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dd07","args":["str:minimapZoom","str:The current outdoor minimap zoom level","0x20","0x9e1370","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dd2c","args":["str:minimapInsideZoom","str:The current indoor minimap zoom level","0x20","0x9e1370","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dd54","args":["str:minimapPortalMax","str:Max Number of Portals to traverse for minimap","0x20","0xa02358","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dd79","args":["str:scriptErrors","str:Whether or not the UI shows Lua errors","0x10","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dda1","args":["str:screenEdgeFlash","str:Whether to show a red flash while you are in combat with the world map up","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ddc6","args":["str:showLootSpam","str:Whether to show verbose loot rolls","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ddee","args":["str:displayFreeBagSlots","str:Whether or not the backpack button should indicate how many inventory slots you've got free","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051de13","args":["str:displayWorldPVPObjectives","str:Whether to show world PvP objectives","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051de3b","args":["str:showClock","str:Whether to display the time manager's clock button","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051de5b","args":["str:colorblindMode","str:Enables colorblind accessibility features in the game","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051de7e","args":["str:questFadingDisable","str:Whether to disable quest text slowly fading in","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051de9e","args":["str:autoQuestWatch","str:Whether to automatically watch all quests when you obtain them","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dec1","args":["str:autoQuestProgress","str:Whether to automatically watch all quests when they are updated","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dee1","args":["str:showQuestTrackingTooltips","str:Displays quest tracking information in unit and object tooltips","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051df04","args":["str:mapQuestDifficulty","str:Whether to color quest titles by difficulty in the World Map","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051df24","args":["str:questLogCollapseFilter","str:bit filed for saving off the state of the headers in Quest Log","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051df5d","args":["str:advancedWatchFrame","str:Enables advanced Objectives tracking features","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051df7d","args":["str:watchFrameIgnoreCursor","str:Disables Objectives frame mouseover and title dropdown.","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dfa0","args":["str:watchFrameBaseAlpha","str:Objectives frame opacity.","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dfc0","args":["str:watchFrameState","str:Stores Objectives frame locked and collapsed states","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051dfe3","args":["str:showQuestObjectivesOnMap","str:Shows quest POIs on the main map.","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e006","args":["str:trackedQuests","str:Internal cvar for saving tracked quests in order","0x120","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e02c","args":["str:trackedAchievements","str:Internal cvar for saving tracked achievements in order","0x120","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e04f","args":["str:flaggedTutorials","str:Internal cvar for saving compleated tutorials in order","0x110","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e072","args":["str:advancedWorldMap","str:Enables advanced World Map features","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e092","args":["str:worldMapOpacity","str:Opacity for the world map when sized down","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e0b5","args":["str:watchFrameWidth","str:Controls objectives frame width","0x0","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e0d5","args":["str:trackerSorting","str:sorting option for the objectives tracker","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e0fd","args":["str:trackerFilter","str:filter option for the objectives tracker","0x20","0xa01c0c","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e11d","args":["str:profanityFilter","str:Whether to enable mature language filtering","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e145","args":["str:spamFilter","str:Whether to enable spam filtering","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e16a","args":["str:chatBubbles","str:Whether to show in-game chat bubbles","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e192","args":["str:chatBubblesParty","str:Whether to show in-game chat bubbles for party chat","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e1b7","args":["str:removeChatDelay","str:Remove Chat Hover Delay","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e1e2","args":["str:guildShowOffline","str:Show offline guild members in the guild UI","0x10","0x9e1464","fn:00512730","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e207","args":["str:guildMemberNotify","str:Receive notification when guild members log on/off","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e232","args":["str:guildRecruitmentChannel","str:Whether to automatically join the guild recruitment channel when not in a guild","0x10","0x9e1464","fn:00512750","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e257","args":["str:lfgAutoFill","str:Whether to automatically add party members while looking for a group","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e27a","args":["str:lfgAutoJoin","str:Whether to automatically join a party while looking for a group","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e29a","args":["str:friendsViewButtons","str:Whether to show the friends list view buttons","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e2bd","args":["str:friendsSmallView","str:Whether to use smaller buttons in the friends list","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e2dd","args":["str:chatStyle","str:The style of Edit Boxes for the ChatFrame. Valid values: \"classic\", \"im\"","0x10","0xa0189c","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e300","args":["str:wholeChatWindowClickable","str:Whether the user may click anywhere on a chat window to change EditBox focus (only works in IM style)","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e320","args":["str:conversationMode","str:The action new Real ID Conversations take by default: \"popout\", \"inline\"","0x10","str:popout","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e343","args":["str:showTimestamps","str:The format of timestamps in chat or \"none\"","0x10","0x9fe5a8","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e363","args":["str:chatMouseScroll","str:Whether the user can use the mouse wheel to scroll through chat","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e386","args":["str:lockActionBars","str:Whether the action bars should be locked, preventing changes","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e3a6","args":["str:alwaysShowActionBars","str:Whether to always show the action bar grid","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e3c9","args":["str:secureAbilityToggle","str:Whether you should be protected against accidentally double-clicking an aura","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e3f3","args":["str:CombatDamage","str:Display damage numbers over hostile creatures when damaged","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e41b","args":["str:CombatLogPeriodicSpells","str:Display damage caused by periodic effects","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e440","args":["str:PetMeleeDamage","str:Display pet melee damage in the world","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e468","args":["str:PetSpellDamage","str:Display pet spell damage in the world","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e48d","args":["str:CombatHealing","str:Display amount of healing you did to the target","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e4b5","args":["str:enableCombatText","str:Whether to show floating combat text","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e4d5","args":["str:combatTextFloatMode","str:The combat text float mode","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e4f5","args":["str:fctCombatState","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e512","args":["str:fctDodgeParryMiss","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e532","args":["str:fctDamageReduction","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e54f","args":["str:fctRepChanges","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e56f","args":["str:fctReactives","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e58c","args":["str:fctFriendlyHealers","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e5ac","args":["str:fctComboPoints","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e5c9","args":["str:fctLowManaHealth","0x0","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e5e9","args":["str:fctEnergyGains","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e606","args":["str:fctPeriodicEnergyGains","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e626","args":["str:fctHonorGains","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e643","args":["str:fctAuras","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e663","args":["str:fctAllSpellMechanics","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e680","args":["str:fctSpellMechanics","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e6a0","args":["str:fctSpellMechanicsOther","0x0","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e6c0","args":["str:xpBarText","str:Whether the XP bar shows the numeric experience value","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e6e3","args":["str:playerStatusText","str:Whether the player portrait shows numeric health/mana values","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e703","args":["str:petStatusText","str:Whether the pet portrait shows numeric health/mana values","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e726","args":["str:partyStatusText","str:Whether the party portraits shows numeric health/mana values","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e746","args":["str:targetStatusText","str:Whether the target portrait shows numeric health/mana values","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e769","args":["str:statusTextPercentage","str:Whether numeric health/mana values are shown as raw values or percentages","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e789","args":["str:showPartyBackground","str:Show a background behind party members","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e7ac","args":["str:partyBackgroundOpacity","str:The opacity of the party background","0x10","0xa010d4","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e7cc","args":["str:hidePartyInRaid","str:Whether to hide the party UI while in a raid","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e7ef","args":["str:showPartyPets","str:Whether to show pets in the party UI","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e80f","args":["str:showRaidRange","str:Show range indicator in raid UI","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e832","args":["str:showArenaEnemyFrames","str:Show arena enemy frames while in an Arena","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e852","args":["str:showArenaEnemyCastbar","str:Show the spell enemies are casting on the Arena Enemy frames","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e875","args":["str:showArenaEnemyPets","str:Show the enemy team's pets on the ArenaEnemy frames","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e895","args":["str:fullSizeFocusFrame","str:Increases the size of the focus frame to that of the target frame","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e8b8","args":["str:buffDurations","str:Whether to show buff durations","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e8dd","args":["str:showDispelDebuffs","str:Show only Debuffs that the player can dispel.  Only applies to raids.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e900","args":["str:showCastableBuffs","str:Show only Buffs the player can cast.  Only applies to raids.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e920","args":["str:consolidateBuffs","str:Consolidates buffs displayed for the player.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e943","args":["str:showCastableDebuffs","str:Show only debuffs the player can apply.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e963","args":["str:showToastOnline","str:Whether to show Battle.net message for friend coming online","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e98b","args":["str:showToastOffline","str:Whether to show Battle.net message for friend going offline","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e9b0","args":["str:showToastBroadcast","str:Whether to show Battle.net message for broadcasts","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e9d8","args":["str:showToastFriendRequest","str:Whether to show Battle.net message for friend requests","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051e9fd","args":["str:showToastConversation","str:Whether to show Battle.net message for conversations","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ea25","args":["str:showToastWindow","str:Whether to show Battle.net system messages in a toast window","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ea45","args":["str:toastDuration","str:How long to display Battle.net toast windows, in seconds","0x10","0xa00b78","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ea6d","args":["str:showNewbieTips","str:Show beginner tooltips","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ea8d","args":["str:UberTooltips","str:Show verbose tooltips","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eab0","args":["str:showItemLevel","str:Show item level in the tooltip","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ead0","args":["str:showTutorials","str:display tutorials","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eaf6","args":["str:calendarShowWeeklyHolidays","str:Whether weekly holidays should appear in the calendar","0x20","0x9e1464","fn:005127a0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eb1e","args":["str:calendarShowDarkmoon","str:Whether Darkmoon Faire holidays should appear in the calendar","0x20","0x9e1464","fn:005127a0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eb49","args":["str:calendarShowBattlegrounds","str:Whether Battleground holidays should appear in the calendar","0x20","0x9e14a0","fn:005127a0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eb71","args":["str:calendarShowLockouts","str:Whether raid lockouts should appear in the calendar","0x20","0x9e1464","fn:005127a0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eb9c","args":["str:calendarShowResets","str:Whether raid resets should appear in the calendar","0x20","0x9e14a0","fn:005127a0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ebbe","args":["str:nameplateShowEnemies","0x0","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ebe3","args":["str:nameplateShowEnemyPets","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ec05","args":["str:nameplateShowEnemyGuardians","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ec2a","args":["str:nameplateShowEnemyTotems","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ec4c","args":["str:nameplateShowFriends","0x0","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ec71","args":["str:nameplateShowFriendlyPets","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ec93","args":["str:nameplateShowFriendlyGuardians","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ecb8","args":["str:nameplateShowFriendlyTotems","0x0","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ecdd","args":["str:nameplateAllowOverlap","str:switches between overlapping nameplates or the (old) never overlapping version","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ed08","args":["str:unitHighlights","str:Whether the highlight circle around units should be displayed","0x10","0x9e1464","0x518bd0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ed2d","args":["str:enablePVPNotifyAFK","str:The ability to shutdown the AFK notification system","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ed69","args":["str:serviceTypeFilter","str:Which trainer services to show","0x10","?","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ed8e","args":["str:autojoinPartyVoice","str:Automatically join the voice session in party/raid chat","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051edb6","args":["str:autojoinBGVoice","str:Automatically join the voice session in battleground chat","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eddb","args":["str:PushToTalkSound","str:Play a sound when voice recording activates and deactivates","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051edfe","args":["str:combatLogOn","str:Whether or not the combat log is shown","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ee1e","args":["str:showKeyring","str:Whether or not the keyring is shown","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ee41","args":["str:showBattlefieldMinimap","str:Whether or not the battlefield minimap is shown","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ee61","args":["str:playerStatLeftDropdown","str:The player stat selected in the left dropdown","0x20","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ee84","args":["str:playerStatRightDropdown","str:The player stat selected in the right dropdown","0x20","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eea4","args":["str:talentFrameShown","str:The talent UI has been shown","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eec7","args":["str:auctionDisplayOnCharacter","str:Show auction items on the dress-up paperdoll","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eee7","args":["str:addFriendInfoShown","str:The info for Add Friend has been shown","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ef0a","args":["str:pendingInviteInfoShown","str:The info for pending invites has been shown","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ef4c","args":["str:timeMgrUseMilitaryTime","str:Toggles the display of either 12 or 24 hour time","0x10","?","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ef6c","args":["str:timeMgrUseLocalTime","str:Toggles the use of either the realm time or your system time","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051ef8f","args":["str:timeMgrAlarmTime","str:The time manager's alarm time in minutes","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051efaf","args":["str:timeMgrAlarmMessage","str:The time manager's alarm message","0x10","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051efd2","args":["str:timeMgrAlarmEnabled","str:Toggles whether or not the time manager's alarm will go off","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051eff2","args":["str:combatLogRetentionTime","str:The maximum duration in seconds to retain combat log entries","0x10","0xa00254","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f01a","args":["str:currencyTokensUnused1","str:Currency token types marked as unused.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f03f","args":["str:currencyTokensUnused2","str:Currency token types marked as unused.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f067","args":["str:currencyTokensBackpack1","str:Currency token types shown on backpack.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f08c","args":["str:currencyTokensBackpack2","str:Currency token types shown on backpack.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f0b4","args":["str:showTokenFrame","str:The token UI has been shown","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f0d4","args":["str:showTokenFrameHonor","str:The token UI has shown Honor","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f0f7","args":["str:predictedHealth","str:Whether or not to use predicted health values in the UI","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f11c","args":["str:predictedPower","str:Whether or not to use predicted power values in the UI","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f147","args":["str:threatWarning","str:Whether or not to show threat warning UI (0 = off, 1 = in dungeons, 2 = in party/raid, 3 = always)","0x20","0x9e1370","fn:0051d990","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f16c","args":["str:threatWorldText","str:Whether or not to show threat floaters in combat","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f194","args":["str:threatShowNumeric","str:Whether or not to show numeric threat on the target and focus frames","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f1b9","args":["str:threatPlaySounds","str:Whether or not to sounds when certain threat transitions occur","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f1e6","args":["str:ShowAllSpellRanks","str:show either all spell ranks, or only the highest rank","0x10","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f20e","args":["str:ShowClassColorInNameplate","str:use this to display the class color in the nameplate health bar","0x20","0x9e14a0","fn:00512770","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f239","args":["str:previewTalents","str:Toggles the ability to preview talents before spending talent points.","0x20","0x9e14a0","0x5127d0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f261","args":["str:lfgSelectedRoles","str:Stores what roles the player is willing to take on.","0x120","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f28c","args":["str:lfdCollapsedHeaders","str:Stores which LFD headers are collapsed.","0x120","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f2b4","args":["str:lfdSelectedDungeons","str:Stores which LFD dungeons are selected.","0x120","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f2dc","args":["str:lastTalkedToGM","str:Stores the last GM someone was talking to in case they reload the UI while the GM chat window is open.","0x10","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f2ff","args":["str:autoCompleteResortNamesOnRecency","str:Shows people you recently spoke with higher up on the AutoComplete list.","0x10","0x9e1464","fn:00512830","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f325","args":["str:autoCompleteWhenEditingFromCenter","str:If you edit a name by inserting characters into the center, a smarter auto-complete will occur.","0x10","0x9e1464","fn:00512850","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f348","args":["str:autoCompleteUseContext","str:The system will, for example, only show people in your guild when you are typing /gpromote. Names will also never be removed.","0x10","0x9e1464","fn:00512870","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f36b","args":["str:colorChatNamesByClass","str:If enabled, the name of a player speaking in chat will be colored according to his class.","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f38b","args":["str:autoFilledMultiCastSlots","str:Bitfield that saves whether multi-cast slots have been automatically filled.","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f3b3","args":["str:minimapTrackedInfo","str:Stores the minimap tracking that was active last session.","0x20","0x9e14ff","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f3d3","args":["str:questPOI","str:If enabled, the quest POI system will be used.","0x20","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f3fb","args":["str:miniWorldMap","str:Whether or not the world map has been toggled to smaller size","0x20","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"0051d9b0","site":"0051f41b","args":["0x9ff910","str:Don't show which equipment sets an item is associated with","0x10","0x9e14a0","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"005238a0","site":"005238be","args":["str:uiScale","str:The current UI scale","0x0","0x9e1340","fn:00518b60","0x4","0x0","0x0","0x0"]}
+{"caller":"005238a0","site":"005238e6","args":["str:useUiScale","str:Whether or not the UI scale should be used","0x0","0x9e14a0","fn:005237e0","0x4","0x0","0x0","0x0"]}
+{"caller":"005e71a0","site":"005e727c","args":["str:POIShiftComplete","?","?","0x9f3548","?","?","?","?","?"]}
+{"caller":"005fd910","site":"005fd942","args":["str:cameraSavedDistance","0x0","0x20","?"]}
+{"caller":"005fd910","site":"005fd964","args":["str:cameraSavedVehicleDistance","0x0","0x20","0xa1e1f8","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fd99a","args":["str:cameraSavedPitch","0x0","0x20","?"]}
+{"caller":"005fd910","site":"005fd9bc","args":["str:mouseInvertYaw","0x0","0x10","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fd9e1","args":["str:mouseInvertPitch","0x0","0x10","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fda03","args":["str:cameraBobbing","0x0","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fda49","args":["str:cameraDistanceMoveSpeed","0x0","0x10","0xa1e7e0","fn:005fd860","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fda6e","args":["str:cameraPitchMoveSpeed","0x0","0x10","0xa1e7c4","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fda96","args":["str:cameraYawMoveSpeed","0x0","0x10","0xa1e7a8","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdabb","args":["str:cameraBobbingSmoothSpeed","0x0","0x10","0xa1e790","fn:005fd860","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdae3","args":["str:cameraFoVSmoothSpeed","0x0","0x10","0xa010d4","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdb08","args":["str:cameraDistanceSmoothSpeed","0x0","0x10","0xa1e7e0","fn:005fd860","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdb30","args":["str:cameraGroundSmoothSpeed","0x0","0x10","0xa1e73c","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdb55","args":["str:cameraHeightSmoothSpeed","0x0","0x10","0xa1e720","fn:005fd860","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdb7d","args":["str:cameraPitchSmoothSpeed","0x0","0x10","0xa1e704","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdba2","args":["str:cameraTargetSmoothSpeed","0x0","0x10","0xa1e7c4","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdbca","args":["str:cameraYawSmoothSpeed","0x0","0x10","0xa1e7a8","fn:005fd800","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdbef","args":["str:cameraFlyingMountHeightSmoothSpeed","0x0","0x10","0x9f2f7c","fn:005fd860","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdc15","args":["str:cameraViewBlendStyle","0x0","0x10","?","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdc3c","args":["str:cameraView","0x0","0x10","?","fn:005fd630","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdcb3","args":["?","0x0","0x50","?","?","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdceb","args":["str:camerasmooth","?","0x10","0x9e1464","?","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fdd08","args":["str:cameraSmoothPitch","?","0x10","0x9e1464","?","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fdd28","args":["str:cameraSmoothYaw","?","0x10","0x9e1464","?","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fdd4b","args":["str:cameraSmoothStyle","?","0x10","?","fn:005fd8c0","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fdd71","args":["str:cameraSmoothTrackingStyle","?","0x10","?","fn:005fd8c0","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fdd8e","args":["str:cameraCustomViewSmoothing","?","0x10","0x9e14a0","?","0x5","?","?","?"]}
+{"caller":"005fd910","site":"005fde21","args":["?","0x0","0x10","?","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdec1","args":["?","0x0","0x10","?","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdf61","args":["?","0x0","0x10","?","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdfba","args":["str:cameraTerrainTilt","0x0","0x10","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fdfdf","args":["str:cameraTerrainTiltTimeMin","0x0","0x10","0xa1e5ac","fn:005fd750","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe007","args":["str:cameraTerrainTiltTimeMax","0x0","0x10","0xa1e2b0","fn:005fd750","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe029","args":["str:cameraWaterCollision","0x0","0x10","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe04e","args":["str:cameraHeightIgnoreStandState","0x0","0x10","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe070","args":["str:cameraPivot","0x0","0x10","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe095","args":["str:cameraPivotDXMax","0x0","0x10","0xa1e528","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe0b7","args":["str:cameraPivotDYMin","0x0","0x10","0xa1e50c","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe0dc","args":["str:cameraDive","0x0","0x10","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe101","args":["str:cameraSurfacePitch","0x0","0x10","0x9f2fbc","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe129","args":["str:cameraSubmergePitch","0x0","0x10","0xa1e4d0","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe14e","args":["str:cameraSurfaceFinalPitch","0x0","0x10","0xa1e294","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe176","args":["str:cameraSubmergeFinalPitch","0x0","0x10","0xa1e294","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe19b","args":["str:cameraDistanceMax","0x0","0x10","0xa1e480","fn:005fd680","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe1c0","args":["str:cameraDistanceMaxFactor","0x0","0x10","0x9e1340","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe1e5","args":["str:cameraPitchSmoothMin","0x0","0x10","0x9f2fbc","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe20d","args":["str:cameraPitchSmoothMax","0x0","0x10","0xa1e298","fn:005fd6d0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe232","args":["str:cameraYawSmoothMin","0x0","0x10","0x9f2fbc","fn:005fd7b0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe25a","args":["str:cameraYawSmoothMax","0x0","0x10","0x9f2fbc","fn:005fd7b0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe27f","args":["str:cameraSmoothTimeMin","0x0","0x10","0xa1e3f8","fn:005fd750","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd910","site":"005fe2a7","args":["0xa1e3d0","0x0","0x10","0x9f2f7c","fn:005fd750","0x5","0x0","0x0","0x0"]}
+{"caller":"006b0dc0","site":"006b0ddf","args":["str:realmName","str:Last realm connected to","?","0x9e14ff","?","0x6","?","?","?"]}
+{"caller":"006b9970","site":"006b9997","args":["?","0x0","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"00715330","site":"0071534b","args":["str:showfootprintparticles","str:toggles rendering of footprint particles","0x1","0x9e1464","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"00715330","site":"00715370","args":["str:pathDistTol","str:Sets acceptable distance from pathing destination in yards","0x0","0x9e1464","0x0","0x4","0x0","0x0","0x0"]}
+{"caller":"007460c0","site":"007460de","args":["str:ObjectSelectionCircle","0x0","0x0","0x9e1464","0x0","0x0","0x0","0x0","0x0"]}
+{"caller":"00747860","site":"0074787e","args":["str:FootstepSounds","0x0","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007e6150","site":"007e616b","args":["str:UnitNameOwn","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x1","0x0"]}
+{"caller":"007e6150","site":"007e618b","args":["str:UnitNameNPC","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x2","0x0"]}
+{"caller":"007e6150","site":"007e61ae","args":["str:UnitNamePlayerGuild","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x4","0x0"]}
+{"caller":"007e6150","site":"007e61ce","args":["str:UnitNamePlayerPVPTitle","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x8","0x0"]}
+{"caller":"007e6150","site":"007e61f1","args":["str:UnitNameEnemyPlayerName","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x10","0x0"]}
+{"caller":"007e6150","site":"007e6211","args":["str:UnitNameEnemyPetName","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x20","0x0"]}
+{"caller":"007e6150","site":"007e6237","args":["str:UnitNameEnemyGuardianName","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x1000","0x0"]}
+{"caller":"007e6150","site":"007e6257","args":["str:UnitNameEnemyTotemName","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x40","0x0"]}
+{"caller":"007e6150","site":"007e627d","args":["str:UnitNameFriendlyPlayerName","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x80","0x0"]}
+{"caller":"007e6150","site":"007e62a0","args":["str:UnitNameFriendlyPetName","0x0","0x10","0x9e1464","fn:007e60e0","0x4","0x0","0x100","0x0"]}
+{"caller":"007e6150","site":"007e62c6","args":["str:UnitNameFriendlyGuardianName","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x2000","0x0"]}
+{"caller":"007e6150","site":"007e62e9","args":["str:UnitNameFriendlyTotemName","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x200","0x0"]}
+{"caller":"007e6150","site":"007e630f","args":["str:UnitNameNonCombatCreatureName","0x0","0x10","0x9e14a0","fn:007e60e0","0x4","0x0","0x400","0x0"]}
+{"caller":"007f3a10","site":"007f3a50","args":["str:violenceLevel","str:Sets the violence level of the game","0x10","?","fn:007f39b0","0x4","0x0","0x0","0x0"]}
+{"caller":"006b0bf0","site":"006b0c2e","args":["str:decorateAccountName","0x9e14ff","0x0","0x9e14a0","0x0","0x6","0x0","0x0","0x0"]}
+{"caller":"006b0bf0","site":"006b0c92","args":["str:realmListbn","str:Address of Battle.net server","0x0","0x9e14ff","0x0","0x6","0x0","0x0","0x0"]}
+{"caller":"006b0bf0","site":"006b0d01","args":["str:portal","str:Name of Battle.net portal to use","0x0","0x9e14ff","0x0","0x6","0x0","0x0","0x0"]}
+{"caller":"006b0bf0","site":"006b0d36","args":["str:serverAlert","str:Get the glue-string tag for the URL","0x0","str:SERVER_ALERT_URL","0x0","0x6","0x0","0x0","0x0"]}
+{"caller":"006b0bf0","site":"006b0d6b","args":["str:realmList","str:Address of realm list server","0x0","str:us.logon.worldofwarcraft.com:3724","0x0","0x6","0x0","0x0","0x0"]}
+{"caller":"007ea260","site":"007ea29d","args":["str:ffxDeath","str:full screen death effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008bfe80","site":"008bfecf","args":["str:ffxGlow","str:full screen glow effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008c12f0","site":"008c1314","args":["0xa94238","str:full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008c12f0","site":"008c1339","args":["str:ffxRectangle","str:use rectangle texture for full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"004067f0","site":"004068a7","args":["str:dbCompress","str:Database compression","?","0x9e11a8","?","0x5","?","?","?"]}
+{"caller":"004067f0","site":"004068c6","args":["str:locale","str:Set the game locale","?","0x9e1ac8","fn:00403320","0x5","?","?","?"]}
+{"caller":"004067f0","site":"0040690f","args":["str:useEnglishAudio","str:override the locale and use English audio","?","0x9e14a0","?","0x5","?","?","?"]}
+{"caller":"004067f0","site":"004069ac","args":["str:processAffinityMask","str:Sets which core(s) WoW may execute on - changes require restart to take effect","0x2","0x9e14a0","fn:004022e0","?","?","?","?"]}
+{"caller":"004067f0","site":"00406a27","args":["str:timingTestError","str:Error reported by the timing validation system","0x6","0x9e14a0","?","0x5","?","?","?"]}
+{"caller":"004067f0","site":"00406a49","args":["str:timingMethod","str:Desired method for game timing","0x2","0x9e14a0","fn:00403200","0x5","?","?","?"]}
+{"caller":"0076ab80","site":"0076abaa","args":["str:hwDetect","str:do hardware detection","0x1","0x9e1464","?","0x1","?","?","?"]}
+{"caller":"00769c90","site":"00769cae","args":["str:gxStereoConvergence","str:Set stereoscopic rendering convergence depth","0x1","0x9e1464","fn:00769c30","0x1","0x0","0x0","0x0"]}
+{"caller":"00769c90","site":"00769cd6","args":["str:gxStereoSeparation","str:Set stereoscopic rendering separation percentage","0x1","0xa389d4","fn:00769c60","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a666","args":["str:widescreen","str:Allow widescreen support","0x0","0x9e1464","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a69b","args":["str:gxWindow","str:toggle fullscreen/window","0x3","?","fn:00769550","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a6d0","args":["str:gxMaximize","str:maximize game window","0x3","?","fn:007695b0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a71b","args":["str:gxColorBits","str:color bits","0x3","?","fn:00769240","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a769","args":["str:gxDepthBits","str:depth bits","0x3","?","fn:007692d0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a7b4","args":["str:gxResolution","str:resolution","0x3","?","fn:0076a220","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a7dc","args":["str:gxRefresh","str:refresh rate","0x3","0xa38d14","fn:0076a580","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a807","args":["str:gxTripleBuffer","str:triple buffer","0x3","0x9e14a0","fn:00769360","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a837","args":["str:gxApi","str:graphics api","0x3","?","fn:007693b0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a862","args":["str:gxVSync","str:vsync on or off","0x3","0x9e1464","fn:00769520","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a88a","args":["str:gxAspect","str:constrain window aspect","0x3","0x9e1464","fn:00769580","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a8b5","args":["str:gxCursor","str:toggle hardware cursor","0x3","0x9e1464","fn:007695e0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a8ff","args":["0xa0c8cc","str:multisample","0x3","?","fn:00769610","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a92a","args":["str:gxMultisampleQuality","str:multisample quality","0x3","0x9f2fbc","fn:00769650","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a974","args":["str:gxFixLag","str:prevent cursor lag","0x3","?","fn:007696a0","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a99f","args":["str:gxStereoEnabled","str:Enable stereoscopic rendering","0x1","0x9e14a0","fn:00769c00","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a9c7","args":["str:gxOverride","str:gx overrides","0x1","0x9e14ff","fn:00769810","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076a9f2","args":["str:maxFPS","str:Set FPS limit","0x1","0xa38bd0","fn:00769830","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076aa1a","args":["str:maxFPSBk","str:Set background FPS limit","0x1","0xa2d568","fn:00769860","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076aa45","args":["str:videoOptionsVersion","str:Video options version","0x3","0x9e14a0","fn:008a1420","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076aa6d","args":["str:windowResizeLock","str:prevent resizing in windowed mode","0x1","0x9e14a0","fn:00769890","0x1","0x0","0x0","0x0"]}
+{"caller":"0076a630","site":"0076aa95","args":["str:fixedFunction","str:Force fixed function rendering","0x3","0x9e14a0","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"006b2cf0","site":"006b2d6f","args":["str:realmName","str:Last realm connected to","?","0x9e14ff","?","0x6","?","?","?"]}
+{"caller":"004d1050","site":"004d106b","args":["str:StartTalkingDelay","0x9e14ff","0x0","0x9f2fbc","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d108b","args":["str:StartTalkingTime","0x9e14ff","0x0","0x9e1340","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d10ae","args":["str:StopTalkingDelay","0x9e14ff","0x0","0x9f2fbc","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d10ce","args":["str:StopTalkingTime","0x9e14ff","0x0","0x9f2f7c","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d10f4","args":["str:OutboundChatVolume","str:The software amplification factor (0.0 - 2.0)","0x0","0x9e1340","fn:008a1420","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1117","args":["str:InboundChatVolume","str:The volume of all other chat you hear (0.0 - 1.0)","0x0","0x9e1340","fn:007dcec0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d113d","args":["str:VoiceChatMode","str:Push to talk(0) or voice activation(1)","0x0","0x9e14a0","fn:007dcf20","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1160","args":["str:VoiceActivationSensitivity","str:Sensitivity of the microphone (0.0 - 1.0)","0x0","0x9f2ea4","fn:007dcfe0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1186","args":["str:EnableMicrophone","str:Enables the microphone so you can speak.","0x0","0x9e1464","fn:007dc770","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d11a9","args":["0x9e2180","str:Enables the voice chat feature.","0x0","0x9e14a0","fn:007dfea0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d11cf","args":["str:VoiceChatSelfMute","str:Turn off your ability to talk.","0x0","0x9e14a0","fn:007dd060","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d11f2","args":["str:PushToTalkButton","str:String representation of the Push-To-Talk button.","0x0","0x9e4104","0x7dd040","0x5","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1215","args":["str:Sound_OutputQuality","str:sound quality, default 1 (medium)","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1235","args":["str:Sound_NumChannels","str:number of sound channels","0x0","0x9e21dc","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d125b","args":["str:Sound_EnableReverb","0x9e14ff","0x0","0x9e14a0","fn:004d0bc0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d127b","args":["str:Sound_EnableSoftwareHRTF","0x9e14ff","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d12a1","args":["str:Sound_VoiceChatInputDriverIndex","0x9e14ff","0x0","0x9e14a0","fn:004d0cb0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d12c1","args":["str:Sound_VoiceChatInputDriverName","0x9e14ff","0x0","str:Primary Sound Capture Driver","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d12e7","args":["0x9f22f0","0x9e14ff","0x0","0x9e14a0","fn:004d0d40","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1307","args":["str:Sound_VoiceChatOutputDriverName","0x9e14ff","0x0","str:Primary Sound Driver","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d132d","args":["str:Sound_OutputDriverIndex","0x9e14ff","0x0","0x9e14a0","fn:004d0dd0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d134d","args":["str:Sound_OutputDriverName","0x9e14ff","0x0","str:Primary Sound Driver","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1370","args":["str:Sound_DSPBufferSize","str:sound buffer size, default 0","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d1390","args":["str:Sound_EnableHardware","str:Enables Hardware","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d13b3","args":["str:Sound_EnableMode2","0x9f2c8c","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1050","site":"004d13d3","args":["str:Sound_EnableMixMode2","0x9f2c8c","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d161b","args":["str:ChatMusicVolume","str:music volume (0.0 to 1.0)","0x0","0x9f3660","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d163b","args":["str:ChatSoundVolume","str:sound volume (0.0 to 1.0)","0x0","0x9f2ea4","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d165e","args":["str:ChatAmbienceVolume","str:Ambience Volume (0.0 to 1.0)","0x0","0x9f3660","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1681","args":["str:Sound_EnableSFX","0x9e14ff","0x0","0x9e1464","fn:004d14e0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d16a7","args":["str:Sound_EnableAmbience","str:Enable Ambience","0x0","0x9e1464","fn:004d1530","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d16c7","args":["str:Sound_EnableErrorSpeech","str:error speech","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d16ed","args":["str:Sound_EnableMusic","str:Enables music","0x0","0x9e1464","fn:004d1590","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1710","args":["str:Sound_EnableAllSound","0x9e14ff","0x0","0x9e1464","fn:004d13e0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1736","args":["str:Sound_MasterVolume","str:master volume (0.0 to 1.0)","0x0","0x9e1340","fn:004d0e60","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1759","args":["str:Sound_SFXVolume","str:sound volume (0.0 to 1.0)","0x0","0x9e1340","fn:004d0e80","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d177f","args":["str:Sound_MusicVolume","str:music volume (0.0 to 1.0)","0x0","0x9f2ea4","fn:004d0eb0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d17a2","args":["str:Sound_AmbienceVolume","str:Ambience Volume (0.0 to 1.0)","0x0","0x9f3548","fn:004d0ef0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d17c5","args":["0x9f2820","str:lock listener at character","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d17e5","args":["str:Sound_EnableEmoteSounds","0x9e14ff","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1808","args":["0x9f25f0","0x9e14ff","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1828","args":["str:Sound_EnableArmorFoleySoundForSelf","0x9e14ff","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d184b","args":["str:Sound_EnableArmorFoleySoundForOthers","0x9e14ff","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d187e","args":["str:Sound_EnableDSPEffects","0x9e14ff","0x0","?","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d189e","args":["str:Sound_EnablePetSounds","str:Enables pet sounds","0x0","0x9e1464","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d18c1","args":["str:Sound_EnableSoundWhenGameIsInBG","str:Enable Sound When Game Is In Background","0x0","0x9e14a0","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d18f2","args":["str:Sound_ChaosMode","str:Testing to break sound engine","0x0","0x9e14a0","fn:004d0f20","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1933","args":["str:Sound_MaxCacheSizeInBytes","str:Max cache size in bytes","0x0","str:16777216","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d1600","site":"004d1953","args":["str:Sound_MaxCacheableSizeInBytes","str:Max sound size that will be cached, larger files will be streamed instead","0x0","str:1048576","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"00877440","site":"00877469","args":["str:SoundMemoryCache","str:sound cache memory size (MB)","0x2","0xa00b78","0x0","0x7","0x0","0x0","0x0"]}
+{"caller":"004d9bd0","site":"004d9dc0","args":["str:gameTip","0x0","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"004d9bd0","site":"004d9de8","args":["str:showGameTips","?","?","0x9e1464","?","0x5","?","?","?"]}
+{"caller":"007e2250","site":"007e22a0","args":["str:forceEnglishNames","0x0","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"006b9900","site":"006b991b","args":["str:synchronizeSettings","str:Whether client settings should be stored on the server","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007ea470","site":"007ea4a2","args":["str:ffxNetherWorld","str:full screen nether world effect (for invisibility)","0x1","0x9e1464","fn:008c02a0","0x1","0x0","0x0","0x0"]}
+{"caller":"007ea5f0","site":"007ea6f4","args":["str:ffxSpecial","str:full screen test effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"0050fea0","site":"0050ff14","args":["?","0x0","?","?","0x0","0x4","0x1","0x0","0x1"]}
+{"caller":"007681f0","site":"00768323","args":["?","0x9e14ff","0x0","?","0x0","0x5","0x1","0x0","0x0"]}
+{"caller":"00787780","site":"007878a9","args":["str:weatherDensity","?","?","0x9e1384","fn:00784040","0x5","?","?","?"]}
+{"caller":"00787780","site":"007878c0","args":["str:useWeatherShaders","?","?","0x9e1464","?","0x5","?","?","?"]}
+{"caller":"007bd3a0","site":"007bd3e3","args":["str:shadowCull","str:enable shadow frustum culling","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007bd3a0","site":"007bd408","args":["str:shadowScissor","str:enable scissoring when rendering shadowmaps","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007bd3a0","site":"007bd430","args":["str:shadowInstancing","str:enable instancing when rendering shadowmaps","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007e4a40","site":"007e4b3f","args":["str:shadowLOD","str:Unit shadow LOD","0x1","0x9e1464","fn:007e3a20","0x1","0x0","0x0","0x0"]}
+{"caller":"?","site":"0040484f","args":["str:textureFilteringMode","str:Texture filtering mode","0x1","0x9e1464","fn:004023c0","0x1","0x0","0x0","0x0"]}
+{"caller":"?","site":"00404877","args":["str:UIFaster","str:UI acceleration option","0x0","0x9e1370","fn:00402250","0x1","0x0","0x0","0x0"]}
+{"caller":"?","site":"004048a2","args":["str:textureCacheSize","str:Texture cache size in bytes","0x1","0x9e21dc","fn:00402320","0x1","0x0","0x0","0x0"]}
+{"caller":"004026b0","site":"004026ce","args":["str:asyncThreadSleep","str:Engine option: Async read thread sleep","0x1","0x9e14a0","fn:00402670","0x0","0x0","0x0","0x0"]}
+{"caller":"004026b0","site":"004026f6","args":["str:asyncHandlerTimeout","str:Engine option: Async read main thread timeout","0x1","0x9e184c","fn:00402690","0x0","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"0040277b","args":["str:M2UseZFill","str:z-fill transparent objects","0x0","0x9e1464","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"004027a0","args":["str:M2UseClipPlanes","str:use clip planes for sorting transparent objects","0x0","0x9e1464","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"004027c8","args":["str:M2UseThreads","str:multithread model animations","0x0","0x9e1464","0x0","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"004027f0","args":["str:M2BatchDoodads","str:combine doodads to reduce batch count","0x0","0x9e1464","fn:00402410","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"0040281b","args":["str:M2BatchParticles","str:combine particle emitters to reduce batch count","0x0","0x9e1464","fn:00402470","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"00402843","args":["str:M2ForceAdditiveParticleSort","str:force all particles to sort as though they were additive","0x0","0x9e14a0","fn:004024d0","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"0040286e","args":["str:M2Faster","str:end user control of scene optimization mode - (0-3)","0x0","0x9e1464","fn:004021c0","0x1","0x0","0x0","0x0"]}
+{"caller":"00402760","site":"00402896","args":["str:M2FasterDebug","str:programmer control of scene optimization mode","0x0","0x9e14a0","fn:00402210","0x1","0x0","0x0","0x0"]}
+{"caller":"004d2a30","site":"004d2a87","args":["str:heapAllocTracking","str:Enables/disables allocation tracking & dumping in SMemMalloc","0x0","0x9e1464","fn:004d2780","0x4","0x0","0x0","0x0"]}
+{"caller":"005fd2c0","site":"005fd2de","args":["str:Joystick","str:enable joystick control","0x0","0x9e14a0","fn:005f9c80","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd2c0","site":"005fd2fe","args":["str:CinematicJoystick","str:enable cinematic joystick control","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd2c0","site":"005fd355","args":["str:enableWowMouse","str:Enable Steelseries RunicWorld        Mouse","0x1","0x9e14a0","fn:005fa9b0","0x5","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e41e","args":["str:farClipOverride","str:Override old world graphic settings","0x1","0x9e14a0","fn:0078dc30","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e446","args":["0xa3f78c","str:Video option: Toggle Lod","0x1","0x9e14a0","fn:0078d610","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e471","args":["str:mapShadows","str:Video option: Toggle map shadows","0x1","0x9e1464","fn:0078d660","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e499","args":["str:MaxLights","str:Max number of hardware lights","0x1","0xa00b78","fn:0078d6b0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e4c4","args":["str:shadowLevel","str:Terrain shadow map mip level","0x1","0x9e1464","fn:0078d6f0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e4ec","args":["str:texLodBias","str:Texture LOD Bias","0x1","0x9f2fbc","fn:0078d730","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e517","args":["0x9f57a0","str:Far clip plane distance","0x1","0xa3f6f8","fn:0078d780","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e53f","args":["str:nearclip","str:Near clip plane distance","0x1","0xa3f6dc","fn:0078d7a0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e56a","args":["str:specular","str:Specularity","0x1","0x9e14a0","fn:0078de60","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e592","args":["str:mapObjLightLOD","str:Map object light LOD","0x1","0x9e14a0","fn:0078ded0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e5bd","args":["str:particleDensity","str:Video option: Particle density","0x1","0x9e1340","fn:0078d860","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e5e5","args":["str:waterLOD","str:Water geometry LOD","0x1","0x9e14a0","fn:0078d8b0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e610","args":["str:baseMip","str:base mipmap level","0x1","0x9e14a0","fn:0078df00","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e638","args":["str:horizonFarclipScale","str:Far clip plane scale for horizon","0x1","0xa1e228","fn:0078d7c0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e663","args":["str:horizonNearclipScale","str:Near clip plane scale for horizon","0x1","0xa3f0a4","fn:0078d810","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e68b","args":["str:showfootprints","str:toggles rendering of footprints","0x1","0x9e1464","fn:0078d8f0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e6b6","args":["str:bspcache","str:BSP node caching","0x1","0x9e1464","fn:0078df90","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e6de","args":["str:footstepBias","str:Unit footstep depth bias","0x1","str:0.125","fn:0078d940","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e709","args":["str:occlusion","str:Use hardware occlusion test","0x1","0x9e1464","fn:0078d9d0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e731","args":["str:worldPoolUsage","str:CGxPool usage static/dynamic","0x1","str:Dynamic","fn:0078da10","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e75c","args":["str:terrainAlphaBitDepth","str:Terrain alpha map bit depth","0x1","0x9e15ec","fn:0078da50","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e784","args":["str:groundEffectDensity","str:Ground effect density","0x1","0xa2d570","fn:0078dab0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e7af","args":["str:groundEffectDist","str:Ground effect dist","0x1","0xa3f2ec","fn:0078db10","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e7d7","args":["str:objectFade","str:Fade objects into view","0x1","0x9e1464","fn:0078db90","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e802","args":["str:objectFadeZFill","str:Fade objects using ZFill pass ","0x1","0x9e14a0","fn:0078dbe0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e82a","args":["str:environmentDetail","str:Environment detail","0x1","0x9e1340","fn:0078dc60","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e855","args":["str:hwPCF","str:Hardware PCF Filtering","0x1","0x9e1464","fn:0078e070","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e87d","args":["str:extShadowQuality","str:Quality of exterior shadows (0-5)","0x1","0x9e14a0","fn:0078dcb0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e8a8","args":["str:projectedTextures","str:Projected Textures","0x1","0x9e14a0","fn:0078dcf0","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e8d0","args":["str:gxTextureCacheSize","str:GX Texture Cache Size","0x1","0x9e14a0","fn:0078e110","0x1","0x0","0x0","0x0"]}
+{"caller":"0078e400","site":"0078e8f8","args":["str:spellEffectLevel","str:Video Option: Spell Effects","0x1","0x9f24fc","0x0","0x1","0x0","0x0","0x0"]}

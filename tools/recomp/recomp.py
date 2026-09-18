@@ -562,6 +562,43 @@ def load_handler_pairs():
 load_handler_pairs.coverage = None
 
 
+CVARS_JSONL = os.path.join(DATA, 'ref-cvars.jsonl')
+
+
+def load_cvar_pairs():
+    """CVar callbacks by cvar name: the reference's CVar::Register(name, help, flags, default,
+    callback, ...) call sites (ExportCallArgs.java on FUN_00767fc0) against whoa's
+    CVar::Register("name", ..., &Callback, ...). Returns [(ref fn, whoa callback name, cvar)] and
+    stores the name sets for the coverage section."""
+    if not os.path.exists(CVARS_JSONL):
+        return []
+    ref = {}
+    with io.open(CVARS_JSONL, encoding='utf-8') as f:
+        for line in f:
+            r = json.loads(line)
+            a = r['args']
+            if a and a[0].startswith('str:'):
+                name = a[0][4:]
+                cb = a[4][3:].lower() if len(a) > 4 and a[4].startswith('fn:') else None
+                ref[name.lower()] = (name, cb)
+    whoa_cvars = {}
+    pat = re.compile(r'CVar::Register\(\s*"([^"]+)"\s*,\s*(?:"(?:[^"\\]|\\.)*"|nullptr|[^,]+)\s*,\s*[^,]+,\s*(?:"(?:[^"\\]|\\.)*"|[^,]+)\s*,\s*&?([\w:]+)', re.S)
+    for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
+        text = io.open(path, encoding='utf-8', errors='replace').read()
+        for m in pat.finditer(text):
+            whoa_cvars[m.group(1).lower()] = m.group(2)
+    pairs = []
+    for key, (name, cb) in ref.items():
+        w = whoa_cvars.get(key)
+        if cb and w and w != 'nullptr':
+            pairs.append((cb, w, name))
+    load_cvar_pairs.coverage = {'ref': ref, 'whoa': whoa_cvars}
+    return pairs
+
+
+load_cvar_pairs.coverage = None
+
+
 def load_overrides():
     if not os.path.exists(OVERRIDES):
         return {}
@@ -615,6 +652,12 @@ def match(refs, whoa, overrides, tables):
         key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
         if key:
             bind(ref_fn, key, 'handler', 'SetMessageHandler(%s) on both sides' % opcode)
+
+    # cvar callbacks: the same cvar name registered with a callback on both sides
+    for ref_fn, fn, cvar in load_cvar_pairs():
+        key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
+        if key:
+            bind(ref_fn, key, 'cvar', 'callback of CVar::Register("%s") on both sides' % cvar)
 
     # string anchors: rarity-weighted overlap, accepted when the best candidate is clearly best
     ref_by_string = collections.defaultdict(set)
@@ -890,6 +933,16 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
         L.append('')
         L.append('Reference-only, by opcode (handler address): ' + ', '.join(
             '%s %s' % (cov['names'].get(op, '0x%x' % op), '/'.join(sorted(cov['ref'][op]))) for op in ref_only))
+        L.append('')
+    cv = load_cvar_pairs.coverage
+    if cv:
+        missing = sorted(n for k, (n, cb) in cv['ref'].items() if k not in cv['whoa'])
+        L.append('## CVar coverage (CVar::Register)')
+        L.append('')
+        L.append('The reference registers %d cvars by literal name; whoa registers %d of them. Missing ones are settings the reference client honours and this one cannot even store.' % (
+            len(cv['ref']), len(cv['ref']) - len(missing)))
+        L.append('')
+        L.append('Missing: ' + ', '.join(missing))
         L.append('')
     L.append('## Coverage by reference module')
     L.append('')

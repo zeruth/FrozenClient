@@ -59,6 +59,36 @@
   "whoa": "TransferPendingHandler",
   "whoaSize": 3
  },
+ "00401a30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 73,
+  "status": "ported",
+  "whoa": "GammaCallback",
+  "whoaSize": 3
+ },
+ "00401a80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 128,
+  "status": "ported",
+  "whoa": "DesktopGammaCallback",
+  "whoaSize": 3
+ },
  "00401b60": {
   "branchRatio": 0.333,
   "constOverlap": 0.111,
@@ -73,6 +103,126 @@
   "status": "ported",
   "whoa": "ClientRegisterConsoleCommands",
   "whoaSize": 682
+ },
+ "004021c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/model/Model2.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 67,
+  "status": "ported",
+  "whoa": "M2FasterChanged",
+  "whoaSize": 208
+ },
+ "00402210": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/Model2.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 50,
+  "status": "ported",
+  "whoa": "M2DebugFasterChanged",
+  "whoaSize": 144
+ },
+ "00402250": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 135,
+  "status": "ported",
+  "whoa": "UIFasterCalllback",
+  "whoaSize": 3
+ },
+ "00402320": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 149,
+  "status": "ported",
+  "whoa": "TextureCacheSizeCallback",
+  "whoaSize": 3
+ },
+ "004023c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 80,
+  "status": "ported",
+  "whoa": "TextureFilteringCallback",
+  "whoaSize": 3
+ },
+ "00402410": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/Model2.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 81,
+  "status": "ported",
+  "whoa": "BatchDoodadsCallback",
+  "whoaSize": 3
+ },
+ "00402470": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/Model2.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 85,
+  "status": "ported",
+  "whoa": "BatchParticlesCallback",
+  "whoaSize": 3
+ },
+ "004024d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/Model2.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 85,
+  "status": "ported",
+  "whoa": "ForceAdditiveParticleSortCallback",
+  "whoaSize": 3
  },
  "00402760": {
   "branchRatio": 1.0,
@@ -103,6 +253,21 @@
   "status": "ported",
   "whoa": "HasCommonArchiveLayout",
   "whoaSize": 0
+ },
+ "00403320": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "cvar",
+  "module": "Client.cpp",
+  "refSize": 23,
+  "status": "ported",
+  "whoa": "LocaleChangedCallback",
+  "whoaSize": 3
  },
  "00403880": {
   "branchRatio": 0.0,
@@ -4081,6 +4246,66 @@
   "whoa": "SI2::PlayUISound",
   "whoaSize": 582
  },
+ "004d0bc0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 233,
+  "status": "stub",
+  "whoa": "EnableReverbHandler",
+  "whoaSize": 75
+ },
+ "004d0cb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 141,
+  "status": "ported",
+  "whoa": "VoiceChatInputDriverHandler",
+  "whoaSize": 75
+ },
+ "004d0dd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 141,
+  "status": "ported",
+  "whoa": "OutputDriverHandler",
+  "whoaSize": 75
+ },
+ "004d0e60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 28,
+  "status": "ported",
+  "whoa": "MasterVolume_CVarCallback",
+  "whoaSize": 24
+ },
  "004d0e80": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -4094,6 +4319,36 @@
   "refSize": 33,
   "status": "ported",
   "whoa": "SFXVolume_CVarCallback",
+  "whoaSize": 34
+ },
+ "004d0eb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 58,
+  "status": "ported",
+  "whoa": "MusicVolume_CVarCallback",
+  "whoaSize": 62
+ },
+ "004d0ef0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 33,
+  "status": "ported",
+  "whoa": "AmbienceVolume_CVarCallback",
   "whoaSize": 34
  },
  "004d1050": {
@@ -15863,6 +16118,186 @@
   "whoa": "ConsoleCommandInitialize",
   "whoaSize": 247
  },
+ "00769240": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 143,
+  "status": "ported",
+  "whoa": "CVGxColorBitsCallback",
+  "whoaSize": 3
+ },
+ "007692d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 143,
+  "status": "ported",
+  "whoa": "CVGxDepthBitsCallback",
+  "whoaSize": 3
+ },
+ "00769360": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 75,
+  "status": "ported",
+  "whoa": "CVGxTripleBufferCallback",
+  "whoaSize": 3
+ },
+ "00769520": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 36,
+  "status": "ported",
+  "whoa": "CVGxVSyncCallback",
+  "whoaSize": 3
+ },
+ "00769550": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 42,
+  "status": "ported",
+  "whoa": "CVGxWindowCallback",
+  "whoaSize": 3
+ },
+ "007695b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 42,
+  "status": "ported",
+  "whoa": "CVGxMaximizeCallback",
+  "whoaSize": 3
+ },
+ "007695e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 42,
+  "status": "ported",
+  "whoa": "CVGxCursorCallback",
+  "whoaSize": 3
+ },
+ "007696a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 42,
+  "status": "ported",
+  "whoa": "CVGxFixLagCallback",
+  "whoaSize": 3
+ },
+ "00769890": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 25,
+  "status": "ported",
+  "whoa": "CVWindowResizeLockCallback",
+  "whoaSize": 3
+ },
+ "00769c00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 43,
+  "status": "ported",
+  "whoa": "CVGxStereoEnabledCallback",
+  "whoaSize": 3
+ },
+ "00769c30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 36,
+  "status": "ported",
+  "whoa": "CVGxStereoConvergenceCallback",
+  "whoaSize": 3
+ },
+ "00769c60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 36,
+  "status": "ported",
+  "whoa": "CVGxStereoSeparationCallback",
+  "whoaSize": 3
+ },
  "00769c90": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -15877,6 +16312,36 @@
   "status": "ported",
   "whoa": "ConsoleDeviceStereoInitialize",
   "whoaSize": 0
+ },
+ "0076a220": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 856,
+  "status": "ported",
+  "whoa": "CVGxResolutionCallback",
+  "whoaSize": 3
+ },
+ "0076a580": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "cvar",
+  "module": "ConsoleVar.cpp",
+  "refSize": 173,
+  "status": "ported",
+  "whoa": "CVGxRefreshCallback",
+  "whoaSize": 3
  },
  "0076a630": {
   "branchRatio": 1.0,
@@ -16408,6 +16873,21 @@
   "whoa": "WeatherDefaultTexture",
   "whoaSize": 0
  },
+ "00784040": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/Weather.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "WeatherDensityCallback",
+  "whoaSize": 3
+ },
  "00787780": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -16422,6 +16902,426 @@
   "status": "ported",
   "whoa": "Weather::Weather",
   "whoaSize": 148
+ },
+ "0078d660": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 66,
+  "status": "ported",
+  "whoa": "CWorldParam::MapShadowsCallback",
+  "whoaSize": 3
+ },
+ "0078d6b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 50,
+  "status": "ported",
+  "whoa": "CWorldParam::MaxLightsCallback",
+  "whoaSize": 3
+ },
+ "0078d6f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 53,
+  "status": "ported",
+  "whoa": "CWorldParam::ShadowLevelCallback",
+  "whoaSize": 3
+ },
+ "0078d730": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 75,
+  "status": "ported",
+  "whoa": "CWorldParam::TextureLodBiasCallback",
+  "whoaSize": 3
+ },
+ "0078d7a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 28,
+  "status": "ported",
+  "whoa": "CWorldParam::NearClipCallback",
+  "whoaSize": 3
+ },
+ "0078d7c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 80,
+  "status": "ported",
+  "whoa": "CWorldParam::HorizonFarClipScaleCallback",
+  "whoaSize": 3
+ },
+ "0078d810": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 76,
+  "status": "ported",
+  "whoa": "CWorldParam::HorizonNearClipScaleCallback",
+  "whoaSize": 3
+ },
+ "0078d860": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 75,
+  "status": "ported",
+  "whoa": "CWorldParam::ParticleDensityCallback",
+  "whoaSize": 3
+ },
+ "0078d8b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 49,
+  "status": "ported",
+  "whoa": "CWorldParam::WaterLODCallback",
+  "whoaSize": 3
+ },
+ "0078d8f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 72,
+  "status": "ported",
+  "whoa": "CWorldParam::ShowFootprintsCallback",
+  "whoaSize": 3
+ },
+ "0078d940": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 131,
+  "status": "ported",
+  "whoa": "CWorldParam::FootstepBiasCallback",
+  "whoaSize": 3
+ },
+ "0078d9d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 52,
+  "status": "ported",
+  "whoa": "CWorldParam::OcclusionCallback",
+  "whoaSize": 3
+ },
+ "0078da10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 62,
+  "status": "ported",
+  "whoa": "CWorldParam::WorldPoolUsageCallback",
+  "whoaSize": 3
+ },
+ "0078da50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 90,
+  "status": "ported",
+  "whoa": "CWorldParam::TerrainAlphaBitDepthCallback",
+  "whoaSize": 3
+ },
+ "0078dab0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 91,
+  "status": "ported",
+  "whoa": "CWorldParam::GroundEffectDensityCallback",
+  "whoaSize": 3
+ },
+ "0078db10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 122,
+  "status": "ported",
+  "whoa": "CWorldParam::GroundEffectDistCallback",
+  "whoaSize": 3
+ },
+ "0078db90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 72,
+  "status": "ported",
+  "whoa": "CWorldParam::ObjectFadeCallback",
+  "whoaSize": 3
+ },
+ "0078dbe0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 72,
+  "status": "ported",
+  "whoa": "CWorldParam::ObjectFadeZFillCallback",
+  "whoaSize": 3
+ },
+ "0078dc30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 40,
+  "status": "ported",
+  "whoa": "CWorldParam::FarClipOverrideCallback",
+  "whoaSize": 3
+ },
+ "0078dc60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 80,
+  "status": "ported",
+  "whoa": "CWorldParam::EnvironmentDetailCallback",
+  "whoaSize": 3
+ },
+ "0078dcb0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 64,
+  "status": "ported",
+  "whoa": "CWorldParam::ExtShadowQualityCallback",
+  "whoaSize": 3
+ },
+ "0078dcf0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 66,
+  "status": "ported",
+  "whoa": "CWorldParam::ProjectedTexturesCallback",
+  "whoaSize": 3
+ },
+ "0078de60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 111,
+  "status": "ported",
+  "whoa": "CWorldParam::SpecularCallback",
+  "whoaSize": 3
+ },
+ "0078ded0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "CWorldParam::MapObjLightLODCallback",
+  "whoaSize": 3
+ },
+ "0078df00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "SEvt.cpp",
+  "refSize": 144,
+  "status": "ported",
+  "whoa": "CWorldParam::BaseMipCallback",
+  "whoaSize": 3
+ },
+ "0078df90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "WorldParam.cpp",
+  "refSize": 215,
+  "status": "ported",
+  "whoa": "CWorldParam::BSPCacheCallback",
+  "whoaSize": 3
+ },
+ "0078e070": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "WorldParam.cpp",
+  "refSize": 149,
+  "status": "ported",
+  "whoa": "CWorldParam::HwPCFCallback",
+  "whoaSize": 3
+ },
+ "0078e110": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp"
+  ],
+  "how": "cvar",
+  "module": "WorldParam.cpp",
+  "refSize": 134,
+  "status": "ported",
+  "whoa": "CWorldParam::TextureCacheSizeCallback",
+  "whoaSize": 3
  },
  "0078e400": {
   "branchRatio": 0.0,
@@ -16482,6 +17382,81 @@
   "status": "ported",
   "whoa": "GetButtonName",
   "whoaSize": 680
+ },
+ "007dc770": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatClient.cpp",
+  "refSize": 192,
+  "status": "stub",
+  "whoa": "EnableMicrophoneHandler",
+  "whoaSize": 75
+ },
+ "007dcec0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatClient.cpp",
+  "refSize": 83,
+  "status": "ported",
+  "whoa": "InboundChatVolumeHandler",
+  "whoaSize": 75
+ },
+ "007dcf20": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatClient.cpp",
+  "refSize": 185,
+  "status": "ported",
+  "whoa": "VoiceChatModeHandler",
+  "whoaSize": 75
+ },
+ "007dcfe0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatClient.cpp",
+  "refSize": 91,
+  "status": "ported",
+  "whoa": "VoiceActivationSensitivityHandler",
+  "whoaSize": 75
+ },
+ "007dd060": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatClient.cpp",
+  "refSize": 53,
+  "status": "ported",
+  "whoa": "SelfMuteHandler",
+  "whoaSize": 75
  },
  "007e18c0": {
   "branchRatio": 0.044,
@@ -18402,6 +19377,21 @@
   "whoa": "SESound::GetOutputDriverName",
   "whoaSize": 147
  },
+ "00879460": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "callgraph",
+  "module": "SoundEngine.cpp",
+  "refSize": 63,
+  "status": "ported",
+  "whoa": "SESound::SetMasterVolume",
+  "whoaSize": 71
+ },
  "0087a6f0": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
@@ -18536,6 +19526,21 @@
   "status": "ported",
   "whoa": "SESound::LoadDiskSound",
   "whoaSize": 1258
+ },
+ "008a1420": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/CCharacterComponent.cpp"
+  ],
+  "how": "cvar",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 3,
+  "status": "ported",
+  "whoa": "ComponentTextureLevelCallback",
+  "whoaSize": 3
  },
  "008a65d0": {
   "branchRatio": 1.0,
@@ -19301,6 +20306,21 @@
   "status": "ported",
   "whoa": "EffectGlow::EffectGlow",
   "whoaSize": 89
+ },
+ "008c02a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectDeath.cpp"
+  ],
+  "how": "cvar",
+  "module": "EffectGlow.cpp",
+  "refSize": 55,
+  "status": "ported",
+  "whoa": "FFXDeathCallback",
+  "whoaSize": 3
  },
  "008c8de0": {
   "branchRatio": 0.0,
