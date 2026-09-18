@@ -117,7 +117,7 @@
   "refSize": 789,
   "status": "ported",
   "whoa": "ClientInitializeGame",
-  "whoaSize": 552
+  "whoaSize": 572
  },
  "00405a10": {
   "branchRatio": 0.0,
@@ -6445,7 +6445,7 @@
   "refSize": 445,
   "status": "ported",
   "whoa": "CGGameUI::DisplayError",
-  "whoaSize": 0
+  "whoaSize": 338
  },
  "00522980": {
   "branchRatio": 0.5,
@@ -15217,6 +15217,21 @@
   "status": "ported",
   "whoa": "CGUnit_C::RefreshDataPointers",
   "whoaSize": 500
+ },
+ "00753bb0": {
+  "branchRatio": 0.011,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "annotated",
+  "module": "UnitCombatLog_C.cpp",
+  "refSize": 565,
+  "status": "ported",
+  "whoa": "InventoryResultToError",
+  "whoaSize": 0
  },
  "00764f30": {
   "branchRatio": 0.4,

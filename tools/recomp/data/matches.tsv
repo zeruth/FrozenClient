@@ -1013,6 +1013,7 @@ addr	how	whoa	evidence
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006dc810	string	Player_C_GetModelName	unique "Error, unknown displayInfo %d specified for player race %d s"
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
+00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	callorder	ConsoleWrite	same slot between linked calls in 007e2840=ReceiveNewTimeSpeed
 00765360	override	ConsoleWriteA	

@@ -161,6 +161,7 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
 
     // TODO
 
+    ClientServices::SetMessageHandler(SMSG_INVENTORY_CHANGE_FAILURE, InventoryChangeFailureHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_NOTIFICATION, NotifyHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_PLAYED_TIME, PlayedTimeHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_NEW_WORLD, NewWorldHandler, nullptr);

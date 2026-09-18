@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 18:09 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 18:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1513 (+3) (5.6%) | 350.5k (6.3%) |
-| &nbsp;&nbsp;ported | 1039 (+3) | 230.5k |
+| mapped to a whoa function | 1514 (+1) (5.6%) | 351.1k (6.3%) |
+| &nbsp;&nbsp;ported | 1040 (+1) | 231.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 451 (=) | 92.0k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **252 (+6) (0.9%)** | **38.0k (0.7%)** |
-| unmapped | 25648 | 5.06M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 171 (-1) (3.1%) | |
-| whoa functions (src/, from PDB + source) | 10612, stubs 885 | |
+| **faithful** (linked, not stub, call order >= 80%) | **253 (+1) (0.9%)** | **38.6k (0.7%)** |
+| unmapped | 25647 | 5.06M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 172 (+1) (3.1%) | |
+| whoa functions (src/, from PDB + source) | 10614, stubs 885 | |
 
-Match evidence: annotated 94, callgraph 62, callorder 87, override 75, string 266, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 95, callgraph 62, callorder 87, override 75, string 266, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:54 -- mapped 1510, ported 1036, stub 451, spine mapped 172.
+Previous run: 2026-09-18 18:09 -- mapped 1513, ported 1039, stub 451, spine mapped 171.
 
 ## Lua API coverage (binding tables)
 
@@ -241,7 +241,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CScriptRegion.cpp | 204 | 27.4k | 67 (32.8%) | 39.7% | 26 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 11 (6.6%) | 21.0% | 0 | 0 | 50 |
-| UnitCombatLog_C.cpp | 106 | 26.2k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
+| UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 5 (3.5%) | 13.4% | 0 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 7 (5.0%) | 14.3% | 0 | 0 | 13 |
@@ -778,7 +778,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 09:16 | 1357 (4.9%) | 108 (0.4%) | 535 | 108/5780 | 936/2512 | 532 |
 | 2026-09-18 09:20 | 1422 (5.2%) | 123 (0.5%) | 535 | 149/5551 | 936/2512 | 532 |
 | 2026-09-18 09:21 | 1402 (5.2%) | 120 (0.4%) | 535 | 142/5551 | 936/2512 | 532 |
 | 2026-09-18 09:24 | 1425 (5.2%) | 129 (0.5%) | 535 | 156/5545 | 936/2512 | 532 |
@@ -803,6 +802,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
 | 2026-09-18 17:54 | 1510 (5.6%) | 246 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
 | 2026-09-18 18:09 | 1513 (5.6%) | 252 (0.9%) | 451 | 171/5530 | 936/2512 | 446 |
+| 2026-09-18 18:13 | 1514 (5.6%) | 253 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
 
 ## How to move a row
 
