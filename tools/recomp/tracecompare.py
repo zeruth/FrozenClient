@@ -32,17 +32,29 @@ MARKER = 'CGWorldFrame::RenderWorld'
 ORDER_OK = 0.8
 
 
-def load(path):
+def load(path, ref_names=None):
+    """Frames of names. Reference hits are re-labelled through the CURRENT map by address, so a
+    trace taken before a link was corrected still compares under the corrected name; hits whose
+    address is no longer linked are dropped."""
     rows = [json.loads(l) for l in io.open(path, encoding='utf-8') if l.strip()]
     frames = []
     cur = None
     for r in rows:
-        if r['name'] == MARKER:
+        if ref_names is not None:
+            if r['key'] == '004faf90':
+                name = MARKER
+            else:
+                name = ref_names.get(r['key'])
+                if name is None:
+                    continue
+        else:
+            name = r['name']
+        if name == MARKER:
             if cur is not None:
                 frames.append(cur)
             cur = []
         elif cur is not None:
-            cur.append(r['name'])
+            cur.append(name)
     # the trailing partial frame is dropped; only complete frames count
     return frames
 
@@ -60,14 +72,14 @@ def lcs_len(a, b):
 
 
 def main():
-    ref = load(os.path.join(DATA, 'trace-ref.jsonl'))
+    m = json.load(io.open(os.path.join(DATA, 'map.json'), encoding='utf-8'))
+    by_name = {e['whoa']: a for a, e in m.items()}
+    ref = load(os.path.join(DATA, 'trace-ref.jsonl'), {a: e['whoa'] for a, e in m.items()})
     whoa = load(os.path.join(DATA, 'trace-whoa.jsonl'))
     if not ref or not whoa:
         raise SystemExit('need complete frames on both sides (ref %d, whoa %d)' % (len(ref), len(whoa)))
     n = min(len(ref), len(whoa))
     ref, whoa = ref[:n], whoa[:n]
-    m = json.load(io.open(os.path.join(DATA, 'map.json'), encoding='utf-8'))
-    by_name = {e['whoa']: a for a, e in m.items()}
 
     names = set()
     for f in ref + whoa:

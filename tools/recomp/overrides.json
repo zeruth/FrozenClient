@@ -69,5 +69,8 @@
   "00403880": { "whoa": "CDataStore::~CDataStore", "status": "ported", "note": "sets vtable 009e0e24, InternalDestroy via vtable slot 1 unless m_alloc == -1" },
   "00824f00": { "whoa": "CM2Model::IsLoaded", "status": "ported", "note": "(wait, attachments): flags 0x20 branch, WaitForLoad, recursion over m_attachList (+0x58/+0x60), sets 0x100" },
 
+  "00832ab0": { "whoa": "CM2Model::SetBoneSequence", "status": "ported", "note": "797 bytes, 67 callers; calls SMemAlloc, SequenceFinished (008260c0), Sub826350 (00826350 = whoa's fallback resolver, named after its address). The body's FUN_ mentions used to self-link it to 00826350." },
+  "0086b5a0": { "status": "unlinked", "note": "'Invalid function pointer: %p' guard around a callback (callers: ConsoleCommandExecute, CVarSetCommandHandler ...); the reference calls it 100x/frame. whoa has no such guard; CVar::Set was a mis-annotation." },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }

@@ -275,11 +275,14 @@ def parse_sources():
                     j += 1
                 j += 1
             body = text[i:j + 1]
-            # the comment block right above the definition carries the reference annotation
+            # The reference annotation is the `// ref:` tag in the comment block right above the
+            # definition, or the address whoa baked into the name (CM2Model::Sub826350 IS
+            # FUN_00826350). A FUN_/Sub mention inside the body names a callee, not this function
+            # -- reading those as self-links is what linked SetBoneSequence to its own helper.
             above = text[max(0, text.rfind('\n\n', 0, m.start())):m.start()]
             refs = set(a.lower().zfill(8) for a in REF_TAG_RE.findall(above))
             if not refs:
-                refs = set(a.lower().zfill(8) for a in REF_ADDR_RE.findall(above + body))
+                refs = set(a.lower().zfill(8) for a in re.findall(r'(?:^|::)(?:Sub|sub_)([0-9A-Fa-f]{6})$', name))
             strings = set()
             for sm in STRING_RE.finditer(body):
                 s = unescape(sm.group(1))

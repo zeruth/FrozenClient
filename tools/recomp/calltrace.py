@@ -161,6 +161,8 @@ def choose(side, opts):
     for a, e in m.items():
         if e['status'] == 'stub':
             continue
+        if side == 'whoa' and not e.get('whoaSize'):
+            continue  # not in the PDB as code (inlined everywhere): a breakpoint could never see it
         if spine is not None and a not in spine:
             continue
         if not opts.hot and callers.get(a, 0) > opts.max_callers:

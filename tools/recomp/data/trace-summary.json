@@ -1,68 +1,60 @@
 {
- "date": "2026-09-18 10:09",
+ "date": "2026-09-18 10:14",
  "frames": 3,
- "orderAvg": 0.296,
- "verified": 19,
+ "orderAvg": 0.311,
+ "verified": 11,
  "missing": [
   [
-   906,
-   "CM2Scene::ComputeElementShaders"
+   146,
+   "CM2Model::Sub8269C0"
   ],
   [
-   311,
-   "CVar::Set"
-  ],
-  [
-   288,
-   "SwallowEventHandler"
-  ],
-  [
-   60,
-   "SI2::PlaySoundKit"
-  ],
-  [
-   37,
-   "ObjectUpdateFirstPass"
-  ],
-  [
-   25,
-   "FrameXML_CreateFrame"
-  ],
-  [
-   23,
-   "Script_GetRealmInfo"
+   131,
+   "CM2Model::Sub826E60"
   ],
   [
    21,
    "luaV_tostring"
   ],
   [
-   20,
-   "SStrChrR"
-  ],
-  [
-   20,
-   "SESound::LoadDiskSound"
-  ],
-  [
-   20,
-   "SEDiskSound::SEDiskSound"
-  ],
-  [
-   20,
-   "SEDiskSound::CompleteNonBlockingLoad"
+   21,
+   "ObjectUpdateFirstPass"
   ],
   [
    15,
-   "CScriptRegion::ProtectedFunctionsAllowed"
+   "CSimpleButton::Enable"
   ],
   [
-   11,
+   13,
    "luaL_checklstring"
   ],
   [
-   9,
+   13,
+   "SFile::IsStreamingTrial"
+  ],
+  [
+   12,
+   "SI2::PlaySoundKit"
+  ],
+  [
+   10,
+   "SStrChrR"
+  ],
+  [
+   10,
+   "SESound::LoadDiskSound"
+  ],
+  [
+   10,
+   "SEDiskSound::CompleteNonBlockingLoad"
+  ],
+  [
+   8,
    "luaC_step"
+  ],
+  [
+   6,
+   "StringToBOOL"
   ],
   [
    6,
@@ -86,14 +78,6 @@
   ],
   [
    3,
-   "LoadWmoLiquid"
-  ],
-  [
-   3,
-   "GxScenePresent"
-  ],
-  [
-   3,
    "CSimpleFontString_SetText"
   ],
   [
@@ -111,32 +95,24 @@
  ],
  "added": [
   [
-   2248,
-   "lua_type"
-  ],
-  [
-   691,
-   "CM2Model::SetWorldTransform"
-  ],
-  [
-   128,
-   "lua_pushnumber"
-  ],
-  [
-   120,
-   "lua_pushnil"
+   74,
+   "CM2Shared::CreateSimpleEffect"
   ],
   [
    21,
    "CSimpleFontString_GetText"
   ],
   [
-   4,
+   10,
+   "CCharacterComponent::CreateTexture"
+  ],
+  [
+   6,
    "FillInSolidTexture"
   ],
   [
-   4,
-   "AsyncFileReadObject"
+   3,
+   "SkyRender"
   ],
   [
    3,
@@ -144,15 +120,11 @@
   ],
   [
    3,
-   "CSimpleTexture_SetTexCoord"
-  ],
-  [
-   3,
-   "CCharacterComponent::CreateTexture"
-  ],
-  [
-   3,
    "BlobShadowsBegin"
+  ],
+  [
+   2,
+   "CSimpleTexture_SetTexCoord"
   ],
   [
    1,
@@ -169,91 +141,61 @@
   [
    1,
    "CImVector::Set"
+  ],
+  [
+   1,
+   "CGlueMgr::EnterWorld"
+  ],
+  [
+   1,
+   "CGUnit_C::RefreshDataPointers"
+  ],
+  [
+   1,
+   "CCharacterComponent::AddHandItem"
   ]
  ],
  "mismatch": [
   [
-   7534,
+   7520,
    "index2adr",
    [
-    538,
-    538,
-    584
+    537,
+    537,
+    593
    ],
    [
     3063,
     3061,
-    3070
+    3063
    ]
   ],
   [
-   2003,
-   "CDataStore::FetchRead",
-   [
-    867,
-    1652,
-    2035
-   ],
-   [
-    959,
-    652,
-    940
-   ]
-  ],
-  [
-   1781,
+   1783,
    "luaH_getnum",
    [
-    135,
     133,
-    143
+    133,
+    144
    ],
    [
-    730,
+    731,
     730,
     732
    ]
   ],
   [
-   1343,
-   "CM2Model::Sub826350",
-   [
-    437,
-    523,
-    676
-   ],
-   [
-    11,
-    139,
-    143
-   ]
-  ],
-  [
-   1031,
+   1029,
    "lua_touserdata",
    [
     49,
     49,
-    54
+    55
    ],
    [
     394,
     394,
-    395
-   ]
-  ],
-  [
-   992,
-   "CM2Model::SequenceFinished",
-   [
-    191,
-    222,
-    279
-   ],
-   [
-    46,
-    818,
-    820
+    394
    ]
   ],
   [
@@ -271,31 +213,45 @@
    ]
   ],
   [
+   953,
+   "CDataStore::FetchRead",
+   [
+    729,
+    756,
+    1287
+   ],
+   [
+    1385,
+    1098,
+    1242
+   ]
+  ],
+  [
    926,
    "CM2Model::IsDrawable",
    [
+    567,
     563,
-    559,
-    566
+    558
    ],
    [
-    871,
     872,
+    871,
     871
    ]
   ],
   [
-   693,
-   "CM2Model::SetBoneSequence",
+   726,
+   "CM2Model::Sub825E00",
    [
-    193,
-    223,
-    285
+    333,
+    440,
+    597
    ],
    [
-    0,
-    7,
-    1
+    76,
+    278,
+    290
    ]
   ],
   [
@@ -313,45 +269,45 @@
    ]
   ],
   [
-   306,
-   "InterpBodyBand",
+   269,
+   "CM2Model::Sub826350",
    [
-    113,
-    113,
-    113
+    155,
+    190,
+    246
    ],
    [
-    11,
-    11,
-    11
+    38,
+    139,
+    145
    ]
   ],
   [
-   129,
-   "CCharacterComponent::RenderPrep",
+   267,
+   "CM2Model::Sub8260C0",
    [
-    4,
-    15,
-    111
+    155,
+    189,
+    245
    ],
    [
+    38,
+    139,
+    145
+   ]
+  ],
+  [
+   125,
+   "CM2Model::SetBoneSequence",
+   [
+    20,
+    36,
+    76
+   ],
+   [
+    7,
     0,
-    1,
     0
-   ]
-  ],
-  [
-   64,
-   "CM2Shared::CreateSimpleEffect",
-   [
-    1,
-    0,
-    1
-   ],
-   [
-    0,
-    63,
-    3
    ]
   ],
   [
@@ -380,20 +336,6 @@
     80,
     80,
     80
-   ]
-  ],
-  [
-   31,
-   "ISStrVPrintf",
-   [
-    15,
-    3,
-    26
-   ],
-   [
-    0,
-    13,
-    0
    ]
   ],
   [
@@ -439,34 +381,6 @@
    ]
   ],
   [
-   12,
-   "LiquidRender",
-   [
-    6,
-    6,
-    6
-   ],
-   [
-    2,
-    2,
-    2
-   ]
-  ],
-  [
-   9,
-   "lua_gettop",
-   [
-    18,
-    18,
-    18
-   ],
-   [
-    21,
-    20,
-    22
-   ]
-  ],
-  [
    9,
    "NDCToDDC",
    [
@@ -481,31 +395,17 @@
    ]
   ],
   [
-   7,
-   "HandleCreate",
+   8,
+   "lua_gettop",
    [
-    9,
-    2,
-    7
+    18,
+    18,
+    18
    ],
    [
-    0,
-    11,
-    0
-   ]
-  ],
-  [
-   7,
-   "CM2Model::AttachToParent",
-   [
-    2,
-    2,
-    4
-   ],
-   [
-    0,
-    1,
-    0
+    21,
+    20,
+    21
    ]
   ],
   [
@@ -537,17 +437,31 @@
    ]
   ],
   [
-   3,
+   4,
    "luaV_tonumber",
    [
     8,
     8,
-    13
+    14
    ],
    [
     8,
     10,
     8
+   ]
+  ],
+  [
+   4,
+   "CM2Model::AttachToParent",
+   [
+    0,
+    1,
+    6
+   ],
+   [
+    3,
+    0,
+    0
    ]
   ],
   [
@@ -565,30 +479,30 @@
    ]
   ],
   [
-   0,
+   2,
    "PostInitObject",
    [
     0,
-    2,
-    0
+    0,
+    1
    ],
    [
-    0,
+    2,
     1,
-    1
+    0
    ]
   ],
   [
-   0,
-   "CCharacterComponent::AddHandItem",
+   1,
+   "ISStrVPrintf",
    [
-    0,
-    0,
-    1
+    9,
+    5,
+    9
    ],
    [
+    24,
     0,
-    1,
     0
    ]
   ]
