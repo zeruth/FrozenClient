@@ -10827,6 +10827,126 @@
   "whoa": "CGCooldown_SetCooldown",
   "whoaSize": 75
  },
+ "005fd630": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 79,
+  "status": "ported",
+  "whoa": "ValidateCameraView",
+  "whoaSize": 80
+ },
+ "005fd680": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 79,
+  "status": "ported",
+  "whoa": "ValidateCameraDistance",
+  "whoaSize": 80
+ },
+ "005fd6d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 113,
+  "status": "ported",
+  "whoa": "ValidateCameraPitch",
+  "whoaSize": 86
+ },
+ "005fd750": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 87,
+  "status": "ported",
+  "whoa": "ValidateCameraTime",
+  "whoaSize": 86
+ },
+ "005fd7b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 79,
+  "status": "ported",
+  "whoa": "ValidateCameraYaw",
+  "whoaSize": 80
+ },
+ "005fd800": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 87,
+  "status": "ported",
+  "whoa": "ValidateCameraAngleSpeed",
+  "whoaSize": 86
+ },
+ "005fd860": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 87,
+  "status": "ported",
+  "whoa": "ValidateCameraSpeed",
+  "whoaSize": 86
+ },
+ "005fd8c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 79,
+  "status": "ported",
+  "whoa": "ValidateCameraSmoothStyle",
+  "whoaSize": 80
+ },
  "005fd910": {
   "branchRatio": 1.0,
   "constOverlap": 0.357,
@@ -10840,7 +10960,7 @@
   "refSize": 2475,
   "status": "ported",
   "whoa": "CameraRegisterCVars",
-  "whoaSize": 3592
+  "whoaSize": 3594
  },
  "006081f0": {
   "branchRatio": 0.0,
@@ -14904,6 +15024,21 @@
   "status": "ported",
   "whoa": "ConsoleWrite",
   "whoaSize": 3
+ },
+ "00765360": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.2,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/console/Console.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleClient.cpp",
+  "refSize": 77,
+  "status": "ported",
+  "whoa": "ConsolePrintf",
+  "whoaSize": 90
  },
  "007658a0": {
   "branchRatio": 0.429,

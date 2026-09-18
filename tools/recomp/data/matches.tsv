@@ -720,6 +720,14 @@ addr	how	whoa	evidence
 005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
+005fd630	annotated	ValidateCameraView	tag in src/ui/game/CGCamera.cpp
+005fd680	annotated	ValidateCameraDistance	tag in src/ui/game/CGCamera.cpp
+005fd6d0	annotated	ValidateCameraPitch	tag in src/ui/game/CGCamera.cpp
+005fd750	annotated	ValidateCameraTime	tag in src/ui/game/CGCamera.cpp
+005fd7b0	annotated	ValidateCameraYaw	tag in src/ui/game/CGCamera.cpp
+005fd800	annotated	ValidateCameraAngleSpeed	tag in src/ui/game/CGCamera.cpp
+005fd860	annotated	ValidateCameraSpeed	tag in src/ui/game/CGCamera.cpp
+005fd8c0	annotated	ValidateCameraSmoothStyle	tag in src/ui/game/CGCamera.cpp
 005fd910	annotated	CameraRegisterCVars	tag in src/ui/game/CGCamera.cpp
 006081f0	table	Script_GetTime	binding "GetTime" in s_SystemFunctions ~ table 00ad2184
 00608230	table	Script_GetGameTime	binding "GetGameTime" in s_SystemFunctions ~ table 00ad2184
@@ -992,6 +1000,7 @@ addr	how	whoa	evidence
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	callorder	ConsoleWrite	same slot between linked calls in 007e2840=ReceiveNewTimeSpeed
+00765360	annotated	ConsolePrintf	tag in src/console/Console.cpp
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
 00766400	annotated	s_LoadFromFile	tag in src/console/CVar.cpp

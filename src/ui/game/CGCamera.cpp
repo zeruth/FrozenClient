@@ -3,6 +3,7 @@
 #include "ui/game/CGCamera.hpp"
 #include "common/Time.hpp"
 #include "console/CVar.hpp"
+#include "console/Console.hpp"
 #include "object/Client.hpp"
 #include "object/client/CVehicleCamera_C.hpp"
 #include "ui/game/Types.hpp"
@@ -26,16 +27,109 @@ CGCamera::CameraViewData CGCamera::s_cameraViewDataDefault[MAX_CAMERA_VIEWS] = {
 
 namespace {
 
+// ref: FUN_005fd630
 bool ValidateCameraView(CVar* var, const char* oldValue, const char* value, void* arg) {
     auto view = SStrToFloat(value);
-    auto min = static_cast<float>(VIEW_FIRST_PERSON);
-    auto max = static_cast<float>(VIEW_BARBER_SHOP);
 
-    if (view >= min && view <= max) {
+    if (0.0f < view && view < 7.0f) {
         return true;
     }
 
-    // TODO ConsoleWriteA("Value out of range (%f - %f)\n", DEFAULT_COLOR, min, max);
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 7.0);
+
+    return false;
+}
+
+// ref: FUN_005fd680
+bool ValidateCameraDistance(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto distance = SStrToFloat(value);
+
+    if (0.0f < distance && distance < 50.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 50.0);
+
+    return false;
+}
+
+// ref: FUN_005fd6d0
+// +-89 degrees, computed from +-1.5533 radians as the reference does
+bool ValidateCameraPitch(CVar* var, const char* oldValue, const char* value, void* arg) {
+    float min = -1.5533430576324463f * 57.295780181884766f;
+    float max = 57.295780181884766f * 1.5533430576324463f;
+    auto pitch = SStrToFloat(value);
+
+    if (min < pitch && pitch < max) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", static_cast<double>(min), static_cast<double>(max));
+
+    return false;
+}
+
+// ref: FUN_005fd750
+bool ValidateCameraTime(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto time = SStrToFloat(value);
+
+    if (0.001f < time && time < 300.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0010000000474974513, 300.0);
+
+    return false;
+}
+
+// ref: FUN_005fd7b0
+bool ValidateCameraYaw(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto yaw = SStrToFloat(value);
+
+    if (0.0f < yaw && yaw < 360.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 360.00001422012247);
+
+    return false;
+}
+
+// ref: FUN_005fd800
+bool ValidateCameraAngleSpeed(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto speed = SStrToFloat(value);
+
+    if (0.1f < speed && speed < 360.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.10000000039264378, 360.00001422012247);
+
+    return false;
+}
+
+// ref: FUN_005fd860
+bool ValidateCameraSpeed(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto speed = SStrToFloat(value);
+
+    if (0.0027777778f < speed && speed < 50.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0027777778450399637, 50.0);
+
+    return false;
+}
+
+// ref: FUN_005fd8c0
+bool ValidateCameraSmoothStyle(CVar* var, const char* oldValue, const char* value, void* arg) {
+    auto style = SStrToFloat(value);
+
+    if (0.0f < style && style < 5.0f) {
+        return true;
+    }
+
+    ConsolePrintf("Value out of range (%f - %f)\n", 0.0, 5.0);
 
     return false;
 }
@@ -224,6 +318,7 @@ C3Vector CGCamera::Up() const {
 // read from the reference binary (PTR_DAT_00ad1b54 .. PTR_DAT_00ad1df8).
 static const char* const s_cameraViewSuffixes[] = { "", "A", "B", "C", "D", "E", "Com", "Barber Shop" };
 static const char* const s_cameraViewKinds[] = { "Distance", "Pitch", "Yaw" };
+static bool (* const s_cameraViewValidators[])(CVar*, const char*, const char*, void*) = { &ValidateCameraDistance, &ValidateCameraPitch, &ValidateCameraYaw }; // PTR_FUN_00ad2054
 static const char* const s_cameraViewDefaults[] = { // per view: distance, pitch, yaw
     "0.0", "0.0", "0.0",
     "0.0", "0.0", "0.0",
@@ -275,18 +370,18 @@ void CameraRegisterCVars() {
     CVar::Register("mouseInvertPitch", nullptr, 0x10, "0", nullptr, DEFAULT);
     CVar::Register("cameraBobbing", nullptr, 0x0, "0", nullptr, DEFAULT);
     // TODO the three smoothing globals the reference seeds here (DAT_00c24e5c..64 from DAT_00a4040c / DAT_00a34c18)
-    CVar::Register("cameraDistanceMoveSpeed", nullptr, 0x10, "8.33", nullptr, DEFAULT); // TODO callback FUN_005fd860
-    CVar::Register("cameraPitchMoveSpeed", nullptr, 0x10, "90", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraYawMoveSpeed", nullptr, 0x10, "180", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraBobbingSmoothSpeed", nullptr, 0x10, "0.8", nullptr, DEFAULT); // TODO callback FUN_005fd860
-    CVar::Register("cameraFoVSmoothSpeed", nullptr, 0x10, "0.5", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraDistanceSmoothSpeed", nullptr, 0x10, "8.33", nullptr, DEFAULT); // TODO callback FUN_005fd860
-    CVar::Register("cameraGroundSmoothSpeed", nullptr, 0x10, "7.5", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraHeightSmoothSpeed", nullptr, 0x10, "1.2", nullptr, DEFAULT); // TODO callback FUN_005fd860
-    CVar::Register("cameraPitchSmoothSpeed", nullptr, 0x10, "45", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraTargetSmoothSpeed", nullptr, 0x10, "90", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraYawSmoothSpeed", nullptr, 0x10, "180", nullptr, DEFAULT); // TODO callback FUN_005fd800
-    CVar::Register("cameraFlyingMountHeightSmoothSpeed", nullptr, 0x10, "2.0", nullptr, DEFAULT); // TODO callback FUN_005fd860
+    CVar::Register("cameraDistanceMoveSpeed", nullptr, 0x10, "8.33", &ValidateCameraSpeed, DEFAULT);
+    CVar::Register("cameraPitchMoveSpeed", nullptr, 0x10, "90", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraYawMoveSpeed", nullptr, 0x10, "180", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraBobbingSmoothSpeed", nullptr, 0x10, "0.8", &ValidateCameraSpeed, DEFAULT);
+    CVar::Register("cameraFoVSmoothSpeed", nullptr, 0x10, "0.5", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraDistanceSmoothSpeed", nullptr, 0x10, "8.33", &ValidateCameraSpeed, DEFAULT);
+    CVar::Register("cameraGroundSmoothSpeed", nullptr, 0x10, "7.5", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraHeightSmoothSpeed", nullptr, 0x10, "1.2", &ValidateCameraSpeed, DEFAULT);
+    CVar::Register("cameraPitchSmoothSpeed", nullptr, 0x10, "45", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraTargetSmoothSpeed", nullptr, 0x10, "90", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraYawSmoothSpeed", nullptr, 0x10, "180", &ValidateCameraAngleSpeed, DEFAULT);
+    CVar::Register("cameraFlyingMountHeightSmoothSpeed", nullptr, 0x10, "2.0", &ValidateCameraSpeed, DEFAULT);
     CVar::Register("cameraViewBlendStyle", nullptr, 0x10, "1", nullptr, DEFAULT);
     s_cameraView = CVar::Register("cameraView", nullptr, 0x10, "2", &ValidateCameraView, DEFAULT);
 
@@ -297,15 +392,15 @@ void CameraRegisterCVars() {
             SStrPack(name, "camera", sizeof(name));
             SStrPack(name, s_cameraViewKinds[j], sizeof(name));
             SStrPack(name, s_cameraViewSuffixes[i], sizeof(name));
-            CVar::Register(name, nullptr, 0x50, s_cameraViewDefaults[i * 3 + j], nullptr, DEFAULT); // TODO callbacks FUN_005fd680 / 6d0 / 7b0 per kind
+            CVar::Register(name, nullptr, 0x50, s_cameraViewDefaults[i * 3 + j], s_cameraViewValidators[j], DEFAULT);
         }
     }
 
     CVar::Register("camerasmooth", nullptr, 0x10, "1", nullptr, DEFAULT);
     CVar::Register("cameraSmoothPitch", nullptr, 0x10, "1", nullptr, DEFAULT);
     CVar::Register("cameraSmoothYaw", nullptr, 0x10, "1", nullptr, DEFAULT);
-    CVar::Register("cameraSmoothStyle", nullptr, 0x10, "4", nullptr, DEFAULT); // TODO callback FUN_005fd8c0
-    CVar::Register("cameraSmoothTrackingStyle", nullptr, 0x10, "4", nullptr, DEFAULT); // TODO callback FUN_005fd8c0
+    CVar::Register("cameraSmoothStyle", nullptr, 0x10, "4", &ValidateCameraSmoothStyle, DEFAULT);
+    CVar::Register("cameraSmoothTrackingStyle", nullptr, 0x10, "4", &ValidateCameraSmoothStyle, DEFAULT);
     CVar::Register("cameraCustomViewSmoothing", nullptr, 0x10, "0", nullptr, DEFAULT);
 
     // Per smoothing style: cameraSmooth<Style><State><Delay|Factor>,
@@ -346,24 +441,24 @@ void CameraRegisterCVars() {
     }
 
     CVar::Register("cameraTerrainTilt", nullptr, 0x10, "0", nullptr, DEFAULT);
-    CVar::Register("cameraTerrainTiltTimeMin", nullptr, 0x10, "3.0", nullptr, DEFAULT); // TODO callback FUN_005fd750
-    CVar::Register("cameraTerrainTiltTimeMax", nullptr, 0x10, "10.0", nullptr, DEFAULT); // TODO callback FUN_005fd750
+    CVar::Register("cameraTerrainTiltTimeMin", nullptr, 0x10, "3.0", &ValidateCameraTime, DEFAULT);
+    CVar::Register("cameraTerrainTiltTimeMax", nullptr, 0x10, "10.0", &ValidateCameraTime, DEFAULT);
     CVar::Register("cameraWaterCollision", nullptr, 0x10, "1", nullptr, DEFAULT);
     CVar::Register("cameraHeightIgnoreStandState", nullptr, 0x10, "0", nullptr, DEFAULT);
     CVar::Register("cameraPivot", nullptr, 0x10, "1", nullptr, DEFAULT);
     CVar::Register("cameraPivotDXMax", nullptr, 0x10, "0.05", nullptr, DEFAULT);
     CVar::Register("cameraPivotDYMin", nullptr, 0x10, "0.00", nullptr, DEFAULT);
     CVar::Register("cameraDive", nullptr, 0x10, "1", nullptr, DEFAULT);
-    CVar::Register("cameraSurfacePitch", nullptr, 0x10, "0.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraSubmergePitch", nullptr, 0x10, "18.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraSurfaceFinalPitch", nullptr, 0x10, "5.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraSubmergeFinalPitch", nullptr, 0x10, "5.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraDistanceMax", nullptr, 0x10, "15.0", nullptr, DEFAULT); // TODO callback FUN_005fd680
+    CVar::Register("cameraSurfacePitch", nullptr, 0x10, "0.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraSubmergePitch", nullptr, 0x10, "18.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraSurfaceFinalPitch", nullptr, 0x10, "5.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraSubmergeFinalPitch", nullptr, 0x10, "5.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraDistanceMax", nullptr, 0x10, "15.0", &ValidateCameraDistance, DEFAULT);
     CVar::Register("cameraDistanceMaxFactor", nullptr, 0x10, "1.0", nullptr, DEFAULT);
-    CVar::Register("cameraPitchSmoothMin", nullptr, 0x10, "0.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraPitchSmoothMax", nullptr, 0x10, "30.0", nullptr, DEFAULT); // TODO callback FUN_005fd6d0
-    CVar::Register("cameraYawSmoothMin", nullptr, 0x10, "0.0", nullptr, DEFAULT); // TODO callback FUN_005fd7b0
-    CVar::Register("cameraYawSmoothMax", nullptr, 0x10, "0.0", nullptr, DEFAULT); // TODO callback FUN_005fd7b0
-    CVar::Register("cameraSmoothTimeMin", nullptr, 0x10, "0.1", nullptr, DEFAULT); // TODO callback FUN_005fd750
-    CVar::Register("cameraSmoothTimeMax", nullptr, 0x10, "2.0", nullptr, DEFAULT); // TODO callback FUN_005fd750
+    CVar::Register("cameraPitchSmoothMin", nullptr, 0x10, "0.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraPitchSmoothMax", nullptr, 0x10, "30.0", &ValidateCameraPitch, DEFAULT);
+    CVar::Register("cameraYawSmoothMin", nullptr, 0x10, "0.0", &ValidateCameraYaw, DEFAULT);
+    CVar::Register("cameraYawSmoothMax", nullptr, 0x10, "0.0", &ValidateCameraYaw, DEFAULT);
+    CVar::Register("cameraSmoothTimeMin", nullptr, 0x10, "0.1", &ValidateCameraTime, DEFAULT);
+    CVar::Register("cameraSmoothTimeMax", nullptr, 0x10, "2.0", &ValidateCameraTime, DEFAULT);
 }

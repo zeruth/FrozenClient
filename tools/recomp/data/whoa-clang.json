@@ -35903,7 +35903,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleAccessSetEnabled": {
 "files": [
@@ -35914,7 +35914,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleGetActive": {
 "files": [
@@ -35925,7 +35925,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleGetHotKey": {
 "files": [
@@ -35936,7 +35936,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleGetResizeState": {
 "files": [
@@ -35947,7 +35947,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleSetActive": {
 "files": [
@@ -35958,7 +35958,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "ConsoleSetHotKey": {
 "files": [
@@ -35969,7 +35969,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "ConsoleSetResizeState": {
 "files": [
@@ -35980,7 +35980,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "ConsoleWrite": {
 "files": [
@@ -35991,7 +35991,25 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
+},
+"ConsolePrintf": {
+"files": [
+"src/console/console.cpp"
+],
+"callseq": [
+"__vcrt_assert_va_start_is_not_reference::__vcrt_assert_va_start_is_not_reference",
+"__va_start",
+"SStrVPrintf",
+"ConsoleWrite"
+],
+"strings": [],
+"consts": [
+"1024"
+],
+"branches": 0,
+"stub": false,
+"lines": 9
 },
 "s_CreatePathDirectories": {
 "files": [
@@ -82290,13 +82308,166 @@
 "src/ui/game/cgcamera.cpp"
 ],
 "callseq": [
-"SStrToFloat"
+"SStrToFloat",
+"ConsolePrintf"
 ],
-"strings": [],
-"consts": [],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0",
+"0.0f",
+"7.0",
+"7.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraDistance": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0",
+"0.0f",
+"50.0",
+"50.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraPitch": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"1.5533430576324463f",
+"57.295780181884766f"
+],
 "branches": 1,
 "stub": false,
 "lines": 13
+},
+"ValidateCameraTime": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0010000000474974513",
+"0.001f",
+"300.0",
+"300.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraYaw": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0",
+"0.0f",
+"360.00001422012247",
+"360.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraAngleSpeed": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.10000000039264378",
+"0.1f",
+"360.00001422012247",
+"360.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraSpeed": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0027777778450399637",
+"0.0027777778f",
+"50.0",
+"50.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
+},
+"ValidateCameraSmoothStyle": {
+"files": [
+"src/ui/game/cgcamera.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"ConsolePrintf"
+],
+"strings": [
+"Value out of range (%f - %f)\n"
+],
+"consts": [
+"0.0",
+"0.0f",
+"5.0",
+"5.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 11
 },
 "CGCamera::UpdateCallback": {
 "files": [

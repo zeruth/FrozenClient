@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:32 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1489 (=) (5.5%) | 348.1k (6.3%) |
-| &nbsp;&nbsp;ported | 1014 (-1) | 230.9k |
+| mapped to a whoa function | 1498 (+9) (5.5%) | 348.8k (6.3%) |
+| &nbsp;&nbsp;ported | 1023 (+9) | 231.6k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **230 (+1) (0.8%)** | **33.2k (0.6%)** |
-| unmapped | 25672 | 5.07M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 167 (=) (3.0%) | |
-| whoa functions (src/, from PDB + source) | 10601, stubs 887 | |
+| **faithful** (linked, not stub, call order >= 80%) | **238 (+8) (0.9%)** | **33.9k (0.6%)** |
+| unmapped | 25663 | 5.06M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 168 (+1) (3.0%) | |
+| whoa functions (src/, from PDB + source) | 10609, stubs 887 | |
 
-Match evidence: annotated 82, callgraph 63, callorder 80, override 67, string 268, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 91, callgraph 63, callorder 80, override 67, string 268, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:25 -- mapped 1489, ported 1015, stub 453, spine mapped 167.
+Previous run: 2026-09-18 17:32 -- mapped 1489, ported 1014, stub 453, spine mapped 167.
 
 ## Lua API coverage (binding tables)
 
@@ -199,7 +199,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | WorldParam.cpp | 187 | 64.3k | 1 (0.5%) | 2.1% | 0 | 0 | 118 |
 | M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
-| InputControl.cpp | 287 | 61.8k | 10 (3.5%) | 15.3% | 3 | 0 | 115 |
+| InputControl.cpp | 287 | 61.8k | 18 (6.3%) | 16.4% | 3 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 11 (2.7%) | 16.8% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 2 (0.8%) | 0.8% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -306,7 +306,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
-| ConsoleClient.cpp | 52 | 10.3k | 4 (7.7%) | 10.1% | 0 | 0 | 6 |
+| ConsoleClient.cpp | 52 | 10.3k | 5 (9.6%) | 10.9% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
 | RaidInfo.cpp | 33 | 10.1k | 12 (36.4%) | 32.1% | 9 | 0 | 1 |
@@ -798,6 +798,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:20 | 1490 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 | 2026-09-18 17:25 | 1489 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 | 2026-09-18 17:32 | 1489 (5.5%) | 230 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
+| 2026-09-18 17:36 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 
 ## How to move a row
 
