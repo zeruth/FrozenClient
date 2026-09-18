@@ -105,5 +105,8 @@
   "00424b50": { "whoa": "SFile::OpenEx", "status": "diverged", "note": "StormLib-backed; see 00422530" },
   "00422910": { "whoa": "SFile::Close", "status": "diverged", "note": "StormLib-backed; see 00422530" },
 
+  "0047cf80": { "whoa": "RCString::Copy", "status": "ported", "note": "CVar::Register clears every RCString member through it (Copy(nullptr)) and copies the help text" },
+  "0076f640": { "whoa": "SStrHash", "status": "ported", "note": "TSHashTable key hash used by CVar::Register before the bucket insert" },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }

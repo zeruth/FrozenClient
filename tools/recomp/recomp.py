@@ -224,7 +224,9 @@ CALL_RE = re.compile(r'\b([A-Za-z_]\w*)\s*\(')
 KEYWORDS = {'if', 'for', 'while', 'switch', 'return', 'sizeof', 'static_cast', 'reinterpret_cast', 'const_cast',
             'dynamic_cast', 'defined', 'catch', 'alignof', 'decltype', 'new', 'delete'}
 REF_ADDR_RE = re.compile(r'\b(?:FUN_|sub_|Sub_?|0x)(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
-REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
+# `// ref: FUN_00767fc0` (this project) or whoa upstream's `// 0x7681F0 in the original`
+REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b'
+                        r'|0x(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\s+(?:with[^)]*)?in the original')
 
 
 def unescape(s):
@@ -280,7 +282,7 @@ def parse_sources():
             # FUN_00826350). A FUN_/Sub mention inside the body names a callee, not this function
             # -- reading those as self-links is what linked SetBoneSequence to its own helper.
             above = text[max(0, text.rfind('\n\n', 0, m.start())):m.start()]
-            refs = set(a.lower().zfill(8) for a in REF_TAG_RE.findall(above))
+            refs = set((a or b).lower().zfill(8) for a, b in REF_TAG_RE.findall(above))
             if not refs:
                 refs = set(a.lower().zfill(8) for a in re.findall(r'(?:^|::)(?:Sub|sub_)([0-9A-Fa-f]{6})$', name))
             strings = set()

@@ -36212,7 +36212,9 @@
 "RCString::Copy",
 "RCString::Copy",
 "CVar::Set",
-"CVar::Set"
+"CVar::Set",
+"ConsoleCommandRegister",
+"HASHKEY_STR::GetString"
 ],
 "strings": [],
 "consts": [
@@ -36225,7 +36227,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 68
+"lines": 67
 },
 "CVar::CVar": {
 "files": [
@@ -36350,6 +36352,61 @@
 "stub": false,
 "lines": 14
 },
+"CVarCommandHandler": {
+"files": [
+"src/console/cvarhandlers.cpp"
+],
+"callseq": [
+"CVar::Lookup",
+"RCString::GetString",
+"SStrPrintf",
+"ConsoleWrite",
+"RCString::GetString",
+"SStrCmp",
+"SStrPrintf",
+"ConsoleWrite",
+"RCString::GetString",
+"SStrCmp",
+"SStrPrintf",
+"ConsoleWrite",
+"RCString::GetString",
+"SStrCmp",
+"SStrPrintf",
+"ConsoleWrite",
+"SStrPrintf",
+"HASHKEY_STR::GetString",
+"ConsoleWrite",
+"?m_callback",
+"RCString::GetString",
+"RCString::Copy",
+"RCString::GetString",
+"SStrCmpI",
+"RCString::Copy",
+"SStrToInt",
+"SStrToFloat",
+"RCString::GetString",
+"RCString::Copy"
+],
+"strings": [
+"  default value \"%s\"",
+"  pending value \"%s\"",
+"  reset value \"%s\"",
+"%s is read only.",
+"CVar \"%s\" is \"%s\""
+],
+"consts": [
+"0",
+"0x100",
+"0x2",
+"0x4",
+"0x7FFFFFFF",
+"1",
+"1024"
+],
+"branches": 14,
+"stub": false,
+"lines": 94
+},
 "CVarDefaultCommandHandler": {
 "files": [
 "src/console/cvarhandlers.cpp"
@@ -36361,7 +36418,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 6
+"lines": 4
 },
 "CVarListCommandHandler": {
 "files": [
@@ -36374,7 +36431,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 6
+"lines": 2
 },
 "CVarSetCommandHandler": {
 "files": [
@@ -36399,7 +36456,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 19
+"lines": 21
 },
 "CVarResetCommandHandler": {
 "files": [

@@ -1,4 +1,19 @@
 {
+ "00401200": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/Archive.cpp"
+  ],
+  "how": "annotated",
+  "module": "?",
+  "refSize": 29,
+  "status": "ported",
+  "whoa": "ComparePatchArchives",
+  "whoaSize": 28
+ },
  "00401b60": {
   "branchRatio": 0.333,
   "constOverlap": 0.111,
@@ -28,6 +43,21 @@
   "status": "ported",
   "whoa": "M2RegisterCVars",
   "whoaSize": 720
+ },
+ "00402b90": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.062,
+  "files": [
+   "src/client/Archive.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 434,
+  "status": "ported",
+  "whoa": "HasCommonArchiveLayout",
+  "whoaSize": 0
  },
  "00403880": {
   "branchRatio": 0.0,
@@ -59,6 +89,21 @@
   "whoa": "LoginVerifyWorldHandler",
   "whoaSize": 288
  },
+ "00404930": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Archive.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 177,
+  "status": "ported",
+  "whoa": "OpenTableArchive",
+  "whoaSize": 229
+ },
  "00405540": {
   "branchRatio": 0.062,
   "constOverlap": 0.056,
@@ -73,6 +118,36 @@
   "status": "ported",
   "whoa": "ClientInitializeGame",
   "whoaSize": 552
+ },
+ "00405a10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/client/Archive.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 147,
+  "status": "ported",
+  "whoa": "AddPatchArchive",
+  "whoaSize": 168
+ },
+ "00405ab0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/client/Archive.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 679,
+  "status": "ported",
+  "whoa": "BuildPatchArchiveList",
+  "whoaSize": 0
  },
  "00405dd0": {
   "branchRatio": 0.0,
@@ -97,7 +172,7 @@
   "files": [
    "src/client/Client.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "Client.cpp",
   "refSize": 167,
   "status": "ported",
@@ -123,7 +198,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.067,
+  "fidelity": 0.133,
   "files": [
    "src/client/Client.cpp"
   ],
@@ -134,6 +209,126 @@
   "whoa": "Sub406B70",
   "whoaSize": 0
  },
+ "004079d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 223,
+  "status": "ported",
+  "whoa": "CalcProgress",
+  "whoaSize": 0
+ },
+ "00407b00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 194,
+  "status": "ported",
+  "whoa": "RegisterEvents",
+  "whoaSize": 0
+ },
+ "00407bd0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 120,
+  "status": "ported",
+  "whoa": "UnregisterEvents",
+  "whoaSize": 0
+ },
+ "00407e30": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 13,
+  "status": "ported",
+  "whoa": "LoadingScreenSetTip",
+  "whoaSize": 8
+ },
+ "00408520": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 126,
+  "status": "ported",
+  "whoa": "KeepAlive",
+  "whoaSize": 0
+ },
+ "004090c0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 436,
+  "status": "ported",
+  "whoa": "DrawBar",
+  "whoaSize": 0
+ },
+ "00409550": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.083,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 207,
+  "status": "ported",
+  "whoa": "LoadingScreenFinish",
+  "whoaSize": 0
+ },
+ "00409800": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/client/Client.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 128,
+  "status": "ported",
+  "whoa": "ClientPlayerModelReady",
+  "whoaSize": 70
+ },
  "00409ed0": {
   "branchRatio": 0.333,
   "constOverlap": 0.091,
@@ -142,12 +337,102 @@
   "files": [
    "src/gx/LoadingScreen.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 646,
   "status": "ported",
   "whoa": "LoadBackgroundTexture",
   "whoaSize": 696
+ },
+ "0040a270": {
+  "branchRatio": 0.632,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.074,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 1055,
+  "status": "ported",
+  "whoa": "Paint",
+  "whoaSize": 1099
+ },
+ "0040a920": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 111,
+  "status": "ported",
+  "whoa": "LoadingScreenUpdate",
+  "whoaSize": 300
+ },
+ "0040a990": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.118,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 386,
+  "status": "ported",
+  "whoa": "Begin",
+  "whoaSize": 650
+ },
+ "0040ab70": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.056,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 480,
+  "status": "ported",
+  "whoa": "LoadingScreenStart",
+  "whoaSize": 137
+ },
+ "0040aef0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 73,
+  "status": "ported",
+  "whoa": "LoadingScreenSetProgress2",
+  "whoaSize": 0
+ },
+ "0040af90": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 73,
+  "status": "ported",
+  "whoa": "LoadingScreenSetProgress",
+  "whoaSize": 50
  },
  "0040bb50": {
   "branchRatio": 1.0,
@@ -172,7 +457,7 @@
   "files": [
    "src/util/SFile.cpp"
   ],
-  "how": "callorder",
+  "how": "callgraph",
   "module": "OggDecompress.cpp",
   "refSize": 33,
   "status": "ported",
@@ -283,6 +568,21 @@
   "status": "ported",
   "whoa": "SFile::Load",
   "whoaSize": 656
+ },
+ "00428210": {
+  "branchRatio": 0.455,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/util/Filesystem.cpp"
+  ],
+  "how": "annotated",
+  "module": "OggDecompress.cpp",
+  "refSize": 223,
+  "status": "ported",
+  "whoa": "OsFileMatch",
+  "whoaSize": 195
  },
  "00455f10": {
   "branchRatio": -1.0,
@@ -817,6 +1117,36 @@
   "whoa": "operator delete",
   "whoaSize": 26
  },
+ "0047cf80": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/common/common/string/RCString.cpp"
+  ],
+  "how": "override",
+  "module": "RCString.cpp",
+  "refSize": 108,
+  "status": "ported",
+  "whoa": "RCString::Copy",
+  "whoaSize": 71
+ },
+ "0047d3c0": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/event/Event.cpp"
+  ],
+  "how": "callgraph",
+  "module": "RCString.cpp",
+  "refSize": 131,
+  "status": "ported",
+  "whoa": "EventRegisterEx",
+  "whoaSize": 288
+ },
  "0047f230": {
   "branchRatio": 0.667,
   "constOverlap": 0.333,
@@ -941,7 +1271,7 @@
   "branchRatio": 0.294,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.459,
+  "fidelity": 0.41,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp"
   ],
@@ -956,7 +1286,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.587,
   "files": [
    "src/ui/simple/CSimpleFontString.cpp"
   ],
@@ -983,19 +1313,19 @@
   "whoaSize": 155
  },
  "00488540": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/simple/CSimpleButton.cpp"
+   "src/ui/CScriptRegion.cpp"
   ],
   "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 42,
   "status": "ported",
-  "whoa": "CSimpleButton::Enable",
-  "whoaSize": 254
+  "whoa": "CScriptRegion::ProtectedFunctionsAllowed",
+  "whoaSize": 3
  },
  "00488db0": {
   "branchRatio": 0.667,
@@ -1057,6 +1387,21 @@
   "whoa": "CLayoutFrame::SetProtectFlag",
   "whoaSize": 130
  },
+ "0048a510": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/CLayoutFrame.cpp"
+  ],
+  "how": "callorder",
+  "module": "CScriptRegion.cpp",
+  "refSize": 5,
+  "status": "ported",
+  "whoa": "CLayoutFrame::ClearAllPoints",
+  "whoaSize": 86
+ },
  "0048b2d0": {
   "branchRatio": 0.684,
   "constOverlap": 0.091,
@@ -1090,8 +1435,8 @@
  "0048b5f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/ui/CScriptObject.cpp"
   ],
@@ -1181,7 +1526,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp"
   ],
@@ -1226,7 +1571,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.286,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp"
   ],
@@ -1390,8 +1735,8 @@
  "0048d380": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.867,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp"
   ],
@@ -1421,7 +1766,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.4,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp"
   ],
@@ -1586,7 +1931,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.429,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp"
   ],
@@ -1961,7 +2306,7 @@
   "branchRatio": 0.412,
   "constOverlap": 0.116,
   "faithful": false,
-  "fidelity": 0.493,
+  "fidelity": 0.391,
   "files": [
    "src/ui/simple/CSimpleFrame.cpp"
   ],
@@ -1991,7 +2336,7 @@
   "branchRatio": 0.46,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.694,
+  "fidelity": 0.611,
   "files": [
    "src/ui/simple/CSimpleFont.cpp"
   ],
@@ -2080,8 +2425,8 @@
  "0049cbd0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.684,
+  "faithful": true,
+  "fidelity": 0.842,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2186,7 +2531,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.375,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2201,7 +2546,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.714,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2216,7 +2561,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.375,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2231,7 +2576,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.714,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2246,7 +2591,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.375,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2261,7 +2606,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.636,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2291,7 +2636,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.24,
+  "fidelity": 0.32,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2305,8 +2650,8 @@
  "0049db10": {
   "branchRatio": 0.895,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.622,
+  "faithful": true,
+  "fidelity": 0.811,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2320,8 +2665,8 @@
  "0049de40": {
   "branchRatio": 0.571,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.625,
+  "faithful": true,
+  "fidelity": 0.812,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2335,8 +2680,8 @@
  "0049e010": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2426,7 +2771,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2501,7 +2846,7 @@
   "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.385,
+  "fidelity": 0.462,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2516,7 +2861,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.429,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2531,7 +2876,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2621,7 +2966,7 @@
   "branchRatio": 0.125,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2726,7 +3071,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2786,7 +3131,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2861,7 +3206,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2936,7 +3281,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.143,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2966,7 +3311,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -2996,7 +3341,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.2,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -3221,7 +3566,7 @@
   "branchRatio": 0.533,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.476,
+  "fidelity": 0.524,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -3236,7 +3581,7 @@
   "branchRatio": 0.588,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.478,
+  "fidelity": 0.522,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp"
   ],
@@ -3280,8 +3625,8 @@
  "004a2780": {
   "branchRatio": 0.706,
   "constOverlap": 0.034,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/CBackdropGenerator.cpp"
   ],
@@ -3296,7 +3641,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 1.0,
   "files": [
    "src/ui/FrameScript_Object.cpp"
   ],
@@ -3481,11 +3826,26 @@
   "files": [
    "src/sound/SI2.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 9,
   "status": "ported",
   "whoa": "SI2::GetNumInputDrivers",
+  "whoaSize": 5
+ },
+ "004c5a80": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SI2.cpp"
+  ],
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 9,
+  "status": "ported",
+  "whoa": "SI2::GetInputDriverName",
   "whoaSize": 5
  },
  "004c5ab0": {
@@ -3496,7 +3856,7 @@
   "files": [
    "src/sound/SI2.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 9,
   "status": "ported",
@@ -3506,12 +3866,12 @@
  "004c5af0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/sound/SI2.cpp"
   ],
-  "how": "callorder",
+  "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 35,
   "status": "ported",
@@ -3728,15 +4088,30 @@
   "whoa": "CGlueMgr::Sub4D8BA0",
   "whoaSize": 0
  },
- "004d8cc0": {
+ "004d8c60": {
   "branchRatio": 1.0,
-  "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.6,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/glue/CGlueMgr.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 88,
+  "status": "ported",
+  "whoa": "CGlueMgr::CreateCharacter",
+  "whoaSize": 108
+ },
+ "004d8cc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/glue/CGlueMgr.cpp"
+  ],
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 96,
   "status": "ported",
@@ -3777,7 +4152,7 @@
   "branchRatio": 0.652,
   "constOverlap": 0.29,
   "faithful": false,
-  "fidelity": 0.368,
+  "fidelity": 0.447,
   "files": [
    "src/glue/CGlueMgr.cpp"
   ],
@@ -3822,7 +4197,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.333,
   "files": [
    "src/glue/CGlueMgr.cpp"
   ],
@@ -4019,8 +4394,8 @@
  "004dcd60": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/glue/GlueScript.cpp"
   ],
@@ -4112,7 +4487,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.571,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/ui/game/GameScript.cpp"
@@ -4171,11 +4546,26 @@
   "whoa": "CRealmList::Sub4DE910",
   "whoaSize": 236
  },
+ "004de960": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/glue/CRealmList.cpp"
+  ],
+  "how": "callorder",
+  "module": "CGlueMgr.cpp",
+  "refSize": 395,
+  "status": "ported",
+  "whoa": "CRealmList::SetPreferredInfo",
+  "whoaSize": 541
+ },
  "004deaf0": {
   "branchRatio": 0.556,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/glue/CRealmListScript.cpp"
   ],
@@ -4190,7 +4580,7 @@
   "branchRatio": 0.708,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.113,
+  "fidelity": 0.151,
   "files": [
    "src/glue/CRealmListScript.cpp"
   ],
@@ -4205,7 +4595,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.545,
   "files": [
    "src/glue/CRealmListScript.cpp"
   ],
@@ -4235,7 +4625,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CRealmListScript.cpp"
   ],
@@ -4276,6 +4666,21 @@
   "whoa": "Script_GetSelectedCategory",
   "whoaSize": 278
  },
+ "004df580": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/glue/CRealmList.cpp"
+  ],
+  "how": "callorder",
+  "module": "RealmList.cpp",
+  "refSize": 236,
+  "status": "ported",
+  "whoa": "CRealmList::Initialize",
+  "whoaSize": 549
+ },
  "004e0040": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
@@ -4294,8 +4699,8 @@
  "004e0160": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreation.cpp"
   ],
@@ -4306,20 +4711,20 @@
   "whoa": "CCharacterCreation::SetFacing",
   "whoaSize": 71
  },
- "004e01f0": {
-  "branchRatio": 0.636,
-  "constOverlap": 0.0,
+ "004e0380": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.273,
   "files": [
    "src/glue/CCharacterCreation.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "RealmList.cpp",
-  "refSize": 368,
+  "refSize": 382,
   "status": "ported",
-  "whoa": "CCharacterCreation::CycleCharCustomization",
-  "whoaSize": 227
+  "whoa": "CCharacterCreation::CreateCharacter",
+  "whoaSize": 249
  },
  "004e05b0": {
   "branchRatio": 0.667,
@@ -4370,7 +4775,7 @@
   "branchRatio": 0.533,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4475,7 +4880,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4489,8 +4894,8 @@
  "004e0c10": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4501,11 +4906,26 @@
   "whoa": "Script_SetCharacterCreateFacing",
   "whoaSize": 84
  },
+ "004e0c60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/glue/CCharacterCreationScript.cpp"
+  ],
+  "how": "annotated",
+  "module": "RealmList.cpp",
+  "refSize": 59,
+  "status": "ported",
+  "whoa": "Script_CreateCharacter",
+  "whoaSize": 72
+ },
  "004e0d00": {
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4564,8 +4984,8 @@
  "004e1a60": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4580,7 +5000,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4609,8 +5029,8 @@
  "004e2470": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp"
   ],
@@ -4624,8 +5044,8 @@
  "004e2e70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterSelection.cpp"
   ],
@@ -4654,8 +5074,8 @@
  "004e3030": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp"
   ],
@@ -4685,7 +5105,7 @@
   "branchRatio": 0.417,
   "constOverlap": 0.267,
   "faithful": false,
-  "fidelity": 0.37,
+  "fidelity": 0.407,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp"
   ],
@@ -4699,12 +5119,12 @@
  "004e33a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp"
   ],
-  "how": "table",
+  "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 102,
   "status": "ported",
@@ -4745,7 +5165,7 @@
   "branchRatio": 0.818,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.538,
+  "fidelity": 0.615,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp"
   ],
@@ -4790,7 +5210,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp"
   ],
@@ -5000,7 +5420,7 @@
   "branchRatio": 0.625,
   "constOverlap": 0.25,
   "faithful": false,
-  "fidelity": 0.176,
+  "fidelity": 0.235,
   "files": [
    "src/ui/game/MiscScript.cpp"
   ],
@@ -6563,7 +6983,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/BattlenetUI.cpp"
   ],
@@ -7088,7 +7508,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.136,
+  "fidelity": 0.182,
   "files": [
    "src/ui/game/MiscScript.cpp"
   ],
@@ -7148,7 +7568,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.139,
+  "fidelity": 0.167,
   "files": [
    "src/ui/game/MiscScript.cpp"
   ],
@@ -7178,7 +7598,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/MiscScript.cpp"
   ],
@@ -7658,7 +8078,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp"
   ],
@@ -7823,7 +8243,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp"
   ],
@@ -7838,7 +8258,7 @@
   "branchRatio": 0.615,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp"
   ],
@@ -9413,7 +9833,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ActionBarScript.cpp"
   ],
@@ -9503,7 +9923,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ActionBarScript.cpp"
   ],
@@ -9518,7 +9938,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ActionBarScript.cpp"
   ],
@@ -9623,7 +10043,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ActionBarScript.cpp"
   ],
@@ -10043,7 +10463,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp"
   ],
@@ -10612,8 +11032,8 @@
  "0060a510": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.625,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -10669,20 +11089,18 @@
   "whoa": "Script_GetGUIDFromToken",
   "whoaSize": 1189
  },
- "0060c1c0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
+ "0060c1f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/ui/game/CGTooltipScript.cpp"
-  ],
+  "files": [],
   "how": "callgraph",
   "module": "ScriptEvents.cpp",
-  "refSize": 41,
+  "refSize": 70,
   "status": "ported",
-  "whoa": "TooltipThis",
-  "whoaSize": 0
+  "whoa": "lua_pushnumber",
+  "whoaSize": 21
  },
  "0060c2a0": {
   "branchRatio": 0.333,
@@ -11003,7 +11421,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.3,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11243,7 +11661,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11258,7 +11676,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11348,7 +11766,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11363,7 +11781,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11543,7 +11961,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11558,7 +11976,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -11738,7 +12156,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12038,7 +12456,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12053,7 +12471,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12098,7 +12516,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12263,7 +12681,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.2,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12473,7 +12891,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12488,7 +12906,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.167,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12503,7 +12921,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12518,7 +12936,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12533,7 +12951,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -12653,7 +13071,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.083,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp"
   ],
@@ -13084,26 +13502,11 @@
   "whoa": "CGTooltip::GetScriptByName",
   "whoaSize": 447
  },
- "0061b040": {
-  "branchRatio": 0.154,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/Util.cpp"
-  ],
-  "how": "callgraph",
-  "module": "Cursor.cpp",
-  "refSize": 547,
-  "status": "ported",
-  "whoa": "StringToTooltipAnchor",
-  "whoaSize": 92
- },
  "0061d040": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13163,7 +13566,7 @@
   "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13193,7 +13596,7 @@
   "branchRatio": 0.158,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.154,
+  "fidelity": 0.231,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13283,7 +13686,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13313,7 +13716,7 @@
   "branchRatio": 0.16,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.212,
+  "fidelity": 0.303,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13523,7 +13926,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.071,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -13538,7 +13941,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.083,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -14108,7 +14511,7 @@
   "branchRatio": 0.047,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.02,
+  "fidelity": 0.039,
   "files": [
    "src/ui/game/CGTooltipScript.cpp"
   ],
@@ -14133,6 +14536,21 @@
   "status": "stub",
   "whoa": "CGTooltip_SetHyperlinkCompareItem",
   "whoaSize": 75
+ },
+ "00682a00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Draw.cpp"
+  ],
+  "how": "callorder",
+  "module": "DBCache.cpp",
+  "refSize": 51,
+  "status": "ported",
+  "whoa": "GxScenePresent",
+  "whoaSize": 14
  },
  "00684970": {
   "branchRatio": 0.647,
@@ -14299,24 +14717,11 @@
   "whoa": "ClientServices::LoginConnection",
   "whoaSize": 8
  },
- "006b0b50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "how": "callgraph",
-  "module": "blp.cpp",
-  "refSize": 41,
-  "status": "ported",
-  "whoa": "lua_type",
-  "whoaSize": 39
- },
  "006b0bf0": {
   "branchRatio": 0.533,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/client/ClientServices.cpp"
   ],
@@ -14356,6 +14761,36 @@
   "status": "ported",
   "whoa": "CGlueMgr::SetIdleState",
   "whoaSize": 0
+ },
+ "006b1620": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/net/connection/ClientConnection.cpp"
+  ],
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 357,
+  "status": "ported",
+  "whoa": "ClientConnection::CreateCharacter",
+  "whoaSize": 69
+ },
+ "006b1a70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/net/connection/ClientConnection.cpp"
+  ],
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 242,
+  "status": "ported",
+  "whoa": "ClientConnection::DeleteCharacter",
+  "whoaSize": 69
  },
  "006b3450": {
   "branchRatio": 1.0,
@@ -14496,11 +14931,11 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.182,
+  "fidelity": 0.364,
   "files": [
    "src/console/Command.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "ConsoleClient.cpp",
   "refSize": 287,
   "status": "ported",
@@ -14515,48 +14950,78 @@
   "files": [
    "src/console/CVar.cpp"
   ],
-  "how": "callorder",
+  "how": "annotated",
   "module": "ConsoleClient.cpp",
   "refSize": 187,
   "status": "ported",
   "whoa": "s_CreatePathDirectories",
   "whoaSize": 0
  },
+ "00766400": {
+  "branchRatio": 0.583,
+  "constOverlap": 0.154,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/console/CVar.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 300,
+  "status": "ported",
+  "whoa": "s_LoadFromFile",
+  "whoaSize": 403
+ },
  "00766530": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/console/CVar.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 146,
+  "status": "ported",
+  "whoa": "CVar::Load",
+  "whoaSize": 240
+ },
+ "007665d0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.25,
   "files": [
    "src/console/CVar.cpp"
   ],
   "how": "string",
   "module": "ConsoleVar.cpp",
-  "refSize": 146,
+  "refSize": 100,
   "status": "ported",
   "whoa": "CVar::RemoveFile",
   "whoaSize": 171
  },
- "00766640": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+ "007667b0": {
+  "branchRatio": 0.545,
+  "constOverlap": 0.071,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/console/CVar.cpp"
   ],
-  "how": "string",
+  "how": "callorder",
   "module": "ConsoleVar.cpp",
-  "refSize": 97,
+  "refSize": 165,
   "status": "ported",
-  "whoa": "s_WriteCVars",
-  "whoaSize": 0
+  "whoa": "CVar::InternalSet",
+  "whoaSize": 248
  },
  "007668c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/console/CVar.cpp"
   ],
@@ -14566,6 +15031,51 @@
   "status": "ported",
   "whoa": "CVar::Set",
   "whoaSize": 203
+ },
+ "00767030": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/CVar.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 170,
+  "status": "ported",
+  "whoa": "s_WriteCVars",
+  "whoaSize": 0
+ },
+ "00767100": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/console/CVar.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 156,
+  "status": "ported",
+  "whoa": "CVar::Save",
+  "whoaSize": 416
+ },
+ "007673f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/console/Initialize.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 68,
+  "status": "ported",
+  "whoa": "ConsoleDestroyClientCVar",
+  "whoaSize": 68
  },
  "00767440": {
   "branchRatio": 1.0,
@@ -14597,20 +15107,50 @@
   "whoa": "CVar::LookupRegistered",
   "whoaSize": 60
  },
+ "00767680": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.375,
+  "files": [
+   "src/console/CVarHandlers.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 442,
+  "status": "ported",
+  "whoa": "CVarCommandHandler",
+  "whoaSize": 653
+ },
  "00767fc0": {
   "branchRatio": 0.412,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.133,
+  "fidelity": 0.533,
   "files": [
    "src/console/CVar.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 553,
   "status": "ported",
   "whoa": "CVar::Register",
-  "whoaSize": 948
+  "whoaSize": 985
+ },
+ "007681f0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.1,
+  "files": [
+   "src/console/CVarHandlers.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 325,
+  "status": "ported",
+  "whoa": "CVarSetCommandHandler",
+  "whoaSize": 236
  },
  "00768340": {
   "branchRatio": 1.0,
@@ -14626,6 +15166,21 @@
   "status": "ported",
   "whoa": "CVar::Initialize",
   "whoaSize": 429
+ },
+ "00768900": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/console/Command.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 211,
+  "status": "ported",
+  "whoa": "ConsoleCommandParse",
+  "whoaSize": 382
  },
  "00769100": {
   "branchRatio": 0.25,
@@ -14686,6 +15241,21 @@
   "status": "ported",
   "whoa": "RegisterGxCVars",
   "whoaSize": 1165
+ },
+ "0076b3b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Command.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 53,
+  "status": "ported",
+  "whoa": "ConsoleCommandHistoryAdd",
+  "whoaSize": 0
  },
  "0076cd40": {
   "branchRatio": 1.0,
@@ -14907,6 +15477,22 @@
   "status": "ported",
   "whoa": "ParseIndex",
   "whoaSize": 0
+ },
+ "0076f640": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "how": "override",
+  "module": "ConsoleVar.cpp",
+  "refSize": 118,
+  "status": "ported",
+  "whoa": "SStrHash",
+  "whoaSize": 264
  },
  "0076f700": {
   "branchRatio": 0.7,
@@ -15407,6 +15993,19 @@
   "whoa": "StringToFramePoint",
   "whoaSize": 92
  },
+ "00814f20": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "how": "callorder",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
+  "status": "ported",
+  "whoa": "lua_pushnil",
+  "whoaSize": 17
+ },
  "00814f60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -15452,33 +16051,20 @@
   "whoa": "StringToOrientation",
   "whoaSize": 92
  },
- "008154e0": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
+ "00815500": {
+  "branchRatio": 0.04,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/Util.cpp"
   ],
   "how": "callorder",
   "module": "XMLTree.cpp",
-  "refSize": 20,
+  "refSize": 115,
   "status": "ported",
   "whoa": "StringToBOOL",
   "whoaSize": 511
- },
- "00815500": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "how": "callgraph",
-  "module": "XMLTree.cpp",
-  "refSize": 115,
-  "status": "ported",
-  "whoa": "lua_toboolean",
-  "whoaSize": 43
  },
  "00815600": {
   "branchRatio": 0.7,
@@ -15649,7 +16235,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/LuaExtraFuncs.cpp"
   ],
@@ -15664,7 +16250,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.133,
   "faithful": false,
-  "fidelity": 0.033,
+  "fidelity": 0.067,
   "files": [
    "src/ui/LuaExtraFuncs.cpp"
   ],
@@ -15919,7 +16505,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.105,
   "faithful": false,
-  "fidelity": 0.475,
+  "fidelity": 0.625,
   "files": [
    "src/ui/simple/ScriptMethods.cpp"
   ],
@@ -16020,6 +16606,21 @@
   "whoa": "CM2Model::IsDrawable",
   "whoaSize": 204
  },
+ "008251d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 134,
+  "status": "ported",
+  "whoa": "CM2Model::SetWorldTransform",
+  "whoaSize": 138
+ },
  "00825e00": {
   "branchRatio": 1.0,
   "constOverlap": 0.143,
@@ -16103,7 +16704,7 @@
   "files": [
    "src/model/CM2Model.cpp"
   ],
-  "how": "callorder",
+  "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 420,
   "status": "ported",
@@ -16248,6 +16849,19 @@
   "whoa": "lua_replace",
   "whoaSize": 208
  },
+ "0084deb0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 31,
+  "status": "ported",
+  "whoa": "lua_type",
+  "whoaSize": 39
+ },
  "0084df20": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -16258,8 +16872,8 @@
   "module": "Minigame_C.cpp",
   "refSize": 53,
   "status": "ported",
-  "whoa": "lua_pushnumber",
-  "whoaSize": 21
+  "whoa": "lua_isnumber",
+  "whoaSize": 48
  },
  "0084df60": {
   "branchRatio": -1.0,
@@ -16299,6 +16913,19 @@
   "status": "ported",
   "whoa": "lua_tointeger",
   "whoaSize": 48
+ },
+ "0084e0b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 42,
+  "status": "ported",
+  "whoa": "lua_toboolean",
+  "whoaSize": 43
  },
  "0084e0e0": {
   "branchRatio": -1.0,
@@ -16736,12 +17363,27 @@
   "files": [
    "src/sound/SESound.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "SoundEngine.cpp",
   "refSize": 75,
   "status": "ported",
   "whoa": "SESound::GetNumInputDrivers",
   "whoaSize": 7
+ },
+ "008783b0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "annotated",
+  "module": "SoundEngine.cpp",
+  "refSize": 150,
+  "status": "ported",
+  "whoa": "SESound::GetInputDriverName",
+  "whoaSize": 111
  },
  "00879290": {
   "branchRatio": 1.0,
@@ -16751,12 +17393,57 @@
   "files": [
    "src/sound/SESound.cpp"
   ],
-  "how": "callgraph",
+  "how": "annotated",
   "module": "SoundEngine.cpp",
   "refSize": 21,
   "status": "ported",
   "whoa": "SESound::GetNumOutputDrivers",
   "whoaSize": 16
+ },
+ "008792b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "annotated",
+  "module": "SoundEngine.cpp",
+  "refSize": 111,
+  "status": "ported",
+  "whoa": "SESound::GetOutputDriverName",
+  "whoaSize": 147
+ },
+ "0087a9b0": {
+  "branchRatio": 0.031,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "annotated",
+  "module": "SoundEngine.cpp",
+  "refSize": 774,
+  "status": "ported",
+  "whoa": "s_SystemCallback",
+  "whoaSize": 21
+ },
+ "0087acc0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "annotated",
+  "module": "SoundEngine.cpp",
+  "refSize": 32,
+  "status": "ported",
+  "whoa": "SESound::SetDeviceListChangedCallback",
+  "whoaSize": 0
  },
  "0087ad40": {
   "branchRatio": 1.0,
@@ -16832,19 +17519,6 @@
   "status": "ported",
   "whoa": "SESound::LoadDiskSound",
   "whoaSize": 1258
- },
- "0088b9c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [],
-  "how": "callgraph",
-  "module": "ComSatSoundIOSoundEngine.cpp",
-  "refSize": 28,
-  "status": "excluded",
-  "whoa": "lua_isnumber",
-  "whoaSize": 48
  },
  "008a65d0": {
   "branchRatio": 1.0,
@@ -17656,6 +18330,21 @@
   "whoa": "Grunt::Timer::Timer",
   "whoaSize": 120
  },
+ "008e5250": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp"
+  ],
+  "how": "annotated",
+  "module": "MeteredSection.cpp",
+  "refSize": 3,
+  "status": "ported",
+  "whoa": "SwallowEventHandler",
+  "whoaSize": 3
+ },
  "0095db80": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -17716,21 +18405,6 @@
   "whoa": "CSimpleModel::SetSequence",
   "whoaSize": 70
  },
- "0095f610": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/ui/simple/CSimpleModel.cpp"
-  ],
-  "how": "callgraph",
-  "module": "CSimpleMovieFrame.cpp",
-  "refSize": 49,
-  "status": "ported",
-  "whoa": "CSimpleModel::SetSequenceTime",
-  "whoaSize": 78
- },
  "0095f800": {
   "branchRatio": 0.588,
   "constOverlap": 0.0,
@@ -17765,7 +18439,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/ui/FrameScript.cpp"
   ],
@@ -17855,7 +18529,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -17870,7 +18544,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -17885,7 +18559,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -17900,7 +18574,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -18050,7 +18724,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -18080,7 +18754,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp"
   ],
@@ -18136,26 +18810,11 @@
   "whoa": "CSimpleModel_SetGlow",
   "whoaSize": 75
  },
- "00961d70": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/simple/CSimpleStatusBar.cpp"
-  ],
-  "how": "callorder",
-  "module": "CSimpleMovieFrame.cpp",
-  "refSize": 182,
-  "status": "ported",
-  "whoa": "CSimpleStatusBar::SetRotatesTexture",
-  "whoaSize": 0
- },
  "00961e30": {
   "branchRatio": 0.48,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.619,
   "files": [
    "src/ui/simple/CSimpleStatusBar.cpp"
   ],
@@ -18185,7 +18844,7 @@
   "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.267,
   "files": [
    "src/ui/simple/CSimpleCheckbox.cpp"
   ],
@@ -18215,7 +18874,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.3,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp"
   ],
@@ -18275,7 +18934,7 @@
   "branchRatio": 0.476,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.722,
+  "fidelity": 0.556,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp"
   ],
@@ -18514,6 +19173,21 @@
   "whoa": "CSimpleButton::SetText",
   "whoaSize": 156
  },
+ "0096f9b0": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleButton.cpp"
+  ],
+  "how": "callorder",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 197,
+  "status": "ported",
+  "whoa": "CSimpleButton::SetHighlight",
+  "whoaSize": 388
+ },
  "0096fed0": {
   "branchRatio": 0.676,
   "constOverlap": 0.0,
@@ -18528,6 +19202,21 @@
   "status": "ported",
   "whoa": "CSimpleButton::LoadXML",
   "whoaSize": 1698
+ },
+ "00970370": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleButton.cpp"
+  ],
+  "how": "callorder",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 193,
+  "status": "ported",
+  "whoa": "CSimpleButton::SetStateTexture",
+  "whoaSize": 416
  },
  "00970660": {
   "branchRatio": 0.0,
@@ -18563,7 +19252,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/ui/simple/CSimpleMovieFrameScript.cpp"
   ],
@@ -18773,7 +19462,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.778,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp"
   ],
@@ -18803,7 +19492,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp"
   ],
@@ -18983,7 +19672,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.857,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp"
   ],
@@ -19013,7 +19702,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp"
   ],
@@ -19043,7 +19732,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp"
   ],
@@ -19148,7 +19837,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleScrollFrameScript.cpp"
   ],
@@ -19433,7 +20122,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.0,
   "files": [
    "src/ui/simple/CSimpleScrollingMessageFrameScript.cpp"
   ],
@@ -20662,8 +21351,8 @@
  "00976b40": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleCheckboxScript.cpp"
   ],
@@ -20752,8 +21441,8 @@
  "00977090": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20767,8 +21456,8 @@
  "00977100": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20813,7 +21502,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20828,7 +21517,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20858,7 +21547,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20888,7 +21577,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -20993,7 +21682,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.643,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -21113,7 +21802,7 @@
   "branchRatio": 0.545,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.529,
+  "fidelity": 0.706,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -21217,8 +21906,8 @@
  "00978260": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp"
   ],
@@ -21308,7 +21997,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.545,
   "files": [
    "src/sound/SI2Script.cpp"
   ],
@@ -21323,7 +22012,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/sound/SI2Script.cpp"
   ],
@@ -21338,7 +22027,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/sound/SI2Script.cpp"
   ],
@@ -21368,7 +22057,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/sound/SI2Script.cpp"
   ],
@@ -21398,7 +22087,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/sound/SI2Script.cpp"
   ],

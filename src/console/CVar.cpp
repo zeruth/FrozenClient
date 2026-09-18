@@ -267,6 +267,7 @@ CVar* CVar::LookupRegistered(const char* name) {
     return var;
 }
 
+// ref: FUN_00767fc0
 CVar* CVar::Register(const char* name, const char* help, uint32_t flags, const char* value, bool (*fcn)(CVar*, const char*, const char*, void*), uint32_t category, bool a7, void* arg, bool a9) {
     CVar* var = CVar::s_registeredCVars.Ptr(name);
 
@@ -329,8 +330,7 @@ CVar* CVar::Register(const char* name, const char* help, uint32_t flags, const c
             var->m_flags |= 0x80;
         }
 
-        // TODO
-        // ConsoleCommandRegister(var->m_key.GetString(), &CvarCommandHandler, category, help);
+        ConsoleCommandRegister(var->m_key.GetString(), &CVarCommandHandler, static_cast<CATEGORY>(category), help);
     }
 
     return var;

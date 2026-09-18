@@ -9,6 +9,8 @@ int32_t CVarListCommandHandler(const char* command, const char* arguments);
 
 int32_t CVarSetCommandHandler(const char* command, const char* arguments);
 
+int32_t CVarCommandHandler(const char* command, const char* arguments);
+
 int32_t CVarResetCommandHandler(const char* command, const char* arguments);
 
 #endif
