@@ -721,7 +721,10 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
             st = status(a)
             by_how[m[a][1]] += 1
             fid[a] = fidelity(refs, whoa, m, a)
-            if st != 'stub' and is_faithful(refs, whoa, m, a, fid[a]):
+            # 'faithful' as an override status is a hand verdict for ports the static measure
+            # misjudges -- a loop over a table where the reference unrolls, say -- and must
+            # carry the reason in its note
+            if st != 'stub' and (st in ('faithful', 'verified') or is_faithful(refs, whoa, m, a, fid[a])):
                 faithful += 1
                 faithful_bytes += real[a]['size']
         else:
@@ -889,7 +892,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
     L.append('|---|---|---:|---:|---:|---:|---:|---:|---:|')
     # diverged (deliberate difference, reason recorded) and vendor (same third-party library on both
     # sides) ports are not expected to match call for call, so they stay out of this list
-    low = sorted((a for a in fid if status(a) not in ('stub', 'diverged', 'vendor') and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
+    low = sorted((a for a in fid if status(a) not in ('stub', 'diverged', 'vendor', 'faithful', 'verified') and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
     for a in low[:40]:
         br, co = fidelity_dims(refs, whoa, m, a)
         w = whoa[m[a][0]]
@@ -1032,7 +1035,7 @@ def queue_next(args, refs, whoa, m):
         args.next = max(args.next or 0, len(pool))
     elif args.fix:
         overrides = load_overrides()
-        skip = set(k.lower().zfill(8) for k, v in overrides.items() if isinstance(v, dict) and v.get('status') in ('diverged', 'vendor'))
+        skip = set(k.lower().zfill(8) for k, v in overrides.items() if isinstance(v, dict) and v.get('status') in ('diverged', 'vendor', 'faithful', 'verified'))
         pool = [a for a in m if a in real and a not in skip and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
     elif args.helpers:
         # the small, everywhere-called leaves (allocators, string ops, CVar lookup): every one of

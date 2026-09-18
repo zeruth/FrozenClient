@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:42 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:43 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -9,17 +9,17 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a whoa function | 1498 (=) (5.5%) | 348.8k (6.3%) |
-| &nbsp;&nbsp;ported | 1023 (=) | 231.6k |
+| &nbsp;&nbsp;ported | 1022 (-1) | 228.7k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **238 (=) (0.9%)** | **33.9k (0.6%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **250 (+12) (0.9%)** | **38.7k (0.7%)** |
 | unmapped | 25663 | 5.06M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 168 (=) (3.0%) | |
 | whoa functions (src/, from PDB + source) | 10609, stubs 887 | |
 
-Match evidence: annotated 92, callgraph 63, callorder 80, override 67, string 267, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 91, callgraph 63, callorder 80, override 68, string 267, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:36 -- mapped 1498, ported 1023, stub 453, spine mapped 168.
+Previous run: 2026-09-18 17:42 -- mapped 1498, ported 1023, stub 453, spine mapped 168.
 
 ## Lua API coverage (binding tables)
 
@@ -661,7 +661,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 5% | 148 | 30 | 90 | 15 | 10% | 3696 |
-| 00485f40 | `CSimpleTexture::LoadXML` | 46% | 61 | 64 | 119 | 41 | 0% | 3017 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004932c0 | `CSimpleFrame::LoadXML` | 39% | 69 | 60 | 68 | 28 | 12% | 1858 |
@@ -698,6 +697,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0061eb40 | `CGTooltip_SetOwner` | 30% | 33 | 12 | 25 | 4 | 0% | 836 |
 | 008bfe80 | `EffectGlow::EffectGlow` | 4% | 28 | 1 | 19 | 0 | 0% | 834 |
 | 0081bb20 | `Script_CreateFrame` | 62% | 40 | 39 | 20 | 16 | 11% | 832 |
+| 0049f2d0 | `CSimpleFrame_GetAttribute` | 59% | 27 | 31 | 27 | 24 | 19% | 831 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -800,6 +800,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:32 | 1489 (5.5%) | 230 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 | 2026-09-18 17:36 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:42 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
+| 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 
 ## How to move a row
 

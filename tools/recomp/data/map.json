@@ -1238,10 +1238,10 @@
   "files": [
    "src/ui/simple/CSimpleTexture.cpp"
   ],
-  "how": "annotated",
+  "how": "override",
   "module": "CSimpleRender.cpp",
   "refSize": 3017,
-  "status": "ported",
+  "status": "faithful",
   "whoa": "CSimpleTexture::LoadXML",
   "whoaSize": 2644
  },

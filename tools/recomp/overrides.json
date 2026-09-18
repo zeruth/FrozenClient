@@ -123,5 +123,7 @@
   "00455f10": { "status": "unlinked", "note": "string-matched to whoa's TEST_CASE (the unit-test macro); the reference function is a 2 KB Storm/SFile routine, not test code" },
   "006909a0": { "whoa": "CGxDeviceGLES::ISetCaps", "status": "diverged", "note": "the reference's OpenGL device caps (GL_ARB_* strings); whoa's GLES backend is a different device, so the call structure is not expected to match" },
 
+  "00485f40": { "whoa": "CSimpleTexture::LoadXML", "status": "faithful", "note": "hand verdict 2026-09-18: every attribute, child and message of FUN_00485f40 is handled; the static score (46%, branches 0.35) is low only because the port loops over the eight Rect corners and the TexCoords edges where the reference unrolls them" },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }
