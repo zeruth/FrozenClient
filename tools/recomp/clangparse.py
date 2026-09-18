@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""Exact whoa-side inventory through libclang: every function definition with its ordered calls,
+string and numeric literals, and branch count, from the real compile flags.
+
+The regex parser in recomp.py collapses overloads, misses lambdas and guesses at which `Foo(` a
+call means. This resolves calls to their declarations, so the call sequence the fidelity score
+compares against the reference is the real one.
+
+    python tools/recomp/clangparse.py                 # parse everything (cached by file mtime)
+    python tools/recomp/clangparse.py src/world/Terrain.cpp   # one file, printed
+
+Output: tools/recomp/data/whoa-clang.json  { qualified name: { files, callseq, strings, consts,
+branches, stub, lines } }. recomp.py prefers it over the regex inventory when present.
+"""
+
+import io
+import json
+import os
+import re
+import sys
+import time
+
+import clang.cindex as ci
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+OUT = os.path.join(DATA, 'whoa-clang.json')
+CACHE = os.path.join(DATA, 'clang-cache.json')
+COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
+              os.path.join(ROOT, 'build', 'compile_commands.json')]
+
+K = ci.CursorKind
+BRANCH_KINDS = {K.IF_STMT, K.FOR_STMT, K.WHILE_STMT, K.DO_STMT, K.CASE_STMT, K.CONDITIONAL_OPERATOR,
+                K.CXX_FOR_RANGE_STMT}
+DEF_KINDS = {K.FUNCTION_DECL, K.CXX_METHOD, K.CONSTRUCTOR, K.DESTRUCTOR, K.FUNCTION_TEMPLATE, K.CONVERSION_FUNCTION}
+
+
+def load_compile_db():
+    for p in COMPILE_DB:
+        if os.path.exists(p):
+            db = json.load(io.open(p, encoding='utf-8'))
+            return {os.path.normcase(os.path.abspath(e['file'])): e for e in db}
+    sys.exit('no compile_commands.json (configure a Ninja build dir with CMAKE_EXPORT_COMPILE_COMMANDS)')
+
+
+def split_command(cmd):
+    """cl.exe style command line -> clang args in cl driver mode, without the output/source bits."""
+    toks = re.findall(r'"([^"]*)"|(\S+)', cmd)
+    toks = [a or b for a, b in toks]
+    args = ['--driver-mode=cl', '-fms-compatibility', '-fms-extensions', '-Wno-everything']
+    skip = False
+    for t in toks[1:]:
+        if skip:
+            skip = False
+            continue
+        low = t.lower()
+        if low in ('/c', '-c') or low.startswith('/fo') or low.startswith('/fd') or low.startswith('/fs') or low.startswith('/fp'):
+            continue
+        if low.endswith('.cpp') or low.endswith('.c') or low.endswith('.cc'):
+            continue
+        if low in ('/showincludes', '/mp', '/nologo', '/tp', '/tc') or low.startswith('/zi') or low.startswith('/zc') or low.startswith('/gm') or low.startswith('/gl'):
+            continue
+        if low.startswith('/external:'):
+            continue
+        args.append(t)
+    return args
+
+
+def qualified(cursor):
+    parts = []
+    c = cursor
+    while c is not None and c.kind != K.TRANSLATION_UNIT:
+        if c.kind in (K.NAMESPACE,) and c.spelling == '':
+            pass  # anonymous namespace: the PDB drops it too
+        elif c.kind in (K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE, K.UNION_DECL) or c.kind in DEF_KINDS:
+            if c.spelling:
+                parts.append(c.spelling)
+        c = c.semantic_parent
+    return '::'.join(reversed(parts))
+
+
+def walk_body(body, out):
+    for c in body.get_children():
+        k = c.kind
+        if k == K.CALL_EXPR:
+            ref = c.referenced
+            if ref is not None and ref.kind in DEF_KINDS:
+                out['callseq'].append(qualified(ref))
+            elif c.spelling:
+                out['callseq'].append('?' + c.spelling)
+        elif k == K.STRING_LITERAL:
+            s = c.spelling
+            if s.startswith('"') and s.endswith('"'):
+                s = s[1:-1]
+            out['strings'].add(s.encode('utf-8').decode('unicode_escape', errors='replace'))
+        elif k in (K.INTEGER_LITERAL, K.FLOATING_LITERAL):
+            toks = list(c.get_tokens())
+            if toks:
+                out['consts'].add(toks[0].spelling)
+        elif k in BRANCH_KINDS:
+            out['branches'] += 1
+        elif k == K.LAMBDA_EXPR:
+            pass  # a lambda's body is its own function to the PDB; skipped rather than mixed in
+        if k != K.LAMBDA_EXPR:
+            walk_body(c, out)
+
+
+def parse_file(index, path, args, text):
+    tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
+    fns = {}
+    norm = os.path.normcase(os.path.abspath(path))
+    for c in tu.cursor.walk_preorder():
+        if c.kind not in DEF_KINDS or not c.is_definition():
+            continue
+        loc = c.location
+        if loc.file is None or os.path.normcase(os.path.abspath(loc.file.name)) != norm:
+            continue
+        name = qualified(c)
+        body = next((ch for ch in c.get_children() if ch.kind == K.COMPOUND_STMT), None)
+        if body is None:
+            continue
+        out = {'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0}
+        walk_body(body, out)
+        ext = body.extent
+        src = text[ext.start.offset:ext.end.offset] if text else ''
+        e = fns.setdefault(name, {'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0})
+        e['callseq'] += out['callseq']
+        e['strings'] |= out['strings']
+        e['consts'] |= out['consts']
+        e['branches'] += out['branches']
+        e['stub'] = e['stub'] and 'WHOA_UNIMPLEMENTED' in src
+        e['lines'] += src.count('\n') + 1
+    return fns
+
+
+def main():
+    db = load_compile_db()
+    index = ci.Index.create()
+    only = [os.path.normcase(os.path.abspath(os.path.join(ROOT, a))) for a in sys.argv[1:]]
+    cache = {}
+    if os.path.exists(CACHE) and not only:
+        cache = json.load(io.open(CACHE, encoding='utf-8'))
+    result = {}
+    n = 0
+    t0 = time.time()
+    for path, e in sorted(db.items()):
+        rel = os.path.relpath(path, ROOT).replace('\\', '/')
+        if not (rel.startswith('src/') or rel.startswith('lib/')):
+            continue
+        if only and path not in only:
+            continue
+        mtime = os.path.getmtime(path)
+        c = cache.get(rel)
+        if c and c['mtime'] == mtime:
+            fns = c['fns']
+        else:
+            text = io.open(path, encoding='utf-8', errors='replace').read()
+            fns = parse_file(index, path, split_command(e['command']), text)
+            fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
+                       'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines']} for k, v in fns.items()}
+            cache[rel] = {'mtime': mtime, 'fns': fns}
+            n += 1
+        for k, v in fns.items():
+            r = result.setdefault(k, {'files': [], 'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0})
+            r['files'].append(rel)
+            r['callseq'] += v['callseq']
+            r['strings'] |= set(v['strings'])
+            r['consts'] |= set(v['consts'])
+            r['branches'] += v['branches']
+            r['stub'] = r['stub'] and v['stub']
+            r['lines'] += v['lines']
+    if only:
+        for k, v in sorted(result.items()):
+            print('%-50s calls %3d branches %3d consts %3d strings %3d%s' % (k[:50], len(v['callseq']), v['branches'], len(v['consts']), len(v['strings']), ' STUB' if v['stub'] else ''))
+            print('   ', ' '.join(v['callseq'][:25]))
+        return
+    for r in result.values():
+        r['strings'] = sorted(r['strings'])
+        r['consts'] = sorted(r['consts'])
+    os.makedirs(DATA, exist_ok=True)
+    json.dump(cache, io.open(CACHE, 'w', encoding='utf-8'))
+    json.dump(result, io.open(OUT, 'w', encoding='utf-8'), indent=0)
+    print('parsed %d files (%d fresh) in %.0fs: %d functions -> %s' % (len([1 for p in db if os.path.relpath(p, ROOT).replace('\\', '/').startswith(('src/', 'lib/'))]), n, time.time() - t0, len(result), os.path.relpath(OUT, ROOT)))
+
+
+if __name__ == '__main__':
+    main()

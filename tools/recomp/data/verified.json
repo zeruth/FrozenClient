@@ -1,0 +1,287 @@
+{
+ "0048c610": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "CSimpleTexture_IsShown",
+  "whoaPerFrame": [
+   2,
+   2,
+   2
+  ]
+ },
+ "0048d240": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CSimpleFontString_IsVisible",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "0048d2a0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CSimpleFontString_IsShown",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "0049e100": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   3,
+   3,
+   3
+  ],
+  "whoa": "CScriptRegion_IsMouseOver",
+  "whoaPerFrame": [
+   3,
+   3,
+   3
+  ]
+ },
+ "0049fe90": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   21,
+   21,
+   21
+  ],
+  "whoa": "CSimpleFrame_IsShown",
+  "whoaPerFrame": [
+   21,
+   21,
+   21
+  ]
+ },
+ "004d84a0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CGlueMgr::Idle",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "004f8ea0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CGWorldFrame::OnWorldRender",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "00510a10": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "Script_GetCursorPosition",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "0061d210": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CGTooltip_IsOwned",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "0072d940": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   0,
+   1,
+   0
+  ],
+  "whoa": "CGUnit_C::RefreshDataPointers",
+  "whoaPerFrame": [
+   0,
+   1,
+   0
+  ]
+ },
+ "00777980": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "SRgnCreate",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "00781610": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "ComputeLightColors",
+  "whoaPerFrame": [
+   2,
+   2,
+   2
+  ]
+ },
+ "00790920": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "TerrainUpdate",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "007eea90": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CWorld::UpdateOutdoorLight",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "007ef6e0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "DrawGlare",
+  "whoaPerFrame": [
+   2,
+   2,
+   2
+  ]
+ },
+ "007f09b0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "SkyRender",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "008714b0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "OsInputGet",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "00973530": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CSimpleScrollingMessageFrame_AtBottom",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "009771d0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:09: same per-frame count in 3/3 frames (frame order agreement overall 30%)",
+  "refPerFrame": [
+   3,
+   3,
+   3
+  ],
+  "whoa": "CSimpleButton_GetButtonState",
+  "whoaPerFrame": [
+   3,
+   3,
+   3
+  ]
+ }
+}

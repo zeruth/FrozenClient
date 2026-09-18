@@ -48,9 +48,24 @@ public class ExportFunctions extends GhidraScript {
                 TreeSet<String> strings = new TreeSet<>();
                 TreeSet<String> data = new TreeSet<>();
                 int callSites = 0;
+                int branches = 0;                       // conditional jumps: the reference's branch count
+                TreeSet<String> consts = new TreeSet<>(); // immediate operands worth comparing (|v| > 8, not addresses)
                 InstructionIterator ii = listing.getInstructions(f.getBody(), true);
                 while (ii.hasNext()) {
                     Instruction ins = ii.next();
+                    ghidra.program.model.symbol.FlowType ft = ins.getFlowType();
+                    if (ft.isConditional() && ft.isJump()) branches++;
+                    for (int op = 0; op < ins.getNumOperands(); op++) {
+                        for (Object o : ins.getOpObjects(op)) {
+                            if (o instanceof ghidra.program.model.scalar.Scalar) {
+                                long v = ((ghidra.program.model.scalar.Scalar) o).getSignedValue();
+                                long av = Math.abs(v);
+                                if (av > 8 && (av < 0x400000L || av > 0x01000000L) && consts.size() < 48) {
+                                    consts.add(v < 0 ? "-0x" + Long.toHexString(av) : "0x" + Long.toHexString(av));
+                                }
+                            }
+                        }
+                    }
                     for (Reference r : ins.getReferencesFrom()) {
                         Address to = r.getToAddress();
                         RefType t = r.getReferenceType();
@@ -85,6 +100,11 @@ public class ExportFunctions extends GhidraScript {
                 sb.append(",\"thunk\":").append(f.isThunk());
                 sb.append(",\"size\":").append(size);
                 sb.append(",\"callSites\":").append(callSites);
+                sb.append(",\"branches\":").append(branches);
+                sb.append(",\"consts\":[");
+                boolean f0 = true;
+                for (String c : consts) { if (!f0) sb.append(','); f0 = false; sb.append('"').append(c).append('"'); }
+                sb.append("]");
                 sb.append(",\"callers\":").append(callers);
                 sb.append(",\"callees\":[");
                 boolean first = true;

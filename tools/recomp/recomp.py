@@ -69,6 +69,9 @@ FAITHFUL = 0.8
 QUEUE_DIR = os.path.join(ROOT, 'docs', 'recomp', 'queue')
 DECOMP = r'C:\Users\tyler\tools\decomp.sh'
 TABLES_JSONL = os.path.join(DATA, 'ref-tables.jsonl')
+SUSPECT_JSON = os.path.join(DATA, 'suspect.json')      # tracecompare: links the runtime contradicts
+VERIFIED_JSON = os.path.join(DATA, 'verified.json')    # tracecompare: links the runtime confirms
+TRACE_SUMMARY = os.path.join(DATA, 'trace-summary.json')
 MATCHES_TSV = os.path.join(DATA, 'matches.tsv')
 
 # Strings too common to tell functions apart.
@@ -104,6 +107,8 @@ def load_reference():
             r['addr'] = r['addr'].lower()
             r['callees'] = [c.lower() for c in r['callees'] if not c.startswith('ext:')]
             r['calls'] = [c.lower() for c in r.get('calls', r['callees']) if not c.startswith('ext:')]
+            r.setdefault('branches', 0)
+            r['consts'] = set(r.get('consts', []))
             refs[r['addr']] = r
     # a thunk is a jump to the real function: callers of the thunk call the target
     for r in refs.values():
@@ -297,6 +302,32 @@ def parse_sources():
     return fns
 
 
+CLANG_JSON = os.path.join(DATA, 'whoa-clang.json')
+
+
+def overlay_clang(src):
+    """Replace the regex parser's guesses with libclang's exact answers where clangparse.py has
+    run: ordered resolved calls, literals, branch counts. Tags (refs) stay with the regex pass, which
+    reads comments. STL and lambda calls are dropped from the sequence: the reference has neither."""
+    if not os.path.exists(CLANG_JSON):
+        return src, False
+    clang = json.load(io.open(CLANG_JSON, encoding='utf-8'))
+    for name, c in clang.items():
+        seq = [x for x in c['callseq'] if not x.startswith('std::') and '(lambda' not in x and not x.startswith('?')]
+        e = src.get(name)
+        if not e:
+            e = src[name] = {'name': name, 'files': set(c['files']), 'strings': set(), 'calls': set(), 'callseq': [],
+                             'refs': set(), 'stub': c['stub'], 'lines': c['lines']}
+        e['callseq'] = seq
+        e['calls'] = set(seq)
+        e['strings'] = set(s for s in c['strings'] if len(s) >= 3 and s not in NOISE_STRINGS)
+        e['consts'] = set(c['consts'])
+        e['branches'] = c['branches']
+        e['stub'] = c['stub']
+        e['exact'] = True
+    return src, True
+
+
 def merge_whoa(pdb, src):
     whoa = {}
     for name, s in src.items():
@@ -304,12 +335,13 @@ def merge_whoa(pdb, src):
         files = sorted(s['files'])
         parts = files[0].split('/')
         whoa[name] = {'name': name, 'files': files, 'strings': s['strings'], 'calls': s['calls'], 'callseq': s['callseq'],
-                      'refs': s['refs'], 'stub': s['stub'], 'lines': s['lines'],
+                      'refs': s['refs'], 'stub': s['stub'], 'lines': s['lines'], 'exact': s.get('exact', False),
+                      'consts': s.get('consts', set()), 'branches': s.get('branches', -1),
                       'size': p['size'] if p else 0, 'lib': p['lib'] if p else (parts[1] if len(parts) > 2 else '?')}
     for name, p in pdb.items():
         if name not in whoa:
             whoa[name] = {'name': name, 'files': [], 'strings': set(), 'calls': set(), 'callseq': [], 'refs': set(), 'stub': False,
-                          'lines': 0, 'size': p['size'], 'lib': p['lib']}
+                          'lines': 0, 'size': p['size'], 'lib': p['lib'], 'exact': False, 'consts': set(), 'branches': -1}
     # resolve calls to whoa function keys: same class first, then a unique short-name match
     short = collections.defaultdict(list)
     for name in whoa:
@@ -327,6 +359,12 @@ def merge_whoa(pdb, src):
                 return cands[0]
             return None
 
+        if w['exact']:
+            # libclang already resolved the callee: its qualified name is the key, unless the callee
+            # is inline/header-only and the PDB never saw it
+            w['seq'] = [c if c in whoa else '?' + c for c in w['callseq']]
+            w['callees'] = set(c for c in w['seq'] if not c.startswith('?'))
+            continue
         w['callees'] = set(k for k in (resolve(c) for c in w['calls']) if k)
         # ordered, unresolved names kept as '?name' so the sequence keeps its shape
         w['seq'] = [resolve(c) or '?' + c for c in w['callseq']]
@@ -353,10 +391,63 @@ def fidelity(refs, whoa, m, addr):
     name = m[addr][0]
     rseq = [m[c][0] if c in m else c for c in refs[addr]['calls']]
     wseq = whoa[name]['seq']
-    n = max(len(rseq), len(wseq))
-    if n == 0:
+    if not rseq:
         return 1.0 if not whoa[name]['stub'] else 0.0
-    return lcs_len(rseq, wseq) / float(n)
+    # Recall of the reference's sequence: extra calls on the whoa side (helpers the reference
+    # compiler inlined, constructors) do not count against it; missing or reordered ones do.
+    return lcs_len(rseq, wseq) / float(len(rseq))
+
+
+def precision(refs, whoa, m, addr):
+    """Share of the port's calls that the reference also makes, in order. Low with high recall
+    means the port does more than the reference: inlined helpers, or invented behaviour."""
+    name = m[addr][0]
+    rseq = [m[c][0] if c in m else c for c in refs[addr]['calls']]
+    wseq = whoa[name]['seq']
+    if not wseq:
+        return 1.0
+    return lcs_len(rseq, wseq) / float(len(wseq))
+
+
+def fidelity_dims(refs, whoa, m, addr):
+    """The other two structural checks, when both sides can answer them (libclang inventory):
+    branch ratio = min/max of the conditional-branch counts (1.0 = same shape), const overlap =
+    share of the reference's notable immediates the port's literals also contain. -1 = unknown."""
+    r = refs[addr]
+    w = whoa[m[addr][0]]
+    br = -1.0
+    if w['branches'] >= 0:
+        a, b = r['branches'], w['branches']
+        br = 1.0 if a == b else (min(a, b) / float(max(a, b)) if max(a, b) else 1.0)
+    co = -1.0
+    if w['exact'] and r['consts']:
+        wc = set()
+        for c in w['consts']:
+            try:
+                v = int(c.rstrip('uUlL'), 0) if not re.search(r'[.eE]', c) or c.lower().startswith('0x') else None
+            except ValueError:
+                v = None
+            if v is not None:
+                wc.add(v)
+        rc = set()
+        for c in r['consts']:
+            try:
+                rc.add(int(c, 16))
+            except ValueError:
+                pass
+        co = len(rc & wc) / float(len(rc)) if rc else -1.0
+    return br, co
+
+
+def is_faithful(refs, whoa, m, addr, fid):
+    """Call order >= FAITHFUL, and when the reference has real control flow (>= 4 branches) and the
+    port's branch count is known, the shapes must be within a factor of two."""
+    if fid < FAITHFUL or whoa[m[addr][0]]['stub']:
+        return False
+    br, co = fidelity_dims(refs, whoa, m, addr)
+    if refs[addr]['branches'] >= 4 and br >= 0 and br < 0.5:
+        return False
+    return True
 
 
 # ----------------------------------------------------------------------------------------------
@@ -433,11 +524,15 @@ def match(refs, whoa, overrides, tables):
     used = set()
     evidence = {}
 
+    unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
+
     def bind(addr, name, how, why=''):
         # an override may bind one whoa name to several reference functions: C++ overloads share a
         # key here (CDataStore::Put x4) and COMDAT folding leaves the reference with copies
         if addr in m or addr not in refs or name not in whoa or (name in used and how != 'override'):
             return False
+        if addr in unlinked:
+            return False  # judged to have no whoa counterpart; automatic evidence does not reopen it
         m[addr] = (name, how)
         used.add(name)
         evidence[addr] = why
@@ -621,7 +716,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
             st = status(a)
             by_how[m[a][1]] += 1
             fid[a] = fidelity(refs, whoa, m, a)
-            if st != 'stub' and fid[a] >= FAITHFUL:
+            if st != 'stub' and is_faithful(refs, whoa, m, a, fid[a]):
                 faithful += 1
                 faithful_bytes += real[a]['size']
         else:
@@ -785,11 +880,48 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
     L.append('')
     L.append('The port exists but does not make the calls the reference makes, in the order it makes them. Either the port guessed, or its callees are not yet linked (then `--show` lists them as bare addresses). Non-stub, largest first.')
     L.append('')
-    L.append('| addr | whoa | fidelity | ref calls | whoa calls | size |')
-    L.append('|---|---|---:|---:|---:|---:|')
-    low = sorted((a for a in fid if status(a) != 'stub' and fid[a] < FAITHFUL and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
+    L.append('| addr | whoa | call order | ref calls | whoa calls | ref branches | whoa branches | consts | size |')
+    L.append('|---|---|---:|---:|---:|---:|---:|---:|---:|')
+    low = sorted((a for a in fid if status(a) != 'stub' and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
     for a in low[:40]:
-        L.append('| %s | `%s` | %.0f%% | %d | %d | %d |' % (a, m[a][0], fid[a] * 100, len(refs[a]['calls']), len(whoa[m[a][0]]['seq']), refs[a]['size']))
+        br, co = fidelity_dims(refs, whoa, m, a)
+        w = whoa[m[a][0]]
+        L.append('| %s | `%s` | %.0f%% | %d | %d | %d | %s | %s | %d |' % (
+            a, m[a][0], fid[a] * 100, len(refs[a]['calls']), len(w['seq']), refs[a]['branches'],
+            str(w['branches']) if w['branches'] >= 0 else '?', ('%.0f%%' % (co * 100)) if co >= 0 else '?', refs[a]['size']))
+    L.append('')
+    L.append('## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)')
+    L.append('')
+    if os.path.exists(TRACE_SUMMARY):
+        ts = json.load(io.open(TRACE_SUMMARY, encoding='utf-8'))
+        L.append('Traced %s: %d frames on each client, frame-level call order agreement %.0f%%, %d functions verified (same per-frame count), %d links contradicted (table below).' % (
+            ts['date'], ts['frames'], ts['orderAvg'] * 100, ts['verified'], len(json.load(io.open(SUSPECT_JSON, encoding='utf-8'))) if os.path.exists(SUSPECT_JSON) else 0))
+        L.append('')
+        L.append('| reference calls every frame, whoa never (hits) | whoa calls, reference never (hits) |')
+        L.append('|---|---|')
+        miss = ts.get('missing', [])[:20]
+        add = ts.get('added', [])[:20]
+        for i in range(max(len(miss), len(add))):
+            a = '`%s` %d' % (miss[i][1], miss[i][0]) if i < len(miss) else ''
+            b = '`%s` %d' % (add[i][1], add[i][0]) if i < len(add) else ''
+            L.append('| %s | %s |' % (a, b))
+        L.append('')
+        L.append('Per-frame count mismatches (ref \\| whoa), largest first:')
+        L.append('')
+        for d, name, rc, wc in ts.get('mismatch', [])[:15]:
+            L.append('- `%s` %s \\| %s' % (name, rc, wc))
+        if os.path.exists(SUSPECT_JSON):
+            sus = json.load(io.open(SUSPECT_JSON, encoding='utf-8'))
+            L.append('')
+            L.append('Links the trace contradicts -- a wrong link, or a real divergence; each needs a verdict in overrides.json (corrected link / `diverged` / `unlinked`):')
+            L.append('')
+            L.append('| addr | whoa | link evidence | why | ref per frame | whoa per frame |')
+            L.append('|---|---|---|---|---|---|')
+            for a, v in sorted(sus.items()):
+                how = m[a][1] if a in m else 'unlinked'
+                L.append('| %s | `%s` | %s | %s | %s | %s |' % (a, v['whoa'], how, v['why'], v['ref'], v['whoa_']))
+    else:
+        L.append('No trace yet. Run both clients into the world, then `calltrace.py ref`, `calltrace.py whoa`, `tracecompare.py`.')
     L.append('')
     L.append('## Iterations')
     L.append('')
@@ -818,6 +950,9 @@ def write_map(refs, whoa, m, overrides):
         o = overrides.get(a, {})
         out[a] = {'whoa': name, 'how': how, 'status': o.get('status') or ('stub' if whoa[name]['stub'] else 'ported'),
                   'fidelity': round(fidelity(refs, whoa, m, a), 3),
+                  'branchRatio': round(fidelity_dims(refs, whoa, m, a)[0], 3),
+                  'constOverlap': round(fidelity_dims(refs, whoa, m, a)[1], 3),
+                  'faithful': is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)),
                   'module': refs[a]['module'], 'refSize': refs[a]['size'], 'whoaSize': whoa[name]['size'],
                   'files': whoa[name]['files']}
     json.dump(out, io.open(MAP_OUT, 'w', encoding='utf-8'), indent=1, sort_keys=True)
@@ -873,7 +1008,7 @@ def queue_next(args, refs, whoa, m):
         return (refs[a]['callers'] + 1) * refs[a]['size']
 
     if args.fix:
-        pool = [a for a in m if a in real and not whoa[m[a][0]]['stub'] and fidelity(refs, whoa, m, a) < FAITHFUL and len(refs[a]['calls']) >= 3]
+        pool = [a for a in m if a in real and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
     elif args.helpers:
         # the small, everywhere-called leaves (allocators, string ops, CVar lookup): every one of
         # them identified lifts the fidelity of hundreds of callers and feeds the call-order matcher
@@ -942,11 +1077,23 @@ def main():
     # anything an override marks excluded (nullsubs, compiler helpers, third-party code)
     for a, r in refs.items():
         r['excluded'] = (r['named'] and r['name'].startswith('_')) or overrides.get(a, {}).get('status') == 'excluded'
-    whoa = merge_whoa(load_pdb_functions(), parse_sources())
+    src, exact = overlay_clang(parse_sources())
+    whoa = merge_whoa(load_pdb_functions(), src)
     overrides = {k.lower().zfill(8): v for k, v in load_overrides().items() if isinstance(v, dict)}
     ref_tables = load_tables()
     pairs = pair_tables(ref_tables, load_whoa_tables())
     m = match(refs, whoa, overrides, pairs)
+
+    # Runtime evidence from the last calltrace/tracecompare run. Matching links become verified.
+    # Contradicted ones are only REPORTED: one trace of one scene cannot tell a wrong link from a
+    # real behavioural divergence (the reference re-picking bone sequences 200x a frame where whoa
+    # does it 7x is the second kind, and is exactly what we want to see). Judging them is the
+    # cycle's job; the verdict goes in overrides.json as a corrected link, "diverged", or
+    # "unlinked" (no whoa counterpart; the address is then never auto-matched again).
+    verified = json.load(io.open(VERIFIED_JSON, encoding='utf-8')) if os.path.exists(VERIFIED_JSON) else {}
+    for a, v in verified.items():
+        if a in m and m[a][0] == v['whoa'] and a not in overrides:
+            overrides[a] = {'whoa': v['whoa'], 'status': 'verified', 'note': v['note'], 'auto': True}
 
     if args.show:
         show(args.show, refs, whoa, m)

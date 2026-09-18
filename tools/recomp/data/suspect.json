@@ -1,0 +1,492 @@
+{
+ "00422140": {
+  "ref": [
+   8,
+   2,
+   13
+  ],
+  "whoa": "Script_GetRealmInfo",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00483910": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CSimpleFontString::SetText",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00488540": {
+  "ref": [
+   5,
+   5,
+   5
+  ],
+  "whoa": "CScriptRegion::ProtectedFunctionsAllowed",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0048d730": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "CSimpleFontString_GetText",
+  "whoa_": [
+   7,
+   7,
+   7
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0048d780": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CSimpleFontString_SetText",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0049d550": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CScriptRegion_GetHeight",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0049db10": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CScriptRegion_SetPoint",
+  "whoa_": [
+   161,
+   161,
+   161
+  ],
+  "why": "per-frame counts differ 20x every frame"
+ },
+ "0049fe30": {
+  "ref": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "CSimpleFrame_IsVisible",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "004d7050": {
+  "ref": [
+   7,
+   11,
+   19
+  ],
+  "whoa": "ObjectUpdateFirstPass",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "004dab40": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CGlueMgr::PollAccountLogin",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00565030": {
+  "ref": [
+   6,
+   8,
+   11
+  ],
+  "whoa": "FrameXML_CreateFrame",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0060abf0": {
+  "ref": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "Script_GetGUIDFromToken",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0060c1f0": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "lua_pushnumber",
+  "whoa_": [
+   42,
+   44,
+   42
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0060eb60": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "Script_UnitHealth",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0060ed40": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "Script_UnitMana",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00682a00": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "GxScenePresent",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00767460": {
+  "ref": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "CVar::LookupRegistered",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0076e720": {
+  "ref": [
+   7,
+   1,
+   12
+  ],
+  "whoa": "SStrChrR",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00793d20": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "LoadWmoLiquid",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "007e4480": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "BlobShadowsBegin",
+  "whoa_": [
+   1,
+   1,
+   1
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "007f2790": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "SkyBodiesRender",
+  "whoa_": [
+   1,
+   1,
+   1
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00814ed0": {
+  "ref": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "StringToFramePoint",
+  "whoa_": [
+   322,
+   322,
+   322
+  ],
+  "why": "per-frame counts differ 20x every frame"
+ },
+ "00814f20": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "lua_pushnil",
+  "whoa_": [
+   40,
+   40,
+   40
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "008251d0": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "CM2Model::SetWorldTransform",
+  "whoa_": [
+   231,
+   230,
+   230
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0084f9f0": {
+  "ref": [
+   1,
+   1,
+   9
+  ],
+  "whoa": "luaL_checklstring",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00856ea0": {
+  "ref": [
+   7,
+   7,
+   7
+  ],
+  "whoa": "luaV_tostring",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0085b950": {
+  "ref": [
+   2,
+   2,
+   5
+  ],
+  "whoa": "luaC_step",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0086b5a0": {
+  "ref": [
+   100,
+   100,
+   111
+  ],
+  "whoa": "CVar::Set",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00873ff0": {
+  "ref": [
+   302,
+   302,
+   302
+  ],
+  "whoa": "CM2Scene::ComputeElementShaders",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "008799e0": {
+  "ref": [
+   19,
+   15,
+   26
+  ],
+  "whoa": "SI2::PlaySoundKit",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0087b5f0": {
+  "ref": [
+   7,
+   1,
+   12
+  ],
+  "whoa": "SEDiskSound::CompleteNonBlockingLoad",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0087ebc0": {
+  "ref": [
+   7,
+   1,
+   12
+  ],
+  "whoa": "SEDiskSound::SEDiskSound",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "0087ee60": {
+  "ref": [
+   7,
+   1,
+   12
+  ],
+  "whoa": "SESound::LoadDiskSound",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "008e5250": {
+  "ref": [
+   85,
+   82,
+   121
+  ],
+  "whoa": "SwallowEventHandler",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00963140": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "lua_type",
+  "whoa_": [
+   749,
+   749,
+   750
+  ],
+  "why": "one side every frame, the other never"
+ }
+}
