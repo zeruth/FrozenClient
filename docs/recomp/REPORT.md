@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1429 (+6) (5.3%) | 336.9k (6.1%) |
-| &nbsp;&nbsp;ported | 958 (+3) | 240.2k |
+| mapped to a whoa function | 1429 (=) (5.3%) | 336.9k (6.1%) |
+| &nbsp;&nbsp;ported | 958 (=) | 240.2k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **197 (-3) (0.7%)** | **24.1k (0.4%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **198 (+1) (0.7%)** | **24.4k (0.4%)** |
 | unmapped | 25732 | 5.08M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 139 (+5) (2.5%) | |
+| world spine (reachable from OnFrameRender) | 5530, mapped 139 (=) (2.5%) | |
 | whoa functions (src/, from PDB + source) | 10591, stubs 887 | |
 
 Match evidence: annotated 22, callgraph 68, callorder 77, override 54, string 278, table 930. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 10:33 -- mapped 1423, ported 955, stub 453, spine mapped 134.
+Previous run: 2026-09-18 10:42 -- mapped 1429, ported 958, stub 453, spine mapped 139.
 
 ## Lua API coverage (binding tables)
 
@@ -580,9 +580,9 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00405dd0 | `Sub405DD0` | Country; Data\; Failed to open archive %s.; Failed to read data from the network. Please check |
 | 0062dae0 | `CGTooltip_SetHyperlink` | %I64X:; %s:SetHyperlink(): Unknown link type; Usage: %s:SetHyperlink(link); achievement: |
 | 0061d650 | `CGTooltip_GetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
-| 0060a630 | `Script_GetGUIDFromString` | -pet-; -target; -target-; arena%d |
 | 00455f10 | `TEST_CASE` | %d - %s - %s\n; Copied smaller than expected; DownloadURL failed; DownloadURL failed - File not found |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | <unknown>; Grunt; My public address is %s; My realm ID is %d |
+| 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0052dc20 | `Script_SetLootMethod` | Invalid loot method; Usage: SetLootMethod("method" [,master]); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; freeforall |
 | 004a15a0 | `CSimpleFrame_SetBackdrop` | Usage: %s:SetBackdrop(nil or {bgFile = "bgFile", e; bgFile; bottom; edgeFile |
@@ -689,8 +689,8 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00497070 | `CSimpleFont::LoadXML` | 69% | 36 | 44 | 50 | 23 | 0% | 1155 |
 | 0076a630 | `RegisterGxCVars` | 61% | 28 | 17 | 2 | 2 | 9% | 1144 |
 | 00401b60 | `ClientRegisterConsoleCommands` | 33% | 33 | 12 | 3 | 1 | 11% | 1126 |
-| 0060a630 | `Script_GetGUIDFromString` | 0% | 44 | 0 | 55 | 0 | 0% | 1122 |
-| 0060abf0 | `Script_GetGUIDFromToken` | 50% | 42 | 36 | 34 | 25 | 20% | 1121 |
+| 0060a630 | `Script_GetGUIDFromString` | 11% | 44 | 13 | 55 | 12 | 8% | 1122 |
+| 0060abf0 | `Script_GetGUIDFromToken` | 69% | 42 | 37 | 34 | 27 | 20% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 76% | 42 | 47 | 35 | 24 | 19% | 1104 |
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 0% | 59 | 59 | 14 | 33 | 0% | 1016 |
 | 004debc0 | `Script_GetRealmInfo` | 11% | 53 | 58 | 24 | 17 | 6% | 990 |
@@ -793,6 +793,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 10:28 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
 | 2026-09-18 10:33 | 1423 (5.2%) | 200 (0.7%) | 453 | 134/5536 | 936/2512 | 448 |
 | 2026-09-18 10:42 | 1429 (5.3%) | 197 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
+| 2026-09-18 10:42 | 1429 (5.3%) | 198 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
 
 ## How to move a row
 

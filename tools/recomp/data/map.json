@@ -2303,7 +2303,7 @@
   "whoaSize": 559
  },
  "0049db10": {
-  "branchRatio": 0.684,
+  "branchRatio": 0.895,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.622,
@@ -10625,10 +10625,10 @@
   "whoaSize": 242
  },
  "0060a630": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.218,
+  "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.114,
   "files": [
    "src/ui/game/ScriptUtil.cpp"
   ],
@@ -10640,10 +10640,10 @@
   "whoaSize": 453
  },
  "0060aaa0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/ScriptUtil.cpp"
   ],
@@ -10655,10 +10655,10 @@
   "whoaSize": 320
  },
  "0060abf0": {
-  "branchRatio": 0.735,
+  "branchRatio": 0.794,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.69,
   "files": [
    "src/ui/game/ScriptUtil.cpp"
   ],
@@ -14894,8 +14894,8 @@
   "whoaSize": 105
  },
  "0076f190": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [

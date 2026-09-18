@@ -6,7 +6,7 @@ client, which ones does whoa have, which are stubs, and what should be ported ne
 
 ```
 python tools/recomp/recomp.py              # inventory + match + report  (~3 s)
-python tools/recomp/recomp.py --pdb        # after a build: re-read Whoa.pdb first
+python tools/recomp/recomp.py --pdb        # after a build: re-read Whoa.pdb and re-parse changed sources (libclang, incremental)
 python tools/recomp/recomp.py --export     # after re-analysing in Ghidra: re-export the reference (2-3 min)
 python tools/recomp/recomp.py --show 0079a870                    # one reference function: callers, callees, strings, candidates
 python tools/recomp/recomp.py --show CGWorldFrame::OnWorldRender # one whoa function

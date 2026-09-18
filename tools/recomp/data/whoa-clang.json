@@ -77399,6 +77399,13 @@
 "StringToFramePoint",
 "luaL_error",
 "FrameScript_Object::GetDisplayName",
+"getenv",
+"lua_Debug::lua_Debug",
+"lua_getstack",
+"lua_getinfo",
+"fprintf",
+"__acrt_iob_func",
+"FrameScript_Object::GetDisplayName",
 "lua_type",
 "lua_tolstring",
 "CScriptRegion::GetLayoutFrameByName",
@@ -77435,7 +77442,10 @@
 "%s:SetPoint(): Couldn't find region named '%s'",
 "%s:SetPoint(): Unknown region point",
 "%s:SetPoint(): trying to anchor to itself",
-"Usage: %s:SetPoint(\"point\" [, region or nil] [, \"relativePoint\"] [, offsetX, offsetY])"
+"SetPoint %s <- %s:%d\n",
+"Sl",
+"Usage: %s:SetPoint(\"point\" [, region or nil] [, \"relativePoint\"] [, offsetX, offsetY])",
+"WHOA_TRACE_LUA"
 ],
 "consts": [
 "0",
@@ -77445,9 +77455,9 @@
 "2",
 "3"
 ],
-"branches": 13,
+"branches": 17,
 "stub": false,
-"lines": 97
+"lines": 114
 },
 "CScriptRegion_SetAllPoints": {
 "files": [
@@ -77600,10 +77610,10 @@
 "CLayoutFrame::GetRect",
 "lua_pushboolean",
 "CoordinateGetAspectCompensation",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:636:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:636:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:636:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:636:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
 "C2Vector::C2Vector",
 "lua_pushboolean",
 "CRect::IsPointInside"
@@ -93404,6 +93414,19 @@
 "branches": 0,
 "stub": false,
 "lines": 20
+},
+"Script_GetPetActionInfo": {
+"files": [
+"src/ui/game/miscscript.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3
 },
 "Script_ReturnZero": {
 "files": [
@@ -118469,16 +118492,48 @@
 "stub": false,
 "lines": 3
 },
-"ParseTrailingTokens": {
+"ParseIndex": {
 "files": [
 "src/ui/game/scriptutil.cpp"
 ],
 "callseq": [],
 "strings": [],
-"consts": [],
-"branches": 0,
+"consts": [
+"0",
+"10"
+],
+"branches": 1,
 "stub": false,
-"lines": 7
+"lines": 10
+},
+"ParseTrailingTokens": {
+"files": [
+"src/ui/game/scriptutil.cpp"
+],
+"callseq": [
+"SStrCmpI",
+"ClntObjMgrGetActivePlayer",
+"CGGameUI::GetLockedTarget",
+"ClntObjMgrObjectPtr",
+"CGUnit::Unit",
+"SStrCmpI",
+"ClntObjMgrGetActivePlayer",
+"ClntObjMgrObjectPtr",
+"CGUnit::Unit"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\scriptutil.cpp",
+"pet",
+"target"
+],
+"consts": [
+"0",
+"3",
+"6"
+],
+"branches": 9,
+"stub": false,
+"lines": 41
 },
 "Script_GetUnitFromName": {
 "files": [
@@ -118494,18 +118549,45 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 10
+"lines": 9
 },
 "Script_GetGUIDFromString": {
 "files": [
 "src/ui/game/scriptutil.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"ClntObjMgrObjectPtr",
+"ClntObjMgrGetActivePlayer",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"NameCacheGetName",
+"SStrCmpI",
+"CGObject::GetGUID",
+"CGUnit::Unit",
+"ClntObjMgrObjectPtr",
+"NameCacheGetName",
+"SStrCmpI"
+],
+"strings": [
+"-pet",
+"-pet-",
+"-target",
+"-target-",
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\scriptutil.cpp"
+],
+"consts": [
+"0",
+"0x2F",
+"0x7FFFFFFF",
+"5",
+"52",
+"8"
+],
+"branches": 12,
 "stub": false,
-"lines": 4
+"lines": 53
 },
 "Script_GetGUIDFromToken": {
 "files": [
@@ -118519,24 +118601,25 @@
 "CGObject::GetGUID",
 "SStrCmpI",
 "SStrCmpI",
+"CGUnit::Unit",
 "SStrCmpI",
 "CGGameUI::GetLockedTarget",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
-"SStrToUnsigned",
+"ParseIndex",
 "SStrCmpI",
 "CGGameUI::GetCurrentObjectTrack",
 "ClntObjMgrObjectPtr",
@@ -118582,9 +118665,9 @@
 "8",
 "9"
 ],
-"branches": 25,
+"branches": 27,
 "stub": false,
-"lines": 172
+"lines": 175
 },
 "Script_CloseTrade": {
 "files": [

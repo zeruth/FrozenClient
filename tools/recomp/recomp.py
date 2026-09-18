@@ -1072,6 +1072,11 @@ def main():
         export_reference()
     if args.pdb or not os.path.exists(PDB_DUMP):
         dump_pdb()
+        # the source changed too, or there would be no new PDB: refresh the exact inventory
+        # (incremental: clangparse caches by file mtime, so this is seconds after the first run)
+        if os.path.exists(CLANG_JSON):
+            print('refreshing the libclang inventory for changed files...')
+            subprocess.run([sys.executable, os.path.join(HERE, 'clangparse.py')])
 
     refs = load_reference()
     anchors = assign_modules(refs)
