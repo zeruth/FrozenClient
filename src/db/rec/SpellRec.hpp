@@ -18,6 +18,7 @@ class SpellRec {
     public:
         static const int32_t COLUMN_COUNT = 234;
         static const int32_t COLUMN_ATTRIBUTES = 4;   // SPELL_ATTR0_*; 0x40 is PASSIVE
+        static const int32_t COLUMN_VISUAL = 131;     // SpellVisualID[2]: 131, 132
         static const int32_t COLUMN_ICON = 133;
         static const int32_t COLUMN_NAME = 136;       // 17 locale columns, then
         static const int32_t COLUMN_RANK = 153;       // "Rank N", or "" for an unranked spell
@@ -26,6 +27,7 @@ class SpellRec {
         int32_t m_spellIconID;
         const char* m_name;
         const char* m_rank;
+        int32_t m_spellVisualID[2];
         uint32_t m_attributes;
 
         static const char* GetFilename();

@@ -1,4 +1,5 @@
 #include "object/client/Util.hpp"
+#include "object/client/UnitVisuals.hpp"
 #include "object/client/CClientObjCreate.hpp"
 #include "object/client/CGContainer_C.hpp"
 #include "object/client/CGCorpse_C.hpp"
@@ -99,6 +100,9 @@ int32_t HandleObjectOutOfRangePass1(CGObject_C* object, OUT_OF_RANGE_TYPE type) 
 
 void HandleObjectOutOfRangePass2(CGObject_C* object) {
     // TODO ClearObjectMirrorHandlers(object);
+
+    // Any spell effect models attached to a unit go with it.
+    UnitVisualsRelease(object->GetGUID());
 
     ClntObjMgrGetCurrent()->m_objects.Unlink(object);
 

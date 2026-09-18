@@ -24,6 +24,9 @@
 #include "db/rec/EmotesRec.hpp"
 #include "db/rec/SkillLineRec.hpp"
 #include "db/rec/SkillLineAbilityRec.hpp"
+#include "db/rec/SpellVisualRec.hpp"
+#include "db/rec/SpellVisualKitRec.hpp"
+#include "db/rec/SpellVisualEffectNameRec.hpp"
 #include "db/rec/LightRec.hpp"
 #include "db/rec/LightParamsRec.hpp"
 #include "db/rec/LightSkyboxRec.hpp"
@@ -72,6 +75,9 @@ extern WowClientDB<AnimationDataRec> g_animationDataDB;
 extern WowClientDB<EmotesRec> g_emotesDB;
 extern WowClientDB<SkillLineRec> g_skillLineDB;
 extern WowClientDB<SkillLineAbilityRec> g_skillLineAbilityDB;
+extern WowClientDB<SpellVisualRec> g_spellVisualDB;
+extern WowClientDB<SpellVisualKitRec> g_spellVisualKitDB;
+extern WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 extern WowClientDB<LightRec> g_lightDB;
 extern WowClientDB<LightParamsRec> g_lightParamsDB;
 extern WowClientDB<LightSkyboxRec> g_lightSkyboxDB;

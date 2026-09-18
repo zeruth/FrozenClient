@@ -14,6 +14,7 @@
 #include <common/Time.hpp>
 #include <cstdio>
 #include "object/client/QuestStatusCache.hpp"
+#include "object/client/UnitVisuals.hpp"
 #include "world/MapShadow.hpp"
 #include "world/ParticleFx.hpp"
 #include "model/CM2Scene.hpp"
@@ -563,6 +564,9 @@ void CGWorldFrame::OnWorldUpdate() {
                     // that sits, stands, dies or emotes after spawn updates instead of holding its
                     // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
                     static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
+
+                    // Keep the unit's aura visuals (spell state kits) attached to match its auras.
+                    UnitVisualsUpdate(static_cast<CGUnit_C*>(object));
                 }
 
                 object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), scale);

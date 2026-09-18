@@ -39,6 +39,8 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
     this->m_name = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_NAME]] : "";
     this->m_rank = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_RANK]] : "";
     this->m_attributes = columns[SpellRec::COLUMN_ATTRIBUTES];
+    this->m_spellVisualID[0] = static_cast<int32_t>(columns[SpellRec::COLUMN_VISUAL]);
+    this->m_spellVisualID[1] = static_cast<int32_t>(columns[SpellRec::COLUMN_VISUAL + 1]);
 
     return true;
 }
