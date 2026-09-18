@@ -976,11 +976,21 @@ int32_t CSimpleFrame_IsUserPlaced(lua_State* L) {
 }
 
 int32_t CSimpleFrame_SetClampedToScreen(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->SetClampedToScreen(lua_toboolean(L, 2));
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsClampedToScreen(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, (frame->CLayoutFrame::m_flags & 0x10) != 0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_RegisterForDrag(lua_State* L) {

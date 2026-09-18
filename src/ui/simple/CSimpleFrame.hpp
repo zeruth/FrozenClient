@@ -53,8 +53,12 @@ class CSimpleFrame : public CScriptRegion {
         CSimpleTop* m_top = nullptr;
         CSimpleTitleRegion* m_titleRegion = nullptr;
         int32_t m_intAC = 1;
-        int32_t m_id = 0;
-        uint32_t m_flags = 0;
+        int32_t m_id = 0;        uint32_t m_flags = 0;
+        // <ResizeBounds> minResize / maxResize (reference +0x64..+0x70), consumed by user resizing
+        float m_minResizeWidth = 0.0f;
+        float m_minResizeHeight = 0.0f;
+        float m_maxResizeWidth = 0.0f;
+        float m_maxResizeHeight = 0.0f;
         float m_frameScale = 1.0f;
         uint8_t m_alpha = 255;
         uint8_t alphaBD = 255;
@@ -181,8 +185,9 @@ class CSimpleFrame : public CScriptRegion {
         void RunOnUpdateScript(float elapsedSec);
         void SetAttribute(const char* name, int32_t luaRef);
         void SetBackdrop(CBackdropGenerator* backdrop);
-        void SetBeingScrolled(int32_t a2, int32_t a3);
-        void SetFrameAlpha(uint8_t alpha);
+        void SetBeingScrolled(int32_t a2, int32_t a3);        void SetFrameAlpha(uint8_t alpha);
+        void SetClampedToScreen(int32_t clamped);
+        void SetProtected();
         void SetFrameFlag(int32_t flag, int32_t on);
         void SetFrameLevel(int32_t level, int32_t shiftChildren);
         bool SetFrameScale(float scale, bool force);

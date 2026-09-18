@@ -88,7 +88,9 @@ addr	how	whoa	evidence
 00488db0	annotated	CLayoutFrame::Sub488DB0	tag in src/ui/CLayoutFrame.cpp
 00488e40	annotated	CLayoutFrame::Sub488E40	tag in src/ui/CLayoutFrame.cpp
 00489190	annotated	CLayoutFrame::Sub489190	tag in src/ui/CLayoutFrame.cpp
+00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190
+0048a130	annotated	CSimpleFrame::SetClampedToScreen	tag in src/ui/simple/CSimpleFrame.cpp
 0048a510	callorder	CLayoutFrame::ClearAllPoints	same slot between linked calls in 0049e010=CScriptRegion_ClearAllPoints
 0048b2d0	string	CLayoutFrame::LoadXML	unique "Anchors"
 0048b540	string	CScriptObject::CreateName	unique "$parent"
@@ -150,8 +152,8 @@ addr	how	whoa	evidence
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
-004932c0	string	CSimpleFrame::LoadXML	unique "Attributes"
-00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject
+004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
+00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
@@ -300,7 +302,6 @@ addr	how	whoa	evidence
 004dde10	string	Script_GetCVarDefault	score 0.50 shared Couldn't find CVar named '%s'; Usage: GetCVarDefault("cvar")
 004ddea0	string	Script_GetCVarMin	score 0.50 shared Couldn't find CVar named '%s'; Usage: GetCVarMin("cvar"); extShadowQuality
 004de910	annotated	CRealmList::Sub4DE910	tag in src/glue/CRealmList.cpp
-004de960	callorder	CRealmList::SetPreferredInfo	same slot between linked calls in 004df3a0=Script_SetPreferredInfo
 004deaf0	table	Script_GetNumRealms	binding "GetNumRealms" in s_ScriptFunctions ~ table 00ac41a8
 004debc0	table	Script_GetRealmInfo	binding "GetRealmInfo" in s_ScriptFunctions ~ table 00ac41a8
 004defb0	table	Script_ChangeRealm	binding "ChangeRealm" in s_ScriptFunctions ~ table 00ac41a8
@@ -744,6 +745,7 @@ addr	how	whoa	evidence
 0060a630	annotated	Script_GetGUIDFromString	tag in src/ui/game/ScriptUtil.cpp
 0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
 0060abf0	annotated	Script_GetGUIDFromToken	tag in src/ui/game/ScriptUtil.cpp
+0060c1c0	callgraph	TooltipThis	only unmatched callee of 0061da20=CGTooltip_IsUnit
 0060c1f0	callgraph	lua_pushnumber	only unmatched callee of 00610fb0=Script_UnitCharacterPoints, 00611c40=Script_UnitPVPRank
 0060c2a0	table	Script_UnitExists	binding "UnitExists" in s_UnitFunctions ~ table 00ad21d8
 0060c350	table	Script_UnitIsVisible	binding "UnitIsVisible" in s_UnitFunctions ~ table 00ad21d8
@@ -986,6 +988,7 @@ addr	how	whoa	evidence
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
+006b0b50	callgraph	lua_type	only unmatched callee of 005a8290=Script_SetActionBarToggles
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
 006b0f40	callorder	CGlueMgr::SetIdleState	same slot between linked calls in 004d8c60=CGlueMgr::CreateCharacter, 004d8cc0=CGlueMgr::DeleteCharacter
@@ -1069,14 +1072,15 @@ addr	how	whoa	evidence
 00813d20	callgraph	FrameXML_RegisterFactory	only unmatched callee of 00521040=CGGameUI::RegisterFrameFactories
 00813ee0	string	FrameXML_ProcessFile	unique "%s:<Scripts>"
 00814340	string	FrameXML_CreateFrames	unique "** Loading table of contents %s"
-008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML
+008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML
 00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00815600=LoadXML_Value, 00815740=LoadXML_Dimensions
 00814ed0	callorder	StringToFramePoint	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
 00814f20	callorder	lua_pushnil	same slot between linked calls in 0049d950=CScriptRegion_GetPoint
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
 00814ff0	string	StringToBlendMode	unique "DISABLE"
 00815110	string	StringToOrientation	unique "HORIZONTAL"
-00815500	callorder	StringToBOOL	same slot between linked calls in 0060a510=Script_FillLocalizedClassList
+008154e0	callorder	StringToBOOL	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML
+00815500	callgraph	lua_toboolean	only unmatched callee of 004a0d70=CSimpleFrame_SetClampedToScreen, 00970770=CSimpleMovieFrame_EnableSubtitles
 00815600	string	LoadXML_Value	unique "AbsValue"
 00815740	string	LoadXML_Dimensions	unique "AbsDimension"
 00815910	string	LoadXML_Insets	unique "AbsInset"
@@ -1142,21 +1146,19 @@ addr	how	whoa	evidence
 0084dbf0	override	lua_settop	
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError
 0084dd70	callorder	lua_replace	same slot between linked calls in 00819730=FrameScript_HandleError
-0084deb0	callorder	lua_type	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject, 0049f610=CSimpleFrame_SetAttribute, 004a2010=CSimpleFrame_CreateTexture
 0084df20	callgraph	lua_isnumber	only unmatched callee of 009612d0=CSimpleModel_SetFogNear, 009613a0=CSimpleModel_SetFogFar
 0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin, 004e0c60=Script_CreateCharacter
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
-0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL
 0084e0e0	override	lua_tolstring	
 0084e1c0	callorder	lua_touserdata	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject, 0049db10=CScriptRegion_SetPoint, 0049de40=CScriptRegion_SetAllPoints
-0084e280	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 004a0850=CSimpleFrame_IsMovable, 004a09d0=CSimpleFrame_IsResizable, 004a0f60=CSimpleFrame_IsKeyboardEnabled
+0084e280	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 004a0850=CSimpleFrame_IsMovable, 004a09d0=CSimpleFrame_IsResizable, 004a0dc0=CSimpleFrame_IsClampedToScreen
 0084e2a0	callgraph	fprintf	only unmatched callee of 0048bc70=CSimpleFontString_GetFieldSize, 0048c7f0=CSimpleTexture_GetTexCoord, 0048d9e0=CSimpleFontString_GetShadowColor
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
 0084e4d0	override	lua_pushboolean	
-0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName, 00818010=FrameScript_GetVariable
+0084e600	callorder	lua_rawget	same slot between linked calls in 00818010=FrameScript_GetVariable
 0084e670	override	lua_rawgeti	
 0084e8d0	callorder	lua_settable	same slot between linked calls in 0060a510=Script_FillLocalizedClassList
 0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError
@@ -1277,8 +1279,9 @@ addr	how	whoa	evidence
 00961420	table	CSimpleModel_GetFogFar	binding "GetFogFar" in SimpleModelMethods ~ table 00b2cb10
 00961470	table	CSimpleModel_ClearFog	binding "ClearFog" in SimpleModelMethods ~ table 00b2cb10
 009614b0	table	CSimpleModel_SetGlow	binding "SetGlow" in SimpleModelMethods ~ table 00b2cb10
+00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML
 00961e30	string	CSimpleStatusBar::LoadXML	unique "BarColor"
-00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
+00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 009624c0=CSimpleCheckbox::LoadXML
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
 009628f0	string	CSimpleEditBox::GetScriptByName	unique "OnCharComposition"
 00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
@@ -1301,9 +1304,7 @@ addr	how	whoa	evidence
 0096e9c0	string	StringToClickAction	unique "LeftButtonDown"
 0096f200	string	CSimpleButton::GetScriptByName	unique "OnClick"
 0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText
-0096f9b0	callorder	CSimpleButton::SetHighlight	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
-00970370	callorder	CSimpleButton::SetStateTexture	same slot between linked calls in 00977a70=CSimpleButton_SetStateTexture
 00970660	table	CSimpleMovieFrame_StartMovie	binding "StartMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970730	table	CSimpleMovieFrame_StopMovie	binding "StopMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970770	table	CSimpleMovieFrame_EnableSubtitles	binding "EnableSubtitles" in SimpleMovieFrameMethods ~ table 00b2cd30

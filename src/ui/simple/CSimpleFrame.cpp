@@ -121,6 +121,7 @@ void CSimpleFrame::EnableDrawLayer(uint32_t drawlayer) {
     this->NotifyDrawLayerChanged(drawlayer);
 }
 
+// ref: FUN_004932c0
 void CSimpleFrame::LoadXML(const XMLNode* node, CStatus* status) {
     const char* inherits = node->GetAttributeByName("inherits");
 
@@ -241,11 +242,27 @@ void CSimpleFrame::LoadXML(const XMLNode* node, CStatus* status) {
                 frameLevel
             );
         }
+    }    // alpha: clamped to [0, 1], stored as a byte, the frame told when it changes
+
+    const char* alpha = node->GetAttributeByName("alpha");
+
+    if (alpha && *alpha) {
+        float a = SStrToFloat(alpha);
+
+        if (a < 0.0f) {
+            a = 0.0f;
+        } else if (a > 1.0f) {
+            a = 1.0f;
+        }
+
+        uint8_t alphaByte = static_cast<uint8_t>(a * 255.0f + 0.5f);
+
+        if (alphaByte != this->m_alpha) {
+            this->m_alpha = alphaByte;
+            this->UpdateAlpha();
+        }
     }
-
-    // TODO alpha
-
-    // enableMouse
+// enableMouse
 
     const char* enableMouse = node->GetAttributeByName("enableMouse");
 
@@ -260,13 +277,22 @@ void CSimpleFrame::LoadXML(const XMLNode* node, CStatus* status) {
     if (enableKeyboard && *enableKeyboard && StringToBOOL(enableKeyboard)) {
         this->EnableEvent(SIMPLE_EVENT_CHAR, -1);
         this->EnableEvent(SIMPLE_EVENT_KEY, -1);
+    }    // clampedToScreen
+
+    const char* clampedToScreen = node->GetAttributeByName("clampedToScreen");
+
+    if (clampedToScreen && *clampedToScreen) {
+        this->SetClampedToScreen(StringToBOOL(clampedToScreen));
     }
 
-    // TODO clampedToScreen
+    // protected
 
-    // TODO protected
+    const char* isProtected = node->GetAttributeByName("protected");
 
-    // depth
+    if (isProtected && *isProtected && StringToBOOL(isProtected)) {
+        this->SetProtected();
+    }
+// depth
 
     const char* depth = node->GetAttributeByName("depth");
 
@@ -286,10 +312,28 @@ void CSimpleFrame::LoadXML(const XMLNode* node, CStatus* status) {
     while (child) {
         if (!SStrCmpI(child->GetName(), "TitleRegion", 0x7FFFFFFFu)) {
             // TODO
-        }
+        }        if (!SStrCmpI(child->GetName(), "ResizeBounds", 0x7FFFFFFFu)) {
+            float minWidth = 0.0f;
+            float minHeight = 0.0f;
+            float maxWidth = 0.0f;
+            float maxHeight = 0.0f;
 
-        if (!SStrCmpI(child->GetName(), "ResizeBounds", 0x7FFFFFFFu)) {
-            // TODO
+            const XMLNode* minResize = child->GetChildByName("minResize");
+
+            if (minResize) {
+                LoadXML_Dimensions(minResize, minWidth, minHeight, status);
+            }
+
+            const XMLNode* maxResize = child->GetChildByName("maxResize");
+
+            if (maxResize) {
+                LoadXML_Dimensions(maxResize, maxWidth, maxHeight, status);
+            }
+
+            this->m_minResizeWidth = minWidth;
+            this->m_minResizeHeight = minHeight;
+            this->m_maxResizeWidth = maxWidth;
+            this->m_maxResizeHeight = maxHeight;
         }
 
         if (!SStrCmpI(child->GetName(), "Backdrop", 0x7FFFFFFFu)) {
@@ -1488,6 +1532,28 @@ void CSimpleFrame::SetBeingScrolled(int32_t a2, int32_t a3) {
     if (visible) {
         this->ShowThis();
     }
+}
+
+// ref: FUN_0048a130
+// The layout flag lives in CLayoutFrame's 16-bit m_flags, which sits at bits 8..23 of the
+// reference's dword at +0x40: its 0x1000 is m_flags 0x10.
+void CSimpleFrame::SetClampedToScreen(int32_t clamped) {
+    if (clamped) {
+        this->CLayoutFrame::m_flags |= 0x10;  // not CSimpleFrame::m_flags, which shadows it
+    } else {
+        this->CLayoutFrame::m_flags &= ~0x10;
+    }
+
+    this->Resize(0);
+}
+
+// ref: FUN_00489690
+// The reference's +0x40 dword: clear bits 17-18, set bit 16 -- CLayoutFrame::m_flags 0x600 / 0x100
+// -- then a virtual at vtable+0xc with 0x200 (TODO: which CLayoutFrame virtual that is) and
+// SetProtectFlag(0x200).
+void CSimpleFrame::SetProtected() {
+    this->CLayoutFrame::m_flags = (this->CLayoutFrame::m_flags & ~0x600) | 0x100;
+    this->SetProtectFlag(0x200);
 }
 
 void CSimpleFrame::SetFrameAlpha(uint8_t alpha) {

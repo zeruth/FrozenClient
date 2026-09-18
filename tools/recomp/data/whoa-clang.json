@@ -128796,7 +128796,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 8
+"lines": 7
 },
 "CSimpleFrame::CreateScriptMetaTable": {
 "files": [
@@ -128810,7 +128810,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6
+"lines": 5
 },
 "CSimpleFrame::RegisterScriptMethods": {
 "files": [
@@ -128824,7 +128824,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5
+"lines": 4
 },
 "CSimpleFrame::CSimpleFrame": {
 "files": [
@@ -128842,7 +128842,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 18
+"lines": 17
 },
 "CSimpleFrame::~CSimpleFrame": {
 "files": [
@@ -128874,7 +128874,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 9
+"lines": 5
 },
 "CSimpleFrame::AttributeChangesAllowed": {
 "files": [
@@ -128885,7 +128885,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CSimpleFrame::DisableDrawLayer": {
 "files": [
@@ -128900,7 +128900,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 4
 },
 "CSimpleFrame::DisableEvent": {
 "files": [
@@ -128916,7 +128916,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 9
+"lines": 11
 },
 "CSimpleFrame::EnableDrawLayer": {
 "files": [
@@ -128931,7 +128931,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 4
 },
 "CSimpleFrame::LoadXML": {
 "files": [
@@ -128968,12 +128968,21 @@
 "SStrToInt",
 "CSimpleFrame::SetFrameLevel",
 "XMLNode::GetAttributeByName",
+"SStrToFloat",
+"CSimpleFrame::UpdateAlpha",
+"XMLNode::GetAttributeByName",
 "StringToBOOL",
 "CSimpleFrame::EnableEvent",
 "XMLNode::GetAttributeByName",
 "StringToBOOL",
 "CSimpleFrame::EnableEvent",
 "CSimpleFrame::EnableEvent",
+"XMLNode::GetAttributeByName",
+"CSimpleFrame::SetClampedToScreen",
+"StringToBOOL",
+"XMLNode::GetAttributeByName",
+"StringToBOOL",
+"CSimpleFrame::SetProtected",
 "XMLNode::GetAttributeByName",
 "SStrToFloat",
 "fabs",
@@ -128982,6 +128991,10 @@
 "XMLNode::GetName",
 "SStrCmpI",
 "XMLNode::GetName",
+"XMLNode::GetChildByName",
+"LoadXML_Dimensions",
+"XMLNode::GetChildByName",
+"LoadXML_Dimensions",
 "SStrCmpI",
 "XMLNode::GetName",
 "CSimpleFrame::LoadXML_Backdrop",
@@ -129013,6 +129026,8 @@
 "ResizeBounds",
 "Scripts",
 "TitleRegion",
+"alpha",
+"clampedToScreen",
 "depth",
 "dontSavePosition",
 "enableKeyboard",
@@ -129021,13 +129036,18 @@
 "frameStrata",
 "hidden",
 "inherits",
+"maxResize",
+"minResize",
 "movable",
+"protected",
 "resizable",
 "toplevel"
 ],
 "consts": [
 "0",
 "0.00000023841858",
+"0.0f",
+"0.5f",
 "0x1",
 "0x100",
 "0x200",
@@ -129035,11 +129055,13 @@
 "0x7FFFFFFFu",
 "0x80000",
 "1",
-"1024"
+"1.0f",
+"1024",
+"255.0f"
 ],
-"branches": 28,
+"branches": 36,
 "stub": false,
-"lines": 208
+"lines": 241
 },
 "CSimpleFrame::PostLoadXML": {
 "files": [
@@ -129057,7 +129079,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 49
+"lines": 47
 },
 "CSimpleFrame::Raise": {
 "files": [
@@ -129072,7 +129094,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CSimpleFrame::RegisterForEvents": {
 "files": [
@@ -129087,7 +129109,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 12
+"lines": 7
 },
 "CSimpleFrame::RunOnAttributeChangedScript": {
 "files": [
@@ -129109,7 +129131,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 23
+"lines": 22
 },
 "CSimpleFrame::RunOnCharScript": {
 "files": [
@@ -129139,7 +129161,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 7
+"lines": 5
 },
 "CSimpleFrame::RunOnDisableScript": {
 "files": [
@@ -129152,7 +129174,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 7
+"lines": 5
 },
 "CSimpleFrame::RunOnEnterScript": {
 "files": [
@@ -129169,7 +129191,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 9
+"lines": 8
 },
 "CSimpleFrame::RunOnHideScript": {
 "files": [
@@ -129182,7 +129204,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 4
+"lines": 5
 },
 "CSimpleFrame::RunOnKeyDownScript": {
 "files": [
@@ -129199,7 +129221,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 10
+"lines": 8
 },
 "CSimpleFrame::RunOnKeyUpScript": {
 "files": [
@@ -129233,7 +129255,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 9
+"lines": 8
 },
 "CSimpleFrame::RunOnLoadScript": {
 "files": [
@@ -129246,7 +129268,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 7
+"lines": 5
 },
 "CSimpleFrame::RunOnMouseDownScript": {
 "files": [
@@ -129263,7 +129285,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 7
+"lines": 8
 },
 "CSimpleFrame::RunOnMouseUpScript": {
 "files": [
@@ -129280,7 +129302,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 5
+"lines": 8
 },
 "CSimpleFrame::RunOnShowScript": {
 "files": [
@@ -129316,7 +129338,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 19
+"lines": 15
 },
 "CSimpleFrame::RunOnUpdateScript": {
 "files": [
@@ -129332,7 +129354,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 12
+"lines": 7
 },
 "CSimpleFrame::PreLoadXML": {
 "files": [
@@ -129356,7 +129378,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 30
+"lines": 34
 },
 "CSimpleFrame::GetAttribute": {
 "files": [
@@ -129369,7 +129391,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 5
+"lines": 11
 },
 "CSimpleFrame::GetBoundsRect": {
 "files": [
@@ -129388,7 +129410,7 @@
 ],
 "branches": 16,
 "stub": false,
-"lines": 46
+"lines": 37
 },
 "CSimpleFrame::GetHitRect": {
 "files": [
@@ -129405,7 +129427,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 5
+"lines": 9
 },
 "CSimpleFrame::GetScriptByName": {
 "files": [
@@ -129466,7 +129488,7 @@
 ],
 "branches": 20,
 "stub": false,
-"lines": 104
+"lines": 97
 },
 "CSimpleFrame::GetScriptMetaTable": {
 "files": [
@@ -129477,7 +129499,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "CSimpleFrame::IsA": {
 "files": [
@@ -129488,7 +129510,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 9
+"lines": 5
 },
 "CSimpleFrame::EnableEvent": {
 "files": [
@@ -129504,7 +129526,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 12
+"lines": 11
 },
 "CSimpleFrame::Hide": {
 "files": [
@@ -129519,7 +129541,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 14
+"lines": 13
 },
 "CSimpleFrame::HideThis": {
 "files": [
@@ -129541,7 +129563,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 20
+"lines": 31
 },
 "CSimpleFrame::LoadXML_Attributes": {
 "files": [
@@ -129591,7 +129613,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 67
+"lines": 65
 },
 "CSimpleFrame::LoadXML_Backdrop": {
 "files": [
@@ -129651,7 +129673,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 56
+"lines": 55
 },
 "CSimpleFrame::LoadXML_Scripts": {
 "files": [
@@ -129731,7 +129753,7 @@
 ],
 "branches": 18,
 "stub": false,
-"lines": 133
+"lines": 122
 },
 "CSimpleFrame::LockHighlight": {
 "files": [
@@ -129745,7 +129767,7 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 9
+"lines": 15
 },
 "CSimpleFrame::NotifyDrawLayerChanged": {
 "files": [
@@ -129778,7 +129800,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 13
+"lines": 15
 },
 "CSimpleFrame::OnFrameRender": {
 "files": [
@@ -129807,7 +129829,7 @@
 ],
 "branches": 11,
 "stub": false,
-"lines": 55
+"lines": 49
 },
 "CSimpleFrame::OnFrameSizeChanged": {
 "files": [
@@ -129829,7 +129851,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 38
+"lines": 26
 },
 "CSimpleFrame::OnLayerChar": {
 "files": [
@@ -129847,7 +129869,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 11
+"lines": 16
 },
 "CSimpleFrame::OnLayerCursorEnter": {
 "files": [
@@ -129863,7 +129885,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 12
+"lines": 13
 },
 "CSimpleFrame::OnLayerCursorExit": {
 "files": [
@@ -129879,7 +129901,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 13
+"lines": 18
 },
 "CSimpleFrame::OnLayerHide": {
 "files": [
@@ -129893,7 +129915,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6
+"lines": 4
 },
 "CSimpleFrame::OnLayerKeyDown": {
 "files": [
@@ -129910,7 +129932,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 7
+"lines": 14
 },
 "CSimpleFrame::OnLayerKeyDownRepeat": {
 "files": [
@@ -129940,7 +129962,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11
+"lines": 10
 },
 "CSimpleFrame::OnLayerMouseDown": {
 "files": [
@@ -129957,7 +129979,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 30
+"lines": 24
 },
 "CSimpleFrame::OnLayerMouseWheel": {
 "files": [
@@ -129987,7 +130009,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 17
+"lines": 28
 },
 "CSimpleFrame::OnLayerShow": {
 "files": [
@@ -130001,7 +130023,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 3
+"lines": 4
 },
 "CSimpleFrame::OnLayerTrackUpdate": {
 "files": [
@@ -130015,7 +130037,7 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 14
+"lines": 17
 },
 "CSimpleFrame::OnLayerUpdate": {
 "files": [
@@ -130029,7 +130051,7 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 18
+"lines": 15
 },
 "CSimpleFrame::OnScreenSizeChanged": {
 "files": [
@@ -130040,7 +130062,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 7
+"lines": 5
 },
 "CSimpleFrame::ParentFrame": {
 "files": [
@@ -130057,7 +130079,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 3
+"lines": 4
 },
 "CSimpleFrame::PostLoadXML_Frames": {
 "files": [
@@ -130083,7 +130105,7 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 82
+"lines": 65
 },
 "CSimpleFrame::PreOnAnimUpdate": {
 "files": [
@@ -130094,7 +130116,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CSimpleFrame::RegisterRegion": {
 "files": [
@@ -130105,7 +130127,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 9
+"lines": 5
 },
 "CSimpleFrame::RemoveFrameRegion": {
 "files": [
@@ -130118,7 +130140,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 8
+"lines": 4
 },
 "CSimpleFrame::SetAttribute": {
 "files": [
@@ -130134,7 +130156,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 12
+"lines": 11
 },
 "CSimpleFrame::SetBackdrop": {
 "files": [
@@ -130171,7 +130193,36 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 29
+"lines": 35
+},
+"CSimpleFrame::SetClampedToScreen": {
+"files": [
+"src/ui/simple/csimpleframe.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0x10"
+],
+"branches": 1,
+"stub": false,
+"lines": 9
+},
+"CSimpleFrame::SetProtected": {
+"files": [
+"src/ui/simple/csimpleframe.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x100",
+"0x200",
+"0x600"
+],
+"branches": 0,
+"stub": false,
+"lines": 4
 },
 "CSimpleFrame::SetFrameAlpha": {
 "files": [
@@ -130184,7 +130235,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 3
+"lines": 8
 },
 "CSimpleFrame::SetFrameFlag": {
 "files": [
@@ -130195,7 +130246,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 2
+"lines": 7
 },
 "CSimpleFrame::SetFrameLevel": {
 "files": [
@@ -130217,7 +130268,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 13
+"lines": 25
 },
 "CSimpleFrame::SetFrameScale": {
 "files": [
@@ -130253,7 +130304,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 17
+"lines": 22
 },
 "CSimpleFrame::SetHitRect": {
 "files": [
@@ -130264,7 +130315,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 14
+"lines": 6
 },
 "CSimpleFrame::SetHitRectInsets": {
 "files": [
@@ -130275,7 +130326,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 22
+"lines": 11
 },
 "CSimpleFrame::SetParent": {
 "files": [
@@ -130305,7 +130356,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 65
+"lines": 53
 },
 "CSimpleFrame::Show": {
 "files": [
@@ -130320,7 +130371,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 14
+"lines": 13
 },
 "CSimpleFrame::ShowThis": {
 "files": [
@@ -130344,7 +130395,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 33
+"lines": 46
 },
 "CSimpleFrame::TestHitRect": {
 "files": [
@@ -130362,7 +130413,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 12
+"lines": 21
 },
 "CSimpleFrame::UpdateDepth": {
 "files": [
@@ -130373,7 +130424,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CSimpleFrame::UpdateScale": {
 "files": [
@@ -130392,7 +130443,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 1
+"lines": 22
 },
 "CSimpleFrame::UnregisterForEvents": {
 "files": [
@@ -130407,7 +130458,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 1
+"lines": 7
 },
 "CSimpleFrame::UnregisterRegion": {
 "files": [
@@ -130418,7 +130469,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 5
 },
 "CSimpleFrame::UpdateAlpha": {
 "files": [
@@ -130436,7 +130487,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 1
+"lines": 12
 },
 "CSimpleFrame_GetTitleRegion": {
 "files": [
@@ -131795,40 +131846,38 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"fprintf",
-"__acrt_iob_func"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleFrame::SetClampedToScreen",
+"lua_toboolean"
 ],
-"strings": [
-"CSimpleFrame_SetClampedToScreen",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3
+"branches": 0,
+"stub": false,
+"lines": 8
 },
 "CSimpleFrame_IsClampedToScreen": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"fprintf",
-"__acrt_iob_func"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushboolean"
 ],
-"strings": [
-"CSimpleFrame_IsClampedToScreen",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x10",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3
+"branches": 0,
+"stub": false,
+"lines": 8
 },
 "CSimpleFrame_RegisterForDrag": {
 "files": [
