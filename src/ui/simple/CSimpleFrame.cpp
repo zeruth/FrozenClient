@@ -1549,11 +1549,12 @@ void CSimpleFrame::SetClampedToScreen(int32_t clamped) {
 
 // ref: FUN_00489690
 // The reference's +0x40 dword: clear bits 17-18, set bit 16 -- CLayoutFrame::m_flags 0x600 / 0x100
-// -- then a virtual at vtable+0xc with 0x200 (TODO: which CLayoutFrame virtual that is) and
-// SetProtectFlag(0x200).
+// -- then the protect flag 0x200 on this frame (a virtual at vtable+0xc in the reference; whoa's
+// SetProtectFlag is not virtual) and on every frame anchored to it (FUN_00489190, Sub489190).
 void CSimpleFrame::SetProtected() {
     this->CLayoutFrame::m_flags = (this->CLayoutFrame::m_flags & ~0x600) | 0x100;
     this->SetProtectFlag(0x200);
+    this->Sub489190(0x200);
 }
 
 void CSimpleFrame::SetFrameAlpha(uint8_t alpha) {

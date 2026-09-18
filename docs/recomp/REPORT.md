@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1499 (+1) (5.5%) | 348.3k (6.3%) |
-| &nbsp;&nbsp;ported | 1025 (+3) | 228.4k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 451 (-2) | 92.0k |
+| mapped to a whoa function | 1510 (+11) (5.6%) | 350.1k (6.3%) |
+| &nbsp;&nbsp;ported | 1036 (+11) | 230.1k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 451 (=) | 92.0k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **243 (-7) (0.9%)** | **36.8k (0.7%)** |
-| unmapped | 25662 | 5.07M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 168 (=) (3.0%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **246 (+3) (0.9%)** | **36.9k (0.7%)** |
+| unmapped | 25651 | 5.06M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 172 (+4) (3.1%) | |
 | whoa functions (src/, from PDB + source) | 10611, stubs 885 | |
 
-Match evidence: annotated 94, callgraph 66, callorder 76, override 68, string 266, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 94, callgraph 68, callorder 79, override 74, string 266, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:43 -- mapped 1498, ported 1022, stub 453, spine mapped 168.
+Previous run: 2026-09-18 17:49 -- mapped 1499, ported 1025, stub 451, spine mapped 168.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). whoa registers 936 of them (=); 446 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). whoa registers 936 of them (=); 446 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | whoa array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -200,7 +200,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 18 (6.3%) | 16.4% | 3 | 0 | 115 |
-| SoundEngine.cpp | 406 | 59.7k | 11 (2.7%) | 16.8% | 0 | 0 | 58 |
+| SoundEngine.cpp | 406 | 59.7k | 13 (3.2%) | 17.3% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 2 (0.8%) | 0.8% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 20 (8.1%) | 7.4% | 7 | 0 | 15 |
@@ -238,13 +238,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGlueMgr.cpp | 183 | 28.9k | 41 (22.4%) | 39.8% | 4 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 61 (29.9%) | 36.3% | 26 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 65 (31.9%) | 39.5% | 26 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 11 (6.6%) | 20.8% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 6 (4.2%) | 14.1% | 0 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
-| SoundInterface2Internal.cpp | 139 | 25.2k | 2 (1.4%) | 12.2% | 0 | 0 | 13 |
+| SoundInterface2Internal.cpp | 139 | 25.2k | 7 (5.0%) | 14.3% | 0 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 25 (22.5%) | 23.4% | 19 | 0 | 8 |
 | CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 6 | 2 | 7 |
 | TalentInfo.cpp | 141 | 24.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -802,6 +802,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:42 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
+| 2026-09-18 17:54 | 1510 (5.6%) | 246 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

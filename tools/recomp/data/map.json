@@ -1290,6 +1290,21 @@
   "whoa": "CScriptRegion::ProtectedFunctionsAllowed",
   "whoaSize": 3
  },
+ "00488cf0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/CLayoutFrame.cpp"
+  ],
+  "how": "callorder",
+  "module": "CScriptRegion.cpp",
+  "refSize": 10,
+  "status": "ported",
+  "whoa": "CLayoutFrame::IsResizePending",
+  "whoaSize": 10
+ },
  "00488db0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -1333,7 +1348,7 @@
   "refSize": 62,
   "status": "ported",
   "whoa": "CLayoutFrame::Sub489190",
-  "whoaSize": 0
+  "whoaSize": 77
  },
  "00489690": {
   "branchRatio": 1.0,
@@ -1365,6 +1380,36 @@
   "whoa": "CLayoutFrame::SetProtectFlag",
   "whoaSize": 130
  },
+ "00489710": {
+  "branchRatio": 0.192,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/CLayoutFrame.cpp"
+  ],
+  "how": "callorder",
+  "module": "CScriptRegion.cpp",
+  "refSize": 408,
+  "status": "ported",
+  "whoa": "CLayoutFrame::AddToResizeList",
+  "whoaSize": 403
+ },
+ "00489de0": {
+  "branchRatio": 0.417,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/ui/CLayoutFrame.cpp"
+  ],
+  "how": "override",
+  "module": "CScriptRegion.cpp",
+  "refSize": 173,
+  "status": "ported",
+  "whoa": "CLayoutFrame::Resize",
+  "whoaSize": 245
+ },
  "0048a130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -1379,6 +1424,21 @@
   "status": "ported",
   "whoa": "CSimpleFrame::SetClampedToScreen",
   "whoaSize": 43
+ },
+ "0048a3e0": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.154,
+  "files": [
+   "src/ui/CLayoutFrame.cpp"
+  ],
+  "how": "callorder",
+  "module": "CScriptRegion.cpp",
+  "refSize": 302,
+  "status": "ported",
+  "whoa": "CLayoutFrame::SetAllPoints",
+  "whoaSize": 316
  },
  "0048a510": {
   "branchRatio": 1.0,
@@ -1399,7 +1459,7 @@
   "branchRatio": 0.684,
   "constOverlap": 0.091,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 0.933,
   "files": [
    "src/ui/CLayoutFrame.cpp"
   ],
@@ -2308,7 +2368,7 @@
   "refSize": 1858,
   "status": "ported",
   "whoa": "CSimpleFrame::LoadXML",
-  "whoaSize": 2065
+  "whoaSize": 2081
  },
  "00496f70": {
   "branchRatio": 0.5,
@@ -2344,7 +2404,7 @@
   "branchRatio": 0.727,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CFramePoint.cpp"
   ],
@@ -2449,7 +2509,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.417,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2464,7 +2524,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2479,7 +2539,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2494,7 +2554,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2509,7 +2569,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2524,7 +2584,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2554,7 +2614,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -2659,7 +2719,7 @@
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.688,
+  "fidelity": 0.75,
   "files": [
    "src/ui/CScriptRegionScript.cpp"
   ],
@@ -3916,6 +3976,21 @@
   "whoa": "SI2::PlayUISound",
   "whoaSize": 582
  },
+ "004d0e80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "override",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 33,
+  "status": "ported",
+  "whoa": "SFXVolume_CVarCallback",
+  "whoaSize": 34
+ },
  "004d1050": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -3930,6 +4005,66 @@
   "status": "ported",
   "whoa": "SI2::RegisterCVars",
   "whoaSize": 1529
+ },
+ "004d13e0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "override",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 249,
+  "status": "ported",
+  "whoa": "EnableAllSound_CVarCallback",
+  "whoaSize": 410
+ },
+ "004d14e0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "override",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 75,
+  "status": "ported",
+  "whoa": "EnableSFX_CVarCallback",
+  "whoaSize": 88
+ },
+ "004d1530": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "override",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "EnableAmbience_CVarCallback",
+  "whoaSize": 75
+ },
+ "004d1590": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/sound/CVarHandlers.cpp"
+  ],
+  "how": "override",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 106,
+  "status": "ported",
+  "whoa": "EnableMusic_CVarCallback",
+  "whoaSize": 88
  },
  "004d1600": {
   "branchRatio": 0.0,
@@ -17753,6 +17888,36 @@
   "status": "ported",
   "whoa": "SESound::GetOutputDriverName",
   "whoaSize": 147
+ },
+ "0087a6f0": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "callgraph",
+  "module": "SoundEngine.cpp",
+  "refSize": 234,
+  "status": "ported",
+  "whoa": "SESound::GetChannelGroup",
+  "whoaSize": 211
+ },
+ "0087a850": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SESound.cpp"
+  ],
+  "how": "callgraph",
+  "module": "SoundEngine.cpp",
+  "refSize": 75,
+  "status": "ported",
+  "whoa": "SESound::SetChannelGroupVolume",
+  "whoaSize": 74
  },
  "0087a9b0": {
   "branchRatio": 0.031,

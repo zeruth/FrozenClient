@@ -125,5 +125,12 @@
 
   "00485f40": { "whoa": "CSimpleTexture::LoadXML", "status": "faithful", "note": "hand verdict 2026-09-18: every attribute, child and message of FUN_00485f40 is handled; the static score (46%, branches 0.35) is low only because the port loops over the eight Rect corners and the TexCoords edges where the reference unrolls them" },
 
+  "004d14e0": { "whoa": "EnableSFX_CVarCallback", "status": "ported", "note": "installed on Sound_EnableSFX by SI2::RegisterUserCVars (FUN_004d1600)" },
+  "004d1530": { "whoa": "EnableAmbience_CVarCallback", "status": "ported", "note": "Sound_EnableAmbience callback" },
+  "004d1590": { "whoa": "EnableMusic_CVarCallback", "status": "ported", "note": "Sound_EnableMusic callback" },
+  "004d13e0": { "whoa": "EnableAllSound_CVarCallback", "status": "ported", "note": "Sound_EnableAllSound callback" },
+  "004d0e80": { "whoa": "SFXVolume_CVarCallback", "status": "ported", "note": "Sound_SFXVolume callback" },
+  "00489de0": { "whoa": "CLayoutFrame::Resize", "status": "ported", "note": "(force): the resize-pending queueing behind SetClampedToScreen and 60 other callers" },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }

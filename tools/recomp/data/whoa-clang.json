@@ -130222,7 +130222,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 5
 },
 "CSimpleFrame::SetFrameAlpha": {
 "files": [
