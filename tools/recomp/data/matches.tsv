@@ -81,7 +81,7 @@ addr	how	whoa	evidence
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
-00485f40	string	CSimpleTexture::LoadXML	unique "Gradient"
+00485f40	annotated	CSimpleTexture::LoadXML	tag in src/ui/simple/CSimpleTexture.cpp
 004873e0	string	CSimpleFontString::LoadXML	unique "FontString %s: Unable to load font file %s"
 00487a10	callgraph	CSimpleRegion::SetVertexColor	only unmatched callee of 004a25f0=CBackdropGenerator::SetVertexColor, 004a2630=CBackdropGenerator::SetBorderVertexColor
 00488540	callorder	CScriptRegion::ProtectedFunctionsAllowed	same slot between linked calls in 0049d480=CScriptRegion_SetWidth, 0049d620=CScriptRegion_SetHeight, 0049d7a0=CScriptRegion_SetSize

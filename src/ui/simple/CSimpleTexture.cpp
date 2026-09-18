@@ -152,6 +152,7 @@ bool CSimpleTexture::IsA(int32_t type) {
         || type == CScriptObject::s_objectType;
 }
 
+// ref: FUN_00485f40
 void CSimpleTexture::LoadXML(const XMLNode* node, CStatus* status) {
     const char* inheritsAttr = node->GetAttributeByName("inherits");
 
@@ -217,10 +218,33 @@ void CSimpleTexture::LoadXML(const XMLNode* node, CStatus* status) {
                 name = "<unnamed>";
             }
 
+            // Four free corners (UL, LL, UR, LR) or an axis-aligned left/right/top/bottom box;
+            // the corner pairs default to the box so one set of coords serves both
+            float ulx = 0.0f, uly = 0.0f, llx = 0.0f, lly = 1.0f, urx = 1.0f, ury = 0.0f, lrx = 1.0f, lry = 1.0f;
+            bool rect = false;
+
             const XMLNode* rectNode = child->GetChildByName("Rect");
 
             if (rectNode) {
-                // TODO
+                rect = true;
+
+                struct { const char* attr; float* value; } corners[] = {
+                    { "ULx", &ulx }, { "ULy", &uly }, { "LLx", &llx }, { "LLy", &lly },
+                    { "URx", &urx }, { "URy", &ury }, { "LRx", &lrx }, { "LRy", &lry },
+                };
+
+                for (auto& corner : corners) {
+                    const char* attr = rectNode->GetAttributeByName(corner.attr);
+
+                    if (attr && *attr) {
+                        *corner.value = SStrToFloat(attr);
+
+                        if (*corner.value < -10000.0f || *corner.value > 10000.0f) {
+                            status->Add(STATUS_ERROR, "Texture %s: Invalid rect value (out of range)", name);
+                            valid = 0;
+                        }
+                    }
+                }
             } else {
                 const char* leftAttr = child->GetAttributeByName("left");
                 if (leftAttr && *leftAttr) {
@@ -324,27 +348,31 @@ void CSimpleTexture::LoadXML(const XMLNode* node, CStatus* status) {
             }
 
             if (valid) {
+                if (!rect) {
+                    ulx = left; uly = top; llx = left; lly = bottom; urx = right; ury = top; lrx = right; lry = bottom;
+                }
+
                 C2Vector coords[4];
 
-                coords[0].x = left;
-                coords[0].y = top;
+                coords[0].x = ulx;
+                coords[0].y = uly;
 
-                coords[1].x = left;
-                coords[1].y = bottom;
+                coords[1].x = llx;
+                coords[1].y = lly;
 
-                coords[2].x = right;
-                coords[2].y = top;
+                coords[2].x = urx;
+                coords[2].y = ury;
 
-                coords[3].y = bottom;
-                coords[3].x = right;
+                coords[3].x = lrx;
+                coords[3].y = lry;
 
                 this->SetTexCoord(coords);
 
-                if (left < 0.0f || left > 1.0f || right < 0.0f || right > 1.0f) {
+                if (ulx < 0.0f || ulx > 1.0f || llx < 0.0f || llx > 1.0f || urx < 0.0f || urx > 1.0f || lrx < 0.0f || lrx > 1.0f) {
                     wrapU = 1;
                 }
 
-                if (top < 0.0f || top > 1.0f || bottom < 0.0f || bottom > 1.0f) {
+                if (uly < 0.0f || uly > 1.0f || lly < 0.0f || lly > 1.0f || ury < 0.0f || ury > 1.0f || lry < 0.0f || lry > 1.0f) {
                     wrapV = 1;
                 }
             }
@@ -385,16 +413,17 @@ void CSimpleTexture::LoadXML(const XMLNode* node, CStatus* status) {
                 v91
             );
 
-            // TODO
-            // CTexture* texture = TextureCreateSolid(&CRAPPY_GREEN); // 0xFF00FF00
+            // A texture that fails to load shows as solid green, as in the reference
+            CImVector crappyGreen = { 0x00, 0xFF, 0x00, 0xFF };
+            HTEXTURE texture = TextureCreateSolid(crappyGreen);
 
-            // if (this->m_texture) {
-            //     HandleClose(this->m_texture);
-            // }
+            if (this->m_texture) {
+                HandleClose(this->m_texture);
+            }
 
-            // this->m_texture = texture;
+            this->m_texture = texture;
 
-            // this->OnRegionChanged();
+            this->OnRegionChanged();
         }
     }
 
@@ -411,10 +440,11 @@ void CSimpleTexture::LoadXML(const XMLNode* node, CStatus* status) {
     if (alphaAttr && *alphaAttr) {
         float alpha = SStrToFloat(alphaAttr);
         this->SetAlpha(alpha);
-    }
+    }    const char* nonBlockingAttr = node->GetAttributeByName("nonBlocking");
 
-    // TODO
-    // - nonBlocking
+    if (nonBlockingAttr && *nonBlockingAttr) {
+        this->m_nonBlocking = StringToBOOL(nonBlockingAttr);
+    }
 }
 
 void CSimpleTexture::OnFrameSizeChanged(const CRect& rect) {

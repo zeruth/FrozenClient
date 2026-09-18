@@ -1231,19 +1231,19 @@
   "whoaSize": 417
  },
  "00485f40": {
-  "branchRatio": 0.294,
+  "branchRatio": 0.345,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.41,
+  "fidelity": 0.459,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 3017,
   "status": "ported",
   "whoa": "CSimpleTexture::LoadXML",
-  "whoaSize": 2043
+  "whoaSize": 2644
  },
  "004873e0": {
   "branchRatio": 0.6,
