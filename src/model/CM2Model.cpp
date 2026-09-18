@@ -2159,8 +2159,89 @@ LABEL_30:
     }
 }
 
+// The replay half of FUN_0083d840 (CM2Shared::SequenceLoadedCallback): apply one parked request
+// now that the sequence's keyframes are in. 0 when the bone no longer takes sequences, in which
+// case the callback keeps the record (the reference leaves it in the list as well).
+int32_t CM2Model::ApplySequencePlayBack(uint16_t sequenceIndex, CM2SequencePlayBack* playback) {
+    auto data = this->m_shared->m_data;
+
+    if (!this->Sub8269C0(data->bones[playback->boneIndex].boneId, playback->boneIndex)) {
+        return 0;
+    }
+
+    auto& sequence = data->sequences[sequenceIndex];
+    auto& modelBone = this->m_bones[playback->boneIndex];
+    M2SequenceFallback fallback = { playback->fallbackId, playback->fallbackMode };
+
+    if (playback->flags & 2) {
+        modelBone.uint90 = sequence.id;
+        modelBone.uint94 = sequence.variationIndex;
+        this->SetPrimaryBoneSequence(sequenceIndex, playback->boneIndex, fallback, playback->time, playback->speed, playback->flags & 1);
+        modelBone.sequence.uintB = playback->flags & 4;
+    } else {
+        this->SetSecondaryBoneSequence(sequenceIndex, playback->boneIndex, fallback, playback->time, playback->speed);
+        modelBone.secondarySequence.uintB = playback->flags & 4;
+    }
+
+    return 1;
+}
+
+// ref: FUN_00831c30
+// A sequence whose keyframes are still on disk (no flag 0x20): park the request on the shared
+// model's load record for it -- the one already in flight when the sequence (or any alias in its
+// chain) carries the loading flag 0x10, else a fresh CM2Shared::LoadSequence -- and let
+// CM2Shared::SequenceLoadedCallback apply it when the .anim data lands. One record per model per
+// load: a repeat request from the same model just overwrites its parked parameters.
 void CM2Model::SetBoneSequenceDeferred(uint16_t a2, M2Data* data, uint16_t boneIndex, uint32_t time, float a6, M2SequenceFallback fallback, int32_t a8, int32_t a9, int32_t a10) {
-    // TODO
+    CM2SequenceLoad* load = nullptr;
+    CM2SequencePlayBack* playback = nullptr;
+
+    if (data->sequences[a2].flags & 0x10) {
+        uint16_t index = a2;
+
+        for (;;) {
+            for (load = this->m_shared->m_sequenceLoads.Head(); load; load = this->m_shared->m_sequenceLoads.Next(load)) {
+                if (load->sequenceIndex == index) {
+                    break;
+                }
+            }
+
+            if (load) {
+                for (playback = load->playbacks.Head(); playback; playback = load->playbacks.Next(playback)) {
+                    if (playback->model == this) {
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+            index = data->sequences[index].aliasNext;
+
+            if (index == a2) {
+                return;
+            }
+        }
+    } else {
+        load = this->m_shared->LoadSequence(a2);
+
+        if (!load) {
+            return;
+        }
+    }
+
+    if (!playback) {
+        playback = STORM_NEW(CM2SequencePlayBack);
+        load->playbacks.LinkToTail(playback);
+        playback->model = this;
+    }
+
+    playback->speed = a6;
+    playback->boneIndex = boneIndex;
+    playback->time = time;
+    playback->fallbackId = fallback.uint0;
+    playback->fallbackMode = fallback.uint2;
+    playback->flags = (a8 ? 1 : 0) | (a9 ? 2 : 0) | (a10 ? 4 : 0);
 }
 
 void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible) {

@@ -251,6 +251,7 @@ addr	how	whoa	evidence
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8c80	string	TextureCreate	unique "UniqueTexture"
+004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
@@ -1118,8 +1119,15 @@ addr	how	whoa	evidence
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
+00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
+0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
+0083d370	annotated	CM2Shared::DestroySequenceLoad	tag in src/model/CM2Shared.cpp
+0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
+0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
+0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
+0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
 0084d9c0	override	index2adr	
 0084dab0	callgraph	lua_checkstack	only unmatched callee of 004df110=Script_GetRealmCategories
 0084dbd0	callorder	lua_gettop	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute

@@ -2,6 +2,7 @@
 #define MODEL_C_M2_SHARED_HPP
 
 #include "gx/Texture.hpp"
+#include "model/CM2SequenceLoad.hpp"
 #include <cstdint>
 #include <storm/String.hpp>
 #include <tempest/Box.hpp>
@@ -25,6 +26,18 @@ class CM2Shared {
         static void LoadFailedCallback(void* param);
         static void LoadSucceededCallback(void* param);
         static void SkinProfileLoadedCallback(void* param);
+        static void SequenceLoadedCallback(void* param);
+        static void SequenceLoadFailedCallback(void* param);
+
+        // External (.anim) sequences: M2 sequences without flag 0x20 keep their keyframes in
+        // "<model>%04d-%02d.anim", read asynchronously on first use. The load record parks the
+        // bone-sequence requests that arrive meanwhile (CM2Model::SetBoneSequenceDeferred).
+        CM2SequenceLoad* LoadSequence(uint16_t sequenceIndex);
+        int32_t InitSequence(uint16_t sequenceIndex, CAsyncObject* object);
+        void DestroySequenceLoad(CM2SequenceLoad* load);
+        TSList<CM2SequenceLoad, TSGetLink<CM2SequenceLoad>> m_sequenceLoads;
+        void** m_sequenceBuffers = nullptr;   // one .anim buffer per loaded sequence, freed with the shared
+        uint32_t m_sequenceBufferCount = 0;
 
         // Member variables
         uint32_t m_refCount = 1;

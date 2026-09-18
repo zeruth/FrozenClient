@@ -1,5 +1,8 @@
 #include "model/CM2Shared.hpp"
 #include "async/AsyncFile.hpp"
+#include "async/CAsyncObject.hpp"
+#include <storm/Memory.hpp>
+#include <storm/String.hpp>
 #include "gx/Buffer.hpp"
 #include "gx/Shader.hpp"
 #include "gx/Texture.hpp"
@@ -49,6 +52,228 @@ void CM2Shared::LoadSucceededCallback(void* arg) {
     shared->m_m2DataLoaded = 1;
 }
 
+namespace {
+
+// ref: FUN_00835a20
+// "<model path without extension><id:04d>-<variation:02d>.anim"
+void M2AnimFileName(const char* modelPath, uint32_t sequenceId, uint32_t variationIndex, char* out, size_t outSize) {
+    SStrCopy(out, modelPath, static_cast<int32_t>(outSize));
+
+    char* dot = SStrChrR(out, '.');
+
+    if (dot) {
+        *dot = '\0';
+    }
+
+    size_t len = SStrLen(out);
+    SStrPrintf(out + len, static_cast<uint32_t>(outSize - len), "%04d-%02d.anim", sequenceId, variationIndex);
+}
+
+// ref: FUN_0083de50 / FUN_0083de90
+// The .anim buffer is 16-byte aligned: 16 spare bytes, the pad size kept in the byte before the
+// data so the free can recover the allocation.
+void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line) {
+    auto raw = static_cast<uint8_t*>(SMemAlloc(size + 16, file, line, 0));
+
+    if (!raw) {
+        return nullptr;
+    }
+
+    uint32_t pad = 16 - (reinterpret_cast<uintptr_t>(raw) & 0xF);
+    raw[pad - 1] = static_cast<uint8_t>(pad);
+
+    return raw + pad;
+}
+
+void SequenceBufferFree(void* buffer) {
+    if (!buffer) {
+        return;
+    }
+
+    auto data = static_cast<uint8_t*>(buffer);
+    uint8_t pad = data[-1];
+
+    SMemFree(data - pad, "delete[]", -1, 0);
+}
+
+} // namespace
+
+// ref: FUN_0083da10
+CM2SequenceLoad* CM2Shared::LoadSequence(uint16_t sequenceIndex) {
+    auto data = this->m_data;
+    auto& sequence = data->sequences[sequenceIndex];
+
+    auto load = STORM_NEW(CM2SequenceLoad);
+    this->m_sequenceLoads.LinkToTail(load);
+    load->sequenceIndex = sequenceIndex;
+    load->shared = this;
+
+    // An aliased sequence's data belongs to the end of its alias chain
+    auto owner = &sequence;
+
+    while (owner->flags & 0x40) {
+        owner = &data->sequences[owner->aliasNext];
+    }
+
+    char path[STORM_MAX_PATH];
+    M2AnimFileName(this->m_filePath, owner->id, owner->variationIndex, path, sizeof(path));
+
+    SFile* file;
+
+    if (!SFile::OpenEx(nullptr, path, (this->m_flag4 ? 1 : 0), &file)) {
+        // The reference logs "Model2: File not found: %s" here through a no-op sink
+        this->DestroySequenceLoad(load);
+        return nullptr;
+    }
+
+    uint32_t size = static_cast<uint32_t>(SFile::GetFileSize(file, nullptr));
+    void* buffer = SequenceBufferAlloc(size, __FILE__, __LINE__);
+
+    if (!buffer) {
+        this->DestroySequenceLoad(load);
+        SFile::Close(file);
+        return nullptr;
+    }
+
+    load->asyncObject = AsyncFileReadAllocObject();
+
+    if (!load->asyncObject) {
+        SFile::Close(file);
+        SequenceBufferFree(buffer);
+        this->DestroySequenceLoad(load);
+        return nullptr;
+    }
+
+    if (!this->m_sequenceBuffers) {
+        this->m_sequenceBuffers = static_cast<void**>(SMemAlloc(sizeof(void*) * data->sequences.Count(), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
+    }
+
+    load->bufferSlot = static_cast<uint16_t>(this->m_sequenceBufferCount);
+    this->m_sequenceBuffers[this->m_sequenceBufferCount++] = buffer;
+
+    // 0x10 = load in flight, on the sequence and every alias that shares the data
+    sequence.flags |= 0x10;
+
+    for (uint16_t i = sequence.aliasNext; i != sequenceIndex; i = data->sequences[i].aliasNext) {
+        data->sequences[i].flags |= 0x10;
+    }
+
+    auto object = load->asyncObject;
+    object->file = file;
+    object->buffer = buffer;
+    object->size = size;
+    object->userArg = load;
+    object->userPostloadCallback = &CM2Shared::SequenceLoadedCallback;
+    object->userFailedCallback = &CM2Shared::SequenceLoadFailedCallback;
+    object->isRead = 0;
+    object->isProcessed = 0;
+    object->priority = 0x7D;
+
+    AsyncFileReadObject(object, 0);
+
+    return load;
+}
+
+// ref: FUN_0083ca90 (FUN_0083c6e0 is M2Init run with the loading-sequence globals set)
+// Patches the sequence's tracks -- and its whole alias chain's -- against the .anim data.
+int32_t CM2Shared::InitSequence(uint16_t sequenceIndex, CAsyncObject* object) {
+    auto data = this->m_data;
+
+    auto initOne = [&](uint16_t index) -> int32_t {
+        CM2Model::s_loadingSequence = index;
+        CM2Model::s_sequenceBase = static_cast<uint8_t*>(object->buffer);
+        CM2Model::s_sequenceBaseSize = object->size;
+
+        int32_t ok = M2Init(reinterpret_cast<uint8_t*>(data), this->m_dataSize, *data);
+
+        CM2Model::s_loadingSequence = 0xFFFFFFFF;
+        CM2Model::s_sequenceBase = nullptr;
+        CM2Model::s_sequenceBaseSize = 0;
+
+        auto& sequence = data->sequences[index];
+
+        if (ok) {
+            sequence.flags = (sequence.flags & ~0x10) | 0x20;
+        }
+
+        return ok;
+    };
+
+    if (!initOne(sequenceIndex)) {
+        return 0;
+    }
+
+    for (uint16_t i = data->sequences[sequenceIndex].aliasNext; i != sequenceIndex; i = data->sequences[i].aliasNext) {
+        if (!initOne(i)) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_0083d370 (+ FUN_0083d2d0)
+void CM2Shared::DestroySequenceLoad(CM2SequenceLoad* load) {
+    while (auto playback = load->playbacks.Head()) {
+        load->playbacks.UnlinkNode(playback);
+        STORM_FREE(playback);
+    }
+
+    if (load->asyncObject) {
+        AsyncFileReadDestroyObject(load->asyncObject);
+        load->asyncObject = nullptr;
+    }
+
+    this->m_sequenceLoads.UnlinkNode(load);
+    STORM_FREE(load);
+}
+
+// ref: FUN_0083d840
+void CM2Shared::SequenceLoadedCallback(void* param) {
+    auto load = static_cast<CM2SequenceLoad*>(param);
+    auto shared = load->shared;
+    auto data = shared->m_data;
+
+    shared->m_flag10 = 1;
+    shared->InitSequence(load->sequenceIndex, load->asyncObject);
+
+    auto& sequence = data->sequences[load->sequenceIndex];
+
+    for (auto playback = load->playbacks.Head(); playback;) {
+        auto next = load->playbacks.Next(playback);
+
+        if (playback->flags & 8) {
+            load->playbacks.UnlinkNode(playback);
+            STORM_FREE(playback);
+        } else if (playback->model->ApplySequencePlayBack(load->sequenceIndex, playback)) {
+            playback->model = nullptr;
+        }
+
+        playback = next;
+    }
+
+    if (shared->m_flag20) {
+        // The shared is being torn down: every load goes with this one
+        while (auto other = shared->m_sequenceLoads.Head()) {
+            shared->DestroySequenceLoad(other);
+        }
+
+        shared->m_flag10 = 0;
+        shared->m_flag20 = 0;
+        return;
+    }
+
+    shared->DestroySequenceLoad(load);
+    shared->m_flag10 = 0;
+}
+
+// ref: FUN_0083d9f0
+void CM2Shared::SequenceLoadFailedCallback(void* param) {
+    auto load = static_cast<CM2SequenceLoad*>(param);
+
+    load->shared->DestroySequenceLoad(load);
+}
+
 void CM2Shared::SkinProfileLoadedCallback(void* arg) {
     CM2Shared* shared = static_cast<CM2Shared*>(arg);
 
@@ -58,8 +283,27 @@ void CM2Shared::SkinProfileLoadedCallback(void* arg) {
     shared->asyncObject = nullptr;
 }
 
+namespace {
+void SequenceBufferFree(void* buffer);
+}
+
 CM2Shared::~CM2Shared() {
     // TODO this->CancelAllDeferredSequences();
+
+    // In-flight .anim reads and the buffers of the ones that landed
+    while (auto load = this->m_sequenceLoads.Head()) {
+        this->DestroySequenceLoad(load);
+    }
+
+    if (this->m_sequenceBuffers) {
+        for (uint32_t i = 0; i < this->m_sequenceBufferCount; i++) {
+            SequenceBufferFree(this->m_sequenceBuffers[i]);
+        }
+
+        SMemFree(this->m_sequenceBuffers, __FILE__, __LINE__, 0);
+        this->m_sequenceBuffers = nullptr;
+        this->m_sequenceBufferCount = 0;
+    }
 
     bool cancelPending = false;
 

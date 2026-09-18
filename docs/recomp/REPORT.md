@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:06 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1482 (+7) (5.5%) | 348.4k (6.3%) |
-| &nbsp;&nbsp;ported | 1010 (+6) | 251.2k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 454 (+1) | 92.6k |
+| mapped to a whoa function | 1490 (+8) (5.5%) | 350.0k (6.3%) |
+| &nbsp;&nbsp;ported | 1019 (+9) | 253.3k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (-1) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **228 (+3) (0.8%)** | **30.7k (0.6%)** |
-| unmapped | 25679 | 5.07M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 162 (+7) (2.9%) | |
-| whoa functions (src/, from PDB + source) | 10592, stubs 887 | |
+| **faithful** (linked, not stub, call order >= 80%) | **229 (+1) (0.8%)** | **30.8k (0.6%)** |
+| unmapped | 25671 | 5.06M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 167 (+5) (3.0%) | |
+| whoa functions (src/, from PDB + source) | 10601, stubs 887 | |
 
-Match evidence: annotated 74, callgraph 62, callorder 80, override 63, string 274, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 81, callgraph 62, callorder 81, override 63, string 274, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:02 -- mapped 1475, ported 1004, stub 453, spine mapped 155.
+Previous run: 2026-09-18 17:06 -- mapped 1482, ported 1010, stub 454, spine mapped 162.
 
 ## Lua API coverage (binding tables)
 
@@ -187,7 +187,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 1 (0.1%) | 0.3% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 1 (0.1%) | 0.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 0 (0.0%) | 0.0% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 19 (6.7%) | 5.8% | 1 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 20 (7.1%) | 5.9% | 0 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 40 (8.1%) | 14.6% | 29 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 6 (1.7%) | 3.2% | 0 | 0 | 121 |
@@ -197,7 +197,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 1 (0.5%) | 2.1% | 0 | 0 | 118 |
-| M2Shared.cpp | 66 | 63.3k | 0 (0.0%) | 0.0% | 0 | 0 | 20 |
+| M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 10 (3.5%) | 15.3% | 3 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 11 (2.7%) | 16.8% | 0 | 0 | 58 |
@@ -252,7 +252,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 34 (28.3%) | 29.3% | 18 | 0 | 0 |
-| Texture.cpp | 146 | 22.2k | 5 (3.4%) | 7.7% | 0 | 0 | 75 |
+| Texture.cpp | 146 | 22.2k | 6 (4.1%) | 8.5% | 0 | 0 | 75 |
 | MapMem.cpp | 101 | 21.3k | 0 (0.0%) | 0.0% | 0 | 0 | 63 |
 | Cursor.cpp | 117 | 20.7k | 1 (0.9%) | 1.8% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
@@ -518,7 +518,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | addr | module | size | callers | whoa | strings |
 |---|---|---:|---:|---|---|
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
-| 00831c30 | M2Scene.cpp? | 487 | 2 | `CM2Model::SetBoneSequenceDeferred` [override] | .?AUCM2SequencePlayBack@@ |
 | 0062dae0 | Tooltip.cpp | 1382 | 0 | `CGTooltip_SetHyperlink` [table] | %I64X:, %s:SetHyperlink(): Unknown link type |
 | 0062e050 | Tooltip.cpp | 1226 | 0 | `CGTooltip_SetInventoryItem` [table] | Invalid inventory slot in SetInventoryIt, Usage: %s:SetInventoryItem(unit, slot [, |
 | 004a15a0 | CSimpleFrameScript.cpp | 1022 | 0 | `CSimpleFrame_SetBackdrop` [table] | .\CSimpleFrameScript.cpp, Usage: %s:SetBackdrop(nil or {bgFile = " |
@@ -557,6 +556,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0049e350 | CScriptRegionScript.cpp | 431 | 0 | `CScriptRegion_CreateAnimationGroup` [table] | %s:CreateAnimationGroup(): Couldn't find, %s:CreateAnimationGroup(): Recursively i |
 | 00631b60 | Tooltip.cpp? | 430 | 0 | `CGTooltip_SetHyperlinkCompareItem` [table] | Usage: %s:SetHyperlinkCompareItem("hyper, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 006307e0 | Tooltip.cpp | 427 | 0 | `CGTooltip_SetBackpackToken` [table] | .\Tooltip.cpp, Usage: %s:SetBackpackToken(index) |
+| 00613f90 | ScriptEvents.cpp | 426 | 0 | `Script_GetPlayerInfoByGUID` [table] | Usage: GetPlayerInfoByGUID("playerGUID") |
 
 ## Divergence smells: reference strings the whoa counterpart never mentions
 
@@ -795,6 +795,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 10:42 | 1429 (5.3%) | 197 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
 | 2026-09-18 17:02 | 1475 (5.4%) | 225 (0.8%) | 453 | 155/5530 | 936/2512 | 448 |
 | 2026-09-18 17:06 | 1482 (5.5%) | 228 (0.8%) | 454 | 162/5530 | 936/2512 | 448 |
+| 2026-09-18 17:20 | 1490 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 
 ## How to move a row
 
