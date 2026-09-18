@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:32 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1489 (-1) (5.5%) | 348.1k (6.3%) |
-| &nbsp;&nbsp;ported | 1015 (-4) | 232.5k |
+| mapped to a whoa function | 1489 (=) (5.5%) | 348.1k (6.3%) |
+| &nbsp;&nbsp;ported | 1014 (-1) | 230.9k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **229 (=) (0.8%)** | **30.8k (0.6%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **230 (+1) (0.8%)** | **33.2k (0.6%)** |
 | unmapped | 25672 | 5.07M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 167 (=) (3.0%) | |
 | whoa functions (src/, from PDB + source) | 10601, stubs 887 | |
 
-Match evidence: annotated 81, callgraph 62, callorder 81, override 66, string 270, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 82, callgraph 63, callorder 80, override 67, string 268, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:20 -- mapped 1490, ported 1019, stub 453, spine mapped 167.
+Previous run: 2026-09-18 17:25 -- mapped 1489, ported 1015, stub 453, spine mapped 167.
 
 ## Lua API coverage (binding tables)
 
@@ -566,7 +566,6 @@ A reference function that formats, asserts or looks up a string its port does no
 |---|---|---|
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
 | 0096e9c0 | `StringToClickAction` | AnyDown; AnyUp; Button10Down; Button10Up |
-| 005fd910 | `CameraRegisterCVars` | Absorb; Delay; Distance; Never |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
 | 00401b60 | `ClientRegisterConsoleCommands` | %1.1f; Account Type; Check interface addon version number; ErrorFilter |
@@ -603,6 +602,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 004932c0 | `CSimpleFrame::LoadXML` | alpha; clampedToScreen; maxResize; minResize |
 | 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
+| 005fd910 | `CameraRegisterCVars` | Absorb; Delay; Distance; Never |
 | 00599b20 | `CGTabardModelFrame_GetLowerEmblemTexture` | %s:GetLowerEmblemTexture(): Couldn't find 'this' i; %s:GetLowerEmblemTexture(): Wrong object type, exp; TabardModelFrameLower; Usage: %s:GetLowerEmblemTexture(texture) |
 
 ## Largest whoa functions with no reference link
@@ -662,14 +662,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 5% | 148 | 30 | 90 | 15 | 10% | 3696 |
 | 00485f40 | `CSimpleTexture::LoadXML` | 41% | 61 | 56 | 119 | 35 | 0% | 3017 |
-| 005fd910 | `CameraRegisterCVars` | 1% | 68 | 1 | 9 | 0 | 7% | 2475 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004932c0 | `CSimpleFrame::LoadXML` | 39% | 69 | 60 | 68 | 28 | 12% | 1858 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
 | 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 0047a5d0 | `mainSort` | 23% | 13 | 12 | 50 | 38 | 24% | 1651 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 004873e0 | `CSimpleFontString::LoadXML` | 59% | 63 | 68 | 55 | 33 | 0% | 1441 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
@@ -698,6 +696,8 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 62% | 24 | 39 | 31 | 18 | 12% | 889 |
 | 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
 | 0061eb40 | `CGTooltip_SetOwner` | 30% | 33 | 12 | 25 | 4 | 0% | 836 |
+| 008bfe80 | `EffectGlow::EffectGlow` | 4% | 28 | 1 | 19 | 0 | 0% | 834 |
+| 0081bb20 | `Script_CreateFrame` | 62% | 40 | 39 | 20 | 16 | 11% | 832 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -797,6 +797,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:06 | 1482 (5.5%) | 228 (0.8%) | 454 | 162/5530 | 936/2512 | 448 |
 | 2026-09-18 17:20 | 1490 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 | 2026-09-18 17:25 | 1489 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
+| 2026-09-18 17:32 | 1489 (5.5%) | 230 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 
 ## How to move a row
 

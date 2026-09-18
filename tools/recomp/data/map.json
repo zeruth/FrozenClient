@@ -712,10 +712,10 @@
   "files": [
    "lib/squall/vendor/stormlib-9.31/src/bzip2/blocksort.c"
   ],
-  "how": "string",
+  "how": "override",
   "module": "framing.c",
   "refSize": 1651,
-  "status": "ported",
+  "status": "vendor",
   "whoa": "mainSort",
   "whoaSize": 2682
  },
@@ -10828,19 +10828,19 @@
   "whoaSize": 75
  },
  "005fd910": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 0.015,
+  "branchRatio": 1.0,
+  "constOverlap": 0.357,
+  "faithful": true,
+  "fidelity": 0.985,
   "files": [
    "src/ui/game/CGCamera.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 2475,
   "status": "ported",
   "whoa": "CameraRegisterCVars",
-  "whoaSize": 82
+  "whoaSize": 3592
  },
  "006081f0": {
   "branchRatio": 0.0,
@@ -15403,7 +15403,7 @@
    "lib/squall/storm/String.cpp",
    "lib/squall/test/stormdll/stormstubs.cpp"
   ],
-  "how": "callorder",
+  "how": "callgraph",
   "module": "ConsoleVar.cpp",
   "refSize": 145,
   "status": "ported",

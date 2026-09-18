@@ -119,6 +119,7 @@
 
   "00476db0": { "whoa": "BZ2_decompress", "status": "vendor", "note": "bzip2 inside StormLib; the reference links its own bzip2 build. Same library, not a port" },
   "00474f50": { "whoa": "sendMTFValues", "status": "vendor", "note": "bzip2 compressor inside StormLib" },
+  "0047a5d0": { "whoa": "mainSort", "status": "vendor", "note": "bzip2 block sort inside StormLib" },
   "00455f10": { "status": "unlinked", "note": "string-matched to whoa's TEST_CASE (the unit-test macro); the reference function is a 2 KB Storm/SFile routine, not test code" },
   "006909a0": { "whoa": "CGxDeviceGLES::ISetCaps", "status": "diverged", "note": "the reference's OpenGL device caps (GL_ARB_* strings); whoa's GLES backend is a different device, so the call structure is not expected to match" },
 

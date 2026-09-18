@@ -46,7 +46,7 @@ addr	how	whoa	evidence
 00474f50	override	sendMTFValues	
 00476db0	override	BZ2_decompress	
 00479860	string	fallbackSort	unique "        depth %6d has "
-0047a5d0	string	mainSort	unique "        %d pointers, %d sorted, %d scanned "
+0047a5d0	override	mainSort	
 0047ac70	string	BZ2_blockSort	unique "      %d work, %d block, ratio %5.2f "
 0047ae50	override	CDataStore::InternalDestroy	
 0047afe0	override	CDataStore::Put	
@@ -720,7 +720,7 @@ addr	how	whoa	evidence
 005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
-005fd910	string	CameraRegisterCVars	unique "cameraView"
+005fd910	annotated	CameraRegisterCVars	tag in src/ui/game/CGCamera.cpp
 006081f0	table	Script_GetTime	binding "GetTime" in s_SystemFunctions ~ table 00ad2184
 00608230	table	Script_GetGameTime	binding "GetGameTime" in s_SystemFunctions ~ table 00ad2184
 00608270	table	Script_ConsoleExec	binding "ConsoleExec" in s_SystemFunctions ~ table 00ad2184
@@ -1023,8 +1023,8 @@ addr	how	whoa	evidence
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32, 008792b0=SESound::GetOutputDriverName
-0076ee30	callorder	SStrLen	same slot between linked calls in 0048b540=CScriptObject::CreateName
-0076ef70	callorder	SStrPack	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0076ee30	callorder	SStrLen	same slot between linked calls in 0048b540=CScriptObject::CreateName, 00814340=FrameXML_CreateFrames
+0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
 0076f0d0	override	SStrToInt	
