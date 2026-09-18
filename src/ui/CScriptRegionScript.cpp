@@ -454,6 +454,23 @@ int32_t CScriptRegion_SetPoint(lua_State* L) {
         return luaL_error(L, "%s:SetPoint(): Unknown region point", region->GetDisplayName());
     }
 
+    // WHOA_TRACE_LUA=1 names the Lua caller of every SetPoint. The reference anchors ~1 region a
+    // frame; whoa was seen doing 161 (tools/recomp call trace), which means some OnUpdate script
+    // re-lays out every frame, and the caller's file:line is the fastest way to find which.
+    static int32_t s_traceLua = -1;
+
+    if (s_traceLua < 0) {
+        s_traceLua = getenv("WHOA_TRACE_LUA") ? 1 : 0;
+    }
+
+    if (s_traceLua) {
+        lua_Debug ar;
+
+        if (lua_getstack(L, 1, &ar) && lua_getinfo(L, "Sl", &ar)) {
+            fprintf(stderr, "SetPoint %s <- %s:%d\n", region->GetDisplayName(), ar.short_src, ar.currentline);
+        }
+    }
+
     int32_t argsIndex = 3;
 
     if (lua_type(L, 3) == LUA_TSTRING) {

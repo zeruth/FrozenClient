@@ -177,6 +177,15 @@ int32_t Script_ReturnNothing(lua_State* L) {
     return 11;
 }
 
+// GetPetActionInfo(slot) -> name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled.
+// With no pet every slot is empty and the reference returns nothing at all, so the pet bar hides its
+// buttons. This used to share Script_ReturnNothing, whose 7th value is 0 -- truthy in Lua -- so
+// all ten pet buttons started their autocast shine and re-anchored 16 sparkles each every frame
+// (161 SetPoints a frame where the reference does 1; found by tools/recomp/calltrace.py).
+int32_t Script_GetPetActionInfo(lua_State* L) {
+    return 0;
+}
+
 int32_t Script_ReturnZero(lua_State* L) {
     lua_pushnumber(L, 0.0);
 
@@ -560,7 +569,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "UpdateSpells",                   &Script_UpdateSpells },
     { "GetKnownSlotFromHighestRankSlot", &Script_GetKnownSlotFromHighestRankSlot },
     { "CombatLog_Object_IsA",           &Script_CombatLog_Object_IsA },
-    { "GetPetActionInfo",               &Script_ReturnNothing },
+    { "GetPetActionInfo",               &Script_GetPetActionInfo },
     { "GetNumWorldStateUI",             &Script_ReturnZero },
     { "GetCompanionInfo",               &Script_ReturnNothing },
     { "GetArenaTeam",                   &Script_ReturnNothing },
