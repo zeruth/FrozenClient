@@ -183,7 +183,7 @@
   "branchRatio": 0.083,
   "constOverlap": 0.095,
   "faithful": false,
-  "fidelity": 0.154,
+  "fidelity": 0.173,
   "files": [
    "src/client/Client.cpp"
   ],
@@ -1192,6 +1192,21 @@
   "whoa": "CSimpleFontString::SetTextLength",
   "whoaSize": 0
  },
+ "00482110": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/Util.cpp"
+  ],
+  "how": "callorder",
+  "module": "CSimpleRender.cpp",
+  "refSize": 210,
+  "status": "ported",
+  "whoa": "LanguageProcess",
+  "whoaSize": 4
+ },
  "004826d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -1241,7 +1256,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.455,
   "files": [
    "src/ui/simple/CSimpleFontString.cpp"
   ],
@@ -14691,7 +14706,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.3,
   "files": [
    "src/gx/gll/CGxDeviceGLL.cpp"
   ],
@@ -14931,7 +14946,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.455,
   "files": [
    "src/console/Command.cpp"
   ],
@@ -15111,7 +15126,7 @@
   "branchRatio": 0.7,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.562,
   "files": [
    "src/console/CVarHandlers.cpp"
   ],
@@ -15352,6 +15367,22 @@
   "whoa": "SStrChrR",
   "whoaSize": 102
  },
+ "0076e760": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "how": "override",
+  "module": "ConsoleVar.cpp",
+  "refSize": 27,
+  "status": "ported",
+  "whoa": "SStrCmp",
+  "whoaSize": 48
+ },
  "0076e780": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -15497,8 +15528,8 @@
  "0076f700": {
   "branchRatio": 0.7,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/test/stormdll/stormstubs.cpp"
@@ -15519,7 +15550,7 @@
    "lib/squall/storm/String.cpp",
    "lib/squall/test/stormdll/stormstubs.cpp"
   ],
-  "how": "callorder",
+  "how": "override",
   "module": "ConsoleVar.cpp",
   "refSize": 553,
   "status": "ported",
@@ -18919,7 +18950,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp"
   ],

@@ -76,6 +76,7 @@ addr	how	whoa	evidence
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
+00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
 00482aa0	callorder	FrameScript_Object::GetDisplayName	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
@@ -1019,6 +1020,7 @@ addr	how	whoa	evidence
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
 0076e720	callorder	SStrChrR	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32, 008792b0=SESound::GetOutputDriverName
 0076ee30	callorder	SStrLen	same slot between linked calls in 0048b540=CScriptObject::CreateName
@@ -1029,7 +1031,7 @@ addr	how	whoa	evidence
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
 0076f640	override	SStrHash	
 0076f700	callorder	SStrStr	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
-0076fb80	callorder	SStrToFloat	same slot between linked calls in 00497070=CSimpleFont::LoadXML, 00815600=LoadXML_Value, 00815740=LoadXML_Dimensions
+0076fb80	override	SStrToFloat	
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771870	override	SErrSetLastError	
 007729b0	callgraph	printf	only unmatched callee of 00772a80=SErrDisplayError
@@ -1059,7 +1061,7 @@ addr	how	whoa	evidence
 00813ee0	string	FrameXML_ProcessFile	unique "%s:<Scripts>"
 00814340	string	FrameXML_CreateFrames	unique "** Loading table of contents %s"
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML
-00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00815df0=LoadXML_Gradient
+00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00815600=LoadXML_Value, 00815740=LoadXML_Dimensions
 00814ed0	callorder	StringToFramePoint	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
 00814f20	callorder	lua_pushnil	same slot between linked calls in 0049d950=CScriptRegion_GetPoint
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER

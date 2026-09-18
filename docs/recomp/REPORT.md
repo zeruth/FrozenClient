@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1475 (+46) (5.4%) | 346.6k (6.3%) |
-| &nbsp;&nbsp;ported | 1004 (+46) | 249.9k |
+| mapped to a whoa function | 1477 (+2) (5.4%) | 346.8k (6.3%) |
+| &nbsp;&nbsp;ported | 1006 (+2) | 250.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **225 (+28) (0.8%)** | **29.5k (0.5%)** |
-| unmapped | 25686 | 5.07M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 155 (+16) (2.8%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **226 (+1) (0.8%)** | **29.6k (0.5%)** |
+| unmapped | 25684 | 5.07M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 157 (+2) (2.8%) | |
 | whoa functions (src/, from PDB + source) | 10592, stubs 887 | |
 
-Match evidence: annotated 74, callgraph 61, callorder 81, override 56, string 274, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 74, callgraph 61, callorder 81, override 58, string 274, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 10:42 -- mapped 1429, ported 958, stub 453, spine mapped 139.
+Previous run: 2026-09-18 17:02 -- mapped 1475, ported 1004, stub 453, spine mapped 155.
 
 ## Lua API coverage (binding tables)
 
@@ -224,7 +224,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameObject_C.cpp | 285 | 38.0k | 0 (0.0%) | 0.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 1 (0.6%) | 0.2% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 37 (15.2%) | 18.7% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 38 (15.6%) | 18.8% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 23 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 9 (4.2%) | 9.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
@@ -240,7 +240,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 204 | 27.4k | 59 (28.9%) | 36.0% | 26 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 10 (6.0%) | 20.0% | 0 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 11 (6.6%) | 20.8% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 6 (4.2%) | 14.1% | 0 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
@@ -681,7 +681,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 007e4480 | `BlobShadowsBegin` | 3% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 81% | 37 | 30 | 4 | 0 | 0% | 1354 |
 | 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 36 | 35 | 19 | 0% | 1303 |
-| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 20% | 10 | 9 | 66 | ? | ? | 1299 |
+| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 30% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `CGGameUI::Initialize` | 12% | 59 | 30 | 23 | 6 | 5% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 20% | 10 | 10 | 10 | 5 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
@@ -794,6 +794,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 10:33 | 1423 (5.2%) | 200 (0.7%) | 453 | 134/5536 | 936/2512 | 448 |
 | 2026-09-18 10:42 | 1429 (5.3%) | 197 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
 | 2026-09-18 17:02 | 1475 (5.4%) | 225 (0.8%) | 453 | 155/5530 | 936/2512 | 448 |
+| 2026-09-18 17:02 | 1477 (5.4%) | 226 (0.8%) | 453 | 157/5530 | 936/2512 | 448 |
 
 ## How to move a row
 
