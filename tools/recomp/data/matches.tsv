@@ -1,10 +1,16 @@
 addr	how	whoa	evidence
 00401200	annotated	ComparePatchArchives	tag in src/client/Archive.cpp
+00401280	handler	NotifyHandler	SetMessageHandler(SMSG_NOTIFICATION) on both sides
+00401390	handler	PlayedTimeHandler	SetMessageHandler(SMSG_PLAYED_TIME) on both sides
+00401480	handler	TransferPendingHandler	SetMessageHandler(SMSG_TRANSFER_PENDING) on both sides
 00401b60	string	ClientRegisterConsoleCommands	unique "DesktopGamma"
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
 00403880	override	CDataStore::~CDataStore	
-00403d10	string	LoginVerifyWorldHandler	score 0.50 shared Bad SMSG_NEW_WORLD zoneID 
+00403910	handler	TransferAbortedHandler	SetMessageHandler(SMSG_TRANSFER_ABORTED) on both sides
+00403b70	callorder	LoadNewWorld	same slot between linked calls in 00403de0=LoginVerifyWorldHandler
+00403d10	handler	NewWorldHandler	SetMessageHandler(SMSG_NEW_WORLD) on both sides
+00403de0	handler	LoginVerifyWorldHandler	SetMessageHandler(SMSG_LOGIN_VERIFY_WORLD) on both sides
 00404930	annotated	OpenTableArchive	tag in src/client/Archive.cpp
 00405540	string	ClientInitializeGame	unique "Bad zone ID %i"
 00405a10	annotated	AddPatchArchive	tag in src/client/Archive.cpp
@@ -284,6 +290,7 @@ addr	how	whoa	evidence
 004d8ba0	annotated	CGlueMgr::Sub4D8BA0	tag in src/glue/CGlueMgr.cpp
 004d8c60	annotated	CGlueMgr::CreateCharacter	tag in src/glue/CGlueMgr.cpp
 004d8cc0	annotated	CGlueMgr::DeleteCharacter	tag in src/glue/CGlueMgr.cpp
+004d9500	handler	CGlueMgr::OnKickReasonMsg	SetMessageHandler(SMSG_KICK_REASON) on both sides
 004d95c0	string	CGlueMgr::GetCharacterList	unique "CHAR_LIST_RETRIEVING"
 004d98d0	string	CGlueMgr::StatusDialogClick	score 0.53 shared login; patchdownload
 004d9bd0	string	CGlueMgr::EnterWorld	unique "CHAR_RENAME_DESCRIPTION"
@@ -434,6 +441,7 @@ addr	how	whoa	evidence
 00522bc0	table	Script_GuildPromote	binding "GuildPromote" in s_ScriptFunctions ~ table 00ac8460
 00522c90	table	Script_GuildDemote	binding "GuildDemote" in s_ScriptFunctions ~ table 00ac8460
 00522d60	table	Script_GuildSetLeader	binding "GuildSetLeader" in s_ScriptFunctions ~ table 00ac8460
+00526530	handler	ReceiveWeather	SetMessageHandler(SMSG_WEATHER) on both sides
 0052a980	string	CGGameUI::Initialize	unique "Interface\FrameXML\Bindings.xml"
 0052c2a0	table	Script_GetLootThreshold	binding "GetLootThreshold" in s_ScriptFunctions ~ table 00acc708
 0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc708
@@ -987,6 +995,8 @@ addr	how	whoa	evidence
 00630b90	table	CGTooltip_SetLFGCompletionReward	binding "SetLFGCompletionReward" in CGTooltipMethods ~ table 00ad2ae0
 00631000	table	CGTooltip_SetAction	binding "SetAction" in CGTooltipMethods ~ table 00ad2ae0
 00631b60	table	CGTooltip_SetHyperlinkCompareItem	binding "SetHyperlinkCompareItem" in CGTooltipMethods ~ table 00ad2ae0
+00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
+006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
 0067d770	callgraph	Script_GetUnitFromName	only unmatched callee of 00612670=Script_UnitIsSameServer
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
@@ -1001,6 +1011,7 @@ addr	how	whoa	evidence
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
 006b0b50	callgraph	lua_type	only unmatched callee of 005a8290=Script_SetActionBarToggles
+006b0b80	override	ClientServices::SetMessageHandler	
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
 006b0f40	callorder	CGlueMgr::SetIdleState	same slot between linked calls in 004d8c60=CGlueMgr::CreateCharacter, 004d8cc0=CGlueMgr::DeleteCharacter
@@ -1011,11 +1022,20 @@ addr	how	whoa	evidence
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
+006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
+006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
+006d8750	handler	ReceiveActionButtons	SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS) on both sides
 006dc810	string	Player_C_GetModelName	unique "Error, unknown displayInfo %d specified for player race %d s"
+006df050	handler	ReceiveInitialSpells	SetMessageHandler(SMSG_SEND_KNOWN_SPELLS) on both sides
+006e2e90	handler	InventoryChangeFailureHandler	SetMessageHandler(SMSG_INVENTORY_CHANGE_FAILURE) on both sides
+006e7840	handler	ReceiveRemovedSpell	SetMessageHandler(SMSG_UNLEARNED_SPELLS) on both sides
+006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
+007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
+0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
-00765270	callorder	ConsoleWrite	same slot between linked calls in 007e2840=ReceiveNewTimeSpeed
+00765270	callorder	ConsoleWrite	same slot between linked calls in 007e28e0=ReceiveNewTimeSpeed
 00765360	override	ConsoleWriteA	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
@@ -1040,6 +1060,7 @@ addr	how	whoa	evidence
 0076a630	string	RegisterGxCVars	unique "Allow widescreen support"
 0076b3b0	annotated	ConsoleCommandHistoryAdd	tag in src/console/Command.cpp
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
+0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
 0076e540	override	SMemAlloc	
 0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
@@ -1076,10 +1097,18 @@ addr	how	whoa	evidence
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007dc010	string	GetButtonName	score 14.05 shared Button10; Button11; Button12
 007e18c0	string	ValidateNameInitialize	score 0.50 shared forceEnglishNames
-007e2840	string	ReceiveNewTimeSpeed	score 0.50 shared Gamespeed set from %.03f to %.03f
+007e2840	handler	ReceiveNewGameSpeed	SetMessageHandler(SMSG_GAME_SPEED_SET) on both sides
+007e28e0	handler	ReceiveNewTimeSpeed	SetMessageHandler(SMSG_LOGIN_SET_TIME_SPEED) on both sides
+007e29c0	handler	ReceiveGameTimeUpdate	SetMessageHandler(SMSG_GAME_TIME_UPDATE) on both sides
+007e2a50	handler	ReceiveServerTime	SetMessageHandler(SMSG_SERVERTIME) on both sides
+007e2b40	handler	ReceiveNewGameTime	SetMessageHandler(SMSG_GAME_TIME_SET) on both sides
 007e4480	override	BlobShadowsBegin	
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	
+00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
+00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
+00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides
+0080fee0	handler	ReceiveSpellStart	SetMessageHandler(SMSG_SPELL_START) on both sides
 00812ce0	callorder	FrameXML_AcquireHashNode	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture
 00812d20	callorder	FrameXML_ReleaseHashNode	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames
 00812fa0	string	FrameXML_CreateFrame	unique "-- Creating %s named %s"

@@ -108,6 +108,7 @@
   "0047cf80": { "whoa": "RCString::Copy", "status": "ported", "note": "CVar::Register clears every RCString member through it (Copy(nullptr)) and copies the help text" },
   "0076f640": { "whoa": "SStrHash", "status": "ported", "note": "TSHashTable key hash used by CVar::Register before the bucket insert" },
 
+  "006b0b80": { "whoa": "ClientServices::SetMessageHandler", "status": "ported", "note": "(opcode, handler, param) through the ClientServices instance, fatal when there is none; 598 call sites -- the handler tables ExportCallArgs.java reads" },
   "00765360": { "whoa": "ConsoleWriteA", "status": "ported", "note": "(format, color, ...): the camera validators pass DEFAULT_COLOR then the bounds; CGGameUI::DisplayError passes its text with colour 3" },
   "0076e760": { "whoa": "SStrCmp", "status": "ported", "note": "case-sensitive compare used by CVarCommandHandler to decide whether default/reset/pending differ" },
   "0076fb80": { "whoa": "SStrToFloat", "status": "ported", "note": "CVarCommandHandler stores it as m_floatValue next to SStrToInt (0076f0d0)" },

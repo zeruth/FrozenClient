@@ -14,6 +14,51 @@
   "whoa": "ComparePatchArchives",
   "whoaSize": 28
  },
+ "00401280": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "?",
+  "refSize": 261,
+  "status": "ported",
+  "whoa": "NotifyHandler",
+  "whoaSize": 3
+ },
+ "00401390": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "Client.cpp",
+  "refSize": 228,
+  "status": "ported",
+  "whoa": "PlayedTimeHandler",
+  "whoaSize": 3
+ },
+ "00401480": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "Client.cpp",
+  "refSize": 157,
+  "status": "ported",
+  "whoa": "TransferPendingHandler",
+  "whoaSize": 3
+ },
  "00401b60": {
   "branchRatio": 0.333,
   "constOverlap": 0.111,
@@ -74,17 +119,62 @@
   "whoa": "CDataStore::~CDataStore",
   "whoaSize": 77
  },
- "00403d10": {
-  "branchRatio": 0.5,
+ "00403910": {
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.0,
   "files": [
    "src/client/ClientHandlers.cpp"
   ],
-  "how": "string",
+  "how": "handler",
+  "module": "Client.cpp",
+  "refSize": 538,
+  "status": "ported",
+  "whoa": "TransferAbortedHandler",
+  "whoaSize": 3
+ },
+ "00403b70": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "callorder",
+  "module": "Client.cpp",
+  "refSize": 401,
+  "status": "ported",
+  "whoa": "LoadNewWorld",
+  "whoaSize": 0
+ },
+ "00403d10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
   "module": "Client.cpp",
   "refSize": 203,
+  "status": "ported",
+  "whoa": "NewWorldHandler",
+  "whoaSize": 3
+ },
+ "00403de0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "Client.cpp",
+  "refSize": 212,
   "status": "ported",
   "whoa": "LoginVerifyWorldHandler",
   "whoaSize": 288
@@ -108,7 +198,7 @@
   "branchRatio": 0.062,
   "constOverlap": 0.056,
   "faithful": false,
-  "fidelity": 0.018,
+  "fidelity": 0.143,
   "files": [
    "src/client/Client.cpp"
   ],
@@ -4276,6 +4366,21 @@
   "whoa": "CGlueMgr::DeleteCharacter",
   "whoaSize": 108
  },
+ "004d9500": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/glue/CGlueMgr.cpp"
+  ],
+  "how": "handler",
+  "module": "CGlueMgr.cpp",
+  "refSize": 130,
+  "status": "ported",
+  "whoa": "CGlueMgr::OnKickReasonMsg",
+  "whoaSize": 112
+ },
  "004d95c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -6536,6 +6641,21 @@
   "status": "stub",
   "whoa": "Script_GuildSetLeader",
   "whoaSize": 75
+ },
+ "00526530": {
+  "branchRatio": 0.075,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.026,
+  "files": [
+   "src/world/Weather.cpp"
+  ],
+  "how": "handler",
+  "module": "GameUI.cpp",
+  "refSize": 2495,
+  "status": "ported",
+  "whoa": "ReceiveWeather",
+  "whoaSize": 257
  },
  "0052a980": {
   "branchRatio": 0.261,
@@ -14830,6 +14950,36 @@
   "whoa": "CGTooltip_SetHyperlinkCompareItem",
   "whoaSize": 75
  },
+ "00635190": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/NameCache.cpp"
+  ],
+  "how": "handler",
+  "module": "DBClient.cpp",
+  "refSize": 26,
+  "status": "ported",
+  "whoa": "ReceiveCreatureQueryResponse",
+  "whoaSize": 256
+ },
+ "006357d0": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.045,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/object/client/NameCache.cpp"
+  ],
+  "how": "handler",
+  "module": "DBClient.cpp",
+  "refSize": 519,
+  "status": "ported",
+  "whoa": "ReceiveNameQueryResponse",
+  "whoaSize": 319
+ },
  "0067d770": {
   "branchRatio": 0.056,
   "constOverlap": 0.0,
@@ -15038,6 +15188,21 @@
   "whoa": "lua_type",
   "whoaSize": 39
  },
+ "006b0b80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientServices.cpp"
+  ],
+  "how": "override",
+  "module": "blp.cpp",
+  "refSize": 53,
+  "status": "ported",
+  "whoa": "ClientServices::SetMessageHandler",
+  "whoaSize": 20
+ },
  "006b0bf0": {
   "branchRatio": 0.533,
   "constOverlap": 0.0,
@@ -15188,6 +15353,51 @@
   "whoa": "TEXTURECACHE::CreateTexture",
   "whoaSize": 0
  },
+ "006cfe70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 115,
+  "status": "ported",
+  "whoa": "ReceiveEmote",
+  "whoaSize": 242
+ },
+ "006d7f10": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/QuestStatusCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 221,
+  "status": "ported",
+  "whoa": "ReceiveQuestgiverStatus",
+  "whoaSize": 389
+ },
+ "006d8750": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.222,
+  "files": [
+   "src/ui/game/CGActionBar.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 287,
+  "status": "ported",
+  "whoa": "ReceiveActionButtons",
+  "whoaSize": 231
+ },
  "006dc810": {
   "branchRatio": 0.375,
   "constOverlap": 0.0,
@@ -15203,6 +15413,66 @@
   "whoa": "Player_C_GetModelName",
   "whoaSize": 215
  },
+ "006df050": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.308,
+  "files": [
+   "src/object/client/SpellBook.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 327,
+  "status": "ported",
+  "whoa": "ReceiveInitialSpells",
+  "whoaSize": 285
+ },
+ "006e2e90": {
+  "branchRatio": 0.077,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.065,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 4848,
+  "status": "ported",
+  "whoa": "InventoryChangeFailureHandler",
+  "whoaSize": 1529
+ },
+ "006e7840": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/object/client/SpellBook.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 136,
+  "status": "ported",
+  "whoa": "ReceiveRemovedSpell",
+  "whoaSize": 143
+ },
+ "006e7d60": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/object/client/SpellBook.cpp"
+  ],
+  "how": "handler",
+  "module": "Player_C.cpp",
+  "refSize": 155,
+  "status": "ported",
+  "whoa": "ReceiveLearnedSpell",
+  "whoaSize": 185
+ },
  "0072d940": {
   "branchRatio": 0.24,
   "constOverlap": 0.0,
@@ -15217,6 +15487,36 @@
   "status": "ported",
   "whoa": "CGUnit_C::RefreshDataPointers",
   "whoaSize": 500
+ },
+ "007300a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/object/client/AuraCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Unit_C.cpp",
+  "refSize": 94,
+  "status": "ported",
+  "whoa": "ReceiveAuraUpdate",
+  "whoaSize": 65
+ },
+ "0073ab90": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp"
+  ],
+  "how": "callgraph",
+  "module": "Unit_C.cpp",
+  "refSize": 148,
+  "status": "ported",
+  "whoa": "CGUnit_C::PlayEmote",
+  "whoaSize": 0
  },
  "00753bb0": {
   "branchRatio": 0.011,
@@ -15622,6 +15922,23 @@
   "status": "ported",
   "whoa": "WowTime::WowGetTimeString",
   "whoaSize": 0
+ },
+ "0076dc20": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/object/client/AuraCache.cpp",
+   "src/object/client/CastCache.cpp",
+   "src/object/client/NameCache.cpp"
+  ],
+  "how": "callorder",
+  "module": "ConsoleVar.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "GetPackedGuid",
+  "whoaSize": 204
  },
  "0076e540": {
   "branchRatio": 1.0,
@@ -16182,19 +16499,79 @@
   "whoaSize": 276
  },
  "007e2840": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.167,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.0,
   "files": [
    "src/client/ClientHandlers.cpp"
   ],
-  "how": "string",
+  "how": "handler",
   "module": "DeclinedWords.cpp",
   "refSize": 150,
+  "status": "stub",
+  "whoa": "ReceiveNewGameSpeed",
+  "whoaSize": 75
+ },
+ "007e28e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "DeclinedWords.cpp",
+  "refSize": 215,
   "status": "ported",
   "whoa": "ReceiveNewTimeSpeed",
   "whoaSize": 265
+ },
+ "007e29c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "DeclinedWords.cpp",
+  "refSize": 134,
+  "status": "stub",
+  "whoa": "ReceiveGameTimeUpdate",
+  "whoaSize": 75
+ },
+ "007e2a50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "DeclinedWords.cpp",
+  "refSize": 231,
+  "status": "stub",
+  "whoa": "ReceiveServerTime",
+  "whoaSize": 75
+ },
+ "007e2b40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientHandlers.cpp"
+  ],
+  "how": "handler",
+  "module": "DeclinedWords.cpp",
+  "refSize": 132,
+  "status": "stub",
+  "whoa": "ReceiveNewGameTime",
+  "whoaSize": 75
  },
  "007e4480": {
   "branchRatio": 0.2,
@@ -16240,6 +16617,66 @@
   "status": "ported",
   "whoa": "SkyRender",
   "whoaSize": 2604
+ },
+ "00801c90": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.3,
+  "files": [
+   "src/object/client/CastCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Spell_C.cpp",
+  "refSize": 283,
+  "status": "ported",
+  "whoa": "ReceiveChannelStart",
+  "whoaSize": 238
+ },
+ "00801db0": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.182,
+  "files": [
+   "src/object/client/CastCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Spell_C.cpp",
+  "refSize": 338,
+  "status": "ported",
+  "whoa": "ReceiveChannelUpdate",
+  "whoaSize": 250
+ },
+ "00809c70": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.059,
+  "files": [
+   "src/object/client/CastCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Spell_C.cpp",
+  "refSize": 444,
+  "status": "ported",
+  "whoa": "ReceiveSpellFailure",
+  "whoaSize": 88
+ },
+ "0080fee0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.455,
+  "files": [
+   "src/object/client/CastCache.cpp"
+  ],
+  "how": "handler",
+  "module": "Spell_C.cpp",
+  "refSize": 368,
+  "status": "ported",
+  "whoa": "ReceiveSpellStart",
+  "whoaSize": 288
  },
  "00812ce0": {
   "branchRatio": 1.0,

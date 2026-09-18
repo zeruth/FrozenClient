@@ -517,6 +517,51 @@ def pair_tables(ref_tables, whoa_tables):
     return list(claimed.values())
 
 
+HANDLERS_JSONL = os.path.join(DATA, 'ref-handlers.jsonl')
+
+
+def load_handler_pairs():
+    """Packet handlers by opcode: the reference's SetMessageHandler(opcode, fn) call sites
+    (ExportCallArgs.java on FUN_006b0b80) against whoa's ClientServices::SetMessageHandler(SMSG_X,
+    Fn) registrations, with SMSG_X resolved through src/net/Types.hpp. Returns [(ref fn, whoa
+    name, opcode)]."""
+    if not os.path.exists(HANDLERS_JSONL):
+        return []
+    ref = {}
+    with io.open(HANDLERS_JSONL, encoding='utf-8') as f:
+        for line in f:
+            r = json.loads(line)
+            a = r['args']
+            if len(a) >= 2 and a[1].startswith('fn:'):
+                try:
+                    ref.setdefault(int(a[0], 16), set()).add(a[1][3:].lower())
+                except ValueError:
+                    pass
+    enum = {}
+    types = os.path.join(ROOT, 'src', 'net', 'Types.hpp')
+    if os.path.exists(types):
+        for m in re.finditer(r'\b([A-Z][A-Z0-9_]+)\s*=\s*(0x[0-9A-Fa-f]+|\d+)', io.open(types, encoding='utf-8').read()):
+            enum[m.group(1)] = int(m.group(2), 0)
+    pairs = []
+    whoa_ops = set()
+    for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
+        text = io.open(path, encoding='utf-8', errors='replace').read()
+        for m in re.finditer(r'SetMessageHandler\(\s*([A-Z][A-Z0-9_]+)\s*,\s*&?([\w:]+)', text):
+            op = enum.get(m.group(1))
+            if op is None:
+                continue
+            whoa_ops.add(op)
+            if op not in ref or len(ref[op]) != 1:
+                continue
+            pairs.append((next(iter(ref[op])), m.group(2), m.group(1)))
+    names = {v: k for k, v in enum.items()}
+    load_handler_pairs.coverage = {'ref': ref, 'whoa': whoa_ops, 'names': names}
+    return pairs
+
+
+load_handler_pairs.coverage = None
+
+
 def load_overrides():
     if not os.path.exists(OVERRIDES):
         return {}
@@ -564,6 +609,12 @@ def match(refs, whoa, overrides, tables):
                 key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
                 if key:
                     bind(a, key, 'table', 'binding "%s" in %s ~ table %s' % (lua_name, wt['name'], rt['addr']))
+
+    # packet handlers: the same opcode registered on both sides names the same function
+    for ref_fn, fn, opcode in load_handler_pairs():
+        key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
+        if key:
+            bind(ref_fn, key, 'handler', 'SetMessageHandler(%s) on both sides' % opcode)
 
     # string anchors: rarity-weighted overlap, accepted when the best candidate is clearly best
     ref_by_string = collections.defaultdict(set)
@@ -829,6 +880,17 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
             names += ' / stubs: ' + ', '.join(r['stubs'][:4]) + (' ...' if len(r['stubs']) > 4 else '')
         L.append('| %s (%s..) | %d | `%s` | %d | %d | %s |' % (r['addr'], r['first'], r['count'], r['whoa'] or '-', len(r['missing']), len(r['stubs']), names))
     L.append('')
+    cov = load_handler_pairs.coverage
+    if cov:
+        both = sorted(op for op in cov['ref'] if op in cov['whoa'])
+        ref_only = sorted(op for op in cov['ref'] if op not in cov['whoa'])
+        L.append('## Packet handler coverage (SetMessageHandler)')
+        L.append('')
+        L.append('The reference registers handlers for %d opcodes; whoa registers %d of them. An opcode with no whoa handler is a server message the client silently drops.' % (len(cov['ref']), len(both)))
+        L.append('')
+        L.append('Reference-only, by opcode (handler address): ' + ', '.join(
+            '%s %s' % (cov['names'].get(op, '0x%x' % op), '/'.join(sorted(cov['ref'][op]))) for op in ref_only))
+        L.append('')
     L.append('## Coverage by reference module')
     L.append('')
     L.append('Module = the source file named by the reference\'s own assert strings near the function (linker order); `?` = no anchor before it.')
