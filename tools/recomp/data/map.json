@@ -584,58 +584,6 @@
   "whoa": "OsFileMatch",
   "whoaSize": 195
  },
- "00455f10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "lib/bc/test/Lock.cpp",
-   "lib/bc/test/Memory.cpp",
-   "lib/bc/test/Process.cpp",
-   "lib/bc/test/String.cpp",
-   "lib/bc/test/Thread.cpp",
-   "lib/common/test/Array.cpp",
-   "lib/common/test/BigInteger.cpp",
-   "lib/common/test/DataStore.cpp",
-   "lib/common/test/Handle.cpp",
-   "lib/common/test/MemPool.cpp",
-   "lib/common/test/ObjectAlloc.cpp",
-   "lib/common/test/Prop.cpp",
-   "lib/common/test/SHA1.cpp",
-   "lib/common/test/String.cpp",
-   "lib/common/test/Thread.cpp",
-   "lib/common/test/XML.cpp",
-   "lib/squall/test/Array.cpp",
-   "lib/squall/test/Atomic.cpp",
-   "lib/squall/test/Big.cpp",
-   "lib/squall/test/Core.cpp",
-   "lib/squall/test/Crypto.cpp",
-   "lib/squall/test/Event.cpp",
-   "lib/squall/test/Handle.cpp",
-   "lib/squall/test/Hash.cpp",
-   "lib/squall/test/List.cpp",
-   "lib/squall/test/Memory.cpp",
-   "lib/squall/test/Queue.cpp",
-   "lib/squall/test/Region.cpp",
-   "lib/squall/test/String.cpp",
-   "lib/squall/test/Thread.cpp",
-   "lib/squall/test/Unicode.cpp",
-   "lib/squall/test/big/Internal.cpp",
-   "lib/squall/test/big/Ops.cpp",
-   "lib/typhoon/test/Math.cpp",
-   "lib/typhoon/test/Matrix.cpp",
-   "lib/typhoon/test/Random.cpp",
-   "lib/typhoon/test/Rect.cpp",
-   "lib/typhoon/test/Vector.cpp"
-  ],
-  "how": "string",
-  "module": "OggDecompress.cpp",
-  "refSize": 2021,
-  "status": "ported",
-  "whoa": "TEST_CASE",
-  "whoaSize": 0
- },
  "00464640": {
   "branchRatio": 0.833,
   "constOverlap": 0.2,
@@ -719,10 +667,10 @@
   "files": [
    "lib/squall/vendor/stormlib-9.31/src/bzip2/compress.c"
   ],
-  "how": "string",
+  "how": "override",
   "module": "framing.c",
   "refSize": 7098,
-  "status": "ported",
+  "status": "vendor",
   "whoa": "sendMTFValues",
   "whoaSize": 15862
  },
@@ -734,10 +682,10 @@
   "files": [
    "lib/squall/vendor/stormlib-9.31/src/bzip2/decompress.c"
   ],
-  "how": "string",
+  "how": "override",
   "module": "framing.c",
   "refSize": 8433,
-  "status": "ported",
+  "status": "vendor",
   "whoa": "BZ2_decompress",
   "whoaSize": 10472
  },
@@ -6291,9 +6239,9 @@
  },
  "0051d9b0": {
   "branchRatio": 0.0,
-  "constOverlap": 0.2,
+  "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.464,
+  "fidelity": 0.969,
   "files": [
    "src/ui/game/CGGameUI.cpp"
   ],
@@ -6302,7 +6250,7 @@
   "refSize": 6776,
   "status": "ported",
   "whoa": "CGGameUI::RegisterGameCVars",
-  "whoaSize": 5048
+  "whoaSize": 11832
  },
  "00521040": {
   "branchRatio": 1.0,
@@ -14710,10 +14658,10 @@
   "files": [
    "src/gx/gles/CGxDeviceGLES.cpp"
   ],
-  "how": "string",
+  "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 3789,
-  "status": "ported",
+  "status": "diverged",
   "whoa": "CGxDeviceGLES::ISetCaps",
   "whoaSize": 0
  },

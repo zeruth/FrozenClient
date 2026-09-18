@@ -887,7 +887,9 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
     L.append('')
     L.append('| addr | whoa | call order | ref calls | whoa calls | ref branches | whoa branches | consts | size |')
     L.append('|---|---|---:|---:|---:|---:|---:|---:|---:|')
-    low = sorted((a for a in fid if status(a) != 'stub' and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
+    # diverged (deliberate difference, reason recorded) and vendor (same third-party library on both
+    # sides) ports are not expected to match call for call, so they stay out of this list
+    low = sorted((a for a in fid if status(a) not in ('stub', 'diverged', 'vendor') and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
     for a in low[:40]:
         br, co = fidelity_dims(refs, whoa, m, a)
         w = whoa[m[a][0]]
@@ -1029,7 +1031,9 @@ def queue_next(args, refs, whoa, m):
             frontier = nxt
         args.next = max(args.next or 0, len(pool))
     elif args.fix:
-        pool = [a for a in m if a in real and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
+        overrides = load_overrides()
+        skip = set(k.lower().zfill(8) for k, v in overrides.items() if isinstance(v, dict) and v.get('status') in ('diverged', 'vendor'))
+        pool = [a for a in m if a in real and a not in skip and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
     elif args.helpers:
         # the small, everywhere-called leaves (allocators, string ops, CVar lookup): every one of
         # them identified lifts the fidelity of hundreds of callers and feeds the call-order matcher

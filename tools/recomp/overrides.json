@@ -117,5 +117,10 @@
   "00826dd0": { "whoa": "CM2Model::SetSecondaryBoneSequence", "status": "ported" },
   "00831c30": { "whoa": "CM2Model::SetBoneSequenceDeferred", "status": "ported", "note": "the path for sequences without flag 0x20 (alias chains via +0x3e when flag 0x10): queues a CM2SequencePlayBack {model, bone, time, speed, fallback, flags} on the shared model's per-sequence playback list (FUN_0083da10 finds/creates it; the RTTI name is .?AUCM2SequencePlayBack@@). That list is the external .anim sequence-loading subsystem, which whoa lacks; port it as a unit (--cluster 00831c30), not piecemeal" },
 
+  "00476db0": { "whoa": "BZ2_decompress", "status": "vendor", "note": "bzip2 inside StormLib; the reference links its own bzip2 build. Same library, not a port" },
+  "00474f50": { "whoa": "sendMTFValues", "status": "vendor", "note": "bzip2 compressor inside StormLib" },
+  "00455f10": { "status": "unlinked", "note": "string-matched to whoa's TEST_CASE (the unit-test macro); the reference function is a 2 KB Storm/SFile routine, not test code" },
+  "006909a0": { "whoa": "CGxDeviceGLES::ISetCaps", "status": "diverged", "note": "the reference's OpenGL device caps (GL_ARB_* strings); whoa's GLES backend is a different device, so the call structure is not expected to match" },
+
   "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
 }

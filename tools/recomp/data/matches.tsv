@@ -38,14 +38,13 @@ addr	how	whoa	evidence
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
-00455f10	string	TEST_CASE	score 0.50 shared %s - %s
 00464640	string	RealmConnection::HandleAuthResponse	unique "SMSG_AUTH_RESPONSE"
 00464b30	callgraph	CDataStore::IsRead	only unmatched callee of 00464c10=RealmConnection::HandleCharEnum
 00464c10	string	RealmConnection::HandleCharEnum	unique "SMSG_CHAR_ENUM"
 00469320	string	WowConnectionNet::Start	unique "NetThread %d"
 004749b0	callorder	BZ2_bz__AssertH__fail	same slot between linked calls in 0047ac70=BZ2_blockSort
-00474f50	string	sendMTFValues	unique "      bytes: mapping %d, "
-00476db0	string	BZ2_decompress	unique "     [%d: huff+mtf "
+00474f50	override	sendMTFValues	
+00476db0	override	BZ2_decompress	
 00479860	string	fallbackSort	unique "        depth %6d has "
 0047a5d0	string	mainSort	unique "        %d pointers, %d sorted, %d scanned "
 0047ac70	string	BZ2_blockSort	unique "      %d work, %d block, ratio %5.2f "
@@ -415,7 +414,7 @@ addr	how	whoa	evidence
 0051b050	table	Script_ConfirmSummon	binding "ConfirmSummon" in s_ScriptFunctions ~ table 00ac8460
 0051b110	table	Script_CancelSummon	binding "CancelSummon" in s_ScriptFunctions ~ table 00ac8460
 0051b1d0	table	Script_SitStandOrDescendStart	binding "SitStandOrDescendStart" in s_ScriptFunctions ~ table 00ac8460
-0051d9b0	string	CGGameUI::RegisterGameCVars	unique "Increases the size of the focus frame to that of the target "
+0051d9b0	string	CGGameUI::RegisterGameCVars	unique "Always show item comparison tooltips"
 00521040	string	CGGameUI::RegisterFrameFactories	unique "WorldFrame"
 00522980	table	Script_PickupPlayerMoney	binding "PickupPlayerMoney" in s_ScriptFunctions ~ table 00ac8460
 00522a20	table	Script_GuildInvite	binding "GuildInvite" in s_ScriptFunctions ~ table 00ac8460
@@ -976,7 +975,7 @@ addr	how	whoa	evidence
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
-006909a0	string	CGxDeviceGLES::ISetCaps	unique "GL_EXT_texture_compression_s3tc"
+006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"

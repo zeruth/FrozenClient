@@ -406,4 +406,125 @@ void CGGameUI::RegisterGameCVars() {
     CameraRegisterCVars();
 
     // TODO
+
+    // The rest of the reference's RegisterGameCVars (FUN_0051d9b0), in its order. Callbacks the
+    // reference installs are noted by address; whoa has no handler for them yet.
+    const char* militaryTime = "1"; // TODO the reference picks "0" for locales 2, 5 and 10 (FUN_00635d90)
+    CVar::Register("autoStand", "Automatically stand when needed", 0x10, "1", nullptr, GAME);
+    CVar::Register("autoDismount", "Automatically dismount when needed", 0x10, "1", nullptr, GAME);
+    CVar::Register("autoUnshift", "Automatically leave shapeshift form when needed", 0x10, "1", nullptr, GAME);
+    CVar::Register("autoClearAFK", "Automatically clear AFK when moving or chatting", 0x10, "1", nullptr, GAME);
+    CVar::Register("blockTrades", "Whether to automatically block trade requests", 0x20, "0", nullptr, GAME);
+    CVar::Register("alwaysCompareItems", "Always show item comparison tooltips", 0x10, "0", nullptr, GAME);
+    CVar::Register("stopAutoAttackOnTargetChange", "Whether to stop attacking when changing targets", 0x20, "0", nullptr, GAME);
+    CVar::Register("showTargetCastbar", "Show the spell your current target is casting", 0x10, "1", nullptr, GAME);
+    CVar::Register("showVKeyCastbar", "If the V key display is up for your current target, show the enemy cast bar with the target's health bar in the game field", 0x10, "1", nullptr, GAME);
+    CVar::Register("minimapZoom", "The current outdoor minimap zoom level", 0x20, "3", nullptr, GAME);
+    CVar::Register("minimapInsideZoom", "The current indoor minimap zoom level", 0x20, "3", nullptr, GAME);
+    CVar::Register("minimapPortalMax", "Max Number of Portals to traverse for minimap", 0x20, "99", nullptr, GAME);
+    CVar::Register("showLootSpam", "Whether to show verbose loot rolls", 0x10, "1", nullptr, GAME);
+    CVar::Register("displayFreeBagSlots", "Whether or not the backpack button should indicate how many inventory slots you've got free", 0x10, "0", nullptr, GAME);
+    CVar::Register("showClock", "Whether to display the time manager's clock button", 0x10, "1", nullptr, GAME);
+    CVar::Register("colorblindMode", "Enables colorblind accessibility features in the game", 0x10, "0", nullptr, GAME);
+    CVar::Register("autoQuestProgress", "Whether to automatically watch all quests when they are updated", 0x10, "1", nullptr, GAME);
+    CVar::Register("showQuestTrackingTooltips", "Displays quest tracking information in unit and object tooltips", 0x20, "1", nullptr, GAME);
+    CVar::Register("mapQuestDifficulty", "Whether to color quest titles by difficulty in the World Map", 0x20, "0", nullptr, GAME);
+    CVar::Register("questLogCollapseFilter", "bit filed for saving off the state of the headers in Quest Log", 0x20, "0", nullptr, GAME);
+    CVar::Register("advancedWatchFrame", "Enables advanced Objectives tracking features", 0x10, "0", nullptr, GAME);
+    CVar::Register("watchFrameIgnoreCursor", "Disables Objectives frame mouseover and title dropdown.", 0x10, "0", nullptr, GAME);
+    CVar::Register("watchFrameBaseAlpha", "Objectives frame opacity.", 0x10, "0", nullptr, GAME);
+    CVar::Register("watchFrameState", "Stores Objectives frame locked and collapsed states", 0x10, "0", nullptr, GAME);
+    CVar::Register("showQuestObjectivesOnMap", "Shows quest POIs on the main map.", 0x20, "1", nullptr, GAME);
+    CVar::Register("trackedQuests", "Internal cvar for saving tracked quests in order", 0x120, "", nullptr, GAME);
+    CVar::Register("trackedAchievements", "Internal cvar for saving tracked achievements in order", 0x120, "", nullptr, GAME);
+    CVar::Register("flaggedTutorials", "Internal cvar for saving compleated tutorials in order", 0x110, "", nullptr, GAME);
+    CVar::Register("advancedWorldMap", "Enables advanced World Map features", 0x20, "0", nullptr, GAME);
+    CVar::Register("worldMapOpacity", "Opacity for the world map when sized down", 0x20, "0", nullptr, GAME);
+    CVar::Register("watchFrameWidth", "Controls objectives frame width", 0, "0", nullptr, GAME);
+    CVar::Register("trackerSorting", "sorting option for the objectives tracker", 0x20, "0", nullptr, GAME);
+    CVar::Register("trackerFilter", "filter option for the objectives tracker", 0x20, "7", nullptr, GAME);
+    CVar::Register("spamFilter", "Whether to enable spam filtering", 0x10, "1", nullptr, GAME);
+    CVar::Register("removeChatDelay", "Remove Chat Hover Delay", 0x10, "0", nullptr, GAME);
+    CVar::Register("guildShowOffline", "Show offline guild members in the guild UI", 0x10, "1", nullptr, GAME); // TODO callback FUN_00512730
+    CVar::Register("guildMemberNotify", "Receive notification when guild members log on/off", 0x10, "0", nullptr, GAME);
+    CVar::Register("guildRecruitmentChannel", "Whether to automatically join the guild recruitment channel when not in a guild", 0x10, "1", nullptr, GAME); // TODO callback FUN_00512750
+    CVar::Register("lfgAutoFill", "Whether to automatically add party members while looking for a group", 0x10, "0", nullptr, GAME);
+    CVar::Register("lfgAutoJoin", "Whether to automatically join a party while looking for a group", 0x10, "0", nullptr, GAME);
+    CVar::Register("friendsViewButtons", "Whether to show the friends list view buttons", 0x20, "0", nullptr, GAME);
+    CVar::Register("friendsSmallView", "Whether to use smaller buttons in the friends list", 0x20, "0", nullptr, GAME);
+    CVar::Register("wholeChatWindowClickable", "Whether the user may click anywhere on a chat window to change EditBox focus (only works in IM style)", 0x10, "1", nullptr, GAME);
+    CVar::Register("chatMouseScroll", "Whether the user can use the mouse wheel to scroll through chat", 0x10, "1", nullptr, GAME);
+    CVar::Register("CombatDamage", "Display damage numbers over hostile creatures when damaged", 0x10, "1", nullptr, GAME);
+    CVar::Register("CombatLogPeriodicSpells", "Display damage caused by periodic effects", 0x10, "1", nullptr, GAME);
+    CVar::Register("PetMeleeDamage", "Display pet melee damage in the world", 0x10, "1", nullptr, GAME);
+    CVar::Register("PetSpellDamage", "Display pet spell damage in the world", 0x10, "1", nullptr, GAME);
+    CVar::Register("CombatHealing", "Display amount of healing you did to the target", 0x10, "1", nullptr, GAME);
+    CVar::Register("showCastableBuffs", "Show only Buffs the player can cast.  Only applies to raids.", 0x20, "0", nullptr, GAME);
+    CVar::Register("consolidateBuffs", "Consolidates buffs displayed for the player.", 0x20, "0", nullptr, GAME);
+    CVar::Register("showCastableDebuffs", "Show only debuffs the player can apply.", 0x20, "0", nullptr, GAME);
+    CVar::Register("showToastConversation", "Whether to show Battle.net message for conversations", 0x10, "1", nullptr, GAME);
+    CVar::Register("showNewbieTips", "Show beginner tooltips", 0x10, "1", nullptr, GAME);
+    CVar::Register("UberTooltips", "Show verbose tooltips", 0x10, "1", nullptr, GAME);
+    CVar::Register("showItemLevel", "Show item level in the tooltip", 0x10, "0", nullptr, GAME);
+    CVar::Register("calendarShowWeeklyHolidays", "Whether weekly holidays should appear in the calendar", 0x20, "1", nullptr, GAME); // TODO callback FUN_005127a0
+    CVar::Register("calendarShowDarkmoon", "Whether Darkmoon Faire holidays should appear in the calendar", 0x20, "1", nullptr, GAME); // TODO callback FUN_005127a0
+    CVar::Register("calendarShowBattlegrounds", "Whether Battleground holidays should appear in the calendar", 0x20, "0", nullptr, GAME); // TODO callback FUN_005127a0
+    CVar::Register("calendarShowLockouts", "Whether raid lockouts should appear in the calendar", 0x20, "1", nullptr, GAME); // TODO callback FUN_005127a0
+    CVar::Register("calendarShowResets", "Whether raid resets should appear in the calendar", 0x20, "0", nullptr, GAME); // TODO callback FUN_005127a0
+    CVar::Register("nameplateShowEnemies", "", 0x20, "0", nullptr, GAME);
+    CVar::Register("nameplateShowEnemyPets", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateShowEnemyGuardians", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateShowEnemyTotems", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateShowFriends", "", 0x20, "0", nullptr, GAME);
+    CVar::Register("nameplateShowFriendlyPets", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateShowFriendlyGuardians", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateShowFriendlyTotems", "", 0x20, "1", nullptr, GAME);
+    CVar::Register("nameplateAllowOverlap", "switches between overlapping nameplates or the (old) never overlapping version", 0x20, "1", nullptr, GAME);
+    CVar::Register("unitHighlights", "Whether the highlight circle around units should be displayed", 0x10, "1", nullptr, GAME); // TODO callback LAB_00518bd0
+    CVar::Register("enablePVPNotifyAFK", "The ability to shutdown the AFK notification system", 0x10, "1", nullptr, GAME);
+    CVar::Register("serviceTypeFilter", "Which trainer services to show", 0x10, "3", nullptr, GAME);
+    CVar::Register("autojoinPartyVoice", "Automatically join the voice session in party/raid chat", 0x10, "1", nullptr, GAME);
+    CVar::Register("autojoinBGVoice", "Automatically join the voice session in battleground chat", 0x10, "0", nullptr, GAME);
+    CVar::Register("PushToTalkSound", "Play a sound when voice recording activates and deactivates", 0x10, "0", nullptr, GAME);
+    CVar::Register("combatLogOn", "Whether or not the combat log is shown", 0x20, "1", nullptr, GAME);
+    CVar::Register("showKeyring", "Whether or not the keyring is shown", 0x20, "0", nullptr, GAME);
+    CVar::Register("showBattlefieldMinimap", "Whether or not the battlefield minimap is shown", 0x20, "0", nullptr, GAME);
+    CVar::Register("playerStatLeftDropdown", "The player stat selected in the left dropdown", 0x20, "", nullptr, GAME);
+    CVar::Register("playerStatRightDropdown", "The player stat selected in the right dropdown", 0x20, "", nullptr, GAME);
+    CVar::Register("talentFrameShown", "The talent UI has been shown", 0x10, "0", nullptr, GAME);
+    CVar::Register("auctionDisplayOnCharacter", "Show auction items on the dress-up paperdoll", 0x10, "0", nullptr, GAME);
+    CVar::Register("addFriendInfoShown", "The info for Add Friend has been shown", 0x10, "0", nullptr, GAME);
+    CVar::Register("pendingInviteInfoShown", "The info for pending invites has been shown", 0x10, "0", nullptr, GAME);
+    CVar::Register("timeMgrUseMilitaryTime", "Toggles the display of either 12 or 24 hour time", 0x10, militaryTime, nullptr, GAME);
+    CVar::Register("timeMgrUseLocalTime", "Toggles the use of either the realm time or your system time", 0x10, "0", nullptr, GAME);
+    CVar::Register("timeMgrAlarmTime", "The time manager's alarm time in minutes", 0x10, "0", nullptr, GAME);
+    CVar::Register("timeMgrAlarmMessage", "The time manager's alarm message", 0x10, "", nullptr, GAME);
+    CVar::Register("timeMgrAlarmEnabled", "Toggles whether or not the time manager's alarm will go off", 0x10, "0", nullptr, GAME);
+    CVar::Register("combatLogRetentionTime", "The maximum duration in seconds to retain combat log entries", 0x10, "300", nullptr, GAME);
+    CVar::Register("currencyTokensUnused1", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
+    CVar::Register("currencyTokensUnused2", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
+    CVar::Register("currencyTokensBackpack1", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
+    CVar::Register("currencyTokensBackpack2", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
+    CVar::Register("showTokenFrame", "The token UI has been shown", 0x20, "0", nullptr, GAME);
+    CVar::Register("showTokenFrameHonor", "The token UI has shown Honor", 0x20, "0", nullptr, GAME);
+    CVar::Register("predictedHealth", "Whether or not to use predicted health values in the UI", 0x10, "1", nullptr, GAME);
+    CVar::Register("predictedPower", "Whether or not to use predicted power values in the UI", 0x10, "1", nullptr, GAME);
+    CVar::Register("threatWorldText", "Whether or not to show threat floaters in combat", 0x10, "1", nullptr, GAME);
+    CVar::Register("threatShowNumeric", "Whether or not to show numeric threat on the target and focus frames", 0x10, "0", nullptr, GAME);
+    CVar::Register("threatPlaySounds", "Whether or not to sounds when certain threat transitions occur", 0x10, "1", nullptr, GAME);
+    CVar::Register("ShowAllSpellRanks", "show either all spell ranks, or only the highest rank", 0x10, "1", nullptr, GAME);
+    CVar::Register("ShowClassColorInNameplate", "use this to display the class color in the nameplate health bar", 0x20, "0", nullptr, GAME); // TODO callback FUN_00512770
+    CVar::Register("lfgSelectedRoles", "Stores what roles the player is willing to take on.", 0x120, "0", nullptr, GAME);
+    CVar::Register("lfdCollapsedHeaders", "Stores which LFD headers are collapsed.", 0x120, "", nullptr, GAME);
+    CVar::Register("lfdSelectedDungeons", "Stores which LFD dungeons are selected.", 0x120, "", nullptr, GAME);
+    CVar::Register("lastTalkedToGM", "Stores the last GM someone was talking to in case they reload the UI while the GM chat window is open.", 0x10, "", nullptr, GAME);
+    CVar::Register("autoCompleteResortNamesOnRecency", "Shows people you recently spoke with higher up on the AutoComplete list.", 0x10, "1", nullptr, GAME); // TODO callback FUN_00512830
+    CVar::Register("autoCompleteWhenEditingFromCenter", "If you edit a name by inserting characters into the center, a smarter auto-complete will occur.", 0x10, "1", nullptr, GAME); // TODO callback FUN_00512850
+    CVar::Register("autoCompleteUseContext", "The system will, for example, only show people in your guild when you are typing /gpromote. Names will also never be removed.", 0x10, "1", nullptr, GAME); // TODO callback FUN_00512870
+    CVar::Register("colorChatNamesByClass", "If enabled, the name of a player speaking in chat will be colored according to his class.", 0x10, "0", nullptr, GAME);
+    CVar::Register("autoFilledMultiCastSlots", "Bitfield that saves whether multi-cast slots have been automatically filled.", 0x20, "0", nullptr, GAME);
+    CVar::Register("minimapTrackedInfo", "Stores the minimap tracking that was active last session.", 0x20, "", nullptr, GAME);
+    CVar::Register("questPOI", "If enabled, the quest POI system will be used.", 0x20, "1", nullptr, GAME);
+    CVar::Register("miniWorldMap", "Whether or not the world map has been toggled to smaller size", 0x20, "0", nullptr, GAME);
+    CVar::Register("dontShowEquipmentSetsOnItems", "Don't show which equipment sets an item is associated with", 0x10, "0", nullptr, GAME);
 }

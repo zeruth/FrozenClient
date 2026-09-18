@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 17:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1490 (+8) (5.5%) | 350.0k (6.3%) |
-| &nbsp;&nbsp;ported | 1019 (+9) | 253.3k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (-1) | 92.2k |
+| mapped to a whoa function | 1489 (-1) (5.5%) | 348.1k (6.3%) |
+| &nbsp;&nbsp;ported | 1015 (-4) | 232.5k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **229 (+1) (0.8%)** | **30.8k (0.6%)** |
-| unmapped | 25671 | 5.06M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 167 (+5) (3.0%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **229 (=) (0.8%)** | **30.8k (0.6%)** |
+| unmapped | 25672 | 5.07M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 167 (=) (3.0%) | |
 | whoa functions (src/, from PDB + source) | 10601, stubs 887 | |
 
-Match evidence: annotated 81, callgraph 62, callorder 81, override 63, string 274, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 81, callgraph 62, callorder 81, override 66, string 270, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:06 -- mapped 1482, ported 1010, stub 454, spine mapped 162.
+Previous run: 2026-09-18 17:20 -- mapped 1490, ported 1019, stub 453, spine mapped 167.
 
 ## Lua API coverage (binding tables)
 
@@ -182,7 +182,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | module | ref fns | bytes | mapped | bytes | stub | verified | spine |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1261 | 274.2k | 0 (0.0%) | 0.0% | 0 | 0 | 81 |
-| OggDecompress.cpp | 1504 | 260.7k | 10 (0.7%) | 1.5% | 0 | 0 | 476 |
+| OggDecompress.cpp | 1504 | 260.7k | 9 (0.6%) | 0.8% | 0 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 976 | 190.0k | 50 (5.1%) | 0.2% | 0 | 0 | 108 |
 | Unit_C.cpp | 705 | 182.3k | 1 (0.1%) | 0.3% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 1 (0.1%) | 0.1% | 0 | 0 | 163 |
@@ -564,11 +564,10 @@ A reference function that formats, asserts or looks up a string its port does no
 
 | addr | whoa | missing |
 |---|---|---|
-| 0051d9b0 | `CGGameUI::RegisterGameCVars` | Always show item comparison tooltips; Automatically clear AFK when moving or chatting; Automatically dismount when needed; Automatically join the voice session in battlegrou |
-| 006909a0 | `CGxDeviceGLES::ISetCaps` | %d.%d; GL_ARB_fragment_program; GL_ARB_multisample; GL_ARB_multitexture |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
 | 0096e9c0 | `StringToClickAction` | AnyDown; AnyUp; Button10Down; Button10Up |
 | 005fd910 | `CameraRegisterCVars` | Absorb; Delay; Distance; Never |
+| 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
 | 00401b60 | `ClientRegisterConsoleCommands` | %1.1f; Account Type; Check interface addon version number; ErrorFilter |
 | 0076a630 | `RegisterGxCVars` | Force fixed function rendering; Set FPS limit; Set background FPS limit; Video options version |
@@ -581,7 +580,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00405dd0 | `Sub405DD0` | Country; Data\; Failed to open archive %s.; Failed to read data from the network. Please check |
 | 0062dae0 | `CGTooltip_SetHyperlink` | %I64X:; %s:SetHyperlink(): Unknown link type; Usage: %s:SetHyperlink(link); achievement: |
 | 0061d650 | `CGTooltip_GetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
-| 00455f10 | `TEST_CASE` | %d - %s - %s\n; Copied smaller than expected; DownloadURL failed; DownloadURL failed - File not found |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | <unknown>; Grunt; My public address is %s; My realm ID is %d |
 | 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
@@ -604,6 +602,8 @@ A reference function that formats, asserts or looks up a string its port does no
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
 | 004932c0 | `CSimpleFrame::LoadXML` | alpha; clampedToScreen; maxResize; minResize |
 | 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
+| 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
+| 00599b20 | `CGTabardModelFrame_GetLowerEmblemTexture` | %s:GetLowerEmblemTexture(): Couldn't find 'this' i; %s:GetLowerEmblemTexture(): Wrong object type, exp; TabardModelFrameLower; Usage: %s:GetLowerEmblemTexture(texture) |
 
 ## Largest whoa functions with no reference link
 
@@ -658,17 +658,13 @@ The port exists but does not make the calls the reference makes, in the order it
 
 | addr | whoa | call order | ref calls | whoa calls | ref branches | whoa branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| 00476db0 | `BZ2_decompress` | 18% | 11 | 10 | 283 | 324 | 4% | 8433 |
-| 00474f50 | `sendMTFValues` | 8% | 89 | 90 | 102 | 71 | 35% | 7098 |
-| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 46% | 192 | 89 | 4 | 0 | 20% | 6776 |
+| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 006909a0 | `CGxDeviceGLES::ISetCaps` | 0% | 206 | 7 | 136 | ? | ? | 3789 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 5% | 148 | 30 | 90 | 15 | 10% | 3696 |
 | 00485f40 | `CSimpleTexture::LoadXML` | 41% | 61 | 56 | 119 | 35 | 0% | 3017 |
 | 005fd910 | `CameraRegisterCVars` | 1% | 68 | 1 | 9 | 0 | 7% | 2475 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
-| 00455f10 | `TEST_CASE` | 0% | 40 | 6583 | 76 | ? | ? | 2021 |
 | 004932c0 | `CSimpleFrame::LoadXML` | 39% | 69 | 60 | 68 | 28 | 12% | 1858 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
@@ -698,6 +694,10 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00967290 | `CSimpleEditBox::LoadXML` | 56% | 36 | 31 | 42 | 20 | 0% | 989 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 38 | 15 | 5 | 8% | 909 |
+| 004d9bd0 | `CGlueMgr::EnterWorld` | 45% | 38 | 38 | 23 | 15 | 29% | 895 |
+| 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 62% | 24 | 39 | 31 | 18 | 12% | 889 |
+| 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
+| 0061eb40 | `CGTooltip_SetOwner` | 30% | 33 | 12 | 25 | 4 | 0% | 836 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -796,6 +796,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:02 | 1475 (5.4%) | 225 (0.8%) | 453 | 155/5530 | 936/2512 | 448 |
 | 2026-09-18 17:06 | 1482 (5.5%) | 228 (0.8%) | 454 | 162/5530 | 936/2512 | 448 |
 | 2026-09-18 17:20 | 1490 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
+| 2026-09-18 17:25 | 1489 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 
 ## How to move a row
 
