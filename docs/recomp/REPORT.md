@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 17:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 18:09 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1510 (+11) (5.6%) | 350.1k (6.3%) |
-| &nbsp;&nbsp;ported | 1036 (+11) | 230.1k |
+| mapped to a whoa function | 1513 (+3) (5.6%) | 350.5k (6.3%) |
+| &nbsp;&nbsp;ported | 1039 (+3) | 230.5k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 451 (=) | 92.0k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **246 (+3) (0.9%)** | **36.9k (0.7%)** |
-| unmapped | 25651 | 5.06M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 172 (+4) (3.1%) | |
-| whoa functions (src/, from PDB + source) | 10611, stubs 885 | |
+| **faithful** (linked, not stub, call order >= 80%) | **252 (+6) (0.9%)** | **38.0k (0.7%)** |
+| unmapped | 25648 | 5.06M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 171 (-1) (3.1%) | |
+| whoa functions (src/, from PDB + source) | 10612, stubs 885 | |
 
-Match evidence: annotated 94, callgraph 68, callorder 79, override 74, string 266, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 94, callgraph 62, callorder 87, override 75, string 266, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 17:49 -- mapped 1499, ported 1025, stub 451, spine mapped 168.
+Previous run: 2026-09-18 17:54 -- mapped 1510, ported 1036, stub 451, spine mapped 172.
 
 ## Lua API coverage (binding tables)
 
@@ -187,10 +187,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 1 (0.1%) | 0.3% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 1 (0.1%) | 0.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 0 (0.0%) | 0.0% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 20 (7.1%) | 5.9% | 0 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 17 (6.0%) | 5.1% | 0 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
-| GameUI.cpp | 491 | 96.4k | 40 (8.1%) | 14.6% | 29 | 0 | 73 |
-| Spell_C.cpp | 355 | 86.2k | 6 (1.7%) | 3.2% | 0 | 0 | 121 |
+| GameUI.cpp | 491 | 96.4k | 41 (8.4%) | 15.0% | 29 | 0 | 73 |
+| Spell_C.cpp | 355 | 86.2k | 7 (2.0%) | 3.2% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 28 (8.0%) | 2.6% | 0 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 6 (1.8%) | 0.9% | 0 | 0 | 107 |
@@ -220,11 +220,11 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureCache.cpp | 252 | 38.9k | 6 (2.4%) | 5.5% | 0 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 2 (1.2%) | 0.2% | 0 | 0 | 23 |
 | framing.c | 125 | 38.8k | 27 (21.6%) | 51.7% | 0 | 0 | 39 |
-| DBCache.cpp | 236 | 38.8k | 3 (1.3%) | 1.2% | 0 | 0 | 83 |
+| DBCache.cpp | 236 | 38.8k | 4 (1.7%) | 2.3% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 0 (0.0%) | 0.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 1 (0.6%) | 0.2% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 38 (15.6%) | 18.8% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 39 (16.0%) | 19.7% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 21 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 9 (4.2%) | 9.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
@@ -232,17 +232,17 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 42 (22.8%) | 28.9% | 10 | 1 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 44 (23.9%) | 29.6% | 10 | 1 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 20 (11.8%) | 26.4% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 41 (22.4%) | 39.8% | 4 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 65 (31.9%) | 39.5% | 26 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 67 (32.8%) | 39.7% | 26 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 11 (6.6%) | 20.8% | 0 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 11 (6.6%) | 21.0% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
-| CSimpleFrame.cpp | 144 | 25.9k | 6 (4.2%) | 14.1% | 0 | 0 | 36 |
+| CSimpleFrame.cpp | 144 | 25.9k | 5 (3.5%) | 13.4% | 0 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 7 (5.0%) | 14.3% | 0 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 25 (22.5%) | 23.4% | 19 | 0 | 8 |
@@ -258,7 +258,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 35 (27.3%) | 30.0% | 5 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 33 (25.8%) | 29.0% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 1 (1.1%) | 1.1% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -370,7 +370,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ReputationInfo.cpp | 40 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | fmod_codec_tag.cpp | 7 | 4.4k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | ArenaTeamInfo.cpp | 33 | 4.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| CSimpleMessageFrame.cpp | 29 | 4.2k | 1 (3.4%) | 2.4% | 0 | 0 | 0 |
+| CSimpleMessageFrame.cpp | 29 | 4.2k | 2 (6.9%) | 3.5% | 0 | 0 | 0 |
 | OsTcp.cpp | 23 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ShaderEffectManager.cpp | 24 | 4.1k | 1 (4.2%) | 11.9% | 0 | 0 | 3 |
 | OsVersionHash.cpp | 19 | 4.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -421,13 +421,11 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---|---:|---:|---|---|
 | 00842da0 | M2Shared.cpp? | 17797 | 70 |  |  |
 | 00509dd0 | ChatFrame.cpp | 4047 | 126 |  | !@#$%^&*, %d. %s |
-| 005216f0 | GameUI.cpp | 445 | 681 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 00832ea0 | M2Scene.cpp? | 5663 | 42 |  | "%s", %s = %g, "%s", %s = %g, %s = %g |
 | 00808200 | Spell_C.cpp | 2446 | 98 |  | %s_PET, .\Spell_C.cpp |
 | 007385c0 | Unit_C.cpp | 4083 | 57 |  | .\Unit_C.cpp |
 | 0061fec0 | Tooltip.cpp | 756 | 204 |  | %sTextLeft%d, %sTextRight%d |
 | 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
-| 0067d770 | DBCache.cpp | 448 | 200 |  | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
 | 00821a20 | M2Scene.cpp? | 5621 | 11 |  |  |
@@ -463,6 +461,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00486b20 | CSimpleRender.cpp? | 778 | 26 |  |  |
 | 0041d770 | OggDecompress.cpp | 199 | 103 |  |  |
 | 0082ced0 | M2Scene.cpp? | 706 | 28 |  |  |
+| 00708c20 | Item_C.cpp | 1998 | 9 |  | .\Item_C.cpp, SPELL_FAILED_NO_CHARGES_REMAIN |
+| 008cfda0 | fmod_memory.cpp | 388 | 48 |  | ..\..\src\fmod_memory.cpp |
 
 ## Next to port: unmapped, anywhere
 
@@ -472,7 +472,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 006277f0 | Tooltip.cpp | 24814 | 42 |  | 			<setspelldesc_%d>, 			<setspelldesc_%d></setspelldesc_%d>
  |
 | 00509dd0 | ChatFrame.cpp | 4047 | 126 |  | !@#$%^&*, %d. %s |
-| 005216f0 | GameUI.cpp | 445 | 681 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 00832ea0 | M2Scene.cpp? | 5663 | 42 |  | "%s", %s = %g, "%s", %s = %g, %s = %g |
 | 00808200 | Spell_C.cpp | 2446 | 98 |  | %s_PET, .\Spell_C.cpp |
 | 007385c0 | Unit_C.cpp | 4083 | 57 |  | .\Unit_C.cpp |
@@ -480,7 +479,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0061fec0 | Tooltip.cpp | 756 | 204 |  | %sTextLeft%d, %sTextRight%d |
 | 006238a0 | Tooltip.cpp | 6714 | 19 |  | %d-%d, %s (%d) |
 | 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
-| 0067d770 | DBCache.cpp | 448 | 200 |  | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
 | 00821a20 | M2Scene.cpp? | 5621 | 11 |  |  |
@@ -499,7 +497,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 004cfd20 | SoundInterface2Internal.cpp? | 101 | 345 |  |  |
 | 005fbbc0 | InputControl.cpp | 588 | 53 |  | .\InputControl.cpp |
 | 006b0b80 | blp.cpp? | 53 | 598 |  |  |
-| 0076f1e0 | ConsoleVar.cpp? | 337 | 93 |  |  |
 | 00685fb0 | CGxDevice.cpp | 358 | 87 |  |  |
 | 00729740 | Unit_C.cpp | 815 | 37 |  |  |
 | 009411a0 | fmod_sample_software.cpp? | 7717 | 3 |  |  |
@@ -512,6 +509,9 @@ Module = the source file named by the reference's own assert strings near the fu
 ,  : error %u:  |
 | 004b9760 | Texture.cpp? | 416 | 67 |  | fileName, fileName[0] |
 | 0067de90 | DBCache.cpp | 412 | 67 |  | .?AUDBCACHECALLBACK@@ |
+| 009013b0 | fmod_codec_it.cpp | 9335 | 2 |  | ..\..\src\fmod_codec_it.cpp, FMOD IT final mixdown unit |
+| 0080cce0 | Spell_C.cpp | 3395 | 7 |  | .\Spell_C.cpp, GAMEABILITYACTIVATE |
+| 008a65e0 | ComSatSoundIOSoundEngine.cpp? | 6621 | 3 |  |  |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -663,14 +663,14 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 5% | 148 | 30 | 90 | 15 | 10% | 3696 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
-| 004932c0 | `CSimpleFrame::LoadXML` | 65% | 69 | 73 | 68 | 36 | 12% | 1858 |
+| 004932c0 | `CSimpleFrame::LoadXML` | 67% | 69 | 78 | 68 | 36 | 12% | 1858 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
 | 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 004873e0 | `CSimpleFontString::LoadXML` | 67% | 63 | 68 | 55 | 33 | 0% | 1441 |
+| 004873e0 | `CSimpleFontString::LoadXML` | 68% | 63 | 68 | 55 | 33 | 0% | 1441 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
-| 00631000 | `CGTooltip_SetAction` | 4% | 51 | 5 | 43 | 2 | 0% | 1377 |
+| 00631000 | `CGTooltip_SetAction` | 4% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 007e4480 | `BlobShadowsBegin` | 3% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 81% | 37 | 30 | 4 | 0 | 0% | 1354 |
 | 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 36 | 35 | 19 | 0% | 1303 |
@@ -678,26 +678,26 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0052a980 | `CGGameUI::Initialize` | 12% | 59 | 30 | 23 | 6 | 5% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 20% | 10 | 10 | 10 | 5 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
-| 0096fed0 | `CSimpleButton::LoadXML` | 50% | 46 | 44 | 34 | 23 | 0% | 1174 |
-| 00497070 | `CSimpleFont::LoadXML` | 69% | 36 | 44 | 50 | 23 | 0% | 1155 |
+| 0096fed0 | `CSimpleButton::LoadXML` | 50% | 46 | 50 | 34 | 23 | 0% | 1174 |
+| 00497070 | `CSimpleFont::LoadXML` | 75% | 36 | 50 | 50 | 23 | 0% | 1155 |
 | 0076a630 | `RegisterGxCVars` | 61% | 28 | 17 | 2 | 2 | 9% | 1144 |
 | 00401b60 | `ClientRegisterConsoleCommands` | 33% | 33 | 12 | 3 | 1 | 11% | 1126 |
 | 0060a630 | `Script_GetGUIDFromString` | 11% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetGUIDFromToken` | 69% | 42 | 37 | 34 | 27 | 20% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 76% | 42 | 47 | 35 | 24 | 19% | 1104 |
 | 0040a270 | `Paint` | 7% | 27 | 35 | 19 | 12 | 0% | 1055 |
-| 004f8ea0 | `CGWorldFrame::OnWorldRender` | 0% | 59 | 59 | 14 | 33 | 0% | 1016 |
+| 004f8ea0 | `CGWorldFrame::OnWorldRender` | 0% | 59 | 84 | 14 | 34 | 0% | 1016 |
 | 004debc0 | `Script_GetRealmInfo` | 15% | 53 | 58 | 24 | 17 | 6% | 990 |
-| 00967290 | `CSimpleEditBox::LoadXML` | 72% | 36 | 31 | 42 | 20 | 0% | 989 |
+| 00967290 | `CSimpleEditBox::LoadXML` | 81% | 36 | 42 | 42 | 20 | 0% | 989 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 38 | 15 | 5 | 8% | 909 |
 | 004d9bd0 | `CGlueMgr::EnterWorld` | 45% | 38 | 38 | 23 | 15 | 29% | 895 |
-| 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 62% | 24 | 39 | 31 | 18 | 12% | 889 |
+| 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 62% | 24 | 41 | 31 | 18 | 12% | 889 |
 | 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
-| 0061eb40 | `CGTooltip_SetOwner` | 27% | 33 | 12 | 25 | 4 | 0% | 836 |
+| 0061eb40 | `CGTooltip_SetOwner` | 27% | 33 | 14 | 25 | 4 | 0% | 836 |
 | 008bfe80 | `EffectGlow::EffectGlow` | 4% | 28 | 1 | 19 | 0 | 0% | 834 |
-| 0081bb20 | `Script_CreateFrame` | 50% | 40 | 39 | 20 | 16 | 11% | 832 |
-| 0049f2d0 | `CSimpleFrame_GetAttribute` | 59% | 27 | 31 | 27 | 24 | 19% | 831 |
+| 0081bb20 | `Script_CreateFrame` | 55% | 40 | 40 | 20 | 16 | 11% | 832 |
+| 0049f2d0 | `CSimpleFrame_GetAttribute` | 63% | 27 | 33 | 27 | 24 | 19% | 831 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -749,7 +749,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | addr | whoa | link evidence | why | ref per frame | whoa per frame |
 |---|---|---|---|---|---|
 | 00422140 | `SFile::IsStreamingTrial` | callorder | one side every frame, the other never | [7, 4, 3] | [0, 0, 0] |
-| 00482aa0 | `FrameScript_Object::GetDisplayName` | callorder | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
+| 00482aa0 | `FrameScript_Object::GetDisplayName` | unlinked | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 00483910 | `CSimpleFontString::SetText` | callorder | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00488540 | `CSimpleButton::Enable` | callorder | one side every frame, the other never | [5, 5, 5] | [0, 0, 0] |
 | 0048d730 | `CSimpleFontString_GetText` | table | one side every frame, the other never | [0, 0, 0] | [7, 7, 7] |
@@ -778,7 +778,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 09:04 | 1316 (4.8%) | 0 (0.0%) | 535 | 84/5780 | 936/2512 | 532 |
 | 2026-09-18 09:16 | 1357 (4.9%) | 108 (0.4%) | 535 | 108/5780 | 936/2512 | 532 |
 | 2026-09-18 09:20 | 1422 (5.2%) | 123 (0.5%) | 535 | 149/5551 | 936/2512 | 532 |
 | 2026-09-18 09:21 | 1402 (5.2%) | 120 (0.4%) | 535 | 142/5551 | 936/2512 | 532 |
@@ -803,6 +802,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
 | 2026-09-18 17:54 | 1510 (5.6%) | 246 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
+| 2026-09-18 18:09 | 1513 (5.6%) | 252 (0.9%) | 451 | 171/5530 | 936/2512 | 446 |
 
 ## How to move a row
 
