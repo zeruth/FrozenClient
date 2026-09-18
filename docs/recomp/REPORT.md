@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 10:14 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 10:28 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27177 | 5.41M |
-| mapped to a whoa function | 1409 (=) (5.2%) | 331.4k (6.0%) |
-| &nbsp;&nbsp;ported | 946 (+1) | 237.5k |
+| mapped to a whoa function | 1408 (=) (5.2%) | 332.5k (6.0%) |
+| &nbsp;&nbsp;ported | 940 (-5) | 237.3k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 453 (=) | 92.2k |
-| &nbsp;&nbsp;verified (override) | 10 (-1) | 1.7k |
+| &nbsp;&nbsp;verified (override) | 15 (+5) | 3.1k |
 | **faithful** (linked, not stub, call order >= 80%) | **195 (=) (0.7%)** | **24.2k (0.4%)** |
-| unmapped | 25768 | 5.08M |
-| world spine (reachable from OnFrameRender) | 5545, mapped 125 (=) (2.3%) | |
-| whoa functions (src/, from PDB + source) | 10589, stubs 887 | |
+| unmapped | 25769 | 5.08M |
+| world spine (reachable from OnFrameRender) | 5545, mapped 127 (=) (2.3%) | |
+| whoa functions (src/, from PDB + source) | 10590, stubs 887 | |
 
-Match evidence: annotated 18, callgraph 67, callorder 69, override 43, string 282, table 930. Module anchors: 1479 assert strings.
+Match evidence: annotated 18, callgraph 67, callorder 69, override 45, string 279, table 930. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 10:12 -- mapped 1409, ported 945, stub 453, spine mapped 125.
+Previous run: 2026-09-18 10:16 -- mapped 1408, ported 945, stub 453, spine mapped 127.
 
 ## Lua API coverage (binding tables)
 
@@ -192,10 +192,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameUI.cpp | 491 | 96.4k | 40 (8.1%) | 14.6% | 29 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 6 (1.7%) | 3.2% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 28 (8.0%) | 2.6% | 0 | 1 | 36 |
+| ChatFrame.cpp | 349 | 82.2k | 28 (8.0%) | 2.6% | 0 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 6 (1.8%) | 0.9% | 0 | 0 | 107 |
 | Map.cpp | 238 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 144 |
-| SpellCast.cpp | 261 | 70.6k | 1 (0.4%) | 0.1% | 0 | 0 | 7 |
+| SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 1 (0.5%) | 2.1% | 0 | 0 | 118 |
 | M2Shared.cpp | 66 | 63.3k | 0 (0.0%) | 0.0% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
@@ -204,7 +204,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SEvt.cpp | 242 | 59.1k | 2 (0.8%) | 0.8% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 20 (8.1%) | 7.4% | 7 | 0 | 15 |
-| FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 1.9% | 0 | 0 | 72 |
+| FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 69 (22.7%) | 31.2% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 6 (2.7%) | 1.9% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 28 (8.0%) | 3.6% | 0 | 0 | 68 |
@@ -232,13 +232,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 40 (21.7%) | 27.4% | 10 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 40 (21.7%) | 27.4% | 10 | 1 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 9 (5.3%) | 17.7% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 40 (21.9%) | 39.5% | 4 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 1 (0.5%) | 2.2% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 59 (28.9%) | 36.0% | 26 | 3 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 59 (28.9%) | 36.0% | 26 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 10 (6.0%) | 20.0% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
@@ -246,7 +246,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 2 (1.4%) | 12.2% | 0 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 25 (22.5%) | 23.4% | 19 | 0 | 8 |
-| CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 6 | 1 | 7 |
+| CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 6 | 2 | 7 |
 | TalentInfo.cpp | 141 | 24.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | MovementShared.cpp | 85 | 23.5k | 0 (0.0%) | 0.0% | 0 | 0 | 42 |
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -258,7 +258,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 82 | 20.6k | 0 (0.0%) | 0.0% | 0 | 0 | 34 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 36 (28.1%) | 30.3% | 5 | 0 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 36 (28.1%) | 30.3% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 1 (1.1%) | 1.1% | 0 | 0 | 29 |
 | TaxiMapFrame.cpp | 98 | 19.5k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
@@ -267,7 +267,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | AddOns.cpp | 101 | 18.1k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | KnowledgeBase.cpp | 119 | 17.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 5 (6.5%) | 2.4% | 4 | 0 | 7 |
-| DeclinedWords.cpp | 72 | 17.4k | 3 (4.2%) | 10.8% | 0 | 0 | 32 |
+| DeclinedWords.cpp | 72 | 17.4k | 3 (4.2%) | 16.8% | 0 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 1 (1.4%) | 3.4% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 5 (5.7%) | 1.6% | 0 | 0 | 33 |
 | Item_C.cpp | 107 | 16.4k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
@@ -591,7 +591,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
-| 007e4a40 | `BlobShadowsBegin` | ShadowAdd; ShadowMod; Unit shadow LOD; extShadowQuality |
 | 0054c8a0 | `Script_GetWorldPVPQueueStatus` | Usage: GetWorldPVPQueueStatus(index); active; confirm; error |
 | 00539d70 | `Script_BNGetFriendToonInfo` | Couldn't find a toon at friend index %d, online to; Couldn't find a toon at friend index %d, toon inde; Friend index %d too large, only %d friends.; Toon index %d too large, only %d toons. |
 | 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
@@ -600,6 +599,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 004932c0 | `CSimpleFrame::LoadXML` | alpha; clampedToScreen; maxResize; minResize |
 | 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
+| 00599b20 | `CGTabardModelFrame_GetLowerEmblemTexture` | %s:GetLowerEmblemTexture(): Couldn't find 'this' i; %s:GetLowerEmblemTexture(): Wrong object type, exp; TabardModelFrameLower; Usage: %s:GetLowerEmblemTexture(texture) |
 
 ## Largest whoa functions with no reference link
 
@@ -674,6 +674,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004873e0 | `CSimpleFontString::LoadXML` | 67% | 63 | 68 | 55 | 33 | 0% | 1441 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 00631000 | `CGTooltip_SetAction` | 2% | 51 | 5 | 43 | 2 | 0% | 1377 |
+| 007e4480 | `BlobShadowsBegin` | 3% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 81% | 37 | 30 | 4 | 0 | 0% | 1354 |
 | 0087ee60 | `SESound::LoadDiskSound` | 62% | 29 | 36 | 35 | 19 | 0% | 1303 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 20% | 10 | 9 | 66 | ? | ? | 1299 |
@@ -693,85 +694,81 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004da5f0 | `CGlueMgr::Resume` | 9% | 47 | 38 | 15 | 5 | 8% | 909 |
 | 004d9bd0 | `CGlueMgr::EnterWorld` | 37% | 38 | 38 | 23 | 15 | 29% | 895 |
 | 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 58% | 24 | 39 | 31 | 18 | 12% | 889 |
-| 004067f0 | `InitializeGlobal` | 15% | 52 | 19 | 12 | 1 | 10% | 887 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
-Traced 2026-09-18 10:14: 3 frames on each client, frame-level call order agreement 31%, 11 functions verified (same per-frame count), 28 links contradicted (table below).
+Traced 2026-09-18 10:28: 3 frames on each client, frame-level call order agreement 58%, 18 functions verified (same per-frame count), 25 links contradicted (table below).
 
 | reference calls every frame, whoa never (hits) | whoa calls, reference never (hits) |
 |---|---|
-| `CM2Model::Sub8269C0` 146 | `CM2Shared::CreateSimpleEffect` 74 |
-| `CM2Model::Sub826E60` 131 | `CSimpleFontString_GetText` 21 |
-| `luaV_tostring` 21 | `CCharacterComponent::CreateTexture` 10 |
-| `ObjectUpdateFirstPass` 21 | `FillInSolidTexture` 6 |
-| `CSimpleButton::Enable` 15 | `SkyRender` 3 |
-| `luaL_checklstring` 13 | `SkyBodiesRender` 3 |
-| `SFile::IsStreamingTrial` 13 | `BlobShadowsBegin` 3 |
-| `SI2::PlaySoundKit` 12 | `CSimpleTexture_SetTexCoord` 2 |
-| `SStrChrR` 10 | `TextureCreate` 1 |
-| `SESound::LoadDiskSound` 10 | `Script_GetNetStats` 1 |
-| `SEDiskSound::CompleteNonBlockingLoad` 10 | `FrameScript_GetColor` 1 |
-| `luaC_step` 8 | `CImVector::Set` 1 |
-| `StringToBOOL` 6 | `CGlueMgr::EnterWorld` 1 |
-| `Script_GetGUIDFromToken` 6 | `CGUnit_C::RefreshDataPointers` 1 |
-| `CVar::LookupRegistered` 6 | `CCharacterComponent::AddHandItem` 1 |
+| `ISStrVPrintf` 25 | `FrameScript_Execute` 60 |
+| `luaV_tostring` 21 | `CSimpleFontString_GetText` 21 |
+| `CSimpleButton::Enable` 15 | `FrameScript_Object::GetDisplayName` 3 |
+| `SFile::IsStreamingTrial` 14 | `BlobShadowsBegin` 3 |
+| `SI2::PlaySoundKit` 13 | `CSimpleTexture_SetTexCoord` 2 |
+| `SStrChrR` 11 | `PostInitObject` 1 |
+| `SESound::LoadDiskSound` 11 |  |
+| `SEDiskSound::CompleteNonBlockingLoad` 11 |  |
+| `luaC_step` 6 |  |
+| `StringToBOOL` 6 |  |
+| `Script_GetGUIDFromToken` 6 |  |
+| `CVar::LookupRegistered` 6 |  |
 | `CSimpleFrame_IsVisible` 6 |  |
+| `luaL_checklstring` 3 |  |
 | `Script_UnitMana` 3 |  |
 | `Script_UnitHealth` 3 |  |
 | `CSimpleFontString_SetText` 3 |  |
 | `CSimpleFontString::SetText` 3 |  |
+| `CScriptRegion_GetWidth` 3 |  |
+| `CScriptRegion_GetHeight` 3 |  |
 
 Per-frame count mismatches (ref \| whoa), largest first:
 
-- `index2adr` [537, 537, 593] \| [3063, 3061, 3063]
-- `luaH_getnum` [133, 133, 144] \| [731, 730, 732]
-- `lua_touserdata` [49, 49, 55] \| [394, 394, 394]
-- `StringToFramePoint` [2, 2, 2] \| [322, 322, 322]
-- `CDataStore::FetchRead` [729, 756, 1287] \| [1385, 1098, 1242]
-- `CM2Model::IsDrawable` [567, 563, 558] \| [872, 871, 871]
-- `CM2Model::Sub825E00` [333, 440, 597] \| [76, 278, 290]
-- `CScriptRegion_SetPoint` [1, 1, 1] \| [161, 161, 161]
-- `CM2Model::Sub826350` [155, 190, 246] \| [38, 139, 145]
-- `CM2Model::Sub8260C0` [155, 189, 245] \| [38, 139, 145]
-- `CM2Model::SetBoneSequence` [20, 36, 76] \| [7, 0, 0]
-- `FrameScript_Execute` [0, 0, 1] \| [20, 20, 20]
+- `CDataStore::FetchRead` [595, 667, 1129] \| [355, 527, 521]
+- `CM2Model::IsDrawable` [569, 568, 568] \| [871, 871, 871]
+- `CM2Model::Sub825E00` [323, 418, 547] \| [90, 158, 142]
+- `CM2Model::Sub826350` [152, 185, 227] \| [45, 79, 71]
+- `CM2Model::Sub8260C0` [152, 183, 227] \| [45, 79, 71]
+- `index2adr` [537, 545, 537] \| [613, 611, 613]
+- `CM2Model::SetBoneSequence` [22, 35, 53] \| [0, 0, 1]
+- `luaH_getnum` [134, 134, 134] \| [160, 160, 160]
+- `lua_touserdata` [49, 50, 49] \| [64, 64, 64]
 - `lua_insert` [68, 68, 68] \| [80, 80, 80]
-- `CScriptRegion_GetWidth` [1, 1, 1] \| [10, 10, 10]
 - `CScriptObject_GetName` [1, 1, 1] \| [8, 8, 8]
+- `lua_rawget` [34, 34, 34] \| [40, 40, 40]
+- `NDCToDDC` [6, 6, 6] \| [3, 3, 3]
+- `lua_gettop` [18, 18, 18] \| [21, 20, 21]
+- `luaL_checknumber` [4, 4, 4] \| [3, 0, 3]
 
 Links the trace contradicts -- a wrong link, or a real divergence; each needs a verdict in overrides.json (corrected link / `diverged` / `unlinked`):
 
 | addr | whoa | link evidence | why | ref per frame | whoa per frame |
 |---|---|---|---|---|---|
-| 00422140 | `SFile::IsStreamingTrial` | callorder | one side every frame, the other never | [5, 3, 5] | [0, 0, 0] |
+| 00422140 | `SFile::IsStreamingTrial` | callorder | one side every frame, the other never | [7, 4, 3] | [0, 0, 0] |
+| 00482aa0 | `FrameScript_Object::GetDisplayName` | callorder | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 00483910 | `CSimpleFontString::SetText` | callorder | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00488540 | `CSimpleButton::Enable` | callorder | one side every frame, the other never | [5, 5, 5] | [0, 0, 0] |
 | 0048d730 | `CSimpleFontString_GetText` | table | one side every frame, the other never | [0, 0, 0] | [7, 7, 7] |
 | 0048d780 | `CSimpleFontString_SetText` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
+| 0049d3b0 | `CScriptRegion_GetWidth` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 0049d550 | `CScriptRegion_GetHeight` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
-| 0049db10 | `CScriptRegion_SetPoint` | table | per-frame counts differ 20x every frame | [1, 1, 1] | [161, 161, 161] |
 | 0049fe30 | `CSimpleFrame_IsVisible` | table | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
-| 004c6a40 | `SI2::PlaySoundKit` | string | one side every frame, the other never | [4, 3, 5] | [0, 0, 0] |
-| 004d7050 | `ObjectUpdateFirstPass` | string | one side every frame, the other never | [6, 4, 11] | [0, 0, 0] |
+| 004c6a40 | `SI2::PlaySoundKit` | string | one side every frame, the other never | [6, 4, 3] | [0, 0, 0] |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | string | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 0060abf0 | `Script_GetGUIDFromToken` | string | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 0060eb60 | `Script_UnitHealth` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 0060ed40 | `Script_UnitMana` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00767460 | `CVar::LookupRegistered` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
-| 0076e720 | `SStrChrR` | callorder | one side every frame, the other never | [4, 2, 4] | [0, 0, 0] |
-| 007e4a40 | `BlobShadowsBegin` | string | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
-| 007f2790 | `SkyBodiesRender` | string | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
-| 00814ed0 | `StringToFramePoint` | callorder | per-frame counts differ 20x every frame | [2, 2, 2] | [322, 322, 322] |
+| 0076e720 | `SStrChrR` | callorder | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
+| 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
+| 007e4480 | `BlobShadowsBegin` | override | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 008154e0 | `StringToBOOL` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
-| 008269c0 | `CM2Model::Sub8269C0` | annotated | one side every frame, the other never | [20, 40, 86] | [0, 0, 0] |
-| 00826e60 | `CM2Model::Sub826E60` | annotated | one side every frame, the other never | [20, 37, 74] | [0, 0, 0] |
-| 0084f9f0 | `luaL_checklstring` | callorder | one side every frame, the other never | [1, 1, 11] | [0, 0, 0] |
+| 00819210 | `FrameScript_Execute` | callorder | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
+| 0084f9f0 | `luaL_checklstring` | callorder | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00856ea0 | `luaV_tostring` | override | one side every frame, the other never | [7, 7, 7] | [0, 0, 0] |
-| 0085b950 | `luaC_step` | override | one side every frame, the other never | [2, 2, 4] | [0, 0, 0] |
-| 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | string | one side every frame, the other never | [4, 2, 4] | [0, 0, 0] |
-| 0087ee60 | `SESound::LoadDiskSound` | string | one side every frame, the other never | [4, 2, 4] | [0, 0, 0] |
-| 009abb00 | `SkyRender` | string | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
+| 0085b950 | `luaC_step` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
+| 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | string | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
+| 0087ee60 | `SESound::LoadDiskSound` | string | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 
 ## Iterations
 
@@ -788,6 +785,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 10:09 | 1475 (5.4%) | 214 (0.8%) | 449 | 154/5545 | 936/2512 | 448 |
 | 2026-09-18 10:12 | 1409 (5.2%) | 195 (0.7%) | 453 | 125/5545 | 936/2512 | 448 |
 | 2026-09-18 10:14 | 1409 (5.2%) | 195 (0.7%) | 453 | 125/5545 | 936/2512 | 448 |
+| 2026-09-18 10:16 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
+| 2026-09-18 10:28 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
 
 ## How to move a row
 

@@ -1,15 +1,29 @@
 {
  "00422140": {
   "ref": [
-   5,
-   3,
-   5
+   7,
+   4,
+   3
   ],
   "whoa": "SFile::IsStreamingTrial",
   "whoa_": [
    0,
    0,
    0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "00482aa0": {
+  "ref": [
+   0,
+   0,
+   0
+  ],
+  "whoa": "FrameScript_Object::GetDisplayName",
+  "whoa_": [
+   1,
+   1,
+   1
   ],
   "why": "one side every frame, the other never"
  },
@@ -69,6 +83,20 @@
   ],
   "why": "one side every frame, the other never"
  },
+ "0049d3b0": {
+  "ref": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CScriptRegion_GetWidth",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
  "0049d550": {
   "ref": [
    1,
@@ -82,20 +110,6 @@
    0
   ],
   "why": "one side every frame, the other never"
- },
- "0049db10": {
-  "ref": [
-   1,
-   1,
-   1
-  ],
-  "whoa": "CScriptRegion_SetPoint",
-  "whoa_": [
-   161,
-   161,
-   161
-  ],
-  "why": "per-frame counts differ 20x every frame"
  },
  "0049fe30": {
   "ref": [
@@ -113,25 +127,11 @@
  },
  "004c6a40": {
   "ref": [
-   4,
-   3,
-   5
-  ],
-  "whoa": "SI2::PlaySoundKit",
-  "whoa_": [
-   0,
-   0,
-   0
-  ],
-  "why": "one side every frame, the other never"
- },
- "004d7050": {
-  "ref": [
    6,
    4,
-   11
+   3
   ],
-  "whoa": "ObjectUpdateFirstPass",
+  "whoa": "SI2::PlaySoundKit",
   "whoa_": [
    0,
    0,
@@ -211,9 +211,9 @@
  },
  "0076e720": {
   "ref": [
-   4,
-   2,
-   4
+   6,
+   3,
+   2
   ],
   "whoa": "SStrChrR",
   "whoa_": [
@@ -223,7 +223,21 @@
   ],
   "why": "one side every frame, the other never"
  },
- "007e4a40": {
+ "0076f010": {
+  "ref": [
+   13,
+   7,
+   5
+  ],
+  "whoa": "ISStrVPrintf",
+  "whoa_": [
+   0,
+   0,
+   0
+  ],
+  "why": "one side every frame, the other never"
+ },
+ "007e4480": {
   "ref": [
    0,
    0,
@@ -236,34 +250,6 @@
    1
   ],
   "why": "one side every frame, the other never"
- },
- "007f2790": {
-  "ref": [
-   0,
-   0,
-   0
-  ],
-  "whoa": "SkyBodiesRender",
-  "whoa_": [
-   1,
-   1,
-   1
-  ],
-  "why": "one side every frame, the other never"
- },
- "00814ed0": {
-  "ref": [
-   2,
-   2,
-   2
-  ],
-  "whoa": "StringToFramePoint",
-  "whoa_": [
-   322,
-   322,
-   322
-  ],
-  "why": "per-frame counts differ 20x every frame"
  },
  "008154e0": {
   "ref": [
@@ -279,31 +265,17 @@
   ],
   "why": "one side every frame, the other never"
  },
- "008269c0": {
+ "00819210": {
   "ref": [
-   20,
-   40,
-   86
-  ],
-  "whoa": "CM2Model::Sub8269C0",
-  "whoa_": [
    0,
    0,
    0
   ],
-  "why": "one side every frame, the other never"
- },
- "00826e60": {
-  "ref": [
-   20,
-   37,
-   74
-  ],
-  "whoa": "CM2Model::Sub826E60",
+  "whoa": "FrameScript_Execute",
   "whoa_": [
-   0,
-   0,
-   0
+   20,
+   20,
+   20
   ],
   "why": "one side every frame, the other never"
  },
@@ -311,7 +283,7 @@
   "ref": [
    1,
    1,
-   11
+   1
   ],
   "whoa": "luaL_checklstring",
   "whoa_": [
@@ -339,7 +311,7 @@
   "ref": [
    2,
    2,
-   4
+   2
   ],
   "whoa": "luaC_step",
   "whoa_": [
@@ -351,9 +323,9 @@
  },
  "0087b5f0": {
   "ref": [
-   4,
-   2,
-   4
+   6,
+   3,
+   2
   ],
   "whoa": "SEDiskSound::CompleteNonBlockingLoad",
   "whoa_": [
@@ -365,29 +337,15 @@
  },
  "0087ee60": {
   "ref": [
-   4,
-   2,
-   4
+   6,
+   3,
+   2
   ],
   "whoa": "SESound::LoadDiskSound",
   "whoa_": [
    0,
    0,
    0
-  ],
-  "why": "one side every frame, the other never"
- },
- "009abb00": {
-  "ref": [
-   0,
-   0,
-   0
-  ],
-  "whoa": "SkyRender",
-  "whoa_": [
-   1,
-   1,
-   1
   ],
   "why": "one side every frame, the other never"
  }

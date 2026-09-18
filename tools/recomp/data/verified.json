@@ -1,7 +1,22 @@
 {
+ "0048bd20": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   0,
+   1,
+   0
+  ],
+  "whoa": "CImVector::Set",
+  "whoaPerFrame": [
+   0,
+   1,
+   0
+  ]
+ },
  "0048c610": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    2,
    2,
@@ -16,7 +31,7 @@
  },
  "0048d240": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -31,7 +46,7 @@
  },
  "0048d2a0": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -44,9 +59,24 @@
    1
   ]
  },
+ "0049db10": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "CScriptRegion_SetPoint",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
  "0049e100": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    3,
    3,
@@ -61,7 +91,7 @@
  },
  "0049fe90": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    21,
    21,
@@ -76,7 +106,7 @@
  },
  "004f8ea0": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -91,7 +121,7 @@
  },
  "00510a10": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -104,9 +134,24 @@
    1
   ]
  },
+ "00510ac0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   0,
+   1,
+   0
+  ],
+  "whoa": "Script_GetNetStats",
+  "whoaPerFrame": [
+   0,
+   1,
+   0
+  ]
+ },
  "0061d210": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -121,7 +166,7 @@
  },
  "00777980": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -134,9 +179,69 @@
    1
   ]
  },
+ "007f09b0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   1,
+   1,
+   1
+  ],
+  "whoa": "SkyRender",
+  "whoaPerFrame": [
+   1,
+   1,
+   1
+  ]
+ },
+ "00814ed0": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   2,
+   2,
+   2
+  ],
+  "whoa": "StringToFramePoint",
+  "whoaPerFrame": [
+   2,
+   2,
+   2
+  ]
+ },
+ "00856e50": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   8,
+   10,
+   8
+  ],
+  "whoa": "luaV_tonumber",
+  "whoaPerFrame": [
+   8,
+   10,
+   8
+  ]
+ },
+ "00960420": {
+  "frames": 3,
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
+  "refPerFrame": [
+   0,
+   1,
+   0
+  ],
+  "whoa": "FrameScript_GetColor",
+  "whoaPerFrame": [
+   0,
+   1,
+   0
+  ]
+ },
  "00973530": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    1,
    1,
@@ -151,7 +256,7 @@
  },
  "009771d0": {
   "frames": 3,
-  "note": "trace 2026-09-18 10:14: same per-frame count in 3/3 frames (frame order agreement overall 31%)",
+  "note": "trace 2026-09-18 10:28: same per-frame count in 3/3 frames (frame order agreement overall 58%)",
   "refPerFrame": [
    3,
    3,

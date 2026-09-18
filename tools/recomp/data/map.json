@@ -1068,7 +1068,7 @@
   "how": "callgraph",
   "module": "CScriptRegion.cpp",
   "refSize": 186,
-  "status": "ported",
+  "status": "verified",
   "whoa": "CImVector::Set",
   "whoaSize": 108
  },
@@ -2253,9 +2253,9 @@
   "how": "table",
   "module": "CSimpleAnim.cpp",
   "refSize": 804,
-  "status": "ported",
+  "status": "verified",
   "whoa": "CScriptRegion_SetPoint",
-  "whoaSize": 890
+  "whoaSize": 1066
  },
  "0049de40": {
   "branchRatio": 0.571,
@@ -5293,7 +5293,7 @@
   "how": "table",
   "module": "ChatFrame.cpp",
   "refSize": 105,
-  "status": "ported",
+  "status": "verified",
   "whoa": "Script_GetNetStats",
   "whoaSize": 61
  },
@@ -15017,17 +15017,17 @@
   "whoa": "ReceiveNewTimeSpeed",
   "whoaSize": 265
  },
- "007e4a40": {
-  "branchRatio": 0.0,
+ "007e4480": {
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.03,
   "files": [
    "src/world/Terrain.cpp"
   ],
-  "how": "string",
+  "how": "override",
   "module": "DeclinedWords.cpp",
-  "refSize": 298,
+  "refSize": 1370,
   "status": "ported",
   "whoa": "BlobShadowsBegin",
   "whoaSize": 405
@@ -15047,20 +15047,20 @@
   "whoa": "EffectDeath::EffectDeath",
   "whoaSize": 89
  },
- "007f2790": {
-  "branchRatio": 0.25,
+ "007f09b0": {
+  "branchRatio": 0.714,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
    "src/world/Terrain.cpp"
   ],
-  "how": "string",
+  "how": "override",
   "module": "FFXEffects.cpp",
-  "refSize": 655,
+  "refSize": 781,
   "status": "ported",
-  "whoa": "SkyBodiesRender",
-  "whoaSize": 1195
+  "whoa": "SkyRender",
+  "whoaSize": 2604
  },
  "00812d20": {
   "branchRatio": 1.0,
@@ -15193,7 +15193,7 @@
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 74,
-  "status": "ported",
+  "status": "verified",
   "whoa": "StringToFramePoint",
   "whoaSize": 92
  },
@@ -17437,7 +17437,7 @@
   "how": "callgraph",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 271,
-  "status": "ported",
+  "status": "verified",
   "whoa": "FrameScript_GetColor",
   "whoaSize": 424
  },
@@ -21148,20 +21148,5 @@
   "status": "ported",
   "whoa": "SI2::StartCreditsMusic",
   "whoaSize": 434
- },
- "009abb00": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/world/Terrain.cpp"
-  ],
-  "how": "string",
-  "module": "SpellCast.cpp",
-  "refSize": 37,
-  "status": "ported",
-  "whoa": "SkyRender",
-  "whoaSize": 2604
  }
 }

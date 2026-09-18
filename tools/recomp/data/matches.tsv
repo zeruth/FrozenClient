@@ -996,9 +996,9 @@ addr	how	whoa	evidence
 007dc010	string	GetButtonName	score 14.05 shared Button10; Button11; Button12
 007e18c0	string	ValidateNameInitialize	score 0.50 shared forceEnglishNames
 007e2840	string	ReceiveNewTimeSpeed	score 0.50 shared Gamespeed set from %.03f to %.03f
-007e4a40	string	BlobShadowsBegin	unique "Textures\ShadowBlob.blp"
+007e4480	override	BlobShadowsBegin	
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
-007f2790	string	SkyBodiesRender	unique "Textures\moon.blp"
+007f09b0	override	SkyRender	
 00812d20	callorder	FrameXML_ReleaseHashNode	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames
 00812fa0	string	FrameXML_CreateFrame	unique "-- Creating %s named %s"
 00813be0	string	FrameXML_StoreHashNode	unique "-- Added virtual frame %s"
@@ -1409,4 +1409,3 @@ addr	how	whoa	evidence
 009860e0	callorder	SI2::StopGlueMusic	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 009861c0	callgraph	SI2::StartGlueMusic	only unmatched callee of 004dc070=Script_PlayGlueMusic
 009862c0	callgraph	SI2::StartCreditsMusic	only unmatched callee of 004dc150=Script_PlayCreditsMusic
-009abb00	string	SkyRender	unique "Environments\Stars\stars.mdl"

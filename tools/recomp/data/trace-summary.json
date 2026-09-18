@@ -1,55 +1,43 @@
 {
- "date": "2026-09-18 10:14",
+ "date": "2026-09-18 10:28",
  "frames": 3,
- "orderAvg": 0.311,
- "verified": 11,
+ "orderAvg": 0.576,
+ "verified": 18,
  "missing": [
   [
-   146,
-   "CM2Model::Sub8269C0"
-  ],
-  [
-   131,
-   "CM2Model::Sub826E60"
+   25,
+   "ISStrVPrintf"
   ],
   [
    21,
    "luaV_tostring"
   ],
   [
-   21,
-   "ObjectUpdateFirstPass"
-  ],
-  [
    15,
    "CSimpleButton::Enable"
   ],
   [
-   13,
-   "luaL_checklstring"
-  ],
-  [
-   13,
+   14,
    "SFile::IsStreamingTrial"
   ],
   [
-   12,
+   13,
    "SI2::PlaySoundKit"
   ],
   [
-   10,
+   11,
    "SStrChrR"
   ],
   [
-   10,
+   11,
    "SESound::LoadDiskSound"
   ],
   [
-   10,
+   11,
    "SEDiskSound::CompleteNonBlockingLoad"
   ],
   [
-   8,
+   6,
    "luaC_step"
   ],
   [
@@ -70,6 +58,10 @@
   ],
   [
    3,
+   "luaL_checklstring"
+  ],
+  [
+   3,
    "Script_UnitMana"
   ],
   [
@@ -86,6 +78,10 @@
   ],
   [
    3,
+   "CScriptRegion_GetWidth"
+  ],
+  [
+   3,
    "CScriptRegion_GetHeight"
   ],
   [
@@ -95,28 +91,16 @@
  ],
  "added": [
   [
-   74,
-   "CM2Shared::CreateSimpleEffect"
+   60,
+   "FrameScript_Execute"
   ],
   [
    21,
    "CSimpleFontString_GetText"
   ],
   [
-   10,
-   "CCharacterComponent::CreateTexture"
-  ],
-  [
-   6,
-   "FillInSolidTexture"
-  ],
-  [
    3,
-   "SkyRender"
-  ],
-  [
-   3,
-   "SkyBodiesRender"
+   "FrameScript_Object::GetDisplayName"
   ],
   [
    3,
@@ -128,200 +112,134 @@
   ],
   [
    1,
-   "TextureCreate"
-  ],
-  [
-   1,
-   "Script_GetNetStats"
-  ],
-  [
-   1,
-   "FrameScript_GetColor"
-  ],
-  [
-   1,
-   "CImVector::Set"
-  ],
-  [
-   1,
-   "CGlueMgr::EnterWorld"
-  ],
-  [
-   1,
-   "CGUnit_C::RefreshDataPointers"
-  ],
-  [
-   1,
-   "CCharacterComponent::AddHandItem"
+   "PostInitObject"
   ]
  ],
  "mismatch": [
   [
-   7520,
-   "index2adr",
-   [
-    537,
-    537,
-    593
-   ],
-   [
-    3063,
-    3061,
-    3063
-   ]
-  ],
-  [
-   1783,
-   "luaH_getnum",
-   [
-    133,
-    133,
-    144
-   ],
-   [
-    731,
-    730,
-    732
-   ]
-  ],
-  [
-   1029,
-   "lua_touserdata",
-   [
-    49,
-    49,
-    55
-   ],
-   [
-    394,
-    394,
-    394
-   ]
-  ],
-  [
-   960,
-   "StringToFramePoint",
-   [
-    2,
-    2,
-    2
-   ],
-   [
-    322,
-    322,
-    322
-   ]
-  ],
-  [
-   953,
+   988,
    "CDataStore::FetchRead",
    [
-    729,
-    756,
-    1287
+    595,
+    667,
+    1129
    ],
    [
-    1385,
-    1098,
-    1242
+    355,
+    527,
+    521
    ]
   ],
   [
-   926,
+   908,
    "CM2Model::IsDrawable",
    [
-    567,
-    563,
-    558
+    569,
+    568,
+    568
    ],
    [
-    872,
+    871,
     871,
     871
    ]
   ],
   [
-   726,
+   898,
    "CM2Model::Sub825E00",
    [
-    333,
-    440,
-    597
+    323,
+    418,
+    547
    ],
    [
-    76,
-    278,
-    290
+    90,
+    158,
+    142
    ]
   ],
   [
-   480,
-   "CScriptRegion_SetPoint",
-   [
-    1,
-    1,
-    1
-   ],
-   [
-    161,
-    161,
-    161
-   ]
-  ],
-  [
-   269,
+   369,
    "CM2Model::Sub826350",
    [
-    155,
-    190,
-    246
+    152,
+    185,
+    227
    ],
    [
-    38,
-    139,
-    145
+    45,
+    79,
+    71
    ]
   ],
   [
-   267,
+   367,
    "CM2Model::Sub8260C0",
    [
-    155,
-    189,
-    245
+    152,
+    183,
+    227
    ],
    [
-    38,
-    139,
-    145
+    45,
+    79,
+    71
    ]
   ],
   [
-   125,
+   218,
+   "index2adr",
+   [
+    537,
+    545,
+    537
+   ],
+   [
+    613,
+    611,
+    613
+   ]
+  ],
+  [
+   109,
    "CM2Model::SetBoneSequence",
    [
-    20,
-    36,
-    76
+    22,
+    35,
+    53
    ],
-   [
-    7,
-    0,
-    0
-   ]
-  ],
-  [
-   59,
-   "FrameScript_Execute",
    [
     0,
     0,
     1
+   ]
+  ],
+  [
+   78,
+   "luaH_getnum",
+   [
+    134,
+    134,
+    134
    ],
    [
-    20,
-    20,
-    20
+    160,
+    160,
+    160
+   ]
+  ],
+  [
+   44,
+   "lua_touserdata",
+   [
+    49,
+    50,
+    49
+   ],
+   [
+    64,
+    64,
+    64
    ]
   ],
   [
@@ -336,20 +254,6 @@
     80,
     80,
     80
-   ]
-  ],
-  [
-   27,
-   "CScriptRegion_GetWidth",
-   [
-    1,
-    1,
-    1
-   ],
-   [
-    10,
-    10,
-    10
    ]
   ],
   [
@@ -423,44 +327,16 @@
    ]
   ],
   [
-   5,
+   6,
    "CSimpleRegion::SetVertexColor",
    [
     2,
-    2,
+    3,
     2
    ],
    [
     0,
     1,
-    0
-   ]
-  ],
-  [
-   4,
-   "luaV_tonumber",
-   [
-    8,
-    8,
-    14
-   ],
-   [
-    8,
-    10,
-    8
-   ]
-  ],
-  [
-   4,
-   "CM2Model::AttachToParent",
-   [
-    0,
-    1,
-    6
-   ],
-   [
-    3,
-    0,
     0
    ]
   ],
@@ -476,34 +352,6 @@
     1,
     1,
     1
-   ]
-  ],
-  [
-   2,
-   "PostInitObject",
-   [
-    0,
-    0,
-    1
-   ],
-   [
-    2,
-    1,
-    0
-   ]
-  ],
-  [
-   1,
-   "ISStrVPrintf",
-   [
-    9,
-    5,
-    9
-   ],
-   [
-    24,
-    0,
-    0
    ]
   ]
  ]

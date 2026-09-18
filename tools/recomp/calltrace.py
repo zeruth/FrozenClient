@@ -161,8 +161,8 @@ def choose(side, opts):
     for a, e in m.items():
         if e['status'] == 'stub':
             continue
-        if side == 'whoa' and not e.get('whoaSize'):
-            continue  # not in the PDB as code (inlined everywhere): a breakpoint could never see it
+        if not e.get('whoaSize'):
+            continue  # whoa inlined it everywhere: a breakpoint could never see it, on either side
         if spine is not None and a not in spine:
             continue
         if not opts.hot and callers.get(a, 0) > opts.max_callers:
@@ -173,6 +173,11 @@ def choose(side, opts):
             picked[a] = e['whoa']
         else:
             picked[e['whoa']] = a
+    # arbitrary reference addresses, linked or not: "which of these 67 callers fires per frame?"
+    if side == 'ref' and opts.addrs:
+        for a in opts.addrs.split(','):
+            a = a.strip().lower().replace('0x', '').zfill(8)
+            picked.setdefault(a, 'FUN_' + a)
     return picked
 
 
@@ -187,6 +192,7 @@ def main():
     ap.add_argument('--hot', action='store_true', help='also trace hot leaves (SMemAlloc, RsSet ...): slow, may stall the client')
     ap.add_argument('--max-callers', type=int, default=100, help='without --hot, skip functions the reference calls from more sites than this')
     ap.add_argument('--names', help='comma-separated whoa names to trace instead of the whole map')
+    ap.add_argument('--addrs', help='ref only: extra reference addresses to trace, linked or not (comma-separated hex)')
     ap.add_argument('--pid', type=int)
     ap.add_argument('--out')
     opts = ap.parse_args()
