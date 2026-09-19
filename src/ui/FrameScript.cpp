@@ -210,6 +210,7 @@ void FrameScript_Execute(const char* source, const char* filename, const char* a
     */
 }
 
+// ref: FUN_00819ea0
 void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32_t argCount, const char* a4, FrameScript_EventObject* event) {
     lua_State* L = FrameScript::s_context;
 

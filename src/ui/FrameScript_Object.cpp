@@ -165,6 +165,7 @@ void FrameScript_Object::RegisterScriptObject(const char* name) {
     }
 }
 
+// ref: FUN_0081a2c0
 void FrameScript_Object::RunScript(ScriptIx const& script, int32_t argCount, const char* a4) {
     FrameScript_Execute(script.luaRef, this, argCount, a4 ? a4 : script.unk, nullptr);
 }

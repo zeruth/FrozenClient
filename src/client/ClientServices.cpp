@@ -391,8 +391,17 @@ void ClientServices::SelectRealm(const char* realmName) {
     ClientServices::SetSelectedRealmInfo(1);
 }
 
+// ref: FUN_006b0b50
 void ClientServices::Send(CDataStore* msg) {
-    ClientServices::Connection()->Send(msg);
+    if (ClientServices::s_currentConnection) {
+        ClientServices::s_currentConnection->Send(msg);
+
+        return;
+    }
+
+    // The reference's FUN_008889b0("", "", 0): a stripped assert that still terminates
+    SErrPrepareAppFatal("", 0);
+    SErrDisplayAppFatal("%s", "");
 }
 
 void ClientServices::SetAccountName(const char* accountName) {

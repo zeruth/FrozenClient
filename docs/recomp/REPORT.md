@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-19 03:09 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 03:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 2187 (+5) (8.1%) | 472.0k (8.5%) |
-| &nbsp;&nbsp;ported | 1640 (+5) | 333.7k |
+| mapped to a whoa function | 2184 (-8) (8.0%) | 471.9k (8.5%) |
+| &nbsp;&nbsp;ported | 1637 (-8) | 333.5k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 523 (=) | 104.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **634 (+2) (2.3%)** | **75.5k (1.4%)** |
-| unmapped | 24974 | 4.94M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 289 (=) (5.2%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **635 (=) (2.3%)** | **75.7k (1.4%)** |
+| unmapped | 24977 | 4.94M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 292 (-3) (5.3%) | |
 | whoa functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 223, callgraph 119, callorder 122, cvar 30, handler 27, order 314, override 107, string 347, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 225, callgraph 114, callorder 120, cvar 30, handler 27, order 312, override 111, string 347, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 03:03 -- mapped 2182, ported 1635, stub 523, spine mapped 289.
+Previous run: 2026-09-19 03:13 -- mapped 2192, ported 1645, stub 523, spine mapped 295.
 
 ## Lua API coverage (binding tables)
 
@@ -223,7 +223,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 7 (3.8%) | 3.8% | 1 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 195 (53.6%) | 58.9% | 75 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 194 (53.3%) | 58.7% | 75 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -243,7 +243,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 55 (29.9%) | 38.2% | 17 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 56 (30.4%) | 38.3% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 47 (27.8%) | 36.2% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 66 (36.1%) | 49.2% | 12 | 0 | 1 |
@@ -269,7 +269,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 32 (25.0%) | 28.1% | 5 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 31 (24.2%) | 27.7% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 0 | 0 | 2 |
@@ -299,7 +299,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | GxuFontUtil.cpp | 60 | 13.3k | 2 (3.3%) | 1.0% | 0 | 0 | 45 |
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
-| blp.cpp | 94 | 13.0k | 12 (12.8%) | 12.2% | 0 | 0 | 20 |
+| blp.cpp | 94 | 13.0k | 13 (13.8%) | 12.5% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
@@ -313,7 +313,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | UIBindings.cpp | 59 | 11.5k | 17 (28.8%) | 34.1% | 15 | 0 | 4 |
-| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 5 (6.7%) | 8.0% | 0 | 0 | 0 |
+| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 3 (4.0%) | 7.3% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
@@ -356,7 +356,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EZ_LCD_Page.cpp | 69 | 6.1k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | UnitSound_C.cpp | 37 | 6.0k | 0 (0.0%) | 0.0% | 0 | 0 | 13 |
 | UnitVehicle_C.cpp | 36 | 6.0k | 0 (0.0%) | 0.0% | 0 | 0 | 21 |
-| NetClient.cpp | 44 | 5.9k | 1 (2.3%) | 0.4% | 0 | 0 | 6 |
+| NetClient.cpp | 44 | 5.9k | 2 (4.5%) | 3.4% | 0 | 0 | 6 |
 | LootFrame.cpp | 36 | 5.8k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | block.c | 16 | 5.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EZ_LCD.cpp | 54 | 5.7k | 0 (0.0%) | 0.0% | 0 | 0 | 8 |
@@ -381,7 +381,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ReputationInfo.cpp | 40 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | fmod_codec_tag.cpp | 7 | 4.4k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | ArenaTeamInfo.cpp | 33 | 4.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| CSimpleMessageFrame.cpp | 29 | 4.2k | 2 (6.9%) | 3.5% | 0 | 0 | 0 |
+| CSimpleMessageFrame.cpp | 29 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | OsTcp.cpp | 23 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ShaderEffectManager.cpp | 24 | 4.1k | 2 (8.3%) | 24.5% | 0 | 0 | 3 |
 | OsVersionHash.cpp | 19 | 4.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -468,12 +468,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0041d770 | OggDecompress.cpp | 199 | 103 |  |  |
 | 0082ced0 | M2Scene.cpp? | 706 | 28 |  |  |
 | 00708c20 | Item_C.cpp | 1998 | 9 |  | .\Item_C.cpp, SPELL_FAILED_NO_CHARGES_REMAIN |
-| 006b0b50 | blp.cpp? | 41 | 465 |  |  |
 | 008cfda0 | fmod_memory.cpp | 388 | 48 |  | ..\..\src\fmod_memory.cpp |
 | 00802f80 | Spell_C.cpp | 1396 | 12 |  | .\Spell_C.cpp |
 | 004922f0 | CSimpleFrame.cpp | 951 | 18 |  |  |
 | 00603330 | InputControl.cpp? | 1379 | 12 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0080bc80 | Spell_C.cpp | 1723 | 9 |  | .\Spell_C.cpp |
+| 004102b2 | LoadingScreen.cpp? | 2420 | 6 |  | (null) |
 
 ## Next to port: unmapped, anywhere
 
@@ -778,7 +778,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
 | 007e4480 | `BlobShadowsBegin` | override | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 008154e0 | `StringToBOOL` | unlinked | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
-| 00819210 | `FrameScript_Execute` | callorder | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
+| 00819210 | `FrameScript_Execute` | override | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
 | 0084f9f0 | `luaL_checklstring` | callorder | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00856ea0 | `luaV_tostring` | override | one side every frame, the other never | [7, 7, 7] | [0, 0, 0] |
 | 0085b950 | `luaC_step` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
@@ -789,8 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 22:25 | 1636 (6.0%) | 316 (1.2%) | 463 | 176/5530 | 936/2512 | 446 |
-| 2026-09-18 22:28 | 1640 (6.0%) | 319 (1.2%) | 463 | 178/5530 | 936/2512 | 446 |
 | 2026-09-18 22:35 | 1647 (6.1%) | 324 (1.2%) | 463 | 179/5530 | 936/2512 | 446 |
 | 2026-09-18 22:43 | 1652 (6.1%) | 326 (1.2%) | 463 | 187/5530 | 936/2512 | 446 |
 | 2026-09-18 22:44 | 1654 (6.1%) | 327 (1.2%) | 463 | 189/5530 | 936/2512 | 446 |
@@ -814,6 +812,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 02:56 | 2170 (8.0%) | 625 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:03 | 2182 (8.0%) | 632 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:09 | 2187 (8.1%) | 634 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:13 | 2192 (8.1%) | 635 (2.3%) | 523 | 295/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:13 | 2184 (8.0%) | 635 (2.3%) | 523 | 292/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

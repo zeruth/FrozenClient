@@ -40822,16 +40822,22 @@
 "src/client/clientservices.cpp"
 ],
 "callseq": [
-"ClientServices::Connection",
-"NetClient::Send"
+"NetClient::Send",
+"SErrPrepareAppFatal",
+"SErrDisplayAppFatal"
 ],
-"strings": [],
-"consts": [],
-"branches": 0,
+"strings": [
+"",
+"%s"
+],
+"consts": [
+"0"
+],
+"branches": 1,
 "stub": false,
-"lines": 3,
+"lines": 11,
 "refs": [],
-"line": 394
+"line": 395
 },
 "ClientServices::SetAccountName": {
 "files": [
@@ -40846,7 +40852,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 398
+"line": 407
 },
 "ClientServices::SetCharacterInfo": {
 "files": [
@@ -40861,7 +40867,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 402
+"line": 411
 },
 "ClientServices::SetMessageHandler": {
 "files": [
@@ -40877,7 +40883,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 408
+"line": 417
 },
 "ClientServices::ClearMessageHandler": {
 "files": [
@@ -40899,7 +40905,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 416
+"line": 425
 },
 "ClientServices::SetSelectedRealmInfo": {
 "files": [
@@ -40923,7 +40929,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 428
+"line": 437
 },
 "ClientServices::ValidDisconnect": {
 "files": [
@@ -40938,7 +40944,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 449
+"line": 458
 },
 "ClientServices::GetLoginServer": {
 "files": [
@@ -40957,7 +40963,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 455
+"line": 464
 },
 "ClientServices::GetLoginServerType": {
 "files": [
@@ -40976,7 +40982,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 461
+"line": 470
 },
 "ClientServices::JoinRealmResult": {
 "files": [
@@ -40989,7 +40995,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 469
+"line": 478
 },
 "ClientServices::LoginServerStatus": {
 "files": [
@@ -41017,7 +41023,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 473
+"line": 482
 },
 "ClientServices::RealmEnumCallback": {
 "files": [
@@ -41050,7 +41056,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 496
+"line": 505
 },
 "OsGuiGetWindow": {
 "files": [
@@ -92908,7 +92914,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 333
+"line": 334
 },
 "FrameScript_ExecuteFile": {
 "files": [
@@ -92948,7 +92954,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 375
+"line": 376
 },
 "FrameScript_Flush": {
 "files": [
@@ -92964,7 +92970,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 441
+"line": 442
 },
 "FrameScript_GetColor": {
 "files": [
@@ -92999,7 +93005,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 448
+"line": 449
 },
 "FrameScript_GetContext": {
 "files": [
@@ -93012,7 +93018,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 467
+"line": 468
 },
 "FrameScript_GetCurrentObject": {
 "files": [
@@ -93046,7 +93052,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 471
+"line": 472
 },
 "FrameScript_GetPluralIndex": {
 "files": [
@@ -93067,7 +93073,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 509
+"line": 510
 },
 "FrameScript_GetText": {
 "files": [
@@ -93108,7 +93114,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 533
+"line": 534
 },
 "FrameScript_GetVariable": {
 "files": [
@@ -93131,7 +93137,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 578
+"line": 579
 },
 "ErrorFrameName": {
 "files": [
@@ -93160,7 +93166,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 602
+"line": 603
 },
 "FrameScript_HandleError": {
 "files": [
@@ -93203,7 +93209,7 @@
 "stub": false,
 "lines": 45,
 "refs": [],
-"line": 645
+"line": 646
 },
 "FrameScript_Initialize": {
 "files": [
@@ -93249,7 +93255,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 691
+"line": 692
 },
 "FrameScript_RegisterFunction": {
 "files": [
@@ -93270,7 +93276,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 724
+"line": 725
 },
 "FrameScript_RegisterScriptEvent": {
 "files": [
@@ -93292,7 +93298,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 733
+"line": 734
 },
 "FrameScript_SetPluralRule": {
 "files": [
@@ -93305,7 +93311,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 753
+"line": 754
 },
 "FrameScript_ShouldSignalEvent": {
 "files": [
@@ -93320,7 +93326,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 757
+"line": 758
 },
 "FrameScript_PushEventName": {
 "files": [
@@ -93337,7 +93343,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 762
+"line": 763
 },
 "FrameScript_PushEventArgs": {
 "files": [
@@ -93358,7 +93364,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 770
+"line": 771
 },
 "FrameScript_SignalEvent": {
 "files": [
@@ -93396,7 +93402,7 @@
 "stub": false,
 "lines": 93,
 "refs": [],
-"line": 817
+"line": 818
 },
 "FrameScript_Sprintf": {
 "files": [
@@ -93434,7 +93440,7 @@
 "stub": false,
 "lines": 200,
 "refs": [],
-"line": 912
+"line": 913
 },
 "FrameScript_UnregisterFunction": {
 "files": [
@@ -93454,7 +93460,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1113
+"line": 1114
 },
 "FrameScript_UnregisterScriptEvent": {
 "files": [
@@ -93478,7 +93484,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1122
+"line": 1123
 },
 "FrameScript_Object::ScriptIx::~ScriptIx": {
 "files": [
@@ -93492,7 +93498,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
 "line": 8
 },
@@ -93517,7 +93523,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 11,
+"lines": 10,
 "refs": [],
 "line": 14
 },
@@ -93537,7 +93543,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 7,
 "refs": [],
 "line": 25
 },
@@ -93554,7 +93560,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
 "line": 33
 },
@@ -93604,7 +93610,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 9,
+"lines": 8,
 "refs": [],
 "line": 65
 },
@@ -93628,7 +93634,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 41,
+"lines": 39,
 "refs": [],
 "line": 74
 },
@@ -93665,7 +93671,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 51,
+"lines": 53,
 "refs": [],
 "line": 114
 },
@@ -93680,9 +93686,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 168
+"line": 169
 },
 "FrameScript_Object::SetScript": {
 "files": [
@@ -93714,9 +93720,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 30,
+"lines": 23,
 "refs": [],
-"line": 172
+"line": 173
 },
 "FrameScript_Object::UnregisterScriptEvent": {
 "files": [
@@ -93735,7 +93741,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 196
+"line": 197
 },
 "FrameScript_Object::UnregisterScriptObject": {
 "files": [
@@ -93765,7 +93771,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 215
+"line": 216
 },
 "FrameScript_GetObjectThis": {
 "files": [
@@ -93793,9 +93799,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 14,
+"lines": 19,
 "refs": [],
-"line": 241
+"line": 242
 },
 "CSimpleCheckbox::CSimpleCheckbox": {
 "files": [
