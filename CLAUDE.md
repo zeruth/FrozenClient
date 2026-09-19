@@ -105,15 +105,28 @@ clients for this is still governed by the working agreement above: only when the
 
 ### Priorities, in order
 
-1. **Seeds.** The most-called unlinked leaves (`--next 40 --helpers`): each one identified lifts the
+**The render surface is the focus.** Entity and environment rendering is what a player actually
+sees, and it is the thinnest coverage in the report: the modules that draw the world hold 6,005
+reference functions and about 1.7% of them are linked. Cycles should land there unless there is a
+specific reason not to.
+
+1. **The render surface** (`--next 20 --render`): unmapped functions in the map, model, entity,
+   texture and device modules, biggest and most-called first. `--render` exists because
+   reachability alone does not isolate graphics -- world text legitimately reaches the chat frame
+   and model animation reaches the sound engine -- so it intersects the render spine with
+   `RENDER_MODULES` in `recomp.py`. Add a module there when a graphics one is missing.
+2. **Unfaithful render ports** (`--next 20 --fix`, then `--diff <addr>` on each): things frozen
+   already has that do not make the reference's calls. `--diff` shows exactly which calls are
+   skipped and which callees are still unlinked, and in practice most gaps are a helper frozen
+   calls under its own name rather than missing behaviour.
+3. **Seeds** (`--next 40 --helpers`): the most-called unlinked leaves. Each one identified lifts the
    fidelity of hundreds of callers and feeds the call-graph matchers. Cheap, do a batch every few
    cycles.
-2. **The world spine** (`--next 20 --spine`): everything reachable from `CGWorldFrame::OnFrameRender`,
-   `CWorld::Update`, `CMap::Render`, biggest and most-called first. This is the M2 model code, the
-   map, the scene -- where the visible bugs live.
-3. **Unfaithful ports** (`--next 20 --fix`): things frozen already has that do not make the reference's
-   calls. These are the guesses; re-port them from the decompilation.
 4. **Lua tables** with the most missing names (report section), so FrameXML stops hitting nil.
+
+`docs/world-render-inventory.md` is the stage-by-stage map of the render pipeline and carries
+reference addresses and recovered original names that the recomp map does not always know. It is
+worth harvesting before decompiling something new.
 
 ### Rules that keep the measurement honest
 

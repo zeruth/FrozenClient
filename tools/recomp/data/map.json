@@ -735,6 +735,22 @@
   "refSize": 13,
   "status": "ported"
  },
+ "00408070": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformViewport",
+  "frozenSize": 55,
+  "how": "callorder",
+  "module": "Client.cpp",
+  "refSize": 105,
+  "status": "ported"
+ },
  "00408520": {
   "branchRatio": 0.5,
   "constOverlap": 0.143,
@@ -799,6 +815,22 @@
   "refSize": 207,
   "status": "ported"
  },
+ "00409670": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/RenderState.cpp",
+   "src/gx/renderstate.cpp"
+  ],
+  "frozen": "GxRsPush",
+  "frozenSize": 12,
+  "how": "override",
+  "module": "Client.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
  "00409800": {
   "branchRatio": 0.2,
   "constOverlap": 0.0,
@@ -835,7 +867,7 @@
   "branchRatio": 0.632,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.333,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -8764,7 +8796,7 @@
   "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.017,
+  "fidelity": 0.136,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -8780,7 +8812,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.286,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -21406,6 +21438,22 @@
   "refSize": 9,
   "status": "ported"
  },
+ "006813b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "GxSceneClear",
+  "frozenSize": 23,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "00681770": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -21438,6 +21486,22 @@
   "refSize": 13,
   "status": "ported"
  },
+ "00681890": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::XformSetViewport",
+  "frozenSize": 143,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 183,
+  "status": "ported"
+ },
  "00681be0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -21452,6 +21516,22 @@
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 203,
+  "status": "ported"
+ },
+ "00681f60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformSetViewport",
+  "frozenSize": 134,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 452,
   "status": "ported"
  },
  "00682a00": {
@@ -23779,6 +23859,22 @@
   "refSize": 14,
   "status": "ported"
  },
+ "007831a0": {
+  "branchRatio": 0.034,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::Update",
+  "frozenSize": 181,
+  "how": "override",
+  "module": "SEvt.cpp",
+  "refSize": 862,
+  "status": "ported"
+ },
  "00783b90": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -24580,7 +24676,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.212,
+  "fidelity": 0.242,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
@@ -24612,7 +24708,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.143,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
@@ -25818,6 +25914,85 @@
   "how": "string",
   "module": "XMLTree.cpp",
   "refSize": 103,
+  "status": "ported"
+ },
+ "0081c9c0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::AdvanceTime",
+  "frozenSize": 88,
+  "how": "override",
+  "module": "XMLTree.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "0081f330": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/cm2scenerender.hpp"
+  ],
+  "frozen": "CM2SceneRender::CM2SceneRender",
+  "frozenSize": 167,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 281,
+  "status": "ported"
+ },
+ "00821a20": {
+  "branchRatio": 0.196,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::Animate",
+  "frozenSize": 2337,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 5621,
+  "status": "ported"
+ },
+ "00823130": {
+  "branchRatio": 0.308,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.08,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::Draw",
+  "frozenSize": 748,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 2909,
+  "status": "ported"
+ },
+ "00823cb0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::Draw",
+  "frozenSize": 289,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 157,
   "status": "ported"
  },
  "00823ed0": {
@@ -30239,6 +30414,22 @@
   "how": "string",
   "module": "TimeManager.cpp",
   "refSize": 35,
+  "status": "ported"
+ },
+ "00872c10": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::UpdateProjMatrix",
+  "frozenSize": 61,
+  "how": "override",
+  "module": "OsClipboard.cpp",
+  "refSize": 197,
   "status": "ported"
  },
  "00875d30": {

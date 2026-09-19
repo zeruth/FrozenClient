@@ -222,5 +222,15 @@
   "006b0ed0": { "frozen": "ClientServices::GetInstance", "status": "ported", "note": "returns the instance block when the initialised flag is set (call slot in CGlueMgr::EnterWorld, recomp --diff 004d9bd0)" },
   "006b0fe0": { "frozen": "ClientServices::SetAccountName", "status": "ported", "note": "SStrCopy into the 0x500-byte account name with the stripped-assert fatal on null; slot in CGlueMgr::EnterWorld" },
   "006b1020": { "frozen": "ClientServices::SetCharacterInfo", "status": "ported", "note": "copies the 0x188-byte CHARACTER_INFO with the stripped-assert fatal on null; slot in CGlueMgr::EnterWorld" },
-  "004d8580": { "frozen": "WowClientDB<GameTipsRec>::GetRecordByIndex", "status": "ported", "note": "bounds check against the count at +8 then rows at +0x1c with 8-byte records; the game tip pick in CGlueMgr::EnterWorld" }
+  "004d8580": { "frozen": "WowClientDB<GameTipsRec>::GetRecordByIndex", "status": "ported", "note": "bounds check against the count at +8 then rows at +0x1c with 8-byte records; the game tip pick in CGlueMgr::EnterWorld" },
+
+  "00409670": { "frozen": "GxRsPush", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/RenderState.cpp, beside the already linked GxRsSet (00408bf0) and GxRsPop (00685fb0)" },
+  "006813b0": { "frozen": "GxSceneClear", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/Draw.cpp; 22 callers, the early scene clear in OnWorldRender" },
+  "00681f60": { "frozen": "GxXformSetViewport", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/Transform.cpp; the viewport get/set around the whole world render" },
+  "007831a0": { "frozen": "CWorld::Update", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in world/CWorld.cpp; the update-phase root, called once per frame from the world frame" },
+  "0081c9c0": { "frozen": "CM2Scene::AdvanceTime", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp" },
+  "00821a20": { "frozen": "CM2Scene::Animate", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port 52" },
+  "00823130": { "frozen": "CM2SceneRender::Draw", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2SceneRender.cpp; 2909 bytes, 25 calls against the port 28" },
+  "00823cb0": { "frozen": "CM2Scene::Draw", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; the per-pass entry logging 'Model2 Pass %d'" },
+  "00872c10": { "frozen": "CShaderEffect::UpdateProjMatrix", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/CShaderEffect.cpp" }
 }

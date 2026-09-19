@@ -152,9 +152,40 @@ def assign_modules(refs):
     return len(anchors)
 
 
-def spine(refs):
+# The render spine: what draws the world and the things in it. It is deliberately rooted in the
+# model scene as well as the frame, because CM2Scene::Animate and ::Draw reach a large subtree
+# (entity animation and the M2 passes) that nothing else does -- which is why this set comes out
+# bigger than the OnFrameRender spine, not smaller. This is the queue for entity and environment
+# rendering accuracy, where the visible bugs live and where coverage is thinnest.
+# The modules that draw the world and the things in it. Reachability alone cannot isolate these:
+# world text reaches the chat frame and model animation reaches the sound engine, so the render
+# spine legitimately contains both. This list is the surface that "graphics accuracy" means, and
+# --render queues unmapped functions inside it, worst covered first.
+RENDER_MODULES = {
+    # environment
+    'Map.cpp', 'MapChunk.cpp', 'MapChunkLiquid.cpp', 'MapMem.cpp', 'MapLoad.cpp', 'MapArea.cpp',
+    'MapObj.cpp', 'MapObjRead.cpp', 'MapObjGroup.cpp', 'DetailDoodad.cpp', 'WorldParam.cpp',
+    'MapWeather.cpp', 'DayNight.cpp', 'Sky.cpp', 'MapShadow.cpp',
+    # entities and their models
+    'M2Scene.cpp', 'M2Shared.cpp', 'M2Model.cpp', 'ModelBlob.cpp', 'CharacterModelBase.cpp',
+    'Unit_C.cpp', 'Player_C.cpp', 'GameObject_C.cpp', 'UnitMissileTrajectory_C.cpp',
+    'MovementShared.cpp', 'CreepTendril.cpp', 'ObjectEffect.cpp',
+    # textures, effects and the device
+    'Texture.cpp', 'TextureCache.cpp', 'TextureBlob.cpp', 'FFXEffects.cpp', 'ShaderEffectManager.cpp',
+    'CGxDevice.cpp', 'CGxDeviceD3d9Ex.cpp', 'CGxD3d9ExTexture.cpp', 'CGxDeviceOpenGl.cpp',
+}
+
+RENDER_ROOTS = ['004faf90',   # CGWorldFrame::RenderWorld
+                '004f8ea0',   # CGWorldFrame::OnWorldRender
+                '007831a0',   # CWorld::Update      (weather, day/night, map streaming)
+                '0079a870',   # CMap::Render        (terrain, chunks, map objects)
+                '00821a20',   # CM2Scene::Animate   (entity animation)
+                '00823cb0']   # CM2Scene::Draw      (entity passes)
+
+
+def spine(refs, roots=None):
     seen = set()
-    stack = [r for r in SPINE_ROOTS if r in refs]
+    stack = [r for r in (roots or SPINE_ROOTS) if r in refs]
     while stack:
         a = stack.pop()
         if a in seen:
@@ -962,6 +993,7 @@ def lua_coverage(ref_tables, pairs, frozen, frozen_tables=()):
 def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), frozen_tables=()):
     lua_total, lua_have, lua_stubbed, lua_rows = lua_coverage(ref_tables, pairs, frozen, frozen_tables)
     sp = spine(refs)
+    rsp = spine(refs, RENDER_ROOTS)
     real = {a: r for a, r in refs.items() if not r['thunk'] and not r['excluded']}
     total = len(real)
     total_bytes = sum(r['size'] for r in real.values())
@@ -1034,6 +1066,9 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
                 'ported': by_status['ported'], 'stub': by_status['stub'], 'verified': by_status['verified'],
                 'faithful': faithful, 'faithfulBytes': faithful_bytes,
                 'spine': len(sp & set(real)), 'spineMapped': sum(1 for a in sp if a in m and a in real),
+                'renderSpine': len(rsp & set(real)), 'renderSpineMapped': sum(1 for a in rsp if a in m and a in real),
+                'renderSurface': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES),
+                'renderSurfaceMapped': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and a in m),
                 'frozenFunctions': len(frozen), 'frozenStubs': sum(1 for w in frozen.values() if w['stub']),
                 'luaTotal': lua_total, 'luaHave': lua_have, 'luaStubbed': lua_stubbed}
     prev = None
@@ -1069,6 +1104,8 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('| **faithful** (linked, not stub, call order >= %.0f%%) | **%d%s (%s)** | **%s (%s)** |' % (FAITHFUL * 100, faithful, delta('faithful'), pct(faithful, total), fmt_bytes(faithful_bytes), pct(faithful_bytes, total_bytes)))
     L.append('| unmapped | %d | %s |' % (by_status['unmapped'], fmt_bytes(bytes_by_status['unmapped'])))
     L.append('| world spine (reachable from OnFrameRender) | %d, mapped %d%s (%s) | |' % (snapshot['spine'], snapshot['spineMapped'], delta('spineMapped'), pct(snapshot['spineMapped'], snapshot['spine'])))
+    L.append('| &nbsp;&nbsp;render spine (world update + map + M2 scene) | %d, mapped %d%s (%s) | |' % (snapshot['renderSpine'], snapshot['renderSpineMapped'], delta('renderSpineMapped'), pct(snapshot['renderSpineMapped'], snapshot['renderSpine'])))
+    L.append('| **render surface** (the modules that draw the world) | **%d, mapped %d%s (%s)** | |' % (snapshot['renderSurface'], snapshot['renderSurfaceMapped'], delta('renderSurfaceMapped'), pct(snapshot['renderSurfaceMapped'], snapshot['renderSurface'])))
     L.append('| frozen functions (src/, from PDB + source) | %d, stubs %d | |' % (snapshot['frozenFunctions'], snapshot['frozenStubs']))
     L.append('')
     L.append('Match evidence: ' + ', '.join('%s %d' % kv for kv in sorted(by_how.items())) + '. Module anchors: %d assert strings.' % anchors)
@@ -1323,7 +1360,9 @@ def queue_next(args, refs, frozen, m):
     """Pick the next functions to work and decompile them into docs/recomp/queue/<addr>.c, one
     Ghidra run for the batch. Each file starts with a header: module, size, callers, the linked
     callees (so the port can call the frozen names) and the unlinked ones (so they get tagged next)."""
-    sp = spine(refs)
+    sp = spine(refs, RENDER_ROOTS if args.render else None)
+    if args.render:
+        sp = set(a for a in sp if refs[a].get('module') in RENDER_MODULES)
     real = {a: r for a, r in refs.items() if not r['thunk'] and not r['excluded']}
 
     def weight(a):
@@ -1355,7 +1394,7 @@ def queue_next(args, refs, frozen, m):
         pool = [a for a in real if a not in m and refs[a]['callers'] >= 20]
     else:
         pool = [a for a in real if a not in m and refs[a]['size'] >= 48]
-    if args.spine:
+    if args.spine or args.render:
         pool = [a for a in pool if a in sp]
     if args.module:
         pool = [a for a in pool if refs[a]['module'].lower() == args.module.lower()]
@@ -1402,6 +1441,7 @@ def main():
     ap.add_argument('--no-history', action='store_true', help='do not append this run to history.jsonl')
     ap.add_argument('--next', type=int, metavar='N', help='decompile the next N functions to port into docs/recomp/queue/')
     ap.add_argument('--spine', action='store_true', help='with --next: only functions on the world spine')
+    ap.add_argument('--render', action='store_true', help='with --next: only the render spine (world update, map and M2 scene roots)')
     ap.add_argument('--module', metavar='FILE.cpp', help='with --next: only functions anchored to this reference module')
     ap.add_argument('--fix', action='store_true', help='with --next: queue linked-but-unfaithful ports instead of unlinked functions')
     ap.add_argument('--helpers', action='store_true', help='with --next: queue the most-called unlinked leaves (allocators, string ops ...)')

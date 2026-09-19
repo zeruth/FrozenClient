@@ -45,10 +45,12 @@ addr	how	frozen	evidence
 00407b00	annotated	RegisterEvents	tag in src/gx/LoadingScreen.cpp
 00407bd0	annotated	UnregisterEvents	tag in src/gx/LoadingScreen.cpp
 00407e30	annotated	LoadingScreenSetTip	tag in src/gx/LoadingScreen.cpp
+00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
 00409550	annotated	LoadingScreenFinish	tag in src/gx/LoadingScreen.cpp
+00409670	override	GxRsPush	
 00409800	annotated	ClientPlayerModelReady	tag in src/client/Client.cpp
 00409ed0	annotated	LoadBackgroundTexture	tag in src/gx/LoadingScreen.cpp
 0040a270	annotated	Paint	tag in src/gx/LoadingScreen.cpp
@@ -1346,9 +1348,12 @@ addr	how	frozen	evidence
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
 0067d770	override	Script_GetUnitFromName	
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
+006813b0	override	GxSceneClear	
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
+00681890	callgraph	CGxDevice::XformSetViewport	only unmatched callee of 00681f60=GxXformSetViewport
 00681be0	override	CGxTexFlags::CGxTexFlags	
+00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
@@ -1493,6 +1498,7 @@ addr	how	frozen	evidence
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
+007831a0	override	CWorld::Update	
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
 00787780	string	Weather::Weather	unique "useWeatherShaders"
@@ -1621,6 +1627,11 @@ addr	how	frozen	evidence
 0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
 0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
+0081c9c0	override	CM2Scene::AdvanceTime	
+0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
+00821a20	override	CM2Scene::Animate	
+00823130	override	CM2SceneRender::Draw	
+00823cb0	override	CM2Scene::Draw	
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
@@ -1913,6 +1924,7 @@ addr	how	frozen	evidence
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
+00872c10	override	CShaderEffect::UpdateProjMatrix	
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
