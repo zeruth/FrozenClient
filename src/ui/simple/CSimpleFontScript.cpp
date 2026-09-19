@@ -27,12 +27,15 @@
 // FrameScript_Object rather than CScriptObject and has neither, so both would have to be
 // added -- with the right string.
 //
-// "Font" is NOT it. A string search of the reference finds FontString, FontInfo, SetFont and
-// thirty others containing the word, and no standalone "Font" anywhere -- so nothing returns
-// that literal. An earlier attempt this session pushed exactly that and was reverted on other
-// grounds; it would also have been wrong. Frozen's convention for these is an
-// s_objectTypeName static (CScriptObject "Object", CScriptRegion "Region"), and whatever
-// belongs in the font's has to come out of the vtable slot, not out of the name of the class.
+// What is known about the string. A standalone "Font" DOES exist, at 009ebc2c -- a raw scan of
+// .rdata finds it where the Ghidra string-reference search did not, so do not take that
+// tool's silence as absence. It is used by the frame-XML loader at 00813ee0 to recognise a
+// <Font> element and hand it to CSimpleFont::LoadXML, which makes it the element name for
+// certain and the script type name only by analogy.
+//
+// So "Font" is plausible and still unconfirmed: confirming it means reading what vtable+0x1c
+// returns, not finding the string. Frozen's convention for these is an s_objectTypeName
+// static -- CScriptObject "Object", CScriptRegion "Region".
 int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
