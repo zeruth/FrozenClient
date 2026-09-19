@@ -143680,44 +143680,56 @@
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth"
 ],
 "strings": [
-"CSimpleButton_SetPushedTextOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
+"Usage: %s:SetPushedTextOffset(x, y)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 15,
 "refs": [],
-"line": 421
+"line": 429
 },
 "CSimpleButton_GetPushedTextOffset": {
 "files": [
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleButton_GetPushedTextOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 425
+"line": 450
 },
 "CSimpleButton_GetTextWidth": {
 "files": [
@@ -143741,7 +143753,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 429
+"line": 462
 },
 "CSimpleButton_GetTextHeight": {
 "files": [
@@ -143765,7 +143777,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 444
+"line": 477
 },
 "CSimpleButton_RegisterForClicks": {
 "files": [
@@ -143788,7 +143800,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 459
+"line": 492
 },
 "CSimpleButton_Click": {
 "files": [
@@ -143814,7 +143826,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 475
+"line": 508
 },
 "CSimpleButton_LockHighlight": {
 "files": [
@@ -143834,7 +143846,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 491
+"line": 524
 },
 "CSimpleButton_UnlockHighlight": {
 "files": [
@@ -143853,7 +143865,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 500
+"line": 533
 },
 "CSimpleButton_GetMotionScriptsWhileDisabled": {
 "files": [
@@ -143875,7 +143887,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 513
+"line": 546
 },
 "CSimpleButton_SetMotionScriptsWhileDisabled": {
 "files": [
@@ -143897,7 +143909,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 517
+"line": 550
 },
 "FaceDirection": {
 "files": [

@@ -418,12 +418,45 @@ int32_t CSimpleButton_GetHighlightTexture(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00977f60
+// Where the label moves while the button is held down.
+//
+// Stored in the reference's units, not the caller's: it divides by the aspect compensation times
+// 1024 and runs the result through NDCToDDCWidth, and GetPushedTextOffset undoes exactly that. The
+// pair is self-consistent either way, so this follows the reference rather than frozen's font-height
+// divergence -- a font height is a size the caller chose, while this is a position that has to land
+// in the same space as the rest of the layout.
 int32_t CSimpleButton_SetPushedTextOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:SetPushedTextOffset(x, y)", button->GetDisplayName());
+    }
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    button->m_pressedOffset.x = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale);
+    button->m_pressedOffset.y = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale);
+
+    return 0;
 }
 
+// ref: FUN_00978040
+// Built as the exact inverse of the setter. The reference fetches the aspect compensation and calls
+// DDCToNDCWidth, but the decompiler lost the arguments, so whether it groups them this way or as
+// DDCToNDCWidth(offset * scale) is not recoverable from the disassembly -- only that the pair round
+// trips, which this does.
 int32_t CSimpleButton_GetPushedTextOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(button->m_pressedOffset.x) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(button->m_pressedOffset.y) * scale);
+
+    return 2;
 }
 
 int32_t CSimpleButton_GetTextWidth(lua_State* L) {
