@@ -1,6 +1,13 @@
 #include "ui/game/CharacterInfoScript.hpp"
 #include "db/Db.hpp"
 #include "ui/FrameScript.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "object/client/CGItem_C.hpp"
+#include "object/client/ItemCache.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/Types.hpp"
+#include "ui/game/ScriptUtil.hpp"
+#include <storm/String.hpp>
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -45,20 +52,88 @@ int32_t Script_GetInventorySlotInfo(lua_State* L) {
     return 3;
 }
 
+// The item object in one of a unit's inventory slots, or null. The slot arrives 1-based from Lua
+// -- GetInventorySlotInfo hands FrameXML the number this expects -- and indexes invSlots, which
+// carries the equipped pieces followed by the bag slots.
+CGItem_C* InventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg) {
+    if (!lua_isstring(L, unitArg) || !lua_isnumber(L, slotArg)) {
+        return nullptr;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, unitArg));
+
+    if (!unit || unit->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        // Only the player's own inventory is readable here: another unit's slots are not sent.
+        return nullptr;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (!data) {
+        return nullptr;
+    }
+
+    auto slot = static_cast<int32_t>(lua_tonumber(L, slotArg)) - 1;
+
+    if (slot < INVSLOT_FIRST || slot > INVSLOT_LAST) {
+        return nullptr;
+    }
+
+    auto object = ClntObjMgrObjectPtr(data->invSlots[slot], TYPE_ITEM, __FILE__, __LINE__);
+
+    return object ? static_cast<CGItem_C*>(object) : nullptr;
+}
+
 int32_t Script_GetInventoryItemsForSlot(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005e9bc0
+// The icon for whatever is in the slot. The chain is the same one GetItemIcon walks: the item's
+// entry gives a cache record, the record's display id gives an ItemDisplayInfo row, and that row's
+// first inventory icon is the name. Nothing in the slot answers with no values rather than nil.
 int32_t Script_GetInventoryItemTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+
+    if (!item) {
+        return 0;
+    }
+
+    auto info = ItemCacheGet(item->GetEntryID());
+
+    if (!info) {
+        return 0;
+    }
+
+    auto rec = g_itemDisplayInfoDB.GetRecord(info->displayInfoID);
+
+    if (!rec || !rec->m_inventoryIcon[0] || !rec->m_inventoryIcon[0][0]) {
+        return 0;
+    }
+
+    char icon[260];
+    SStrPrintf(icon, sizeof(icon), "Interface\\Icons\\%s", rec->m_inventoryIcon[0]);
+
+    lua_pushstring(L, icon);
+
+    return 1;
 }
 
 int32_t Script_GetInventoryItemBroken(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005e9e40
 int32_t Script_GetInventoryItemCount(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+    auto data = item ? item->Item() : nullptr;
+
+    // An empty slot counts as zero, and a stack that has not arrived yet counts as one, the same
+    // way GetItemCount treats it.
+    lua_pushnumber(L, data ? (data->stackCount ? data->stackCount : 1) : 0);
+
+    return 1;
 }
 
 int32_t Script_GetInventoryItemQuality(lua_State* L) {

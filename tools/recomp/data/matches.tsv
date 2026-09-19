@@ -1357,9 +1357,9 @@ addr	how	frozen	evidence
 005e7fa0	table	Script_GetInventoryAlertStatus	binding "GetInventoryAlertStatus" in s_ScriptFunctions ~ table 00ad1270
 005e8030	table	Script_GetInspectArenaTeamData	binding "GetInspectArenaTeamData" in s_ScriptFunctions ~ table 00ad1270
 005e95c0	table	Script_GetInventoryItemsForSlot	binding "GetInventoryItemsForSlot" in s_ScriptFunctions ~ table 00ad1270
-005e9bc0	table	Script_GetInventoryItemTexture	binding "GetInventoryItemTexture" in s_ScriptFunctions ~ table 00ad1270
+005e9bc0	annotated	Script_GetInventoryItemTexture	tag in src/ui/game/CharacterInfoScript.cpp
 005e9d80	table	Script_GetInventoryItemBroken	binding "GetInventoryItemBroken" in s_ScriptFunctions ~ table 00ad1270
-005e9e40	table	Script_GetInventoryItemCount	binding "GetInventoryItemCount" in s_ScriptFunctions ~ table 00ad1270
+005e9e40	annotated	Script_GetInventoryItemCount	tag in src/ui/game/CharacterInfoScript.cpp
 005ea040	table	Script_GetInventoryItemQuality	binding "GetInventoryItemQuality" in s_ScriptFunctions ~ table 00ad1270
 005ea170	table	Script_GetInventoryItemDurability	binding "GetInventoryItemDurability" in s_ScriptFunctions ~ table 00ad1270
 005ea270	table	Script_GetInventoryItemLink	binding "GetInventoryItemLink" in s_ScriptFunctions ~ table 00ad1270
