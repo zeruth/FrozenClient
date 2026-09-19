@@ -670,6 +670,7 @@ addr	how	frozen	evidence
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
 00510bd0	annotated	Script_GetCoinIcon	tag in src/ui/game/GameScript.cpp
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
+00510d00	annotated	Script_GetCoinTextureString	tag in src/ui/game/GameScript.cpp
 00510e00	annotated	Script_GetRealmName	tag in src/ui/game/GameScript.cpp
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
@@ -1648,6 +1649,7 @@ addr	how	frozen	evidence
 007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
 007e7cc0	override	CoinIconFormat	
 007e7d80	annotated	CoinTextFormat	tag in src/ui/game/GameScript.cpp
+007e7e10	annotated	CoinTextureFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	
 007f3ae0	override	CGMinimapFrame::SetZoom	

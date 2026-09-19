@@ -1229,8 +1229,72 @@ int32_t Script_GetCoinText(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_007e7e10
+// Same walk as CoinTextFormat, but through the *_AMOUNT_TEXTURE global strings -- which carry the
+// inline texture markup -- joined by a single space rather than the caller's separator. Each format
+// takes the value and the font height twice, since the markup sizes the icon in both axes. Zero is
+// the one special case: it renders as copper rather than as nothing.
+static void CoinTextureFormat(int32_t amount, char* text, size_t textSize, int32_t fontHeight) {
+    if (!amount) {
+        auto format = FrameScript_GetText("COPPER_AMOUNT_TEXTURE", -1, GENDER_NOT_APPLICABLE);
+        SStrPrintf(text, textSize, format, 0, fontHeight, fontHeight);
+
+        return;
+    }
+
+    int32_t gold, silver, copper;
+    CoinSplit(amount, gold, silver, copper);
+
+    const struct {
+        int32_t value;
+        const char* globalString;
+    } parts[] = {
+        { gold,   "GOLD_AMOUNT_TEXTURE" },
+        { silver, "SILVER_AMOUNT_TEXTURE" },
+        { copper, "COPPER_AMOUNT_TEXTURE" },
+    };
+
+    text[0] = '\0';
+
+    for (const auto& part : parts) {
+        if (!part.value) {
+            continue;
+        }
+
+        if (text[0]) {
+            SStrPack(text, " ", textSize);
+        }
+
+        auto format = FrameScript_GetText(part.globalString, -1, GENDER_NOT_APPLICABLE);
+
+        char rendered[1024];
+        SStrPrintf(rendered, sizeof(rendered), format, part.value, fontHeight, fontHeight);
+
+        SStrPack(text, rendered, textSize);
+    }
+}
+
+// ref: FUN_00510d00
 int32_t Script_GetCoinTextureString(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        // The reference's own usage string names the wrong function here; kept as it is.
+        luaL_error(L, "Usage: GetCoinText(amount, fontHeight)");
+
+        return 0;
+    }
+
+    int32_t fontHeight = 14;
+
+    if (lua_isnumber(L, 2)) {
+        fontHeight = static_cast<int32_t>(lua_tonumber(L, 2) + 0.5);
+    }
+
+    char text[1024];
+    CoinTextureFormat(static_cast<int32_t>(lua_tonumber(L, 1) + 0.5), text, sizeof(text), fontHeight);
+
+    lua_pushstring(L, text);
+
+    return 1;
 }
 
 int32_t Script_IsSubZonePVPPOI(lua_State* L) {
