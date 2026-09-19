@@ -19,7 +19,7 @@ Usage (launch under the debugger):
     python tools/crashstack.py --attach 1234      # attach to a client that is already running
     python tools/crashstack.py --timeout 300      # give up after N seconds
 
-The client is launched exactly the way the normal run does: build/dist/bin/Whoa.exe with the
+The client is launched exactly the way the normal run does: build/dist/bin/Frozen.exe with the
 reference install as its working directory.
 """
 
@@ -35,7 +35,7 @@ k32 = ctypes.WinDLL('kernel32', use_last_error=True)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..'))
-EXE = os.path.join(REPO, 'build', 'dist', 'bin', 'Whoa.exe')
+EXE = os.path.join(REPO, 'build', 'dist', 'bin', 'Frozen.exe')
 CWD = os.path.join(REPO, '.reference', 'WOTLK 3.3.5a - Windows', 'WoW_WOTLK_3.3.5a')
 SYMBOLIZER = r'C:\Program Files\LLVM\bin\llvm-symbolizer.exe'
 
@@ -231,15 +231,15 @@ def report(process, thread_id, rec, exe, base, image_size):
     addr = rec.ExceptionAddress or 0
     print('\n=== first-chance exception 0x%08X at 0x%016X ===' % (code, addr))
 
-    # A fault outside Whoa.exe symbolizes to nothing useful; name the module instead, which at
+    # A fault outside Frozen.exe symbolizes to nothing useful; name the module instead, which at
     # least says whether it is the graphics driver, the CRT, or something the client called into.
     if not (base <= addr < base + image_size):
         owner = module_for(process, addr)
 
         if owner:
-            print('faulting module: %s +0x%x  (NOT Whoa.exe)' % (owner[0], owner[1]))
+            print('faulting module: %s +0x%x  (NOT Frozen.exe)' % (owner[0], owner[1]))
         else:
-            print('faulting address is outside Whoa.exe and no module claims it')
+            print('faulting address is outside Frozen.exe and no module claims it')
 
     if code == EXCEPTION_ACCESS_VIOLATION and rec.NumberParameters >= 2:
         kind = {0: 'read', 1: 'write', 8: 'execute'}.get(rec.ExceptionInformation[0], '?')
@@ -264,7 +264,7 @@ def report(process, thread_id, rec, exe, base, image_size):
     print('\nregisters:')
     for name in ('Rip', 'Rsp', 'Rbp', 'Rax', 'Rcx', 'Rdx', 'Rbx', 'Rsi', 'Rdi', 'R8', 'R9'):
         v = getattr(ctx, name)
-        tag = '  <- in Whoa.exe +0x%x' % (v - base) if lo <= v < hi else ''
+        tag = '  <- in Frozen.exe +0x%x' % (v - base) if lo <= v < hi else ''
         print('  %-3s 0x%016X%s' % (name, v, tag))
 
     # Walk the stack heuristically: collect qwords that point into the image
@@ -300,7 +300,7 @@ def report(process, thread_id, rec, exe, base, image_size):
     # thread looks like -- the only way to see who called in is to attribute the other return
     # addresses to whatever module owns them.
     if shown <= 1 and foreign:
-        print('\nno frames from Whoa.exe on this thread; modules on the stack instead:')
+        print('\nno frames from Frozen.exe on this thread; modules on the stack instead:')
         seen_mod = set()
 
         for off, v in foreign:

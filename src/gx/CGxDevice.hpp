@@ -137,7 +137,7 @@ class CGxDevice {
         virtual void IRenderTargetSet(EGxBuffer, CGxTex*, uint32_t) {}
 
         // Debug only: read a render target back and write it to a file. There is no equivalent in
-        // the reference, which had a debugger attached instead; whoa needs it because a shadow map
+        // the reference, which had a debugger attached instead; frozen needs it because a shadow map
         // that is never sampled correctly is indistinguishable from one that was never drawn.
         virtual int32_t IRenderTargetDump(CGxTex*, const char*) { return 0; }
         virtual int32_t IScreenShot(const char*) { return 0; }

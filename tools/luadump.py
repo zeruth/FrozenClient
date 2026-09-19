@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Enumerate a running client's Lua globals by walking its Lua state in memory.
 
-Whoa logs "Function not yet implemented" when a stub is CALLED, which only ever names the subset the
+Frozen logs "Function not yet implemented" when a stub is CALLED, which only ever names the subset the
 current screen happened to touch. The honest measure of Lua parity is the whole global table in each
 client, compared name by name, which is what this reads.
 
-Both clients use Lua 5.1 (whoa vendors 5.1.3), so one set of structure offsets serves both once the
-pointer width is accounted for. The reference is 32-bit and whoa is 64-bit.
+Both clients use Lua 5.1 (frozen vendors 5.1.3), so one set of structure offsets serves both once the
+pointer width is accounted for. The reference is 32-bit and frozen is 64-bit.
 
 The reference's lua_State global has no recovered address, so it is found by scanning the image's
 writable data for a pointer that validates as a lua_State: type tag LUA_TTHREAD, a non-null global
@@ -401,7 +401,7 @@ def scan_heap_for_globals_table(target, reader):
     """Find the globals table directly, without relying on the lua_State layout.
 
     Locating the state first is neater, but it assumes the exact field order of `lua_State`, and the
-    reference's Lua is a Blizzard fork whose layout does not match the stock 5.1.3 whoa vendors, so
+    reference's Lua is a Blizzard fork whose layout does not match the stock 5.1.3 frozen vendors, so
     that search comes up empty against it. A `Table` is a much smaller and much more stable
     structure, and the globals table is unmistakable once found: it is the one holding thousands of
     string keys, several of which are names no other table would carry.
@@ -475,7 +475,7 @@ def dump(label, exe, state_symbol=None):
     state = None
 
     if state_symbol:
-        symbols = memcompare.load_whoa_symbols()
+        symbols = memcompare.load_frozen_symbols()
         sym = symbols.get(state_symbol)
 
         if sym:
@@ -527,7 +527,7 @@ def main():
 
     if args.diff:
         ref = dump("reference", memcompare.REFERENCE_EXE)
-        ours = dump("whoa", memcompare.WHOA_EXE, args.symbol)
+        ours = dump("frozen", memcompare.FROZEN_EXE, args.symbol)
 
         if not ref or not ours:
             sys.exit("need both clients in the world")
@@ -539,9 +539,9 @@ def main():
 
         print()
         print("reference Lua functions : %d" % len(ref_functions))
-        print("whoa Lua functions      : %d" % len(our_functions))
-        print("missing from whoa       : %d" % len(missing))
-        print("present only in whoa    : %d" % len(extra))
+        print("frozen Lua functions      : %d" % len(our_functions))
+        print("missing from frozen       : %d" % len(missing))
+        print("present only in frozen    : %d" % len(extra))
 
         if missing:
             print()
@@ -559,7 +559,7 @@ def main():
     if not args.exe:
         sys.exit("need --exe or --diff")
 
-    names = dump("client", args.exe, args.symbol if "Whoa" in args.exe else None)
+    names = dump("client", args.exe, args.symbol if "Frozen" in args.exe else None)
 
     if names and args.out:
         with open(args.out, "w") as fh:

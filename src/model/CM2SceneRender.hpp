@@ -29,7 +29,7 @@ class CM2SceneRender {
         // ShadowMapSL effect instead of their own material effect, and the bone matrices are
         // rebased from the camera's view into the light's. Null means normal rendering.
         //
-        // The rebase is needed because whoa bakes the view into the bone matrices
+        // The rebase is needed because frozen bakes the view into the bone matrices
         // (CM2Model::AnimateMT: matrixF4 = matrixB4 * view), which is what the model shaders
         // expect. The reference's ShadowMap vertex shader instead carries a second matrix at
         // c14..c16 for exactly this correction, but only in its bone-blended permutations;

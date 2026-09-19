@@ -1,4 +1,4 @@
-data/whoa-pdb.txt
+data/frozen-pdb.txt
 data/clang-cache.json
 data/trace-ref.jsonl
-data/trace-whoa.jsonl
+data/trace-frozen.jsonl

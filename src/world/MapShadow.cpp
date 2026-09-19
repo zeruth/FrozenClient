@@ -42,7 +42,7 @@ const int32_t SHADOW_SIZE = 1024;
 } // namespace (reopened below)
 
 // The point the light volume was last built around. The reference caches the same thing, so
-// exposing whoa's copy turns "we pass the player position, same as the reference" from a claim in a
+// exposing frozen's copy turns "we pass the player position, same as the reference" from a claim in a
 // comment into a compared value.
 C3Vector g_mapShadowFocus = { 0.0f, 0.0f, 0.0f };
 
@@ -138,11 +138,11 @@ void MapShadowSetup(const C3Vector& focus) {
 
     // The reference's exaggeration and clamp operate on the direction the light TRAVELS, which
     // points downward, so the vector has to be flipped into that convention BEFORE the rule is
-    // applied. whoa stores the direction TOWARD the light (see CWorld::s_outdoorDirection), whose z
+    // applied. frozen stores the direction TOWARD the light (see CWorld::s_outdoorDirection), whose z
     // is positive, and the clamp is one-sided: applied to a positive z it never engages at all.
     //
     // That was the bug. The clamp is what holds the light near 52 degrees of elevation; without it
-    // whoa produced 0.963 where the reference holds 0.829, a far steeper light and correspondingly
+    // frozen produced 0.963 where the reference holds 0.829, a far steeper light and correspondingly
     // wrong shadow length. Confirmed against the value the reference stores at 0x00D43180:
     // reference -0.3956 -0.3956 -0.8288, this code -0.3970 -0.3970 -0.8275.
     C3Vector lit = CWorld::GetOutdoorDirection();
@@ -259,7 +259,7 @@ int32_t MapShadowBegin() {
         return 0;
     }
 
-    // Set WHOA_SHADOW_DUMP to a file path to have the map written out once, a hundred frames in so
+    // Set FROZEN_SHADOW_DUMP to a file path to have the map written out once, a hundred frames in so
     // the world has finished streaming. Reading the map back is the only way to tell an empty pass
     // from a broken bind while nothing samples it yet.
     static int32_t frame = 0;
@@ -267,9 +267,9 @@ int32_t MapShadowBegin() {
     // Frame 30, not 100: the client currently dies about 15 seconds after entering the world, and
     // waiting 100 frames was leaving no dump at all when the run ended early.
     if (++frame == 30) {
-        const char* want = getenv("WHOA_SHADOW_DUMP");
+        const char* want = getenv("FROZEN_SHADOW_DUMP");
 
-        fprintf(stderr, "MapShadow: dump requested? %s\n", want ? want : "(WHOA_SHADOW_DUMP unset)");
+        fprintf(stderr, "MapShadow: dump requested? %s\n", want ? want : "(FROZEN_SHADOW_DUMP unset)");
 
         if (want) {
             MapShadowRequestDump(want);

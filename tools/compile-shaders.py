@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compile the D3D9 HLSL under src/world/shaders into an embedded C array header.
 
-The reference ships its shaders in MPQ archives, so whoa carries its own bytecode compiled at
+The reference ships its shaders in MPQ archives, so frozen carries its own bytecode compiled at
 build-authoring time rather than at runtime. Each source names its profile in a leading comment:
 
     // profile: vs_2_0

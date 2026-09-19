@@ -12,7 +12,7 @@ endif()
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "macOS Deployment Target" FORCE)
 
 # Project
-project(whoa)
+project(frozen)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "dist" CACHE PATH "Installation prefix" FORCE)
@@ -26,7 +26,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(lib/system/cmake/system.cmake)
 
-# The NDK toolchain reports its own system name. For everything whoa cares about Android is a
+# The NDK toolchain reports its own system name. For everything frozen cares about Android is a
 # POSIX system like Linux, so it takes the Linux paths plus its own flag for the differences.
 if(ANDROID)
     set(WHOA_SYSTEM_LINUX 1)

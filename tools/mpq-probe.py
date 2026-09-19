@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""Ask the reference MPQ archives whether a given file path exists, and pull files back out.
 
-Whoa loads shaders by name out of the reference install's archives (Shaders\Vertex\vs_2_0\*.bls),
+Frozen loads shaders by name out of the reference install's archives (Shaders\Vertex\vs_2_0\*.bls),
 so before authoring a replacement it is worth asking whether the original is already sitting there.
 A plain existence probe only walks the encrypted hash table; --extract and --list go the rest of
 the way and decompress sectors, which is what makes each archive's own (listfile) readable.

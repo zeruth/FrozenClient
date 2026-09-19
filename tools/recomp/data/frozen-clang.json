@@ -38242,10 +38242,10 @@
 ],
 "strings": [
 "\nregisters:\n",
-"\nstack candidates (symbolize the +0x offsets against Whoa.exe):\n",
+"\nstack candidates (symbolize the +0x offsets against Frozen.exe):\n",
 "  %s of 0x%016llX\n",
-"  OUTSIDE Whoa.exe\n",
-"  in Whoa.exe +0x%llX\n",
+"  OUTSIDE Frozen.exe\n",
+"  in Frozen.exe +0x%llX\n",
 "  r10 %016llX r11 %016llX r12 %016llX r13 %016llX\n",
 "  r14 %016llX r15 %016llX\n",
 "  rax %016llX rcx %016llX rdx %016llX rbx %016llX\n",
@@ -38291,7 +38291,7 @@
 },
 "WinMain": {
 "files": [
-"src/app/win/whoa.cpp"
+"src/app/win/frozen.cpp"
 ],
 "callseq": [
 "CrashReportInstall",
@@ -38623,7 +38623,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 2,
+"lines": 7,
 "refs": [],
 "line": 128
 },
@@ -38645,7 +38645,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 10,
 "refs": [],
 "line": 137
 },
@@ -38660,7 +38660,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 6,
 "refs": [],
 "line": 151
 },
@@ -38685,7 +38685,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 25,
+"lines": 29,
 "refs": [],
 "line": 159
 },
@@ -38707,7 +38707,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 18,
+"lines": 16,
 "refs": [],
 "line": 190
 },
@@ -38730,7 +38730,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 14,
+"lines": 13,
 "refs": [],
 "line": 208
 },
@@ -38790,7 +38790,7 @@
 ],
 "branches": 23,
 "stub": false,
-"lines": 151,
+"lines": 140,
 "refs": [],
 "line": 222
 },
@@ -38811,7 +38811,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 3,
+"lines": 12,
 "refs": [],
 "line": 363
 },
@@ -38824,7 +38824,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
 "line": 376
 },
@@ -57002,8 +57002,8 @@
 "CGlueMgr::EnterWorld"
 ],
 "strings": [
-"WHOA_AUTO_CHARACTER",
-"WHOA_AUTO_LOGIN",
+"FROZEN_AUTO_CHARACTER",
+"FROZEN_AUTO_LOGIN",
 "charselect",
 "login"
 ],
@@ -92495,11 +92495,11 @@
 "%s:SetPoint(): Couldn't find region named '%s'",
 "%s:SetPoint(): Unknown region point",
 "%s:SetPoint(): trying to anchor to itself",
+"FROZEN_TRACE_LUA",
 "SetPoint %s <- %s:%d\n",
 "Sl",
 "UIParent",
-"Usage: %s:SetPoint(\"point\" [, region or nil] [, \"relativePoint\"] [, offsetX, offsetY])",
-"WHOA_TRACE_LUA"
+"Usage: %s:SetPoint(\"point\" [, region or nil] [, \"relativePoint\"] [, offsetX, offsetY])"
 ],
 "consts": [
 "0",
@@ -103298,8 +103298,8 @@
 ],
 "strings": [
 "AutoScreenShot: capturing to %s\n",
-"WHOA_SCREENSHOT",
-"WHOA_SCREENSHOT_FRAME"
+"FROZEN_SCREENSHOT",
+"FROZEN_SCREENSHOT_FRAME"
 ],
 "consts": [
 "0",
@@ -132877,7 +132877,7 @@
 "ExpireTexts"
 ],
 "strings": [
-"WHOA_NO_NAMES"
+"FROZEN_NO_NAMES"
 ],
 "consts": [
 "0.001f",
@@ -165377,9 +165377,9 @@
 "GxXformSetProjection"
 ],
 "strings": [
-"(WHOA_SHADOW_DUMP unset)",
-"MapShadow: dump requested? %s\n",
-"WHOA_SHADOW_DUMP"
+"(FROZEN_SHADOW_DUMP unset)",
+"FROZEN_SHADOW_DUMP",
+"MapShadow: dump requested? %s\n"
 ],
 "consts": [
 "0",

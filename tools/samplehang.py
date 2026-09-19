@@ -5,7 +5,7 @@ For a hang there is no exception to catch, so crashstack.py has nothing to trigg
 suspends each thread briefly, reads its instruction pointer, and maps it to the nearest symbol from
 the PDB -- a poor man's profiler, which is all that is needed to find a busy loop.
 
-    python tools/samplehang.py [--samples 5] [--exe build/dist/bin/Whoa.exe]
+    python tools/samplehang.py [--samples 5] [--exe build/dist/bin/Frozen.exe]
 """
 
 import argparse
@@ -85,16 +85,16 @@ def threads_of(pid):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--exe", default="build/dist/bin/Whoa.exe")
+    ap.add_argument("--exe", default="build/dist/bin/Frozen.exe")
     ap.add_argument("--samples", type=int, default=5)
     args = ap.parse_args()
 
-    target = memcompare.attach("whoa", args.exe)
+    target = memcompare.attach("frozen", args.exe)
 
     if not target:
         sys.exit("that client is not running")
 
-    symbols = memcompare.load_whoa_symbols()
+    symbols = memcompare.load_frozen_symbols()
 
     # Sort once so each sample is a binary search rather than a scan.
     # Symbol values are not all 2-tuples (some carry gather lists), so take the first element as
@@ -144,7 +144,7 @@ def main():
                         # which reads the real function table.
                         hits["0x%X" % (rip - target.base)] += 1
                     else:
-                        hits["(outside Whoa.exe -- system call or other module)"] += 1
+                        hits["(outside Frozen.exe -- system call or other module)"] += 1
 
                 k32.ResumeThread(handle)
 

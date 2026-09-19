@@ -358,7 +358,7 @@ static const char* const s_cameraTerrainTiltDefaults[] = { // [style][state][par
 
 // ref: FUN_005fd910
 // Every camera cvar the reference registers, in its order, with its defaults. The reference
-// installs clamping callbacks on many of them (noted by address); whoa validates only cameraView.
+// installs clamping callbacks on many of them (noted by address); frozen validates only cameraView.
 void CameraRegisterCVars() {
     char name[64];
     int32_t view = SStrToInt("2"); // the cameraView default, which picks the saved-distance/pitch defaults

@@ -75,7 +75,7 @@ void WowClientDB<T>::Load(const char* filename, int32_t linenumber) {
         // Say so. A database that failed to open is indistinguishable at every call site from one
         // whose every field is zero, and that cost real time: LightFloatBand's name was written
         // with an unescaped backslash, so it silently never loaded and fog distance and cloud
-        // density read as 0 for as long as the file existed. The reference aborts here; whoa cannot
+        // density read as 0 for as long as the file existed. The reference aborts here; frozen cannot
         // yet, because several DBCs it asks for are genuinely absent, so it complains instead.
         fprintf(stderr, "DBC: could not open %s -- every lookup in it will return nothing\n",
                 T::GetFilename());

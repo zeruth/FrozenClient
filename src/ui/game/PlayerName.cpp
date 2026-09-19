@@ -114,10 +114,10 @@ void PlayerNameUpdateWorldText() {
 
 void PlayerNameRenderWorldText() {
     // Temporary attribution switch for the crash that kills the client 10-15 seconds after entering
-    // the world, faulting inside CGxString::InitializeViewTranslation. Set WHOA_NO_NAMES=1 to skip
+    // the world, faulting inside CGxString::InitializeViewTranslation. Set FROZEN_NO_NAMES=1 to skip
     // this system entirely: if the client then survives, the fault is here; if it still dies, this
     // is not the culprit and the search moves elsewhere. Remove once the cause is known.
-    static const bool disabled = getenv("WHOA_NO_NAMES") != nullptr;
+    static const bool disabled = getenv("FROZEN_NO_NAMES") != nullptr;
 
     if (disabled) {
         return;

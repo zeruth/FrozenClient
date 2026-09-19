@@ -1,4 +1,4 @@
-# Shadow rendering parity: 3.3.5a reference vs whoa
+# Shadow rendering parity: 3.3.5a reference vs frozen
 
 Scope: unit/doodad **blob shadows** (Shadow.cpp region, ~0x7e2-0x7e4) and the **map shadow map**
 (MapShadow.cpp ~0x7bb + CShadowCache ~0x874-0x875). Program: `RunicWorldGame.exe` (Win 3.3.5a 12340).
@@ -76,7 +76,7 @@ shadow-map path instead.
 **Render states (FUN_007e4480; `FUN_00408bf0` = GxRsSet(int), `FUN_00409670`/`FUN_00685fb0` = GxRsPush/Pop,
 `FUN_00685f50` = GxRsSet(texture), `FUN_00408c30` = set AlphaRef to the default for the current blend mode).**
 
-| state | id | value | meaning in whoa enum |
+| state | id | value | meaning in frozen enum |
 |---|---|---|---|
 | GxRs_BlendingMode | 6 | **4** | `GxBlend_Mod` - src=ZERO, dst=SRCCOLOR, i.e. `dest *= shadowColor` |
 | GxRs_AlphaRef | 7 | default-for-blend | `FUN_00408c30(7)` |
@@ -87,14 +87,14 @@ shadow-map path instead.
 | GxRs_Texture0 | 0x15 | `Textures\ShadowBlob.blp` (`DAT_00d38044`) | |
 | GxRs_ColorOp0 | 0x25 | 5 | fixed-function combiner *(exact op semantics uncertain)* |
 | GxRs_AlphaOp0 | 0x2d | 3 | *(uncertain)* |
-| GxRs_DepthFunc | 0x0e | **1** | per whoa `CGxDeviceD3d::s_cmpFunc` = `{LESSEQUAL, EQUAL, GREATEREQUAL, LESS}` -> **D3DCMP_EQUAL** |
+| GxRs_DepthFunc | 0x0e | **1** | per frozen `CGxDeviceD3d::s_cmpFunc` = `{LESSEQUAL, EQUAL, GREATEREQUAL, LESS}` -> **D3DCMP_EQUAL** |
 
 **There is no `GxRs_PolygonOffset` (state 0) anywhere in this path, and no depth bias of any kind.**
 Coplanarity is handled by `DepthFunc = EQUAL` + `DepthWrite = 0`: only fragments whose depth exactly
 matches what the base pass already wrote are shaded. That is only sound because the shadow pass feeds
 the rasteriser the *same world-space vertices* through the *same transform* as the pass that wrote
 the depth (`FUN_007e32f0` copies the receiver vertices verbatim; `FUN_0057c450(8, m)` sets
-`GxXform_World` to the receiver own matrix). This is the mechanism whoa is missing.
+`GxXform_World` to the receiver own matrix). This is the mechanism frozen is missing.
 
 Only the `DepthFunc = 1` line is conditional (`if (param_3 == 0.0)`) - the ground-marker caller passes a
 non-zero value and therefore keeps the default LESSEQUAL.
@@ -145,7 +145,7 @@ select which receiver classes `FUN_007e35f0` gathers *(uncertain which bit is wh
 
 **Draw order.** Blob shadows are step 11 of `CMap::Render` - after terrain chunks (8), WMO groups (9)
 and sky (10), before `CM2Scene::Draw(pass 0)` which is step 7 of `OnWorldRender`. All opaque receivers
-have already written depth. Whoa current placement (after TerrainRender, before the M2 passes) is
+have already written depth. Frozen current placement (after TerrainRender, before the M2 passes) is
 therefore already correct; only the sky position differs, which is a separate known gap.
 
 ### 1b. Map shadow map (separate system, CVars `mapShadows` / `shadowLevel`)
@@ -168,11 +168,11 @@ therefore already correct; only the sky position differs, which is a separate kn
   * `FUN_008750b0` - builds the shadow texture matrix and binds the result.
 * Shaders: `ShadowMapRenderSL` (`FUN_007bb460`), `ShadowMap.wfx` (`FUN_00780f50`), and the terrain
   `Terrain2_pcf` / `Terrain3_pcf` permutations sample it.
-* Requires **render-to-texture**, which whoa gx does not have.
+* Requires **render-to-texture**, which frozen gx does not have.
 
 ---
 
-## 2. Why the current whoa stand-in is wrong
+## 2. Why the current frozen stand-in is wrong
 
 `BlobShadowsBegin` / `BlobShadowDraw` / `BlobShadowsEnd`, `src/world/Terrain.cpp:4260-4370`,
 called from `CGWorldFrame::OnWorldRender`, `src/ui/game/CGWorldFrame.cpp:243-274`.
@@ -194,21 +194,21 @@ does. What is wrong:
    `src/gx/gll/CGxDeviceGLL.cpp`. `GLDevice.cpp:430-450` has `glPolygonOffset` plumbing but nothing
    routes the render state to it. So the state is silently a no-op everywhere. (This matters for the
    fallback plan, not for parity - the reference never uses it here.)
-3. **Wrong blend mode and colour model.** Whoa uses `GxBlend_Alpha` with a hard-coded opaque-black
+3. **Wrong blend mode and colour model.** Frozen uses `GxBlend_Alpha` with a hard-coded opaque-black
    vertex colour. The reference uses `GxBlend_Mod` (`dest *= shadowColor`) with a **white** diffuse
-   whose alpha is the model shadow opacity (`model+0x178`). Consequence: whoa shadows are a flat
+   whose alpha is the model shadow opacity (`model+0x178`). Consequence: frozen shadows are a flat
    black wash with no per-model opacity and no fade-out.
-4. **Fog is left on.** Whoa sets `GxRs_Fog, s_fogActive`; the reference sets `Fog = 0` and
-   `FogColor = 0xffffffff`. Distant whoa shadows get tinted by the fog colour.
+4. **Fog is left on.** Frozen sets `GxRs_Fog, s_fogActive`; the reference sets `Fog = 0` and
+   `FogColor = 0xffffffff`. Distant frozen shadows get tinted by the fog colour.
 5. **No stage-1 distance ramp.** The `ShadowAdd`/`ShadowMod` 64x8 ramp on `GxRs_Texture1`, driven by
-   `GxXform_Tex1`, is what makes the shadow fade out along the projection axis. Whoa has neither, so
+   `GxXform_Tex1`, is what makes the shadow fade out along the projection axis. Frozen has neither, so
    the decal ends with a hard texture edge.
-6. **Receiver coverage is terrain only.** Whoa loops `s_tiles`/`chunks`. The reference gathers world
+6. **Receiver coverage is terrain only.** Frozen loops `s_tiles`/`chunks`. The reference gathers world
    geometry batches *and* up to 10 M2 receivers, so shadows land on **WMO floors**, bridges, and other
-   models. Whoa shadows vanish the moment a unit steps onto a WMO floor or a doodad.
-7. **Casters are units only.** Whoa filters `object->IsA(TYPE_UNIT)`; the reference walks every scene
+   models. Frozen shadows vanish the moment a unit steps onto a WMO floor or a doodad.
+7. **Casters are units only.** Frozen filters `object->IsA(TYPE_UNIT)`; the reference walks every scene
    entity with the `0x800` flag, so **doodads cast blob shadows too**.
-8. **Footprint is a fixed axis-aligned circle.** Whoa uses `object->GetPosition()` and a clamped
+8. **Footprint is a fixed axis-aligned circle.** Frozen uses `object->GetPosition()` and a clamped
    `max(ex,ey)*scale*0.9` radius. The reference uses the **current animation** bounding box
    (`FUN_0082ced0`), oriented by the model rotation, projected along the model local Z, and for
    units re-bases Z onto the floor (`FUN_0071ed80`).
@@ -262,7 +262,7 @@ already gives.
 *Prereq*: T1, P5.
 Pass the model world matrix and the current sequence bounding box instead of `(position, radius)`;
 build the quad from `(+-hx, +-hy, 0)` rotated by the model 3x3, and derive the Z extent from
-`halfHeight` scaled by the two tunables. Whoa already reads `M2Bounds` in `CGWorldFrame.cpp:216`; the
+`halfHeight` scaled by the two tunables. Frozen already reads `M2Bounds` in `CGWorldFrame.cpp:216`; the
 per-sequence bounds table is the part that is missing.
 
 ### T4 - Restore `ShadowInit`
@@ -334,7 +334,7 @@ lands; nothing in T1-T9 depends on it.
   (`D3DRS_DEPTHBIAS` + `D3DRS_SLOPESCALEDEPTHBIAS`) would close the gap. Treat as an independent gx fix,
   not as the z-fighting fix.
 * **P5 - M2 per-sequence bounding boxes.** T3 needs the sequence-bounds table
-  (`m2data+0x150`, stride 0x40, box at `+0x20`); whoa currently exposes only the global
+  (`m2data+0x150`, stride 0x40, box at `+0x20`); frozen currently exposes only the global
   `M2Bounds`. Owner: `src/model`.
 * **P6 - a shared receiver-geometry abstraction.** T7-T9 need terrain chunks, WMO groups and M2 batches
   to be enumerable through one interface with a world matrix per batch. Today each lives in its own
@@ -408,7 +408,7 @@ already queued behind a single run, and the last review pass found a crash in ex
 
 ### 2026-09-16, same day - correction: that was not the root cause
 
-The entry above says the reference gets its blob falloff from the generated ramp while whoa is stuck
+The entry above says the reference gets its blob falloff from the generated ramp while frozen is stuck
 with a binary mask. **That is not what `ShadowInit` does.** Reading `FUN_007e4a40` itself rather than
 inferring from the two ramp callbacks:
 
@@ -429,7 +429,7 @@ What survives from the entry above, because it was measured rather than inferred
 
 - `Textures\ShadowBlob.blp` is 32x32 palettised with `alphaDepth = 1`, and its decoded alpha plane
   holds exactly `{0, 255}`. **Both clients load this.**
-- whoa's `blob_decal_ps.hlsl` derives its entire coverage from that alpha, so whoa's blob edge is as
+- frozen's `blob_decal_ps.hlsl` derives its entire coverage from that alpha, so frozen's blob edge is as
   hard as the mask.
 - The trapezoid profile and its five constants, read from `.rdata` at the addresses listed above,
   are correct as a description of what those two ramp callbacks write. Only the claim about *what
@@ -450,10 +450,10 @@ texgen through `GxXform_Tex0` / `GxXform_Tex1`, set by `FUN_00616a30` inside `FU
 Three consequences, and the first one matters most:
 
 1. **The hard circular edge is not a defect.** The reference binds the same binary-alpha
-   `ShadowBlob.blp` at stage 0 that whoa does. Whatever makes the reference's shadows look better, it
+   `ShadowBlob.blp` at stage 0 that frozen does. Whatever makes the reference's shadows look better, it
    is not a softer mask -- so "make the blob edge soft" would be inventing a difference, not closing
    one.
-2. **whoa has no stage 1 at all**, so its shadows never fade with distance along the projection axis.
+2. **frozen has no stage 1 at all**, so its shadows never fade with distance along the projection axis.
    They sit at full strength wherever they land. That is a real, fully specified gap: a 64x8 texture
    whose profile and five constants are recorded above, bound to stage 1, modulated in
    (`ColorOp1`/`AlphaOp1 = 2` on the shader path).
@@ -461,7 +461,7 @@ Three consequences, and the first one matters most:
    it derives darkness from `diffuseLuma / (ambientLuma + diffuseLuma)`. That remains the other
    candidate for shadows reading too dark.
 
-Porting (2) is not a shader one-liner: whoa's blob pass runs a pixel shader rather than the
+Porting (2) is not a shader one-liner: frozen's blob pass runs a pixel shader rather than the
 fixed-function combiner, so the fade needs a second sampler, a constant carrying the fade range, and
 an `fxc` rebuild. Specified, not yet written.
 
@@ -483,13 +483,13 @@ item by item against the code as it stands, rather than re-quoting it:
 | 2 | no depth bias to fall back on | **fixed** as a gx feature (and was never the cause) |
 | 3 | wrong blend mode and colour model | **fixed** - `GxRs_BlendingMode, GxBlend_Mod` |
 | 4 | fog left on | **fixed** - `GxRs_Fog, 0` |
-| 5 | no stage-1 distance ramp | **still open** - whoa binds no stage 1 at all |
+| 5 | no stage-1 distance ramp | **still open** - frozen binds no stage 1 at all |
 | 6 | receiver coverage is terrain only | **partly** - WMO floors covered via `BlobShadowDrawWmo` |
 | 7 | casters are units only | **still open** |
 | 8 | footprint is a fixed axis-aligned circle | **still open** |
 | 9 | no CPU up-facing cull | **partly** - `BuildWmoShadowGrid` keeps only up-facing triangles |
 | 10 | no gating CVars (`shadowLOD`, `extShadowQuality`) | **still open** |
-| 11 | `ShadowInit()` never called | still commented out at `src/client/Client.cpp:679`, but deliberately: the whoa blob path loads its own texture and does not need it |
+| 11 | `ShadowInit()` never called | still commented out at `src/client/Client.cpp:679`, but deliberately: the frozen blob path loads its own texture and does not need it |
 
 So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), caster and
 footprint fidelity (7, 8), and the quality CVars (10).

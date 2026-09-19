@@ -22,7 +22,7 @@ namespace {
 SArchive* s_archiveList = nullptr;
 
 // Directory every relative path is resolved against. Empty means the working directory, which is
-// what Whoa assumes everywhere else.
+// what Frozen assumes everywhere else.
 // TODO the original sets this from the executable's location during startup
 char s_basePath[STORM_MAX_PATH] = "";
 

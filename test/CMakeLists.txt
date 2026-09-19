@@ -13,9 +13,9 @@ if(WHOA_SYSTEM_MAC)
         PROPERTIES COMPILE_FLAGS "-x objective-c++"
     )
 
-    add_executable(WhoaTest ${PRIVATE_SOURCES})
+    add_executable(FrozenTest ${PRIVATE_SOURCES})
 
-    target_link_libraries(WhoaTest
+    target_link_libraries(FrozenTest
         PRIVATE
             client
             event
@@ -36,9 +36,9 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
         "util/*.cpp"
     )
 
-    add_executable(WhoaTest ${PRIVATE_SOURCES})
+    add_executable(FrozenTest ${PRIVATE_SOURCES})
 
-    target_link_libraries(WhoaTest
+    target_link_libraries(FrozenTest
         PRIVATE
             client
             event
@@ -48,15 +48,15 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
     )
 endif()
 
-target_include_directories(WhoaTest
+target_include_directories(FrozenTest
     PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/vendor/catch2-2.13.10
 )
 
-install(TARGETS WhoaTest DESTINATION "bin")
+install(TARGETS FrozenTest DESTINATION "bin")
 
 if(WHOA_SYSTEM_ANDROID)
     # Catch2 writes through the Android log
-    target_link_libraries(WhoaTest PRIVATE log)
+    target_link_libraries(FrozenTest PRIVATE log)
 endif()

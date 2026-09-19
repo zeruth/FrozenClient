@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read the same piece of state out of the reference client and out of whoa, side by side.
+"""Read the same piece of state out of the reference client and out of frozen, side by side.
 
 A screenshot diff says two frames disagree. It does not say which number was wrong. This attaches to
 both running clients, reads named globals out of each, and prints them next to each other, so a
@@ -10,7 +10,7 @@ Addresses come from two different places, because the two binaries are nothing a
 
   reference : absolute virtual addresses recovered in Ghidra (the 32-bit image prefers base
               0x00400000 and the DAT_ labels are already absolute), rebased onto the live module.
-  whoa      : symbol names, resolved to RVAs through the PDB with llvm-pdbutil.
+  frozen      : symbol names, resolved to RVAs through the PDB with llvm-pdbutil.
 
 Usage:
     python tools/memcompare.py                 # read every probe, print a table
@@ -31,9 +31,9 @@ import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDBUTIL = r"C:\Program Files\LLVM\bin\llvm-pdbutil.exe"
-WHOA_PDB = os.path.join(ROOT, "build", "dist", "bin", "Whoa.pdb")
-WHOA_EXE = os.path.join(ROOT, "build", "dist", "bin", "Whoa.exe")
-SYMBOL_CACHE = os.path.join(ROOT, "build", "whoa-globals.json")
+FROZEN_PDB = os.path.join(ROOT, "build", "dist", "bin", "Frozen.pdb")
+FROZEN_EXE = os.path.join(ROOT, "build", "dist", "bin", "Frozen.exe")
+SYMBOL_CACHE = os.path.join(ROOT, "build", "frozen-globals.json")
 
 # The vanilla 3.3.5a client the Ghidra database was built from. Named by full path on purpose: the
 # user's own live game is also called WoW.exe.
@@ -191,13 +191,13 @@ def attach(label, exe_path):
     return Target(label, pid, handle, info.lpBaseOfDll, info.SizeOfImage, bits)
 
 
-def load_whoa_symbols():
+def load_frozen_symbols():
     """Map global name -> (RVA, size), from the PDB. Cached: the dump takes a while."""
-    if os.path.exists(SYMBOL_CACHE) and os.path.getmtime(SYMBOL_CACHE) >= os.path.getmtime(WHOA_PDB):
+    if os.path.exists(SYMBOL_CACHE) and os.path.getmtime(SYMBOL_CACHE) >= os.path.getmtime(FROZEN_PDB):
         return json.load(open(SYMBOL_CACHE))
 
-    print("resolving symbols from %s ..." % os.path.basename(WHOA_PDB), file=sys.stderr)
-    out = subprocess.run([PDBUTIL, "pretty", "--globals", WHOA_PDB], capture_output=True, text=True).stdout
+    print("resolving symbols from %s ..." % os.path.basename(FROZEN_PDB), file=sys.stderr)
+    out = subprocess.run([PDBUTIL, "pretty", "--globals", FROZEN_PDB], capture_output=True, text=True).stdout
 
     symbols = {}
     ambiguous = []
@@ -289,7 +289,7 @@ def image_size_on_disk(path):
 def check_build_matches(target, exe_path):
     """Warn loudly when the attached process is not the binary the PDB describes.
 
-    There is a second, stale Whoa.exe sitting in the reference install directory, and launching it by
+    There is a second, stale Frozen.exe sitting in the reference install directory, and launching it by
     accident produces a client that looks right, runs fine, and answers every symbol read with
     ERROR_PARTIAL_COPY. Comparing the loaded image size against the build output catches that in one
     line instead of an hour.
@@ -313,7 +313,7 @@ def read_probe(target, address, kind, gather):
     """Read one probe, optionally assembling it from scattered floats.
 
     The two clients do not agree on layout even when they agree on content: the reference stores the
-    shadow texture matrix as three float4 COLUMNS, while whoa keeps a row-major 4x4, so the same
+    shadow texture matrix as three float4 COLUMNS, while frozen keeps a row-major 4x4, so the same
     twelve numbers live at non-contiguous offsets on one side. `gather` names those offsets so the
     values can still be lined up element for element instead of eyeballed.
     """
@@ -401,7 +401,7 @@ def report_clock_skew(ref, ours, symbols):
     Nearly every light value is a function of the time of day, so a few minutes of skew turns a
     correct client into a screenful of DIFF. This is not hypothetical: a run once reported 8 DIFF
     against a previous 3 with no code change, and the cause was the reference sitting logged in for
-    90 minutes while its clock ran slow. whoa re-syncs from the server on every login; the reference
+    90 minutes while its clock ran slow. frozen re-syncs from the server on every login; the reference
     does not while it stays logged in. Re-log the reference and the difference disappears.
     """
     if not ref or not ours:
@@ -432,7 +432,7 @@ def report_clock_skew(ref, ours, symbols):
     skew = our_minutes - ref_minutes
 
     print()
-    print("day/night clock: reference %d, whoa %d (%+d minutes)" % (ref_minutes, our_minutes, skew))
+    print("day/night clock: reference %d, frozen %d (%+d minutes)" % (ref_minutes, our_minutes, skew))
 
     if abs(skew) > 2:
         print("  *** THE CLOCKS HAVE DRIFTED. Every light value is a function of time of day, so")
@@ -475,7 +475,7 @@ def report_invariants(rows):
             checks.append((
                 "horizontal column * 20",
                 ref_len * 20.0, our_len * 20.0,
-                "reference 1.0 vs whoa 0.5 is BY DESIGN: whoa folds the NDC-to-UV remap into "
+                "reference 1.0 vs frozen 0.5 is BY DESIGN: frozen folds the NDC-to-UV remap into "
                 "the matrix, the reference does it in its pixel shader"))
 
     # The three tex-matrix columns always report DIFF element by element, and that is a convention
@@ -483,7 +483,7 @@ def report_invariants(rows):
     # (u and v 1/40 for the 40-yard first cascade, depth 1/4000 for the far plane) once the
     # reference's NDC-to-UV halving is accounted for, and the depth at the reference's own shadow
     # centre agrees to 0.0014. The two matrices are the same transform expressed in different input
-    # bases -- whoa consumes world coordinates, the reference does not. Checking the scale ratio
+    # bases -- frozen consumes world coordinates, the reference does not. Checking the scale ratio
     # keeps that claim honest: if any axis drifts, the matrices really have diverged.
     for index, axis in ((0, "u"), (1, "v"), (2, "depth")):
         col = values.get("tex matrix col %d" % index)
@@ -496,13 +496,13 @@ def report_invariants(rows):
         if not ref_len or not our_len:
             continue
 
-        # The reference keeps u and v in NDC and halves them in the shader; whoa folds that in.
+        # The reference keeps u and v in NDC and halves them in the shader; frozen folds that in.
         ref_len *= 0.5 if index < 2 else 1.0
 
         checks.append((
             "%s axis scale ratio" % axis,
             1.0, our_len / ref_len,
-            "1.0 means whoa's shadow projection scales this axis exactly as the reference does"))
+            "1.0 means frozen's shadow projection scales this axis exactly as the reference does"))
 
     if not checks:
         return
@@ -544,16 +544,16 @@ def read_one_side(target, probe, side, symbols):
 
         return read_probe(target, address, kind, probe.get("ref_gather"))
 
-    if not probe.get("whoa"):
+    if not probe.get("frozen"):
         return None
 
-    sym = symbols.get(probe["whoa"])
+    sym = symbols.get(probe["frozen"])
 
     if not sym:
         return None
 
-    return read_probe(target, target.base + sym[0] + probe.get("whoa_offset", 0),
-                      kind, probe.get("whoa_gather"))
+    return read_probe(target, target.base + sym[0] + probe.get("frozen_offset", 0),
+                      kind, probe.get("frozen_gather"))
 
 
 def main():
@@ -563,11 +563,11 @@ def main():
     ap.add_argument("--probes", default=os.path.join(ROOT, "tools", "probes.json"))
     ap.add_argument("--ref-exe", default=REFERENCE_EXE,
                     help="the reference client image to attach to, matched by full path")
-    ap.add_argument("--our-exe", default=WHOA_EXE)
+    ap.add_argument("--our-exe", default=FROZEN_EXE)
     ap.add_argument("--snapshot", metavar="FILE",
                     help="read ONE client's probes and save them, for comparing against a snapshot "
                          "taken at another time")
-    ap.add_argument("--side", choices=("reference", "whoa"), default="reference",
+    ap.add_argument("--side", choices=("reference", "frozen"), default="reference",
                     help="which client --snapshot reads")
     ap.add_argument("--against", metavar="FILE",
                     help="compare the live client against a saved snapshot instead of the other "
@@ -575,7 +575,7 @@ def main():
     args = ap.parse_args()
 
     probes = json.load(open(args.probes))
-    symbols = load_whoa_symbols()
+    symbols = load_frozen_symbols()
 
     # Snapshots exist because the two clients CANNOT both be in the world at once: they share one
     # account, and whichever logs in second kicks the first back to character select, where its
@@ -588,7 +588,7 @@ def main():
         if not target:
             sys.exit("%s is not running" % args.side)
 
-        symbols_local = symbols if args.side == "whoa" else {}
+        symbols_local = symbols if args.side == "frozen" else {}
         saved = {}
 
         for probe in probes:
@@ -603,24 +603,24 @@ def main():
         return
 
     ref = attach("reference", args.ref_exe)
-    ours = attach("whoa", args.our_exe)
+    ours = attach("frozen", args.our_exe)
 
     if args.against:
         loaded = json.load(open(args.against))
-        print("comparing live whoa against %s snapshot in %s"
+        print("comparing live frozen against %s snapshot in %s"
               % (loaded["side"], args.against), file=sys.stderr)
 
     if not ref and not ours:
         sys.exit("neither client is running")
 
-    for label, target in (("reference", ref), ("whoa", ours)):
+    for label, target in (("reference", ref), ("frozen", ours)):
         if target:
             print("%-10s pid %-6d base 0x%X  %d-bit"
                   % (label, target.pid, target.base, target.bits), file=sys.stderr)
         else:
             print("%-10s not running" % label, file=sys.stderr)
 
-    check_build_matches(ours, os.path.join(ROOT, "build", "dist", "bin", "Whoa.exe"))
+    check_build_matches(ours, os.path.join(ROOT, "build", "dist", "bin", "Frozen.exe"))
 
     while True:
         rows = []
@@ -639,7 +639,7 @@ def main():
                 address = ref.base + rva
 
                 # Several of these labels name a POINTER to a structure rather than the structure.
-                # Read them as-is and every field comes back zero, which reads as "whoa disagrees"
+                # Read them as-is and every field comes back zero, which reads as "frozen disagrees"
                 # when it actually means "this was never the data".
                 if probe.get("ref_deref"):
                     held = ref.read(address, 8 if ref.bits == 64 else 4)
@@ -654,7 +654,7 @@ def main():
                 ref_value = (read_probe(ref, address, kind, probe.get("ref_gather"))
                              if address else None)
 
-                # The reference packs several colours into one u32 where whoa keeps three floats.
+                # The reference packs several colours into one u32 where frozen keeps three floats.
                 # Unpacking here lets those probes compare automatically instead of "compare by
                 # hand", which in practice meant they were never compared at all.
                 if probe.get("ref_packed_rgb") and isinstance(ref_value, int):
@@ -662,17 +662,17 @@ def main():
                                  ((ref_value >> 8) & 0xFF) / 255.0,
                                  (ref_value & 0xFF) / 255.0]
 
-            if ours and probe.get("whoa"):
-                sym = symbols.get(probe["whoa"])
+            if ours and probe.get("frozen"):
+                sym = symbols.get(probe["frozen"])
 
                 if sym:
-                    address = ours.base + sym[0] + probe.get("whoa_offset", 0)
+                    address = ours.base + sym[0] + probe.get("frozen_offset", 0)
 
                     # Some probes hold the same quantity in different shapes on the two sides -- a
-                    # packed colour against three floats, say -- so the whoa side can override the
+                    # packed colour against three floats, say -- so the frozen side can override the
                     # type rather than needing a second probe that nothing ever compares.
-                    our_value = read_probe(ours, address, probe.get("whoa_type", kind),
-                                           probe.get("whoa_gather"))
+                    our_value = read_probe(ours, address, probe.get("frozen_type", kind),
+                                           probe.get("frozen_gather"))
 
             rows.append((probe, ref_value, our_value))
 
@@ -684,7 +684,7 @@ def main():
         TIME_DEPENDENT = ("outdoor light", "fog", "sky dome", "sky bodies")
 
         print()
-        print("%-26s %-28s %-28s %s" % ("probe", "reference", "whoa", ""))
+        print("%-26s %-28s %-28s %s" % ("probe", "reference", "frozen", ""))
         print("-" * 96)
         group = None
 

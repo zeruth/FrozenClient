@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Reference <-> whoa function map: how much of the 3.3.5a client this port actually covers.
+"""Reference <-> frozen function map: how much of the 3.3.5a client this port actually covers.
 
-The reference binary has 27.7k functions and no symbols; whoa has ~9k. Nothing links the two
+The reference binary has 27.7k functions and no symbols; frozen has ~9k. Nothing links the two
 except the code itself, so this builds the link from evidence and keeps it across runs:
 
   1. reference inventory  tools/recomp/data/ref-functions.jsonl
        every function, its size, callees, callers and the string literals it references
        (Ghidra headless: tools/ghidra-scripts ExportFunctions.java; --export re-runs it)
-  2. whoa inventory       from build/dist/bin/Whoa.pdb (names, code sizes, object files) and the
+  2. frozen inventory       from build/dist/bin/Frozen.pdb (names, code sizes, object files) and the
        source itself (bodies, string literals, calls, WHOA_UNIMPLEMENTED, reference annotations)
   3. matching, in order of trust
        override   tools/recomp/overrides.json          -- hand-confirmed, never lost
-       annotated  `// ref: FUN_004f8ea0` above a whoa definition (or FUN_/Sub_ in its body)
+       annotated  `// ref: FUN_004f8ea0` above a frozen definition (or FUN_/Sub_ in its body)
        string     a literal both sides reference, weighted by how rare it is
        callgraph  a matched pair whose only unmatched callee on each side must be each other
        callorder  between two linked calls inside a linked pair, a single unlinked call each side
-       order      definition order: between two linked anchors from one file, the unlinked whoa
+       order      definition order: between two linked anchors from one file, the unlinked frozen
                   definitions and the unlinked reference addresses pair up when their counts agree
   4. report               docs/recomp/REPORT.md + data/map.json + data/history.jsonl
 
@@ -23,7 +23,7 @@ Run it after every porting session:
 
     python tools/recomp/recomp.py            # inventory + match + report
     python tools/recomp/recomp.py --export   # also re-export the reference from Ghidra (2-3 min)
-    python tools/recomp/recomp.py --pdb      # also re-dump Whoa.pdb (after a build)
+    python tools/recomp/recomp.py --pdb      # also re-dump Frozen.pdb (after a build)
     python tools/recomp/recomp.py --show 004f8ea0     # everything known about one reference fn
     python tools/recomp/recomp.py --show CGWorldFrame::OnWorldRender
 
@@ -50,7 +50,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, 'data')
 REF_JSONL = os.path.join(DATA, 'ref-functions.jsonl')
-PDB_DUMP = os.path.join(DATA, 'whoa-pdb.txt')
+PDB_DUMP = os.path.join(DATA, 'frozen-pdb.txt')
 OVERRIDES = os.path.join(HERE, 'overrides.json')
 MAP_OUT = os.path.join(DATA, 'map.json')
 HISTORY = os.path.join(DATA, 'history.jsonl')
@@ -59,7 +59,7 @@ REPORT = os.path.join(ROOT, 'docs', 'recomp', 'REPORT.md')
 GHIDRA_PROJECTS = r'C:\Users\tyler\tools\ghidra-projects'
 GHIDRA_SCRIPTS = os.path.join(HERE, 'ghidra')  # the exporters live with the tool
 PDBUTIL = r'C:\Program Files\LLVM\bin\llvm-pdbutil.exe'
-PDB = os.path.join(ROOT, 'build', 'dist', 'bin', 'Whoa.pdb')
+PDB = os.path.join(ROOT, 'build', 'dist', 'bin', 'Frozen.pdb')
 
 # Roots of the frame loop in the reference: CGWorldFrame::OnFrameRender and the client's main
 # idle. Reachability from these is what "world spine" means in the report.
@@ -165,7 +165,7 @@ def spine(refs):
 
 
 # ----------------------------------------------------------------------------------------------
-# whoa side
+# frozen side
 
 def dump_pdb():
     os.makedirs(DATA, exist_ok=True)
@@ -199,7 +199,7 @@ def load_pdb_functions():
                 mm = re.search(r'([\w.-]+)\.dir\\(?:Release\\)?([\w.-]+)\.obj$', path)
                 if mm:
                     lib, obj = mm.group(1), mm.group(2)
-                    if lib == 'Whoa':
+                    if lib == 'Frozen':
                         lib = 'app'
                     if lib in VENDOR_LIBS:
                         lib = 'lib/' + lib  # storm, tempest ...: part of the reference too, kept but labelled
@@ -228,7 +228,7 @@ CALL_RE = re.compile(r'\b([A-Za-z_]\w*)\s*\(')
 KEYWORDS = {'if', 'for', 'while', 'switch', 'return', 'sizeof', 'static_cast', 'reinterpret_cast', 'const_cast',
             'dynamic_cast', 'defined', 'catch', 'alignof', 'decltype', 'new', 'delete'}
 REF_ADDR_RE = re.compile(r'\b(?:FUN_|sub_|Sub_?|0x)(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
-# `// ref: FUN_00767fc0` (this project) or whoa upstream's `// 0x7681F0 in the original`
+# `// ref: FUN_00767fc0` (this project) or frozen upstream's `// 0x7681F0 in the original`
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b'
                         r'|0x(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\s+(?:with[^)]*)?in the original')
 
@@ -282,7 +282,7 @@ def parse_sources():
                 j += 1
             body = text[i:j + 1]
             # The reference annotation is the `// ref:` tag in the comment block right above the
-            # definition, or the address whoa baked into the name (CM2Model::Sub826350 IS
+            # definition, or the address frozen baked into the name (CM2Model::Sub826350 IS
             # FUN_00826350). A FUN_/Sub mention inside the body names a callee, not this function
             # -- reading those as self-links is what linked SetBoneSequence to its own helper.
             above = text[max(0, text.rfind('\n\n', 0, m.start())):m.start()]
@@ -311,7 +311,7 @@ def parse_sources():
     return fns
 
 
-CLANG_JSON = os.path.join(DATA, 'whoa-clang.json')
+CLANG_JSON = os.path.join(DATA, 'frozen-clang.json')
 
 
 def msvc_nested(name):
@@ -350,11 +350,11 @@ def overlay_clang(src):
 TEMPLATE_ARGS_RE = re.compile(r'^([\w:]+)(<.+>)::([^:]+)$')
 
 
-def expand_inlined(callseq, whoa, inlined, depth=0):
-    """whoa call sequence with header-only inlined callees replaced by their own calls."""
+def expand_inlined(callseq, frozen, inlined, depth=0):
+    """frozen call sequence with header-only inlined callees replaced by their own calls."""
     out = []
     for c in callseq:
-        if c in whoa:
+        if c in frozen:
             out.append(c)
             continue
         pattern, args = c, ''
@@ -367,44 +367,44 @@ def expand_inlined(callseq, whoa, inlined, depth=0):
             continue
         if args:
             # the pattern's callees are spelled without arguments; give them this instantiation's
-            body = [(n.replace('::', args + '::', 1) if n.replace('::', args + '::', 1) in whoa or n.replace('::', args + '::', 1) in inlined else n) if '<' not in n and '::' in n else n for n in body]
-        out.extend(expand_inlined(body, whoa, inlined, depth + 1))
+            body = [(n.replace('::', args + '::', 1) if n.replace('::', args + '::', 1) in frozen or n.replace('::', args + '::', 1) in inlined else n) if '<' not in n and '::' in n else n for n in body]
+        out.extend(expand_inlined(body, frozen, inlined, depth + 1))
     return out
 
 
-def merge_whoa(pdb, src):
-    whoa = {}
+def merge_frozen(pdb, src):
+    frozen = {}
     inlined = {}  # header-only functions with no PDB symbol: name -> callseq
     for name, s in src.items():
         p = pdb.get(name)
         if not p and s['files'] and all(f.endswith(('.hpp', '.h')) for f in s['files']):
-            # defined in a header and inlined at every use: no function in whoa's binary, and the
+            # defined in a header and inlined at every use: no function in frozen's binary, and the
             # reference inlined it too. Counting it as a callee would break the callgraph votes;
             # instead its calls are spliced into its callers below, as the compiler did.
             inlined[name] = s['callseq']
             continue
         files = sorted(s['files'])
         parts = files[0].split('/')
-        whoa[name] = {'name': name, 'files': files, 'strings': s['strings'], 'calls': s['calls'], 'callseq': s['callseq'],
+        frozen[name] = {'name': name, 'files': files, 'strings': s['strings'], 'calls': s['calls'], 'callseq': s['callseq'],
                       'refs': s['refs'], 'stub': s['stub'], 'lines': s['lines'], 'exact': s.get('exact', False),
                       'consts': s.get('consts', set()), 'branches': s.get('branches', -1), 'line': s.get('line', 0),
                       'size': p['size'] if p else 0, 'lib': p['lib'] if p else (parts[1] if len(parts) > 2 else '?')}
     for name, p in pdb.items():
-        if name not in whoa:
-            whoa[name] = {'name': name, 'files': [], 'strings': set(), 'calls': set(), 'callseq': [], 'refs': set(), 'stub': False,
+        if name not in frozen:
+            frozen[name] = {'name': name, 'files': [], 'strings': set(), 'calls': set(), 'callseq': [], 'refs': set(), 'stub': False,
                           'lines': 0, 'size': p['size'], 'lib': p['lib'], 'exact': False, 'consts': set(), 'branches': -1}
-    # resolve calls to whoa function keys: same class first, then a unique short-name match
+    # resolve calls to frozen function keys: same class first, then a unique short-name match
     short = collections.defaultdict(list)
-    for name in whoa:
+    for name in frozen:
         short[name.split('::')[-1]].append(name)
-    for name, w in whoa.items():
+    for name, w in frozen.items():
         cls = name.rsplit('::', 1)[0] if '::' in name else None
 
         def resolve(c):
             cands = short.get(c)
             if not cands:
                 return None
-            if cls and cls + '::' + c in whoa:
+            if cls and cls + '::' + c in frozen:
                 return cls + '::' + c
             if len(cands) == 1:
                 return cands[0]
@@ -415,13 +415,13 @@ def merge_whoa(pdb, src):
             # header-only and never got a PDB symbol was inlined, so its own calls stand in for it
             # (three levels deep), with template arguments carried into the pattern's callee names:
             # TSGrowableArray<unsigned int>::New expands to TSGrowableArray<unsigned int>::Reserve.
-            w['seq'] = expand_inlined(w['callseq'], whoa, inlined)
+            w['seq'] = expand_inlined(w['callseq'], frozen, inlined)
             w['callees'] = set(c for c in w['seq'] if not c.startswith('?'))
             continue
         w['callees'] = set(k for k in (resolve(c) for c in w['calls']) if k)
         # ordered, unresolved names kept as '?name' so the sequence keeps its shape
         w['seq'] = [resolve(c) or '?' + c for c in w['callseq']]
-    return whoa
+    return frozen
 
 
 def lcs_len(a, b):
@@ -441,7 +441,7 @@ CRT_NAME_RE = re.compile(r'^(?:FID_conflict_)?_{1,2}([A-Za-z]\w*)$')
 
 def crt_token(name):
     """CRT calls the compiler kept as calls on both sides (malloc, memset, sscanf, _msize) are
-    named `_malloc` by Ghidra and `?malloc` in an unresolved whoa sequence; both become crt:malloc
+    named `_malloc` by Ghidra and `?malloc` in an unresolved frozen sequence; both become crt:malloc
     so the two sequences can align on them."""
     m = CRT_NAME_RE.match(name)
     return 'crt:' + m.group(1).lower() if m else None
@@ -459,9 +459,9 @@ def ref_seq(refs, m, addr):
     return out
 
 
-def whoa_seq(whoa, name):
+def frozen_seq(frozen, name):
     out = []
-    for c in whoa[name]['seq']:
+    for c in frozen[name]['seq']:
         if c.startswith('?'):
             out.append(crt_token('_' + c[1:].lstrip('_')) or c)
         else:
@@ -469,38 +469,38 @@ def whoa_seq(whoa, name):
     return out
 
 
-def fidelity(refs, whoa, m, addr):
+def fidelity(refs, frozen, m, addr):
     """How much of the reference's call sequence the port reproduces, in order: LCS of the two call
     sequences over the longer one, with reference callees translated through the map. 1.0 means every
     call the reference makes, the port makes, in the same order. Unlinked reference callees can never
     match, so a low score also says 'dependencies still unidentified'."""
     name = m[addr][0]
     rseq = ref_seq(refs, m, addr)
-    wseq = whoa_seq(whoa, name)
+    wseq = frozen_seq(frozen, name)
     if not rseq:
-        return 1.0 if not whoa[name]['stub'] else 0.0
-    # Recall of the reference's sequence: extra calls on the whoa side (helpers the reference
+        return 1.0 if not frozen[name]['stub'] else 0.0
+    # Recall of the reference's sequence: extra calls on the frozen side (helpers the reference
     # compiler inlined, constructors) do not count against it; missing or reordered ones do.
     return lcs_len(rseq, wseq) / float(len(rseq))
 
 
-def precision(refs, whoa, m, addr):
+def precision(refs, frozen, m, addr):
     """Share of the port's calls that the reference also makes, in order. Low with high recall
     means the port does more than the reference: inlined helpers, or invented behaviour."""
     name = m[addr][0]
     rseq = ref_seq(refs, m, addr)
-    wseq = whoa_seq(whoa, name)
+    wseq = frozen_seq(frozen, name)
     if not wseq:
         return 1.0
     return lcs_len(rseq, wseq) / float(len(wseq))
 
 
-def fidelity_dims(refs, whoa, m, addr):
+def fidelity_dims(refs, frozen, m, addr):
     """The other two structural checks, when both sides can answer them (libclang inventory):
     branch ratio = min/max of the conditional-branch counts (1.0 = same shape), const overlap =
     share of the reference's notable immediates the port's literals also contain. -1 = unknown."""
     r = refs[addr]
-    w = whoa[m[addr][0]]
+    w = frozen[m[addr][0]]
     br = -1.0
     if w['branches'] >= 0:
         a, b = r['branches'], w['branches']
@@ -525,12 +525,12 @@ def fidelity_dims(refs, whoa, m, addr):
     return br, co
 
 
-def is_faithful(refs, whoa, m, addr, fid):
+def is_faithful(refs, frozen, m, addr, fid):
     """Call order >= FAITHFUL, and when the reference has real control flow (>= 4 branches) and the
     port's branch count is known, the shapes must be within a factor of two."""
-    if fid < FAITHFUL or whoa[m[addr][0]]['stub']:
+    if fid < FAITHFUL or frozen[m[addr][0]]['stub']:
         return False
-    br, co = fidelity_dims(refs, whoa, m, addr)
+    br, co = fidelity_dims(refs, frozen, m, addr)
     if refs[addr]['branches'] >= 4 and br >= 0 and br < 0.5:
         return False
     return True
@@ -561,27 +561,27 @@ def load_tables():
     return tables
 
 
-WHOA_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
-WHOA_ENTRY_RE = re.compile(r'\{\s*"(\w+)"\s*,\s*&?([\w:]+)\s*\}')
+FROZEN_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
+FROZEN_ENTRY_RE = re.compile(r'\{\s*"(\w+)"\s*,\s*&?([\w:]+)\s*\}')
 
 
-def load_whoa_tables():
-    """whoa's own binding arrays, in source order: [{'name': array, 'file', 'entries': [(lua name, fn)]}]."""
+def load_frozen_tables():
+    """frozen's own binding arrays, in source order: [{'name': array, 'file', 'entries': [(lua name, fn)]}]."""
     tables = []
     for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
         text = io.open(path, encoding='utf-8', errors='replace').read()
-        for m in WHOA_TABLE_RE.finditer(text):
-            entries = [(n, f) for n, f in WHOA_ENTRY_RE.findall(m.group(3))]
+        for m in FROZEN_TABLE_RE.finditer(text):
+            entries = [(n, f) for n, f in FROZEN_ENTRY_RE.findall(m.group(3))]
             if entries:
                 tables.append({'name': m.group(2), 'file': os.path.relpath(path, ROOT).replace('\\', '/'), 'entries': entries})
     return tables
 
 
-def pair_tables(ref_tables, whoa_tables):
-    """Match whoa binding arrays to reference tables by shared names; a reference table can only be
-    claimed once. Returns [(whoa table, ref table, shared name count)]."""
+def pair_tables(ref_tables, frozen_tables):
+    """Match frozen binding arrays to reference tables by shared names; a reference table can only be
+    claimed once. Returns [(frozen table, ref table, shared name count)]."""
     pairs = []
-    for wt in whoa_tables:
+    for wt in frozen_tables:
         wnames = set(n for n, _ in wt['entries'])
         best = None
         for rt in ref_tables:
@@ -590,7 +590,7 @@ def pair_tables(ref_tables, whoa_tables):
                 best = (k, rt)
         if best and (best[0] >= 3 or best[0] == len(wnames)):
             pairs.append((wt, best[1], best[0]))
-    # one reference table per whoa table, best claim wins
+    # one reference table per frozen table, best claim wins
     claimed = {}
     for wt, rt, k in sorted(pairs, key=lambda p: -p[2]):
         if rt['addr'] not in claimed:
@@ -603,8 +603,8 @@ HANDLERS_JSONL = os.path.join(DATA, 'ref-handlers.jsonl')
 
 def load_handler_pairs():
     """Packet handlers by opcode: the reference's SetMessageHandler(opcode, fn) call sites
-    (ExportCallArgs.java on FUN_006b0b80) against whoa's ClientServices::SetMessageHandler(SMSG_X,
-    Fn) registrations, with SMSG_X resolved through src/net/Types.hpp. Returns [(ref fn, whoa
+    (ExportCallArgs.java on FUN_006b0b80) against frozen's ClientServices::SetMessageHandler(SMSG_X,
+    Fn) registrations, with SMSG_X resolved through src/net/Types.hpp. Returns [(ref fn, frozen
     name, opcode)]."""
     if not os.path.exists(HANDLERS_JSONL):
         return []
@@ -624,19 +624,19 @@ def load_handler_pairs():
         for m in re.finditer(r'\b([A-Z][A-Z0-9_]+)\s*=\s*(0x[0-9A-Fa-f]+|\d+)', io.open(types, encoding='utf-8').read()):
             enum[m.group(1)] = int(m.group(2), 0)
     pairs = []
-    whoa_ops = set()
+    frozen_ops = set()
     for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
         text = io.open(path, encoding='utf-8', errors='replace').read()
         for m in re.finditer(r'SetMessageHandler\(\s*([A-Z][A-Z0-9_]+)\s*,\s*&?([\w:]+)', text):
             op = enum.get(m.group(1))
             if op is None:
                 continue
-            whoa_ops.add(op)
+            frozen_ops.add(op)
             if op not in ref or len(ref[op]) != 1:
                 continue
             pairs.append((next(iter(ref[op])), m.group(2), m.group(1)))
     names = {v: k for k, v in enum.items()}
-    load_handler_pairs.coverage = {'ref': ref, 'whoa': whoa_ops, 'names': names}
+    load_handler_pairs.coverage = {'ref': ref, 'frozen': frozen_ops, 'names': names}
     return pairs
 
 
@@ -648,8 +648,8 @@ CVARS_JSONL = os.path.join(DATA, 'ref-cvars.jsonl')
 
 def load_cvar_pairs():
     """CVar callbacks by cvar name: the reference's CVar::Register(name, help, flags, default,
-    callback, ...) call sites (ExportCallArgs.java on FUN_00767fc0) against whoa's
-    CVar::Register("name", ..., &Callback, ...). Returns [(ref fn, whoa callback name, cvar)] and
+    callback, ...) call sites (ExportCallArgs.java on FUN_00767fc0) against frozen's
+    CVar::Register("name", ..., &Callback, ...). Returns [(ref fn, frozen callback name, cvar)] and
     stores the name sets for the coverage section."""
     if not os.path.exists(CVARS_JSONL):
         return []
@@ -662,18 +662,18 @@ def load_cvar_pairs():
                 name = a[0][4:]
                 cb = a[4][3:].lower() if len(a) > 4 and a[4].startswith('fn:') else None
                 ref[name.lower()] = (name, cb)
-    whoa_cvars = {}
+    frozen_cvars = {}
     pat = re.compile(r'CVar::Register\(\s*"([^"]+)"\s*,\s*(?:"(?:[^"\\]|\\.)*"|nullptr|[^,]+)\s*,\s*[^,]+,\s*(?:"(?:[^"\\]|\\.)*"|[^,]+)\s*,\s*&?([\w:]+)', re.S)
     for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
         text = io.open(path, encoding='utf-8', errors='replace').read()
         for m in pat.finditer(text):
-            whoa_cvars[m.group(1).lower()] = m.group(2)
+            frozen_cvars[m.group(1).lower()] = m.group(2)
     pairs = []
     for key, (name, cb) in ref.items():
-        w = whoa_cvars.get(key)
+        w = frozen_cvars.get(key)
         if cb and w and w != 'nullptr':
             pairs.append((cb, w, name))
-    load_cvar_pairs.coverage = {'ref': ref, 'whoa': whoa_cvars}
+    load_cvar_pairs.coverage = {'ref': ref, 'frozen': frozen_cvars}
     return pairs
 
 
@@ -686,8 +686,8 @@ def load_overrides():
     return json.load(io.open(OVERRIDES, encoding='utf-8'))
 
 
-def match(refs, whoa, overrides, tables):
-    """addr -> (whoa name, confidence)"""
+def match(refs, frozen, overrides, tables):
+    """addr -> (frozen name, confidence)"""
     m = {}
     used = set()
     evidence = {}
@@ -695,12 +695,12 @@ def match(refs, whoa, overrides, tables):
     unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
 
     def bind(addr, name, how, why=''):
-        # an override may bind one whoa name to several reference functions: C++ overloads share a
+        # an override may bind one frozen name to several reference functions: C++ overloads share a
         # key here (CDataStore::Put x4) and COMDAT folding leaves the reference with copies
-        if addr in m or addr not in refs or name not in whoa or (name in used and how != 'override'):
+        if addr in m or addr not in refs or name not in frozen or (name in used and how != 'override'):
             return False
         if addr in unlinked:
-            return False  # judged to have no whoa counterpart; automatic evidence does not reopen it
+            return False  # judged to have no frozen counterpart; automatic evidence does not reopen it
         m[addr] = (name, how)
         used.add(name)
         evidence[addr] = why
@@ -708,14 +708,14 @@ def match(refs, whoa, overrides, tables):
 
     for addr, o in overrides.items():
         addr = addr.lower().zfill(8)
-        if o.get('whoa'):
-            bind(addr, o['whoa'], 'override')
+        if o.get('frozen'):
+            bind(addr, o['frozen'], 'override')
 
-    for name, w in sorted(whoa.items()):
+    for name, w in sorted(frozen.items()):
         for addr in sorted(w['refs']):
             bind(addr, name, 'annotated', 'tag in ' + (w['files'][0] if w['files'] else '?'))
 
-    # binding tables: whoa's FrameScript_Method/Function arrays paired with the reference's by
+    # binding tables: frozen's FrameScript_Method/Function arrays paired with the reference's by
     # shared names, then each entry bound by name inside its pair (so CSimpleFrame's AddLine and
     # CSimpleHTML's AddLine each find their own)
     for wt, rt, k in tables:
@@ -723,20 +723,20 @@ def match(refs, whoa, overrides, tables):
         for lua_name, fn in wt['entries']:
             a = rfn.get(lua_name)
             if a:
-                # whoa spells the handler as it likes; resolve the array's function name to a key
-                key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
+                # frozen spells the handler as it likes; resolve the array's function name to a key
+                key = fn if fn in frozen else next((n for n in frozen if n.endswith('::' + fn)), None)
                 if key:
                     bind(a, key, 'table', 'binding "%s" in %s ~ table %s' % (lua_name, wt['name'], rt['addr']))
 
     # packet handlers: the same opcode registered on both sides names the same function
     for ref_fn, fn, opcode in load_handler_pairs():
-        key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
+        key = fn if fn in frozen else next((n for n in frozen if n.endswith('::' + fn)), None)
         if key:
             bind(ref_fn, key, 'handler', 'SetMessageHandler(%s) on both sides' % opcode)
 
     # cvar callbacks: the same cvar name registered with a callback on both sides
     for ref_fn, fn, cvar in load_cvar_pairs():
-        key = fn if fn in whoa else next((n for n in whoa if n.endswith('::' + fn)), None)
+        key = fn if fn in frozen else next((n for n in frozen if n.endswith('::' + fn)), None)
         if key:
             bind(ref_fn, key, 'cvar', 'callback of CVar::Register("%s") on both sides' % cvar)
 
@@ -746,18 +746,18 @@ def match(refs, whoa, overrides, tables):
         for s in r['strings']:
             if len(s) >= 3 and s not in NOISE_STRINGS:
                 ref_by_string[s].add(addr)
-    whoa_by_string = collections.defaultdict(set)
-    for name, w in whoa.items():
+    frozen_by_string = collections.defaultdict(set)
+    for name, w in frozen.items():
         for s in w['strings']:
-            whoa_by_string[s].add(name)
-    for s, rset in sorted(ref_by_string.items(), key=lambda kv: (len(kv[1]) * len(whoa_by_string.get(kv[0], ())), kv[0])):
-        wset = whoa_by_string.get(s)
+            frozen_by_string[s].add(name)
+    for s, rset in sorted(ref_by_string.items(), key=lambda kv: (len(kv[1]) * len(frozen_by_string.get(kv[0], ())), kv[0])):
+        wset = frozen_by_string.get(s)
         if not wset or len(rset) != 1 or len(wset) != 1:
             continue
         bind(next(iter(rset)), next(iter(wset)), 'string', 'unique "%s"' % s[:60])
     scores = collections.defaultdict(float)
     for s, rset in ref_by_string.items():
-        wset = whoa_by_string.get(s)
+        wset = frozen_by_string.get(s)
         if not wset or len(rset) > 8 or len(wset) > 8:
             continue
         wgt = 1.0 / (len(rset) * len(wset))
@@ -770,7 +770,7 @@ def match(refs, whoa, overrides, tables):
     for a, cands in sorted(best_ref.items()):
         cands.sort(reverse=True)
         if cands[0][0] >= 0.5 and (len(cands) == 1 or cands[0][0] >= 2 * cands[1][0]):
-            shared = sorted(s for s in refs[a]['strings'] if s in whoa[cands[0][1]]['strings'])
+            shared = sorted(s for s in refs[a]['strings'] if s in frozen[cands[0][1]]['strings'])
             bind(a, cands[0][1], 'string', 'score %.2f shared %s' % (cands[0][0], '; '.join(x[:40] for x in shared[:3])))
 
     # call-graph propagation: a matched pair with exactly one unmatched callee each side proposes
@@ -781,17 +781,17 @@ def match(refs, whoa, overrides, tables):
         votes = collections.defaultdict(set)
         for addr, (name, how) in list(m.items()):
             rc = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
-            wc_all = [c for c in whoa[name]['callees'] if c not in used and c in whoa]
+            wc_all = [c for c in frozen[name]['callees'] if c not in used and c in frozen]
             # template instantiations (TSBaseArray<X>::operator[]) are usually inlined in the
             # reference, so they must not block a vote; they can still be the vote when alone
             wc = [c for c in wc_all if '<' not in c] or (wc_all if len(wc_all) == 1 else [])
             if len(rc) == 1 and len(wc) == 1:
                 votes[(rc[0], wc[0])].add(addr)
         by_ref = collections.Counter(p[0] for p in votes)
-        by_whoa = collections.Counter(p[1] for p in votes)
+        by_frozen = collections.Counter(p[1] for p in votes)
         added = 0
         for (rc, wc), parents in sorted(votes.items(), key=lambda kv: -len(kv[1])):
-            if len(parents) >= 2 or (by_ref[rc] == 1 and by_whoa[wc] == 1):
+            if len(parents) >= 2 or (by_ref[rc] == 1 and by_frozen[wc] == 1):
                 added += bind(rc, wc, 'callgraph', 'only unmatched callee of %s' % ', '.join('%s=%s' % (p, m[p][0]) for p in sorted(parents)[:3]))
         if not added:
             break
@@ -802,7 +802,7 @@ def match(refs, whoa, overrides, tables):
         votes = collections.defaultdict(set)
         for addr, (name, how) in list(m.items()):
             rseq = refs[addr]['calls']
-            wseq = whoa[name]['seq']
+            wseq = frozen[name]['seq']
             if len(rseq) < 2 or len(wseq) < 2 or len(rseq) > 80 or len(wseq) > 80:
                 continue
             ri = wi = 0
@@ -821,28 +821,28 @@ def match(refs, whoa, overrides, tables):
             for (i0, j0), (i1, j1) in zip(anchors, anchors[1:]):
                 if i1 - i0 == 2 and j1 - j0 == 2:
                     rc, wc = rseq[i0 + 1], wseq[j0 + 1]
-                    if rc in refs and not wc.startswith('?') and wc in whoa and rc not in m and wc not in used:
+                    if rc in refs and not wc.startswith('?') and wc in frozen and rc not in m and wc not in used:
                         votes[(rc, wc)].add(addr)
         by_ref = collections.Counter(p[0] for p in votes)
-        by_whoa = collections.Counter(p[1] for p in votes)
+        by_frozen = collections.Counter(p[1] for p in votes)
         added = 0
         for (rc, wc), parents in sorted(votes.items(), key=lambda kv: -len(kv[1])):
-            if len(parents) >= 2 or (by_ref[rc] == 1 and by_whoa[wc] == 1):
+            if len(parents) >= 2 or (by_ref[rc] == 1 and by_frozen[wc] == 1):
                 added += bind(rc, wc, 'callorder', 'same slot between linked calls in %s' % ', '.join('%s=%s' % (p, m[p][0]) for p in sorted(parents)[:3]))
         if not added:
             break
 
     # definition-order propagation: MSVC lays a translation unit's functions out in definition
-    # order, so between two linked anchors from the same file the unlinked whoa definitions and the
+    # order, so between two linked anchors from the same file the unlinked frozen definitions and the
     # unlinked reference addresses pair up in order when their counts agree. Anchors that break the
     # monotonic order (a wrong link) are left out via the longest increasing subsequence.
     rev = {name: addr for addr, (name, how) in m.items()}
     by_file = collections.defaultdict(list)
-    for name, w in whoa.items():
+    for name, w in frozen.items():
         if w.get('line') and w['files']:
             by_file[w['files'][0]].append((w['line'], name))
     ref_order = sorted(int(a, 16) for a, r in refs.items() if not r['thunk'] and not r['excluded'])
-    # the binding tables name reference functions (Show, running); a whoa function whose short
+    # the binding tables name reference functions (Show, running); a frozen function whose short
     # name is one of those, in a file that already has anchors, is an anchor candidate too. The
     # order check below keeps only the candidates that sit where the address order says they should.
     tabname = collections.defaultdict(set)
@@ -889,7 +889,7 @@ def match(refs, whoa, overrides, tables):
             R = ['%08x' % a for a in ref_order[lo:hi] if '%08x' % a not in m]
             if W and len(W) == len(R):
                 # veto: a binding table naming any address in the interval must agree with the
-                # whoa function it would pair with; whoa's aggregate script files do not always
+                # frozen function it would pair with; frozen's aggregate script files do not always
                 # follow one reference translation unit, and this is where that shows
                 vetoed = False
                 for name, addr in zip(W, R):
@@ -907,7 +907,7 @@ def match(refs, whoa, overrides, tables):
                     bind(addr, name, 'order', 'definition order between %s and %s in %s' % (n0, n1, f))
 
     with io.open(MATCHES_TSV, 'w', encoding='utf-8', newline='\n') as out:
-        out.write('addr\thow\twhoa\tevidence\n')
+        out.write('addr\thow\tfrozen\tevidence\n')
         for a, (name, how) in sorted(m.items()):
             why = evidence.get(a, '').replace('\n', ' ').replace('\t', ' ')
             out.write('%s\t%s\t%s\t%s\n' % (a, how, name, why))
@@ -921,14 +921,14 @@ def fmt_bytes(n):
     return '%.1fk' % (n / 1024.0) if n < 1024 * 1024 else '%.2fM' % (n / 1048576.0)
 
 
-def lua_coverage(ref_tables, pairs, whoa, whoa_tables=()):
-    """Per reference binding table: how many of its names whoa registers, and which are missing or
-    stubbed. A name counts wherever whoa registers it: the reference splits the globals into many
-    small tables and whoa keeps a few big arrays, so the one-to-one pairing (used for linking) is
+def lua_coverage(ref_tables, pairs, frozen, frozen_tables=()):
+    """Per reference binding table: how many of its names frozen registers, and which are missing or
+    stubbed. A name counts wherever frozen registers it: the reference splits the globals into many
+    small tables and frozen keeps a few big arrays, so the one-to-one pairing (used for linking) is
     not the measure. The paired array is still shown when there is one."""
     by_ref = {rt['addr']: (wt, k) for wt, rt, k in pairs}
-    registered = {}  # lua name -> (whoa fn, array name) anywhere in whoa
-    for wt in whoa_tables:
+    registered = {}  # lua name -> (frozen fn, array name) anywhere in frozen
+    for wt in frozen_tables:
         for n, f in wt['entries']:
             registered.setdefault(n, (f, wt['name']))
     rows = []
@@ -947,20 +947,20 @@ def lua_coverage(ref_tables, pairs, whoa, whoa_tables=()):
         for n in names:
             f = wnames.get(n)
             if f:
-                key = f if f in whoa else next((x for x in whoa if x.endswith('::' + f)), None)
-                if key and whoa[key]['stub']:
+                key = f if f in frozen else next((x for x in frozen if x.endswith('::' + f)), None)
+                if key and frozen[key]['stub']:
                     stubs.append(n)
         total += len(names)
         have += len(names) - len(missing)
         stubbed += len(stubs)
-        rows.append({'addr': rt['addr'], 'count': len(names), 'whoa': wt['name'] if wt else '', 'file': wt['file'] if wt else '',
+        rows.append({'addr': rt['addr'], 'count': len(names), 'frozen': wt['name'] if wt else '', 'file': wt['file'] if wt else '',
                      'missing': missing, 'stubs': stubs, 'first': names[0]})
     rows.sort(key=lambda r: -(len(r['missing']) + len(r['stubs'])))
     return total, have, stubbed, rows
 
 
-def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), whoa_tables=()):
-    lua_total, lua_have, lua_stubbed, lua_rows = lua_coverage(ref_tables, pairs, whoa, whoa_tables)
+def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), frozen_tables=()):
+    lua_total, lua_have, lua_stubbed, lua_rows = lua_coverage(ref_tables, pairs, frozen, frozen_tables)
     sp = spine(refs)
     real = {a: r for a, r in refs.items() if not r['thunk'] and not r['excluded']}
     total = len(real)
@@ -971,7 +971,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
         o = overrides.get(addr, {})
         if o.get('status'):
             return o['status']
-        return 'stub' if whoa[name]['stub'] else 'ported'
+        return 'stub' if frozen[name]['stub'] else 'ported'
 
     by_status = collections.Counter()
     bytes_by_status = collections.Counter()
@@ -982,11 +982,11 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
         if a in m:
             st = status(a)
             by_how[m[a][1]] += 1
-            fid[a] = fidelity(refs, whoa, m, a)
+            fid[a] = fidelity(refs, frozen, m, a)
             # 'faithful' as an override status is a hand verdict for ports the static measure
             # misjudges -- a loop over a table where the reference unrolls, say -- and must
             # carry the reason in its note
-            if st != 'stub' and (st in ('faithful', 'verified') or is_faithful(refs, whoa, m, a, fid[a])):
+            if st != 'stub' and (st in ('faithful', 'verified') or is_faithful(refs, frozen, m, a, fid[a])):
                 faithful += 1
                 faithful_bytes += real[a]['size']
         else:
@@ -1016,17 +1016,17 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
     top_spine = sorted((a for a in unmapped if a in sp), key=weight, reverse=True)[:40]
     top_all = sorted(unmapped, key=weight, reverse=True)[:40]
     stubs = sorted((a for a in m if status(a) == 'stub'), key=weight, reverse=True)[:40]
-    # divergence smell: reference strings the whoa counterpart does not carry
+    # divergence smell: reference strings the frozen counterpart does not carry
     smells = []
     for a, (name, how) in m.items():
         rs = set(s for s in refs[a]['strings'] if len(s) >= 3 and s not in NOISE_STRINGS and not MODULE_STRING.match(s))
-        missing = sorted(rs - whoa[name]['strings'])
+        missing = sorted(rs - frozen[name]['strings'])
         if missing and how != 'override':
             smells.append((len(missing), a, name, missing))
     smells.sort(reverse=True)
 
-    whoa_unlinked = sorted((n for n, w in whoa.items() if n not in {v[0] for v in m.values()} and w['size']),
-                           key=lambda n: whoa[n]['size'], reverse=True)
+    frozen_unlinked = sorted((n for n, w in frozen.items() if n not in {v[0] for v in m.values()} and w['size']),
+                           key=lambda n: frozen[n]['size'], reverse=True)
 
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     snapshot = {'date': now, 'refFunctions': total, 'refBytes': total_bytes,
@@ -1034,7 +1034,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
                 'ported': by_status['ported'], 'stub': by_status['stub'], 'verified': by_status['verified'],
                 'faithful': faithful, 'faithfulBytes': faithful_bytes,
                 'spine': len(sp & set(real)), 'spineMapped': sum(1 for a in sp if a in m and a in real),
-                'whoaFunctions': len(whoa), 'whoaStubs': sum(1 for w in whoa.values() if w['stub']),
+                'frozenFunctions': len(frozen), 'frozenStubs': sum(1 for w in frozen.values() if w['stub']),
                 'luaTotal': lua_total, 'luaHave': lua_have, 'luaStubbed': lua_stubbed}
     prev = None
     if os.path.exists(HISTORY):
@@ -1052,24 +1052,24 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
         return '%.1f%%' % (100.0 * n / d) if d else '-'
 
     L = []
-    L.append('# Recomp map: reference 3.3.5a (12340) vs whoa')
+    L.append('# Recomp map: reference 3.3.5a (12340) vs frozen')
     L.append('')
     L.append('Generated %s by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`' % now)
-    L.append('or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.')
+    L.append('or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.')
     L.append('')
     L.append('## Totals')
     L.append('')
     L.append('| | functions | code bytes |')
     L.append('|---|---:|---:|')
     L.append('| reference (non-thunk) | %d | %s |' % (total, fmt_bytes(total_bytes)))
-    L.append('| mapped to a whoa function | %d%s (%s) | %s (%s) |' % (snapshot['mapped'], delta('mapped'), pct(snapshot['mapped'], total), fmt_bytes(snapshot['mappedBytes']), pct(snapshot['mappedBytes'], total_bytes)))
+    L.append('| mapped to a frozen function | %d%s (%s) | %s (%s) |' % (snapshot['mapped'], delta('mapped'), pct(snapshot['mapped'], total), fmt_bytes(snapshot['mappedBytes']), pct(snapshot['mappedBytes'], total_bytes)))
     L.append('| &nbsp;&nbsp;ported | %d%s | %s |' % (by_status['ported'], delta('ported'), fmt_bytes(bytes_by_status['ported'])))
     L.append('| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | %d%s | %s |' % (by_status['stub'], delta('stub'), fmt_bytes(bytes_by_status['stub'])))
     L.append('| &nbsp;&nbsp;verified (override) | %d%s | %s |' % (by_status['verified'], delta('verified'), fmt_bytes(bytes_by_status['verified'])))
     L.append('| **faithful** (linked, not stub, call order >= %.0f%%) | **%d%s (%s)** | **%s (%s)** |' % (FAITHFUL * 100, faithful, delta('faithful'), pct(faithful, total), fmt_bytes(faithful_bytes), pct(faithful_bytes, total_bytes)))
     L.append('| unmapped | %d | %s |' % (by_status['unmapped'], fmt_bytes(bytes_by_status['unmapped'])))
     L.append('| world spine (reachable from OnFrameRender) | %d, mapped %d%s (%s) | |' % (snapshot['spine'], snapshot['spineMapped'], delta('spineMapped'), pct(snapshot['spineMapped'], snapshot['spine'])))
-    L.append('| whoa functions (src/, from PDB + source) | %d, stubs %d | |' % (snapshot['whoaFunctions'], snapshot['whoaStubs']))
+    L.append('| frozen functions (src/, from PDB + source) | %d, stubs %d | |' % (snapshot['frozenFunctions'], snapshot['frozenStubs']))
     L.append('')
     L.append('Match evidence: ' + ', '.join('%s %d' % kv for kv in sorted(by_how.items())) + '. Module anchors: %d assert strings.' % anchors)
     if prev:
@@ -1078,10 +1078,10 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
     L.append('')
     L.append('## Lua API coverage (binding tables)')
     L.append('')
-    L.append('The reference registers %d Lua bindings across %d tables (widget methods per class, and the global function blocks). whoa registers %d of them%s; %d of those are WHOA_UNIMPLEMENTED stubs%s. A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.' % (
+    L.append('The reference registers %d Lua bindings across %d tables (widget methods per class, and the global function blocks). frozen registers %d of them%s; %d of those are WHOA_UNIMPLEMENTED stubs%s. A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.' % (
         lua_total, len([r for r in lua_rows]), lua_have, delta('luaHave'), lua_stubbed, delta('luaStubbed')))
     L.append('')
-    L.append('| ref table | entries | whoa array | missing | stubbed | first missing / stubbed names |')
+    L.append('| ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |')
     L.append('|---|---:|---|---:|---:|---|')
     for r in lua_rows:
         if not r['missing'] and not r['stubs']:
@@ -1089,25 +1089,25 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
         names = ', '.join(r['missing'][:6]) + (' ...' if len(r['missing']) > 6 else '')
         if r['stubs']:
             names += ' / stubs: ' + ', '.join(r['stubs'][:4]) + (' ...' if len(r['stubs']) > 4 else '')
-        L.append('| %s (%s..) | %d | `%s` | %d | %d | %s |' % (r['addr'], r['first'], r['count'], r['whoa'] or '-', len(r['missing']), len(r['stubs']), names))
+        L.append('| %s (%s..) | %d | `%s` | %d | %d | %s |' % (r['addr'], r['first'], r['count'], r['frozen'] or '-', len(r['missing']), len(r['stubs']), names))
     L.append('')
     cov = load_handler_pairs.coverage
     if cov:
-        both = sorted(op for op in cov['ref'] if op in cov['whoa'])
-        ref_only = sorted(op for op in cov['ref'] if op not in cov['whoa'])
+        both = sorted(op for op in cov['ref'] if op in cov['frozen'])
+        ref_only = sorted(op for op in cov['ref'] if op not in cov['frozen'])
         L.append('## Packet handler coverage (SetMessageHandler)')
         L.append('')
-        L.append('The reference registers handlers for %d opcodes; whoa registers %d of them. An opcode with no whoa handler is a server message the client silently drops.' % (len(cov['ref']), len(both)))
+        L.append('The reference registers handlers for %d opcodes; frozen registers %d of them. An opcode with no frozen handler is a server message the client silently drops.' % (len(cov['ref']), len(both)))
         L.append('')
         L.append('Reference-only, by opcode (handler address): ' + ', '.join(
             '%s %s' % (cov['names'].get(op, '0x%x' % op), '/'.join(sorted(cov['ref'][op]))) for op in ref_only))
         L.append('')
     cv = load_cvar_pairs.coverage
     if cv:
-        missing = sorted(n for k, (n, cb) in cv['ref'].items() if k not in cv['whoa'])
+        missing = sorted(n for k, (n, cb) in cv['ref'].items() if k not in cv['frozen'])
         L.append('## CVar coverage (CVar::Register)')
         L.append('')
-        L.append('The reference registers %d cvars by literal name; whoa registers %d of them. Missing ones are settings the reference client honours and this one cannot even store.' % (
+        L.append('The reference registers %d cvars by literal name; frozen registers %d of them. Missing ones are settings the reference client honours and this one cannot even store.' % (
             len(cv['ref']), len(cv['ref']) - len(missing)))
         L.append('')
         L.append('Missing: ' + ', '.join(missing))
@@ -1132,53 +1132,53 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
 
     L.append('## Next to port: unmapped, on the world spine (by callers x size)')
     L.append('')
-    L.append('| addr | module | size | callers | whoa | strings |')
+    L.append('| addr | module | size | callers | frozen | strings |')
     L.append('|---|---|---:|---:|---|---|')
     L.extend(row(a) for a in top_spine)
     L.append('')
     L.append('## Next to port: unmapped, anywhere')
     L.append('')
-    L.append('| addr | module | size | callers | whoa | strings |')
+    L.append('| addr | module | size | callers | frozen | strings |')
     L.append('|---|---|---:|---:|---|---|')
     L.extend(row(a) for a in top_all)
     L.append('')
     L.append('## Mapped but stubbed (WHOA_UNIMPLEMENTED)')
     L.append('')
-    L.append('| addr | module | size | callers | whoa | strings |')
+    L.append('| addr | module | size | callers | frozen | strings |')
     L.append('|---|---|---:|---:|---|---|')
     L.extend(row(a) for a in stubs)
     L.append('')
-    L.append('## Divergence smells: reference strings the whoa counterpart never mentions')
+    L.append('## Divergence smells: reference strings the frozen counterpart never mentions')
     L.append('')
     L.append('A reference function that formats, asserts or looks up a string its port does not is missing a branch, an error path or a data lookup. Top 40 by count.')
     L.append('')
-    L.append('| addr | whoa | missing |')
+    L.append('| addr | frozen | missing |')
     L.append('|---|---|---|')
     for n, a, name, missing in smells[:40]:
         L.append('| %s | `%s` | %s |' % (a, name, '; '.join(s[:50] for s in missing[:4]).replace('|', '\\|').replace('\n', '\\n')))
     L.append('')
-    L.append('## Largest whoa functions with no reference link')
+    L.append('## Largest frozen functions with no reference link')
     L.append('')
     L.append('Either the port added behaviour the reference does not have, or the link is simply unknown: tag it with `// ref: FUN_xxxxxxxx` once found.')
     L.append('')
-    L.append('| whoa | lib | code bytes | file |')
+    L.append('| frozen | lib | code bytes | file |')
     L.append('|---|---|---:|---|')
-    for n in whoa_unlinked[:40]:
-        w = whoa[n]
+    for n in frozen_unlinked[:40]:
+        w = frozen[n]
         L.append('| `%s` | %s | %d | %s |' % (n, w['lib'], w['size'], w['files'][0] if w['files'] else ''))
     L.append('')
     L.append('## Linked ports with the lowest call-order fidelity')
     L.append('')
     L.append('The port exists but does not make the calls the reference makes, in the order it makes them. Either the port guessed, or its callees are not yet linked (then `--show` lists them as bare addresses). Non-stub, largest first.')
     L.append('')
-    L.append('| addr | whoa | call order | ref calls | whoa calls | ref branches | whoa branches | consts | size |')
+    L.append('| addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |')
     L.append('|---|---|---:|---:|---:|---:|---:|---:|---:|')
     # diverged (deliberate difference, reason recorded) and vendor (same third-party library on both
     # sides) ports are not expected to match call for call, so they stay out of this list
-    low = sorted((a for a in fid if status(a) not in ('stub', 'diverged', 'vendor', 'faithful', 'verified') and not is_faithful(refs, whoa, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
+    low = sorted((a for a in fid if status(a) not in ('stub', 'diverged', 'vendor', 'faithful', 'verified') and not is_faithful(refs, frozen, m, a, fid[a]) and len(refs[a]['calls']) >= 3), key=lambda a: -refs[a]['size'])
     for a in low[:40]:
-        br, co = fidelity_dims(refs, whoa, m, a)
-        w = whoa[m[a][0]]
+        br, co = fidelity_dims(refs, frozen, m, a)
+        w = frozen[m[a][0]]
         L.append('| %s | `%s` | %.0f%% | %d | %d | %d | %s | %s | %d |' % (
             a, m[a][0], fid[a] * 100, len(refs[a]['calls']), len(w['seq']), refs[a]['branches'],
             str(w['branches']) if w['branches'] >= 0 else '?', ('%.0f%%' % (co * 100)) if co >= 0 else '?', refs[a]['size']))
@@ -1190,7 +1190,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
         L.append('Traced %s: %d frames on each client, frame-level call order agreement %.0f%%, %d functions verified (same per-frame count), %d links contradicted (table below).' % (
             ts['date'], ts['frames'], ts['orderAvg'] * 100, ts['verified'], len(json.load(io.open(SUSPECT_JSON, encoding='utf-8'))) if os.path.exists(SUSPECT_JSON) else 0))
         L.append('')
-        L.append('| reference calls every frame, whoa never (hits) | whoa calls, reference never (hits) |')
+        L.append('| reference calls every frame, frozen never (hits) | frozen calls, reference never (hits) |')
         L.append('|---|---|')
         miss = ts.get('missing', [])[:20]
         add = ts.get('added', [])[:20]
@@ -1199,7 +1199,7 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
             b = '`%s` %d' % (add[i][1], add[i][0]) if i < len(add) else ''
             L.append('| %s | %s |' % (a, b))
         L.append('')
-        L.append('Per-frame count mismatches (ref \\| whoa), largest first:')
+        L.append('Per-frame count mismatches (ref \\| frozen), largest first:')
         L.append('')
         for d, name, rc, wc in ts.get('mismatch', [])[:15]:
             L.append('- `%s` %s \\| %s' % (name, rc, wc))
@@ -1208,13 +1208,13 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
             L.append('')
             L.append('Links the trace contradicts -- a wrong link, or a real divergence; each needs a verdict in overrides.json (corrected link / `diverged` / `unlinked`):')
             L.append('')
-            L.append('| addr | whoa | link evidence | why | ref per frame | whoa per frame |')
+            L.append('| addr | frozen | link evidence | why | ref per frame | frozen per frame |')
             L.append('|---|---|---|---|---|---|')
             for a, v in sorted(sus.items()):
                 how = m[a][1] if a in m else 'unlinked'
-                L.append('| %s | `%s` | %s | %s | %s | %s |' % (a, v['whoa'], how, v['why'], v['ref'], v['whoa_']))
+                L.append('| %s | `%s` | %s | %s | %s | %s |' % (a, v['frozen'], how, v['why'], v['ref'], v['frozen_']))
     else:
-        L.append('No trace yet. Run both clients into the world, then `calltrace.py ref`, `calltrace.py whoa`, `tracecompare.py`.')
+        L.append('No trace yet. Run both clients into the world, then `calltrace.py ref`, `calltrace.py frozen`, `tracecompare.py`.')
     L.append('')
     L.append('## Iterations')
     L.append('')
@@ -1230,28 +1230,28 @@ def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), who
     L.append('')
     L.append('## How to move a row')
     L.append('')
-    L.append('1. Pick the top unmapped spine function. `python tools/recomp/recomp.py --show <addr>` prints its callers, callees, strings and the closest whoa candidates; `C:\\Users\\tyler\\tools\\decomp.sh <out> <addr>` decompiles it.')
-    L.append('2. Port it (or find the existing port) and put `// ref: FUN_<addr>` above the whoa definition.')
-    L.append('3. When a run shows it behaving like the reference, add `{"<addr>": {"whoa": "<name>", "status": "verified", "note": "..."}}` to overrides.json.')
+    L.append('1. Pick the top unmapped spine function. `python tools/recomp/recomp.py --show <addr>` prints its callers, callees, strings and the closest frozen candidates; `C:\\Users\\tyler\\tools\\decomp.sh <out> <addr>` decompiles it.')
+    L.append('2. Port it (or find the existing port) and put `// ref: FUN_<addr>` above the frozen definition.')
+    L.append('3. When a run shows it behaving like the reference, add `{"<addr>": {"frozen": "<name>", "status": "verified", "note": "..."}}` to overrides.json.')
     L.append('4. Re-run the tool; the totals line shows the delta against the previous run.')
     return '\n'.join(L) + '\n', snapshot
 
 
-def write_map(refs, whoa, m, overrides):
+def write_map(refs, frozen, m, overrides):
     out = {}
     for a, (name, how) in sorted(m.items()):
         o = overrides.get(a, {})
-        out[a] = {'whoa': name, 'how': how, 'status': o.get('status') or ('stub' if whoa[name]['stub'] else 'ported'),
-                  'fidelity': round(fidelity(refs, whoa, m, a), 3),
-                  'branchRatio': round(fidelity_dims(refs, whoa, m, a)[0], 3),
-                  'constOverlap': round(fidelity_dims(refs, whoa, m, a)[1], 3),
-                  'faithful': is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)),
-                  'module': refs[a]['module'], 'refSize': refs[a]['size'], 'whoaSize': whoa[name]['size'],
-                  'files': whoa[name]['files']}
+        out[a] = {'frozen': name, 'how': how, 'status': o.get('status') or ('stub' if frozen[name]['stub'] else 'ported'),
+                  'fidelity': round(fidelity(refs, frozen, m, a), 3),
+                  'branchRatio': round(fidelity_dims(refs, frozen, m, a)[0], 3),
+                  'constOverlap': round(fidelity_dims(refs, frozen, m, a)[1], 3),
+                  'faithful': is_faithful(refs, frozen, m, a, fidelity(refs, frozen, m, a)),
+                  'module': refs[a]['module'], 'refSize': refs[a]['size'], 'frozenSize': frozen[name]['size'],
+                  'files': frozen[name]['files']}
     json.dump(out, io.open(MAP_OUT, 'w', encoding='utf-8'), indent=1, sort_keys=True)
 
 
-def diff_seq(target, refs, whoa, m):
+def diff_seq(target, refs, frozen, m):
     """Align the reference's call sequence (callees named through the map) with the port's, and
     print them side by side: the calls the port skips, the calls it adds, in order."""
     a = target.lower().replace('0x', '').zfill(8)
@@ -1260,14 +1260,14 @@ def diff_seq(target, refs, whoa, m):
         return
     name = m[a][0]
     rseq = ref_seq(refs, m, a)
-    wseq = whoa_seq(whoa, name)
+    wseq = frozen_seq(frozen, name)
     n, k = len(rseq), len(wseq)
     L = [[0] * (k + 1) for _ in range(n + 1)]
     for i in range(n - 1, -1, -1):
         for j in range(k - 1, -1, -1):
             L[i][j] = L[i + 1][j + 1] + 1 if rseq[i] == wseq[j] else max(L[i + 1][j], L[i][j + 1])
     print('%s  <->  %s   recall %.0f%%' % (a, name, 100.0 * (L[0][0] / float(n) if n else 1.0)))
-    print('  %-48s | %s' % ('reference', 'whoa'))
+    print('  %-48s | %s' % ('reference', 'frozen'))
     i = j = 0
     while i < n or j < k:
         if i < n and j < k and rseq[i] == wseq[j]:
@@ -1276,20 +1276,20 @@ def diff_seq(target, refs, whoa, m):
             print('  %-48s | + %s' % ('', wseq[j][:58])); j += 1
         else:
             r = rseq[i]
-            tag = '' if r in whoa or r.startswith('crt:') else '  (unlinked %s)' % (refs[r]['name'] if r in refs else r)
+            tag = '' if r in frozen or r.startswith('crt:') else '  (unlinked %s)' % (refs[r]['name'] if r in refs else r)
             print('  - %-46s |%s' % (r[:46], tag)); i += 1
 
 
-def show(target, refs, whoa, m):
+def show(target, refs, frozen, m):
     rev = {v[0]: a for a, v in m.items()}
     a = None
     if re.fullmatch(r'(0x)?[0-9a-fA-F]{6,8}', target):
         a = target.lower().replace('0x', '').zfill(8)
     elif target in rev:
         a = rev[target]
-    elif target in whoa:
-        w = whoa[target]
-        print('whoa %s  size %d  files %s  stub %s  refs %s' % (target, w['size'], w['files'], w['stub'], sorted(w['refs'])))
+    elif target in frozen:
+        w = frozen[target]
+        print('frozen %s  size %d  files %s  stub %s  refs %s' % (target, w['size'], w['files'], w['stub'], sorted(w['refs'])))
         print('  strings:', sorted(w['strings'])[:20])
         print('  callees:', sorted(w['callees'])[:30])
         print('  no reference link')
@@ -1305,24 +1305,24 @@ def show(target, refs, whoa, m):
     print('  callers:', ' '.join('%s%s' % (c, ('=' + m[c][0]) if c in m else '') for c in callers[:30]))
     if a in m:
         name, how = m[a]
-        w = whoa[name]
-        print('  whoa: %s [%s] size %d files %s stub %s' % (name, how, w['size'], w['files'], w['stub']))
-        print('  whoa strings missing on ref side:', sorted(w['strings'] - set(r['strings']))[:10])
-        print('  ref strings missing on whoa side:', sorted(set(r['strings']) - w['strings'])[:10])
+        w = frozen[name]
+        print('  frozen: %s [%s] size %d files %s stub %s' % (name, how, w['size'], w['files'], w['stub']))
+        print('  frozen strings missing on ref side:', sorted(w['strings'] - set(r['strings']))[:10])
+        print('  ref strings missing on frozen side:', sorted(set(r['strings']) - w['strings'])[:10])
     else:
         # candidates by shared strings
         cands = collections.Counter()
-        for n, w in whoa.items():
+        for n, w in frozen.items():
             k = len(w['strings'] & set(r['strings']))
             if k:
                 cands[n] = k
         print('  unmapped. candidates by shared strings:', cands.most_common(8))
 
 
-def queue_next(args, refs, whoa, m):
+def queue_next(args, refs, frozen, m):
     """Pick the next functions to work and decompile them into docs/recomp/queue/<addr>.c, one
     Ghidra run for the batch. Each file starts with a header: module, size, callers, the linked
-    callees (so the port can call the whoa names) and the unlinked ones (so they get tagged next)."""
+    callees (so the port can call the frozen names) and the unlinked ones (so they get tagged next)."""
     sp = spine(refs)
     real = {a: r for a, r in refs.items() if not r['thunk'] and not r['excluded']}
 
@@ -1348,7 +1348,7 @@ def queue_next(args, refs, whoa, m):
     elif args.fix:
         overrides = load_overrides()
         skip = set(k.lower().zfill(8) for k, v in overrides.items() if isinstance(v, dict) and v.get('status') in ('diverged', 'vendor', 'faithful', 'verified'))
-        pool = [a for a in m if a in real and a not in skip and not whoa[m[a][0]]['stub'] and not is_faithful(refs, whoa, m, a, fidelity(refs, whoa, m, a)) and len(refs[a]['calls']) >= 3]
+        pool = [a for a in m if a in real and a not in skip and not frozen[m[a][0]]['stub'] and not is_faithful(refs, frozen, m, a, fidelity(refs, frozen, m, a)) and len(refs[a]['calls']) >= 3]
     elif args.helpers:
         # the small, everywhere-called leaves (allocators, string ops, CVar lookup): every one of
         # them identified lifts the fidelity of hundreds of callers and feeds the call-order matcher
@@ -1385,7 +1385,7 @@ def queue_next(args, refs, whoa, m):
                 '// strings: ' + '; '.join(s[:60] for s in r['strings'][:8]),
                 '// linked callees: ' + ('; '.join(linked) if linked else '-'),
                 '// unlinked callees: ' + (' '.join(unlinked) if unlinked else '-'),
-                '// when ported: put  // ref: FUN_%s  above the whoa definition, re-run recomp.py' % a, '']
+                '// when ported: put  // ref: FUN_%s  above the frozen definition, re-run recomp.py' % a, '']
         body = by_addr.get(a, '// (decompilation missing: run decomp.sh by hand)\n')
         io.open(os.path.join(QUEUE_DIR, a + '.c'), 'w', encoding='utf-8', newline='\n').write('\n'.join(head) + body)
         print('  %s  %-22s size %5d callers %4d  -> docs/recomp/queue/%s.c' % (a, r['module'], r['size'], r['callers'], a))
@@ -1396,7 +1396,7 @@ def queue_next(args, refs, whoa, m):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--export', action='store_true', help='re-export the reference inventory from Ghidra')
-    ap.add_argument('--pdb', action='store_true', help='re-dump Whoa.pdb')
+    ap.add_argument('--pdb', action='store_true', help='re-dump Frozen.pdb')
     ap.add_argument('--show', metavar='ADDR|NAME', help='print everything known about one function')
     ap.add_argument('--diff', metavar='ADDR', help='align the reference call sequence with the port and show what it skips')
     ap.add_argument('--no-history', action='store_true', help='do not append this run to history.jsonl')
@@ -1427,44 +1427,44 @@ def main():
     for a, r in refs.items():
         r['excluded'] = (r['named'] and r['name'].startswith('_')) or overrides.get(a, {}).get('status') == 'excluded'
     src, exact = overlay_clang(parse_sources())
-    whoa = merge_whoa(load_pdb_functions(), src)
+    frozen = merge_frozen(load_pdb_functions(), src)
     overrides = {k.lower().zfill(8): v for k, v in load_overrides().items() if isinstance(v, dict)}
     ref_tables = load_tables()
-    whoa_tables = load_whoa_tables()
-    pairs = pair_tables(ref_tables, whoa_tables)
-    m = match(refs, whoa, overrides, pairs)
+    frozen_tables = load_frozen_tables()
+    pairs = pair_tables(ref_tables, frozen_tables)
+    m = match(refs, frozen, overrides, pairs)
 
     # Runtime evidence from the last calltrace/tracecompare run. Matching links become verified.
     # Contradicted ones are only REPORTED: one trace of one scene cannot tell a wrong link from a
-    # real behavioural divergence (the reference re-picking bone sequences 200x a frame where whoa
+    # real behavioural divergence (the reference re-picking bone sequences 200x a frame where frozen
     # does it 7x is the second kind, and is exactly what we want to see). Judging them is the
     # cycle's job; the verdict goes in overrides.json as a corrected link, "diverged", or
-    # "unlinked" (no whoa counterpart; the address is then never auto-matched again).
+    # "unlinked" (no frozen counterpart; the address is then never auto-matched again).
     verified = json.load(io.open(VERIFIED_JSON, encoding='utf-8')) if os.path.exists(VERIFIED_JSON) else {}
     for a, v in verified.items():
-        if a in m and m[a][0] == v['whoa'] and a not in overrides:
-            overrides[a] = {'whoa': v['whoa'], 'status': 'verified', 'note': v['note'], 'auto': True}
+        if a in m and m[a][0] == v['frozen'] and a not in overrides:
+            overrides[a] = {'frozen': v['frozen'], 'status': 'verified', 'note': v['note'], 'auto': True}
 
     if args.diff:
-        diff_seq(args.diff, refs, whoa, m)
+        diff_seq(args.diff, refs, frozen, m)
     if args.show:
-        show(args.show, refs, whoa, m)
+        show(args.show, refs, frozen, m)
         return
 
     if args.next or args.cluster:
-        queue_next(args, refs, whoa, m)
+        queue_next(args, refs, frozen, m)
         return
 
-    report, snapshot = build_report(refs, whoa, m, overrides, anchors, ref_tables, pairs, whoa_tables)
+    report, snapshot = build_report(refs, frozen, m, overrides, anchors, ref_tables, pairs, frozen_tables)
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     io.open(REPORT, 'w', encoding='utf-8', newline='\n').write(report)
-    write_map(refs, whoa, m, overrides)
+    write_map(refs, frozen, m, overrides)
     if not args.no_history:
         with io.open(HISTORY, 'a', encoding='utf-8') as h:
             h.write(json.dumps(snapshot) + '\n')
-    print('reference %d fns, mapped %d (ported %d, stub %d, verified %d), spine %d/%d; whoa %d fns' % (
+    print('reference %d fns, mapped %d (ported %d, stub %d, verified %d), spine %d/%d; frozen %d fns' % (
         snapshot['refFunctions'], snapshot['mapped'], snapshot['ported'], snapshot['stub'], snapshot['verified'],
-        snapshot['spineMapped'], snapshot['spine'], snapshot['whoaFunctions']))
+        snapshot['spineMapped'], snapshot['spine'], snapshot['frozenFunctions']))
     print('wrote', os.path.relpath(REPORT, ROOT))
 
 

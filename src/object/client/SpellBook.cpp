@@ -330,7 +330,7 @@ int32_t ReceiveLearnedSpell(void* param, NETMESSAGE msgId, uint32_t time, CDataS
     return 1;
 }
 
-// SMSG_REMOVED_SPELL (whoa names 0x0203 SMSG_UNLEARNED_SPELLS): uint32 spellId.
+// SMSG_REMOVED_SPELL (frozen names 0x0203 SMSG_UNLEARNED_SPELLS): uint32 spellId.
 int32_t ReceiveRemovedSpell(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     if (!msg || msg->Tell() + 4 > msg->Size()) {
         return 1;

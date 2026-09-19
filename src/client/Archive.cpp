@@ -220,7 +220,7 @@ static bool HasCommonArchiveLayout() {
 }
 
 void ClientOpenArchives() {
-    // TODO the original always requires the archives; Whoa still supports running from a fully
+    // TODO the original always requires the archives; Frozen still supports running from a fully
     // extracted data set, so a missing Data directory switches to local files only
     if (!OsDirectoryExists("Data")) {
         return;

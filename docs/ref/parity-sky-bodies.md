@@ -79,7 +79,7 @@ Confirmed by disassembly. Wrap-around linear interpolation over `(time, value)` 
 * `f = t - key[lo].time`; if `f < 0` add 1.
 * return `lerp(key[lo].value, key[hi].value, f / span)`.
 
-whoa's existing `InterpFloatBand` loop is the same shape.
+frozen's existing `InterpFloatBand` loop is the same shape.
 
 ### The disc/cloud draw path
 
@@ -177,7 +177,7 @@ MOON2 phi   @0xd39148 (3):  (0.0000000, 2.3561945)  135 deg
 
 ## 1.2 The position formula
 
-For each body, with `t` = `DayNight+0x04` = the 0..1 day fraction (whoa: `CWorld::GetDayProgress()`):
+For each body, with `t` = `DayNight+0x04` = the 0..1 day fraction (frozen: `CWorld::GetDayProgress()`):
 
 ```c
 float theta = InterpBand(thetaTable, t);      // zenith angle, radians
@@ -305,7 +305,7 @@ Net effect: the disc is cut off exactly at the camera's eye-level plane and its 
 units (about 1.9 degrees of the 12-unit sphere) fade out, so the sun does not pop when it sets.
 
 Render state (`FUN_009ac660`). The device's render-state array is at `dev + 0x90 + rs * 0x18`, which
-decodes exactly onto whoa's `EGxRenderState`:
+decodes exactly onto frozen's `EGxRenderState`:
 
 | dev offset | RS | set to |
 |---|---|---|
@@ -320,14 +320,14 @@ decodes exactly onto whoa's `EGxRenderState`:
 
 It does **not** touch `GxRs_Culling` or the depth test; it inherits whatever the sky pass has, and
 draws inside the far-depth viewport `FUN_007f09b0` installs (`DAT_00adeef0/f4`, the
-`[0.9990234375, 1.0]` range whoa already uses).
+`[0.9990234375, 1.0]` range frozen already uses).
 
 **Draw order inside the pass, and a correction to `parity-sky.md`:** stars, sun, moon 1, moon 2,
 gradient dome, clouds. That only works because **the gradient dome is `GxBlend_Add` (3), not
 opaque** — `FUN_009acb00` writes `*(dev + 0x90) = 3`, and RS 6 value 3 is `GxBlend_Add`. The dome is
 additive over a cleared frame buffer, so it produces the sky colour on empty pixels *and* brightens
 the stars and discs already drawn beneath it. The clouds then alpha-blend on top (mode 2), and the
-cloud drawer additionally clears RS 17 `GxRs_Culling`. whoa's `SkyRender` currently sets
+cloud drawer additionally clears RS 17 `GxRs_Culling`. frozen's `SkyRender` currently sets
 `GxRs_BlendingMode, GxBlend_Opaque` for the dome; that must become `GxBlend_Add` before the discs can
 be drawn under it.
 
@@ -415,12 +415,12 @@ So the sun glare band ramps up 06:30 -> 07:30 and down 19:30 -> 21:00; the moon 
 * Moon 2's RGB tint (above).
 * The exact semantics of `DayNight+0x08` — `FUN_007eecc0` uses it as an integer **day counter** in
   the moon-phase maths (`frac((day + t) / 1.7)`), while `parity-sky.md` section 0 labels it "time of
-  day override". The phase maths only makes sense as a day counter; whoa can drive it from the
+  day override". The phase maths only makes sense as a day counter; frozen can drive it from the
   calendar day.
 * `FUN_009abb60`'s input is `column2` of the matrix in the Gx transform slot at `+0x1b00`
   (`DAT_00c5df88 + DAT_00c5df88[0x6be] * 0x40 + 0x1b00`). It is the current world/view transform's
   forward axis; the read is unambiguous in the disassembly, but which Gx slot that is has not been
-  cross-checked against whoa's `GxXform_*` enum. A plain "face the camera" billboard is equivalent.
+  cross-checked against frozen's `GxXform_*` enum. A plain "face the camera" billboard is equivalent.
 
 ---
 
@@ -449,7 +449,7 @@ this->tex[1] /*+0x94*/ = FUN_004b9200(dim, dim, this->format, 2, this, this->tex
                                       FUN_007ece10, "DNClouds1", 0);
 ```
 
-`FUN_004b9200` -> `FUN_004b8c80` is the **callback-backed** `TextureCreate` (the same overload whoa
+`FUN_004b9200` -> `FUN_004b8c80` is the **callback-backed** `TextureCreate` (the same overload frozen
 already calls for `s_skyWhite` in `SkyRender`). The last string is the texture's debug name. The
 callback is:
 

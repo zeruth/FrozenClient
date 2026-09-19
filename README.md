@@ -1,55 +1,135 @@
-# Whoa
+# Frozen
 
-[![Push](https://github.com/whoahq/whoa/actions/workflows/push.yml/badge.svg)](https://github.com/whoahq/whoa/actions/workflows/push.yml)
+[![Push](https://github.com/zeruth/FrozenClient/actions/workflows/push.yml/badge.svg)](https://github.com/zeruth/FrozenClient/actions/workflows/push.yml)
 
-Welcome to Whoa, an unofficial open source implementation of the World of Warcraft 3.3.5a (build 12340) game client in C++11.
+Frozen is an unofficial, open source reimplementation of the World of Warcraft 3.3.5a (build 12340)
+game client in C++.
 
-## Supported Platforms
+It is a fork of [whoa](https://github.com/whoahq/whoa), and it would not exist without it. whoa
+built the foundation this project stands on: the module layout, the Storm and Tempest library
+reimplementations, the glue and login flow, the FrameXML host with its Lua binding tables, and the
+GX device abstraction over Direct3D and OpenGL. Everything below is continuation, not replacement,
+and changes that are not specific to Frozen's goals belong upstream.
 
-Currently, Windows 10+ and macOS 10.14+ are supported, including recent versions of macOS on M1 and M2 processors. Support for Linux is in progress.
+Where whoa stops at the character select screen, Frozen's aim is the world: get in, draw it, and
+then make it match the original client function for function.
+
+## Status
+
+The client logs in, enters the world, and renders it. Concretely, this works today:
+
+- Terrain with its texture layers and baked lighting, water, buildings and their interiors, doodads,
+  and animated creatures and players.
+- The player composited from equipped items, with idle animation.
+- Sky, clouds, and the sun and moon, driven from the light tables in the game data.
+- The console, the CVar system, and enough of the FrameXML host to load Blizzard's stock interface.
+
+These are real but unfinished: entity and terrain shadows, particle effects, and the video options
+panel all render or respond but are not yet a match for the original. Unit movement is not ported,
+so footprints and ribbon trails have nothing to draw. Where the render pipeline is built but has
+never been confirmed on screen, `docs/world-render-inventory.md` says so per stage, and this project
+treats "it compiled" as worth nothing.
+
+Frozen currently targets Windows. The macOS, Linux and Android paths are inherited from whoa and are
+not exercised by this fork's work.
+
+## Accuracy
+
+The goal for 1.0.0 is not "looks right". It is that every function in the original client has a
+counterpart here that makes the same calls in the same order, and that the ones that matter have
+been watched doing it at runtime.
+
+Guessing an implementation from what the screen looks like is how most of the graphics bugs in this
+codebase got in, so accuracy is measured rather than asserted. `tools/recomp/` links the original's
+27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`. It tracks three numbers that are
+deliberately never rolled into one:
+
+| measure | meaning | today |
+|---|---|---:|
+| **linked** | an original function has a known counterpart here | 2,254 |
+| **faithful** | linked, not a stub, and the port reproduces at least 80% of the original's call sequence in order | 684 |
+| **verified** | a run was observed behaving like the original | 14 |
+
+Alongside those: 1,584 of the 2,512 Lua bindings the original registers, and 312 of the 5,530
+functions reachable from the world render entry point.
+
+The report also carries per-module coverage, the ranked queue of what to port next, and a history
+row per run, so progress is a table rather than a feeling. A function is only ever marked verified
+by a trace or a scene comparison, never by a clean build or a plausible reading of a decompilation.
+
+## Roadmap
+
+1. **In-world rendering parity.** Close out the stages in `docs/world-render-inventory.md` that are
+   built but unconfirmed, then the known gaps: shadows, particles, unit movement.
+2. **Subsystem ports.** Chat, the spell cast pipeline, inventory and the tooltip, sound. These are
+   the large functions at the top of the report's unfaithful queue and the reason several Lua tables
+   are still stubs.
+3. **Lua surface.** Close the remaining 928 bindings so Blizzard's interface stops meeting `nil`.
+4. **Runtime verification at scale.** The call tracer and the scene comparison exist; the work is
+   running them broadly enough to move the verified column, not just the linked one.
+5. **1.0.0.** Every reference function linked and faithful, the render verified against the original
+   scene by scene.
+
+The long-term goal inherited from whoa, an Android port, is unchanged and waits on the above.
 
 ## Building
 
-To build, ensure you have installed a recent version of CMake and an appropriate C++ build environment, and run the following from the `whoa` directory:
+Install a recent CMake and a C++ toolchain, then from the repository root:
 
 ```
-mkdir build && cd build
-cmake ..
-make install
+cmake -S . -B build
+cmake --build build --config Release --target Frozen
 ```
 
-Assuming all went well, you should see a `dist/bin` directory appear in the `build` directory. The `dist/bin` directory will contain a `Whoa` executable.
+The executable lands in `build/bin/Release`. Install it next to its PDB in `build/dist/bin`; a stale
+PDB will symbolize crashes to the wrong function, which has cost more than one debugging session.
 
 ## Running
 
-Whoa doesn't currently support reading from MPQ archives. Instead, it assumes you are launching the Whoa executable from the root of a fully extracted MPQ archive set for World of Warcraft 3.3.5a (build 12340). You can obtain a valid set of MPQ archives to extract by installing World of Warcraft 3.3.5a from legally purchased original install media. Whoa does not provide any copy of game data.
+Frozen does not read MPQ archives yet. Run `Frozen.exe` with the working directory set to the root
+of a fully extracted 3.3.5a (build 12340) archive set. You can obtain archives to extract by
+installing World of Warcraft 3.3.5a from legally purchased original install media. Frozen ships no
+game data.
 
-Assuming all goes well, you should be greeted by the login screen, complete with its flying dragon animation loop and background music. The options panels can be interacted with, although some options currently do nothing. Game credits can be viewed. You may log in to a server and interact with the character select screen.
+Point it at a 3.3.5a-compatible server to log in and enter the world.
 
-Whoa is very much a work-in-progress: in its current state, it doesn't support entering the game world, doesn't permit character creation or deletion, and doesn't persist game settings to disk. These things will be supported over time.
+Two environment hooks help when working on the client:
 
-![Whoa in action](./docs/img/login.png)
+| hook | effect |
+|---|---|
+| `FROZEN_AUTO_LOGIN=account:password` | walks the glue into the world without a human at the keyboard |
+| `FROZEN_AUTO_CHARACTER=name` | picks a specific character on the way through |
+
+Lua errors go to stdout; redirect it to capture them.
 
 ## Contributing
 
-Please follow the guidelines contained in [CONTRIBUTING.md](./CONTRIBUTING.md) when making contributions.
+Read [CONTRIBUTING.md](./CONTRIBUTING.md) first. The short version: this is a decompilation project,
+so match the original's names, signatures, layouts and behaviour, and when a name is unknown, name
+by behaviour. Do not import behaviour from other client versions. Tag a port with the address it
+came from (`// ref: FUN_004932c0`) so the accuracy tooling can score it.
 
 ## FAQ
 
-**Why?**
+**Why fork whoa rather than contribute to it?**
 
-It's fascinating to explore the development practices used to build a modern major video game.
+Frozen pursues in-world rendering and a measured 1:1 recomp, which is a narrower and more invasive
+goal than whoa's. Work that isn't specific to that goal is better off upstream.
 
 **Why 3.3.5a?**
 
-The game and its libraries have become significantly more complex in the intervening 10+ years. By picking 3.3.5a, it's possible to imagine this implementation will eventually be complete.
+The game and its libraries have grown enormously since. At 3.3.5a it is possible to imagine this
+implementation eventually being complete.
 
-**Can I use this in my own development projects?**
+**Can I use this in my own projects?**
 
-It's probably a bad idea. The original game is closed source, and this project is in no way official.
+Probably a bad idea. The original game is closed source and this project is in no way official.
 
 ## Legal
 
 This project is released into the public domain.
 
-World of Warcraft: Wrath of the Lich King ©2008 Blizzard Entertainment, Inc. All rights reserved. Wrath of the Lich King is a trademark, and World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other countries.
+World of Warcraft: Wrath of the Lich King ©2008 Blizzard Entertainment, Inc. All rights reserved.
+Wrath of the Lich King is a trademark, and World of Warcraft, Warcraft and Blizzard Entertainment
+are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other
+countries.

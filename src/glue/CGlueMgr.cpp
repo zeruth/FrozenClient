@@ -376,7 +376,7 @@ int32_t CGlueMgr::HandleDisplaySizeChanged(const CSizeEvent& event) {
     return 1;
 }
 
-// Walk the glue to the world without a human at the keyboard, when WHOA_AUTO_LOGIN is set to
+// Walk the glue to the world without a human at the keyboard, when FROZEN_AUTO_LOGIN is set to
 // "account:password".
 //
 // This exists for the reference-comparison harness: every in-world memory comparison needs both
@@ -387,7 +387,7 @@ int32_t CGlueMgr::HandleDisplaySizeChanged(const CSizeEvent& event) {
 // Each step is retried rather than fired once: the login screen is reachable before the account
 // screen will accept a login, and the character list arrives some frames after the realm does.
 static void GlueAutoAdvance() {
-    static const char* s_credentials = getenv("WHOA_AUTO_LOGIN");
+    static const char* s_credentials = getenv("FROZEN_AUTO_LOGIN");
 
     if (!s_credentials || !*s_credentials) {
         return;
@@ -426,7 +426,7 @@ static void GlueAutoAdvance() {
         // Optionally pick a character by name. An account can hold several, and the comparison
         // harness needs a specific one -- the Ebon Hold scene is only populated for the Death
         // Knight, and the first character in the list is not necessarily it.
-        static const char* s_wanted = getenv("WHOA_AUTO_CHARACTER");
+        static const char* s_wanted = getenv("FROZEN_AUTO_CHARACTER");
 
         if (s_wanted && *s_wanted) {
             for (int32_t i = 0; i < CCharacterSelection::s_characterList.Count(); i++) {

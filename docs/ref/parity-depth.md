@@ -1,4 +1,4 @@
-# Depth-buffer / z-fighting parity: 3.3.5a reference vs whoa
+# Depth-buffer / z-fighting parity: 3.3.5a reference vs frozen
 
 Program: **RunicWorldGame.exe** (Win 3.3.5a build 12340, stripped, image base 0x400000) in the
 Ghidra project `C:\Users\tyler\tools\ghidra-projects\RunicWorld`. Raw dumps captured for this doc:
@@ -14,19 +14,19 @@ the binary's data.
 
 ## 0. Executive summary
 
-* The **render-state machinery is already at parity**. Whoa's `EGxRenderState` numbering, the
+* The **render-state machinery is already at parity**. Frozen's `EGxRenderState` numbering, the
   depth-compare table, the cull table and the master-enable gating all match the reference
   bit-for-bit (verified against the reference's `IRsSendToHw` switch and its D3D lookup tables).
 * The **depth buffer is D24S8 in both**. This is not a precision problem from the buffer format.
 * The **near/far planes match** (`nearclip` 0.2, `farclip` 350 in both). With n=0.2/f=350 a D24
   buffer resolves ~0.7 mm at 50 yd and ~3 mm at 100 yd - far better than the errors below.
-* `GxRs_PolygonOffset` really is a **no-op in every whoa backend**, but the reference only uses it
+* `GxRs_PolygonOffset` really is a **no-op in every frozen backend**, but the reference only uses it
   for *decals* (footprints, post-liquid decals, projected-texture batches) and explicitly sets it to
   **0** for the M2 scene. It is therefore **not** the cause of model z-fighting. It is still a real
   gap, and the reference's exact mapping is recovered below.
 * The actual parity break that produces z-fighting is **coordinate space**: the reference draws
   terrain chunks, WMO groups and ground doodads with a **per-chunk / per-instance world transform**
-  over *local* vertex data, while whoa **bakes absolute world coordinates** (up to +-17066) into the
+  over *local* vertex data, while frozen **bakes absolute world coordinates** (up to +-17066) into the
   vertex streams and folds the camera translation into a single matrix. The per-vertex `dp4` then
   cancels two ~10^4 magnitudes, leaving 2-8 mm of view-space error that *changes as the camera
   moves*. That is 3-10x the D24 depth quantum at close range, and it is why anything coplanar with
@@ -41,7 +41,7 @@ the binary's data.
 
 ## 1. Depth bias / polygon offset
 
-### 1a. Whoa: declared, initialised, handled by nobody
+### 1a. Frozen: declared, initialised, handled by nobody
 
 | Where | What |
 |---|---|
@@ -51,11 +51,11 @@ the binary's data.
 | `src/gx/gll/CGxDeviceGLL.cpp:455-651` | same switch, **no `case GxRs_PolygonOffset`** |
 | `src/gx/gles/CGxDeviceGLES.cpp` | no reference at all |
 | `src/gx/gll/GLDevice.cpp:450` | `glPolygonOffset(states.rasterizer.slopeScaledDepthBias * 2.0, units)` exists in the *lower* GLL layer, but nothing ever writes `rasterizer.slopeScaledDepthBias` from the RS path |
-| Writers in whoa | `src/model/CM2SceneRender.cpp:88` (`GxRsSet(GxRs_PolygonOffset, 0)`) and `src/console/Screen.cpp:106` (`0.0f`) - both write 0, so nothing is lost today |
+| Writers in frozen | `src/model/CM2SceneRender.cpp:88` (`GxRsSet(GxRs_PolygonOffset, 0)`) and `src/console/Screen.cpp:106` (`0.0f`) - both write 0, so nothing is lost today |
 
 ### 1b. Reference: `D3DRS_DEPTHBIAS` only, negated, caps-gated
 
-The render-state array lives at `device + 0x28f4` -> `base + index * 0x18`, value at `+0`; whoa's
+The render-state array lives at `device + 0x28f4` -> `base + index * 0x18`, value at `+0`; frozen's
 enum numbering is confirmed identical by the offsets seen in the decompiles
 (`6 -> +0x90` BlendingMode, `7 -> +0xa8` AlphaRef, `0xb -> +0x108` Lighting, `0xc -> +0x120` Fog,
 `0xf -> +0x168` DepthWrite, `0x11 -> +0x198` Culling). `FUN_00685970(index)` is the inlined
@@ -80,19 +80,19 @@ case 0:                                             // GxRs_PolygonOffset
 * The value is passed as the raw float bits, **negated**. D3D9 adds `D3DRS_DEPTHBIAS` to the
   post-projection depth in [0,1]; negating pulls the fragment *toward* the viewer. So
   `GxRs_PolygonOffset` is a **positive "pull toward camera" amount in normalised depth units**.
-* Gated on the caps bit at `this + 0x304`, which whoa already computes as
+* Gated on the caps bit at `this + 0x304`, which frozen already computes as
   `m_caps.m_depthBias` (`src/gx/d3d/CGxDeviceD3d.cpp:1284`).
 
-The same function confirms the rest of the depth path matches whoa exactly:
+The same function confirms the rest of the depth path matches frozen exactly:
 
-| RS | Reference | Whoa |
+| RS | Reference | Frozen |
 |---|---|---|
 | `0xd`/`0xe` DepthTest/DepthFunc | if master-enable bit 4 clear **or** `appRs[DepthTest] == 0` -> `D3DRS_ZFUNC = 8` (`D3DCMP_ALWAYS`), else `DAT_00a2fa14[DepthFunc]` = `{4,3,7,2}` = `{LESSEQUAL, EQUAL, GREATEREQUAL, LESS}` | identical (`s_cmpFunc`, `CGxDeviceD3d.cpp:13-18, 1093-1108`) |
 | `0xf` DepthWrite | master-enable bit 8 gate, then `D3DRS_ZWRITEENABLE` (14) | identical (`:1111-1120`) |
 | `0x11` Culling | `DAT_00a2fa24` = `{1,2,3}` = `{NONE, CW, CCW}` | identical (`s_cullMode`) |
 
 Note the reference never touches `D3DRS_ZENABLE`; the depth test is disabled by setting
-`ZFUNC = ALWAYS`. Whoa does the same. Both rely on `EnableAutoDepthStencil` leaving
+`ZFUNC = ALWAYS`. Frozen does the same. Both rely on `EnableAutoDepthStencil` leaving
 `ZENABLE = D3DZB_TRUE`.
 
 ### 1c. Which reference draws actually use it
@@ -103,7 +103,7 @@ grep for `FUN_00685970(0)` across every decompile in `docs/ref/`:
 | Caller | Meaning | Value written |
 |---|---|---|
 | `FUN_006865b0` (`CGxDevice` RS defaults) | initial state | `0.0` |
-| `FUN_00823130` (`CM2SceneRender::Draw`) | **the M2 scene explicitly zeroes it** | `0.0` (whoa mirrors this at `src/model/CM2SceneRender.cpp:88`) |
+| `FUN_00823130` (`CM2SceneRender::Draw`) | **the M2 scene explicitly zeroes it** | `0.0` (frozen mirrors this at `src/model/CM2SceneRender.cpp:88`) |
 | `FUN_0079fcc0` (footprints, `Map.cpp`, CVar `showfootprints`) | footprint decals | `footstepBias * _DAT_00a3fd64` = `0.125 * 2^-8` = **4.883e-4** |
 | `FUN_0079d5e0` (post-liquid decal list `DAT_00adfb60`) | ripple/splash decals | a local; its source was not traced *(uncertain)* |
 | `FUN_007e3aa0` (projected-texture decal draw, `Shadow.cpp`; called from `FUN_007e3e80` @ `007e3e63`) | projected decals, when its bias arg != 0 | saves the old value, sets `(bias + bias) * _DAT_00a41170` = `2 * bias * 2^-15`, restores afterwards |
@@ -114,7 +114,7 @@ CVar defaults read straight out of the PE: `footstepBias` = `"0.125"`
 `_DAT_00a41170` = `3.05180e-05` (2^-15).
 
 **Conclusion for item 1:** in the reference, polygon offset is a decal-only feature. Models, terrain,
-WMOs and liquids all draw with offset 0. Whoa draws none of those decals yet (no footprints, no
+WMOs and liquids all draw with offset 0. Frozen draws none of those decals yet (no footprints, no
 post-liquid decals, no projected-texture batches - `CM2SceneRender::DrawBatchProj` is a TODO at
 `src/model/CM2SceneRender.cpp:262` and `CM2Scene::uint104` is permanently 0, so element type 1 is
 never produced). **The missing backend cannot be causing model z-fighting.** It should still be
@@ -144,7 +144,7 @@ The sky pass additionally renders through a viewport with the depth range squeez
 `[DAT_00adeef0, DAT_00adeef4]` = **`[0.9990234375, 1.0]`** (verified in the binary; exactly
 `1 - 2^-10`).
 
-### 2b. Whoa
+### 2b. Frozen
 
 | Item | Value | Where |
 |---|---|---|
@@ -177,10 +177,10 @@ plane is irrelevant once `n << f`; only the near plane matters.
 | 300 | 27 mm | 11 mm | 6.8 yd |
 
 So a D24 buffer at n=0.2 is comfortable and matches the reference exactly. **A too-small near plane
-is not the cause here.** (If whoa were falling back to D16 it would be catastrophic - item 4 rules
+is not the cause here.** (If frozen were falling back to D16 it would be catastrophic - item 4 rules
 that out.)
 
-### 2d. Two real whoa bugs found in this area (neither is the main cause)
+### 2d. Two real frozen bugs found in this area (neither is the main cause)
 
 1. **`CGCamera` latches near/far at construction.**
    `src/ui/game/CGCamera.cpp:90`:
@@ -203,7 +203,7 @@ that out.)
 
 ---
 
-## 3. Depth-state audit of whoa's world passes
+## 3. Depth-state audit of frozen's world passes
 
 All of these run inside `CGWorldFrame::OnWorldRender` (`src/ui/game/CGWorldFrame.cpp:150-350`).
 `GxRs_DepthFunc = 0` is `LESSEQUAL` everywhere.
@@ -236,7 +236,7 @@ a per-chunk transform (`FUN_007984a0` -> `FUN_00790440` + `FUN_007b10e0`, 0x17 V
 exact semantics of `FUN_00834900` were not confirmed - marked uncertain - but the per-chunk /
 per-instance transform call pattern is unambiguous.)*
 
-**Whoa.** Everything is pre-baked into absolute world coordinates and drawn with one global matrix:
+**Frozen.** Everything is pre-baked into absolute world coordinates and drawn with one global matrix:
 
 * `Terrain.cpp:831-833` - `chunk.position[k] = { posX - fx*UNIT_SIZE, posY - fy*UNIT_SIZE, posZ + heights[k] }`, absolute, up to +-17066.
 * `Terrain.cpp:3919-3935` - `view = GxXformView(); view.Translate(-cameraPos); viewProjT = (view*proj)^T`, uploaded to `c0..c3`.
@@ -289,7 +289,7 @@ intersects inconsistently from frame to frame.
 
 ## 4. Depth buffer format
 
-**Whoa requests D24S8 and gets it.**
+**Frozen requests D24S8 and gets it.**
 
 * `src/console/Device.cpp:395-396` - `s_requestedFormat.colorFormat = Fmt_Argb8888;
   s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds248;`
@@ -304,7 +304,7 @@ intersects inconsistently from frame to frame.
 Reference: `gxDepthBits` is `"24"` in `Config.wtf`; the CVar is read in `FUN_0076a630`,
 `FUN_0054f1b0`, `FUN_0054f980` and `FUN_0054f8b0` (`win-strrefs-depth.txt`), and the D3D device code
 lives at `FUN_00689ef0`+ (`.\CGxDeviceD3d\CGxDeviceD3d.cpp`) / `FUN_006a0aa0`+
-(`.\CGxDeviceD3d9Ex\...`). The reference's format table is the same shape as whoa's (whoa's gx is a
+(`.\CGxDeviceD3d9Ex\...`). The reference's format table is the same shape as frozen's (frozen's gx is a
 decompilation of it), so both land on `D3DFMT_D24S8`. *(The reference's exact
 `AutoDepthStencilFormat` line was not decompiled - marked uncertain - but the CVar value and the
 shared table make it certain enough.)*
@@ -342,7 +342,7 @@ See task C5.
 5. **M2 pass 1/2 double-listing, latent** (3b). Harmless today; becomes a guaranteed same-geometry
    double draw the moment `CM2Lighting` starts setting flag `0x40`.
 6. **`GxRs_PolygonOffset` unimplemented.** Cannot be the cause (the reference zeroes it for models,
-   and whoa draws none of the decals that use it), but it is a real gap that blocks footprints,
+   and frozen draws none of the decals that use it), but it is a real gap that blocks footprints,
    post-liquid decals and projected-texture batches.
 
 ---

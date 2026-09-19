@@ -17,7 +17,7 @@ jobs:
           - system_name: Linux
             build_type: Release
             compiler_name: GCC
-            test_path: WhoaTest
+            test_path: FrozenTest
             os: ubuntu-latest
             cc: gcc
             cxx: g++
@@ -25,7 +25,7 @@ jobs:
           - system_name: macOS
             build_type: Release
             compiler_name: Clang
-            test_path: WhoaTest
+            test_path: FrozenTest
             os: macos-latest
             cc: clang
             cxx: clang++
@@ -33,7 +33,7 @@ jobs:
           - system_name: Windows
             build_type: Release
             compiler_name: MSVC
-            test_path: WhoaTest
+            test_path: FrozenTest
             os: windows-latest
             cc: cl
             cxx: cl

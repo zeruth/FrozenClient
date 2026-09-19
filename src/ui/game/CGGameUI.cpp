@@ -180,7 +180,7 @@ void CGGameUI::Initialize() {
 
     // The interface loader reports every failure -- a file it could not open, XML it could not
     // parse, a frame type it does not know -- into this collector. A plain CStatus throws all of
-    // that away when it goes out of scope, which is why whoa loaded only part of FrameXML while
+    // that away when it goes out of scope, which is why frozen loaded only part of FrameXML while
     // reporting nothing at all. The glue path already logs the same way to Logs\GlueXML.log.
     OsCreateDirectory("Logs", 0);
 
@@ -408,7 +408,7 @@ void CGGameUI::RegisterGameCVars() {
     // TODO
 
     // The rest of the reference's RegisterGameCVars (FUN_0051d9b0), in its order. Callbacks the
-    // reference installs are noted by address; whoa has no handler for them yet.
+    // reference installs are noted by address; frozen has no handler for them yet.
     const char* militaryTime = "1"; // TODO the reference picks "0" for locales 2, 5 and 10 (FUN_00635d90)
     CVar::Register("autoStand", "Automatically stand when needed", 0x10, "1", nullptr, GAME);
     CVar::Register("autoDismount", "Automatically dismount when needed", 0x10, "1", nullptr, GAME);

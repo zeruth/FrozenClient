@@ -781,7 +781,7 @@ void CGGameUI::DisplayError(uint32_t errorCode, ...) {
     }
 
     // The reference resolves the text through the player's gender when a player is active
-    // (FUN_007225e0) and plainly otherwise; whoa's GetText takes the gender directly
+    // (FUN_007225e0) and plainly otherwise; frozen's GetText takes the gender directly
     const char* format = FrameScript_GetText(entry.stringId, -1, GENDER_NOT_APPLICABLE);
 
     char text[3000];

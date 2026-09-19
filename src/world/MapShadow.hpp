@@ -43,7 +43,7 @@ void MapShadowSetup(const C3Vector& focus);
 // the light-space z the vertex shader passes down, not the projected z, so this stays ordinary.
 const C44Matrix& MapShadowProjection();
 
-// world -> light view. Casters whose vertices already carry the camera's view (whoa bakes it into
+// world -> light view. Casters whose vertices already carry the camera's view (frozen bakes it into
 // M2 bone matrices) are rebased with inverse(cameraView) * this.
 const C44Matrix& MapShadowLightView();
 

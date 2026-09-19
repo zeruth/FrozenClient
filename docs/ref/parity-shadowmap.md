@@ -1,4 +1,4 @@
-# Map shadow map parity: 3.3.5a reference vs whoa
+# Map shadow map parity: 3.3.5a reference vs frozen
 
 Scope: the **map shadow map** — the quality tier *above* the blob shadows covered by
 `parity-shadows.md`. Modules: `MapShadow.cpp` (~0x7ba-0x7bd) and `CShadowCache` (~0x874-0x876).
@@ -46,7 +46,7 @@ CMap::Render FUN_0079a870
 Two things matter for the port:
 
 * The shadow map is rendered **after** `CM2Scene::Animate`, so the caster model matrices are current.
-  Whoa's `CGWorldFrame::OnWorldRender` runs `scene->AdvanceTime`/`Animate` *after* `TerrainRender`,
+  Frozen's `CGWorldFrame::OnWorldRender` runs `scene->AdvanceTime`/`Animate` *after* `TerrainRender`,
   so the shadow-map render cannot simply be dropped where `TerrainRender` is today — **Animate has to
   move before it** (or the shadow pass has to run before the terrain pass but after an early Animate).
 * The constants are bound **inside each receiver's own draw routine**, not once per frame. Terrain
@@ -242,10 +242,10 @@ The per-slot struct is 0x3c bytes and the **global entry uses the same layout** 
 **Realloc** is deferred: `FUN_00873fe0` / `FUN_00874210` only set `DAT_00b1d51c = 1`; the next
 `FUN_00875f80` does `FUN_00874240(); FUN_00875d30();` and clears the flag. `FUN_00875d30` also
 registers `FUN_00873fe0` as a device-lost callback (`device vtable +0x7c`) and `FUN_00874240`
-unregisters it (`+0x80`) — so a device reset re-creates the `D3DPOOL_DEFAULT` targets. Whoa needs
+unregisters it (`+0x80`) — so a device reset re-creates the `D3DPOOL_DEFAULT` targets. Frozen needs
 the same hook for a windowed resize.
 
-**What whoa must bind.** Per pass:
+**What frozen must bind.** Per pass:
 
 ```
 GxRenderTargetSet(GxBuffers_Depth, depthTex, 0)   // only on the hwPCF path
@@ -261,7 +261,7 @@ GxRenderTargetSet(GxBuffers_Depth, savedDepth, 0) // restore, saved with GxRende
 **not** handled yet:
 
 * `IDirect3DDevice9::SetRenderTarget` **resets the viewport and scissor** to the full surface. The
-  reference re-sets the viewport itself (`FUN_00681f60` with the slot's sub-rect); whoa's
+  reference re-sets the viewport itself (`FUN_00681f60` with the slot's sub-rect); frozen's
   `GxXformSetViewport` must be called after the bind, not before.
 * On the non-hwPCF path the reference binds **only** a colour target and keeps the default
   depth-stencil. D3D9 requires the depth surface to be at least as large as the colour surface, so a
@@ -376,7 +376,7 @@ permutation). *(uncertain: which stage does the remap — the MPQ shader source 
 Also note `0.5/size` in NDC is a **quarter** texel, not a half texel; D3D9's texel-centre rule wants
 `1.0/size` here. Both are flagged rather than silently corrected.
 
-**For whoa, fold the remap into the matrix on the CPU** and drop the `inverse(worldStackTop)` factor
+**For frozen, fold the remap into the matrix on the CPU** and drop the `inverse(worldStackTop)` factor
 (identity at that point in the frame):
 
 ```
@@ -408,7 +408,7 @@ light direction, PS c5..c12 = the taps, samplers s5-s7 for the cascades only; th
 `FUN_008745d0` uses PS c3 = a plane and sampler s4; `FUN_00874760` uses VS c23, PS c3 = a plane,
 c4 = direction, c5..c12 = taps, sampler s4.)
 
-Whoa's `EGxRenderState` numbering matches the reference bit for bit here: `0x19 = GxRs_Texture4`,
+Frozen's `EGxRenderState` numbering matches the reference bit for bit here: `0x19 = GxRs_Texture4`,
 `0x1a = GxRs_Texture5`, `0x10 = GxRs_ColorWrite`, `0x11 = GxRs_Culling`, `0x0c = GxRs_Fog`.
 
 ### 6c. The plane constant from `FUN_007bb670`
@@ -448,9 +448,9 @@ by `1/size`:
 `FUN_008742e0` also caches `_DAT_00d431bc = _DAT_00d431c0 = (float)size` and
 `_DAT_00d43200 = 1/size` (which doubles as tap 3's `.x`).
 
-### 6e. In whoa's terms — a terrain pixel shader that could implement it
+### 6e. In frozen's terms — a terrain pixel shader that could implement it
 
-Whoa's terrain VS (`g_terrainVsD3d9`, disassembled interface) uses `c0..c3` for the chunk matrix and
+Frozen's terrain VS (`g_terrainVsD3d9`, disassembled interface) uses `c0..c3` for the chunk matrix and
 `c4 = (1, 0, 0.2, 0)`, inputs `v0` position, `v1` colour, `v2` blend UV, outputs `oPos`, `oT0`, `oT1`,
 `oD0`. `oT2` and `c5+` are free. The minimal port:
 
@@ -488,18 +488,18 @@ return float4(colour * v0.rgb * shadow, 1.0f);
 ```
 
 That is the correct combination semantically (both are occlusion of the *same* sun, so a pixel is lit
-only if neither occludes it) and it reuses the ambient-ratio machinery whoa already has in `v0.a`.
+only if neither occludes it) and it reuses the ambient-ratio machinery frozen already has in `v0.a`.
 *(uncertain: the reference's exact combine is inside `Terrain2`/`Terrain3`, which is not recoverable —
 `min` is the reasoned choice, not a recovered one.)*
 
-Notes for the whoa implementation:
+Notes for the frozen implementation:
 * With `hwPCF` **off** the map is `R32F` holding linear `depth/4000`, so a plain `tex2D(...).r >= z`
   comparison is right and ps_2_0 can do all 8 taps (8 `texld` + 8 compares fits easily).
 * With `hwPCF` **on** the map is a `D24X8` depth texture; on D3D9 the hardware does the compare and
   the 2x2 bilinear blend inside `tex2D`, and the PS just averages the 8 returned values. Do **not**
   implement that first — it needs a caps check (`D3DFMT_D24X8` usable as a texture) and it is the
   only reason `Terrain2_pcf` exists.
-* Whoa's terrain draws per-chunk with `ChunkMatrixT` at VS c0..c3; building `chunkModel * shadowTex`
+* Frozen's terrain draws per-chunk with `ChunkMatrixT` at VS c0..c3; building `chunkModel * shadowTex`
   on the CPU per chunk and uploading it at c5..c7 costs three more `GxShaderConstantsSet` float4s per
   chunk and keeps the shader at 3 `dp4`s.
 
@@ -507,7 +507,7 @@ Notes for the whoa implementation:
 
 ## 7. Ordered implementation task list
 
-Each task names the whoa file/function and the reference function it ports.
+Each task names the frozen file/function and the reference function it ports.
 
 ### S0 - prerequisite: author `terrain_vs.hlsl`
 *Change*: new `src/world/shaders/terrain_vs.hlsl`, regenerate `src/world/TerrainShadersD3d9.hpp`.
@@ -553,7 +553,7 @@ a point at the player's feet maps to `uv ~= (0.5, 0.5)` and `z ~= 2000/4000`.
 
 Bind the target, `GxSceneClear(3, white)`, viewport = the full map, culling off, fog off, then draw
 every visible `CM2Model` in the scene with a minimal depth-only vertex+pixel program that writes
-`lightDepth/4000` to `.r`. Whoa has no `ShadowMapRenderSL`; write a `shadowmap_vs.hlsl` /
+`lightDepth/4000` to `.r`. Frozen has no `ShadowMapRenderSL`; write a `shadowmap_vs.hlsl` /
 `shadowmap_ps.hlsl` pair beside the terrain shaders (VS: `oPos` from a per-model
 `model * lightView * lightProj`, `oT0.x` = the linear light depth; PS: `return oT0.xxxx * c0.w`).
 Restore the target, viewport and view matrix afterwards. **Verify by dumping the render target to a
@@ -577,7 +577,7 @@ puts a dynamic shadow on the ground.
 `CShadowCache::SetShadowMapGenericGlobal` is commented out.
 *Ports*: `FUN_008744e0` (M2/WMO binder, VS c224 / PS c4 / PS c5..c12). *Prereq*: S4.
 
-Because whoa already drives terrain, detail doodads and WMO groups through one vertex program, WMO
+Because frozen already drives terrain, detail doodads and WMO groups through one vertex program, WMO
 floors come nearly free once S4 lands — same `oT2`, same sampler. M2 receivers need the same three
 constants in the model vertex program.
 
@@ -598,7 +598,7 @@ texture, a second terrain PS permutation.
 *Change*: the slot array in `CShadowCache`, the progressive atlas refresh, three more samplers.
 *Ports*: `FUN_00874890`, `FUN_00874fb0`, `FUN_00875760`. *Prereq*: S6.
 
-The most code for the least visible gain at whoa's current state. Defer until S4-S6 are verified on
+The most code for the least visible gain at frozen's current state. Defer until S4-S6 are verified on
 screen.
 
 ### Relationship to `parity-shadows.md`
@@ -690,7 +690,7 @@ The two systems are mutually exclusive by design: `FUN_007e49e0` gates blob shad
 
 ---
 
-## 11. MEASURED (2026-09-15): section 3a is CORRECT, and whoa was applying it to the wrong vector
+## 11. MEASURED (2026-09-15): section 3a is CORRECT, and frozen was applying it to the wrong vector
 
 **Retraction.** An earlier version of this section claimed section 3a's `z *= 5`, clamp `>= -1.2`
 rule did not hold, on the evidence that the reference's shadow texture matrix column 2 was nearly
@@ -700,20 +700,20 @@ implemented, and the reference stores its result at **`DAT_00d43180`**, read liv
 outdoor light. The mistake was assuming column 2 of the texture matrix is the light direction; the
 direction the matrix column encodes is a separate vector stored at `DAT_00d4318c`.
 
-**The real bug, and it was whoa's.** The rule operates on the direction the light TRAVELS, which
-points downward. whoa stores the direction TOWARD the light, whose z is positive. The clamp is
+**The real bug, and it was frozen's.** The rule operates on the direction the light TRAVELS, which
+points downward. frozen stores the direction TOWARD the light, whose z is positive. The clamp is
 one-sided, so applied to a positive z **it never engages**, and the clamp is precisely what pins the
 light near 52 degrees of elevation.
 
 | | z of the shadow light |
 |---|---|
 | reference | -0.829 |
-| whoa, before | +0.963 (clamp never reached) |
-| whoa, after | -0.826 |
+| frozen, before | +0.963 (clamp never reached) |
+| frozen, after | -0.826 |
 
 Every shadow was therefore cast from a far steeper angle than the reference's, which is wrong length
 and wrong direction on every surface. Fixed in `MapShadowSetup` by flipping into the reference's
-convention BEFORE applying the rule. Verified live: whoa now reports
+convention BEFORE applying the rule. Verified live: frozen now reports
 `light(-0.398 -0.398 -0.826)` against the reference's `-0.3956 -0.3956 -0.8288`, the residual being
 time-of-day drift between the two readings.
 

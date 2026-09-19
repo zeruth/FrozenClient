@@ -30,14 +30,14 @@ android {
         externalNativeBuild {
             cmake {
                 arguments += listOf("-DANDROID_PLATFORM=android-26")
-                targets += listOf("Whoa")
+                targets += listOf("Frozen")
             }
         }
     }
 
     externalNativeBuild {
         cmake {
-            // The whole client tree; only the Whoa target is built for the app
+            // The whole client tree; only the Frozen target is built for the app
             path = file("../../CMakeLists.txt")
             version = "3.22.1"
         }

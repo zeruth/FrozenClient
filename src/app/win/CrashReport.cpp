@@ -53,10 +53,10 @@ LONG WINAPI OnUnhandledException(EXCEPTION_POINTERS* info) {
             record->ExceptionCode, static_cast<unsigned long long>(address));
 
     if (s_imageBase && address >= s_imageBase && address < s_imageEnd) {
-        fprintf(out, "  in Whoa.exe +0x%llX\n",
+        fprintf(out, "  in Frozen.exe +0x%llX\n",
                 static_cast<unsigned long long>(address - s_imageBase));
     } else {
-        fprintf(out, "  OUTSIDE Whoa.exe\n");
+        fprintf(out, "  OUTSIDE Frozen.exe\n");
     }
 
     if (record->ExceptionCode == EXCEPTION_ACCESS_VIOLATION && record->NumberParameters >= 2) {
@@ -81,7 +81,7 @@ LONG WINAPI OnUnhandledException(EXCEPTION_POINTERS* info) {
     // Every qword on the stack that points into our own code, newest first. Frame-pointer omission
     // makes this a guess rather than a call chain, so read it top down and discard what does not
     // fit; stale return addresses from earlier calls are expected.
-    fprintf(out, "\nstack candidates (symbolize the +0x offsets against Whoa.exe):\n");
+    fprintf(out, "\nstack candidates (symbolize the +0x offsets against Frozen.exe):\n");
 
     auto stack = reinterpret_cast<const uintptr_t*>(context->Rsp);
     int32_t shown = 0;

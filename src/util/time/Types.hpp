@@ -3,6 +3,6 @@
 
 #include <cstdint>
 
-typedef uint64_t whoa_tick_t;
+typedef uint64_t frozen_tick_t;
 
 #endif

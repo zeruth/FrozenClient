@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exact whoa-side inventory through libclang: every function definition with its ordered calls,
+"""Exact frozen-side inventory through libclang: every function definition with its ordered calls,
 string and numeric literals, and branch count, from the real compile flags.
 
 The regex parser in recomp.py collapses overloads, misses lambdas and guesses at which `Foo(` a
@@ -9,7 +9,7 @@ compares against the reference is the real one.
     python tools/recomp/clangparse.py                 # parse everything (cached by file mtime)
     python tools/recomp/clangparse.py src/world/Terrain.cpp   # one file, printed
 
-Output: tools/recomp/data/whoa-clang.json  { qualified name: { files, callseq, strings, consts,
+Output: tools/recomp/data/frozen-clang.json  { qualified name: { files, callseq, strings, consts,
 branches, stub, lines } }. recomp.py prefers it over the regex inventory when present.
 """
 
@@ -30,7 +30,7 @@ if os.path.exists(SYSTEM_LIBCLANG):
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-OUT = os.path.join(DATA, 'whoa-clang.json')
+OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
 CACHE_VERSION = 5  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)

@@ -39,7 +39,7 @@ win-decomp-shadow-blob3.txt    FUN_007e35f0 gather, FUN_007e32f0/007e2fd0 dynami
                                FUN_00829aa0 M2 projected batch draw (DrawBatchProj), FUN_007e36e0/007e3820 ShadowAdd/ShadowMod ramps,
                                FUN_007e3a20 shadowLOD cvar handler
 win-decomp-shadow-blob4.txt    FUN_0077f350->007a2aa0 / FUN_0077f340->007a6af0 receiver gatherers, FUN_0077f1e0
-parity-shadows.md              write-up built from the four dumps above: reference mechanism, whoa gaps, task list
+parity-shadows.md              write-up built from the four dumps above: reference mechanism, frozen gaps, task list
 win-decomp-sky-lightblock.txt  light block + fog appliers: FUN_007d9bd0 CLight ctor, FUN_00834f60 AddLight,
                                FUN_008355d0 read-back, FUN_00872e40 VS light constants, FUN_00781610 fog RS,
                                FUN_0077eed0 zone-light query, FUN_007f1010/007f1070/007ecf00
@@ -56,7 +56,7 @@ win-callers-daynightbase.txt   callers of FUN_007ecef0
 win-datarefs-lightblock.txt / win-datarefs-lightdir.txt / win-datarefs-fog.txt
                                refs to DAT_00ce04a8, the light direction DAT_00d38c9c.., and the fog fields
 parity-sky.md                  write-up: the outdoor light direction (FUN_007eea90), sky dome rings, clouds,
-                               glare, fog formulas, and the whoa task list
+                               glare, fog formulas, and the frozen task list
 
 win-strrefs-depth.txt          string refs for gxDepthBits/gxColorBits/nearclip/CGxDeviceD3d (locates the D3D device region)
 win-decomp-depth1.txt          FUN_00685130/006850e0 (RS list New), FUN_0078e400 WorldParam CVar registration (nearclip/farclip/
@@ -113,7 +113,7 @@ win-dump-shadowmap4.txt        pass 4: FUN_007bac10 the light view*ortho + depth
 parity-shadowmap.md            write-up: the light volume (dir clamp, eye 2000 back, +-20 ortho, far 4000,
                                1/4000 linear depth, 0.1 bias), CShadowCache targets and the hwPCF layout,
                                casters per quality tier, the 8-tap PCF kernel and the shadow texture matrix
-                               in terms a new whoa HLSL shader can implement, + the S0-S8 task list
+                               in terms a new frozen HLSL shader can implement, + the S0-S8 task list
 
 Tooling note: C:\Users\tyler\tools\dump.sh + ghidra-scripts\Dump.java replaces decomp.sh for new
 work - one headless run mixes d:<addr> decompile, a:<addr> disassemble a function, x:<addr> raw

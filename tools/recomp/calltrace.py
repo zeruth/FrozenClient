@@ -6,10 +6,10 @@ on every function in the chosen set, logs each hit as (time, thread, function), 
 the original bytes restored. Works on both sides of the map:
 
     python tools/recomp/calltrace.py ref  --seconds 8      # the reference WoW.exe (32-bit, WOW64)
-    python tools/recomp/calltrace.py whoa --seconds 8      # build/dist/bin/Whoa.exe (64-bit)
+    python tools/recomp/calltrace.py frozen --seconds 8      # build/dist/bin/Frozen.exe (64-bit)
 
 The set is every linked, non-stub function in tools/recomp/data/map.json (--spine limits it to the
-world spine; --names a,b,c picks by whoa name), plus the frame marker CGWorldFrame::OnFrameRender,
+world spine; --names a,b,c picks by frozen name), plus the frame marker CGWorldFrame::OnFrameRender,
 which is always traced so hits can be cut into frames. Hot leaves are throttled: after --max-hits
 hits an address stops being re-armed, so SMemAlloc cannot make a frame take a minute.
 
@@ -17,7 +17,7 @@ Output: tools/recomp/data/trace-<side>.jsonl, one hit per line; tracecompare.py 
 
 The process is found by full path, never by name (the user's own game is also a WoW.exe). Launch
 and login are not this tool's job: tools/relog-reference.py brings the reference to the world,
-WHOA_AUTO_LOGIN does it for whoa.
+FROZEN_AUTO_LOGIN does it for frozen.
 """
 
 import argparse
@@ -39,15 +39,15 @@ import crashstack  # noqa: E402  (CONTEXT, aligned_context, DEBUG_EVENT, constan
 DATA = os.path.join(HERE, 'data')
 MAP_JSON = os.path.join(DATA, 'map.json')
 REF_JSONL = os.path.join(DATA, 'ref-functions.jsonl')
-PDB_DUMP = os.path.join(DATA, 'whoa-pdb.txt')
+PDB_DUMP = os.path.join(DATA, 'frozen-pdb.txt')
 REFERENCE_EXE = os.path.join(ROOT, '.reference', 'WOTLK 3.3.5a - Windows', 'WoW_WOTLK_3.3.5a', 'WoW.exe')
-WHOA_EXE = os.path.join(ROOT, 'build', 'dist', 'bin', 'Whoa.exe')
+FROZEN_EXE = os.path.join(ROOT, 'build', 'dist', 'bin', 'Frozen.exe')
 REF_IMAGE_BASE = 0x400000  # Ghidra's addresses are relative to this preferred base
 
 # The per-frame marker: CGWorldFrame::RenderWorld, the render-batch callback both clients run once
-# per world frame (OnFrameRender only queues it, and in whoa is not itself observed by a breakpoint)
+# per world frame (OnFrameRender only queues it, and in frozen is not itself observed by a breakpoint)
 FRAME_REF = '004faf90'
-FRAME_WHOA = 'CGWorldFrame::RenderWorld'
+FRAME_FROZEN = 'CGWorldFrame::RenderWorld'
 
 k32 = crashstack.k32
 psapi = ctypes.WinDLL('psapi', use_last_error=True)
@@ -102,9 +102,9 @@ def pe_sections(exe):
     return out
 
 
-def whoa_rvas(names):
-    """whoa name -> RVA from the PDB dump + PE section table."""
-    sections = pe_sections(WHOA_EXE)
+def frozen_rvas(names):
+    """frozen name -> RVA from the PDB dump + PE section table."""
+    sections = pe_sections(FROZEN_EXE)
     want = set(names)
     out = {}
     owners = {}
@@ -133,12 +133,12 @@ def whoa_rvas(names):
     for n in folded:
         del out[n]
     if folded:
-        print('skipping %d whoa functions on ICF-folded addresses (e.g. %s)' % (len(folded), ', '.join(sorted(folded)[:4])))
+        print('skipping %d frozen functions on ICF-folded addresses (e.g. %s)' % (len(folded), ', '.join(sorted(folded)[:4])))
     return out
 
 
 def choose(side, opts):
-    """{address-key: label} to trace. Keys are reference addresses (hex) or whoa names."""
+    """{address-key: label} to trace. Keys are reference addresses (hex) or frozen names."""
     m = json.load(io.open(MAP_JSON, encoding='utf-8'))
     picked = {}
     spine = None
@@ -161,18 +161,18 @@ def choose(side, opts):
     for a, e in m.items():
         if e['status'] == 'stub':
             continue
-        if not e.get('whoaSize'):
-            continue  # whoa inlined it everywhere: a breakpoint could never see it, on either side
+        if not e.get('frozenSize'):
+            continue  # frozen inlined it everywhere: a breakpoint could never see it, on either side
         if spine is not None and a not in spine:
             continue
         if not opts.hot and callers.get(a, 0) > opts.max_callers:
             continue
-        if names is not None and e['whoa'] not in names:
+        if names is not None and e['frozen'] not in names:
             continue
         if side == 'ref':
-            picked[a] = e['whoa']
+            picked[a] = e['frozen']
         else:
-            picked[e['whoa']] = a
+            picked[e['frozen']] = a
     # arbitrary reference addresses, linked or not: "which of these 67 callers fires per frame?"
     if side == 'ref' and opts.addrs:
         for a in opts.addrs.split(','):
@@ -183,7 +183,7 @@ def choose(side, opts):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('side', choices=['ref', 'whoa'])
+    ap.add_argument('side', choices=['ref', 'frozen'])
     ap.add_argument('--seconds', type=float, default=20.0, help='hard stop')
     ap.add_argument('--frames', type=int, default=5, help='stop after this many complete frames (0 = run to --seconds)')
     ap.add_argument('--max-hits', type=int, default=0, help='per address (0 = unlimited); throttled addresses stop being re-armed')
@@ -191,13 +191,13 @@ def main():
     ap.add_argument('--spine', action='store_true')
     ap.add_argument('--hot', action='store_true', help='also trace hot leaves (SMemAlloc, RsSet ...): slow, may stall the client')
     ap.add_argument('--max-callers', type=int, default=100, help='without --hot, skip functions the reference calls from more sites than this')
-    ap.add_argument('--names', help='comma-separated whoa names to trace instead of the whole map')
+    ap.add_argument('--names', help='comma-separated frozen names to trace instead of the whole map')
     ap.add_argument('--addrs', help='ref only: extra reference addresses to trace, linked or not (comma-separated hex)')
     ap.add_argument('--pid', type=int)
     ap.add_argument('--out')
     opts = ap.parse_args()
 
-    exe = REFERENCE_EXE if opts.side == 'ref' else WHOA_EXE
+    exe = REFERENCE_EXE if opts.side == 'ref' else FROZEN_EXE
     pid = opts.pid or find_pid(exe)
     if not pid:
         sys.exit('%s is not running (by full path)' % exe)
@@ -267,14 +267,14 @@ def main():
     def plant_all():
         if opts.side == 'ref':
             targets = {base + int(a, 16) - REF_IMAGE_BASE: (label, a) for a, label in picked.items()}
-            targets[base + int(FRAME_REF, 16) - REF_IMAGE_BASE] = (FRAME_WHOA, FRAME_REF)
+            targets[base + int(FRAME_REF, 16) - REF_IMAGE_BASE] = (FRAME_FROZEN, FRAME_REF)
         else:
-            rvas = whoa_rvas(list(picked) + [FRAME_WHOA])
+            rvas = frozen_rvas(list(picked) + [FRAME_FROZEN])
             targets = {}
-            for name, rva in sorted(rvas.items(), key=lambda kv: kv[0] != FRAME_WHOA):
+            for name, rva in sorted(rvas.items(), key=lambda kv: kv[0] != FRAME_FROZEN):
                 targets.setdefault(base + rva, (name, picked.get(name, '')))  # the marker wins a folded address
-            if FRAME_WHOA not in rvas:
-                print('WARNING: %s not found in the PDB dump; frames cannot be cut' % FRAME_WHOA)
+            if FRAME_FROZEN not in rvas:
+                print('WARNING: %s not found in the PDB dump; frames cannot be cut' % FRAME_FROZEN)
         ok = 0
         for addr, (label, key) in targets.items():
             orig = read_byte(addr)
@@ -283,7 +283,7 @@ def main():
             if write_byte(addr, 0xCC):
                 bps[addr] = (orig, label, key)
                 ok += 1
-        print('planted %d/%d breakpoints (frame marker %s)' % (ok, len(targets), FRAME_WHOA))
+        print('planted %d/%d breakpoints (frame marker %s)' % (ok, len(targets), FRAME_FROZEN))
         sys.stdout.flush()
 
     def restore_all():
@@ -322,7 +322,7 @@ def main():
                     if opts.side == 'ref':
                         frame_addr = base + int(FRAME_REF, 16) - REF_IMAGE_BASE
                     else:
-                        frame_addr = next((a for a, b in bps.items() if b[1] == FRAME_WHOA), None)
+                        frame_addr = next((a for a, b in bps.items() if b[1] == FRAME_FROZEN), None)
                 elif xcode in BREAKPOINT_CODES and addr in bps:
                     orig, label, key = bps[addr]
                     hits[addr] = hits.get(addr, 0) + 1
@@ -356,7 +356,7 @@ def main():
                 break
         # Time is up. Restore every breakpoint first, then keep pumping until no thread still has
         # the trap flag pending: a single-step exception with no debugger attached kills the
-        # process, which is how the first version of this took whoa down on detach.
+        # process, which is how the first version of this took frozen down on detach.
         if process:
             restore_all()
             drain_until = time.time() + 2.0

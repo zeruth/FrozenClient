@@ -6,7 +6,7 @@
 
 #include <cstdio>
 
-// Interface ACTIONS the reference performs and whoa cannot yet: closing a frame it has no model
+// Interface ACTIONS the reference performs and frozen cannot yet: closing a frame it has no model
 // for, selling to a merchant it has no connection to, sorting an auction list that does not
 // exist. Unlike the predicates in MiscScript.cpp, where returning nil IS the reference's own
 // answer for a client in this state, doing nothing here is NOT what the reference does. These
@@ -19,7 +19,7 @@
 // NOT stubbed here, deliberately: names containing an underscore. In 3.3.5a the client's own Lua API
 // is PascalCase without underscores; an underscore means the function is defined by an interface
 // SCRIPT (BackpackTokenFrame_Update) or by a loadable addon (Blizzard_CombatLog_*). Registering a C
-// function for those would hide a different gap entirely -- that whoa is not loading those scripts
+// function for those would hide a different gap entirely -- that frozen is not loading those scripts
 // or addons -- behind a name that looks present. 130 such names were removed from this file after
 // they were noticed; they belong in the interface-loading work, not here.
 

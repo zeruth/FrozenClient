@@ -40,7 +40,7 @@ CSimpleFrame* CGWorldFrame::Create(CSimpleFrame* parent) {
     return STORM_NEW(CGWorldFrame)(parent);
 }
 
-// Test hook: WHOA_SCREENSHOT=<path> captures one frame after WHOA_SCREENSHOT_FRAME frames in world
+// Test hook: FROZEN_SCREENSHOT=<path> captures one frame after FROZEN_SCREENSHOT_FRAME frames in world
 // (default 300) and writes it there.
 //
 // Verifying a render means looking at it, and the only safe way to do that on a machine someone else
@@ -55,7 +55,7 @@ static void AutoScreenShot() {
         return;
     }
 
-    const char* path = getenv("WHOA_SCREENSHOT");
+    const char* path = getenv("FROZEN_SCREENSHOT");
 
     if (!path || !*path) {
         done = true;
@@ -63,7 +63,7 @@ static void AutoScreenShot() {
     }
 
     if (remaining < 0) {
-        const char* frames = getenv("WHOA_SCREENSHOT_FRAME");
+        const char* frames = getenv("FROZEN_SCREENSHOT_FRAME");
         remaining = frames && *frames ? atoi(frames) : 300;
     }
 
@@ -438,7 +438,7 @@ void CGWorldFrame::OnWorldRender() {
             scene->Animate(this->m_camera->Position());
 
             // Cast the animated models into the shadow map. The reference renders this before the
-            // terrain pass so terrain can sample the same frame's map; whoa cannot yet, because
+            // terrain pass so terrain can sample the same frame's map; frozen cannot yet, because
             // Animate depends on the visibility the terrain pass establishes. The map is therefore
             // one frame behind what terrain will read in S4. Closing that gap means hoisting
             // TerrainUpdateView and the visibility sweep above this block, which is why

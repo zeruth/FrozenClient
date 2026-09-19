@@ -2123,7 +2123,7 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
             // vertical. The model's own yaw has to be turned by the same 180 degrees or the
             // geometry ends up rotated half a turn about its placement point.
             //
-            // Measured, not guessed: for two unrelated buildings the offset between whoa's built
+            // Measured, not guessed: for two unrelated buildings the offset between frozen's built
             // centre and the placement record's centre implies a rotation error of 173.5 and 180.0
             // degrees respectively, derived from each model's own centroid in its MOHD header.
             // Buildings whose geometry is centred on their placement point showed almost no offset,
@@ -4930,7 +4930,7 @@ void BlobShadowsBegin() {
 // NOT the reference's own calculation, but the reason recorded here was wrong: the ShadowAdd and
 // ShadowMod ramps are now decoded (2026-09-16, parity-shadows.md), and they are NOT where the
 // reference gets this value. They are 64x8 textures bound to stage 1 as a fade along the projection
-// axis -- a separate effect whoa does not implement at all. Where the reference's shadow strength
+// axis -- a separate effect frozen does not implement at all. Where the reference's shadow strength
 // comes from is still unread, so this stays a principled stand-in.
 //
 // Note the sense: this returns how much light is REMOVED. The shader emits 1 - coverage, so the
@@ -5786,7 +5786,7 @@ void SkyBodiesRender() {
     DrawSkyBody(MOON_THETA, MOON1_PHI, 3, MOON_SIZE, 1.75f, t, s_bodyTexture[1], right, up);
 
     // The second moon runs on its own 1.7-day cycle, so its phase is not the day fraction
-    float day = t; // whoa has no absolute day counter yet; phase folds back to the day fraction
+    float day = t; // frozen has no absolute day counter yet; phase folds back to the day fraction
     float t2 = day / 1.7f;
     t2 -= static_cast<float>(static_cast<int32_t>(t2));
 

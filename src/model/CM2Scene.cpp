@@ -717,7 +717,7 @@ int32_t CM2Scene::Draw(M2PASS pass) {
 int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
     // The reference loads this pair through the effect ShadowMapRenderSL, declared in the archive
     // file Shaders/Effects/ShadowMap.wfx as VertexShader(ShadowMap) + PixelShader(ShadowMapSL).
-    // Whoa has no .wfx parser, so the indirection is resolved here and the two shader libraries are
+    // Frozen has no .wfx parser, so the indirection is resolved here and the two shader libraries are
     // requested by name directly; both ship in the reference archives with the same 90 / 16
     // permutation counts InitEffect already asks for, so the element's own permutation indices
     // select the matching program.

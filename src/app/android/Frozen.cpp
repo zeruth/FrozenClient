@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <cstring>
 
-#define LOG_TAG "Whoa"
+#define LOG_TAG "Frozen"
 
 // The client prints Lua errors and assertions to stdout and stderr; on Android those go nowhere
 // unless they are forwarded to the log

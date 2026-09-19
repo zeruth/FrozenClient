@@ -1,6 +1,6 @@
 # scene-compare
 
-Pixel comparison of the reference 3.3.5a client and Whoa at fixed viewpoints. It turns "the sky
+Pixel comparison of the reference 3.3.5a client and Frozen at fixed viewpoints. It turns "the sky
 looks funky" into a per-viewpoint match percentage and a side-by-side image, and catches
 regressions when a later change breaks something that already matched.
 
@@ -33,10 +33,10 @@ Guards built in:
 ```
 python tools/scene-compare/compare.py                    # all viewpoints, both clients
 python tools/scene-compare/compare.py --view goldshire   # one viewpoint
-python tools/scene-compare/compare.py --only whoa        # re-capture whoa only, diff against the saved ref
+python tools/scene-compare/compare.py --only frozen        # re-capture frozen only, diff against the saved ref
 ```
 
-Output: `build/scene-compare/<viewpoint>/{ref,whoa,diff,side-by-side}.png` and
+Output: `build/scene-compare/<viewpoint>/{ref,frozen,diff,side-by-side}.png` and
 `build/scene-compare/report.md`.
 
 ## Known issue: reference capture

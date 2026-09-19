@@ -2,10 +2,10 @@
 #
 # The sources live in squall's vendor directory (lib/squall/vendor/stormlib-9.31),
 # which is vendored there but not built by squall itself. This target compiles
-# them in place. Only the archive read path is exercised by Whoa; the write/
+# them in place. Only the archive read path is exercised by Frozen; the write/
 # create path is compiled for use in tests.
 #
-# Whoa's own zlib (vendor/zlib-1.2.2) is used in place of StormLib's bundled
+# Frozen's own zlib (vendor/zlib-1.2.2) is used in place of StormLib's bundled
 # copy to avoid duplicate symbols in the final link.
 
 set(STORMLIB_SRC_DIR "${CMAKE_SOURCE_DIR}/lib/squall/vendor/stormlib-9.31/src")
@@ -291,7 +291,7 @@ if(MSVC)
         PRIVATE
             _CRT_SECURE_NO_WARNINGS
     )
-    # Vendored third-party code; keep its warnings out of Whoa's build output
+    # Vendored third-party code; keep its warnings out of Frozen's build output
     target_compile_options(stormlib-9.31 PRIVATE /w)
 else()
     target_compile_options(stormlib-9.31 PRIVATE -w)

@@ -1,4 +1,4 @@
-# RunicWorld client (whoa fork)
+# Frozen client
 
 A from-scratch reimplementation of the World of Warcraft 3.3.5a (build 12340) client in C++, forked
 from [whoa](https://github.com/whoahq/whoa). `origin` is the user's fork (FrozenClient); work lands
@@ -13,16 +13,16 @@ behaviour. Do not import behaviour from other client versions.
 ## Build, install, run
 
 ```bash
-cmake --build build --config Release --target Whoa      # build (VS 2026, x64)
-cp build/bin/Release/Whoa.exe build/dist/bin/Whoa.exe   # install
-cp build/bin/Release/Whoa.pdb build/dist/bin/Whoa.pdb   # ALWAYS install the PDB with it
+cmake --build build --config Release --target Frozen      # build (VS 2026, x64)
+cp build/bin/Release/Frozen.exe build/dist/bin/Frozen.exe   # install
+cp build/bin/Release/Frozen.pdb build/dist/bin/Frozen.pdb   # ALWAYS install the PDB with it
 ```
 
-Run `build/dist/bin/Whoa.exe` with the working directory set to the vanilla reference install:
+Run `build/dist/bin/Frozen.exe` with the working directory set to the vanilla reference install:
 `.reference/WOTLK 3.3.5a - Windows/WoW_WOTLK_3.3.5a`. It auto-logs in and enters the world.
 
 Gotchas, each of which has cost a session before:
-- `cmake --install` silently keeps a stale exe if Whoa is running, and exits 0. Kill it first and
+- `cmake --install` silently keeps a stale exe if Frozen is running, and exits 0. Kill it first and
   check the timestamp.
 - **Install the PDB alongside the exe.** A stale PDB symbolizes crashes to the wrong function, which
   has sent debugging down the wrong path more than once.
@@ -51,20 +51,20 @@ runs as a service. Test account TEST/TEST; the scene-compare harness uses SCENE/
 ## The recomp cycle: road to 1.0.0
 
 **1.0.0 means 100% accuracy against the reference 3.3.5a (12340) client**, function for function.
-Not "looks right" -- every reference function has a whoa counterpart that makes the same calls in
+Not "looks right" -- every reference function has a frozen counterpart that makes the same calls in
 the same order, and the ones that matter have been seen behaving the same at runtime. Guessing an
 implementation from what the screen looks like is how the graphics bugs got in; it is no longer an
 acceptable way to write code here. **Decompile it, port it, tag it, measure it, verify it.**
 
 ### The instrument
 
-`tools/recomp/` (README there) links the reference's 27k functions to whoa's and writes
+`tools/recomp/` (README there) links the reference's 27k functions to frozen's and writes
 `docs/recomp/REPORT.md` -- the single source of truth for where the port stands. It tracks three
 percentages that are never rolled into one:
 
 | number | meaning | how it moves |
 |---|---|---|
-| **linked** | a reference function has a known whoa counterpart | a `// ref: FUN_xxxxxxxx` tag, an `overrides.json` entry, or an automatic match |
+| **linked** | a reference function has a known frozen counterpart | a `// ref: FUN_xxxxxxxx` tag, an `overrides.json` entry, or an automatic match |
 | **faithful** | linked, not a stub, and the port reproduces >= 80% of the reference's call sequence in order (plus branch/constant checks as they land) | porting from the decompilation instead of from memory |
 | **verified** | a run showed it behaving like the reference | a trace or scene compare, recorded in `overrides.json` with a note |
 
@@ -79,11 +79,11 @@ python tools/recomp/recomp.py                    # 1. where are we (report + his
 python tools/recomp/recomp.py --next 20 --spine  # 2. decompile the next batch -> docs/recomp/queue/<addr>.c
                                                  #    (--helpers for the most-called leaves, --fix for
                                                  #     linked-but-unfaithful ports, --module Map.cpp to focus)
-# 3. for each queued function: read the decompilation, find or write the whoa counterpart,
+# 3. for each queued function: read the decompilation, find or write the frozen counterpart,
 #    matching names/signatures/layouts (CONTRIBUTING.md), put  // ref: FUN_<addr>  above it.
 #    Identified-but-not-ported? Still tag it (or add it to overrides.json with a note).
 #    CRT / STL / fmod / nullsub? overrides.json status "excluded" so it leaves the denominator.
-cmake --build build --config Release --target Whoa   # 4. build; install exe + PDB with the timestamp guard
+cmake --build build --config Release --target Frozen   # 4. build; install exe + PDB with the timestamp guard
 #    (added a .cpp? also run tools/recomp/refresh-compile-db.bat so clangparse sees it)
 python tools/recomp/recomp.py --pdb                   # 5. re-measure; the totals line prints the delta
 git commit                                            # 6. one scoped commit per cycle; put the delta in the
@@ -99,7 +99,7 @@ regression.
 Static fidelity says "same structure"; only a run says "same behaviour". Ports accumulate over
 cycles and get verified in batches: `tools/scene-compare/` for pixels, and the call tracers (in
 progress: a breakpoint tracer on the reference via `tools/crashstack.py`'s debugger attach, and a
-`WHOA_TRACE` entry log in whoa over the same map) for per-frame call sequences. A function becomes
+`FROZEN_TRACE` entry log in frozen over the same map) for per-frame call sequences. A function becomes
 `verified` only through one of those, recorded in `overrides.json` with what was seen. Launching
 clients for this is still governed by the working agreement above: only when the user has said so.
 
@@ -111,7 +111,7 @@ clients for this is still governed by the working agreement above: only when the
 2. **The world spine** (`--next 20 --spine`): everything reachable from `CGWorldFrame::OnFrameRender`,
    `CWorld::Update`, `CMap::Render`, biggest and most-called first. This is the M2 model code, the
    map, the scene -- where the visible bugs live.
-3. **Unfaithful ports** (`--next 20 --fix`): things whoa already has that do not make the reference's
+3. **Unfaithful ports** (`--next 20 --fix`): things frozen already has that do not make the reference's
    calls. These are the guesses; re-port them from the decompilation.
 4. **Lua tables** with the most missing names (report section), so FrameXML stops hitting nil.
 
@@ -119,7 +119,7 @@ clients for this is still governed by the working agreement above: only when the
 
 - Never edit `docs/recomp/REPORT.md` or `data/map.json`; they are generated. Facts go in
   `overrides.json` or `// ref:` tags.
-- A tag is a claim that the whoa function IS that reference function. Do not tag a "similar" one.
+- A tag is a claim that the frozen function IS that reference function. Do not tag a "similar" one.
 - `verified` needs a run. A clean build, a passing fidelity score, or a plausible reading of the
   decompilation is not verification.
 - When a port must diverge (platform, 64-bit, a reference bug not worth reproducing), record it as
@@ -151,13 +151,13 @@ that is often 20 lines from the real fault. To decode the faulting instruction e
 bytes at that RVA from the exe and read them; that is what finally settled the appearance-table bug.
 
 ```bash
-echo 0x<rva> | "/c/Program Files/LLVM/bin/llvm-symbolizer" --obj=build/dist/bin/Whoa.exe \
+echo 0x<rva> | "/c/Program Files/LLVM/bin/llvm-symbolizer" --obj=build/dist/bin/Frozen.exe \
     --relative-address --demangle --functions=linkage
 ```
 
 ### Visual parity: `tools/scene-compare/`
 
-Captures the reference client and Whoa at the same viewpoints and diffs them, producing a match
+Captures the reference client and Frozen at the same viewpoints and diffs them, producing a match
 percentage plus side-by-side and heat-map images under `build/scene-compare/`. This is the only
 objective check on rendering work. See its README for the safety guards and the known issue with
 capturing the fullscreen reference client. **Run it by hand when the desktop is free**, never in a
@@ -202,7 +202,7 @@ The goal is 100% parity with the reference world render. The method is:
    `OnWorldRender` FUN_004f8ea0 -> `CMap::Render` FUN_0079a870, then the M2 passes) with a status
    per stage and the reference function each stage should port. Keep its status column honest: a
    stage is not "ported" until it has been seen working.
-2. **Per-area parity docs** hold the detailed task lists, each task naming the whoa function to
+2. **Per-area parity docs** hold the detailed task lists, each task naming the frozen function to
    change and the reference function it ports:
    - `docs/ref/parity-shadows.md` — entity blob shadows and the map shadow map.
    - `docs/ref/parity-depth.md` — depth buffer configuration and z-fighting.

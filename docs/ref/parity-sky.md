@@ -39,7 +39,7 @@ The two earlier hunts failed because they assumed `+0x30` was the sun. It is the
 `FUN_007ef6e0` @ 0x007ef6e0 dots it with `normalize(glareSourcePos - cameraPos)` to decide glare
 strength, and `FUN_007f3920` turns it into a yaw that rotates the sky-dome / cloud UVs. Its writer is
 `FUN_004f8410` @ 0x004f8410 (in `WorldFrame.cpp`, string refs at lines 0x805/0x810), which fills
-`DayNight[0x0c..0x4c]` from the camera every frame - exactly the data whoa already keeps in
+`DayNight[0x0c..0x4c]` from the camera every frame - exactly the data frozen already keeps in
 `CWorld::s_cameraDir` / `CWorld::GetCameraPos`.
 
 ---
@@ -80,7 +80,7 @@ Sample values: `t = 0 or 0.5` -> `(-0.564718, -0.564718, -0.601815)`; `t = 0.25 
 **Sense of the vector.** It points *away* from the light (z < 0, i.e. downward). Consumers negate it:
 `FUN_007cfbe0` (terrain shader constants) computes `fVar1 = -local_20; ...` before transforming it
 into the vertex-shader constant, and `FUN_007bb570` (shadow-map view) normalises
-`(dir.x, dir.y, dir.z*5)` to aim the shadow camera. So whoa's `s_outdoorDirection`, which is used as
+`(dir.x, dir.y, dir.z*5)` to aim the shadow camera. So frozen's `s_outdoorDirection`, which is used as
 "direction **to** the light" and dotted straight into N.L, must hold the **negation**:
 
 ```
@@ -89,7 +89,7 @@ CWorld::s_outdoorDirection = ( -cos(phi)*sin(theta), -sin(phi)*sin(theta), -cos(
                            = ( 0.664463, 0.664463, 0.342020 ) at 06:00 / 18:00
 ```
 
-whoa's current placeholder `{-0.402096, -0.301572, 0.864504}` is roughly 180 deg wrong in azimuth
+frozen's current placeholder `{-0.402096, -0.301572, 0.864504}` is roughly 180 deg wrong in azimuth
 (it lights from -X/-Y instead of +X/+Y) and about 23 deg too high. Those bytes do **not** appear
 anywhere in `RunicWorldGame.exe` (the whole image was searched for all three floats), so the constant
 was never taken from this reference.
@@ -113,7 +113,7 @@ FUN_00834f60(ctx, &g_light[0x58])   // CLighting::AddLight: ctx+0x54 += ambient;
 FUN_008355d0(ctx, &dir, &c0, &c1, &c2)   // read back: ctx+0x78 = accumulated direction
 ```
 
-`FUN_00834dc0` @ 0x00834dc0 is byte-for-byte what whoa already has as `CM2Lighting::AddDiffuse`
+`FUN_00834dc0` @ 0x00834dc0 is byte-for-byte what frozen already has as `CM2Lighting::AddDiffuse`
 (same three colour-weighted accumulators plus the 0.212671 / 0.71516 / 0.072169 luminance term), and
 `FUN_00834d90` @ 0x00834d90 is `AddAmbient`. `FUN_00780cd0` @ 0x00780cd0 is the reference's
 `CWorld::LightingCallback`: outdoors it calls `AddAmbient(DayNight+0x1ac)` then
@@ -139,7 +139,7 @@ Light.dbc row: +8/+0xc/+0x10 (x/y/z) -> DNInfo[0x1f]/[0x25]/[0x16];
 
 `FUN_007ee750` @ 0x007ee750 then does `DayNight[0x1a8] (diffuse) = DNInfo[1]` and
 `DayNight[0x1ac] (ambient) = DNInfo[0]`, i.e. **LightIntBand band 0 = diffuse, band 1 = ambient** -
-which is what whoa's `ComputeLightColors` already assumes. No change needed there. What *is* wrong is
+which is what frozen's `ComputeLightColors` already assumes. No change needed there. What *is* wrong is
 the sky-band mapping (section 2).
 
 ---
@@ -188,18 +188,18 @@ rings it walks the 24 segments stepping a band parameter by `-1/24` starting fro
 rotates with the camera / sun azimuth. The exact per-vertex band pointers are passed in registers and
 did not survive decompilation - *uncertain*, and not needed for a first-cut port.
 
-### whoa gaps
+### frozen gaps
 
 `SkyRender` (`src/world/Terrain.cpp:4452`) uses a procedural 12x24 dome coloured by `z / SKY_RADIUS`
 across 5 colours. Two concrete errors:
 
 1. Wrong ring distribution. The reference puts **five** rings inside the 45..90 deg elevation cap and
-   nothing between 45 deg and the nadir; whoa spreads 12 rings evenly, so the gradient sits far too
+   nothing between 45 deg and the nadir; frozen spreads 12 rings evenly, so the gradient sits far too
    low and the horizon band is far too thin.
 2. Wrong band mapping. `ComputeLightColors` (`src/world/CWorld.cpp`) fills `sky[0..4]` from bands
    6,5,4,3,2 and `fog` from band 7, and `SkyRender` lerps `GetSkyColor(0..4)` bottom-to-top. The
    reference's stack is **band 2 (top), 3, 4, 5, 6, then band 7 twice** - six colours, not five, and
-   the last one is the fog colour. whoa's dome never reaches the fog colour at the horizon, which is
+   the last one is the fog colour. frozen's dome never reaches the fog colour at the horizon, which is
    why its horizon and its fogged terrain do not meet.
 
 ---
@@ -305,14 +305,14 @@ A WMO/zone interior fog set is then cross-faded in by `DAT_00d38b9c` (from the v
 `FUN_0077fb90`) and the result written both back to `+0x90/+0x94/+0x98` and to the mirror at
 `+0xa0..+0xac` that the interior lighting path (`FUN_007b3f30` @ 0x007b3f30) reads.
 
-Corrections to whoa (`ComputeLightColors` / `UpdateOutdoorLight` in `src/world/CWorld.cpp`):
+Corrections to frozen (`ComputeLightColors` / `UpdateOutdoorLight` in `src/world/CWorld.cpp`):
 
-* `s_fogEnd` must be **clamped to the far clip**: `min(CWorld::s_farClip, band)`. whoa does not clamp.
+* `s_fogEnd` must be **clamped to the far clip**: `min(CWorld::s_farClip, band)`. frozen does not clamp.
 * `s_fogStart = fogEnd * scalar`, **not** `fogEnd * (1 + scalar)`.
 * The scalar is clamped to `[-1, 1]` at load time (`FUN_007ebff0`), so a negative value legitimately
   puts the fog start behind the camera.
 * **MEASURED CORRECTION (2026-09-15): the fog start scalar is NOT LightFloatBand band 1.** Read from
-  the running reference, standing in the world on the same character as whoa:
+  the running reference, standing in the world on the same character as frozen:
   `_DAT_00d38c20` (the value the outdoor path multiplies fog end by) is **0.0**, while band 1 of
   this zone's light parameter set (748) is negative at every one of its seven keys across the whole
   day, from -0.500 at midnight to -0.125 at 09:00. No interpolation of that band yields 0.
@@ -326,18 +326,18 @@ Corrections to whoa (`ComputeLightColors` / `UpdateOutdoorLight` in `src/world/C
   give 0.5 (`_DAT_009e2ec4`), the light band is negative at every hour, and the flag plus its source
   values now read 0, i.e. the override has already been consumed.
 
-  So this is a **missing feature in whoa, not a wrong formula**: whoa has no zone or weather fog
+  So this is a **missing feature in frozen, not a wrong formula**: frozen has no zone or weather fog
   override, so it falls through to the band, which it reads correctly. Fog END and fog COLOUR match
   the reference exactly; only the start differs, and only while an override is active on the
   reference side.
-* whoa divides the LightFloatBand end by 36. The reference does not scale it at all - it only clamps
+* frozen divides the LightFloatBand end by 36. The reference does not scale it at all - it only clamps
   it against the far clip, which is what actually bounds it in practice. *(Worth one sanity check
   against the DBC, but either way the clamp is the real limiter.)*
 
 **Is fog applied to the sky?** No. `FUN_009acb00` (dome) and `FUN_009acd40` (clouds) both explicitly
 clear render state 0x11 (`*(dev+0x198) = 0`) and `FUN_009ac400` (glare) calls `FUN_00408bf0(0x11, 0)`.
 The sky is never fogged; the horizon matches the fog because the bottom dome rings are literally the
-fog colour. whoa already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct today.
+fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct today.
 
 ---
 
@@ -348,7 +348,7 @@ fog colour. whoa already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct t
    `theta = wrap-lerp over {(0, 2.2165682), (0.25, 1.9198622), (0.5, 2.2165682), (0.75, 1.9198622)}`
    at `GetDayProgress()`, `phi = 3.9269910`, then
    `s_outdoorDirection = -(cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta))`
-   (negated because whoa uses it as "direction to the light"). Reuse the existing wrap-around band
+   (negated because frozen uses it as "direction to the light"). Reuse the existing wrap-around band
    lerp; `InterpFloatBand`'s loop is the same shape as `FUN_007ed3b0`. Everything downstream
    (`LightingCallback`, the terrain ndotl bake at `Terrain.cpp:843`, the WMO bake at
    `Terrain.cpp:1475`) then tracks it - but note both bakes run at load time, so either they must be

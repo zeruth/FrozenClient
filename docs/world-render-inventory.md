@@ -1,8 +1,8 @@
-# World render completeness inventory (3.3.5a 12340 vs whoa)
+# World render completeness inventory (3.3.5a 12340 vs frozen)
 
 ## Verification (2026-09-14, second pass)
 
-Every row below that claims **ported** or **stand-in** was re-checked by reading the whoa source as
+Every row below that claims **ported** or **stand-in** was re-checked by reading the frozen source as
 it stands in the working tree: that the named function exists and does what the row says, that it is
 actually reachable from `CGWorldFrame::OnWorldRender` / `CGWorldFrame::OnWorldUpdate` (through
 `TerrainUpdate`, `TerrainRender`, `SkyRender`, `RenderWmos`, `WmoUpdateVisibility`, `LiquidRender`,
@@ -60,7 +60,7 @@ Names given as `CWorld::Update` etc. are **inferred** from structure; the binary
 Anything marked *(uncertain)* was not fully confirmed. Raw call trees and decompiles are in
 `docs/ref/` (see `docs/ref/INDEX.txt`).
 
-Whoa side: `src/ui/game/CGWorldFrame.cpp`, `src/world/Terrain.cpp` (the fork's first-cut
+Frozen side: `src/ui/game/CGWorldFrame.cpp`, `src/world/Terrain.cpp` (the fork's first-cut
 renderer), `src/world/CWorld.cpp`, `src/model/*`, `src/gx/*`.
 
 Status legend: **ported** = follows the reference structure; **stand-in** = something draws but it
@@ -69,7 +69,7 @@ stage that is wired up but carries a concrete defect (see Verification above).
 
 ## Top-level entry
 
-| Stage | Reference function(s) | What it does | Whoa status | Whoa location / notes |
+| Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
 | Frame hook | `CGWorldFrame::OnFrameRender` FUN_004fb080 | On layer 0 queues the `RenderWorld` callback into the frame's render batch (`FUN_004858e0(FUN_004faf90, this)`). | ported | `CGWorldFrame::OnFrameRender` queues `CGWorldFrame::RenderWorld` on DRAWLAYER_BACKGROUND. |
 | RenderWorld callback | FUN_004faf90 | Saves proj/view matrix stacks, calls FUN_004fa5f0 (update+render body), FUN_007e6480 (world-text update), FUN_004f8ea0 (`OnWorldRender`), FUN_007e7490 (world-text render), restores matrices, `CShaderEffect::UpdateProjMatrix` FUN_00872c10. | ported (shell) | `CGWorldFrame::RenderWorld` (CGWorldFrame.cpp:32): save proj/view -> OnWorldUpdate -> PlayerNameUpdateWorldText -> OnWorldRender -> PlayerNameRenderWorldText -> restore -> UpdateProjMatrix. Verified same shape and order. `PlayerNameUpdateWorldText` is still an empty body, so the reference's world-text *update* step has no equivalent; `PlayerNameRenderWorldText` does draw (see the world-text row). |
@@ -78,7 +78,7 @@ stage that is wired up but carries a concrete defect (see Verification above).
 
 ## Update phase (`CWorld::Update` FUN_007831a0)
 
-| Stage | Reference function(s) | What it does | Whoa status | Whoa location / notes |
+| Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
 | World tick | FUN_007831a0 | Frame-time ring, chunk-window (min/max chunk coords) change detection, `FUN_00780860(targetPos)`, then the calls below; also blends `farclip` toward the AreaTable override (`DAT_00ad3154` table lookup) and copies the "camera under liquid" id into the CM2Scene. | stand-in | `CWorld::Update` (CWorld.cpp:620) records only the camera position and direction: no frame-time ring, no chunk-window change detection, no camera-under-liquid id copied into the CM2Scene. farclip comes from `CWorld::SetFarClip` / `AdjustFarClip` (CWorld.cpp:390); no AreaTable-driven farclip blend. |
 | Scene camera / frustum | `CWorldScene` FUN_00795400(cameraPos, cameraTarget) | Stores camera pos/dir planes, builds the view frustum (`FUN_006bf6d0` corners, `FUN_00984240` planes), the world-space frustum box, the visible chunk index rectangle (`/33.333`), and the fallback billboard matrices. | stand-in | `TerrainRender` builds view*proj and calls `ExtractFrustum` every frame (Terrain.cpp ~2105); no chunk-rect prepass. |
@@ -89,11 +89,11 @@ stage that is wired up but carries a concrete defect (see Verification above).
 
 ## Render phase (`CGWorldFrame::OnWorldRender` FUN_004f8ea0)
 
-| Stage | Reference function(s) | What it does | Whoa status | Whoa location / notes |
+| Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
 | Viewport / state push | FUN_004f8ea0 head; `GxXformSetViewport` FUN_00681f60 | Gets the device viewport (vfunc 0x8c), `GxRsPush` FUN_00409670, `GxRsSet(0x13,1)`, sets the frame's viewport rect (with y-flip depending on `FUN_00682d50`). | ported (viewport) / missing (GxRsSet 0x13) | Verified at CGWorldFrame.cpp:152-154 and :348: `GxXformViewport` saves all six values, `GxXformSetViewport(m_viewport..., 0, 1)` sets the world's, and the saved set is restored at the end of `OnWorldRender`. No `GxRsPush`/`GxRsPop` around the whole world render (individual stages push/pop their own), and the y-flip variant (`FUN_00682d50`) is not reproduced. Note the world text is drawn *after* this restore (see the world-text row). |
 | FFX begin | FUN_004f8770 (glow params from DayNight `+300`/underwater), FUN_008c1770 | Sets full-screen-effect parameters and redirects rendering to the FFX render target (`FFXEffects.cpp`: glow FUN_008bfe80, death FUN_007ea260, fog-combine/propagate-fog FUN_007ea5f0 -> FUN_007e80b0/FUN_007e81b0). | missing (deferred 2026-09-14) | `src/ffx/EffectGlow.cpp` ctor/callback are TODO. Blocked on gx: the device has no render-to-texture (only `RenderTargetGet`), so the glow needs D3D9 `SetRenderTarget`/render-target textures, the downsample+blur passes and the composite first. Sized as a multi-session gx feature, not a render-stage port. |
-| Scene clear (early) | `GxSceneClear` FUN_006813b0(3, black) | Only when the viewport rect changed (`FUN_004f5d90`). | stand-in | whoa always clears at the top of `OnWorldRender` (CGWorldFrame.cpp:171) to the fog colour when fog is active, else the horizon sky colour; there is no viewport-changed test. The reference's real clear is inside `CMap::Render` (below). |
+| Scene clear (early) | `GxSceneClear` FUN_006813b0(3, black) | Only when the viewport rect changed (`FUN_004f5d90`). | stand-in | frozen always clears at the top of `OnWorldRender` (CGWorldFrame.cpp:171) to the fog colour when fog is active, else the horizon sky colour; there is no viewport-changed test. The reference's real clear is inside `CMap::Render` (below). |
 | Map prepare + **`CMap::Render`** | FUN_0077eff0 -> **FUN_0079a870** | See the dedicated table below. | stand-in | `TerrainRender` (Terrain.cpp:3909) + `WmoUpdateVisibility` + `RenderWmos` + `LiquidRender(0)`, all inside one function; the reference's split between prepare and render does not exist. |
 | Footprints | FUN_0079fcc0 (Map.cpp, flag 0x400 = `showfootprints`) | 576-slot ring of fading footprint decals drawn as textured quads (`CMapFootprintTexture`). | missing | - |
 | Visible object pre-render | `ObjectMgr` enumerate FUN_004d4b30(FUN_004f6a40) -> FUN_0072b350 | Per visible object callback (assert WorldFrame.cpp:0x862). | stand-in | `OnWorldUpdate` (CGWorldFrame.cpp:381) loops `objMgr->m_visibleObjects`, calls `UpdateIdleAnimation` and `SetWorldTransform` itself, and marks every model visible/animating; `OnWorldRender` then re-culls the same list against the frustum. No per-object callback, no `CMap` entity list. |
@@ -111,7 +111,7 @@ stage that is wired up but carries a concrete defect (see Verification above).
 
 ### `CMap::Render` FUN_0079a870 (called from OnWorldRender via FUN_0077eff0(camera+8, ...))
 
-| Stage | Reference function(s) | What it does | Whoa status | Whoa location / notes |
+| Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
 | Liquid-under-camera | `CWorldScene` FUN_00790920 -> FUN_007a0b00 (terrain liquid at camera) / FUN_007c8360 (WMO group liquid) | Writes `DAT_00cd8794` (liquid type id), sets the DayNight override-sky flag (FUN_007f1070) and underwater fog (FUN_0079b8e0/FUN_0079b360), FUN_008a2aa0. | stand-in | Verified: `TerrainUpdate` (Terrain.cpp:3766) calls `LiquidAt` (Terrain.cpp:2854) over the loaded terrain liquid layers (covering cell's highest corner = surface) and stores the kind in `s_cameraLiquidKind`; `CWorld::SetCameraUnderLiquid` switches `UpdateOutdoorLight` to the Light.dbc underwater parameter set, and `SkyRender` returns early while submerged. Caveats: the query is a linear scan of every liquid layer of all 25 resident tiles every frame (no spatial index); it runs *before* this frame's tile streaming, so it uses the previous frame's tile set; **WMO liquids are not consulted**, so a canal or interior pool never registers as submersion; `CGCamera::CheckUnderwater` (CGCamera.cpp:134) is still an empty stub, so nothing camera-side reacts. |
 | Frame begin | `GxRsPush`, `GxXformPush(World)` FUN_0057c3a0(8), frustum FUN_00984240, FUN_00782f20, FUN_007ba600 (index pool `CMap::lowDetailIndexPool`), FUN_007ae060 (MapObj begin), FUN_007b2a80 (DetailDoodad begin), FUN_007cd910/FUN_007cc810 (MapLowDetail begin; adds low-detail areas via FUN_007927e0) | Resets per-frame lists and counters. | stand-in | no equivalent; `TerrainRender` is monolithic and keeps no per-frame lists apart from the WMO `visFrame` stamp and the transient liquid/blended-batch vectors. It does `GxRsPush`/`GxRsPop` around itself but no `GxXformPush(World)`. |
@@ -140,7 +140,7 @@ if (!under) { M2 pass 2 (FUN_00823cb0(2)); liquid+ (FUN_00790a80); weather (FUN_
 else        { barriers (FUN_0077f980); M2 pass 1; weather (FUN_0077f030); liquid+ (FUN_00790a80); M2 pass 2 }
 ```
 
-| Stage | Reference function(s) | What it does | Whoa status | Whoa location / notes |
+| Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
 | M2 pass 2 / pass 1 | `CM2Scene::Draw` FUN_00823cb0(2) / (1) -> FUN_00823130 (`CM2SceneRender::Draw`) | Transparent M2 passes; particles/ribbons are elements in these passes (`Particle_Unlit` shader from FUN_0081f330). | ported (passes 1 and 2 drawn, underwater order flip) / stand-in (suspect) (particles) / missing (ribbons) | Verified: `CM2Scene::Draw` (CM2Scene.cpp:693) draws `array54[pass]`, which `Animate` fills and heap-sorts for all three passes (CM2Scene.cpp:629-662), and `CGWorldFrame::OnWorldRender` (:324-336) draws 0, 2, 1 above liquid and **does** flip to 1, weather, liquid, 2 under liquid - the inline comment there claiming the flip is unported is stale. `DrawParticle` still returns 0 and `DrawRibbon` is empty (`src/model/CM2SceneRender.cpp:270/275`). The `src/world/ParticleFx.cpp` stand-in is real and called (`ParticleFxUpdateModel` per visible object and per terrain/WMO doodad at CGWorldFrame.cpp:300-311, `ParticleFxRender` with pass 2): it samples the emitter tracks against the bone sequence state, simulates plane/sphere emitters in world space (emitter bone animation ignored) and draws sorted camera-facing quads with the M2 blend modes. **Suspect: use-after-free.** `s_models` is a `std::map` keyed on raw `CM2Model*` and entries are only evicted after 600 unseen frames (ParticleFx.cpp:284), but `ParticleFxForgetModel` is called only from `FreeTile` for terrain and WMO doodads (Terrain.cpp:1942/2009) - never when a unit's model is destroyed, so `ParticleFxRender` (:343) dereferences `model->m_shared` on freed objects after a despawn. |
 | Liquid bucket 1 | FUN_00790a80: FUN_00781610 (fog), **FUN_008a2240(cameraPos, 1)** (transparent water, sorted), FUN_0079d5e0 (post-liquid decal list `DAT_00adfb60` with shaders `DAT_00cdffd4/d8`, uses MapChunkLiquid FUN_007cecd0 - likely ripples/splashes *(uncertain)*) | Water surfaces sorted back-to-front. | stand-in (suspect) | Verified: `LiquidRender(1)` is called from `CGWorldFrame::OnWorldRender` (:327/:333) in both camera orders; water/ocean layers are frustum-tested, sorted farthest first, alpha-blended with depth writes off and fogged. Carries the same `s_liquidColor[81]` overrun for WMO liquid grids as bucket 0 (see that row). Post-liquid decals: missing. |
@@ -190,12 +190,12 @@ Per frame, in call order (RunicWorldGame.exe):
 5. world-text render FUN_007e7490 (names / damage text quads)
 6. restore proj/view stacks, UpdateProjMatrix.
 
-Where transparents are sorted: M2 elements are sorted inside `CM2Scene::Animate` (ported in whoa
+Where transparents are sorted: M2 elements are sorted inside `CM2Scene::Animate` (ported in frozen
 `src/model/M2Sort.cpp`); liquid instances are `qsort`ed per bucket in FUN_008a2240; WMO alpha
 batches are handled by the MapObj batch renderer chosen in FUN_007ad020; the generic render buckets
 are `qsort`ed in FUN_00681ba0.
 
-Whoa's actual order, read off `CGWorldFrame::OnWorldRender` (CGWorldFrame.cpp:148) on 2026-09-14:
+Frozen's actual order, read off `CGWorldFrame::OnWorldRender` (CGWorldFrame.cpp:148) on 2026-09-14:
 
 1. viewport push, `GxSceneClear(3, fog or horizon sky)`, `CShaderEffect::UpdateProjMatrix`
 2. `TerrainRender`: `GxRsPush`, view*proj, `ExtractFrustum`, fog render states, doodad sphere cull,
@@ -219,7 +219,7 @@ particle quads are a separate pass rather than elements inside the M2 passes.
 
 ## Culling (reference)
 
-| Mechanism | Reference | Whoa |
+| Mechanism | Reference | Frozen |
 |---|---|---|
 | View frustum | `CWFrustum` built in FUN_00795400 (FUN_006bf6d0 corners, FUN_00984240 planes; sphere/box tests FUN_0078f370 / FUN_0078fb20 / FUN_0078f3e0) | `ExtractFrustum`, `BoxVisible`, `SphereVisible` in Terrain.cpp |
 | Chunk index window | FUN_00795400 computes min/max chunk coords from the frustum box; `CWorld::Update` tracks window changes (`DAT_00cd77d8..e4`) | tile ring `MAX_TILE_RADIUS = 2` around the camera |
@@ -259,7 +259,7 @@ simulation in the update phase when it runs inside `WeatherRender`).
 Most significant gaps (by visual impact): (1) liquids (buckets 0/1, WMO liquid, procedural water),
 (2) sky composition and order (stars/sun/moon/clouds, drawn after opaque geometry), (3) shadows
 (map shadow map + blob shadows), (4) particles/ribbons + M2 pass 2, (5) detail doodads; plus the
-structural gap that whoa has no `CMap::Update` visibility lists / portal traversal, so every stage
+structural gap that frozen has no `CMap::Update` visibility lists / portal traversal, so every stage
 re-culls with its own AABB tests.
 
 ## Progress log
@@ -435,7 +435,7 @@ released.
   and size bands: a direction at a fixed radius of 12 from the camera, screen-aligned quad, hidden
   below the eye-level plane, additive. Two open parity notes recorded: the gradient dome should be
   additive with the discs drawn before it, and the disc tint should come from LightIntBand band 9
-  (whoa uses the horizon sky band as the nearest thing it already interpolates).
+  (frozen uses the horizon sky band as the nearest thing it already interpolates).
 * 2026-09-15 (9): sky layering brought in line with the reference -- scene clears to black under an
   open sky (fog colour only under liquid), discs drawn before the dome, dome switched to additive.
   Disc tint now comes from LightIntBand band 9 (`CWorld::GetBodyTint`) instead of standing in with
@@ -473,7 +473,7 @@ released.
   be applied a second time to the geometry. Two earlier attempts rolled the axes and produced
   buildings 2-6x too tall and too narrow about roughly correct centres, which is what the placement
   self-check measured. Applied to walls, normals, portals, MLIQ and MODD doodads. crashstack now
-  names the faulting module when a fault lands outside Whoa.exe.
+  names the faulting module when a fault lands outside Frozen.exe.
 
 ### 2026-09-15 - map shadow map S2 and S3 (partial)
 
@@ -500,7 +500,7 @@ Supporting work this needed:
 - `GxRenderTargetSet` was declared but never defined; `src/gx/RenderTarget.cpp` now defines it.
 - `GxRenderTargetDump` added (device virtual -> `CGxDeviceD3d::IRenderTargetDump`): copies a render
   target into a `D3DPOOL_SYSTEMMEM` offscreen surface and writes an 8-bit greyscale TGA. Set
-  `WHOA_SHADOW_DUMP=<path>` and the map is written once at frame 100. Without this there is no way
+  `FROZEN_SHADOW_DUMP=<path>` and the map is written once at frame 100. Without this there is no way
   to tell an empty pass from a broken bind while nothing samples the map yet.
 - `tools/compile-shaders.py` turns `src/world/shaders/*.hlsl` into the embedded C array header, so
   the shader bytecode stops being a hand-run `fxc` step. Each source declares its own
@@ -530,7 +530,7 @@ therefore split into `MapShadowProjection` (plain ortho, in the `[-1, 1]` depth 
 `CGxDeviceD3d::IXformSetProjection` expects, since it does the remap to `[0, 1]` itself) and
 `MapShadowLightView`.
 
-Casters are drawn through whoa's own M2 path rather than a reimplementation:
+Casters are drawn through frozen's own M2 path rather than a reimplementation:
 `CM2Scene::DrawShadowCasters` resolves the effect once, sets PS `c0.w`, and puts
 `CM2SceneRender` into a caster mode where `DrawBatch` substitutes the shadow effect for the batch's
 own and skips lighting, material and texture setup. Bone matrices are rebased per bone by
@@ -541,7 +541,7 @@ matrix than it did in the visible pass.
 `TerrainUpdateView` was split out of `TerrainRender` (frustum, fog states, doodad visibility) so the
 frame can eventually establish visibility before anything draws.
 
-**Known deviation, not yet closed:** the reference renders the map before the terrain pass. Whoa
+**Known deviation, not yet closed:** the reference renders the map before the terrain pass. Frozen
 renders it after `CM2Scene::Animate`, which currently depends on the visibility the terrain pass
 establishes, so the map is one frame behind what terrain will sample in S4. Closing it means
 hoisting `TerrainUpdateView` and the object visibility sweep above the animate block, which is what
@@ -549,12 +549,12 @@ the split was for.
 
 **Unverified.** Everything above builds and installs but has not been run: the client has not been
 launched since. The first run should show `MapShadow: targets allocated 1024x1024` and
-`MapShadow: focus -> uv(...) OK`, and with `WHOA_SHADOW_DUMP=<path>` set should write a TGA at frame
+`MapShadow: focus -> uv(...) OK`, and with `FROZEN_SHADOW_DUMP=<path>` set should write a TGA at frame
 100 that is white with dark blobs where units stand.
 
 **Older note, superseded:** the caster draw. The map currently renders empty (cleared white), which is
 the safe degradation: a white map reads as "nothing casts anywhere", so S4 will produce no shadow
-rather than garbage. Drawing casters means a vs_2_0 caster program that reproduces whoa's M2 bone
+rather than garbage. Drawing casters means a vs_2_0 caster program that reproduces frozen's M2 bone
 skinning (bone matrices are uploaded at VS c31, three float4 per bone, in
 `CM2SceneRender::DrawBatch`) and writes linear light depth to `.r`. The vertex input layout and
 which constant registers are free are being established now.
@@ -564,14 +564,14 @@ which constant registers are free are being established now.
 Two clients now run together and are compared by reading their memory, rather than by looking at
 them. Three new tools make that possible:
 
-- `tools/memcompare.py` attaches to the reference client and to whoa at once and prints named
+- `tools/memcompare.py` attaches to the reference client and to frozen at once and prints named
   globals side by side. Reference addresses are the absolute Ghidra `DAT_` labels rebased onto the
-  live module; whoa's come from the PDB through `llvm-pdbutil pretty --globals`, cached in
-  `build/whoa-globals.json`. Probes live in `tools/probes.json`. It identifies each client by FULL
+  live module; frozen's come from the PDB through `llvm-pdbutil pretty --globals`, cached in
+  `build/frozen-globals.json`. Probes live in `tools/probes.json`. It identifies each client by FULL
   PATH, never by process name, because the user's own live game is also called `WoW.exe` and an
-  early version of this tool read that instead of the reference. It also refuses to trust a whoa
+  early version of this tool read that instead of the reference. It also refuses to trust a frozen
   process whose loaded image size does not match the build the PDB describes, which is what a stale
-  `Whoa.exe` in the reference folder looks like.
+  `Frozen.exe` in the reference folder looks like.
 - `tools/drive.py` finds a client's window by image path and drives it with `PostMessage`, so login
   and character select are automated without ever taking focus. Both clients go from launch to
   in-world unattended.
@@ -596,21 +596,21 @@ off the committed end, which made the stack walk look empty when it had simply b
 
 **Shadow map constants verified against the running reference**, not against a document. Every value
 the parity doc predicted is what the live client holds: map size 1024, depth scale 0.00025, box
-half-extent 20, up hint (1, 0, 0), cascade extents 40/160/640, cascade thresholds 4/16/1024. Whoa
+half-extent 20, up hint (1, 0, 0), cascade extents 40/160/640, cascade thresholds 4/16/1024. Frozen
 uses the same numbers. Note the reference builds no shadow map at all until `extShadowQuality` is
 raised; at its default every one of these reads back as zero, which is indistinguishable from
 disagreement but means only that it was never asked.
 
 **A real bug the comparison caught.** Our light camera's forward axis had a positive z where the
 reference's has a negative one: the shadow camera was under the ground looking up, and every caster
-would have been behind it. Nothing inside whoa could have revealed this. The volume still built, the
+would have been behind it. Nothing inside frozen could have revealed this. The volume still built, the
 matrix still looked reasonable, and the S2 self-check still reported the focus landing dead centre
 at half depth, because that assertion holds just as well for an inverted camera. Fixed in
 `MapShadowSetup`: the eye is the focus displaced ALONG the away-from-light vector, and the forward
 axis is its negation.
 
 **Still open on this system.** The reference builds its light matrix around a camera-relative origin
-(it subtracts the world-rebase offset), so its translation term stays small; whoa builds it in
+(it subtracts the world-rebase offset), so its translation term stays small; frozen builds it in
 absolute world coordinates, which is the same precision break CLAUDE.md already flags for vertex
 data. The two per-frame matrices therefore cannot be compared element for element until both
 clients stand in the same place, which they currently do not.
@@ -618,10 +618,10 @@ clients stand in the same place, which they currently do not.
 ### 2026-09-15 - Lua parity: our side measured, the reference side not yet
 
 `tools/luadump.py` walks a client's Lua globals table straight out of its memory. The point is that
-whoa's "Function not yet implemented" log only names a stub when something CALLS it, so it reports
+frozen's "Function not yet implemented" log only names a stub when something CALLS it, so it reports
 whatever the current screen happened to touch. This run logged 87. That was never the real number.
 
-**Whoa's Lua environment, read from the live client:**
+**Frozen's Lua environment, read from the live client:**
 
 | kind | count |
 |---|---|
@@ -630,7 +630,7 @@ whatever the current screen happened to touch. This run logged 87. That was neve
 | tables | 17660 |
 | strings | 9969 |
 
-Two ways in, both working against whoa: resolve `FrameScript::s_compat_lua` from the PDB, or find
+Two ways in, both working against frozen: resolve `FrameScript::s_compat_lua` from the PDB, or find
 the globals table by its own shape in the heap. The second takes about 25 seconds and agrees with
 the first, which is what gives confidence in the table walker itself.
 
@@ -638,7 +638,7 @@ the first, which is what gives confidence in the table walker itself.
 
 - The reference's Lua strings are stock 5.1 x86. Reading the bytes before a live `"CreateFrame"`
   gives `next` at -16, the type tag (4 = string) at -12, the hash at -8 and the length (11) at -4,
-  so the `TString` header is 16 bytes with the characters at +16. That is exactly what whoa's
+  so the `TString` header is 16 bytes with the characters at +16. That is exactly what frozen's
   vendored 5.1.3 produces, so the string type is not the problem.
 - Its Lua heap IS inside the memory being scanned: `"CreateFrame"` occurs four times in committed
   private regions, of which 247 MB is scanned.
@@ -735,10 +735,10 @@ rounds of scanning heuristics had produced only false positives.
 | | globals | functions |
 |---|---|---|
 | reference `_G` | 959 | 157 |
-| whoa `_G` | 32445 | 4068 |
+| frozen `_G` | 32445 | 4068 |
 
 Five functions exist in the reference's table and not in ours, all of them `AccountMsg_*`. That is
-a genuine gap but a small one, and the rest of the comparison is not yet meaningful: whoa's table
+a genuine gap but a small one, and the rest of the comparison is not yet meaningful: frozen's table
 carries `UIParent` and `UnitName` so it is the in-world environment, while the reference's carries
 neither, despite that client being confirmed in the world at the same moment (its live player
 height and shadow centre both read back). So the reference keeps more than one Lua environment and
@@ -769,12 +769,12 @@ self-reference and read:
 | | globals | functions |
 |---|---|---|
 | reference | 4450 | 463 |
-| whoa | 32445 | 4068 |
+| frozen | 32445 | 4068 |
 
 **The extraction is still incomplete, so the difference is not a finding.** `UnitName` and `GetTime`
 are both interned in the reference as Lua strings, so they exist as globals, yet neither appears in
 the extracted table. Anything that misses those is missing more, and reporting "119 functions
-missing from whoa" off that basis would be a number without a meaning.
+missing from frozen" off that basis would be a number without a meaning.
 
 Two fixes did move it forward and are worth keeping: the node array is now read across unreadable
 gaps rather than stopping at the first one, and a 64K chunk that fails because it straddens an
@@ -806,14 +806,14 @@ and the reference exits every time it logs in. The raw dump is archived at
 The result passes the acceptance test: `UnitName`, `GetTime`, `CreateFrame` and `UIParent` are all
 present.
 
-| | reference | whoa |
+| | reference | frozen |
 |---|---|---|
 | globals | 33479 | 32445 |
 | functions | 4926 | 4068 |
 | tables | 18498 | 17660 |
 | strings | 9356 | 9969 |
 
-**1283 functions exist in the reference and not in whoa**, and 425 exist only in whoa. The full
+**1283 functions exist in the reference and not in frozen**, and 425 exist only in frozen. The full
 lists are `build/lua-missing.txt` and `build/lua-ref.txt`. Where the gap is:
 
 | prefix | missing | prefix | missing |
@@ -830,18 +830,18 @@ estimate.
 ### 2026-09-15 - outdoor light compared, and a convention worth writing down
 
 `DAT_00ce04a8` is a POINTER to the light block, not the block. Read as a structure it returns zeros,
-which looks exactly like whoa disagreeing when it means the probe was never pointed at data.
+which looks exactly like frozen disagreeing when it means the probe was never pointed at data.
 `memcompare` now supports `ref_deref` with `ref_offset` for labels like this. Within the block:
 direction at +0x7c, ambient at +0x88, diffuse at +0x94.
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | sun direction | -0.566 -0.566 -0.600 | +0.569 +0.569 +0.595 | NEGATED |
 | outdoor ambient | 0.102 0.220 0.333 | 0.227 0.388 0.400 | different zone |
 | outdoor diffuse | 0.369 0.600 0.776 | 0.259 0.698 0.875 | different zone |
 
 **The sun direction is negated ON PURPOSE and must not be "fixed".** The reference stores the
-direction the light travels, pointing down, and negates at each use site. Whoa stores the direction
+direction the light travels, pointing down, and negates at each use site. Frozen stores the direction
 toward the light and dots it straight into N.L in the terrain bake (`Terrain.cpp:920`). Both are
 self-consistent; the vectors are unit length in both and the components agree to about 0.005, which
 is time-of-day drift between the two sessions.
@@ -857,7 +857,7 @@ the same blocker already noted for the shadow matrices.
 
 ### 2026-09-15 - closing Lua errors, layer by layer
 
-The 1283 missing functions are genuinely absent from whoa's source, not merely unregistered: a
+The 1283 missing functions are genuinely absent from frozen's source, not merely unregistered: a
 sample checked against every string literal in `src/` found none of them. So "Lua to 100%" is the
 whole client, not a loop task, and most of it waits on systems that do not exist yet (quests, the
 calendar, talents, and unit movement, which CLAUDE.md already lists as unported).
@@ -892,25 +892,25 @@ like a live one. Several "simultaneous" comparisons above were therefore one liv
 stale one. The reliable liveness test is whether `UnitName` is interned as a Lua string; a non-zero
 probe value is not evidence of anything.
 
-`memcompare` gained `--snapshot FILE --side {reference,whoa}` for this: read one client's probes
+`memcompare` gained `--snapshot FILE --side {reference,frozen}` for this: read one client's probes
 while it is genuinely in the world, save them, then read the other and diff the files. Sequential,
 and honest about it.
 
 **Aligning the characters was the missing piece.** The two clients were picking different characters
-(`lastCharacterIndex` was 3; whoa takes the first slot), so they stood on different continents and
+(`lastCharacterIndex` was 3; frozen takes the first slot), so they stood on different continents and
 every per-zone value differed for a reason that had nothing to do with rendering. Setting
 `lastCharacterIndex` to 0 puts both on the same character: the reference's light centre is
-(2358.4, -5666.9, 426.0) against whoa's camera at (2363.2, -5664.2, 428.6).
+(2358.4, -5666.9, 426.0) against frozen's camera at (2363.2, -5664.2, 428.6).
 
 **With that done, the outdoor light colours verify for the first time:**
 
-| | reference | whoa | delta |
+| | reference | frozen | delta |
 |---|---|---|---|
 | ambient | 56, 98, 100 /255 | 58, 99, 102 /255 | +2, +1, +2 |
 | diffuse | 64, 176, 222 /255 | 66, 178, 223 /255 | +2, +2, +1 |
 
-Whoa's Light.dbc band interpolation produces the reference's own ambient and diffuse to within two
-steps of 255. The residual is systematic (whoa always slightly higher, never lower) which points at
+Frozen's Light.dbc band interpolation produces the reference's own ambient and diffuse to within two
+steps of 255. The residual is systematic (frozen always slightly higher, never lower) which points at
 sample-time skew rather than a formula error: the two snapshots were taken a few seconds apart and
 these bands interpolate across the day. Confirming that needs both sampled at the same game time,
 which is not yet possible.
@@ -959,7 +959,7 @@ So the question is not what the function does, it is who handed it a bad pointer
 
 **Ruled out this round:**
 
-* **Our world-text system is not the cause.** A `WHOA_NO_NAMES` switch skips
+* **Our world-text system is not the cause.** A `FROZEN_NO_NAMES` switch skips
   `PlayerNameRenderWorldText` entirely; with it set the client still dies at 15 seconds with the
   identical fault offset. The strings involved come from the UI, not from unit names.
 * The string batch's lifetime (fixed anyway, it leaked and held destroyed strings).
@@ -985,9 +985,9 @@ Something is handing the layout code a pointer that is neither a live string nor
 
 ### 2026-09-15 - fog and cloud density were never loading: one missing backslash
 
-Comparing fog against the reference showed whoa holding `s_fogEnd = 0` and `s_fogStart = 0` while
+Comparing fog against the reference showed frozen holding `s_fogEnd = 0` and `s_fogStart = 0` while
 the reference had real fog. The cause was not the fog code, which is correct, and not the band index
-formula, which was verified against the file: for the light parameter set whoa had selected (748),
+formula, which was verified against the file: for the light parameter set frozen had selected (748),
 `LightFloatBand` band 0 holds 62000 and band 3 holds 0.5, exactly where the formula
 `(P - 1) * 6 + band + 1` says they should be.
 
@@ -1014,7 +1014,7 @@ unset and let callers read zeros forever.
 ### 2026-09-15 - fog confirmed applied, and the silent-load hole closed
 
 `WowClientDB::Load` now writes a line to stderr when `SFile::OpenEx` fails, instead of returning
-quietly and leaving every lookup to answer 0. The reference aborts in that situation; whoa cannot
+quietly and leaving every lookup to answer 0. The reference aborts in that situation; frozen cannot
 yet, because some DBCs it asks for are genuinely absent, so it complains and carries on.
 
 Running a full session with that in place reports **zero** failures, which is the useful negative
@@ -1027,14 +1027,14 @@ numbers that nothing uses.
 
 Partially done: locating the reference's own fog distance globals for a permanent side-by-side.
 Several `727.0` values sit in the `DAT_00d38b__` block where the parity doc places the fog override
-set, but none pairs with a negative start the way whoa's does, so the reference's stored form has
-not been matched yet. Whoa's start is negative here (-131.8) because band 1 for this light parameter
+set, but none pairs with a negative start the way frozen's does, so the reference's stored form has
+not been matched yet. Frozen's start is negative here (-131.8) because band 1 for this light parameter
 set is -0.18, which the parity doc says is legitimate; whether the reference stores the same
 negative value or resolves it earlier is the open question.
 
 ### 2026-09-15 - the shadow map has still never been observed, and the crash is the reason
 
-`WHOA_SHADOW_DUMP` writes the rendered map to a TGA so its contents can be checked: white with dark
+`FROZEN_SHADOW_DUMP` writes the rendered map to a TGA so its contents can be checked: white with dark
 blobs where casters stand is the checkpoint for S3. It has never produced a file.
 
 The dump was moved from frame 100 to frame 30 and told to announce whether it sees the environment
@@ -1085,7 +1085,7 @@ it cannot perturb the timing. Windows Error Reporting local dumps were not avail
 administrator rights), which is why this exists.
 
 *Windows Error Reporting's module attribution lied, and I believed it.* It reported "Faulting
-module name: Whoa.exe, fault offset 0x1cd03". Symbolizing that offset against our binary gave
+module name: Frozen.exe, fault offset 0x1cd03". Symbolizing that offset against our binary gave
 `CGxString::InitializeViewTranslation`, and two rounds were spent on the font code on that basis.
 The in-process handler showed the true faulting address was in VCRUNTIME140.dll; 0x1cd03 was its
 offset in THAT module, and the match against our image was a coincidence. **Never symbolize a WER
@@ -1125,7 +1125,7 @@ failing too and the map has never been rendered at all.
 Chasing the failing shadow map read-back produced a real defect, though not yet a working capture.
 
 **The evidence.** At capture time the texture reported itself as 1024x1024 in format R32F with
-`m_needsCreation` clear, so every piece of whoa's own bookkeeping said it was live. Yet
+`m_needsCreation` clear, so every piece of frozen's own bookkeeping said it was live. Yet
 `GetLevelCount()` on it answered **0** and `GetSurfaceLevel(0)` returned `D3DERR_INVALIDCALL`. Both
 are impossible for a real texture, so the pointer was dangling.
 
@@ -1233,16 +1233,16 @@ by the dome's own colours.
 ### 2026-09-15 - WMO placement: the transform is correct, the self-check's premise was not
 
 The in-client self-check has been reporting a mean size ratio of 0.88 in x and y against MODF's
-extents, which read as "whoa builds buildings 12 percent too small". Extracting the WMO itself and
+extents, which read as "frozen builds buildings 12 percent too small". Extracting the WMO itself and
 reading the bounding box the FILE declares settles it, for WetlandsHumanDock01:
 
 | source | size |
 |---|---|
 | the WMO's own MOHD bounding box | 49.40 x 71.53 x 26.68 |
-| whoa, built from transformed vertices | 49.90 x 73.60 x 26.70 |
+| frozen, built from transformed vertices | 49.90 x 73.60 x 26.70 |
 | the placement record's MODF extents | 54.90 x 75.20 x 26.70 |
 
-Whoa matches the file's own declared box to within the small enlargement a yaw rotation adds to an
+Frozen matches the file's own declared box to within the small enlargement a yaw rotation adds to an
 axis-aligned box. **MODF's extents are a looser, padded bound, not the exact geometry bound**, so
 comparing against them and calling the difference an error was measuring the wrong thing. The
 vertex transform's axes and scale are correct, and the 43 instances flagged BAD are not
@@ -1268,7 +1268,7 @@ Buildings were rotated 180 degrees about their placement point.
 The model's own yaw was not turned to match, so every building was placed correctly and then rotated
 half a turn around that point.
 
-**Measured before changing anything.** For two unrelated buildings, the offset between whoa's built
+**Measured before changing anything.** For two unrelated buildings, the offset between frozen's built
 centre and the placement record's centre was compared against each model's own centroid, taken from
 its MOHD header in the game archive:
 
@@ -1332,8 +1332,8 @@ Re-measured against the reference's own dump, with the client now stable enough 
 | | count |
 |---|---|
 | reference Lua functions | 4926 |
-| whoa Lua functions | 4079 |
-| missing from whoa | **1272** (was 1283) |
+| frozen Lua functions | 4079 |
+| missing from frozen | **1272** (was 1283) |
 
 The number moved by exactly 11, matching the 11 functions registered earlier, and all four spot-
 checked names are gone from the list. That is the point worth recording: **the metric responds
@@ -1446,22 +1446,22 @@ _DAT_00d38b98 = fog rate
 
 Both clients read in the world, on the same character, in the same place:
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | fog end | 727 | 727 | ok |
 | far clip | 727 | 727 | ok |
 | fog colour | 0xFF003E54 | 0.000, 0.243, 0.333 | **ok** -- 62/255 and 84/255 are the packed green and blue |
 | fog start | **0** | **-145.4** | differs |
-| fog rate | 1.5 | not stored by whoa | |
+| fog rate | 1.5 | not stored by frozen | |
 
-Fog colour matching is new and worth having: the packed reference value decodes to exactly whoa's
+Fog colour matching is new and worth having: the packed reference value decodes to exactly frozen's
 floats, so the colour band lookup and the interpolation behind it are right.
 
-**The start differs and the cause is not yet established.** Whoa computes end x scalar, and for this
+**The start differs and the cause is not yet established.** Frozen computes end x scalar, and for this
 zone's light parameter set the LightFloatBand band 1 scalar is negative, giving -145.4. The
 reference holds exactly 0, which looks like a clamp to zero rather than a different scalar, but that
 is an inference and not something the decompile above shows. Both values mean "fog begins at or
-before the camera"; the difference is the slope of the ramp, so whoa will read slightly hazier close
+before the camera"; the difference is the slope of the ramp, so frozen will read slightly hazier close
 up. Resolving it needs the reference's `_DAT_00d38aac` read in the world alongside these, which is
 one more probe.
 
@@ -1473,7 +1473,7 @@ dumps in `docs/ref/` had not been searched for these names. Worth checking there
 The outdoor fog path uses different globals from the underwater one, and the underwater pair reads 0
 because it is unused. The outdoor pair, read from the reference in the world:
 
-| | reference | whoa |
+| | reference | frozen |
 |---|---|---|
 | outdoor band fog end | 727 | 727 (62000 clamped to the far clip) |
 | outdoor start scalar | **0** | **-0.20** |
@@ -1492,7 +1492,7 @@ because it is unused. The outdoor pair, read from the reference in the world:
 | 20:00 | -0.333 |
 | 22:00 | -0.417 |
 
-It is negative at every hour, so no interpolation of it yields 0. Whoa's -0.20 is a correct read of
+It is negative at every hour, so no interpolation of it yields 0. Frozen's -0.20 is a correct read of
 this band; the reference's 0 is not this band's value at any time.
 
 Two explanations remain and the evidence does not separate them:
@@ -1513,18 +1513,18 @@ the colour sliver and the fog scalar together.
 ### 2026-09-15 - the standing colour offset is a sampling artifact, not a bug
 
 Ambient and diffuse have matched the reference "to within 1-2 steps of 255" for several rounds, with
-whoa always slightly higher and never lower. That systematic sign was the clue, and it is now
+frozen always slightly higher and never lower. That systematic sign was the clue, and it is now
 explained.
 
-Whoa's measured values are **exactly** the endpoint of this zone's light band:
+Frozen's measured values are **exactly** the endpoint of this zone's light band:
 
 | | measured | LightIntBand for params 748 at t=1440 |
 |---|---|---|
-| whoa ambient | 58, 99, 102 | 58, 99, 102 |
-| whoa diffuse | 66, 178, 223 | 66, 178, 223 |
+| frozen ambient | 58, 99, 102 | 58, 99, 102 |
+| frozen diffuse | 66, 178, 223 | 66, 178, 223 |
 
 Exact to the byte. The reference measured 54, 98, 100 and 64, 176, 222, which is the same band
-interpolated slightly BELOW that endpoint, around t=1341 -- roughly 11:10 against whoa's noon.
+interpolated slightly BELOW that endpoint, around t=1341 -- roughly 11:10 against frozen's noon.
 
 **The cause is the sequential snapshot method, not the lighting code.** The two clients share one
 account and kick each other, so their readings cannot be simultaneous; they are minutes of real time
@@ -1532,7 +1532,7 @@ apart, and WoW's game clock runs far faster than real time. Fifty game-minutes o
 snapshots is expected, and at this point in the band it moves each channel by exactly the 1-4 steps
 observed.
 
-So whoa's light band interpolation is not merely close, it is exact for the time it sampled. **The
+So frozen's light band interpolation is not merely close, it is exact for the time it sampled. **The
 residual was an artifact of how the measurement had to be taken.** Worth remembering for every other
 time-varying value compared this way.
 
@@ -1545,7 +1545,7 @@ Two corrections to the previous entry, both from following this through:
   reference's `_DAT_00d38c20` reads 0 while band 1 of params 748 is negative at every hour, so that
   global is probably not the scalar either. Still open, and still not worth guessing at.
 
-### 2026-09-15 - fog start resolved: whoa is missing fog overrides
+### 2026-09-15 - fog start resolved: frozen is missing fog overrides
 
 Traced by decompiling the two writers of the live fog scalar (`DataRefs` on `00d38c20`, then
 `DecompileList` on both).
@@ -1562,7 +1562,7 @@ Every alternative is excluded by measurement:
 | LightFloatBand band 1 | negative at all 7 keys | not 0 at any hour |
 | fog override | whatever was staged | **0, and the flag is now cleared** |
 
-So the reference's fog start of 0 is an override that has already been consumed, and whoa's -145.4
+So the reference's fog start of 0 is an override that has already been consumed, and frozen's -145.4
 is the correct band value for a client that has no override. **This is a missing feature, not a
 wrong formula.** Fog end and fog colour match exactly.
 
@@ -1573,13 +1573,13 @@ the parameter id, not assuming the doc was right -- kept the search pointed at t
 ### 2026-09-15 - sky gradient verified against the reference
 
 The reference's sky ring colours live in the blended light record `DNInfo` at `DAT_00d38bd4`, dwords
-3 through 8, as packed colours. Read from the running client and set against whoa's `s_skyColors`:
+3 through 8, as packed colours. Read from the running client and set against frozen's `s_skyColors`:
 
-| ring | reference | whoa |
+| ring | reference | frozen |
 |---|---|---|
 | sky top / zenith | 32, 80, 104 | 33, 85, 109 |
 | next four rings | 60, 152, 194 (all four identical) | 62, 154, 197 (all four identical) |
-| fog colour ring | 0, 62, 84 | 0, 62, 85 (whoa's `s_fogColor`) |
+| fog colour ring | 0, 62, 84 | 0, 62, 85 (frozen's `s_fogColor`) |
 
 Every ring agrees to within a few steps of 255, which is the known game-clock drift between two
 snapshots that cannot be taken simultaneously. **The whole sky gradient is verified**, and so is the
@@ -1593,9 +1593,9 @@ One labelling correction for `parity-sky.md`: the observed `DNInfo[0]` is the AM
 matching the reference's measured ambient) and `DNInfo[1]` is the DIFFUSE, which is the opposite way
 round from the note at line 141 of that document.
 
-### 2026-09-15 - sun/moon tint: whoa's is verifiably correct, the reference's is not explained
+### 2026-09-15 - sun/moon tint: frozen's is verifiably correct, the reference's is not explained
 
-**Retraction first.** An earlier version of this entry concluded that whoa's game clock ran about
+**Retraction first.** An earlier version of this entry concluded that frozen's game clock ran about
 3.5 hours ahead of the reference's. That was wrong, and it was wrong because I solved the reference's
 colour for a time without checking whether the answer was self-consistent.
 
@@ -1604,11 +1604,11 @@ day, so unlike the two-key ambient and diffuse bands it is actually sensitive to
 
 | | tint | solves to |
 |---|---|---|
-| whoa | 255, 213, 186 | t=1790 from green, t=1790 from blue -- **consistent** |
+| frozen | 255, 213, 186 | t=1790 from green, t=1790 from blue -- **consistent** |
 | reference | 254, 240, 216 | t=1328 from green, t=1406 from blue -- **inconsistent by 78** |
 
-Whoa's value is a clean interpolation of that band: both channels independently give the same time,
-and t=1790 is 14:55 in game, against a real local time of 14:57 when it was read. So **whoa's body
+Frozen's value is a clean interpolation of that band: both channels independently give the same time,
+and t=1790 is 14:55 in game, against a real local time of 14:57 when it was read. So **frozen's body
 tint is correct, and its clock is correct.**
 
 The reference's tint is NOT a clean interpolation of that band at any time -- the two channels
@@ -1628,8 +1628,8 @@ for what they can distinguish.
 one-liner: `return &DAT_00d38b00;`. So **`DAT_00d38b00` is the base of the reference's DayNight
 state**, and its first dword is what the update works from.
 
-That address read **751** while whoa's light state corresponded to 895 game minutes. If the field is
-game minutes, that is 12:31 against whoa's 14:55.
+That address read **751** while frozen's light state corresponded to 895 game minutes. If the field is
+game minutes, that is 12:31 against frozen's 14:55.
 
 This is also the correction to an earlier guess: `DAT_00d38b00` holding 751 was previously taken for
 a light parameter id purely because it was an integer in a plausible range sitting in the light
@@ -1637,7 +1637,7 @@ block. It is not a parameter id, it is the head of the DayNight state. Two wrong
 same number, both from pattern-matching rather than from following the code.
 
 It is now a probe. Settling whether the two clocks actually differ needs one paired sample: read
-this alongside a whoa snapshot taken within a minute of it, since the clients cannot be in the world
+this alongside a frozen snapshot taken within a minute of it, since the clients cannot be in the world
 at the same time and the value moves. Until that is done the time question stays open, and the
 several colour-based estimates of it in the entries above should all be treated as noise.
 
@@ -1649,7 +1649,7 @@ The paired sample settles it. `DAT_00d38b00` is the reference's game time in min
 |---|---|---|
 | reference | 908 | 15:08 |
 | reference (earlier read of 751) | 751 | 12:31 |
-| whoa | 895 | 14:57 |
+| frozen | 895 | 14:57 |
 
 All three match real local time exactly. **Neither clock is wrong, and there is no offset.**
 
@@ -1658,9 +1658,9 @@ With each tint solved against its OWN sample time rather than against each other
 | | measured | band 9 predicts at that clock |
 |---|---|---|
 | reference (t=1502) | 254, 240, 216 | 255, 241, 216 |
-| whoa (t=1790) | 255, 213, 186 | **255, 213, 186** |
+| frozen (t=1790) | 255, 213, 186 | **255, 213, 186** |
 
-Whoa's is exact to the byte; the reference's is within one step of rounding. **Both sun/moon tints
+Frozen's is exact to the byte; the reference's is within one step of rounding. **Both sun/moon tints
 are correct.** The 27-and-30-step gap between them was entirely the two and a half hours of game
 time between when I sampled each, because the clients cannot be in the world simultaneously.
 
@@ -1675,7 +1675,7 @@ value, and solve each side against its own clock. Comparing a time-dependent val
 sequential snapshot pair is meaningless without it. `reference day/night clock` is now a probe so
 this is cheap to do.
 
-### 2026-09-15 - the reference blends a second light; whoa reads one. That is the colour gap.
+### 2026-09-15 - the reference blends a second light; frozen reads one. That is the colour gap.
 
 With the clock rule applied, the reference's own values were checked against LightIntBand params 748
 at the reference's own clock (911 minutes, t=1822). Two of seven bands match, five do not:
@@ -1697,17 +1697,17 @@ not of a wrong formula or a wrong time.
 It also explains why fog colour and body tint match exactly: those two are evidently the same in
 both lights, so blending does not move them.
 
-**And it explains whoa's side precisely.** Whoa's measured ambient was 58, 99, 102 -- the *pure*
-params 748 value, exact to the byte. So whoa is reading a single light where the reference is
+**And it explains frozen's side precisely.** Frozen's measured ambient was 58, 99, 102 -- the *pure*
+params 748 value, exact to the byte. So frozen is reading a single light where the reference is
 blending two. `ComputeLightColors` does have blending (`result = result*iw + local*w`), so the gap
-is that whoa is not finding the local light the reference has picked up at this position.
+is that frozen is not finding the local light the reference has picked up at this position.
 
 That is a concrete, bounded parity gap and the right next target: find which light the reference is
-blending in at this position, and why whoa's local-light search misses it. It is also the real
+blending in at this position, and why frozen's local-light search misses it. It is also the real
 explanation for every colour residual reported across this session, which were variously blamed on
 clock drift, sampling skew and rounding.
 
-### 2026-09-15 - the colour gap is a blend whoa does not do; the second input is not yet identified
+### 2026-09-15 - the colour gap is a blend frozen does not do; the second input is not yet identified
 
 Narrowing, all measured:
 
@@ -1716,9 +1716,9 @@ Narrowing, all measured:
   and several sets tie at that figure. There is no exact match.
 * Two bands DO match params 748 exactly: fog colour and body tint. Five are darker, by ratios that
   vary per band and per channel (sky top 0.73 uniformly, sky rings 0.94, ambient 0.72/0.93/0.92).
-* Whoa reads pure params 748, exact to the byte.
+* Frozen reads pure params 748, exact to the byte.
 
-So the reference combines 748 with something whoa does not, and that something leaves fog colour and
+So the reference combines 748 with something frozen does not, and that something leaves fog colour and
 body tint untouched while darkening ambient, diffuse and the sky rings by different amounts.
 
 **A local light was found and then ruled out.** Light 1763 covers the player (distance 690 against
@@ -1737,7 +1737,7 @@ defaults branch has been read; the data branch has not.
 Following `FUN_007f3230` rather than guessing at the second input. What it does, in order:
 
 1. `FUN_00780620(&local_10)` returns an area/zone object and a height, used to index
-   `DAT_00ad4084` into `iVar9`. So the record is area-dependent, which whoa's version is not.
+   `DAT_00ad4084` into `iVar9`. So the record is area-dependent, which frozen's version is not.
 2. It builds a light record in a **156-byte local** (`local_150`, and 0x9c is exactly the DNInfo
    size), with a second 88-byte record in `local_b4`.
 3. `FUN_007ec220(local_b4, local_150, _DAT_00d38b88)` **blends the two records**, weighted by
@@ -1752,7 +1752,7 @@ entries. It is a blend of two records built inside this function, plus an area-d
 DNInfo[0] and DNInfo[1] into other globals, not the record itself.
 
 Unfinished: `FUN_007ec220` (the blender) and `FUN_007eb180` (which fetches each light) have not been
-decompiled. Those two would say exactly what is combined and in what proportion, which is what whoa
+decompiled. Those two would say exactly what is combined and in what proportion, which is what frozen
 needs to reproduce. That is the next step, and it is bounded: two functions, both named.
 
 ### 2026-09-15 - weather-variant theory TESTED AND REJECTED; the colour gap is still open
@@ -1761,7 +1761,7 @@ needs to reproduce. That is the next step, and it is bounded: two functions, bot
 array of eight parameter ids, and `FUN_007f3230` does call it with index 2 or 3 -- the storm pair.
 That much is real. The conclusion drawn from it was not.
 
-**Tested against the data before changing any code, and it fails.** The parameter set whoa uses
+**Tested against the data before changing any code, and it fails.** The parameter set frozen uses
 (748) belongs to lights on maps 451, 571 and 609 -- the Death Knight starting zone, not map 0, which
 also invalidates the map-0 local-light search two entries above. For light 1771 on map 609 the eight
 ids are [748, 9, 10, 11, 3, 0, 0, 0]. Comparing each against the reference's measured values at its
@@ -1779,7 +1779,7 @@ The weather variants are not merely worse, they are nowhere near: params 10 is f
 
 **Where this leaves it.** Still: the reference's values are not a pure read of ANY parameter set
 (all were searched), two bands match 748 exactly, five are darker by per-band ratios that are near
-uniform within each band (sky top 0.73, sky rings 0.94, ambient 0.72/0.93/0.92). Whoa reads pure
+uniform within each band (sky top 0.73, sky rings 0.94, ambient 0.72/0.93/0.92). Frozen reads pure
 748. Something scales five bands and leaves two alone, and it is not weather selection, not a
 positional local light, and not the loading-fade blend.
 
@@ -1881,7 +1881,7 @@ verified parity. The instrument may well be salvageable, but it is now a debuggi
 WOW64 debug registers rather than about this client's rendering, which is a poor use of the loop.
 
 What is solid and unaffected: the reference's light values are not a pure read of any parameter set,
-two of its bands match whoa exactly and five are darker by per-band ratios, and whoa reads a single
+two of its bands match frozen exactly and five are darker by per-band ratios, and frozen reads a single
 set cleanly. Anyone picking this up has the measurements, the five dead ends, and a tool that is one
 WOW64 detail away from answering it.
 
@@ -1949,7 +1949,7 @@ batched behind one convention and will have to follow their subsystems.
 | after 236 actions | 955 |
 | after 56 counts + 899 stubs | **0** |
 
-Every Lua function in the reference's own dump now exists in whoa. Lua errors through a full
+Every Lua function in the reference's own dump now exists in frozen. Lua errors through a full
 login-to-world session remain 0.
 
 **This is name parity, not behaviour parity, and the difference is most of the work.** Of the
@@ -1968,7 +1968,7 @@ functions closed:
 named candidates for real implementation. Before this they were silent holes that killed whatever
 script touched them.
 
-Note whoa now reports 5351 functions against the reference's 4926. The surplus is not an error: the
+Note frozen now reports 5351 functions against the reference's 4926. The surplus is not an error: the
 reference's dump is one moment in one session, and FrameXML defines some functions lazily, so its
 list is a lower bound on what it eventually has.
 
@@ -1979,7 +1979,7 @@ the client's API at all, which is masking rather than parity. **130 of the 899 n
 batch contain an underscore.** In 3.3.5a the client's own Lua API is PascalCase without underscores;
 an underscore means the function is defined by an interface SCRIPT (`BackpackTokenFrame_Update`) or
 by a loadable addon (`Blizzard_CombatLog_*`). Registering a C function for those hides a different
-gap -- that whoa is not loading those scripts or addons -- behind a name that looks present.
+gap -- that frozen is not loading those scripts or addons -- behind a name that looks present.
 
 All 130 have been removed, and the file now carries a comment saying why they do not belong there.
 The honest numbers:
@@ -1991,28 +1991,28 @@ The honest numbers:
 | Lua errors, launch to in-world | **0** |
 
 So the client's own scripting surface is complete by name, from 1283 missing at the first
-measurement. The remaining 130 are a separate piece of work: whoa does not load those interface
+measurement. The remaining 130 are a separate piece of work: frozen does not load those interface
 scripts or optional addons, and the fix is in the interface-loading path, not in registering more C
 functions.
 
 How this was caught is worth keeping. `CombatText_UpdateDisplayedMessages` appeared among the four
-stubs actually CALLED in a session. Checking it, whoa already defines the other 11 `CombatText_*`
+stubs actually CALLED in a session. Checking it, frozen already defines the other 11 `CombatText_*`
 functions -- so the script clearly loads, and one function from it was missing anyway. That did not
 fit "the client API lacks this", which is what prompted counting underscores at all. A stub being
 hit is a signal worth reading, not just a safety net doing its job.
 
-### 2026-09-15 - the last 130: specific interface scripts do not execute in whoa
+### 2026-09-15 - the last 130: specific interface scripts do not execute in frozen
 
-Correcting my own earlier check first: I claimed whoa "clearly loads" CombatText because it had 11
+Correcting my own earlier check first: I claimed frozen "clearly loads" CombatText because it had 11
 `CombatText_*` functions. That measurement was taken AFTER I had stubbed those names, so it was
 measuring my own stubs. With them removed, the real figures are:
 
-| script | reference defines | whoa defines |
+| script | reference defines | frozen defines |
 |---|---|---|
 | CombatText | 11 | **0** |
 | TimeManager | 45 | **1** |
 
-So those interface scripts genuinely do not execute in whoa. It reports no error while doing it,
+So those interface scripts genuinely do not execute in frozen. It reports no error while doing it,
 which is why this was invisible.
 
 Also fixed on the way: `tools/mpq-probe.py` only scanned `Data/*.MPQ` and never the LOCALE
@@ -2021,7 +2021,7 @@ FOUND -- including `UIParent.lua`, which the client demonstrably loads and error
 conclusion in these notes that rested on a FrameXML file being "absent from the archives" should be
 re-checked. `FrameXML.toc` is there and lists 138 entries.
 
-**The remaining Lua gap is therefore one bounded bug**, not 130 separate ones: whoa's interface
+**The remaining Lua gap is therefore one bounded bug**, not 130 separate ones: frozen's interface
 loader silently skips or fails a handful of the 138 entries in `FrameXML.toc`, and the missing
 function names identify exactly which -- CombatText, TimeManager, KnowledgeBase, CombatLog,
 TokenFrame. Making the loader report what it skips would name them directly.
@@ -2032,7 +2032,7 @@ before trusting any localised file from that tool.)
 
 ### 2026-09-15 (later) - the Lua gap is the addon loader, and nothing else
 
-**Correcting the entry above.** It said whoa's interface loader "silently skips or fails a handful
+**Correcting the entry above.** It said frozen's interface loader "silently skips or fails a handful
 of the 138 entries in FrameXML.toc". That was wrong. Those files are not in FrameXML.toc at all.
 
 What actually happened, in order:
@@ -2049,7 +2049,7 @@ What actually happened, in order:
    completely.
 3. The missing names all belong to `Interface\AddOns\Blizzard_*` -- CombatText, TimeManager,
    CombatLog, TokenUI -- which are present in the locale archives and are **not** FrameXML files.
-4. Of those groups, the only names whoa does define are `TimeManager_LoadUI`, `CombatLog_LoadUI`
+4. Of those groups, the only names frozen does define are `TimeManager_LoadUI`, `CombatLog_LoadUI`
    and `TokenFrame_LoadUI`: the FrameXML stubs whose whole job is to call
    `UIParentLoadAddOn("Blizzard_...")` on demand. That is exactly the fingerprint of an addon that
    is never loaded.
@@ -2065,11 +2065,11 @@ bounded: implement `LoadAddOn` / `GetNumAddOns` / `GetAddOnInfo` / `IsAddOnLoade
 Verified this run: our client reaches the world (`CGGameUI::s_inWorld == 1`) with 5221 Lua functions
 and 33803 globals defined, and FrameXML reports no load problems.
 
-### Reaching the world without a human: WHOA_AUTO_LOGIN
+### Reaching the world without a human: FROZEN_AUTO_LOGIN
 
 Every memory comparison needs both clients standing in the world, and posting input to the glue from
 outside is unreliable -- the window is deliberately never given focus, so the messages get dropped.
-There is now a test hook in `CGlueMgr::Idle`: set `WHOA_AUTO_LOGIN=account:password` and the glue
+There is now a test hook in `CGlueMgr::Idle`: set `FROZEN_AUTO_LOGIN=account:password` and the glue
 walks itself from the login screen through character select into the world. Unset, nothing runs.
 (The existing Android-only dev login in `CGlueMgr::SetScreen` is the same idea; this is the desktop
 equivalent and is what CLAUDE.md's "it auto-logs in" claim now actually refers to on Windows.)
@@ -2090,7 +2090,7 @@ The rest of the missing names are not a defect:
   they appear only when the interface actually asks. The reference has them loaded because its
   session triggered them.
 - **Blizzard_TokenUI has no LoadOnDemand line**, so the reference loads it at startup by enumerating
-  `Interface\AddOns`. whoa has no enumeration -- `SFile` exposes no directory listing -- so that one
+  `Interface\AddOns`. frozen has no enumeration -- `SFile` exposes no directory listing -- so that one
   stays absent. That is the remaining structural gap, and it needs a listfile reader.
 
 **Three real Lua stubs found and implemented on the way** (`src/ui/LuaExtraFuncs.cpp`): `debugstack`
@@ -2200,7 +2200,7 @@ before**. The combination is not the answer either.
 - The glue path works end to end: `AccountLoginAccountEdit` has `ref=1170` on OnTextChanged, so
   script resolution, the `function="..."` attribute form, and dispatch are all fine where they run.
 
-**So: no in-world edit box in whoa ever fires OnTextChanged or OnCursorChanged.** That is a parity
+**So: no in-world edit box in frozen ever fires OnTextChanged or OnCursorChanged.** That is a parity
 gap in its own right, well beyond this cascade -- it covers chat entry, search boxes and macro
 editing -- and it is the thing worth fixing, not the Lua symptom.
 
@@ -2217,18 +2217,18 @@ still unproven.
 
 **Method unlocked.** Every comparison in these notes so far was sequential, because both clients
 logged in as TEST and kicked each other, so their samples were minutes apart at different day/night
-times -- which is exactly the variable every light value depends on. Running whoa on the second
-account (`WHOA_AUTO_LOGIN=SCENE:SCENE`) alongside the reference on TEST puts **both in the world
+times -- which is exactly the variable every light value depends on. Running frozen on the second
+account (`FROZEN_AUTO_LOGIN=SCENE:SCENE`) alongside the reference on TEST puts **both in the world
 simultaneously**, sampled at the same instant. Do it this way from now on; the clock rule and its
 solve-each-side-against-its-own-clock workaround are no longer needed for same-instant probes.
 
-Driving the reference also works, which is worth recording because it does not work on whoa: posting
+Driving the reference also works, which is worth recording because it does not work on frozen: posting
 clicks and keys to the reference's window walked it through login and character select into the
-world first try. Whatever blocks posted input on whoa's glue does not affect the reference.
+world first try. Whatever blocks posted input on frozen's glue does not affect the reference.
 
 **Verified at the same instant:**
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | far clip | 727 | 727 | exact |
 | fog end | 727 | 727 | exact |
@@ -2236,19 +2236,19 @@ world first try. Whatever blocks posted input on whoa's glue does not affect the
 
 The sun direction is the useful new result: with both clients on the same clock the vectors agree to
 within 0.0004 and 0.0017 per component, confirming the direction solve is right and the only
-difference is the documented sign convention (whoa stores the direction toward the light, the
+difference is the documented sign convention (frozen stores the direction toward the light, the
 reference the direction it travels).
 
 **Still not comparable: the light colours.** The two characters stand in different zones --
-reference at (2358, -5666, 426) on light params 748, whoa at (-9469, 62, 58) on params 12 -- so
+reference at (2358, -5666, 426) on light params 748, frozen at (-9469, 62, 58) on params 12 -- so
 ambient, diffuse, fog start and the tints are reading different parameter sets and the numbers
 cannot be compared at all. Co-locating the two characters is the next prerequisite, and it gates the
 whole outstanding light-colour question.
 
-**A bug I nearly reported, disproved by the data.** whoa's fog start read -180.572 against the
+**A bug I nearly reported, disproved by the data.** frozen's fog start read -180.572 against the
 reference's 0, and a negative fog start looks obviously wrong. It is not: `LightFloatBand.dbc` row
 4484 (params 748, band 1) holds values `[-0.5, 0.0]` at times `[0, 1440]`, and **452 of the 838
-band-1 rows carry a negative value somewhere**. Negative start scalars are real data, whoa's read and
+band-1 rows carry a negative value somewhere**. Negative start scalars are real data, frozen's read and
 its [-1, 1] clamp are correct, and the reference's 0 is simply its own later time of day landing on
 the second key. Check the DBC before calling a light value wrong.
 
@@ -2267,24 +2267,24 @@ Getting there needed two things beyond the two-account trick:
    dropping the killed session, and when it did it **saved the old position over the update**. The
    fix is to kill the client, wait ~75s for the session to actually drop, *then* write the row.
    Original SCENE position, if it needs restoring: map 0, zone 4298, (-9464, 62, 56).
-2. Confirming the clocks agree: whoa 1092 minutes against the reference's 1089, sampled moments
-   apart. **whoa's day/night clock is correct and server-synchronised.** (Read `g_clientGameTime` as
+2. Confirming the clocks agree: frozen 1092 minutes against the reference's 1089, sampled moments
+   apart. **frozen's day/night clock is correct and server-synchronised.** (Read `g_clientGameTime` as
    the full `WowTime` -- `m_minute` is at offset 0 and `m_hour` at +4. Reading the first four bytes
    alone gives the minute and looks like a clock stuck near zero. It is not.)
 
 **The measurement** (8-bit quantised on both sides, shown as /255):
 
-| band | reference | whoa | whoa - ref |
+| band | reference | frozen | frozen - ref |
 |---|---|---|---|
 | outdoor ambient | 28, 88, 88 | 58, 99, 102 | **+30, +11, +14** |
 | outdoor diffuse | 38, 166, 206 | 66, 178, 223 | **+28, +12, +17** |
 
-whoa is brighter, as always. The new information is in the last column: **the difference is nearly
+frozen is brighter, as always. The new information is in the last column: **the difference is nearly
 the same for both bands** (+30,+11,+14 against +28,+12,+17) even though the bands themselves differ
 by a factor of two. A multiplicative rescale cannot do that -- the ratios are 0.48/0.89/0.86 for
 ambient and 0.58/0.93/0.92 for diffuse, which look like nothing in particular, while the deltas look
 like a constant. **This argues against the area-driven-rescale theory (FUN_007ed790) that the
-earlier notes favoured, and toward an additive term whoa includes and the reference does not.**
+earlier notes favoured, and toward an additive term frozen includes and the reference does not.**
 
 **Leading hypothesis, untested:** `CWorld.cpp`'s light selection keeps only `bestWeight` -- the
 single highest-weighted Light.dbc row -- and blends that one over the default light. The reference
@@ -2296,9 +2296,9 @@ them in order and see whether the deltas close.
 Fog end (727) and far clip (727) match exactly, and sun direction matches to 3-4 decimal places
 modulo the documented sign flip.
 
-### 2026-09-15 - SOLVED: the light-colour gap. The bands wrap; whoa was clamping.
+### 2026-09-15 - SOLVED: the light-colour gap. The bands wrap; frozen was clamping.
 
-The gap that has been open across several sessions -- whoa's outdoor light persistently brighter
+The gap that has been open across several sessions -- frozen's outdoor light persistently brighter
 than the reference's, by per-band amounts that "drift with the clock" -- is closed.
 
 **It was not blending.** The falloff-accumulation hypothesis from the previous entry is disproved:
@@ -2306,13 +2306,13 @@ at the test position exactly **one** Light.dbc row covers the point (id 1771, pa
 covers it at full weight 1.0, so there is nothing to accumulate and the default light contributes
 nothing. Single-light selection was never the problem.
 
-**It was the end of the day.** Reading `LightIntBand.dbc` directly for params 748 at whoa's clock:
+**It was the end of the day.** Reading `LightIntBand.dbc` directly for params 748 at frozen's clock:
 
 - diffuse row 13447 has **two keys**, t=0 and t=1440, values `0x0E9DBE` and `0x42B2DF`
 - ambient row 13448 likewise, `0x004D4D` and `0x3A6366`
 
 Times are half-minutes, so those two keys are **midnight and noon** -- and at 18:12 the sample time
-t=2184 is past the last key. whoa clamped to it, which pinned every afternoon and evening to the
+t=2184 is past the last key. frozen clamped to it, which pinned every afternoon and evening to the
 noon colour. The reference wraps: it interpolates from the last key back to the first across the end
 of the day. Checking by hand, ambient at 51.7% of the way from the noon key toward the midnight key
 gives 28, 88, 89 -- against the reference's measured 28, 88, 88.
@@ -2320,7 +2320,7 @@ gives 28, 88, 89 -- against the reference's measured 28, 88, 88.
 Fixed in `InterpBandColor` and `InterpFloatBand` (`DAY_HALF_MINUTES = 2880`). Measured after, both
 clients co-located at the same clock:
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | outdoor ambient | 0.101961 0.337255 0.345098 | 0.105882 0.341176 0.345098 | **ok** |
 | outdoor diffuse | 0.14902 0.65098 0.807843 | 0.14902 0.65098 0.803922 | **ok** |
@@ -2346,7 +2346,7 @@ With the band wrap fixed and the harness taught two new tricks, every colour the
 produces is now compared automatically and matches. Measured with both clients co-located on map
 609 at the same clock:
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | outdoor ambient | 0.101961 0.337255 0.345098 | 0.105882 0.341176 0.345098 | ok |
 | outdoor diffuse | 0.14902 0.65098 0.807843 | 0.14902 0.65098 0.803922 | ok |
@@ -2361,10 +2361,10 @@ produces is now compared automatically and matches. Measured with both clients c
 | sun direction | -0.660471 -0.660471 -0.357149 | 0.660178 0.660178 0.358232 | negated, matches |
 
 **Harness changes that made those seven comparable.** They were not failing before -- they were never
-being compared at all. The reference packs a colour into one u32 where whoa keeps three floats, so
+being compared at all. The reference packs a colour into one u32 where frozen keeps three floats, so
 the probe file carried them as two unpaired rows with a note saying "compare by hand", which in
 practice meant never. `memcompare.py` now takes `ref_packed_rgb` (unpack the reference u32 into
-three floats) and `whoa_type` (let the whoa side read a different shape from the reference side).
+three floats) and `frozen_type` (let the frozen side read a different shape from the reference side).
 
 **The DayNight block layout, mapped by value rather than guessed.** My first attempt at sky-ring
 addresses was off by two slots and reported five confident DIFFs against correct data -- worth
@@ -2374,8 +2374,8 @@ remembering before trusting a computed probe address. Dumping both blocks side b
 |---|---|
 | 0 | ambient (band 1) |
 | 1 | diffuse (band 0) |
-| 2 | neutral grey, 0.298 on all three channels -- **not yet identified**, whoa reads no band for it |
-| 3..7 | sky bands 2..6, so ref index = 7 - k for whoa's `s_skyColors[k]` |
+| 2 | neutral grey, 0.298 on all three channels -- **not yet identified**, frozen reads no band for it |
+| 3..7 | sky bands 2..6, so ref index = 7 - k for frozen's `s_skyColors[k]` |
 | 8 | fog colour |
 | 9 | body tint (band 9) |
 | 10, 11 | two further colours, not yet identified |
@@ -2392,7 +2392,7 @@ They are not a defect. Measured with both clients co-located:
   (the 40-yard first cascade) and depth is 1/4000 (the far plane), once the reference's NDC-to-UV
   halving is accounted for.
 - **Depth at the reference's own shadow centre agrees**: 0.498582 against 0.499975.
-- The linear parts differ by a rotation -- whoa's u row has a zero x component (forced: the basis is
+- The linear parts differ by a rotation -- frozen's u row has a zero x component (forced: the basis is
   `cross(up, dir)` with the up hint `1 0 0`, which the reference probe confirms it also uses),
   the reference's does not. So the reference's matrix does **not** consume world coordinates.
   Camera/view space is the obvious candidate; that is a hypothesis, not a measurement.
@@ -2404,7 +2404,7 @@ This is now checked automatically rather than argued: `report_invariants` report
 ratio, so if the projections ever really diverge the ratio moves off 1.0 and says so. Element-wise
 DIFF on those three rows is expected and can be ignored; **the ratios are the thing to read.**
 
-Remaining unpaired probes (reference has a value, whoa has no counterpart): `celestial glow`,
+Remaining unpaired probes (reference has a value, frozen has no counterpart): `celestial glow`,
 `sun glare colour`, `fog rate`, and DayNight block indices 2, 10 and 11.
 
 ### 2026-09-15 - the reference's DayNight colour block, fully mapped and fully compared
@@ -2417,18 +2417,18 @@ already produced one set of confident-but-wrong DIFFs, so this is the method to 
 |---|---|---|
 | 0 | 1 | ambient |
 | 1 | 0 | diffuse |
-| 2 | **8** | a neutral grey here -- **whoa never read this band** |
+| 2 | **8** | a neutral grey here -- **frozen never read this band** |
 | 3 | 2 | sky ring (bottom) |
 | 4-7 | 3, 4, 5, 6 | sky rings |
 | 8 | - | fog colour (no band matches it directly; it is derived) |
 | 9 | 9 | body tint |
-| 10 | **10** | **whoa never read this band** |
-| 11 | **11** | **whoa never read this band** |
+| 10 | **10** | **frozen never read this band** |
+| 11 | **11** | **frozen never read this band** |
 
-whoa now reads bands 8, 10 and 11 into `s_sunColor`, `s_cloudColor1` and `s_cloudColor2`, blended
+frozen now reads bands 8, 10 and 11 into `s_sunColor`, `s_cloudColor1` and `s_cloudColor2`, blended
 through the same falloff path as every other band, and all three are compared. Measured:
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | sun colour (band 8) | 0.298039 x3 | 0.301961 x3 | ok |
 | cloud colour 1 (band 10) | 0.219608 0.54902 0.690196 | 0.215686 0.54902 0.690196 | ok |
@@ -2444,7 +2444,7 @@ verified inputs to work from.
 tex-matrix columns already shown to be a basis convention, watched by the per-axis scale ratios.**
 Nothing in the paired set is unexplained.
 
-What remains is unpaired rather than wrong: the shadow-map constants whoa hard-codes (map size,
+What remains is unpaired rather than wrong: the shadow-map constants frozen hard-codes (map size,
 cascade extents and thresholds, box half-extent, up hint, depth scale), the reference's cached
 shadow centre, and `celestial glow` / `sun glare colour` / `fog rate`.
 
@@ -2453,25 +2453,25 @@ shadow centre, and `celestial glow` / `sun glare colour` / `fog rate`.
 The unpaired `fog rate` probe turned out to be a genuine defect rather than missing instrumentation.
 
 Reading the reference's fog block live shows it laid out as **[colour, start, end, rate]**, twice
-over (0x00d38b8c and 0x00d38ba0), with the rate **1.5** in both copies. whoa was calling the
+over (0x00d38b8c and 0x00d38ba0), with the rate **1.5** in both copies. frozen was calling the
 three-argument `CM2Lighting::SetFog`, whose overload **defaults the density to 1.0** -- so even with
 fog start, fog end and fog colour all matching the reference exactly, entity fog fell off on a
 different curve. A four-argument overload already existed and was simply never used.
 
 `CWorld::s_fogRate` now holds 1.5 and is passed through, and the probe is paired so it stays
-checked: reference 1.5, whoa 1.5, ok. **16 ok, 3 DIFF** (the three explained shadow tex-matrix
+checked: reference 1.5, frozen 1.5, ok. **16 ok, 3 DIFF** (the three explained shadow tex-matrix
 columns).
 
 **The float bands, mapped the same way as the colour bands** (compute all six at the live clock):
 
 | band | value here | |
 |---|---|---|
-| 0 | 62000 | fog end, whoa reads |
-| 1 | -0.274 | fog start scalar, whoa reads |
-| 2 | 1.0 | **whoa does not read** |
-| 3 | 0.527 | cloud density, whoa reads |
-| 4 | 0.95 | **whoa does not read** |
-| 5 | 1.0 | **whoa does not read** |
+| 0 | 62000 | fog end, frozen reads |
+| 1 | -0.274 | fog start scalar, frozen reads |
+| 2 | 1.0 | **frozen does not read** |
+| 3 | 0.527 | cloud density, frozen reads |
+| 4 | 0.95 | **frozen does not read** |
+| 5 | 1.0 | **frozen does not read** |
 
 None of them produces 1.5, so the fog rate is not band-driven -- it reads as a constant, which is
 why hard-coding it matches. Bands 2, 4 and 5 remain unidentified; they are the float-side equivalent
@@ -2485,11 +2485,11 @@ Dump the neighbourhood and read the structure before trusting a single address.
 
 The reference keeps LightFloatBand bands 2..5 **consecutively** at `0x00d38c30`, `0x00d38c34`,
 `0x00d38c38`, `0x00d38c3c`. Found by value, not by guessing: band 4's 0.95 had exactly one match in
-the whole DayNight region, and dumping around it showed the run, with whoa's own cloud density
+the whole DayNight region, and dumping around it showed the run, with frozen's own cloud density
 sitting third.
 
-That places **cloud density at `0x00d38c34`** -- it had been a whoa-only probe with nothing to
-compare against since it was first implemented. It now compares: reference 0.528518, whoa 0.525556,
+That places **cloud density at `0x00d38c34`** -- it had been a frozen-only probe with nothing to
+compare against since it was first implemented. It now compares: reference 0.528518, frozen 0.525556,
 ok (the drift is the clock advancing between the two reads).
 
 Bands 2, 4 and 5 are now read into `s_floatBand2/4/5` and compared (1.0, 0.95, 1.0 -- all ok).
@@ -2503,23 +2503,23 @@ columns). Up from 12 ok two iterations ago, with no new mismatches.
 the row holds `highlightSky=1`, `lightSkyboxID=114`, `glow=0`, and four water alphas (0.2, 0.5, 1.0,
 0.75, 1.0). None is 0.3228. The value also falls steadily through the evening (0.371 -> 0.351 ->
 0.333 -> 0.323 across the session), so it is computed per frame, most likely from the sun's
-elevation. whoa has no equivalent because the sun glare pass is not ported.
+elevation. frozen has no equivalent because the sun glare pass is not ported.
 
 Still unpaired: `celestial glow`, `sun glare colour` (which reads identical to the body tint in every
 sample so far -- worth confirming they are genuinely the same value before pairing), the shadow-map
-constants whoa hard-codes, and the reference's cached shadow centre.
+constants frozen hard-codes, and the reference's cached shadow centre.
 
 ### 2026-09-15 - the hard-coded shadow constants are now checked, not assumed
 
 Four of the reference's shadow-cache values had sat unpaired since the harness was written, with the
-note "Whoa hard-codes it, so there is no symbol to read". That was true and it was the problem: the
+note "Frozen hard-codes it, so there is no symbol to read". That was true and it was the problem: the
 constants were file-local `const` in `MapShadow.cpp`, so the compiler folded them away and nothing
 could read them. They matched the reference by assertion in a comment, never by measurement.
 
 They are now gathered into `g_mapShadowConstants` (declared in `MapShadow.hpp`), which costs nothing
 at runtime and makes them readable. Measured:
 
-| probe | reference | whoa | |
+| probe | reference | frozen | |
 |---|---|---|---|
 | map size (texels) | 1024 | 1024 | ok |
 | box half-extent | 20 | 20 | ok |
@@ -2529,15 +2529,15 @@ at runtime and makes them readable. Measured:
 **Comparison state: 24 ok, 1 negated-by-convention, 3 DIFF** (the explained tex-matrix columns).
 
 **Deliberately NOT paired: cascade extents and thresholds.** The reference reports extents
-`40 160 640` and thresholds `4 16 1024` -- three cascades. whoa has one, whose 40-yard box matches
-the reference's first. Pairing whoa's single value against the reference's first entry would show a
+`40 160 640` and thresholds `4 16 1024` -- three cascades. frozen has one, whose 40-yard box matches
+the reference's first. Pairing frozen's single value against the reference's first entry would show a
 green "ok" for a client that does not implement cascades at all. That is a real gap and it should
 stay visible as one.
 
 **sun glare colour resolved, and it needs no probe.** Its RGB is byte-identical to the body tint in
 every sample; the difference is the **alpha byte**, `0x00` against the tint's `0xFF`. Same colour
 source, with alpha carrying whether the glare draws at all -- zero here, which is correct for
-evening. Pairing it against whoa's body tint would just re-check the tint under a second name.
+evening. Pairing it against frozen's body tint would just re-check the tint under a second name.
 
 ### 2026-09-15 - the interface load is down to two frame types
 
@@ -2574,7 +2574,7 @@ A comparison run came back **8 DIFF, 20 ok** against the previous **3 DIFF, 24 o
 fog colour, body tint, sky ring 4 and cloud colour 2 all suddenly wrong. No code involved had
 changed.
 
-Cause: **46 minutes of day/night clock skew.** whoa read 19:12, the reference 18:26. whoa re-syncs
+Cause: **46 minutes of day/night clock skew.** frozen read 19:12, the reference 18:26. frozen re-syncs
 from the server on every login and had been restarted many times; the reference had been running
 continuously for about 90 real minutes and had advanced only ~30 game minutes in that time. Its
 clock runs slow and it never re-syncs while it stays logged in.
@@ -2582,7 +2582,7 @@ clock runs slow and it never re-syncs while it stays logged in.
 Restarting and re-logging the reference restored **24 ok, 3 DIFF** immediately, with no code change.
 
 **So: a comparison is only valid shortly after BOTH clients have logged in.** Leaving the reference
-up across several iterations of whoa restarts silently invalidates every clock-dependent probe --
+up across several iterations of frozen restarts silently invalidates every clock-dependent probe --
 which is most of them. Re-log the reference before any run whose numbers matter, and if a batch of
 light values goes bad at once, check the clocks before looking at the code. `memcompare.py` should
 grow a skew warning; until it does, this is a manual check.
@@ -2616,7 +2616,7 @@ both clients read the identical minute count, so `0x00d38b00` is the reference's
 minutes.
 
 **The shadow centre is now compared, and matches exactly**: reference `2358.44 -5666.9 426.023`,
-whoa `2358.44 -5666.9 426.023`. whoa passes the player position to `MapShadowSetup` exactly as the
+frozen `2358.44 -5666.9 426.023`. frozen passes the player position to `MapShadowSetup` exactly as the
 reference does -- previously a claim in a comment, now a checked value via `g_mapShadowFocus`.
 
 **Comparison state: 25 ok, 1 negated-by-convention, 3 DIFF.**
@@ -2625,7 +2625,7 @@ That exact centre match sharpens the one real unknown left in the shadow volume.
 
 - the two matrices scale every axis identically (ratio 1.000000),
 - they are built around the identical focus point,
-- yet the reference maps that focus to u,v = (0.532, 0.430) of its shadow map while whoa maps it to
+- yet the reference maps that focus to u,v = (0.532, 0.430) of its shadow map while frozen maps it to
   (0.500, 0.500) -- dead centre.
 
 So the reference deliberately offsets its shadow volume from the focus by roughly **1.2 and 2.8
@@ -2639,7 +2639,7 @@ iterations ago.
 
 Last entry claimed the reference "deliberately offsets its shadow volume from the focus by roughly
 1.2 and 2.8 yards". **That is wrong, and the error was mine, not the client's.** I compared two
-different points: whoa's matrix consumes world coordinates, so feeding it the player position shows
+different points: frozen's matrix consumes world coordinates, so feeding it the player position shows
 where the *player* lands (dead centre, 0.500/0.500); the reference's matrix consumes camera-relative
 coordinates, so its constant column shows where the *camera* lands (0.532/0.430). Comparing the
 image of the player against the image of the camera and calling the difference an offset was a
@@ -2655,7 +2655,7 @@ with six left-arrow presses and its tex matrix re-read:
 
 **The whole matrix changed, linear part included, from a camera rotation alone.** Nothing about the
 light moved -- the sun direction and the focus are untouched by yaw -- so the matrix cannot be a pure
-world-to-light transform. It carries the view. whoa's equivalent is view-independent by
+world-to-light transform. It carries the view. frozen's equivalent is view-independent by
 construction, since it is built from the light direction and the focus only.
 
 The magnitudes agree too: the camera sits 6.04 yards from the focus, which is 0.151 of the 40-yard
@@ -2669,10 +2669,10 @@ shadow volume.
 Turning the camera and re-reading is a good general technique for this binary: it separates the
 things that depend on the view from the things that depend on the world, and it needs no symbols.
 
-### 2026-09-15 - the light block runs to slot 17: six more bands whoa never read
+### 2026-09-15 - the light block runs to slot 17: six more bands frozen never read
 
 Sweeping past slot 11 shows the DayNight block keeps going. Slots 12..17 hold LightIntBand bands
-12..17, matched by value at the live clock. **whoa read none of them.**
+12..17, matched by value at the live clock. **frozen read none of them.**
 
 The full block, now mapped end to end:
 
@@ -2691,7 +2691,7 @@ Two pairs in the new range stand out: bands **14 and 16 hold the same colour** (
 and **15 and 17 a darker one** (~0.10-0.12 0.173 0.243). Same-colour-shallow / darker-deep, twice
 over, is the shape of **river and ocean water colours**. That is inference from values, not from
 code, so they are stored as `s_lightBands12to17` by band number rather than named for the guess.
-If it holds, it means whoa's liquid rendering has never had the data-driven water colours available
+If it holds, it means frozen's liquid rendering has never had the data-driven water colours available
 to it at all.
 
 All six now read and compared: **ok** on every one.
@@ -2720,10 +2720,10 @@ by `FUN_007ecef0`. Finding it means following that second block rather than sear
 to the first. **Do not spend another Ghidra run on DataRefs for these addresses.**
 
 The bands stay named `s_lightBands12to17` -- by number, not by the guess -- and they are read,
-blended and verified against the reference regardless. Whether whoa's liquid rendering should be
+blended and verified against the reference regardless. Whether frozen's liquid rendering should be
 consuming them is a separate question that this did not settle.
 
-### 2026-09-15 - CONFIRMED: bands 14-17 are the liquid colours, and whoa has never read them
+### 2026-09-15 - CONFIRMED: bands 14-17 are the liquid colours, and frozen has never read them
 
 The previous entry recorded "do not spend another Ghidra run on DataRefs for these addresses" and
 said to follow the consumers instead. That worked.
@@ -2752,7 +2752,7 @@ So, confirmed rather than inferred:
 | 16 | ocean shallow |
 | 17 | ocean deep |
 
-**whoa's liquid rendering has never had these colours.** It now reads all four (verified ok against
+**frozen's liquid rendering has never had these colours.** It now reads all four (verified ok against
 the reference), and the gradient-table construction in `FUN_008a2bf0` is the port that would use
 them, together with the LightParams alphas.
 
@@ -2821,7 +2821,7 @@ as well.
 
 Porting the alpha half of `FUN_008a2bf0` turned up a concrete bug rather than just missing data.
 
-whoa baked per-vertex liquid alpha as `t * base * 255`, where `t` is the depth ramp (0 at the
+frozen baked per-vertex liquid alpha as `t * base * 255`, where `t` is the depth ramp (0 at the
 surface edge, 1 at `maxDarkenDepth`) and `base` was a hand-picked 0.847 for ocean and 0.753 for
 water. **At zero depth that gives alpha 0 -- shallow water drew completely invisible.** The reference
 interpolates between two LightParams alphas instead, so its shallow edge starts at 0.5 for river
@@ -2864,7 +2864,7 @@ Without this a water surface kept the light of whatever zone it loaded under, so
 or waiting for dusk left it stale.
 
 One byte per liquid vertex is the cost. That is the same trade the reference makes in a different
-shape: it keeps a gradient table and indexes it per vertex; whoa keeps the index and rebuilds the
+shape: it keeps a gradient table and indexes it per vertex; frozen keeps the index and rebuilds the
 colours.
 
 **A mistake worth noting:** the first attempt added `depthRamp` to `CChunkLiquid.hpp`, which is an
@@ -2915,14 +2915,14 @@ doing.
 Run it, then compare:
 
 ```
-day/night clock: reference 1206, whoa 1206 (+0 minutes)
+day/night clock: reference 1206, frozen 1206 (+0 minutes)
 ok: 31   DIFF: 3   SKEW: 0
 ```
 
 The three DIFFs remain the view-space shadow tex-matrix columns, watched by the per-axis scale
 ratios. Note how much they move between runs -- `tex matrix col 0` reads `0.00896 -0.0306 -0.0385`
 here against `0.0381 -0.0275 -0.0172` earlier -- which is the camera orientation changing and is
-exactly what a view-space matrix should do. whoa's columns barely move across the same runs.
+exactly what a view-space matrix should do. frozen's columns barely move across the same runs.
 
 ### 2026-09-15 - ColorSelect implemented; the interface load is down to one line
 
@@ -3320,7 +3320,7 @@ plainly see a frozen window. **Sampling where the CPU is says nothing about whet
 the screen.**
 
 `tools/samplehang.py` was written for this: it suspends each thread, reads the instruction pointer
-and symbolizes it. It found the earlier `BlobShadowDrawWmo` spin correctly. Note that whoa's symbol
+and symbolizes it. It found the earlier `BlobShadowDrawWmo` spin correctly. Note that frozen's symbol
 cache holds DATA globals only, so it prints raw RVAs -- pass those to llvm-symbolizer, which reads
 the real function table.
 
@@ -3338,17 +3338,17 @@ core to roughly a quarter of one, and the function no longer appears in samples 
 
 ### 2026-09-15 - the missing NPCs were a character mismatch, not a bug
 
-The Val'kyr and the Lich King are visible in the reference and absent in whoa because the two
+The Val'kyr and the Lich King are visible in the reference and absent in frozen because the two
 clients were logged in as different characters:
 
 | | class | level |
 |---|---|---|
 | reference (TEST) | **6, Death Knight** | 55 |
-| whoa (SCENE) | 4, Rogue | 1 |
+| frozen (SCENE) | 4, Rogue | 1 |
 
-Those NPCs belong to the Death Knight intro, which is phased. Measured: the server sent whoa exactly
+Those NPCs belong to the Death Knight intro, which is phased. Measured: the server sent frozen exactly
 **1 unit and 1 player, with zero parse failures** -- it was never sending them. Logged in as the
-Death Knight instead, whoa creates **130 units, 102 of them live in the object manager and all 102
+Death Knight instead, frozen creates **130 units, 102 of them live in the object manager and all 102
 visible**.
 
 Worth remembering when setting up a comparison: moving a character into a phased zone through the
@@ -3376,7 +3376,7 @@ false for `.wmo` and they stay visibly unimplemented. That branch is the remaini
 
 ### 2026-09-15 - comparison note: only one Death Knight exists
 
-whoa now runs as TEST (the Death Knight) to see the phased Ebon Hold scene. The reference used the
+frozen now runs as TEST (the Death Knight) to see the phased Ebon Hold scene. The reference used the
 same account, so **both clients cannot be in that scene at once** -- logging one in kicks the other.
 
 Rendering comparisons at Ebon Hold are therefore sequential again, with all the clock-skew hazard
@@ -3414,17 +3414,17 @@ Only one Death Knight existed, on TEST, so both clients could not be in the popu
 would corrupt both. The copy is therefore unequipped, which is a visible difference on the player
 model and nothing else.
 
-`WHOA_AUTO_CHARACTER` picks a character by name at the selection screen, since an account can hold
+`FROZEN_AUTO_CHARACTER` picks a character by name at the selection screen, since an account can hold
 several and the first is not necessarily the right one:
 
 ```
-WHOA_AUTO_LOGIN=SCENE:SCENE WHOA_AUTO_CHARACTER=Scenedk
+FROZEN_AUTO_LOGIN=SCENE:SCENE FROZEN_AUTO_CHARACTER=Scenedk
 ```
 
 Both clients in the populated scene, same instant:
 
 ```
-day/night clock: reference 1434, whoa 1434 (+0 minutes)
+day/night clock: reference 1434, frozen 1434 (+0 minutes)
 ok: 31   DIFF: 3   SKEW: 0
 ```
 
@@ -3489,7 +3489,7 @@ So the client now emits its own back buffer.
 | `CGxDevice::ScreenShot` / `GxScreenShot` | the same four-layer chain `GxRenderTargetDump` already uses; non-D3D backends inherit a no-op |
 | `Screen::s_capturePath` + the `s_captureScreen` block in `Screen.cpp` | the `// TODO` next to the capture flag is filled in: the grab happens at present time, so the image is a whole frame |
 | `Script_Screenshot` | was `WHOA_UNIMPLEMENTED`. Names the file `Screenshots/WoWScrnShot_MMDDYY_HHMMSS.tga` as the reference does, sets the flag, and signals event 171 |
-| `AutoScreenShot` in `CGWorldFrame.cpp` | `WHOA_SCREENSHOT=<path>` captures once after `WHOA_SCREENSHOT_FRAME` frames in world (default 300) |
+| `AutoScreenShot` in `CGWorldFrame.cpp` | `FROZEN_SCREENSHOT=<path>` captures once after `FROZEN_SCREENSHOT_FRAME` frames in world (default 300) |
 | `tools/tga2png.py` | stdlib-only TGA -> PNG, since nothing in the viewing path reads TGA and Pillow is not installed |
 
 The binding defers to the layer code rather than capturing inline: at the moment a Lua binding runs,
@@ -3502,7 +3502,7 @@ capture itself, which needs a run. The user was playing, so no client could be s
 Next run, this is the command:
 
 ```
-WHOA_AUTO_LOGIN=SCENE:SCENE WHOA_AUTO_CHARACTER=Scenedk WHOA_SCREENSHOT=<path>.tga Whoa.exe
+FROZEN_AUTO_LOGIN=SCENE:SCENE FROZEN_AUTO_CHARACTER=Scenedk FROZEN_SCREENSHOT=<path>.tga Frozen.exe
 python tools/tga2png.py <path>.tga
 ```
 
@@ -3606,8 +3606,8 @@ slice, and naming the slice matters more than the count.
 | | count |
 |---|---|
 | probes in the file | 57 |
-| whoa-only -- no reference address located yet | 10 |
-| reference-only -- read there, no whoa equivalent read back | 12 |
+| frozen-only -- no reference address located yet | 10 |
+| reference-only -- read there, no frozen equivalent read back | 12 |
 | **actually compared pairs** | **34** |
 | ...of which the explained shadow-matrix basis difference | 3 |
 | ...**matching pairs** | **31** |
@@ -3638,7 +3638,7 @@ specifically silent on all three things the user last reported seeing wrong:
 
 That is the honest boundary of the current measurement, and it is the gap that has to close before
 "100 percent" means anything. Each new probe needs a reference address, which means Ghidra, not
-guesswork -- the whoa side is already reachable (`BlobShadowStrength` and the liquid accessors in
+guesswork -- the frozen side is already reachable (`BlobShadowStrength` and the liquid accessors in
 `src/world/Terrain.cpp`, the density and sheet-flip state in `src/world/Clouds.cpp`).
 
 Also restored `SET gxWindow "1"` to the reference install's `WTF/Config.wtf`. It was missing again --
@@ -3653,8 +3653,8 @@ struct base at **0x00d38d90**, and gives its layout.
 
 | field | address | probe |
 |-------|---------|-------|
-| `densityOverride` (float, 0 = use the DNInfo band) | 0x00d38d94 | reference-only; whoa has no override |
-| `alphaThreshold` (uint8) | 0x00d38d98 | paired with whoa's `s_threshold` |
+| `densityOverride` (float, 0 = use the DNInfo band) | 0x00d38d94 | reference-only; frozen has no override |
+| `alphaThreshold` (uint8) | 0x00d38d98 | paired with frozen's `s_threshold` |
 
 `alphaThreshold` is the useful one: it is `round((1 - density) * 255)`, so it encodes the effective
 cloud density in a single byte that is rewritten whenever the density changes. Probes: 57 -> 59.
@@ -3675,8 +3675,8 @@ down and wrong. The probe decides it with one run, which is what a probe is for.
 PDB report RVAs around 0x08BExxxx, far past the 2.3 MB image, which looked like a symbol-resolution
 bug silently feeding garbage addresses to the harness. It is not. `s_texMatrix` is one of the 192 and
 it returned correct values in the live comparison, so those addresses are real -- the image simply
-carries a large uninitialized data region. The 12 rows that print "-" on the whoa side are just
-probes with no `whoa` field, exactly as the previous entry described. **No bug; nothing to fix.**
+carries a large uninitialized data region. The 12 rows that print "-" on the frozen side are just
+probes with no `frozen` field, exactly as the previous entry described. **No bug; nothing to fix.**
 
 ### 2026-09-16 - the new Lua bindings, checked against real call sites
 
@@ -4259,7 +4259,7 @@ finished.
 **The draw-distance sphere is NOT a fog parameter problem.** Read live from the running client and
 cross-checked against the last two-client comparison, every fog value matches the reference exactly:
 
-| | reference | whoa | |
+| | reference | frozen | |
 |---|---|---|---|
 | fog end | 727 | 727 | ok |
 | fog start | 0 | 0 | ok |

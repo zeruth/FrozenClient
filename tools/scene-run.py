@@ -2,7 +2,7 @@
 r"""One command for a full two-client comparison run, with the safety rules built in.
 
 Assembling this sequence by hand each time is how a run gets wasted: the reference comes up
-fullscreen because Config.wtf lost gxWindow again, or a stale Whoa is still holding the port, or the
+fullscreen because Config.wtf lost gxWindow again, or a stale Frozen is still holding the port, or the
 screenshot never gets converted and there is nothing to look at afterwards. The desktop is rarely
 free, so when it is, the run has to work the first time.
 
@@ -161,7 +161,7 @@ def main():
 
     print("[2/7] gxWindow present")
 
-    killed = kill_by_path(memcompare.REFERENCE_EXE, memcompare.WHOA_EXE)
+    killed = kill_by_path(memcompare.REFERENCE_EXE, memcompare.FROZEN_EXE)
     print("[3/7] cleared %d leftover client(s)" % len(killed))
 
     if killed:
@@ -185,15 +185,15 @@ def main():
         os.remove(shot)
 
     env = dict(os.environ)
-    env["WHOA_AUTO_LOGIN"] = "%s:%s" % (args.account, args.password)
-    env["WHOA_AUTO_CHARACTER"] = args.character
-    env["WHOA_SCREENSHOT"] = shot
+    env["FROZEN_AUTO_LOGIN"] = "%s:%s" % (args.account, args.password)
+    env["FROZEN_AUTO_CHARACTER"] = args.character
+    env["FROZEN_SCREENSHOT"] = shot
 
     print("[5/7] launching ours as %s ..." % args.character)
     log = open(os.path.join(ROOT, "build", "scene-run.log"), "wb")
-    subprocess.Popen([memcompare.WHOA_EXE], cwd=REFERENCE_DIR, env=env, stdout=log, stderr=log)
+    subprocess.Popen([memcompare.FROZEN_EXE], cwd=REFERENCE_DIR, env=env, stdout=log, stderr=log)
 
-    symbols = memcompare.load_whoa_symbols()
+    symbols = memcompare.load_frozen_symbols()
 
     def ours_in_world(target):
         info = symbols.get("CGGameUI::s_inWorld")
@@ -205,7 +205,7 @@ def main():
 
         return "in world" if held and held[0] else None
 
-    if not wait_for_world("whoa", memcompare.WHOA_EXE, ours_in_world, args.timeout):
+    if not wait_for_world("frozen", memcompare.FROZEN_EXE, ours_in_world, args.timeout):
         print("  WARNING: ours never reported in-world; comparing anyway")
 
     # The screenshot fires a few hundred frames in; give it room to land.
@@ -250,7 +250,7 @@ def main():
     print("  stubs hit this run: %d unique" % len(stubs))
 
     if not args.keep:
-        kill_by_path(memcompare.REFERENCE_EXE, memcompare.WHOA_EXE)
+        kill_by_path(memcompare.REFERENCE_EXE, memcompare.FROZEN_EXE)
         print("both clients shut down")
     else:
         print("both clients left running (--keep)")

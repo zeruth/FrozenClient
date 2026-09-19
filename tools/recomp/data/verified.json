@@ -7,8 +7,8 @@
    1,
    0
   ],
-  "whoa": "CImVector::Set",
-  "whoaPerFrame": [
+  "frozen": "CImVector::Set",
+  "frozenPerFrame": [
    0,
    1,
    0
@@ -22,8 +22,8 @@
    2,
    2
   ],
-  "whoa": "CSimpleTexture_IsShown",
-  "whoaPerFrame": [
+  "frozen": "CSimpleTexture_IsShown",
+  "frozenPerFrame": [
    2,
    2,
    2
@@ -37,8 +37,8 @@
    1,
    1
   ],
-  "whoa": "CSimpleFontString_IsVisible",
-  "whoaPerFrame": [
+  "frozen": "CSimpleFontString_IsVisible",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -52,8 +52,8 @@
    1,
    1
   ],
-  "whoa": "CSimpleFontString_IsShown",
-  "whoaPerFrame": [
+  "frozen": "CSimpleFontString_IsShown",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -67,8 +67,8 @@
    1,
    1
   ],
-  "whoa": "CScriptRegion_SetPoint",
-  "whoaPerFrame": [
+  "frozen": "CScriptRegion_SetPoint",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -82,8 +82,8 @@
    3,
    3
   ],
-  "whoa": "CScriptRegion_IsMouseOver",
-  "whoaPerFrame": [
+  "frozen": "CScriptRegion_IsMouseOver",
+  "frozenPerFrame": [
    3,
    3,
    3
@@ -97,8 +97,8 @@
    21,
    21
   ],
-  "whoa": "CSimpleFrame_IsShown",
-  "whoaPerFrame": [
+  "frozen": "CSimpleFrame_IsShown",
+  "frozenPerFrame": [
    21,
    21,
    21
@@ -112,8 +112,8 @@
    1,
    1
   ],
-  "whoa": "CGWorldFrame::OnWorldRender",
-  "whoaPerFrame": [
+  "frozen": "CGWorldFrame::OnWorldRender",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -127,8 +127,8 @@
    1,
    1
   ],
-  "whoa": "Script_GetCursorPosition",
-  "whoaPerFrame": [
+  "frozen": "Script_GetCursorPosition",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -142,8 +142,8 @@
    1,
    0
   ],
-  "whoa": "Script_GetNetStats",
-  "whoaPerFrame": [
+  "frozen": "Script_GetNetStats",
+  "frozenPerFrame": [
    0,
    1,
    0
@@ -157,8 +157,8 @@
    1,
    1
   ],
-  "whoa": "CGTooltip_IsOwned",
-  "whoaPerFrame": [
+  "frozen": "CGTooltip_IsOwned",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -172,8 +172,8 @@
    1,
    1
   ],
-  "whoa": "SRgnCreate",
-  "whoaPerFrame": [
+  "frozen": "SRgnCreate",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -187,8 +187,8 @@
    1,
    1
   ],
-  "whoa": "SkyRender",
-  "whoaPerFrame": [
+  "frozen": "SkyRender",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -202,8 +202,8 @@
    2,
    2
   ],
-  "whoa": "StringToFramePoint",
-  "whoaPerFrame": [
+  "frozen": "StringToFramePoint",
+  "frozenPerFrame": [
    2,
    2,
    2
@@ -217,8 +217,8 @@
    10,
    8
   ],
-  "whoa": "luaV_tonumber",
-  "whoaPerFrame": [
+  "frozen": "luaV_tonumber",
+  "frozenPerFrame": [
    8,
    10,
    8
@@ -232,8 +232,8 @@
    1,
    0
   ],
-  "whoa": "FrameScript_GetColor",
-  "whoaPerFrame": [
+  "frozen": "FrameScript_GetColor",
+  "frozenPerFrame": [
    0,
    1,
    0
@@ -247,8 +247,8 @@
    1,
    1
   ],
-  "whoa": "CSimpleScrollingMessageFrame_AtBottom",
-  "whoaPerFrame": [
+  "frozen": "CSimpleScrollingMessageFrame_AtBottom",
+  "frozenPerFrame": [
    1,
    1,
    1
@@ -262,8 +262,8 @@
    3,
    3
   ],
-  "whoa": "CSimpleButton_GetButtonState",
-  "whoaPerFrame": [
+  "frozen": "CSimpleButton_GetButtonState",
+  "frozenPerFrame": [
    3,
    3,
    3

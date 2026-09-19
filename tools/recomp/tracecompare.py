@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Diff the reference's and whoa's per-frame call traces and mark what matched as verified.
+"""Diff the reference's and frozen's per-frame call traces and mark what matched as verified.
 
-Inputs: data/trace-ref.jsonl and data/trace-whoa.jsonl from calltrace.py (same map.json, same
+Inputs: data/trace-ref.jsonl and data/trace-frozen.jsonl from calltrace.py (same map.json, same
 scene as far as the accounts allow). Both are cut into frames at CGWorldFrame::RenderWorld and every
-reference hit is translated to its whoa name through the map, so the two sides speak the same names.
+reference hit is translated to its frozen name through the map, so the two sides speak the same names.
 
 For every function that either side called, per frame:
   * present on both sides, same count in most frames, and the frame-level order agrees
     (LCS over the frame's sequence >= 0.8)                     -> verified (written to data/verified.json)
-  * called by the reference every frame, never by whoa       -> "whoa never calls" (a missing call site)
-  * called by whoa, never by the reference                   -> "whoa adds" (invented behaviour)
+  * called by the reference every frame, never by frozen       -> "frozen never calls" (a missing call site)
+  * called by frozen, never by the reference                   -> "frozen adds" (invented behaviour)
   * both call it but counts differ                           -> count mismatch
 
 recomp.py reads verified.json: a linked function in it reports as status "verified" with the
@@ -73,27 +73,27 @@ def lcs_len(a, b):
 
 def main():
     m = json.load(io.open(os.path.join(DATA, 'map.json'), encoding='utf-8'))
-    by_name = {e['whoa']: a for a, e in m.items()}
-    ref = load(os.path.join(DATA, 'trace-ref.jsonl'), {a: e['whoa'] for a, e in m.items()})
-    whoa = load(os.path.join(DATA, 'trace-whoa.jsonl'))
-    if not ref or not whoa:
-        raise SystemExit('need complete frames on both sides (ref %d, whoa %d)' % (len(ref), len(whoa)))
-    n = min(len(ref), len(whoa))
-    ref, whoa = ref[:n], whoa[:n]
+    by_name = {e['frozen']: a for a, e in m.items()}
+    ref = load(os.path.join(DATA, 'trace-ref.jsonl'), {a: e['frozen'] for a, e in m.items()})
+    frozen = load(os.path.join(DATA, 'trace-frozen.jsonl'))
+    if not ref or not frozen:
+        raise SystemExit('need complete frames on both sides (ref %d, frozen %d)' % (len(ref), len(frozen)))
+    n = min(len(ref), len(frozen))
+    ref, frozen = ref[:n], frozen[:n]
 
     names = set()
-    for f in ref + whoa:
+    for f in ref + frozen:
         names |= set(f)
     per = {}
     for name in sorted(names):
         rc = [f.count(name) for f in ref]
-        wc = [f.count(name) for f in whoa]
+        wc = [f.count(name) for f in frozen]
         per[name] = (rc, wc)
 
     # frame-level order: the sequence of names both sides know, compared frame by frame
     common = set(x for x in names if any(per[x][0]) and any(per[x][1]))
     order = []
-    for fr, fw in zip(ref, whoa):
+    for fr, fw in zip(ref, frozen):
         a = [x for x in fr if x in common]
         b = [x for x in fw if x in common]
         order.append(lcs_len(a, b) / float(max(len(a), len(b))) if a or b else 1.0)
@@ -112,7 +112,7 @@ def main():
             # down by every wrong link and by scene differences that have nothing to do with
             # this function.
             if same >= max(2, (n * 2) // 3):
-                verified[by_name.get(name, name)] = {'whoa': name, 'frames': n, 'refPerFrame': rc, 'whoaPerFrame': wc,
+                verified[by_name.get(name, name)] = {'frozen': name, 'frames': n, 'refPerFrame': rc, 'frozenPerFrame': wc,
                                                      'note': 'trace %s: same per-frame count in %d/%d frames (frame order agreement overall %.0f%%)' % (
                                                          datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), same, n, order_avg * 100)}
             else:
@@ -127,9 +127,9 @@ def main():
         if not a:
             continue
         if (all(rc) and not any(wc)) or (all(wc) and not any(rc)):
-            suspect[a] = {'whoa': name, 'why': 'one side every frame, the other never', 'ref': rc, 'whoa_': wc}
+            suspect[a] = {'frozen': name, 'why': 'one side every frame, the other never', 'ref': rc, 'frozen_': wc}
         elif all(rc) and all(wc) and all(max(x, y) >= 20 * max(1, min(x, y)) for x, y in zip(rc, wc)):
-            suspect[a] = {'whoa': name, 'why': 'per-frame counts differ 20x every frame', 'ref': rc, 'whoa_': wc}
+            suspect[a] = {'frozen': name, 'why': 'per-frame counts differ 20x every frame', 'ref': rc, 'frozen_': wc}
     json.dump(suspect, io.open(os.path.join(DATA, 'suspect.json'), 'w', encoding='utf-8'), indent=1, sort_keys=True)
     json.dump(verified, io.open(os.path.join(DATA, 'verified.json'), 'w', encoding='utf-8'), indent=1, sort_keys=True)
     summary = {'date': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), 'frames': n, 'orderAvg': round(order_avg, 3),
@@ -138,14 +138,14 @@ def main():
     json.dump(summary, io.open(os.path.join(DATA, 'trace-summary.json'), 'w', encoding='utf-8'), indent=1)
 
     print('%d frames compared; frame order agreement %.0f%%' % (n, order_avg * 100))
-    print('verified %d, whoa never calls %d, whoa adds %d, count mismatch %d' % (len(verified), len(missing), len(added), len(mismatch)))
-    print('\nreference calls every frame, whoa never:')
+    print('verified %d, frozen never calls %d, frozen adds %d, count mismatch %d' % (len(verified), len(missing), len(added), len(mismatch)))
+    print('\nreference calls every frame, frozen never:')
     for c, name in sorted(missing, reverse=True)[:25]:
         print('  %5d  %s' % (c, name))
-    print('\nwhoa calls, reference never:')
+    print('\nfrozen calls, reference never:')
     for c, name in sorted(added, reverse=True)[:25]:
         print('  %5d  %s' % (c, name))
-    print('\ncount mismatch (ref per frame | whoa per frame):')
+    print('\ncount mismatch (ref per frame | frozen per frame):')
     for d, name, rc, wc in sorted(mismatch, reverse=True)[:25]:
         print('  %-45s %s | %s' % (name[:45], rc, wc))
 

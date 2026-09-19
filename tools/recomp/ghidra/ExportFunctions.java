@@ -1,6 +1,6 @@
 // Exports every function in the program as one JSON line: address, name, whether the name is
 // analyst-given or a default FUN_, size, callees, callers count, referenced string literals and
-// referenced global data addresses. Feeds tools/recomp (the reference <-> whoa function map).
+// referenced global data addresses. Feeds tools/recomp (the reference <-> frozen function map).
 // Usage: -postScript ExportFunctions.java <outfile.jsonl>
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;

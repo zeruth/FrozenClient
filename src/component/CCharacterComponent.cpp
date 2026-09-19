@@ -469,9 +469,9 @@ void CCharacterComponent::Initialize(EGxTexFormat textureFormat, uint32_t textur
 
         // TODO FUN_004f16f0: start the component worker thread
     }
-    // else: the reference clears the ten words of worker-thread state here; whoa keeps none
+    // else: the reference clears the ten words of worker-thread state here; frozen keeps none
 
-    // whoa-only: the reference allocates the composition buffer lazily on its worker; this port
+    // frozen-only: the reference allocates the composition buffer lazily on its worker; this port
     // composes on the main thread and needs the buffer up front
     CCharacterComponent::s_textureBuffer = TextureAllocMippedImg(
         PIXEL_ARGB8888,

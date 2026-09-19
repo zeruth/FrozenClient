@@ -1,10 +1,10 @@
-# Contributing to Whoa
+# Contributing to Frozen
 
-Thanks for making a contribution to Whoa!
+Thanks for making a contribution to Frozen!
 
-## Whoa is 3.3.5a (build 12340)
+## Frozen is 3.3.5a (build 12340)
 
-Since Whoa is a faithful implementation of the original 3.3.5a (build 12340) client, there are some important considerations to keep in mind regarding accuracy:
+Since Frozen is a faithful implementation of the original 3.3.5a (build 12340) client, there are some important considerations to keep in mind regarding accuracy:
 
 * Do not assume behavior present in another version of the client is present in 3.3.5a (build 12340). Always verify 3.3.5a (build 12340) contains the behavior before trying to contribute it.
 
@@ -14,14 +14,14 @@ Since Whoa is a faithful implementation of the original 3.3.5a (build 12340) cli
 
 * Occasionally, original layouts or behaviors must be changed to permit compilation on modern 64-bit systems. When behaviors differ for compatibility, the original behavior should be documented, and the variance explained.
 
-* Even if known, original names and paths of source code files are not part of Whoa's faithful implementation.
+* Even if known, original names and paths of source code files are not part of Frozen's faithful implementation.
 
 ## Commits and Pull Requests
 
 * Keep commits formatted according to [the Conventional Commits standard](https://www.conventionalcommits.org/en/v1.0.0/):
   - Example of a well-formed commit headline: `feat(net): implement SRP6 client proof calculation`
   - Every commit headline (the first line of the message) should begin with a type of `feat`, `fix`, or `chore`.
-  - Every type should be followed by the impacted subsystem of Whoa: `app`, `client`, `event`, `glue`, `gx`, `net`, `ui`, etc.
+  - Every type should be followed by the impacted subsystem of Frozen: `app`, `client`, `event`, `glue`, `gx`, `net`, `ui`, etc.
   - Commit headlines should be no longer than 72 characters.
   - If more descriptive text is required, please confine it to the commit description after the headline.
   - Separate the headline and description by one blank line.
@@ -70,6 +70,6 @@ Since Whoa is a faithful implementation of the original 3.3.5a (build 12340) cli
 
 ## Submodules
 
-* Implementations of classes, templates, and functions that may have been present in Storm [should be added to squall](https://github.com/whoahq/squall), the Storm implementation for Whoa.
+* Implementations of classes, templates, and functions that may have been present in Storm [should be added to squall](https://github.com/whoahq/squall), the Storm implementation for Frozen.
 
-* Implementations of classes, templates, and functions that may have been present in Tempest [should be added to typhoon](https://github.com/whoahq/typhoon), the Tempest implementation for Whoa.
+* Implementations of classes, templates, and functions that may have been present in Tempest [should be added to typhoon](https://github.com/whoahq/typhoon), the Tempest implementation for Frozen.

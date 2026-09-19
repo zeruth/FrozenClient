@@ -311,7 +311,7 @@ void SESound::EnumerateDrivers() {
     }
 
     // Chat output and input drivers
-    // TODO the original enumerates these from the voice chat FMOD system, which Whoa does not
+    // TODO the original enumerates these from the voice chat FMOD system, which Frozen does not
     // create yet
 
     SESound::s_ChatOutputDrivers.Clear();

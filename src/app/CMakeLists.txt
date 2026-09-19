@@ -1,9 +1,9 @@
 if(WHOA_SYSTEM_WIN)
     file(GLOB PRIVATE_SOURCES "win/*.cpp")
 
-    add_executable(Whoa WIN32 ${PRIVATE_SOURCES})
+    add_executable(Frozen WIN32 ${PRIVATE_SOURCES})
 
-    target_link_libraries(Whoa
+    target_link_libraries(Frozen
         PRIVATE
             client
             event
@@ -20,9 +20,9 @@ if(WHOA_SYSTEM_MAC)
         PROPERTIES COMPILE_FLAGS "-x objective-c++"
     )
 
-    add_executable(Whoa ${PRIVATE_SOURCES})
+    add_executable(Frozen ${PRIVATE_SOURCES})
 
-    target_link_libraries(Whoa
+    target_link_libraries(Frozen
         PRIVATE
             client
             event
@@ -44,17 +44,17 @@ if(WHOA_SYSTEM_ANDROID)
     # providing the activity callbacks and the native thread
     list(APPEND PRIVATE_SOURCES ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
-    add_library(Whoa SHARED ${PRIVATE_SOURCES})
+    add_library(Frozen SHARED ${PRIVATE_SOURCES})
 
-    target_include_directories(Whoa
+    target_include_directories(Frozen
         PRIVATE
             ${ANDROID_NDK}/sources/android/native_app_glue
     )
 
     # Keep the glue's activity entry point even though nothing in the library references it
-    target_link_options(Whoa PRIVATE -u ANativeActivity_onCreate)
+    target_link_options(Frozen PRIVATE -u ANativeActivity_onCreate)
 
-    target_link_libraries(Whoa
+    target_link_libraries(Frozen
         PRIVATE
             client
             event
@@ -70,9 +70,9 @@ if(WHOA_SYSTEM_ANDROID)
 elseif(WHOA_SYSTEM_LINUX)
     file(GLOB PRIVATE_SOURCES "linux/*.cpp")
 
-    add_executable(Whoa ${PRIVATE_SOURCES})
+    add_executable(Frozen ${PRIVATE_SOURCES})
 
-    target_link_libraries(Whoa
+    target_link_libraries(Frozen
         PRIVATE
             client
             event
@@ -82,12 +82,12 @@ elseif(WHOA_SYSTEM_LINUX)
     )
 endif()
 
-target_include_directories(Whoa
+target_include_directories(Frozen
     PRIVATE
         ${CMAKE_SOURCE_DIR}/src
 )
 
-install(TARGETS Whoa DESTINATION "bin")
+install(TARGETS Frozen DESTINATION "bin")
 
 if(WHOA_SYSTEM_WIN)
     # Developer tool for listing and extracting client archive contents

@@ -48,7 +48,7 @@ int32_t CWorld::s_outdoorParamsID = 0;
 C3Vector CWorld::s_fogColor = { 0.5f, 0.5f, 0.5f };
 // The reference keeps its outdoor fog as [colour, start, end, rate] and holds the rate at 1.5 --
 // read live from its fog block, and the same in both copies of it. The three-argument SetFog
-// overload whoa was calling defaults the density to 1.0, so fog fell off on a different curve from
+// overload frozen was calling defaults the density to 1.0, so fog fell off on a different curve from
 // the reference's even once start and end matched exactly.
 float CWorld::s_fogRate = 1.5f;
 float CWorld::s_floatBand2 = 0.0f;
@@ -87,7 +87,7 @@ void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
         // Past the last key the band WRAPS to the first one across the end of the day -- it does
         // not hold. Most params carry only two keys, midnight and noon, so clamping instead left
         // every afternoon and evening frozen at the noon colour: measured against the reference at
-        // 18:12, whoa's ambient was 58,99,102 (exactly the noon key) where the reference had
+        // 18:12, frozen's ambient was 58,99,102 (exactly the noon key) where the reference had
         // 28,88,88, which is that key interpolated 51.7% of the way back toward midnight.
         int32_t t0 = static_cast<int32_t>(rec->m_times[num - 1]);
         int32_t t1 = static_cast<int32_t>(rec->m_times[0]) + DAY_HALF_MINUTES;
@@ -189,14 +189,14 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     InterpBandColor(P, 7, t, out.fog);
     InterpBandColor(P, 9, t, out.bodyTint);
 
-    // Bands the reference reads and whoa did not. Identified by computing every band from the DBC
+    // Bands the reference reads and frozen did not. Identified by computing every band from the DBC
     // at the live clock and matching values against the reference's DayNight block, rather than by
     // guessing addresses -- slot 2 is band 8, slots 10 and 11 are bands 10 and 11.
     InterpBandColor(P, 8, t, out.sunColor);
     InterpBandColor(P, 10, t, out.cloudColor1);
     InterpBandColor(P, 11, t, out.cloudColor2);
 
-    // Bands 12..17 sit at DayNight slots 12..17 in the reference and whoa read none of them.
+    // Bands 12..17 sit at DayNight slots 12..17 in the reference and frozen read none of them.
     //
     // Bands 14..17 are the LIQUID COLOURS, confirmed in FUN_008a2bf0: it reads a colour pair at
     // base+0x10c and base+0x110 indexed by `type * 8`, and interpolates each pair across a
@@ -209,7 +209,7 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     // selects 0x148 rather than 0x140.
     //
     // So: 14 = ocean shallow, 15 = ocean deep, 16 = river shallow, 17 = river deep -- the OPPOSITE
-    // of what the colour values alone suggested. whoa's liquid rendering has never had any of them.
+    // of what the colour values alone suggested. frozen's liquid rendering has never had any of them.
     // This rests on the documented LightParams column order; if that is ever shown wrong, the two
     // pairs swap back.
     for (int32_t b = 0; b < 6; b++) {
@@ -459,7 +459,7 @@ void CWorld::UpdateOutdoorLight() {
     // reference (FUN_007eea90, reached from the DayNight update via FUN_007f3920) holds the
     // azimuth at a constant 225 degrees and wobbles only the zenith angle between 127 and 110
     // degrees twice a day, from a hard-coded four-key band over the day fraction. The vector it
-    // stores points AWAY from the light; whoa's lighting dots the direction TO the light, so this
+    // stores points AWAY from the light; frozen's lighting dots the direction TO the light, so this
     // is the negation.
     {
         float day = CWorld::GetDayProgress();

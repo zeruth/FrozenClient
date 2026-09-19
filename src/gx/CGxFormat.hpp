@@ -51,7 +51,7 @@ class CGxFormat {
         int32_t unk50;
         int32_t unk54;
 
-        // whoa-only: the window position the D3D backend creates the window at. Not part of the
+        // frozen-only: the window position the D3D backend creates the window at. Not part of the
         // reference struct.
         C2iVector pos;
 };

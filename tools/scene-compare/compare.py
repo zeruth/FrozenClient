@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Scene comparison harness: reference WoW.exe vs Whoa.exe, same viewpoint, pixel diff.
+"""Scene comparison harness: reference WoW.exe vs Frozen.exe, same viewpoint, pixel diff.
 
 For each viewpoint the script teleports the harness character in the AzerothCore database, launches
 a client from the reference data directory, drives the login (password + Enter, then Enter at the
@@ -17,10 +17,10 @@ Only pure-python + Pillow + ctypes are needed.
 Typical use (from the repo root, servers already running):
 
     python tools/scene-compare/compare.py                  # every viewpoint, both clients
-    python tools/scene-compare/compare.py --only whoa      # just re-capture whoa, reuse ref
+    python tools/scene-compare/compare.py --only frozen      # just re-capture frozen, reuse ref
     python tools/scene-compare/compare.py --view goldshire # one viewpoint
 
-Output goes to build/scene-compare/<viewpoint>/{ref,whoa,diff,side-by-side}.png plus report.md.
+Output goes to build/scene-compare/<viewpoint>/{ref,frozen,diff,side-by-side}.png plus report.md.
 """
 
 import argparse
@@ -39,7 +39,7 @@ REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 DEFAULTS = {
     "ref_dir": os.path.join(REPO, ".reference", "WOTLK 3.3.5a - Windows", "WoW_WOTLK_3.3.5a"),
     "ref_exe": "WoW.exe",
-    "whoa_exe": os.path.join(REPO, "build", "dist", "bin", "Whoa.exe"),
+    "frozen_exe": os.path.join(REPO, "build", "dist", "bin", "Frozen.exe"),
     "mysql": r"C:\Program Files\MySQL\MySQL Server 9.6\bin\mysql.exe",
     "mysql_user": "acore",
     "mysql_pass": "acore",
@@ -298,13 +298,13 @@ def run_client(opts, exe, cwd, label, out_png):
 # Diff
 # ---------------------------------------------------------------------------------------------
 
-def diff_images(ref, whoa, out_dir, threshold):
+def diff_images(ref, frozen, out_dir, threshold):
     note = ""
-    if ref.size != whoa.size:
-        note = "size mismatch ref %s whoa %s (whoa resized for the diff)" % (ref.size, whoa.size)
-        whoa = whoa.resize(ref.size, Image.BILINEAR)
+    if ref.size != frozen.size:
+        note = "size mismatch ref %s frozen %s (frozen resized for the diff)" % (ref.size, frozen.size)
+        frozen = frozen.resize(ref.size, Image.BILINEAR)
 
-    d = ImageChops.difference(ref, whoa).convert("L")
+    d = ImageChops.difference(ref, frozen).convert("L")
     hist = d.histogram()
     total = sum(hist)
     bad = sum(hist[threshold + 1:])
@@ -315,11 +315,11 @@ def diff_images(ref, whoa, out_dir, threshold):
 
     side = Image.new("RGB", (ref.width * 3 + 20, ref.height + 24), (30, 30, 30))
     side.paste(ref, (0, 24))
-    side.paste(whoa, (ref.width + 10, 24))
+    side.paste(frozen, (ref.width + 10, 24))
     side.paste(heat, (ref.width * 2 + 20, 24))
     dr = ImageDraw.Draw(side)
     dr.text((4, 4), "reference", fill=(255, 255, 255))
-    dr.text((ref.width + 14, 4), "whoa", fill=(255, 255, 255))
+    dr.text((ref.width + 14, 4), "frozen", fill=(255, 255, 255))
     dr.text((ref.width * 2 + 24, 4), "diff  match %.1f%%" % match, fill=(255, 255, 255))
     side.save(os.path.join(out_dir, "side-by-side.png"))
 
@@ -332,7 +332,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ref-dir", default=DEFAULTS["ref_dir"], help="reference client install (cwd for both clients)")
     ap.add_argument("--ref-exe", default=DEFAULTS["ref_exe"], help="reference exe, relative to --ref-dir")
-    ap.add_argument("--whoa-exe", default=DEFAULTS["whoa_exe"])
+    ap.add_argument("--frozen-exe", default=DEFAULTS["frozen_exe"])
     ap.add_argument("--mysql", default=DEFAULTS["mysql"])
     ap.add_argument("--mysql-user", default=DEFAULTS["mysql_user"])
     ap.add_argument("--mysql-pass", default=DEFAULTS["mysql_pass"])
@@ -341,7 +341,7 @@ def main():
     ap.add_argument("--viewpoints", default=DEFAULTS["viewpoints"])
     ap.add_argument("--out", default=DEFAULTS["out"])
     ap.add_argument("--view", action="append", help="only this viewpoint name (repeatable)")
-    ap.add_argument("--only", choices=["ref", "whoa"], help="capture just one client; the other side's last capture is reused for the diff")
+    ap.add_argument("--only", choices=["ref", "frozen"], help="capture just one client; the other side's last capture is reused for the diff")
     ap.add_argument("--no-teleport", action="store_true")
     ap.add_argument("--threshold", type=int, default=24, help="per-pixel grey difference counted as a mismatch (0-255)")
     ap.add_argument("--wait-window", type=int, default=60)
@@ -377,25 +377,25 @@ def main():
             vdir = os.path.join(opts.out, vp["name"])
             os.makedirs(vdir, exist_ok=True)
             ref_png = os.path.join(vdir, "ref.png")
-            whoa_png = os.path.join(vdir, "whoa.png")
+            frozen_png = os.path.join(vdir, "frozen.png")
 
             failure = None
             try:
-                for label, exe in (("ref", os.path.join(opts.ref_dir, opts.ref_exe)), ("whoa", opts.whoa_exe)):
+                for label, exe in (("ref", os.path.join(opts.ref_dir, opts.ref_exe)), ("frozen", opts.frozen_exe)):
                     if opts.only and opts.only != label:
                         continue
                     if not opts.no_teleport:
                         teleport(opts, vp)
                     prepare_config(config_path, opts.account)
-                    run_client(opts, exe, opts.ref_dir, label, ref_png if label == "ref" else whoa_png)
+                    run_client(opts, exe, opts.ref_dir, label, ref_png if label == "ref" else frozen_png)
             except RuntimeError as e:
                 failure = str(e)
                 print("  FAILED: " + failure)
 
             if failure:
                 rows.append((vp["name"], None, failure))
-            elif os.path.exists(ref_png) and os.path.exists(whoa_png):
-                match, note = diff_images(Image.open(ref_png).convert("RGB"), Image.open(whoa_png).convert("RGB"), vdir, opts.threshold)
+            elif os.path.exists(ref_png) and os.path.exists(frozen_png):
+                match, note = diff_images(Image.open(ref_png).convert("RGB"), Image.open(frozen_png).convert("RGB"), vdir, opts.threshold)
                 print("  match %.1f%% %s" % (match, note))
                 rows.append((vp["name"], match, note))
             else:
