@@ -186,5 +186,17 @@
 
   "00632b50": { "whoa": "NetClient::Send", "status": "ported", "note": "the connection-side send ClientServices::Send (006b0b50, 465 callers) reaches through s_currentConnection; in the NetClient block beside ClearMessageHandler (00631fc0)" },
 
-  "0084f0f0": { "whoa": "lua_newuserdata", "status": "ported", "note": "lapi.c order after lua_concat 0084ef90; call-order slot in luaB_newproxy" }
+  "0084f0f0": { "whoa": "lua_newuserdata", "status": "ported", "note": "lapi.c order after lua_concat 0084ef90; call-order slot in luaB_newproxy" },
+
+  "008154e0": { "whoa": "StringToBOOL", "status": "ported", "note": "the const char* overload: every boolean attribute in CSimpleFrame::LoadXML goes through it; 00815500 is the lua_State overload" },
+  "0048f620": { "whoa": "CSimpleFrame::Hide", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): the hidden attribute" },
+  "0048f660": { "whoa": "CSimpleFrame::Show", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): the hidden attribute" },
+  "0048f6a0": { "whoa": "CSimpleFrame::EnableEvent", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0) for enableMouse/enableKeyboard, and EnableJoystick (004a11d0) calls it with (4, -1)" },
+  "0048f6f0": { "whoa": "CSimpleFrame::DisableEvent", "status": "ported", "note": "EnableJoystick (004a11d0) calls it with (4) on the false branch" },
+  "00814e40": { "whoa": "StringToFrameStrata", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): the frameStrata attribute" },
+  "00491020": { "whoa": "CSimpleFrame::SetFrameStrata", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): right after StringToFrameStrata; the earlier order vote at 0049e880 sits in the script-binding block" },
+  "004910a0": { "whoa": "CSimpleFrame::SetFrameLevel", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): right after SStrToInt of the frameLevel attribute" },
+  "00812ce0": { "whoa": "FrameXML_AcquireHashNode", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): the inherits lookup before FrameScript_GetContext and the ReleaseHashNode" },
+  "004905a0": { "whoa": "CSimpleFrame::SetBackdrop", "status": "ported", "note": "CSimpleFrame_SetBackdrop (004a15a0) calls it with the generator it built, and LoadXML with the one from the Backdrop element" },
+  "004a2d40": { "whoa": "CBackdropGenerator::CBackdropGenerator", "status": "ported", "note": "constructed on a fresh 0x6c-byte allocation in CSimpleFrame_SetBackdrop and in CSimpleFrame::LoadXML" }
 }

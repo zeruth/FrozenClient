@@ -129,6 +129,8 @@ addr	how	whoa	evidence
 00485f40	override	CSimpleTexture::LoadXML	
 00486b20	override	CSimpleFontString::UpdateString	
 00487130	annotated	CSimpleFontString::SetShadowColor	tag in src/ui/simple/CSimpleFontString.cpp
+00487210	callorder	CSimpleFontString::SetNonWordWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
+00487250	callorder	CSimpleFontString::SetNonSpaceWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004873e0	string	CSimpleFontString::LoadXML	unique "FontString %s: Unable to load font file %s"
 00487a10	callorder	CSimpleRegion::SetVertexColor	same slot between linked calls in 0048d970=CSimpleFontString_SetTextColor
 00487ab0	annotated	CSimpleFontString::GetTextColor	tag in src/ui/simple/CSimpleFontString.cpp
@@ -152,7 +154,7 @@ addr	how	whoa	evidence
 0048b540	string	CScriptObject::CreateName	unique "$parent"
 0048b5f0	callgraph	CScriptObject::GetScriptObjectByName	only unmatched callee of 004e05b0=Script_SetCharCustomizeFrame, 004e2f60=Script_SetCharSelectModelFrame
 0048bc70	annotated	CSimpleFontString_GetFieldSize	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048bd20	callgraph	CImVector::Set	only unmatched callee of 00960420=FrameScript_GetColor
+0048bd20	callgraph	CImVector::Set	only unmatched callee of 004a2d40=CBackdropGenerator::CBackdropGenerator
 0048bff0	order	CSimpleTexture_GetBlendMode	binding table name CSimpleTexture_GetBlendMode, in definition order in src/ui/simple/CSimpleTextureScript.cpp
 0048c040	order	CSimpleTexture::SetBlendMode	binding table name SetBlendMode, in definition order in src/ui/simple/CSimpleTexture.cpp
 0048c0e0	order	CSimpleRegion::GetVertexColor	binding table name GetVertexColor, in definition order in src/ui/simple/CSimpleRegion.cpp
@@ -218,15 +220,32 @@ addr	how	whoa	evidence
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
+0048f620	override	CSimpleFrame::Hide	
+0048f660	override	CSimpleFrame::Show	
+0048f6a0	override	CSimpleFrame::EnableEvent	
+0048f6f0	override	CSimpleFrame::DisableEvent	
 0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
+004905a0	override	CSimpleFrame::SetBackdrop	
+00491020	override	CSimpleFrame::SetFrameStrata	
+004910a0	override	CSimpleFrame::SetFrameLevel	
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
+00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
+00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
+00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
+00492e70	order	CSimpleFrame::IsA	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
+00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 00494d20	callorder	CFrameStrata::FrameOccluded	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
+00495060	callorder	CSimpleTop::CompressStrata	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 004951a0	callgraph	CSimpleTop::RaiseFrame	only unmatched callee of 0048e9a0=CSimpleFrame::Raise
-00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject, 00977640=CSimpleButton_SetHighlightFontObject
+00495670	callgraph	CSimpleSortedArray<FRAMEPRIORITY *>::Insert	only unmatched callee of 00495880=CSimpleTop::RegisterForEvent
+00495710	callgraph	CSimpleFrame::OnLayerCursorExit	only unmatched callee of 00495900=CSimpleTop::UnregisterForEvent
+00495880	callgraph	CSimpleTop::RegisterForEvent	only unmatched callee of 0048f6a0=CSimpleFrame::EnableEvent
+00495900	callgraph	CSimpleTop::UnregisterForEvent	only unmatched callee of 0048f6f0=CSimpleFrame::DisableEvent
+00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004a2240=CSimpleFrame_CreateFontString, 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
@@ -258,9 +277,9 @@ addr	how	whoa	evidence
 0049e350	table	CScriptRegion_CreateAnimationGroup	binding "CreateAnimationGroup" in ScriptRegionMethods ~ table 00ac1480
 0049e5b0	order	CSimpleFrame_GetTitleRegion	binding table name CSimpleFrame_GetTitleRegion, in definition order in src/ui/simple/CSimpleFrameScript.cpp
 0049e630	order	CSimpleFrame_CreateTitleRegion	binding table name CSimpleFrame_CreateTitleRegion, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e700	order	CSimpleFrame::GetBoundsRect	binding table name GetBoundsRect, in definition order in src/ui/simple/CSimpleFrame.cpp
+0049e700	order	CSimpleFrame_GetBoundsRect	binding table name CSimpleFrame_GetBoundsRect, in definition order in src/ui/simple/CSimpleFrameScript.cpp
 0049e830	order	CSimpleFrame_GetFrameStrata	binding table name CSimpleFrame_GetFrameStrata, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e880	order	CSimpleFrame::SetFrameStrata	binding table name SetFrameStrata, in definition order in src/ui/simple/CSimpleFrame.cpp
+0049e880	order	CSimpleFrame_SetFrameStrata	binding table name CSimpleFrame_SetFrameStrata, in definition order in src/ui/simple/CSimpleFrameScript.cpp
 0049e980	order	CSimpleFrame_GetFrameLevel	binding table name CSimpleFrame_GetFrameLevel, in definition order in src/ui/simple/CSimpleFrameScript.cpp
 0049e9d0	string	CSimpleFrame_SetFrameLevel	unique "%s:SetFrameLevel(): Passed negative frame level: %d"
 0049eab0	order	CSimpleFrame_HasScript	definition order between CSimpleFrame_SetFrameLevel and CSimpleFrame_RegisterEvent in src/ui/simple/CSimpleFrameScript.cpp
@@ -340,6 +359,7 @@ addr	how	whoa	evidence
 004a25f0	callorder	CBackdropGenerator::SetVertexColor	same slot between linked calls in 004a1a80=CSimpleFrame_SetBackdropColor
 004a2630	callorder	CBackdropGenerator::SetBorderVertexColor	same slot between linked calls in 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
+004a2d40	override	CBackdropGenerator::CBackdropGenerator	
 004a4220	order	FrameScript_EventObject::GetName	binding table name GetName, in definition order in src/ui/FrameScript.cpp
 004a6f60	order	ClientConnection::AccountLogin_Finish	binding table name AccountLogin_Finish, in definition order in src/net/connection/ClientConnection.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
@@ -818,7 +838,7 @@ addr	how	whoa	evidence
 0055e8d0	table	Script_GetBinding	binding "GetBinding" in s_ScriptFunctions ~ table 00acde38
 0055e9b0	table	Script_GetBindingKey	binding "GetBindingKey" in s_ScriptFunctions ~ table 00acde38
 0055ea70	table	Script_GetModifiedClickAction	binding "GetModifiedClickAction" in s_ScriptFunctions ~ table 00acde38
-0055f4d0	callgraph	TSHashTable<CVar,HASHKEY_STRI>::Ptr	only unmatched callee of 00767440=CVar::Lookup
+0055f4d0	callgraph	TSHashTable<HashedNode,HASHKEY_STRI>::Ptr	only unmatched callee of 00812ce0=FrameXML_AcquireHashNode
 0055fad0	table	Script_RunBinding	binding "RunBinding" in s_ScriptFunctions ~ table 00acde38
 0055fb90	table	Script_SetModifiedClick	binding "SetModifiedClick" in s_ScriptFunctions ~ table 00acde38
 0055fc20	table	Script_GetModifiedClick	binding "GetModifiedClick" in s_ScriptFunctions ~ table 00acde38
@@ -1245,6 +1265,7 @@ addr	how	whoa	evidence
 0061d9c0	table	CGTooltip_NumLines	binding "NumLines" in CGTooltipMethods ~ table 00ad2ae0
 0061da20	table	CGTooltip_IsUnit	binding "IsUnit" in CGTooltipMethods ~ table 00ad2ae0
 0061dad0	table	CGTooltip_GetUnit	binding "GetUnit" in CGTooltipMethods ~ table 00ad2ae0
+0061ea00	callgraph	FrameScript_Object::GetDisplayName	only unmatched callee of 0061eb40=CGTooltip_SetOwner
 0061eb40	table	CGTooltip_SetOwner	binding "SetOwner" in CGTooltipMethods ~ table 00ad2ae0
 0061ee90	table	CGTooltip_AppendText	binding "AppendText" in CGTooltipMethods ~ table 00ad2ae0
 0061ef10	table	CGTooltip_GetItem	binding "GetItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1374,7 +1395,7 @@ addr	how	whoa	evidence
 00767030	annotated	s_WriteCVars	tag in src/console/CVar.cpp
 00767100	annotated	CVar::Save	tag in src/console/CVar.cpp
 007673f0	annotated	ConsoleDestroyClientCVar	tag in src/console/Initialize.cpp
-00767440	callgraph	CVar::Lookup	only unmatched callee of 0054ea90=Script_SetGamma
+00767440	callorder	CVar::Lookup	same slot between linked calls in 004d14e0=EnableSFX_CVarCallback, 004d1590=EnableMusic_CVarCallback
 00767460	callorder	CVar::LookupRegistered	same slot between linked calls in 004dce70=Script_SetCVar
 00767680	annotated	CVarCommandHandler	tag in src/console/CVarHandlers.cpp
 00767fc0	annotated	CVar::Register	tag in src/console/CVar.cpp
@@ -1507,6 +1528,7 @@ addr	how	whoa	evidence
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides
 0080fee0	handler	ReceiveSpellStart	SetMessageHandler(SMSG_SPELL_START) on both sides
+00812ce0	override	FrameXML_AcquireHashNode	
 00812d20	callorder	FrameXML_ReleaseHashNode	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames
 00812fa0	string	FrameXML_CreateFrame	unique "-- Creating %s named %s"
 00813be0	string	FrameXML_StoreHashNode	unique "-- Added virtual frame %s"
@@ -1514,12 +1536,14 @@ addr	how	whoa	evidence
 00813ee0	string	FrameXML_ProcessFile	unique "%s:<Scripts>"
 00814340	string	FrameXML_CreateFrames	unique "** Loading table of contents %s"
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
-00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames, 004932c0=CSimpleFrame::LoadXML, 00813ee0=FrameXML_ProcessFile
+00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML, 004873e0=CSimpleFontString::LoadXML, 0048f400=CSimpleFrame::PostLoadXML_Frames
+00814e40	override	StringToFrameStrata	
 00814ed0	override	StringToFramePoint	
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
 00814ff0	string	StringToBlendMode	unique "DISABLE"
 008150d0	annotated	JustifyToString	tag in src/ui/Util.cpp
 00815110	string	StringToOrientation	unique "HORIZONTAL"
+008154e0	override	StringToBOOL	
 00815500	override	StringToBOOL	
 00815600	string	LoadXML_Value	unique "AbsValue"
 00815740	string	LoadXML_Dimensions	unique "AbsDimension"
@@ -1619,6 +1643,7 @@ addr	how	whoa	evidence
 0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin, 004e0c60=Script_CreateCharacter
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
+0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL, 00854b20=luaB_newproxy
 0084e0e0	override	lua_tolstring	
 0084e150	callorder	lua_objlen	same slot between linked calls in 00851c30=tconcat, 00854860=luaB_unpack
 0084e1c0	callgraph	lua_touserdata	only unmatched callee of 004a81b0=FrameScript_GetObjectThis
@@ -1633,9 +1658,9 @@ addr	how	whoa	evidence
 0084e3d0	callgraph	tag_error	only unmatched callee of 0084fb60=luaL_checkinteger
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
 0084e4d0	override	lua_pushboolean	
-0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_getfield in vendor/lua-5.1.3/src/lapi.c
-0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_getfield in vendor/lua-5.1.3/src/lapi.c
-0084e560	order	lua_gettable	definition order between lua_pushboolean and lua_getfield in vendor/lua-5.1.3/src/lapi.c
+0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
+0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
+0084e560	callorder	lua_gettable	same slot between linked calls in 00853860=add_value
 0084e590	callorder	lua_getfield	same slot between linked calls in 0084fc00=luaL_openlib
 0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 0084e670	override	lua_rawgeti	
@@ -1674,7 +1699,7 @@ addr	how	whoa	evidence
 0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 008529a0=str_dump, 008542c0=luaB_setmetatable
 0084f9c0	string	luaL_checkany	unique "value expected"
 0084f9f0	callorder	luaL_checklstring	same slot between linked calls in 00818070=FrameScript_Sprintf, 00852800=str_byte, 00854100=luaB_tonumber
-0084fa50	callorder	luaL_optlstring	same slot between linked calls in 00851c30=tconcat
+0084fa50	callorder	luaL_optlstring	same slot between linked calls in 00851c30=tconcat, 00854810=luaB_assert
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
 0084fbd0	callgraph	luaL_optinteger	only unmatched callee of 008545c0=luaB_collectgarbage
@@ -1966,6 +1991,7 @@ addr	how	whoa	evidence
 00961420	table	CSimpleModel_GetFogFar	binding "GetFogFar" in SimpleModelMethods ~ table 00b2cb10
 00961470	table	CSimpleModel_ClearFog	binding "ClearFog" in SimpleModelMethods ~ table 00b2cb10
 009614b0	table	CSimpleModel_SetGlow	binding "SetGlow" in SimpleModelMethods ~ table 00b2cb10
+00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML
 00961e30	string	CSimpleStatusBar::LoadXML	unique "BarColor"
 00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
@@ -1977,11 +2003,11 @@ addr	how	whoa	evidence
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
-009699c0	callgraph	lua_toboolean	only unmatched callee of 00973c40=CSimpleScrollingMessageFrame_SetHyperlinksEnabled
 0096a920	callgraph	CSimpleScrollingMessageFrame::ScrollToTop	only unmatched callee of 009733f0=CSimpleScrollingMessageFrame_ScrollToTop
 0096a950	callgraph	CSimpleScrollingMessageFrame::ScrollToBottom	only unmatched callee of 00973430=CSimpleScrollingMessageFrame_ScrollToBottom
 0096b0b0	string	CSimpleScrollFrame::GetScriptByName	unique "OnHorizontalScroll"
 0096b920	string	CSimpleScrollFrame::LoadXML	unique "Frame %s: Scroll frame created without scroll child"
+0096c470	callorder	CSimpleSlider::SetMinMaxValues	same slot between linked calls in 0096c500=CSimpleSlider::LoadXML
 0096c500	string	CSimpleSlider::LoadXML	unique "ThumbTexture"
 0096c9e0	string	CSimpleHTML::ParseP	score 0.50 shared align
 0096d890	string	CSimpleHTML::SetText	unique "Frame %s: Unknown element type: %s (expected BODY)"

@@ -1251,6 +1251,35 @@ def write_map(refs, whoa, m, overrides):
     json.dump(out, io.open(MAP_OUT, 'w', encoding='utf-8'), indent=1, sort_keys=True)
 
 
+def diff_seq(target, refs, whoa, m):
+    """Align the reference's call sequence (callees named through the map) with the port's, and
+    print them side by side: the calls the port skips, the calls it adds, in order."""
+    a = target.lower().replace('0x', '').zfill(8)
+    if a not in m:
+        print('%s is not linked' % a)
+        return
+    name = m[a][0]
+    rseq = ref_seq(refs, m, a)
+    wseq = whoa_seq(whoa, name)
+    n, k = len(rseq), len(wseq)
+    L = [[0] * (k + 1) for _ in range(n + 1)]
+    for i in range(n - 1, -1, -1):
+        for j in range(k - 1, -1, -1):
+            L[i][j] = L[i + 1][j + 1] + 1 if rseq[i] == wseq[j] else max(L[i + 1][j], L[i][j + 1])
+    print('%s  <->  %s   recall %.0f%%' % (a, name, 100.0 * (L[0][0] / float(n) if n else 1.0)))
+    print('  %-48s | %s' % ('reference', 'whoa'))
+    i = j = 0
+    while i < n or j < k:
+        if i < n and j < k and rseq[i] == wseq[j]:
+            print('  %-48s | %s' % (rseq[i][:48], wseq[j][:60])); i += 1; j += 1
+        elif j < k and (i == n or L[i][j + 1] >= L[i + 1][j]):
+            print('  %-48s | + %s' % ('', wseq[j][:58])); j += 1
+        else:
+            r = rseq[i]
+            tag = '' if r in whoa or r.startswith('crt:') else '  (unlinked %s)' % (refs[r]['name'] if r in refs else r)
+            print('  - %-46s |%s' % (r[:46], tag)); i += 1
+
+
 def show(target, refs, whoa, m):
     rev = {v[0]: a for a, v in m.items()}
     a = None
@@ -1369,6 +1398,7 @@ def main():
     ap.add_argument('--export', action='store_true', help='re-export the reference inventory from Ghidra')
     ap.add_argument('--pdb', action='store_true', help='re-dump Whoa.pdb')
     ap.add_argument('--show', metavar='ADDR|NAME', help='print everything known about one function')
+    ap.add_argument('--diff', metavar='ADDR', help='align the reference call sequence with the port and show what it skips')
     ap.add_argument('--no-history', action='store_true', help='do not append this run to history.jsonl')
     ap.add_argument('--next', type=int, metavar='N', help='decompile the next N functions to port into docs/recomp/queue/')
     ap.add_argument('--spine', action='store_true', help='with --next: only functions on the world spine')
@@ -1415,6 +1445,8 @@ def main():
         if a in m and m[a][0] == v['whoa'] and a not in overrides:
             overrides[a] = {'whoa': v['whoa'], 'status': 'verified', 'note': v['note'], 'auto': True}
 
+    if args.diff:
+        diff_seq(args.diff, refs, whoa, m)
     if args.show:
         show(args.show, refs, whoa, m)
         return
