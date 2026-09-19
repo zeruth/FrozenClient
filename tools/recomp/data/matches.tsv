@@ -408,7 +408,7 @@ addr	how	frozen	evidence
 004a4220	order	CScriptObject::GetName	binding table name GetName, in definition order in src/ui/CScriptObject.cpp
 004a4280	annotated	CSimpleFont_SetFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
 004a42d0	annotated	CSimpleFont_GetFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
-004a4350	order	CSimpleFont_CopyFontObject	definition order between CSimpleFont_GetFontObject and CSimpleFont_SetFont in src/ui/simple/CSimpleFontScript.cpp
+004a4350	annotated	CSimpleFont_CopyFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
 004a43a0	annotated	CSimpleFont_SetFont	tag in src/ui/simple/CSimpleFontScript.cpp
 004a43f0	order	CSimpleFont_GetFont	definition order between CSimpleFont_SetFont and CSimpleFont_SetAlpha in src/ui/simple/CSimpleFontScript.cpp
 004a4440	annotated	CSimpleFont_SetAlpha	tag in src/ui/simple/CSimpleFontScript.cpp

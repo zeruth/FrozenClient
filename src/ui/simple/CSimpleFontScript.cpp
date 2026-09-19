@@ -97,8 +97,46 @@ int32_t CSimpleFont_GetFontObject(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a4350
+// Takes the same font-or-name argument as SetFontObject, with its own three error messages, but
+// does something different with it: SetFontObject makes this font INHERIT from the other, while
+// this one copies the other's attributes across and leaves the two unrelated afterwards. Note it
+// does NOT accept nil, and has no loop guard, because nothing is linked.
 int32_t CSimpleFont_CopyFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+
+    CSimpleFont* source = nullptr;
+
+    if (lua_type(L, 2) == LUA_TTABLE) {
+        lua_rawgeti(L, 2, 0);
+        source = static_cast<CSimpleFont*>(lua_touserdata(L, -1));
+        lua_settop(L, -2);
+
+        if (!source) {
+            return luaL_error(L, "%s:CopyFontObject(): Couldn't find 'this' in font object", font->GetDisplayName());
+        }
+
+        if (!source->IsA(CSimpleFont::GetObjectType())) {
+            return luaL_error(L, "%s:CopyFontObject(): Wrong object type, expected font", font->GetDisplayName());
+        }
+    } else if (lua_type(L, 2) == LUA_TSTRING) {
+        auto fontName = lua_tostring(L, 2);
+        source = CSimpleFont::GetFont(fontName, 0);
+
+        if (!source) {
+            return luaL_error(L, "%s:CopyFontObject(): Couldn't find font named %s", font->GetDisplayName(), fontName);
+        }
+    } else {
+        return luaL_error(L, "Usage: %s:CopyFontObject(font or \"font\")", font->GetDisplayName());
+    }
+
+    // Update copies FROM the receiver TO its argument, and only the attributes the source actually
+    // has set, which is what the reference's copy does.
+    source->m_attributes.Update(font->m_attributes, FLAG_COMPLETE_UPDATE);
+    font->UpdateObjects();
+
+    return 0;
 }
 
 // ref: FUN_004a43a0
