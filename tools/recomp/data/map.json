@@ -9841,24 +9841,6 @@
   "refSize": 171,
   "status": "stub"
  },
- "004de090": {
-  "branchRatio": 0.6,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.889,
-  "files": [
-   "src/glue/GlueScript.cpp",
-   "src/glue/gluescript.cpp",
-   "src/ui/game/GameScript.cpp",
-   "src/ui/game/gamescript.cpp"
-  ],
-  "frozen": "Script_GetCVarAbsoluteMin",
-  "frozenSize": 253,
-  "how": "annotated",
-  "module": "CGlueMgr.cpp",
-  "refSize": 158,
-  "status": "ported"
- },
  "004de1f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -13013,6 +12995,24 @@
   "how": "table",
   "module": "GameUI.cpp",
   "refSize": 290,
+  "status": "ported"
+ },
+ "00514f60": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp",
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetCVarAbsoluteMin",
+  "frozenSize": 259,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 170,
   "status": "ported"
  },
  "00515010": {

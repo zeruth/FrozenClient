@@ -126,6 +126,13 @@ right answer in `overrides.json`.
 > reporting for that was added at the same time and stays, because a failing TU really does lose
 > call and stub data silently).
 >
+> Followed up 2026-09-19 by deleting `clang-cache.json` outright and parsing all 727 files from
+> scratch: the totals came out **identical** to the current state, so the data in the repo now
+> agrees with a clean rebuild and can be trusted. Three files had carried wrong flags -- four
+> bindings in `CGCooldownScript.cpp`, three in `CGCharacterModelBaseScript.cpp`, thirteen in
+> `GMTicketInfoScript.cpp` -- and in each case they corrected when the file itself was edited,
+> which is not a mechanism the content-hash key should permit. The cause is still not explained.
+>
 > Reading the report until this is closed: `linked` is unaffected, since the flag only splits an
 > already-linked function between two columns. `ported` is an upper bound and `stub` a lower one.
 > After a full direct `python tools/recomp/clangparse.py` run the current numbers agree with

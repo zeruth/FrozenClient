@@ -615,7 +615,6 @@ addr	how	frozen	evidence
 004ddbd0	table	Script_GetBillingTimeRemaining	binding "GetBillingTimeRemaining" in s_ScriptFunctions ~ table 00ac3e00
 004ddc20	table	Script_GetExpansionLevel	binding "GetExpansionLevel" in s_ScriptFunctions ~ table 00ac80b0
 004ddc60	table	Script_GetBillingPlan	binding "GetBillingPlan" in s_ScriptFunctions ~ table 00ac3e00
-004de090	annotated	Script_GetCVarAbsoluteMin	tag in src/glue/GlueScript.cpp
 004de1f0	table	Script_GetChangedOptionWarnings	binding "GetChangedOptionWarnings" in s_ScriptFunctions ~ table 00ac3e00
 004de250	table	Script_SetRealmSplitState	binding "SetRealmSplitState" in s_ScriptFunctions ~ table 00ac3e00
 004de2e0	table	Script_RequestRealmSplitInfo	binding "RequestRealmSplitInfo" in s_ScriptFunctions ~ table 00ac3e00
@@ -813,6 +812,7 @@ addr	how	frozen	evidence
 00514c10	table	Script_SetCVar	binding "SetCVar" in s_ScriptFunctions ~ table 00ac80b0
 00514d40	table	Script_GetCVarMin	binding "GetCVarMin" in s_ScriptFunctions ~ table 00ac80b0
 00514e30	table	Script_GetCVarMax	binding "GetCVarMax" in s_ScriptFunctions ~ table 00ac80b0
+00514f60	annotated	Script_GetCVarAbsoluteMin	tag in src/glue/GlueScript.cpp
 00515010	table	Script_GetCVarAbsoluteMax	binding "GetCVarAbsoluteMax" in s_ScriptFunctions ~ table 00ac80b0
 00515100	annotated	Script_CursorHasItem	tag in src/ui/game/GameScript.cpp
 00515140	annotated	Script_CursorHasSpell	tag in src/ui/game/GameScript.cpp

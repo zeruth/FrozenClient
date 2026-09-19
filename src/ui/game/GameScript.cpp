@@ -453,10 +453,15 @@ int32_t Script_GetCVarMax(lua_State* L) {
     return 1;
 }
 
-// ref: FUN_004de090
+// ref: FUN_00514f60
 // Exactly one cvar has an absolute minimum, and it is zero. Everything else that exists answers
 // nil, and a name that is not registered at all is an error rather than a nil -- three outcomes
 // where two would be the natural design.
+//
+// A cvar carrying flag 0x40 is reported as NOT FOUND rather than answered, which is how the
+// reference hides the private ones (accountName is registered with that flag). That check is the
+// difference between this function and its twin at 004de090, which the binding-table matcher
+// offered first and which belongs to another table.
 //
 // The reference compares the CVar's own stored name; this compares the argument, which is
 // equivalent because the lookup and the comparison are both case-insensitive, and frozen's CVar
@@ -467,8 +472,9 @@ int32_t Script_GetCVarAbsoluteMin(lua_State* L) {
     }
 
     auto name = lua_tostring(L, 1);
+    auto cvar = CVar::LookupRegistered(name);
 
-    if (!CVar::LookupRegistered(name)) {
+    if (!cvar || (cvar->m_flags & 0x40)) {
         return luaL_error(L, "Couldn't find CVar named '%s'", name);
     }
 
