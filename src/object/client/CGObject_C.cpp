@@ -227,6 +227,18 @@ void CGObject_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) 
     // TODO
 }
 
+uint32_t CGObject_C::GetBlock(uint32_t block) const {
+    auto storage = reinterpret_cast<const uint32_t*>(this->m_obj);
+
+    return storage[block];
+}
+
+uint32_t CGObject_C::BlockIndexOf(const void* field) const {
+    auto storage = reinterpret_cast<const uint32_t*>(this->m_obj);
+
+    return static_cast<uint32_t>(static_cast<const uint32_t*>(field) - storage);
+}
+
 void CGObject_C::SetBlock(uint32_t block, uint32_t value) {
     auto storage = reinterpret_cast<uint32_t*>(this->m_obj);
     storage[block] = value;

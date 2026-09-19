@@ -10,6 +10,11 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/Util.hpp"
 #include "object/Types.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/game/Types.hpp"
+#include <vector>
 #include <common/DataStore.hpp>
 
 #define MAX_CHANGE_MASKS 42
@@ -151,6 +156,139 @@ int32_t IsMaskBitSet(uint32_t* masks, uint32_t block) {
     return masks[block / 32] & (1 << (block % 32));
 }
 
+namespace {
+
+// Blocks whose value actually changed during this SMSG_UPDATE_OBJECT.
+//
+// The reference does not need this: each registered watcher keeps its own copy of the bytes it
+// watches and compares against that (docs/ref/parity-mirror.md). Frozen has no watcher registry
+// yet, and by the time the second pass runs the first has already stored the new value, so there
+// is nothing left to compare against unless the change is recorded as it happens.
+struct MirrorChange {
+    WOWGUID guid;
+    uint32_t block;
+};
+
+std::vector<MirrorChange> s_changes;
+
+}
+
+void MirrorBeginUpdate() {
+    s_changes.clear();
+}
+
+void MirrorNoteChange(WOWGUID guid, uint32_t block) {
+    s_changes.push_back({ guid, block });
+}
+
+namespace {
+
+// The token FrameXML knows this unit by, or null when it has none. The reference resolves the whole
+// set -- pet, focus, party1-4, raid1-40 -- from rosters frozen does not keep yet, so this answers
+// for the two that the player and target frames need. A unit with no token is not skipped for being
+// unimportant; it is skipped because there is no name to hand the event.
+const char* UnitToken(const CGUnit_C* unit) {
+    auto guid = unit->GetGUID();
+
+    if (guid == ClntObjMgrGetActivePlayer()) {
+        return "player";
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto playerData = player ? player->Unit() : nullptr;
+
+    if (playerData && playerData->target && guid == playerData->target) {
+        return "target";
+    }
+
+    return nullptr;
+}
+
+// Signals the events the changed blocks of a unit stand for. Ranges are handled the way the
+// reference's watchers do -- power and maxPower are seven dwords each and any of them means the
+// same event -- so the arrays are compared as spans rather than seven separate cases.
+void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
+    auto data = unit->Unit();
+
+    if (!data) {
+        return;
+    }
+
+    auto token = UnitToken(unit);
+
+    if (!token) {
+        return;
+    }
+
+    auto health = unit->BlockIndexOf(&data->health);
+    auto maxHealth = unit->BlockIndexOf(&data->maxHealth);
+    auto power = unit->BlockIndexOf(&data->power[0]);
+    auto maxPower = unit->BlockIndexOf(&data->maxPower[0]);
+    auto level = unit->BlockIndexOf(&data->level);
+    auto faction = unit->BlockIndexOf(&data->factionTemplate);
+
+    // power and maxPower are parallel arrays; take their length from the struct rather
+    // than restating it, so adding a power type cannot silently narrow the range test.
+    const uint32_t POWER_COUNT = sizeof(data->power) / sizeof(data->power[0]);
+
+    // One event per kind however many of its dwords moved: a power tick that changes two entries
+    // should not make FrameXML redraw twice.
+    bool healthChanged = false;
+    bool maxHealthChanged = false;
+    bool powerChanged = false;
+    bool maxPowerChanged = false;
+    bool levelChanged = false;
+    bool factionChanged = false;
+
+    for (const auto& change : s_changes) {
+        if (change.guid != guid) {
+            continue;
+        }
+
+        auto block = change.block;
+
+        if (block == health) {
+            healthChanged = true;
+        } else if (block == maxHealth) {
+            maxHealthChanged = true;
+        } else if (block >= power && block < power + POWER_COUNT) {
+            powerChanged = true;
+        } else if (block >= maxPower && block < maxPower + POWER_COUNT) {
+            maxPowerChanged = true;
+        } else if (block == level) {
+            levelChanged = true;
+        } else if (block == faction) {
+            factionChanged = true;
+        }
+    }
+
+    if (healthChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_HEALTH, "%s", token);
+    }
+
+    if (maxHealthChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_MAXHEALTH, "%s", token);
+    }
+
+    if (powerChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_MANA, "%s", token);
+    }
+
+    if (maxPowerChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_MAXMANA, "%s", token);
+    }
+
+    if (levelChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_LEVEL, "%s", token);
+    }
+
+    if (factionChanged) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_FACTION, "%s", token);
+    }
+}
+
+}
+
 // ref: FUN_004d5550
 // The second half of an object update. The first pass has already stored every changed field
 // (UpdateObject -> FillInPartialObjectData); this pass re-reads the same bytes to run the per-field
@@ -193,14 +331,18 @@ int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
             typeID = IncTypeID(object, typeID);
         }
 
-        // TODO
-
         if (IsMaskBitSet(changeMasks, block)) {
+            // Read past it. The value is already stored; see the note above.
             uint32_t blockValue = 0;
             msg->Get(blockValue);
         }
+    }
 
-        // TODO
+    // TODO the reference walks its watcher list here, one pass per block. Until that exists, the
+    // unit fields the player and target frames depend on are signalled from the recorded change
+    // set. Deliberately narrow: see docs/ref/parity-mirror.md.
+    if (object->IsA(TYPE_UNIT)) {
+        SignalUnitFieldEvents(static_cast<CGUnit_C*>(object), guid);
     }
 
     return 1;
@@ -230,6 +372,13 @@ int32_t FillInPartialObjectData(CGObject_C* object, WOWGUID guid, CDataStore* ms
         if (IsMaskBitSet(changeMasks, block)) {
             uint32_t blockValue;
             msg->GetArray(reinterpret_cast<uint8_t*>(&blockValue), sizeof(blockValue));
+
+            // Before the write, while the old value is still readable. A field the server resends
+            // unchanged is not a change, and signalling one would have FrameXML redraw on every
+            // packet rather than on every difference.
+            if (!forFullUpdate && object->GetBlock(block) != blockValue) {
+                MirrorNoteChange(guid, block);
+            }
 
             object->SetBlock(block, blockValue);
         } else if (zeroZeroBits) {

@@ -8505,7 +8505,7 @@
   "status": "ported"
  },
  "004d5550": {
-  "branchRatio": 0.545,
+  "branchRatio": 0.636,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.077,
@@ -8514,11 +8514,11 @@
    "src/object/client/mirror.cpp"
   ],
   "frozen": "CallMirrorHandlers",
-  "frozenSize": 589,
-  "how": "annotated",
+  "frozenSize": 636,
+  "how": "override",
   "module": "ObjectMgrClient.cpp",
   "refSize": 458,
-  "status": "ported"
+  "status": "diverged"
  },
  "004d63b0": {
   "branchRatio": 0.692,

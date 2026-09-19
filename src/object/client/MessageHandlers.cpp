@@ -548,6 +548,9 @@ int32_t ObjectCompressedUpdateHandler(void* param, NETMESSAGE msgId, uint32_t ti
 }
 
 int32_t ObjectUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    // The change set belongs to one packet: the first pass fills it, the second pass reads it.
+    MirrorBeginUpdate();
+
     uint32_t updateCount;
     msg->Get(updateCount);
 

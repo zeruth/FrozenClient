@@ -83245,6 +83245,32 @@
 "refs": [],
 "line": 224
 },
+"CGObject_C::GetBlock": {
+"files": [
+"src/object/client/cgobject_c.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 230
+},
+"CGObject_C::BlockIndexOf": {
+"files": [
+"src/object/client/cgobject_c.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 236
+},
 "CGObject_C::SetBlock": {
 "files": [
 "src/object/client/cgobject_c.cpp"
@@ -83256,7 +83282,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 230
+"line": 242
 },
 "CGObject_C::SetDisablePending": {
 "files": [
@@ -83269,7 +83295,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 235
+"line": 247
 },
 "CGObject_C::SetModel": {
 "files": [
@@ -83285,7 +83311,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 243
+"line": 255
 },
 "CGObject_C::SetModelFinish": {
 "files": [
@@ -83298,7 +83324,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 258
+"line": 270
 },
 "CGObject_C::SetObjectLocked": {
 "files": [
@@ -83314,7 +83340,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 262
+"line": 274
 },
 "CGObject_C::SetStorage": {
 "files": [
@@ -83330,7 +83356,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 274
+"line": 286
 },
 "CGObject_C::SetTypeID": {
 "files": [
@@ -83343,7 +83369,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 279
+"line": 291
 },
 "CGObject_C::UpdateWorldObject": {
 "files": [
@@ -83356,7 +83382,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 320
+"line": 332
 },
 "CGPlayer::GetBaseOffset": {
 "files": [
@@ -85030,6 +85056,7 @@
 "src/object/client/messagehandlers.cpp"
 ],
 "callseq": [
+"MirrorBeginUpdate",
 "CDataStore::Get",
 "CDataStore::Tell",
 "CDataStore::Get",
@@ -85048,7 +85075,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 38,
+"lines": 41,
 "refs": [],
 "line": 550
 },
@@ -85071,7 +85098,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 589
+"line": 592
 },
 "ExtractDirtyMasks": {
 "files": [
@@ -85092,7 +85119,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 33
+"line": 38
 },
 "GetNumDwordBlocks": {
 "files": [
@@ -85118,7 +85145,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 57
+"line": 62
 },
 "IncTypeID": {
 "files": [
@@ -85133,7 +85160,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 93
+"line": 98
 },
 "IsMaskBitSet": {
 "files": [
@@ -85149,7 +85176,91 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 155
+},
+"MirrorBeginUpdate": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"vector<(anonymous namespace)::MirrorChange,std::allocator<(anonymous namespace)::MirrorChange> >::clear"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 176
+},
+"MirrorNoteChange": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"vector<(anonymous namespace)::MirrorChange,std::allocator<(anonymous namespace)::MirrorChange> >::push_back"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 180
+},
+"UnitToken": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"CGObject::GetGUID",
+"ClntObjMgrGetActivePlayer",
+"CGPlayer_C::GetActivePtr",
+"CGUnit::Unit"
+],
+"strings": [
+"player",
+"target"
+],
+"consts": [],
+"branches": 3,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 190
+},
+"SignalUnitFieldEvents": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"CGUnit::Unit",
+"UnitToken",
+"CGObject_C::BlockIndexOf",
+"CGObject_C::BlockIndexOf",
+"CGObject_C::BlockIndexOf",
+"CGObject_C::BlockIndexOf",
+"CGObject_C::BlockIndexOf",
+"CGObject_C::BlockIndexOf",
+"_Vector_iterator<std::_Vector_val<std::_Simple_types<(anonymous namespace)::MirrorChange> > >::operator*",
+"FrameScript_SignalEvent",
+"FrameScript_SignalEvent",
+"FrameScript_SignalEvent",
+"FrameScript_SignalEvent",
+"FrameScript_SignalEvent",
+"FrameScript_SignalEvent"
+],
+"strings": [
+"%s"
+],
+"consts": [
+"0"
+],
+"branches": 16,
+"stub": false,
+"lines": 79,
+"refs": [],
+"line": 210
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85166,7 +85277,9 @@
 "GetNumDwordBlocks",
 "IncTypeID",
 "IsMaskBitSet",
-"CDataStore::Get"
+"CDataStore::Get",
+"CGObject::IsA",
+"SignalUnitFieldEvents"
 ],
 "strings": [],
 "consts": [
@@ -85174,11 +85287,11 @@
 "1",
 "42"
 ],
-"branches": 6,
+"branches": 7,
 "stub": false,
-"lines": 42,
+"lines": 46,
 "refs": [],
-"line": 166
+"line": 304
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85191,6 +85304,8 @@
 "IncTypeID",
 "IsMaskBitSet",
 "CDataStore::GetArray",
+"CGObject_C::GetBlock",
+"MirrorNoteChange",
 "CGObject_C::SetBlock",
 "CGObject_C::SetBlock"
 ],
@@ -85200,11 +85315,11 @@
 "1",
 "42"
 ],
-"branches": 6,
+"branches": 7,
 "stub": false,
-"lines": 35,
+"lines": 42,
 "refs": [],
-"line": 209
+"line": 351
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85226,7 +85341,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 245
+"line": 394
 },
 "QueryPlayerName": {
 "files": [

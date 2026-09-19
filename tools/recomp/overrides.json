@@ -1147,5 +1147,10 @@
     "frozen": "Script_IsMouseButtonDown",
     "status": "diverged",
     "note": "structural only: with no argument the reference asks after each of thirty-one buttons in turn; frozen keeps the same information as a bitmask in Input::s_buttonState, so that is one test. Same answers."
+  },
+  "004d5550": {
+    "frozen": "CallMirrorHandlers",
+    "status": "diverged",
+    "note": "the reference walks a registry of watchers, each holding its own copy of the bytes it watches; frozen has no registry yet and instead records which blocks actually changed as the first pass applies them, then signals the unit events the player and target frames need. Same effect for those fields, different mechanism, and narrower: only health, maxhealth, power, maxpower, level and faction, only for the player and target tokens. docs/ref/parity-mirror.md."
   }
 }

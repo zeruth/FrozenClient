@@ -7,6 +7,9 @@
 class CDataStore;
 class CGObject_C;
 
+void MirrorBeginUpdate();
+void MirrorNoteChange(WOWGUID guid, uint32_t block);
+
 int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid);
 
 int32_t FillInPartialObjectData(CGObject_C* object, WOWGUID guid, CDataStore* msg, bool forFullUpdate, bool zeroZeroBits);

@@ -532,7 +532,7 @@ addr	how	frozen	evidence
 004d41c0	annotated	SkipSetOfObjects	tag in src/object/client/MessageHandlers.cpp
 004d4ac0	string	ClntObjMgrInitializeShared	score 0.50 shared ObjUsage
 004d4db0	override	ClntObjMgrObjectPtr	
-004d5550	annotated	CallMirrorHandlers	tag in src/object/client/Mirror.cpp
+004d5550	override	CallMirrorHandlers	
 004d63b0	annotated	PostInitObject	tag in src/object/client/MessageHandlers.cpp
 004d6da0	annotated	PostMovementUpdate	tag in src/object/client/MessageHandlers.cpp
 004d6e80	annotated	UpdateObject	tag in src/object/client/MessageHandlers.cpp

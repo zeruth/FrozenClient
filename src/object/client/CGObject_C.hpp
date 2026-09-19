@@ -57,7 +57,13 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         int32_t IsInReenable();
         int32_t IsObjectLocked();
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);
+        uint32_t GetBlock(uint32_t block) const;
         void SetBlock(uint32_t block, uint32_t value);
+
+        // Which descriptor block a field of this object's data lives in. Lets the mirror name
+        // fields by member rather than by a hand-counted dword index that would rot the moment a
+        // descriptor struct gained a member.
+        uint32_t BlockIndexOf(const void* field) const;
         void SetDisablePending(int32_t pending);
         void SetModel(CM2Model* model);
         void SetModelFinish(CM2Model* model);
