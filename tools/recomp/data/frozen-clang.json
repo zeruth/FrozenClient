@@ -72628,9 +72628,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 106,
+"lines": 113,
 "refs": [],
-"line": 930
+"line": 931
 },
 "TextureCreateSolid": {
 "files": [
@@ -72654,7 +72654,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1039
+"line": 1047
 },
 "TextureGetDimensions": {
 "files": [
@@ -72673,7 +72673,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1056
+"line": 1064
 },
 "TextureGetGxTex": {
 "files": [
@@ -72698,7 +72698,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1080
+"line": 1088
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -72711,7 +72711,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1131
+"line": 1139
 },
 "TextureIncreasePriority": {
 "files": [
@@ -72724,7 +72724,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1135
+"line": 1143
 },
 "TextureInitialize": {
 "files": [
@@ -72746,7 +72746,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1139
+"line": 1147
 },
 "TextureIsSame": {
 "files": [
@@ -72768,7 +72768,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1147
+"line": 1155
 },
 "CGxTexFlags::operator==": {
 "files": [

@@ -927,11 +927,19 @@ uint32_t TextureCalcMipCount(uint32_t width, uint32_t height) {
     return count;
 }
 
+// ref: FUN_004b9760
 HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* status, int32_t createFlags) {
     STORM_ASSERT(fileName);
     STORM_ASSERT(*fileName);
     STORM_ASSERT(status);
 
+    // DIVERGENCE, deliberate. The reference tests this the other way round: bit 0 CLEAR means "no
+    // explicit filter", so the global texture-filtering mode wins, and only the loading screen
+    // (the one caller passing 1) keeps the flags it built. Frozen cannot take that yet -- flipping
+    // the test to match makes the client fault during world load, before the first frame, every
+    // run -- so something downstream assumes the filter a caller asked for. Until that is found,
+    // this keeps the condition Frozen can survive, and the texture-filtering CVar consequently
+    // does nothing for world and character textures.
     if (createFlags & 0x1) {
         texFlags.m_filter = CTexture::s_filterMode;
     }

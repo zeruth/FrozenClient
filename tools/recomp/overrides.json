@@ -232,5 +232,14 @@
   "00821a20": { "frozen": "CM2Scene::Animate", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port 52" },
   "00823130": { "frozen": "CM2SceneRender::Draw", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2SceneRender.cpp; 2909 bytes, 25 calls against the port 28" },
   "00823cb0": { "frozen": "CM2Scene::Draw", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; the per-pass entry logging 'Model2 Pass %d'" },
-  "00872c10": { "frozen": "CShaderEffect::UpdateProjMatrix", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/CShaderEffect.cpp" }
+  "00872c10": { "frozen": "CShaderEffect::UpdateProjMatrix", "status": "ported", "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in gx/CShaderEffect.cpp" },
+
+  "004b51c0": { "frozen": "OsPathFindExtensionWithDot", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): straight after the SStrCopy of the file name" },
+  "004b6fa0": { "frozen": "TextureCacheGetTexture", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): the cache probe before anything is created, (fileName, ext, flags)" },
+  "004b95b0": { "frozen": "CreateTgaTexture", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status)" },
+  "004b8be0": { "frozen": "CreateBlpTexture", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): the other branch of the same loop" },
+  "004b9480": { "frozen": "TextureCacheNewTexture", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags" },
+  "004b9550": { "frozen": "TextureCreateSolid", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): the fallback returned after both loaders fail" },
+
+  "0047bf50": { "frozen": "HandleCreate", "status": "ported", "note": "the ++refcount half of the handle pair, next to HandleClose at 0047bf30; its call-order slot in TextureCreate was displaced when 004b9760 took the TextureCreate name, so it is pinned on its own evidence. 004b8c80 (unique string UniqueTexture) is another TextureCreate overload and cannot be linked until the inventory keys overloads apart" }
 }

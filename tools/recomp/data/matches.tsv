@@ -103,7 +103,7 @@ addr	how	frozen	evidence
 0047b480	override	CDataStore::GetString	
 0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
 0047bf30	override	HandleClose	
-0047bf50	callorder	HandleCreate	same slot between linked calls in 004b8c80=TextureCreate
+0047bf50	override	HandleCreate	
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	callorder	NDCToDDC	same slot between linked calls in 00510a10=Script_GetCursorPosition
@@ -390,12 +390,40 @@ addr	how	frozen	evidence
 004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	Script_Screenshot	unique "Screenshots"
+004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
+004b51c0	override	OsPathFindExtensionWithDot	
+004b5210	callorder	FindSubstitution	same slot between linked calls in 004b8be0=CreateBlpTexture
 004b6760	callgraph	TextureAllocGxTex	only unmatched callee of 004b6920=FillInSolidTexture
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
+004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6ae0	order	GxCalcTexelStrideInBytes	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6c50	order	GxTexCreate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
+004b6d90	order	GxTexDestroy	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6e40	order	GxTexParameters	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6e90	order	GxTexReusable	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6f30	order	GxTexSetWrap	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6fa0	override	TextureCacheGetTexture	
+004b7020	order	ReloadMips	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b70a0	order	TextureFreeGxTex	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7220	order	TextureAllocMippedImg	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7300	order	GxTexUpdate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b73e0	order	GxuUpdateSingleColorTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7460	order	GetDefaultTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b74f0	order	GetTextureFormats	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7580	order	MippedImgAllocA	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b76e0	order	MippedImgCalcSize	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7770	order	MippedImgSet	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b78a0	order	RequestImageDimensions	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7aa0	order	UpdateBlpTextureAsync	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
-004b8c80	string	TextureCreate	unique "UniqueTexture"
+004b8770	callorder	CTexture::CTexture	same slot between linked calls in 004b9550=TextureCreateSolid
+004b8be0	override	CreateBlpTexture	
+004b9480	override	TextureCacheNewTexture	
+004b9550	override	TextureCreateSolid	
+004b95b0	override	CreateTgaTexture	
+004b9760	annotated	TextureCreate	tag in src/gx/Texture.cpp
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
 004bd960	callorder	CSimpleFontString::GetFontName	same slot between linked calls in 00483750=CSimpleFontString::SetFont
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString

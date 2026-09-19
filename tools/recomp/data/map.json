@@ -851,7 +851,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.091,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -899,7 +899,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.176,
+  "fidelity": 0.294,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1664,7 +1664,7 @@
   ],
   "frozen": "HandleCreate",
   "frozenSize": 37,
-  "how": "callorder",
+  "how": "override",
   "module": "framing.c",
   "refSize": 27,
   "status": "ported"
@@ -2088,7 +2088,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp",
    "src/ui/simple/csimpletexture.cpp"
@@ -2104,7 +2104,7 @@
   "branchRatio": 0.345,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.623,
+  "fidelity": 0.639,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp",
    "src/ui/simple/csimpletexture.cpp"
@@ -6243,6 +6243,54 @@
   "refSize": 432,
   "status": "ported"
  },
+ "004a8bb0": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/Screen.cpp",
+   "src/gx/screen.cpp"
+  ],
+  "frozen": "ScrnLayerCreate",
+  "frozenSize": 407,
+  "how": "callorder",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 211,
+  "status": "ported"
+ },
+ "004b51c0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsPathFindExtensionWithDot",
+  "frozenSize": 97,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "004b5210": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "FindSubstitution",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "Texture.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
  "004b6760": {
   "branchRatio": 0.176,
   "constOverlap": 0.0,
@@ -6275,6 +6323,54 @@
   "refSize": 183,
   "status": "ported"
  },
+ "004b69e0": {
+  "branchRatio": 0.615,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GetBitDepth",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 252,
+  "status": "ported"
+ },
+ "004b6ae0": {
+  "branchRatio": 0.053,
+  "constOverlap": 0.333,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxCalcTexelStrideInBytes",
+  "frozenSize": 55,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 350,
+  "status": "ported"
+ },
+ "004b6c50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexCreate",
+  "frozenSize": 135,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
  "004b6cb0": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,
@@ -6291,11 +6387,283 @@
   "refSize": 210,
   "status": "ported"
  },
+ "004b6d90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexDestroy",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 163,
+  "status": "ported"
+ },
+ "004b6e40": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexParameters",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
+ "004b6e90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexReusable",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 149,
+  "status": "ported"
+ },
+ "004b6f30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexSetWrap",
+  "frozenSize": 21,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
+ "004b6fa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetTexture",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "004b7020": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "ReloadMips",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 128,
+  "status": "ported"
+ },
+ "004b70a0": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureFreeGxTex",
+  "frozenSize": 77,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 344,
+  "status": "ported"
+ },
+ "004b7220": {
+  "branchRatio": 0.091,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureAllocMippedImg",
+  "frozenSize": 314,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 212,
+  "status": "ported"
+ },
+ "004b7300": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexUpdate",
+  "frozenSize": 105,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 217,
+  "status": "ported"
+ },
+ "004b73e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxuUpdateSingleColorTexture",
+  "frozenSize": 73,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "004b7460": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GetDefaultTexture",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
+ "004b74f0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GetTextureFormats",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 133,
+  "status": "ported"
+ },
+ "004b7580": {
+  "branchRatio": 0.071,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "MippedImgAllocA",
+  "frozenSize": 231,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 343,
+  "status": "ported"
+ },
+ "004b76e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "MippedImgCalcSize",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 138,
+  "status": "ported"
+ },
+ "004b7770": {
+  "branchRatio": 0.05,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "MippedImgSet",
+  "frozenSize": 178,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 302,
+  "status": "ported"
+ },
+ "004b78a0": {
+  "branchRatio": 0.308,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "RequestImageDimensions",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 506,
+  "status": "ported"
+ },
+ "004b7aa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "UpdateBlpTextureAsync",
+  "frozenSize": 119,
+  "how": "order",
+  "module": "Texture.cpp",
+  "refSize": 256,
+  "status": "ported"
+ },
  "004b7bd0": {
   "branchRatio": 0.786,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.071,
+  "fidelity": 0.143,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -6323,20 +6691,100 @@
   "refSize": 437,
   "status": "ported"
  },
- "004b8c80": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.043,
+ "004b8770": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.8,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/texture/CTexture.cpp",
+   "src/gx/texture/ctexture.cpp"
+  ],
+  "frozen": "CTexture::CTexture",
+  "frozenSize": 244,
+  "how": "callorder",
+  "module": "Texture.cpp",
+  "refSize": 175,
+  "status": "ported"
+ },
+ "004b8be0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "CreateBlpTexture",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 147,
+  "status": "ported"
+ },
+ "004b9480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheNewTexture",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
+ "004b9550": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCreateSolid",
+  "frozenSize": 79,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
+ "004b95b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "CreateTgaTexture",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 427,
+  "status": "ported"
+ },
+ "004b9760": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.636,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
   "frozenSize": 1296,
-  "how": "string",
+  "how": "annotated",
   "module": "Texture.cpp",
-  "refSize": 234,
+  "refSize": 416,
   "status": "ported"
  },
  "004ba170": {
@@ -8700,7 +9148,7 @@
   "branchRatio": 0.9,
   "constOverlap": 0.286,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
