@@ -492,6 +492,22 @@
   "refSize": 31,
   "status": "ported"
  },
+ "004038f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetActivePtr",
+  "frozenSize": 39,
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
  "00403910": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

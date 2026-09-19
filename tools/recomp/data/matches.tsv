@@ -30,6 +30,7 @@ addr	how	frozen	evidence
 004033c0	callorder	CGTooltip::GetObjectType	same slot between linked calls in 0052a980=CGGameUI::Initialize
 00403760	callgraph	TSGrowableArray<char *>::Reserve	only unmatched callee of 00405a10=AddPatchArchive
 00403880	override	CDataStore::~CDataStore	
+004038f0	annotated	CGPlayer_C::GetActivePtr	tag in src/object/client/CGPlayer_C.cpp
 00403910	handler	TransferAbortedHandler	SetMessageHandler(SMSG_TRANSFER_ABORTED) on both sides
 00403b70	callorder	LoadNewWorld	same slot between linked calls in 00403de0=LoginVerifyWorldHandler
 00403d10	handler	NewWorldHandler	SetMessageHandler(SMSG_NEW_WORLD) on both sides

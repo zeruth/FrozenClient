@@ -83682,7 +83682,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 50
+"line": 54
 },
 "CGPlayer_C::CGPlayer_C": {
 "files": [
@@ -83695,7 +83695,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 56
+"line": 60
 },
 "CGPlayer_C::~CGPlayer_C": {
 "files": [
@@ -83708,7 +83708,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 60
+"line": 64
 },
 "CGPlayer_C::GetMoney": {
 "files": [
@@ -83727,7 +83727,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 64
+"line": 68
 },
 "CGPlayer_C::GetNextLevelXP": {
 "files": [
@@ -83746,7 +83746,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 72
+"line": 76
 },
 "CGPlayer_C::GetXP": {
 "files": [
@@ -83765,7 +83765,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 80
+"line": 84
 },
 "CGPlayer_C::PostInit": {
 "files": [
@@ -83784,7 +83784,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 88
+"line": 92
 },
 "CGPlayer_C::PostInitActivePlayer": {
 "files": [
@@ -83806,7 +83806,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 104
+"line": 108
 },
 "CGPlayer_C::SetStorage": {
 "files": [
@@ -83823,7 +83823,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 124
+"line": 128
 },
 "CGPlayer_C::BuildCharacterComponent": {
 "files": [
@@ -83859,7 +83859,7 @@
 "stub": false,
 "lines": 108,
 "refs": [],
-"line": 134
+"line": 138
 },
 "CGPlayer_C::UpdatePartyMemberState": {
 "files": [
@@ -83872,7 +83872,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 243
+"line": 247
 },
 "Player_C_GetDisplayId": {
 "files": [
@@ -83889,7 +83889,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 247
+"line": 251
 },
 "Player_C_GetModelName": {
 "files": [
@@ -83911,7 +83911,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 267
+"line": 271
 },
 "CGUnit::GetBaseOffset": {
 "files": [

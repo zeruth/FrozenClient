@@ -47,6 +47,10 @@ void CGPlayer_C::SetLocalPlayerInfo(const CHARACTER_INFO& info) {
     CGPlayer_C::s_localPlayerInfo = info;
 }
 
+// ref: FUN_004038f0
+// One of the most-called leaves in the client: 101 call sites resolve the active player through
+// it. The reference spells it exactly the same way -- the active player's guid, resolved as
+// TYPE_PLAYER (0x10), with the Player_C.h file and line the allocator tracks it by.
 CGPlayer_C* CGPlayer_C::GetActivePtr() {
     return static_cast<CGPlayer_C*>(
         ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)
