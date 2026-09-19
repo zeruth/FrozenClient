@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 16:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 16:11 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2690 (=) (9.9%) | 572.6k (10.3%) |
-| &nbsp;&nbsp;ported | 2104 (+1) | 417.7k |
-| &nbsp;&nbsp;stub (unimplemented body) | 550 (-1) | 116.9k |
+| mapped to a frozen function | 2692 (+1) (9.9%) | 572.7k (10.3%) |
+| &nbsp;&nbsp;ported | 2104 (+1) | 417.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 552 (=) | 117.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **938 (=) (3.5%)** | **118.4k (2.1%)** |
-| unmapped | 24471 | 4.85M |
+| **faithful** (linked, not stub, call order >= 80%) | **945 (+1) (3.5%)** | **118.8k (2.1%)** |
+| unmapped | 24469 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 394 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 398 (=) (6.9%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11468, stubs 796 | |
+| frozen functions (src/, from PDB + source) | 11471, stubs 799 | |
 
-Match evidence: annotated 528, callgraph 160, callorder 140, cvar 30, handler 28, order 190, override 193, sticky 14, string 312, table 1095. Module anchors: 1479 assert strings.
+Match evidence: annotated 534, callgraph 156, callorder 142, cvar 30, handler 28, order 190, override 194, sticky 17, string 310, table 1091. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 15:59 -- mapped 2690, ported 2103, stub 551, spine mapped 394.
+Previous run: 2026-09-19 16:10 -- mapped 2691, ported 2103, stub 552, spine mapped 394.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 613 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 612 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -96,7 +96,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
-| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 5 |  / stubs: GetDrawLayer, SetBlendMode, GetVertexColor, SetGradient ... |
+| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 6 |  / stubs: SetOrientation, GetStatusBarTexture, SetStatusBarTexture, GetStatusBarColor ... |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions` | 5 | 0 | GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle, BarberShopReset |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions` | 5 | 0 | FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial, GetPrevCompleatedTutorial |
@@ -105,14 +105,14 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions` | 5 | 0 | GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
 | 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
+| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 4 |  / stubs: SetBlendMode, GetVertexColor, SetGradient, SetGradientAlpha |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
-| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 4 |  / stubs: GetOrientation, SetOrientation, SetStatusBarTexture, SetStatusBarColor |
-| 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 4 |  / stubs: GetThumbTexture, SetThumbTexture, GetOrientation, SetOrientation |
-| 00ac1118 (IsObjectType..) | 41 | `SimpleFontStringMethods` | 0 | 3 |  / stubs: GetDrawLayer, SetAlphaGradient, SetFormattedText |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
 | 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 3 |  / stubs: SetLight, ReplaceIconTexture, SetGlow |
+| 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 3 |  / stubs: GetThumbTexture, SetThumbTexture, SetOrientation |
+| 00ac1118 (IsObjectType..) | 41 | `SimpleFontStringMethods` | 0 | 2 |  / stubs: SetAlphaGradient, SetFormattedText |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 17 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 20 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -193,13 +193,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 2 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 71 (38.6%) | 45.9% | 17 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 73 (39.7%) | 46.2% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 30 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 9 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 7 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 34 (20.5%) | 33.1% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
@@ -219,7 +219,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 42 (32.8%) | 30.8% | 4 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 42 (32.8%) | 30.8% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 0 | 0 | 2 |
@@ -511,12 +511,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
 | 0052dc20 | PartyFrame.cpp | 564 | 0 | `Script_SetLootMethod` [table] | Invalid loot method, Usage: SetLootMethod("method" [,master]) |
 | 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
+| 00961d70 | CSimpleMovieFrame.cpp? | 182 | 2 | `CSimpleStatusBar::SetRotatesTexture` [callorder] |  |
 | 004b7460 | Texture.cpp | 136 | 3 | `GetDefaultTexture` [order] | .?AVCMipBitsCache@@, d:\buildserver\wow\1\work\wow-code\branc |
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
 | 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
 | 0054de00 | BattlefieldInfo.cpp | 519 | 0 | `Script_SortBattlefieldScoreData` [table] | Usgae: SortBattlefieldScoreData("type"), class |
 | 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
-| 00535180 | PartyFrame.cpp? | 510 | 0 | `Script_BNGetFriendInviteInfo` [table] | BNUI: Invite Info Account name: %s %s, BNUI: Invite Info ID: %u |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -738,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 14:47 | 2677 (9.9%) | 930 (3.4%) | 562 | 393/5530 | 1791/2964 | 626 |
-| 2026-09-19 14:48 | 2681 (9.9%) | 930 (3.4%) | 562 | 392/5530 | 1791/2964 | 626 |
 | 2026-09-19 14:54 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 14:55 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 14:56 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
@@ -763,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 15:57 | 2690 (9.9%) | 938 (3.5%) | 551 | 394/5530 | 1791/2964 | 614 |
 | 2026-09-19 15:59 | 2690 (9.9%) | 938 (3.5%) | 551 | 394/5530 | 1791/2964 | 614 |
 | 2026-09-19 16:03 | 2690 (9.9%) | 938 (3.5%) | 550 | 394/5530 | 1791/2964 | 613 |
+| 2026-09-19 16:10 | 2691 (9.9%) | 944 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
+| 2026-09-19 16:11 | 2692 (9.9%) | 945 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
 
 ## How to move a row
 

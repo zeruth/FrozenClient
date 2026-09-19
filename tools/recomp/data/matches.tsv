@@ -156,7 +156,7 @@ addr	how	frozen	evidence
 00487bf0	override	CSimpleRegion::Hide	
 00487c40	override	CSimpleRegion::Show	
 00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481700=CSimpleTexture::SetShader
-00487ed0	callgraph	CSimpleRegion::SetFrame	only unmatched callee of 0048bf30=CSimpleTexture_SetDrawLayer
+00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f920=CSimpleButton::SetStateTexture
 004883f0	callorder	CScriptRegion::LoadXML_Animations	same slot between linked calls in 00488670=CScriptRegion::LoadXML
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
@@ -183,7 +183,7 @@ addr	how	frozen	evidence
 0048bd20	callgraph	CImVector::Set	only unmatched callee of 004a2d40=CBackdropGenerator::CBackdropGenerator
 0048bde0	table	CSimpleTexture_GetObjectType	binding "GetObjectType" in SimpleTextureMethods ~ table 00ac1028
 0048be30	table	CSimpleTexture_IsObjectType	binding "IsObjectType" in SimpleTextureMethods ~ table 00ac1028
-0048bee0	table	CSimpleTexture_GetDrawLayer	binding "GetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
+0048bee0	annotated	CSimpleTexture_GetDrawLayer	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048bf30	table	CSimpleTexture_SetDrawLayer	binding "SetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
 0048bff0	annotated	CSimpleTexture_GetBlendMode	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c040	table	CSimpleTexture_SetBlendMode	binding "SetBlendMode" in SimpleTextureMethods ~ table 00ac1028
@@ -211,7 +211,7 @@ addr	how	frozen	evidence
 0048cc90	annotated	CSimpleTexture_GetVertTile	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048cd20	table	CSimpleFontString_GetObjectType	binding "GetObjectType" in SimpleFontStringMethods ~ table 00ac1118
 0048cd70	table	CSimpleFontString_IsObjectType	binding "IsObjectType" in SimpleFontStringMethods ~ table 00ac1118
-0048ce20	table	CSimpleFontString_GetDrawLayer	binding "GetDrawLayer" in SimpleFontStringMethods ~ table 00ac1118
+0048ce20	annotated	CSimpleFontString_GetDrawLayer	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048ce70	table	CSimpleFontString_SetDrawLayer	binding "SetDrawLayer" in SimpleFontStringMethods ~ table 00ac1118
 0048cf30	table	CSimpleFontString_SetVertexColor	binding "SetVertexColor" in SimpleFontStringMethods ~ table 00ac1118
 0048cfc0	table	CSimpleFontString_GetAlpha	binding "GetAlpha" in SimpleFontStringMethods ~ table 00ac1118
@@ -267,11 +267,11 @@ addr	how	frozen	evidence
 0048f6f0	override	CSimpleFrame::DisableEvent	
 0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
-00490270	callgraph	CSimpleFrame::NotifyDrawLayerChanged	only unmatched callee of 00490600=CSimpleFrame::EnableDrawLayer, 00490620=CSimpleFrame::DisableDrawLayer
+00490270	sticky	CSimpleFrame::NotifyDrawLayerChanged	held from the previous run, where it was sticky
 00490410	annotated	CSimpleFrame::PostLoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 004905a0	override	CSimpleFrame::SetBackdrop	
-00490600	callgraph	CSimpleFrame::EnableDrawLayer	only unmatched callee of 0049fc90=CSimpleFrame_EnableDrawLayer
-00490620	callgraph	CSimpleFrame::DisableDrawLayer	only unmatched callee of 0049fd00=CSimpleFrame_DisableDrawLayer
+00490600	sticky	CSimpleFrame::EnableDrawLayer	held from the previous run, where it was sticky
+00490620	sticky	CSimpleFrame::DisableDrawLayer	held from the previous run, where it was sticky
 00491020	override	CSimpleFrame::SetFrameStrata	
 004910a0	override	CSimpleFrame::SetFrameLevel	
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
@@ -1917,12 +1917,14 @@ addr	how	frozen	evidence
 00814e40	override	StringToFrameStrata	
 00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
-00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
+00814f60	callorder	StringToDrawLayer	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture, 004a2240=CSimpleFrame_CreateFontString
+00814fb0	annotated	DrawLayerToString	tag in src/ui/Util.cpp
 00814ff0	callorder	StringToBlendMode	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
 00815040	annotated	BlendModeToString	tag in src/ui/Util.cpp
 00815080	override	StringToJustify	
 008150d0	callgraph	JustifyToString	only unmatched callee of 004a4080=FontString_GetJustifyH, 004a40b0=FontString_GetJustifyV
-00815110	string	StringToOrientation	unique "HORIZONTAL"
+00815110	override	StringToOrientation	
+00815160	annotated	OrientationToString	tag in src/ui/Util.cpp
 008151a0	annotated	StringToFontFlags	tag in src/ui/Util.cpp
 008151e0	annotated	FontFlagsToString	tag in src/ui/Util.cpp
 008154e0	override	StringToBOOL	
@@ -2493,7 +2495,7 @@ addr	how	frozen	evidence
 00970fd0	table	CSimpleColorSelect_GetColorHSV	binding "GetColorHSV" in SimpleColorSelectMethods ~ table 00b2cd50
 00971050	table	CSimpleColorSelect_SetColorRGB	binding "SetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
 009710d0	table	CSimpleColorSelect_GetColorRGB	binding "GetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
-00971240	table	CSimpleStatusBar_GetOrientation	binding "GetOrientation" in SimpleStatusBarMethods ~ table 00b2cdb8
+00971240	annotated	CSimpleSlider_GetOrientation	tag in src/ui/simple/CSimpleSliderScript.cpp
 00971290	table	CSimpleStatusBar_SetOrientation	binding "SetOrientation" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971360	table	CSimpleStatusBar_GetMinMaxValues	binding "GetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
 009713c0	table	CSimpleStatusBar_SetMinMaxValues	binding "SetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
@@ -2507,7 +2509,7 @@ addr	how	frozen	evidence
 009719d0	table	CSimpleStatusBar_SetRotatesTexture	binding "SetRotatesTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971a90	table	CSimpleSlider_GetThumbTexture	binding "GetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
 00971b10	table	CSimpleSlider_SetThumbTexture	binding "SetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
-00971c70	table	CSimpleSlider_GetOrientation	binding "GetOrientation" in SimpleSliderMethods ~ table 00b2ce20
+00971c70	annotated	CSimpleStatusBar_GetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971cc0	table	CSimpleSlider_SetOrientation	binding "SetOrientation" in SimpleSliderMethods ~ table 00b2ce20
 00971d90	table	CSimpleSlider_GetMinMaxValues	binding "GetMinMaxValues" in SimpleSliderMethods ~ table 00b2ce20
 00971df0	table	CSimpleSlider_SetMinMaxValues	binding "SetMinMaxValues" in SimpleSliderMethods ~ table 00b2ce20

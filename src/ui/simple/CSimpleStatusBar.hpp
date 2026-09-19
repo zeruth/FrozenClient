@@ -32,6 +32,7 @@ class CSimpleStatusBar : public CSimpleFrame {
             , m_valueSet(false) {};
         float GetAnimValue() const;
         float GetMaxValue() const;
+        ORIENTATION GetOrientation() const;
         float GetMinValue() const;
         float GetValue() const;
         void RunOnMinMaxChangedScript();

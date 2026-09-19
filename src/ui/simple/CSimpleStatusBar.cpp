@@ -64,6 +64,10 @@ float CSimpleStatusBar::GetMaxValue() const {
     return this->m_maxValue;
 }
 
+ORIENTATION CSimpleStatusBar::GetOrientation() const {
+    return this->m_orientation;
+}
+
 float CSimpleStatusBar::GetMinValue() const {
     return this->m_minValue;
 }

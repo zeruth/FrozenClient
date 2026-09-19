@@ -12,8 +12,14 @@ int32_t CSimpleSlider_SetThumbTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00971240
 int32_t CSimpleSlider_GetOrientation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto slider = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, OrientationToString(slider->m_orientation));
+
+    return 1;
 }
 
 int32_t CSimpleSlider_SetOrientation(lua_State* L) {

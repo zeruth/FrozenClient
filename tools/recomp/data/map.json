@@ -2506,7 +2506,7 @@
   ],
   "frozen": "CSimpleRegion::SetFrame",
   "frozenSize": 250,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 297,
   "status": "ported"
@@ -2928,20 +2928,20 @@
   "status": "stub"
  },
  "0048bee0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetDrawLayer",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 74,
-  "status": "stub"
+  "status": "ported"
  },
  "0048bf30": {
   "branchRatio": 0.5,
@@ -3376,20 +3376,20 @@
   "status": "ported"
  },
  "0048ce20": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp",
    "src/ui/simple/csimplefontstringscript.cpp"
   ],
   "frozen": "CSimpleFontString_GetDrawLayer",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 74,
-  "status": "stub"
+  "status": "ported"
  },
  "0048ce70": {
   "branchRatio": 0.5,
@@ -4282,7 +4282,7 @@
   ],
   "frozen": "CSimpleFrame::NotifyDrawLayerChanged",
   "frozenSize": 153,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CSimpleFrame.cpp",
   "refSize": 87,
   "status": "ported"
@@ -4330,7 +4330,7 @@
   ],
   "frozen": "CSimpleFrame::EnableDrawLayer",
   "frozenSize": 18,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CSimpleFrame.cpp",
   "refSize": 27,
   "status": "ported"
@@ -4346,7 +4346,7 @@
   ],
   "frozen": "CSimpleFrame::DisableDrawLayer",
   "frozenSize": 18,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CSimpleFrame.cpp",
   "refSize": 27,
   "status": "ported"
@@ -30579,9 +30579,25 @@
   ],
   "frozen": "StringToDrawLayer",
   "frozenSize": 92,
-  "how": "string",
+  "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 74,
+  "status": "ported"
+ },
+ "00814fb0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/Util.cpp",
+   "src/ui/util.cpp"
+  ],
+  "frozen": "DrawLayerToString",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
   "status": "ported"
  },
  "00814ff0": {
@@ -30659,9 +30675,25 @@
   ],
   "frozen": "StringToOrientation",
   "frozenSize": 92,
-  "how": "string",
+  "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 74,
+  "status": "ported"
+ },
+ "00815160": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/Util.cpp",
+   "src/ui/util.cpp"
+  ],
+  "frozen": "OrientationToString",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
   "status": "ported"
  },
  "008151a0": {
@@ -38451,7 +38483,7 @@
   "how": "callorder",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 182,
-  "status": "ported"
+  "status": "stub"
  },
  "00961e30": {
   "branchRatio": 0.48,
@@ -39513,17 +39545,17 @@
   "status": "ported"
  },
  "00971240": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleStatusBarScript.cpp",
-   "src/ui/simple/csimplestatusbarscript.cpp"
+   "src/ui/simple/CSimpleSliderScript.cpp",
+   "src/ui/simple/csimplesliderscript.cpp"
   ],
-  "frozen": "CSimpleStatusBar_GetOrientation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozen": "CSimpleSlider_GetOrientation",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,
   "status": "ported"
@@ -39542,7 +39574,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 203,
-  "status": "ported"
+  "status": "stub"
  },
  "00971360": {
   "branchRatio": 0.0,
@@ -39622,7 +39654,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 114,
-  "status": "ported"
+  "status": "stub"
  },
  "00971650": {
   "branchRatio": 0.182,
@@ -39654,12 +39686,12 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 259,
-  "status": "ported"
+  "status": "stub"
  },
  "00971910": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
@@ -39670,7 +39702,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 96,
-  "status": "stub"
+  "status": "ported"
  },
  "00971970": {
   "branchRatio": 1.0,
@@ -39686,7 +39718,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 94,
-  "status": "ported"
+  "status": "stub"
  },
  "009719d0": {
   "branchRatio": 0.5,
@@ -39702,7 +39734,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,
-  "status": "ported"
+  "status": "stub"
  },
  "00971a90": {
   "branchRatio": 0.667,
@@ -39737,20 +39769,20 @@
   "status": "stub"
  },
  "00971c70": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleSliderScript.cpp",
-   "src/ui/simple/csimplesliderscript.cpp"
+   "src/ui/simple/CSimpleStatusBarScript.cpp",
+   "src/ui/simple/csimplestatusbarscript.cpp"
   ],
-  "frozen": "CSimpleSlider_GetOrientation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozen": "CSimpleStatusBar_GetOrientation",
+  "frozenSize": 61,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,
-  "status": "stub"
+  "status": "ported"
  },
  "00971cc0": {
   "branchRatio": 0.4,

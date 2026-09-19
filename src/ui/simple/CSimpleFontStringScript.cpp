@@ -305,8 +305,16 @@ int32_t CSimpleFontString_GetObjectType(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048ce20
+// One reference function serves both this and the texture's, the way the FontString helpers are
+// shared -- same body, a different region type in front of it.
 int32_t CSimpleFontString_GetDrawLayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto fontString = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, DrawLayerToString(fontString->m_drawlayer));
+
+    return 1;
 }
 
 int32_t CSimpleFontString_SetDrawLayer(lua_State* L) {

@@ -20,8 +20,14 @@ int32_t CSimpleTexture_GetObjectType(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048bee0
 int32_t CSimpleTexture_GetDrawLayer(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, DrawLayerToString(texture->m_drawlayer));
+
+    return 1;
 }
 
 int32_t CSimpleTexture_SetDrawLayer(lua_State* L) {

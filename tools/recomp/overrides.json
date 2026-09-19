@@ -1152,5 +1152,10 @@
     "frozen": "CallMirrorHandlers",
     "status": "diverged",
     "note": "the reference walks a registry of watchers, each holding its own copy of the bytes it watches; frozen has no registry yet and instead records which blocks actually changed as the first pass applies them, then signals the unit events the player and target frames need. Same effect for those fields, different mechanism, and narrower: only health, maxhealth, power, maxpower, level and faction, only for the player and target tokens. docs/ref/parity-mirror.md."
+  },
+  "00815110": {
+    "frozen": "StringToOrientation",
+    "status": "ported",
+    "note": "pinned 2026-09-19. It was linked by its two literals, HORIZONTAL and VERTICAL; moving them into a namespace-scope table shared with OrientationToString -- which is how the reference reads one table from both directions -- left the function itself mentioning neither, so the string matcher dropped it. The link is unchanged, the evidence for it moved."
   }
 }

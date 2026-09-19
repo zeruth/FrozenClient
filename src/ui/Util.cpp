@@ -420,21 +420,25 @@ uint64_t StringToClickAction(const char* string) {
     return 0;
 }
 
+namespace {
+
+struct LayerEntry {
+    const char* string;
+    int32_t layer;
+};
+
+LayerEntry g_layerMap[] = {
+    { "BACKGROUND", DRAWLAYER_BACKGROUND },
+    { "BORDER",     DRAWLAYER_BACKGROUND_BORDER },
+    { "ARTWORK",    DRAWLAYER_ARTWORK },
+    { "OVERLAY",    DRAWLAYER_ARTWORK_OVERLAY },
+    { "HIGHLIGHT",  DRAWLAYER_HIGHLIGHT },
+};
+
+}
+
 int32_t StringToDrawLayer(const char* string, int32_t& layer) {
-    struct LayerEntry {
-        const char* string;
-        int32_t layer;
-    };
-
-    static LayerEntry layerMap[] = {
-        { "BACKGROUND", DRAWLAYER_BACKGROUND },
-        { "BORDER",     DRAWLAYER_BACKGROUND_BORDER },
-        { "ARTWORK",    DRAWLAYER_ARTWORK },
-        { "OVERLAY",    DRAWLAYER_ARTWORK_OVERLAY },
-        { "HIGHLIGHT",  DRAWLAYER_HIGHLIGHT },
-    };
-
-    for (const auto& entry : layerMap) {
+    for (const auto& entry : g_layerMap) {
         if (!SStrCmpI(string, entry.string)) {
             layer = entry.layer;
             return true;
@@ -442,6 +446,20 @@ int32_t StringToDrawLayer(const char* string, int32_t& layer) {
     }
 
     return false;
+}
+
+// ref: FUN_00814fb0
+// The reference hands this the low nibble of the region's layer byte -- the high nibble carries
+// something else -- so callers mask before asking. An unknown layer answers "UNKNOWN" rather than
+// null, so a caller pushing the result straight onto the stack cannot push nil by accident.
+const char* DrawLayerToString(int32_t layer) {
+    for (const auto& entry : g_layerMap) {
+        if (entry.layer == layer) {
+            return entry.string;
+        }
+    }
+
+    return "UNKNOWN";
 }
 
 // The name FrameXML uses for an anchor point, for the queries that hand a point back to script.
@@ -600,18 +618,33 @@ int32_t StringToJustify(const char* string, uint32_t& justify) {
     return false;
 }
 
+namespace {
+
+struct OrientationEntry {
+    const char* string;
+    ORIENTATION value;
+};
+
+OrientationEntry g_orientationMap[] = {
+    { "HORIZONTAL", ORIENTATION_HORIZONTAL },
+    { "VERTICAL",   ORIENTATION_VERTICAL },
+};
+
+}
+
+// ref: FUN_00815160
+const char* OrientationToString(ORIENTATION orientation) {
+    for (const auto& entry : g_orientationMap) {
+        if (entry.value == orientation) {
+            return entry.string;
+        }
+    }
+
+    return "UNKNOWN";
+}
+
 int32_t StringToOrientation(const char* string, ORIENTATION& orientation) {
-    struct OrientationEntry {
-        const char* string;
-        ORIENTATION value;
-    };
-
-    static OrientationEntry orientationMap[] = {
-        { "HORIZONTAL", ORIENTATION_HORIZONTAL },
-        { "VERTICAL",   ORIENTATION_VERTICAL },
-    };
-
-    for (const auto& entry : orientationMap) {
+    for (const auto& entry : g_orientationMap) {
         if (!SStrCmpI(entry.string, string)) {
             orientation = entry.value;
             return true;

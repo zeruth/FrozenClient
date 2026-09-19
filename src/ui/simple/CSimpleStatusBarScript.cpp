@@ -6,8 +6,14 @@
 
 namespace {
 
+// ref: FUN_00971c70
 int32_t CSimpleStatusBar_GetOrientation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, OrientationToString(statusBar->GetOrientation()));
+
+    return 1;
 }
 
 int32_t CSimpleStatusBar_SetOrientation(lua_State* L) {

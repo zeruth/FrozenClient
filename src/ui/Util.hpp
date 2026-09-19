@@ -21,6 +21,7 @@ bool StringToBOOL(lua_State* L, int32_t idx, int32_t def);
 
 uint64_t StringToClickAction(const char* string);
 
+const char* DrawLayerToString(int32_t layer);
 int32_t StringToDrawLayer(const char* string, int32_t& layer);
 
 const char* FramePointToString(FRAMEPOINT point);
@@ -42,6 +43,7 @@ int32_t StringToJustify(const char* string, uint32_t& justify);
 
 const char* JustifyToString(uint32_t justify);
 
+const char* OrientationToString(ORIENTATION orientation);
 int32_t StringToOrientation(const char* string, ORIENTATION& orientation);
 
 #endif
