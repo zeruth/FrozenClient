@@ -10,6 +10,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include "ui/Types.hpp"
 #include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/FrameScript.hpp"
@@ -1109,8 +1110,74 @@ int32_t Script_GetCoinIcon(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_007e7c70
+// Splits a copper amount into its three coin denominations. The reference writes them into one
+// struct in the order copper, silver, gold; the caller walks it backwards, which is why the text
+// comes out largest first.
+static void CoinSplit(int32_t amount, int32_t& gold, int32_t& silver, int32_t& copper) {
+    gold = amount / 10000;
+    silver = (amount / 100) % 100;
+    copper = amount % 100;
+}
+
+// ref: FUN_007e7d80
+// Gold first, then silver, then copper, each skipped when it is zero, each rendered through its own
+// localized global string (GOLD_AMOUNT, SILVER_AMOUNT, COPPER_AMOUNT) and joined by the caller's
+// separator. The three global-string names come from the reference's own table at 00af4914.
+static void CoinTextFormat(int32_t amount, char* text, size_t textSize, const char* separator) {
+    int32_t gold, silver, copper;
+    CoinSplit(amount, gold, silver, copper);
+
+    const struct {
+        int32_t value;
+        const char* globalString;
+    } parts[] = {
+        { gold,   "GOLD_AMOUNT" },
+        { silver, "SILVER_AMOUNT" },
+        { copper, "COPPER_AMOUNT" },
+    };
+
+    text[0] = '\0';
+
+    for (const auto& part : parts) {
+        if (!part.value) {
+            continue;
+        }
+
+        if (text[0]) {
+            SStrPack(text, separator, textSize);
+        }
+
+        // TODO the reference passes a fourth argument here that Frozen's FrameScript_GetText does
+        // not take. It is either the plural count for the global string or the value substituted
+        // into it; the two cannot be told apart from the decompilation, so the count is passed as
+        // -1 the way the visible second argument reads, and the value is substituted below.
+        auto format = FrameScript_GetText(part.globalString, -1, GENDER_NOT_APPLICABLE);
+
+        char rendered[1024];
+        SStrPrintf(rendered, sizeof(rendered), format, part.value);
+
+        SStrPack(text, rendered, textSize);
+    }
+}
+
+// ref: FUN_00510c60
 int32_t Script_GetCoinText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetCoinText(amount [,separator])");
+
+        return 0;
+    }
+
+    // The reference defaults the separator to ", ", the same string its font-flag joiner uses.
+    auto separator = luaL_optstring(L, 2, ", ");
+
+    char text[1024];
+    CoinTextFormat(static_cast<int32_t>(lua_tonumber(L, 1) + 0.5), text, sizeof(text), separator);
+
+    lua_pushstring(L, text);
+
+    return 1;
 }
 
 int32_t Script_GetCoinTextureString(lua_State* L) {

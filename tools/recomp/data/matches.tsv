@@ -668,6 +668,7 @@ addr	how	frozen	evidence
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac8460
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
+00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
@@ -1636,6 +1637,8 @@ addr	how	frozen	evidence
 007e2b40	handler	ReceiveNewGameTime	SetMessageHandler(SMSG_GAME_TIME_SET) on both sides
 007e4480	override	BlobShadowsBegin	
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
+007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
+007e7d80	annotated	CoinTextFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	
 007f3ae0	override	CGMinimapFrame::SetZoom	
@@ -1793,7 +1796,7 @@ addr	how	frozen	evidence
 0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
-0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL, 00854b20=luaB_newproxy
+0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL, 00854810=luaB_assert, 00854b20=luaB_newproxy
 0084e0e0	override	lua_tolstring	
 0084e150	callorder	lua_objlen	same slot between linked calls in 00851c30=tconcat, 00854860=luaB_unpack
 0084e1c0	callgraph	lua_touserdata	only unmatched callee of 004a81b0=FrameScript_GetObjectThis
@@ -1846,10 +1849,10 @@ addr	how	frozen	evidence
 0084f6a0	callorder	luaL_buffinit	same slot between linked calls in 00851c30=tconcat
 0084f6c0	callorder	luaL_ref	same slot between linked calls in 00819bb0=FrameScript_Initialize
 0084f8b0	string	luaL_argerror	unique "bad argument #%d (%s)"
-0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 008529a0=str_dump, 008542c0=luaB_setmetatable
+0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 00851c30=tconcat, 008529a0=str_dump
 0084f9c0	string	luaL_checkany	unique "value expected"
 0084f9f0	callgraph	luaL_checklstring	only unmatched callee of 00854100=luaB_tonumber
-0084fa50	callorder	luaL_optlstring	same slot between linked calls in 00851c30=tconcat, 00854810=luaB_assert
+0084fa50	callgraph	luaL_optlstring	only unmatched callee of 00510c60=Script_GetCoinText
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
 0084fbd0	callgraph	luaL_optinteger	only unmatched callee of 008545c0=luaB_collectgarbage

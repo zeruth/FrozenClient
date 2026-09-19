@@ -1069,5 +1069,9 @@
   "0076ab80": {
     "status": "unlinked",
     "note": "The gxRestart path. Frozen's console/Device.cpp already accumulates mode changes into s_requestedFormat and prints 'set pending gxRestart' from every gx CVar callback, but nothing consumes it: there is no registered gxRestart command and no device recreation, so a resolution or colour-depth change cannot be applied without restarting the process. Recreating the D3D device at runtime means releasing and rebuilding every GPU resource, which is a subsystem, not a missing call. Script_RestartGx is ported as the console command it is; this is what the command would have to do."
+  },
+  "007e7cc0": {
+    "status": "unlinked",
+    "note": "The coin icon formatter behind GetCoinIcon. Fully readable except its first step: it prefixes the icon name with a path from FUN_00634910(3), a DBC record lookup returning the string at field +4 of row 3, and which table that is has not been established. The rest is settled -- format '%s%s' with the prefix and a backslash when the prefix is non-empty, then append by amount: under 10 INV_Misc_Coin_05, under 100 _06, under 1000 _03, under 10000 _04, under 100000 _01, else _02. Not ported because a bare icon name and a path-prefixed one are not interchangeable to the texture loader."
   }
 }
