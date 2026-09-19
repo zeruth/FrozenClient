@@ -41,7 +41,26 @@ The cluster is five functions plus the tracking helpers:
 0051d9b0   CVars: portal traversal limit, and the saved tracking flags
 0057bd90   texture teardown: releases every minimap texture global and nulls it
 0057bd10   blip insertion: orders 256 blips into a list by a float key at +0x8c
+0057dca0   the constructor, 802 bytes
 ```
+
+### 2e. The constructor, and why the arrow region starts null
+
+`0057dca0` is `CGMinimapFrame::CGMinimapFrame(parent)`. It chains to the base frame constructor,
+installs both vtables, and then does three things worth knowing:
+
+- **It sets `+0x2a0` to zero.** The player arrow region starts null in the reference too, exactly as
+  frozen's `m_playerTexture` does. So nothing in the constructor creates it, and `LoadXML` as
+  decompiled does not assign it either -- the assignment is either inside the base
+  `CSimpleFrame::LoadXML`, through a named-region lookup like the compass, or folded away by the
+  decompiler. That is where to look next; it is not in the constructor.
+- **It records itself as a singleton** in `DAT_00beba88`, but only if that is still null, so the
+  first minimap created wins. This is consistent with the texture set living at module scope rather
+  than per frame.
+- **It precomputes the zoom radius table** into `DAT_00beba44` through `DAT_00beba5c`: four radii,
+  each also halved into the slot below it, scaled from a base and three constants at `00a11f88`,
+  `00a11f90` and `00a11f94`. This is the table frozen's header refers to when it says the interior
+  flag selects "which zoom radius table" -- it is one table of pairs, not two tables.
 
 ### 2d. The texture globals are wider than frozen's header records
 
@@ -72,11 +91,10 @@ and this function only points it at a file. That makes it less self-contained th
 porting it without finding what creates `m_playerTexture` would call `SetTexture` on the null that
 `CGMinimapFrame::m_playerTexture` already documents.
 
-Two candidates have been ruled out. `0057bd90` and `0057bd10`, the two functions immediately before
-`LoadXML` and the obvious places for a constructor to sit, are the texture teardown and the blip
-insertion (see 2d). The constructor is elsewhere and has not been located; the decompiler folds the
-register `SetTexture` is called on, so the assignment to `+0x2a0` has to be found from the writing
-side rather than read out of `LoadXML`.
+The constructor has since been found (2e) and it settles half the question: it sets `+0x2a0` to
+zero, so the region genuinely starts null in the reference as well. Two neighbours were ruled out
+on the way -- `0057bd90` and `0057bd10`, immediately before `LoadXML`, are the texture teardown and
+the blip insertion (2d).
 
 ### 2b. Orientation comes from the player object, not the camera
 
