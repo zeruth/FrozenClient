@@ -81,6 +81,10 @@ class CSimpleFontString : public CSimpleRegion, public CSimpleFontable {
         void SetNonSpaceWrap(int32_t a2);
         void SetNonWordWrap(int32_t a2);
         void SetSpacing(float spacing);
+        void SetShadowColor(const CImVector& color);
+        void SetShadowOffset(const C2Vector& offset);
+        void SetTextHeight(float height);
+        void GetTextColor(CImVector& color);
         void SetStyleFlags(uint32_t styleFlags);
         void SetText(const char* text, int32_t a3);
         void SetTextLength(uint32_t a2);

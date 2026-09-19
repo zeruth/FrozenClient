@@ -726,7 +726,15 @@ void CSimpleFontString::SetHeight(float height) {
 }
 
 void CSimpleFontString::SetIndentedWordWrap(bool a2) {
-    // TODO
+    uint32_t styleFlags = a2 ? (this->m_styleFlags | 0x20000) : (this->m_styleFlags & ~0x20000);
+
+    if (styleFlags != this->m_styleFlags) {
+        this->m_styleFlags = styleFlags;
+
+        if (this->m_string) {
+            this->UpdateString();
+        }
+    }
 }
 
 void CSimpleFontString::SetJustificationOffset(float x, float y) {
@@ -774,7 +782,81 @@ void CSimpleFontString::SetJustifyH(uint8_t justify) {
 }
 
 void CSimpleFontString::SetNonSpaceWrap(int32_t a2) {
-    // TODO
+    uint32_t styleFlags = a2 ? (this->m_styleFlags | 0x1000) : (this->m_styleFlags & ~0x1000);
+
+    if (styleFlags != this->m_styleFlags) {
+        this->m_styleFlags = styleFlags;
+
+        if (this->m_string) {
+            this->UpdateString();
+        }
+    }
+}
+
+// ref: FUN_00487130
+void CSimpleFontString::SetShadowColor(const CImVector& color) {
+    if (color != this->m_shadowColor) {
+        this->m_shadowColor = color;
+
+        if (this->m_string) {
+            this->UpdateString();
+        }
+    }
+}
+
+// ref: FUN_00483dd0
+void CSimpleFontString::SetShadowOffset(const C2Vector& offset) {
+    if (this->m_shadowOffset.x != offset.x || this->m_shadowOffset.y != offset.y) {
+        this->m_shadowOffset = offset;
+
+        if (this->m_shadowOffset.x == 0.0f && this->m_shadowOffset.y == 0.0f) {
+            this->RemoveShadow();
+        } else {
+            this->AddShadow(this->m_shadowColor, this->m_shadowOffset);
+        }
+
+        this->m_cachedWidth = 0.0f;
+        this->m_cachedHeight = 0.0f;
+
+        if (this->m_string) {
+            HandleClose(this->m_string);
+            this->m_string = nullptr;
+        }
+
+        this->m_flags &= ~0x100;
+        this->Resize(0);
+    }
+}
+
+// ref: FUN_00483890
+void CSimpleFontString::SetTextHeight(float height) {
+    if (fabs(height - this->m_fontHeight) >= WHOA_EPSILON_1) {
+        this->m_fontHeight = height;
+        this->m_styleFlags &= ~0x200;
+        this->m_cachedWidth = 0.0f;
+        this->m_cachedHeight = 0.0f;
+
+        if (this->m_string) {
+            HandleClose(this->m_string);
+            this->m_string = nullptr;
+        }
+
+        this->m_flags &= ~0x100;
+        this->Resize(0);
+    }
+}
+
+// ref: FUN_00487ab0
+// One vertex colour means a solid text colour; a gradient reports white.
+void CSimpleFontString::GetTextColor(CImVector& color) {
+    if (this->m_colorCount == 1) {
+        color = this->m_color[0];
+        color.a = this->m_alpha[0];
+
+        return;
+    }
+
+    color = { 0xFF, 0xFF, 0xFF, 0xFF };
 }
 
 void CSimpleFontString::SetSpacing(float spacing) {
@@ -844,7 +926,15 @@ void CSimpleFontString::SetTextLength(uint32_t a2) {
 }
 
 void CSimpleFontString::SetNonWordWrap(int32_t a2) {
-    // TODO
+    uint32_t styleFlags = a2 ? (this->m_styleFlags | 0x40) : (this->m_styleFlags & ~0x40);
+
+    if (styleFlags != this->m_styleFlags) {
+        this->m_styleFlags = styleFlags;
+
+        if (this->m_string) {
+            this->UpdateString();
+        }
+    }
 }
 
 void CSimpleFontString::SetWidth(float width) {

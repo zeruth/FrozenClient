@@ -1,6 +1,8 @@
 #include "ui/CScriptObject.hpp"
 #include "ui/simple/CSimpleFontStringScript.hpp"
 #include "ui/Util.hpp"
+#include "ui/FrameScript.hpp"
+#include "gx/Coordinate.hpp"
 #include "ui/simple/CSimpleFont.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "util/Lua.hpp"
@@ -271,8 +273,11 @@ int32_t CSimpleFontString_GetText(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048bc70
 int32_t CSimpleFontString_GetFieldSize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 8191.0);
+
+    return 1;
 }
 
 int32_t CSimpleFontString_SetText(lua_State* L) {
@@ -305,8 +310,20 @@ int32_t CSimpleFontString_SetFormattedText(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048d890
 int32_t CSimpleFontString_GetTextColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    CImVector color;
+    string->GetTextColor(color);
+
+    lua_pushnumber(L, color.r * (1.0f / 255.0f));
+    lua_pushnumber(L, color.g * (1.0f / 255.0f));
+    lua_pushnumber(L, color.b * (1.0f / 255.0f));
+    lua_pushnumber(L, color.a * (1.0f / 255.0f));
+
+    return 4;
 }
 
 int32_t CSimpleFontString_SetTextColor(lua_State* L) {
@@ -322,26 +339,85 @@ int32_t CSimpleFontString_SetTextColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048d9e0
 int32_t CSimpleFontString_GetShadowColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto& color = string->m_shadowColor;
+
+    lua_pushnumber(L, color.r * (1.0f / 255.0f));
+    lua_pushnumber(L, color.g * (1.0f / 255.0f));
+    lua_pushnumber(L, color.b * (1.0f / 255.0f));
+    lua_pushnumber(L, color.a * (1.0f / 255.0f));
+
+    return 4;
 }
 
+// ref: FUN_0048dab0
 int32_t CSimpleFontString_SetShadowColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    CImVector color = { 0x00, 0x00, 0x00, 0x00 };
+    FrameScript_GetColor(L, 2, color);
+
+    string->SetShadowColor(color);
+    string->m_fontableFlags &= ~FLAG_SHADOW_UPDATE;
+
+    return 0;
 }
 
+// ref: FUN_0048db20
 int32_t CSimpleFontString_GetShadowOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, NDCToDDCWidth(string->m_shadowOffset.x) * scale);
+    lua_pushnumber(L, NDCToDDCWidth(string->m_shadowOffset.y) * scale);
+
+    return 2;
 }
 
+// ref: FUN_0048dbb0
 int32_t CSimpleFontString_SetShadowOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
+        auto x = static_cast<float>(lua_tonumber(L, 2));
+        auto y = static_cast<float>(lua_tonumber(L, 3));
+        auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+        C2Vector offset = {
+            DDCToNDCWidth(x / scale),
+            DDCToNDCWidth(y / scale)
+        };
+
+        string->SetShadowOffset(offset);
+        string->m_fontableFlags &= ~FLAG_SHADOW_UPDATE;
+
+        return 0;
+    }
+
+    return luaL_error(L, "Usage: %s:SetShadowOffset(x, y)", string->GetDisplayName());
 }
 
+// ref: FUN_0048dca0
 int32_t CSimpleFontString_GetSpacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, NDCToDDCWidth(string->m_spacing) * scale);
+
+    return 1;
 }
 
+// ref: FUN_0048dd00
 int32_t CSimpleFontString_SetSpacing(lua_State* L) {
     auto type = CSimpleFontString::GetObjectType();
     auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
@@ -350,13 +426,33 @@ int32_t CSimpleFontString_SetSpacing(lua_State* L) {
         return luaL_error(L, "Usage: %s:SetSpacing(spacing)", string->GetDisplayName());
     }
 
-    string->SetSpacing(static_cast<float>(lua_tonumber(L, 2)));
+    auto spacing = static_cast<float>(lua_tonumber(L, 2));
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    string->SetSpacing(DDCToNDCWidth(spacing / scale));
+    string->m_fontableFlags &= ~FLAG_SPACING_UPDATE;
 
     return 0;
 }
 
+// ref: FUN_0048ddb0
 int32_t CSimpleFontString_SetTextHeight(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetTextHeight(pixelHeight)", string->GetDisplayName());
+    }
+
+    auto height = static_cast<float>(lua_tonumber(L, 2));
+
+    if (height <= 1.1920929e-07f) {
+        return luaL_error(L, "%s:SetTextHeight(): invalid texHeight: %f, height must be > 0", string->GetDisplayName(), height);
+    }
+
+    string->SetTextHeight(DDCToNDCWidth(height / CoordinateGetAspectCompensation()));
+
+    return 0;
 }
 
 int32_t CSimpleFontString_GetStringWidth(lua_State* L) {
@@ -377,8 +473,14 @@ int32_t CSimpleFontString_GetStringHeight(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048df70
 int32_t CSimpleFontString_GetJustifyH(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, JustifyToString(string->m_styleFlags & 0x7));
+
+    return 1;
 }
 
 int32_t CSimpleFontString_SetJustifyH(lua_State* L) {
@@ -396,36 +498,111 @@ int32_t CSimpleFontString_SetJustifyH(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048dfc0
 int32_t CSimpleFontString_GetJustifyV(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, JustifyToString(string->m_styleFlags & 0x38));
+
+    return 1;
 }
 
+// ref: FUN_0048e430
 int32_t CSimpleFontString_SetJustifyV(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    uint32_t justifyV;
+    if (!lua_isstring(L, 2) || !StringToJustify(lua_tostring(L, 2), justifyV)) {
+        return luaL_error(L, "Usage: %s:SetJustifyV(\"justify\")", string->GetDisplayName());
+    }
+
+    string->SetJustifyV(justifyV);
+    string->m_fontableFlags &= ~FLAG_STYLE_UPDATE;
+
+    return 0;
 }
 
+// ref: FUN_0048e010
 int32_t CSimpleFontString_CanNonSpaceWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (string->m_styleFlags & 0x1000) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0048e500
 int32_t CSimpleFontString_SetNonSpaceWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto wrap = StringToBOOL(L, 2, 1);
+
+    string->m_settableStyleFlags &= ~0x1000;
+    string->SetNonSpaceWrap(wrap);
+
+    return 0;
 }
 
+// ref: FUN_0048e080
 int32_t CSimpleFontString_CanWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!(string->m_styleFlags & 0x40)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0048e580
 int32_t CSimpleFontString_SetWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto wrap = StringToBOOL(L, 2, 1);
+
+    string->m_settableStyleFlags &= ~0x40;
+    string->SetNonWordWrap(!wrap);
+
+    return 0;
 }
 
+// ref: FUN_0048e600
 int32_t CSimpleFontString_GetIndentedWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    auto wrap = StringToBOOL(L, 2, 1);
+
+    string->m_settableStyleFlags &= ~0x20000;
+    string->SetIndentedWordWrap(wrap);
+
+    return 0;
 }
 
+// ref: FUN_0048e0e0
 int32_t CSimpleFontString_SetIndentedWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto string = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (string->m_styleFlags & 0x20000) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 FrameScript_Method SimpleFontStringMethods[NUM_SIMPLE_FONT_STRING_SCRIPT_METHODS] = {

@@ -164,5 +164,8 @@
   "00860760": { "whoa": "XML_ErrorString", "status": "ported", "note": "unique string 'syntax error' in the XMLTree block; the match became ambiguous with lua's syntax error once lua was inventoried" },
   "0087ebc0": { "whoa": "SEDiskSound::SEDiskSound", "status": "ported", "note": "call-order slot in SESound::LoadDiskSound (2026-09-18)" },
 
-  "0047bf30": { "whoa": "HandleClose", "status": "ported", "note": "22 bytes: --refcount at +4, deleting virtual destructor when it hits zero; 189 callers, right before HandleCreate (0047bf50); the console font release in FUN_00764f30 goes through it" }
+  "0047bf30": { "whoa": "HandleClose", "status": "ported", "note": "22 bytes: --refcount at +4, deleting virtual destructor when it hits zero; 189 callers, right before HandleCreate (0047bf50); the console font release in FUN_00764f30 goes through it" },
+
+  "00815500": { "whoa": "StringToBOOL", "status": "ported", "note": "the lua_State overload: switch on lua_type (nil->0, boolean, number != 0, string through StringToBOOL, else the default); 183 callers, the bool reader of every SetX(bool) binding. Was auto-linked to lua_toboolean, which is one of its cases" },
+  "00486b20": { "whoa": "CSimpleFontString::UpdateString", "status": "ported", "note": "rebuilds the text block when CLayoutFrame flag 0x100 is set: closes the old handle, measures, honours the |c colour escape (0x400), lays out with the justification offset; the callee every style setter reaches when m_string is live" }
 }

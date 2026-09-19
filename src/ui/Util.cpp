@@ -329,3 +329,26 @@ int32_t StringToOrientation(const char* string, ORIENTATION& orientation) {
 
     return false;
 }
+
+// ref: FUN_008150d0
+const char* JustifyToString(uint32_t justify) {
+    static const struct {
+        uint32_t value;
+        const char* string;
+    } justifyNames[] = {
+        { 0x1, "LEFT" },
+        { 0x2, "CENTER" },
+        { 0x4, "RIGHT" },
+        { 0x8, "TOP" },
+        { 0x10, "MIDDLE" },
+        { 0x20, "BOTTOM" },
+    };
+
+    for (const auto& entry : justifyNames) {
+        if (entry.value & justify) {
+            return entry.string;
+        }
+    }
+
+    return "UNKNOWN";
+}

@@ -34,6 +34,8 @@ int32_t StringToFrameStrata(const char* string, FRAME_STRATA& strata);
 
 int32_t StringToJustify(const char* string, uint32_t& justify);
 
+const char* JustifyToString(uint32_t justify);
+
 int32_t StringToOrientation(const char* string, ORIENTATION& orientation);
 
 #endif

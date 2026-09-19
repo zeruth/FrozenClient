@@ -841,10 +841,16 @@ def fmt_bytes(n):
     return '%.1fk' % (n / 1024.0) if n < 1024 * 1024 else '%.2fM' % (n / 1048576.0)
 
 
-def lua_coverage(ref_tables, pairs, whoa):
+def lua_coverage(ref_tables, pairs, whoa, whoa_tables=()):
     """Per reference binding table: how many of its names whoa registers, and which are missing or
-    stubbed. The pairing decides which whoa array answers for which reference table."""
+    stubbed. A name counts wherever whoa registers it: the reference splits the globals into many
+    small tables and whoa keeps a few big arrays, so the one-to-one pairing (used for linking) is
+    not the measure. The paired array is still shown when there is one."""
     by_ref = {rt['addr']: (wt, k) for wt, rt, k in pairs}
+    registered = {}  # lua name -> (whoa fn, array name) anywhere in whoa
+    for wt in whoa_tables:
+        for n, f in wt['entries']:
+            registered.setdefault(n, (f, wt['name']))
     rows = []
     total = have = stubbed = 0
     for rt in ref_tables:
@@ -852,7 +858,10 @@ def lua_coverage(ref_tables, pairs, whoa):
             continue  # not a binding table: a two-entry pair in some other structure
         names = [n for n, _ in rt['entries']]
         wt = by_ref.get(rt['addr'], (None, 0))[0]
-        wnames = {n: f for n, f in wt['entries']} if wt else {}
+        wnames = {n: registered[n][0] for n in names if n in registered}
+        if not wt:
+            arrays = sorted(set(registered[n][1] for n in names if n in registered))
+            wt = {'name': ', '.join(arrays[:2]) + (' ...' if len(arrays) > 2 else ''), 'file': ''} if arrays else None
         missing = [n for n in names if n not in wnames]
         stubs = []
         for n in names:
@@ -870,8 +879,8 @@ def lua_coverage(ref_tables, pairs, whoa):
     return total, have, stubbed, rows
 
 
-def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=()):
-    lua_total, lua_have, lua_stubbed, lua_rows = lua_coverage(ref_tables, pairs, whoa)
+def build_report(refs, whoa, m, overrides, anchors, ref_tables=(), pairs=(), whoa_tables=()):
+    lua_total, lua_have, lua_stubbed, lua_rows = lua_coverage(ref_tables, pairs, whoa, whoa_tables)
     sp = spine(refs)
     real = {a: r for a, r in refs.items() if not r['thunk'] and not r['excluded']}
     total = len(real)
@@ -1311,7 +1320,8 @@ def main():
     whoa = merge_whoa(load_pdb_functions(), src)
     overrides = {k.lower().zfill(8): v for k, v in load_overrides().items() if isinstance(v, dict)}
     ref_tables = load_tables()
-    pairs = pair_tables(ref_tables, load_whoa_tables())
+    whoa_tables = load_whoa_tables()
+    pairs = pair_tables(ref_tables, whoa_tables)
     m = match(refs, whoa, overrides, pairs)
 
     # Runtime evidence from the last calltrace/tracecompare run. Matching links become verified.
@@ -1333,7 +1343,7 @@ def main():
         queue_next(args, refs, whoa, m)
         return
 
-    report, snapshot = build_report(refs, whoa, m, overrides, anchors, ref_tables, pairs)
+    report, snapshot = build_report(refs, whoa, m, overrides, anchors, ref_tables, pairs, whoa_tables)
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     io.open(REPORT, 'w', encoding='utf-8', newline='\n').write(report)
     write_map(refs, whoa, m, overrides)

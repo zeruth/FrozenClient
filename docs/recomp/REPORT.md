@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,171 +8,170 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1825 (+1) (6.7%) | 417.5k (7.5%) |
-| &nbsp;&nbsp;ported | 1340 (+1) | 295.9k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
+| mapped to a whoa function | 1833 (+3) (6.7%) | 419.8k (7.6%) |
+| &nbsp;&nbsp;ported | 1365 (+3) | 300.3k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 446 (=) | 91.6k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **432 (+1) (1.6%)** | **55.2k (1.0%)** |
-| unmapped | 25336 | 5.00M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 260 (+1) (4.7%) | |
-| whoa functions (src/, from PDB + source) | 11300, stubs 895 | |
+| **faithful** (linked, not stub, call order >= 80%) | **447 (+9) (1.6%)** | **56.9k (1.0%)** |
+| unmapped | 25328 | 5.00M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 269 (+8) (4.9%) | |
+| whoa functions (src/, from PDB + source) | 11305, stubs 878 | |
 
-Match evidence: annotated 165, callgraph 110, callorder 118, cvar 30, handler 27, override 97, string 349, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 188, callgraph 108, callorder 121, cvar 30, handler 27, override 99, string 349, table 911. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 23:31 -- mapped 1824, ported 1339, stub 463, spine mapped 259.
+Previous run: 2026-09-18 23:47 -- mapped 1830, ported 1362, stub 446, spine mapped 261.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). whoa registers 936 of them (=); 446 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). whoa registers 1584 of them (=); 765 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | whoa array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
 | 00ad21d8 (UnitExists..) | 168 | `s_UnitFunctions` | 0 | 63 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
-| 00ac7b70 (GetChatTypeIndex..) | 54 | `-` | 54 | 0 | GetChatTypeIndex, GetChatWindowInfo, GetChatWindowSavedPosition, GetChatWindowSavedDimensions, GetChatWindowMessages, GetChatWindowChannels ... |
-| 00ad1060 (IsUnitOnQuest..) | 52 | `-` | 52 | 0 | IsUnitOnQuest, GetQuestLogQuestText, GetNumQuestLeaderBoards, GetQuestLogLeaderBoard, GetNumQuestItemDrops, GetQuestLogItemDrop ... |
+| 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 52 |  / stubs: SetFontObject, GetFontObject, SetFont, GetFont ... |
 | 00ad2ae0 (AddFontStrings..) | 69 | `CGTooltipMethods` | 0 | 51 |  / stubs: AddFontStrings, AddTexture, AppendText, FadeOut ... |
-| 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 51 |  / stubs: SetFontObject, GetFontObject, SetFont, GetFont ... |
 | 00accae8 (BNGetInfo..) | 57 | `s_ScriptFunctions` | 0 | 47 |  / stubs: BNGetInfo, BNGetFriendInfo, BNGetFriendInfoByID, BNGetNumFriendToons ... |
-| 00ac1550 (GetTitleRegion..) | 38 | `-` | 38 | 0 | GetTitleRegion, CreateTitleRegion, CreateTexture, CreateFontString, GetBoundsRect, GetNumRegions ... |
-| 00ad0840 (GetNumGuildMembers..) | 37 | `-` | 37 | 0 | GetNumGuildMembers, GetGuildRosterMOTD, GetGuildRosterInfo, GetGuildRosterLastOnline, GuildRosterSetPublicNote, GuildRosterSetOfficerNote ... |
-| 00acd760 (GetLFGBootProposal..) | 36 | `-` | 36 | 0 | GetLFGBootProposal, SetLFGBootVote, GetLFGQueueStats, GetLastQueueStatusIndex, GetLFGDungeonInfo, GetLFGRandomDungeonInfo ... |
-| 00ace620 (ClickSendMailItemButton..) | 36 | `-` | 36 | 0 | ClickSendMailItemButton, SetSendMailMoney, GetSendMailMoney, SetSendMailCOD, GetSendMailCOD, GetNumStationeries ... |
-| 00ac7a58 (SendChatMessage..) | 34 | `-` | 34 | 0 | SendChatMessage, SendAddonMessage, SendSystemMessage, GetNumLanguages, GetLanguageByIndex, GetDefaultLanguage ... |
-| 00ac8710 (GetMouseFocus..) | 34 | `-` | 34 | 0 | GetMouseFocus, GetRealmName, GetItemQualityColor, GetItemInfo, GetItemGem, GetExtendedItemInfo ... |
-| 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 34 | 0 | SetFontObject, GetFontObject, SetFont, GetFont, SetTextColor, GetTextColor ... |
-| 00ad0e88 (GetNumTradeSkills..) | 32 | `-` | 32 | 0 | GetNumTradeSkills, GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex, GetTradeSkillCooldown, GetTradeSkillIcon ... |
-| 00ad93d8 (GetNumFriends..) | 31 | `-` | 31 | 0 | GetNumFriends, GetFriendInfo, SetSelectedFriend, GetSelectedFriend, AddOrRemoveFriend, AddFriend ... |
-| 00ac8158 (GetFramerate..) | 30 | `-` | 30 | 0 | GetFramerate, TogglePerformanceDisplay, TogglePerformancePause, TogglePerformanceValues, ResetPerformanceValues, GetDebugStats ... |
+| 00ad1060 (IsUnitOnQuest..) | 52 | `s_ScriptFunctions` | 41 | 0 | GetQuestLogQuestText, GetQuestLogLeaderBoard, GetQuestLogItemDrop, GetQuestPOILeaderBoard, GetQuestLogTimeLeft, GetQuestLogRewardInfo ... |
+| 00ac7b70 (GetChatTypeIndex..) | 54 | `s_ScriptFunctions` | 39 | 0 | GetChatWindowSavedPosition, GetChatWindowSavedDimensions, GetChatWindowMessages, GetChatWindowChannels, AddChatWindowMessages, RemoveChatWindowMessages ... |
+| 00ac7a58 (SendChatMessage..) | 34 | `s_ScriptFunctions` | 33 | 0 | SendChatMessage, SendAddonMessage, SendSystemMessage, GetLanguageByIndex, GetDefaultLanguage, DoEmote ... |
+| 00ace620 (ClickSendMailItemButton..) | 36 | `s_ScriptFunctions` | 31 | 0 | ClickSendMailItemButton, SetSendMailMoney, GetSendMailMoney, SetSendMailCOD, GetSendMailCOD, GetStationeryInfo ... |
+| 00ad0e88 (GetNumTradeSkills..) | 32 | `s_ScriptFunctions` | 31 | 0 | GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex, GetTradeSkillCooldown, GetTradeSkillIcon, GetTradeSkillNumMade ... |
+| 00acd760 (GetLFGBootProposal..) | 36 | `s_ScriptFunctions` | 30 | 0 | GetLFGBootProposal, SetLFGBootVote, GetLFGQueueStats, GetLastQueueStatusIndex, GetLFGDungeonInfo, GetLFGRandomDungeonInfo ... |
 | 00ac8460 (PickupPlayerMoney..) | 34 | `s_ScriptFunctions` | 0 | 29 |  / stubs: PickupPlayerMoney, HasSoulstone, UseSoulstone, GuildInvite ... |
-| 00ac8858 (IsAddOnLoadOnDemand..) | 29 | `-` | 29 | 0 | IsAddOnLoadOnDemand, IsAddOnLoaded, LoadAddOn, PartialPlayTime, NoPlayTime, GetBillingTimeRested ... |
-| 00acf8d0 (QueryGuildBankTab..) | 29 | `-` | 29 | 0 | QueryGuildBankTab, SetCurrentGuildBankTab, GetCurrentGuildBankTab, GetGuildBankItemInfo, SetGuildBankTabInfo, GetGuildBankItemLink ... |
-| 00ac18f8 (IsDone..) | 28 | `-` | 28 | 0 | IsDone, IsPlaying, IsPaused, IsStopped, IsDelaying, GetElapsed ... |
-| 00b2d068 (SetFontObject..) | 28 | `-` | 28 | 0 | SetFontObject, GetFontObject, SetFont, GetFont, SetTextColor, GetTextColor ... |
-| 00acf3e8 (OpenTrainer..) | 27 | `-` | 27 | 0 | OpenTrainer, CloseTrainer, GetNumTrainerServices, GetTrainerServiceInfo, SelectTrainerService, IsTradeskillTrainer ... |
-| 00acfcd0 (GetAchievementComparisonInfo..) | 25 | `-` | 25 | 0 | GetAchievementComparisonInfo, GetPreviousAchievement, GetNextAchievement, GetAchievementCategory, GetAchievementLink, GetNumCompletedAchievements ... |
+| 00ac8710 (GetMouseFocus..) | 34 | `CGTooltipMethods, s_ScriptFunctions` | 0 | 29 |  / stubs: GetRealmName, GetItemInfo, GetItemGem, GetExtendedItemInfo ... |
+| 00ac18f8 (IsDone..) | 28 | `ScriptRegionMethods, SimpleFrameMethods` | 23 | 2 | IsDone, IsPlaying, IsPaused, IsStopped, IsDelaying, GetElapsed ... / stubs: HasScript, HookScript |
+| 00acf8d0 (QueryGuildBankTab..) | 29 | `s_ScriptFunctions` | 25 | 0 | QueryGuildBankTab, SetCurrentGuildBankTab, GetCurrentGuildBankTab, GetGuildBankItemInfo, SetGuildBankTabInfo, GetGuildBankItemLink ... |
 | 00acde38 (GetNumBindings..) | 26 | `s_ScriptFunctions` | 0 | 24 |  / stubs: GetNumBindings, GetBinding, SetBinding, SetBindingSpell ... |
+| 00acf3e8 (OpenTrainer..) | 27 | `s_ScriptFunctions` | 24 | 0 | OpenTrainer, CloseTrainer, GetTrainerServiceInfo, SelectTrainerService, GetTrainerSelectionIndex, GetTrainerGreetingText ... |
+| 00ac8158 (GetFramerate..) | 30 | `s_ScriptFunctions` | 0 | 23 |  / stubs: TogglePerformanceDisplay, TogglePerformancePause, TogglePerformanceValues, ResetPerformanceValues ... |
+| 00ad93d8 (GetNumFriends..) | 31 | `s_ScriptFunctions` | 23 | 0 | GetFriendInfo, SetSelectedFriend, GetSelectedFriend, AddOrRemoveFriend, AddFriend, RemoveFriend ... |
+| 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 18 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine / stubs: SetFontObject, GetFontObject, SetFont, GetFont ... |
 | 00acd488 (KBSetup_BeginLoading..) | 22 | `-` | 22 | 0 | KBSetup_BeginLoading, KBSetup_IsLoaded, KBSetup_GetLanguageCount, KBSetup_GetLanguageData, KBSetup_GetCategoryCount, KBSetup_GetCategoryData ... |
-| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `-` | 22 | 0 | ContainerIDToInventoryID, GetContainerNumSlots, GetContainerItemInfo, GetContainerItemID, GetContainerItemLink, GetContainerItemCooldown ... |
+| 00ad0840 (GetNumGuildMembers..) | 37 | `s_ScriptFunctions` | 22 | 0 | GetGuildRosterInfo, GetGuildRosterLastOnline, GuildRosterSetPublicNote, GuildRosterSetOfficerNote, GetGuildRosterSelection, SortGuildRoster ... |
 | 00ac1690 (IsVisible..) | 45 | `SimpleFrameMethods` | 0 | 21 |  / stubs: Lower, GetHitRectInsets, GetClampRectInsets, GetMinResize ... |
 | 00acd248 (GetNumBattlefieldPositions..) | 25 | `s_ScriptFunctions` | 0 | 21 |  / stubs: GetNumBattlefieldPositions, GetBattlefieldPosition, GetNumBattlefieldFlagPositions, GetBattlefieldFlagPosition ... |
-| 00acf678 (GetBidderAuctionItems..) | 20 | `-` | 20 | 0 | GetBidderAuctionItems, GetNumAuctionItems, GetAuctionItemInfo, GetAuctionItemLink, GetAuctionItemTimeLeft, PlaceAuctionBid ... |
+| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 21 | 0 | ContainerIDToInventoryID, GetContainerNumSlots, GetContainerItemInfo, GetContainerItemID, GetContainerItemLink, GetContainerItemCooldown ... |
 | 00ad0160 (CalendarContextGetEventIndex..) | 20 | `-` | 20 | 0 | CalendarContextGetEventIndex, CalendarContextInviteIsPending, CalendarContextInviteModeratorStatus, CalendarContextInviteStatus, CalendarContextInviteType, CalendarContextInviteAvailable ... |
 | 00ad0220 (CalendarEventSortInvites..) | 20 | `-` | 20 | 0 | CalendarEventSortInvites, CalendarEventGetInviteSortCriterion, CalendarEventGetStatusOptions, CalendarEventSetStatus, CalendarEventSetModerator, CalendarEventClearModerator ... |
 | 00ad1270 (GetInventorySlotInfo..) | 24 | `s_ScriptFunctions` | 0 | 20 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemTexture, GetInventoryItemBroken, GetInventoryItemCount ... |
-| 00ac1ad0 (Finish..) | 23 | `ScriptObjectMethods` | 19 | 0 | Finish, GetProgress, IsDone, IsPlaying, IsPaused, IsPendingFinish ... |
-| 00ac8278 (CursorHasItem..) | 19 | `-` | 19 | 0 | CursorHasItem, CursorHasSpell, CursorHasMacro, CursorHasMoney, GetCursorInfo, EquipCursorItem ... |
-| 00accf58 (GetMapInfo..) | 19 | `-` | 19 | 0 | GetMapInfo, GetCurrentMapContinent, GetCurrentMapAreaID, GetCurrentMapZone, GetCurrentMapDungeonLevel, SetMapByID ... |
-| 00ac1848 (SetFont..) | 18 | `-` | 18 | 0 | SetFont, GetFont, SetAlpha, GetAlpha, SetTextColor, GetTextColor ... |
-| 00ace210 (CreateMacro..) | 18 | `-` | 18 | 0 | CreateMacro, GetNumMacros, GetMacroInfo, GetMacroBody, DeleteMacro, EditMacro ... |
-| 00ac1168 (IsVisible..) | 31 | `SimpleFontStringMethods` | 0 | 17 |  / stubs: GetFieldSize, GetTextColor, GetShadowColor, SetShadowColor ... |
-| 00ac80c8 (RegisterForSave..) | 17 | `-` | 17 | 0 | RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode, IsModifierKeyDown, IsLeftShiftKeyDown, IsRightShiftKeyDown ... |
+| 00b2d150 (SetFontObject..) | 23 | `SimpleHTMLMethods` | 0 | 20 |  / stubs: SetFontObject, GetFontObject, SetFont, GetFont ... |
+| 00ac1168 (IsVisible..) | 31 | `SimpleFontStringMethods` | 0 | 19 |  / stubs: GetFontObject, SetFontObject, GetFont, SetFont ... |
+| 00ac1848 (SetFont..) | 18 | `SimpleEditBoxMethods, SimpleFontMethods` | 0 | 18 |  / stubs: SetFont, GetFont, SetAlpha, GetAlpha ... |
+| 00ac8278 (CursorHasItem..) | 19 | `s_ScriptFunctions` | 0 | 18 |  / stubs: CursorHasSpell, CursorHasMacro, CursorHasMoney, GetCursorInfo ... |
+| 00acfcd0 (GetAchievementComparisonInfo..) | 25 | `s_ScriptFunctions` | 18 | 0 | GetAchievementComparisonInfo, GetPreviousAchievement, GetNextAchievement, GetAchievementCategory, GetAchievementLink, GetLatestCompletedAchievements ... |
+| 00b2d068 (SetFontObject..) | 28 | `SimpleEditBoxMethods, SimpleMessageFrameMethods` | 0 | 18 |  / stubs: SetFontObject, GetFontObject, SetFont, GetFont ... |
+| 00ac1ad0 (Finish..) | 23 | `ScriptObjectMethods` | 15 | 2 | Finish, GetProgress, IsDone, IsPlaying, IsPaused, IsPendingFinish ... / stubs: HasScript, HookScript |
 | 00ace400 (CommentatorSetCamera..) | 17 | `-` | 17 | 0 | CommentatorSetCamera, CommentatorGetCamera, CommentatorGetCurrentMapID, CommentatorStartInstance, CommentatorAddPlayer, CommentatorRemovePlayer ... |
-| 00acee28 (SetLootPortrait..) | 17 | `-` | 17 | 0 | SetLootPortrait, GetNumLootItems, GetLootSlotInfo, GetLootSlotLink, LootSlotIsItem, LootSlotIsCoin ... |
-| 00ad0030 (CalendarGetMonthNames..) | 17 | `-` | 17 | 0 | CalendarGetMonthNames, CalendarGetWeekdayNames, CalendarGetDate, CalendarGetMinDate, CalendarGetMaxDate, CalendarGetMinHistoryDate ... |
-| 00ad05f0 (GetNumTalentTabs..) | 17 | `-` | 17 | 0 | GetNumTalentTabs, GetTalentTabInfo, GetNumTalents, GetTalentInfo, GetTalentLink, GetTalentPrereqs ... |
-| 00acd178 (GetNumBattlefields..) | 16 | `-` | 16 | 0 | GetNumBattlefields, GetBattlefieldInfo, GetBattlefieldInstanceInfo, IsBattlefieldArena, IsActiveBattlefieldArena, JoinBattlefield ... |
 | 00ace370 (CommentatorSetMode..) | 16 | `-` | 16 | 0 | CommentatorSetMode, CommentatorToggleMode, CommentatorGetMode, CommentatorSetMapAndInstanceIndex, CommentatorSetPlayerIndex, CommentatorUpdatePlayerInfo ... |
-| 00acefe0 (GetTitleText..) | 16 | `-` | 16 | 0 | GetTitleText, GetGreetingText, GetQuestText, GetObjectiveText, GetProgressText, GetRewardText ... |
-| 00acd6d8 (SearchLFGGetNumResults..) | 15 | `-` | 15 | 0 | SearchLFGGetNumResults, SearchLFGGetResults, SearchLFGGetEncounterResults, SearchLFGGetPartyResults, SearchLFGSort, GetLFGTypes ... |
-| 00ad0c30 (PetHasActionBar..) | 15 | `-` | 15 | 0 | PetHasActionBar, GetPetActionInfo, GetPetActionCooldown, GetPetActionsUsable, GetPetActionSlotUsable, IsPetAttackActive ... |
-| 00af29c0 (VoiceEnumerateOutputDevices..) | 15 | `-` | 15 | 0 | VoiceEnumerateOutputDevices, VoiceEnumerateCaptureDevices, VoiceSelectOutputDevice, VoiceSelectCaptureDevice, VoiceGetCurrentOutputDevice, VoiceGetCurrentCaptureDevice ... |
-| 00ac8600 (GetRestState..) | 14 | `-` | 14 | 0 | GetRestState, GetXPExhaustion, GetTimeToWellRested, GMRequestPlayerInfo, GetCoinIcon, GetCoinText ... |
-| 00accdd0 (GetShapeshiftFormInfo..) | 14 | `-` | 14 | 0 | GetShapeshiftFormInfo, CastShapeshiftForm, GetShapeshiftFormCooldown, CastSpellByName, CastSpellByID, GetNumCompanions ... |
-| 00aced08 (GetMerchantNumItems..) | 14 | `-` | 14 | 0 | GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemCostInfo, GetMerchantItemCostItem, GetBuybackItemInfo, GetBuybackItemLink ... |
-| 00ac8578 (RunScript..) | 13 | `-` | 13 | 0 | RunScript, CheckInteractDistance, RandomRoll, OpeningCinematic, InCinematic, IsWindowsClient ... |
-| 00ac8970 (SetUIVisibility..) | 13 | `-` | 13 | 0 | SetUIVisibility, IsReferAFriendLinked, CanGrantLevel, GrantLevel, CanSummonFriend, SummonFriend ... |
+| 00ad0030 (CalendarGetMonthNames..) | 17 | `s_ScriptFunctions` | 16 | 0 | CalendarGetMonthNames, CalendarGetWeekdayNames, CalendarGetMinDate, CalendarGetMaxDate, CalendarGetMinHistoryDate, CalendarGetMaxCreateDate ... |
+| 00ac8858 (IsAddOnLoadOnDemand..) | 29 | `s_ScriptFunctions` | 0 | 15 |  / stubs: IsAddOnLoadOnDemand, CanShowResetInstances, ResetInstances, GetInstanceDifficulty ... |
+| 00ace210 (CreateMacro..) | 18 | `s_ScriptFunctions` | 15 | 0 | CreateMacro, GetMacroInfo, GetMacroBody, DeleteMacro, EditMacro, SetMacroItem ... |
+| 00acf678 (GetBidderAuctionItems..) | 20 | `s_ScriptFunctions` | 15 | 0 | GetBidderAuctionItems, GetAuctionItemInfo, GetAuctionItemLink, GetAuctionItemTimeLeft, PlaceAuctionBid, GetAuctionItemClasses ... |
+| 00acee28 (SetLootPortrait..) | 17 | `s_ScriptFunctions` | 14 | 0 | SetLootPortrait, GetLootSlotInfo, GetLootSlotLink, LootSlotIsItem, LootSlotIsCoin, LootSlot ... |
+| 00acd178 (GetNumBattlefields..) | 16 | `s_ScriptFunctions` | 0 | 13 |  / stubs: GetNumBattlefields, GetBattlefieldInfo, GetBattlefieldInstanceInfo, JoinBattlefield ... |
 | 00ace790 (GetNumRaidMembers..) | 16 | `s_ScriptFunctions` | 0 | 13 |  / stubs: GetRealNumRaidMembers, GetRaidRosterInfo, SetRaidRosterSelection, GetRaidRosterSelection ... |
+| 00aced08 (GetMerchantNumItems..) | 14 | `s_ScriptFunctions` | 13 | 0 | GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemCostInfo, GetMerchantItemCostItem, GetBuybackItemInfo, GetBuybackItemLink ... |
 | 00acf0e8 (ConfirmAcceptQuest..) | 13 | `-` | 13 | 0 | ConfirmAcceptQuest, GetQuestBackgroundMaterial, GetSuggestedGroupNum, QuestFlagsPVP, QuestGetAutoAccept, GetDailyQuestsCompleted ... |
-| 00acf770 (StablePet..) | 13 | `-` | 13 | 0 | StablePet, UnstablePet, BuyStableSlot, GetNumStablePets, GetNumStableSlots, GetStablePetInfo ... |
-| 00acf838 (GetArenaTeam..) | 13 | `-` | 13 | 0 | GetArenaTeam, GetNumArenaTeamMembers, GetArenaTeamRosterInfo, GetArenaTeamGdfInfo, SetArenaTeamRosterSelection, GetArenaTeamRosterSelection ... |
-| 00ad0cc0 (PetRename..) | 13 | `-` | 13 | 0 | PetRename, PetCanBeAbandoned, PetCanBeDismissed, PetCanBeRenamed, GetPetTimeRemaining, HasPetUI ... |
-| 00ad1a68 (VehicleAimIncrement..) | 13 | `-` | 13 | 0 | VehicleAimIncrement, VehicleAimDecrement, VehicleAimRequestAngle, VehicleAimGetAngle, VehicleAimRequestNormAngle, VehicleAimGetNormAngle ... |
-| 00ac1028 (IsObjectType..) | 12 | `-` | 12 | 0 | IsObjectType, GetObjectType, GetDrawLayer, SetDrawLayer, GetBlendMode, SetBlendMode ... |
-| 00accff8 (PositionWorldMapArrowFrame..) | 12 | `-` | 12 | 0 | PositionWorldMapArrowFrame, PositionMiniWorldMapArrowFrame, ShowWorldMapArrowFrame, ShowMiniWorldMapArrowFrame, ClickLandmark, GetNumMapDebugObjects ... |
-| 00acef78 (GetGossipText..) | 12 | `-` | 12 | 0 | GetGossipText, GetNumGossipOptions, GetNumGossipAvailableQuests, GetNumGossipActiveQuests, GetGossipOptions, GetGossipAvailableQuests ... |
-| 00acf080 (GetQuestReward..) | 12 | `-` | 12 | 0 | GetQuestReward, GetRewardMoney, GetRewardXP, GetRewardHonor, GetRewardSpell, GetQuestMoneyToGet ... |
-| 00ac42c8 (GetCharacterCreateFacing..) | 11 | `-` | 11 | 0 | GetCharacterCreateFacing, SetCharacterCreateFacing, GetRandomName, CreateCharacter, CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex ... |
-| 00ac8a08 (IsDesaturateSupported..) | 11 | `-` | 11 | 0 | IsDesaturateSupported, GetThreatStatusColor, IsThreatWarningEnabled, ConsoleAddMessage, GetItemUniqueness, EndRefund ... |
+| 00acd6d8 (SearchLFGGetNumResults..) | 15 | `s_ScriptFunctions` | 12 | 0 | SearchLFGGetNumResults, SearchLFGGetResults, SearchLFGGetEncounterResults, SearchLFGGetPartyResults, SearchLFGSort, GetLFGTypes ... |
+| 00acefe0 (GetTitleText..) | 16 | `s_ScriptFunctions` | 12 | 0 | GetTitleText, GetGreetingText, GetQuestText, GetObjectiveText, GetProgressText, GetRewardText ... |
+| 00ac1550 (GetTitleRegion..) | 38 | `SimpleFontMethods, SimpleFrameMethods` | 0 | 11 |  / stubs: GetTitleRegion, CreateTitleRegion, HasScript, HookScript ... |
+| 00accf58 (GetMapInfo..) | 19 | `s_ScriptFunctions` | 11 | 0 | GetCurrentMapAreaID, GetCurrentMapZone, SetMapByID, ProcessMapClick, UpdateMapHighlight, GetPlayerMapPosition ... |
 | 00acd418 (AccountMsg_LoadHeaders..) | 11 | `-` | 11 | 0 | AccountMsg_LoadHeaders, AccountMsg_GetNumTotalMsgs, AccountMsg_GetNumUnreadMsgs, AccountMsg_GetNumUnreadUrgentMsgs, AccountMsg_GetIndexHighestPriorityUnreadMsg, AccountMsg_GetIndexNextUnreadMsg ... |
-| 00acfba8 (EquipmentManagerUnignoreSlotForSave..) | 11 | `-` | 11 | 0 | EquipmentManagerUnignoreSlotForSave, GetEquipmentSetLocations, GetEquipmentSetItemIDs, GetNumEquipmentSets, GetEquipmentSetInfo, GetEquipmentSetInfoByName ... |
 | 00acfc70 (GetCategoryList..) | 11 | `-` | 11 | 0 | GetCategoryList, GetStatisticsCategoryList, GetCategoryInfo, GetCategoryNumAchievements, GetComparisonCategoryNumAchievements, GetAchievementInfo ... |
+| 00ad0c30 (PetHasActionBar..) | 15 | `s_ScriptFunctions` | 11 | 0 | GetPetActionsUsable, GetPetActionSlotUsable, PickupPetAction, TogglePetAutocast, CastPetAction, PetPassiveMode ... |
 | 00a443a8 (setglobal..) | 10 | `-` | 10 | 0 | setglobal, getglobal, strtrim, strsplit, strjoin, strreplace ... |
-| 00ac40e8 (ShowChangedOptionWarnings..) | 10 | `-` | 10 | 0 | ShowChangedOptionWarnings, TokenEntered, GetNumDeclensionSets, DeclineName, GetNumGameAccounts, GetGameAccountInfo ... |
-| 00ac8378 (GetZoneText..) | 10 | `-` | 10 | 0 | GetZoneText, GetRealZoneText, GetSubZoneText, GetMinimapZoneText, InitiateTrade, CanInspect ... |
-| 00af51c8 (SpellIsTargeting..) | 10 | `-` | 10 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
+| 00accdd0 (GetShapeshiftFormInfo..) | 14 | `s_ScriptFunctions` | 10 | 0 | GetShapeshiftFormInfo, CastShapeshiftForm, GetShapeshiftFormCooldown, CastSpellByName, CastSpellByID, GetCompanionCooldown ... |
+| 00acf770 (StablePet..) | 13 | `s_ScriptFunctions` | 10 | 0 | StablePet, UnstablePet, BuyStableSlot, GetStablePetInfo, GetNextStableSlotCost, ClickStablePet ... |
+| 00ad0cc0 (PetRename..) | 13 | `s_ScriptFunctions` | 10 | 0 | PetRename, PetCanBeAbandoned, PetCanBeDismissed, PetCanBeRenamed, GetPetTimeRemaining, GetPetExperience ... |
+| 00af29c0 (VoiceEnumerateOutputDevices..) | 15 | `s_ScriptFunctions` | 10 | 0 | VoiceEnumerateOutputDevices, VoiceEnumerateCaptureDevices, VoiceSelectOutputDevice, VoiceSelectCaptureDevice, VoiceGetCurrentOutputDevice, VoiceGetCurrentCaptureDevice ... |
 | 00a44400 (securecall..) | 9 | `-` | 9 | 0 | securecall, hooksecurefunc, debugload, debuginfo, debugprint, debugdump ... |
 | 00a47cc0 (pcall..) | 9 | `-` | 9 | 0 | pcall, rawequal, rawget, rawset, select, setfenv ... |
-| 00ac1098 (IsVisible..) | 15 | `SimpleTextureMethods` | 0 | 9 |  / stubs: GetTexCoord, SetRotation, IsDesaturated, SetNonBlocking ... |
-| 00ac3f60 (GetNumAddOns..) | 9 | `-` | 9 | 0 | GetNumAddOns, GetAddOnInfo, LaunchAddOnURL, GetAddOnDependencies, GetAddOnEnableState, EnableAddOn ... |
-| 00ac4098 (GetCVar..) | 9 | `-` | 9 | 0 | GetCVar, GetCVarBool, SetCVar, GetCVarDefault, GetCVarMin, GetCVarMax ... |
-| 00ac86b8 (GetBindLocation..) | 9 | `-` | 9 | 0 | GetBindLocation, ConfirmTalentWipe, ConfirmBinder, ShowingHelm, ShowingCloak, ShowHelm ... |
+| 00ac40e8 (ShowChangedOptionWarnings..) | 10 | `s_ScriptFunctions` | 0 | 9 |  / stubs: TokenEntered, GetNumDeclensionSets, DeclineName, GetNumGameAccounts ... |
+| 00ac8578 (RunScript..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: RunScript, CheckInteractDistance, RandomRoll, OpeningCinematic ... |
+| 00ac86b8 (GetBindLocation..) | 9 | `s_ScriptFunctions` | 0 | 9 |  / stubs: GetBindLocation, ConfirmTalentWipe, ConfirmBinder, ShowingHelm ... |
+| 00ac8970 (SetUIVisibility..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: SetUIVisibility, GrantLevel, CanSummonFriend, SummonFriend ... |
+| 00ac8a08 (IsDesaturateSupported..) | 11 | `s_ScriptFunctions` | 0 | 9 |  / stubs: IsDesaturateSupported, GetThreatStatusColor, ConsoleAddMessage, GetItemUniqueness ... |
 | 00acc708 (GetLootMethod..) | 15 | `s_ScriptFunctions` | 0 | 9 |  / stubs: SetLootMethod, SetLootThreshold, SetPartyAssignment, ClearPartyAssignment ... |
-| 00ad09b8 (GetNumSkillLines..) | 9 | `-` | 9 | 0 | GetNumSkillLines, GetSkillLineInfo, AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp ... |
+| 00accff8 (PositionWorldMapArrowFrame..) | 12 | `s_ScriptFunctions` | 9 | 0 | PositionWorldMapArrowFrame, PositionMiniWorldMapArrowFrame, ShowWorldMapArrowFrame, ShowMiniWorldMapArrowFrame, ClickLandmark, GetMapDebugObjectInfo ... |
+| 00acef78 (GetGossipText..) | 12 | `s_ScriptFunctions` | 9 | 0 | GetGossipText, GetGossipOptions, GetGossipAvailableQuests, GetGossipActiveQuests, SelectGossipOption, SelectGossipAvailableQuest ... |
+| 00acf080 (GetQuestReward..) | 12 | `s_ScriptFunctions` | 9 | 0 | GetQuestReward, GetRewardMoney, GetRewardXP, GetRewardHonor, GetRewardSpell, GetQuestMoneyToGet ... |
+| 00acf838 (GetArenaTeam..) | 13 | `s_ScriptFunctions` | 9 | 0 | GetArenaTeamRosterInfo, GetArenaTeamGdfInfo, SetArenaTeamRosterSelection, GetArenaTeamRosterSelection, SortArenaTeamRoster, SetArenaTeamRosterShowOffline ... |
+| 00acfba8 (EquipmentManagerUnignoreSlotForSave..) | 11 | `s_ScriptFunctions` | 9 | 0 | EquipmentManagerUnignoreSlotForSave, GetEquipmentSetLocations, GetEquipmentSetItemIDs, GetEquipmentSetInfo, GetEquipmentSetInfoByName, EquipmentSetContainsLockedItems ... |
+| 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions` | 9 | 0 | GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent, SetActiveTalentGroup, AddPreviewTalentPoints ... |
 | 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 9 |  / stubs: GetNormalFontObject, GetDisabledFontObject, GetHighlightFontObject, SetFontString ... |
-| 00ac1118 (IsObjectType..) | 8 | `-` | 8 | 0 | IsObjectType, GetObjectType, GetDrawLayer, SetDrawLayer, SetVertexColor, GetAlpha ... |
-| 00acd200 (GetNumBattlefieldScores..) | 8 | `-` | 8 | 0 | GetNumBattlefieldScores, GetBattlefieldScore, GetBattlefieldWinner, SetBattlefieldScoreFaction, LeaveBattlefield, GetNumBattlefieldStats ... |
+| 00ac1028 (IsObjectType..) | 12 | `ScriptObjectMethods, SimpleFontMethods ...` | 0 | 8 |  / stubs: GetDrawLayer, GetBlendMode, SetBlendMode, GetVertexColor ... |
+| 00ac1098 (IsVisible..) | 15 | `SimpleTextureMethods` | 0 | 8 |  / stubs: GetTexCoord, IsDesaturated, SetNonBlocking, GetNonBlocking ... |
+| 00ac3f60 (GetNumAddOns..) | 9 | `s_ScriptFunctions` | 0 | 8 |  / stubs: GetAddOnInfo, LaunchAddOnURL, GetAddOnDependencies, GetAddOnEnableState ... |
+| 00ac8600 (GetRestState..) | 14 | `s_ScriptFunctions` | 0 | 8 |  / stubs: GMRequestPlayerInfo, GetCoinIcon, GetCoinText, GetCoinTextureString ... |
 | 00ad02e0 (CalendarEventGetTextures..) | 8 | `-` | 8 | 0 | CalendarEventGetTextures, CalendarEventHasPendingInvite, CalendarEventHaveSettingsChanged, CalendarEventCanEdit, CalendarEventGetCalendarType, CalendarCanSendInvite ... |
+| 00ad1a68 (VehicleAimIncrement..) | 13 | `s_ScriptFunctions` | 8 | 0 | VehicleAimIncrement, VehicleAimDecrement, VehicleAimRequestAngle, VehicleAimGetAngle, VehicleAimRequestNormAngle, VehicleAimGetNormAngle ... |
+| 00af51c8 (SpellIsTargeting..) | 10 | `s_ScriptFunctions` | 8 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
 | 00a47c80 (assert..) | 7 | `-` | 7 | 0 | assert, collectgarbage, error, gcinfo, getfenv, getmetatable ... |
 | 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 7 |  / stubs: IsProtected, CanChangeProtectedState, GetRect, CreateAnimationGroup ... |
-| 00accf18 (GetMapContinents..) | 7 | `-` | 7 | 0 | GetMapContinents, GetMapZones, SetMapZoom, ZoomOut, SetDungeonMapLevel, GetNumDungeonMapLevels ... |
+| 00ac80c8 (RegisterForSave..) | 17 | `s_ScriptFunctions` | 0 | 7 |  / stubs: RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode, IsMouseButtonDown ... |
+| 00acd200 (GetNumBattlefieldScores..) | 8 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetNumBattlefieldScores, GetBattlefieldScore, GetBattlefieldWinner, SetBattlefieldScoreFaction ... |
 | 00acedb0 (CloseTrade..) | 7 | `s_ScriptFunctions` | 0 | 7 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
-| 00acf290 (TaxiNodeGetType..) | 7 | `-` | 7 | 0 | TaxiNodeGetType, TaxiNodeSetCurrent, TaxiGetSrcX, TaxiGetSrcY, TaxiGetDestX, TaxiGetDestY ... |
-| 00acf7f8 (GetNumPetitionItems..) | 7 | `-` | 7 | 0 | GetNumPetitionItems, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition ... |
-| 00ad00c0 (CalendarGetEventInfo..) | 7 | `-` | 7 | 0 | CalendarGetEventInfo, CalendarGetHolidayInfo, CalendarGetRaidInfo, CalendarGetNumPendingInvites, CalendarEventGetNumInvites, CalendarEventGetInvite ... |
-| 00ad0570 (GetSocketItemInfo..) | 7 | `-` | 7 | 0 | GetSocketItemInfo, GetNumSockets, GetExistingSocketInfo, GetExistingSocketLink, GetNewSocketInfo, GetNewSocketLink ... |
-| 00ad0a68 (GetPetitionInfo..) | 7 | `-` | 7 | 0 | GetPetitionInfo, GetNumPetitionNames, GetPetitionNameInfo, CanSignPetition, SignPetition, OfferPetition ... |
-| 00ad0ae8 (GetNumFactions..) | 7 | `-` | 7 | 0 | GetNumFactions, GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex, FactionToggleAtWar ... |
 | 00adb8e8 (CombatLogAddFilter..) | 7 | `-` | 7 | 0 | CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime, CombatLogGetNumEntries, CombatLogSetCurrentEntry, CombatLogGetCurrentEntry ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
-| 00ac3e78 (GetMovieResolution..) | 6 | `-` | 6 | 0 | GetMovieResolution, GetScreenWidth, GetScreenHeight, LaunchURL, ShowTOSNotice, TOSAccepted |
-| 00ac3fe0 (GetBillingTimeRemaining..) | 6 | `-` | 6 | 0 | GetBillingTimeRemaining, GetBillingPlan, GetBillingTimeRested, SurveyNotificationDone, PINEntered, PlayGlueAmbience |
-| 00ac4060 (IsScanDLLFinished..) | 6 | `-` | 6 | 0 | IsScanDLLFinished, IsWindowsClient, IsMacClient, IsLinuxClient, SetRealmSplitState, RequestRealmSplitInfo |
-| 00ac8338 (AssistUnit..) | 6 | `-` | 6 | 0 | AssistUnit, FocusUnit, FollowUnit, InteractUnit, ClearTarget, ClearFocus |
-| 00acc6d0 (GetNumPartyMembers..) | 6 | `-` | 6 | 0 | GetNumPartyMembers, GetRealNumPartyMembers, GetPartyMember, GetPartyLeaderIndex, IsPartyLeader, IsRealPartyLeader |
+| 00ac42c8 (GetCharacterCreateFacing..) | 11 | `s_ScriptFunctions` | 0 | 6 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
+| 00ac8338 (AssistUnit..) | 6 | `s_ScriptFunctions` | 0 | 6 |  / stubs: AssistUnit, FocusUnit, FollowUnit, InteractUnit ... |
+| 00ac8378 (GetZoneText..) | 10 | `s_ScriptFunctions` | 0 | 6 |  / stubs: InitiateTrade, CanInspect, NotifyInspect, InviteUnit ... |
 | 00accce0 (GetNumSpellTabs..) | 25 | `s_ScriptFunctions` | 6 | 0 | GetSpellCount, ToggleSpellAutocast, EnableSpellAutocast, DisableSpellAutocast, PickupSpell, SpellHasRange |
+| 00accf18 (GetMapContinents..) | 7 | `s_ScriptFunctions` | 6 | 0 | GetMapContinents, GetMapZones, SetMapZoom, ZoomOut, SetDungeonMapLevel, DungeonUsesTerrainMap |
 | 00aceec0 (ItemTextGetItem..) | 6 | `-` | 6 | 0 | ItemTextGetItem, ItemTextGetCreator, ItemTextGetMaterial, ItemTextGetPage, ItemTextGetText, ItemTextHasNextPage |
 | 00acf258 (SetTaxiMap..) | 6 | `-` | 6 | 0 | SetTaxiMap, NumTaxiNodes, TaxiNodeName, TaxiNodePosition, TaxiNodeCost, TakeTaxiNode |
+| 00acf290 (TaxiNodeGetType..) | 7 | `s_ScriptFunctions` | 6 | 0 | TaxiNodeGetType, TaxiNodeSetCurrent, TaxiGetSrcX, TaxiGetSrcY, TaxiGetDestX, TaxiGetDestY |
 | 00acf640 (GetAuctionHouseDepositRate..) | 6 | `-` | 6 | 0 | GetAuctionHouseDepositRate, CalculateAuctionDeposit, ClickAuctionSellItemButton, GetAuctionSellItemInfo, StartAuction, QueryAuctionItems |
 | 00acf9e0 (GetActionInfo..) | 28 | `s_ScriptFunctions` | 0 | 6 |  / stubs: GetActionAutocast, PickupAction, PlaceAction, ChangeActionBarPage ... |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
-| 00acff54 (GetNumGlyphSockets..) | 6 | `-` | 6 | 0 | GetNumGlyphSockets, GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
+| 00ad00c0 (CalendarGetEventInfo..) | 7 | `s_ScriptFunctions` | 6 | 0 | CalendarGetEventInfo, CalendarGetHolidayInfo, CalendarGetRaidInfo, CalendarEventGetNumInvites, CalendarEventGetInvite, CalendarEventGetInviteResponseTime |
+| 00ad0570 (GetSocketItemInfo..) | 7 | `s_ScriptFunctions` | 6 | 0 | GetSocketItemInfo, GetExistingSocketInfo, GetExistingSocketLink, GetNewSocketInfo, GetNewSocketLink, ClickSocketButton |
+| 00ad09b8 (GetNumSkillLines..) | 9 | `s_ScriptFunctions` | 6 | 0 | AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp, RemoveSkillUp, AcceptSkillUps |
+| 00ad0ae8 (GetNumFactions..) | 7 | `s_ScriptFunctions` | 6 | 0 | GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex, FactionToggleAtWar, CollapseFactionHeader |
 | 00ad1208 (QuestPOIGetIconInfo..) | 6 | `-` | 6 | 0 | QuestPOIGetIconInfo, QuestPOIGetQuestIDByIndex, QuestPOIGetQuestIDByVisibleIndex, GetQuestLogCompletionText, SetPOIIconOverlapDistance, SetPOIIconOverlapPushDistance |
-| 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 6 |  / stubs: GetText, GetNumFrames, EnumerateFrames, CreateFont ... |
-| 00ac1818 (GetObjectType..) | 5 | `-` | 5 | 0 | GetObjectType, IsObjectType, GetName, SetFontObject, GetFontObject |
-| 00ac1a48 (SetParent..) | 5 | `-` | 5 | 0 | SetParent, SetOffset, GetOffset, SetOrder, GetOrder |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
-| 00ac4160 (IsConsoleActive..) | 5 | `-` | 5 | 0 | IsConsoleActive, RunScript, ReadyForAccountDataTimes, IsTrialAccount, IsSystemSupported |
-| 00ac8678 (SetPortraitToTexture..) | 5 | `-` | 5 | 0 | SetPortraitToTexture, GetLocale, GetGMTicketCategories, DropItemOnUnit, RestartGx |
-| 00acd680 (GetLFGInfoLocal..) | 5 | `-` | 5 | 0 | GetLFGInfoLocal, GetLFGInfoServer, GetLFGQueuedList, SetLFGComment, LFGTeleport |
-| 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `-` | 5 | 0 | BankButtonIDToInvSlotID, GetNumBankSlots, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
-| 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 4 | 1 | GetNumTrackingTypes, GetTrackingInfo, SetTracking, GetTrackingTexture / stubs: SetMaskTexture |
+| 00ac3fe0 (GetBillingTimeRemaining..) | 6 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetBillingTimeRemaining, GetBillingPlan, SurveyNotificationDone, PINEntered ... |
+| 00acf7f8 (GetNumPetitionItems..) | 7 | `s_ScriptFunctions` | 5 | 0 | GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfb78 (SaveEquipmentSet..) | 5 | `-` | 5 | 0 | SaveEquipmentSet, DeleteEquipmentSet, RenameEquipmentSet, EquipmentManagerIgnoreSlotForSave, EquipmentManagerIsSlotIgnoredForSave |
-| 00ad0970 (GetGuildInfoText..) | 5 | `-` | 5 | 0 | GetGuildInfoText, SetGuildInfoText, QueryGuildEventLog, GetNumGuildEvents, GetGuildEventInfo |
-| 00ad1350 (GetInspectHonorData..) | 5 | `-` | 5 | 0 | GetInspectHonorData, GetInspectArenaTeamData, ClearInspectPlayer, GetWeaponEnchantInfo, HasWandEquipped |
+| 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions` | 5 | 0 | GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
+| 00ad0a68 (GetPetitionInfo..) | 7 | `s_ScriptFunctions` | 5 | 0 | GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
+| 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
 | 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 5 |  / stubs: SetCamera, AdvanceTime, SetFogColor, SetFogNear ... |
 | 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 5 |  / stubs: GetThumbTexture, SetThumbTexture, GetOrientation, SetOrientation ... |
 | 00a44478 (difftime..) | 4 | `-` | 4 | 0 | difftime, debugstack, debuglocals, scrub |
 | 00a47d28 (create..) | 4 | `-` | 4 | 0 | create, resume, running, status |
-| 00ac1a24 (SetOrigin..) | 4 | `-` | 4 | 0 | SetOrigin, GetOrigin, SetScale, GetScale |
-| 00ac4018 (GetCreditsText..) | 4 | `-` | 4 | 0 | GetCreditsText, GetAccountExpansionLevel, GetClientExpansionLevel, MatrixEntered |
-| 00acc868 (CanResetTutorials..) | 4 | `-` | 4 | 0 | CanResetTutorials, FlagTutorial, IsTutorialFlagged, TriggerTutorial |
+| 00ac1118 (IsObjectType..) | 8 | `ScriptObjectMethods, SimpleFontMethods ...` | 0 | 4 |  / stubs: GetDrawLayer, GetAlpha, SetAlpha, SetAlphaGradient |
+| 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
+| 00ac8678 (SetPortraitToTexture..) | 5 | `s_ScriptFunctions` | 0 | 4 |  / stubs: SetPortraitToTexture, GetGMTicketCategories, DropItemOnUnit, RestartGx |
 | 00acd320 (GetScreenResolutions..) | 15 | `CGVideoOptions::s_ScriptFunctions` | 0 | 4 |  / stubs: SetupFullscreenScale, SetMultisampleFormat, GetVideoCaps, SetTerrainMip |
-| 00aced88 (InRepairMode..) | 4 | `-` | 4 | 0 | InRepairMode, GetRepairAllCost, RepairAllItems, GetNumBuybackItems |
-| 00ad0b28 (SetFactionInactive..) | 4 | `-` | 4 | 0 | SetFactionInactive, SetFactionActive, IsFactionInactive, ExpandFactionHeader |
-| 00ad1020 (GetNumQuestLogEntries..) | 4 | `-` | 4 | 0 | GetNumQuestLogEntries, GetQuestLogTitle, SelectQuestLogEntry, GetQuestLogSelection |
-| 00b2d150 (SetFontObject..) | 23 | `SimpleHTMLMethods` | 0 | 4 |  / stubs: SetFontObject, SetText, SetHyperlinkFormat, GetHyperlinkFormat |
-| 00b2d970 (Sound_ChatSystem_GetNumInputDrivers..) | 4 | `-` | 4 | 0 | Sound_ChatSystem_GetNumInputDrivers, Sound_ChatSystem_GetInputDriverNameByIndex, Sound_ChatSystem_GetNumOutputDrivers, Sound_ChatSystem_GetOutputDriverNameByIndex |
+| 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
+| 00ad0970 (GetGuildInfoText..) | 5 | `s_ScriptFunctions` | 4 | 0 | GetGuildInfoText, SetGuildInfoText, QueryGuildEventLog, GetGuildEventInfo |
+| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 4 |  / stubs: GetOrientation, SetOrientation, SetStatusBarTexture, SetStatusBarColor |
+| 00ac4098 (GetCVar..) | 9 | `s_ScriptFunctions` | 0 | 3 |  / stubs: GetCVarAbsoluteMin, GetCVarAbsoluteMax, GetChangedOptionWarnings |
+| 00ac4160 (IsConsoleActive..) | 5 | `s_ScriptFunctions` | 0 | 3 |  / stubs: IsConsoleActive, RunScript, ReadyForAccountDataTimes |
+| 00acd680 (GetLFGInfoLocal..) | 5 | `s_ScriptFunctions` | 3 | 0 | GetLFGInfoLocal, SetLFGComment, LFGTeleport |
+| 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: SetMaskTexture, SetTracking |
+| 00ad0b28 (SetFactionInactive..) | 4 | `s_ScriptFunctions` | 3 | 0 | SetFactionInactive, SetFactionActive, ExpandFactionHeader |
+| 00ad1350 (GetInspectHonorData..) | 5 | `s_ScriptFunctions` | 0 | 3 |  / stubs: GetInspectHonorData, GetInspectArenaTeamData, ClearInspectPlayer |
+| 00ac1818 (GetObjectType..) | 5 | `ScriptObjectMethods, SimpleEditBoxMethods` | 0 | 2 |  / stubs: SetFontObject, GetFontObject |
+| 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac3e00 (IsShiftKeyDown..) | 10 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetUsesToken, SetSavedAccountList |
+| 00ac3e78 (GetMovieResolution..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: GetMovieResolution, LaunchURL |
+| 00ac4060 (IsScanDLLFinished..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetRealmSplitState, RequestRealmSplitInfo |
 | 00ac41a8 (GetNumRealms..) | 7 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4390 (GetNumCharacters..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
+| 00acc6d0 (GetNumPartyMembers..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: GetRealNumPartyMembers, IsRealPartyLeader |
+| 00aced88 (InRepairMode..) | 4 | `s_ScriptFunctions` | 2 | 0 | InRepairMode, RepairAllItems |
 | 00b2cd50 (GetColorWheelTexture..) | 12 | `SimpleColorSelectMethods` | 2 | 0 | SetColorWheelThumbTexture, SetColorValueThumbTexture |
-| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 2 |  / stubs: SetStatusBarTexture, SetStatusBarColor |
 | 00b2ce90 (SetScrollChild..) | 9 | `SimpleScrollFrameMethods` | 0 | 2 |  / stubs: SetScrollChild, UpdateScrollChildRect |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
+| 00ac4018 (GetCreditsText..) | 4 | `s_ScriptFunctions` | 0 | 1 |  / stubs: MatrixEntered |
 | 00ac4240 (GetNameForRace..) | 13 | `s_ScriptFunctions` | 0 | 1 |  / stubs: GetClassesForRace |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 1 |  / stubs: ResetLights |
+| 00acc868 (CanResetTutorials..) | 4 | `s_ScriptFunctions` | 1 | 0 | FlagTutorial |
 | 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 1 |  / stubs: SetFillTexture |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 1 |  / stubs: SetUnit |
+| 00ad1020 (GetNumQuestLogEntries..) | 4 | `s_ScriptFunctions` | 1 | 0 | GetQuestLogTitle |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
 
 ## Packet handler coverage (SetMessageHandler)
@@ -205,7 +204,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 355 | 86.2k | 10 (2.8%) | 4.8% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 29 (8.3%) | 2.6% | 0 | 2 | 36 |
-| lmemPool.cpp | 342 | 80.2k | 67 (19.6%) | 29.6% | 0 | 0 | 107 |
+| lmemPool.cpp | 342 | 80.2k | 68 (19.9%) | 29.6% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 5 (2.7%) | 3.3% | 0 | 0 | 118 |
@@ -219,7 +218,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 70 (23.0%) | 31.3% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 6 (2.7%) | 1.9% | 0 | 0 | 8 |
-| Minigame_C.cpp | 352 | 50.8k | 114 (32.4%) | 27.3% | 0 | 0 | 68 |
+| Minigame_C.cpp | 352 | 50.8k | 118 (33.5%) | 28.7% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 12 (5.2%) | 3.0% | 9 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.8% | 60 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
@@ -244,17 +243,17 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 43 (23.4%) | 30.8% | 10 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 43 (23.4%) | 30.9% | 10 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 39 (23.1%) | 35.1% | 0 | 0 | 31 |
-| CGlueMgr.cpp | 183 | 28.9k | 42 (23.0%) | 40.2% | 4 | 0 | 1 |
+| CGlueMgr.cpp | 183 | 28.9k | 43 (23.5%) | 41.6% | 4 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 9 (4.5%) | 18.3% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 70 (34.3%) | 42.0% | 26 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 71 (34.8%) | 42.2% | 9 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 13 (7.8%) | 21.4% | 0 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 16 (9.6%) | 25.3% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
-| CSimpleFrame.cpp | 144 | 25.9k | 6 (4.2%) | 14.2% | 0 | 0 | 36 |
+| CSimpleFrame.cpp | 144 | 25.9k | 7 (4.9%) | 15.3% | 0 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 14 (10.1%) | 16.9% | 3 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 25 (22.5%) | 23.4% | 19 | 0 | 8 |
@@ -270,7 +269,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 31 (24.2%) | 28.0% | 5 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 31 (24.2%) | 27.7% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -300,7 +299,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | GxuFontUtil.cpp | 60 | 13.3k | 2 (3.3%) | 1.0% | 0 | 0 | 45 |
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
-| blp.cpp | 94 | 13.0k | 12 (12.8%) | 12.2% | 0 | 0 | 20 |
+| blp.cpp | 94 | 13.0k | 13 (13.8%) | 12.5% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
@@ -314,7 +313,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | UIBindings.cpp | 59 | 11.5k | 16 (27.1%) | 32.4% | 15 | 0 | 4 |
-| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 5 (6.7%) | 8.0% | 0 | 0 | 0 |
+| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 3 (4.0%) | 7.3% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
@@ -382,7 +381,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ReputationInfo.cpp | 40 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | fmod_codec_tag.cpp | 7 | 4.4k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | ArenaTeamInfo.cpp | 33 | 4.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| CSimpleMessageFrame.cpp | 29 | 4.2k | 2 (6.9%) | 3.5% | 0 | 0 | 0 |
+| CSimpleMessageFrame.cpp | 29 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | OsTcp.cpp | 23 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ShaderEffectManager.cpp | 24 | 4.1k | 1 (4.2%) | 11.9% | 0 | 0 | 3 |
 | OsVersionHash.cpp | 19 | 4.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -466,15 +465,15 @@ Module = the source file named by the reference's own assert strings near the fu
 | 007251c0 | Unit_C.cpp | 798 | 27 |  |  |
 | 004ba060 | Texture.cpp? | 260 | 84 |  | AsyncFileReadWait(): s_waiting != FALSE, AsyncFileReadWait():%s
  |
-| 00486b20 | CSimpleRender.cpp? | 778 | 26 |  |  |
 | 0041d770 | OggDecompress.cpp | 199 | 103 |  |  |
 | 0082ced0 | M2Scene.cpp? | 706 | 28 |  |  |
 | 00708c20 | Item_C.cpp | 1998 | 9 |  | .\Item_C.cpp, SPELL_FAILED_NO_CHARGES_REMAIN |
-| 006b0b50 | blp.cpp? | 41 | 465 |  |  |
 | 008cfda0 | fmod_memory.cpp | 388 | 48 |  | ..\..\src\fmod_memory.cpp |
 | 00802f80 | Spell_C.cpp | 1396 | 12 |  | .\Spell_C.cpp |
 | 004922f0 | CSimpleFrame.cpp | 951 | 18 |  |  |
 | 00603330 | InputControl.cpp? | 1379 | 12 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
+| 0080bc80 | Spell_C.cpp | 1723 | 9 |  | .\Spell_C.cpp |
+| 00786e10 | SEvt.cpp? | 2403 | 6 |  |  |
 
 ## Next to port: unmapped, anywhere
 
@@ -672,7 +671,7 @@ The port exists but does not make the calls the reference makes, in the order it
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00857ca0 | `luaV_execute` | 38% | 50 | 48 | 163 | 115 | 2% | 5138 |
+| 00857ca0 | `luaV_execute` | 40% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00865270 | `inflate` | 0% | 22 | 23 | 180 | 260 | 48% | 4934 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 7% | 148 | 29 | 90 | 15 | 10% | 3696 |
@@ -680,13 +679,13 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004102b2 | `luaO_pushvfstring` | 0% | 32 | 14 | 129 | 17 | 0% | 2420 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
-| 004932c0 | `CSimpleFrame::LoadXML` | 67% | 69 | 78 | 68 | 36 | 12% | 1858 |
+| 004932c0 | `CSimpleFrame::LoadXML` | 54% | 69 | 78 | 68 | 36 | 12% | 1858 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
 | 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 0085e600 | `llex` | 67% | 39 | 34 | 39 | 46 | 0% | 1520 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 004873e0 | `CSimpleFontString::LoadXML` | 70% | 63 | 67 | 55 | 33 | 0% | 1441 |
+| 004873e0 | `CSimpleFontString::LoadXML` | 59% | 63 | 67 | 55 | 33 | 0% | 1441 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 00631000 | `CGTooltip_SetAction` | 4% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 007e4480 | `BlobShadowsBegin` | 21% | 33 | 17 | 10 | 2 | 0% | 1370 |
@@ -697,7 +696,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004f1a20 | `CCharacterComponent::Initialize` | 20% | 10 | 10 | 10 | 5 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
 | 0096fed0 | `CSimpleButton::LoadXML` | 50% | 46 | 49 | 34 | 23 | 0% | 1174 |
-| 00497070 | `CSimpleFont::LoadXML` | 75% | 36 | 49 | 50 | 23 | 0% | 1155 |
+| 00497070 | `CSimpleFont::LoadXML` | 67% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 00401b60 | `ClientRegisterConsoleCommands` | 33% | 33 | 12 | 3 | 1 | 11% | 1126 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetGUIDFromToken` | 71% | 42 | 37 | 34 | 27 | 20% | 1121 |
@@ -706,7 +705,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 2% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 00851d20 | `auxsort` | 29% | 73 | 32 | 18 | 13 | 0% | 1011 |
 | 004debc0 | `Script_GetRealmInfo` | 15% | 53 | 55 | 24 | 17 | 6% | 990 |
-| 00967290 | `CSimpleEditBox::LoadXML` | 81% | 36 | 42 | 42 | 20 | 0% | 989 |
+| 00967290 | `CSimpleEditBox::LoadXML` | 64% | 36 | 42 | 42 | 20 | 0% | 989 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
 | 0085e160 | `read_string` | 47% | 30 | 21 | 15 | 25 | 6% | 904 |
@@ -778,7 +777,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 0076e720 | `SStrChrR` | override | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
 | 007e4480 | `BlobShadowsBegin` | override | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
-| 008154e0 | `StringToBOOL` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
+| 008154e0 | `StringToBOOL` | unlinked | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 00819210 | `FrameScript_Execute` | callorder | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
 | 0084f9f0 | `luaL_checklstring` | callorder | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00856ea0 | `luaV_tostring` | override | one side every frame, the other never | [7, 7, 7] | [0, 0, 0] |
@@ -790,8 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
-| 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
 | 2026-09-18 17:54 | 1510 (5.6%) | 246 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
 | 2026-09-18 18:09 | 1513 (5.6%) | 252 (0.9%) | 451 | 171/5530 | 936/2512 | 446 |
 | 2026-09-18 18:13 | 1514 (5.6%) | 253 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
@@ -815,6 +812,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 23:27 | 1817 (6.7%) | 430 (1.6%) | 463 | 252/5530 | 936/2512 | 446 |
 | 2026-09-18 23:31 | 1824 (6.7%) | 431 (1.6%) | 463 | 259/5530 | 936/2512 | 446 |
 | 2026-09-18 23:36 | 1825 (6.7%) | 432 (1.6%) | 463 | 260/5530 | 936/2512 | 446 |
+| 2026-09-18 23:47 | 1830 (6.7%) | 438 (1.6%) | 446 | 261/5530 | 1584/2512 | 765 |
+| 2026-09-18 23:48 | 1833 (6.7%) | 447 (1.6%) | 446 | 269/5530 | 1584/2512 | 765 |
 
 ## How to move a row
 

@@ -139756,7 +139756,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": []
 },
 "CSimpleFontString::GetObjectType": {
@@ -139768,7 +139768,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 7,
 "refs": []
 },
 "CSimpleFontString::RegisterScriptMethods": {
@@ -139783,7 +139783,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": []
 },
 "CSimpleFontString::CSimpleFontString": {
@@ -139798,7 +139798,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 8,
 "refs": []
 },
 "CSimpleFontString::~CSimpleFontString": {
@@ -139820,7 +139820,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 21,
+"lines": 22,
 "refs": []
 },
 "CSimpleFontString::AddShadow": {
@@ -139864,7 +139864,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 10,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString::Draw": {
@@ -139879,7 +139879,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 9,
+"lines": 6,
 "refs": []
 },
 "CSimpleFontString::DrawEmbeddedTextures": {
@@ -139891,7 +139891,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::IsA": {
@@ -139917,7 +139917,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::FreeEmbeddedTextures": {
@@ -139929,7 +139929,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::GetDisplayText": {
@@ -139961,7 +139961,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 75,
+"lines": 71,
 "refs": []
 },
 "CSimpleFontString::GetFontFlags": {
@@ -139977,7 +139977,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 3,
+"lines": 7,
 "refs": []
 },
 "CSimpleFontString::GetFontHeight": {
@@ -139996,7 +139996,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 16,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString::GetFontName": {
@@ -140010,7 +140010,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 5,
 "refs": []
 },
 "CSimpleFontString::GetHeight": {
@@ -140031,7 +140031,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 13,
+"lines": 9,
 "refs": []
 },
 "CSimpleFontString::GetNumCharsWithinWidth": {
@@ -140051,7 +140051,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 22,
+"lines": 26,
 "refs": []
 },
 "CSimpleFontString::GetScriptMetaTable": {
@@ -140086,7 +140086,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 29,
+"lines": 28,
 "refs": []
 },
 "CSimpleFontString::GetStringWidth": {
@@ -140108,7 +140108,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 37,
+"lines": 27,
 "refs": []
 },
 "CSimpleFontString::GetText": {
@@ -140120,7 +140120,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::GetTextWidth": {
@@ -140139,7 +140139,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 24,
+"lines": 28,
 "refs": []
 },
 "CSimpleFontString::GetWidth": {
@@ -140160,7 +140160,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 9,
 "refs": []
 },
 "CSimpleFontString::LoadXML": {
@@ -140273,7 +140273,7 @@
 ],
 "branches": 33,
 "stub": false,
-"lines": 197,
+"lines": 192,
 "refs": []
 },
 "CSimpleFontString::OnColorChanged": {
@@ -140298,7 +140298,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 27,
+"lines": 29,
 "refs": []
 },
 "CSimpleFontString::OnScreenSizeChanged": {
@@ -140338,7 +140338,7 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 34,
+"lines": 29,
 "refs": []
 },
 "CSimpleFontString::PostLoadXML": {
@@ -140361,7 +140361,7 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 34,
+"lines": 27,
 "refs": []
 },
 "CSimpleFontString::RefreshEmbeddedTextures": {
@@ -140373,7 +140373,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::RemoveShadow": {
@@ -140385,7 +140385,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::SetFont": {
@@ -140411,7 +140411,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 45,
+"lines": 48,
 "refs": []
 },
 "CSimpleFontString::SetHeight": {
@@ -140434,12 +140434,16 @@
 "files": [
 "src/ui/simple/csimplefontstring.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CSimpleFontString::UpdateString"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
+"consts": [
+"0x20000"
+],
+"branches": 3,
 "stub": false,
-"lines": 1,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString::SetJustificationOffset": {
@@ -140456,7 +140460,7 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 18,
+"lines": 17,
 "refs": []
 },
 "CSimpleFontString::SetJustifyV": {
@@ -140474,7 +140478,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 15,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString::SetJustifyH": {
@@ -140492,19 +140496,103 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 13,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString::SetNonSpaceWrap": {
 "files": [
 "src/ui/simple/csimplefontstring.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CSimpleFontString::UpdateString"
+],
+"strings": [],
+"consts": [
+"0x1000"
+],
+"branches": 3,
+"stub": false,
+"lines": 11,
+"refs": []
+},
+"CSimpleFontString::SetShadowColor": {
+"files": [
+"src/ui/simple/csimplefontstring.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"operator!=",
+"CImVector::operator=",
+"CSimpleFontString::UpdateString"
+],
 "strings": [],
 "consts": [],
-"branches": 0,
+"branches": 2,
 "stub": false,
-"lines": 2,
+"lines": 9,
+"refs": []
+},
+"CSimpleFontString::SetShadowOffset": {
+"files": [
+"src/ui/simple/csimplefontstring.cpp"
+],
+"callseq": [
+"C2Vector::operator=",
+"CSimpleFontString::RemoveShadow",
+"CSimpleFontString::AddShadow",
+"HandleClose",
+"CLayoutFrame::Resize"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x100"
+],
+"branches": 3,
+"stub": false,
+"lines": 22,
+"refs": []
+},
+"CSimpleFontString::SetTextHeight": {
+"files": [
+"src/ui/simple/csimplefontstring.cpp"
+],
+"callseq": [
+"fabs",
+"HandleClose",
+"CLayoutFrame::Resize"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x100",
+"0x200"
+],
+"branches": 2,
+"stub": false,
+"lines": 16,
+"refs": []
+},
+"CSimpleFontString::GetTextColor": {
+"files": [
+"src/ui/simple/csimplefontstring.cpp"
+],
+"callseq": [
+"CImVector::operator=",
+"CImVector::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"0xFF",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 10,
 "refs": []
 },
 "CSimpleFontString::SetSpacing": {
@@ -140521,7 +140609,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 9,
+"lines": 14,
 "refs": []
 },
 "CSimpleFontString::SetStyleFlags": {
@@ -140535,7 +140623,7 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 9,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString::SetText": {
@@ -140561,7 +140649,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 43,
+"lines": 34,
 "refs": []
 },
 "CSimpleFontString::SetTextLength": {
@@ -140573,19 +140661,23 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": []
 },
 "CSimpleFontString::SetNonWordWrap": {
 "files": [
 "src/ui/simple/csimplefontstring.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CSimpleFontString::UpdateString"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
+"consts": [
+"0x40"
+],
+"branches": 3,
 "stub": false,
-"lines": 1,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString::SetWidth": {
@@ -140601,7 +140693,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": []
 },
 "CSimpleFontString::UpdateString": {
@@ -140638,7 +140730,7 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 67,
+"lines": 92,
 "refs": []
 },
 "CSimpleFontStringAttributes::SetColor": {
@@ -141259,20 +141351,16 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetFieldSize",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"8191.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 5,
 "refs": []
 },
 "CSimpleFontString_SetText": {
@@ -141331,20 +141419,24 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"CImVector::CImVector",
+"CSimpleFontString::GetTextColor",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 14,
 "refs": []
 },
 "CSimpleFontString_SetTextColor": {
@@ -141373,20 +141465,22 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 13,
 "refs": []
 },
 "CSimpleFontString_SetShadowColor": {
@@ -141394,20 +141488,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_GetColor",
+"CSimpleFontString::SetShadowColor"
 ],
-"strings": [
-"CSimpleFontString_SetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x00",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString_GetShadowOffset": {
@@ -141415,20 +141509,22 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"lua_pushnumber",
+"NDCToDDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString_SetShadowOffset": {
@@ -141436,20 +141532,32 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"lua_tonumber",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"DDCToNDCWidth",
+"C2Vector::C2Vector",
+"CSimpleFontString::SetShadowOffset",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleFontString_SetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
+"Usage: %s:SetShadowOffset(x, y)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 22,
 "refs": []
 },
 "CSimpleFontString_GetSpacing": {
@@ -141457,20 +141565,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1024.0f"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": []
 },
 "CSimpleFontString_SetSpacing": {
@@ -141484,6 +141592,8 @@
 "FrameScript_Object::GetDisplayName",
 "luaL_error",
 "lua_tonumber",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
 "CSimpleFontString::SetSpacing"
 ],
 "strings": [
@@ -141491,11 +141601,12 @@
 ],
 "consts": [
 "0",
+"1024.0f",
 "2"
 ],
 "branches": 1,
 "stub": false,
-"lines": 12,
+"lines": 16,
 "refs": []
 },
 "CSimpleFontString_SetTextHeight": {
@@ -141503,20 +141614,30 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"CSimpleFontString::SetTextHeight"
 ],
 "strings": [
-"CSimpleFontString_SetTextHeight",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
+"%s:SetTextHeight(): invalid texHeight: %f, height must be > 0",
+"Usage: %s:SetTextHeight(pixelHeight)"
 ],
 "consts": [
-"0"
+"0",
+"1.1920929e-07f",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 18,
 "refs": []
 },
 "CSimpleFontString_GetStringWidth": {
@@ -141562,20 +141683,19 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"JustifyToString",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleFontString_GetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x7",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": []
 },
 "CSimpleFontString_SetJustifyH": {
@@ -141609,20 +141729,19 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"JustifyToString",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleFontString_GetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x38",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": []
 },
 "CSimpleFontString_SetJustifyV": {
@@ -141630,20 +141749,25 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFontString::SetJustifyV"
 ],
 "strings": [
-"CSimpleFontString_SetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
+"Usage: %s:SetJustifyV(\"justify\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 14,
 "refs": []
 },
 "CSimpleFontString_CanNonSpaceWrap": {
@@ -141651,20 +141775,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFontString_CanNonSpaceWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x1000",
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString_SetNonSpaceWrap": {
@@ -141672,20 +141796,21 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleFontString::SetNonSpaceWrap"
 ],
-"strings": [
-"CSimpleFontString_SetNonSpaceWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x1000",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString_CanWordWrap": {
@@ -141693,20 +141818,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFontString_CanWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x40",
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": []
 },
 "CSimpleFontString_SetWordWrap": {
@@ -141714,20 +141839,21 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleFontString::SetNonWordWrap"
 ],
-"strings": [
-"CSimpleFontString_SetWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x40",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString_GetIndentedWordWrap": {
@@ -141735,20 +141861,21 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleFontString::SetIndentedWordWrap"
 ],
-"strings": [
-"CSimpleFontString_GetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x20000",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": []
 },
 "CSimpleFontString_SetIndentedWordWrap": {
@@ -141756,20 +141883,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFontString_SetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x20000",
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": []
 },
 "CSimpleFrame::GetObjectType": {
@@ -153596,6 +153723,33 @@
 "branches": 2,
 "stub": false,
 "lines": 20,
+"refs": []
+},
+"JustifyToString": {
+"files": [
+"src/ui/util.cpp"
+],
+"callseq": [],
+"strings": [
+"BOTTOM",
+"CENTER",
+"LEFT",
+"MIDDLE",
+"RIGHT",
+"TOP",
+"UNKNOWN"
+],
+"consts": [
+"0x1",
+"0x10",
+"0x2",
+"0x20",
+"0x4",
+"0x8"
+],
+"branches": 2,
+"stub": false,
+"lines": 21,
 "refs": []
 },
 "CStatus::~CStatus": {
