@@ -144004,44 +144004,39 @@
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushboolean"
 ],
-"strings": [
-"CSimpleButton_GetMotionScriptsWhileDisabled",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 546
+"line": 545
 },
 "CSimpleButton_SetMotionScriptsWhileDisabled": {
 "files": [
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"CSimpleButton_SetMotionScriptsWhileDisabled",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 550
+"line": 555
 },
 "FaceDirection": {
 "files": [

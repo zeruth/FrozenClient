@@ -80,12 +80,11 @@ CLASS_GLOBAL = {
 # even in a file with no expectation recorded.
 ALL_CLASS_GLOBALS = set(CLASS_GLOBAL.values()) | {'00b499dc', '00b4997c'}
 
-BENIGN = {
-    '00d3f778',
-    '00b4792c', '00b4793c', '00b49978', '00b49984', '00b499b0', '00b499dc', '00b499ec',
-    '00b4997c', '00c5cf4c', '00c2423c', '00c0e4d4',
-    '00dce440', '00dce4a4', '00dce4bc', '00dce4d4', '00dce650',
-}
+# An object-type id read says nothing about what state a function needs, so none of them count as
+# risky. Derived from the catalogue above rather than restated, since keeping two lists in step by
+# hand had already gone wrong once -- CGQuestPOIFrame's id was in one and not the other, and its
+# bindings showed a risky global they did not have.
+BENIGN = ALL_CLASS_GLOBALS | {'00d3f778'}
 
 
 def rdata_ranges():

@@ -31,6 +31,10 @@ class CSimpleButton : public CSimpleFrame {
         uint64_t m_clickAction = 0x0000000080000000;
         CSimpleButtonState m_state = BUTTONSTATE_DISABLED;
         int32_t m_stateLocked = 0;
+        // Whether OnEnter and OnLeave still fire while the button is disabled. CSimpleButton.cpp
+        // already has the call sites for this, commented out around the disabled-state handling;
+        // they are what to uncomment when the behaviour is wanted. Storing it is not honouring it.
+        int32_t m_motionScriptsWhileDisabled = 0;
         CSimpleFontString* m_text = nullptr;
         CSimpleFont* m_normalFont = nullptr;
         CSimpleFont* m_highlightFont = nullptr;

@@ -539,16 +539,26 @@ int32_t CSimpleButton_UnlockHighlight(lua_State* L) {
     return 0;
 }
 
-// TODO FUN_00978360 and FUN_009783b0 reach the flag through virtuals at +0xf8 and +0xf4,
-// so it lives on the button rather than in a script-side member. CSimpleButton has the
-// call sites for it commented out (CSimpleButton.cpp, around the disabled-state handling)
-// but no member; that is what these two wait on, not on themselves.
+// ref: FUN_00978360
+// Pushed as a boolean, not the 1-or-nil most of these use -- the reference calls lua_pushboolean
+// here where its neighbours push a number.
 int32_t CSimpleButton_GetMotionScriptsWhileDisabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, button->m_motionScriptsWhileDisabled);
+
+    return 1;
 }
 
+// ref: FUN_009783b0
 int32_t CSimpleButton_SetMotionScriptsWhileDisabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    button->m_motionScriptsWhileDisabled = StringToBOOL(L, 2, 0);
+
+    return 0;
 }
 
 FrameScript_Method SimpleButtonMethods[NUM_SIMPLE_BUTTON_SCRIPT_METHODS] = {

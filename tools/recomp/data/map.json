@@ -42397,36 +42397,36 @@
   "status": "ported"
  },
  "00978360": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_GetMotionScriptsWhileDisabled",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 49,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 73,
-  "status": "stub"
+  "status": "ported"
  },
  "009783b0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_SetMotionScriptsWhileDisabled",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 69,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 75,
-  "status": "stub"
+  "status": "ported"
  },
  "00978610": {
   "branchRatio": 0.75,

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 19:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 19:31 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2126 (-7) | 420.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 536 (+7) | 114.6k |
+| &nbsp;&nbsp;ported | 2128 (+2) | 420.4k |
+| &nbsp;&nbsp;stub (unimplemented body) | 534 (-2) | 114.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **998 (=) (3.7%)** | **124.1k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1000 (+2) (3.7%)** | **124.2k (2.2%)** |
 | unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11491, stubs 796 | |
+| frozen functions (src/, from PDB + source) | 11491, stubs 794 | |
 
-Match evidence: annotated 591, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1037. Module anchors: 1479 assert strings.
+Match evidence: annotated 593, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1035. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 19:22 -- mapped 2699, ported 2133, stub 529, spine mapped 393.
+Previous run: 2026-09-19 19:26 -- mapped 2699, ported 2126, stub 536, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 597 of those are WHOA_UNIMPLEMENTED stubs (+5). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 595 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -112,7 +112,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 3 |  / stubs: SetUnit, SetCreature, RefreshUnit |
-| 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 3 |  / stubs: SetFontString, GetMotionScriptsWhileDisabled, SetMotionScriptsWhileDisabled |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
 | 00b2cd50 (GetColorWheelTexture..) | 12 | `SimpleColorSelectMethods` | 2 | 0 | SetColorWheelThumbTexture, SetColorValueThumbTexture |
@@ -123,6 +122,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
 | 00ad2184 (GetTime..) | 7 | `s_SystemFunctions` | 0 | 1 |  / stubs: ConsoleExec |
 | 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 1 |  / stubs: ClearFocus |
+| 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 1 |  / stubs: SetFontString |
 
 ## Packet handler coverage (SetMessageHandler)
 
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 8 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 16:50 | 2698 (9.9%) | 950 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 | 2026-09-19 17:07 | 2698 (9.9%) | 950 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 | 2026-09-19 17:15 | 2698 (9.9%) | 950 (3.5%) | 541 | 394/5530 | 1791/2964 | 601 |
 | 2026-09-19 17:21 | 2698 (9.9%) | 951 (3.5%) | 540 | 394/5530 | 1791/2964 | 600 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 19:19 | 2699 (9.9%) | 995 (3.7%) | 519 | 393/5530 | 1791/2964 | 582 |
 | 2026-09-19 19:22 | 2699 (9.9%) | 998 (3.7%) | 529 | 393/5530 | 1791/2964 | 592 |
 | 2026-09-19 19:26 | 2699 (9.9%) | 998 (3.7%) | 536 | 393/5530 | 1791/2964 | 597 |
+| 2026-09-19 19:31 | 2699 (9.9%) | 1000 (3.7%) | 534 | 393/5530 | 1791/2964 | 595 |
 
 ## How to move a row
 

@@ -2673,8 +2673,8 @@ addr	how	frozen	evidence
 00978260	table	CSimpleButton_Click	binding "Click" in SimpleButtonMethods ~ table 00b2d418
 009782e0	table	CSimpleButton_LockHighlight	binding "LockHighlight" in SimpleButtonMethods ~ table 00b2d418
 00978320	table	CSimpleButton_UnlockHighlight	binding "UnlockHighlight" in SimpleButtonMethods ~ table 00b2d418
-00978360	table	CSimpleButton_GetMotionScriptsWhileDisabled	binding "GetMotionScriptsWhileDisabled" in SimpleButtonMethods ~ table 00b2d418
-009783b0	table	CSimpleButton_SetMotionScriptsWhileDisabled	binding "SetMotionScriptsWhileDisabled" in SimpleButtonMethods ~ table 00b2d418
+00978360	annotated	CSimpleButton_GetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
+009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00980f70	annotated	ParticleFxSetDensity	tag in src/world/ParticleFx.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
