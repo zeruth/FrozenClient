@@ -12906,68 +12906,68 @@
   "status": "stub"
  },
  "00515100": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_CursorHasItem",
-  "frozenSize": 21,
-  "how": "table",
+  "frozenSize": 61,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 64,
   "status": "ported"
  },
  "00515140": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_CursorHasSpell",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 62,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "00515180": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_CursorHasMacro",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 62,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "005151c0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_CursorHasMoney",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 62,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "00515200": {
   "branchRatio": 0.154,
@@ -13204,7 +13204,7 @@
   ],
   "frozen": "Script_GetCursorMoney",
   "frozenSize": 43,
-  "how": "table",
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 52,
   "status": "ported"

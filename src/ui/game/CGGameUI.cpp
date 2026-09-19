@@ -39,6 +39,13 @@
 
 WOWGUID CGGameUI::s_currentObjectTrack;
 uint32_t CGGameUI::s_cursorMoney;
+uint32_t CGGameUI::s_cursorKind = CGGameUI::CURSOR_NONE;
+uint32_t CGGameUI::s_cursorHolding;
+uint32_t CGGameUI::s_cursorIndex;
+uint32_t CGGameUI::s_cursorItemEntry;
+WOWGUID CGGameUI::s_cursorItemGUID;
+uint32_t CGGameUI::s_cursorSpell;
+uint32_t CGGameUI::s_cursorMacro;
 CScriptObject* CGGameUI::s_gameTooltip;
 bool CGGameUI::s_inWorld;
 WOWGUID CGGameUI::s_lockedTarget;
@@ -143,6 +150,15 @@ void CGGameUI::EnterWorld() {
 
 WOWGUID& CGGameUI::GetCurrentObjectTrack() {
     return CGGameUI::s_currentObjectTrack;
+}
+
+bool CGGameUI::CursorHasItem() {
+    return CGGameUI::s_cursorKind == CGGameUI::CURSOR_ITEM_OBJECT
+        || CGGameUI::s_cursorKind == CGGameUI::CURSOR_ITEM_ENTRY_ALT;
+}
+
+uint32_t CGGameUI::GetCursorKind() {
+    return CGGameUI::s_cursorKind;
 }
 
 uint32_t CGGameUI::GetCursorMoney() {

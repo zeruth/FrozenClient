@@ -577,26 +577,48 @@ int32_t Script_ClearCursor(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00515100
 int32_t Script_CursorHasItem(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
+    if (CGGameUI::CursorHasItem()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
 
-// TODO FUN_00515140, FUN_00515180 and FUN_005151c0 are the same function three times over:
-// each compares one global cursor-kind against a constant (3 spell, 8 macro, 2 money) and
-// pushes 1 or nil. Frozen tracks no cursor contents at all, so all three wait on that.
+// ref: FUN_00515140
 int32_t Script_CursorHasSpell(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGGameUI::GetCursorKind() == CGGameUI::CURSOR_SPELL) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00515180
 int32_t Script_CursorHasMacro(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGGameUI::GetCursorKind() == CGGameUI::CURSOR_MACRO) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_005151c0
 int32_t Script_CursorHasMoney(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGGameUI::GetCursorKind() == CGGameUI::CURSOR_MONEY) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_GetCursorInfo(lua_State* L) {
@@ -905,6 +927,7 @@ int32_t Script_ForceQuit(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00515a50
 int32_t Script_GetCursorMoney(lua_State* L) {
     lua_pushnumber(L, CGGameUI::GetCursorMoney());
 

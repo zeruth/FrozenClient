@@ -806,10 +806,10 @@ addr	how	frozen	evidence
 00514e30	table	Script_GetCVarMax	binding "GetCVarMax" in s_ScriptFunctions ~ table 00ac80b0
 00514f60	table	Script_GetCVarAbsoluteMin	binding "GetCVarAbsoluteMin" in s_ScriptFunctions ~ table 00ac80b0
 00515010	table	Script_GetCVarAbsoluteMax	binding "GetCVarAbsoluteMax" in s_ScriptFunctions ~ table 00ac80b0
-00515100	table	Script_CursorHasItem	binding "CursorHasItem" in s_ScriptFunctions ~ table 00ac80b0
-00515140	table	Script_CursorHasSpell	binding "CursorHasSpell" in s_ScriptFunctions ~ table 00ac80b0
-00515180	table	Script_CursorHasMacro	binding "CursorHasMacro" in s_ScriptFunctions ~ table 00ac80b0
-005151c0	table	Script_CursorHasMoney	binding "CursorHasMoney" in s_ScriptFunctions ~ table 00ac80b0
+00515100	annotated	Script_CursorHasItem	tag in src/ui/game/GameScript.cpp
+00515140	annotated	Script_CursorHasSpell	tag in src/ui/game/GameScript.cpp
+00515180	annotated	Script_CursorHasMacro	tag in src/ui/game/GameScript.cpp
+005151c0	annotated	Script_CursorHasMoney	tag in src/ui/game/GameScript.cpp
 00515200	table	Script_GetCursorInfo	binding "GetCursorInfo" in s_ScriptFunctions ~ table 00ac80b0
 00515570	table	Script_GetZoneText	binding "GetZoneText" in s_ScriptFunctions ~ table 00ac80b0
 005155a0	table	Script_GetRealZoneText	binding "GetRealZoneText" in s_ScriptFunctions ~ table 00ac80b0
@@ -824,7 +824,7 @@ addr	how	frozen	evidence
 00515950	table	Script_ResurrectGetOfferer	binding "ResurrectGetOfferer" in s_ScriptFunctions ~ table 00ac80b0
 005159c0	table	Script_ResurrectHasSickness	binding "ResurrectHasSickness" in s_ScriptFunctions ~ table 00ac80b0
 00515a00	table	Script_ResurrectHasTimer	binding "ResurrectHasTimer" in s_ScriptFunctions ~ table 00ac80b0
-00515a50	table	Script_GetCursorMoney	binding "GetCursorMoney" in s_ScriptFunctions ~ table 00ac80b0
+00515a50	annotated	Script_GetCursorMoney	tag in src/ui/game/GameScript.cpp
 00515a90	table	Script_GuildSetMOTD	binding "GuildSetMOTD" in s_ScriptFunctions ~ table 00ac80b0
 00515b70	table	Script_GuildLeave	binding "GuildLeave" in s_ScriptFunctions ~ table 00ac80b0
 00515be0	table	Script_GuildDisband	binding "GuildDisband" in s_ScriptFunctions ~ table 00ac80b0
