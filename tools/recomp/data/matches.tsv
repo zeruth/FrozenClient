@@ -413,7 +413,7 @@ addr	how	frozen	evidence
 004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
 004a3790	annotated	FontString_SetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
-004a38f0	annotated	FontString_GetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a38f0	annotated	ButtonFontObject	tag in src/ui/simple/CSimpleButtonScript.cpp
 004a3a50	annotated	FontString_SetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a3b60	annotated	FontString_GetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a3c50	annotated	FontString_SetTextColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
@@ -2638,11 +2638,11 @@ addr	how	frozen	evidence
 009771d0	table	CSimpleButton_GetButtonState	binding "GetButtonState" in SimpleButtonMethods ~ table 00b2d418
 00977280	table	CSimpleButton_SetButtonState	binding "SetButtonState" in SimpleButtonMethods ~ table 00b2d418
 00977340	table	CSimpleButton_SetNormalFontObject	binding "SetNormalFontObject" in SimpleButtonMethods ~ table 00b2d418
-00977450	table	CSimpleButton_GetNormalFontObject	binding "GetNormalFontObject" in SimpleButtonMethods ~ table 00b2d418
+00977450	annotated	CSimpleButton_GetNormalFontObject	tag in src/ui/simple/CSimpleButtonScript.cpp
 009774c0	table	CSimpleButton_SetDisabledFontObject	binding "SetDisabledFontObject" in SimpleButtonMethods ~ table 00b2d418
-009775d0	table	CSimpleButton_GetDisabledFontObject	binding "GetDisabledFontObject" in SimpleButtonMethods ~ table 00b2d418
+009775d0	annotated	CSimpleButton_GetDisabledFontObject	tag in src/ui/simple/CSimpleButtonScript.cpp
 00977640	table	CSimpleButton_SetHighlightFontObject	binding "SetHighlightFontObject" in SimpleButtonMethods ~ table 00b2d418
-00977750	table	CSimpleButton_GetHighlightFontObject	binding "GetHighlightFontObject" in SimpleButtonMethods ~ table 00b2d418
+00977750	annotated	CSimpleButton_GetHighlightFontObject	tag in src/ui/simple/CSimpleButtonScript.cpp
 009777c0	table	CSimpleButton_SetFontString	binding "SetFontString" in SimpleButtonMethods ~ table 00b2d418
 009778e0	table	CSimpleButton_GetFontString	binding "GetFontString" in SimpleButtonMethods ~ table 00b2d418
 00977960	table	CSimpleButton_SetText	binding "SetText" in SimpleButtonMethods ~ table 00b2d418

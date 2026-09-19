@@ -6610,11 +6610,11 @@
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/simple/CSimpleFontStringScript.cpp",
-   "src/ui/simple/csimplefontstringscript.cpp"
+   "src/ui/simple/CSimpleButtonScript.cpp",
+   "src/ui/simple/csimplebuttonscript.cpp"
   ],
-  "frozen": "FontString_GetFontObject",
-  "frozenSize": 106,
+  "frozen": "ButtonFontObject",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 78,
@@ -40731,8 +40731,8 @@
  "00975370": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -41833,20 +41833,20 @@
   "status": "ported"
  },
  "00977450": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_GetNormalFontObject",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 102,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "009774c0": {
   "branchRatio": 0.375,
@@ -41865,20 +41865,20 @@
   "status": "ported"
  },
  "009775d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_GetDisabledFontObject",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 102,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "00977640": {
   "branchRatio": 0.375,
@@ -41897,20 +41897,20 @@
   "status": "ported"
  },
  "00977750": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_GetHighlightFontObject",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 102,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "009777c0": {
   "branchRatio": 0.25,

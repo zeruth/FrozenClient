@@ -143261,27 +143261,41 @@
 "refs": [],
 "line": 154
 },
+"ButtonFontObject": {
+"files": [
+"src/ui/simple/csimplebuttonscript.cpp"
+],
+"callseq": [
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 186
+},
 "CSimpleButton_GetNormalFontObject": {
 "files": [
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"ButtonFontObject"
 ],
-"strings": [
-"CSimpleButton_GetNormalFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 179
+"line": 201
 },
 "CSimpleButton_SetDisabledFontObject": {
 "files": [
@@ -143315,29 +143329,24 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 183
+"line": 208
 },
 "CSimpleButton_GetDisabledFontObject": {
 "files": [
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"ButtonFontObject"
 ],
-"strings": [
-"CSimpleButton_GetDisabledFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 208
+"line": 234
 },
 "CSimpleButton_SetHighlightFontObject": {
 "files": [
@@ -143371,29 +143380,24 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 212
+"line": 241
 },
 "CSimpleButton_GetHighlightFontObject": {
 "files": [
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"ButtonFontObject"
 ],
-"strings": [
-"CSimpleButton_GetHighlightFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 237
+"line": 267
 },
 "CSimpleButton_SetFontString": {
 "files": [
@@ -143415,7 +143419,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 241
+"line": 274
 },
 "CSimpleButton_GetFontString": {
 "files": [
@@ -143436,7 +143440,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 245
+"line": 278
 },
 "CSimpleButton_SetText": {
 "files": [
@@ -143457,7 +143461,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 264
+"line": 297
 },
 "CSimpleButton_SetFormattedText": {
 "files": [
@@ -143479,7 +143483,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 274
+"line": 307
 },
 "CSimpleButton_GetText": {
 "files": [
@@ -143501,7 +143505,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 278
+"line": 311
 },
 "CSimpleButton_SetNormalTexture": {
 "files": [
@@ -143518,7 +143522,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 293
+"line": 326
 },
 "CSimpleButton_GetNormalTexture": {
 "files": [
@@ -143533,7 +143537,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 297
+"line": 330
 },
 "CSimpleButton_SetPushedTexture": {
 "files": [
@@ -143550,7 +143554,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 301
+"line": 334
 },
 "CSimpleButton_GetPushedTexture": {
 "files": [
@@ -143565,7 +143569,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 305
+"line": 338
 },
 "CSimpleButton_SetDisabledTexture": {
 "files": [
@@ -143582,7 +143586,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 309
+"line": 342
 },
 "CSimpleButton_GetDisabledTexture": {
 "files": [
@@ -143597,7 +143601,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 313
+"line": 346
 },
 "CSimpleButton_SetHighlightTexture": {
 "files": [
@@ -143643,7 +143647,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 317
+"line": 350
 },
 "CSimpleButton_GetHighlightTexture": {
 "files": [
@@ -143664,7 +143668,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 357
+"line": 390
 },
 "CSimpleButton_SetPushedTextOffset": {
 "files": [
@@ -143686,7 +143690,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 376
+"line": 409
 },
 "CSimpleButton_GetPushedTextOffset": {
 "files": [
@@ -143708,7 +143712,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 380
+"line": 413
 },
 "CSimpleButton_GetTextWidth": {
 "files": [
@@ -143732,7 +143736,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 384
+"line": 417
 },
 "CSimpleButton_GetTextHeight": {
 "files": [
@@ -143756,7 +143760,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 399
+"line": 432
 },
 "CSimpleButton_RegisterForClicks": {
 "files": [
@@ -143779,7 +143783,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 414
+"line": 447
 },
 "CSimpleButton_Click": {
 "files": [
@@ -143805,7 +143809,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 430
+"line": 463
 },
 "CSimpleButton_LockHighlight": {
 "files": [
@@ -143825,7 +143829,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 446
+"line": 479
 },
 "CSimpleButton_UnlockHighlight": {
 "files": [
@@ -143844,7 +143848,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 455
+"line": 488
 },
 "CSimpleButton_GetMotionScriptsWhileDisabled": {
 "files": [
@@ -143866,7 +143870,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 468
+"line": 501
 },
 "CSimpleButton_SetMotionScriptsWhileDisabled": {
 "files": [
@@ -143888,7 +143892,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 472
+"line": 505
 },
 "FaceDirection": {
 "files": [

@@ -176,8 +176,33 @@ int32_t CSimpleButton_SetNormalFontObject(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a38f0
+// Pushes a button's font object, registering it on first use. The reference shares one helper
+// across the three getters below, which is why they are one-line forwards here too.
+//
+// A button with no font for that state answers with NO values, not nil -- the reference returns
+// zero from the binding rather than pushing anything, and FrameXML's button templates rely on the
+// difference when they fall back to the parent's font.
+static int32_t ButtonFontObject(CSimpleFont* font, lua_State* L) {
+    if (!font) {
+        return 0;
+    }
+
+    if (!font->lua_registered) {
+        font->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, font->lua_objectRef);
+
+    return 1;
+}
+
+// ref: FUN_00977450
 int32_t CSimpleButton_GetNormalFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    return ButtonFontObject(button->m_normalFont, L);
 }
 
 int32_t CSimpleButton_SetDisabledFontObject(lua_State* L) {
@@ -205,8 +230,12 @@ int32_t CSimpleButton_SetDisabledFontObject(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_009775d0
 int32_t CSimpleButton_GetDisabledFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    return ButtonFontObject(button->m_disabledFont, L);
 }
 
 int32_t CSimpleButton_SetHighlightFontObject(lua_State* L) {
@@ -234,8 +263,12 @@ int32_t CSimpleButton_SetHighlightFontObject(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00977750
 int32_t CSimpleButton_GetHighlightFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    return ButtonFontObject(button->m_highlightFont, L);
 }
 
 int32_t CSimpleButton_SetFontString(lua_State* L) {
