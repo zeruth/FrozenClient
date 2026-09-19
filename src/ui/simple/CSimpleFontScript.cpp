@@ -17,11 +17,17 @@
 // FrameScript_Object plus a CSimpleFontable -- so it has neither that virtual nor the string form
 // of IsA that CSimpleFontString uses. Adding the type-name virtual to FrameScript_Object is the
 // missing piece; pushing a literal "Font" instead would be inventing the answer the virtual gives.
-// TODO not FUN_004a8240 / FUN_004a8290, which the binding-table matcher offers: both read
-// DAT_00b4997c and CSimpleFont is DAT_00b499b0 (its GetFont and SetFont, 004a43f0 and
-// 004a43a0, read that one). The font's own pair has not been located. An earlier attempt
-// this session pushed a literal "Font" here and was reverted; the address being wrong is the
-// better reason to leave it alone.
+// TODO the font's pair is FUN_004a4120 (GetObjectType) and FUN_004a4170 (IsObjectType), found
+// through its method-table run at 00ac1818-00ac18d0 and confirmed by both reading DAT_00b499b0.
+// NOT the 004a8240/004a8290 the binding-table matcher offers: those read DAT_00b4997c, whose
+// run holds Play, Pause, CreateAnimation and SetCurve -- the animation group, not a font.
+//
+// Still blocked, but on one thing rather than on the address. The reference reaches a type
+// name through vtable+0x1c and a name-based IsA through +0x18; frozen's CSimpleFont derives
+// from FrameScript_Object, not CScriptObject, so it has neither, and what string the
+// reference returns is not recovered. An earlier attempt this session pushed a literal "Font"
+// and was reverted; nothing in the shipped interface corroborates that spelling, so adding
+// the virtuals means finding what they return first.
 int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

@@ -130,7 +130,10 @@ three tags were aimed at the wrong sibling.
   DAT_00dce650  CSimpleButton           DAT_00b4792c  CSimpleFontString
   DAT_00b49978  CScriptRegion           DAT_00b499b0  CSimpleFont
   DAT_00b499ec  CSimpleModel            DAT_00dce4a4  CSimpleMessageFrame
-  DAT_00c2423c  CGCooldown              DAT_00b4997c  (not CSimpleFont -- unidentified)
+  DAT_00c2423c  CGCooldown              DAT_00b4997c  AnimationGroup
+method-table runs identified so far: CSimpleFrame 00ac15b8-00ac1730, CSimpleFont
+00ac1818-00ac18d0, AnimationGroup 00ac1a48-00ac1b80 (Play/Pause/CreateAnimation/SetCurve),
+CSimpleMessageFrame around 00b2cef0 (AddMessage).
 
 binding-table entries (ref-tables.jsonl "table" field) are the ENTRY address, not the table base,
 so a class's methods occupy a consecutive run. That makes the run an independent check on which
