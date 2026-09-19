@@ -39,7 +39,22 @@ The cluster is five functions plus the tracking helpers:
 0057f1b0   tracking icons: "Interface\Minimap\Tracking"
 0057f4f0   tracking icons, second entry point
 0051d9b0   CVars: portal traversal limit, and the saved tracking flags
+0057bd90   texture teardown: releases every minimap texture global and nulls it
+0057bd10   blip insertion: orders 256 blips into a list by a float key at +0x8c
 ```
+
+### 2d. The texture globals are wider than frozen's header records
+
+`0057bd90` releases the whole set and is the cleanest inventory of it. Frozen's `CGMinimapFrame`
+header lists seven statics, `DAT_00beba24` through `DAT_00beba3c`. The teardown also releases
+**`DAT_00beba20`**, which the header does not mention, and an **array of seven more at
+`DAT_00beba04`** (it loops a 0x1c byte span in 4-byte steps). So the real set is the seven named
+ones, plus one unnamed neighbour below them, plus a seven-entry array below that. Whoever ports the
+renderer should widen the header to match before wiring anything up.
+
+`0057bd10` walks 256 entries of a 164-byte (0x29 dword) structure and links each into a list
+ordered by a float at `+0x8c`, which is the blip draw order *(uncertain: the key is read but its
+meaning -- distance, or screen depth -- is not established)*.
 
 ### 2a. The player arrow comes from an XML attribute, with a hardcoded fallback
 
@@ -56,6 +71,12 @@ somewhere else, in the constructor or by the base LoadXML from a `<Texture>` chi
 and this function only points it at a file. That makes it less self-contained than it first looks:
 porting it without finding what creates `m_playerTexture` would call `SetTexture` on the null that
 `CGMinimapFrame::m_playerTexture` already documents.
+
+Two candidates have been ruled out. `0057bd90` and `0057bd10`, the two functions immediately before
+`LoadXML` and the obvious places for a constructor to sit, are the texture teardown and the blip
+insertion (see 2d). The constructor is elsewhere and has not been located; the decompiler folds the
+register `SetTexture` is called on, so the assignment to `+0x2a0` has to be found from the writing
+side rather than read out of `LoadXML`.
 
 ### 2b. Orientation comes from the player object, not the camera
 
