@@ -210,9 +210,10 @@ int32_t CGMinimapFrame_SetPlayerTexture(lua_State* L) {
     // The reference sets the arrow region's texture unconditionally; the null check is Frozen's,
     // because nothing creates the region yet and the member is still always null.
     //
-    // The attribute does not create it. CGMinimapFrame::LoadXML dereferences m_playerTexture to
-    // call SetTexture on it, so in the reference the region already exists by then -- created by
-    // the base CSimpleFrame::LoadXML, which is the piece frozen is missing. The attribute only
+    // The attribute does not create it. CGMinimapFrame::PostLoadXML (0057bea0) dereferences
+    // m_playerTexture to call SetTexture on it, so the region already exists by then -- but not
+    // from the shipped XML, which gives the Minimap element no Texture child. What creates it is
+    // still unfound; see parity-minimap.md 2a-iii. The attribute only
     // names the file, and the shipped Minimap.xml never sets it, so the reference always uses the
     // fallback Interface\Minimap\MinimapArrow.tga. See docs/ref/parity-minimap.md 2a-i and 2a-ii.
     if (frame->m_playerTexture) {

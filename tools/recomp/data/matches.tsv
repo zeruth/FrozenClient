@@ -267,6 +267,7 @@ addr	how	frozen	evidence
 0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
 00490270	callgraph	CSimpleFrame::NotifyDrawLayerChanged	only unmatched callee of 00490600=CSimpleFrame::EnableDrawLayer, 00490620=CSimpleFrame::DisableDrawLayer
+00490410	annotated	CSimpleFrame::PostLoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 004905a0	override	CSimpleFrame::SetBackdrop	
 00490600	callgraph	CSimpleFrame::EnableDrawLayer	only unmatched callee of 0049fc90=CSimpleFrame_EnableDrawLayer
 00490620	callgraph	CSimpleFrame::DisableDrawLayer	only unmatched callee of 0049fd00=CSimpleFrame_DisableDrawLayer

@@ -166,6 +166,29 @@ That also corrects a comment in frozen's `CGMinimapFrame_SetPlayerTexture`, whic
 `minimapPlayerTexture` attribute is what creates the region. It is not; it only names the file, and
 in the shipped interface it is never even set (2a-i).
 
+### 2a-iii. It is PostLoadXML, not LoadXML
+
+Corrected 2026-09-19, and it invalidates the conclusion 2a-ii reached about what to decompile next.
+
+`0057bea0` chains to `FUN_00490410`, which 2a-ii read as the base `LoadXML`. It is not.
+`CSimpleFrame::LoadXML` is `004932c0` and has been mapped all along at 0.942 fidelity. `00490410`
+calls `CSimpleFrame::PostLoadXML_Frames` (`0048f400`, already mapped) and then propagates a
+visibility bit and a parent-multiplied alpha down the child regions -- that is
+**`CSimpleFrame::PostLoadXML`**, now tagged in frozen.
+
+So `0057bea0` is `CGMinimapFrame::PostLoadXML`, and everything in it reads correctly in that light:
+pointing an existing region at a file and resolving a sibling region *by name* are both things that
+can only be done after the XML pass has created them.
+
+Which leaves the original question open again, and narrower. The `<Minimap>` element in
+`build/framexml/Minimap.xml` has no `<Texture>` child at all -- only `<Size>`, `<Anchors>` and
+`<Frames>` -- so the arrow region is not created from the shipped XML either. It is not the
+constructor (2e), not `PostLoadXML`, and not the XML. `CGMinimapFrame::LoadXML` proper has not been
+found yet; that is the remaining candidate, and it is a different address from `0057bea0`.
+
+**Rename throughout when porting:** every reference to `0057bea0` as "LoadXML" in the sections
+above should be read as `PostLoadXML`.
+
 ### 2b. Orientation comes from the player object, not the camera
 
 `0057c6a0` resolves the active player through the object manager and calls a virtual at vtable

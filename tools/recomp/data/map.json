@@ -4271,6 +4271,22 @@
   "refSize": 87,
   "status": "ported"
  },
+ "00490410": {
+  "branchRatio": 0.294,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::PostLoadXML",
+  "frozenSize": 268,
+  "how": "annotated",
+  "module": "CSimpleFrame.cpp",
+  "refSize": 392,
+  "status": "ported"
+ },
  "004905a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,

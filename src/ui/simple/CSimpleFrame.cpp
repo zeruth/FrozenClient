@@ -364,6 +364,7 @@ void CSimpleFrame::LoadXML(const XMLNode* node, CStatus* status) {
     }
 }
 
+// ref: FUN_00490410
 void CSimpleFrame::PostLoadXML(const XMLNode* node, CStatus* status) {
     this->m_loading = 0;
 
