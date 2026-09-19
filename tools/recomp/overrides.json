@@ -1043,5 +1043,27 @@
     "frozen": "CGTooltip_FadeOut",
     "status": "diverged",
     "note": "Hides at once in every case. The reference hides only when the anchor is TOOLTIP_ANCHOR_CURSOR (8) or TOOLTIP_ANCHOR_CURSOR_RIGHT (11) and otherwise raises a fade flag and stamps a start time for its update pass to finish. That pass is not ported, so taking the reference's other branch would leave the tooltip on screen for the rest of the session: UnitFrame_OnLeave is the one FrameXML caller and it runs with the default anchor."
+  },
+  "0067ca30": {
+    "status": "unlinked",
+    "note": "CDBCache lookup, 275 callers and the top of the seeds queue: given an id it returns the cached record when complete (flag at +0x220), otherwise allocates one and queues a server query, or appends the caller's callback to the pending list. Frozen's src/object/client/NameCache.cpp is a deliberate substitute for the name and creature caches, not a port of this: it exposes a name-by-object lookup with no callback list, no generic record store and no completion flag. Tagging it here would claim a contract Frozen does not implement."
+  },
+  "00990880": {
+    "status": "unlinked",
+    "note": "Releases a handle through its owner's vtable slot +8 and zeroes the caller's handle; 122 callers. No Frozen counterpart identified -- the owning type is not pinned down, so which of Frozen's release helpers this is cannot be settled from the body alone."
+  },
+  "0076ea40": {
+    "status": "unlinked",
+    "note": "Length-limited string compare returning 0 on equal, 122 callers. Whether it folds case is hidden inside FUN_0076e8d0, which is called once per string per iteration and whose out-parameters Ghidra lost, so SStrCmp and SStrCmpI cannot be told apart from this body."
+  },
+  "005ac090": {
+    "frozen": "Script_PickupAction",
+    "status": "stub",
+    "note": "Correctly identified by the binding table, deliberately not implemented: the reference validates the slot, converts to 0-based and hands it to the action-pickup routine, but Frozen has no cursor holding an action -- CursorHasSpell, CursorHasMacro and CursorHasMoney are all stubs -- so there is nothing to pick up onto."
+  },
+  "005ab840": {
+    "frozen": "Script_PlaceAction",
+    "status": "stub",
+    "note": "Same shape as PickupAction and blocked on the same missing cursor. Worth noting for when it lands: the reference refuses slots 0x78..0x83, the multi-cast/totem range, placing only outside that window."
   }
 }

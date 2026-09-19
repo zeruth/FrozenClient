@@ -1078,10 +1078,10 @@ addr	how	frozen	evidence
 005a9cf0	table	Script_ActionHasRange	binding "ActionHasRange" in s_ScriptFunctions ~ table 00acf9e0
 005a9d50	table	Script_IsActionInRange	binding "IsActionInRange" in s_ScriptFunctions ~ table 00acf9e0
 005aad40	table	Script_IsCurrentAction	binding "IsCurrentAction" in s_ScriptFunctions ~ table 00acf9e0
-005ab840	table	Script_PlaceAction	binding "PlaceAction" in s_ScriptFunctions ~ table 00acf9e0
+005ab840	override	Script_PlaceAction	
 005ab8a0	table	Script_SetMultiCastSpell	binding "SetMultiCastSpell" in s_ScriptFunctions ~ table 00acf9e0
 005ac000	table	Script_UseAction	binding "UseAction" in s_ScriptFunctions ~ table 00acf9e0
-005ac090	table	Script_PickupAction	binding "PickupAction" in s_ScriptFunctions ~ table 00acf9e0
+005ac090	override	Script_PickupAction	
 005ac390	table	Script_GMSurveyAnswerSubmit	binding "GMSurveyAnswerSubmit" in s_ScriptFunctions ~ table 00acfb28
 005ac480	table	Script_GMSurveyCommentSubmit	binding "GMSurveyCommentSubmit" in s_ScriptFunctions ~ table 00acfb28
 005ac750	table	Script_GMSurveyQuestion	binding "GMSurveyQuestion" in s_ScriptFunctions ~ table 00acfb28

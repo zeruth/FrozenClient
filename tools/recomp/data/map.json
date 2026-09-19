@@ -17140,7 +17140,7 @@
   ],
   "frozen": "Script_PlaceAction",
   "frozenSize": 75,
-  "how": "table",
+  "how": "override",
   "module": "ActionBarFrame.cpp",
   "refSize": 86,
   "status": "stub"
@@ -17188,7 +17188,7 @@
   ],
   "frozen": "Script_PickupAction",
   "frozenSize": 75,
-  "how": "table",
+  "how": "override",
   "module": "ActionBarFrame.cpp",
   "refSize": 71,
   "status": "stub"

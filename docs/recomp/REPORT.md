@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 10:33 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2399 (+1) (8.8%) | 530.7k (9.6%) |
-| &nbsp;&nbsp;ported | 1923 (+1) | 397.5k |
-| &nbsp;&nbsp;stub (unimplemented body) | 450 (=) | 99.2k |
+| mapped to a frozen function | 2399 (+2) (8.8%) | 530.7k (9.6%) |
+| &nbsp;&nbsp;ported | 1923 (=) | 397.5k |
+| &nbsp;&nbsp;stub (unimplemented body) | 450 (+2) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **893 (+1) (3.3%)** | **114.3k (2.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **893 (=) (3.3%)** | **114.3k (2.1%)** |
 | unmapped | 24762 | 4.89M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 388 (+1) (7.0%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (+1) (6.8%) | |
+| world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
 | frozen functions (src/, from PDB + source) | 11420, stubs 851 | |
 
-Match evidence: annotated 439, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 760. Module anchors: 1479 assert strings.
+Match evidence: annotated 439, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 178, string 345, table 758. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 10:29 -- mapped 2398, ported 1922, stub 450, spine mapped 387.
+Previous run: 2026-09-19 10:36 -- mapped 2397, ported 1923, stub 448, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
@@ -785,8 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
@@ -810,6 +808,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:33 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:36 | 2397 (8.8%) | 893 (3.3%) | 448 | 388/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:37 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
 
 ## How to move a row
 
