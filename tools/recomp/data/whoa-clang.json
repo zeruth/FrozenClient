@@ -141512,9 +141512,9 @@
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
 "CoordinateGetAspectCompensation",
-"NDCToDDCWidth",
+"DDCToNDCWidth",
 "lua_pushnumber",
-"NDCToDDCWidth",
+"DDCToNDCWidth",
 "lua_pushnumber"
 ],
 "strings": [],
@@ -141539,8 +141539,8 @@
 "lua_tonumber",
 "lua_tonumber",
 "CoordinateGetAspectCompensation",
-"DDCToNDCWidth",
-"DDCToNDCWidth",
+"NDCToDDCWidth",
+"NDCToDDCWidth",
 "C2Vector::C2Vector",
 "CSimpleFontString::SetShadowOffset",
 "FrameScript_Object::GetDisplayName",
@@ -141568,7 +141568,7 @@
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
 "CoordinateGetAspectCompensation",
-"NDCToDDCWidth",
+"DDCToNDCWidth",
 "lua_pushnumber"
 ],
 "strings": [],
@@ -141593,7 +141593,7 @@
 "luaL_error",
 "lua_tonumber",
 "CoordinateGetAspectCompensation",
-"DDCToNDCWidth",
+"NDCToDDCWidth",
 "CSimpleFontString::SetSpacing"
 ],
 "strings": [
@@ -141623,7 +141623,7 @@
 "FrameScript_Object::GetDisplayName",
 "luaL_error",
 "CoordinateGetAspectCompensation",
-"DDCToNDCWidth",
+"NDCToDDCWidth",
 "CSimpleFontString::SetTextHeight"
 ],
 "strings": [
@@ -141966,9 +141966,9 @@
 ],
 "callseq": [
 "CSimpleTop::UnregisterFrame",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::UnlinkAll",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::UnlinkNode"
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::UnlinkAll",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::UnlinkNode"
 ],
 "strings": [],
 "consts": [
@@ -141986,7 +141986,7 @@
 ],
 "callseq": [
 "CLayoutFrame::SetLayoutScale",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::LinkToTail",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::LinkToTail",
 "CSimpleFrame::NotifyDrawLayerChanged"
 ],
 "strings": [],
@@ -142202,8 +142202,8 @@
 "callseq": [
 "CLayoutFrame::SetDeferredResize",
 "CLayoutFrame::SetDeferredResize",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Next",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Next",
 "CLayoutFrame::SetDeferredResize",
 "CSimpleFrame::PostLoadXML_Frames",
 "CSimpleFrame::RunOnLoadScript",
@@ -142541,7 +142541,7 @@
 "SStrToInt",
 "CLayoutFrame::SetDeferredResize",
 "CLayoutFrame::SetDeferredResize",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
 "CLayoutFrame::SetDeferredResize",
 "TSLink<CSimpleRegion>::Next"
 ],
@@ -142583,14 +142583,14 @@
 "CLayoutFrame::Resize",
 "CRect::CRect",
 "CLayoutFrame::GetRect",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Next",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Next",
 "CSimpleRegion::IsShown",
 "CLayoutFrame::IsResizePending",
 "CLayoutFrame::Resize",
 "CLayoutFrame::GetRect",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Next",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Next",
 "CSimpleFrame::GetBoundsRect"
 ],
 "strings": [],
@@ -142750,13 +142750,13 @@
 "CLayoutFrame::SetDeferredResize",
 "CLayoutFrame::SetDeferredResize",
 "CSimpleTop::HideFrame",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CSimpleRegion::HideThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
 "CSimpleFrame::HideThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::OnLayerHide"
 ],
@@ -143034,19 +143034,19 @@
 "callseq": [
 "SMemAlloc",
 "CRenderBatch::CRenderBatch",
-"TSList<CRenderBatch,TSGetExplicitLink<CRenderBatch>>::Link",
+"TSList<CRenderBatch,TSGetExplicitLink<CRenderBatch> >::Link",
 "TSLink<CRenderBatch>::Unlink",
 "CRenderBatch::Clear",
 "CSimpleFrame::OnFrameRender",
 "CRenderBatch::Finish",
-"TSList<CRenderBatch,TSGetExplicitLink<CRenderBatch>>::LinkToTail",
+"TSList<CRenderBatch,TSGetExplicitLink<CRenderBatch> >::LinkToTail",
 "CSimpleRender::DrawBatch",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::OnFrameRender",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CSimpleRegion::Draw"
 ],
@@ -143293,13 +143293,13 @@
 "callseq": [
 "CSimpleFrame::RunOnUpdateScript",
 "CSimpleFrame::PreOnAnimUpdate",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CScriptRegion::PreOnAnimUpdate",
 "CScriptRegion::OnLayerUpdate",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CScriptRegion::OnLayerUpdate"
 ],
@@ -143315,8 +143315,8 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CSimpleRegion::OnScreenSizeChanged"
 ],
@@ -143332,7 +143332,7 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::NewNode"
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::NewNode"
 ],
 "strings": [],
 "consts": [
@@ -143389,7 +143389,7 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::LinkToTail"
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::LinkToTail"
 ],
 "strings": [],
 "consts": [],
@@ -143403,7 +143403,7 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::UnlinkNode",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::UnlinkNode",
 "CSimpleFrame::NotifyDrawLayerChanged"
 ],
 "strings": [],
@@ -143452,8 +143452,8 @@
 ],
 "callseq": [
 "CSimpleFrame::HideThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::SetBeingScrolled",
 "CSimpleFrame::ShowThis"
@@ -143542,8 +143542,8 @@
 "std::min",
 "CSimpleTop::HideFrame",
 "CSimpleTop::ShowFrame",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::SetFrameLevel"
 ],
@@ -143582,9 +143582,9 @@
 "callseq": [
 "CSimpleTop::HideFrame",
 "CSimpleTop::ShowFrame",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
 "CSimpleFrame::SetFrameStrata",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next"
 ],
 "strings": [],
@@ -143597,6 +143597,18 @@
 "refs": []
 },
 "CSimpleFrame::SetHitRect": {
+"files": [
+"src/ui/simple/csimpleframe.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": []
+},
+"CSimpleFrame::GetHitRectInsets": {
 "files": [
 "src/ui/simple/csimpleframe.cpp"
 ],
@@ -143677,13 +143689,13 @@
 "CLayoutFrame::SetDeferredResize",
 "CLayoutFrame::SetDeferredResize",
 "CSimpleTop::ShowFrame",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
 "CSimpleRegion::ShowThis",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
 "CSimpleFrame::ShowThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleTop::RaiseFrame",
 "CSimpleFrame::OnLayerShow"
@@ -143738,12 +143750,12 @@
 "callseq": [
 "AreEqual",
 "CLayoutFrame::SetLayoutScale",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CLayoutFrame::SetLayoutScale",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::UpdateScale"
 ],
@@ -143777,7 +143789,7 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::UnlinkNode"
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::UnlinkNode"
 ],
 "strings": [],
 "consts": [],
@@ -143791,12 +143803,12 @@
 "src/ui/simple/csimpleframe.cpp"
 ],
 "callseq": [
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Link",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Link",
 "TSLink<CSimpleRegion>::Next",
 "CSimpleRegion::OnColorChanged",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Link",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Link",
 "TSLink<SIMPLEFRAMENODE>::Next",
 "CSimpleFrame::UpdateAlpha"
 ],
@@ -143991,8 +144003,8 @@
 "callseq": [
 "CSimpleFrame::GetObjectType",
 "FrameScript_GetObjectThis",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Next",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Next",
 "lua_pushnumber"
 ],
 "strings": [],
@@ -144012,8 +144024,8 @@
 "callseq": [
 "CSimpleFrame::GetObjectType",
 "FrameScript_GetObjectThis",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Head",
-"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion>>::Next",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Head",
+"TSList<CSimpleRegion,TSGetExplicitLink<CSimpleRegion> >::Next",
 "FrameScript_Object::RegisterScriptObject",
 "lua_rawgeti"
 ],
@@ -144033,7 +144045,7 @@
 "callseq": [
 "CSimpleFrame::GetObjectType",
 "FrameScript_GetObjectThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
 "TSLinkedNode<SIMPLEFRAMENODE>::Next",
 "lua_pushnumber"
 ],
@@ -144054,7 +144066,7 @@
 "callseq": [
 "CSimpleFrame::GetObjectType",
 "FrameScript_GetObjectThis",
-"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE>>::Head",
+"TSList<SIMPLEFRAMENODE,TSGetLink<SIMPLEFRAMENODE> >::Head",
 "TSLinkedNode<SIMPLEFRAMENODE>::Next",
 "FrameScript_Object::RegisterScriptObject",
 "lua_rawgeti"
@@ -144344,7 +144356,7 @@
 "luaL_error",
 "lua_tolstring",
 "TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr",
-"TSList<EVENTLISTENERNODE,TSGetLink<EVENTLISTENERNODE>>::Head",
+"TSList<EVENTLISTENERNODE,TSGetLink<EVENTLISTENERNODE> >::Head",
 "TSLinkedNode<EVENTLISTENERNODE>::Next",
 "lua_pushboolean"
 ],
@@ -144888,20 +144900,27 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleFrame::GetHitRectInsets",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetHitRectInsets",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 15,
 "refs": []
 },
 "CSimpleFrame_SetHitRectInsets": {
@@ -144949,20 +144968,27 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CLayoutFrame::GetClampRectInsets",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetClampRectInsets",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 15,
 "refs": []
 },
 "CSimpleFrame_SetClampRectInsets": {
@@ -144984,20 +145010,22 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetMinResize",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": []
 },
 "CSimpleFrame_SetMinResize": {
@@ -145005,20 +145033,30 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleFrame_SetMinResize",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Usage: %s:SetMinResize(minWidth, minHeight)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": []
 },
 "CSimpleFrame_GetMaxResize": {
@@ -145026,20 +145064,22 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetMaxResize",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": []
 },
 "CSimpleFrame_SetMaxResize": {
@@ -145047,20 +145087,30 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleFrame_SetMaxResize",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Usage: %s:SetMaxResize(maxWidth, maxHeight)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": []
 },
 "CSimpleFrame_SetMovable": {
@@ -145108,20 +145158,21 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleFrame::SetFrameFlag"
 ],
-"strings": [
-"CSimpleFrame_SetDontSavePosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x80000",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": []
 },
 "CSimpleFrame_GetDontSavePosition": {
@@ -145129,20 +145180,20 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFrame_GetDontSavePosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x80000",
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": []
 },
 "CSimpleFrame_SetResizable": {
@@ -145190,20 +145241,26 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"C2Vector::C2Vector",
+"CSimpleTop::StartMoveOrResizeFrame"
 ],
 "strings": [
-"CSimpleFrame_StartMoving",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Frame %s is not movable"
 ],
 "consts": [
-"0"
+"0",
+"0.0f",
+"0x100",
+"3",
+"4"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 19,
 "refs": []
 },
 "CSimpleFrame_StartSizing": {
@@ -145211,20 +145268,29 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_isstring",
+"lua_tolstring",
+"StringToFramePoint",
+"C2Vector::C2Vector",
+"CSimpleTop::StartMoveOrResizeFrame"
 ],
 "strings": [
-"CSimpleFrame_StartSizing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Frame %s is not resizable"
 ],
 "consts": [
-"0"
+"0",
+"0.0f",
+"0x200",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 25,
 "refs": []
 },
 "CSimpleFrame_StopMovingOrSizing": {
@@ -145489,20 +145555,22 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CScriptRegion::ProtectedFunctionsAllowed",
+"StringToBOOL",
+"CSimpleFrame::EnableEvent",
+"CSimpleFrame::DisableEvent"
 ],
-"strings": [
-"CSimpleFrame_EnableJoystick",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 18,
 "refs": []
 },
 "CSimpleFrame_IsJoystickEnabled": {
@@ -145571,20 +145639,23 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetBackdropColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": []
 },
 "CSimpleFrame_SetBackdropColor": {
@@ -145613,20 +145684,23 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetBackdropBorderColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": []
 },
 "CSimpleFrame_SetBackdropBorderColor": {

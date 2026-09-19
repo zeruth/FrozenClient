@@ -375,8 +375,8 @@ int32_t CSimpleFontString_GetShadowOffset(lua_State* L) {
 
     auto scale = CoordinateGetAspectCompensation() * 1024.0f;
 
-    lua_pushnumber(L, NDCToDDCWidth(string->m_shadowOffset.x) * scale);
-    lua_pushnumber(L, NDCToDDCWidth(string->m_shadowOffset.y) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(string->m_shadowOffset.x) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(string->m_shadowOffset.y) * scale);
 
     return 2;
 }
@@ -392,8 +392,8 @@ int32_t CSimpleFontString_SetShadowOffset(lua_State* L) {
         auto scale = CoordinateGetAspectCompensation() * 1024.0f;
 
         C2Vector offset = {
-            DDCToNDCWidth(x / scale),
-            DDCToNDCWidth(y / scale)
+            NDCToDDCWidth(x / scale),
+            NDCToDDCWidth(y / scale)
         };
 
         string->SetShadowOffset(offset);
@@ -412,7 +412,7 @@ int32_t CSimpleFontString_GetSpacing(lua_State* L) {
 
     auto scale = CoordinateGetAspectCompensation() * 1024.0f;
 
-    lua_pushnumber(L, NDCToDDCWidth(string->m_spacing) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(string->m_spacing) * scale);
 
     return 1;
 }
@@ -429,7 +429,7 @@ int32_t CSimpleFontString_SetSpacing(lua_State* L) {
     auto spacing = static_cast<float>(lua_tonumber(L, 2));
     auto scale = CoordinateGetAspectCompensation() * 1024.0f;
 
-    string->SetSpacing(DDCToNDCWidth(spacing / scale));
+    string->SetSpacing(NDCToDDCWidth(spacing / scale));
     string->m_fontableFlags &= ~FLAG_SPACING_UPDATE;
 
     return 0;
@@ -450,7 +450,7 @@ int32_t CSimpleFontString_SetTextHeight(lua_State* L) {
         return luaL_error(L, "%s:SetTextHeight(): invalid texHeight: %f, height must be > 0", string->GetDisplayName(), height);
     }
 
-    string->SetTextHeight(DDCToNDCWidth(height / CoordinateGetAspectCompensation()));
+    string->SetTextHeight(NDCToDDCWidth(height / CoordinateGetAspectCompensation()));
 
     return 0;
 }

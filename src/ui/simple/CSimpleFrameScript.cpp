@@ -4,6 +4,7 @@
 #include "ui/FrameScript.hpp"
 #include "ui/FrameXML.hpp"
 #include "ui/Util.hpp"
+#include "ui/simple/CSimpleTop.hpp"
 #include "ui/simple/CSimpleFont.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "ui/simple/CSimpleFrame.hpp"
@@ -850,8 +851,21 @@ int32_t CSimpleFrame_Lower(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0049ffb0
 int32_t CSimpleFrame_GetHitRectInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    float left, right, top, bottom;
+    frame->GetHitRectInsets(left, right, top, bottom);
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(left) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(right) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(top) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(bottom) * scale);
+
+    return 4;
 }
 
 int32_t CSimpleFrame_SetHitRectInsets(lua_State* L) {
@@ -873,8 +887,21 @@ int32_t CSimpleFrame_SetHitRectInsets(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a0230
 int32_t CSimpleFrame_GetClampRectInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    float left, right, top, bottom;
+    frame->GetClampRectInsets(left, right, top, bottom);
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(left) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(right) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(top) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(bottom) * scale);
+
+    return 4;
 }
 
 int32_t CSimpleFrame_SetClampRectInsets(lua_State* L) {
@@ -882,20 +909,66 @@ int32_t CSimpleFrame_SetClampRectInsets(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a0480
 int32_t CSimpleFrame_GetMinResize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(frame->m_minResizeWidth) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(frame->m_minResizeHeight) * scale);
+
+    return 2;
 }
 
+// ref: FUN_004a0520
 int32_t CSimpleFrame_SetMinResize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
+        float scale = CoordinateGetAspectCompensation() * 1024.0f;
+        float width = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale);
+        float height = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale);
+
+        frame->m_minResizeWidth = width;
+        frame->m_minResizeHeight = height;
+
+        return 0;
+    }
+
+    return luaL_error(L, "Usage: %s:SetMinResize(minWidth, minHeight)", frame->GetDisplayName());
 }
 
+// ref: FUN_004a0640
 int32_t CSimpleFrame_GetMaxResize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(frame->m_maxResizeWidth) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(frame->m_maxResizeHeight) * scale);
+
+    return 2;
 }
 
+// ref: FUN_004a06e0
 int32_t CSimpleFrame_SetMaxResize(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
+        float scale = CoordinateGetAspectCompensation() * 1024.0f;
+        float width = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale);
+        float height = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale);
+
+        frame->m_maxResizeWidth = width;
+        frame->m_maxResizeHeight = height;
+
+        return 0;
+    }
+
+    return luaL_error(L, "Usage: %s:SetMaxResize(maxWidth, maxHeight)", frame->GetDisplayName());
 }
 
 int32_t CSimpleFrame_SetMovable(lua_State* L) {
@@ -916,12 +989,28 @@ int32_t CSimpleFrame_IsMovable(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a08c0
 int32_t CSimpleFrame_SetDontSavePosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->SetFrameFlag(0x80000, StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_004a0910
 int32_t CSimpleFrame_GetDontSavePosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (frame->m_flags & 0x80000) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFrame_SetResizable(lua_State* L) {
@@ -942,12 +1031,52 @@ int32_t CSimpleFrame_IsResizable(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a0a40
 int32_t CSimpleFrame_StartMoving(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!(frame->m_flags & 0x100)) {
+        return luaL_error(L, "Frame %s is not movable", frame->GetDisplayName());
+    }
+
+    // TODO the reference skips this while the top already has a frame moving or resizing
+    C2Vector pt = frame->m_clickPoint;
+
+    if (pt.x == 0.0f && pt.y == 0.0f) {
+        // TODO FUN_004883c0: the current mouse position
+    }
+
+    frame->m_top->StartMoveOrResizeFrame(frame, static_cast<MOVERESIZE_REASON>(3), pt.x, pt.y, 4);
+
+    return 0;
 }
 
+// ref: FUN_004a0b10
 int32_t CSimpleFrame_StartSizing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!(frame->m_flags & 0x200)) {
+        return luaL_error(L, "Frame %s is not resizable", frame->GetDisplayName());
+    }
+
+    FRAMEPOINT point = FRAMEPOINT_BOTTOMRIGHT;  // the reference defaults to 8: size from the bottom-right corner
+
+    if (lua_isstring(L, 2)) {
+        StringToFramePoint(lua_tolstring(L, 2, nullptr), point);
+    }
+
+    // TODO the reference skips this while the top already has a frame moving or resizing
+    C2Vector pt = frame->m_clickPoint;
+
+    if (pt.x == 0.0f && pt.y == 0.0f) {
+        // TODO FUN_004883c0: the current mouse position
+    }
+
+    frame->m_top->StartMoveOrResizeFrame(frame, static_cast<MOVERESIZE_REASON>(3), pt.x, pt.y, point);
+
+    return 0;
 }
 
 int32_t CSimpleFrame_StopMovingOrSizing(lua_State* L) {
@@ -1092,8 +1221,24 @@ int32_t CSimpleFrame_IsMouseWheelEnabled(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a11d0
 int32_t CSimpleFrame_EnableJoystick(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->ProtectedFunctionsAllowed()) {
+        // TODO the top's disallowed-protected-call callback
+
+        return 0;
+    }
+
+    if (StringToBOOL(L, 2, 1)) {
+        frame->EnableEvent(SIMPLE_EVENT_JOYSTICK, -1);
+    } else {
+        frame->DisableEvent(SIMPLE_EVENT_JOYSTICK);
+    }
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsJoystickEnabled(lua_State* L) {
@@ -1114,8 +1259,23 @@ int32_t CSimpleFrame_SetBackdrop(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004a19a0
 int32_t CSimpleFrame_GetBackdropColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->m_backdrop) {
+        return 0;
+    }
+
+    auto& color = frame->m_backdrop->m_color;
+
+    lua_pushnumber(L, color.r * (1.0f / 255.0f));
+    lua_pushnumber(L, color.g * (1.0f / 255.0f));
+    lua_pushnumber(L, color.b * (1.0f / 255.0f));
+    lua_pushnumber(L, color.a * (1.0f / 255.0f));
+
+    return 4;
 }
 
 int32_t CSimpleFrame_SetBackdropColor(lua_State* L) {
@@ -1132,8 +1292,23 @@ int32_t CSimpleFrame_SetBackdropColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a1af0
 int32_t CSimpleFrame_GetBackdropBorderColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->m_backdrop) {
+        return 0;
+    }
+
+    auto& color = frame->m_backdrop->m_borderColor;
+
+    lua_pushnumber(L, color.r * (1.0f / 255.0f));
+    lua_pushnumber(L, color.g * (1.0f / 255.0f));
+    lua_pushnumber(L, color.b * (1.0f / 255.0f));
+    lua_pushnumber(L, color.a * (1.0f / 255.0f));
+
+    return 4;
 }
 
 int32_t CSimpleFrame_SetBackdropBorderColor(lua_State* L) {

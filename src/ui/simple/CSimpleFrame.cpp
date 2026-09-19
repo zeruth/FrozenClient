@@ -1640,6 +1640,14 @@ void CSimpleFrame::SetHitRect() {
     this->m_hitRect.maxY = this->m_rect.maxY - this->m_hitOffset.maxY * this->m_layoutScale;
 }
 
+// ref: FUN_0048eac0
+void CSimpleFrame::GetHitRectInsets(float& left, float& right, float& top, float& bottom) {
+    left = this->m_hitOffset.minX;
+    right = this->m_hitOffset.maxX;
+    top = this->m_hitOffset.maxY;
+    bottom = this->m_hitOffset.minY;
+}
+
 void CSimpleFrame::SetHitRectInsets(float left, float right, float top, float bottom) {
     this->m_hitOffset.minX = left;
     this->m_hitOffset.maxX = right;

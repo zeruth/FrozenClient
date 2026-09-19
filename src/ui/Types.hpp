@@ -20,7 +20,7 @@ enum CSimpleEventType {
     SIMPLE_EVENT_KEY            = 1,
     SIMPLE_EVENT_MOUSE          = 2,
     SIMPLE_EVENT_MOUSEWHEEL     = 3,
-    SIMPLE_EVENT_4              = 4,
+    SIMPLE_EVENT_JOYSTICK       = 4,  // EnableJoystick enables this one
     NUM_SIMPLE_EVENTS           = 5
 };
 

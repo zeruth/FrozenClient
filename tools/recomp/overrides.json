@@ -55,7 +55,7 @@
 
   "0076f0d0": { "whoa": "SStrToInt", "status": "ported", "note": "sign, digits, SErrSetLastError(0x57) on null" },
   "0047bfe0": { "whoa": "CoordinateGetAspectCompensation", "status": "ported", "note": "returns the float global at 00ac0cbc; structure match (getter of a coordinate global, paired with 0047c070)" },
-  "0047c070": { "whoa": "DDCToNDCWidth", "status": "ported", "note": "x * global 00ac0cb4 (reciprocal of Coordinate::s_x); structure match" },
+  "0047c070": { "whoa": "NDCToDDCWidth", "status": "ported", "note": "returns DAT_00ac0cb4 * v: the multiply, which is whoa's NDCToDDCWidth (s_x * ndcx). Was pinned to DDCToNDCWidth, the divide, which inverted every pixel conversion ported through it" },
   "00685f50": { "whoa": "CGxDevice::RsSet", "status": "ported", "note": "(which, CGxTex*): m_context check, IRsDirty, texture-state (0x15..0x24) flag 0x80/+0x5a -> vtable[0]" },
   "0084dbf0": { "whoa": "lua_settop", "status": "ported" },
   "0084e670": { "whoa": "lua_rawgeti", "status": "ported", "note": "index2adr + luaH_getnum + copy TValue to top" },
@@ -167,5 +167,16 @@
   "0047bf30": { "whoa": "HandleClose", "status": "ported", "note": "22 bytes: --refcount at +4, deleting virtual destructor when it hits zero; 189 callers, right before HandleCreate (0047bf50); the console font release in FUN_00764f30 goes through it" },
 
   "00815500": { "whoa": "StringToBOOL", "status": "ported", "note": "the lua_State overload: switch on lua_type (nil->0, boolean, number != 0, string through StringToBOOL, else the default); 183 callers, the bool reader of every SetX(bool) binding. Was auto-linked to lua_toboolean, which is one of its cases" },
-  "00486b20": { "whoa": "CSimpleFontString::UpdateString", "status": "ported", "note": "rebuilds the text block when CLayoutFrame flag 0x100 is set: closes the old handle, measures, honours the |c colour escape (0x400), lays out with the justification offset; the callee every style setter reaches when m_string is live" }
+  "00486b20": { "whoa": "CSimpleFontString::UpdateString", "status": "ported", "note": "rebuilds the text block when CLayoutFrame flag 0x100 is set: closes the old handle, measures, honours the |c colour escape (0x400), lays out with the justification offset; the callee every style setter reaches when m_string is live" },
+
+  "0047c050": { "whoa": "DDCToNDCWidth", "status": "ported", "note": "returns v / DAT_00ac0cb4: the divide, whoa's DDCToNDCWidth (ddcx / s_x); the getters of every pixel-valued binding go through it. Was auto-linked to CSimpleScrollFrame::GetObjectType" },
+
+  "0084e2a0": { "whoa": "lua_pushnumber", "status": "ported", "note": "the lua API push behind every numeric binding result (GetTextColor, GetHitRectInsets, ... push it 2-4 times in a row); the call-graph vote had proposed fprintf" },
+  "0084e280": { "whoa": "lua_pushnil", "status": "ported", "note": "the nil push the boolean-style getters make in their false branch (CanWordWrap, GetDontSavePosition); the vote had proposed CSimpleFrame::GetObjectType" },
+
+  "0084e970": { "whoa": "lua_rawset", "status": "ported", "note": "lapi.c order around it: lua_settable 0084e8d0, lua_rawset 0084e970, lua_rawseti 0084ea00; call-order slot in FrameScript_Object::RegisterScriptObject" },
+  "0084ea00": { "whoa": "lua_rawseti", "status": "ported", "note": "lapi.c order (see 0084e970); call-order slot in luaL_ref" },
+  "0084ed50": { "whoa": "lua_gc", "status": "ported", "note": "call-order slot in FrameScript_Initialize; sits before lua_error 0084ef30 as in lapi.c" },
+  "006b0f40": { "whoa": "ClientServices::GetErrorToken", "status": "ported", "note": "30 bytes, no callees, 11 callers in the glue (CreateCharacter, DeleteCharacter, EnterWorld, CCharacterCreation); in the ClientServices block" },
+  "0076dd20": { "whoa": "NameNeedsDeclension", "status": "ported", "note": "call-order slot in CGlueMgr::EnterWorld (2026-09-18)" }
 }
