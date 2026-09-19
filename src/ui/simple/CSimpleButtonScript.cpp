@@ -461,6 +461,10 @@ int32_t CSimpleButton_UnlockHighlight(lua_State* L) {
     return 0;
 }
 
+// TODO FUN_00978360 and FUN_009783b0 reach the flag through virtuals at +0xf8 and +0xf4,
+// so it lives on the button rather than in a script-side member. CSimpleButton has the
+// call sites for it commented out (CSimpleButton.cpp, around the disabled-state handling)
+// but no member; that is what these two wait on, not on themselves.
 int32_t CSimpleButton_GetMotionScriptsWhileDisabled(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

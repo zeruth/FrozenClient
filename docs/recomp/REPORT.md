@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 16:11 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 16:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2692 (+1) (9.9%) | 572.7k (10.3%) |
-| &nbsp;&nbsp;ported | 2104 (+1) | 417.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 552 (=) | 117.5k |
+| &nbsp;&nbsp;ported | 2105 (=) | 417.3k |
+| &nbsp;&nbsp;stub (unimplemented body) | 551 (+1) | 117.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **945 (+1) (3.5%)** | **118.8k (2.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **946 (=) (3.5%)** | **118.9k (2.1%)** |
 | unmapped | 24469 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 394 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 398 (=) (6.9%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11471, stubs 799 | |
+| frozen functions (src/, from PDB + source) | 11471, stubs 798 | |
 
-Match evidence: annotated 534, callgraph 156, callorder 142, cvar 30, handler 28, order 190, override 194, sticky 17, string 310, table 1091. Module anchors: 1479 assert strings.
+Match evidence: annotated 536, callgraph 156, callorder 142, cvar 30, handler 28, order 190, override 194, sticky 17, string 310, table 1089. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 16:10 -- mapped 2691, ported 2103, stub 552, spine mapped 394.
+Previous run: 2026-09-19 16:13 -- mapped 2691, ported 2105, stub 550, spine mapped 394.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 612 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 611 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -96,7 +96,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
-| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 6 |  / stubs: SetOrientation, GetStatusBarTexture, SetStatusBarTexture, GetStatusBarColor ... |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions` | 5 | 0 | GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle, BarberShopReset |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions` | 5 | 0 | FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial, GetPrevCompleatedTutorial |
@@ -104,6 +103,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf9e0 (GetActionInfo..) | 28 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetActionAutocast, PickupAction, PlaceAction, GetMultiCastTotemSpells ... |
 | 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions` | 5 | 0 | GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
 | 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
+| 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 5 |  / stubs: SetOrientation, GetStatusBarTexture, SetStatusBarTexture, GetStatusBarColor ... |
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
 | 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 4 |  / stubs: SetBlendMode, GetVertexColor, SetGradient, SetGradientAlpha |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 20 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 19 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -738,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 14:54 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
-| 2026-09-19 14:55 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 14:56 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:01 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:08 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
@@ -763,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 16:03 | 2690 (9.9%) | 938 (3.5%) | 550 | 394/5530 | 1791/2964 | 613 |
 | 2026-09-19 16:10 | 2691 (9.9%) | 944 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
 | 2026-09-19 16:11 | 2692 (9.9%) | 945 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
+| 2026-09-19 16:13 | 2691 (9.9%) | 946 (3.5%) | 550 | 394/5530 | 1791/2964 | 611 |
+| 2026-09-19 16:15 | 2692 (9.9%) | 946 (3.5%) | 551 | 394/5530 | 1791/2964 | 611 |
 
 ## How to move a row
 

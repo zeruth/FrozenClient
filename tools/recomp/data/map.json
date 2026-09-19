@@ -5543,7 +5543,7 @@
   ],
   "frozen": "CSimpleFrame_GetAlpha",
   "frozenSize": 68,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 83,
   "status": "ported"
@@ -38479,7 +38479,7 @@
    "src/ui/simple/csimplestatusbar.cpp"
   ],
   "frozen": "CSimpleStatusBar::SetRotatesTexture",
-  "frozenSize": 0,
+  "frozenSize": 3,
   "how": "callorder",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 182,
@@ -39721,20 +39721,20 @@
   "status": "stub"
  },
  "009719d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
    "src/ui/simple/csimplestatusbarscript.cpp"
   ],
   "frozen": "CSimpleStatusBar_SetRotatesTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,
-  "status": "stub"
+  "status": "ported"
  },
  "00971a90": {
   "branchRatio": 0.667,

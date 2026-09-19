@@ -702,11 +702,13 @@ int32_t CSimpleFrame_GetEffectiveAlpha(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0049f980
 int32_t CSimpleFrame_GetAlpha(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
-    // SetAlpha stores the value as a byte; script works in 0..1.
+    // SetAlpha stores the value as a byte; script works in 0..1. The reference's scale constant at
+    // 009ece88 is a double, not a float -- read as a float it is garbage -- and is exactly 1/255.
     lua_pushnumber(L, frame->m_alpha / 255.0f);
 
     return 1;

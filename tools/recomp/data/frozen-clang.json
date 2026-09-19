@@ -143866,7 +143866,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 464
+"line": 468
 },
 "CSimpleButton_SetMotionScriptsWhileDisabled": {
 "files": [
@@ -143888,7 +143888,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 468
+"line": 472
 },
 "FaceDirection": {
 "files": [
@@ -150408,7 +150408,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 359
+"line": 364
 },
 "CSimpleFontString_SetAlpha": {
 "files": [
@@ -150423,7 +150423,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 363
+"line": 368
 },
 "CSimpleFontString_SetAlphaGradient": {
 "files": [
@@ -150445,7 +150445,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 368
+"line": 373
 },
 "CSimpleFontString_Show": {
 "files": [
@@ -150464,7 +150464,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 372
+"line": 377
 },
 "CSimpleFontString_Hide": {
 "files": [
@@ -150483,7 +150483,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 381
+"line": 386
 },
 "CSimpleFontString_IsVisible": {
 "files": [
@@ -150505,7 +150505,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 390
+"line": 395
 },
 "CSimpleFontString_IsShown": {
 "files": [
@@ -150527,7 +150527,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 403
+"line": 408
 },
 "CSimpleFontString_GetFontObject": {
 "files": [
@@ -150545,7 +150545,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 416
+"line": 421
 },
 "CSimpleFontString_SetFontObject": {
 "files": [
@@ -150563,7 +150563,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 423
+"line": 428
 },
 "CSimpleFontString_GetFont": {
 "files": [
@@ -150581,7 +150581,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 430
+"line": 435
 },
 "CSimpleFontString_SetFont": {
 "files": [
@@ -150599,7 +150599,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 437
+"line": 442
 },
 "CSimpleFontString_GetText": {
 "files": [
@@ -150619,7 +150619,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 444
+"line": 449
 },
 "CSimpleFontString_GetFieldSize": {
 "files": [
@@ -150637,7 +150637,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 459
+"line": 464
 },
 "CSimpleFontString_SetText": {
 "files": [
@@ -150663,7 +150663,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 465
+"line": 470
 },
 "CSimpleFontString_SetFormattedText": {
 "files": [
@@ -150690,7 +150690,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 479
+"line": 484
 },
 "CSimpleFontString_GetTextColor": {
 "files": [
@@ -150708,7 +150708,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 495
+"line": 500
 },
 "CSimpleFontString_SetTextColor": {
 "files": [
@@ -150726,7 +150726,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 502
+"line": 507
 },
 "CSimpleFontString_GetShadowColor": {
 "files": [
@@ -150744,7 +150744,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 509
+"line": 514
 },
 "CSimpleFontString_SetShadowColor": {
 "files": [
@@ -150762,7 +150762,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 516
+"line": 521
 },
 "CSimpleFontString_GetShadowOffset": {
 "files": [
@@ -150780,7 +150780,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 523
+"line": 528
 },
 "CSimpleFontString_SetShadowOffset": {
 "files": [
@@ -150798,7 +150798,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 530
+"line": 535
 },
 "CSimpleFontString_GetSpacing": {
 "files": [
@@ -150816,7 +150816,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 537
+"line": 542
 },
 "CSimpleFontString_SetSpacing": {
 "files": [
@@ -150834,7 +150834,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 544
+"line": 549
 },
 "CSimpleFontString_SetTextHeight": {
 "files": [
@@ -150866,7 +150866,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 552
+"line": 557
 },
 "CSimpleFontString_GetStringWidth": {
 "files": [
@@ -150886,7 +150886,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 571
+"line": 576
 },
 "CSimpleFontString_GetStringHeight": {
 "files": [
@@ -150906,7 +150906,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 580
+"line": 585
 },
 "CSimpleFontString_GetJustifyH": {
 "files": [
@@ -150924,7 +150924,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 589
+"line": 594
 },
 "CSimpleFontString_SetJustifyH": {
 "files": [
@@ -150942,7 +150942,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 596
+"line": 601
 },
 "CSimpleFontString_GetJustifyV": {
 "files": [
@@ -150960,7 +150960,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 603
+"line": 608
 },
 "CSimpleFontString_SetJustifyV": {
 "files": [
@@ -150978,7 +150978,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 610
+"line": 615
 },
 "CSimpleFontString_CanNonSpaceWrap": {
 "files": [
@@ -151000,7 +151000,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 618
+"line": 623
 },
 "CSimpleFontString_SetNonSpaceWrap": {
 "files": [
@@ -151023,7 +151023,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 632
+"line": 637
 },
 "CSimpleFontString_CanWordWrap": {
 "files": [
@@ -151045,7 +151045,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 645
+"line": 650
 },
 "CSimpleFontString_SetWordWrap": {
 "files": [
@@ -151068,7 +151068,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 659
+"line": 664
 },
 "CSimpleFontString_GetIndentedWordWrap": {
 "files": [
@@ -151086,7 +151086,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 671
+"line": 676
 },
 "CSimpleFontString_SetIndentedWordWrap": {
 "files": [
@@ -151104,7 +151104,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 678
+"line": 683
 },
 "CSimpleFrame::GetObjectType": {
 "files": [
@@ -153953,9 +153953,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 10,
 "refs": [],
-"line": 705
+"line": 706
 },
 "CSimpleFrame_SetAlpha": {
 "files": [
@@ -153986,7 +153986,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 715
+"line": 717
 },
 "CSimpleFrame_GetID": {
 "files": [
@@ -154005,7 +154005,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 730
+"line": 732
 },
 "CSimpleFrame_SetID": {
 "files": [
@@ -154031,7 +154031,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 739
+"line": 741
 },
 "CSimpleFrame_SetToplevel": {
 "files": [
@@ -154053,7 +154053,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 759
+"line": 761
 },
 "CSimpleFrame_IsToplevel": {
 "files": [
@@ -154073,7 +154073,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 768
+"line": 770
 },
 "CSimpleFrame_EnableDrawLayer": {
 "files": [
@@ -154100,7 +154100,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 777
+"line": 779
 },
 "CSimpleFrame_DisableDrawLayer": {
 "files": [
@@ -154127,7 +154127,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 792
+"line": 794
 },
 "CSimpleFrame_Show": {
 "files": [
@@ -154147,7 +154147,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 807
+"line": 809
 },
 "CSimpleFrame_Hide": {
 "files": [
@@ -154167,7 +154167,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 821
+"line": 823
 },
 "CSimpleFrame_IsVisible": {
 "files": [
@@ -154188,7 +154188,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 835
+"line": 837
 },
 "CSimpleFrame_IsShown": {
 "files": [
@@ -154209,7 +154209,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 848
+"line": 850
 },
 "CSimpleFrame_Raise": {
 "files": [
@@ -154229,7 +154229,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 861
+"line": 863
 },
 "CSimpleFrame_Lower": {
 "files": [
@@ -154251,7 +154251,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 877
+"line": 879
 },
 "CSimpleFrame_GetHitRectInsets": {
 "files": [
@@ -154280,7 +154280,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 882
+"line": 884
 },
 "CSimpleFrame_SetHitRectInsets": {
 "files": [
@@ -154321,7 +154321,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 898
+"line": 900
 },
 "CSimpleFrame_GetClampRectInsets": {
 "files": [
@@ -154350,7 +154350,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 918
+"line": 920
 },
 "CSimpleFrame_SetClampRectInsets": {
 "files": [
@@ -154365,7 +154365,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 934
+"line": 936
 },
 "CSimpleFrame_GetMinResize": {
 "files": [
@@ -154389,7 +154389,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 940
+"line": 942
 },
 "CSimpleFrame_SetMinResize": {
 "files": [
@@ -154421,7 +154421,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 952
+"line": 954
 },
 "CSimpleFrame_GetMaxResize": {
 "files": [
@@ -154445,7 +154445,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 971
+"line": 973
 },
 "CSimpleFrame_SetMaxResize": {
 "files": [
@@ -154477,7 +154477,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 983
+"line": 985
 },
 "CSimpleFrame_SetMovable": {
 "files": [
@@ -154499,7 +154499,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1001
+"line": 1003
 },
 "CSimpleFrame_IsMovable": {
 "files": [
@@ -154519,7 +154519,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1010
+"line": 1012
 },
 "CSimpleFrame_SetDontSavePosition": {
 "files": [
@@ -154542,7 +154542,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1020
+"line": 1022
 },
 "CSimpleFrame_GetDontSavePosition": {
 "files": [
@@ -154564,7 +154564,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1030
+"line": 1032
 },
 "CSimpleFrame_SetResizable": {
 "files": [
@@ -154586,7 +154586,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1043
+"line": 1045
 },
 "CSimpleFrame_IsResizable": {
 "files": [
@@ -154606,7 +154606,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1052
+"line": 1054
 },
 "CSimpleFrame_StartMoving": {
 "files": [
@@ -154634,7 +154634,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1062
+"line": 1064
 },
 "CSimpleFrame_StartSizing": {
 "files": [
@@ -154665,7 +154665,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1083
+"line": 1085
 },
 "CSimpleFrame_StopMovingOrSizing": {
 "files": [
@@ -154687,7 +154687,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1112
+"line": 1114
 },
 "CSimpleFrame_SetUserPlaced": {
 "files": [
@@ -154713,7 +154713,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1116
+"line": 1118
 },
 "CSimpleFrame_IsUserPlaced": {
 "files": [
@@ -154730,7 +154730,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1131
+"line": 1133
 },
 "CSimpleFrame_SetClampedToScreen": {
 "files": [
@@ -154751,7 +154751,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1137
+"line": 1139
 },
 "CSimpleFrame_IsClampedToScreen": {
 "files": [
@@ -154772,7 +154772,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1146
+"line": 1148
 },
 "CSimpleFrame_RegisterForDrag": {
 "files": [
@@ -154794,7 +154794,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1155
+"line": 1157
 },
 "CSimpleFrame_EnableKeyboard": {
 "files": [
@@ -154817,7 +154817,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1172
+"line": 1174
 },
 "CSimpleFrame_IsKeyboardEnabled": {
 "files": [
@@ -154837,7 +154837,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1185
+"line": 1187
 },
 "CSimpleFrame_EnableMouse": {
 "files": [
@@ -154861,7 +154861,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1194
+"line": 1196
 },
 "CSimpleFrame_IsMouseEnabled": {
 "files": [
@@ -154881,7 +154881,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1213
+"line": 1215
 },
 "CSimpleFrame_EnableMouseWheel": {
 "files": [
@@ -154904,7 +154904,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1222
+"line": 1224
 },
 "CSimpleFrame_IsMouseWheelEnabled": {
 "files": [
@@ -154924,7 +154924,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1235
+"line": 1237
 },
 "CSimpleFrame_EnableJoystick": {
 "files": [
@@ -154948,7 +154948,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1245
+"line": 1247
 },
 "CSimpleFrame_IsJoystickEnabled": {
 "files": [
@@ -154968,7 +154968,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1264
+"line": 1266
 },
 "CSimpleFrame_GetBackdrop": {
 "files": [
@@ -155052,7 +155052,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1275
+"line": 1277
 },
 "CSimpleFrame_SetBackdrop": {
 "files": [
@@ -155154,7 +155154,7 @@
 "stub": false,
 "lines": 128,
 "refs": [],
-"line": 1369
+"line": 1371
 },
 "CSimpleFrame_GetBackdropColor": {
 "files": [
@@ -155179,7 +155179,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1499
+"line": 1501
 },
 "CSimpleFrame_SetBackdropColor": {
 "files": [
@@ -155201,7 +155201,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1517
+"line": 1519
 },
 "CSimpleFrame_GetBackdropBorderColor": {
 "files": [
@@ -155226,7 +155226,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1532
+"line": 1534
 },
 "CSimpleFrame_SetBackdropBorderColor": {
 "files": [
@@ -155248,7 +155248,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1550
+"line": 1552
 },
 "CSimpleFrame_SetDepth": {
 "files": [
@@ -155274,7 +155274,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1565
+"line": 1567
 },
 "CSimpleFrame_GetDepth": {
 "files": [
@@ -155294,7 +155294,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1579
+"line": 1581
 },
 "CSimpleFrame_GetEffectiveDepth": {
 "files": [
@@ -155314,7 +155314,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1593
+"line": 1595
 },
 "CSimpleFrame_IgnoreDepth": {
 "files": [
@@ -155329,7 +155329,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1606
+"line": 1608
 },
 "CSimpleFrame_IsIgnoringDepth": {
 "files": [
@@ -155350,7 +155350,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1612
+"line": 1614
 },
 "CONTENTNODE::~CONTENTNODE": {
 "files": [
@@ -161697,22 +161697,21 @@
 "src/ui/simple/csimplestatusbarscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleStatusBar::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleStatusBar::SetRotatesTexture"
 ],
-"strings": [
-"(anonymous namespace)::CSimpleStatusBar_SetRotatesTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplestatusbarscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 113
+"line": 114
 },
 "CSimpleTexture::CreateScriptMetaTable": {
 "files": [

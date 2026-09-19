@@ -110,8 +110,14 @@ int32_t CSimpleStatusBar_GetRotatesTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_009719d0
 int32_t CSimpleStatusBar_SetRotatesTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    statusBar->SetRotatesTexture(StringToBOOL(L, 2, 0));
+
+    return 0;
 }
 
 }

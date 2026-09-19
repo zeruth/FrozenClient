@@ -346,7 +346,7 @@ addr	how	frozen	evidence
 0049f7d0	annotated	CSimpleModel_GetScale	tag in src/ui/simple/CSimpleModelScript.cpp
 0049f820	table	CSimpleFrame_SetScale	binding "SetScale" in SimpleFrameMethods ~ table 00ac1550
 0049f900	annotated	CSimpleFrame_GetEffectiveAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
-0049f980	table	CSimpleFrame_GetAlpha	binding "GetAlpha" in SimpleFrameMethods ~ table 00ac1550
+0049f980	annotated	CSimpleFrame_GetAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f9e0	table	CSimpleFrame_SetAlpha	binding "SetAlpha" in SimpleFrameMethods ~ table 00ac1550
 0049fab0	table	CSimpleFrame_GetID	binding "GetID" in SimpleFrameMethods ~ table 00ac1550
 0049fb00	table	CSimpleFrame_SetID	binding "SetID" in SimpleFrameMethods ~ table 00ac1550
@@ -2428,7 +2428,7 @@ addr	how	frozen	evidence
 00961420	annotated	CSimpleModel_GetFogFar	tag in src/ui/simple/CSimpleModelScript.cpp
 00961470	annotated	CSimpleModel_ClearFog	tag in src/ui/simple/CSimpleModelScript.cpp
 009614b0	annotated	CSimpleModel_SetGlow	tag in src/ui/simple/CSimpleModelScript.cpp
-00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML
+00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML, 009719d0=CSimpleStatusBar_SetRotatesTexture
 00961e30	string	CSimpleStatusBar::LoadXML	unique "BarColor"
 00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
@@ -2506,7 +2506,7 @@ addr	how	frozen	evidence
 00971800	table	CSimpleStatusBar_GetStatusBarColor	binding "GetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971910	table	CSimpleStatusBar_SetStatusBarColor	binding "SetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971970	table	CSimpleStatusBar_GetRotatesTexture	binding "GetRotatesTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
-009719d0	table	CSimpleStatusBar_SetRotatesTexture	binding "SetRotatesTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
+009719d0	annotated	CSimpleStatusBar_SetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971a90	table	CSimpleSlider_GetThumbTexture	binding "GetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
 00971b10	table	CSimpleSlider_SetThumbTexture	binding "SetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
 00971c70	annotated	CSimpleStatusBar_GetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp

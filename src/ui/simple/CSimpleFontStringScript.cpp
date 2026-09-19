@@ -356,6 +356,11 @@ int32_t CSimpleFontString_SetVertexColor(lua_State* L) {
     return 0;
 }
 
+// TODO the font string's own GetAlpha is FUN_0048cfc0, which the binding table already matches
+// and which has not been decompiled. It is NOT FUN_0049f980: that one reads the frame object type
+// and is CSimpleFrame::GetAlpha, tagged there. Reading m_alpha[0] here looks right -- it is the
+// entry the region's colour uses -- but which entry the reference reads has not been checked, and
+// the other three are the gradient.
 int32_t CSimpleFontString_GetAlpha(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
