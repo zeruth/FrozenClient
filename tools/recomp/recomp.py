@@ -424,14 +424,47 @@ def lcs_len(a, b):
     return prev[-1]
 
 
+CRT_NAME_RE = re.compile(r'^(?:FID_conflict_)?_{1,2}([A-Za-z]\w*)$')
+
+
+def crt_token(name):
+    """CRT calls the compiler kept as calls on both sides (malloc, memset, sscanf, _msize) are
+    named `_malloc` by Ghidra and `?malloc` in an unresolved whoa sequence; both become crt:malloc
+    so the two sequences can align on them."""
+    m = CRT_NAME_RE.match(name)
+    return 'crt:' + m.group(1).lower() if m else None
+
+
+def ref_seq(refs, m, addr):
+    out = []
+    for c in refs[addr]['calls']:
+        if c in m:
+            out.append(m[c][0])
+        elif c in refs and refs[c]['named'] and refs[c]['excluded']:
+            out.append(crt_token(refs[c]['name']) or c)
+        else:
+            out.append(c)
+    return out
+
+
+def whoa_seq(whoa, name):
+    out = []
+    for c in whoa[name]['seq']:
+        if c.startswith('?'):
+            out.append(crt_token('_' + c[1:].lstrip('_')) or c)
+        else:
+            out.append(c)
+    return out
+
+
 def fidelity(refs, whoa, m, addr):
     """How much of the reference's call sequence the port reproduces, in order: LCS of the two call
     sequences over the longer one, with reference callees translated through the map. 1.0 means every
     call the reference makes, the port makes, in the same order. Unlinked reference callees can never
     match, so a low score also says 'dependencies still unidentified'."""
     name = m[addr][0]
-    rseq = [m[c][0] if c in m else c for c in refs[addr]['calls']]
-    wseq = whoa[name]['seq']
+    rseq = ref_seq(refs, m, addr)
+    wseq = whoa_seq(whoa, name)
     if not rseq:
         return 1.0 if not whoa[name]['stub'] else 0.0
     # Recall of the reference's sequence: extra calls on the whoa side (helpers the reference
@@ -443,8 +476,8 @@ def precision(refs, whoa, m, addr):
     """Share of the port's calls that the reference also makes, in order. Low with high recall
     means the port does more than the reference: inlined helpers, or invented behaviour."""
     name = m[addr][0]
-    rseq = [m[c][0] if c in m else c for c in refs[addr]['calls']]
-    wseq = whoa[name]['seq']
+    rseq = ref_seq(refs, m, addr)
+    wseq = whoa_seq(whoa, name)
     if not wseq:
         return 1.0
     return lcs_len(rseq, wseq) / float(len(wseq))

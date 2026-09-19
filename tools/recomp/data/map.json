@@ -498,8 +498,8 @@
  "00406740": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -828,6 +828,19 @@
   "whoa": "WowClientDB<AnimationDataRec>::GetRecord",
   "whoaSize": 29
  },
+ "0040c0f7": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "how": "callgraph",
+  "module": "LoadingScreen.cpp",
+  "refSize": 123,
+  "status": "ported",
+  "whoa": "sprintf",
+  "whoaSize": 94
+ },
  "0040cb10": {
   "branchRatio": 0.176,
   "constOverlap": 0.0,
@@ -844,6 +857,38 @@
   "status": "excluded",
   "whoa": "SStrLen",
   "whoaSize": 50
+ },
+ "004102b2": {
+  "branchRatio": 0.132,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lobject.c"
+  ],
+  "how": "string",
+  "module": "LoadingScreen.cpp",
+  "refSize": 2420,
+  "status": "ported",
+  "whoa": "luaO_pushvfstring",
+  "whoaSize": 871
+ },
+ "004144a0": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "how": "callgraph",
+  "module": "LoadingScreen.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "SStrChrR",
+  "whoaSize": 102
  },
  "00421880": {
   "branchRatio": 1.0,
@@ -973,11 +1018,27 @@
   "whoa": "SFile::Load",
   "whoaSize": 656
  },
+ "00424f80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/util/SFile.cpp",
+   "src/util/sfile.cpp"
+  ],
+  "how": "callorder",
+  "module": "OggDecompress.cpp",
+  "refSize": 24,
+  "status": "ported",
+  "whoa": "SFile::Open",
+  "whoaSize": 16
+ },
  "00428210": {
   "branchRatio": 0.455,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/util/Filesystem.cpp",
    "src/util/filesystem.cpp"
@@ -1057,7 +1118,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.2,
   "files": [
    "lib/squall/vendor/stormlib-9.31/src/bzip2/bzlib.c"
   ],
@@ -7093,11 +7154,13 @@
   "whoaSize": 8
  },
  "00513c30": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "GameUI.cpp",
   "refSize": 54,
@@ -8879,7 +8942,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.2,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -9662,7 +9725,7 @@
   "branchRatio": 0.615,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
@@ -12844,11 +12907,13 @@
   "whoaSize": 0
  },
  "0060c1f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "ScriptEvents.cpp",
   "refSize": 70,
@@ -16699,8 +16764,8 @@
  "00684970": {
   "branchRatio": 0.647,
   "constOverlap": 0.083,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -18221,7 +18286,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "lib/squall/storm/Memory.cpp",
    "lib/squall/storm/memory.cpp",
@@ -18238,7 +18303,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "lib/squall/storm/Memory.cpp",
    "lib/squall/storm/memory.cpp",
@@ -18255,7 +18320,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.286,
   "files": [
    "lib/squall/storm/Memory.cpp",
    "lib/squall/storm/memory.cpp",
@@ -18285,28 +18350,11 @@
   "whoa": "SStrChr",
   "whoaSize": 120
  },
- "0076e720": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/squall/storm/String.cpp",
-   "lib/squall/storm/string.cpp",
-   "lib/squall/test/stormdll/stormstubs.cpp"
-  ],
-  "how": "callorder",
-  "module": "ConsoleVar.cpp",
-  "refSize": 54,
-  "status": "ported",
-  "whoa": "SStrChrR",
-  "whoaSize": 102
- },
  "0076e760": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/storm/string.cpp",
@@ -18322,8 +18370,8 @@
  "0076e780": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/storm/string.cpp",
@@ -18390,7 +18438,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/storm/string.cpp"
@@ -19728,7 +19776,7 @@
   "branchRatio": 0.686,
   "constOverlap": 0.19,
   "faithful": false,
-  "fidelity": 0.762,
+  "fidelity": 0.69,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -19744,7 +19792,7 @@
   "branchRatio": 0.684,
   "constOverlap": 0.12,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.438,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -19869,11 +19917,13 @@
   "whoaSize": 511
  },
  "00815500": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 115,
@@ -20057,21 +20107,35 @@
   "whoa": "seterrorhandler",
   "whoaSize": 100
  },
- "00817450": {
-  "branchRatio": 0.857,
-  "constOverlap": 0.133,
+ "00817650": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.067,
+  "fidelity": 0.132,
   "files": [
-   "src/ui/LuaExtraFuncs.cpp",
-   "src/ui/luaextrafuncs.cpp"
+   "vendor/lua-5.1.3/src/loslib.c"
   ],
   "how": "string",
   "module": "XMLTree.cpp",
-  "refSize": 505,
+  "refSize": 588,
   "status": "ported",
-  "whoa": "os_date",
-  "whoaSize": 762
+  "whoa": "getfield",
+  "whoaSize": 0
+ },
+ "008178f0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.545,
+  "files": [
+   "vendor/lua-5.1.3/src/ldblib.c"
+  ],
+  "how": "string",
+  "module": "XMLTree.cpp",
+  "refSize": 745,
+  "status": "ported",
+  "whoa": "db_errorfb",
+  "whoaSize": 0
  },
  "00817db0": {
   "branchRatio": 1.0,
@@ -20157,7 +20221,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 0.929,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"
@@ -20189,7 +20253,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.667,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"
@@ -20556,8 +20620,8 @@
  "00826b00": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -20604,8 +20668,8 @@
  "00826e60": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -20701,7 +20765,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -20841,12 +20905,74 @@
   "whoa": "SequenceBufferAlloc",
   "whoaSize": 0
  },
- "0084d9c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084d3f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lobject.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 40,
+  "status": "ported",
+  "whoa": "luaO_log2",
+  "whoaSize": 46
+ },
+ "0084d480": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.25,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lobject.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 157,
+  "status": "ported",
+  "whoa": "luaO_str2d",
+  "whoaSize": 206
+ },
+ "0084d840": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 25,
+  "status": "ported",
+  "whoa": "errorlimit",
+  "whoaSize": 0
+ },
+ "0084d860": {
+  "branchRatio": 0.385,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lobject.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 338,
+  "status": "ported",
+  "whoa": "luaO_chunkid",
+  "whoaSize": 368
+ },
+ "0084d9c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 136,
@@ -20855,11 +20981,13 @@
   "whoaSize": 200
  },
  "0084dab0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 86,
@@ -20867,12 +20995,44 @@
   "whoa": "lua_checkstack",
   "whoaSize": 123
  },
- "0084dbd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084db10": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 128,
+  "status": "ported",
+  "whoa": "lua_xmove",
+  "whoaSize": 99
+ },
+ "0084db90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 64,
+  "status": "ported",
+  "whoa": "lua_newthread",
+  "whoaSize": 61
+ },
+ "0084dbd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 17,
@@ -20881,11 +21041,13 @@
   "whoaSize": 13
  },
  "0084dbf0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 89,
@@ -20893,12 +21055,29 @@
   "whoa": "lua_settop",
   "whoaSize": 83
  },
- "0084dcc0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084dc50": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 112,
+  "status": "ported",
+  "whoa": "lua_remove",
+  "whoaSize": 71
+ },
+ "0084dcc0": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 176,
@@ -20907,24 +21086,43 @@
   "whoaSize": 79
  },
  "0084dd70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.417,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "how": "callorder",
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "string",
   "module": "Minigame_C.cpp",
   "refSize": 221,
   "status": "ported",
   "whoa": "lua_replace",
   "whoaSize": 208
  },
+ "0084de50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 94,
+  "status": "ported",
+  "whoa": "lua_pushvalue",
+  "whoaSize": 39
+ },
  "0084deb0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 31,
@@ -20932,12 +21130,44 @@
   "whoa": "lua_type",
   "whoaSize": 39
  },
+ "0084ded0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 27,
+  "status": "ported",
+  "whoa": "lua_typename",
+  "whoaSize": 28
+ },
+ "0084def0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 39,
+  "status": "ported",
+  "whoa": "lua_iscfunction",
+  "whoaSize": 41
+ },
  "0084df20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 53,
@@ -20946,11 +21176,13 @@
   "whoaSize": 48
  },
  "0084df60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 45,
@@ -20959,11 +21191,13 @@
   "whoaSize": 49
  },
  "0084e030": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 52,
@@ -20972,11 +21206,13 @@
   "whoaSize": 50
  },
  "0084e070": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 62,
@@ -20985,11 +21221,13 @@
   "whoaSize": 48
  },
  "0084e0e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 111,
@@ -20997,18 +21235,50 @@
   "whoa": "lua_tolstring",
   "whoaSize": 155
  },
+ "0084e150": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 91,
+  "status": "ported",
+  "whoa": "lua_objlen",
+  "whoaSize": 123
+ },
  "0084e1c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 42,
   "status": "ported",
   "whoa": "lua_touserdata",
   "whoaSize": 49
+ },
+ "0084e210": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 81,
+  "status": "ported",
+  "whoa": "lua_topointer",
+  "whoaSize": 100
  },
  "0084e280": {
   "branchRatio": 0.0,
@@ -21040,11 +21310,13 @@
   "whoaSize": 69
  },
  "0084e2d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 36,
@@ -21052,12 +21324,29 @@
   "whoa": "lua_pushinteger",
   "whoaSize": 29
  },
+ "0084e300": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 74,
+  "status": "ported",
+  "whoa": "lua_pushlstring",
+  "whoaSize": 79
+ },
  "0084e350": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 76,
@@ -21066,11 +21355,13 @@
   "whoaSize": 141
  },
  "0084e3a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 47,
@@ -21078,12 +21369,29 @@
   "whoa": "lua_pushvfstring",
   "whoaSize": 72
  },
+ "0084e3d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 47,
+  "status": "ported",
+  "whoa": "lua_pushfstring",
+  "whoaSize": 66
+ },
  "0084e4d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 41,
@@ -21091,12 +21399,29 @@
   "whoa": "lua_pushboolean",
   "whoaSize": 28
  },
+ "0084e590": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 98,
+  "status": "ported",
+  "whoa": "lua_getfield",
+  "whoaSize": 105
+ },
  "0084e600": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 106,
@@ -21105,11 +21430,13 @@
   "whoaSize": 53
  },
  "0084e670": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 109,
@@ -21117,12 +21444,44 @@
   "whoa": "lua_rawgeti",
   "whoaSize": 56
  },
+ "0084e6e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 74,
+  "status": "ported",
+  "whoa": "lua_createtable",
+  "whoaSize": 77
+ },
+ "0084e730": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 98,
+  "status": "ported",
+  "whoa": "lua_getmetatable",
+  "whoaSize": 88
+ },
  "0084e8d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 45,
@@ -21130,12 +21489,44 @@
   "whoa": "lua_settable",
   "whoaSize": 48
  },
- "0084ebf0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084e900": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 101,
+  "status": "ported",
+  "whoa": "lua_setfield",
+  "whoaSize": 109
+ },
+ "0084ea90": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.667,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 165,
+  "status": "ported",
+  "whoa": "lua_setmetatable",
+  "whoaSize": 188
+ },
+ "0084ebf0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 59,
@@ -21143,12 +21534,29 @@
   "whoa": "lua_call",
   "whoaSize": 72
  },
- "0084ef30": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084ed00": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 58,
+  "status": "ported",
+  "whoa": "lua_dump",
+  "whoaSize": 65
+ },
+ "0084ef30": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 19,
@@ -21157,11 +21565,13 @@
   "whoaSize": 16
  },
  "0084ef90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 128,
@@ -21170,11 +21580,13 @@
   "whoaSize": 144
  },
  "0084f210": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 101,
@@ -21183,11 +21595,13 @@
   "whoaSize": 139
  },
  "0084f280": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 49,
@@ -21195,12 +21609,194 @@
   "whoa": "luaL_error",
   "whoaSize": 204
  },
- "0084f9f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084f2c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "luaL_checkstack",
+  "whoaSize": 54
+ },
+ "0084f2f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 92,
+  "status": "ported",
+  "whoa": "luaL_getmetafield",
+  "whoaSize": 118
+ },
+ "0084f350": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 88,
+  "status": "ported",
+  "whoa": "luaL_callmeta",
+  "whoaSize": 187
+ },
+ "0084f3b0": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 235,
+  "status": "ported",
+  "whoa": "luaL_findtable",
+  "whoaSize": 277
+ },
+ "0084f520": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 53,
+  "status": "ported",
+  "whoa": "luaL_prepbuffer",
+  "whoaSize": 69
+ },
+ "0084f560": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 94,
+  "status": "ported",
+  "whoa": "luaL_addlstring",
+  "whoaSize": 152
+ },
+ "0084f5c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 67,
+  "status": "ported",
+  "whoa": "luaL_pushresult",
+  "whoaSize": 78
+ },
+ "0084f610": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 131,
+  "status": "ported",
+  "whoa": "luaL_addvalue",
+  "whoaSize": 180
+ },
+ "0084f6a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 26,
+  "status": "ported",
+  "whoa": "luaL_buffinit",
+  "whoaSize": 19
+ },
+ "0084f8b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 173,
+  "status": "ported",
+  "whoa": "luaL_argerror",
+  "whoaSize": 236
+ },
+ "0084f960": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 81,
+  "status": "ported",
+  "whoa": "luaL_checktype",
+  "whoaSize": 61
+ },
+ "0084f9c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "luaL_checkany",
+  "whoaSize": 53
+ },
+ "0084f9f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 94,
@@ -21208,12 +21804,29 @@
   "whoa": "luaL_checklstring",
   "whoaSize": 132
  },
+ "0084fa50": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 91,
+  "status": "ported",
+  "whoa": "luaL_optlstring",
+  "whoaSize": 100
+ },
  "0084fab0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.286,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 113,
@@ -21221,25 +21834,254 @@
   "whoa": "luaL_checknumber",
   "whoaSize": 88
  },
- "0084fdd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084fb60": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.286,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
   "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 104,
+  "status": "ported",
+  "whoa": "luaL_checkinteger",
+  "whoaSize": 82
+ },
+ "0084fbd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 46,
+  "status": "ported",
+  "whoa": "luaL_optinteger",
+  "whoaSize": 99
+ },
+ "0084fc00": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.929,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 286,
+  "status": "ported",
+  "whoa": "luaL_openlib",
+  "whoaSize": 0
+ },
+ "0084fd20": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 175,
+  "status": "ported",
+  "whoa": "luaL_checkoption",
+  "whoaSize": 150
+ },
+ "0084fdd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lauxlib.c"
+  ],
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 27,
   "status": "ported",
   "whoa": "luaL_register",
   "whoaSize": 321
  },
- "00851010": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0084fe40": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 123,
+  "status": "ported",
+  "whoa": "lua_getstack",
+  "whoaSize": 120
+ },
+ "0084fec0": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 102,
+  "status": "ported",
+  "whoa": "findlocal",
+  "whoaSize": 159
+ },
+ "008505a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 340,
+  "status": "ported",
+  "whoa": "getobjname",
+  "whoaSize": 557
+ },
+ "00850830": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 238,
+  "status": "ported",
+  "whoa": "luaG_errormsg",
+  "whoaSize": 172
+ },
+ "00850920": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 39,
+  "status": "ported",
+  "whoa": "luaG_runerror",
+  "whoaSize": 336
+ },
+ "00850950": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 252,
+  "status": "ported",
+  "whoa": "info_tailcall",
+  "whoaSize": 0
+ },
+ "00850a90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 201,
+  "status": "ported",
+  "whoa": "lua_getinfo",
+  "whoaSize": 393
+ },
+ "00850b60": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 140,
+  "status": "ported",
+  "whoa": "luaG_typeerror",
+  "whoaSize": 199
+ },
+ "00850bf0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 35,
+  "status": "ported",
+  "whoa": "luaG_concaterror",
+  "whoaSize": 25
+ },
+ "00850c20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 55,
+  "status": "ported",
+  "whoa": "luaG_aritherror",
+  "whoaSize": 78
+ },
+ "00850c60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 82,
+  "status": "ported",
+  "whoa": "luaG_ordererror",
+  "whoaSize": 78
+ },
+ "00851010": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/bit.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 34,
@@ -21247,12 +22089,29 @@
   "whoa": "luaopen_bit",
   "whoaSize": 207
  },
- "00851760": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "00851640": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lmathlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 273,
+  "status": "ported",
+  "whoa": "math_random",
+  "whoaSize": 336
+ },
+ "00851760": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "vendor/lua-5.1.3/src/lmathlib.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 96,
@@ -21260,25 +22119,284 @@
   "whoa": "luaopen_math",
   "whoaSize": 151
  },
- "008521f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "008519b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltablib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 47,
+  "status": "ported",
+  "whoa": "setn",
+  "whoaSize": 64
+ },
+ "008519e0": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "how": "callorder",
+  "fidelity": 0.556,
+  "files": [
+   "vendor/lua-5.1.3/src/ltablib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 173,
+  "status": "ported",
+  "whoa": "tinsert",
+  "whoaSize": 184
+ },
+ "00851c30": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltablib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 231,
+  "status": "ported",
+  "whoa": "tconcat",
+  "whoaSize": 310
+ },
+ "00851d20": {
+  "branchRatio": 0.722,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.288,
+  "files": [
+   "vendor/lua-5.1.3/src/ltablib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 1011,
+  "status": "ported",
+  "whoa": "auxsort",
+  "whoaSize": 1042
+ },
+ "008521f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltablib.c"
+  ],
+  "how": "string",
   "module": "Minigame_C.cpp",
   "refSize": 32,
   "status": "ported",
   "whoa": "luaopen_table",
   "whoaSize": 33
  },
- "008540d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "00852800": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 196,
+  "status": "ported",
+  "whoa": "str_byte",
+  "whoaSize": 248
+ },
+ "008528d0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 161,
+  "status": "ported",
+  "whoa": "str_char",
+  "whoaSize": 224
+ },
+ "008529a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 108,
+  "status": "ported",
+  "whoa": "str_dump",
+  "whoaSize": 151
+ },
+ "00852a10": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 109,
+  "status": "ported",
+  "whoa": "classend",
+  "whoaSize": 162
+ },
+ "00852c30": {
+  "branchRatio": 0.75,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 112,
+  "status": "ported",
+  "whoa": "matchbalance",
+  "whoaSize": 0
+ },
+ "00852e20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 89,
+  "status": "ported",
+  "whoa": "capture_to_close",
+  "whoaSize": 0
+ },
+ "00852f60": {
+  "branchRatio": 0.957,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 594,
+  "status": "ported",
+  "whoa": "match",
+  "whoaSize": 1025
+ },
+ "00853340": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 120,
+  "status": "ported",
+  "whoa": "push_onecapture",
+  "whoaSize": 192
+ },
+ "008533c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 74,
+  "status": "ported",
+  "whoa": "push_captures",
+  "whoaSize": 267
+ },
+ "00853410": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.786,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 408,
+  "status": "ported",
+  "whoa": "str_find_aux",
+  "whoaSize": 654
+ },
+ "00853760": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 22,
+  "status": "ported",
+  "whoa": "gfind_nodef",
+  "whoaSize": 12
+ },
+ "00853780": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 221,
+  "status": "ported",
+  "whoa": "add_s",
+  "whoaSize": 0
+ },
+ "00853860": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.765,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 269,
+  "status": "ported",
+  "whoa": "add_value",
+  "whoaSize": 524
+ },
+ "008540d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
   "how": "callorder",
   "module": "Minigame_C.cpp",
   "refSize": 39,
@@ -21286,12 +22404,419 @@
   "whoa": "luaopen_string",
   "whoaSize": 198
  },
- "00856e50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "00854100": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.667,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 271,
+  "status": "ported",
+  "whoa": "luaB_tonumber",
+  "whoaSize": 300
+ },
+ "008542c0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 118,
+  "status": "ported",
+  "whoa": "luaB_setmetatable",
+  "whoaSize": 154
+ },
+ "00854340": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 157,
+  "status": "ported",
+  "whoa": "getfunc",
+  "whoaSize": 242
+ },
+ "008545c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 159,
+  "status": "ported",
+  "whoa": "luaB_collectgarbage",
+  "whoaSize": 196
+ },
+ "00854810": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 74,
+  "status": "ported",
+  "whoa": "luaB_assert",
+  "whoaSize": 92
+ },
+ "00854860": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 141,
+  "status": "ported",
+  "whoa": "luaB_unpack",
+  "whoaSize": 177
+ },
+ "008548f0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 130,
+  "status": "ported",
+  "whoa": "luaB_select",
+  "whoaSize": 168
+ },
+ "00854a20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 229,
+  "status": "ported",
+  "whoa": "luaB_tostring",
+  "whoaSize": 297
+ },
+ "00854b20": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.688,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 216,
+  "status": "ported",
+  "whoa": "luaB_newproxy",
+  "whoaSize": 248
+ },
+ "00854c00": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 78,
+  "status": "ported",
+  "whoa": "auxresume",
+  "whoaSize": 229
+ },
+ "00854da0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 92,
+  "status": "ported",
+  "whoa": "luaB_cocreate",
+  "whoaSize": 122
+ },
+ "00854f40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.375,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 286,
+  "status": "ported",
+  "whoa": "base_open",
+  "whoaSize": 0
+ },
+ "00855060": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lbaselib.c"
+  ],
+  "how": "string",
+  "module": "Minigame_C.cpp",
+  "refSize": 39,
+  "status": "ported",
+  "whoa": "luaopen_base",
+  "whoaSize": 377
+ },
+ "00855240": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/lstate.c"
+  ],
+  "how": "callorder",
+  "module": "Minigame_C.cpp",
+  "refSize": 196,
+  "status": "ported",
+  "whoa": "luaE_newthread",
+  "whoaSize": 194
+ },
+ "00855a20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 182,
+  "status": "ported",
+  "whoa": "luaD_seterrorobj",
+  "whoaSize": 190
+ },
+ "00855bf0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 236,
+  "status": "ported",
+  "whoa": "luaD_reallocstack",
+  "whoaSize": 285
+ },
+ "00855c50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 127,
+  "status": "ported",
+  "whoa": "luaD_reallocCI",
+  "whoaSize": 158
+ },
+ "00855cd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 44,
+  "status": "ported",
+  "whoa": "luaD_growstack",
+  "whoaSize": 25
+ },
+ "00856150": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 52,
+  "status": "ported",
+  "whoa": "lua_yield",
+  "whoaSize": 73
+ },
+ "008562e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 74,
+  "status": "ported",
+  "whoa": "luaD_throw",
+  "whoaSize": 96
+ },
+ "00856330": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 61,
+  "status": "ported",
+  "whoa": "growCI",
+  "whoaSize": 77
+ },
+ "00856370": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.067,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 473,
+  "status": "ported",
+  "whoa": "luaD_precall",
+  "whoaSize": 713
+ },
+ "00856760": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.625,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 169,
+  "status": "ported",
+  "whoa": "luaD_call",
+  "whoaSize": 172
+ },
+ "008568f0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "vendor/lua-5.1.3/src/ldo.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 127,
+  "status": "ported",
+  "whoa": "lua_resume",
+  "whoaSize": 305
+ },
+ "00856af0": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstring.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 194,
+  "status": "ported",
+  "whoa": "luaS_resize",
+  "whoaSize": 250
+ },
+ "00856bc0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "vendor/lua-5.1.3/src/lstring.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 190,
+  "status": "ported",
+  "whoa": "newlstr",
+  "whoaSize": 0
+ },
+ "00856c80": {
+  "branchRatio": 0.211,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstring.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 326,
+  "status": "ported",
+  "whoa": "luaS_newlstr",
+  "whoaSize": 565
+ },
+ "00856e50": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 78,
@@ -21300,11 +22825,13 @@
   "whoaSize": 86
  },
  "00856ea0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 111,
@@ -21312,12 +22839,104 @@
   "whoa": "luaV_tostring",
   "whoaSize": 132
  },
- "0085b950": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "00857250": {
+  "branchRatio": 0.438,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 357,
+  "status": "ported",
+  "whoa": "luaV_gettable",
+  "whoaSize": 390
+ },
+ "008573c0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 402,
+  "status": "ported",
+  "whoa": "luaV_settable",
+  "whoaSize": 427
+ },
+ "00857900": {
+  "branchRatio": 0.467,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.455,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 455,
+  "status": "ported",
+  "whoa": "luaV_concat",
+  "whoaSize": 651
+ },
+ "00857ca0": {
+  "branchRatio": 0.706,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.38,
+  "files": [
+   "vendor/lua-5.1.3/src/lvm.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 5138,
+  "status": "ported",
+  "whoa": "luaV_execute",
+  "whoaSize": 6660
+ },
+ "0085a7d0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lgc.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 190,
+  "status": "ported",
+  "whoa": "reallymarkobject",
+  "whoaSize": 284
+ },
+ "0085b850": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.2,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lgc.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 229,
+  "status": "ported",
+  "whoa": "singlestep",
+  "whoaSize": 468
+ },
+ "0085b950": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lgc.c"
+  ],
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 130,
@@ -21325,12 +22944,74 @@
   "whoa": "luaC_step",
   "whoaSize": 575
  },
- "0085c3a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "0085ba50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
+  "files": [
+   "vendor/lua-5.1.3/src/lgc.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 51,
+  "status": "ported",
+  "whoa": "luaC_barrierf",
+  "whoaSize": 37
+ },
+ "0085bd70": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 184,
+  "status": "ported",
+  "whoa": "findindex",
+  "whoaSize": 0
+ },
+ "0085c200": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 217,
+  "status": "ported",
+  "whoa": "setnodevector",
+  "whoaSize": 221
+ },
+ "0085c2e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 87,
+  "status": "ported",
+  "whoa": "luaH_new",
+  "whoaSize": 120
+ },
+ "0085c3a0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 135,
@@ -21338,20 +23019,560 @@
   "whoa": "luaH_getnum",
   "whoaSize": 148
  },
- "00860760": {
-  "branchRatio": 0.143,
+ "0085c430": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 63,
+  "status": "ported",
+  "whoa": "luaH_getstr",
+  "whoaSize": 67
+ },
+ "0085c470": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 165,
+  "status": "ported",
+  "whoa": "luaH_get",
+  "whoaSize": 217
+ },
+ "0085c520": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 98,
+  "status": "ported",
+  "whoa": "luaH_set",
+  "whoaSize": 296
+ },
+ "0085c690": {
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "lib/common/vendor/expat-2.0.1/lib/xmlparse.c"
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "luaH_getn",
+  "whoaSize": 117
+ },
+ "0085cab0": {
+  "branchRatio": 0.417,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 260,
+  "status": "ported",
+  "whoa": "newkey",
+  "whoaSize": 315
+ },
+ "0085cbc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltable.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 72,
+  "status": "ported",
+  "whoa": "luaH_setstr",
+  "whoaSize": 114
+ },
+ "0085d0f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lzio.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 66,
+  "status": "ported",
+  "whoa": "luaZ_fill",
+  "whoaSize": 80
+ },
+ "0085d6d0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lmem.c"
   ],
   "how": "string",
   "module": "lmemPool.cpp",
-  "refSize": 296,
+  "refSize": 24,
   "status": "ported",
-  "whoa": "XML_ErrorString",
+  "whoa": "luaM_toobig",
+  "whoaSize": 23
+ },
+ "0085d6f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lmem.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 73,
+  "status": "ported",
+  "whoa": "luaM_realloc_",
+  "whoaSize": 78
+ },
+ "0085d740": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/lmem.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 197,
+  "status": "ported",
+  "whoa": "luaM_growaux_",
+  "whoaSize": 233
+ },
+ "0085d810": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 116,
+  "status": "ported",
+  "whoa": "save",
+  "whoaSize": 164
+ },
+ "0085d8e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/ltm.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 85,
+  "status": "ported",
+  "whoa": "luaT_init",
+  "whoaSize": 105
+ },
+ "0085d940": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 147,
+  "status": "ported",
+  "whoa": "luaX_lexerror",
+  "whoaSize": 266
+ },
+ "0085d9e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 25,
+  "status": "ported",
+  "whoa": "luaX_syntaxerror",
+  "whoaSize": 9
+ },
+ "0085da00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 80,
+  "status": "ported",
+  "whoa": "luaX_newstring",
+  "whoaSize": 90
+ },
+ "0085da50": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 140,
+  "status": "ported",
+  "whoa": "inclinenumber",
+  "whoaSize": 170
+ },
+ "0085dbd0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 220,
+  "status": "ported",
+  "whoa": "trydecpoint",
   "whoaSize": 0
+ },
+ "0085ddd0": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "callorder",
+  "module": "lmemPool.cpp",
+  "refSize": 151,
+  "status": "ported",
+  "whoa": "skip_sep",
+  "whoaSize": 326
+ },
+ "0085de70": {
+  "branchRatio": 0.789,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.583,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 633,
+  "status": "ported",
+  "whoa": "read_long_string",
+  "whoaSize": 543
+ },
+ "0085e160": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.056,
+  "faithful": false,
+  "fidelity": 0.467,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 904,
+  "status": "ported",
+  "whoa": "read_string",
+  "whoaSize": 896
+ },
+ "0085e600": {
+  "branchRatio": 0.848,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "vendor/lua-5.1.3/src/llex.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 1520,
+  "status": "ported",
+  "whoa": "llex",
+  "whoaSize": 1796
+ },
+ "0085ed90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.125,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 110,
+  "status": "ported",
+  "whoa": "check_match",
+  "whoaSize": 195
+ },
+ "0085ee80": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 173,
+  "status": "ported",
+  "whoa": "registerlocalvar",
+  "whoaSize": 0
+ },
+ "0085efb0": {
+  "branchRatio": 0.545,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 331,
+  "status": "ported",
+  "whoa": "indexupvalue",
+  "whoaSize": 396
+ },
+ "0085faa0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.1,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 297,
+  "status": "ported",
+  "whoa": "parlist",
+  "whoaSize": 0
+ },
+ "0085fd50": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 306,
+  "status": "ported",
+  "whoa": "funcargs",
+  "whoaSize": 396
+ },
+ "0085fe90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 98,
+  "status": "ported",
+  "whoa": "prefixexp",
+  "whoaSize": 0
+ },
+ "008601e0": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.1,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 269,
+  "status": "ported",
+  "whoa": "simpleexp",
+  "whoaSize": 0
+ },
+ "00860570": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.1,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 258,
+  "status": "ported",
+  "whoa": "enterlevel",
+  "whoaSize": 0
+ },
+ "00860890": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "breakstat",
+  "whoaSize": 135
+ },
+ "00860ce0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.1,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 549,
+  "status": "ported",
+  "whoa": "fornum",
+  "whoaSize": 494
+ },
+ "00860f10": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.107,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 630,
+  "status": "ported",
+  "whoa": "forlist",
+  "whoaSize": 624
+ },
+ "00861190": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "vendor/lua-5.1.3/src/lparser.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 275,
+  "status": "ported",
+  "whoa": "forstat",
+  "whoaSize": 0
+ },
+ "00861bd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lcode.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 70,
+  "status": "ported",
+  "whoa": "fixjump",
+  "whoaSize": 99
+ },
+ "00861d90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lcode.c"
+  ],
+  "how": "callgraph",
+  "module": "lmemPool.cpp",
+  "refSize": 235,
+  "status": "ported",
+  "whoa": "dischargejpc",
+  "whoaSize": 0
+ },
+ "008623b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lcode.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 161,
+  "status": "ported",
+  "whoa": "luaK_code",
+  "whoaSize": 201
+ },
+ "00865270": {
+  "branchRatio": 0.692,
+  "constOverlap": 0.479,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "vendor/zlib-1.2.2/inflate.c"
+  ],
+  "how": "string",
+  "module": "lmemPool.cpp",
+  "refSize": 4934,
+  "status": "ported",
+  "whoa": "inflate",
+  "whoaSize": 5368
  },
  "00869620": {
   "branchRatio": 1.0,
@@ -21628,27 +23849,11 @@
   "whoa": "SESound::Init",
   "whoaSize": 1207
  },
- "0087ebc0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.222,
-  "files": [
-   "src/sound/SESoundInternal.cpp",
-   "src/sound/sesoundinternal.cpp"
-  ],
-  "how": "callorder",
-  "module": "SoundEngine.cpp",
-  "refSize": 291,
-  "status": "ported",
-  "whoa": "SEDiskSound::SEDiskSound",
-  "whoaSize": 258
- },
  "0087ee60": {
   "branchRatio": 0.543,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.759,
+  "fidelity": 0.69,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"
@@ -26600,5 +28805,95 @@
   "status": "ported",
   "whoa": "SI2::StartCreditsMusic",
   "whoaSize": 434
+ },
+ "00993c00": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.222,
+  "files": [
+   "vendor/freetype-2.0.9/src/type1/t1parse.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 392,
+  "status": "ported",
+  "whoa": "T1_New_Parser",
+  "whoaSize": 428
+ },
+ "00994e20": {
+  "branchRatio": 0.513,
+  "constOverlap": 0.185,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "vendor/freetype-2.0.9/src/type1/t1load.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 691,
+  "status": "ported",
+  "whoa": "parse_encoding",
+  "whoaSize": 802
+ },
+ "00995610": {
+  "branchRatio": 0.484,
+  "constOverlap": 0.118,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "vendor/freetype-2.0.9/src/type1/t1load.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 488,
+  "status": "ported",
+  "whoa": "parse_dict",
+  "whoaSize": 700
+ },
+ "00995ba0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/freetype-2.0.9/src/type1/t1driver.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 120,
+  "status": "ported",
+  "whoa": "Get_Interface",
+  "whoaSize": 217
+ },
+ "009a12d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.211,
+  "faithful": false,
+  "fidelity": 0.273,
+  "files": [
+   "vendor/freetype-2.0.9/src/cid/cidparse.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 361,
+  "status": "ported",
+  "whoa": "CID_New_Parser",
+  "whoaSize": 458
+ },
+ "009a16a0": {
+  "branchRatio": 0.542,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/freetype-2.0.9/src/cid/cidload.c"
+  ],
+  "how": "string",
+  "module": "HealthBar.cpp",
+  "refSize": 386,
+  "status": "ported",
+  "whoa": "cid_parse_dict",
+  "whoaSize": 620
  }
 }

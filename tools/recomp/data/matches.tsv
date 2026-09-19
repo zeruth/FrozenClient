@@ -51,7 +51,10 @@ addr	how	whoa	evidence
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 0040bb50	callorder	CSimpleFontString::GetObjectType	same slot between linked calls in 0048d800=CSimpleFontString_SetFormattedText
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
+0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 0040cb10	callgraph	SStrLen	only unmatched callee of 0076f9e0=SStrDupA
+004102b2	string	luaO_pushvfstring	unique "(null)"
+004144a0	callgraph	SStrChrR	only unmatched callee of 00835a20=M2AnimFileName
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
@@ -60,6 +63,7 @@ addr	how	whoa	evidence
 00422910	override	SFile::Close	
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
+00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
 00464640	string	RealmConnection::HandleAuthResponse	unique "SMSG_AUTH_RESPONSE"
 00464b30	callgraph	CDataStore::IsRead	only unmatched callee of 00464c10=RealmConnection::HandleCharEnum
@@ -1147,7 +1151,6 @@ addr	how	whoa	evidence
 0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
-0076e720	callorder	SStrChrR	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32, 008792b0=SESound::GetOutputDriverName
@@ -1257,10 +1260,11 @@ addr	how	whoa	evidence
 00816c40	annotated	sub_816C40	tag in src/ui/LuaExtraFuncs.cpp
 00816d80	annotated	sub_816D80	tag in src/ui/LuaExtraFuncs.cpp
 008173c0	string	seterrorhandler	unique "Usage: seterrorhandler(errfunc)"
-00817450	string	os_date	score 0.75 shared isdst; month
+00817650	string	getfield	unique "field '%s' missing in date table"
+008178f0	string	db_errorfb	unique " in function <%s:%d>"
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 00818010	callorder	FrameScript_GetVariable	same slot between linked calls in 00819d40=FrameScript_GetText
-00818070	string	FrameScript_Sprintf	score 1.00 shared invalid format (width or precision too l; invalid option in `format'
+00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
 00819210	callorder	FrameScript_Execute	same slot between linked calls in 00819bb0=FrameScript_Initialize
 00819730	string	FrameScript_HandleError	unique "UNKNOWN ERROR"
@@ -1306,45 +1310,184 @@ addr	how	whoa	evidence
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
 0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
 0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
+0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector
+0084d480	callgraph	luaO_str2d	only unmatched callee of 00856e50=luaV_tonumber
+0084d840	callgraph	errorlimit	only unmatched callee of 0085efb0=indexupvalue
+0084d860	string	luaO_chunkid	unique "[string ""
 0084d9c0	override	index2adr	
-0084dab0	callgraph	lua_checkstack	only unmatched callee of 004df110=Script_GetRealmCategories
-0084dbd0	callorder	lua_gettop	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
+0084dab0	callgraph	lua_checkstack	only unmatched callee of 0084f2c0=luaL_checkstack
+0084db10	callorder	lua_xmove	same slot between linked calls in 00854da0=luaB_cocreate
+0084db90	callorder	lua_newthread	same slot between linked calls in 00854da0=luaB_cocreate
+0084dbd0	callorder	lua_gettop	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute, 00854810=luaB_assert, 008548f0=luaB_select
 0084dbf0	override	lua_settop	
+0084dc50	callorder	lua_remove	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError
-0084dd70	callorder	lua_replace	same slot between linked calls in 00819730=FrameScript_HandleError
+0084dd70	string	lua_replace	unique "no calling environment"
+0084de50	callorder	lua_pushvalue	same slot between linked calls in 008519b0=setn
 0084deb0	override	lua_type	
+0084ded0	string	lua_typename	unique "no value"
+0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
 0084df20	callgraph	lua_isnumber	only unmatched callee of 00985b10=Script_Sound_ChatSystem_GetOutputDriverNameByIndex, 00985be0=Script_Sound_GameSystem_GetInputDriverNameByIndex, 00985ca0=Script_Sound_GameSystem_GetOutputDriverNameByIndex
 0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin, 004e0c60=Script_CreateCharacter
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
 0084e0e0	override	lua_tolstring	
+0084e150	callorder	lua_objlen	same slot between linked calls in 008519e0=tinsert, 00851c30=tconcat, 00854860=luaB_unpack
 0084e1c0	callgraph	lua_touserdata	only unmatched callee of 004a81b0=FrameScript_GetObjectThis
+0084e210	callorder	lua_topointer	same slot between linked calls in 00854a20=luaB_tostring
 0084e280	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 004a0850=CSimpleFrame_IsMovable, 004a09d0=CSimpleFrame_IsResizable, 004a0dc0=CSimpleFrame_IsClampedToScreen
 0084e2a0	callgraph	fprintf	only unmatched callee of 0048bc70=CSimpleFontString_GetFieldSize, 0048c7f0=CSimpleTexture_GetTexCoord, 0048d9e0=CSimpleFontString_GetShadowColor
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
+0084e300	callgraph	lua_pushlstring	only unmatched callee of 00853340=push_onecapture
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
+0084e3d0	callorder	lua_pushfstring	same slot between linked calls in 00854a20=luaB_tostring
 0084e4d0	override	lua_pushboolean	
+0084e590	callorder	lua_getfield	same slot between linked calls in 0084fc00=luaL_openlib
 0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 0084e670	override	lua_rawgeti	
+0084e6e0	callorder	lua_createtable	same slot between linked calls in 0084f3b0=luaL_findtable, 00854b20=luaB_newproxy
+0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084e8d0	callorder	lua_settable	same slot between linked calls in 0060a510=Script_FillLocalizedClassList
-0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError
+0084e900	callorder	lua_setfield	same slot between linked calls in 0084fc00=luaL_openlib
+0084ea90	callorder	lua_setmetatable	same slot between linked calls in 008542c0=luaB_setmetatable
+0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError, 0084f350=luaL_callmeta
+0084ed00	callorder	lua_dump	same slot between linked calls in 008529a0=str_dump
 0084ef30	override	lua_error	
 0084ef90	override	lua_concat	
 0084f210	override	luaL_where	
 0084f280	override	luaL_error	
+0084f2c0	string	luaL_checkstack	unique "stack overflow (%s)"
+0084f2f0	callorder	luaL_getmetafield	same slot between linked calls in 008542c0=luaB_setmetatable
+0084f350	callorder	luaL_callmeta	same slot between linked calls in 00854a20=luaB_tostring
+0084f3b0	callorder	luaL_findtable	same slot between linked calls in 0084fc00=luaL_openlib
+0084f520	callorder	luaL_prepbuffer	same slot between linked calls in 008528d0=str_char
+0084f560	callorder	luaL_addlstring	same slot between linked calls in 00853780=add_s
+0084f5c0	callorder	luaL_pushresult	same slot between linked calls in 008529a0=str_dump
+0084f610	callorder	luaL_addvalue	same slot between linked calls in 00853780=add_s
+0084f6a0	callorder	luaL_buffinit	same slot between linked calls in 00851c30=tconcat, 008528d0=str_char
+0084f8b0	string	luaL_argerror	unique "bad argument #%d (%s)"
+0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 008529a0=str_dump, 008542c0=luaB_setmetatable
+0084f9c0	string	luaL_checkany	unique "value expected"
 0084f9f0	callorder	luaL_checklstring	same slot between linked calls in 00818070=FrameScript_Sprintf
+0084fa50	callorder	luaL_optlstring	same slot between linked calls in 00851c30=tconcat
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
-0084fdd0	callorder	luaL_register	same slot between linked calls in 00819bb0=FrameScript_Initialize
+0084fb60	callorder	luaL_checkinteger	same slot between linked calls in 008548f0=luaB_select
+0084fbd0	callorder	luaL_optinteger	same slot between linked calls in 00854100=luaB_tonumber
+0084fc00	callgraph	luaL_openlib	only unmatched callee of 0084fdd0=luaL_register
+0084fd20	string	luaL_checkoption	unique "invalid option '%s'"
+0084fdd0	callgraph	luaL_register	only unmatched callee of 008521f0=luaopen_table, 00855060=luaopen_base
+0084fe40	callorder	lua_getstack	same slot between linked calls in 0084f8b0=luaL_argerror, 00854340=getfunc
+0084fec0	string	findlocal	unique "(*temporary)"
+008505a0	string	getobjname	unique "field"
+00850830	callgraph	luaG_errormsg	only unmatched callee of 0084ef30=lua_error
+00850920	callgraph	luaG_runerror	only unmatched callee of 00850c60=luaG_ordererror, 00856150=lua_yield, 0085d6d0=luaM_toobig
+00850950	string	info_tailcall	unique "=(tail call)"
+00850a90	callorder	lua_getinfo	same slot between linked calls in 00854340=getfunc
+00850b60	string	luaG_typeerror	unique "attempt to %s %s '%s' (a %s value)"
+00850bf0	string	luaG_concaterror	unique "concatenate"
+00850c20	string	luaG_aritherror	unique "perform arithmetic on"
+00850c60	string	luaG_ordererror	unique "attempt to compare %s with %s"
 00851010	callorder	luaopen_bit	same slot between linked calls in 00819bb0=FrameScript_Initialize
+00851640	string	math_random	unique "wrong number of arguments"
 00851760	callorder	luaopen_math	same slot between linked calls in 00819bb0=FrameScript_Initialize
-008521f0	callorder	luaopen_table	same slot between linked calls in 00819bb0=FrameScript_Initialize
+008519b0	string	setn	unique "'setn' is obsolete"
+008519e0	string	tinsert	unique "wrong number of arguments to 'insert'"
+00851c30	string	tconcat	unique "table contains non-strings"
+00851d20	string	auxsort	unique "invalid order function for sorting"
+008521f0	string	luaopen_table	unique "table"
+00852800	string	str_byte	unique "string slice too long"
+008528d0	string	str_char	unique "invalid value"
+008529a0	string	str_dump	unique "unable to dump given function"
+00852a10	string	classend	unique "malformed pattern (ends with '%%')"
+00852c30	string	matchbalance	unique "unbalanced pattern"
+00852e20	string	capture_to_close	unique "invalid pattern capture"
+00852f60	string	match	unique "missing '[' after '%%f' in pattern"
+00853340	string	push_onecapture	unique "unfinished capture"
+008533c0	callorder	push_captures	same slot between linked calls in 00853860=add_value
+00853410	string	str_find_aux	unique "^$*+?.([%-"
+00853760	string	gfind_nodef	unique "'string.gfind' was renamed to 'string.gmatch'"
+00853780	callorder	add_s	same slot between linked calls in 00853860=add_value
+00853860	string	add_value	unique "invalid replacement value (a %s)"
 008540d0	callorder	luaopen_string	same slot between linked calls in 00819bb0=FrameScript_Initialize
+00854100	string	luaB_tonumber	unique "base out of range"
+008542c0	string	luaB_setmetatable	unique "cannot change a protected metatable"
+00854340	string	getfunc	unique "invalid level"
+008545c0	string	luaB_collectgarbage	unique "collect"
+00854810	string	luaB_assert	unique "assertion failed!"
+00854860	string	luaB_unpack	unique "table too big to unpack"
+008548f0	string	luaB_select	unique "index out of range"
+00854a20	string	luaB_tostring	unique "__tostring"
+00854b20	string	luaB_newproxy	unique "boolean or proxy expected"
+00854c00	string	auxresume	unique "too many arguments to resume"
+00854da0	string	luaB_cocreate	unique "Lua function expected"
+00854f40	string	base_open	unique "Lua 5.1"
+00855060	string	luaopen_base	unique "coroutine"
+00855240	callorder	luaE_newthread	same slot between linked calls in 0084db90=lua_newthread
+00855a20	string	luaD_seterrorobj	unique "error in error handling"
+00855bf0	callgraph	luaD_reallocstack	only unmatched callee of 00855cd0=luaD_growstack
+00855c50	callorder	luaD_reallocCI	same slot between linked calls in 00856330=growCI
+00855cd0	callgraph	luaD_growstack	only unmatched callee of 0084dab0=lua_checkstack
+00856150	string	lua_yield	unique "attempt to yield across metamethod/C-call boundary"
+008562e0	callgraph	luaD_throw	only unmatched callee of 0085d6f0=luaM_realloc_
+00856330	string	growCI	unique "stack overflow"
+00856370	callorder	luaD_precall	same slot between linked calls in 00856760=luaD_call
+00856760	callorder	luaD_call	same slot between linked calls in 00850830=luaG_errormsg
+008568f0	string	lua_resume	unique "cannot resume non-suspended coroutine"
+00856af0	callgraph	luaS_resize	only unmatched callee of 00856bc0=newlstr
+00856bc0	callgraph	newlstr	only unmatched callee of 00856c80=luaS_newlstr
+00856c80	callgraph	luaS_newlstr	only unmatched callee of 0084ef90=lua_concat, 00855a20=luaD_seterrorobj
 00856e50	override	luaV_tonumber	
 00856ea0	override	luaV_tostring	
+00857250	string	luaV_gettable	unique "loop in gettable"
+008573c0	string	luaV_settable	unique "loop in settable"
+00857900	string	luaV_concat	unique "string length overflow"
+00857ca0	string	luaV_execute	score 2.00 shared 'for' initial value must be a number; 'for' limit must be a number; 'for' step must be a number
+0085a7d0	callgraph	reallymarkobject	only unmatched callee of 0085ba50=luaC_barrierf
+0085b850	callgraph	singlestep	only unmatched callee of 0085b950=luaC_step
 0085b950	override	luaC_step	
+0085ba50	callgraph	luaC_barrierf	only unmatched callee of 0084dd70=lua_replace
+0085bd70	string	findindex	unique "invalid key to 'next'"
+0085c200	string	setnodevector	unique "table overflow"
+0085c2e0	callorder	luaH_new	same slot between linked calls in 0084e6e0=lua_createtable
 0085c3a0	override	luaH_getnum	
-00860760	string	XML_ErrorString	unique "syntax error"
+0085c430	callorder	luaH_getstr	same slot between linked calls in 0085c470=luaH_get
+0085c470	callorder	luaH_get	same slot between linked calls in 0085c520=luaH_set
+0085c520	string	luaH_set	score 1.00 shared table index is NaN; table index is nil
+0085c690	callorder	luaH_getn	same slot between linked calls in 0084e150=lua_objlen
+0085cab0	callorder	newkey	same slot between linked calls in 0085cbc0=luaH_setstr
+0085cbc0	callorder	luaH_setstr	same slot between linked calls in 0085da00=luaX_newstring
+0085d0f0	callgraph	luaZ_fill	only unmatched callee of 0085da50=inclinenumber
+0085d6d0	string	luaM_toobig	score 0.50 shared memory allocation error: block too big
+0085d6f0	callgraph	luaM_realloc_	only unmatched callee of 0085d810=save
+0085d740	callgraph	luaM_growaux_	only unmatched callee of 0085ee80=registerlocalvar
+0085d810	string	save	unique "lexical element too long"
+0085d8e0	string	luaT_init	unique "__len"
+0085d940	callgraph	luaX_lexerror	only unmatched callee of 0085d9e0=luaX_syntaxerror
+0085d9e0	callgraph	luaX_syntaxerror	only unmatched callee of 00861bd0=fixjump
+0085da00	callorder	luaX_newstring	same slot between linked calls in 0085de70=read_long_string
+0085da50	string	inclinenumber	unique "chunk has too many lines"
+0085dbd0	string	trydecpoint	unique "malformed number"
+0085ddd0	callorder	skip_sep	same slot between linked calls in 0085e600=llex
+0085de70	string	read_long_string	unique "nesting of [[...]] is deprecated"
+0085e160	string	read_string	unique "escape sequence too large"
+0085e600	string	llex	unique "invalid long string delimiter"
+0085ed90	string	check_match	unique "'%s' expected (to close '%s' at line %d)"
+0085ee80	string	registerlocalvar	unique "too many local variables"
+0085efb0	string	indexupvalue	unique "upvalues"
+0085faa0	string	parlist	unique "<name> or '...' expected"
+0085fd50	string	funcargs	unique "ambiguous syntax (function call x new statement)"
+0085fe90	string	prefixexp	unique "unexpected symbol"
+008601e0	string	simpleexp	unique "cannot use '...' outside a vararg function"
+00860570	string	enterlevel	score 0.50 shared chunk has too many syntax levels
+00860890	string	breakstat	unique "no loop to break"
+00860ce0	string	fornum	unique "(for index)"
+00860f10	string	forlist	unique "(for control)"
+00861190	string	forstat	unique "'=' or 'in' expected"
+00861bd0	string	fixjump	score 0.50 shared control structure too long
+00861d90	callgraph	dischargejpc	only unmatched callee of 008623b0=luaK_code
+008623b0	string	luaK_code	unique "code size overflow"
+00865270	string	inflate	unique "header crc mismatch"
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
@@ -1362,7 +1505,6 @@ addr	how	whoa	evidence
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087b5f0	string	SEDiskSound::CompleteNonBlockingLoad	unique "CNBL: playSound Failed"
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
-0087ebc0	callorder	SEDiskSound::SEDiskSound	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
 0088b9c0	callorder	TSBaseArray<CharacterSelectionDisplay>::operator[]	same slot between linked calls in 004e33a0=Script_DeleteCharacter
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
@@ -1673,3 +1815,9 @@ addr	how	whoa	evidence
 009860e0	callorder	SI2::StopGlueMusic	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 009861c0	callgraph	SI2::StartGlueMusic	only unmatched callee of 004dc070=Script_PlayGlueMusic
 009862c0	callgraph	SI2::StartCreditsMusic	only unmatched callee of 004dc150=Script_PlayCreditsMusic
+00993c00	string	T1_New_Parser	unique "%!FontType"
+00994e20	string	parse_encoding	unique "ExpertEncoding"
+00995610	string	parse_dict	unique "FontDirectory"
+00995ba0	string	Get_Interface	score 1.12 shared glyph_name; set_mm_blend; set_mm_design
+009a12d0	string	CID_New_Parser	unique "%!PS-Adobe-3.0 Resource-CIDFont"
+009a16a0	string	cid_parse_dict	unique "%ADOBeginFontDict"

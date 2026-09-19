@@ -158,5 +158,9 @@
   "0048ed30": { "whoa": "CSimpleFrame::AttributeChangesAllowed", "status": "ported", "note": "call-order vote in its script binding (2026-09-18), lost when inlined callees were expanded into callers; binding CSimpleFrame_SetAttribute" },
   "0060c1c0": { "whoa": "TooltipThis", "status": "ported", "note": "only unmatched callee of CGTooltip_IsUnit (2026-09-18), lost when inlined callees were expanded" },
   "0067d770": { "whoa": "Script_GetUnitFromName", "status": "ported", "note": "only unmatched callee of Script_UnitIsSameServer (2026-09-18); also the resolved callee in CGUnit_C name lookup FUN_0072a000" },
-  "00488540": { "whoa": "CScriptRegion::ProtectedFunctionsAllowed", "status": "ported", "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block)" }
+  "00488540": { "whoa": "CScriptRegion::ProtectedFunctionsAllowed", "status": "ported", "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block)" },
+
+  "0076e720": { "whoa": "SStrChrR", "status": "ported", "note": "call-order slot in FrameXML_ProcessFile (2026-09-18); vote displaced once the lua sources were inventoried" },
+  "00860760": { "whoa": "XML_ErrorString", "status": "ported", "note": "unique string "syntax error" in the XMLTree block; the match became ambiguous with lua's syntax error once lua was inventoried" },
+  "0087ebc0": { "whoa": "SEDiskSound::SEDiskSound", "status": "ported", "note": "call-order slot in SESound::LoadDiskSound (2026-09-18)" }
 }

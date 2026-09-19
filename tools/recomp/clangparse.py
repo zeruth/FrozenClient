@@ -195,7 +195,7 @@ def parse_file(index, path, args, text):
             # the PDB has it as a function of its own, so it needs an inventory entry too. It is
             # seen from every TU that includes the header; main() keeps the first.
             rel = os.path.relpath(fpath, ROOT).replace('\\', '/')
-            if not fpath.startswith(root) or not (rel.startswith('src/') or rel.startswith('lib/')):
+            if not fpath.startswith(root) or not rel.startswith(('src/', 'lib/', 'vendor/')):
                 continue
             header = rel
         name = qualified(c)
@@ -239,7 +239,7 @@ def main():
     t0 = time.time()
     for path, e in sorted(db.items()):
         rel = os.path.relpath(path, ROOT).replace('\\', '/')
-        if not (rel.startswith('src/') or rel.startswith('lib/')):
+        if not rel.startswith(('src/', 'lib/', 'vendor/')):
             continue
         if only and path not in only:
             continue
