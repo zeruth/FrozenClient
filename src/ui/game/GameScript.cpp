@@ -1114,8 +1114,49 @@ int32_t Script_GMRequestPlayerInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// The icon directory. The reference does not hold this as a literal: it reads row 3 of a table
+// through FUN_00634910 and joins it to the icon name with a backslash, skipping the backslash when
+// the row is empty. That table has not been identified, so the value is taken from the client's own
+// shipped data instead of guessed -- Minimap.xml and QuestFrameTemplates.xml both address icons as
+// "Interface\\Icons\\<name>", and one of them names inv_misc_coin_02, which is exactly an icon
+// CoinIconFormat below returns. DIVERGENCE: hardcoded where the reference is data-driven.
+static const char* ICON_DIRECTORY = "Interface\\Icons";
+
+// ref: FUN_007e7cc0
+// Six coins by amount, with the thresholds read out of the decompilation rather than reasoned
+// about: under 10, 100, 1000, 10000 and 100000, then everything above.
+static void CoinIconFormat(int32_t amount, char* icon, size_t iconSize) {
+    const char* name = "INV_Misc_Coin_02";
+
+    if (amount < 10) {
+        name = "INV_Misc_Coin_05";
+    } else if (amount < 100) {
+        name = "INV_Misc_Coin_06";
+    } else if (amount < 1000) {
+        name = "INV_Misc_Coin_03";
+    } else if (amount < 10000) {
+        name = "INV_Misc_Coin_04";
+    } else if (amount < 100000) {
+        name = "INV_Misc_Coin_01";
+    }
+
+    SStrPrintf(icon, iconSize, "%s%s%s", ICON_DIRECTORY, *ICON_DIRECTORY ? "\\" : "", name);
+}
+
+// ref: FUN_00510bd0
 int32_t Script_GetCoinIcon(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetCoinIcon(amount)");
+
+        return 0;
+    }
+
+    char icon[260];
+    CoinIconFormat(static_cast<int32_t>(lua_tonumber(L, 1) + 0.5), icon, sizeof(icon));
+
+    lua_pushstring(L, icon);
+
+    return 1;
 }
 
 // ref: FUN_007e7c70

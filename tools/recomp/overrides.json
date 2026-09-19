@@ -1071,8 +1071,9 @@
     "note": "The gxRestart path. Frozen's console/Device.cpp already accumulates mode changes into s_requestedFormat and prints 'set pending gxRestart' from every gx CVar callback, but nothing consumes it: there is no registered gxRestart command and no device recreation, so a resolution or colour-depth change cannot be applied without restarting the process. Recreating the D3D device at runtime means releasing and rebuilding every GPU resource, which is a subsystem, not a missing call. Script_RestartGx is ported as the console command it is; this is what the command would have to do."
   },
   "007e7cc0": {
-    "status": "unlinked",
-    "note": "The coin icon formatter behind GetCoinIcon. Fully readable except its first step: it prefixes the icon name with a path from FUN_00634910(3), a DBC record lookup returning the string at field +4 of row 3, and which table that is has not been established. The rest is settled -- format '%s%s' with the prefix and a backslash when the prefix is non-empty, then append by amount: under 10 INV_Misc_Coin_05, under 100 _06, under 1000 _03, under 10000 _04, under 100000 _01, else _02. Not ported because a bare icon name and a path-prefixed one are not interchangeable to the texture loader."
+    "frozen": "CoinIconFormat",
+    "status": "diverged",
+    "note": "Ported, with one divergence: the reference reads the icon directory from row 3 of an unidentified table through FUN_00634910 and joins it with a backslash only when non-empty, while Frozen hardcodes it. The value is not a guess -- the client's own shipped interface addresses icons as Interface\\Icons\\<name> in Minimap.xml and QuestFrameTemplates.xml, and the latter names inv_misc_coin_02, one of the six icons this very function returns. The six amount thresholds are ported exactly."
   },
   "00619330": {
     "status": "unlinked",
@@ -1091,6 +1092,6 @@
   "00517020": {
     "frozen": "Script_GetItemIcon",
     "status": "stub",
-    "note": "Does NOT go through the item cache: it looks the argument up directly in ItemDisplayInfo (bounds at 00ad3d5c/58, index table 00ad3d6c) and returns field +0x14, which is m_inventoryIcon[0] in Frozen's ItemDisplayInfoRec. So the argument is a display id, not an item entry. Blocked on exactly the same unknown as GetCoinIcon: both prefix the name with a path from FUN_00634910(3), a lookup returning the string at field +4 of row 3 of a table that has not been identified, joined by a backslash only when the prefix is non-empty. One unknown blocks both."
+    "note": "Does NOT go through the item cache: it looks the argument up directly in ItemDisplayInfo (bounds at 00ad3d5c/58, index table 00ad3d6c) and returns field +0x14, which is m_inventoryIcon[0] in Frozen's ItemDisplayInfoRec. So the argument is a display id, not an item entry. The icon directory it prefixes is now solved -- see 007e7cc0 -- so the one thing left is FUN_0070a910, which the reference applies to the DBC string before formatting and which has not been decompiled. Everything else about this binding is ready."
   }
 }

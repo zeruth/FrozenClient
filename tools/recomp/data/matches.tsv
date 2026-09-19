@@ -668,6 +668,7 @@ addr	how	frozen	evidence
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac8460
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
+00510bd0	annotated	Script_GetCoinIcon	tag in src/ui/game/GameScript.cpp
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
 00510e00	annotated	Script_GetRealmName	tag in src/ui/game/GameScript.cpp
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
@@ -706,6 +707,7 @@ addr	how	frozen	evidence
 005164b0	table	Script_GetSummonConfirmTimeLeft	binding "GetSummonConfirmTimeLeft" in s_ScriptFunctions ~ table 00ac8460
 00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac8460
 00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac8460
+00517020	override	Script_GetItemIcon	
 0051acd0	table	Script_HasSoulstone	binding "HasSoulstone" in s_ScriptFunctions ~ table 00ac8460
 0051add0	table	Script_UseSoulstone	binding "UseSoulstone" in s_ScriptFunctions ~ table 00ac8460
 0051ae80	table	Script_HasKey	binding "HasKey" in s_ScriptFunctions ~ table 00ac8460

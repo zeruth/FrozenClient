@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 11:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 11:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2411 (=) (8.9%) | 531.9k (9.6%) |
-| &nbsp;&nbsp;ported | 1939 (=) | 399.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 446 (=) | 99.0k |
+| mapped to a frozen function | 2413 (=) (8.9%) | 532.3k (9.6%) |
+| &nbsp;&nbsp;ported | 1940 (=) | 399.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 447 (=) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **906 (=) (3.3%)** | **115.2k (2.1%)** |
-| unmapped | 24750 | 4.89M |
+| **faithful** (linked, not stub, call order >= 80%) | **907 (=) (3.3%)** | **115.4k (2.1%)** |
+| unmapped | 24748 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11439, stubs 841 | |
+| frozen functions (src/, from PDB + source) | 11440, stubs 840 | |
 
-Match evidence: annotated 453, callgraph 171, callorder 126, cvar 30, handler 28, order 321, override 180, string 345, table 757. Module anchors: 1479 assert strings.
+Match evidence: annotated 454, callgraph 171, callorder 126, cvar 30, handler 28, order 321, override 181, string 345, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 11:45 -- mapped 2411, ported 1939, stub 446, spine mapped 388.
+Previous run: 2026-09-19 11:54 -- mapped 2413, ported 1940, stub 447, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 550 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 549 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -99,7 +99,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00a47c80 (assert..) | 7 | `-` | 7 | 0 | assert, collectgarbage, error, gcinfo, getfenv, getmetatable ... |
 | 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 7 |  / stubs: IsProtected, CanChangeProtectedState, GetRect, CreateAnimationGroup ... |
 | 00ac80c8 (RegisterForSave..) | 17 | `s_ScriptFunctions` | 0 | 7 |  / stubs: RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode, IsMouseButtonDown ... |
-| 00ac8600 (GetRestState..) | 14 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GMRequestPlayerInfo, GetCoinIcon, GetCoinTextureString, TogglePVP ... |
 | 00acd200 (GetNumBattlefieldScores..) | 8 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetNumBattlefieldScores, GetBattlefieldScore, GetBattlefieldWinner, SetBattlefieldScoreFaction ... |
 | 00acedb0 (CloseTrade..) | 7 | `s_ScriptFunctions` | 0 | 7 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
 | 00adb8e8 (CombatLogAddFilter..) | 7 | `-` | 7 | 0 | CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime, CombatLogGetNumEntries, CombatLogSetCurrentEntry, CombatLogGetCurrentEntry ... |
@@ -108,6 +107,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ac42c8 (GetCharacterCreateFacing..) | 11 | `s_ScriptFunctions` | 0 | 6 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
 | 00ac8338 (AssistUnit..) | 6 | `s_ScriptFunctions` | 0 | 6 |  / stubs: AssistUnit, FocusUnit, FollowUnit, InteractUnit ... |
 | 00ac8378 (GetZoneText..) | 10 | `s_ScriptFunctions` | 0 | 6 |  / stubs: InitiateTrade, CanInspect, NotifyInspect, InviteUnit ... |
+| 00ac8600 (GetRestState..) | 14 | `s_ScriptFunctions` | 0 | 6 |  / stubs: GMRequestPlayerInfo, GetCoinTextureString, TogglePVP, SetPVP ... |
 | 00accce0 (GetNumSpellTabs..) | 25 | `s_ScriptFunctions` | 6 | 0 | GetSpellCount, ToggleSpellAutocast, EnableSpellAutocast, DisableSpellAutocast, PickupSpell, SpellHasRange |
 | 00accf18 (GetMapContinents..) | 7 | `s_ScriptFunctions` | 6 | 0 | GetMapContinents, GetMapZones, SetMapZoom, ZoomOut, SetDungeonMapLevel, DungeonUsesTerrainMap |
 | 00aceec0 (ItemTextGetItem..) | 6 | `-` | 6 | 0 | ItemTextGetItem, ItemTextGetCreator, ItemTextGetMaterial, ItemTextGetPage, ItemTextGetText, ItemTextHasNextPage |
@@ -197,10 +197,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
-| GameUI.cpp | 491 | 96.4k | 100 (20.4%) | 27.1% | 60 | 0 | 73 |
+| GameUI.cpp | 491 | 96.4k | 101 (20.6%) | 27.3% | 61 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 70 (46.4%) | 27.6% | 44 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 49 (14.0%) | 7.9% | 6 | 2 | 36 |
+| ChatFrame.cpp | 349 | 82.2k | 50 (14.3%) | 8.0% | 6 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
@@ -785,8 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 10:22 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:22 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
@@ -810,6 +808,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 11:31 | 2408 (8.9%) | 905 (3.3%) | 445 | 388/5530 | 1584/2512 | 550 |
 | 2026-09-19 11:45 | 2411 (8.9%) | 906 (3.3%) | 446 | 388/5530 | 1584/2512 | 550 |
 | 2026-09-19 11:49 | 2411 (8.9%) | 906 (3.3%) | 446 | 388/5530 | 1584/2512 | 550 |
+| 2026-09-19 11:54 | 2413 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 549 |
+| 2026-09-19 11:55 | 2413 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 549 |
 
 ## How to move a row
 

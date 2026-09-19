@@ -10675,6 +10675,22 @@
   "refSize": 24,
   "status": "ported"
  },
+ "00510bd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetCoinIcon",
+  "frozenSize": 278,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 131,
+  "status": "ported"
+ },
  "00510c60": {
   "branchRatio": 1.0,
   "constOverlap": 0.143,
@@ -11281,6 +11297,22 @@
   "how": "table",
   "module": "GameUI.cpp",
   "refSize": 88,
+  "status": "stub"
+ },
+ "00517020": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetItemIcon",
+  "frozenSize": 75,
+  "how": "override",
+  "module": "GameUI.cpp",
+  "refSize": 213,
   "status": "stub"
  },
  "0051acd0": {
