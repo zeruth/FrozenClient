@@ -85229,6 +85229,21 @@
 "refs": [],
 "line": 190
 },
+"BlockRangeChanged": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"_Vector_iterator<std::_Vector_val<std::_Simple_types<(anonymous namespace)::MirrorChange> > >::operator*"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 208
+},
 "SignalUnitFieldEvents": {
 "files": [
 "src/object/client/mirror.cpp"
@@ -85248,19 +85263,52 @@
 "FrameScript_SignalEvent",
 "FrameScript_SignalEvent",
 "FrameScript_SignalEvent",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject::GetGUID",
+"ClntObjMgrGetActivePlayer",
 "FrameScript_SignalEvent"
 ],
 "strings": [
 "%s"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 16,
+"branches": 18,
 "stub": false,
-"lines": 79,
+"lines": 92,
 "refs": [],
-"line": 210
+"line": 221
+},
+"SignalPlayerFieldEvents": {
+"files": [
+"src/object/client/mirror.cpp"
+],
+"callseq": [
+"CGPlayer::Player",
+"ClntObjMgrGetActivePlayer",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 316
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85279,7 +85327,9 @@
 "IsMaskBitSet",
 "CDataStore::Get",
 "CGObject::IsA",
-"SignalUnitFieldEvents"
+"SignalUnitFieldEvents",
+"CGObject::IsA",
+"SignalPlayerFieldEvents"
 ],
 "strings": [],
 "consts": [
@@ -85287,11 +85337,11 @@
 "1",
 "42"
 ],
-"branches": 7,
+"branches": 8,
 "stub": false,
-"lines": 46,
+"lines": 50,
 "refs": [],
-"line": 304
+"line": 347
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85319,7 +85369,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 351
+"line": 398
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85341,7 +85391,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 394
+"line": 441
 },
 "QueryPlayerName": {
 "files": [

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 15:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 15:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,7 +9,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2687 (=) (9.9%) | 571.9k (10.3%) |
-| &nbsp;&nbsp;ported | 2090 (-1) | 415.7k |
+| &nbsp;&nbsp;ported | 2090 (=) | 415.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 561 (=) | 118.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **932 (=) (3.4%)** | **117.7k (2.1%)** |
@@ -17,11 +17,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11465, stubs 807 | |
+| frozen functions (src/, from PDB + source) | 11467, stubs 807 | |
 
 Match evidence: annotated 516, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 193, string 312, table 1106. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 15:19 -- mapped 2687, ported 2091, stub 561, spine mapped 392.
+Previous run: 2026-09-19 15:20 -- mapped 2687, ported 2090, stub 561, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
 | 2026-09-19 13:33 | 2677 (9.9%) | 918 (3.4%) | 580 | 391/5530 | 1791/2964 | 645 |
 | 2026-09-19 13:33 | 2677 (9.9%) | 918 (3.4%) | 580 | 391/5530 | 1791/2964 | 645 |
 | 2026-09-19 13:40 | 2678 (9.9%) | 920 (3.4%) | 577 | 392/5530 | 1791/2964 | 641 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 15:08 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:19 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:20 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
+| 2026-09-19 15:22 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 
 ## How to move a row
 

@@ -204,6 +204,17 @@ const char* UnitToken(const CGUnit_C* unit) {
     return nullptr;
 }
 
+// Whether any block in [first, first + count) changed for this guid.
+bool BlockRangeChanged(WOWGUID guid, uint32_t first, uint32_t count) {
+    for (const auto& change : s_changes) {
+        if (change.guid == guid && change.block >= first && change.block < first + count) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Signals the events the changed blocks of a unit stand for. Ranges are handled the way the
 // reference's watchers do -- power and maxPower are seven dwords each and any of them means the
 // same event -- so the arrays are compared as spans rather than seven separate cases.
@@ -285,6 +296,38 @@ void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
     if (factionChanged) {
         FrameScript_SignalEvent(SCRIPT_UNIT_FACTION, "%s", token);
     }
+
+    // The target guid is eight bytes, so two blocks, and either may move on its own -- a target
+    // change that only alters the high dword is still a target change.
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->target), 2)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_TARGET, "%s", token);
+
+        // PLAYER_TARGET_CHANGED is the player's own target moving, and carries no argument. It is
+        // what puts the target frame on screen at all, so it is worth having even while the unit
+        // tokens beyond "player" and "target" are missing.
+        if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            FrameScript_SignalEvent(SCRIPT_PLAYER_TARGET_CHANGED, nullptr);
+        }
+    }
+}
+
+// Fields that live on the player descriptor rather than the unit one. Only the active player has
+// these sent to us at all, so there is no token question here.
+void SignalPlayerFieldEvents(CGPlayer_C* player, WOWGUID guid) {
+    auto data = player->Player();
+
+    if (!data || guid != ClntObjMgrGetActivePlayer()) {
+        return;
+    }
+
+    if (BlockRangeChanged(guid, player->BlockIndexOf(&data->xp), 1)
+        || BlockRangeChanged(guid, player->BlockIndexOf(&data->nextLevelXP), 1)) {
+        FrameScript_SignalEvent(SCRIPT_PLAYER_XP_UPDATE, nullptr);
+    }
+
+    if (BlockRangeChanged(guid, player->BlockIndexOf(&data->coinage), 1)) {
+        FrameScript_SignalEvent(SCRIPT_PLAYER_MONEY, nullptr);
+    }
 }
 
 }
@@ -343,6 +386,10 @@ int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
     // set. Deliberately narrow: see docs/ref/parity-mirror.md.
     if (object->IsA(TYPE_UNIT)) {
         SignalUnitFieldEvents(static_cast<CGUnit_C*>(object), guid);
+    }
+
+    if (object->IsA(TYPE_PLAYER)) {
+        SignalPlayerFieldEvents(static_cast<CGPlayer_C*>(object), guid);
     }
 
     return 1;

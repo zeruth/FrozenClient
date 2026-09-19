@@ -105,3 +105,31 @@ signal `UNIT_HEALTH`" without the registry. That reaches the right behaviour for
 fields the player and target frames need (health, maxhealth, power, maxpower, level, faction) and
 diverges from the reference in mechanism rather than in effect. It would have to be recorded as
 `diverged`, with the registry named as the end state, or it will read later as a finished port.
+
+## 5. What frozen signals today
+
+Implemented 2026-09-19 as a deliberate divergence (`overrides.json` 004d5550). The first pass
+records the blocks whose value actually changed; the second pass turns those into events.
+
+| field | event | token |
+|---|---|---|
+| `CGUnitData::health` | `UNIT_HEALTH` | player, target |
+| `CGUnitData::maxHealth` | `UNIT_MAXHEALTH` | player, target |
+| `CGUnitData::power[0..6]` | `UNIT_MANA` | player, target |
+| `CGUnitData::maxPower[0..6]` | `UNIT_MAXMANA` | player, target |
+| `CGUnitData::level` | `UNIT_LEVEL` | player, target |
+| `CGUnitData::factionTemplate` | `UNIT_FACTION` | player, target |
+| `CGUnitData::target` (2 blocks) | `UNIT_TARGET`, and `PLAYER_TARGET_CHANGED` for the player | player, target |
+| `CGPlayerData::xp`, `nextLevelXP` | `PLAYER_XP_UPDATE` | player only |
+| `CGPlayerData::coinage` | `PLAYER_MONEY` | player only |
+
+Not signalled, and each for a stated reason:
+
+* `UNIT_AURA` -- auras do not live in the descriptors. `CGUnitData::auraState` is a bitfield of
+  *categories* for spell requirements, not the aura list, which arrives in its own packet and is
+  already parsed into the aura cache. Wiring `auraState` to `UNIT_AURA` would fire on the wrong
+  thing at the wrong times.
+* Every other field -- there is no watcher registry, so each one is a hand-written case. The six
+  plus three above are the ones the player and target frames read on the first frame in the world.
+
+Still narrow in the same two ways: no registry, and only two tokens.
