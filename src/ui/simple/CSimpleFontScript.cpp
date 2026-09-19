@@ -22,12 +22,17 @@
 // NOT the 004a8240/004a8290 the binding-table matcher offers: those read DAT_00b4997c, whose
 // run holds Play, Pause, CreateAnimation and SetCurve -- the animation group, not a font.
 //
-// Still blocked, but on one thing rather than on the address. The reference reaches a type
-// name through vtable+0x1c and a name-based IsA through +0x18; frozen's CSimpleFont derives
-// from FrameScript_Object, not CScriptObject, so it has neither, and what string the
-// reference returns is not recovered. An earlier attempt this session pushed a literal "Font"
-// and was reverted; nothing in the shipped interface corroborates that spelling, so adding
-// the virtuals means finding what they return first.
+// Blocked on one thing: what type name the reference reports. It reaches it through
+// vtable+0x1c, and a name-based IsA through +0x18; frozen's CSimpleFont derives from
+// FrameScript_Object rather than CScriptObject and has neither, so both would have to be
+// added -- with the right string.
+//
+// "Font" is NOT it. A string search of the reference finds FontString, FontInfo, SetFont and
+// thirty others containing the word, and no standalone "Font" anywhere -- so nothing returns
+// that literal. An earlier attempt this session pushed exactly that and was reverted on other
+// grounds; it would also have been wrong. Frozen's convention for these is an
+// s_objectTypeName static (CScriptObject "Object", CScriptRegion "Region"), and whatever
+// belongs in the font's has to come out of the vtable slot, not out of the name of the class.
 int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
