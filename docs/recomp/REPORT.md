@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:57 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 00:14 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1853 (+14) (6.8%) | 422.0k (7.6%) |
-| &nbsp;&nbsp;ported | 1398 (+14) | 305.0k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 433 (=) | 89.1k |
+| mapped to a whoa function | 2167 (+314) (8.0%) | 473.0k (8.5%) |
+| &nbsp;&nbsp;ported | 1622 (+224) | 340.4k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 523 (+90) | 104.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **551 (+11) (2.0%)** | **68.6k (1.2%)** |
-| unmapped | 25308 | 4.99M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 276 (+11) (5.0%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **621 (+70) (2.3%)** | **73.8k (1.3%)** |
+| unmapped | 24994 | 4.94M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 288 (+12) (5.2%) | |
 | whoa functions (src/, from PDB + source) | 11306, stubs 865 | |
 
-Match evidence: annotated 202, callgraph 118, callorder 122, cvar 30, handler 27, override 107, string 349, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 202, callgraph 118, callorder 122, cvar 30, handler 27, order 313, override 107, string 350, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 23:56 -- mapped 1839, ported 1384, stub 433, spine mapped 265.
+Previous run: 2026-09-18 23:57 -- mapped 1853, ported 1398, stub 433, spine mapped 276.
 
 ## Lua API coverage (binding tables)
 
@@ -197,68 +197,68 @@ Module = the source file named by the reference's own assert strings near the fu
 | ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 52 (5.3%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
-| HealthBar.cpp | 448 | 102.9k | 6 (1.3%) | 2.3% | 0 | 0 | 68 |
+| HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 20 (7.1%) | 5.8% | 0 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
-| GameUI.cpp | 491 | 96.4k | 43 (8.8%) | 17.6% | 29 | 0 | 73 |
+| GameUI.cpp | 491 | 96.4k | 99 (20.2%) | 27.0% | 63 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 10 (2.8%) | 4.8% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 29 (8.3%) | 2.6% | 0 | 2 | 36 |
-| lmemPool.cpp | 342 | 80.2k | 73 (21.3%) | 30.2% | 0 | 0 | 107 |
+| ChatFrame.cpp | 349 | 82.2k | 45 (12.9%) | 7.4% | 13 | 2 | 36 |
+| lmemPool.cpp | 342 | 80.2k | 83 (24.3%) | 33.4% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 5 (2.7%) | 3.3% | 0 | 0 | 118 |
 | M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
-| InputControl.cpp | 287 | 61.8k | 18 (6.3%) | 16.4% | 3 | 0 | 115 |
+| InputControl.cpp | 287 | 61.8k | 25 (8.7%) | 17.5% | 3 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 14 (3.4%) | 17.4% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 31 (12.8%) | 4.1% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| SpellBookFrame.cpp | 246 | 57.0k | 21 (8.5%) | 7.5% | 7 | 0 | 15 |
+| SpellBookFrame.cpp | 246 | 57.0k | 35 (14.2%) | 11.0% | 15 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
-| PartyFrame.cpp | 304 | 55.3k | 70 (23.0%) | 31.3% | 56 | 0 | 11 |
+| PartyFrame.cpp | 304 | 55.3k | 74 (24.3%) | 32.2% | 57 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 6 (2.7%) | 1.9% | 0 | 0 | 8 |
-| Minigame_C.cpp | 352 | 50.8k | 124 (35.2%) | 30.6% | 0 | 0 | 68 |
-| LFGInfo.cpp | 229 | 47.7k | 12 (5.2%) | 3.0% | 9 | 0 | 7 |
-| ScriptEvents.cpp | 225 | 46.9k | 166 (73.8%) | 71.7% | 60 | 0 | 26 |
+| Minigame_C.cpp | 352 | 50.8k | 175 (49.7%) | 40.6% | 0 | 0 | 68 |
+| LFGInfo.cpp | 229 | 47.7k | 20 (8.7%) | 8.7% | 9 | 0 | 7 |
+| ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 7 (3.8%) | 3.8% | 1 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 194 (53.3%) | 58.7% | 75 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 195 (53.6%) | 58.9% | 75 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
 | VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
-| TextureCache.cpp | 252 | 38.9k | 7 (2.8%) | 5.5% | 0 | 0 | 79 |
-| TradeSkillFrame.cpp | 163 | 38.8k | 2 (1.2%) | 0.2% | 0 | 0 | 23 |
-| framing.c | 125 | 38.8k | 28 (22.4%) | 51.7% | 0 | 0 | 39 |
+| TextureCache.cpp | 252 | 38.9k | 12 (4.8%) | 7.9% | 0 | 0 | 79 |
+| TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 0 | 0 | 23 |
+| framing.c | 125 | 38.8k | 34 (27.2%) | 52.8% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 9 (3.8%) | 3.1% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 2 (0.7%) | 0.5% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 68 (28.0%) | 29.1% | 0 | 0 | 68 |
-| CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 8 | 1 | 4 |
+| ConsoleVar.cpp | 243 | 36.1k | 69 (28.4%) | 29.1% | 0 | 0 | 68 |
+| CSimpleFrameScript.cpp | 242 | 35.7k | 85 (35.1%) | 43.3% | 16 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 10 (4.7%) | 9.1% | 0 | 0 | 84 |
-| AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
+| AchievementInfo.cpp | 179 | 33.7k | 4 (2.2%) | 1.7% | 0 | 0 | 0 |
 | Calendar.cpp | 109 | 32.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 44 (23.9%) | 31.0% | 10 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 55 (29.9%) | 38.2% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 39 (23.1%) | 35.1% | 0 | 0 | 31 |
-| CGlueMgr.cpp | 183 | 28.9k | 43 (23.5%) | 41.6% | 4 | 0 | 1 |
+| CGlueMgr.cpp | 183 | 28.9k | 66 (36.1%) | 49.2% | 12 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 9 (4.5%) | 18.3% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 72 (35.3%) | 42.3% | 9 | 4 | 50 |
-| UIMacros.cpp | 139 | 27.2k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
+| CScriptRegion.cpp | 204 | 27.4k | 84 (41.2%) | 48.2% | 13 | 4 | 50 |
+| UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 18 (10.8%) | 26.4% | 0 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 7 (4.9%) | 15.3% | 0 | 0 | 36 |
-| GossipInfo.cpp | 174 | 25.4k | 15 (8.6%) | 5.5% | 1 | 0 | 5 |
+| GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 14 (10.1%) | 16.9% | 3 | 0 | 13 |
-| PaperDollInfoFrame.cpp | 111 | 25.0k | 25 (22.5%) | 23.4% | 19 | 0 | 8 |
+| PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 19 | 0 | 8 |
 | CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 6 | 2 | 7 |
-| TalentInfo.cpp | 141 | 24.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
+| TalentInfo.cpp | 141 | 24.1k | 3 (2.1%) | 1.8% | 0 | 0 | 1 |
 | MovementShared.cpp | 85 | 23.5k | 0 (0.0%) | 0.0% | 0 | 0 | 42 |
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
@@ -272,7 +272,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 32 (25.0%) | 28.1% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
-| TaxiMapFrame.cpp | 97 | 19.4k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
+| TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 0 | 0 | 2 |
 | Profile.cpp | 128 | 19.1k | 2 (1.6%) | 2.5% | 0 | 0 | 28 |
 | DressUpModelFrame.cpp | 116 | 18.8k | 10 (8.6%) | 12.8% | 0 | 0 | 7 |
 | AddOns.cpp | 101 | 18.1k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
@@ -282,16 +282,16 @@ Module = the source file named by the reference's own assert strings near the fu
 | OsClipboard.cpp | 74 | 16.8k | 1 (1.4%) | 3.4% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 5 (5.7%) | 1.6% | 0 | 0 | 33 |
 | Item_C.cpp | 107 | 16.4k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
-| QuestLog.cpp | 80 | 16.4k | 4 (5.0%) | 4.7% | 2 | 0 | 2 |
+| QuestLog.cpp | 80 | 16.4k | 6 (7.5%) | 7.3% | 2 | 0 | 2 |
 | CGxDevice.cpp | 54 | 16.2k | 4 (7.4%) | 3.8% | 0 | 0 | 9 |
 | tga.cpp | 82 | 16.2k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | AuctionHouse.cpp | 49 | 16.1k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | fmod_codec_dls.cpp | 36 | 16.0k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | Grunt.cpp | 69 | 15.9k | 2 (2.9%) | 6.4% | 0 | 0 | 5 |
 | fmod_plugin.cpp | 39 | 15.7k | 0 (0.0%) | 0.0% | 0 | 0 | 15 |
-| ComSatClient.cpp | 86 | 15.6k | 5 (5.8%) | 3.8% | 5 | 0 | 6 |
+| ComSatClient.cpp | 86 | 15.6k | 6 (7.0%) | 4.2% | 5 | 0 | 6 |
 | SComp.cpp | 83 | 15.1k | 1 (1.2%) | 1.2% | 0 | 0 | 2 |
-| PetInfo.cpp | 69 | 14.8k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
+| PetInfo.cpp | 69 | 14.8k | 4 (5.8%) | 4.4% | 0 | 0 | 7 |
 | ActionBarFrame.cpp | 64 | 14.7k | 18 (28.1%) | 19.9% | 4 | 0 | 8 |
 | PlayerName.cpp | 71 | 14.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | UIMacroOptions.cpp | 93 | 14.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -308,11 +308,11 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_os_cdda.cpp | 30 | 12.4k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
 | SLock.cpp | 68 | 12.3k | 1 (1.5%) | 2.0% | 0 | 1 | 18 |
 | CGxD3d9ExTexture.cpp | 47 | 12.2k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
-| CharacterCreation.cpp | 56 | 12.2k | 19 (33.9%) | 32.6% | 3 | 0 | 3 |
+| CharacterCreation.cpp | 56 | 12.2k | 20 (35.7%) | 33.4% | 4 | 0 | 3 |
 | aSfxDsp.cpp | 48 | 12.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
-| UIBindings.cpp | 59 | 11.5k | 16 (27.1%) | 32.4% | 15 | 0 | 4 |
+| UIBindings.cpp | 59 | 11.5k | 17 (28.8%) | 34.1% | 15 | 0 | 4 |
 | CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 5 (6.7%) | 8.0% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -320,34 +320,34 @@ Module = the source file named by the reference's own assert strings near the fu
 | ConsoleClient.cpp | 52 | 10.3k | 7 (13.5%) | 12.8% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
-| RaidInfo.cpp | 33 | 10.1k | 12 (36.4%) | 32.1% | 9 | 0 | 1 |
+| RaidInfo.cpp | 33 | 10.1k | 14 (42.4%) | 37.8% | 10 | 0 | 1 |
 | CurrencyTypes.cpp | 48 | 10.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | MapLoad.cpp | 29 | 9.9k | 1 (3.4%) | 3.3% | 0 | 0 | 22 |
 | fmod_output_dsound.cpp | 36 | 9.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | fmod_codec_s3m.cpp | 14 | 9.7k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | fmod_codec.cpp | 43 | 9.2k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
 | fmod_codec_fsb.cpp | 18 | 9.2k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| WardenClient.cpp | 62 | 8.9k | 1 (1.6%) | 9.2% | 0 | 0 | 0 |
+| WardenClient.cpp | 62 | 8.9k | 3 (4.8%) | 11.8% | 0 | 0 | 0 |
 | TradeFrame.cpp | 43 | 8.8k | 7 (16.3%) | 24.3% | 6 | 0 | 5 |
 | vorbisfile.c | 23 | 8.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | DanceStudio.cpp | 53 | 8.6k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
 | DuelInfo.cpp | 49 | 8.4k | 1 (2.0%) | 0.4% | 0 | 0 | 4 |
 | AccountData.cpp | 47 | 8.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| GuildInfo.cpp | 35 | 8.3k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| MerchantFrame.cpp | 41 | 8.3k | 1 (2.4%) | 2.8% | 1 | 0 | 4 |
+| GuildInfo.cpp | 35 | 8.3k | 1 (2.9%) | 3.0% | 0 | 0 | 1 |
+| MerchantFrame.cpp | 41 | 8.3k | 9 (22.0%) | 31.7% | 3 | 0 | 4 |
 | fmod_pluginfactory.cpp | 38 | 8.3k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | MapObjRead.cpp | 37 | 8.1k | 0 (0.0%) | 0.0% | 0 | 0 | 11 |
 | fmod_codec_oggvorbis.cpp | 31 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | CalendarEvent.cpp | 40 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ChatBubbleFrame.cpp | 55 | 7.6k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
-| RealmList.cpp | 46 | 7.5k | 19 (41.3%) | 36.8% | 0 | 0 | 0 |
+| RealmList.cpp | 46 | 7.5k | 20 (43.5%) | 37.3% | 0 | 0 | 0 |
 | fmod_sample_openal.cpp | 19 | 7.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetitionVendor.cpp | 38 | 6.9k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | Vehicle_C.cpp | 43 | 6.8k | 0 (0.0%) | 0.0% | 0 | 0 | 19 |
 | Corpse_C.cpp | 63 | 6.8k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
-| cmemblock.cpp | 46 | 6.7k | 10 (21.7%) | 19.4% | 0 | 0 | 16 |
+| cmemblock.cpp | 46 | 6.7k | 12 (26.1%) | 22.0% | 2 | 0 | 16 |
 | SSignature.cpp | 36 | 6.7k | 6 (16.7%) | 11.8% | 0 | 0 | 18 |
-| SCmd.cpp | 55 | 6.6k | 4 (7.3%) | 1.1% | 0 | 0 | 16 |
+| SCmd.cpp | 55 | 6.6k | 5 (9.1%) | 1.3% | 0 | 0 | 16 |
 | fmod_dsp_itecho.cpp | 35 | 6.6k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | UnitCombat_C.cpp | 25 | 6.5k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
 | hidmanagerimpl.cpp | 34 | 6.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -362,7 +362,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EZ_LCD.cpp | 54 | 5.7k | 0 (0.0%) | 0.0% | 0 | 0 | 8 |
 | NamePlateFrame.cpp | 10 | 5.6k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | OsURLDownload.cpp | 21 | 5.5k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
-| GMTicketInfo.cpp | 37 | 5.3k | 6 (16.2%) | 14.4% | 0 | 0 | 1 |
+| GMTicketInfo.cpp | 37 | 5.3k | 9 (24.3%) | 19.5% | 0 | 0 | 1 |
 | fmod.cpp | 110 | 5.2k | 1 (0.9%) | 0.9% | 0 | 0 | 42 |
 | fmod_codec_mod.cpp | 10 | 5.0k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | fmod_thread.cpp | 25 | 4.9k | 0 (0.0%) | 0.0% | 0 | 0 | 16 |
@@ -383,7 +383,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ArenaTeamInfo.cpp | 33 | 4.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | CSimpleMessageFrame.cpp | 29 | 4.2k | 2 (6.9%) | 3.5% | 0 | 0 | 0 |
 | OsTcp.cpp | 23 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| ShaderEffectManager.cpp | 24 | 4.1k | 1 (4.2%) | 11.9% | 0 | 0 | 3 |
+| ShaderEffectManager.cpp | 24 | 4.1k | 2 (8.3%) | 24.5% | 0 | 0 | 3 |
 | OsVersionHash.cpp | 19 | 4.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CharacterComponent.cpp | 11 | 4.0k | 1 (9.1%) | 28.8% | 0 | 0 | 5 |
 | RCString.cpp | 46 | 4.0k | 3 (6.5%) | 8.2% | 0 | 0 | 17 |
@@ -409,7 +409,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | sharedbook.c | 8 | 2.7k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_codec_flac.cpp | 22 | 2.6k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | floor1.c | 7 | 2.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| PetitionInfo.cpp | 20 | 2.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
+| PetitionInfo.cpp | 20 | 2.5k | 1 (5.0%) | 21.3% | 0 | 0 | 0 |
 | ItemStats.cpp | 3 | 2.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_file_cdda.cpp | 12 | 2.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | Trade_C.cpp | 13 | 2.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
@@ -530,10 +530,13 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---|---:|---:|---|---|
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
 | 0062dae0 | Tooltip.cpp | 1382 | 0 | `CGTooltip_SetHyperlink` [table] | %I64X:, %s:SetHyperlink(): Unknown link type |
+| 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [order] | BACKSPACE, DECIMAL |
 | 0062e050 | Tooltip.cpp | 1226 | 0 | `CGTooltip_SetInventoryItem` [table] | Invalid inventory slot in SetInventoryIt, Usage: %s:SetInventoryItem(unit, slot [, |
+| 005104a0 | ChatFrame.cpp? | 1143 | 0 | `Script_SetCursor` [order] | ATTACK_CURSOR, ATTACK_ERROR_CURSOR |
 | 004a15a0 | CSimpleFrameScript.cpp | 1022 | 0 | `CSimpleFrame_SetBackdrop` [table] | .\CSimpleFrameScript.cpp, Usage: %s:SetBackdrop(nil or {bgFile = " |
 | 00573690 | RaidInfo.cpp | 975 | 0 | `Script_GetRaidRosterInfo` [table] | .\RaidInfo.cpp, MAINASSIST |
 | 0062f420 | Tooltip.cpp | 800 | 0 | `CGTooltip_SetBagItem` [table] | .\Tooltip.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
+| 0051cdb0 | GameUI.cpp | 754 | 0 | `Script_EquipItemByName` [order] | EquipItemByName(): Invalid inventory dst, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 00537240 | PartyFrame.cpp? | 719 | 0 | `Script_BNGetFOFInfo` [table] | BNUI: BNGetFOFInfo for ID %u index %d is, Incorrect ID |
 | 004a12d0 | CSimpleFrameScript.cpp | 718 | 0 | `CSimpleFrame_GetBackdrop` [table] | bgFile, bottom |
 | 005879d0 | TradeFrame.cpp | 656 | 0 | `Script_ClickTradeButton` [table] | .\TradeFrame.cpp, Usage: ClickTradeButton(index) |
@@ -543,10 +546,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00587c60 | TradeFrame.cpp | 589 | 0 | `Script_GetTradeTargetItemInfo` [table] | %s%s%s, Usage: GetTradeTargetItemInfo(index) |
 | 00574ab0 | RaidInfo.cpp | 579 | 0 | `Script_SetRaidTarget` [table] | .\RaidInfo.cpp, Usage: SetRaidTarget(unit, index) |
 | 0052e1b0 | PartyFrame.cpp | 578 | 0 | `Script_SetPartyAssignment` [table] | .\PartyFrame.cpp, Invalid Party assignment |
+| 0051c450 | GameUI.cpp | 574 | 0 | `Script_IsUsableItem` [order] | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062f1e0 | Tooltip.cpp | 571 | 0 | `CGTooltip_SetTradeTargetItem` [table] | Invalid trade slot in SetTradeTargetItem |
 | 0062f9e0 | Tooltip.cpp | 569 | 0 | `CGTooltip_SetInboxItem` [table] | Usage: %s:SetInboxItem(messageIndex, att |
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
 | 0052dc20 | PartyFrame.cpp | 564 | 0 | `Script_SetLootMethod` [table] | Invalid loot method, Usage: SetLootMethod("method" [,master]) |
+| 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [order] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
 | 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
 | 0054de00 | BattlefieldInfo.cpp | 519 | 0 | `Script_SortBattlefieldScoreData` [table] | Usgae: SortBattlefieldScoreData("type"), class |
@@ -558,16 +563,11 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0054c2e0 | BattlefieldInfo.cpp | 496 | 0 | `Script_GetBattlefieldPosition` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldPosition(index) |
 | 0062e900 | Tooltip.cpp | 480 | 0 | `CGTooltip_SetTrainerService` [table] | Invalid trainer service in SetTrainerSer |
 | 0061ef10 | Tooltip.cpp | 480 | 0 | `CGTooltip_GetItem` [table] | .\Tooltip.cpp |
+| 00817170 | XMLTree.cpp? | 467 | 0 | `hooksecurefunc` [order] | Usage: hooksecurefunc([table,] "function, hooksecurefunc(): %s is not a function |
 | 00536e40 | PartyFrame.cpp? | 457 | 0 | `Script_BNReportPlayer` [table] | ABUSE, BNET_REPORT_SENT |
 | 00535ce0 | PartyFrame.cpp? | 452 | 0 | `Script_BNCreateConversation` [table] | Usage: BNCreateConversation(id,id) |
 | 00630620 | Tooltip.cpp | 443 | 0 | `CGTooltip_SetCurrencyToken` [table] | .\Tooltip.cpp, Usage: %s:SetCurrencyToken(index) |
 | 00625470 | Tooltip.cpp | 437 | 0 | `CGTooltip_SetPetAction` [table] | Usage: %s:SetPetAction(slot) |
-| 00535aa0 | PartyFrame.cpp? | 435 | 0 | `Script_BNGetCustomMessageTable` [table] | Usage: BNGetCustomMessageTable(table) |
-| 005e9bc0 | PaperDollInfoFrame.cpp | 433 | 0 | `Script_GetInventoryItemTexture` [table] | %s%s%s |
-| 0049e350 | CScriptRegionScript.cpp | 431 | 0 | `CScriptRegion_CreateAnimationGroup` [table] | %s:CreateAnimationGroup(): Couldn't find, %s:CreateAnimationGroup(): Recursively i |
-| 00631b60 | Tooltip.cpp? | 430 | 0 | `CGTooltip_SetHyperlinkCompareItem` [table] | Usage: %s:SetHyperlinkCompareItem("hyper, d:\BuildServer\WoW\1\work\WoW-code\branc |
-| 006307e0 | Tooltip.cpp | 427 | 0 | `CGTooltip_SetBackpackToken` [table] | .\Tooltip.cpp, Usage: %s:SetBackpackToken(index) |
-| 00613f90 | ScriptEvents.cpp | 426 | 0 | `Script_GetPlayerInfoByGUID` [table] | Usage: GetPlayerInfoByGUID("playerGUID") |
 
 ## Divergence smells: reference strings the whoa counterpart never mentions
 
@@ -575,12 +575,15 @@ A reference function that formats, asserts or looks up a string its port does no
 
 | addr | whoa | missing |
 |---|---|---|
+| 00877aa0 | `FMOD_ErrorString` | A CDDA read error occurred. ; A HTTP error occurred. This is a catch-all for HTT; A HTTP server error occurred. ; A Win32 COM related error occured. COM failed to i |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
 | 0096e9c0 | `StringToClickAction` | AnyDown; AnyUp; Button10Down; Button10Up |
+| 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
 | 00401b60 | `ClientRegisterConsoleCommands` | %1.1f; Account Type; Check interface addon version number; ErrorFilter |
 | 0061eb40 | `CGTooltip_SetOwner` | %s:SetOwner(): Can't set owner to self; %s:SetOwner(): Couldn't find 'this' in frame objec; %s:SetOwner(): Wrong object type, expected frame; ANCHOR_BOTTOM |
+| 0050f990 | `Script_SetConsoleKey` | BACKSPACE; DECIMAL; DELETE; DIVIDE |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | %d%d%d%d%b%d; %d%d%d%d%d%d%d%d%d%d; %s\n%s; CHANGE_REALM |
 | 004067f0 | `InitializeGlobal` | .PAD; Database compression; Desired method for game timing; Error reported by the timing validation system |
 | 00405ab0 | `BuildPatchArchiveList` | ..\Data\; ..\Data\%s\; Data\; Data\%s\ |
@@ -596,6 +599,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0052dc20 | `Script_SetLootMethod` | Invalid loot method; Usage: SetLootMethod("method" [,master]); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; freeforall |
 | 004a15a0 | `CSimpleFrame_SetBackdrop` | Usage: %s:SetBackdrop(nil or {bgFile = "bgFile", e; bgFile; bottom; edgeFile |
+| 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
 | 00515200 | `ActionTypeName` | CRITTER; MOUNT; UNKNOWN; companion |
 | 004a12d0 | `CSimpleFrame_GetBackdrop` | bgFile; bottom; edgeFile; edgeSize |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
@@ -611,10 +615,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
-| 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
-| 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
-| 00860f10 | `forlist` | '%s' expected; function at line %d has more than %d %s; local variables; main function has more than %d %s |
-| 0085de70 | `read_long_string` | %s near '%s'; %s:%d: %s; <eof>; char(%d) |
 
 ## Largest whoa functions with no reference link
 
@@ -671,7 +671,7 @@ The port exists but does not make the calls the reference makes, in the order it
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00857ca0 | `luaV_execute` | 42% | 50 | 48 | 163 | 115 | 2% | 5138 |
+| 00857ca0 | `luaV_execute` | 48% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00865270 | `inflate` | 0% | 22 | 23 | 180 | 260 | 48% | 4934 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 7% | 148 | 29 | 90 | 15 | 10% | 3696 |
@@ -683,7 +683,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
 | 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 0085e600 | `llex` | 67% | 39 | 34 | 39 | 46 | 0% | 1520 |
+| 0085e600 | `llex` | 69% | 39 | 34 | 39 | 46 | 0% | 1520 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 004873e0 | `CSimpleFontString::LoadXML` | 60% | 63 | 67 | 55 | 33 | 0% | 1441 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
@@ -706,9 +706,9 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00851d20 | `auxsort` | 29% | 73 | 32 | 18 | 13 | 0% | 1011 |
 | 004debc0 | `Script_GetRealmInfo` | 62% | 53 | 55 | 24 | 17 | 6% | 990 |
 | 00967290 | `CSimpleEditBox::LoadXML` | 64% | 36 | 42 | 42 | 20 | 0% | 989 |
+| 00995230 | `parse_charstrings` | 0% | 3 | 7 | 39 | 34 | 8% | 985 |
+| 00853c50 | `str_format` | 63% | 30 | 25 | 23 | 18 | 3% | 969 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
-| 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
-| 0085e160 | `read_string` | 47% | 30 | 21 | 15 | 25 | 6% | 904 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -789,7 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 18:17 | 1543 (5.7%) | 255 (0.9%) | 455 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 18:18 | 1543 (5.7%) | 255 (0.9%) | 455 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 18:20 | 1611 (5.9%) | 259 (1.0%) | 457 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 21:58 | 1612 (5.9%) | 274 (1.0%) | 457 | 173/5530 | 936/2512 | 446 |
@@ -814,6 +813,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 23:55 | 1834 (6.8%) | 452 (1.7%) | 433 | 269/5530 | 1584/2512 | 752 |
 | 2026-09-18 23:56 | 1839 (6.8%) | 540 (2.0%) | 433 | 265/5530 | 1584/2512 | 752 |
 | 2026-09-18 23:57 | 1853 (6.8%) | 551 (2.0%) | 433 | 276/5530 | 1584/2512 | 752 |
+| 2026-09-19 00:14 | 2167 (8.0%) | 621 (2.3%) | 523 | 288/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

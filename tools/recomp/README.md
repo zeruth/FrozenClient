@@ -48,6 +48,13 @@ world), whoa with `WHOA_AUTO_LOGIN=TEST:TEST`, then `calltrace.py ref`, `calltra
    with a clear winner (asserts, usage strings, DBC paths, CVar descriptions).
 5. **callgraph** — a linked pair whose only unlinked callee on each side must be each other.
    Repeated until it stops adding.
+6. **callorder** — inside a linked pair, between two linked calls, a single unlinked call on each
+   side is the same call. Both propagation rules need two parents to agree, or a proposal nobody
+   contests.
+7. **order** — MSVC lays a translation unit out in definition order, so between two linked anchors
+   from the same file the unlinked whoa definitions and the unlinked reference addresses pair up
+   when their counts agree; anchors that break the address order (a wrong link) are skipped via
+   the longest increasing subsequence.
 
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.

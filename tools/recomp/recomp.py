@@ -14,6 +14,9 @@ except the code itself, so this builds the link from evidence and keeps it acros
        annotated  `// ref: FUN_004f8ea0` above a whoa definition (or FUN_/Sub_ in its body)
        string     a literal both sides reference, weighted by how rare it is
        callgraph  a matched pair whose only unmatched callee on each side must be each other
+       callorder  between two linked calls inside a linked pair, a single unlinked call each side
+       order      definition order: between two linked anchors from one file, the unlinked whoa
+                  definitions and the unlinked reference addresses pair up when their counts agree
   4. report               docs/recomp/REPORT.md + data/map.json + data/history.jsonl
 
 Run it after every porting session:
@@ -32,6 +35,7 @@ always the top of a list rather than a guess.
 """
 
 import argparse
+import bisect
 import collections
 import datetime
 import glob
@@ -333,6 +337,7 @@ def overlay_clang(src):
         e['callseq'] = seq
         e['calls'] = set(seq)
         e['refs'] |= set(c.get('refs', []))  # tags above header-inline definitions, read by clangparse
+        e['line'] = c.get('line', 0)
         e['files'] |= set(c['files'])
         e['strings'] = set(s for s in c['strings'] if len(s) >= 3 and s not in NOISE_STRINGS)
         e['consts'] = set(c['consts'])
@@ -382,7 +387,7 @@ def merge_whoa(pdb, src):
         parts = files[0].split('/')
         whoa[name] = {'name': name, 'files': files, 'strings': s['strings'], 'calls': s['calls'], 'callseq': s['callseq'],
                       'refs': s['refs'], 'stub': s['stub'], 'lines': s['lines'], 'exact': s.get('exact', False),
-                      'consts': s.get('consts', set()), 'branches': s.get('branches', -1),
+                      'consts': s.get('consts', set()), 'branches': s.get('branches', -1), 'line': s.get('line', 0),
                       'size': p['size'] if p else 0, 'lib': p['lib'] if p else (parts[1] if len(parts) > 2 else '?')}
     for name, p in pdb.items():
         if name not in whoa:
@@ -826,6 +831,81 @@ def match(refs, whoa, overrides, tables):
                 added += bind(rc, wc, 'callorder', 'same slot between linked calls in %s' % ', '.join('%s=%s' % (p, m[p][0]) for p in sorted(parents)[:3]))
         if not added:
             break
+
+    # definition-order propagation: MSVC lays a translation unit's functions out in definition
+    # order, so between two linked anchors from the same file the unlinked whoa definitions and the
+    # unlinked reference addresses pair up in order when their counts agree. Anchors that break the
+    # monotonic order (a wrong link) are left out via the longest increasing subsequence.
+    rev = {name: addr for addr, (name, how) in m.items()}
+    by_file = collections.defaultdict(list)
+    for name, w in whoa.items():
+        if w.get('line') and w['files']:
+            by_file[w['files'][0]].append((w['line'], name))
+    ref_order = sorted(int(a, 16) for a, r in refs.items() if not r['thunk'] and not r['excluded'])
+    # the binding tables name reference functions (Show, running); a whoa function whose short
+    # name is one of those, in a file that already has anchors, is an anchor candidate too. The
+    # order check below keeps only the candidates that sit where the address order says they should.
+    tabname = collections.defaultdict(set)
+    tab_by_addr = collections.defaultdict(set)
+    for rt in load_tables():
+        for n, fn in rt['entries']:
+            tabname[n.lower()].add(fn)
+            tab_by_addr[fn].add(n.lower())
+    for f, lst in by_file.items():
+        lst.sort()
+        anchors = [(line, int(rev[name], 16), name, None) for line, name in lst if name in rev]
+        if len(anchors) < 2:
+            continue
+        for line, name in lst:
+            if name in rev or name in used:
+                continue
+            short = name.rsplit('::', 1)[-1]
+            cands = set(tabname.get(short.lower(), ())) | set(tabname.get(short.rsplit('_', 1)[-1].lower(), ()))
+            cands = set(fn for fn in cands if fn in refs and fn not in m and not refs[fn]['excluded'])
+            if len(cands) == 1:
+                fn = cands.pop()
+                anchors.append((line, int(fn, 16), name, fn))
+        anchors.sort()
+        best = [1] * len(anchors)
+        prev = [-1] * len(anchors)
+        for i in range(len(anchors)):
+            for j in range(i):
+                if anchors[j][1] < anchors[i][1] and best[j] + 1 > best[i]:
+                    best[i], prev[i] = best[j] + 1, j
+        i = max(range(len(anchors)), key=lambda k: best[k])
+        chain = []
+        while i >= 0:
+            chain.append(anchors[i])
+            i = prev[i]
+        chain.reverse()
+        # a table-named candidate that kept its place in the address order is itself a link
+        for line, addr, name, fn in chain:
+            if fn is not None:
+                bind(fn, name, 'order', 'binding table name %s, in definition order in %s' % (name.rsplit('::', 1)[-1], f))
+        chain = [(l, a, n) for l, a, n, fn in chain if fn is None or n in used]
+        for (l0, a0, n0), (l1, a1, n1) in zip(chain, chain[1:]):
+            W = [name for line, name in lst if l0 < line < l1 and name not in used]
+            lo, hi = bisect.bisect_right(ref_order, a0), bisect.bisect_left(ref_order, a1)
+            R = ['%08x' % a for a in ref_order[lo:hi] if '%08x' % a not in m]
+            if W and len(W) == len(R):
+                # veto: a binding table naming any address in the interval must agree with the
+                # whoa function it would pair with; whoa's aggregate script files do not always
+                # follow one reference translation unit, and this is where that shows
+                vetoed = False
+                for name, addr in zip(W, R):
+                    names = tab_by_addr.get(addr)
+                    if not names:
+                        continue
+                    short = name.rsplit('::', 1)[-1].lower()
+                    tail = short.rsplit('_', 1)[-1]
+                    if not any(t == short or t == tail or t.startswith(tail) or tail.startswith(t) for t in names):
+                        vetoed = True
+                        break
+                if vetoed:
+                    continue
+                for name, addr in zip(W, R):
+                    bind(addr, name, 'order', 'definition order between %s and %s in %s' % (n0, n1, f))
+
     with io.open(MATCHES_TSV, 'w', encoding='utf-8', newline='\n') as out:
         out.write('addr\thow\twhoa\tevidence\n')
         for a, (name, how) in sorted(m.items()):
