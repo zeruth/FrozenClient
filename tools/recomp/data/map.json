@@ -38470,7 +38470,7 @@
   "status": "stub"
  },
  "00961d70": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -38479,11 +38479,11 @@
    "src/ui/simple/csimplestatusbar.cpp"
   ],
   "frozen": "CSimpleStatusBar::SetRotatesTexture",
-  "frozenSize": 3,
+  "frozenSize": 21,
   "how": "callorder",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 182,
-  "status": "stub"
+  "status": "ported"
  },
  "00961e30": {
   "branchRatio": 0.48,
@@ -38495,7 +38495,7 @@
    "src/ui/simple/csimplestatusbar.cpp"
   ],
   "frozen": "CSimpleStatusBar::LoadXML",
-  "frozenSize": 1226,
+  "frozenSize": 1230,
   "how": "string",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 679,
@@ -39644,17 +39644,17 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
    "src/ui/simple/csimplestatusbarscript.cpp"
   ],
   "frozen": "CSimpleStatusBar_GetStatusBarTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 117,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 114,
-  "status": "stub"
+  "status": "ported"
  },
  "00971650": {
   "branchRatio": 0.182,
@@ -39705,20 +39705,20 @@
   "status": "ported"
  },
  "00971970": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
    "src/ui/simple/csimplestatusbarscript.cpp"
   ],
   "frozen": "CSimpleStatusBar_GetRotatesTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 79,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 94,
-  "status": "stub"
+  "status": "ported"
  },
  "009719d0": {
   "branchRatio": 0.0,
@@ -39740,17 +39740,17 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp",
    "src/ui/simple/csimplesliderscript.cpp"
   ],
   "frozen": "CSimpleSlider_GetThumbTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 113,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 114,
-  "status": "stub"
+  "status": "ported"
  },
  "00971b10": {
   "branchRatio": 0.2,

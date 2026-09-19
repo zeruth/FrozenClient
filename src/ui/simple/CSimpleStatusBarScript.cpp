@@ -1,5 +1,6 @@
 #include "ui/simple/CSimpleStatusBarScript.hpp"
 #include "ui/simple/CSimpleStatusBar.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
@@ -82,8 +83,28 @@ int32_t CSimpleStatusBar_SetValue(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_009715d0
+// Hands back the texture's own Lua object, registering it on first use, which is the same shape
+// GetScrollChild uses. A bar with no texture answers nil.
 int32_t CSimpleStatusBar_GetStatusBarTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    auto texture = statusBar->GetStatusBarTexture();
+
+    if (!texture) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!texture->lua_registered) {
+        texture->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, texture->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CSimpleStatusBar_SetStatusBarTexture(lua_State* L) {
@@ -106,8 +127,19 @@ int32_t CSimpleStatusBar_SetStatusBarColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00971970
+// One bit of the reference's flag byte at +0x29c. Pushes 1 or nil, never false.
 int32_t CSimpleStatusBar_GetRotatesTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    if (statusBar->GetRotatesTexture()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 // ref: FUN_009719d0

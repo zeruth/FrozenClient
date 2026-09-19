@@ -158364,7 +158364,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 236
+"line": 237
 },
 "CSimpleModel_AdvanceTime": {
 "files": [
@@ -158382,7 +158382,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 240
+"line": 241
 },
 "CSimpleModel_ReplaceIconTexture": {
 "files": [
@@ -158404,7 +158404,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 254
+"line": 255
 },
 "CSimpleModel_SetFogColor": {
 "files": [
@@ -158426,7 +158426,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 258
+"line": 259
 },
 "CSimpleModel_GetFogColor": {
 "files": [
@@ -158450,7 +158450,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 272
+"line": 273
 },
 "CSimpleModel_SetFogNear": {
 "files": [
@@ -158475,7 +158475,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 286
+"line": 287
 },
 "CSimpleModel_GetFogNear": {
 "files": [
@@ -158494,7 +158494,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 300
+"line": 301
 },
 "CSimpleModel_SetFogFar": {
 "files": [
@@ -158519,7 +158519,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 309
+"line": 310
 },
 "CSimpleModel_GetFogFar": {
 "files": [
@@ -158538,7 +158538,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 323
+"line": 324
 },
 "CSimpleModel_ClearFog": {
 "files": [
@@ -158557,7 +158557,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 333
+"line": 334
 },
 "CSimpleModel_SetGlow": {
 "files": [
@@ -158579,7 +158579,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 346
+"line": 347
 },
 "CSimpleMovieFrame::CreateScriptMetaTable": {
 "files": [
@@ -160768,22 +160768,21 @@
 "src/ui/simple/csimplesliderscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleSlider::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
 ],
-"strings": [
-"CSimpleSlider_GetThumbTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplesliderscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 20,
 "refs": [],
-"line": 7
+"line": 9
 },
 "CSimpleSlider_SetThumbTexture": {
 "files": [
@@ -160805,7 +160804,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 11
+"line": 30
 },
 "CSimpleSlider_GetOrientation": {
 "files": [
@@ -160825,7 +160824,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 16
+"line": 35
 },
 "CSimpleSlider_SetOrientation": {
 "files": [
@@ -160847,7 +160846,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 25
+"line": 44
 },
 "CSimpleSlider_GetMinMaxValues": {
 "files": [
@@ -160867,7 +160866,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 29
+"line": 48
 },
 "CSimpleSlider_SetMinMaxValues": {
 "files": [
@@ -160898,7 +160897,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 39
+"line": 58
 },
 "CSimpleSlider_GetValue": {
 "files": [
@@ -160917,7 +160916,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 55
+"line": 74
 },
 "CSimpleSlider_SetValue": {
 "files": [
@@ -160943,7 +160942,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 66
+"line": 85
 },
 "CSimpleSlider_GetValueStep": {
 "files": [
@@ -160962,7 +160961,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 81
+"line": 100
 },
 "CSimpleSlider_SetValueStep": {
 "files": [
@@ -160988,7 +160987,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 90
+"line": 109
 },
 "CSimpleSlider_Enable": {
 "files": [
@@ -161009,7 +161008,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 104
+"line": 123
 },
 "CSimpleSlider_Disable": {
 "files": [
@@ -161031,7 +161030,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 114
+"line": 133
 },
 "CSimpleSlider_IsEnabled": {
 "files": [
@@ -161053,7 +161052,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 125
+"line": 144
 },
 "CSimpleStatusBar::CreateScriptMetaTable": {
 "files": [
@@ -161163,7 +161162,7 @@
 "refs": [],
 "line": 63
 },
-"CSimpleStatusBar::GetOrientation": {
+"CSimpleStatusBar::GetRotatesTexture": {
 "files": [
 "src/ui/simple/csimplestatusbar.cpp"
 ],
@@ -161176,7 +161175,7 @@
 "refs": [],
 "line": 67
 },
-"CSimpleStatusBar::GetMinValue": {
+"CSimpleStatusBar::GetStatusBarTexture": {
 "files": [
 "src/ui/simple/csimplestatusbar.cpp"
 ],
@@ -161189,7 +161188,7 @@
 "refs": [],
 "line": 71
 },
-"CSimpleStatusBar::GetValue": {
+"CSimpleStatusBar::GetOrientation": {
 "files": [
 "src/ui/simple/csimplestatusbar.cpp"
 ],
@@ -161202,6 +161201,32 @@
 "refs": [],
 "line": 75
 },
+"CSimpleStatusBar::GetMinValue": {
+"files": [
+"src/ui/simple/csimplestatusbar.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 79
+},
+"CSimpleStatusBar::GetValue": {
+"files": [
+"src/ui/simple/csimplestatusbar.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 83
+},
 "CSimpleStatusBar::IsA": {
 "files": [
 "src/ui/simple/csimplestatusbar.cpp"
@@ -161213,7 +161238,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 79
+"line": 87
 },
 "CSimpleStatusBar::LoadXML": {
 "files": [
@@ -161275,7 +161300,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 86
+"line": 94
 },
 "CSimpleStatusBar::OnLayerUpdate": {
 "files": [
@@ -161305,7 +161330,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 146
+"line": 154
 },
 "CSimpleStatusBar::RunOnMinMaxChangedScript": {
 "files": [
@@ -161325,7 +161350,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 186
+"line": 194
 },
 "CSimpleStatusBar::RunOnValueChangedScript": {
 "files": [
@@ -161344,7 +161369,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 199
+"line": 207
 },
 "CSimpleStatusBar::SetBarTexture": {
 "files": [
@@ -161365,7 +161390,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 211
+"line": 219
 },
 "CSimpleStatusBar::SetMinMaxValues": {
 "files": [
@@ -161381,7 +161406,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 235
+"line": 243
 },
 "CSimpleStatusBar::SetOrientation": {
 "files": [
@@ -161394,7 +161419,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 258
+"line": 266
 },
 "CSimpleStatusBar::SetRotatesTexture": {
 "files": [
@@ -161402,12 +161427,15 @@
 ],
 "callseq": [],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 262
+"line": 270
 },
 "CSimpleStatusBar::SetStatusBarColor": {
 "files": [
@@ -161422,7 +161450,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 266
+"line": 277
 },
 "CSimpleStatusBar::SetValue": {
 "files": [
@@ -161439,7 +161467,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 272
+"line": 283
 },
 "CSimpleStatusBar_GetOrientation": {
 "files": [
@@ -161460,7 +161488,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 10
+"line": 11
 },
 "CSimpleStatusBar_SetOrientation": {
 "files": [
@@ -161482,7 +161510,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 19
+"line": 20
 },
 "CSimpleStatusBar_GetMinMaxValues": {
 "files": [
@@ -161504,7 +161532,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 23
+"line": 24
 },
 "CSimpleStatusBar_SetMinMaxValues": {
 "files": [
@@ -161538,7 +161566,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 33
+"line": 34
 },
 "CSimpleStatusBar_GetValue": {
 "files": [
@@ -161558,7 +161586,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 60
+"line": 61
 },
 "CSimpleStatusBar_SetValue": {
 "files": [
@@ -161584,29 +161612,29 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 69
+"line": 70
 },
 "CSimpleStatusBar_GetStatusBarTexture": {
 "files": [
 "src/ui/simple/csimplestatusbarscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleStatusBar::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleStatusBar::GetStatusBarTexture",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
 ],
-"strings": [
-"(anonymous namespace)::CSimpleStatusBar_GetStatusBarTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplestatusbarscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 20,
 "refs": [],
-"line": 85
+"line": 89
 },
 "CSimpleStatusBar_SetStatusBarTexture": {
 "files": [
@@ -161628,7 +161656,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 89
+"line": 110
 },
 "CSimpleStatusBar_GetStatusBarColor": {
 "files": [
@@ -161650,7 +161678,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 93
+"line": 114
 },
 "CSimpleStatusBar_SetStatusBarColor": {
 "files": [
@@ -161671,29 +161699,29 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 97
+"line": 118
 },
 "CSimpleStatusBar_GetRotatesTexture": {
 "files": [
 "src/ui/simple/csimplestatusbarscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleStatusBar::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleStatusBar::GetRotatesTexture",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"(anonymous namespace)::CSimpleStatusBar_GetRotatesTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplestatusbarscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 109
+"line": 132
 },
 "CSimpleStatusBar_SetRotatesTexture": {
 "files": [
@@ -161714,7 +161742,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 114
+"line": 146
 },
 "CSimpleTexture::CreateScriptMetaTable": {
 "files": [

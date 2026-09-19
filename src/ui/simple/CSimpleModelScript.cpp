@@ -230,9 +230,10 @@ int32_t CSimpleModel_GetFacing(lua_State* L) {
     return 1;
 }
 
-// TODO the model's own GetScale has not been found. FUN_0049f7d0 is NOT it: that one reads the
-// frame object-type global and is CSimpleFrame::GetScale, tagged there. Pushing m_scale here is
-// probably right, but "probably" is what put the wrong tag on it the first time.
+// FUN_004a6700 is the model's GetScale -- it reads DAT_00b499ec, the model object type --
+// and it returns TWO values through a helper at 004980d0, not one. The note that used to
+// stand here guessed a single m_scale push, which would have been wrong in arity before it
+// was wrong in value. Identify 004980d0 first.
 int32_t CSimpleModel_GetScale(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

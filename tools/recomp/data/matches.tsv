@@ -2501,13 +2501,13 @@ addr	how	frozen	evidence
 009713c0	table	CSimpleStatusBar_SetMinMaxValues	binding "SetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
 009714f0	table	CSimpleStatusBar_GetValue	binding "GetValue" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971540	table	CSimpleStatusBar_SetValue	binding "SetValue" in SimpleStatusBarMethods ~ table 00b2cdb8
-009715d0	table	CSimpleStatusBar_GetStatusBarTexture	binding "GetStatusBarTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
+009715d0	annotated	CSimpleStatusBar_GetStatusBarTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971650	table	CSimpleStatusBar_SetStatusBarTexture	binding "SetStatusBarTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971800	table	CSimpleStatusBar_GetStatusBarColor	binding "GetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971910	table	CSimpleStatusBar_SetStatusBarColor	binding "SetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
-00971970	table	CSimpleStatusBar_GetRotatesTexture	binding "GetRotatesTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
+00971970	annotated	CSimpleStatusBar_GetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 009719d0	annotated	CSimpleStatusBar_SetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
-00971a90	table	CSimpleSlider_GetThumbTexture	binding "GetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
+00971a90	annotated	CSimpleSlider_GetThumbTexture	tag in src/ui/simple/CSimpleSliderScript.cpp
 00971b10	table	CSimpleSlider_SetThumbTexture	binding "SetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
 00971c70	annotated	CSimpleSlider_GetOrientation	tag in src/ui/simple/CSimpleSliderScript.cpp
 00971cc0	table	CSimpleSlider_SetOrientation	binding "SetOrientation" in SimpleSliderMethods ~ table 00b2ce20

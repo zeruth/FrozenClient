@@ -1,11 +1,30 @@
 #include "ui/simple/CSimpleSliderScript.hpp"
 #include "ui/simple/CSimpleSlider.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <cstdint>
 
+// ref: FUN_00971a90
 int32_t CSimpleSlider_GetThumbTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto slider = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    auto texture = slider->m_thumbTexture;
+
+    if (!texture) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!texture->lua_registered) {
+        texture->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, texture->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CSimpleSlider_SetThumbTexture(lua_State* L) {

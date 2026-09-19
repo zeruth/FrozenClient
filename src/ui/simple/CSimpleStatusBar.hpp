@@ -33,6 +33,8 @@ class CSimpleStatusBar : public CSimpleFrame {
         float GetAnimValue() const;
         float GetMaxValue() const;
         ORIENTATION GetOrientation() const;
+        int32_t GetRotatesTexture() const;
+        CSimpleTexture* GetStatusBarTexture() const;
         float GetMinValue() const;
         float GetValue() const;
         void RunOnMinMaxChangedScript();
@@ -48,6 +50,10 @@ class CSimpleStatusBar : public CSimpleFrame {
         uint32_t m_changed  : 1;
         uint32_t m_rangeSet : 1;
         uint32_t m_valueSet : 1;
+        // Set by SetRotatesTexture and read by the binding. The reference keeps it as one bit of a
+        // flag byte at +0x29c. Storing it is not the same as honouring it: the bar texture is not
+        // actually rotated yet, so this records the request rather than performing it.
+        uint32_t m_rotatesTexture : 1;
         float m_minValue = 0.0f;
         float m_maxValue = 0.0f;
         float m_value = 0.0f;

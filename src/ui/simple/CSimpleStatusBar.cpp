@@ -64,6 +64,14 @@ float CSimpleStatusBar::GetMaxValue() const {
     return this->m_maxValue;
 }
 
+int32_t CSimpleStatusBar::GetRotatesTexture() const {
+    return this->m_rotatesTexture;
+}
+
+CSimpleTexture* CSimpleStatusBar::GetStatusBarTexture() const {
+    return this->m_barTexture;
+}
+
 ORIENTATION CSimpleStatusBar::GetOrientation() const {
     return this->m_orientation;
 }
@@ -260,7 +268,10 @@ void CSimpleStatusBar::SetOrientation(ORIENTATION orientation) {
 }
 
 void CSimpleStatusBar::SetRotatesTexture(int32_t enabled) {
-    // TODO
+    this->m_rotatesTexture = enabled ? 1 : 0;
+
+    // TODO the reference also re-orients the bar texture's coordinates from this. Only the flag is
+    // kept for now, so GetRotatesTexture answers what was asked for and the bar still draws upright.
 }
 
 void CSimpleStatusBar::SetStatusBarColor(const CImVector& color) {
