@@ -4,9 +4,12 @@
 #include "console/CVar.hpp"
 
 class CWorldParam {
-    public:
-        // Static variables
-        static CVar* cvar_baseMip;
+    public:        // Static variables
+        static int32_t s_maxLights;       // MaxLights (reference DAT_00cd7660)
+        static uint32_t s_mapObjLightLOD; // mapObjLightLOD (DAT_00d1c414)
+        static int32_t s_waterLOD;        // waterLOD, always 0 in 3.3.5 (DAT_00cdffd0)
+        static bool s_mapShadows;         // mapShadows: bit 0x40 of the world flags (DAT_00cd774c)
+static CVar* cvar_baseMip;
         static CVar* cvar_bspCache;
         static CVar* cvar_environmentDetail;
         static CVar* cvar_extShadowQuality;

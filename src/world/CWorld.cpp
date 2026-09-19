@@ -858,3 +858,8 @@ const C3Vector& CWorld::GetCameraPos() {
 const C3Vector& CWorld::GetCameraDir() {
     return CWorld::s_cameraDir;
 }
+
+// ref: FUN_0077f490
+void CWorld::SetNearClip(float nearClip) {
+    CWorld::s_nearClip = nearClip;
+}

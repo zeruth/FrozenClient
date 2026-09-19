@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 18:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 21:58 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1611 (+68) (5.9%) | 370.7k (6.7%) |
-| &nbsp;&nbsp;ported | 1131 (+66) | 249.7k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 457 (+2) | 93.0k |
+| mapped to a whoa function | 1612 (+1) (5.9%) | 370.7k (6.7%) |
+| &nbsp;&nbsp;ported | 1132 (+1) | 249.7k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 457 (=) | 93.0k |
 | &nbsp;&nbsp;verified (override) | 15 (=) | 3.1k |
-| **faithful** (linked, not stub, call order >= 80%) | **259 (+4) (1.0%)** | **39.0k (0.7%)** |
-| unmapped | 25550 | 5.04M |
+| **faithful** (linked, not stub, call order >= 80%) | **274 (+15) (1.0%)** | **39.7k (0.7%)** |
+| unmapped | 25549 | 5.04M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 173 (=) (3.1%) | |
-| whoa functions (src/, from PDB + source) | 10614, stubs 885 | |
+| whoa functions (src/, from PDB + source) | 10615, stubs 885 | |
 
-Match evidence: annotated 95, callgraph 64, callorder 89, cvar 67, handler 27, override 76, string 264, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 112, callgraph 64, callorder 88, cvar 51, handler 27, override 77, string 264, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 18:18 -- mapped 1543, ported 1065, stub 455, spine mapped 173.
+Previous run: 2026-09-18 18:20 -- mapped 1611, ported 1131, stub 457, spine mapped 173.
 
 ## Lua API coverage (binding tables)
 
@@ -213,7 +213,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 18 (6.3%) | 16.4% | 3 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 14 (3.4%) | 17.4% | 0 | 0 | 58 |
-| SEvt.cpp | 242 | 59.1k | 28 (11.6%) | 4.0% | 0 | 0 | 111 |
+| SEvt.cpp | 242 | 59.1k | 29 (12.0%) | 4.0% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 20 (8.1%) | 7.4% | 7 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 10:03 | 1448 (5.3%) | 202 (0.7%) | 449 | 147/5545 | 936/2512 | 448 |
 | 2026-09-18 10:05 | 1475 (5.4%) | 214 (0.8%) | 449 | 154/5545 | 936/2512 | 448 |
 | 2026-09-18 10:08 | 1475 (5.4%) | 214 (0.8%) | 449 | 154/5545 | 936/2512 | 448 |
 | 2026-09-18 10:09 | 1475 (5.4%) | 214 (0.8%) | 449 | 154/5545 | 936/2512 | 448 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 18:17 | 1543 (5.7%) | 255 (0.9%) | 455 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 18:18 | 1543 (5.7%) | 255 (0.9%) | 455 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 18:20 | 1611 (5.9%) | 259 (1.0%) | 457 | 173/5530 | 936/2512 | 446 |
+| 2026-09-18 21:58 | 1612 (5.9%) | 274 (1.0%) | 457 | 173/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

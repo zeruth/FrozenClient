@@ -36831,12 +36831,19 @@
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
+"consts": [
+"0"
+],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVGxDepthBitsCallback": {
 "files": [
@@ -36853,23 +36860,37 @@
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
+"consts": [
+"0"
+],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVGxMaximizeCallback": {
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
+"consts": [
+"0"
+],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVGxRefreshCallback": {
 "files": [
@@ -36908,12 +36929,19 @@
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
+"consts": [
+"1"
+],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVGxStereoSeparationCallback": {
 "files": [
@@ -36941,23 +36969,35 @@
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVGxWindowCallback": {
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"set pending gxRestart"
+],
+"consts": [
+"0"
+],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 6
 },
 "CVWindowResizeLockCallback": {
 "files": [
@@ -44567,12 +44607,19 @@
 "files": [
 "src/ffx/effectdeath.cpp"
 ],
-"callseq": [],
-"strings": [],
+"callseq": [
+"atol",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"disabled",
+"enabled"
+],
 "consts": [],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 5
+"lines": 11
 },
 "EffectDeath::EffectDeath": {
 "files": [
@@ -142924,6 +142971,17 @@
 "stub": false,
 "lines": 3
 },
+"CWorld::SetNearClip": {
+"files": [
+"src/world/cworld.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3
+},
 "CWorldParam::BaseMipCallback": {
 "files": [
 "src/world/cworldparam.cpp"
@@ -142933,7 +142991,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::BSPCacheCallback": {
 "files": [
@@ -142944,7 +143002,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::EnvironmentDetailCallback": {
 "files": [
@@ -142955,7 +143013,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::ExtShadowQualityCallback": {
 "files": [
@@ -142966,7 +143024,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::FarClipCallback": {
 "files": [
@@ -142980,18 +143038,25 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 5
 },
 "CWorldParam::FarClipOverrideCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"farClipOverride must be 0 or 1."
+],
+"consts": [
+"2"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 9
 },
 "CWorldParam::FootstepBiasCallback": {
 "files": [
@@ -143002,7 +143067,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::GroundEffectDensityCallback": {
 "files": [
@@ -143013,7 +143078,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::GroundEffectDistCallback": {
 "files": [
@@ -143024,7 +143089,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::HorizonFarClipScaleCallback": {
 "files": [
@@ -143035,7 +143100,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::HorizonNearClipScaleCallback": {
 "files": [
@@ -143046,7 +143111,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::HwPCFCallback": {
 "files": [
@@ -143057,7 +143122,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 4
 },
 "CWorldParam::Initialize": {
 "files": [
@@ -143176,7 +143241,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 377
+"lines": 363
 },
 "CWorldParam::LodCallback": {
 "files": [
@@ -143187,51 +143252,76 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::MapObjLightLODCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"MapObjLightLOD must be 0-2"
+],
+"consts": [
+"3"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 13
 },
 "CWorldParam::MapShadowsCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"Terrain shadows disabled.",
+"Terrain shadows enabled."
+],
 "consts": [],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 13
 },
 "CWorldParam::MaxLightsCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToInt",
+"ConsoleWriteA"
+],
+"strings": [
+"MaxLights must be in range 1 - %i."
+],
+"consts": [
+"1",
+"4"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 13
 },
 "CWorldParam::NearClipCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CWorld::SetNearClip",
+"SStrToFloat"
+],
 "strings": [],
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 5
 },
 "CWorldParam::ObjectFadeCallback": {
 "files": [
@@ -143242,7 +143332,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::ObjectFadeZFillCallback": {
 "files": [
@@ -143253,18 +143343,25 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::OcclusionCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"Disabled hardware occlusion test.",
+"Using hardware occlusion test."
+],
 "consts": [],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 11
 },
 "CWorldParam::ParticleDensityCallback": {
 "files": [
@@ -143275,7 +143372,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::ProjectedTexturesCallback": {
 "files": [
@@ -143286,18 +143383,27 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::ShadowLevelCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToInt",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"Shadow mip level changed upon restart.",
+"Shadow mip level must be in range 0 - 1."
+],
+"consts": [
+"1"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 11
 },
 "CWorldParam::ShowFootprintsCallback": {
 "files": [
@@ -143308,7 +143414,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::SpecularCallback": {
 "files": [
@@ -143319,7 +143425,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::TerrainAlphaBitDepthCallback": {
 "files": [
@@ -143330,7 +143436,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 4
 },
 "CWorldParam::TextureCacheSizeCallback": {
 "files": [
@@ -143341,7 +143447,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::TextureLodBiasCallback": {
 "files": [
@@ -143352,29 +143458,46 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 4
 },
 "CWorldParam::WaterLODCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"waterLOD fixed to 0"
+],
+"consts": [
+"0"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 11
 },
 "CWorldParam::WorldPoolUsageCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrCmpI",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"Dynamic",
+"WorldPoolUsage must be Stream, Dynamic or Static.",
+"WorldPoolUsage set on restart."
+],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 1,
 "stub": false,
-"lines": 1
+"lines": 11
 },
 "CMap::AllocEntity": {
 "files": [

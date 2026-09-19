@@ -1,4 +1,6 @@
 #include "world/CWorldParam.hpp"
+#include <storm/String.hpp>
+#include "console/Console.hpp"
 #include "world/CWorld.hpp"
 #include "console/CVar.hpp"
 
@@ -33,6 +35,11 @@ CVar* CWorldParam::cvar_texLodBias;
 CVar* CWorldParam::cvar_waterLOD;
 CVar* CWorldParam::cvar_worldPoolUsage;
 
+int32_t CWorldParam::s_maxLights = 4;
+uint32_t CWorldParam::s_mapObjLightLOD = 0;
+int32_t CWorldParam::s_waterLOD = 0;
+bool CWorldParam::s_mapShadows = false;
+
 bool CWorldParam::BaseMipCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
     // TODO
     return true;
@@ -59,9 +66,15 @@ bool CWorldParam::FarClipCallback(CVar* var, const char* oldValue, const char* v
     return true;
 }
 
+// ref: FUN_0078dc30
 bool CWorldParam::FarClipOverrideCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    if (static_cast<uint32_t>(SStrToInt(value)) < 2) {
+        return true;
+    }
+
+    ConsoleWrite("farClipOverride must be 0 or 1.", DEFAULT_COLOR);
+
+    return false;
 }
 
 bool CWorldParam::FootstepBiasCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
@@ -463,23 +476,55 @@ bool CWorldParam::LodCallback(CVar* var, const char* oldValue, const char* value
     return true;
 }
 
+// ref: FUN_0078ded0
 bool CWorldParam::MapObjLightLODCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    uint32_t lod = SStrToInt(value);
+
+    if (lod < 3) {
+        CWorldParam::s_mapObjLightLOD = lod;
+
+        return true;
+    }
+
+    ConsoleWrite("MapObjLightLOD must be 0-2", DEFAULT_COLOR);
+
+    return false;
 }
 
+// ref: FUN_0078d660
 bool CWorldParam::MapShadowsCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Terrain shadows enabled.", DEFAULT_COLOR);
+        CWorldParam::s_mapShadows = true;
+
+        return true;
+    }
+
+    ConsoleWrite("Terrain shadows disabled.", DEFAULT_COLOR);
+    CWorldParam::s_mapShadows = false;
+
     return true;
 }
 
+// ref: FUN_0078d6b0
 bool CWorldParam::MaxLightsCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    int32_t maxLights = SStrToInt(value);
+
+    if (maxLights - 1 < 4) {
+        CWorldParam::s_maxLights = maxLights;
+
+        return true;
+    }
+
+    ConsoleWriteA("MaxLights must be in range 1 - %i.", DEFAULT_COLOR, 4);
+
+    return false;
 }
 
+// ref: FUN_0078d7a0
 bool CWorldParam::NearClipCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    CWorld::SetNearClip(SStrToFloat(value));
+
     return true;
 }
 
@@ -493,8 +538,16 @@ bool CWorldParam::ObjectFadeZFillCallback(CVar* var, const char* oldValue, const
     return true;
 }
 
+// ref: FUN_0078d9d0
 bool CWorldParam::OcclusionCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Using hardware occlusion test.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("Disabled hardware occlusion test.", DEFAULT_COLOR);
+
     return true;
 }
 
@@ -508,8 +561,16 @@ bool CWorldParam::ProjectedTexturesCallback(CVar* var, const char* oldValue, con
     return true;
 }
 
+// ref: FUN_0078d6f0
 bool CWorldParam::ShadowLevelCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value) > 1) {
+        ConsoleWrite("Shadow mip level must be in range 0 - 1.", DEFAULT_COLOR);
+
+        return false;
+    }
+
+    ConsoleWrite("Shadow mip level changed upon restart.", DEFAULT_COLOR);
+
     return true;
 }
 
@@ -538,12 +599,28 @@ bool CWorldParam::TextureLodBiasCallback(CVar* var, const char* oldValue, const 
     return true;
 }
 
+// ref: FUN_0078d8b0
 bool CWorldParam::WaterLODCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    CWorldParam::s_waterLOD = 0;
+
+    if (SStrToInt(value)) {
+        ConsoleWrite("waterLOD fixed to 0", DEFAULT_COLOR);
+
+        return false;
+    }
+
     return true;
 }
 
+// ref: FUN_0078da10
 bool CWorldParam::WorldPoolUsageCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    if (!SStrCmpI(value, "Dynamic", 0x7FFFFFFF)) {
+        ConsoleWrite("WorldPoolUsage set on restart.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("WorldPoolUsage must be Stream, Dynamic or Static.", DEFAULT_COLOR);
+
+    return false;
 }

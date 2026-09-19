@@ -1052,7 +1052,7 @@ addr	how	whoa	evidence
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
-00765270	callorder	ConsoleWrite	same slot between linked calls in 007e28e0=ReceiveNewTimeSpeed
+00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
@@ -1076,13 +1076,13 @@ addr	how	whoa	evidence
 00769240	cvar	CVGxColorBitsCallback	callback of CVar::Register("gxColorBits") on both sides
 007692d0	cvar	CVGxDepthBitsCallback	callback of CVar::Register("gxDepthBits") on both sides
 00769360	cvar	CVGxTripleBufferCallback	callback of CVar::Register("gxTripleBuffer") on both sides
-00769520	cvar	CVGxVSyncCallback	callback of CVar::Register("gxVSync") on both sides
-00769550	cvar	CVGxWindowCallback	callback of CVar::Register("gxWindow") on both sides
-007695b0	cvar	CVGxMaximizeCallback	callback of CVar::Register("gxMaximize") on both sides
-007695e0	cvar	CVGxCursorCallback	callback of CVar::Register("gxCursor") on both sides
-007696a0	cvar	CVGxFixLagCallback	callback of CVar::Register("gxFixLag") on both sides
+00769520	annotated	CVGxVSyncCallback	tag in src/console/Device.cpp
+00769550	annotated	CVGxWindowCallback	tag in src/console/Device.cpp
+007695b0	annotated	CVGxMaximizeCallback	tag in src/console/Device.cpp
+007695e0	annotated	CVGxCursorCallback	tag in src/console/Device.cpp
+007696a0	annotated	CVGxFixLagCallback	tag in src/console/Device.cpp
 00769890	cvar	CVWindowResizeLockCallback	callback of CVar::Register("windowResizeLock") on both sides
-00769c00	cvar	CVGxStereoEnabledCallback	callback of CVar::Register("gxStereoEnabled") on both sides
+00769c00	annotated	CVGxStereoEnabledCallback	tag in src/console/Device.cpp
 00769c30	cvar	CVGxStereoConvergenceCallback	callback of CVar::Register("gxStereoConvergence") on both sides
 00769c60	cvar	CVGxStereoSeparationCallback	callback of CVar::Register("gxStereoSeparation") on both sides
 00769c90	string	ConsoleDeviceStereoInitialize	unique "Set stereoscopic rendering convergence depth"
@@ -1121,33 +1121,34 @@ addr	how	whoa	evidence
 00774740	callorder	SThread::Create	same slot between linked calls in 00469320=WowConnectionNet::Start
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
+0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
 00787780	string	Weather::Weather	unique "useWeatherShaders"
-0078d660	cvar	CWorldParam::MapShadowsCallback	callback of CVar::Register("mapShadows") on both sides
-0078d6b0	cvar	CWorldParam::MaxLightsCallback	callback of CVar::Register("MaxLights") on both sides
-0078d6f0	cvar	CWorldParam::ShadowLevelCallback	callback of CVar::Register("shadowLevel") on both sides
+0078d660	annotated	CWorldParam::MapShadowsCallback	tag in src/world/CWorldParam.cpp
+0078d6b0	annotated	CWorldParam::MaxLightsCallback	tag in src/world/CWorldParam.cpp
+0078d6f0	annotated	CWorldParam::ShadowLevelCallback	tag in src/world/CWorldParam.cpp
 0078d730	cvar	CWorldParam::TextureLodBiasCallback	callback of CVar::Register("texLodBias") on both sides
-0078d7a0	cvar	CWorldParam::NearClipCallback	callback of CVar::Register("nearclip") on both sides
+0078d7a0	annotated	CWorldParam::NearClipCallback	tag in src/world/CWorldParam.cpp
 0078d7c0	cvar	CWorldParam::HorizonFarClipScaleCallback	callback of CVar::Register("horizonFarclipScale") on both sides
 0078d810	cvar	CWorldParam::HorizonNearClipScaleCallback	callback of CVar::Register("horizonNearclipScale") on both sides
 0078d860	cvar	CWorldParam::ParticleDensityCallback	callback of CVar::Register("particleDensity") on both sides
-0078d8b0	cvar	CWorldParam::WaterLODCallback	callback of CVar::Register("waterLOD") on both sides
+0078d8b0	annotated	CWorldParam::WaterLODCallback	tag in src/world/CWorldParam.cpp
 0078d8f0	cvar	CWorldParam::ShowFootprintsCallback	callback of CVar::Register("showfootprints") on both sides
 0078d940	cvar	CWorldParam::FootstepBiasCallback	callback of CVar::Register("footstepBias") on both sides
-0078d9d0	cvar	CWorldParam::OcclusionCallback	callback of CVar::Register("occlusion") on both sides
-0078da10	cvar	CWorldParam::WorldPoolUsageCallback	callback of CVar::Register("worldPoolUsage") on both sides
+0078d9d0	annotated	CWorldParam::OcclusionCallback	tag in src/world/CWorldParam.cpp
+0078da10	annotated	CWorldParam::WorldPoolUsageCallback	tag in src/world/CWorldParam.cpp
 0078da50	cvar	CWorldParam::TerrainAlphaBitDepthCallback	callback of CVar::Register("terrainAlphaBitDepth") on both sides
 0078dab0	cvar	CWorldParam::GroundEffectDensityCallback	callback of CVar::Register("groundEffectDensity") on both sides
 0078db10	cvar	CWorldParam::GroundEffectDistCallback	callback of CVar::Register("groundEffectDist") on both sides
 0078db90	cvar	CWorldParam::ObjectFadeCallback	callback of CVar::Register("objectFade") on both sides
 0078dbe0	cvar	CWorldParam::ObjectFadeZFillCallback	callback of CVar::Register("objectFadeZFill") on both sides
-0078dc30	cvar	CWorldParam::FarClipOverrideCallback	callback of CVar::Register("farClipOverride") on both sides
+0078dc30	annotated	CWorldParam::FarClipOverrideCallback	tag in src/world/CWorldParam.cpp
 0078dc60	cvar	CWorldParam::EnvironmentDetailCallback	callback of CVar::Register("environmentDetail") on both sides
 0078dcb0	cvar	CWorldParam::ExtShadowQualityCallback	callback of CVar::Register("extShadowQuality") on both sides
 0078dcf0	cvar	CWorldParam::ProjectedTexturesCallback	callback of CVar::Register("projectedTextures") on both sides
 0078de60	cvar	CWorldParam::SpecularCallback	callback of CVar::Register("specular") on both sides
-0078ded0	cvar	CWorldParam::MapObjLightLODCallback	callback of CVar::Register("mapObjLightLOD") on both sides
+0078ded0	annotated	CWorldParam::MapObjLightLODCallback	tag in src/world/CWorldParam.cpp
 0078df00	cvar	CWorldParam::BaseMipCallback	callback of CVar::Register("baseMip") on both sides
 0078df90	cvar	CWorldParam::BSPCacheCallback	callback of CVar::Register("bspcache") on both sides
 0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
@@ -1356,7 +1357,7 @@ addr	how	whoa	evidence
 008be100	string	LightIntBandRec::GetFilename	unique "DBFilesClient\LightIntBand.dbc"
 008be1a0	string	LightFloatBandRec::GetFilename	unique "DBFilesClient\LightFloatBand.dbc"
 008bfe80	string	EffectGlow::EffectGlow	unique "full screen glow effect"
-008c02a0	cvar	FFXDeathCallback	callback of CVar::Register("ffxDeath") on both sides
+008c02a0	annotated	FFXDeathCallback	tag in src/ffx/EffectDeath.cpp
 008c8de0	callgraph	CSimpleModel::GetObjectType	only unmatched callee of 009610e0=CSimpleModel_AdvanceTime
 008ce200	string	FindPatchPrefix_SC2_ArchiveName	score 0.50 shared Battle.net
 008cf7a0	string	Grunt::Timer::Timer	unique "GruntTimerEvt"

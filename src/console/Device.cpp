@@ -1,4 +1,5 @@
 #include "console/Device.hpp"
+#include <storm/String.hpp>
 #include "client/Gui.hpp"
 #include "console/CVar.hpp"
 #include "console/Console.hpp"
@@ -29,14 +30,18 @@ static TSGrowableArray<CGxMonitorMode> s_gxMonitorModes;
 static bool s_hwDetect;
 static bool s_hwChanged;
 static CGxFormat s_requestedFormat;
+static bool s_requestedStereoEnabled;  // gxStereoEnabled, the reference's DAT_00cabd0c beside the format
 
 bool CVGxColorBitsCallback(CVar*, const char*, const char*, void*) {
     // TODO
     return true;
 }
 
-bool CVGxCursorCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_007695e0
+bool CVGxCursorCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.cursor = SStrToInt(value) != 0;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
@@ -45,13 +50,19 @@ bool CVGxDepthBitsCallback(CVar*, const char*, const char*, void*) {
     return true;
 }
 
-bool CVGxFixLagCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_007696a0
+bool CVGxFixLagCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.fixLag = SStrToInt(value) != 0;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
-bool CVGxMaximizeCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_007695b0
+bool CVGxMaximizeCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.maximize = SStrToInt(value) != 0;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
@@ -70,8 +81,11 @@ bool CVGxStereoConvergenceCallback(CVar*, const char*, const char*, void*) {
     return true;
 }
 
-bool CVGxStereoEnabledCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_00769c00
+bool CVGxStereoEnabledCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedStereoEnabled = SStrToInt(value) == 1;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
@@ -85,13 +99,19 @@ bool CVGxTripleBufferCallback(CVar*, const char*, const char*, void*) {
     return true;
 }
 
-bool CVGxVSyncCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_00769520
+bool CVGxVSyncCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.vsync = SStrToInt(value);
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
-bool CVGxWindowCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_00769550
+bool CVGxWindowCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.window = SStrToInt(value) != 0;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 

@@ -25,6 +25,8 @@ class CGxFormat {
 
         // Member variables
         bool hwTnL;
+        int8_t cursor;   // hardware cursor (gxCursor)
+        int8_t fixLag;   // gxFixLag
         int8_t window;
         int32_t maximize;
         Format depthFormat;
