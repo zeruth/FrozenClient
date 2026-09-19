@@ -5120,17 +5120,17 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_GetTitleRegion",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 113,
+  "how": "annotated",
   "module": "CScriptRegionScript.cpp",
   "refSize": 114,
-  "status": "stub"
+  "status": "ported"
  },
  "0049e630": {
   "branchRatio": 0.5,
@@ -5485,20 +5485,20 @@
   "status": "ported"
  },
  "0049f900": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_GetEffectiveAlpha",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 115,
-  "status": "stub"
+  "status": "ported"
  },
  "0049f980": {
   "branchRatio": 0.0,

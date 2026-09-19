@@ -320,7 +320,7 @@ addr	how	frozen	evidence
 0049e100	table	CScriptRegion_IsMouseOver	binding "IsMouseOver" in ScriptRegionMethods ~ table 00ac1480
 0049e260	table	CScriptRegion_GetAnimationGroups	binding "GetAnimationGroups" in ScriptRegionMethods ~ table 00ac1480
 0049e350	table	CScriptRegion_CreateAnimationGroup	binding "CreateAnimationGroup" in ScriptRegionMethods ~ table 00ac1480
-0049e5b0	table	CSimpleFrame_GetTitleRegion	binding "GetTitleRegion" in SimpleFrameMethods ~ table 00ac1550
+0049e5b0	annotated	CSimpleFrame_GetTitleRegion	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049e630	table	CSimpleFrame_CreateTitleRegion	binding "CreateTitleRegion" in SimpleFrameMethods ~ table 00ac1550
 0049e700	table	CSimpleFrame_GetBoundsRect	binding "GetBoundsRect" in SimpleFrameMethods ~ table 00ac1550
 0049e830	table	CSimpleFrame_GetFrameStrata	binding "GetFrameStrata" in SimpleFrameMethods ~ table 00ac1550
@@ -343,7 +343,7 @@ addr	how	frozen	evidence
 0049f790	table	CSimpleFrame_GetEffectiveScale	binding "GetEffectiveScale" in SimpleFrameMethods ~ table 00ac1550
 0049f7d0	table	CSimpleFrame_GetScale	binding "GetScale" in SimpleFrameMethods ~ table 00ac1550
 0049f820	table	CSimpleFrame_SetScale	binding "SetScale" in SimpleFrameMethods ~ table 00ac1550
-0049f900	table	CSimpleFrame_GetEffectiveAlpha	binding "GetEffectiveAlpha" in SimpleFrameMethods ~ table 00ac1550
+0049f900	annotated	CSimpleFrame_GetEffectiveAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f980	table	CSimpleFrame_GetAlpha	binding "GetAlpha" in SimpleFrameMethods ~ table 00ac1550
 0049f9e0	table	CSimpleFrame_SetAlpha	binding "SetAlpha" in SimpleFrameMethods ~ table 00ac1550
 0049fab0	table	CSimpleFrame_GetID	binding "GetID" in SimpleFrameMethods ~ table 00ac1550

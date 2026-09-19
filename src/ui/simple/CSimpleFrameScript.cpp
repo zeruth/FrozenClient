@@ -8,6 +8,7 @@
 #include "ui/simple/CSimpleFont.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "ui/simple/CSimpleFrame.hpp"
+#include "ui/simple/CSimpleTitleRegion.hpp"
 #include "ui/simple/CSimpleTexture.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
@@ -16,8 +17,26 @@
 #include <cstdint>
 #include <limits>
 
+// ref: FUN_0049e5b0
 int32_t CSimpleFrame_GetTitleRegion(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    auto region = frame->m_titleRegion;
+
+    if (!region) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!region->lua_registered) {
+        region->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, region->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_CreateTitleRegion(lua_State* L) {
@@ -671,8 +690,16 @@ int32_t CSimpleFrame_SetScale(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049f900
 int32_t CSimpleFrame_GetEffectiveAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    auto effective = (frame->alphaBD * frame->m_alpha / 255) & 0xFF;
+
+    lua_pushnumber(L, effective * (1.0f / 255.0f));
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetAlpha(lua_State* L) {

@@ -152768,22 +152768,21 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
 ],
-"strings": [
-"CSimpleFrame_GetTitleRegion",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 20,
 "refs": [],
-"line": 19
+"line": 21
 },
 "CSimpleFrame_CreateTitleRegion": {
 "files": [
@@ -152805,7 +152804,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 23
+"line": 42
 },
 "CSimpleFrame_CreateTexture": {
 "files": [
@@ -152853,7 +152852,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 27
+"line": 46
 },
 "CSimpleFrame_CreateFontString": {
 "files": [
@@ -152903,7 +152902,7 @@
 "stub": false,
 "lines": 69,
 "refs": [],
-"line": 90
+"line": 109
 },
 "CSimpleFrame_GetBoundsRect": {
 "files": [
@@ -152941,7 +152940,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 160
+"line": 179
 },
 "CSimpleFrame_GetNumRegions": {
 "files": [
@@ -152963,7 +152962,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 196
+"line": 215
 },
 "CSimpleFrame_GetRegions": {
 "files": [
@@ -152985,7 +152984,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 211
+"line": 230
 },
 "CSimpleFrame_GetNumChildren": {
 "files": [
@@ -153007,7 +153006,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 229
+"line": 248
 },
 "CSimpleFrame_GetChildren": {
 "files": [
@@ -153029,7 +153028,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 244
+"line": 263
 },
 "CSimpleFrame_GetFrameStrata": {
 "files": [
@@ -153050,7 +153049,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 270
+"line": 289
 },
 "CSimpleFrame_SetFrameStrata": {
 "files": [
@@ -153081,7 +153080,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 285
+"line": 304
 },
 "CSimpleFrame_GetFrameLevel": {
 "files": [
@@ -153100,7 +153099,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 304
+"line": 323
 },
 "CSimpleFrame_SetFrameLevel": {
 "files": [
@@ -153131,7 +153130,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 313
+"line": 332
 },
 "CSimpleFrame_HasScript": {
 "files": [
@@ -153153,7 +153152,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 339
+"line": 358
 },
 "CSimpleFrame_GetScript": {
 "files": [
@@ -153170,7 +153169,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 343
+"line": 362
 },
 "CSimpleFrame_SetScript": {
 "files": [
@@ -153187,7 +153186,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 350
+"line": 369
 },
 "CSimpleFrame_HookScript": {
 "files": [
@@ -153209,7 +153208,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 357
+"line": 376
 },
 "CSimpleFrame_RegisterEvent": {
 "files": [
@@ -153235,7 +153234,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 361
+"line": 380
 },
 "CSimpleFrame_UnregisterEvent": {
 "files": [
@@ -153261,7 +153260,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 376
+"line": 395
 },
 "CSimpleFrame_RegisterAllEvents": {
 "files": [
@@ -153283,7 +153282,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 392
+"line": 411
 },
 "CSimpleFrame_UnregisterAllEvents": {
 "files": [
@@ -153305,7 +153304,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 396
+"line": 415
 },
 "CSimpleFrame_IsEventRegistered": {
 "files": [
@@ -153335,7 +153334,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 400
+"line": 419
 },
 "CSimpleFrame_AllowAttributeChanges": {
 "files": [
@@ -153357,7 +153356,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 427
+"line": 446
 },
 "CSimpleFrame_CanChangeAttributes": {
 "files": [
@@ -153379,7 +153378,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 431
+"line": 450
 },
 "CSimpleFrame_GetAttribute": {
 "files": [
@@ -153438,7 +153437,7 @@
 "stub": false,
 "lines": 158,
 "refs": [],
-"line": 435
+"line": 454
 },
 "CSimpleFrame_SetAttribute": {
 "files": [
@@ -153472,7 +153471,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 594
+"line": 613
 },
 "CSimpleFrame_GetEffectiveScale": {
 "files": [
@@ -153491,7 +153490,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 629
+"line": 648
 },
 "CSimpleFrame_GetScale": {
 "files": [
@@ -153510,7 +153509,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 639
+"line": 658
 },
 "CSimpleFrame_SetScale": {
 "files": [
@@ -153541,29 +153540,30 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 648
+"line": 667
 },
 "CSimpleFrame_GetEffectiveAlpha": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetEffectiveAlpha",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0xFF",
+"1",
+"1.0f",
+"255",
+"255.0f"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": [],
-"line": 674
+"line": 694
 },
 "CSimpleFrame_GetAlpha": {
 "files": [
@@ -153583,7 +153583,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 678
+"line": 705
 },
 "CSimpleFrame_SetAlpha": {
 "files": [
@@ -153614,7 +153614,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 688
+"line": 715
 },
 "CSimpleFrame_GetID": {
 "files": [
@@ -153633,7 +153633,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 703
+"line": 730
 },
 "CSimpleFrame_SetID": {
 "files": [
@@ -153659,7 +153659,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 712
+"line": 739
 },
 "CSimpleFrame_SetToplevel": {
 "files": [
@@ -153681,7 +153681,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 732
+"line": 759
 },
 "CSimpleFrame_IsToplevel": {
 "files": [
@@ -153701,7 +153701,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 741
+"line": 768
 },
 "CSimpleFrame_EnableDrawLayer": {
 "files": [
@@ -153728,7 +153728,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 750
+"line": 777
 },
 "CSimpleFrame_DisableDrawLayer": {
 "files": [
@@ -153755,7 +153755,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 765
+"line": 792
 },
 "CSimpleFrame_Show": {
 "files": [
@@ -153775,7 +153775,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 780
+"line": 807
 },
 "CSimpleFrame_Hide": {
 "files": [
@@ -153795,7 +153795,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 794
+"line": 821
 },
 "CSimpleFrame_IsVisible": {
 "files": [
@@ -153816,7 +153816,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 808
+"line": 835
 },
 "CSimpleFrame_IsShown": {
 "files": [
@@ -153837,7 +153837,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 821
+"line": 848
 },
 "CSimpleFrame_Raise": {
 "files": [
@@ -153857,7 +153857,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 834
+"line": 861
 },
 "CSimpleFrame_Lower": {
 "files": [
@@ -153879,7 +153879,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 850
+"line": 877
 },
 "CSimpleFrame_GetHitRectInsets": {
 "files": [
@@ -153908,7 +153908,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 855
+"line": 882
 },
 "CSimpleFrame_SetHitRectInsets": {
 "files": [
@@ -153949,7 +153949,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 871
+"line": 898
 },
 "CSimpleFrame_GetClampRectInsets": {
 "files": [
@@ -153978,7 +153978,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 891
+"line": 918
 },
 "CSimpleFrame_SetClampRectInsets": {
 "files": [
@@ -153993,7 +153993,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 907
+"line": 934
 },
 "CSimpleFrame_GetMinResize": {
 "files": [
@@ -154017,7 +154017,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 913
+"line": 940
 },
 "CSimpleFrame_SetMinResize": {
 "files": [
@@ -154049,7 +154049,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 925
+"line": 952
 },
 "CSimpleFrame_GetMaxResize": {
 "files": [
@@ -154073,7 +154073,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 944
+"line": 971
 },
 "CSimpleFrame_SetMaxResize": {
 "files": [
@@ -154105,7 +154105,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 956
+"line": 983
 },
 "CSimpleFrame_SetMovable": {
 "files": [
@@ -154127,7 +154127,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 974
+"line": 1001
 },
 "CSimpleFrame_IsMovable": {
 "files": [
@@ -154147,7 +154147,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 983
+"line": 1010
 },
 "CSimpleFrame_SetDontSavePosition": {
 "files": [
@@ -154170,7 +154170,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 993
+"line": 1020
 },
 "CSimpleFrame_GetDontSavePosition": {
 "files": [
@@ -154192,7 +154192,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1003
+"line": 1030
 },
 "CSimpleFrame_SetResizable": {
 "files": [
@@ -154214,7 +154214,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1016
+"line": 1043
 },
 "CSimpleFrame_IsResizable": {
 "files": [
@@ -154234,7 +154234,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1025
+"line": 1052
 },
 "CSimpleFrame_StartMoving": {
 "files": [
@@ -154262,7 +154262,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1035
+"line": 1062
 },
 "CSimpleFrame_StartSizing": {
 "files": [
@@ -154293,7 +154293,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1056
+"line": 1083
 },
 "CSimpleFrame_StopMovingOrSizing": {
 "files": [
@@ -154315,7 +154315,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1082
+"line": 1109
 },
 "CSimpleFrame_SetUserPlaced": {
 "files": [
@@ -154341,7 +154341,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1086
+"line": 1113
 },
 "CSimpleFrame_IsUserPlaced": {
 "files": [
@@ -154358,7 +154358,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1101
+"line": 1128
 },
 "CSimpleFrame_SetClampedToScreen": {
 "files": [
@@ -154379,7 +154379,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1107
+"line": 1134
 },
 "CSimpleFrame_IsClampedToScreen": {
 "files": [
@@ -154400,7 +154400,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1116
+"line": 1143
 },
 "CSimpleFrame_RegisterForDrag": {
 "files": [
@@ -154432,7 +154432,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1125
+"line": 1152
 },
 "CSimpleFrame_EnableKeyboard": {
 "files": [
@@ -154455,7 +154455,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1152
+"line": 1179
 },
 "CSimpleFrame_IsKeyboardEnabled": {
 "files": [
@@ -154475,7 +154475,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1165
+"line": 1192
 },
 "CSimpleFrame_EnableMouse": {
 "files": [
@@ -154499,7 +154499,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1174
+"line": 1201
 },
 "CSimpleFrame_IsMouseEnabled": {
 "files": [
@@ -154519,7 +154519,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1193
+"line": 1220
 },
 "CSimpleFrame_EnableMouseWheel": {
 "files": [
@@ -154542,7 +154542,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1202
+"line": 1229
 },
 "CSimpleFrame_IsMouseWheelEnabled": {
 "files": [
@@ -154562,7 +154562,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1215
+"line": 1242
 },
 "CSimpleFrame_EnableJoystick": {
 "files": [
@@ -154586,7 +154586,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1225
+"line": 1252
 },
 "CSimpleFrame_IsJoystickEnabled": {
 "files": [
@@ -154606,7 +154606,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1244
+"line": 1271
 },
 "CSimpleFrame_GetBackdrop": {
 "files": [
@@ -154690,7 +154690,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1255
+"line": 1282
 },
 "CSimpleFrame_SetBackdrop": {
 "files": [
@@ -154792,7 +154792,7 @@
 "stub": false,
 "lines": 128,
 "refs": [],
-"line": 1349
+"line": 1376
 },
 "CSimpleFrame_GetBackdropColor": {
 "files": [
@@ -154817,7 +154817,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1479
+"line": 1506
 },
 "CSimpleFrame_SetBackdropColor": {
 "files": [
@@ -154839,7 +154839,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1497
+"line": 1524
 },
 "CSimpleFrame_GetBackdropBorderColor": {
 "files": [
@@ -154864,7 +154864,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1512
+"line": 1539
 },
 "CSimpleFrame_SetBackdropBorderColor": {
 "files": [
@@ -154886,7 +154886,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1530
+"line": 1557
 },
 "CSimpleFrame_SetDepth": {
 "files": [
@@ -154912,7 +154912,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1545
+"line": 1572
 },
 "CSimpleFrame_GetDepth": {
 "files": [
@@ -154932,7 +154932,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1559
+"line": 1586
 },
 "CSimpleFrame_GetEffectiveDepth": {
 "files": [
@@ -154952,7 +154952,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1573
+"line": 1600
 },
 "CSimpleFrame_IgnoreDepth": {
 "files": [
@@ -154967,7 +154967,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1586
+"line": 1613
 },
 "CSimpleFrame_IsIgnoringDepth": {
 "files": [
@@ -154988,7 +154988,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1592
+"line": 1619
 },
 "CONTENTNODE::~CONTENTNODE": {
 "files": [
