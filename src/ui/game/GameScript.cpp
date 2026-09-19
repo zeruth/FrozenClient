@@ -1868,8 +1868,39 @@ int32_t Script_IsDesaturateSupported(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0061a4f0
+// Five colours, read out of the reference's table at 00ad2d70: white, grey, yellow, orange, red.
+// The clamp is on an UNSIGNED status, so a negative one -- which is what the server sends for a
+// unit that is not on the threat table -- wraps high and lands on grey rather than on white.
+static const CImVector& ThreatStatusColor(uint32_t status) {
+    static const CImVector s_threatColors[5] = {
+        { 0xFF, 0xFF, 0xFF, 0xFF },
+        { 0xB0, 0xB0, 0xB0, 0xFF },
+        { 0x77, 0xFF, 0xFF, 0xFF },
+        { 0x00, 0x99, 0xFF, 0xFF },
+        { 0x00, 0x00, 0xFF, 0xFF },
+    };
+
+    if (status > 4) {
+        status = 1;
+    }
+
+    return s_threatColors[status];
+}
+
+// ref: FUN_00511fe0
 int32_t Script_GetThreatStatusColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Rounded to an int first, then taken as unsigned, so the negative case reaches the clamp
+    // above exactly as it does in the reference.
+    auto status = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1) + 0.5));
+
+    const auto& color = ThreatStatusColor(status);
+
+    lua_pushnumber(L, color.r * (1.0f / 255.0f));
+    lua_pushnumber(L, color.g * (1.0f / 255.0f));
+    lua_pushnumber(L, color.b * (1.0f / 255.0f));
+
+    return 3;
 }
 
 int32_t Script_IsThreatWarningEnabled(lua_State* L) {

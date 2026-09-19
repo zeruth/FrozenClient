@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 11:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 11:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2405 (=) (8.9%) | 531.1k (9.6%) |
-| &nbsp;&nbsp;ported | 1931 (=) | 398.1k |
+| mapped to a frozen function | 2407 (=) (8.9%) | 531.3k (9.6%) |
+| &nbsp;&nbsp;ported | 1933 (=) | 398.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 448 (=) | 99.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **901 (=) (3.3%)** | **115.0k (2.1%)** |
-| unmapped | 24756 | 4.89M |
+| **faithful** (linked, not stub, call order >= 80%) | **903 (=) (3.3%)** | **115.1k (2.1%)** |
+| unmapped | 24754 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11423, stubs 846 | |
+| frozen functions (src/, from PDB + source) | 11424, stubs 845 | |
 
-Match evidence: annotated 447, callgraph 170, callorder 126, cvar 30, handler 27, order 325, override 178, string 345, table 757. Module anchors: 1479 assert strings.
+Match evidence: annotated 449, callgraph 170, callorder 126, cvar 30, handler 27, order 325, override 178, string 345, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 11:16 -- mapped 2405, ported 1931, stub 448, spine mapped 388.
+Previous run: 2026-09-19 11:21 -- mapped 2407, ported 1933, stub 448, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 555 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 554 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -82,7 +82,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ac1550 (GetTitleRegion..) | 38 | `SimpleFontMethods, SimpleFrameMethods` | 0 | 9 |  / stubs: GetTitleRegion, CreateTitleRegion, HasScript, HookScript ... |
 | 00ac8578 (RunScript..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: RunScript, CheckInteractDistance, RandomRoll, OpeningCinematic ... |
 | 00ac8970 (SetUIVisibility..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: SetUIVisibility, GrantLevel, CanSummonFriend, SummonFriend ... |
-| 00ac8a08 (IsDesaturateSupported..) | 11 | `s_ScriptFunctions` | 0 | 9 |  / stubs: IsDesaturateSupported, GetThreatStatusColor, ConsoleAddMessage, GetItemUniqueness ... |
 | 00acc708 (GetLootMethod..) | 15 | `s_ScriptFunctions` | 0 | 9 |  / stubs: SetLootMethod, SetLootThreshold, SetPartyAssignment, ClearPartyAssignment ... |
 | 00accff8 (PositionWorldMapArrowFrame..) | 12 | `s_ScriptFunctions` | 9 | 0 | PositionWorldMapArrowFrame, PositionMiniWorldMapArrowFrame, ShowWorldMapArrowFrame, ShowMiniWorldMapArrowFrame, ClickLandmark, GetMapDebugObjectInfo ... |
 | 00acef78 (GetGossipText..) | 12 | `s_ScriptFunctions` | 9 | 0 | GetGossipText, GetGossipOptions, GetGossipAvailableQuests, GetGossipActiveQuests, SelectGossipOption, SelectGossipAvailableQuest ... |
@@ -93,6 +92,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 9 |  / stubs: GetNormalFontObject, GetDisabledFontObject, GetHighlightFontObject, SetFontString ... |
 | 00ac3f60 (GetNumAddOns..) | 9 | `s_ScriptFunctions` | 0 | 8 |  / stubs: GetAddOnInfo, LaunchAddOnURL, GetAddOnDependencies, GetAddOnEnableState ... |
 | 00ac40e8 (ShowChangedOptionWarnings..) | 10 | `s_ScriptFunctions` | 0 | 8 |  / stubs: TokenEntered, GetNumDeclensionSets, DeclineName, GetNumGameAccounts ... |
+| 00ac8a08 (IsDesaturateSupported..) | 11 | `s_ScriptFunctions` | 0 | 8 |  / stubs: IsDesaturateSupported, ConsoleAddMessage, GetItemUniqueness, EndRefund ... |
 | 00ad02e0 (CalendarEventGetTextures..) | 8 | `-` | 8 | 0 | CalendarEventGetTextures, CalendarEventHasPendingInvite, CalendarEventHaveSettingsChanged, CalendarEventCanEdit, CalendarEventGetCalendarType, CalendarCanSendInvite ... |
 | 00ad1a68 (VehicleAimIncrement..) | 13 | `s_ScriptFunctions` | 8 | 0 | VehicleAimIncrement, VehicleAimDecrement, VehicleAimRequestAngle, VehicleAimGetAngle, VehicleAimRequestNormAngle, VehicleAimGetNormAngle ... |
 | 00af51c8 (SpellIsTargeting..) | 10 | `s_ScriptFunctions` | 8 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
@@ -200,7 +200,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameUI.cpp | 491 | 96.4k | 99 (20.2%) | 27.0% | 61 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 70 (46.4%) | 27.6% | 44 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 47 (13.5%) | 7.6% | 7 | 2 | 36 |
+| ChatFrame.cpp | 349 | 82.2k | 48 (13.8%) | 7.8% | 7 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
@@ -262,7 +262,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | BattlefieldInfo.cpp | 120 | 22.7k | 34 (28.3%) | 29.3% | 14 | 0 | 0 |
 | Texture.cpp | 146 | 22.2k | 39 (26.7%) | 40.1% | 2 | 0 | 75 |
 | MapMem.cpp | 101 | 21.3k | 0 (0.0%) | 0.0% | 0 | 0 | 63 |
-| Cursor.cpp | 117 | 20.7k | 2 (1.7%) | 4.3% | 0 | 0 | 19 |
+| Cursor.cpp | 117 | 20.7k | 3 (2.6%) | 4.5% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
@@ -785,8 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:15 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
@@ -810,6 +808,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
+| 2026-09-19 11:21 | 2407 (8.9%) | 903 (3.3%) | 448 | 388/5530 | 1584/2512 | 554 |
+| 2026-09-19 11:21 | 2407 (8.9%) | 903 (3.3%) | 448 | 388/5530 | 1584/2512 | 554 |
 
 ## How to move a row
 

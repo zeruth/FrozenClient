@@ -110897,27 +110897,52 @@
 "refs": [],
 "line": 1867
 },
+"ThreatStatusColor": {
+"files": [
+"src/ui/game/gamescript.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x00",
+"0x77",
+"0x99",
+"0xB0",
+"0xFF",
+"1",
+"4",
+"5"
+],
+"branches": 1,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 1875
+},
 "Script_GetThreatStatusColor": {
 "files": [
 "src/ui/game/gamescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_tonumber",
+"ThreatStatusColor",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"(anonymous namespace)::Script_GetThreatStatusColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\gamescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0.5",
+"1",
+"1.0f",
+"255.0f",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 13,
 "refs": [],
-"line": 1871
+"line": 1892
 },
 "Script_IsThreatWarningEnabled": {
 "files": [
@@ -110934,7 +110959,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1875
+"line": 1906
 },
 "Script_ConsoleAddMessage": {
 "files": [
@@ -110956,7 +110981,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1881
+"line": 1912
 },
 "Script_GetItemUniqueness": {
 "files": [
@@ -110978,7 +111003,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1885
+"line": 1916
 },
 "Script_EndRefund": {
 "files": [
@@ -111000,7 +111025,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1889
+"line": 1920
 },
 "Script_EndBoundTradeable": {
 "files": [
@@ -111022,7 +111047,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1893
+"line": 1924
 },
 "Script_CanMapChangeDifficulty": {
 "files": [
@@ -111044,7 +111069,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1897
+"line": 1928
 },
 "Script_GetExpansionLevel": {
 "files": [
@@ -111062,7 +111087,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1901
+"line": 1932
 },
 "Script_GetAllowLowLevelRaid": {
 "files": [
@@ -111084,7 +111109,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1908
+"line": 1939
 },
 "Script_SetAllowLowLevelRaid": {
 "files": [
@@ -111106,7 +111131,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1912
+"line": 1943
 },
 "GameScriptRegisterFunctions": {
 "files": [
@@ -111121,7 +111146,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2231
+"line": 2262
 },
 "Script_GetGMTicket": {
 "files": [

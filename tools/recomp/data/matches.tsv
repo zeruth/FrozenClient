@@ -669,6 +669,7 @@ addr	how	frozen	evidence
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
+00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
@@ -1345,6 +1346,7 @@ addr	how	frozen	evidence
 00614e60	table	Script_GetVehicleUIIndicator	binding "GetVehicleUIIndicator" in s_UnitFunctions ~ table 00ad21d8
 00614ef0	table	Script_GetVehicleUIIndicatorSeat	binding "GetVehicleUIIndicatorSeat" in s_UnitFunctions ~ table 00ad21d8
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
+0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
 0061b040	override	StringToTooltipAnchor	
 0061c620	callgraph	TooltipClear	only unmatched callee of 0061d7d0=CGTooltip_ClearLines
 0061d040	table	CGTooltip_SetMinimumWidth	binding "SetMinimumWidth" in CGTooltipMethods ~ table 00ad2ae0
