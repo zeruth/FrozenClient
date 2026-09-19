@@ -155,6 +155,7 @@ int32_t CGxDevice::AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapte
     return adapterFormats.Count() != 0;
 }
 
+// ref: FUN_0068a4c0
 int32_t CGxDevice::AdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes) {
 #if defined(WHOA_SYSTEM_WIN)
 

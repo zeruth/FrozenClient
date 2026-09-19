@@ -36943,23 +36943,92 @@
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"SStrToUnsigned",
+"TSGrowableArray::TSGrowableArray",
+"GxAdapterMonitorModes",
+"TSBaseArray::Count",
+"TSBaseArray::operator[]",
+"TSBaseArray::Count",
+"ConsoleWrite",
+"ConsoleWrite"
+],
+"strings": [
+"Unsupported refresh rate",
+"set pending gxRestart"
+],
+"consts": [
+"0"
+],
+"branches": 3,
 "stub": false,
-"lines": 4
+"lines": 26
 },
 "CVGxResolutionCallback": {
 "files": [
 "src/console/device.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
+"callseq": [
+"sscanf",
+"ConsoleWrite",
+"TSGrowableArray::TSGrowableArray",
+"CVar::GetInt",
+"TSGrowableArray::TSGrowableArray",
+"GxAdapterMonitorModes",
+"C2iVector::C2iVector",
+"TSBaseArray::Count",
+"TSBaseArray::operator[]",
+"C2iVector::operator=",
+"TSGrowableArray::Add",
+"TSBaseArray::Count",
+"C2iVector::C2iVector",
+"TSGrowableArray::Add",
+"TSBaseArray::Count",
+"TSBaseArray::operator[]",
+"TSBaseArray::operator[]",
+"TSBaseArray::Count",
+"ConsoleWrite",
+"SStrCopy",
+"TSBaseArray::Count",
+"SStrPack",
+"SStrLen",
+"ConsoleWrite",
+"TSBaseArray::operator[]",
+"TSBaseArray::operator[]",
+"SStrPrintf",
+"SStrPack",
+"ConsoleWrite"
+],
+"strings": [
+"%d%c%d",
+"%dx%d",
+", ",
+"invalid resolution, must be one of ",
+"set pending gxRestart"
+],
+"consts": [
+"0",
+"1",
+"1.248f",
+"100",
+"1024",
+"1152",
+"1200",
+"1280",
+"1600",
+"256",
+"32",
+"480",
+"600",
+"640",
+"768",
+"800",
+"864",
+"960"
+],
+"branches": 12,
 "stub": false,
-"lines": 4
+"lines": 86
 },
 "CVGxStereoConvergenceCallback": {
 "files": [
@@ -37335,13 +37404,16 @@
 "CVar::Update",
 "CVar::Update",
 "CVar::Update",
+"CVar::Update",
+"CVar::Update",
+"CVar::Update",
 "CVar::Update"
 ],
 "strings": [],
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 22
+"lines": 18
 },
 "SetGxCVars": {
 "files": [
@@ -37356,18 +37428,37 @@
 "CVar::Set",
 "SStrPrintf",
 "CVar::Set",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
+"SStrPrintf",
+"CVar::Set",
 "UpdateGxCVars"
 ],
 "strings": [
 "%d",
-"%dx%d"
+"%dx%d",
+"%f",
+"0",
+"1"
 ],
 "consts": [
-"1024"
+"1024",
+"2"
 ],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 23
+"lines": 41
 },
 "ConsoleDeviceStereoInitialize": {
 "files": [
@@ -51055,7 +51146,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "GxAdapterMonitorModes": {
 "files": [

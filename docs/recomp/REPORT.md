@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 22:28 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 22:35 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1640 (+4) (6.0%) | 372.5k (6.7%) |
-| &nbsp;&nbsp;ported | 1155 (+4) | 250.9k |
+| mapped to a whoa function | 1647 (+7) (6.1%) | 373.7k (6.8%) |
+| &nbsp;&nbsp;ported | 1162 (+7) | 252.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **319 (+3) (1.2%)** | **43.9k (0.8%)** |
-| unmapped | 25521 | 5.04M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 178 (+2) (3.2%) | |
-| whoa functions (src/, from PDB + source) | 10632, stubs 895 | |
+| **faithful** (linked, not stub, call order >= 80%) | **324 (+5) (1.2%)** | **44.9k (0.8%)** |
+| unmapped | 25514 | 5.04M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 179 (+1) (3.2%) | |
+| whoa functions (src/, from PDB + source) | 10636, stubs 895 | |
 
-Match evidence: annotated 149, callgraph 65, callorder 93, cvar 32, handler 27, override 81, string 264, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 155, callgraph 67, callorder 94, cvar 30, handler 27, override 81, string 264, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 22:25 -- mapped 1636, ported 1151, stub 463, spine mapped 176.
+Previous run: 2026-09-18 22:28 -- mapped 1640, ported 1155, stub 463, spine mapped 178.
 
 ## Lua API coverage (binding tables)
 
@@ -195,7 +195,7 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1261 | 274.2k | 2 (0.2%) | 0.2% | 0 | 0 | 81 |
 | OggDecompress.cpp | 1504 | 260.7k | 9 (0.6%) | 0.8% | 0 | 0 | 476 |
-| ComSatSoundIOSoundEngine.cpp | 976 | 190.0k | 51 (5.2%) | 0.2% | 0 | 0 | 108 |
+| ComSatSoundIOSoundEngine.cpp | 976 | 190.0k | 52 (5.3%) | 0.2% | 0 | 0 | 108 |
 | Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 0 (0.0%) | 0.0% | 0 | 0 | 68 |
@@ -232,11 +232,11 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureCache.cpp | 252 | 38.9k | 6 (2.4%) | 5.5% | 0 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 2 (1.2%) | 0.2% | 0 | 0 | 23 |
 | framing.c | 125 | 38.8k | 27 (21.6%) | 51.7% | 0 | 0 | 39 |
-| DBCache.cpp | 236 | 38.8k | 6 (2.5%) | 2.4% | 0 | 0 | 83 |
+| DBCache.cpp | 236 | 38.8k | 7 (3.0%) | 2.4% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 0 (0.0%) | 0.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 1 (0.6%) | 0.2% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 62 (25.5%) | 26.1% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 66 (27.2%) | 28.8% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 21 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 10 (4.7%) | 9.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
@@ -394,7 +394,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SoundInterface2VoiceChat.cpp | 44 | 3.9k | 0 (0.0%) | 0.0% | 0 | 0 | 13 |
 | CSimpleFont.cpp | 25 | 3.8k | 2 (8.0%) | 35.5% | 0 | 0 | 1 |
 | TumorManager.cpp | 44 | 3.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| CGxDeviceD3d.cpp | 15 | 3.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
+| CGxDeviceD3d.cpp | 15 | 3.8k | 1 (6.7%) | 5.1% | 0 | 0 | 0 |
 | fmod_output_software.cpp | 14 | 3.7k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | DynamicObject_C.cpp | 25 | 3.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ModelBlob.cpp | 29 | 3.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
@@ -607,7 +607,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
-| 0076a220 | `CVGxResolutionCallback` | %d%c%d; %dx%d; .?AUCGxMonitorMode@@; .?AVC2iVector@NTempest@@ |
 | 0054c8a0 | `Script_GetWorldPVPQueueStatus` | Usage: GetWorldPVPQueueStatus(index); active; confirm; error |
 | 00539d70 | `Script_BNGetFriendToonInfo` | Couldn't find a toon at friend index %d, online to; Couldn't find a toon at friend index %d, toon inde; Friend index %d too large, only %d friends.; Toon index %d too large, only %d toons. |
 | 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
@@ -616,6 +615,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
 | 007e2a50 | `ReceiveServerTime` | (High bit set); Malformed message recieved: Id = %d, Len = %d, Rea; Server game time is %s; Server last tick is 0x%08x %s |
+| 0078df90 | `CWorldParam::BSPCacheCallback` | BSP node cache already disabled.; Disabling BSP node cache.; Enabling BSP node cache (already enabled, so clear; Enabling BSP node cache (first time - starting up) |
 
 ## Largest whoa functions with no reference link
 
@@ -688,7 +688,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 007e4480 | `BlobShadowsBegin` | 3% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
 | 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 36 | 35 | 19 | 0% | 1303 |
-| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 30% | 10 | 9 | 66 | ? | ? | 1299 |
+| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `CGGameUI::Initialize` | 14% | 59 | 30 | 23 | 6 | 5% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 20% | 10 | 10 | 10 | 5 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
@@ -707,7 +707,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004d9bd0 | `CGlueMgr::EnterWorld` | 55% | 38 | 38 | 23 | 15 | 29% | 895 |
 | 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 62% | 24 | 41 | 31 | 18 | 12% | 889 |
 | 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
-| 0076a220 | `CVGxResolutionCallback` | 0% | 20 | 0 | 25 | 0 | 0% | 856 |
+| 0076a220 | `CVGxResolutionCallback` | 35% | 20 | 29 | 25 | 12 | 40% | 856 |
 | 0061eb40 | `CGTooltip_SetOwner` | 27% | 33 | 14 | 25 | 4 | 0% | 836 |
 | 008bfe80 | `EffectGlow::EffectGlow` | 4% | 28 | 1 | 19 | 0 | 0% | 834 |
 
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 10:12 | 1409 (5.2%) | 195 (0.7%) | 453 | 125/5545 | 936/2512 | 448 |
 | 2026-09-18 10:14 | 1409 (5.2%) | 195 (0.7%) | 453 | 125/5545 | 936/2512 | 448 |
 | 2026-09-18 10:16 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
 | 2026-09-18 10:28 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 22:12 | 1620 (6.0%) | 295 (1.1%) | 463 | 174/5530 | 936/2512 | 446 |
 | 2026-09-18 22:25 | 1636 (6.0%) | 316 (1.2%) | 463 | 176/5530 | 936/2512 | 446 |
 | 2026-09-18 22:28 | 1640 (6.0%) | 319 (1.2%) | 463 | 178/5530 | 936/2512 | 446 |
+| 2026-09-18 22:35 | 1647 (6.1%) | 324 (1.2%) | 463 | 179/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

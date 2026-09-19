@@ -6372,8 +6372,8 @@
  "0050f7c0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CGlueMgr.cpp"
   ],
@@ -8830,7 +8830,7 @@
   "refSize": 615,
   "status": "ported",
   "whoa": "SetupFormats",
-  "whoaSize": 904
+  "whoaSize": 906
  },
  "0054f430": {
   "branchRatio": 0.5,
@@ -8851,7 +8851,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp"
   ],
@@ -8881,7 +8881,7 @@
   "branchRatio": 0.615,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.556,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp"
   ],
@@ -15355,6 +15355,21 @@
   "whoa": "Script_GetUnitFromName",
   "whoaSize": 60
  },
+ "00681210": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Adapter.cpp"
+  ],
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 9,
+  "status": "ported",
+  "whoa": "GxAdapterMonitorModes",
+  "whoaSize": 5
+ },
  "00681770": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -15475,6 +15490,21 @@
   "whoa": "CGxDevice::DeviceCreatePools",
   "whoaSize": 115
  },
+ "0068a4c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/CGxDevice.cpp"
+  ],
+  "how": "annotated",
+  "module": "CGxDeviceD3d.cpp",
+  "refSize": 201,
+  "status": "ported",
+  "whoa": "CGxDevice::AdapterMonitorModes",
+  "whoaSize": 355
+ },
  "0068da10": {
   "branchRatio": 1.0,
   "constOverlap": 0.182,
@@ -15518,7 +15548,7 @@
   "refSize": 280,
   "status": "ported",
   "whoa": "CGxDeviceD3d::DeviceSetFormat",
-  "whoaSize": 873
+  "whoaSize": 955
  },
  "006909a0": {
   "branchRatio": -1.0,
@@ -15539,7 +15569,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/gx/gll/CGxDeviceGLL.cpp"
   ],
@@ -16133,6 +16163,21 @@
   "whoa": "CVar::Set",
   "whoaSize": 203
  },
+ "00766ab0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/console/CVar.cpp"
+  ],
+  "how": "callgraph",
+  "module": "ConsoleVar.cpp",
+  "refSize": 111,
+  "status": "ported",
+  "whoa": "CVar::Update",
+  "whoaSize": 202
+ },
  "00767030": {
   "branchRatio": 0.5,
   "constOverlap": 0.111,
@@ -16401,7 +16446,7 @@
   "refSize": 42,
   "status": "ported",
   "whoa": "CVGxAspectCallback",
-  "whoaSize": 46
+  "whoaSize": 42
  },
  "007695b0": {
   "branchRatio": 1.0,
@@ -16553,6 +16598,36 @@
   "whoa": "CVWindowResizeLockCallback",
   "whoaSize": 26
  },
+ "007698b0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 0.929,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 154,
+  "status": "ported",
+  "whoa": "UpdateGxCVars",
+  "whoaSize": 0
+ },
+ "00769950": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Device.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 677,
+  "status": "ported",
+  "whoa": "SetGxCVars",
+  "whoaSize": 962
+ },
  "00769c00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -16614,34 +16689,34 @@
   "whoaSize": 0
  },
  "0076a220": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.48,
+  "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.35,
   "files": [
    "src/console/Device.cpp"
   ],
-  "how": "cvar",
+  "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 856,
   "status": "ported",
   "whoa": "CVGxResolutionCallback",
-  "whoaSize": 3
+  "whoaSize": 1276
  },
  "0076a580": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/console/Device.cpp"
   ],
-  "how": "cvar",
+  "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 173,
   "status": "ported",
   "whoa": "CVGxRefreshCallback",
-  "whoaSize": 3
+  "whoaSize": 503
  },
  "0076a630": {
   "branchRatio": 1.0,
@@ -16926,6 +17001,22 @@
   "status": "ported",
   "whoa": "SStrToInt",
   "whoaSize": 105
+ },
+ "0076f140": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "how": "callgraph",
+  "module": "ConsoleVar.cpp",
+  "refSize": 73,
+  "status": "ported",
+  "whoa": "SStrToUnsigned",
+  "whoaSize": 80
  },
  "0076f190": {
   "branchRatio": 0.25,
@@ -19951,6 +20042,19 @@
   "status": "ported",
   "whoa": "SESound::LoadDiskSound",
   "whoaSize": 1258
+ },
+ "0088be0d": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "how": "callorder",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 31,
+  "status": "ported",
+  "whoa": "sscanf",
+  "whoaSize": 82
  },
  "008a1420": {
   "branchRatio": 1.0,

@@ -1022,6 +1022,7 @@ addr	how	whoa	evidence
 00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
 0067d770	callgraph	Script_GetUnitFromName	only unmatched callee of 00612670=Script_UnitIsSameServer
+00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
@@ -1030,6 +1031,7 @@ addr	how	whoa	evidence
 00685f50	override	CGxDevice::RsSet	
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
+0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
@@ -1073,7 +1075,8 @@ addr	how	whoa	evidence
 00766530	annotated	CVar::Load	tag in src/console/CVar.cpp
 007665d0	string	CVar::RemoveFile	score 0.50 shared WTF\%s
 007667b0	callorder	CVar::InternalSet	same slot between linked calls in 007668c0=CVar::Set
-007668c0	callgraph	CVar::Set	only unmatched callee of 004dbec0=Script_SetSavedAccountName
+007668c0	callgraph	CVar::Set	only unmatched callee of 004dbec0=Script_SetSavedAccountName, 00769950=SetGxCVars
+00766ab0	callgraph	CVar::Update	only unmatched callee of 007698b0=UpdateGxCVars
 00767030	annotated	s_WriteCVars	tag in src/console/CVar.cpp
 00767100	annotated	CVar::Save	tag in src/console/CVar.cpp
 007673f0	annotated	ConsoleDestroyClientCVar	tag in src/console/Initialize.cpp
@@ -1102,12 +1105,14 @@ addr	how	whoa	evidence
 00769830	annotated	CVGxMaxFPSCallback	tag in src/console/Device.cpp
 00769860	annotated	CVGxMaxFPSBkCallback	tag in src/console/Device.cpp
 00769890	annotated	CVWindowResizeLockCallback	tag in src/console/Device.cpp
+007698b0	annotated	UpdateGxCVars	tag in src/console/Device.cpp
+00769950	annotated	SetGxCVars	tag in src/console/Device.cpp
 00769c00	annotated	CVGxStereoEnabledCallback	tag in src/console/Device.cpp
 00769c30	cvar	CVGxStereoConvergenceCallback	callback of CVar::Register("gxStereoConvergence") on both sides
 00769c60	cvar	CVGxStereoSeparationCallback	callback of CVar::Register("gxStereoSeparation") on both sides
 00769c90	string	ConsoleDeviceStereoInitialize	unique "Set stereoscopic rendering convergence depth"
-0076a220	cvar	CVGxResolutionCallback	callback of CVar::Register("gxResolution") on both sides
-0076a580	cvar	CVGxRefreshCallback	callback of CVar::Register("gxRefresh") on both sides
+0076a220	annotated	CVGxResolutionCallback	tag in src/console/Device.cpp
+0076a580	annotated	CVGxRefreshCallback	tag in src/console/Device.cpp
 0076a630	string	RegisterGxCVars	unique "Allow widescreen support"
 0076b3b0	annotated	ConsoleCommandHistoryAdd	tag in src/console/Command.cpp
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
@@ -1126,6 +1131,7 @@ addr	how	whoa	evidence
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
 0076f0d0	override	SStrToInt	
+0076f140	callgraph	SStrToUnsigned	only unmatched callee of 0076a580=CVGxRefreshCallback
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
 0076f1e0	callgraph	SStrTokenize	only unmatched callee of 007696d0=CVGxOverrideParse
 0076f640	override	SStrHash	
@@ -1332,6 +1338,7 @@ addr	how	whoa	evidence
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
 0087ebc0	callorder	SEDiskSound::SEDiskSound	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
+0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"

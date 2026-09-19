@@ -6,6 +6,7 @@ int32_t GxAdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats)
     return CGxDevice::AdapterFormats(api, adapterFormats);
 }
 
+// ref: FUN_00681210
 int32_t GxAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes) {
     return CGxDevice::AdapterMonitorModes(monitorModes);
 }

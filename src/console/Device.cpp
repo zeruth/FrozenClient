@@ -1,4 +1,6 @@
 #include "console/Device.hpp"
+#include <cstdio>
+#include "gx/CGxMonitorMode.hpp"
 #include <cstdlib>
 #include "gx/Gx.hpp"
 #include "client/gui/OsGui.hpp"
@@ -129,14 +131,120 @@ bool CVGxMaximizeCallback(CVar*, const char*, const char* value, void*) {
     return true;
 }
 
-bool CVGxRefreshCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_0076a580
+bool CVGxRefreshCallback(CVar*, const char*, const char* value, void*) {
+    uint32_t refresh = SStrToUnsigned(value);
+
+    TSGrowableArray<CGxMonitorMode> modes;
+    GxAdapterMonitorModes(modes);
+
+    uint32_t i = 0;
+    while (i < modes.Count()) {
+        if (modes[i].refreshRate == refresh) {
+            break;
+        }
+
+        i++;
+    }
+
+    if (i == modes.Count()) {
+        ConsoleWrite("Unsupported refresh rate", DEFAULT_COLOR);
+
+        return false;
+    }
+
+    s_requestedFormat.refreshRate = refresh;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
     return true;
 }
 
-bool CVGxResolutionCallback(CVar*, const char*, const char*, void*) {
-    // TODO
-    return true;
+// ref: FUN_0076a220
+bool CVGxResolutionCallback(CVar*, const char*, const char* value, void*) {
+    int32_t width = -1;
+    int32_t height = -1;
+    char separator;
+    sscanf(value, "%d%c%d", &width, &separator, &height);
+
+    // Windowed: any size goes
+    if (s_requestedFormat.window) {
+        s_requestedFormat.size.x = width;
+        s_requestedFormat.size.y = height;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    TSGrowableArray<C2iVector> resolutions;
+
+    if (s_cvGxWidescreen->GetInt()) {
+        TSGrowableArray<CGxMonitorMode> modes;
+        GxAdapterMonitorModes(modes);
+
+        C2iVector last = { 0, 0 };
+
+        for (uint32_t i = 0; i < modes.Count(); i++) {
+            const C2iVector& size = modes[i].size;
+
+            if (static_cast<float>(size.x) / static_cast<float>(size.y) >= 1.248f
+                && size.x >= 640
+                && size.y >= 480
+                && (size.x != last.x || size.y != last.y)) {
+                last = size;
+                resolutions.Add(1, &last);
+            }
+        }
+    }
+
+    if (resolutions.Count() == 0) {
+        static const C2iVector defaults[] = {
+            { 640, 480 }, { 800, 600 }, { 1024, 768 }, { 1152, 864 }, { 1280, 960 }, { 1280, 1024 }, { 1600, 1200 }
+        };
+
+        for (const C2iVector& size : defaults) {
+            C2iVector v = size;
+            resolutions.Add(1, &v);
+        }
+    }
+
+    uint32_t i = 0;
+    while (i < resolutions.Count()) {
+        if (width == resolutions[i].x && height == resolutions[i].y) {
+            break;
+        }
+
+        i++;
+    }
+
+    if (i != resolutions.Count()) {
+        s_requestedFormat.size.x = width;
+        s_requestedFormat.size.y = height;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    char message[256];
+    SStrCopy(message, "invalid resolution, must be one of ", sizeof(message));
+
+    for (uint32_t j = 0; j < resolutions.Count(); j++) {
+        if (j != 0) {
+            SStrPack(message, ", ", sizeof(message));
+        }
+
+        if (SStrLen(message) > 100) {
+            ConsoleWrite(message, DEFAULT_COLOR);
+            message[0] = '\0';
+        }
+
+        char resolution[32];
+        SStrPrintf(resolution, sizeof(resolution), "%dx%d", resolutions[j].x, resolutions[j].y);
+        SStrPack(message, resolution, sizeof(message));
+    }
+
+    ConsoleWrite(message, DEFAULT_COLOR);
+
+    return false;
 }
 
 bool CVGxStereoConvergenceCallback(CVar*, const char*, const char*, void*) {
@@ -146,7 +254,7 @@ bool CVGxStereoConvergenceCallback(CVar*, const char*, const char*, void*) {
 
 // ref: FUN_00769c00
 bool CVGxStereoEnabledCallback(CVar*, const char*, const char* value, void*) {
-    s_requestedStereoEnabled = SStrToInt(value) == 1;
+    s_requestedFormat.stereoEnabled = SStrToInt(value) == 1;
     ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
 
     return true;
@@ -608,6 +716,7 @@ void RegisterGxCVars() {
     );
 }
 
+// ref: FUN_007698b0
 void UpdateGxCVars() {
     s_cvGxColorBits->Update();
     s_cvGxDepthBits->Update();
@@ -616,21 +725,18 @@ void UpdateGxCVars() {
     s_cvGxRefresh->Update();
     s_cvGxTripleBuffer->Update();
 
-    // TODO s_cvGxApi
+    // TODO s_cvGxApi->Update();
 
     s_cvGxVSync->Update();
-
-    // TODO s_cvGxAspect
-
+    s_cvGxAspect->Update();
     s_cvGxMaximize->Update();
     s_cvGxCursor->Update();
-
-    // TODO s_cvGxMultisample
-    // TODO s_cvGxMultisampleQuality;
-
+    s_cvGxMultisample->Update();
+    s_cvGxMultisampleQuality->Update();
     s_cvGxFixLag->Update();
 }
 
+// ref: FUN_00769950
 void SetGxCVars(const CGxFormat& format) {
     char value[1024];
 
@@ -644,13 +750,31 @@ void SetGxCVars(const CGxFormat& format) {
     SStrPrintf(value, sizeof(value), "%dx%d", format.size.x, format.size.y);
     s_cvGxResolution->Set(value, true, false, false, true);
 
-    // TODO s_cvGxRefresh
-    // TODO others
+    SStrPrintf(value, sizeof(value), "%d", format.refreshRate);
+    s_cvGxRefresh->Set(value, true, false, false, true);
+
+    s_cvGxTripleBuffer->Set(format.backBufferCount < 2 ? "0" : "1", true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", format.vsync);
+    s_cvGxVSync->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", format.aspect);
+    s_cvGxAspect->Set(value, true, false, false, true);
 
     SStrPrintf(value, sizeof(value), "%d", format.maximize);
     s_cvGxMaximize->Set(value, true, false, false, true);
 
-    // TODO others
+    SStrPrintf(value, sizeof(value), "%d", format.cursor);
+    s_cvGxCursor->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", format.multisampleCount);
+    s_cvGxMultisample->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%f", format.multisampleQuality);
+    s_cvGxMultisampleQuality->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", format.fixLag);
+    s_cvGxFixLag->Set(value, true, false, false, true);
 
     UpdateGxCVars();
 }
