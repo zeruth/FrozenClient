@@ -89,3 +89,39 @@ Two routes, and the second is the one this codebase has already taken once:
 
 Route 2 is smaller and matches what is already here. Route 1 is what a 1:1 recomp eventually wants.
 Either way the field order in section 3 is the part that had to be recovered, and it now has been.
+
+---
+
+## 5. What `GetItemInfo` needs beyond the cache
+
+`GetItemInfo` (00516c60) is the binding most of FrameXML reaches for, and the cache alone is not
+enough for it. Decompiled and read; the return order is:
+
+```
+name          FUN_00706d70(buf, 0x400, id, ...)   a builder, not a field -- it folds in the suffix
+link          FUN_0061e290(id, quality, ...)      a builder
+quality       record +0x14
+item level    record +0x34
+required level record +0x38
+class name    ItemClass lookup on record +0x04    (bounds 00ad3da4/a0, index 00ad3db4)
+subclass name a second lookup of the same shape
+stack count   } the rest follow from fields the cache already holds
+equip slot    }
+texture       }
+sell price    }
+```
+
+So five of the eleven returns are already in `ItemInfo`. The four that are not:
+
+1. **The name builder.** Not the raw name field: it composes the displayed name, which is why the
+   reference calls a 1 KB-buffered builder rather than pushing the string.
+2. **The link builder**, which needs the quality for the colour code.
+3. **`ItemClass`**, which frozen does not load -- there is no `ItemClassRec` in `src/db/rec/`.
+4. **`ItemSubClass`**, same.
+
+A partial port would return nil for the link and both type names, which are exactly the values
+FrameXML selects out of it most often, so it is not worth landing until at least the two tables are
+loaded. Adding those two DBCs is the smallest step that makes the rest worth writing.
+
+**Also settled while reading this:** the binding returns *no values at all* when the item is not in
+the cache, rather than nils. Anything counting returns has to expect zero.
