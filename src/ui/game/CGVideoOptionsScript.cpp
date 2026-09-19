@@ -5,9 +5,12 @@
 #include "gx/Adapter.hpp"
 #include "gx/Gx.hpp"
 #include "gx/CGxDevice.hpp"
+#include "gx/Coordinate.hpp"
 #include "gx/Device.hpp"
+#include "ui/FrameScript_Object.hpp"
 #include "ui/Types.hpp"
 #include "ui/game/CGVideoOptions.hpp"
+#include "ui/simple/CSimpleFrame.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <storm/String.hpp>
@@ -257,8 +260,43 @@ int32_t Script_GetRefreshRates(lua_State* L) {
     return nargs;
 }
 
+// ref: FUN_0054ed80
 int32_t Script_SetupFullscreenScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The reference does not go through FrameScript_GetObjectThis here; it inlines the same three
+    // steps so that it can report its own usage strings.
+
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        return luaL_error(L, "Usage: SetupFullscreenScale(frame)");
+    }
+
+    lua_rawgeti(L, 1, 0);
+    auto object = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!object) {
+        return luaL_error(L, "SetupFullscreenScale(): Couldn't find 'this' in frame object");
+    }
+
+    if (!object->IsA(CSimpleFrame::GetObjectType())) {
+        return luaL_error(L, "SetupFullscreenScale(): Wrong object type, expected frame");
+    }
+
+    auto frame = static_cast<CSimpleFrame*>(object);
+
+    // Letterboxed (narrower than 4:3) displays shrink the frame so that it still covers the screen;
+    // anything wider is left at 1.0.
+
+    float aspectCompensation = CoordinateGetAspectCompensation();
+
+    if (aspectCompensation < 1.0f) {
+        frame->SetFrameScale(aspectCompensation, false);
+
+        return 0;
+    }
+
+    frame->SetFrameScale(1.0f, false);
+
+    return 0;
 }
 
 int32_t Script_GetMultisampleFormats(lua_State* L) {
@@ -310,12 +348,128 @@ int32_t Script_GetCurrentMultisampleFormat(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0054f980
 int32_t Script_SetMultisampleFormat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Load available multisample formats
+
+    SetupFormats();
+
+    // Find matching multisample format
+
+    uint32_t formatIndex = 0;
+
+    if (lua_isnumber(L, 1)) {
+        if (lua_tonumber(L, 1) - 1 < s_multisampleFormats.Count()) {
+            formatIndex = static_cast<uint32_t>(lua_tonumber(L, 1)) - 1;
+        } else {
+            formatIndex = s_multisampleFormats.Count();
+        }
+    }
+
+    // The reference indexes the format array here without re-checking the bound it just computed,
+    // so an out of range index reads one element past the end. Not reproduced.
+    if (formatIndex >= s_multisampleFormats.Count()) {
+        return 0;
+    }
+
+    auto gxColorBitsVar = CVar::Lookup("gxColorBits");
+    auto gxDepthBitsVar = CVar::Lookup("gxDepthBits");
+    auto gxMultisampleVar = CVar::Lookup("gxMultisample");
+
+    if (!gxColorBitsVar || !gxDepthBitsVar || !gxMultisampleVar) {
+        return 0;
+    }
+
+    int32_t gxMultisample = gxMultisampleVar->GetInt();
+
+    auto& multisampleFormat = s_multisampleFormats[formatIndex];
+
+    // Only write the CVars when the requested format differs from the configured one
+
+    if (gxColorBitsVar->GetInt() == multisampleFormat.x
+        && gxDepthBitsVar->GetInt() == multisampleFormat.y
+        && gxMultisample == multisampleFormat.z) {
+        return 0;
+    }
+
+    char value[32];
+
+    SStrPrintf(value, sizeof(value), "%d", multisampleFormat.x);
+    gxColorBitsVar->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", multisampleFormat.y);
+    gxDepthBitsVar->Set(value, true, false, false, true);
+
+    SStrPrintf(value, sizeof(value), "%d", multisampleFormat.z);
+    gxMultisampleVar->Set(value, true, false, false, true);
+
+    return 0;
 }
 
+// ref: FUN_0054ee60
 int32_t Script_GetVideoCaps(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // FrameXML reads these back as:
+    //   anisotropic, pixelShaders, vertexShaders, trilinear, buffering, maxAnisotropy, hardwareCursor
+
+    auto& caps = GxCaps();
+
+    // anisotropic
+
+    if (!caps.m_texFilterAnisotropic) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    // pixelShaders
+
+    if (!caps.m_shaderTargets[GxSh_Pixel]) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    // vertexShaders
+
+    if (!caps.m_shaderTargets[GxSh_Vertex]) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    // trilinear
+
+    if (!caps.m_texFilterTrilinear) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    // buffering
+    //
+    // TODO the reference reads a signed int at caps + 0x18. That offset lands on m_maxIndex in
+    // Frozen's CGxCaps, but that field is an index-buffer limit and has nothing to do with
+    // buffering, so the two are unrelated and matching them by offset would be a coincidence, not
+    // an identification. Reported as 0 until the reference field is identified.
+
+    lua_pushnumber(L, 0.0);
+
+    // maxAnisotropy
+
+    if (!caps.m_maxTexAnisotropy) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, caps.m_maxTexAnisotropy);
+    }
+
+    // hardwareCursor
+    //
+    // The reference reads a caps field at + 0xfc that CGxCaps does not carry here, and no device
+    // backend reports a hardware cursor, so this is the reference's "unsupported" answer.
+
+    lua_pushnil(L);
+
+    return 7;
 }
 
 int32_t Script_GetGamma(lua_State* L) {
@@ -348,8 +502,21 @@ int32_t Script_GetTerrainMip(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0054eb40
 int32_t Script_SetTerrainMip(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        return luaL_error(L, "Usage: SetTerrainMip(value)");
+    }
+
+    // Terrain mip is the inverse of the shadowLevel CVar, matching GetTerrainMip
+
+    char value[16];
+    SStrPrintf(value, sizeof(value), "%d", 1 - static_cast<int32_t>(lua_tonumber(L, 1)));
+
+    auto shadowLevelVar = CVar::Lookup("shadowLevel");
+    shadowLevelVar->Set(value, true, false, false, true);
+
+    return 0;
 }
 
 int32_t Script_IsStereoVideoAvailable(lua_State* L) {

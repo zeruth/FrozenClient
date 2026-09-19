@@ -7467,6 +7467,19 @@
   "refSize": 30,
   "status": "ported"
  },
+ "004cfd20": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "WowClientDB<SpellRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "callgraph",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 101,
+  "status": "ported"
+ },
  "004d0bc0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -9537,20 +9550,20 @@
   "status": "ported"
  },
  "004e6be0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelFFXScript.cpp",
    "src/ui/simple/csimplemodelffxscript.cpp"
   ],
   "frozen": "CSimpleModelFFX_ResetLights",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 106,
+  "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 124,
-  "status": "stub"
+  "status": "ported"
  },
  "004e6c60": {
   "branchRatio": 0.333,
@@ -9563,10 +9576,10 @@
   ],
   "frozen": "CSimpleModelFFX_AddLight",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 247,
-  "status": "ported"
+  "status": "stub"
  },
  "004e6d60": {
   "branchRatio": 0.333,
@@ -9579,10 +9592,10 @@
   ],
   "frozen": "CSimpleModelFFX_AddCharacterLight",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 247,
-  "status": "ported"
+  "status": "stub"
  },
  "004e6e60": {
   "branchRatio": 0.333,
@@ -9595,10 +9608,10 @@
   ],
   "frozen": "CSimpleModelFFX_AddPetLight",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 247,
-  "status": "ported"
+  "status": "stub"
  },
  "004e6fb0": {
   "branchRatio": 0.5,
@@ -10435,100 +10448,116 @@
   "status": "stub"
  },
  "005101d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetWaterDetail",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 46,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 41,
-  "status": "stub"
+  "status": "ported"
  },
  "00510200": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetFarclip",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 55,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 39,
-  "status": "stub"
+  "status": "ported"
  },
  "00510230": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetFarclip",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 173,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "005102b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetTexLodBias",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 55,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 39,
-  "status": "stub"
+  "status": "ported"
  },
  "005102e0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetTexLodBias",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 173,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
+ },
+ "00510360": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetBaseMip",
+  "frozenSize": 63,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 41,
+  "status": "ported"
  },
  "00510390": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetBaseMip",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 178,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 123,
-  "status": "stub"
+  "status": "ported"
  },
  "005104a0": {
   "branchRatio": 0.4,
@@ -13404,6 +13433,22 @@
   "refSize": 54,
   "status": "ported"
  },
+ "0053dc20": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/MiscScript.cpp",
+   "src/ui/game/miscscript.cpp"
+  ],
+  "frozen": "SpellIconPath",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "SpellBookFrame.cpp",
+  "refSize": 240,
+  "status": "ported"
+ },
  "0053e490": {
   "branchRatio": 0.143,
   "constOverlap": 0.0,
@@ -13419,11 +13464,27 @@
   "refSize": 324,
   "status": "ported"
  },
+ "00540670": {
+  "branchRatio": 0.154,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/ui/game/MiscScript.cpp",
+   "src/ui/game/miscscript.cpp"
+  ],
+  "frozen": "SpellAtSlot",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "SpellBookFrame.cpp",
+  "refSize": 380,
+  "status": "ported"
+ },
  "005407f0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -13439,7 +13500,7 @@
   "branchRatio": 0.091,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.188,
+  "fidelity": 0.125,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -13455,7 +13516,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.306,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -13470,8 +13531,8 @@
  "00540d70": {
   "branchRatio": 0.333,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -13535,7 +13596,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -14232,20 +14293,20 @@
   "status": "ported"
  },
  "0054eb40": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
   ],
   "frozen": "Script_SetTerrainMip",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 166,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 122,
-  "status": "stub"
+  "status": "ported"
  },
  "0054ebc0": {
   "branchRatio": 0.0,
@@ -14264,36 +14325,36 @@
   "status": "ported"
  },
  "0054ed80": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
   ],
   "frozen": "Script_SetupFullscreenScale",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 221,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 216,
-  "status": "stub"
+  "status": "ported"
  },
  "0054ee60": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.714,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.929,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
   ],
   "frozen": "Script_GetVideoCaps",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 212,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 295,
-  "status": "stub"
+  "status": "ported"
  },
  "0054ef90": {
   "branchRatio": 1.0,
@@ -14440,20 +14501,20 @@
   "status": "ported"
  },
  "0054f980": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.625,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
   ],
   "frozen": "Script_SetMultisampleFormat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 513,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 395,
-  "status": "stub"
+  "status": "ported"
  },
  "00552940": {
   "branchRatio": 1.0,
@@ -15443,52 +15504,52 @@
   "status": "ported"
  },
  "0057bf50": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_GetZoomLevels",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 43,
+  "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "0057bf90": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_GetZoom",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 43,
+  "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "0057bfd0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetZoom",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 77,
+  "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "0057c090": {
   "branchRatio": 1.0,
@@ -15522,20 +15583,20 @@
   "status": "ported"
  },
  "0057e100": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPlayerTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 242,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 191,
-  "status": "stub"
+  "status": "ported"
  },
  "0057e1c0": {
   "branchRatio": 0.5,
@@ -15547,7 +15608,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPlayerTextureHeight",
-  "frozenSize": 173,
+  "frozenSize": 178,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 187,
@@ -15563,7 +15624,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPlayerTextureWidth",
-  "frozenSize": 173,
+  "frozenSize": 178,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 187,
@@ -16685,17 +16746,17 @@
   "status": "ported"
  },
  "005a7d10": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
   ],
   "frozen": "Script_GetActionCount",
-  "frozenSize": 22,
-  "how": "table",
+  "frozenSize": 78,
+  "how": "annotated",
   "module": "GuildBankFrame.cpp",
   "refSize": 119,
   "status": "ported"
@@ -16743,7 +16804,7 @@
   ],
   "frozen": "Script_GetBonusBarOffset",
   "frozenSize": 43,
-  "how": "table",
+  "how": "annotated",
   "module": "GuildBankFrame.cpp",
   "refSize": 52,
   "status": "ported"
@@ -16752,17 +16813,17 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.4,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
   ],
   "frozen": "Script_ChangeActionBarPage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 101,
+  "how": "annotated",
   "module": "GuildBankFrame.cpp",
   "refSize": 107,
-  "status": "stub"
+  "status": "ported"
  },
  "005a7fd0": {
   "branchRatio": 1.0,
@@ -16775,7 +16836,7 @@
   ],
   "frozen": "Script_GetActionBarPage",
   "frozenSize": 56,
-  "how": "table",
+  "how": "annotated",
   "module": "GuildBankFrame.cpp",
   "refSize": 65,
   "status": "ported"
@@ -18489,12 +18550,12 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/game/ScriptEvents.cpp",
-   "src/ui/game/scriptevents.cpp"
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
   ],
-  "frozen": "Script_GetPVPRankProgress",
+  "frozen": "Script_GetWaterDetail",
   "frozenSize": 22,
-  "how": "table",
+  "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 30,
   "status": "ported"
@@ -19559,14 +19620,14 @@
   "branchRatio": 0.316,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.318,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitName",
-  "frozenSize": 222,
-  "how": "table",
+  "frozenSize": 247,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 596,
   "status": "ported"
@@ -19581,7 +19642,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitPVPName",
-  "frozenSize": 304,
+  "frozenSize": 329,
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 179,
@@ -20407,7 +20468,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.478,
+  "fidelity": 0.522,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -20423,7 +20484,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.545,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -21267,6 +21328,22 @@
   "refSize": 547,
   "status": "ported"
  },
+ "0061c620": {
+  "branchRatio": 0.071,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.417,
+  "files": [
+   "src/ui/game/CGTooltipScript.cpp",
+   "src/ui/game/cgtooltipscript.cpp"
+  ],
+  "frozen": "TooltipClear",
+  "frozenSize": 201,
+  "how": "callgraph",
+  "module": "Tooltip.cpp",
+  "refSize": 646,
+  "status": "ported"
+ },
  "0061d040": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -21396,16 +21473,16 @@
   "status": "ported"
  },
  "0061d7d0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_ClearLines",
-  "frozenSize": 332,
+  "frozenSize": 40,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 55,
@@ -21428,20 +21505,20 @@
   "status": "stub"
  },
  "0061d940": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_FadeOut",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 40,
+  "how": "override",
   "module": "Tooltip.cpp",
   "refSize": 115,
-  "status": "stub"
+  "status": "diverged"
  },
  "0061d9c0": {
   "branchRatio": 0.0,
@@ -21460,36 +21537,36 @@
   "status": "ported"
  },
  "0061da20": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.429,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_IsUnit",
-  "frozenSize": 45,
+  "frozenSize": 178,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 163,
   "status": "ported"
  },
  "0061dad0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.429,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_GetUnit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 250,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 204,
-  "status": "stub"
+  "status": "ported"
  },
  "0061eb40": {
   "branchRatio": 0.16,
@@ -21508,20 +21585,20 @@
   "status": "ported"
  },
  "0061ee90": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AppendText",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 289,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 124,
-  "status": "stub"
+  "status": "ported"
  },
  "0061ef10": {
   "branchRatio": 0.125,
@@ -21540,20 +21617,20 @@
   "status": "stub"
  },
  "0061f0f0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.455,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_GetSpell",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 216,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 244,
-  "status": "stub"
+  "status": "ported"
  },
  "0061f1f0": {
   "branchRatio": 0.5,
@@ -21572,20 +21649,20 @@
   "status": "stub"
  },
  "006201f0": {
-  "branchRatio": 0.222,
+  "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddFontStrings",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 257,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 334,
-  "status": "stub"
+  "status": "ported"
  },
  "00620340": {
   "branchRatio": 0.667,
@@ -21597,7 +21674,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddLine",
-  "frozenSize": 122,
+  "frozenSize": 207,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 162,
@@ -21613,7 +21690,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddDoubleLine",
-  "frozenSize": 177,
+  "frozenSize": 350,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 229,
@@ -21629,7 +21706,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetText",
-  "frozenSize": 115,
+  "frozenSize": 208,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 217,
@@ -21725,7 +21802,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetSpell",
-  "frozenSize": 228,
+  "frozenSize": 148,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 422,
@@ -21741,7 +21818,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetSpellByID",
-  "frozenSize": 209,
+  "frozenSize": 137,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 368,
@@ -21764,20 +21841,20 @@
   "status": "stub"
  },
  "00625e10": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.556,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetUnit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 419,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 238,
-  "status": "stub"
+  "status": "ported"
  },
  "00626240": {
   "branchRatio": 0.667,
@@ -21892,20 +21969,20 @@
   "status": "stub"
  },
  "0062dae0": {
-  "branchRatio": 0.049,
+  "branchRatio": 0.268,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.121,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetHyperlink",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 556,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 1382,
-  "status": "stub"
+  "status": "ported"
  },
  "0062e050": {
   "branchRatio": 0.065,
@@ -22343,13 +22420,13 @@
   "branchRatio": 0.047,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.118,
+  "fidelity": 0.137,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetAction",
-  "frozenSize": 250,
+  "frozenSize": 219,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 1377,
@@ -23675,7 +23752,7 @@
   ],
   "frozen": "CVar::Lookup",
   "frozenSize": 23,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "ConsoleVar.cpp",
   "refSize": 27,
   "status": "ported"
@@ -25796,6 +25873,54 @@
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
+  "status": "ported"
+ },
+ "007f3ae0": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::SetZoom",
+  "frozenSize": 33,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 85,
+  "status": "diverged"
+ },
+ "007f3b40": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetZoom",
+  "frozenSize": 22,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 20,
+  "status": "ported"
+ },
+ "007f3b60": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetZoomLevels",
+  "frozenSize": 6,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "00801c90": {

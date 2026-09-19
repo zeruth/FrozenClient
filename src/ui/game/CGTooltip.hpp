@@ -3,9 +3,22 @@
 
 #include "ui/simple/CSimpleFrame.hpp"
 #include "util/guid/Types.hpp"
+#include <storm/Array.hpp>
+
+class CSimpleFontString;
 
 class CGTooltip : public CSimpleFrame {
     public:
+        // Structs
+
+        // The pair of font strings that make up one tooltip line. The template declares
+        // TextLeft1..8 / TextRight1..8 as named children, so those are found by name; a pair handed
+        // over by AddFontStrings extends the tooltip past them.
+        struct TOOLTIPLINE {
+            CSimpleFontString* left = nullptr;
+            CSimpleFontString* right = nullptr;
+        };
+
         // Static variables
         static int32_t s_metatable;
         static int32_t s_objectType;
@@ -26,9 +39,18 @@ class CGTooltip : public CSimpleFrame {
         // How many lines are currently in use. The line font strings themselves are not owned here:
         // GameTooltipTemplate.xml declares <name>TextLeft1..8 / TextRight1..8 as children, so a line
         // is found by name rather than created. The reference makes more on demand when a tooltip
-        // needs more than the template declares; that is not done yet, so lines past the last
-        // declared one are dropped instead of silently overwriting line 8.
+        // needs more than the template declares; that is not done yet, so a line past the last
+        // declared one exists only if AddFontStrings was handed a pair for it, and is otherwise
+        // dropped rather than silently overwriting line 8.
         int32_t m_lineCount = 0;
+
+        // Lines beyond the ones the template declares, in the order AddFontStrings registered them.
+        TSGrowableArray<TOOLTIPLINE> m_extraLines;
+
+        // The spell the tooltip was last filled from, which is what GetSpell reports. The reference
+        // keeps two spell slots (+0x364 and +0x370) and returns name/rank/id for each; only the
+        // first is tracked here, so GetSpell returns three values rather than up to six.
+        int32_t m_spellID = 0;
         float m_minimumWidth = 0.0f;
         float m_padding = 0.0f;
         WOWGUID m_unitGUID = 0;
@@ -53,6 +75,7 @@ class CGTooltip : public CSimpleFrame {
         virtual ScriptIx* GetScriptByName(const char* name, ScriptData& data);
 
         // Member functions
+        void AddFontStrings(CSimpleFontString* left, CSimpleFontString* right);
         void RunOnTooltipSetDefaultAnchorScript();
         void RunOnTooltipAddMoneyScript(int32_t money);
         void RunOnTooltipClearedScript();

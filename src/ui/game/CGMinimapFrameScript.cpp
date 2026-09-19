@@ -2,11 +2,14 @@
 #include "ui/game/CGMinimapFrame.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/FrameScript_Object.hpp"
+#include "ui/Types.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Texture.hpp"
 #include "util/CStatus.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <cmath>
 #include <cstdint>
 
 namespace {
@@ -195,8 +198,25 @@ int32_t CGMinimapFrame_SetCorpsePOIArrowTexture(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0057e100
 int32_t CGMinimapFrame_SetPlayerTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGMinimapFrame::GetObjectType();
+    auto frame = static_cast<CGMinimapFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetPlayerTexture(\"file\")", frame->GetDisplayName());
+    }
+
+    // The reference sets the arrow region's texture unconditionally; the null check is Frozen's,
+    // because the minimapPlayerTexture XML attribute that creates the region is not ported and the
+    // member is still always null. See CGMinimapFrame::m_playerTexture.
+    if (frame->m_playerTexture) {
+        if (!frame->m_playerTexture->SetTexture(lua_tostring(L, 2), false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI)) {
+            return luaL_error(L, "%s:SetPlayerTexture(): Couldn't load the file %s", frame->GetDisplayName(), lua_tostring(L, 2));
+        }
+    }
+
+    return 0;
 }
 
 // ref: FUN_0057e1c0
@@ -240,22 +260,50 @@ int32_t CGMinimapFrame_SetPlayerTextureWidth(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0057bf50
 int32_t CGMinimapFrame_GetZoomLevels(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // The reference converts the count as unsigned before pushing it.
+    lua_pushnumber(L, static_cast<double>(CGMinimapFrame::GetZoomLevels()));
+
+    return 1;
 }
 
+// ref: FUN_0057bf90
 int32_t CGMinimapFrame_GetZoom(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, static_cast<double>(CGMinimapFrame::GetZoom()));
+
+    return 1;
 }
 
+// ref: FUN_0057bfd0
 int32_t CGMinimapFrame_SetZoom(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Alone among the minimap bindings this one neither takes nor names a frame: the zoom is module
+    // state, so the usage message carries no object name.
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: SetZoom(level)");
+    }
+
+    // The reference rounds on the x87 stack, which rounds half to even, then truncates the result
+    // to 32 bits.
+    auto level = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(lua_tonumber(L, 2))));
+
+    CGMinimapFrame::SetZoom(level);
+
+    return 0;
 }
 
+// FUN_0057ed70. Not ported: the ping itself is a game system Frozen does not have. The reference
+// turns the click into a world position with the active player object and the rotateMinimap CVar's
+// facing matrix, then hands it to the ping store (FUN_0057eb80), which names the pinging unit,
+// broadcasts the ping and raises MINIMAP_PING. None of that exists here, so the binding stays a
+// stub rather than pretending to record a ping.
 int32_t CGMinimapFrame_PingLocation(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// FUN_0057efe0. Not ported for the same reason: it reads back the position the ping store wrote
+// (DAT_00beba8c / DAT_00beba90) relative to the active player. With no ping store there is nothing
+// to read, and answering (0, 0) would look like a ping at the player's feet.
 int32_t CGMinimapFrame_GetPingPosition(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

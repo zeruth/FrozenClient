@@ -515,12 +515,17 @@ int32_t Script_UnitGUID(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060e740
 int32_t Script_UnitName(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitName(\"unit\")");
         return 0;
     }
 
+    // TODO the reference answers the "player" token from a dedicated local-player name accessor
+    // (FUN_006b1060) before it ever touches the object manager, so the player frame has a name even
+    // when the player object is not resolvable. Frozen resolves it like any other unit; see the
+    // note below for why the glue selection is still consulted first.
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
 
     if (!unit) {
@@ -540,7 +545,9 @@ int32_t Script_UnitName(lua_State* L) {
     //
     // The selection is still consulted first, because it is authoritative and immediate while the
     // glue is up, whereas the cache only fills once the query reply lands.
-    const char* name = "Unknown";
+    // The reference falls back to the localized UNKNOWNOBJECT global string rather than a literal,
+    // so this reads "Unknown" only in enUS; every other locale gets its own word.
+    const char* name = FrameScript_GetText("UNKNOWNOBJECT", -1, GENDER_NOT_APPLICABLE);
     const char* resolved = nullptr;
 
     if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {

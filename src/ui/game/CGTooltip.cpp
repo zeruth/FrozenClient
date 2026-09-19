@@ -1,6 +1,7 @@
 #include "util/Lua.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGTooltipScript.hpp"
+#include "ui/simple/CSimpleFontString.hpp"
 
 int32_t CGTooltip::s_metatable;
 int32_t CGTooltip::s_objectType;
@@ -79,6 +80,19 @@ FrameScript_Object::ScriptIx* CGTooltip::GetScriptByName(const char* name, Scrip
     }
 
     return CSimpleFrame::GetScriptByName(name, data);
+}
+
+// Take a pair of font strings made elsewhere -- FrameXML and addons create them as
+// $parentTextLeft<n> / $parentTextRight<n> -- as a line past the ones the template declares.
+//
+// The reference's own store for this (the callee of the AddFontStrings binding, FUN_0061fe30) has
+// not been decompiled, so only the registration is ported here: the pairs are kept in the order
+// they arrive and the line lookup in CGTooltipScript.cpp reads them after the template's lines.
+void CGTooltip::AddFontStrings(CSimpleFontString* left, CSimpleFontString* right) {
+    auto line = this->m_extraLines.New();
+
+    line->left = left;
+    line->right = right;
 }
 
 void CGTooltip::RunOnTooltipSetDefaultAnchorScript() {

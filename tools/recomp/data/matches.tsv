@@ -136,7 +136,7 @@ addr	how	frozen	evidence
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483dd0	annotated	CSimpleFontString::SetShadowOffset	tag in src/ui/simple/CSimpleFontString.cpp
 00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
-004859e0	callorder	CSimpleTexture::SetTexture	same slot between linked calls in 0048c6f0=CSimpleTexture_SetTexture
+004859e0	callorder	CSimpleTexture::SetTexture	same slot between linked calls in 0048c6f0=CSimpleTexture_SetTexture, 0057e100=CGMinimapFrame_SetPlayerTexture
 00485f40	override	CSimpleTexture::LoadXML	
 00486b20	override	CSimpleFontString::UpdateString	
 004870d0	override	CSimpleFontString::SetSpacing	
@@ -243,7 +243,7 @@ addr	how	frozen	evidence
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
-0048f580	callgraph	CSimpleFrame::SetFrameScale	only unmatched callee of 0049f820=CSimpleFrame_SetScale
+0048f580	callgraph	CSimpleFrame::SetFrameScale	only unmatched callee of 0049f820=CSimpleFrame_SetScale, 0054ed80=Script_SetupFullscreenScale
 0048f5d0	annotated	CSimpleFrame::SetDepth	tag in src/ui/simple/CSimpleFrame.cpp
 0048f620	override	CSimpleFrame::Hide	
 0048f660	override	CSimpleFrame::Show	
@@ -467,6 +467,7 @@ addr	how	frozen	evidence
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
+004cfd20	callgraph	WowClientDB<SpellRec>::GetRecord	only unmatched callee of 0061f0f0=CGTooltip_GetSpell
 004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
 004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
 004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
@@ -595,10 +596,10 @@ addr	how	frozen	evidence
 004e3c10	callgraph	CCharacterSelection::SetBackgroundModel	only unmatched callee of 004e44e0=Script_SetCharSelectBackground
 004e44e0	string	Script_SetCharSelectBackground	unique "Usage: SetCharSelectBackground("filename")"
 004e4580	table	Script_SelectCharacter	binding "SelectCharacter" in s_ScriptFunctions ~ table 00ac4390
-004e6be0	table	CSimpleModelFFX_ResetLights	binding "ResetLights" in SimpleModelFFXMethods ~ table 00ac465c
-004e6c60	table	CSimpleModelFFX_AddLight	binding "AddLight" in SimpleModelFFXMethods ~ table 00ac465c
-004e6d60	table	CSimpleModelFFX_AddCharacterLight	binding "AddCharacterLight" in SimpleModelFFXMethods ~ table 00ac465c
-004e6e60	table	CSimpleModelFFX_AddPetLight	binding "AddPetLight" in SimpleModelFFXMethods ~ table 00ac465c
+004e6be0	annotated	CSimpleModelFFX_ResetLights	tag in src/ui/simple/CSimpleModelFFXScript.cpp
+004e6c60	annotated	CSimpleModelFFX_AddLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
+004e6d60	annotated	CSimpleModelFFX_AddCharacterLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
+004e6e60	annotated	CSimpleModelFFX_AddPetLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
 004e6fb0	string	CCharacterComponent::CreateTexture	unique "Item\TextureComponents\%s\%s_%s.blp"
 004e81c0	annotated	TabardBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 004e8210	annotated	TabardEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
@@ -653,12 +654,13 @@ addr	how	frozen	evidence
 0050fe80	order	Script_IsDebugBuild	binding table name Script_IsDebugBuild, in definition order in src/ui/game/GameScript.cpp
 0050ff30	order	Script_RegisterCVar	binding table name Script_RegisterCVar, in definition order in src/ui/game/GameScript.cpp
 0050ff50	order	Script_GetCVarInfo	binding table name Script_GetCVarInfo, in definition order in src/ui/game/GameScript.cpp
-005101d0	order	Script_SetWaterDetail	binding table name Script_SetWaterDetail, in definition order in src/ui/game/GameScript.cpp
-00510200	order	Script_GetFarclip	binding table name Script_GetFarclip, in definition order in src/ui/game/GameScript.cpp
-00510230	order	Script_SetFarclip	binding table name Script_SetFarclip, in definition order in src/ui/game/GameScript.cpp
-005102b0	order	Script_GetTexLodBias	binding table name Script_GetTexLodBias, in definition order in src/ui/game/GameScript.cpp
-005102e0	order	Script_SetTexLodBias	binding table name Script_SetTexLodBias, in definition order in src/ui/game/GameScript.cpp
-00510390	order	Script_SetBaseMip	binding table name Script_SetBaseMip, in definition order in src/ui/game/GameScript.cpp
+005101d0	annotated	Script_SetWaterDetail	tag in src/ui/game/GameScript.cpp
+00510200	annotated	Script_GetFarclip	tag in src/ui/game/GameScript.cpp
+00510230	annotated	Script_SetFarclip	tag in src/ui/game/GameScript.cpp
+005102b0	annotated	Script_GetTexLodBias	tag in src/ui/game/GameScript.cpp
+005102e0	annotated	Script_SetTexLodBias	tag in src/ui/game/GameScript.cpp
+00510360	annotated	Script_GetBaseMip	tag in src/ui/game/GameScript.cpp
+00510390	annotated	Script_SetBaseMip	tag in src/ui/game/GameScript.cpp
 005104a0	order	Script_SetCursor	binding table name Script_SetCursor, in definition order in src/ui/game/GameScript.cpp
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac8460
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
@@ -842,7 +844,9 @@ addr	how	frozen	evidence
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
+0053dc20	callgraph	SpellIconPath	only unmatched callee of 00540d70=Script_GetSpellTexture
 0053e490	order	Script_Stub_GetCompanionCooldown	binding table name Script_Stub_GetCompanionCooldown, in definition order in src/ui/game/miscscriptstubs.cpp
+00540670	callgraph	SpellAtSlot	only unmatched callee of 005407f0=Script_GetSpellName, 00541340=Script_IsPassiveSpell
 005407f0	table	Script_GetSpellName	binding "GetSpellName" in s_ScriptFunctions ~ table 00accce0
 005408e0	table	Script_GetSpellLink	binding "GetSpellLink" in s_ScriptFunctions ~ table 00accce0
 00540a30	table	Script_GetSpellInfo	binding "GetSpellInfo" in s_ScriptFunctions ~ table 00accce0
@@ -894,10 +898,10 @@ addr	how	frozen	evidence
 0054ea60	table	Script_GetGamma	binding "GetGamma" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ea90	table	Script_SetGamma	binding "SetGamma" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054eb10	table	Script_GetTerrainMip	binding "GetTerrainMip" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054eb40	table	Script_SetTerrainMip	binding "SetTerrainMip" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
+0054eb40	annotated	Script_SetTerrainMip	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ebc0	table	Script_IsPlayerResolutionAvailable	binding "IsPlayerResolutionAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054ed80	table	Script_SetupFullscreenScale	binding "SetupFullscreenScale" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054ee60	table	Script_GetVideoCaps	binding "GetVideoCaps" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
+0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
+0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions, 0054f690=Script_GetRefreshRates
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f820=Script_GetMultisampleFormats
@@ -907,7 +911,7 @@ addr	how	frozen	evidence
 0054f690	table	Script_GetRefreshRates	binding "GetRefreshRates" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f820	table	Script_GetMultisampleFormats	binding "GetMultisampleFormats" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f8b0	table	Script_GetCurrentMultisampleFormat	binding "GetCurrentMultisampleFormat" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054f980	table	Script_SetMultisampleFormat	binding "SetMultisampleFormat" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
+0054f980	annotated	Script_SetMultisampleFormat	tag in src/ui/game/CGVideoOptionsScript.cpp
 00552940	callgraph	CGLookingForGroup::GetClassRoles	only unmatched callee of 004e0a60=Script_GetSelectedClass
 005564d0	order	Script_Stub_GetLFDChoiceCollapseState	binding table name Script_Stub_GetLFDChoiceCollapseState, in definition order in src/ui/game/miscscriptstubs.cpp
 005567e0	order	Script_Stub_GetLFDChoiceEnabledState	binding table name Script_Stub_GetLFDChoiceEnabledState, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -971,12 +975,12 @@ addr	how	frozen	evidence
 00574ab0	table	Script_SetRaidTarget	binding "SetRaidTarget" in s_ScriptFunctions ~ table 00ace790
 00575820	string	Script_Stub_PlayDance	score 0.50 shared PlayDance
 0057b9e0	string	Script_Stub_BankButtonIDToInvSlotID	score 0.50 shared BankButtonIDToInvSlotID
-0057bf50	table	CGMinimapFrame_GetZoomLevels	binding "GetZoomLevels" in CGMinimapFrameMethods ~ table 00acebb8
-0057bf90	table	CGMinimapFrame_GetZoom	binding "GetZoom" in CGMinimapFrameMethods ~ table 00acebb8
-0057bfd0	table	CGMinimapFrame_SetZoom	binding "SetZoom" in CGMinimapFrameMethods ~ table 00acebb8
+0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057c090	string	Script_Stub_GetTrackingInfo	score 0.50 shared GetTrackingInfo
 0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
-0057e100	table	CGMinimapFrame_SetPlayerTexture	binding "SetPlayerTexture" in CGMinimapFrameMethods ~ table 00acebb8
+0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e280	annotated	CGMinimapFrame_SetPlayerTextureWidth	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057ed70	table	CGMinimapFrame_PingLocation	binding "PingLocation" in CGMinimapFrameMethods ~ table 00acebb8
@@ -1050,12 +1054,12 @@ addr	how	frozen	evidence
 00599890	table	CGTabardModelFrame_GetUpperEmblemTexture	binding "GetUpperEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
 00599b20	table	CGTabardModelFrame_GetLowerEmblemTexture	binding "GetLowerEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
 005a20f0	string	Script_Stub_ClosePetitionVendor	score 0.50 shared ClosePetitionVendor
-005a7d10	table	Script_GetActionCount	binding "GetActionCount" in s_ScriptFunctions ~ table 00acf9e0
+005a7d10	annotated	Script_GetActionCount	tag in src/ui/game/ActionBarScript.cpp
 005a7d90	table	Script_GetActionText	binding "GetActionText" in s_ScriptFunctions ~ table 00acf9e0
 005a7e60	table	Script_IsUsableAction	binding "IsUsableAction" in s_ScriptFunctions ~ table 00acf9e0
-005a7f20	table	Script_GetBonusBarOffset	binding "GetBonusBarOffset" in s_ScriptFunctions ~ table 00acf9e0
-005a7f60	table	Script_ChangeActionBarPage	binding "ChangeActionBarPage" in s_ScriptFunctions ~ table 00acf9e0
-005a7fd0	table	Script_GetActionBarPage	binding "GetActionBarPage" in s_ScriptFunctions ~ table 00acf9e0
+005a7f20	annotated	Script_GetBonusBarOffset	tag in src/ui/game/ActionBarScript.cpp
+005a7f60	annotated	Script_ChangeActionBarPage	tag in src/ui/game/ActionBarScript.cpp
+005a7fd0	annotated	Script_GetActionBarPage	tag in src/ui/game/ActionBarScript.cpp
 005a8220	table	Script_HasAction	binding "HasAction" in s_ScriptFunctions ~ table 00acf9e0
 005a8290	table	Script_SetActionBarToggles	binding "SetActionBarToggles" in s_ScriptFunctions ~ table 00acf9e0
 005a8330	table	Script_GetMultiCastTotemSpells	binding "GetMultiCastTotemSpells" in s_ScriptFunctions ~ table 00acf9e0
@@ -1164,7 +1168,7 @@ addr	how	frozen	evidence
 00608230	table	Script_GetGameTime	binding "GetGameTime" in s_SystemFunctions ~ table 00ad2184
 00608270	table	Script_ConsoleExec	binding "ConsoleExec" in s_SystemFunctions ~ table 00ad2184
 006082c0	table	Script_GetMaxCombatRatingBonus	binding "GetMaxCombatRatingBonus" in s_UnitFunctions ~ table 00ad21d8
-00608560	table	Script_GetPVPRankProgress	binding "GetPVPRankProgress" in s_UnitFunctions ~ table 00ad21d8
+00608560	annotated	Script_GetWaterDetail	tag in src/ui/game/GameScript.cpp
 00608580	table	Script_CanSwitchVehicleSeat	binding "CanSwitchVehicleSeat" in s_UnitFunctions ~ table 00ad21d8
 00608690	table	Script_GetItemStats	binding "GetItemStats" in s_UnitFunctions ~ table 00ad21d8
 00608760	table	Script_GetItemStatDelta	binding "GetItemStatDelta" in s_UnitFunctions ~ table 00ad21d8
@@ -1231,7 +1235,7 @@ addr	how	frozen	evidence
 0060e4e0	table	Script_GetArmorPenetration	binding "GetArmorPenetration" in s_UnitFunctions ~ table 00ad21d8
 0060e560	table	Script_GetAttackPowerForStat	binding "GetAttackPowerForStat" in s_UnitFunctions ~ table 00ad21d8
 0060e630	table	Script_UnitGUID	binding "UnitGUID" in s_UnitFunctions ~ table 00ad21d8
-0060e740	table	Script_UnitName	binding "UnitName" in s_UnitFunctions ~ table 00ad21d8
+0060e740	annotated	Script_UnitName	tag in src/ui/game/ScriptEvents.cpp
 0060e9a0	table	Script_UnitPVPName	binding "UnitPVPName" in s_UnitFunctions ~ table 00ad21d8
 0060ea60	table	Script_UnitXP	binding "UnitXP" in s_UnitFunctions ~ table 00ad21d8
 0060eae0	table	Script_UnitXPMax	binding "UnitXPMax" in s_UnitFunctions ~ table 00ad21d8
@@ -1338,6 +1342,7 @@ addr	how	frozen	evidence
 00614ef0	table	Script_GetVehicleUIIndicatorSeat	binding "GetVehicleUIIndicatorSeat" in s_UnitFunctions ~ table 00ad21d8
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061b040	override	StringToTooltipAnchor	
+0061c620	callgraph	TooltipClear	only unmatched callee of 0061d7d0=CGTooltip_ClearLines
 0061d040	table	CGTooltip_SetMinimumWidth	binding "SetMinimumWidth" in CGTooltipMethods ~ table 00ad2ae0
 0061d0d0	table	CGTooltip_GetMinimumWidth	binding "GetMinimumWidth" in CGTooltipMethods ~ table 00ad2ae0
 0061d150	table	CGTooltip_SetPadding	binding "SetPadding" in CGTooltipMethods ~ table 00ad2ae0
@@ -1348,16 +1353,16 @@ addr	how	frozen	evidence
 0061d650	table	CGTooltip_GetAnchorType	binding "GetAnchorType" in CGTooltipMethods ~ table 00ad2ae0
 0061d7d0	table	CGTooltip_ClearLines	binding "ClearLines" in CGTooltipMethods ~ table 00ad2ae0
 0061d810	table	CGTooltip_AddTexture	binding "AddTexture" in CGTooltipMethods ~ table 00ad2ae0
-0061d940	table	CGTooltip_FadeOut	binding "FadeOut" in CGTooltipMethods ~ table 00ad2ae0
+0061d940	override	CGTooltip_FadeOut	
 0061d9c0	table	CGTooltip_NumLines	binding "NumLines" in CGTooltipMethods ~ table 00ad2ae0
 0061da20	table	CGTooltip_IsUnit	binding "IsUnit" in CGTooltipMethods ~ table 00ad2ae0
-0061dad0	table	CGTooltip_GetUnit	binding "GetUnit" in CGTooltipMethods ~ table 00ad2ae0
+0061dad0	annotated	CGTooltip_GetUnit	tag in src/ui/game/CGTooltipScript.cpp
 0061eb40	table	CGTooltip_SetOwner	binding "SetOwner" in CGTooltipMethods ~ table 00ad2ae0
-0061ee90	table	CGTooltip_AppendText	binding "AppendText" in CGTooltipMethods ~ table 00ad2ae0
+0061ee90	annotated	CGTooltip_AppendText	tag in src/ui/game/CGTooltipScript.cpp
 0061ef10	table	CGTooltip_GetItem	binding "GetItem" in CGTooltipMethods ~ table 00ad2ae0
-0061f0f0	table	CGTooltip_GetSpell	binding "GetSpell" in CGTooltipMethods ~ table 00ad2ae0
+0061f0f0	annotated	CGTooltip_GetSpell	tag in src/ui/game/CGTooltipScript.cpp
 0061f1f0	table	CGTooltip_IsEquippedItem	binding "IsEquippedItem" in CGTooltipMethods ~ table 00ad2ae0
-006201f0	table	CGTooltip_AddFontStrings	binding "AddFontStrings" in CGTooltipMethods ~ table 00ad2ae0
+006201f0	annotated	CGTooltip_AddFontStrings	tag in src/ui/game/CGTooltipScript.cpp
 00620340	table	CGTooltip_AddLine	binding "AddLine" in CGTooltipMethods ~ table 00ad2ae0
 006203f0	table	CGTooltip_AddDoubleLine	binding "AddDoubleLine" in CGTooltipMethods ~ table 00ad2ae0
 006204e0	table	CGTooltip_SetText	binding "SetText" in CGTooltipMethods ~ table 00ad2ae0
@@ -1369,7 +1374,7 @@ addr	how	frozen	evidence
 006259e0	table	CGTooltip_SetSpell	binding "SetSpell" in CGTooltipMethods ~ table 00ad2ae0
 00625b90	table	CGTooltip_SetSpellByID	binding "SetSpellByID" in CGTooltipMethods ~ table 00ad2ae0
 00625d00	table	CGTooltip_SetGlyph	binding "SetGlyph" in CGTooltipMethods ~ table 00ad2ae0
-00625e10	table	CGTooltip_SetUnit	binding "SetUnit" in CGTooltipMethods ~ table 00ad2ae0
+00625e10	annotated	CGTooltip_SetUnit	tag in src/ui/game/CGTooltipScript.cpp
 00626240	table	CGTooltip_SetUnitAura	binding "SetUnitAura" in CGTooltipMethods ~ table 00ad2ae0
 006262c0	table	CGTooltip_SetUnitBuff	binding "SetUnitBuff" in CGTooltipMethods ~ table 00ad2ae0
 00626350	table	CGTooltip_SetUnitDebuff	binding "SetUnitDebuff" in CGTooltipMethods ~ table 00ad2ae0
@@ -1377,7 +1382,7 @@ addr	how	frozen	evidence
 00626440	table	CGTooltip_SetQuestLogRewardSpell	binding "SetQuestLogRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 006264d0	table	CGTooltip_SetEquipmentSet	binding "SetEquipmentSet" in CGTooltipMethods ~ table 00ad2ae0
 00626560	table	CGTooltip_SetFrameStack	binding "SetFrameStack" in CGTooltipMethods ~ table 00ad2ae0
-0062dae0	table	CGTooltip_SetHyperlink	binding "SetHyperlink" in CGTooltipMethods ~ table 00ad2ae0
+0062dae0	annotated	CGTooltip_SetHyperlink	tag in src/ui/game/CGTooltipScript.cpp
 0062e050	table	CGTooltip_SetInventoryItem	binding "SetInventoryItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e520	table	CGTooltip_SetLootItem	binding "SetLootItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e670	table	CGTooltip_SetQuestItem	binding "SetQuestItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1488,7 +1493,7 @@ addr	how	frozen	evidence
 00767030	annotated	s_WriteCVars	tag in src/console/CVar.cpp
 00767100	annotated	CVar::Save	tag in src/console/CVar.cpp
 007673f0	annotated	ConsoleDestroyClientCVar	tag in src/console/Initialize.cpp
-00767440	callorder	CVar::Lookup	same slot between linked calls in 004d14e0=EnableSFX_CVarCallback, 004d1590=EnableMusic_CVarCallback
+00767440	callgraph	CVar::Lookup	only unmatched callee of 00510230=Script_SetFarclip, 005102e0=Script_SetTexLodBias, 00510390=Script_SetBaseMip
 00767460	callorder	CVar::LookupRegistered	same slot between linked calls in 004dce70=Script_SetCVar
 00767680	annotated	CVarCommandHandler	tag in src/console/CVarHandlers.cpp
 00767fc0	annotated	CVar::Register	tag in src/console/CVar.cpp
@@ -1620,6 +1625,9 @@ addr	how	frozen	evidence
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	
+007f3ae0	override	CGMinimapFrame::SetZoom	
+007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
+007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides

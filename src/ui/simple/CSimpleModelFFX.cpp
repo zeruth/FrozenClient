@@ -5,12 +5,21 @@
 #include <storm/Memory.hpp>
 
 int32_t CSimpleModelFFX::s_metatable;
+int32_t CSimpleModelFFX::s_objectType;
 
 CSimpleFrame* CSimpleModelFFX::Create(CSimpleFrame* parent) {
     // TODO
     // auto m = CDataAllocator::GetData(CSimpleModelFFX::s_simpleModelFFXHeap, 0, __FILE__, __LINE__);
     auto m = SMemAlloc(sizeof(CSimpleModelFFX), __FILE__, __LINE__, 0x0);
     return new (m) CSimpleModelFFX(parent);
+}
+
+int32_t CSimpleModelFFX::GetObjectType() {
+    if (!CSimpleModelFFX::s_objectType) {
+        CSimpleModelFFX::s_objectType = ++FrameScript_Object::s_objectTypes;
+    }
+
+    return CSimpleModelFFX::s_objectType;
 }
 
 void CSimpleModelFFX::Render(void* arg) {
@@ -43,6 +52,14 @@ void CSimpleModelFFX::RegisterScriptMethods(lua_State* L) {
 
 CSimpleModelFFX::CSimpleModelFFX(CSimpleFrame* parent) : CSimpleModel(parent) {
     // TODO
+}
+
+bool CSimpleModelFFX::IsA(int32_t type) {
+    return type == CSimpleModelFFX::s_objectType
+        || type == CSimpleModel::s_objectType
+        || type == CSimpleFrame::s_objectType
+        || type == CScriptRegion::s_objectType
+        || type == CScriptObject::s_objectType;
 }
 
 int32_t CSimpleModelFFX::GetScriptMetaTable() {
