@@ -267,9 +267,9 @@
     "note": "'Invalid function pointer: %p' guard around a callback (callers: ConsoleCommandExecute, CVarSetCommandHandler ...); the reference calls it 100x/frame. frozen has no such guard; CVar::Set was a mis-annotation."
   },
   "007e4480": {
-    "frozen": "BlobShadowsBegin",
-    "status": "ported",
-    "note": "blob shadow projector + render states (docs/ref/parity-shadows.md: GxBlend_Mod, DepthFunc EQUAL); the trace showed the reference never calling 007e4a40, which the string matcher had picked"
+    "frozen": "BlobShadowDraw",
+    "status": "diverged",
+    "note": "re-pointed 2026-09-19 after decompiling it. 007e4480 is the per-caster projector and draw -- it takes the caster's six-float bounding box, an object and a float, builds the texture projection matrix, sets state, draws through FUN_007e4370 and pops. It is NOT a pass-level 'begin': it pushes and pops its own state. Frozen's counterpart at that stage is BlobShadowDraw; the implementations diverge (frozen re-draws the receiver's own chunk triangles through the terrain vertex program, the reference projects a texture matrix), so this is the stage link, not a call-for-call one. It was previously pointed at BlobShadowsBegin, which frozen split out of this and which therefore has no reference counterpart of its own. The runtime trace disagreed with that link in the most direct way available: reference [0,0,0], frozen [1,1,1]."
   },
   "007e4a40": {
     "status": "unlinked",

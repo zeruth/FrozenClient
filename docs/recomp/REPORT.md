@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 15:01 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,7 +9,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2682 (=) (9.9%) | 570.8k (10.3%) |
-| &nbsp;&nbsp;ported | 2087 (-2) | 416.4k |
+| &nbsp;&nbsp;ported | 2086 (-1) | 415.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 561 (=) | 118.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **932 (=) (3.4%)** | **117.7k (2.1%)** |
@@ -21,7 +21,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 511, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 192, string 313, table 1106. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:54 -- mapped 2682, ported 2089, stub 561, spine mapped 392.
+Previous run: 2026-09-19 14:56 -- mapped 2682, ported 2087, stub 561, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
@@ -637,7 +637,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 12% | 66 | 23 | 41 | 11 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 12% | 51 | 7 | 43 | 2 | 0% | 1377 |
-| 007e4480 | `BlobShadowsBegin` | 24% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
 | 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
@@ -658,6 +657,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
 | 0085e160 | `read_string` | 77% | 30 | 21 | 15 | 25 | 6% | 904 |
+| 004d9bd0 | `CGlueMgr::EnterWorld` | 61% | 38 | 37 | 23 | 15 | 29% | 895 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -738,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:20 | 2675 (9.8%) | 919 (3.4%) | 587 | 391/5530 | 1791/2964 | 653 |
-| 2026-09-19 13:21 | 2676 (9.9%) | 919 (3.4%) | 587 | 391/5530 | 1791/2964 | 653 |
 | 2026-09-19 13:25 | 2677 (9.9%) | 919 (3.4%) | 585 | 391/5530 | 1791/2964 | 650 |
 | 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
 | 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
@@ -763,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 14:48 | 2681 (9.9%) | 930 (3.4%) | 562 | 392/5530 | 1791/2964 | 626 |
 | 2026-09-19 14:54 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 14:55 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
+| 2026-09-19 14:56 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
+| 2026-09-19 15:01 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 
 ## How to move a row
 

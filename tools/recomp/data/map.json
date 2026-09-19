@@ -30009,20 +30009,20 @@
   "status": "stub"
  },
  "007e4480": {
-  "branchRatio": 0.2,
+  "branchRatio": 0.7,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.242,
+  "fidelity": 0.0,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
   ],
-  "frozen": "BlobShadowsBegin",
-  "frozenSize": 405,
+  "frozen": "BlobShadowDraw",
+  "frozenSize": 1223,
   "how": "override",
   "module": "DeclinedWords.cpp",
   "refSize": 1370,
-  "status": "ported"
+  "status": "diverged"
  },
  "007e6480": {
   "branchRatio": 0.0,
