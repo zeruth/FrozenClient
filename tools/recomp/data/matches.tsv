@@ -391,9 +391,10 @@ addr	how	frozen	evidence
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	Script_Screenshot	unique "Screenshots"
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
+004b5170	callgraph	TextureGetTexturePtr	only unmatched callee of 004b9760=TextureCreate
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callorder	FindSubstitution	same slot between linked calls in 004b8be0=CreateBlpTexture
-004b6760	callgraph	TextureAllocGxTex	only unmatched callee of 004b6920=FillInSolidTexture
+004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
 004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b6ae0	order	GxCalcTexelStrideInBytes	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
@@ -418,12 +419,13 @@ addr	how	frozen	evidence
 004b7aa0	order	UpdateBlpTextureAsync	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
-004b8770	callorder	CTexture::CTexture	same slot between linked calls in 004b9550=TextureCreateSolid
+004b8770	override	CTexture::CTexture	
 004b8be0	override	CreateBlpTexture	
+004b8c80	override	TextureCreate	
 004b9480	override	TextureCacheNewTexture	
 004b9550	override	TextureCreateSolid	
 004b95b0	override	CreateTgaTexture	
-004b9760	annotated	TextureCreate	tag in src/gx/Texture.cpp
+004b9760	override	TextureCreate	
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
 004bd960	callorder	CSimpleFontString::GetFontName	same slot between linked calls in 00483750=CSimpleFontString::SetFont
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
@@ -1497,7 +1499,7 @@ addr	how	frozen	evidence
 0076e720	override	SStrChrR	
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
-0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32
+0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
 0076ee30	callgraph	CScriptObject::GetName	only unmatched callee of 0048b540=CScriptObject::CreateName
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf

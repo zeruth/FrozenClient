@@ -725,10 +725,15 @@ def match(refs, frozen, overrides, tables):
 
     unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
 
+    HAND = ('override', 'annotated')
+
     def bind(addr, name, how, why=''):
-        # an override may bind one frozen name to several reference functions: C++ overloads share a
-        # key here (CDataStore::Put x4) and COMDAT folding leaves the reference with copies
-        if addr in m or addr not in refs or name not in frozen or (name in used and how != 'override'):
+        # Hand evidence -- an overrides.json entry or a // ref: tag -- may bind one frozen name to
+        # several reference functions, because C++ overloads collapse to a single key here
+        # (TextureCreate x3, CDataStore::Put x4) and COMDAT folding leaves the reference with
+        # copies. Automatic evidence may not: one guess per name, or the matchers would spray a
+        # popular name across a whole neighbourhood.
+        if addr in m or addr not in refs or name not in frozen or (name in used and how not in HAND):
             return False
         if addr in unlinked:
             return False  # judged to have no frozen counterpart; automatic evidence does not reopen it

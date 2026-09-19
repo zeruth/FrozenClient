@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 07:00 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 07:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2294 (=) (8.4%) | 496.7k (9.0%) |
-| &nbsp;&nbsp;ported | 1746 (=) | 358.1k |
+| mapped to a frozen function | 2296 (=) (8.5%) | 497.0k (9.0%) |
+| &nbsp;&nbsp;ported | 1748 (=) | 358.4k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **686 (=) (2.5%)** | **87.2k (1.6%)** |
-| unmapped | 24867 | 4.92M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 344 (=) (6.2%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 346 (=) (6.0%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 127 (=) (2.1%)** | |
+| unmapped | 24865 | 4.92M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 346 (=) (6.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 348 (=) (6.0%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 129 (=) (2.1%)** | |
 | frozen functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 230, callgraph 135, callorder 132, cvar 30, handler 27, order 340, override 157, string 345, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 229, callgraph 135, callorder 131, cvar 30, handler 27, order 340, override 161, string 345, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 06:05 -- mapped 2294, ported 1746, stub 524, spine mapped 344.
+Previous run: 2026-09-19 07:03 -- mapped 2296, ported 1748, stub 524, spine mapped 346.
 
 ## Lua API coverage (binding tables)
 
@@ -265,7 +265,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 34 (28.3%) | 29.3% | 18 | 0 | 0 |
-| Texture.cpp | 146 | 22.2k | 34 (23.3%) | 34.4% | 0 | 0 | 75 |
+| Texture.cpp | 146 | 22.2k | 36 (24.7%) | 35.8% | 0 | 0 | 75 |
 | MapMem.cpp | 101 | 21.3k | 0 (0.0%) | 0.0% | 0 | 0 | 63 |
 | Cursor.cpp | 117 | 20.7k | 2 (1.7%) | 4.3% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
@@ -791,9 +791,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 23:55 | 1834 (6.8%) | 452 (1.7%) | 433 | 269/5530 | 1584/2512 | 752 |
-| 2026-09-18 23:56 | 1839 (6.8%) | 540 (2.0%) | 433 | 265/5530 | 1584/2512 | 752 |
-| 2026-09-18 23:57 | 1853 (6.8%) | 551 (2.0%) | 433 | 276/5530 | 1584/2512 | 752 |
 | 2026-09-19 00:14 | 2167 (8.0%) | 621 (2.3%) | 523 | 288/5530 | 1584/2512 | 752 |
 | 2026-09-19 02:56 | 2168 (8.0%) | 622 (2.3%) | 523 | 287/5529 | 1584/2512 | 752 |
 | 2026-09-19 02:56 | 2170 (8.0%) | 625 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
@@ -816,6 +813,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 06:04 | 2294 (8.4%) | 685 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
 | 2026-09-19 06:05 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:00 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:02 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

@@ -6259,6 +6259,22 @@
   "refSize": 211,
   "status": "ported"
  },
+ "004b5170": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureGetTexturePtr",
+  "frozenSize": 4,
+  "how": "callgraph",
+  "module": "Texture.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
  "004b51c0": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
@@ -6302,7 +6318,7 @@
   ],
   "frozen": "TextureAllocGxTex",
   "frozenSize": 417,
-  "how": "callgraph",
+  "how": "override",
   "module": "Texture.cpp",
   "refSize": 448,
   "status": "ported"
@@ -6702,7 +6718,7 @@
   ],
   "frozen": "CTexture::CTexture",
   "frozenSize": 244,
-  "how": "callorder",
+  "how": "override",
   "module": "Texture.cpp",
   "refSize": 175,
   "status": "ported"
@@ -6721,6 +6737,22 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 147,
+  "status": "ported"
+ },
+ "004b8c80": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCreate",
+  "frozenSize": 1296,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 234,
   "status": "ported"
  },
  "004b9480": {
@@ -6775,14 +6807,14 @@
   "branchRatio": 0.857,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.636,
+  "fidelity": 0.727,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
   "frozenSize": 1296,
-  "how": "annotated",
+  "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,
   "status": "ported"

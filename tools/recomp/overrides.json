@@ -241,5 +241,11 @@
   "004b9480": { "frozen": "TextureCacheNewTexture", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags" },
   "004b9550": { "frozen": "TextureCreateSolid", "status": "ported", "note": "call slot in TextureCreate (recomp --diff 004b9760): the fallback returned after both loaders fail" },
 
-  "0047bf50": { "frozen": "HandleCreate", "status": "ported", "note": "the ++refcount half of the handle pair, next to HandleClose at 0047bf30; its call-order slot in TextureCreate was displaced when 004b9760 took the TextureCreate name, so it is pinned on its own evidence. 004b8c80 (unique string UniqueTexture) is another TextureCreate overload and cannot be linked until the inventory keys overloads apart" }
+  "0047bf50": { "frozen": "HandleCreate", "status": "ported", "note": "the ++refcount half of the handle pair, next to HandleClose at 0047bf30; its call-order slot in TextureCreate was displaced when 004b9760 took the TextureCreate name, so it is pinned on its own evidence. 004b8c80 (unique string UniqueTexture) is another TextureCreate overload and cannot be linked until the inventory keys overloads apart" },
+
+  "004b8c80": { "frozen": "TextureCreate", "status": "ported", "note": "the target-based overload (target, w, h, depth, format, dataFormat, flags, userArg, userFunc, name, a11). Matches the port line for line: the global filter applied when a11 is non-zero (the opposite polarity to the by-filename overload at 004b9760, which is correct in both), the anisotropy pick, the UniqueTexture default and the closing HandleCreate. Frozen collapses its three TextureCreate overloads under one inventory key, so this shares the name with 004b9760 -- allowed for overrides by design" },
+  "004b6760": { "frozen": "TextureAllocGxTex", "status": "ported", "note": "called by both TextureCreate overloads with (target, w, h, depth, format, flags, userArg, userFunc, dataFormat); the reference passes the texture name as a tenth argument that the port drops" },
+  "004b8770": { "frozen": "CTexture::CTexture", "status": "ported", "note": "constructed on the 0x170-byte allocation at the head of the target-based TextureCreate" },
+
+  "004b9760": { "frozen": "TextureCreate", "status": "ported", "note": "the by-filename overload, tagged in src/gx/Texture.cpp. Pinned as well as tagged because the other overload at 004b8c80 needs an override to share the collapsed TextureCreate key, and a tag cannot share a name an override holds" }
 }
