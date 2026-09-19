@@ -124,6 +124,7 @@ addr	how	frozen	evidence
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 004815e0	callgraph	CSimpleTexture::GetObjectType	only unmatched callee of 0048c670=CSimpleTexture_GetTexture
+00481640	sticky	CSimpleTexture::SetTexCoord	held from the previous run, where it was sticky
 00481700	callgraph	CSimpleTexture::SetShader	only unmatched callee of 0048c9a0=CSimpleTexture_SetDesaturated
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
@@ -131,6 +132,7 @@ addr	how	frozen	evidence
 00482aa0	override	FrameScript_Object::GetDisplayName	
 00482d10	callorder	CSimpleFontStringAttributes::SetFont	same slot between linked calls in 00497070=CSimpleFont::LoadXML
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
+004831d0	sticky	lua_gettop	held from the previous run, where it was sticky
 00483290	callgraph	CSimpleTexture::GetImageModePixelShader	only unmatched callee of 00511fb0=Script_IsDesaturateSupported
 00483750	callorder	CSimpleFontString::SetFont	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483890	annotated	CSimpleFontString::SetTextHeight	tag in src/ui/simple/CSimpleFontString.cpp
@@ -251,6 +253,7 @@ addr	how	frozen	evidence
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
 0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
 0048e9a0	override	CSimpleFrame::Raise	
+0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was sticky
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
@@ -548,6 +551,7 @@ addr	how	frozen	evidence
 004d9500	handler	CGlueMgr::OnKickReasonMsg	SetMessageHandler(SMSG_KICK_REASON) on both sides
 004d95c0	string	CGlueMgr::GetCharacterList	unique "CHAR_LIST_RETRIEVING"
 004d9610	callgraph	CGlueMgr::GetRealmList	only unmatched callee of 004de430=Script_RequestRealmList
+004d98a0	sticky	CCharacterSelection::GetCharacterDisplay	held from the previous run, where it was sticky
 004d98d0	string	CGlueMgr::StatusDialogClick	score 0.53 shared login; patchdownload
 004d9bd0	string	CGlueMgr::EnterWorld	unique "CHAR_RENAME_DESCRIPTION"
 004da5f0	string	CGlueMgr::Resume	unique "Interface\GlueXML\GlueXML.toc"
@@ -632,8 +636,10 @@ addr	how	frozen	evidence
 004df580	callorder	CRealmList::Initialize	same slot between linked calls in 004db9f0=CGlueMgr::Initialize
 004dfa70	table	Script_IsRaceClassRestricted	binding "IsRaceClassRestricted" in s_ScriptFunctions ~ table 00ac4228
 004dfca0	table	Script_GetRandomName	binding "GetRandomName" in s_ScriptFunctions ~ table 00ac4228
+004dffe0	sticky	CCharacterCreation::IsRaceClassValid	held from the previous run, where it was sticky
 004e0040	callgraph	CCharacterCreation::SetCharCustomizeModel	only unmatched callee of 004e0620=Script_SetCharCustomizeBackground
 004e0160	callorder	CCharacterCreation::SetFacing	same slot between linked calls in 004e0c10=Script_SetCharacterCreateFacing
+004e01f0	sticky	CCharacterCreation::CycleCharCustomization	held from the previous run, where it was sticky
 004e0380	annotated	CCharacterCreation::CreateCharacter	tag in src/glue/CCharacterCreation.cpp
 004e05b0	table	Script_SetCharCustomizeFrame	binding "SetCharCustomizeFrame" in s_ScriptFunctions ~ table 00ac4228
 004e0620	table	Script_SetCharCustomizeBackground	binding "SetCharCustomizeBackground" in s_ScriptFunctions ~ table 00ac4228
@@ -1138,6 +1144,7 @@ addr	how	frozen	evidence
 0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
+0054efe0	sticky	ConsoleDetectGetResolutions	held from the previous run, where it was sticky
 0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f820=Script_GetMultisampleFormats
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -1728,7 +1735,9 @@ addr	how	frozen	evidence
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
+007159e0	sticky	CGUnit_C::GetDisplayClassNameFromRecord	held from the previous run, where it was sticky
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
+0072aab0	sticky	WowClientDB<ChrClassesRec>::GetRecord	held from the previous run, where it was sticky
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
@@ -1991,6 +2000,7 @@ addr	how	frozen	evidence
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
 00825170	callorder	CM2Model::UpdateLoaded	same slot between linked calls in 00832ea0=CM2Model::InitializeLoaded
+008251d0	sticky	CM2Model::SetWorldTransform	held from the previous run, where it was sticky
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
@@ -2316,6 +2326,7 @@ addr	how	frozen	evidence
 00879460	callgraph	SESound::SetMasterVolume	only unmatched callee of 004d0e60=MasterVolume_CVarCallback
 0087a6f0	callgraph	SESound::GetChannelGroup	only unmatched callee of 0087a850=SESound::SetChannelGroupVolume
 0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback, 004d0eb0=MusicVolume_CVarCallback, 004d0ef0=AmbienceVolume_CVarCallback
+0087a8e0	sticky	SESound::MuteChannelGroup	held from the previous run, where it was sticky
 0087a9b0	annotated	s_SystemCallback	tag in src/sound/SESound.cpp
 0087acc0	annotated	SESound::SetDeviceListChangedCallback	tag in src/sound/SESound.cpp
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -2386,7 +2397,10 @@ addr	how	frozen	evidence
 008e5250	annotated	SwallowEventHandler	tag in src/gx/LoadingScreen.cpp
 0095db80	string	CSimpleMovieFrame::GetScriptByName	unique "OnMovieFinished"
 0095f420	string	CSimpleModel::GetScriptByName	unique "OnAnimFinished"
+0095f5e0	sticky	CSimpleModel::SetSequence	held from the previous run, where it was sticky
+0095f610	sticky	CSimpleModel::SetSequenceTime	held from the previous run, where it was sticky
 0095f800	string	CSimpleModel::LoadXML	unique "FogColor"
+0095f9f0	sticky	CSimpleModel::SetCameraByIndex	held from the previous run, where it was sticky
 00960420	callgraph	FrameScript_GetColor	only unmatched callee of 004a3d40=FontString_SetShadowColor, 009611a0=CSimpleModel_SetFogColor
 00960530	table	CSimpleModel_SetModel	binding "SetModel" in SimpleModelMethods ~ table 00b2cb10
 009605d0	annotated	CSimpleModel_GetModel	tag in src/ui/simple/CSimpleModelScript.cpp

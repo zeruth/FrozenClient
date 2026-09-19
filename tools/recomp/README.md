@@ -62,9 +62,26 @@ world), frozen with `FROZEN_AUTO_LOGIN=TEST:TEST`, then `calltrace.py ref`, `cal
    >
    > Consequences: a negative delta after a batch of stub fills is worth diagnosing before it is
    > treated as a regression, since the port may have improved while the measurement fell; and the
-   > count is not monotonic in the way the report's history table implies. Worth fixing in the
-   > instrument — candidates are iterating to a fixed point rather than one pass, and not counting a
-   > stub as "has no callees" when testing uniqueness.
+   > count is not monotonic in the way the report's history table implies.
+   >
+   > **Mitigated** since 2026-09-19 by `sticky` below, which holds such a link rather than dropping
+   > it, and by the link-churn lines every run now prints before writing the map.
+
+*Weakest of all, and deliberately last:*
+
+- **sticky** — a `callgraph` or `callorder` link the previous run made that this run's matchers no
+  longer derive. Offered only where both sides are still unclaimed, and `bind()` refuses anything
+  taken, so it can never displace evidence this run actually found.
+
+  It exists because an inferred link can stop being derivable without becoming wrong — see the box
+  above. The trade is explicit: it keeps knowledge that would otherwise be lost to unrelated work,
+  at the cost that a **wrong** inference now persists across runs instead of evaporating. That is
+  why it carries its own name in the map rather than staying `callgraph`: a sticky link is the
+  first thing to distrust when a fidelity score looks wrong, and re-deriving one is as simple as
+  deleting its row from `data/map.json` and re-running.
+
+  It does not apply to `override`, `annotated`, `table` or `string`. Deleting a `// ref:` tag still
+  shows up as a lost link, which is what the gate is for.
 6. **callorder** — inside a linked pair, between two linked calls, a single unlinked call on each
    side is the same call. Both propagation rules need two parents to agree, or a proposal nobody
    contests.

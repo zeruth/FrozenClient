@@ -981,6 +981,35 @@ def match(refs, frozen, overrides, tables):
                 for name, addr in zip(W, R):
                     bind(addr, name, 'order', 'definition order between %s and %s in %s' % (n0, n1, f))
 
+    # sticky: an inferred link the last run made, which this run's matchers no longer derive.
+    #
+    # The propagating matchers need a uniqueness that unrelated work can take away -- filling in a
+    # stub gives it callees, and some other pair's "only unmatched callee" stops holding (README,
+    # under callgraph). The pair did not become wrong; it became underivable. Measured on
+    # 2026-09-19: three one-line bindings cost fourteen such links across untouched modules.
+    #
+    # Only offered where both sides are still free, and bind() refuses anything claimed, so this
+    # can never displace evidence this run actually found. Kept under its own name so it is never
+    # mistaken for something derived afresh, and so a wrong one stays visible rather than hiding
+    # among the callgraph links.
+    if os.path.exists(MAP_OUT):
+        try:
+            previous = json.load(io.open(MAP_OUT, encoding='utf-8'))
+        except Exception:
+            previous = {}
+
+        kept = 0
+        for addr, rec in sorted(previous.items()):
+            if rec.get('how') not in ('callgraph', 'callorder', 'sticky'):
+                continue
+            if bind(addr, rec.get('frozen'), 'sticky',
+                    'held from the previous run, where it was %s' % rec.get('how')):
+                kept += 1
+
+        if kept:
+            print('  kept %d inferred link%s the matchers no longer derive (sticky)'
+                  % (kept, '' if kept == 1 else 's'))
+
     with io.open(MATCHES_TSV, 'w', encoding='utf-8', newline='\n') as out:
         out.write('addr\thow\tfrozen\tevidence\n')
         for a, (name, how) in sorted(m.items()):
