@@ -84678,7 +84678,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 31
+"line": 32
 },
 "PostInitObject": {
 "files": [
@@ -84716,7 +84716,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 41
+"line": 43
 },
 "PostMovementUpdate": {
 "files": [
@@ -84740,7 +84740,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 124
+"line": 127
 },
 "UpdateOutOfRangeObjects": {
 "files": [
@@ -84774,7 +84774,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 149
+"line": 152
 },
 "UpdateObject": {
 "files": [
@@ -84799,7 +84799,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 196
+"line": 200
 },
 "UpdateObjectMovement": {
 "files": [
@@ -84819,7 +84819,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 218
+"line": 222
 },
 "SetupObjectStorage": {
 "files": [
@@ -84872,7 +84872,7 @@
 "stub": false,
 "lines": 95,
 "refs": [],
-"line": 222
+"line": 226
 },
 "CreateObject": {
 "files": [
@@ -84913,7 +84913,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 318
+"line": 322
 },
 "UpdateInRangeObjects": {
 "files": [
@@ -84937,7 +84937,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 369
+"line": 373
 },
 "ObjectUpdateFirstPass": {
 "files": [
@@ -84964,7 +84964,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 388
+"line": 392
 },
 "ObjectUpdateSecondPass": {
 "files": [
@@ -84991,7 +84991,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 437
+"line": 442
 },
 "ObjectCompressedUpdateHandler": {
 "files": [
@@ -85023,7 +85023,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 491
+"line": 496
 },
 "ObjectUpdateHandler": {
 "files": [
@@ -85050,7 +85050,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 545
+"line": 550
 },
 "OnObjectDestroy": {
 "files": [
@@ -85071,7 +85071,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 584
+"line": 589
 },
 "ExtractDirtyMasks": {
 "files": [
@@ -85090,7 +85090,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 20,
+"lines": 19,
 "refs": [],
 "line": 33
 },
@@ -85131,7 +85131,7 @@
 "consts": [],
 "branches": 14,
 "stub": false,
-"lines": 59,
+"lines": 56,
 "refs": [],
 "line": 93
 },
@@ -85147,7 +85147,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
 "line": 150
 },
@@ -85176,9 +85176,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 36,
+"lines": 42,
 "refs": [],
-"line": 154
+"line": 166
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85202,9 +85202,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 37,
+"lines": 35,
 "refs": [],
-"line": 197
+"line": 209
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85224,9 +85224,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 10,
+"lines": 16,
 "refs": [],
-"line": 233
+"line": 245
 },
 "QueryPlayerName": {
 "files": [

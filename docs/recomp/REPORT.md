@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 15:01 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 15:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2682 (=) (9.9%) | 570.8k (10.3%) |
-| &nbsp;&nbsp;ported | 2086 (-1) | 415.0k |
+| mapped to a frozen function | 2687 (+5) (9.9%) | 571.9k (10.3%) |
+| &nbsp;&nbsp;ported | 2091 (+5) | 416.2k |
 | &nbsp;&nbsp;stub (unimplemented body) | 561 (=) | 118.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **932 (=) (3.4%)** | **117.7k (2.1%)** |
-| unmapped | 24479 | 4.85M |
+| unmapped | 24474 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
 | frozen functions (src/, from PDB + source) | 11455, stubs 807 | |
 
-Match evidence: annotated 511, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 192, string 313, table 1106. Module anchors: 1479 assert strings.
+Match evidence: annotated 517, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 192, string 312, table 1106. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:56 -- mapped 2682, ported 2087, stub 561, spine mapped 392.
+Previous run: 2026-09-19 15:01 -- mapped 2682, ported 2086, stub 561, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
@@ -251,7 +251,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
 | blp.cpp | 94 | 13.0k | 21 (22.3%) | 12.5% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
+| ObjectMgrClient.cpp | 89 | 12.8k | 9 (10.1%) | 15.3% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
 | fmod_dsp_echo.cpp | 55 | 12.5k | 0 (0.0%) | 0.0% | 0 | 0 | 8 |
 | GuildBankFrame.cpp | 71 | 12.4k | 9 (12.7%) | 8.8% | 1 | 0 | 13 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:25 | 2677 (9.9%) | 919 (3.4%) | 585 | 391/5530 | 1791/2964 | 650 |
 | 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
 | 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
 | 2026-09-19 13:29 | 2677 (9.9%) | 918 (3.4%) | 581 | 391/5530 | 1791/2964 | 646 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 14:55 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 14:56 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:01 | 2682 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
+| 2026-09-19 15:08 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 
 ## How to move a row
 

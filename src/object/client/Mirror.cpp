@@ -151,6 +151,18 @@ int32_t IsMaskBitSet(uint32_t* masks, uint32_t block) {
     return masks[block / 32] & (1 << (block % 32));
 }
 
+// ref: FUN_004d5550
+// The second half of an object update. The first pass has already stored every changed field
+// (UpdateObject -> FillInPartialObjectData); this pass re-reads the same bytes to run the per-field
+// change handlers, which is where UNIT_HEALTH and the rest of the UNIT_* events come from.
+//
+// No handlers are dispatched yet, so nothing tells the interface a field moved and FrameXML -- which
+// does not poll -- never redraws the unit frames. See docs/ref/parity-mirror.md.
+//
+// Reading each changed dword and discarding it is CORRECT here, not an oversight: the value is
+// already applied. Adding object->SetBlock() to the loop below, which is what its sibling
+// FillInPartialObjectData does and looks like the obvious one-line repair, would re-apply bytes the
+// first pass has handled.
 int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
     if (!a2) {
         SmartGUID _guid;

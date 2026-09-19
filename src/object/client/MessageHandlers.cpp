@@ -28,6 +28,7 @@ enum UPDATE_TYPE {
     UPDATE_IN_RANGE     = 5,
 };
 
+// ref: FUN_004d41c0
 void SkipSetOfObjects(CDataStore* msg) {
     uint32_t count;
     msg->Get(count);
@@ -38,6 +39,7 @@ void SkipSetOfObjects(CDataStore* msg) {
     }
 }
 
+// ref: FUN_004d63b0
 int32_t PostInitObject(CDataStore* msg, uint32_t time, bool a3) {
     SmartGUID guid;
     *msg >> guid;
@@ -121,6 +123,7 @@ int32_t PostInitObject(CDataStore* msg, uint32_t time, bool a3) {
     return SkipPartialObjectUpdate(msg);
 }
 
+// ref: FUN_004d6da0
 void PostMovementUpdate(CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -193,6 +196,7 @@ void UpdateOutOfRangeObjects(CDataStore* msg) {
     // TODO CVehiclePassenger_C::ExecutePendingRescueTransitions();
 }
 
+// ref: FUN_004d6e80
 int32_t UpdateObject(CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -434,6 +438,7 @@ int32_t ObjectUpdateFirstPass(CDataStore* msg, uint32_t time, uint32_t updateIdx
     return 1;
 }
 
+// ref: FUN_004d7100
 int32_t ObjectUpdateSecondPass(CDataStore* msg, uint32_t time, uint32_t updateCount) {
     // Handle post updates
 

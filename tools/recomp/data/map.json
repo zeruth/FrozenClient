@@ -8456,6 +8456,22 @@
   "refSize": 43,
   "status": "ported"
  },
+ "004d41c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/MessageHandlers.cpp",
+   "src/object/client/messagehandlers.cpp"
+  ],
+  "frozen": "SkipSetOfObjects",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectMgrClient.cpp",
+  "refSize": 58,
+  "status": "ported"
+ },
  "004d4ac0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -8488,27 +8504,75 @@
   "refSize": 82,
   "status": "ported"
  },
+ "004d5550": {
+  "branchRatio": 0.545,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.077,
+  "files": [
+   "src/object/client/Mirror.cpp",
+   "src/object/client/mirror.cpp"
+  ],
+  "frozen": "CallMirrorHandlers",
+  "frozenSize": 589,
+  "how": "annotated",
+  "module": "ObjectMgrClient.cpp",
+  "refSize": 458,
+  "status": "ported"
+ },
  "004d63b0": {
   "branchRatio": 0.692,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.045,
+  "fidelity": 0.091,
   "files": [
    "src/object/client/MessageHandlers.cpp",
    "src/object/client/messagehandlers.cpp"
   ],
   "frozen": "PostInitObject",
   "frozenSize": 696,
-  "how": "string",
+  "how": "annotated",
   "module": "ObjectMgrClient.cpp",
   "refSize": 522,
+  "status": "ported"
+ },
+ "004d6da0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/MessageHandlers.cpp",
+   "src/object/client/messagehandlers.cpp"
+  ],
+  "frozen": "PostMovementUpdate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectMgrClient.cpp",
+  "refSize": 224,
+  "status": "ported"
+ },
+ "004d6e80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/MessageHandlers.cpp",
+   "src/object/client/messagehandlers.cpp"
+  ],
+  "frozen": "UpdateObject",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectMgrClient.cpp",
+  "refSize": 134,
   "status": "ported"
  },
  "004d7050": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.286,
   "files": [
    "src/object/client/MessageHandlers.cpp",
    "src/object/client/messagehandlers.cpp"
@@ -8518,6 +8582,22 @@
   "how": "string",
   "module": "ObjectMgrClient.cpp",
   "refSize": 150,
+  "status": "ported"
+ },
+ "004d7100": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/object/client/MessageHandlers.cpp",
+   "src/object/client/messagehandlers.cpp"
+  ],
+  "frozen": "ObjectUpdateSecondPass",
+  "frozenSize": 628,
+  "how": "annotated",
+  "module": "ObjectMgrClient.cpp",
+  "refSize": 274,
   "status": "ported"
  },
  "004d80c0": {
