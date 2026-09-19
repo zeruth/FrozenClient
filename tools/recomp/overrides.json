@@ -1112,5 +1112,20 @@
     "frozen": "Script_AccessDenied",
     "status": "ported",
     "note": "18 bytes, one callee (luaL_error) and the single string 'Access Denied' -- the shared refusal frozen registers for ReadFile, DeleteFile and their neighbours. Pinned because it came unlinked the moment a SECOND 'Access Denied' literal appeared in the port: GMRequestPlayerInfo raises the same text inline rather than calling this, which the reference also does, and the string rule cannot choose between two identical literals. The rule was right the first time; it just stopped being able to prove it."
+  },
+  "00626240": {
+    "frozen": "CGTooltip_SetUnitAura",
+    "status": "diverged",
+    "note": "Fills the spell body through TooltipSetSpellRec and stops. The reference fills these from FUN_00625f00, 814 bytes and 24 callees, which adds the remaining duration, the caster and a stack count on top of the spell text. Frozen has no tooltip line for any of those three, so the tooltip shows the spell but not how long is left on it -- a visible gap, recorded rather than papered over with an invented duration line."
+  },
+  "006262c0": {
+    "frozen": "CGTooltip_SetUnitBuff",
+    "status": "diverged",
+    "note": "Fills the spell body through TooltipSetSpellRec and stops. The reference fills these from FUN_00625f00, 814 bytes and 24 callees, which adds the remaining duration, the caster and a stack count on top of the spell text. Frozen has no tooltip line for any of those three, so the tooltip shows the spell but not how long is left on it -- a visible gap, recorded rather than papered over with an invented duration line."
+  },
+  "00626350": {
+    "frozen": "CGTooltip_SetUnitDebuff",
+    "status": "diverged",
+    "note": "Fills the spell body through TooltipSetSpellRec and stops. The reference fills these from FUN_00625f00, 814 bytes and 24 callees, which adds the remaining duration, the caster and a stack count on top of the spell text. Frozen has no tooltip line for any of those three, so the tooltip shows the spell but not how long is left on it -- a visible gap, recorded rather than papered over with an invented duration line."
   }
 }

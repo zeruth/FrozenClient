@@ -1621,9 +1621,9 @@ addr	how	frozen	evidence
 00625b90	table	CGTooltip_SetSpellByID	binding "SetSpellByID" in CGTooltipMethods ~ table 00ad2ae0
 00625d00	table	CGTooltip_SetGlyph	binding "SetGlyph" in CGTooltipMethods ~ table 00ad2ae0
 00625e10	annotated	CGTooltip_SetUnit	tag in src/ui/game/CGTooltipScript.cpp
-00626240	table	CGTooltip_SetUnitAura	binding "SetUnitAura" in CGTooltipMethods ~ table 00ad2ae0
-006262c0	table	CGTooltip_SetUnitBuff	binding "SetUnitBuff" in CGTooltipMethods ~ table 00ad2ae0
-00626350	table	CGTooltip_SetUnitDebuff	binding "SetUnitDebuff" in CGTooltipMethods ~ table 00ad2ae0
+00626240	annotated	CGTooltip_SetUnitAura	tag in src/ui/game/CGTooltipScript.cpp
+006262c0	annotated	CGTooltip_SetUnitBuff	tag in src/ui/game/CGTooltipScript.cpp
+00626350	annotated	CGTooltip_SetUnitDebuff	tag in src/ui/game/CGTooltipScript.cpp
 006263e0	table	CGTooltip_SetQuestRewardSpell	binding "SetQuestRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 00626440	table	CGTooltip_SetQuestLogRewardSpell	binding "SetQuestLogRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 006264d0	table	CGTooltip_SetEquipmentSet	binding "SetEquipmentSet" in CGTooltipMethods ~ table 00ad2ae0

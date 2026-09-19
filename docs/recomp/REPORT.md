@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 13:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 13:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2678 (+1) (9.9%) | 570.0k (10.3%) |
-| &nbsp;&nbsp;ported | 2073 (+4) | 414.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 577 (-3) | 121.6k |
+| mapped to a frozen function | 2678 (=) (9.9%) | 570.0k (10.3%) |
+| &nbsp;&nbsp;ported | 2076 (+3) | 414.5k |
+| &nbsp;&nbsp;stub (unimplemented body) | 574 (-3) | 121.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **920 (+2) (3.4%)** | **116.5k (2.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **920 (=) (3.4%)** | **116.5k (2.1%)** |
 | unmapped | 24483 | 4.85M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 392 (+1) (7.1%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (+1) (6.8%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 162 (+1) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11447, stubs 823 | |
+| world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
+| frozen functions (src/, from PDB + source) | 11448, stubs 820 | |
 
-Match evidence: annotated 491, callgraph 185, callorder 124, cvar 30, handler 28, order 190, override 185, string 314, table 1131. Module anchors: 1479 assert strings.
+Match evidence: annotated 494, callgraph 185, callorder 124, cvar 30, handler 28, order 190, override 185, string 314, table 1128. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 13:33 -- mapped 2677, ported 2069, stub 580, spine mapped 391.
+Previous run: 2026-09-19 13:40 -- mapped 2678, ported 2073, stub 577, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 641 of those are WHOA_UNIMPLEMENTED stubs (-4). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 638 of those are WHOA_UNIMPLEMENTED stubs (-3). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -39,8 +39,8 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acef78 (GetGossipText..) | 59 | `s_ScriptFunctions` | 48 | 0 | GetGossipText, GetGossipOptions, GetGossipAvailableQuests, GetGossipActiveQuests, SelectGossipOption, SelectGossipAvailableQuest ... |
 | 00accae8 (BNGetInfo..) | 57 | `s_ScriptFunctions` | 0 | 47 |  / stubs: BNGetInfo, BNGetFriendInfo, BNGetFriendInfoByID, BNGetNumFriendToons ... |
 | 00ad1938 (JumpOrAscendStart..) | 52 | `s_ScriptFunctions` | 47 | 0 | JumpOrAscendStart, AscendStop, DescendStop, ToggleRun, ToggleAutoRun, MoveForwardStart ... |
-| 00ad2ae0 (AddFontStrings..) | 69 | `CGTooltipMethods` | 0 | 45 |  / stubs: AddTexture, SetPetAction, SetShapeshift, SetPossession ... |
 | 00acd178 (GetNumBattlefields..) | 51 | `s_ScriptFunctions` | 0 | 42 |  / stubs: GetNumBattlefields, GetBattlefieldInfo, GetBattlefieldInstanceInfo, JoinBattlefield ... |
+| 00ad2ae0 (AddFontStrings..) | 69 | `CGTooltipMethods` | 0 | 42 |  / stubs: AddTexture, SetPetAction, SetShapeshift, SetPossession ... |
 | 00ace370 (CommentatorSetMode..) | 35 | `-` | 35 | 0 | CommentatorSetMode, CommentatorToggleMode, CommentatorGetMode, CommentatorSetMapAndInstanceIndex, CommentatorSetPlayerIndex, CommentatorUpdatePlayerInfo ... |
 | 00ad0e80 (CloseTradeSkill..) | 36 | `s_ScriptFunctions` | 34 | 0 | CloseTradeSkill, GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex, GetTradeSkillCooldown, GetTradeSkillIcon ... |
 | 00ace610 (CloseMail..) | 38 | `s_ScriptFunctions` | 33 | 0 | CloseMail, ClearSendMail, ClickSendMailItemButton, SetSendMailMoney, GetSendMailMoney, SetSendMailCOD ... |
@@ -153,7 +153,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 194 (39.5%) | 44.6% | 120 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
-| Tooltip.cpp | 151 | 86.0k | 71 (47.0%) | 28.4% | 44 | 1 | 16 |
+| Tooltip.cpp | 151 | 86.0k | 71 (47.0%) | 28.4% | 41 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 27 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
@@ -740,7 +740,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-19 12:08 | 2416 (8.9%) | 909 (3.3%) | 446 | 388/5530 | 1584/2512 | 547 |
-| 2026-09-19 12:08 | 2416 (8.9%) | 909 (3.3%) | 446 | 388/5530 | 1584/2512 | 547 |
 | 2026-09-19 12:12 | 2416 (8.9%) | 909 (3.3%) | 445 | 388/5530 | 1584/2512 | 546 |
 | 2026-09-19 12:12 | 2416 (8.9%) | 909 (3.3%) | 445 | 388/5530 | 1584/2512 | 546 |
 | 2026-09-19 12:18 | 2418 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
@@ -764,6 +763,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 13:33 | 2677 (9.9%) | 918 (3.4%) | 580 | 391/5530 | 1791/2964 | 645 |
 | 2026-09-19 13:33 | 2677 (9.9%) | 918 (3.4%) | 580 | 391/5530 | 1791/2964 | 645 |
 | 2026-09-19 13:40 | 2678 (9.9%) | 920 (3.4%) | 577 | 392/5530 | 1791/2964 | 641 |
+| 2026-09-19 13:49 | 2678 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
 
 ## How to move a row
 

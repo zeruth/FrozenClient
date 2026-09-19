@@ -25822,52 +25822,52 @@
   "status": "ported"
  },
  "00626240": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetUnitAura",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 46,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 124,
-  "status": "stub"
+  "status": "ported"
  },
  "006262c0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetUnitBuff",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 46,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 136,
-  "status": "stub"
+  "status": "ported"
  },
  "00626350": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetUnitDebuff",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 46,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 136,
-  "status": "stub"
+  "status": "ported"
  },
  "006263e0": {
   "branchRatio": 1.0,

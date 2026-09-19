@@ -14,6 +14,7 @@
 #include "ui/simple/CSimpleTop.hpp"
 #include <storm/String.hpp>
 #include "ui/FrameScript.hpp"
+#include "object/client/AuraCache.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -860,16 +861,59 @@ int32_t CGTooltip_SetUnit(lua_State* L) {
     return 1;
 }
 
+// Defined below, with the other aura tooltip code; declared here because SetUnitBuff and
+// SetUnitDebuff appear above it in this file.
+static int32_t TooltipSetAura(lua_State* L, CGTooltip* tooltip, uint8_t required, uint8_t forbidden);
+
+// ref: FUN_006262c0
 int32_t CGTooltip_SetUnitBuff(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    return TooltipSetAura(L, tooltip, AURA_FLAG_POSITIVE, 0);
 }
 
+// ref: FUN_00626350
 int32_t CGTooltip_SetUnitDebuff(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    return TooltipSetAura(L, tooltip, 0, AURA_FLAG_POSITIVE);
 }
 
+// The three aura tooltips below share this. The reference fills them from an 814-byte routine
+// (FUN_00625f00) that adds the remaining duration, the caster and a stack count on top of the
+// spell text; frozen has no line for any of those yet, so this fills the spell body through the
+// same TooltipSetSpellRec the spellbook tooltip uses and stops there.
+//
+// DIVERGENCE, and a visible one: the tooltip will show the spell but not how long is left on it.
+// Recorded rather than faked, because a duration line invented here would be wrong in a way nobody
+// would notice until they timed a buff by it.
+static int32_t TooltipSetAura(lua_State* L, CGTooltip* tooltip, uint8_t required, uint8_t forbidden) {
+    if (!lua_isstring(L, 2) || !lua_isnumber(L, 3)) {
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 2));
+
+    if (!unit) {
+        return 0;
+    }
+
+    // 1-based on the Lua side, as every index in this API is.
+    auto index = static_cast<int32_t>(lua_tonumber(L, 3)) - 1;
+    auto aura = AuraCacheGet(unit->GetGUID(), index, required, forbidden);
+
+    if (!aura) {
+        return 0;
+    }
+
+    return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(aura->spellID));
+}
+
+// ref: FUN_00626240
 int32_t CGTooltip_SetUnitAura(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    return TooltipSetAura(L, tooltip, 0, 0);
 }
 
 int32_t CGTooltip_SetTalent(lua_State* L) {
