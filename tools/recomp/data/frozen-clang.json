@@ -144660,6 +144660,98 @@
 "refs": [],
 "line": 1141
 },
+"CSimpleEditBox::SetAutoFocus": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1152
+},
+"CSimpleEditBox::SetCountInvisibleLetters": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1157
+},
+"CSimpleEditBox::SetNumeric": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1162
+},
+"CSimpleEditBox::SetPassword": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1167
+},
+"CSimpleEditBox::SetAltArrowKeyMode": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1172
+},
+"CSimpleEditBox::LetterCount": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0x80",
+"0xC0"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1179
+},
 "CSimpleEditBox::SetMultiLine": {
 "files": [
 "src/ui/simple/csimpleeditbox.cpp"
@@ -144685,7 +144777,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1152
+"line": 1192
 },
 "CSimpleEditBox::SetText": {
 "files": [
@@ -144707,7 +144799,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1182
+"line": 1222
 },
 "CSimpleEditBox::StartHighlight": {
 "files": [
@@ -144720,7 +144812,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1197
+"line": 1237
 },
 "CSimpleEditBox::UpdateDirtyBits": {
 "files": [
@@ -144743,7 +144835,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1202
+"line": 1242
 },
 "CSimpleEditBox::UpdateSizes": {
 "files": [
@@ -144777,7 +144869,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1231
+"line": 1271
 },
 "CSimpleEditBox::UpdateTextInfo": {
 "files": [
@@ -144798,7 +144890,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1281
+"line": 1321
 },
 "CSimpleEditBox::UpdateVisibleCursor": {
 "files": [
@@ -144853,7 +144945,7 @@
 "stub": false,
 "lines": 133,
 "refs": [],
-"line": 1309
+"line": 1349
 },
 "CSimpleEditBox::UpdateVisibleHighlight": {
 "files": [
@@ -144866,7 +144958,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1443
+"line": 1483
 },
 "CSimpleEditBox::UpdateVisibleText": {
 "files": [
@@ -144903,623 +144995,546 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 1447
+"line": 1487
 },
 "CSimpleEditBox_SetFontObject": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetFontObject"
 ],
-"strings": [
-"CSimpleEditBox_SetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 7
+"line": 11
 },
 "CSimpleEditBox_GetFontObject": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetFontObject"
 ],
-"strings": [
-"CSimpleEditBox_GetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 11
+"line": 19
 },
 "CSimpleEditBox_SetFont": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetFont"
 ],
-"strings": [
-"CSimpleEditBox_SetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 15
+"line": 27
 },
 "CSimpleEditBox_GetFont": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetFont"
 ],
-"strings": [
-"CSimpleEditBox_GetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 19
+"line": 35
 },
 "CSimpleEditBox_SetTextColor": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetTextColor"
 ],
-"strings": [
-"CSimpleEditBox_SetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 23
+"line": 43
 },
 "CSimpleEditBox_GetTextColor": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetTextColor"
 ],
-"strings": [
-"CSimpleEditBox_GetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 27
+"line": 51
 },
 "CSimpleEditBox_SetShadowColor": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetShadowColor"
 ],
-"strings": [
-"CSimpleEditBox_SetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 31
+"line": 59
 },
 "CSimpleEditBox_GetShadowColor": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetShadowColor"
 ],
-"strings": [
-"CSimpleEditBox_GetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 35
+"line": 67
 },
 "CSimpleEditBox_SetShadowOffset": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetShadowOffset"
 ],
-"strings": [
-"CSimpleEditBox_SetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 39
+"line": 75
 },
 "CSimpleEditBox_GetShadowOffset": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetShadowOffset"
 ],
-"strings": [
-"CSimpleEditBox_GetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 43
+"line": 83
 },
 "CSimpleEditBox_SetSpacing": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetSpacing"
 ],
-"strings": [
-"CSimpleEditBox_SetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 47
+"line": 91
 },
 "CSimpleEditBox_GetSpacing": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetSpacing"
 ],
-"strings": [
-"CSimpleEditBox_GetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 51
+"line": 99
 },
 "CSimpleEditBox_SetJustifyH": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetJustifyH"
 ],
-"strings": [
-"CSimpleEditBox_SetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 55
+"line": 107
 },
 "CSimpleEditBox_GetJustifyH": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetJustifyH"
 ],
-"strings": [
-"CSimpleEditBox_GetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 59
+"line": 115
 },
 "CSimpleEditBox_SetJustifyV": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetJustifyV"
 ],
-"strings": [
-"CSimpleEditBox_SetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 63
+"line": 123
 },
 "CSimpleEditBox_GetJustifyV": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetJustifyV"
 ],
-"strings": [
-"CSimpleEditBox_GetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 67
+"line": 131
 },
 "CSimpleEditBox_SetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_SetIndentedWordWrap"
 ],
-"strings": [
-"CSimpleEditBox_SetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 71
+"line": 139
 },
 "CSimpleEditBox_GetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Object::GetDisplayName",
+"FontString_GetIndentedWordWrap"
 ],
-"strings": [
-"CSimpleEditBox_GetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 75
+"line": 147
 },
 "CSimpleEditBox_SetAutoFocus": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetAutoFocus"
 ],
-"strings": [
-"CSimpleEditBox_SetAutoFocus",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 79
+"line": 155
 },
 "CSimpleEditBox_IsAutoFocus": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsAutoFocus",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 83
+"line": 165
 },
 "CSimpleEditBox_SetCountInvisibleLetters": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetCountInvisibleLetters"
 ],
-"strings": [
-"CSimpleEditBox_SetCountInvisibleLetters",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 87
+"line": 179
 },
 "CSimpleEditBox_IsCountInvisibleLetters": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsCountInvisibleLetters",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 91
+"line": 189
 },
 "CSimpleEditBox_SetMultiLine": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetMultiLine"
 ],
-"strings": [
-"CSimpleEditBox_SetMultiLine",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 95
+"line": 203
 },
 "CSimpleEditBox_IsMultiLine": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsMultiLine",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 99
+"line": 213
 },
 "CSimpleEditBox_SetNumeric": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetNumeric"
 ],
-"strings": [
-"CSimpleEditBox_SetNumeric",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 103
+"line": 227
 },
 "CSimpleEditBox_IsNumeric": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsNumeric",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 107
+"line": 237
 },
 "CSimpleEditBox_SetPassword": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetPassword"
 ],
-"strings": [
-"CSimpleEditBox_SetPassword",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 111
+"line": 251
 },
 "CSimpleEditBox_IsPassword": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsPassword",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 115
+"line": 261
 },
 "CSimpleEditBox_SetBlinkSpeed": {
 "files": [
@@ -145541,7 +145556,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 119
+"line": 274
 },
 "CSimpleEditBox_GetBlinkSpeed": {
 "files": [
@@ -145563,7 +145578,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 123
+"line": 278
 },
 "CSimpleEditBox_Insert": {
 "files": [
@@ -145585,7 +145600,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 127
+"line": 282
 },
 "CSimpleEditBox_SetText": {
 "files": [
@@ -145611,7 +145626,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 131
+"line": 286
 },
 "CSimpleEditBox_GetText": {
 "files": [
@@ -145630,7 +145645,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 146
+"line": 301
 },
 "CSimpleEditBox_SetNumber": {
 "files": [
@@ -145652,7 +145667,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 161
+"line": 316
 },
 "CSimpleEditBox_GetNumber": {
 "files": [
@@ -145674,7 +145689,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 165
+"line": 320
 },
 "CSimpleEditBox_HighlightText": {
 "files": [
@@ -145699,7 +145714,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 169
+"line": 324
 },
 "CSimpleEditBox_AddHistoryLine": {
 "files": [
@@ -145721,7 +145736,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 190
+"line": 345
 },
 "CSimpleEditBox_ClearHistory": {
 "files": [
@@ -145743,7 +145758,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 194
+"line": 349
 },
 "CSimpleEditBox_SetTextInsets": {
 "files": [
@@ -145765,7 +145780,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 198
+"line": 353
 },
 "CSimpleEditBox_GetTextInsets": {
 "files": [
@@ -145787,7 +145802,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 202
+"line": 357
 },
 "CSimpleEditBox_SetFocus": {
 "files": [
@@ -145806,7 +145821,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 206
+"line": 361
 },
 "CSimpleEditBox_ClearFocus": {
 "files": [
@@ -145825,183 +145840,180 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 215
+"line": 370
 },
 "CSimpleEditBox_HasFocus": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushboolean"
 ],
-"strings": [
-"CSimpleEditBox_HasFocus",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 224
+"line": 380
 },
 "CSimpleEditBox_SetMaxBytes": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber"
 ],
 "strings": [
-"CSimpleEditBox_SetMaxBytes",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetMaxBytes(max)"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 13,
 "refs": [],
-"line": 228
+"line": 390
 },
 "CSimpleEditBox_GetMaxBytes": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetMaxBytes",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 232
+"line": 405
 },
 "CSimpleEditBox_SetMaxLetters": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber"
 ],
 "strings": [
-"CSimpleEditBox_SetMaxLetters",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetMaxLetters(max)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 236
+"line": 415
 },
 "CSimpleEditBox_GetMaxLetters": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetMaxLetters",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 240
+"line": 429
 },
 "CSimpleEditBox_GetNumLetters": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleEditBox::LetterCount",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetNumLetters",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 244
+"line": 439
 },
 "CSimpleEditBox_GetHistoryLines": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetHistoryLines",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 248
+"line": 449
 },
 "CSimpleEditBox_SetHistoryLines": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_tonumber",
+"CSimpleEditBox::SetHistoryLines",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleEditBox_SetHistoryLines",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetHistoryLines(numLines)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 16,
 "refs": [],
-"line": 252
+"line": 459
 },
 "CSimpleEditBox_GetInputLanguage": {
 "files": [
@@ -146023,7 +146035,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 256
+"line": 476
 },
 "CSimpleEditBox_ToggleInputLanguage": {
 "files": [
@@ -146045,73 +146057,69 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 260
+"line": 480
 },
 "CSimpleEditBox_SetAltArrowKeyMode": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleEditBox::SetAltArrowKeyMode"
 ],
-"strings": [
-"CSimpleEditBox_SetAltArrowKeyMode",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 264
+"line": 485
 },
 "CSimpleEditBox_GetAltArrowKeyMode": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_GetAltArrowKeyMode",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 268
+"line": 495
 },
 "CSimpleEditBox_IsInIMECompositionMode": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleEditBox_IsInIMECompositionMode",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 9,
 "refs": [],
-"line": 272
+"line": 509
 },
 "CSimpleEditBox_SetCursorPosition": {
 "files": [
@@ -146137,7 +146145,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 276
+"line": 519
 },
 "CSimpleEditBox_GetCursorPosition": {
 "files": [
@@ -146156,29 +146164,29 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 293
+"line": 536
 },
 "CSimpleEditBox_GetUTF8CursorPosition": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetUTF8CursorPosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x80",
+"0xC0",
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 17,
 "refs": [],
-"line": 302
+"line": 546
 },
 "SIMPLEFONT::SIMPLEFONT": {
 "files": [
@@ -148273,6 +148281,437 @@
 "refs": [],
 "line": 127
 },
+"FontString_SetFontObject": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_type",
+"lua_rawgeti",
+"lua_touserdata",
+"lua_settop",
+"luaL_error",
+"CSimpleFont::GetObjectType",
+"CSimpleFont::IsA",
+"luaL_error",
+"lua_type",
+"lua_tolstring",
+"CSimpleFont::GetFont",
+"luaL_error",
+"lua_type",
+"luaL_error",
+"luaL_error",
+"CSimpleFontable::SetFontObject"
+],
+"strings": [
+"%s:SetFontObject(): Can't create a font object loop",
+"%s:SetFontObject(): Couldn't find 'this' in font object",
+"%s:SetFontObject(): Couldn't find font named %s",
+"%s:SetFontObject(): Wrong object type, expected font",
+"Usage: %s:SetFontObject(font or \"font\" or nil)"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 8,
+"stub": false,
+"lines": 38,
+"refs": [],
+"line": 19
+},
+"FontString_GetFontObject": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"CSimpleFontable::GetFontObject",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 59
+},
+"FontString_SetFont": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_isnumber",
+"luaL_error",
+"lua_isstring",
+"lua_tolstring",
+"StringToFontFlags",
+"lua_tonumber",
+"lua_tolstring",
+"CSimpleFontString::SetFont",
+"lua_pushnumber",
+"lua_pushnil"
+],
+"strings": [
+"Usage: %s:SetFont(\"font\", fontHeight [, flags])"
+],
+"consts": [
+"0x0",
+"1",
+"1.0",
+"2",
+"3",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 78
+},
+"FontString_GetFont": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"CSimpleFontString::GetFontName",
+"lua_pushnil",
+"lua_pushnil",
+"lua_pushnil",
+"lua_pushstring",
+"CSimpleFontString::GetFontHeight",
+"lua_pushnumber",
+"CSimpleFontString::GetFontFlags",
+"FontFlagsToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 101
+},
+"FontString_SetTextColor": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"FrameScript_GetColor",
+"CSimpleRegion::SetVertexColor"
+],
+"strings": [],
+"consts": [
+"0",
+"0x00",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 120
+},
+"FontString_GetTextColor": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"CImVector::CImVector",
+"CSimpleFontString::GetTextColor",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1.0f",
+"255.0f",
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 131
+},
+"FontString_SetShadowColor": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"FrameScript_GetColor",
+"CSimpleFontString::SetShadowColor"
+],
+"strings": [],
+"consts": [
+"0",
+"0x00",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 144
+},
+"FontString_GetShadowColor": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1.0f",
+"255.0f",
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 155
+},
+"FontString_SetShadowOffset": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_isnumber",
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"NDCToDDCWidth",
+"C2Vector::C2Vector",
+"CSimpleFontString::SetShadowOffset"
+],
+"strings": [
+"Usage: %s:SetShadowOffset(x, y)"
+],
+"consts": [
+"0",
+"1024.0f",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 167
+},
+"FontString_GetShadowOffset": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1024.0f",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 188
+},
+"FontString_SetSpacing": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"CSimpleFontString::SetSpacing"
+],
+"strings": [
+"Usage: %s:SetSpacing(spacing)"
+],
+"consts": [
+"0",
+"1024.0f",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 198
+},
+"FontString_GetSpacing": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1",
+"1024.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 213
+},
+"FontString_SetJustifyH": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"luaL_error",
+"CSimpleFontString::SetJustifyH"
+],
+"strings": [
+"Usage: %s:SetJustifyH(\"justify\")"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 222
+},
+"FontString_GetJustifyH": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"JustifyToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"0x7",
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 236
+},
+"FontString_SetJustifyV": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"luaL_error",
+"CSimpleFontString::SetJustifyV"
+],
+"strings": [
+"Usage: %s:SetJustifyV(\"justify\")"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 243
+},
+"FontString_GetJustifyV": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"JustifyToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"0x38",
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 257
+},
+"FontString_SetIndentedWordWrap": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"StringToBOOL",
+"CSimpleFontString::SetIndentedWordWrap"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 264
+},
+"FontString_GetIndentedWordWrap": {
+"files": [
+"src/ui/simple/csimplefontstringscript.cpp"
+],
+"callseq": [
+"lua_pushnumber",
+"lua_pushnil"
+],
+"strings": [],
+"consts": [
+"0x20000",
+"1",
+"1.0"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 272
+},
 "CSimpleFontString_IsObjectType": {
 "files": [
 "src/ui/simple/csimplefontstringscript.cpp"
@@ -148300,7 +148739,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 12
+"line": 282
 },
 "CSimpleFontString_GetObjectType": {
 "files": [
@@ -148320,7 +148759,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 29
+"line": 299
 },
 "CSimpleFontString_GetDrawLayer": {
 "files": [
@@ -148342,7 +148781,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 38
+"line": 308
 },
 "CSimpleFontString_SetDrawLayer": {
 "files": [
@@ -148373,7 +148812,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 42
+"line": 312
 },
 "CSimpleFontString_SetVertexColor": {
 "files": [
@@ -148397,7 +148836,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 61
+"line": 331
 },
 "CSimpleFontString_GetAlpha": {
 "files": [
@@ -148419,7 +148858,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 81
+"line": 351
 },
 "CSimpleFontString_SetAlpha": {
 "files": [
@@ -148434,7 +148873,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 85
+"line": 355
 },
 "CSimpleFontString_SetAlphaGradient": {
 "files": [
@@ -148456,7 +148895,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 90
+"line": 360
 },
 "CSimpleFontString_Show": {
 "files": [
@@ -148475,7 +148914,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 94
+"line": 364
 },
 "CSimpleFontString_Hide": {
 "files": [
@@ -148494,7 +148933,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 103
+"line": 373
 },
 "CSimpleFontString_IsVisible": {
 "files": [
@@ -148516,7 +148955,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 112
+"line": 382
 },
 "CSimpleFontString_IsShown": {
 "files": [
@@ -148538,7 +148977,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 125
+"line": 395
 },
 "CSimpleFontString_GetFontObject": {
 "files": [
@@ -148547,20 +148986,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"CSimpleFontable::GetFontObject",
-"lua_pushnil",
-"FrameScript_Object::RegisterScriptObject",
-"lua_rawgeti"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetFontObject"
 ],
 "strings": [],
-"consts": [
-"1"
-],
-"branches": 2,
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 20,
+"lines": 6,
 "refs": [],
-"line": 138
+"line": 408
 },
 "CSimpleFontString_SetFontObject": {
 "files": [
@@ -148569,42 +149004,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_type",
-"lua_rawgeti",
-"lua_touserdata",
-"lua_settop",
 "FrameScript_Object::GetDisplayName",
-"luaL_error",
-"CSimpleFont::GetObjectType",
-"CSimpleFont::IsA",
-"FrameScript_Object::GetDisplayName",
-"luaL_error",
-"lua_type",
-"lua_tolstring",
-"CSimpleFont::GetFont",
-"FrameScript_Object::GetDisplayName",
-"luaL_error",
-"lua_type",
-"FrameScript_Object::GetDisplayName",
-"luaL_error",
-"CSimpleFontable::SetFontObject"
+"FontString_SetFontObject"
 ],
-"strings": [
-"%s:SetFontObject(): Couldn't find 'this' in font object",
-"%s:SetFontObject(): Couldn't find font named %s",
-"%s:SetFontObject(): Wrong object type, expected font",
-"Usage: %s:SetFontObject(font or \"font\" or nil)"
-],
-"consts": [
-"0",
-"1",
-"2"
-],
-"branches": 6,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 33,
+"lines": 6,
 "refs": [],
-"line": 159
+"line": 415
 },
 "CSimpleFontString_GetFont": {
 "files": [
@@ -148613,35 +149022,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"CSimpleFontString::GetFontName",
-"lua_pushnil",
-"lua_pushnil",
-"lua_pushnil",
-"CSimpleFontString::GetFontFlags",
-"SStrPack",
-"SStrPack",
-"SStrPack",
-"lua_pushstring",
-"CSimpleFontString::GetFontHeight",
-"lua_pushnumber",
-"lua_pushstring"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetFont"
 ],
-"strings": [
-"",
-",",
-"MONOCHROME",
-"OUTLINE",
-"THICKOUTLINE"
-],
-"consts": [
-"3",
-"64"
-],
-"branches": 5,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 35,
+"lines": 6,
 "refs": [],
-"line": 193
+"line": 422
 },
 "CSimpleFontString_SetFont": {
 "files": [
@@ -148650,40 +149040,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_isstring",
-"lua_isnumber",
 "FrameScript_Object::GetDisplayName",
-"luaL_error",
-"lua_isstring",
-"lua_tolstring",
-"SStrStr",
-"SStrStr",
-"SStrStr",
-"lua_tonumber",
-"lua_tolstring",
-"CSimpleFontString::SetFont",
-"lua_pushnil",
-"lua_pushnumber"
+"FontString_SetFont"
 ],
-"strings": [
-"MONOCHROME",
-"OUTLINE",
-"THICKOUTLINE",
-"Usage: %s:SetFont(\"font\", fontHeight [, flags])"
-],
-"consts": [
-"0",
-"1",
-"1.0",
-"2",
-"3",
-"4"
-],
-"branches": 6,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 32,
+"lines": 6,
 "refs": [],
-"line": 229
+"line": 429
 },
 "CSimpleFontString_GetText": {
 "files": [
@@ -148703,7 +149069,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 262
+"line": 436
 },
 "CSimpleFontString_GetFieldSize": {
 "files": [
@@ -148721,7 +149087,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 277
+"line": 451
 },
 "CSimpleFontString_SetText": {
 "files": [
@@ -148747,7 +149113,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 283
+"line": 457
 },
 "CSimpleFontString_SetFormattedText": {
 "files": [
@@ -148774,7 +149140,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 297
+"line": 471
 },
 "CSimpleFontString_GetTextColor": {
 "files": [
@@ -148783,24 +149149,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"CImVector::CImVector",
-"CSimpleFontString::GetTextColor",
-"lua_pushnumber",
-"lua_pushnumber",
-"lua_pushnumber",
-"lua_pushnumber"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetTextColor"
 ],
 "strings": [],
-"consts": [
-"1.0f",
-"255.0f",
-"4"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 14,
+"lines": 6,
 "refs": [],
-"line": 314
+"line": 487
 },
 "CSimpleFontString_SetTextColor": {
 "files": [
@@ -148809,20 +149167,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"FrameScript_GetColor",
-"CSimpleRegion::SetVertexColor"
+"FrameScript_Object::GetDisplayName",
+"FontString_SetTextColor"
 ],
 "strings": [],
-"consts": [
-"0",
-"0x00",
-"2"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 12,
+"lines": 6,
 "refs": [],
-"line": 329
+"line": 494
 },
 "CSimpleFontString_GetShadowColor": {
 "files": [
@@ -148831,22 +149185,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_pushnumber",
-"lua_pushnumber",
-"lua_pushnumber",
-"lua_pushnumber"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetShadowColor"
 ],
 "strings": [],
-"consts": [
-"1.0f",
-"255.0f",
-"4"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 13,
+"lines": 6,
 "refs": [],
-"line": 343
+"line": 501
 },
 "CSimpleFontString_SetShadowColor": {
 "files": [
@@ -148855,20 +149203,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"FrameScript_GetColor",
-"CSimpleFontString::SetShadowColor"
+"FrameScript_Object::GetDisplayName",
+"FontString_SetShadowColor"
 ],
 "strings": [],
-"consts": [
-"0",
-"0x00",
-"2"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 12,
+"lines": 6,
 "refs": [],
-"line": 358
+"line": 508
 },
 "CSimpleFontString_GetShadowOffset": {
 "files": [
@@ -148877,22 +149221,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"CoordinateGetAspectCompensation",
-"DDCToNDCWidth",
-"lua_pushnumber",
-"DDCToNDCWidth",
-"lua_pushnumber"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetShadowOffset"
 ],
 "strings": [],
-"consts": [
-"1024.0f",
-"2"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 11,
+"lines": 6,
 "refs": [],
-"line": 372
+"line": 515
 },
 "CSimpleFontString_SetShadowOffset": {
 "files": [
@@ -148901,32 +149239,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_isnumber",
-"lua_isnumber",
-"lua_tonumber",
-"lua_tonumber",
-"CoordinateGetAspectCompensation",
-"NDCToDDCWidth",
-"NDCToDDCWidth",
-"C2Vector::C2Vector",
-"CSimpleFontString::SetShadowOffset",
 "FrameScript_Object::GetDisplayName",
-"luaL_error"
+"FontString_SetShadowOffset"
 ],
-"strings": [
-"Usage: %s:SetShadowOffset(x, y)"
-],
-"consts": [
-"0",
-"1024.0f",
-"2",
-"3"
-],
-"branches": 1,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 22,
+"lines": 6,
 "refs": [],
-"line": 385
+"line": 522
 },
 "CSimpleFontString_GetSpacing": {
 "files": [
@@ -148935,20 +149257,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"CoordinateGetAspectCompensation",
-"DDCToNDCWidth",
-"lua_pushnumber"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetSpacing"
 ],
 "strings": [],
-"consts": [
-"1",
-"1024.0f"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 10,
+"lines": 6,
 "refs": [],
-"line": 409
+"line": 529
 },
 "CSimpleFontString_SetSpacing": {
 "files": [
@@ -148957,27 +149275,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_isnumber",
 "FrameScript_Object::GetDisplayName",
-"luaL_error",
-"lua_tonumber",
-"CoordinateGetAspectCompensation",
-"NDCToDDCWidth",
-"CSimpleFontString::SetSpacing"
+"FontString_SetSpacing"
 ],
-"strings": [
-"Usage: %s:SetSpacing(spacing)"
-],
-"consts": [
-"0",
-"1024.0f",
-"2"
-],
-"branches": 1,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 16,
+"lines": 6,
 "refs": [],
-"line": 421
+"line": 536
 },
 "CSimpleFontString_SetTextHeight": {
 "files": [
@@ -149009,7 +149316,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 439
+"line": 544
 },
 "CSimpleFontString_GetStringWidth": {
 "files": [
@@ -149029,7 +149336,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 458
+"line": 563
 },
 "CSimpleFontString_GetStringHeight": {
 "files": [
@@ -149049,7 +149356,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 467
+"line": 572
 },
 "CSimpleFontString_GetJustifyH": {
 "files": [
@@ -149058,19 +149365,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"JustifyToString",
-"lua_pushstring"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetJustifyH"
 ],
 "strings": [],
-"consts": [
-"0x7",
-"1"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 6,
 "refs": [],
-"line": 477
+"line": 581
 },
 "CSimpleFontString_SetJustifyH": {
 "files": [
@@ -149079,25 +149383,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_isstring",
-"lua_tolstring",
-"StringToJustify",
 "FrameScript_Object::GetDisplayName",
-"luaL_error",
-"CSimpleFontString::SetJustifyH"
+"FontString_SetJustifyH"
 ],
-"strings": [
-"Usage: %s:SetJustifyH(\"justify\")"
-],
-"consts": [
-"0",
-"2"
-],
-"branches": 1,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 14,
+"lines": 6,
 "refs": [],
-"line": 486
+"line": 588
 },
 "CSimpleFontString_GetJustifyV": {
 "files": [
@@ -149106,19 +149401,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"JustifyToString",
-"lua_pushstring"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetJustifyV"
 ],
 "strings": [],
-"consts": [
-"0x38",
-"1"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 6,
 "refs": [],
-"line": 502
+"line": 595
 },
 "CSimpleFontString_SetJustifyV": {
 "files": [
@@ -149127,25 +149419,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_isstring",
-"lua_tolstring",
-"StringToJustify",
 "FrameScript_Object::GetDisplayName",
-"luaL_error",
-"CSimpleFontString::SetJustifyV"
+"FontString_SetJustifyV"
 ],
-"strings": [
-"Usage: %s:SetJustifyV(\"justify\")"
-],
-"consts": [
-"0",
-"2"
-],
-"branches": 1,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 14,
+"lines": 6,
 "refs": [],
-"line": 512
+"line": 602
 },
 "CSimpleFontString_CanNonSpaceWrap": {
 "files": [
@@ -149167,7 +149450,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 528
+"line": 610
 },
 "CSimpleFontString_SetNonSpaceWrap": {
 "files": [
@@ -149190,7 +149473,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 542
+"line": 624
 },
 "CSimpleFontString_CanWordWrap": {
 "files": [
@@ -149212,7 +149495,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 555
+"line": 637
 },
 "CSimpleFontString_SetWordWrap": {
 "files": [
@@ -149235,7 +149518,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 569
+"line": 651
 },
 "CSimpleFontString_GetIndentedWordWrap": {
 "files": [
@@ -149244,21 +149527,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"StringToBOOL",
-"CSimpleFontString::SetIndentedWordWrap"
+"FrameScript_Object::GetDisplayName",
+"FontString_GetIndentedWordWrap"
 ],
 "strings": [],
-"consts": [
-"0",
-"0x20000",
-"1",
-"2"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 11,
+"lines": 6,
 "refs": [],
-"line": 582
+"line": 663
 },
 "CSimpleFontString_SetIndentedWordWrap": {
 "files": [
@@ -149267,20 +149545,16 @@
 "callseq": [
 "CSimpleFontString::GetObjectType",
 "FrameScript_GetObjectThis",
-"lua_pushnumber",
-"lua_pushnil"
+"FrameScript_Object::GetDisplayName",
+"FontString_SetIndentedWordWrap"
 ],
 "strings": [],
-"consts": [
-"0x20000",
-"1",
-"1.0"
-],
-"branches": 1,
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 12,
+"lines": 6,
 "refs": [],
-"line": 595
+"line": 670
 },
 "CSimpleFrame::GetObjectType": {
 "files": [
@@ -161467,7 +161741,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 5
+"line": 6
 },
 "StringToBlendMode": {
 "files": [
@@ -161488,7 +161762,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 10
+"line": 11
 },
 "StringToBOOL": {
 "files": [
@@ -161519,7 +161793,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 34
+"line": 35
 },
 "StringToClickAction": {
 "files": [
@@ -161728,7 +162002,7 @@
 "stub": false,
 "lines": 263,
 "refs": [],
-"line": 102
+"line": 103
 },
 "StringToDrawLayer": {
 "files": [
@@ -161749,7 +162023,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 366
+"line": 367
 },
 "FramePointToString": {
 "files": [
@@ -161774,7 +162048,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 391
+"line": 392
 },
 "StringToFramePoint": {
 "files": [
@@ -161799,7 +162073,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 407
+"line": 408
 },
 "StringToTooltipAnchor": {
 "files": [
@@ -161814,7 +162088,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 452
+"line": 453
 },
 "TooltipAnchorToString": {
 "files": [
@@ -161827,7 +162101,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 463
+"line": 464
 },
 "FrameStrataToString": {
 "files": [
@@ -161852,7 +162126,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 473
+"line": 474
 },
 "StringToFrameStrata": {
 "files": [
@@ -161876,7 +162150,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 493
+"line": 494
 },
 "StringToJustify": {
 "files": [
@@ -161905,7 +162179,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 521
+"line": 522
 },
 "StringToOrientation": {
 "files": [
@@ -161923,7 +162197,45 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 546
+"line": 547
+},
+"StringToFontFlags": {
+"files": [
+"src/ui/util.cpp"
+],
+"callseq": [
+"SStrStr"
+],
+"strings": [],
+"consts": [
+"0x0"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 585
+},
+"FontFlagsToString": {
+"files": [
+"src/ui/util.cpp"
+],
+"callseq": [
+"SStrPack",
+"SStrPack"
+],
+"strings": [
+", "
+],
+"consts": [
+"0",
+"0x40"
+],
+"branches": 3,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 598
 },
 "JustifyToString": {
 "files": [
@@ -161951,7 +162263,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 568
+"line": 616
 },
 "CStatus::~CStatus": {
 "files": [

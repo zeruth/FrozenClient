@@ -1148,6 +1148,46 @@ void CSimpleEditBox::SetHistoryLines(int32_t lines) {
     }
 }
 
+// ref: FUN_00962bb0
+void CSimpleEditBox::SetAutoFocus(int32_t autoFocus) {
+    this->m_autoFocus = autoFocus != 0;
+}
+
+// ref: FUN_00962bd0
+void CSimpleEditBox::SetCountInvisibleLetters(int32_t count) {
+    this->m_countInvisibleLetters = count != 0;
+}
+
+// ref: FUN_00962bf0
+void CSimpleEditBox::SetNumeric(int32_t numeric) {
+    this->m_numeric = numeric != 0;
+}
+
+// ref: FUN_00962c10
+void CSimpleEditBox::SetPassword(int32_t password) {
+    this->m_password = password != 0;
+}
+
+// ref: FUN_00962c30
+void CSimpleEditBox::SetAltArrowKeyMode(int32_t ignore) {
+    this->m_ignoreArrows = ignore != 0;
+}
+
+// Characters rather than bytes: a UTF-8 continuation byte is not a letter of its own.
+// TODO the reference counts visible letters here (FUN_00962ea0) when countInvisibleLetters is
+// clear, which skips the |c colour escapes; this counts every character either way.
+int32_t CSimpleEditBox::LetterCount() const {
+    int32_t n = 0;
+
+    for (const char* p = this->m_text; p && *p; p++) {
+        if ((*p & 0xC0) != 0x80) {
+            n++;
+        }
+    }
+
+    return n;
+}
+
 // ref: FUN_00965f20
 void CSimpleEditBox::SetMultiLine(int32_t enabled) {
     if (enabled) {

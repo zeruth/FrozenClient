@@ -1,119 +1,274 @@
 #include "ui/simple/CSimpleEditBoxScript.hpp"
 #include "ui/simple/CSimpleEditBox.hpp"
+#include "ui/simple/CSimpleFontStringScript.hpp"
+#include "ui/simple/CSimpleFontString.hpp"
 #include "util/Lua.hpp"
+#include "ui/Util.hpp"
 #include "util/Unimplemented.hpp"
 #include <cstdint>
 
+// ref: FUN_00975310
 int32_t CSimpleEditBox_SetFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetFontObject(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975370
 int32_t CSimpleEditBox_GetFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetFontObject(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009753d0
 int32_t CSimpleEditBox_SetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetFont(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975430
 int32_t CSimpleEditBox_GetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetFont(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975490
 int32_t CSimpleEditBox_SetTextColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetTextColor(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009754f0
 int32_t CSimpleEditBox_GetTextColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetTextColor(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975550
 int32_t CSimpleEditBox_SetShadowColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetShadowColor(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009755b0
 int32_t CSimpleEditBox_GetShadowColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetShadowColor(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975610
 int32_t CSimpleEditBox_SetShadowOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetShadowOffset(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975670
 int32_t CSimpleEditBox_GetShadowOffset(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetShadowOffset(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009756d0
 int32_t CSimpleEditBox_SetSpacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetSpacing(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975730
 int32_t CSimpleEditBox_GetSpacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetSpacing(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975790
 int32_t CSimpleEditBox_SetJustifyH(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetJustifyH(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009757f0
 int32_t CSimpleEditBox_GetJustifyH(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetJustifyH(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975850
 int32_t CSimpleEditBox_SetJustifyV(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetJustifyV(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009758b0
 int32_t CSimpleEditBox_GetJustifyV(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetJustifyV(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975910
 int32_t CSimpleEditBox_SetIndentedWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_SetIndentedWordWrap(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_00975970
 int32_t CSimpleEditBox_GetIndentedWordWrap(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    return FontString_GetIndentedWordWrap(editBox->GetDisplayName(), editBox->m_string, L);
 }
 
+// ref: FUN_009759d0
 int32_t CSimpleEditBox_SetAutoFocus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetAutoFocus(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_00975a20
 int32_t CSimpleEditBox_IsAutoFocus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_autoFocus) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00975a80
 int32_t CSimpleEditBox_SetCountInvisibleLetters(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetCountInvisibleLetters(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_00975ad0
 int32_t CSimpleEditBox_IsCountInvisibleLetters(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_countInvisibleLetters) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00975b30
 int32_t CSimpleEditBox_SetMultiLine(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetMultiLine(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_00975b80
 int32_t CSimpleEditBox_IsMultiLine(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_multiline) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00975be0
 int32_t CSimpleEditBox_SetNumeric(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetNumeric(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_00975c30
 int32_t CSimpleEditBox_IsNumeric(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_numeric) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00975c90
 int32_t CSimpleEditBox_SetPassword(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetPassword(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_00975ce0
 int32_t CSimpleEditBox_IsPassword(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_password) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleEditBox_SetBlinkSpeed(lua_State* L) {
@@ -221,36 +376,101 @@ int32_t CSimpleEditBox_ClearFocus(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00976490
 int32_t CSimpleEditBox_HasFocus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, editBox == CSimpleEditBox::s_currentFocus);
+
+    return 1;
 }
 
+// ref: FUN_009764e0
 int32_t CSimpleEditBox_SetMaxBytes(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_type(L, 2) != LUA_TNUMBER) {
+        return luaL_error(L, "Usage: %s:SetMaxBytes(max)", editBox->GetDisplayName());
+    }
+
+    int32_t max = static_cast<int32_t>(lua_tonumber(L, 2));
+    editBox->m_textLengthMax = max > 0 ? max - 1 : -1;
+
+    return 0;
 }
 
+// ref: FUN_00976580
 int32_t CSimpleEditBox_GetMaxBytes(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->m_textLengthMax + 1);
+
+    return 1;
 }
 
+// ref: FUN_009765d0
 int32_t CSimpleEditBox_SetMaxLetters(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_type(L, 2) != LUA_TNUMBER) {
+        return luaL_error(L, "Usage: %s:SetMaxLetters(max)", editBox->GetDisplayName());
+    }
+
+    editBox->m_textLettersMax = static_cast<int32_t>(lua_tonumber(L, 2));
+
+    return 0;
 }
 
+// ref: FUN_00976650
 int32_t CSimpleEditBox_GetMaxLetters(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->m_textLettersMax);
+
+    return 1;
 }
 
+// ref: FUN_009766a0
 int32_t CSimpleEditBox_GetNumLetters(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->LetterCount());
+
+    return 1;
 }
 
+// ref: FUN_00976720
 int32_t CSimpleEditBox_GetHistoryLines(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->m_historyLines);
+
+    return 1;
 }
 
+// ref: FUN_00976770
 int32_t CSimpleEditBox_SetHistoryLines(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isnumber(L, 2)) {
+        int32_t lines = static_cast<int32_t>(lua_tonumber(L, 2));
+
+        if (lines > 0) {
+            editBox->SetHistoryLines(lines);
+
+            return 0;
+        }
+    }
+
+    return luaL_error(L, "Usage: %s:SetHistoryLines(numLines)", editBox->GetDisplayName());
 }
 
 int32_t CSimpleEditBox_GetInputLanguage(lua_State* L) {
@@ -261,16 +481,39 @@ int32_t CSimpleEditBox_ToggleInputLanguage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00976890
 int32_t CSimpleEditBox_SetAltArrowKeyMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->SetAltArrowKeyMode(StringToBOOL(L, 2, 1));
+
+    return 0;
 }
 
+// ref: FUN_009768e0
 int32_t CSimpleEditBox_GetAltArrowKeyMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (editBox->m_ignoreArrows) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00976940
 int32_t CSimpleEditBox_IsInIMECompositionMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    // TODO the reference reports its IME composition state here; Frozen has no IME, so never.
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t CSimpleEditBox_SetCursorPosition(lua_State* L) {
@@ -299,8 +542,23 @@ int32_t CSimpleEditBox_GetCursorPosition(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00976a70
 int32_t CSimpleEditBox_GetUTF8CursorPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    // Characters before the cursor, not bytes: continuation bytes do not advance the count.
+    int32_t n = 0;
+
+    for (int32_t i = 0; i < editBox->m_cursorPos && editBox->m_text[i]; i++) {
+        if ((editBox->m_text[i] & 0xC0) != 0x80) {
+            n++;
+        }
+    }
+
+    lua_pushnumber(L, n);
+
+    return 1;
 }
 
 FrameScript_Method SimpleEditBoxMethods[NUM_SIMPLE_EDIT_BOX_SCRIPT_METHODS] = {

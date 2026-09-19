@@ -32,6 +32,10 @@ const char* FrameStrataToString(FRAME_STRATA strata);
 
 int32_t StringToFrameStrata(const char* string, FRAME_STRATA& strata);
 
+uint32_t StringToFontFlags(const char* string);
+
+const char* FontFlagsToString(uint32_t fontFlags);
+
 int32_t StringToJustify(const char* string, uint32_t& justify);
 
 const char* JustifyToString(uint32_t justify);

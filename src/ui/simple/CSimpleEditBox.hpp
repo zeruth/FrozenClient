@@ -128,7 +128,13 @@ class CSimpleEditBox : public CSimpleFrame, CSimpleFontedFrame {
         void RunOnTextSetScript(const char* a2);
         void SetCursorPosition(int32_t position);
         void SetHistoryLines(int32_t a2);
+        void SetAltArrowKeyMode(int32_t ignore);
+        void SetAutoFocus(int32_t autoFocus);
+        void SetCountInvisibleLetters(int32_t count);
         void SetMultiLine(int32_t enabled);
+        void SetNumeric(int32_t numeric);
+        void SetPassword(int32_t password);
+        int32_t LetterCount() const;
         void SetText(const char* text, const char* a3);
         void StartHighlight();
         void UpdateDirtyBits();

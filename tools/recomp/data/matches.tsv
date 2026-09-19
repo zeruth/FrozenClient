@@ -126,14 +126,13 @@ addr	how	frozen	evidence
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
 00482aa0	override	FrameScript_Object::GetDisplayName	
-00482d10	callorder	CSimpleFontStringAttributes::SetFont	same slot between linked calls in 00497070=CSimpleFont::LoadXML
+00482d10	callgraph	CSimpleFontString::SetFont	only unmatched callee of 004a3a50=FontString_SetFont
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
-00483750	callorder	CSimpleFontString::SetFont	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483890	annotated	CSimpleFontString::SetTextHeight	tag in src/ui/simple/CSimpleFontString.cpp
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483dd0	annotated	CSimpleFontString::SetShadowOffset	tag in src/ui/simple/CSimpleFontString.cpp
-00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject
+00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004859e0	callorder	CSimpleTexture::SetTexture	same slot between linked calls in 0048c6f0=CSimpleTexture_SetTexture
 00485f40	override	CSimpleTexture::LoadXML	
 00486b20	override	CSimpleFontString::UpdateString	
@@ -211,28 +210,28 @@ addr	how	frozen	evidence
 0048d730	table	CSimpleFontString_GetText	binding "GetText" in SimpleFontStringMethods ~ table 00ac1168
 0048d780	table	CSimpleFontString_SetText	binding "SetText" in SimpleFontStringMethods ~ table 00ac1168
 0048d800	table	CSimpleFontString_SetFormattedText	binding "SetFormattedText" in SimpleFontStringMethods ~ table 00ac1168
-0048d890	annotated	CSimpleFontString_GetTextColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048d890	table	CSimpleFontString_GetTextColor	binding "GetTextColor" in SimpleFontStringMethods ~ table 00ac1168
 0048d970	table	CSimpleFontString_SetTextColor	binding "SetTextColor" in SimpleFontStringMethods ~ table 00ac1168
-0048d9e0	annotated	CSimpleFontString_GetShadowColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048dab0	annotated	CSimpleFontString_SetShadowColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048db20	annotated	CSimpleFontString_GetShadowOffset	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048dbb0	annotated	CSimpleFontString_SetShadowOffset	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048dca0	annotated	CSimpleFontString_GetSpacing	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048dd00	annotated	CSimpleFontString_SetSpacing	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048d9e0	table	CSimpleFontString_GetShadowColor	binding "GetShadowColor" in SimpleFontStringMethods ~ table 00ac1168
+0048dab0	table	CSimpleFontString_SetShadowColor	binding "SetShadowColor" in SimpleFontStringMethods ~ table 00ac1168
+0048db20	table	CSimpleFontString_GetShadowOffset	binding "GetShadowOffset" in SimpleFontStringMethods ~ table 00ac1168
+0048dbb0	table	CSimpleFontString_SetShadowOffset	binding "SetShadowOffset" in SimpleFontStringMethods ~ table 00ac1168
+0048dca0	table	CSimpleFontString_GetSpacing	binding "GetSpacing" in SimpleFontStringMethods ~ table 00ac1168
+0048dd00	table	CSimpleFontString_SetSpacing	binding "SetSpacing" in SimpleFontStringMethods ~ table 00ac1168
 0048ddb0	annotated	CSimpleFontString_SetTextHeight	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048de90	table	CSimpleFontString_GetStringWidth	binding "GetStringWidth" in SimpleFontStringMethods ~ table 00ac1168
 0048df00	table	CSimpleFontString_GetStringHeight	binding "GetStringHeight" in SimpleFontStringMethods ~ table 00ac1168
-0048df70	annotated	CSimpleFontString_GetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048dfc0	annotated	CSimpleFontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048df70	table	CSimpleFontString_GetJustifyH	binding "GetJustifyH" in SimpleFontStringMethods ~ table 00ac1168
+0048dfc0	table	CSimpleFontString_GetJustifyV	binding "GetJustifyV" in SimpleFontStringMethods ~ table 00ac1168
 0048e010	annotated	CSimpleFontString_CanNonSpaceWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e080	annotated	CSimpleFontString_CanWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048e0e0	annotated	CSimpleFontString_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048e0e0	table	CSimpleFontString_SetIndentedWordWrap	binding "SetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1168
 0048e170	table	CSimpleTexture_SetTexCoord	binding "SetTexCoord" in SimpleTextureMethods ~ table 00ac1098
 0048e360	table	CSimpleFontString_SetJustifyH	binding "SetJustifyH" in SimpleFontStringMethods ~ table 00ac1168
-0048e430	annotated	CSimpleFontString_SetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048e430	table	CSimpleFontString_SetJustifyV	binding "SetJustifyV" in SimpleFontStringMethods ~ table 00ac1168
 0048e500	annotated	CSimpleFontString_SetNonSpaceWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e580	annotated	CSimpleFontString_SetWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048e600	annotated	CSimpleFontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
+0048e600	table	CSimpleFontString_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1168
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
 0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition, 004a0980=CSimpleFrame_SetResizable
 0048e9a0	override	CSimpleFrame::Raise	
@@ -252,7 +251,7 @@ addr	how	frozen	evidence
 00491020	override	CSimpleFrame::SetFrameStrata	
 004910a0	override	CSimpleFrame::SetFrameLevel	
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
-00492be0	callgraph	CSimpleFrame::GetAttribute	only unmatched callee of 0049f2d0=CSimpleFrame_GetAttribute
+00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
@@ -384,7 +383,25 @@ addr	how	frozen	evidence
 004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
+004a3790	annotated	FontString_SetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a38f0	annotated	FontString_GetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3a50	annotated	FontString_SetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3b60	annotated	FontString_GetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3c50	annotated	FontString_SetTextColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3ca0	annotated	FontString_GetTextColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3d40	annotated	FontString_SetShadowColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3dc0	annotated	FontString_GetShadowColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3e60	annotated	FontString_SetShadowOffset	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3f20	annotated	FontString_GetShadowOffset	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a3f90	annotated	FontString_SetSpacing	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a4040	annotated	FontString_GetSpacing	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a4080	annotated	FontString_GetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a40b0	annotated	FontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a40e0	annotated	FontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a4220	order	FrameScript_EventObject::GetName	binding table name GetName, in definition order in src/ui/FrameScript.cpp
+004a4930	annotated	FontString_SetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a49c0	annotated	FontString_SetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a4a50	annotated	FontString_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a6f60	order	ClientConnection::AccountLogin_Finish	binding table name AccountLogin_Finish, in definition order in src/net/connection/ClientConnection.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
 004a8240	table	CScriptObject_GetObjectType	binding "GetObjectType" in ScriptObjectMethods ~ table 00ac1ad0
@@ -433,7 +450,6 @@ addr	how	frozen	evidence
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
-004bd960	callorder	CSimpleFontString::GetFontName	same slot between linked calls in 00483750=CSimpleFontString::SetFont
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -1511,7 +1527,7 @@ addr	how	frozen	evidence
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
 0076ee30	callgraph	CScriptObject::GetName	only unmatched callee of 0048b540=CScriptObject::CreateName
-0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars
+0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars, 008151e0=FontFlagsToString
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
 0076f0d0	override	SStrToInt	
@@ -1519,7 +1535,7 @@ addr	how	frozen	evidence
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
 0076f1e0	callgraph	SStrTokenize	only unmatched callee of 007696d0=CVGxOverrideParse
 0076f640	override	SStrHash	
-0076f700	callorder	SStrStr	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0076f770	callgraph	SStrStr	only unmatched callee of 008151a0=StringToFontFlags
 0076f9e0	override	SStrDupA	
 0076fb80	override	SStrToFloat	
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
@@ -1611,8 +1627,10 @@ addr	how	frozen	evidence
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
 00814ff0	string	StringToBlendMode	unique "DISABLE"
 00815080	override	StringToJustify	
-008150d0	annotated	JustifyToString	tag in src/ui/Util.cpp
+008150d0	callgraph	JustifyToString	only unmatched callee of 004a4080=FontString_GetJustifyH, 004a40b0=FontString_GetJustifyV
 00815110	string	StringToOrientation	unique "HORIZONTAL"
+008151a0	annotated	StringToFontFlags	tag in src/ui/Util.cpp
+008151e0	annotated	FontFlagsToString	tag in src/ui/Util.cpp
 008154e0	override	StringToBOOL	
 00815500	override	StringToBOOL	
 00815600	string	LoadXML_Value	unique "AbsValue"
@@ -1641,7 +1659,6 @@ addr	how	frozen	evidence
 008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
-00817f90	callgraph	fprintf	only unmatched callee of 005302b0=Script_Stub_FlagTutorial, 005485b0=Script_Stub_GetWorldStateUIInfo, 00575820=Script_Stub_PlayDance
 00818010	callorder	FrameScript_GetVariable	same slot between linked calls in 00819d40=FrameScript_GetText
 00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
@@ -1720,7 +1737,7 @@ addr	how	frozen	evidence
 0084dab0	callgraph	lua_checkstack	only unmatched callee of 004df110=Script_GetRealmCategories, 0084f2c0=luaL_checkstack
 0084db10	callorder	lua_xmove	same slot between linked calls in 00854da0=luaB_cocreate
 0084db90	callorder	lua_newthread	same slot between linked calls in 00854da0=luaB_cocreate
-0084dbd0	callgraph	lua_gettop	only unmatched callee of 00851640=math_random, 008548f0=luaB_select
+0084dbd0	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 009764e0=CSimpleEditBox_SetMaxBytes, 009765d0=CSimpleEditBox_SetMaxLetters
 0084dbf0	override	lua_settop	
 0084dc50	callorder	lua_remove	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819ea0=FrameScript_Execute
@@ -1729,8 +1746,8 @@ addr	how	frozen	evidence
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter, 0061d040=CGTooltip_SetMinimumWidth
-0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin, 004e0c60=Script_CreateCharacter
+0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter
+0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
 0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL, 00854b20=luaB_newproxy
@@ -1783,7 +1800,7 @@ addr	how	frozen	evidence
 0084f560	callorder	luaL_addlstring	same slot between linked calls in 00853780=add_s
 0084f5c0	callorder	luaL_pushresult	same slot between linked calls in 008529a0=str_dump
 0084f610	callorder	luaL_addvalue	same slot between linked calls in 00853780=add_s
-0084f6a0	callorder	luaL_buffinit	same slot between linked calls in 00851c30=tconcat, 008528d0=str_char
+0084f6a0	callorder	luaL_buffinit	same slot between linked calls in 00851c30=tconcat
 0084f6c0	callorder	luaL_ref	same slot between linked calls in 00819bb0=FrameScript_Initialize
 0084f8b0	string	luaL_argerror	unique "bad argument #%d (%s)"
 0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 008529a0=str_dump, 008542c0=luaB_setmetatable
@@ -1975,6 +1992,7 @@ addr	how	frozen	evidence
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
+0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872c10	override	CShaderEffect::UpdateProjMatrix	
 00873480	override	CShaderEffect::SetTexMtx_Identity	
 00875d30	string	EnsureTargets	unique "ShadowCache"
@@ -2060,7 +2078,7 @@ addr	how	frozen	evidence
 0095f610	callgraph	CSimpleModel::SetSequenceTime	only unmatched callee of 009608b0=CSimpleModel_SetSequenceTime
 0095f800	string	CSimpleModel::LoadXML	unique "FogColor"
 0095f9f0	callgraph	CSimpleModel::SetCameraByIndex	only unmatched callee of 00960970=CSimpleModel_SetCamera
-00960420	callgraph	FrameScript_GetColor	only unmatched callee of 009611a0=CSimpleModel_SetFogColor
+00960420	callgraph	FrameScript_GetColor	only unmatched callee of 004a3d40=FontString_SetShadowColor, 009611a0=CSimpleModel_SetFogColor
 00960530	table	CSimpleModel_SetModel	binding "SetModel" in SimpleModelMethods ~ table 00b2cb10
 009605d0	table	CSimpleModel_GetModel	binding "GetModel" in SimpleModelMethods ~ table 00b2cb10
 00960620	table	CSimpleModel_ClearModel	binding "ClearModel" in SimpleModelMethods ~ table 00b2cb10
@@ -2090,7 +2108,11 @@ addr	how	frozen	evidence
 00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
 009628f0	string	CSimpleEditBox::GetScriptByName	unique "OnCharComposition"
-00963140	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 00976080=CSimpleEditBox_HighlightText
+00962bb0	annotated	CSimpleEditBox::SetAutoFocus	tag in src/ui/simple/CSimpleEditBox.cpp
+00962bd0	annotated	CSimpleEditBox::SetCountInvisibleLetters	tag in src/ui/simple/CSimpleEditBox.cpp
+00962bf0	annotated	CSimpleEditBox::SetNumeric	tag in src/ui/simple/CSimpleEditBox.cpp
+00962c10	annotated	CSimpleEditBox::SetPassword	tag in src/ui/simple/CSimpleEditBox.cpp
+00962c30	annotated	CSimpleEditBox::SetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBox.cpp
 00963350	callgraph	CSimpleEditBox::SetCursorPosition	only unmatched callee of 009769a0=CSimpleEditBox_SetCursorPosition
 00963390	callgraph	CSimpleEditBox::RunOnEditFocusLostScript	only unmatched callee of 009651f0=CSimpleEditBox::ClearKeyboardFocus
 00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
@@ -2183,6 +2205,7 @@ addr	how	frozen	evidence
 009737a0	table	CSimpleScrollingMessageFrame_GetMaxLines	binding "GetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 009737f0	table	CSimpleScrollingMessageFrame_SetMaxLines	binding "SetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973c40	table	CSimpleScrollingMessageFrame_SetHyperlinksEnabled	binding "SetHyperlinksEnabled" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
+009748f0	callgraph	fprintf	only unmatched callee of 00974a10=CSimpleHTML_SetFontObject, 00974a70=CSimpleHTML_GetFontObject, 00974ad0=CSimpleHTML_SetFont
 00974a10	table	CSimpleHTML_SetFontObject	binding "SetFontObject" in SimpleHTMLMethods ~ table 00b2d150
 00974a70	table	CSimpleHTML_GetFontObject	binding "GetFontObject" in SimpleHTMLMethods ~ table 00b2d150
 00974ad0	table	CSimpleHTML_SetFont	binding "SetFont" in SimpleHTMLMethods ~ table 00b2d150
@@ -2206,34 +2229,34 @@ addr	how	frozen	evidence
 009751a0	table	CSimpleHTML_GetHyperlinkFormat	binding "GetHyperlinkFormat" in SimpleHTMLMethods ~ table 00b2d150
 009751e0	table	CSimpleHTML_SetHyperlinksEnabled	binding "SetHyperlinksEnabled" in SimpleHTMLMethods ~ table 00b2d150
 00975240	table	CSimpleHTML_GetHyperlinksEnabled	binding "GetHyperlinksEnabled" in SimpleHTMLMethods ~ table 00b2d150
-00975310	table	CSimpleEditBox_SetFontObject	binding "SetFontObject" in SimpleEditBoxMethods ~ table 00b2d210
-00975370	table	CSimpleEditBox_GetFontObject	binding "GetFontObject" in SimpleEditBoxMethods ~ table 00b2d210
-009753d0	table	CSimpleEditBox_SetFont	binding "SetFont" in SimpleEditBoxMethods ~ table 00b2d210
-00975430	table	CSimpleEditBox_GetFont	binding "GetFont" in SimpleEditBoxMethods ~ table 00b2d210
-00975490	table	CSimpleEditBox_SetTextColor	binding "SetTextColor" in SimpleEditBoxMethods ~ table 00b2d210
-009754f0	table	CSimpleEditBox_GetTextColor	binding "GetTextColor" in SimpleEditBoxMethods ~ table 00b2d210
-00975550	table	CSimpleEditBox_SetShadowColor	binding "SetShadowColor" in SimpleEditBoxMethods ~ table 00b2d210
-009755b0	table	CSimpleEditBox_GetShadowColor	binding "GetShadowColor" in SimpleEditBoxMethods ~ table 00b2d210
-00975610	table	CSimpleEditBox_SetShadowOffset	binding "SetShadowOffset" in SimpleEditBoxMethods ~ table 00b2d210
-00975670	table	CSimpleEditBox_GetShadowOffset	binding "GetShadowOffset" in SimpleEditBoxMethods ~ table 00b2d210
-009756d0	table	CSimpleEditBox_SetSpacing	binding "SetSpacing" in SimpleEditBoxMethods ~ table 00b2d210
-00975730	table	CSimpleEditBox_GetSpacing	binding "GetSpacing" in SimpleEditBoxMethods ~ table 00b2d210
-00975790	table	CSimpleEditBox_SetJustifyH	binding "SetJustifyH" in SimpleEditBoxMethods ~ table 00b2d210
-009757f0	table	CSimpleEditBox_GetJustifyH	binding "GetJustifyH" in SimpleEditBoxMethods ~ table 00b2d210
-00975850	table	CSimpleEditBox_SetJustifyV	binding "SetJustifyV" in SimpleEditBoxMethods ~ table 00b2d210
-009758b0	table	CSimpleEditBox_GetJustifyV	binding "GetJustifyV" in SimpleEditBoxMethods ~ table 00b2d210
-00975910	table	CSimpleEditBox_SetIndentedWordWrap	binding "SetIndentedWordWrap" in SimpleEditBoxMethods ~ table 00b2d210
-00975970	table	CSimpleEditBox_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleEditBoxMethods ~ table 00b2d210
-009759d0	table	CSimpleEditBox_SetAutoFocus	binding "SetAutoFocus" in SimpleEditBoxMethods ~ table 00b2d210
-00975a20	table	CSimpleEditBox_IsAutoFocus	binding "IsAutoFocus" in SimpleEditBoxMethods ~ table 00b2d210
-00975a80	table	CSimpleEditBox_SetCountInvisibleLetters	binding "SetCountInvisibleLetters" in SimpleEditBoxMethods ~ table 00b2d210
-00975ad0	table	CSimpleEditBox_IsCountInvisibleLetters	binding "IsCountInvisibleLetters" in SimpleEditBoxMethods ~ table 00b2d210
-00975b30	table	CSimpleEditBox_SetMultiLine	binding "SetMultiLine" in SimpleEditBoxMethods ~ table 00b2d210
-00975b80	table	CSimpleEditBox_IsMultiLine	binding "IsMultiLine" in SimpleEditBoxMethods ~ table 00b2d210
-00975be0	table	CSimpleEditBox_SetNumeric	binding "SetNumeric" in SimpleEditBoxMethods ~ table 00b2d210
-00975c30	table	CSimpleEditBox_IsNumeric	binding "IsNumeric" in SimpleEditBoxMethods ~ table 00b2d210
-00975c90	table	CSimpleEditBox_SetPassword	binding "SetPassword" in SimpleEditBoxMethods ~ table 00b2d210
-00975ce0	table	CSimpleEditBox_IsPassword	binding "IsPassword" in SimpleEditBoxMethods ~ table 00b2d210
+00975310	annotated	CSimpleEditBox_SetFontObject	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975370	annotated	CSimpleEditBox_GetFontObject	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009753d0	annotated	CSimpleEditBox_SetFont	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975430	annotated	CSimpleEditBox_GetFont	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975490	annotated	CSimpleEditBox_SetTextColor	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009754f0	annotated	CSimpleEditBox_GetTextColor	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975550	annotated	CSimpleEditBox_SetShadowColor	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009755b0	annotated	CSimpleEditBox_GetShadowColor	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975610	annotated	CSimpleEditBox_SetShadowOffset	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975670	annotated	CSimpleEditBox_GetShadowOffset	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009756d0	annotated	CSimpleEditBox_SetSpacing	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975730	annotated	CSimpleEditBox_GetSpacing	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975790	annotated	CSimpleEditBox_SetJustifyH	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009757f0	annotated	CSimpleEditBox_GetJustifyH	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975850	annotated	CSimpleEditBox_SetJustifyV	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009758b0	annotated	CSimpleEditBox_GetJustifyV	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975910	annotated	CSimpleEditBox_SetIndentedWordWrap	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975970	annotated	CSimpleEditBox_GetIndentedWordWrap	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009759d0	annotated	CSimpleEditBox_SetAutoFocus	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975a20	annotated	CSimpleEditBox_IsAutoFocus	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975a80	annotated	CSimpleEditBox_SetCountInvisibleLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975ad0	annotated	CSimpleEditBox_IsCountInvisibleLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975b30	annotated	CSimpleEditBox_SetMultiLine	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975b80	annotated	CSimpleEditBox_IsMultiLine	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975be0	annotated	CSimpleEditBox_SetNumeric	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975c30	annotated	CSimpleEditBox_IsNumeric	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975c90	annotated	CSimpleEditBox_SetPassword	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975ce0	annotated	CSimpleEditBox_IsPassword	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00975d40	table	CSimpleEditBox_SetBlinkSpeed	binding "SetBlinkSpeed" in SimpleEditBoxMethods ~ table 00b2d210
 00975dc0	table	CSimpleEditBox_GetBlinkSpeed	binding "GetBlinkSpeed" in SimpleEditBoxMethods ~ table 00b2d210
 00975e10	table	CSimpleEditBox_Insert	binding "Insert" in SimpleEditBoxMethods ~ table 00b2d210
@@ -2248,22 +2271,22 @@ addr	how	frozen	evidence
 00976330	table	CSimpleEditBox_GetTextInsets	binding "GetTextInsets" in SimpleEditBoxMethods ~ table 00b2d210
 00976410	table	CSimpleEditBox_SetFocus	binding "SetFocus" in SimpleEditBoxMethods ~ table 00b2d210
 00976450	table	CSimpleEditBox_ClearFocus	binding "ClearFocus" in SimpleEditBoxMethods ~ table 00b2d210
-00976490	table	CSimpleEditBox_HasFocus	binding "HasFocus" in SimpleEditBoxMethods ~ table 00b2d210
-009764e0	table	CSimpleEditBox_SetMaxBytes	binding "SetMaxBytes" in SimpleEditBoxMethods ~ table 00b2d210
-00976580	table	CSimpleEditBox_GetMaxBytes	binding "GetMaxBytes" in SimpleEditBoxMethods ~ table 00b2d210
-009765d0	table	CSimpleEditBox_SetMaxLetters	binding "SetMaxLetters" in SimpleEditBoxMethods ~ table 00b2d210
-00976650	table	CSimpleEditBox_GetMaxLetters	binding "GetMaxLetters" in SimpleEditBoxMethods ~ table 00b2d210
-009766a0	table	CSimpleEditBox_GetNumLetters	binding "GetNumLetters" in SimpleEditBoxMethods ~ table 00b2d210
-00976720	table	CSimpleEditBox_GetHistoryLines	binding "GetHistoryLines" in SimpleEditBoxMethods ~ table 00b2d210
-00976770	table	CSimpleEditBox_SetHistoryLines	binding "SetHistoryLines" in SimpleEditBoxMethods ~ table 00b2d210
+00976490	annotated	CSimpleEditBox_HasFocus	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009764e0	annotated	CSimpleEditBox_SetMaxBytes	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976580	annotated	CSimpleEditBox_GetMaxBytes	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009765d0	annotated	CSimpleEditBox_SetMaxLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976650	annotated	CSimpleEditBox_GetMaxLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009766a0	annotated	CSimpleEditBox_GetNumLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976720	annotated	CSimpleEditBox_GetHistoryLines	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976770	annotated	CSimpleEditBox_SetHistoryLines	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976800	table	CSimpleEditBox_GetInputLanguage	binding "GetInputLanguage" in SimpleEditBoxMethods ~ table 00b2d210
 00976850	table	CSimpleEditBox_ToggleInputLanguage	binding "ToggleInputLanguage" in SimpleEditBoxMethods ~ table 00b2d210
-00976890	table	CSimpleEditBox_SetAltArrowKeyMode	binding "SetAltArrowKeyMode" in SimpleEditBoxMethods ~ table 00b2d210
-009768e0	table	CSimpleEditBox_GetAltArrowKeyMode	binding "GetAltArrowKeyMode" in SimpleEditBoxMethods ~ table 00b2d210
-00976940	table	CSimpleEditBox_IsInIMECompositionMode	binding "IsInIMECompositionMode" in SimpleEditBoxMethods ~ table 00b2d210
+00976890	annotated	CSimpleEditBox_SetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009768e0	annotated	CSimpleEditBox_GetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976940	annotated	CSimpleEditBox_IsInIMECompositionMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 009769a0	table	CSimpleEditBox_SetCursorPosition	binding "SetCursorPosition" in SimpleEditBoxMethods ~ table 00b2d210
 00976a20	table	CSimpleEditBox_GetCursorPosition	binding "GetCursorPosition" in SimpleEditBoxMethods ~ table 00b2d210
-00976a70	table	CSimpleEditBox_GetUTF8CursorPosition	binding "GetUTF8CursorPosition" in SimpleEditBoxMethods ~ table 00b2d210
+00976a70	annotated	CSimpleEditBox_GetUTF8CursorPosition	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976b40	table	CSimpleCheckbox_SetChecked	binding "SetChecked" in SimpleCheckboxMethods ~ table 00b2d3e4
 00976b90	table	CSimpleCheckbox_GetChecked	binding "GetChecked" in SimpleCheckboxMethods ~ table 00b2d3e4
 00976bf0	table	CSimpleCheckbox_GetCheckedTexture	binding "GetCheckedTexture" in SimpleCheckboxMethods ~ table 00b2d3e4

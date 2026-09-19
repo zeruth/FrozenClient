@@ -1,4 +1,5 @@
 #include "ui/Util.hpp"
+#include "gx/font/TextBlock.hpp"
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
 
@@ -565,6 +566,53 @@ int32_t StringToOrientation(const char* string, ORIENTATION& orientation) {
 }
 
 // ref: FUN_008150d0
+// The reference drives both directions from one table of {flag, name} pairs at 00a44050, in this
+// order, so THICKOUTLINE is listed after OUTLINE and a flag word of FONT_OUTLINE|FONT_THICKOUTLINE
+// spells out as "OUTLINE, THICKOUTLINE".
+struct FontFlagEntry {
+    uint32_t value;
+    const char* string;
+};
+
+static const FontFlagEntry s_fontFlagNames[] = {
+    { FONT_OUTLINE,      "OUTLINE" },
+    { FONT_THICKOUTLINE, "THICKOUTLINE" },
+    { FONT_MONOCHROME,   "MONOCHROME" },
+};
+
+// ref: FUN_008151a0
+// A substring test, not an equality test: "THICKOUTLINE" contains "OUTLINE", so it sets both bits.
+uint32_t StringToFontFlags(const char* string) {
+    uint32_t fontFlags = 0x0;
+
+    for (const auto& entry : s_fontFlagNames) {
+        if (SStrStr(string, entry.string)) {
+            fontFlags |= entry.value;
+        }
+    }
+
+    return fontFlags;
+}
+
+// ref: FUN_008151e0
+const char* FontFlagsToString(uint32_t fontFlags) {
+    static char s_fontFlagsBuffer[0x40];
+
+    s_fontFlagsBuffer[0] = '\0';
+
+    for (const auto& entry : s_fontFlagNames) {
+        if (entry.value & fontFlags) {
+            if (s_fontFlagsBuffer[0]) {
+                SStrPack(s_fontFlagsBuffer, ", ", sizeof(s_fontFlagsBuffer));
+            }
+
+            SStrPack(s_fontFlagsBuffer, entry.string, sizeof(s_fontFlagsBuffer));
+        }
+    }
+
+    return s_fontFlagsBuffer;
+}
+
 const char* JustifyToString(uint32_t justify) {
     static const struct {
         uint32_t value;
