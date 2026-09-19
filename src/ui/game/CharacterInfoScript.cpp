@@ -120,6 +120,10 @@ int32_t Script_GetInventoryItemTexture(lua_State* L) {
     return 1;
 }
 
+// TODO the reference gates this on two things beyond a zero durability: a flag bit on the item's
+// own record, and a second durability field at +0xdc that frozen's CGItemData does not carry. Both
+// have to be identified before this can answer anything but nil, and guessing "durability == 0"
+// would call an undamageable item broken.
 int32_t Script_GetInventoryItemBroken(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -136,6 +140,9 @@ int32_t Script_GetInventoryItemCount(lua_State* L) {
     return 1;
 }
 
+// TODO the item cache record holds the quality frozen would push, but the reference reads it only
+// when another field of the same record is zero, and which field that is has not been established.
+// Pushing the quality unconditionally would be right most of the time and wrong silently.
 int32_t Script_GetInventoryItemQuality(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -144,16 +151,38 @@ int32_t Script_GetInventoryItemCooldown(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005ea170
+// Two values, current and maximum. An empty slot answers with none at all rather than a pair of
+// zeros, which is how FrameXML tells "no item" from "an item at full durability".
 int32_t Script_GetInventoryItemDurability(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+    auto data = item ? item->Item() : nullptr;
+
+    if (!data || !data->maxDurability) {
+        return 0;
+    }
+
+    lua_pushnumber(L, data->durability);
+    lua_pushnumber(L, data->maxDurability);
+
+    return 2;
 }
 
 int32_t Script_GetInventoryItemLink(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005ea3e0
 int32_t Script_GetInventoryItemID(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+
+    if (!item) {
+        return 0;
+    }
+
+    lua_pushnumber(L, item->GetEntryID());
+
+    return 1;
 }
 
 int32_t Script_GetInventoryItemGems(lua_State* L) {

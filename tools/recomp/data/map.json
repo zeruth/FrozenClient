@@ -21672,17 +21672,17 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.4,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_GetInventoryItemDurability",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 132,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 245,
-  "status": "stub"
+  "status": "ported"
  },
  "005ea270": {
   "branchRatio": 0.167,
@@ -21701,20 +21701,20 @@
   "status": "stub"
  },
  "005ea3e0": {
-  "branchRatio": 0.182,
+  "branchRatio": 0.091,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.222,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_GetInventoryItemID",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 72,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 262,
-  "status": "stub"
+  "status": "ported"
  },
  "005ea4f0": {
   "branchRatio": 0.2,

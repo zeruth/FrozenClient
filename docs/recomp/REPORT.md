@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 14:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2679 (=) (9.9%) | 570.2k (10.3%) |
-| &nbsp;&nbsp;ported | 2077 (+2) | 415.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 571 (-2) | 120.0k |
+| &nbsp;&nbsp;ported | 2079 (+2) | 416.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 569 (-2) | 119.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **920 (=) (3.4%)** | **116.5k (2.1%)** |
 | unmapped | 24482 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11451, stubs 817 | |
+| frozen functions (src/, from PDB + source) | 11451, stubs 815 | |
 
-Match evidence: annotated 495, callgraph 185, callorder 125, cvar 30, handler 28, order 190, override 188, string 314, table 1124. Module anchors: 1479 assert strings.
+Match evidence: annotated 497, callgraph 185, callorder 125, cvar 30, handler 28, order 190, override 188, string 314, table 1122. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 13:58 -- mapped 2679, ported 2075, stub 573, spine mapped 392.
+Previous run: 2026-09-19 14:03 -- mapped 2679, ported 2077, stub 571, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 635 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 633 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -55,9 +55,9 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acde38 (GetNumBindings..) | 26 | `s_ScriptFunctions` | 0 | 24 |  / stubs: GetNumBindings, GetBinding, SetBinding, SetBindingSpell ... |
 | 00acf638 (CloseAuctionHouse..) | 30 | `s_ScriptFunctions` | 24 | 0 | CloseAuctionHouse, GetAuctionHouseDepositRate, CalculateAuctionDeposit, ClickAuctionSellItemButton, GetAuctionSellItemInfo, StartAuction ... |
 | 00ad0c30 (PetHasActionBar..) | 31 | `s_ScriptFunctions` | 24 | 0 | GetPetActionsUsable, GetPetActionSlotUsable, PickupPetAction, TogglePetAutocast, CastPetAction, PetPassiveMode ... |
-| 00ad1270 (GetInventorySlotInfo..) | 33 | `s_ScriptFunctions` | 0 | 24 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemBroken, GetInventoryItemQuality, GetInventoryItemCooldown ... |
 | 00ad93d8 (GetNumFriends..) | 31 | `s_ScriptFunctions` | 23 | 0 | GetFriendInfo, SetSelectedFriend, GetSelectedFriend, AddOrRemoveFriend, AddFriend, RemoveFriend ... |
 | 00acd488 (KBSetup_BeginLoading..) | 22 | `-` | 22 | 0 | KBSetup_BeginLoading, KBSetup_IsLoaded, KBSetup_GetLanguageCount, KBSetup_GetLanguageData, KBSetup_GetCategoryCount, KBSetup_GetCategoryData ... |
+| 00ad1270 (GetInventorySlotInfo..) | 33 | `s_ScriptFunctions` | 0 | 22 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemBroken, GetInventoryItemQuality, GetInventoryItemCooldown ... |
 | 00ad2060 (CameraZoomIn..) | 22 | `-` | 22 | 0 | CameraZoomIn, CameraZoomOut, MoveViewInStart, MoveViewInStop, MoveViewOutStart, MoveViewOutStop ... |
 | 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 21 | 0 | ContainerIDToInventoryID, GetContainerNumSlots, GetContainerItemInfo, GetContainerItemID, GetContainerItemLink, GetContainerItemCooldown ... |
 | 00a47c80 (assert..) | 20 | `-` | 20 | 0 | assert, collectgarbage, error, gcinfo, getfenv, getmetatable ... |
@@ -207,7 +207,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleFrame.cpp | 144 | 25.9k | 25 (17.4%) | 24.3% | 1 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 1 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 15 (10.8%) | 17.3% | 3 | 0 | 13 |
-| PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 17 | 0 | 8 |
+| PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 15 | 0 | 8 |
 | CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 6 | 2 | 7 |
 | TalentInfo.cpp | 141 | 24.1k | 3 (2.1%) | 1.8% | 0 | 0 | 1 |
 | MovementShared.cpp | 85 | 23.5k | 1 (1.2%) | 1.1% | 0 | 0 | 42 |
@@ -739,7 +739,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 12:33 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:37 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:41 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:52 | 2433 (9.0%) | 916 (3.4%) | 445 | 389/5530 | 1584/2512 | 553 |
@@ -764,6 +763,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 13:58 | 2679 (9.9%) | 920 (3.4%) | 573 | 392/5530 | 1791/2964 | 637 |
 | 2026-09-19 13:58 | 2679 (9.9%) | 920 (3.4%) | 573 | 392/5530 | 1791/2964 | 637 |
 | 2026-09-19 14:03 | 2679 (9.9%) | 920 (3.4%) | 571 | 392/5530 | 1791/2964 | 635 |
+| 2026-09-19 14:07 | 2679 (9.9%) | 920 (3.4%) | 569 | 392/5530 | 1791/2964 | 633 |
 
 ## How to move a row
 
