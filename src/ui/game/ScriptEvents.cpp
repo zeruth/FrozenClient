@@ -332,51 +332,73 @@ int32_t Script_UnitFactionGroup(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_0060d280
+// Takes TWO units and reports how the first regards the second. The reference resolves both and
+// answers nil unless both resolve, then pushes its internal reaction plus one.
 int32_t Script_UnitReaction(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitReaction(\"unit\")");
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: UnitReaction(\"unit\", \"otherUnit\")");
         return 0;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    // TODO faction reactions; 5 is neutral
-    lua_pushnumber(L, unit ? 5.0 : 0.0);
+    if (!unit || !other) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    // TODO the reaction itself is CGUnit_C::GetReaction (FUN_007251c0), 798 bytes of faction,
+    // PvP-flag and party/raid membership rules that are not ported. 5 is neutral on the Lua scale,
+    // which is the reference's answer for two unrelated units and the least wrong stand-in.
+    lua_pushnumber(L, 5.0);
 
     return 1;
 }
 
+// ref: FUN_0060d330
 int32_t Script_UnitIsEnemy(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitIsEnemy(\"unit\")");
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: UnitIsEnemy(\"unit\", \"otherUnit\")");
         return 0;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    // TODO faction reactions
+    // TODO the reference answers 1 when the reaction is below 2 and nil otherwise; without
+    // CGUnit_C::GetReaction (FUN_007251c0) nothing is hostile, which is the safer of the two
+    // wrong answers -- the opposite would paint every nameplate and portrait red.
+    (void)unit;
+    (void)other;
+
     lua_pushnil(L);
 
     return 1;
 }
 
+// ref: FUN_0060d3d0
 int32_t Script_UnitIsFriend(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitIsFriend(\"unit\")");
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: UnitIsFriend(\"unit\", \"otherUnit\")");
         return 0;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    // TODO faction reactions; everyone is a friend until they are ported
-    if (unit) {
-        lua_pushnumber(L, 1.0);
-    } else {
+    if (!unit || !other) {
         lua_pushnil(L);
+
+        return 1;
     }
+
+    // TODO gated on the reaction like UnitIsEnemy; until CGUnit_C::GetReaction is ported every
+    // resolvable pair reads as friendly, which is what this answered before and is the direction
+    // that keeps friendly UI friendly rather than turning it hostile.
+    lua_pushnumber(L, 1.0);
 
     return 1;
 }

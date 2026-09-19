@@ -1201,9 +1201,9 @@ addr	how	frozen	evidence
 0060cf20	table	Script_UnitIsPVPSanctuary	binding "UnitIsPVPSanctuary" in s_UnitFunctions ~ table 00ad21d8
 0060cfb0	table	Script_UnitIsPVPFreeForAll	binding "UnitIsPVPFreeForAll" in s_UnitFunctions ~ table 00ad21d8
 0060d0a0	table	Script_UnitFactionGroup	binding "UnitFactionGroup" in s_UnitFunctions ~ table 00ad21d8
-0060d280	table	Script_UnitReaction	binding "UnitReaction" in s_UnitFunctions ~ table 00ad21d8
-0060d330	table	Script_UnitIsEnemy	binding "UnitIsEnemy" in s_UnitFunctions ~ table 00ad21d8
-0060d3d0	table	Script_UnitIsFriend	binding "UnitIsFriend" in s_UnitFunctions ~ table 00ad21d8
+0060d280	annotated	Script_UnitReaction	tag in src/ui/game/ScriptEvents.cpp
+0060d330	annotated	Script_UnitIsEnemy	tag in src/ui/game/ScriptEvents.cpp
+0060d3d0	annotated	Script_UnitIsFriend	tag in src/ui/game/ScriptEvents.cpp
 0060d530	table	Script_UnitCanCooperate	binding "UnitCanCooperate" in s_UnitFunctions ~ table 00ad21d8
 0060d690	table	Script_UnitCanAssist	binding "UnitCanAssist" in s_UnitFunctions ~ table 00ad21d8
 0060d730	table	Script_UnitCanAttack	binding "UnitCanAttack" in s_UnitFunctions ~ table 00ad21d8

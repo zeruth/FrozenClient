@@ -19073,49 +19073,49 @@
   "status": "ported"
  },
  "0060d280": {
-  "branchRatio": 0.75,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitReaction",
-  "frozenSize": 133,
-  "how": "table",
+  "frozenSize": 184,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 168,
   "status": "ported"
  },
  "0060d330": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsEnemy",
-  "frozenSize": 103,
-  "how": "table",
+  "frozenSize": 130,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 159,
   "status": "ported"
  },
  "0060d3d0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsFriend",
-  "frozenSize": 130,
-  "how": "table",
+  "frozenSize": 184,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 350,
   "status": "ported"
@@ -19242,7 +19242,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitSelectionColor",
-  "frozenSize": 365,
+  "frozenSize": 410,
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 273,
