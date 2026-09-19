@@ -86,10 +86,13 @@ PDB will symbolize crashes to the wrong function, which has cost more than one d
 
 ## Running
 
-Frozen does not read MPQ archives yet. Run `Frozen.exe` with the working directory set to the root
-of a fully extracted 3.3.5a (build 12340) archive set. You can obtain archives to extract by
-installing World of Warcraft 3.3.5a from legally purchased original install media. Frozen ships no
-game data.
+Run `Frozen.exe` with the working directory set to the root of a 3.3.5a (build 12340) installation.
+It reads the MPQ archives out of `Data` directly: both the common layout and the older split one,
+locale archives, and the numbered patch archives applied in order. A fully extracted data set also
+works, and is what gets used when there is no `Data` directory at all.
+
+Obtain the archives by installing World of Warcraft 3.3.5a from legally purchased original install
+media. Frozen ships no game data.
 
 Point it at a 3.3.5a-compatible server to log in and enter the world.
 
