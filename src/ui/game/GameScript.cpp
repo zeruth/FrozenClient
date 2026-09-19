@@ -212,23 +212,28 @@ int32_t Script_GetFramerate(lua_State* L) {
 }
 
 int32_t Script_TogglePerformanceDisplay(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_TogglePerformancePause(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_TogglePerformanceValues(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_ResetPerformanceValues(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_GetDebugStats(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_IsDebugBuild(lua_State* L) {
@@ -356,56 +361,126 @@ int32_t Script_GetCVarAbsoluteMax(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00608560
 int32_t Script_GetWaterDetail(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
+// ref: FUN_005101d0
 int32_t Script_SetWaterDetail(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetWaterDetail(value)");
+    }
+
+    return 0;
 }
 
+// ref: FUN_00510200
 int32_t Script_GetFarclip(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("farclip");
+
+    lua_pushnumber(L, var->GetFloat());
+
+    return 1;
 }
 
+// ref: FUN_00510230
 int32_t Script_SetFarclip(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetFarclip(value)");
+
+        return 0;
+    }
+
+    auto var = CVar::Lookup("farclip");
+
+    char value[16];
+    SStrPrintf(value, sizeof(value), "%f", lua_tonumber(L, 1));
+
+    var->Set(value, true, false, false, true);
+
+    return 0;
 }
 
+// ref: FUN_005102b0
 int32_t Script_GetTexLodBias(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("texLodBias");
+
+    lua_pushnumber(L, var->GetFloat());
+
+    return 1;
 }
 
+// ref: FUN_005102e0
 int32_t Script_SetTexLodBias(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetTexLodBias(value)");
+
+        return 0;
+    }
+
+    auto var = CVar::Lookup("texLodBias");
+
+    char value[16];
+    SStrPrintf(value, sizeof(value), "%f", lua_tonumber(L, 1));
+
+    var->Set(value, true, false, false, true);
+
+    return 0;
 }
 
+// ref: FUN_00510390
 int32_t Script_SetBaseMip(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetBaseMip(value)");
+
+        return 0;
+    }
+
+    auto var = CVar::Lookup("baseMip");
+
+    char value[16];
+    SStrPrintf(value, sizeof(value), "%d", static_cast<int32_t>(lua_tonumber(L, 1) + 0.5));
+
+    var->Set(value, true, false, false, true);
+
+    return 0;
 }
 
+// ref: FUN_00510360
 int32_t Script_GetBaseMip(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("baseMip");
+
+    lua_pushnumber(L, 1.0f - var->GetFloat());
+
+    return 1;
 }
 
 int32_t Script_ToggleTris(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_TogglePortals(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_ToggleCollision(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_ToggleCollisionDisplay(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_TogglePlayerBounds(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 int32_t Script_Stuck(lua_State* L) {
