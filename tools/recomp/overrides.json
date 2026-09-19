@@ -1162,5 +1162,10 @@
     "frozen": "",
     "status": "unlinked",
     "note": "decompiled 2026-09-19: this is the character model's rotation setter -- it compares the new angle against the stored one, plays turn sequence 0xb or 0xc accordingly, raises a turning flag, stores the angle and records a now+100ms deadline. Frozen has no such method; Script_SetRotation writes CSimpleModel::m_facing directly. The callgraph matcher bound it to CGCharacterModelBase::GetObjectType, which it plainly is not."
+  },
+  "00517890": {
+    "frozen": "Script_GetFrameCPUUsage",
+    "status": "diverged",
+    "note": "the three validations are ported exactly; the measurement is not. The reference reads a per-frame script profiler through a virtual frozen has no counterpart for, so this answers zero time and zero calls -- nothing was measured, and FrameXML's profiling display divides by these, so nil would break it where zero reads as no cost."
   }
 }

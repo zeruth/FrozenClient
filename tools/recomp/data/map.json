@@ -2410,7 +2410,7 @@
   ],
   "frozen": "CSimpleRegion::SetVertexColor",
   "frozenSize": 155,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 149,
   "status": "ported"
@@ -2714,7 +2714,7 @@
   ],
   "frozen": "CLayoutFrame::ResizePending",
   "frozenSize": 209,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CScriptRegion.cpp",
   "refSize": 200,
   "status": "ported"
@@ -4026,7 +4026,7 @@
   ],
   "frozen": "CSimpleFrame::SetFrameFlag",
   "frozenSize": 31,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "CScriptRegion.cpp",
   "refSize": 37,
   "status": "ported"
@@ -4058,7 +4058,7 @@
   ],
   "frozen": "CSimpleFrame::SetFrameAlpha",
   "frozenSize": 25,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CScriptRegion.cpp",
   "refSize": 34,
   "status": "ported"
@@ -4154,7 +4154,7 @@
   ],
   "frozen": "CSimpleFrame::SetFrameScale",
   "frozenSize": 82,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CScriptRegion.cpp",
   "refSize": 76,
   "status": "ported"
@@ -6519,7 +6519,7 @@
   ],
   "frozen": "CBackdropGenerator::SetVertexColor",
   "frozenSize": 29,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 49,
   "status": "ported"
@@ -6535,7 +6535,7 @@
   ],
   "frozen": "CBackdropGenerator::SetBorderVertexColor",
   "frozenSize": 168,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 145,
   "status": "ported"
@@ -13930,20 +13930,20 @@
   "status": "ported"
  },
  "00517890": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetFrameCPUUsage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 211,
+  "how": "override",
   "module": "GameUI.cpp",
   "refSize": 275,
-  "status": "stub"
+  "status": "diverged"
  },
  "005179b0": {
   "branchRatio": 0.667,
@@ -30549,7 +30549,7 @@
   ],
   "frozen": "FrameStrataToString",
   "frozenSize": 23,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 43,
   "status": "ported"
@@ -31394,7 +31394,7 @@
   ],
   "frozen": "CSimpleFrame::GetObjectType",
   "frozenSize": 31,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "XMLTree.cpp",
   "refSize": 72,
   "status": "ported"
@@ -31410,7 +31410,7 @@
   ],
   "frozen": "FrameScript_Object::RegisterScriptEvent",
   "frozenSize": 179,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "XMLTree.cpp",
   "refSize": 135,
   "status": "ported"
@@ -31426,7 +31426,7 @@
   ],
   "frozen": "FrameScript_Object::UnregisterScriptEvent",
   "frozenSize": 185,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "XMLTree.cpp",
   "refSize": 93,
   "status": "ported"

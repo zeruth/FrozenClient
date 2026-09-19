@@ -150,7 +150,7 @@ addr	how	frozen	evidence
 00487250	callorder	CSimpleFontString::SetNonSpaceWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004872a0	override	CSimpleFontString::SetIndentedWordWrap	
 004873e0	string	CSimpleFontString::LoadXML	unique "FontString %s: Unable to load font file %s"
-00487a10	callgraph	CSimpleRegion::SetVertexColor	only unmatched callee of 004a25f0=CBackdropGenerator::SetVertexColor, 004a2630=CBackdropGenerator::SetBorderVertexColor
+00487a10	callorder	CSimpleRegion::SetVertexColor	same slot between linked calls in 0048c1c0=CSimpleTexture_SetVertexColor, 0048cf30=CSimpleFontString_SetVertexColor
 00487ab0	annotated	CSimpleFontString::GetTextColor	tag in src/ui/simple/CSimpleFontString.cpp
 00487b00	callgraph	CSimpleRegion::SetVertexGradient	only unmatched callee of 0048c310=CSimpleTexture_SetGradientAlpha
 00487bf0	override	CSimpleRegion::Hide	
@@ -169,7 +169,7 @@ addr	how	frozen	evidence
 00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
-004898b0	callgraph	CLayoutFrame::ResizePending	only unmatched callee of 004d8860=CGlueMgr::HandleDisplaySizeChanged
+004898b0	sticky	CLayoutFrame::ResizePending	held from the previous run, where it was callgraph
 00489de0	override	CLayoutFrame::Resize	
 0048a130	annotated	CSimpleFrame::SetClampedToScreen	tag in src/ui/simple/CSimpleFrame.cpp
 0048a260	annotated	CLayoutFrame::SetPoint	tag in src/ui/CLayoutFrame.cpp
@@ -251,15 +251,15 @@ addr	how	frozen	evidence
 0048e580	annotated	CSimpleFontString_SetWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e600	table	CSimpleFontString_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1118
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
-0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
+0048e970	callorder	CSimpleFrame::SetFrameFlag	same slot between linked calls in 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
 0048e9a0	override	CSimpleFrame::Raise	
-0048ea10	callgraph	CSimpleFrame::SetFrameAlpha	only unmatched callee of 0049f9e0=CSimpleFrame_SetAlpha
+0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was callgraph
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
-0048f580	callgraph	CSimpleFrame::SetFrameScale	only unmatched callee of 0049f820=CSimpleFrame_SetScale, 0054ed80=Script_SetupFullscreenScale
+0048f580	sticky	CSimpleFrame::SetFrameScale	held from the previous run, where it was callgraph
 0048f5d0	annotated	CSimpleFrame::SetDepth	tag in src/ui/simple/CSimpleFrame.cpp
 0048f620	override	CSimpleFrame::Hide	
 0048f660	override	CSimpleFrame::Show	
@@ -407,8 +407,8 @@ addr	how	frozen	evidence
 004a2240	table	CSimpleFrame_CreateFontString	binding "CreateFontString" in SimpleFrameMethods ~ table 00ac1550
 004a2490	table	CSimpleFrame_GetNumChildren	binding "GetNumChildren" in SimpleFrameMethods ~ table 00ac1550
 004a2510	table	CSimpleFrame_GetChildren	binding "GetChildren" in SimpleFrameMethods ~ table 00ac1550
-004a25f0	callgraph	CBackdropGenerator::SetVertexColor	only unmatched callee of 004a1a80=CSimpleFrame_SetBackdropColor
-004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
+004a25f0	callorder	CBackdropGenerator::SetVertexColor	same slot between linked calls in 004a1a80=CSimpleFrame_SetBackdropColor
+004a2630	callorder	CBackdropGenerator::SetBorderVertexColor	same slot between linked calls in 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
 004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
@@ -870,7 +870,7 @@ addr	how	frozen	evidence
 005172e0	table	Script_IsHarmfulItem	binding "IsHarmfulItem" in s_ScriptFunctions ~ table 00ac80b0
 005173e0	table	Script_IsConsumableItem	binding "IsConsumableItem" in s_ScriptFunctions ~ table 00ac80b0
 00517530	table	Script_IsDressableItem	binding "IsDressableItem" in s_ScriptFunctions ~ table 00ac80b0
-00517890	table	Script_GetFrameCPUUsage	binding "GetFrameCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00517890	override	Script_GetFrameCPUUsage	
 005179b0	table	Script_GetAddOnDependencies	binding "GetAddOnDependencies" in s_ScriptFunctions ~ table 00ac80b0
 00517aa0	table	Script_GetMirrorTimerProgress	binding "GetMirrorTimerProgress" in s_ScriptFunctions ~ table 00ac80b0
 00517b50	annotated	Script_SetTaxiBenchmarkMode	tag in src/ui/game/GameScript.cpp
@@ -1915,7 +1915,7 @@ addr	how	frozen	evidence
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
 00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML, 004873e0=CSimpleFontString::LoadXML, 0048f400=CSimpleFrame::PostLoadXML_Frames
 00814e40	override	StringToFrameStrata	
-00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
+00814e90	callorder	FrameStrataToString	same slot between linked calls in 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
 00814f60	callorder	StringToDrawLayer	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture, 004a2240=CSimpleFrame_CreateFontString
 00814fb0	annotated	DrawLayerToString	tag in src/ui/Util.cpp
@@ -1932,7 +1932,7 @@ addr	how	frozen	evidence
 00815600	string	LoadXML_Value	unique "AbsValue"
 00815740	string	LoadXML_Dimensions	unique "AbsDimension"
 00815910	string	LoadXML_Insets	unique "AbsInset"
-00815c30	callorder	LoadXML_Color	same slot between linked calls in 004a2780=CBackdropGenerator::LoadXML, 00815df0=LoadXML_Gradient
+00815c30	callorder	LoadXML_Color	same slot between linked calls in 00815df0=LoadXML_Gradient
 00815df0	string	LoadXML_Gradient	unique "MaxColor"
 00815f40	override	LoadXML_Texture	
 00815fa0	override	LoadXML_String	
@@ -1968,9 +1968,9 @@ addr	how	frozen	evidence
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
-0081b380	callgraph	FrameScript_Object::RegisterScriptEvent	only unmatched callee of 0049efe0=CSimpleFrame_RegisterEvent
-0081b410	callgraph	FrameScript_Object::UnregisterScriptEvent	only unmatched callee of 0049f060=CSimpleFrame_UnregisterEvent
+0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was callgraph
+0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was callgraph
+0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was callgraph
 0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d9bd0=CGlueMgr::EnterWorld
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848

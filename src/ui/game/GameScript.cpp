@@ -2275,8 +2275,38 @@ int32_t Script_GetFunctionCPUUsage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00517890
+// Two values, time and call count, for one frame's script handlers.
+//
+// The three validations are ported exactly -- a non-table argument, a table with no frame in it,
+// and a table holding something that is not a frame each have their own message. The measurement
+// is not: the reference reads a per-frame profiler through a virtual frozen has no counterpart for,
+// and frozen does not profile scripts at all.
+//
+// So this answers zero time and zero calls. That is not a placeholder for a real number: nothing
+// was measured, and FrameXML's profiling display divides by these, so nil would break it where zero
+// reads as "no cost recorded". Registered as diverged all the same.
 int32_t Script_GetFrameCPUUsage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        return luaL_error(L, "Usage: GetFrameCPUUsage(frame[, includeChildren])");
+    }
+
+    lua_rawgeti(L, 1, 0);
+    auto frame = static_cast<CSimpleFrame*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!frame) {
+        return luaL_error(L, "GetFrameCPUUsage(): Couldn't find 'this' in frame object");
+    }
+
+    if (!frame->IsA(CSimpleFrame::GetObjectType())) {
+        return luaL_error(L, "GetFrameCPUUsage(): Wrong object type, expected frame");
+    }
+
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    return 2;
 }
 
 int32_t Script_GetEventCPUUsage(lua_State* L) {

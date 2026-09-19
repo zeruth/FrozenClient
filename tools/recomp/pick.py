@@ -18,10 +18,18 @@ CharTitles.dbc at 00ad3390, neither of which frozen has. Both scored 100% covera
 A candidate with 100% coverage and zero risky globals is usually a morning's work. One with risky
 globals needs whatever those globals are first, and the address is printed so it can be chased.
 
-Caveats worth knowing. The binding-table matcher offers an address per NAME, and a name that
-appears in several method tables can resolve to the wrong class -- check the object-type global in
-the body against docs/ref/INDEX.txt before tagging anything. And a global here is only *suspicious*:
-some of them are constants the port would not need at all.
+**The class column** answers the same question automatically for widget files: a widget script
+function reads its class's object-type id, and the expected id per file is catalogued, so the column
+reads "ok" or "WRONG:<global>". It has caught five mis-offers.
+
+It is blank for GameScript.cpp and the other global-function files, which have no object-type global
+-- and that is where the wrong GetCVarAbsoluteMin was tagged on 2026-09-19. The **entry column** is
+the candidate's address in the reference's binding table, printed so the run it sits in can be
+compared by eye against a binding known to belong to the same table. It is not a verdict: frozen's
+aggregate files draw from several reference tables, so a span test over a file's tagged entries does
+not discriminate, which was tried and dropped rather than shipped as false confidence.
+
+A global in the last column is only *suspicious*: some are constants the port would not need at all.
 """
 
 import io
@@ -113,9 +121,13 @@ def main():
     mapped = json.load(io.open(os.path.join(DATA, 'map.json'), encoding='utf-8'))
 
     tables = {}
+    entry_of = {}
     for line in io.open(os.path.join(DATA, 'ref-tables.jsonl'), encoding='utf-8'):
         d = json.loads(line)
         tables.setdefault(d['name'], set()).add(d['fn'])
+        entry_of.setdefault(d['fn'], set()).add(int(d['table'], 16))
+
+
 
     ro = rdata_ranges()
 
@@ -152,32 +164,36 @@ def main():
                     known = sum(1 for c in callees if c in mapped)
                     globals_ = sorted({d for d in r.get('data', []) if risky(d)})
 
-                    # Does this function belong to the class whose file it was offered for?
+                    # Does this function belong where it was offered? Two independent checks: the
+                    # object-type global it reads (widgets only), and whether its method-table entry
+                    # falls in the run this file's already-tagged bindings occupy (any file).
                     base = os.path.basename(rel)
                     expect = CLASS_GLOBAL.get(base)
                     seen_globals = {d for d in r.get('data', []) if d in ALL_CLASS_GLOBALS}
-                    if not expect or not seen_globals:
-                        verdict = ''
-                    elif expect in seen_globals:
-                        verdict = 'ok'
-                    else:
-                        verdict = 'WRONG:' + sorted(seen_globals)[0]
+
+                    verdict = ''
+                    if expect and seen_globals:
+                        verdict = 'ok' if expect in seen_globals else 'WRONG:' + sorted(seen_globals)[0]
+
+                    entries = sorted(entry_of.get(addr, ()))
+                    entry = '%08x' % entries[0] if entries else ''
 
                     rows.append((-(known / len(callees)), len(globals_), r['size'],
-                                 m.group(2), addr, base, globals_, verdict))
+                                 m.group(2), addr, base, globals_, verdict, entry))
 
     rows.sort()
     seen = set()
-    print('%-5s %-6s %-5s %-30s %-9s %-34s %-16s %s'
-          % ('cover', 'risky', 'size', 'name', 'addr', 'file', 'class', 'globals'))
+    print('%-5s %-6s %-5s %-30s %-9s %-9s %-34s %-16s %s'
+          % ('cover', 'risky', 'size', 'name', 'addr', 'entry', 'file', 'class', 'globals'))
 
     shown = 0
-    for cover, nglobals, size, name, addr, base, globals_, verdict in rows:
+    for cover, nglobals, size, name, addr, base, globals_, verdict, entry in rows:
         if (name, base) in seen:
             continue
         seen.add((name, base))
-        print('%4.0f%% %6d %5d  %-30s %s  %-34s %-16s %s'
-              % (-cover * 100, nglobals, size, name, addr, base, verdict, ' '.join(globals_[:4])))
+        print('%4.0f%% %6d %5d  %-30s %s  %-9s %-34s %-16s %s'
+              % (-cover * 100, nglobals, size, name, addr, entry, base, verdict,
+                 ' '.join(globals_[:4])))
         shown += 1
         if shown >= 40:
             break
