@@ -5,6 +5,7 @@
 #include "gx/Texture.hpp"
 #include "model/CM2Lighting.hpp"
 #include <cstdint>
+#include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Vector.hpp>
 
@@ -30,6 +31,21 @@ struct CM2ModelCall {
     CM2ModelCall* modelCallNext;
     uint32_t time;
     uint32_t args[8];
+};
+
+// Everything CM2Model::GetSequenceInfo reports about one animation: how the fallback chain resolved
+// the requested id, the sequence header the model would actually play, and that sequence's authored
+// bounding box. The blob-shadow pass takes the box out of here as the doodad footprint, so the
+// footprint follows the animation rather than being a fixed radius.
+struct M2SequenceInfo {
+    uint32_t flags;
+    uint32_t duration;
+    float moveSpeed;
+    CAaBox extent;
+    C3Vector center;
+    float radius;
+    uint32_t sequenceId;
+    uint32_t playMode;
 };
 
 class CM2Model {
@@ -82,6 +98,11 @@ class CM2Model {
         CM2Model* model30 = nullptr;
         CM2ModelCall* m_modelCallList = nullptr;
         CM2ModelCall** m_modelCallTail = nullptr;
+
+        // The value CM2Scene::uint14 had when this model was last animated. AnimateMT stamps it on
+        // the way out and Animate() reads it to tell "already done this frame" from "needs work".
+        uint32_t m_animCounter = 0;
+
         CM2Model** m_animatePrev = nullptr;
         CM2Model* m_animateNext = nullptr;
         CM2Model* m_attachParent = nullptr;
@@ -177,6 +198,7 @@ class CM2Model {
         CAaBox& GetBoundingBox(CAaBox& bounds);
         HCAMERA GetCameraByIndex(uint32_t index);
         C3Vector GetPosition();
+        void GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info);
         bool HasAttachment(uint32_t id);
         int32_t Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, uint32_t flags);
         int32_t InitializeLoaded();

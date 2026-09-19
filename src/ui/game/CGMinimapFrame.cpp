@@ -4,6 +4,14 @@
 int32_t CGMinimapFrame::s_metatable;
 int32_t CGMinimapFrame::s_objectType;
 
+HTEXTURE CGMinimapFrame::s_staticPOIArrowTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_corpsePOIArrowTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_poiArrowTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_maskTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_classBlipTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_blipTexture = nullptr;
+HTEXTURE CGMinimapFrame::s_iconTexture = nullptr;
+
 CSimpleFrame* CGMinimapFrame::Create(CSimpleFrame* parent) {
     // TODO use CDataAllocator
 

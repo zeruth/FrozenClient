@@ -1547,6 +1547,20 @@ void CSimpleFrame::SetClampedToScreen(int32_t clamped) {
     this->Resize(0);
 }
 
+// ref: FUN_0048f5d0
+// The epsilon early-out is conditional: the reference tests it only when force is clear, so a
+// forced call assigns and updates even when the depth has not moved. The flag is then handed
+// straight to UpdateDepth. CSimpleFrame::LoadXML inlines the same body for the <Frame depth="...">
+// attribute and passes 0 there.
+void CSimpleFrame::SetDepth(float depth, int32_t force) {
+    if (!force && !NotEqual(depth, this->m_depth, WHOA_EPSILON_1)) {
+        return;
+    }
+
+    this->m_depth = depth;
+    this->UpdateDepth(force != 0);
+}
+
 // ref: FUN_00489690
 // The reference's +0x40 dword: clear bits 17-18, set bit 16 -- CLayoutFrame::m_flags 0x600 / 0x100
 // -- then the protect flag 0x200 on this frame (a virtual at vtable+0xc in the reference; frozen's

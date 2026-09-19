@@ -896,7 +896,7 @@
   "branchRatio": 0.632,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.37,
+  "fidelity": 0.519,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1220,6 +1220,22 @@
   "how": "callgraph",
   "module": "OggDecompress.cpp",
   "refSize": 156,
+  "status": "ported"
+ },
+ "00464580": {
+  "branchRatio": 1.0,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/random/CRandom.cpp",
+   "lib/typhoon/tempest/random/crandom.cpp"
+  ],
+  "frozen": "CRandom::uint32",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 182,
   "status": "ported"
  },
  "00464640": {
@@ -1920,6 +1936,38 @@
   "refSize": 60,
   "status": "ported"
  },
+ "00481640": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::SetTexCoord",
+  "frozenSize": 175,
+  "how": "callgraph",
+  "module": "EvtTimer.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "00481700": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::SetShader",
+  "frozenSize": 22,
+  "how": "callgraph",
+  "module": "EvtTimer.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "004818f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -2014,6 +2062,37 @@
   "how": "string",
   "module": "CSimpleRender.cpp",
   "refSize": 56,
+  "status": "ported"
+ },
+ "004831d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lapi.c"
+  ],
+  "frozen": "lua_gettop",
+  "frozenSize": 13,
+  "how": "callgraph",
+  "module": "CSimpleRender.cpp",
+  "refSize": 80,
+  "status": "ported"
+ },
+ "00483290": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::GetImageModePixelShader",
+  "frozenSize": 58,
+  "how": "callgraph",
+  "module": "CSimpleRender.cpp",
+  "refSize": 42,
   "status": "ported"
  },
  "00483890": {
@@ -2977,42 +3056,42 @@
   "status": "ported"
  },
  "0048c7f0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetTexCoord",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 118,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 107,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c860": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetRotation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 422,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 317,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c9a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.571,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
@@ -3025,116 +3104,116 @@
   "status": "ported"
  },
  "0048ca30": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_IsDesaturated",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 111,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 109,
-  "status": "stub"
+  "status": "ported"
  },
  "0048caa0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetNonBlocking",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 79,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 82,
-  "status": "stub"
+  "status": "ported"
  },
  "0048cb00": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetNonBlocking",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 94,
-  "status": "stub"
+  "status": "ported"
  },
  "0048cb60": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetHorizTile",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 86,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 89,
-  "status": "stub"
+  "status": "ported"
  },
  "0048cbc0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetHorizTile",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 98,
-  "status": "stub"
+  "status": "ported"
  },
  "0048cc30": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetVertTile",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 86,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 91,
-  "status": "stub"
+  "status": "ported"
  },
  "0048cc90": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetVertTile",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 98,
-  "status": "stub"
+  "status": "ported"
  },
  "0048d0f0": {
   "branchRatio": 0.4,
@@ -3824,6 +3903,22 @@
   "refSize": 76,
   "status": "ported"
  },
+ "0048f5d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::SetDepth",
+  "frozenSize": 62,
+  "how": "annotated",
+  "module": "CScriptRegion.cpp",
+  "refSize": 65,
+  "status": "ported"
+ },
  "0048f620": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -3930,7 +4025,7 @@
    "src/ui/simple/csimpleframe.cpp"
   ],
   "frozen": "CSimpleFrame::SetBackdrop",
-  "frozenSize": 0,
+  "frozenSize": 72,
   "how": "override",
   "module": "CSimpleFrame.cpp",
   "refSize": 85,
@@ -5822,36 +5917,36 @@
   "status": "ported"
  },
  "004a12d0": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.857,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.868,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_GetBackdrop",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 836,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 718,
-  "status": "stub"
+  "status": "ported"
  },
  "004a15a0": {
-  "branchRatio": 0.133,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.733,
+  "constOverlap": 0.04,
+  "faithful": true,
+  "fidelity": 0.914,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_SetBackdrop",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 1258,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 1022,
-  "status": "stub"
+  "status": "ported"
  },
  "004a19a0": {
   "branchRatio": 0.333,
@@ -5918,52 +6013,52 @@
   "status": "ported"
  },
  "004a1c40": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_SetDepth",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 128,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 127,
-  "status": "stub"
+  "status": "ported"
  },
  "004a1cc0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_GetDepth",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 74,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 89,
-  "status": "stub"
+  "status": "ported"
  },
  "004a1d20": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_GetEffectiveDepth",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 82,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "004a1d80": {
   "branchRatio": 0.0,
@@ -5982,20 +6077,20 @@
   "status": "ported"
  },
  "004a1e00": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_IsIgnoringDepth",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 94,
-  "status": "stub"
+  "status": "ported"
  },
  "004a2010": {
   "branchRatio": 0.533,
@@ -6075,6 +6170,22 @@
   "how": "string",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 587,
+  "status": "ported"
+ },
+ "004a29d0": {
+  "branchRatio": 0.692,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/ui/CBackdropGenerator.cpp",
+   "src/ui/cbackdropgenerator.cpp"
+  ],
+  "frozen": "CBackdropGenerator::Generate",
+  "frozenSize": 636,
+  "how": "callorder",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 868,
   "status": "ported"
  },
  "004a2d40": {
@@ -7151,6 +7262,22 @@
   "refSize": 416,
   "status": "ported"
  },
+ "004ba060": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadWait",
+  "frozenSize": 532,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 260,
+  "status": "ported"
+ },
  "004ba170": {
   "branchRatio": 0.167,
   "constOverlap": 0.067,
@@ -7638,7 +7765,7 @@
    "src/object/client/messagehandlers.cpp"
   ],
   "frozen": "PostInitObject",
-  "frozenSize": 684,
+  "frozenSize": 696,
   "how": "string",
   "module": "ObjectMgrClient.cpp",
   "refSize": 522,
@@ -8789,7 +8916,7 @@
   "branchRatio": 0.625,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -9489,6 +9616,38 @@
   "refSize": 127,
   "status": "ported"
  },
+ "004e81c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGTabardModelFrameScript.cpp",
+   "src/ui/game/cgtabardmodelframescript.cpp"
+  ],
+  "frozen": "TabardBackgroundFileName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
+ "004e8210": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGTabardModelFrameScript.cpp",
+   "src/ui/game/cgtabardmodelframescript.cpp"
+  ],
+  "frozen": "TabardEmblemFileName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "004eacd0": {
   "branchRatio": 0.375,
   "constOverlap": 0.0,
@@ -9643,7 +9802,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldUpdate",
-  "frozenSize": 642,
+  "frozenSize": 645,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1493,
@@ -12298,8 +12457,8 @@
  "005302b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -13452,8 +13611,8 @@
  "005485b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -15256,8 +15415,8 @@
  "00575820": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -15271,8 +15430,8 @@
  "0057b9e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -15297,7 +15456,7 @@
   "how": "table",
   "module": "QuestTextParser.cpp",
   "refSize": 52,
-  "status": "ported"
+  "status": "stub"
  },
  "0057bf90": {
   "branchRatio": 0.5,
@@ -15313,7 +15472,7 @@
   "how": "table",
   "module": "QuestTextParser.cpp",
   "refSize": 52,
-  "status": "ported"
+  "status": "stub"
  },
  "0057bfd0": {
   "branchRatio": 0.5,
@@ -15329,13 +15488,13 @@
   "how": "table",
   "module": "QuestTextParser.cpp",
   "refSize": 97,
-  "status": "ported"
+  "status": "stub"
  },
  "0057c090": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -15376,20 +15535,20 @@
   "how": "table",
   "module": "MinimapFrame.cpp",
   "refSize": 191,
-  "status": "ported"
+  "status": "stub"
  },
  "0057e1c0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPlayerTextureHeight",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 173,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 187,
   "status": "ported"
@@ -15397,15 +15556,15 @@
  "0057e280": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPlayerTextureWidth",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 173,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 187,
   "status": "ported"
@@ -15424,7 +15583,7 @@
   "how": "table",
   "module": "MinimapFrame.cpp",
   "refSize": 622,
-  "status": "ported"
+  "status": "stub"
  },
  "0057efe0": {
   "branchRatio": 1.0,
@@ -15440,116 +15599,116 @@
   "how": "table",
   "module": "MinimapFrame.cpp",
   "refSize": 390,
-  "status": "ported"
+  "status": "stub"
  },
  "00583860": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetMaskTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
-  "status": "stub"
+  "status": "ported"
  },
  "00583980": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPOIArrowTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
   "status": "ported"
  },
  "00583aa0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetStaticPOIArrowTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
   "status": "ported"
  },
  "00583bc0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetCorpsePOIArrowTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
   "status": "ported"
  },
  "00583ce0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetIconTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
   "status": "ported"
  },
  "00583e00": {
-  "branchRatio": 0.222,
+  "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetBlipTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 326,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 338,
   "status": "ported"
  },
  "00583f60": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetClassBlipTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
   "status": "ported"
@@ -15794,8 +15953,8 @@
  "00588e60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -15809,8 +15968,8 @@
  "0058aa60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -16370,8 +16529,8 @@
  "00598e10": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -16396,68 +16555,68 @@
   "how": "table",
   "module": "DressUpModelFrame.cpp",
   "refSize": 58,
-  "status": "ported"
+  "status": "stub"
  },
  "005991d0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTabardModelFrameScript.cpp",
    "src/ui/game/cgtabardmodelframescript.cpp"
   ],
   "frozen": "CGTabardModelFrame_GetUpperBackgroundFileName",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 150,
+  "how": "annotated",
   "module": "DressUpModelFrame.cpp",
   "refSize": 98,
   "status": "ported"
  },
  "00599240": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTabardModelFrameScript.cpp",
    "src/ui/game/cgtabardmodelframescript.cpp"
   ],
   "frozen": "CGTabardModelFrame_GetLowerBackgroundFileName",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 150,
+  "how": "annotated",
   "module": "DressUpModelFrame.cpp",
   "refSize": 98,
   "status": "ported"
  },
  "005992b0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTabardModelFrameScript.cpp",
    "src/ui/game/cgtabardmodelframescript.cpp"
   ],
   "frozen": "CGTabardModelFrame_GetUpperEmblemFileName",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 162,
+  "how": "annotated",
   "module": "DressUpModelFrame.cpp",
   "refSize": 105,
   "status": "ported"
  },
  "00599320": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGTabardModelFrameScript.cpp",
    "src/ui/game/cgtabardmodelframescript.cpp"
   ],
   "frozen": "CGTabardModelFrame_GetLowerEmblemFileName",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 162,
+  "how": "annotated",
   "module": "DressUpModelFrame.cpp",
   "refSize": 105,
   "status": "ported"
@@ -16476,7 +16635,7 @@
   "how": "table",
   "module": "DressUpModelFrame.cpp",
   "refSize": 202,
-  "status": "ported"
+  "status": "stub"
  },
  "00599890": {
   "branchRatio": 0.143,
@@ -16492,7 +16651,7 @@
   "how": "table",
   "module": "DressUpModelFrame.cpp",
   "refSize": 646,
-  "status": "ported"
+  "status": "stub"
  },
  "00599b20": {
   "branchRatio": 0.118,
@@ -16508,13 +16667,13 @@
   "how": "table",
   "module": "DressUpModelFrame.cpp",
   "refSize": 677,
-  "status": "ported"
+  "status": "stub"
  },
  "005a20f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -17104,8 +17263,8 @@
  "005afd40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -17135,8 +17294,8 @@
  "005b7210": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -17256,8 +17415,8 @@
  "005cff60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -17331,8 +17490,8 @@
  "005da3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -17361,8 +17520,8 @@
  "005dfd20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -22532,6 +22691,22 @@
   "refSize": 64,
   "status": "ported"
  },
+ "00689a50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CGxShader.cpp",
+   "src/gx/shader/cgxshader.cpp"
+  ],
+  "frozen": "CGxShader::Valid",
+  "frozenSize": 52,
+  "how": "callgraph",
+  "module": "CGxDevice.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
  "0068a4c0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -22885,8 +23060,8 @@
  "006b3450": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
@@ -26438,6 +26613,19 @@
   "refSize": 6,
   "status": "ported"
  },
+ "00817f90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "fprintf",
+  "frozenSize": 69,
+  "how": "callgraph",
+  "module": "XMLTree.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
  "00818010": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -26771,6 +26959,22 @@
   "refSize": 221,
   "status": "stub"
  },
+ "0081bfd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::WaitThread",
+  "frozenSize": 3,
+  "how": "callorder",
+  "module": "XMLTree.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
  "0081c060": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -27014,13 +27218,13 @@
   "branchRatio": 0.196,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.093,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2337,
+  "frozenSize": 2353,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -27077,8 +27281,8 @@
  "00823ed0": {
   "branchRatio": 1.0,
   "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -27120,6 +27324,22 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 177,
+  "status": "ported"
+ },
+ "00825170": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::UpdateLoaded",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "M2Scene.cpp",
+  "refSize": 63,
   "status": "ported"
  },
  "008251d0": {
@@ -27266,6 +27486,102 @@
   "refSize": 106,
   "status": "ported"
  },
+ "008284d0": {
+  "branchRatio": 0.72,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FindKey",
+  "frozenSize": 488,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 420,
+  "status": "ported"
+ },
+ "0082ced0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.024,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetSequenceInfo",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 706,
+  "status": "ported"
+ },
+ "0082e140": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateMTSimple",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1032,
+  "status": "stub"
+ },
+ "0082f0f0": {
+  "branchRatio": 0.342,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateMT",
+  "frozenSize": 5794,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 6267,
+  "status": "ported"
+ },
+ "00830dc0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.04,
+  "faithful": false,
+  "fidelity": 0.364,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::Animate",
+  "frozenSize": 554,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 451,
+  "status": "ported"
+ },
+ "00831630": {
+  "branchRatio": 0.706,
+  "constOverlap": 0.031,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AttachToParent",
+  "frozenSize": 965,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 420,
+  "status": "ported"
+ },
  "00831bb0": {
   "branchRatio": 0.333,
   "constOverlap": -1.0,
@@ -27324,7 +27640,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 541,
+  "frozenSize": 544,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,
@@ -27360,6 +27676,22 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,
+  "status": "ported"
+ },
+ "00832ea0": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.127,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::InitializeLoaded",
+  "frozenSize": 3692,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 5663,
   "status": "ported"
  },
  "00835a20": {
@@ -27712,7 +28044,7 @@
   ],
   "frozen": "lua_remove",
   "frozenSize": 71,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 112,
   "status": "ported"
@@ -32914,65 +33246,65 @@
   "status": "ported"
  },
  "009605d0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetModel",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 63,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 77,
   "status": "ported"
  },
  "00960620": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_ClearModel",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 42,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 62,
   "status": "ported"
  },
  "00960660": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_SetPosition",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 148,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 123,
   "status": "ported"
  },
  "009606e0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_SetFacing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 125,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 120,
   "status": "ported"
@@ -33028,7 +33360,7 @@
  "00960970": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
@@ -33039,7 +33371,7 @@
   "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 156,
-  "status": "stub"
+  "status": "ported"
  },
  "00960d20": {
   "branchRatio": 0.5,
@@ -33052,58 +33384,58 @@
   ],
   "frozen": "CSimpleModel_SetLight",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 166,
   "status": "ported"
  },
  "00960dd0": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
+  "branchRatio": 0.375,
+  "constOverlap": 0.118,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetLight",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 464,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 485,
   "status": "ported"
  },
  "00960fc0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetPosition",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 104,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 126,
   "status": "ported"
  },
  "00961040": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetFacing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
-  "status": "ported"
+  "status": "stub"
  },
  "00961090": {
   "branchRatio": 0.5,
@@ -33135,7 +33467,7 @@
   "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "00961120": {
   "branchRatio": 0.667,
@@ -33148,7 +33480,7 @@
   ],
   "frozen": "CSimpleModel_ReplaceIconTexture",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 126,
   "status": "ported"
@@ -33156,7 +33488,7 @@
  "009611a0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
@@ -33167,20 +33499,20 @@
   "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 96,
-  "status": "stub"
+  "status": "ported"
  },
  "00961200": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetFogColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 181,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 198,
   "status": "ported"
@@ -33199,20 +33531,20 @@
   "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "00961350": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetFogNear",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
   "status": "ported"
@@ -33231,36 +33563,36 @@
   "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "00961420": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetFogFar",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
   "status": "ported"
  },
  "00961470": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_ClearFog",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 39,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 55,
   "status": "ported"
@@ -33276,7 +33608,7 @@
   ],
   "frozen": "CSimpleModel_SetGlow",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 132,
   "status": "ported"
@@ -33892,6 +34224,22 @@
   "refSize": 579,
   "status": "ported"
  },
+ "0096c770": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleHTML.cpp",
+   "src/ui/simple/csimplehtml.cpp"
+  ],
+  "frozen": "CSimpleHTML::SetHyperlinkFormat",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
  "0096c9e0": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
@@ -33906,6 +34254,22 @@
   "how": "string",
   "module": "CSimpleHTML.cpp",
   "refSize": 687,
+  "status": "ported"
+ },
+ "0096d500": {
+  "branchRatio": 0.045,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleHTML.cpp",
+   "src/ui/simple/csimplehtml.cpp"
+  ],
+  "frozen": "CSimpleHTML::GetObjectType",
+  "frozenSize": 31,
+  "how": "callgraph",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 452,
   "status": "ported"
  },
  "0096d890": {
@@ -35077,302 +35441,305 @@
   "status": "ported"
  },
  "009748f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "fprintf",
-  "frozenSize": 69,
-  "how": "callgraph",
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleHTMLScript.cpp",
+   "src/ui/simple/csimplehtmlscript.cpp"
+  ],
+  "frozen": "CSimpleHTML_GetTextTypeArg",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 201,
   "status": "ported"
  },
  "00974a10": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetFontObject",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 60,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
-  "status": "stub"
+  "status": "ported"
  },
  "00974a70": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetFontObject",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 126,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974ad0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetFont",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 310,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974b30": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetFont",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 149,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974b90": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetTextColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 101,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974bf0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetTextColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 174,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974c50": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetShadowColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 105,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974cb0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetShadowColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 174,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974d10": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetShadowOffset",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 299,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974d70": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetShadowOffset",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 136,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974dd0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetSpacing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 188,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974e30": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetSpacing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 107,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974e90": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetJustifyH",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 172,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974ef0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetJustifyH",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 74,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974f50": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetJustifyV",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 172,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00974fb0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetJustifyV",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 74,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00975010": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetIndentedWordWrap",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 92,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
  },
  "00975070": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetIndentedWordWrap",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 98,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 93,
   "status": "ported"
@@ -35380,7 +35747,7 @@
  "009750d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
@@ -35391,68 +35758,68 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 75,
-  "status": "stub"
+  "status": "ported"
  },
  "00975120": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetHyperlinkFormat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 124,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 124,
-  "status": "stub"
+  "status": "ported"
  },
  "009751a0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetHyperlinkFormat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 50,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 64,
-  "status": "stub"
+  "status": "ported"
  },
  "009751e0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_SetHyperlinksEnabled",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 77,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 88,
   "status": "ported"
  },
  "00975240": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleHTMLScript.cpp",
    "src/ui/simple/csimplehtmlscript.cpp"
   ],
   "frozen": "CSimpleHTML_GetHyperlinksEnabled",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 94,
   "status": "ported"
@@ -37279,6 +37646,22 @@
   "how": "callgraph",
   "module": "cmemblock.cpp",
   "refSize": 207,
+  "status": "ported"
+ },
+ "00987570": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.235,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/movement/CMovementShared.cpp",
+   "src/object/movement/cmovementshared.cpp"
+  ],
+  "frozen": "CMovementShared::GetCurrentSpeed",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MovementShared.cpp",
+  "refSize": 267,
   "status": "ported"
  },
  "00993c00": {

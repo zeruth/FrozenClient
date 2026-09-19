@@ -310,6 +310,17 @@ void CSimpleHTML::ParseP(const XMLNode* node, HTML_TEXT_TYPE type, CStatus* stat
     SMemFree(text, __FILE__, __LINE__, 0x0);
 }
 
+// ref: FUN_0096c770
+// The format a hyperlink's display text is wrapped in before it is handed to the text engine. The
+// frame owns the string, so the previous one is released first.
+void CSimpleHTML::SetHyperlinkFormat(const char* format) {
+    if (this->m_hyperlinkFormat) {
+        SMemFree(this->m_hyperlinkFormat, __FILE__, __LINE__, 0x0);
+    }
+
+    this->m_hyperlinkFormat = SStrDupA(format, __FILE__, __LINE__);
+}
+
 bool CSimpleHTML::SetText(const char* text, CStatus* status) {
     static auto s_nullStatus = CStatus();
 

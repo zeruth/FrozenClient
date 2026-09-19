@@ -35,3 +35,11 @@ CGTabardModelFrame::CGTabardModelFrame(CSimpleFrame* parent) : CGCharacterModelB
 int32_t CGTabardModelFrame::GetScriptMetaTable() {
     return CGTabardModelFrame::s_metatable;
 }
+
+// The script methods are looked up through this object's own type, so the type chain has to reach
+// it; CSimpleModel::IsA carries the rest of the chain.
+bool CGTabardModelFrame::IsA(int32_t type) {
+    return type == CGTabardModelFrame::GetObjectType()
+        || type == CGCharacterModelBase::GetObjectType()
+        || CSimpleModel::IsA(type);
+}

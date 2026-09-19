@@ -16,6 +16,8 @@ struct CMoveSpline {
     uint32_t flags;
     uint32_t start;
     // TODO
+    uint32_t uint20 = 0;
+    // TODO
     uint32_t uint2C;
     uint32_t uint30;
     C3Spline_CatmullRom spline;

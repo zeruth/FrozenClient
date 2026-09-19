@@ -76,6 +76,7 @@ addr	how	frozen	evidence
 00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
 00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
+00464580	annotated	CRandom::uint32	tag in lib/typhoon/tempest/random/CRandom.cpp
 00464640	string	RealmConnection::HandleAuthResponse	unique "SMSG_AUTH_RESPONSE"
 00464b30	callgraph	CDataStore::IsRead	only unmatched callee of 00464c10=RealmConnection::HandleCharEnum
 00464c10	string	RealmConnection::HandleCharEnum	unique "SMSG_CHAR_ENUM"
@@ -120,12 +121,16 @@ addr	how	frozen	evidence
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 004815e0	callgraph	CSimpleTexture::GetObjectType	only unmatched callee of 0048c670=CSimpleTexture_GetTexture
+00481640	callgraph	CSimpleTexture::SetTexCoord	only unmatched callee of 0048c860=CSimpleTexture_SetRotation
+00481700	callgraph	CSimpleTexture::SetShader	only unmatched callee of 0048c9a0=CSimpleTexture_SetDesaturated
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
 00482aa0	override	FrameScript_Object::GetDisplayName	
 00482d10	callgraph	CSimpleFontString::SetFont	only unmatched callee of 004a3a50=FontString_SetFont
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
+004831d0	callgraph	lua_gettop	only unmatched callee of 0048e170=CSimpleTexture_SetTexCoord
+00483290	callgraph	CSimpleTexture::GetImageModePixelShader	only unmatched callee of 0048ca30=CSimpleTexture_IsDesaturated
 00483890	annotated	CSimpleFontString::SetTextHeight	tag in src/ui/simple/CSimpleFontString.cpp
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
@@ -186,16 +191,16 @@ addr	how	frozen	evidence
 0048c610	table	CSimpleTexture_IsShown	binding "IsShown" in SimpleTextureMethods ~ table 00ac1098
 0048c670	table	CSimpleTexture_GetTexture	binding "GetTexture" in SimpleTextureMethods ~ table 00ac1098
 0048c6f0	table	CSimpleTexture_SetTexture	binding "SetTexture" in SimpleTextureMethods ~ table 00ac1098
-0048c7f0	table	CSimpleTexture_GetTexCoord	binding "GetTexCoord" in SimpleTextureMethods ~ table 00ac1098
-0048c860	table	CSimpleTexture_SetRotation	binding "SetRotation" in SimpleTextureMethods ~ table 00ac1098
+0048c7f0	annotated	CSimpleTexture_GetTexCoord	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048c860	annotated	CSimpleTexture_SetRotation	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c9a0	table	CSimpleTexture_SetDesaturated	binding "SetDesaturated" in SimpleTextureMethods ~ table 00ac1098
-0048ca30	table	CSimpleTexture_IsDesaturated	binding "IsDesaturated" in SimpleTextureMethods ~ table 00ac1098
-0048caa0	table	CSimpleTexture_SetNonBlocking	binding "SetNonBlocking" in SimpleTextureMethods ~ table 00ac1098
-0048cb00	table	CSimpleTexture_GetNonBlocking	binding "GetNonBlocking" in SimpleTextureMethods ~ table 00ac1098
-0048cb60	table	CSimpleTexture_SetHorizTile	binding "SetHorizTile" in SimpleTextureMethods ~ table 00ac1098
-0048cbc0	table	CSimpleTexture_GetHorizTile	binding "GetHorizTile" in SimpleTextureMethods ~ table 00ac1098
-0048cc30	table	CSimpleTexture_SetVertTile	binding "SetVertTile" in SimpleTextureMethods ~ table 00ac1098
-0048cc90	table	CSimpleTexture_GetVertTile	binding "GetVertTile" in SimpleTextureMethods ~ table 00ac1098
+0048ca30	annotated	CSimpleTexture_IsDesaturated	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048caa0	annotated	CSimpleTexture_SetNonBlocking	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048cb00	annotated	CSimpleTexture_GetNonBlocking	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048cb60	annotated	CSimpleTexture_SetHorizTile	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048cbc0	annotated	CSimpleTexture_GetHorizTile	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048cc30	annotated	CSimpleTexture_SetVertTile	tag in src/ui/simple/CSimpleTextureScript.cpp
+0048cc90	annotated	CSimpleTexture_GetVertTile	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048d0f0	order	CSimpleFontString_SetAlphaGradient	binding table name CSimpleFontString_SetAlphaGradient, in definition order in src/ui/simple/CSimpleFontStringScript.cpp
 0048d1c0	order	CSimpleFontString_Show	definition order between CSimpleFontString_SetAlphaGradient and CSimpleFontString_IsVisible in src/ui/simple/CSimpleFontStringScript.cpp
 0048d200	order	CSimpleFontString_Hide	definition order between CSimpleFontString_SetAlphaGradient and CSimpleFontString_IsVisible in src/ui/simple/CSimpleFontStringScript.cpp
@@ -239,6 +244,7 @@ addr	how	frozen	evidence
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
 0048f580	callgraph	CSimpleFrame::SetFrameScale	only unmatched callee of 0049f820=CSimpleFrame_SetScale
+0048f5d0	annotated	CSimpleFrame::SetDepth	tag in src/ui/simple/CSimpleFrame.cpp
 0048f620	override	CSimpleFrame::Hide	
 0048f660	override	CSimpleFrame::Show	
 0048f6a0	override	CSimpleFrame::EnableEvent	
@@ -364,22 +370,23 @@ addr	how	frozen	evidence
 004a1160	table	CSimpleFrame_IsMouseWheelEnabled	binding "IsMouseWheelEnabled" in SimpleFrameMethods ~ table 00ac1690
 004a11d0	annotated	CSimpleFrame_EnableJoystick	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1260	table	CSimpleFrame_IsJoystickEnabled	binding "IsJoystickEnabled" in SimpleFrameMethods ~ table 00ac1690
-004a12d0	table	CSimpleFrame_GetBackdrop	binding "GetBackdrop" in SimpleFrameMethods ~ table 00ac1690
-004a15a0	table	CSimpleFrame_SetBackdrop	binding "SetBackdrop" in SimpleFrameMethods ~ table 00ac1690
+004a12d0	annotated	CSimpleFrame_GetBackdrop	tag in src/ui/simple/CSimpleFrameScript.cpp
+004a15a0	annotated	CSimpleFrame_SetBackdrop	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a19a0	annotated	CSimpleFrame_GetBackdropColor	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1a80	table	CSimpleFrame_SetBackdropColor	binding "SetBackdropColor" in SimpleFrameMethods ~ table 00ac1690
 004a1af0	annotated	CSimpleFrame_GetBackdropBorderColor	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1bd0	table	CSimpleFrame_SetBackdropBorderColor	binding "SetBackdropBorderColor" in SimpleFrameMethods ~ table 00ac1690
-004a1c40	table	CSimpleFrame_SetDepth	binding "SetDepth" in SimpleFrameMethods ~ table 00ac1690
-004a1cc0	table	CSimpleFrame_GetDepth	binding "GetDepth" in SimpleFrameMethods ~ table 00ac1690
-004a1d20	table	CSimpleFrame_GetEffectiveDepth	binding "GetEffectiveDepth" in SimpleFrameMethods ~ table 00ac1690
+004a1c40	annotated	CSimpleFrame_SetDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
+004a1cc0	annotated	CSimpleFrame_GetDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
+004a1d20	annotated	CSimpleFrame_GetEffectiveDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1d80	table	CSimpleFrame_IgnoreDepth	binding "IgnoreDepth" in SimpleFrameMethods ~ table 00ac1690
-004a1e00	table	CSimpleFrame_IsIgnoringDepth	binding "IsIgnoringDepth" in SimpleFrameMethods ~ table 00ac1690
+004a1e00	annotated	CSimpleFrame_IsIgnoringDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a2010	string	CSimpleFrame_CreateTexture	unique "%s:CreateTexture(): Couldn't find inherited node "%s""
 004a2240	string	CSimpleFrame_CreateFontString	unique "%s:CreateFontString(): Couldn't find inherited node "%s""
 004a25f0	callgraph	CBackdropGenerator::SetVertexColor	only unmatched callee of 004a1a80=CSimpleFrame_SetBackdropColor
 004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
+004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
 004a3790	annotated	FontString_SetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a38f0	annotated	FontString_GetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
@@ -447,6 +454,7 @@ addr	how	frozen	evidence
 004b9550	override	TextureCreateSolid	
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
+004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
 004bc410	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr	same slot between linked calls in 00768900=ConsoleCommandParse
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
@@ -592,6 +600,8 @@ addr	how	frozen	evidence
 004e6d60	table	CSimpleModelFFX_AddCharacterLight	binding "AddCharacterLight" in SimpleModelFFXMethods ~ table 00ac465c
 004e6e60	table	CSimpleModelFFX_AddPetLight	binding "AddPetLight" in SimpleModelFFXMethods ~ table 00ac465c
 004e6fb0	string	CCharacterComponent::CreateTexture	unique "Item\TextureComponents\%s\%s_%s.blp"
+004e81c0	annotated	TabardBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
+004e8210	annotated	TabardEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 004eacd0	string	CCharacterComponent::AddHandItem	score 0.83 shared Item\ObjectComponents\Shield\; Item\ObjectComponents\Weapon\
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
@@ -889,7 +899,7 @@ addr	how	frozen	evidence
 0054ed80	table	Script_SetupFullscreenScale	binding "SetupFullscreenScale" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ee60	table	Script_GetVideoCaps	binding "GetVideoCaps" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f690=Script_GetRefreshRates
+0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions, 0054f690=Script_GetRefreshRates
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f820=Script_GetMultisampleFormats
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f4a0	table	Script_GetCurrentResolution	binding "GetCurrentResolution" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -967,17 +977,17 @@ addr	how	frozen	evidence
 0057c090	string	Script_Stub_GetTrackingInfo	score 0.50 shared GetTrackingInfo
 0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
 0057e100	table	CGMinimapFrame_SetPlayerTexture	binding "SetPlayerTexture" in CGMinimapFrameMethods ~ table 00acebb8
-0057e1c0	table	CGMinimapFrame_SetPlayerTextureHeight	binding "SetPlayerTextureHeight" in CGMinimapFrameMethods ~ table 00acebb8
-0057e280	table	CGMinimapFrame_SetPlayerTextureWidth	binding "SetPlayerTextureWidth" in CGMinimapFrameMethods ~ table 00acebb8
+0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057e280	annotated	CGMinimapFrame_SetPlayerTextureWidth	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057ed70	table	CGMinimapFrame_PingLocation	binding "PingLocation" in CGMinimapFrameMethods ~ table 00acebb8
 0057efe0	table	CGMinimapFrame_GetPingPosition	binding "GetPingPosition" in CGMinimapFrameMethods ~ table 00acebb8
-00583860	table	CGMinimapFrame_SetMaskTexture	binding "SetMaskTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583980	table	CGMinimapFrame_SetPOIArrowTexture	binding "SetPOIArrowTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583aa0	table	CGMinimapFrame_SetStaticPOIArrowTexture	binding "SetStaticPOIArrowTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583bc0	table	CGMinimapFrame_SetCorpsePOIArrowTexture	binding "SetCorpsePOIArrowTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583ce0	table	CGMinimapFrame_SetIconTexture	binding "SetIconTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583e00	table	CGMinimapFrame_SetBlipTexture	binding "SetBlipTexture" in CGMinimapFrameMethods ~ table 00acebb8
-00583f60	table	CGMinimapFrame_SetClassBlipTexture	binding "SetClassBlipTexture" in CGMinimapFrameMethods ~ table 00acebb8
+00583860	annotated	CGMinimapFrame_SetMaskTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583980	annotated	CGMinimapFrame_SetPOIArrowTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583aa0	annotated	CGMinimapFrame_SetStaticPOIArrowTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583bc0	annotated	CGMinimapFrame_SetCorpsePOIArrowTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583ce0	annotated	CGMinimapFrame_SetIconTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583e00	annotated	CGMinimapFrame_SetBlipTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
+00583f60	annotated	CGMinimapFrame_SetClassBlipTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 005846e0	order	Script_Stub_GetMerchantItemCostInfo	binding table name Script_Stub_GetMerchantItemCostInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00584820	order	Script_Stub_GetMerchantItemCostItem	binding table name Script_Stub_GetMerchantItemCostItem, in definition order in src/ui/game/miscscriptstubs.cpp
 00584e10	order	Script_Stub_GetMerchantItemInfo	binding table name Script_Stub_GetMerchantItemInfo, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1032,10 +1042,10 @@ addr	how	frozen	evidence
 00598830	table	Script_TryOn	binding "TryOn" in CGDressUpModelFrameMethods ~ table 00acf550
 00598e10	string	Script_Stub_CloseTabardCreation	score 0.50 shared CloseTabardCreation
 00598fa0	table	CGTabardModelFrame_CanSaveTabardNow	binding "CanSaveTabardNow" in CGTabardModelFrameMethods ~ table 00acf598
-005991d0	table	CGTabardModelFrame_GetUpperBackgroundFileName	binding "GetUpperBackgroundFileName" in CGTabardModelFrameMethods ~ table 00acf598
-00599240	table	CGTabardModelFrame_GetLowerBackgroundFileName	binding "GetLowerBackgroundFileName" in CGTabardModelFrameMethods ~ table 00acf598
-005992b0	table	CGTabardModelFrame_GetUpperEmblemFileName	binding "GetUpperEmblemFileName" in CGTabardModelFrameMethods ~ table 00acf598
-00599320	table	CGTabardModelFrame_GetLowerEmblemFileName	binding "GetLowerEmblemFileName" in CGTabardModelFrameMethods ~ table 00acf598
+005991d0	annotated	CGTabardModelFrame_GetUpperBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
+00599240	annotated	CGTabardModelFrame_GetLowerBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
+005992b0	annotated	CGTabardModelFrame_GetUpperEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
+00599320	annotated	CGTabardModelFrame_GetLowerEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 00599500	table	CGTabardModelFrame_CycleVariation	binding "CycleVariation" in CGTabardModelFrameMethods ~ table 00acf598
 00599890	table	CGTabardModelFrame_GetUpperEmblemTexture	binding "GetUpperEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
 00599b20	table	CGTabardModelFrame_GetLowerEmblemTexture	binding "GetLowerEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
@@ -1417,6 +1427,7 @@ addr	how	frozen	evidence
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
+00689a50	callgraph	CGxShader::Valid	only unmatched callee of 00483290=CSimpleTexture::GetImageModePixelShader
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
@@ -1529,7 +1540,7 @@ addr	how	frozen	evidence
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars, 008151e0=FontFlagsToString
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
-0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
+0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 004e81c0=TabardBackgroundFileName, 004e8210=TabardEmblemFileName
 0076f0d0	override	SStrToInt	
 0076f140	callgraph	SStrToUnsigned	only unmatched callee of 0076a580=CVGxRefreshCallback
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
@@ -1660,6 +1671,7 @@ addr	how	frozen	evidence
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
 00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
+00817f90	callgraph	fprintf	only unmatched callee of 005302b0=Script_Stub_FlagTutorial, 005485b0=Script_Stub_GetWorldStateUIInfo, 00575820=Script_Stub_PlayDance
 00818010	callorder	FrameScript_GetVariable	same slot between linked calls in 00819d40=FrameScript_GetText
 00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
@@ -1681,6 +1693,7 @@ addr	how	frozen	evidence
 0081bab0	table	Script_GetNumFrames	binding "GetNumFrames" in s_ScriptFunctions ~ table 00af5848
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	table	Script_GetFramesRegisteredForEvent	binding "GetFramesRegisteredForEvent" in s_ScriptFunctions ~ table 00af5848
+0081bfd0	callorder	CM2Cache::WaitThread	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
 0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
@@ -1703,6 +1716,7 @@ addr	how	frozen	evidence
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
+00825170	callorder	CM2Model::UpdateLoaded	same slot between linked calls in 00832ea0=CM2Model::InitializeLoaded
 008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
@@ -1712,12 +1726,19 @@ addr	how	frozen	evidence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
 00826dd0	override	CM2Model::SetSecondaryBoneSequence	
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
+008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
+0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
+0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
+0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
+00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
+00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 00831bb0	callgraph	CM2Model::ApplySequencePlayBack	only unmatched callee of 0083d840=CM2Shared::SequenceLoadedCallback
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00832640	override	CM2Model::~CM2Model	
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
+00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
@@ -1735,12 +1756,12 @@ addr	how	frozen	evidence
 0084d840	callgraph	errorlimit	only unmatched callee of 0085efb0=indexupvalue
 0084d860	string	luaO_chunkid	unique "[string ""
 0084d9c0	override	index2adr	
-0084dab0	callgraph	lua_checkstack	only unmatched callee of 004df110=Script_GetRealmCategories, 0084f2c0=luaL_checkstack
+0084dab0	callgraph	lua_checkstack	only unmatched callee of 0084f2c0=luaL_checkstack
 0084db10	callorder	lua_xmove	same slot between linked calls in 00854da0=luaB_cocreate
 0084db90	callorder	lua_newthread	same slot between linked calls in 00854da0=luaB_cocreate
 0084dbd0	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 009764e0=CSimpleEditBox_SetMaxBytes, 009765d0=CSimpleEditBox_SetMaxLetters
 0084dbf0	override	lua_settop	
-0084dc50	callorder	lua_remove	same slot between linked calls in 0084f2f0=luaL_getmetafield
+0084dc50	callgraph	lua_remove	only unmatched callee of 009748f0=CSimpleHTML_GetTextTypeArg
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819ea0=FrameScript_Execute
 0084dd70	string	lua_replace	unique "no calling environment"
 0084de50	callorder	lua_pushvalue	same slot between linked calls in 008519b0=setn, 00854340=getfunc
@@ -1768,15 +1789,15 @@ addr	how	frozen	evidence
 0084e4d0	override	lua_pushboolean	
 0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
 0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
-0084e560	callorder	lua_gettable	same slot between linked calls in 00853860=add_value
+0084e560	callorder	lua_gettable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop, 004a15a0=CSimpleFrame_SetBackdrop
 0084e590	callorder	lua_getfield	same slot between linked calls in 0084fc00=luaL_openlib
 0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 0084e670	override	lua_rawgeti	
-0084e6e0	callorder	lua_createtable	same slot between linked calls in 0084f3b0=luaL_findtable, 00854b20=luaB_newproxy
+0084e6e0	callorder	lua_createtable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084e7a0	order	lua_getfenv	definition order between lua_getmetatable and lua_settable in vendor/lua-5.1.3/src/lapi.c
 0084e8d0	callgraph	lua_settable	only unmatched callee of 0060a510=Script_FillLocalizedClassList
-0084e900	callorder	lua_setfield	same slot between linked calls in 00851760=luaopen_math
+0084e900	callorder	lua_setfield	same slot between linked calls in 0084fc00=luaL_openlib, 00851760=luaopen_math
 0084e970	override	lua_rawset	
 0084ea00	override	lua_rawseti	
 0084ea90	callorder	lua_setmetatable	same slot between linked calls in 008542c0=luaB_setmetatable
@@ -2081,29 +2102,29 @@ addr	how	frozen	evidence
 0095f9f0	callgraph	CSimpleModel::SetCameraByIndex	only unmatched callee of 00960970=CSimpleModel_SetCamera
 00960420	callgraph	FrameScript_GetColor	only unmatched callee of 004a3d40=FontString_SetShadowColor, 009611a0=CSimpleModel_SetFogColor
 00960530	table	CSimpleModel_SetModel	binding "SetModel" in SimpleModelMethods ~ table 00b2cb10
-009605d0	table	CSimpleModel_GetModel	binding "GetModel" in SimpleModelMethods ~ table 00b2cb10
-00960620	table	CSimpleModel_ClearModel	binding "ClearModel" in SimpleModelMethods ~ table 00b2cb10
-00960660	table	CSimpleModel_SetPosition	binding "SetPosition" in SimpleModelMethods ~ table 00b2cb10
-009606e0	table	CSimpleModel_SetFacing	binding "SetFacing" in SimpleModelMethods ~ table 00b2cb10
+009605d0	annotated	CSimpleModel_GetModel	tag in src/ui/simple/CSimpleModelScript.cpp
+00960620	annotated	CSimpleModel_ClearModel	tag in src/ui/simple/CSimpleModelScript.cpp
+00960660	annotated	CSimpleModel_SetPosition	tag in src/ui/simple/CSimpleModelScript.cpp
+009606e0	annotated	CSimpleModel_SetFacing	tag in src/ui/simple/CSimpleModelScript.cpp
 00960760	table	CSimpleModel_SetScale	binding "SetModelScale" in SimpleModelMethods ~ table 00b2cb10
 009607e0	table	CSimpleModel_SetSequence	binding "SetSequence" in SimpleModelMethods ~ table 00b2cb10
 009608b0	table	CSimpleModel_SetSequenceTime	binding "SetSequenceTime" in SimpleModelMethods ~ table 00b2cb10
 00960970	table	CSimpleModel_SetCamera	binding "SetCamera" in SimpleModelMethods ~ table 00b2cb10
-00960d20	table	CSimpleModel_SetLight	binding "SetLight" in SimpleModelMethods ~ table 00b2cb10
-00960dd0	table	CSimpleModel_GetLight	binding "GetLight" in SimpleModelMethods ~ table 00b2cb10
-00960fc0	table	CSimpleModel_GetPosition	binding "GetPosition" in SimpleModelMethods ~ table 00b2cb10
-00961040	table	CSimpleModel_GetFacing	binding "GetFacing" in SimpleModelMethods ~ table 00b2cb10
+00960d20	annotated	CSimpleModel_SetLight	tag in src/ui/simple/CSimpleModelScript.cpp
+00960dd0	annotated	CSimpleModel_GetLight	tag in src/ui/simple/CSimpleModelScript.cpp
+00960fc0	annotated	CSimpleModel_GetPosition	tag in src/ui/simple/CSimpleModelScript.cpp
+00961040	annotated	CSimpleModel_GetFacing	tag in src/ui/simple/CSimpleModelScript.cpp
 00961090	table	CSimpleModel_GetScale	binding "GetModelScale" in SimpleModelMethods ~ table 00b2cb10
 009610e0	table	CSimpleModel_AdvanceTime	binding "AdvanceTime" in SimpleModelMethods ~ table 00b2cb10
-00961120	table	CSimpleModel_ReplaceIconTexture	binding "ReplaceIconTexture" in SimpleModelMethods ~ table 00b2cb10
+00961120	annotated	CSimpleModel_ReplaceIconTexture	tag in src/ui/simple/CSimpleModelScript.cpp
 009611a0	table	CSimpleModel_SetFogColor	binding "SetFogColor" in SimpleModelMethods ~ table 00b2cb10
-00961200	table	CSimpleModel_GetFogColor	binding "GetFogColor" in SimpleModelMethods ~ table 00b2cb10
+00961200	annotated	CSimpleModel_GetFogColor	tag in src/ui/simple/CSimpleModelScript.cpp
 009612d0	table	CSimpleModel_SetFogNear	binding "SetFogNear" in SimpleModelMethods ~ table 00b2cb10
-00961350	table	CSimpleModel_GetFogNear	binding "GetFogNear" in SimpleModelMethods ~ table 00b2cb10
+00961350	annotated	CSimpleModel_GetFogNear	tag in src/ui/simple/CSimpleModelScript.cpp
 009613a0	table	CSimpleModel_SetFogFar	binding "SetFogFar" in SimpleModelMethods ~ table 00b2cb10
-00961420	table	CSimpleModel_GetFogFar	binding "GetFogFar" in SimpleModelMethods ~ table 00b2cb10
-00961470	table	CSimpleModel_ClearFog	binding "ClearFog" in SimpleModelMethods ~ table 00b2cb10
-009614b0	table	CSimpleModel_SetGlow	binding "SetGlow" in SimpleModelMethods ~ table 00b2cb10
+00961420	annotated	CSimpleModel_GetFogFar	tag in src/ui/simple/CSimpleModelScript.cpp
+00961470	annotated	CSimpleModel_ClearFog	tag in src/ui/simple/CSimpleModelScript.cpp
+009614b0	annotated	CSimpleModel_SetGlow	tag in src/ui/simple/CSimpleModelScript.cpp
 00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML
 00961e30	string	CSimpleStatusBar::LoadXML	unique "BarColor"
 00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
@@ -2142,7 +2163,9 @@ addr	how	frozen	evidence
 0096b920	string	CSimpleScrollFrame::LoadXML	unique "Frame %s: Scroll frame created without scroll child"
 0096c470	callorder	CSimpleSlider::SetMinMaxValues	same slot between linked calls in 0096c500=CSimpleSlider::LoadXML
 0096c500	string	CSimpleSlider::LoadXML	unique "ThumbTexture"
+0096c770	annotated	CSimpleHTML::SetHyperlinkFormat	tag in src/ui/simple/CSimpleHTML.cpp
 0096c9e0	string	CSimpleHTML::ParseP	score 0.50 shared align
+0096d500	callgraph	CSimpleHTML::GetObjectType	only unmatched callee of 009751e0=CSimpleHTML_SetHyperlinksEnabled
 0096d890	string	CSimpleHTML::SetText	unique "Frame %s: Unknown element type: %s (expected BODY)"
 0096da40	string	CSimpleHTML::LoadXML	unique "FontStringHeader1"
 0096dc50	string	CSimpleColorSelect::GetScriptByName	unique "OnColorSelect"
@@ -2216,30 +2239,30 @@ addr	how	frozen	evidence
 009737a0	table	CSimpleScrollingMessageFrame_GetMaxLines	binding "GetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 009737f0	table	CSimpleScrollingMessageFrame_SetMaxLines	binding "SetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973c40	table	CSimpleScrollingMessageFrame_SetHyperlinksEnabled	binding "SetHyperlinksEnabled" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
-009748f0	callgraph	fprintf	only unmatched callee of 00974a10=CSimpleHTML_SetFontObject, 00974a70=CSimpleHTML_GetFontObject, 00974ad0=CSimpleHTML_SetFont
-00974a10	table	CSimpleHTML_SetFontObject	binding "SetFontObject" in SimpleHTMLMethods ~ table 00b2d150
-00974a70	table	CSimpleHTML_GetFontObject	binding "GetFontObject" in SimpleHTMLMethods ~ table 00b2d150
-00974ad0	table	CSimpleHTML_SetFont	binding "SetFont" in SimpleHTMLMethods ~ table 00b2d150
-00974b30	table	CSimpleHTML_GetFont	binding "GetFont" in SimpleHTMLMethods ~ table 00b2d150
-00974b90	table	CSimpleHTML_SetTextColor	binding "SetTextColor" in SimpleHTMLMethods ~ table 00b2d150
-00974bf0	table	CSimpleHTML_GetTextColor	binding "GetTextColor" in SimpleHTMLMethods ~ table 00b2d150
-00974c50	table	CSimpleHTML_SetShadowColor	binding "SetShadowColor" in SimpleHTMLMethods ~ table 00b2d150
-00974cb0	table	CSimpleHTML_GetShadowColor	binding "GetShadowColor" in SimpleHTMLMethods ~ table 00b2d150
-00974d10	table	CSimpleHTML_SetShadowOffset	binding "SetShadowOffset" in SimpleHTMLMethods ~ table 00b2d150
-00974d70	table	CSimpleHTML_GetShadowOffset	binding "GetShadowOffset" in SimpleHTMLMethods ~ table 00b2d150
-00974dd0	table	CSimpleHTML_SetSpacing	binding "SetSpacing" in SimpleHTMLMethods ~ table 00b2d150
-00974e30	table	CSimpleHTML_GetSpacing	binding "GetSpacing" in SimpleHTMLMethods ~ table 00b2d150
-00974e90	table	CSimpleHTML_SetJustifyH	binding "SetJustifyH" in SimpleHTMLMethods ~ table 00b2d150
-00974ef0	table	CSimpleHTML_GetJustifyH	binding "GetJustifyH" in SimpleHTMLMethods ~ table 00b2d150
-00974f50	table	CSimpleHTML_SetJustifyV	binding "SetJustifyV" in SimpleHTMLMethods ~ table 00b2d150
-00974fb0	table	CSimpleHTML_GetJustifyV	binding "GetJustifyV" in SimpleHTMLMethods ~ table 00b2d150
-00975010	table	CSimpleHTML_SetIndentedWordWrap	binding "SetIndentedWordWrap" in SimpleHTMLMethods ~ table 00b2d150
-00975070	table	CSimpleHTML_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleHTMLMethods ~ table 00b2d150
+009748f0	annotated	CSimpleHTML_GetTextTypeArg	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974a10	annotated	CSimpleHTML_SetFontObject	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974a70	annotated	CSimpleHTML_GetFontObject	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974ad0	annotated	CSimpleHTML_SetFont	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974b30	annotated	CSimpleHTML_GetFont	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974b90	annotated	CSimpleHTML_SetTextColor	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974bf0	annotated	CSimpleHTML_GetTextColor	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974c50	annotated	CSimpleHTML_SetShadowColor	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974cb0	annotated	CSimpleHTML_GetShadowColor	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974d10	annotated	CSimpleHTML_SetShadowOffset	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974d70	annotated	CSimpleHTML_GetShadowOffset	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974dd0	annotated	CSimpleHTML_SetSpacing	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974e30	annotated	CSimpleHTML_GetSpacing	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974e90	annotated	CSimpleHTML_SetJustifyH	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974ef0	annotated	CSimpleHTML_GetJustifyH	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974f50	annotated	CSimpleHTML_SetJustifyV	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00974fb0	annotated	CSimpleHTML_GetJustifyV	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00975010	annotated	CSimpleHTML_SetIndentedWordWrap	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00975070	annotated	CSimpleHTML_GetIndentedWordWrap	tag in src/ui/simple/CSimpleHTMLScript.cpp
 009750d0	table	CSimpleHTML_SetText	binding "SetText" in SimpleHTMLMethods ~ table 00b2d150
-00975120	table	CSimpleHTML_SetHyperlinkFormat	binding "SetHyperlinkFormat" in SimpleHTMLMethods ~ table 00b2d150
-009751a0	table	CSimpleHTML_GetHyperlinkFormat	binding "GetHyperlinkFormat" in SimpleHTMLMethods ~ table 00b2d150
-009751e0	table	CSimpleHTML_SetHyperlinksEnabled	binding "SetHyperlinksEnabled" in SimpleHTMLMethods ~ table 00b2d150
-00975240	table	CSimpleHTML_GetHyperlinksEnabled	binding "GetHyperlinksEnabled" in SimpleHTMLMethods ~ table 00b2d150
+00975120	annotated	CSimpleHTML_SetHyperlinkFormat	tag in src/ui/simple/CSimpleHTMLScript.cpp
+009751a0	annotated	CSimpleHTML_GetHyperlinkFormat	tag in src/ui/simple/CSimpleHTMLScript.cpp
+009751e0	annotated	CSimpleHTML_SetHyperlinksEnabled	tag in src/ui/simple/CSimpleHTMLScript.cpp
+00975240	annotated	CSimpleHTML_GetHyperlinksEnabled	tag in src/ui/simple/CSimpleHTMLScript.cpp
 00975310	annotated	CSimpleEditBox_SetFontObject	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00975370	annotated	CSimpleEditBox_GetFontObject	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 009753d0	annotated	CSimpleEditBox_SetFont	tag in src/ui/simple/CSimpleEditBoxScript.cpp
@@ -2354,6 +2377,7 @@ addr	how	frozen	evidence
 009860e0	callorder	SI2::StopGlueMusic	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 009861c0	callgraph	SI2::StartGlueMusic	only unmatched callee of 004dc070=Script_PlayGlueMusic
 009862c0	callgraph	SI2::StartCreditsMusic	only unmatched callee of 004dc150=Script_PlayCreditsMusic
+00987570	annotated	CMovementShared::GetCurrentSpeed	tag in src/object/movement/CMovementShared.cpp
 00993c00	string	T1_New_Parser	unique "%!FontType"
 00994e20	string	parse_encoding	unique "ExpertEncoding"
 009950e0	order	parse_subrs	definition order between parse_encoding and parse_dict in vendor/freetype-2.0.9/src/type1/t1load.c

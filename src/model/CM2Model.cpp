@@ -179,8 +179,71 @@ void CM2Model::AddRef() {
     this->m_refCount++;
 }
 
+// ref: FUN_00830dc0
+// Bring this model's transform and bone matrices up to date for the scene's current frame, on
+// demand rather than from the scene's animate pass. A model attached to another one cannot be
+// animated on its own -- its transform starts at the parent's attachment point -- so the parent is
+// animated first and this model is then animated onto the attachment matrix. When the animation
+// could not run (not loaded, or the parent has no fresh bone matrices) the transform still has to
+// be defined, so it falls back to the parent's, or to this model's own world transform.
 void CM2Model::Animate() {
-    // TODO
+    if (this->m_animCounter == this->m_scene->uint14) {
+        return;
+    }
+
+    if (!this->m_attachParent) {
+        C3Vector diffuse = { 1.0f, 1.0f, 1.0f };
+        C3Vector emissive = { 0.0f, 0.0f, 0.0f };
+
+        if (this->m_flag1000) {
+            this->AnimateMTSimple(&this->m_scene->m_view, diffuse, emissive, 1.0f, 1.0f);
+        } else {
+            this->AnimateMT(&this->m_scene->m_view, diffuse, emissive, 1.0f, 1.0f);
+        }
+    } else {
+        this->m_attachParent->Animate();
+    }
+
+    auto scene = this->m_scene;
+
+    if (this->m_animCounter == scene->uint14) {
+        return;
+    }
+
+    auto parent = this->m_attachParent;
+
+    if (parent && this->m_loaded) {
+        C44Matrix view;
+
+        const C44Matrix* attachView = &parent->matrixF4;
+
+        if (parent->m_loaded && parent->m_animCounter == scene->uint14 && this->m_attachIndex != 0xFFFF) {
+            auto& attachment = parent->m_shared->m_data->attachments[this->m_attachIndex];
+
+            view = parent->m_boneMatrices[attachment.boneIndex];
+            view.Translate(attachment.position);
+
+            attachView = &view;
+        }
+
+        if (this->m_flag1000) {
+            this->AnimateMTSimple(attachView, parent->m_currentDiffuse, parent->m_currentEmissive, parent->float198, parent->alpha19C);
+        } else {
+            this->AnimateMT(attachView, parent->m_currentDiffuse, parent->m_currentEmissive, parent->float198, parent->alpha19C);
+        }
+
+        if (this->m_animCounter == scene->uint14) {
+            return;
+        }
+    }
+
+    if (this->m_attachParent) {
+        this->matrixF4 = this->m_attachParent->matrixF4;
+
+        return;
+    }
+
+    this->matrixF4 = this->matrixB4 * scene->m_view;
 }
 
 void CM2Model::AnimateAttachmentsMT() {
@@ -249,8 +312,14 @@ void CM2Model::AnimateCamerasST() {
     }
 }
 
+// ref: FUN_0082f0f0
 void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6) {
-    if (!this->m_loaded /* TODO other conditionals */) {
+    if (!this->m_loaded) {
+        return;
+    }
+
+    // Already animated for this frame of the scene.
+    if (this->m_animCounter == this->m_scene->uint14) {
         return;
     }
 
@@ -703,15 +772,22 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
         }
     }
 
-    // TODO
+    this->m_flag400 = 0;
+
+    // TODO particles
 
     if (this->m_attachments || this->m_attachList) {
         this->AnimateAttachmentsMT();
     }
 
-    // TODO
+    this->m_animCounter = this->m_scene->uint14;
 }
 
+// ref: FUN_0082e140
+// Identified, not ported. The reference opens with the same two early-outs as AnimateMT -- the
+// loaded bit at +0x10, then m_animCounter (+0x3c) against the scene's counter (+0x14) -- and then
+// runs a shorter body of its own. TODO port the body; what it actually animates has not been read
+// out of the decompilation yet, so do not assume it mirrors AnimateMT.
 void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6) {
     // TODO
 }
@@ -869,6 +945,7 @@ void CM2Model::AnimateTextureTransformsMT() {
     }
 }
 
+// ref: FUN_00831630
 void CM2Model::AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5) {
     if (this->m_attachParent) {
         this->DetachFromParent();
@@ -1028,6 +1105,7 @@ void CM2Model::DetachFromScene() {
     this->m_scene = nullptr;
 }
 
+// ref: FUN_008284d0
 void CM2Model::FindKey(M2ModelBoneSeq* sequence, const M2TrackBase& track, uint32_t& currentKey, uint32_t& nextKey, float& ratio) {
     if (!track.sequenceTimes.Count()) {
         currentKey = 0;
@@ -1288,6 +1366,89 @@ C3Vector CM2Model::GetPosition() {
     return reinterpret_cast<C3Vector&>(this->matrixF4.d0) * this->m_scene->m_viewInv;
 }
 
+// ref: FUN_0082ced0
+// Report the sequence the model would actually play for `sequenceId`: the fallback chain is walked
+// first (the model may not carry the animation asked for), then the requested variation of what it
+// resolved to. The caller gets that sequence's header and its authored bounding box; the box is
+// what the blob-shadow pass projects as a doodad's footprint, which is why the footprint follows
+// the animation.
+void CM2Model::GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info) {
+    if (!this->m_loaded) {
+        this->WaitForLoad("GetSequenceInfo");
+    }
+
+    M2SequenceFallback fallback;
+    this->Sub826350(fallback, sequenceId);
+
+    info.sequenceId = fallback.uint0;
+    info.playMode = fallback.uint2;
+
+    auto data = this->m_shared->m_data;
+
+    uint16_t sequenceIndex = CM2Model::Sub8260C0(data, fallback.uint0, variationIndex);
+
+    // The model has no such variation: everything but the resolved fallback is cleared.
+    if (sequenceIndex == 0xFFFF) {
+        info.flags = 0;
+        info.duration = 0;
+        info.moveSpeed = 0.0f;
+        info.extent.b = { 0.0f, 0.0f, 0.0f };
+        info.extent.t = { 0.0f, 0.0f, 0.0f };
+        info.center = { 0.0f, 0.0f, 0.0f };
+        info.radius = 0.0f;
+
+        return;
+    }
+
+    auto& sequence = data->sequences[sequenceIndex];
+
+    info.flags = sequence.flags;
+    info.duration = sequence.duration;
+    info.moveSpeed = sequence.movespeed;
+
+    // The authored move speed is in the model's own units, so a model carrying a world transform
+    // has it scaled by the length of that transform's first row. An attached model has no world
+    // transform of its own -- matrixF4 is relative to the scene view -- so the length is taken from
+    // the row the view inverse maps back into world space.
+    if (this->m_flag8000) {
+        if (!this->m_attachParent) {
+            float scale = sqrtf(
+                this->matrixB4.a0 * this->matrixB4.a0
+                + this->matrixB4.a1 * this->matrixB4.a1
+                + this->matrixB4.a2 * this->matrixB4.a2
+            );
+
+            info.moveSpeed = scale * sequence.movespeed;
+        } else {
+            auto& viewInv = this->m_scene->m_viewInv;
+            auto& transform = this->matrixF4;
+
+            float x = transform.a0 * viewInv.a0
+                + transform.a1 * viewInv.b0
+                + transform.a2 * viewInv.c0
+                + transform.a3 * viewInv.d0;
+            float y = transform.a0 * viewInv.a1
+                + transform.a1 * viewInv.b1
+                + transform.a2 * viewInv.c1
+                + transform.a3 * viewInv.d1;
+            float z = transform.a0 * viewInv.a2
+                + transform.a1 * viewInv.b2
+                + transform.a2 * viewInv.c2
+                + transform.a3 * viewInv.d2;
+
+            info.moveSpeed = sqrtf(x * x + y * y + z * z) * sequence.movespeed;
+        }
+    }
+
+    info.extent = sequence.bounds.extent;
+
+    info.center.x = (sequence.bounds.extent.b.x + sequence.bounds.extent.t.x) * 0.5f;
+    info.center.y = (sequence.bounds.extent.t.y + sequence.bounds.extent.b.y) * 0.5f;
+    info.center.z = (sequence.bounds.extent.t.z + sequence.bounds.extent.b.z) * 0.5f;
+
+    info.radius = sequence.bounds.radius;
+}
+
 bool CM2Model::HasAttachment(uint32_t id) {
     if (!this->m_loaded) {
         this->WaitForLoad("HasAttachment");
@@ -1324,6 +1485,7 @@ int32_t CM2Model::Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, u
     return this->m_shared->CallbackWhenLoaded(this);
 }
 
+// ref: FUN_00832ea0
 int32_t CM2Model::InitializeLoaded() {
     if (!this->m_shared->m_m2DataLoaded || !this->m_shared->m_skinProfileLoaded) {
         return 1;
@@ -1590,7 +1752,12 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 6: {
-                // TODO
+                this->UnsetBoneSequence(
+                    modelCall->args[0],
+                    modelCall->args[1],
+                    modelCall->args[2]
+                );
+
                 break;
             }
 

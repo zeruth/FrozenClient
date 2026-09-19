@@ -1,5 +1,6 @@
 #include "ui/simple/CSimpleModelScript.hpp"
 #include "ui/simple/CSimpleModel.hpp"
+#include "model/CM2Shared.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <cstdint>
@@ -23,20 +24,59 @@ int32_t CSimpleModel_SetModel(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_009605d0
 int32_t CSimpleModel_GetModel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    if (model->m_model) {
+        lua_pushstring(L, model->m_model->m_shared->m_filePath);
+    }
+
+    // The reference returns 1 result even when no model is set, handing back whatever was
+    // already on top of the stack. Reproduced as-is.
+    return 1;
 }
 
+// ref: FUN_00960620
 int32_t CSimpleModel_ClearModel(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    model->SetModel(static_cast<CM2Model*>(nullptr));
+
+    return 0;
 }
 
+// ref: FUN_00960660
 int32_t CSimpleModel_SetPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    // The reference reads all three coordinates unconditionally, with no type check.
+    auto x = static_cast<float>(lua_tonumber(L, 2));
+    auto y = static_cast<float>(lua_tonumber(L, 3));
+    auto z = static_cast<float>(lua_tonumber(L, 4));
+
+    model->m_position.x = x;
+    model->m_position.y = y;
+    model->m_position.z = z;
+
+    return 0;
 }
 
+// ref: FUN_009606e0
 int32_t CSimpleModel_SetFacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetFacing(facing)", model->GetDisplayName());
+    }
+
+    model->m_facing = static_cast<float>(lua_tonumber(L, 2));
+
+    return 0;
 }
 
 int32_t CSimpleModel_SetScale(lua_State* L) {
@@ -101,20 +141,93 @@ int32_t CSimpleModel_SetCamera(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00960d20
+// Identified but not ported: the body is a call to the shared light-argument parser
+// FUN_00960a10 (777 bytes, also used by CSimpleModelFFX's light methods) followed by
+// FUN_0095f5c0, neither of which has been decompiled. GetLight below documents the field
+// layout the parser has to fill; porting it needs those two decompilations.
 int32_t CSimpleModel_SetLight(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00960dd0
 int32_t CSimpleModel_GetLight(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_checkstack(L, 13);
+
+    auto& light = model->m_light;
+
+    lua_pushnumber(L, light.m_visible);
+
+    C3Vector dir;
+
+    if (light.m_type == M2LIGHT_1) {
+        lua_pushnumber(L, 1.0);
+        dir = light.m_pos;
+    } else {
+        lua_pushnumber(L, 0.0);
+        dir = light.m_dir;
+    }
+
+    lua_pushnumber(L, dir.x);
+    lua_pushnumber(L, dir.y);
+    lua_pushnumber(L, dir.z);
+
+    int32_t results;
+
+    auto& ambColor = light.m_ambColor;
+
+    if (ambColor.x > 0.0f || ambColor.y > 0.0f || ambColor.z > 0.0f) {
+        lua_pushnumber(L, 1.0);
+        lua_pushnumber(L, ambColor.x);
+        lua_pushnumber(L, ambColor.y);
+        lua_pushnumber(L, ambColor.z);
+
+        results = 9;
+    } else {
+        lua_pushnumber(L, 0.0);
+
+        results = 6;
+    }
+
+    auto& dirColor = light.m_dirColor;
+
+    if (dirColor.x <= 0.0f && dirColor.y <= 0.0f && dirColor.z <= 0.0f) {
+        lua_pushnumber(L, 0.0);
+
+        return results + 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+    lua_pushnumber(L, dirColor.x);
+    lua_pushnumber(L, dirColor.y);
+    lua_pushnumber(L, dirColor.z);
+
+    return results + 4;
 }
 
+// ref: FUN_00960fc0
 int32_t CSimpleModel_GetPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_position.x);
+    lua_pushnumber(L, model->m_position.y);
+    lua_pushnumber(L, model->m_position.z);
+
+    return 3;
 }
 
+// ref: FUN_00961040
 int32_t CSimpleModel_GetFacing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_facing);
+
+    return 1;
 }
 
 int32_t CSimpleModel_GetScale(lua_State* L) {
@@ -130,6 +243,11 @@ int32_t CSimpleModel_AdvanceTime(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00961120
+// Identified but not ported: the binding checks lua_isstring(L, 2) and then hands the string
+// to FUN_00960320(0xe, path), a file-scope helper (6 callees) that has not been decompiled.
+// Texture type 0xe is the M2 item-icon slot, so this is a CM2Model::ReplaceTexture(14, ...)
+// wrapper, but the texture creation it performs is unknown.
 int32_t CSimpleModel_ReplaceIconTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -147,8 +265,19 @@ int32_t CSimpleModel_SetFogColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00961200
 int32_t CSimpleModel_GetFogColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    auto& fogColor = model->m_fogColor;
+
+    lua_pushnumber(L, fogColor.r * (1.0f / 255.0f));
+    lua_pushnumber(L, fogColor.g * (1.0f / 255.0f));
+    lua_pushnumber(L, fogColor.b * (1.0f / 255.0f));
+    lua_pushnumber(L, fogColor.a * (1.0f / 255.0f));
+
+    return 4;
 }
 
 int32_t CSimpleModel_SetFogNear(lua_State* L) {
@@ -164,8 +293,14 @@ int32_t CSimpleModel_SetFogNear(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00961350
 int32_t CSimpleModel_GetFogNear(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_fogNear);
+
+    return 1;
 }
 
 int32_t CSimpleModel_SetFogFar(lua_State* L) {
@@ -181,14 +316,30 @@ int32_t CSimpleModel_SetFogFar(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00961420
 int32_t CSimpleModel_GetFogFar(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_fogFar);
+
+    return 1;
 }
 
+// ref: FUN_00961470
 int32_t CSimpleModel_ClearFog(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    model->m_flags &= ~0x1u;
+
+    return 0;
 }
 
+// ref: FUN_009614b0
+// Identified but not ported: the binding checks lua_isnumber(L, 2) and then calls a virtual at
+// CSimpleModel vtable slot +0xf0 with the value. Frozen has no counterpart for that virtual and
+// its decompilation was not available, so the widget method it needs cannot be written yet.
 int32_t CSimpleModel_SetGlow(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

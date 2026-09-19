@@ -4,6 +4,7 @@
 #include "ui/simple/CSimpleTexture.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <cmath>
 #include <cstdint>
 
 int32_t CSimpleTexture_IsObjectType(lua_State* L) {
@@ -205,8 +206,17 @@ int32_t CSimpleTexture_SetTexture(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048c7f0
 int32_t CSimpleTexture_GetTexCoord(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    for (int32_t i = 0; i < 4; i++) {
+        lua_pushnumber(L, texture->m_texCoord[i].x);
+        lua_pushnumber(L, texture->m_texCoord[i].y);
+    }
+
+    return 8;
 }
 
 int32_t CSimpleTexture_SetTexCoord(lua_State* L) {
@@ -266,8 +276,43 @@ int32_t CSimpleTexture_SetTexCoord(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048c860
 int32_t CSimpleTexture_SetRotation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: %s:SetRotation(angle, [cx, cy])", texture->GetDisplayName());
+    }
+
+    // The four corners ride a unit circle around the centre, a quarter turn apart, with the angle
+    // backed off an eighth of a turn. That offset is _DAT_009eaf48 in the reference, stored as a
+    // double: 0x3FE921FB60000000, which is float(pi/4) widened. The centre defaults are
+    // _DAT_009e2ec4 = 0.5. The reference scales the sine and cosine by nothing at all, so the
+    // corners sit at radius 1 rather than on the unit rect.
+    float angle = static_cast<float>(lua_tonumber(L, 2)) - 0.78539816f;
+
+    float centerX = 0.5f;
+    float centerY = 0.5f;
+
+    if (lua_isnumber(L, 3) && lua_isnumber(L, 4)) {
+        centerX = static_cast<float>(lua_tonumber(L, 3));
+        centerY = static_cast<float>(lua_tonumber(L, 4));
+    }
+
+    float s = sinf(angle);
+    float c = cosf(angle);
+
+    C2Vector texCoord[4];
+
+    texCoord[0] = { centerX + s, centerY - c };
+    texCoord[1] = { centerX - c, centerY - s };
+    texCoord[2] = { centerX + c, centerY + s };
+    texCoord[3] = { centerX - s, centerY + c };
+
+    texture->SetTexCoord(texCoord);
+
+    return 0;
 }
 
 int32_t CSimpleTexture_SetDesaturated(lua_State* L) {
@@ -288,32 +333,92 @@ int32_t CSimpleTexture_SetDesaturated(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048ca30
 int32_t CSimpleTexture_IsDesaturated(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    auto shader = CSimpleTexture::GetImageModePixelShader(ImageMode_Desaturate);
+
+    if (shader && texture->m_shader == shader) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0048caa0
 int32_t CSimpleTexture_SetNonBlocking(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    texture->m_nonBlocking = StringToBOOL(L, 2, 1);
+
+    return 0;
 }
 
+// ref: FUN_0048cb00
 int32_t CSimpleTexture_GetNonBlocking(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (texture->m_nonBlocking) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0048cb60
 int32_t CSimpleTexture_SetHorizTile(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    texture->m_horizTile = StringToBOOL(L, 2, 1);
+
+    return 0;
 }
 
+// ref: FUN_0048cbc0
 int32_t CSimpleTexture_GetHorizTile(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (texture->m_horizTile) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0048cc30
 int32_t CSimpleTexture_SetVertTile(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    texture->m_vertTile = StringToBOOL(L, 2, 1);
+
+    return 0;
 }
 
+// ref: FUN_0048cc90
 int32_t CSimpleTexture_GetVertTile(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (texture->m_vertTile) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 FrameScript_Method SimpleTextureMethods[NUM_SIMPLE_TEXTURE_SCRIPT_METHODS] = {

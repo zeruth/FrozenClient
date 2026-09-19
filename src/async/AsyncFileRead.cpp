@@ -197,6 +197,7 @@ uint32_t AsyncFileReadThread(void* param) {
     return 0;
 }
 
+// ref: FUN_004ba060
 void AsyncFileReadWait(CAsyncObject* object) {
     STORM_ASSERT(object);
 

@@ -24,6 +24,7 @@ uint32_t CRandom::dice(uint32_t sides, CRndSeed& seed) {
     return CMath::mulhwu(sides, CRandom::uint32(seed));
 }
 
+// ref: FUN_00464580
 uint32_t CRandom::uint32(CRndSeed& seed) {
     auto acc = seed.rndacc;
     auto vls = seed.rndvls;

@@ -360,6 +360,7 @@ C44Matrix operator*(const C44Matrix& l, float a) {
     return { a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, d2, d3 };
 }
 
+// ref: FUN_004c1f00
 C44Matrix operator*(const C44Matrix& l, const C44Matrix& r) {
     float a0 = l.a0 * r.a0 + l.a1 * r.b0 + l.a2 * r.c0 + l.a3 * r.d0;
     float a1 = l.a0 * r.a1 + l.a1 * r.b1 + l.a2 * r.c1 + l.a3 * r.d1;

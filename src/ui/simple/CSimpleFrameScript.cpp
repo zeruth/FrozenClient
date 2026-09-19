@@ -1251,12 +1251,228 @@ int32_t CSimpleFrame_IsJoystickEnabled(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a12d0
 int32_t CSimpleFrame_GetBackdrop(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    auto backdrop = frame->m_backdrop;
+
+    if (!backdrop) {
+        return 0;
+    }
+
+    // The reference fills a table handed in as the first argument, and makes one when there is none
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        lua_createtable(L, 0, 0);
+    }
+
+    auto background = backdrop->m_background.GetString();
+
+    if (!background) {
+        background = "";
+    }
+
+    auto tile = backdrop->m_tileBackground;
+
+    auto border = backdrop->m_border.GetString();
+
+    if (!border) {
+        border = "";
+    }
+
+    lua_pushstring(L, "bgFile");
+    lua_pushstring(L, background);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "edgeFile");
+    lua_pushstring(L, border);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "tile");
+
+    if (!tile) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, 1.0);
+    }
+
+    lua_settable(L, -3);
+
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushstring(L, "tileSize");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_backgroundSize) * scale);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "edgeSize");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_cornerSize) * scale);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "insets");
+    lua_gettable(L, -2);
+
+    // Reuse the caller's insets table when it has one, otherwise put a fresh one in its place
+    if (lua_type(L, -1) != LUA_TTABLE) {
+        lua_settop(L, -2);
+
+        lua_pushstring(L, "insets");
+        lua_createtable(L, 0, 0);
+        lua_settable(L, -3);
+
+        lua_pushstring(L, "insets");
+        lua_gettable(L, -2);
+    }
+
+    lua_pushstring(L, "left");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_leftInset) * scale);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "right");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_rightInset) * scale);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "top");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_topInset) * scale);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "bottom");
+    lua_pushnumber(L, DDCToNDCWidth(backdrop->m_bottomInset) * scale);
+    lua_settable(L, -3);
+
+    lua_settop(L, -2);
+
+    return 1;
 }
 
+// ref: FUN_004a15a0
 int32_t CSimpleFrame_SetBackdrop(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // An explicit nil clears the backdrop; anything else that is not a table is a usage error
+    if (lua_type(L, 2) == LUA_TNIL) {
+        frame->SetBackdrop(nullptr);
+
+        return 0;
+    }
+
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        return luaL_error(L, "Usage: %s:SetBackdrop(nil or {bgFile = \"bgFile\", edgeFile = \"edgeFile\", tile = false, tileSize = 0, edgeSize = 32, insets = { left = 0, right = 0, top = 0, bottom = 0 }})", frame->GetDisplayName());
+    }
+
+    auto backdrop = STORM_NEW(CBackdropGenerator)();
+
+    // Both strings are read and popped before they are copied into the generator, as the reference
+    // does. They stay alive because the table still holds them and nothing here steps the collector
+    lua_pushstring(L, "bgFile");
+    lua_gettable(L, -2);
+    auto background = lua_tostring(L, -1);
+    lua_settop(L, -2);
+
+    lua_pushstring(L, "edgeFile");
+    lua_gettable(L, -2);
+    auto border = lua_tostring(L, -1);
+    lua_settop(L, -2);
+
+    lua_pushstring(L, "tile");
+    lua_gettable(L, -2);
+    int32_t tile = StringToBOOL(L, -1, 0);
+    lua_settop(L, -2);
+
+    // 0xFF is every border piece; the XML loader picks the same value the same way
+    uint32_t pieces = border && *border
+        ? 0xFF
+        : 0;
+
+    backdrop->m_background.Copy(background);
+    backdrop->m_pieces = pieces;
+    backdrop->m_tileBackground = tile;
+    backdrop->m_border.Copy(border);
+    backdrop->m_blend = GxBlend_Alpha;
+
+    float scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushstring(L, "tileSize");
+    lua_gettable(L, -2);
+
+    if (lua_isnumber(L, -1)) {
+        backdrop->m_backgroundSize = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+    }
+
+    lua_settop(L, -2);
+
+    lua_pushstring(L, "edgeSize");
+    lua_gettable(L, -2);
+
+    if (lua_isnumber(L, -1)) {
+        backdrop->m_cornerSize = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+    }
+
+    lua_settop(L, -2);
+
+    lua_pushstring(L, "insets");
+    lua_gettable(L, -2);
+
+    if (lua_type(L, -1) == LUA_TTABLE) {
+        float left = 0.0f;
+        float right = 0.0f;
+        float top = 0.0f;
+        float bottom = 0.0f;
+
+        lua_pushstring(L, "left");
+        lua_gettable(L, -2);
+
+        if (lua_isnumber(L, -1)) {
+            left = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+        }
+
+        lua_settop(L, -2);
+
+        lua_pushstring(L, "right");
+        lua_gettable(L, -2);
+
+        if (lua_isnumber(L, -1)) {
+            right = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+        }
+
+        lua_settop(L, -2);
+
+        lua_pushstring(L, "top");
+        lua_gettable(L, -2);
+
+        if (lua_isnumber(L, -1)) {
+            top = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+        }
+
+        lua_settop(L, -2);
+
+        lua_pushstring(L, "bottom");
+        lua_gettable(L, -2);
+
+        if (lua_isnumber(L, -1)) {
+            bottom = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, -1)) / scale);
+        }
+
+        lua_settop(L, -2);
+
+        backdrop->m_leftInset = left;
+        backdrop->m_rightInset = right;
+        backdrop->m_topInset = top;
+        backdrop->m_bottomInset = bottom;
+    }
+
+    lua_settop(L, -2);
+
+    frame->SetBackdrop(backdrop);
+
+    CRect rect;
+
+    if (frame->GetRect(&rect)) {
+        backdrop->Generate(&rect);
+    }
+
+    return 0;
 }
 
 // ref: FUN_004a19a0
@@ -1325,16 +1541,46 @@ int32_t CSimpleFrame_SetBackdropBorderColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a1c40
 int32_t CSimpleFrame_SetDepth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetDepth(additiveDepth)", frame->GetDisplayName());
+    }
+
+    frame->SetDepth(static_cast<float>(lua_tonumber(L, 2)), 0);
+
+    return 0;
 }
 
+// ref: FUN_004a1cc0
 int32_t CSimpleFrame_GetDepth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (frame->m_flags & FRAME_FLAG_NO_DEPTH) {
+        return 0;
+    }
+
+    lua_pushnumber(L, frame->m_depth);
+
+    return 1;
 }
 
+// ref: FUN_004a1d20
 int32_t CSimpleFrame_GetEffectiveDepth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (frame->m_flags & FRAME_FLAG_NO_DEPTH) {
+        return 0;
+    }
+
+    lua_pushnumber(L, frame->m_inheritedDepth + frame->m_depth);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_IgnoreDepth(lua_State* L) {
@@ -1342,8 +1588,18 @@ int32_t CSimpleFrame_IgnoreDepth(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a1e00
 int32_t CSimpleFrame_IsIgnoringDepth(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (frame->m_ignoreDepth) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 FrameScript_Method SimpleFrameMethods[NUM_SIMPLE_FRAME_SCRIPT_METHODS] = {

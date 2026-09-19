@@ -37321,7 +37321,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 62,
+"lines": 61,
 "refs": [],
 "line": 105
 },
@@ -37748,7 +37748,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 5,
 "refs": [],
 "line": 23
 },
@@ -37781,7 +37781,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 27
+"line": 28
 },
 "CRndSeed::CRndSeed": {
 "files": [
@@ -38605,7 +38605,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 200
+"line": 201
 },
 "ApplyLocale": {
 "files": [
@@ -73901,14 +73901,33 @@
 "files": [
 "src/model/cm2model.cpp"
 ],
-"callseq": [],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"CM2Model::AnimateMTSimple",
+"CM2Model::AnimateMT",
+"CM2Model::Animate",
+"C44Matrix::C44Matrix",
+"M2Array<M2Attachment>::operator[]",
+"C44Matrix::operator=",
+"C44Matrix::Translate",
+"CM2Model::AnimateMTSimple",
+"CM2Model::AnimateMT",
+"C44Matrix::operator=",
+"operator*",
+"C44Matrix::operator="
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0.0f",
+"0xFFFF",
+"1.0f"
+],
+"branches": 9,
+"stub": false,
+"lines": 59,
 "refs": [],
-"line": 182
+"line": 189
 },
 "CM2Model::AnimateAttachmentsMT": {
 "files": [
@@ -73940,7 +73959,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 186
+"line": 249
 },
 "CM2Model::AnimateCamerasST": {
 "files": [
@@ -73971,7 +73990,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 235
+"line": 298
 },
 "CM2Model::AnimateMT": {
 "files": [
@@ -74123,11 +74142,11 @@
 "1.0f",
 "1e-6f"
 ],
-"branches": 51,
+"branches": 52,
 "stub": false,
-"lines": 462,
+"lines": 469,
 "refs": [],
-"line": 252
+"line": 316
 },
 "CM2Model::AnimateMTSimple": {
 "files": [
@@ -74140,7 +74159,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 715
+"line": 791
 },
 "CM2Model::AnimateST": {
 "files": [
@@ -74168,7 +74187,7 @@
 "stub": false,
 "lines": 97,
 "refs": [],
-"line": 719
+"line": 795
 },
 "CM2Model::AnimateTextureTransformsMT": {
 "files": [
@@ -74209,7 +74228,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 817
+"line": 893
 },
 "CM2Model::AttachToParent": {
 "files": [
@@ -74238,7 +74257,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 872
+"line": 949
 },
 "CM2Model::AttachToScene": {
 "files": [
@@ -74257,7 +74276,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 947
+"line": 1024
 },
 "CM2Model::CancelDeferredSequences": {
 "files": [
@@ -74270,7 +74289,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 973
+"line": 1050
 },
 "CM2Model::DetachAllChildrenById": {
 "files": [
@@ -74285,7 +74304,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 977
+"line": 1054
 },
 "CM2Model::DetachFromParent": {
 "files": [
@@ -74303,7 +74322,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 991
+"line": 1068
 },
 "CM2Model::DetachFromScene": {
 "files": [
@@ -74316,7 +74335,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1012
+"line": 1089
 },
 "CM2Model::FindKey": {
 "files": [
@@ -74343,7 +74362,7 @@
 "stub": false,
 "lines": 120,
 "refs": [],
-"line": 1031
+"line": 1109
 },
 "CM2Model::FreeExternalResources": {
 "files": [
@@ -74361,7 +74380,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1152
+"line": 1230
 },
 "CM2Model::FreeInternalResources": {
 "files": [
@@ -74382,7 +74401,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1172
+"line": 1250
 },
 "CM2Model::GetAttachmentWorldTransform": {
 "files": [
@@ -74411,7 +74430,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1230
+"line": 1308
 },
 "CM2Model::GetBoundingBox": {
 "files": [
@@ -74426,7 +74445,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1270
+"line": 1348
 },
 "CM2Model::GetCameraByIndex": {
 "files": [
@@ -74443,7 +74462,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1279
+"line": 1357
 },
 "CM2Model::GetPosition": {
 "files": [
@@ -74458,7 +74477,42 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1287
+"line": 1365
+},
+"CM2Model::GetSequenceInfo": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"CM2Model::WaitForLoad",
+"M2SequenceFallback::M2SequenceFallback",
+"CM2Model::Sub826350",
+"CM2Model::Sub8260C0",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"M2Array<M2Sequence>::operator[]",
+"sqrtf",
+"sqrtf",
+"CAaBox::operator="
+],
+"strings": [
+"GetSequenceInfo"
+],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"0xFFFF"
+],
+"branches": 4,
+"stub": false,
+"lines": 76,
+"refs": [],
+"line": 1375
 },
 "CM2Model::HasAttachment": {
 "files": [
@@ -74481,7 +74535,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1291
+"line": 1452
 },
 "CM2Model::Initialize": {
 "files": [
@@ -74499,7 +74553,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1303
+"line": 1464
 },
 "CM2Model::InitializeLoaded": {
 "files": [
@@ -74580,6 +74634,7 @@
 "CM2Model::ReplaceTexture",
 "CM2Model::SetGeometryVisible",
 "CM2Model::SetBoneSequence",
+"CM2Model::UnsetBoneSequence",
 "HandleClose",
 "SMemFree",
 "CM2Model::UpdateLoaded"
@@ -74611,9 +74666,9 @@
 ],
 "branches": 51,
 "stub": false,
-"lines": 331,
+"lines": 336,
 "refs": [],
-"line": 1327
+"line": 1489
 },
 "CM2Model::IsBatchDoodadCompatible": {
 "files": [
@@ -74628,7 +74683,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1659
+"line": 1826
 },
 "CM2Model::IsDrawable": {
 "files": [
@@ -74648,7 +74703,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 1665
+"line": 1832
 },
 "CM2Model::IsLoaded": {
 "files": [
@@ -74668,7 +74723,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1697
+"line": 1864
 },
 "CM2Model::LinkToCallbackListTail": {
 "files": [
@@ -74681,7 +74736,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1727
+"line": 1894
 },
 "CM2Model::OptimizeVisibleGeometry": {
 "files": [
@@ -74694,7 +74749,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1734
+"line": 1901
 },
 "CM2Model::ProcessCallbacks": {
 "files": [
@@ -74723,7 +74778,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 1738
+"line": 1905
 },
 "CM2Model::SequenceFinished": {
 "files": [
@@ -74767,7 +74822,7 @@
 "stub": false,
 "lines": 83,
 "refs": [],
-"line": 1813
+"line": 1980
 },
 "CM2Model::ProcessCallbacksRecursive": {
 "files": [
@@ -74784,7 +74839,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1897
+"line": 2064
 },
 "CM2Model::Release": {
 "files": [
@@ -74802,7 +74857,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1912
+"line": 2079
 },
 "CM2Model::ReplaceTexture": {
 "files": [
@@ -74829,7 +74884,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1927
+"line": 2094
 },
 "CM2Model::SetAnimating": {
 "files": [
@@ -74846,7 +74901,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1977
+"line": 2144
 },
 "CM2Model::SetBoneSequence": {
 "files": [
@@ -74901,7 +74956,7 @@
 "stub": false,
 "lines": 153,
 "refs": [],
-"line": 2009
+"line": 2176
 },
 "CM2Model::ApplySequencePlayBack": {
 "files": [
@@ -74927,7 +74982,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2166
+"line": 2333
 },
 "CM2Model::SetBoneSequenceDeferred": {
 "files": [
@@ -74959,7 +75014,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2196
+"line": 2363
 },
 "CM2Model::SetGeometryVisible": {
 "files": [
@@ -74985,7 +75040,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2248
+"line": 2415
 },
 "CM2Model::SetIndices": {
 "files": [
@@ -74998,7 +75053,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2300
+"line": 2467
 },
 "CM2Model::SetLightingCallback": {
 "files": [
@@ -75011,7 +75066,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2304
+"line": 2471
 },
 "CM2Model::SetLoadedCallback": {
 "files": [
@@ -75026,7 +75081,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2309
+"line": 2476
 },
 "CM2Model::SetPrimaryBoneSequence": {
 "files": [
@@ -75054,7 +75109,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2316
+"line": 2483
 },
 "CM2Model::SetSecondaryBoneSequence": {
 "files": [
@@ -75067,7 +75122,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2368
+"line": 2535
 },
 "CM2Model::SetupBoneSequence": {
 "files": [
@@ -75097,7 +75152,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 2372
+"line": 2539
 },
 "CM2Model::SetupLighting": {
 "files": [
@@ -75124,7 +75179,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2422
+"line": 2589
 },
 "CM2Model::SetVisible": {
 "files": [
@@ -75140,7 +75195,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2446
+"line": 2613
 },
 "CM2Model::SetWorldTransform": {
 "files": [
@@ -75159,7 +75214,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 2454
+"line": 2621
 },
 "CM2Model::Sub826350": {
 "files": [
@@ -75189,7 +75244,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 2465
+"line": 2632
 },
 "CM2Model::Sub8269C0": {
 "files": [
@@ -75204,7 +75259,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2552
+"line": 2719
 },
 "CM2Model::Sub826E60": {
 "files": [
@@ -75225,7 +75280,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 2557
+"line": 2724
 },
 "CM2Model::UnlinkFromAnimateList": {
 "files": [
@@ -75238,7 +75293,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2598
+"line": 2765
 },
 "CM2Model::UnlinkFromAttachList": {
 "files": [
@@ -75251,7 +75306,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2608
+"line": 2775
 },
 "CM2Model::UnlinkFromCallbackList": {
 "files": [
@@ -75264,7 +75319,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2618
+"line": 2785
 },
 "CM2Model::UnlinkFromDrawList": {
 "files": [
@@ -75277,7 +75332,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2633
+"line": 2800
 },
 "CM2Model::UnoptimizeVisibleGeometry": {
 "files": [
@@ -75290,7 +75345,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2643
+"line": 2810
 },
 "CM2Model::UnsetBoneSequence": {
 "files": [
@@ -75303,7 +75358,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2647
+"line": 2814
 },
 "CM2Model::UpdateLoaded": {
 "files": [
@@ -75322,7 +75377,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 2651
+"line": 2818
 },
 "CM2Model::WaitForLoad": {
 "files": [
@@ -75341,7 +75396,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 2668
+"line": 2835
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
@@ -86396,13 +86451,36 @@
 "strings": [],
 "consts": [
 "0.0f",
+"0x0",
 "1.0f"
 ],
 "branches": 0,
 "stub": false,
-"lines": 11,
+"lines": 21,
 "refs": [],
-"line": 3
+"line": 4
+},
+"CMovementShared::GetCurrentSpeed": {
+"files": [
+"src/object/movement/cmovementshared.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0f",
+"0x100",
+"0x2",
+"0x200000",
+"0x2000000",
+"0x400",
+"0xc0000f",
+"1000.0f"
+],
+"branches": 10,
+"stub": false,
+"lines": 46,
+"refs": [],
+"line": 29
 },
 "CMovementStatus::Skip": {
 "files": [
@@ -99755,9 +99833,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
-"line": 7
+"line": 15
 },
 "CGMinimapFrame::CreateScriptMetaTable": {
 "files": [
@@ -99771,9 +99849,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
-"line": 13
+"line": 21
 },
 "CGMinimapFrame::GetObjectType": {
 "files": [
@@ -99784,9 +99862,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 7,
 "refs": [],
-"line": 18
+"line": 26
 },
 "CGMinimapFrame::RegisterScriptMethods": {
 "files": [
@@ -99800,9 +99878,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
-"line": 26
+"line": 34
 },
 "CGMinimapFrame::CGMinimapFrame": {
 "files": [
@@ -99812,10 +99890,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 31
+"line": 39
 },
 "CGMinimapFrame::GetScriptMetaTable": {
 "files": [
@@ -99828,161 +99906,264 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 35
+"line": 43
+},
+"MinimapTexFlags": {
+"files": [
+"src/ui/game/cgminimapframescript.cpp"
+],
+"callseq": [
+"CGxTexFlags::CGxTexFlags"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 16
 },
 "CGMinimapFrame_SetMaskTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetMaskTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetMaskTexture(): Couldn't load the file %s",
+"Usage: %s:SetMaskTexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 4,
+"branches": 3,
+"stub": false,
+"lines": 22,
 "refs": [],
-"line": 7
+"line": 21
 },
 "CGMinimapFrame_SetIconTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetIconTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetIconTexture(): Couldn't load the file %s",
+"Usage: %s:SetIconTexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 22,
 "refs": [],
-"line": 11
+"line": 45
 },
 "CGMinimapFrame_SetBlipTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"TextureCreate",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetBlipTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetBlipTexture(): Couldn't load the file %s",
+"Usage: %s:SetBlipTexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 4,
 "stub": false,
-"lines": 4,
+"lines": 30,
 "refs": [],
-"line": 15
+"line": 69
 },
 "CGMinimapFrame_SetClassBlipTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetClassBlipTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetClassBlipTexture(): Couldn't load the file %s",
+"Usage: %s:SetClassBlipTexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 22,
 "refs": [],
-"line": 19
+"line": 101
 },
 "CGMinimapFrame_SetPOIArrowTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetPOIArrowTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetPOITexture(): Couldn't load the file %s",
+"Usage: %s:SetPOITexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 23,
 "refs": [],
-"line": 23
+"line": 125
 },
 "CGMinimapFrame_SetStaticPOIArrowTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetStaticPOIArrowTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetStaticPOITexture(): Couldn't load the file %s",
+"Usage: %s:SetStaticPOITexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 22,
 "refs": [],
-"line": 27
+"line": 150
 },
 "CGMinimapFrame_SetCorpsePOIArrowTexture": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CStatus::CStatus",
+"HandleClose",
+"MinimapTexFlags",
+"lua_tolstring",
+"TextureCreate",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetCorpsePOIArrowTexture",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"%s:SetCorspePOITexture(): Couldn't load the file %s",
+"Usage: %s:SetCorpsePOITexture(\"file\")"
 ],
 "consts": [
-"0"
+"0",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 3,
+"lines": 23,
 "refs": [],
-"line": 31
+"line": 174
 },
 "CGMinimapFrame_SetPlayerTexture": {
 "files": [
@@ -100001,54 +100182,68 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 35
+"line": 198
 },
 "CGMinimapFrame_SetPlayerTextureHeight": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"CLayoutFrame::SetHeight"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetPlayerTextureHeight",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"Usage: %s:SetPlayerTextureHeight(height)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2"
 ],
 "branches": 2,
 "stub": false,
-"lines": 1,
+"lines": 19,
 "refs": [],
-"line": 39
+"line": 203
 },
 "CGMinimapFrame_SetPlayerTextureWidth": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"CLayoutFrame::SetWidth"
 ],
 "strings": [
-"(anonymous namespace)::CGMinimapFrame_SetPlayerTextureWidth",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
+"Usage: %s:SetPlayerTextureWidth(Width)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2"
 ],
 "branches": 2,
 "stub": false,
-"lines": 1,
+"lines": 18,
 "refs": [],
-"line": 43
+"line": 224
 },
 "CGMinimapFrame_GetZoomLevels": {
 "files": [
@@ -100067,10 +100262,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 47
+"line": 243
 },
 "CGMinimapFrame_GetZoom": {
 "files": [
@@ -100089,10 +100284,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 51
+"line": 247
 },
 "CGMinimapFrame_SetZoom": {
 "files": [
@@ -100111,10 +100306,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 55
+"line": 251
 },
 "CGMinimapFrame_PingLocation": {
 "files": [
@@ -100133,10 +100328,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 59
+"line": 255
 },
 "CGMinimapFrame_GetPingPosition": {
 "files": [
@@ -100155,10 +100350,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 63
+"line": 259
 },
 "CGPartyInfo::NumMembers": {
 "files": [
@@ -100614,7 +100809,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
 "line": 7
 },
@@ -100630,7 +100825,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
 "line": 13
 },
@@ -100643,7 +100838,7 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 7,
 "refs": [],
 "line": 18
 },
@@ -100659,7 +100854,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
 "line": 26
 },
@@ -100671,8 +100866,8 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
 "line": 31
 },
@@ -100688,6 +100883,61 @@
 "lines": 3,
 "refs": [],
 "line": 35
+},
+"CGTabardModelFrame::IsA": {
+"files": [
+"src/ui/game/cgtabardmodelframe.cpp"
+],
+"callseq": [
+"CGTabardModelFrame::GetObjectType",
+"CGCharacterModelBase::GetObjectType",
+"CSimpleModel::IsA"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 41
+},
+"TabardBackgroundFileName": {
+"files": [
+"src/ui/game/cgtabardmodelframescript.cpp"
+],
+"callseq": [
+"SStrPrintf",
+"SStrPrintf"
+],
+"strings": [
+"Textures\\GuildEmblems\\Background_%02d_TL_U",
+"Textures\\GuildEmblems\\Background_%02d_TU_U"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 21
+},
+"TabardEmblemFileName": {
+"files": [
+"src/ui/game/cgtabardmodelframescript.cpp"
+],
+"callseq": [
+"SStrPrintf",
+"SStrPrintf"
+],
+"strings": [
+"Textures\\GuildEmblems\\Emblem_%02d_%02d_TL_U",
+"Textures\\GuildEmblems\\Emblem_%02d_%02d_TU_U"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 30
 },
 "CGTabardModelFrame_InitializeTabardColors": {
 "files": [
@@ -100707,9 +100957,9 @@
 ],
 "branches": 2,
 "stub": true,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 7
+"line": 38
 },
 "CGTabardModelFrame_Save": {
 "files": [
@@ -100728,10 +100978,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 11
+"line": 42
 },
 "CGTabardModelFrame_CycleVariation": {
 "files": [
@@ -100750,98 +101000,94 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 15
+"line": 46
 },
 "CGTabardModelFrame_GetUpperBackgroundFileName": {
 "files": [
 "src/ui/game/cgtabardmodelframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGTabardModelFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"TabardBackgroundFileName",
+"lua_pushstring"
 ],
-"strings": [
-"(anonymous namespace)::CGTabardModelFrame_GetUpperBackgroundFileName",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgtabardmodelframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"260"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 19
+"line": 51
 },
 "CGTabardModelFrame_GetLowerBackgroundFileName": {
 "files": [
 "src/ui/game/cgtabardmodelframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGTabardModelFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"TabardBackgroundFileName",
+"lua_pushstring"
 ],
-"strings": [
-"(anonymous namespace)::CGTabardModelFrame_GetLowerBackgroundFileName",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgtabardmodelframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"260"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 23
+"line": 62
 },
 "CGTabardModelFrame_GetUpperEmblemFileName": {
 "files": [
 "src/ui/game/cgtabardmodelframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGTabardModelFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"TabardEmblemFileName",
+"lua_pushstring"
 ],
-"strings": [
-"(anonymous namespace)::CGTabardModelFrame_GetUpperEmblemFileName",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgtabardmodelframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"260"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 27
+"line": 73
 },
 "CGTabardModelFrame_GetLowerEmblemFileName": {
 "files": [
 "src/ui/game/cgtabardmodelframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGTabardModelFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"TabardEmblemFileName",
+"lua_pushstring"
 ],
-"strings": [
-"(anonymous namespace)::CGTabardModelFrame_GetLowerEmblemFileName",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgtabardmodelframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"260"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 9,
 "refs": [],
-"line": 31
+"line": 84
 },
 "CGTabardModelFrame_GetUpperEmblemTexture": {
 "files": [
@@ -100860,10 +101106,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 35
+"line": 94
 },
 "CGTabardModelFrame_GetLowerEmblemTexture": {
 "files": [
@@ -100882,10 +101128,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 39
+"line": 98
 },
 "CGTabardModelFrame_CanSaveTabardNow": {
 "files": [
@@ -100904,10 +101150,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 43
+"line": 102
 },
 "CGTooltip::Create": {
 "files": [
@@ -146651,8 +146897,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 9
 },
@@ -146673,8 +146919,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 13
 },
@@ -146695,8 +146941,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 17
 },
@@ -146717,8 +146963,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 21
 },
@@ -146739,8 +146985,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 25
 },
@@ -146761,8 +147007,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 29
 },
@@ -146783,8 +147029,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 33
 },
@@ -146816,7 +147062,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 26,
+"lines": 28,
 "refs": [],
 "line": 37
 },
@@ -146837,8 +147083,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 2,
 "refs": [],
 "line": 64
 },
@@ -146859,8 +147105,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 2,
 "refs": [],
 "line": 68
 },
@@ -146881,8 +147127,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 72
 },
@@ -146907,7 +147153,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 16,
+"lines": 20,
 "refs": [],
 "line": 76
 },
@@ -146928,8 +147174,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 94
 },
@@ -146950,8 +147196,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 98
 },
@@ -146972,8 +147218,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 102
 },
@@ -146994,8 +147240,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 4,
 "refs": [],
 "line": 106
 },
@@ -147016,8 +147262,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 110
 },
@@ -147038,8 +147284,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 114
 },
@@ -147060,8 +147306,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 118
 },
@@ -147082,8 +147328,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 122
 },
@@ -147104,8 +147350,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 126
 },
@@ -147126,8 +147372,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 130
 },
@@ -147148,8 +147394,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 1,
 "refs": [],
 "line": 134
 },
@@ -147170,8 +147416,8 @@
 "0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 2,
 "refs": [],
 "line": 138
 },
@@ -151356,6 +151602,24 @@
 "refs": [],
 "line": 1540
 },
+"CSimpleFrame::SetDepth": {
+"files": [
+"src/ui/simple/csimpleframe.cpp"
+],
+"callseq": [
+"NotEqual",
+"CSimpleFrame::UpdateDepth"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 1555
+},
 "CSimpleFrame::SetProtected": {
 "files": [
 "src/ui/simple/csimpleframe.cpp"
@@ -151374,7 +151638,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1554
+"line": 1568
 },
 "CSimpleFrame::SetFrameAlpha": {
 "files": [
@@ -151389,7 +151653,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1560
+"line": 1574
 },
 "CSimpleFrame::SetFrameFlag": {
 "files": [
@@ -151402,7 +151666,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1569
+"line": 1583
 },
 "CSimpleFrame::SetFrameLevel": {
 "files": [
@@ -151428,7 +151692,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1577
+"line": 1591
 },
 "CSimpleFrame::SetFrameScale": {
 "files": [
@@ -151446,7 +151710,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1603
+"line": 1617
 },
 "CSimpleFrame::SetFrameStrata": {
 "files": [
@@ -151468,7 +151732,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1613
+"line": 1627
 },
 "CSimpleFrame::SetHitRect": {
 "files": [
@@ -151481,7 +151745,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1636
+"line": 1650
 },
 "CSimpleFrame::GetHitRectInsets": {
 "files": [
@@ -151494,7 +151758,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1644
+"line": 1658
 },
 "CSimpleFrame::SetHitRectInsets": {
 "files": [
@@ -151507,7 +151771,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1651
+"line": 1665
 },
 "CSimpleFrame::SetParent": {
 "files": [
@@ -151540,7 +151804,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1663
+"line": 1677
 },
 "CSimpleFrame::Show": {
 "files": [
@@ -151558,7 +151822,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1717
+"line": 1731
 },
 "CSimpleFrame::ShowThis": {
 "files": [
@@ -151589,7 +151853,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 1731
+"line": 1745
 },
 "CSimpleFrame::TestHitRect": {
 "files": [
@@ -151610,7 +151874,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1778
+"line": 1792
 },
 "CSimpleFrame::UpdateDepth": {
 "files": [
@@ -151623,7 +151887,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1800
+"line": 1814
 },
 "CSimpleFrame::UpdateScale": {
 "files": [
@@ -151649,7 +151913,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1804
+"line": 1818
 },
 "CSimpleFrame::UnregisterForEvents": {
 "files": [
@@ -151666,7 +151930,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1827
+"line": 1841
 },
 "CSimpleFrame::UnregisterRegion": {
 "files": [
@@ -151681,7 +151945,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1835
+"line": 1849
 },
 "CSimpleFrame::UpdateAlpha": {
 "files": [
@@ -151705,7 +151969,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1841
+"line": 1855
 },
 "CSimpleFrame_GetTitleRegion": {
 "files": [
@@ -153557,44 +153821,186 @@
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"lua_createtable",
+"RCString::GetString",
+"RCString::GetString",
+"lua_pushstring",
+"lua_pushstring",
+"lua_settable",
+"lua_pushstring",
+"lua_pushstring",
+"lua_settable",
+"lua_pushstring",
+"lua_pushnil",
+"lua_pushnumber",
+"lua_settable",
+"CoordinateGetAspectCompensation",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_pushstring",
+"lua_gettable",
+"lua_type",
+"lua_settop",
+"lua_pushstring",
+"lua_createtable",
+"lua_settable",
+"lua_pushstring",
+"lua_gettable",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_pushstring",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"lua_settable",
+"lua_settop"
 ],
 "strings": [
-"CSimpleFrame_GetBackdrop",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"",
+"bgFile",
+"bottom",
+"edgeFile",
+"edgeSize",
+"insets",
+"left",
+"right",
+"tile",
+"tileSize",
+"top"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"1.0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 92,
 "refs": [],
-"line": 1254
+"line": 1255
 },
 "CSimpleFrame_SetBackdrop": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"CSimpleFrame::SetBackdrop",
+"lua_type",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"SMemAlloc",
+"CBackdropGenerator::CBackdropGenerator",
+"lua_pushstring",
+"lua_gettable",
+"lua_tolstring",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_tolstring",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"StringToBOOL",
+"lua_settop",
+"RCString::Copy",
+"RCString::Copy",
+"CoordinateGetAspectCompensation",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_type",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_pushstring",
+"lua_gettable",
+"lua_isnumber",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_settop",
+"lua_settop",
+"CSimpleFrame::SetBackdrop",
+"CRect::CRect",
+"CLayoutFrame::GetRect",
+"CBackdropGenerator::Generate"
 ],
 "strings": [
-"CSimpleFrame_SetBackdrop",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Usage: %s:SetBackdrop(nil or {bgFile = \"bgFile\", edgeFile = \"edgeFile\", tile = false, tileSize = 0, edgeSize = 32, insets = { left = 0, right = 0, top = 0, bottom = 0 }})",
+"bgFile",
+"bottom",
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp",
+"edgeFile",
+"edgeSize",
+"insets",
+"left",
+"right",
+"tile",
+"tileSize",
+"top"
 ],
 "consts": [
-"0"
+"0",
+"0.0f",
+"0xFF",
+"1",
+"1024.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 11,
+"stub": false,
+"lines": 128,
 "refs": [],
-"line": 1258
+"line": 1349
 },
 "CSimpleFrame_GetBackdropColor": {
 "files": [
@@ -153619,7 +154025,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1263
+"line": 1479
 },
 "CSimpleFrame_SetBackdropColor": {
 "files": [
@@ -153641,7 +154047,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1281
+"line": 1497
 },
 "CSimpleFrame_GetBackdropBorderColor": {
 "files": [
@@ -153666,7 +154072,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1296
+"line": 1512
 },
 "CSimpleFrame_SetBackdropBorderColor": {
 "files": [
@@ -153688,73 +154094,73 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1314
+"line": 1530
 },
 "CSimpleFrame_SetDepth": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"CSimpleFrame::SetDepth"
 ],
 "strings": [
-"CSimpleFrame_SetDepth",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
+"Usage: %s:SetDepth(additiveDepth)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 1328
+"line": 1545
 },
 "CSimpleFrame_GetDepth": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetDepth",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 1332
+"line": 1559
 },
 "CSimpleFrame_GetEffectiveDepth": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFrame_GetEffectiveDepth",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 1336
+"line": 1573
 },
 "CSimpleFrame_IgnoreDepth": {
 "files": [
@@ -153769,29 +154175,28 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1340
+"line": 1586
 },
 "CSimpleFrame_IsIgnoringDepth": {
 "files": [
 "src/ui/simple/csimpleframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFrame_IsIgnoringDepth",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 1345
+"line": 1592
 },
 "CONTENTNODE::~CONTENTNODE": {
 "files": [
@@ -154113,9 +154518,29 @@
 ],
 "branches": 16,
 "stub": false,
-"lines": 121,
+"lines": 111,
 "refs": [],
 "line": 201
+},
+"CSimpleHTML::SetHyperlinkFormat": {
+"files": [
+"src/ui/simple/csimplehtml.cpp"
+],
+"callseq": [
+"SMemFree",
+"SStrDupA"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtml.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 316
 },
 "CSimpleHTML::SetText": {
 "files": [
@@ -154155,403 +154580,796 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 313
+"line": 324
+},
+"CSimpleHTML_GetTextTypeArg": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_type",
+"lua_tolstring",
+"SStrCmpI",
+"lua_remove",
+"SStrCmpI",
+"lua_remove",
+"SStrCmpI",
+"lua_remove",
+"SStrCmpI",
+"lua_remove"
+],
+"strings": [
+"h1",
+"h2",
+"h3",
+"p"
+],
+"consts": [
+"2"
+],
+"branches": 5,
+"stub": false,
+"lines": 33,
+"refs": [],
+"line": 37
+},
+"CSimpleHTML_GetElementFont": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"CSimpleHTML::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleHTML_GetTextTypeArg"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 73
+},
+"HTMLFont_SetFontObject": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_type",
+"lua_rawgeti",
+"lua_touserdata",
+"lua_settop",
+"luaL_error",
+"CSimpleFont::GetObjectType",
+"CSimpleFont::IsA",
+"luaL_error",
+"lua_type",
+"lua_tolstring",
+"CSimpleFont::GetFont",
+"luaL_error",
+"lua_type",
+"luaL_error",
+"luaL_error",
+"CSimpleFontable::SetFontObject"
+],
+"strings": [
+"%s:SetFontObject(): Can't create a font object loop",
+"%s:SetFontObject(): Couldn't find 'this' in font object",
+"%s:SetFontObject(): Couldn't find font named %s",
+"%s:SetFontObject(): Wrong object type, expected font",
+"Usage: %s:SetFontObject(font or \"font\" or nil)"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 8,
+"stub": false,
+"lines": 38,
+"refs": [],
+"line": 80
+},
+"HTMLFont_GetFontObject": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"CSimpleFontable::GetFontObject",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 119
+},
+"HTMLFont_SetFont": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"lua_isstring",
+"lua_tolstring",
+"StringToFontFlags",
+"lua_tolstring",
+"CSimpleFontStringAttributes::SetFont",
+"CSimpleFont::UpdateObjects",
+"lua_pushnumber",
+"lua_pushnil"
+],
+"strings": [
+"Usage: %s:SetFont(\"font\", fontHeight [, flags])"
+],
+"consts": [
+"0x0",
+"1",
+"1.0",
+"2",
+"3",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 27,
+"refs": [],
+"line": 137
+},
+"HTMLFont_GetFont": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"RCString::GetString",
+"lua_pushnil",
+"lua_pushnil",
+"lua_pushnil",
+"lua_pushstring",
+"lua_pushnumber",
+"FontFlagsToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 165
+},
+"HTMLFont_SetTextColor": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"FrameScript_GetColor",
+"CSimpleFontStringAttributes::SetColor",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [],
+"consts": [
+"0",
+"0x00",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 183
+},
+"HTMLFont_GetTextColor": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1.0f",
+"255.0f",
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 194
+},
+"HTMLFont_SetShadowColor": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"FrameScript_GetColor",
+"CSimpleFontStringAttributes::SetShadow",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [],
+"consts": [
+"0",
+"0x00",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 205
+},
+"HTMLFont_GetShadowColor": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1.0f",
+"255.0f",
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 218
+},
+"HTMLFont_SetShadowOffset": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_isnumber",
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"NDCToDDCWidth",
+"C2Vector::C2Vector",
+"CSimpleFontStringAttributes::SetShadow",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [
+"Usage: %s:SetShadowOffset(x, y)"
+],
+"consts": [
+"0",
+"1024.0f",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 229
+},
+"HTMLFont_GetShadowOffset": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1024.0f",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 250
+},
+"HTMLFont_SetSpacing": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth",
+"CSimpleFontStringAttributes::SetSpacing",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [
+"Usage: %s:SetSpacing(spacing)"
+],
+"consts": [
+"0",
+"1024.0f",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 259
+},
+"HTMLFont_GetSpacing": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1",
+"1024.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 274
+},
+"HTMLFont_SetJustifyH": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"luaL_error",
+"CSimpleFontStringAttributes::SetJustifyH",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [
+"Usage: %s:SetJustifyH(\"justify\")"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 282
+},
+"HTMLFont_GetJustifyH": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"JustifyToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"0x7",
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 296
+},
+"HTMLFont_SetJustifyV": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"luaL_error",
+"CSimpleFontStringAttributes::SetJustifyV",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [
+"Usage: %s:SetJustifyV(\"justify\")"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 302
+},
+"HTMLFont_GetJustifyV": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"JustifyToString",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"0x38",
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 316
+},
+"HTMLFont_SetIndentedWordWrap": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"StringToBOOL",
+"CSimpleFontStringAttributes::SetIndented",
+"CSimpleFont::UpdateObjects"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 322
+},
+"HTMLFont_GetIndentedWordWrap": {
+"files": [
+"src/ui/simple/csimplehtmlscript.cpp"
+],
+"callseq": [
+"lua_pushnumber",
+"lua_pushnil"
+],
+"strings": [],
+"consts": [
+"0x20000",
+"1",
+"1.0"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 330
 },
 "CSimpleHTML_SetFontObject": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetFontObject"
 ],
-"strings": [
-"CSimpleHTML_SetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 4,
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 7
+"line": 341
 },
 "CSimpleHTML_GetFontObject": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetFontObject"
 ],
-"strings": [
-"CSimpleHTML_GetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 6,
 "refs": [],
-"line": 11
+"line": 349
 },
 "CSimpleHTML_SetFont": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetFont"
 ],
-"strings": [
-"CSimpleHTML_SetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 6,
 "refs": [],
-"line": 15
+"line": 357
 },
 "CSimpleHTML_GetFont": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetFont"
 ],
-"strings": [
-"CSimpleHTML_GetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 6,
 "refs": [],
-"line": 19
+"line": 365
 },
 "CSimpleHTML_SetTextColor": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetTextColor"
 ],
-"strings": [
-"CSimpleHTML_SetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 6,
 "refs": [],
-"line": 23
+"line": 373
 },
 "CSimpleHTML_GetTextColor": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetTextColor"
 ],
-"strings": [
-"CSimpleHTML_GetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 6,
 "refs": [],
-"line": 27
+"line": 381
 },
 "CSimpleHTML_SetShadowColor": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetShadowColor"
 ],
-"strings": [
-"CSimpleHTML_SetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 6,
 "refs": [],
-"line": 31
+"line": 389
 },
 "CSimpleHTML_GetShadowColor": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetShadowColor"
 ],
-"strings": [
-"CSimpleHTML_GetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 6,
 "refs": [],
-"line": 35
+"line": 397
 },
 "CSimpleHTML_SetShadowOffset": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetShadowOffset"
 ],
-"strings": [
-"CSimpleHTML_SetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 6,
 "refs": [],
-"line": 39
+"line": 405
 },
 "CSimpleHTML_GetShadowOffset": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetShadowOffset"
 ],
-"strings": [
-"CSimpleHTML_GetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 6,
 "refs": [],
-"line": 43
+"line": 413
 },
 "CSimpleHTML_SetSpacing": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetSpacing"
 ],
-"strings": [
-"CSimpleHTML_SetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 6,
 "refs": [],
-"line": 47
+"line": 421
 },
 "CSimpleHTML_GetSpacing": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetSpacing"
 ],
-"strings": [
-"CSimpleHTML_GetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 51
+"line": 429
 },
 "CSimpleHTML_SetJustifyH": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetJustifyH"
 ],
-"strings": [
-"CSimpleHTML_SetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 55
+"line": 437
 },
 "CSimpleHTML_GetJustifyH": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetJustifyH"
 ],
-"strings": [
-"CSimpleHTML_GetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 59
+"line": 445
 },
 "CSimpleHTML_SetJustifyV": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetJustifyV"
 ],
-"strings": [
-"CSimpleHTML_SetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 63
+"line": 453
 },
 "CSimpleHTML_GetJustifyV": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetJustifyV"
 ],
-"strings": [
-"CSimpleHTML_GetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 67
+"line": 461
 },
 "CSimpleHTML_SetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_SetIndentedWordWrap"
 ],
-"strings": [
-"CSimpleHTML_SetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 71
+"line": 469
 },
 "CSimpleHTML_GetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML_GetElementFont",
+"FrameScript_Object::GetDisplayName",
+"HTMLFont_GetIndentedWordWrap"
 ],
-"strings": [
-"CSimpleHTML_GetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 75
+"line": 477
 },
 "CSimpleHTML_SetText": {
 "files": [
@@ -154569,98 +155387,97 @@
 "2"
 ],
 "branches": 0,
-"stub": true,
-"lines": 12,
+"stub": false,
+"lines": 9,
 "refs": [],
-"line": 79
+"line": 484
 },
 "CSimpleHTML_SetHyperlinkFormat": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"CSimpleHTML::SetHyperlinkFormat"
 ],
 "strings": [
-"CSimpleHTML_SetHyperlinkFormat",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
+"Usage: %s:SetHyperlinkFormat(\"format\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 4,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 89
+"line": 495
 },
 "CSimpleHTML_GetHyperlinkFormat": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleHTML_GetHyperlinkFormat",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 4,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 93
+"line": 509
 },
 "CSimpleHTML_SetHyperlinksEnabled": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"CSimpleHTML_SetHyperlinksEnabled",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 17,
 "refs": [],
-"line": 97
+"line": 519
 },
 "CSimpleHTML_GetHyperlinksEnabled": {
 "files": [
 "src/ui/simple/csimplehtmlscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleHTML::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleHTML_GetHyperlinksEnabled",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplehtmlscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 2,
+"lines": 12,
 "refs": [],
-"line": 101
+"line": 538
 },
 "CSimpleHyperlinkedFrame::CSimpleHyperlinkedFrame": {
 "files": [
@@ -156041,97 +156858,96 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 19,
+"lines": 20,
 "refs": [],
-"line": 7
+"line": 8
 },
 "CSimpleModel_GetModel": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleModel_GetModel",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 14,
 "refs": [],
-"line": 26
+"line": 28
 },
 "CSimpleModel_ClearModel": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleModel::SetModel"
 ],
-"strings": [
-"CSimpleModel_ClearModel",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
 "0"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 10,
 "refs": [],
-"line": 30
+"line": 42
 },
 "CSimpleModel_SetPosition": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_tonumber",
+"lua_tonumber",
+"lua_tonumber"
 ],
-"strings": [
-"CSimpleModel_SetPosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2",
+"3",
+"4"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 16,
 "refs": [],
-"line": 34
+"line": 52
 },
 "CSimpleModel_SetFacing": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber"
 ],
 "strings": [
-"CSimpleModel_SetFacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
+"Usage: %s:SetFacing(facing)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 1,
+"lines": 13,
 "refs": [],
-"line": 38
+"line": 69
 },
 "CSimpleModel_SetScale": {
 "files": [
@@ -156155,9 +156971,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 15,
+"lines": 14,
 "refs": [],
-"line": 42
+"line": 82
 },
 "CSimpleModel_SetSequence": {
 "files": [
@@ -156185,9 +157001,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 19,
+"lines": 20,
 "refs": [],
-"line": 56
+"line": 96
 },
 "CSimpleModel_SetSequenceTime": {
 "files": [
@@ -156214,9 +157030,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 15,
+"lines": 16,
 "refs": [],
-"line": 75
+"line": 115
 },
 "CSimpleModel_SetCamera": {
 "files": [
@@ -156239,10 +157055,10 @@
 "2"
 ],
 "branches": 1,
-"stub": true,
-"lines": 17,
+"stub": false,
+"lines": 15,
 "refs": [],
-"line": 90
+"line": 130
 },
 "CSimpleModel_SetLight": {
 "files": [
@@ -156262,75 +157078,94 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 4,
+"lines": 1,
 "refs": [],
-"line": 104
+"line": 149
 },
 "CSimpleModel_GetLight": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_checkstack",
+"lua_pushnumber",
+"C3Vector::C3Vector",
+"lua_pushnumber",
+"C3Vector::operator=",
+"lua_pushnumber",
+"C3Vector::operator=",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetLight",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0.0",
+"0.0f",
+"1",
+"1.0",
+"13",
+"4",
+"6",
+"9"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 59,
 "refs": [],
-"line": 108
+"line": 154
 },
 "CSimpleModel_GetPosition": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetPosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"3"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 12,
 "refs": [],
-"line": 112
+"line": 212
 },
 "CSimpleModel_GetFacing": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetFacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": false,
-"lines": 1,
+"branches": 0,
+"stub": true,
+"lines": 7,
 "refs": [],
-"line": 116
+"line": 224
 },
 "CSimpleModel_GetScale": {
 "files": [
@@ -156350,9 +157185,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 2,
+"lines": 6,
 "refs": [],
-"line": 120
+"line": 233
 },
 "CSimpleModel_AdvanceTime": {
 "files": [
@@ -156367,10 +157202,10 @@
 "0"
 ],
 "branches": 0,
-"stub": true,
-"lines": 12,
+"stub": false,
+"lines": 3,
 "refs": [],
-"line": 124
+"line": 237
 },
 "CSimpleModel_ReplaceIconTexture": {
 "files": [
@@ -156392,7 +157227,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 133
+"line": 251
 },
 "CSimpleModel_SetFogColor": {
 "files": [
@@ -156411,32 +157246,34 @@
 "2"
 ],
 "branches": 0,
-"stub": true,
-"lines": 15,
+"stub": false,
+"lines": 13,
 "refs": [],
-"line": 137
+"line": 255
 },
 "CSimpleModel_GetFogColor": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetFogColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 13,
 "refs": [],
-"line": 150
+"line": 269
 },
 "CSimpleModel_SetFogNear": {
 "files": [
@@ -156458,32 +157295,29 @@
 "2"
 ],
 "branches": 1,
-"stub": true,
-"lines": 15,
+"stub": false,
+"lines": 16,
 "refs": [],
-"line": 154
+"line": 283
 },
 "CSimpleModel_GetFogNear": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetFogNear",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 7,
 "refs": [],
-"line": 167
+"line": 297
 },
 "CSimpleModel_SetFogFar": {
 "files": [
@@ -156505,54 +157339,48 @@
 "2"
 ],
 "branches": 1,
-"stub": true,
+"stub": false,
 "lines": 17,
 "refs": [],
-"line": 171
+"line": 306
 },
 "CSimpleModel_GetFogFar": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleModel_GetFogFar",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 9,
 "refs": [],
-"line": 184
+"line": 320
 },
 "CSimpleModel_ClearFog": {
 "files": [
 "src/ui/simple/csimplemodelscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleModel::GetObjectType",
+"FrameScript_GetObjectThis"
 ],
-"strings": [
-"CSimpleModel_ClearFog",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemodelscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x1u"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 188
+"line": 330
 },
 "CSimpleModel_SetGlow": {
 "files": [
@@ -156572,9 +157400,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 2,
+"lines": 1,
 "refs": [],
-"line": 192
+"line": 343
 },
 "CSimpleMovieFrame::CreateScriptMetaTable": {
 "files": [
@@ -160248,7 +161076,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 9
+"line": 10
 },
 "CSimpleTexture_GetObjectType": {
 "files": [
@@ -160268,7 +161096,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 13
+"line": 14
 },
 "CSimpleTexture_GetDrawLayer": {
 "files": [
@@ -160290,7 +161118,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 22
+"line": 23
 },
 "CSimpleTexture_SetDrawLayer": {
 "files": [
@@ -160319,7 +161147,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 26
+"line": 27
 },
 "CSimpleTexture_GetBlendMode": {
 "files": [
@@ -160341,7 +161169,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 48
+"line": 49
 },
 "CSimpleTexture_SetBlendMode": {
 "files": [
@@ -160363,7 +161191,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 52
+"line": 53
 },
 "CSimpleTexture_GetVertexColor": {
 "files": [
@@ -160385,7 +161213,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 56
+"line": 57
 },
 "CSimpleTexture_SetVertexColor": {
 "files": [
@@ -160409,7 +161237,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 60
+"line": 61
 },
 "CSimpleTexture_SetGradient": {
 "files": [
@@ -160431,7 +161259,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 78
+"line": 79
 },
 "CSimpleTexture_SetGradientAlpha": {
 "files": [
@@ -160453,7 +161281,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 82
+"line": 83
 },
 "CSimpleTexture_SetAlpha": {
 "files": [
@@ -160479,7 +161307,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 86
+"line": 87
 },
 "CSimpleTexture_GetAlpha": {
 "files": [
@@ -160500,7 +161328,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 100
+"line": 101
 },
 "CSimpleTexture_Show": {
 "files": [
@@ -160519,7 +161347,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 111
+"line": 112
 },
 "CSimpleTexture_Hide": {
 "files": [
@@ -160538,7 +161366,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 120
+"line": 121
 },
 "CSimpleTexture_IsVisible": {
 "files": [
@@ -160560,7 +161388,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 129
+"line": 130
 },
 "CSimpleTexture_IsShown": {
 "files": [
@@ -160582,7 +161410,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 142
+"line": 143
 },
 "CSimpleTexture_GetTexture": {
 "files": [
@@ -160603,7 +161431,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 155
+"line": 156
 },
 "CSimpleTexture_SetTexture": {
 "files": [
@@ -160636,29 +161464,29 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 170
+"line": 171
 },
 "CSimpleTexture_GetTexCoord": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleTexture_GetTexCoord",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"4",
+"8"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 208
+"line": 210
 },
 "CSimpleTexture_SetTexCoord": {
 "files": [
@@ -160703,29 +161531,53 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 212
+"line": 222
 },
 "CSimpleTexture_SetRotation": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"lua_isnumber",
+"lua_isnumber",
+"lua_tonumber",
+"lua_tonumber",
+"sinf",
+"cosf",
+"C2Vector::C2Vector",
+"C2Vector::C2Vector",
+"C2Vector::operator=",
+"C2Vector::C2Vector",
+"C2Vector::operator=",
+"C2Vector::C2Vector",
+"C2Vector::operator=",
+"C2Vector::C2Vector",
+"C2Vector::operator=",
+"CSimpleTexture::SetTexCoord"
 ],
 "strings": [
-"CSimpleTexture_SetRotation",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
+"Usage: %s:SetRotation(angle, [cx, cy])"
 ],
 "consts": [
-"0"
+"0",
+"0.5f",
+"0.78539816f",
+"1",
+"2",
+"3",
+"4"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 37,
 "refs": [],
-"line": 269
+"line": 280
 },
 "CSimpleTexture_SetDesaturated": {
 "files": [
@@ -160749,161 +161601,155 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 273
+"line": 318
 },
 "CSimpleTexture_IsDesaturated": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleTexture::GetImageModePixelShader",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleTexture_IsDesaturated",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 14,
 "refs": [],
-"line": 291
+"line": 337
 },
 "CSimpleTexture_SetNonBlocking": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"CSimpleTexture_SetNonBlocking",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 295
+"line": 353
 },
 "CSimpleTexture_GetNonBlocking": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleTexture_GetNonBlocking",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 299
+"line": 363
 },
 "CSimpleTexture_SetHorizTile": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"CSimpleTexture_SetHorizTile",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 303
+"line": 377
 },
 "CSimpleTexture_GetHorizTile": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleTexture_GetHorizTile",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 307
+"line": 387
 },
 "CSimpleTexture_SetVertTile": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"CSimpleTexture_SetVertTile",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 311
+"line": 401
 },
 "CSimpleTexture_GetVertTile": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleTexture_GetVertTile",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 315
+"line": 411
 },
 "CSimpleSortedArray::operator[]": {
 "files": [

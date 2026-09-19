@@ -36,6 +36,10 @@ enum {
     FRAME_FLAG_RESIZABLE   = 0x0200,
     FRAME_FLAG_DISABLED    = 0x0400,
     FRAME_FLAG_USER_PLACED = 0x1000,
+    // Suppresses the depth queries: GetDepth (FUN_004a1cc0) and GetEffectiveDepth (FUN_004a1d20)
+    // both test frame + 0xb4 against this bit and return nothing at all while it is set. Nothing in
+    // Frozen sets it yet -- the reference path that does has not been ported -- so it reads as 0.
+    FRAME_FLAG_NO_DEPTH    = 0x40000,
 };
 
 class CSimpleFrame : public CScriptRegion {
@@ -63,6 +67,13 @@ class CSimpleFrame : public CScriptRegion {
         uint8_t m_alpha = 255;
         uint8_t alphaBD = 255;
         float m_depth = 0.0;
+        // Depth inherited from the parent chain (reference +0xc8, beside m_depth at +0xc4).
+        // GetEffectiveDepth returns m_inheritedDepth + m_depth. CSimpleFrame::UpdateDepth is still a
+        // stub, so nothing writes this yet and the effective depth equals the frame's own depth.
+        float m_inheritedDepth = 0.0f;
+        // Reference +0xcc, read back by IsIgnoringDepth (FUN_004a1e00). CSimpleFrame_IgnoreDepth is
+        // still a no-op, so nothing sets it.
+        int32_t m_ignoreDepth = 0;
         FRAME_STRATA m_strata = FRAME_STRATA_MEDIUM;
         int32_t m_level = 0;
         uint32_t m_eventmask = 0;
@@ -187,6 +198,7 @@ class CSimpleFrame : public CScriptRegion {
         void SetBackdrop(CBackdropGenerator* backdrop);
         void SetBeingScrolled(int32_t a2, int32_t a3);        void SetFrameAlpha(uint8_t alpha);
         void SetClampedToScreen(int32_t clamped);
+        void SetDepth(float depth, int32_t force);
         void SetProtected();
         void SetFrameFlag(int32_t flag, int32_t on);
         void SetFrameLevel(int32_t level, int32_t shiftChildren);

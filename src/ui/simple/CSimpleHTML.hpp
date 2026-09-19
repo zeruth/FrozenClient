@@ -31,6 +31,10 @@ class CSimpleHTML : public CSimpleHyperlinkedFrame, CSimpleFontedFrame {
         CLayoutFrame* m_layoutAnchor;
         float m_layoutOffset;
         CSimpleFontedFrameFont* m_fonts[NUM_HTML_TEXT_TYPES];
+        char* m_hyperlinkFormat = nullptr;
+        // The reference carries the hyperlink button pool between the format and this flag
+        // (+0x2e4 .. +0x2f0); Frozen does not build hyperlink buttons yet, so that gap is empty.
+        bool m_hyperlinksEnabled = false;
 
         // Virtual member functions
         virtual bool IsA(int32_t type);
@@ -45,6 +49,7 @@ class CSimpleHTML : public CSimpleHyperlinkedFrame, CSimpleFontedFrame {
         void ParseBODY(const XMLNode* node, CStatus* status);
         void ParseIMG(const XMLNode* node, CStatus* status);
         void ParseP(const XMLNode* node, HTML_TEXT_TYPE type, CStatus* status);
+        void SetHyperlinkFormat(const char* format);
         bool SetText(const char* text, CStatus* status);
 };
 
