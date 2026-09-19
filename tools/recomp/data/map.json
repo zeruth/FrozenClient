@@ -9357,6 +9357,24 @@
   "refSize": 58,
   "status": "ported"
  },
+ "004dd490": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp",
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_RunScript",
+  "frozenSize": 142,
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "004dd4d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -11967,7 +11985,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp",
@@ -11975,11 +11993,11 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_RunScript",
-  "frozenSize": 150,
-  "how": "table",
+  "frozenSize": 142,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 66,
-  "status": "stub"
+  "status": "ported"
  },
  "00510b90": {
   "branchRatio": 1.0,
@@ -12543,17 +12561,17 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_ConsoleAddMessage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 89,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 77,
-  "status": "stub"
+  "status": "ported"
  },
  "005125e0": {
   "branchRatio": 0.8,

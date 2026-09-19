@@ -10,6 +10,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include "console/Console.hpp"
 #include <common/DataStore.hpp>
 #include "client/ClientServices.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -1066,8 +1067,24 @@ int32_t Script_StopCinematic(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00510b30
+// The script text is passed as both the source and the chunk name, so a Lua error from it reports
+// the script itself as its own location. An empty string is dropped rather than executed.
 int32_t Script_RunScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return 0;
+    }
+
+    auto script = lua_tostring(L, 1);
+
+    if (!script || !*script) {
+        return 0;
+    }
+
+    // TODO lua_tainted: the reference hands its taint source through as the third argument.
+    FrameScript_Execute(script, script, nullptr);
+
+    return 0;
 }
 
 int32_t Script_CheckInteractDistance(lua_State* L) {
@@ -2167,8 +2184,21 @@ int32_t Script_IsThreatWarningEnabled(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00512090
+// Note the reference does NOT return after raising the usage error, so a non-string argument both
+// errors and then falls through to the write. Reproduced rather than tidied.
 int32_t Script_ConsoleAddMessage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: ConsoleAddMessage(string)");
+    }
+
+    auto text = lua_tostring(L, 1);
+
+    if (text && *text) {
+        ConsoleWriteA("%s", DEFAULT_COLOR, text);
+    }
+
+    return 0;
 }
 
 int32_t Script_GetItemUniqueness(lua_State* L) {

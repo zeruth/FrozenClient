@@ -829,8 +829,24 @@ int32_t Script_IsConsoleActive(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004dd490
+// The script text is passed as both the source and the chunk name, so a Lua error from it reports
+// the script itself as its own location. An empty string is dropped rather than executed.
 int32_t Script_RunScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return 0;
+    }
+
+    auto script = lua_tostring(L, 1);
+
+    if (!script || !*script) {
+        return 0;
+    }
+
+    // TODO lua_tainted: the reference hands its taint source through as the third argument.
+    FrameScript_Execute(script, script, nullptr);
+
+    return 0;
 }
 
 int32_t Script_ReadyForAccountDataTimes(lua_State* L) {

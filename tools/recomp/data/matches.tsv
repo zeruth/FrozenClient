@@ -585,6 +585,7 @@ addr	how	frozen	evidence
 004dd3b0	table	Script_SetClearConfigData	binding "SetClearConfigData" in s_ScriptFunctions ~ table 00ac3e00
 004dd400	annotated	Script_RestartGx	tag in src/glue/GlueScript.cpp
 004dd450	annotated	Script_IsConsoleActive	tag in src/glue/GlueScript.cpp
+004dd490	annotated	Script_RunScript	tag in src/glue/GlueScript.cpp
 004dd4d0	table	Script_IsTrialAccount	binding "IsTrialAccount" in s_ScriptFunctions ~ table 00ac3e00
 004dd540	table	Script_IsSystemSupported	binding "IsSystemSupported" in s_ScriptFunctions ~ table 00ac3e00
 004dd5d0	table	Script_GetSavedAccountName	binding "GetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
@@ -749,7 +750,7 @@ addr	how	frozen	evidence
 00510980	table	Script_ReportSuggestion	binding "ReportSuggestion" in s_ScriptFunctions ~ table 00ac80b0
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac80b0
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac80b0
-00510b30	table	Script_RunScript	binding "RunScript" in s_ScriptFunctions ~ table 00ac80b0
+00510b30	annotated	Script_RunScript	tag in src/glue/GlueScript.cpp
 00510b90	table	Script_IsMacClient	binding "IsMacClient" in s_ScriptFunctions ~ table 00ac80b0
 00510bb0	annotated	Script_GMRequestPlayerInfo	tag in src/ui/game/GameScript.cpp
 00510bd0	annotated	Script_GetCoinIcon	tag in src/ui/game/GameScript.cpp
@@ -784,7 +785,7 @@ addr	how	frozen	evidence
 00511e80	table	Script_DeclineName	binding "DeclineName" in s_ScriptFunctions ~ table 00ac80b0
 00511fb0	table	Script_IsDesaturateSupported	binding "IsDesaturateSupported" in s_ScriptFunctions ~ table 00ac80b0
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
-00512090	table	Script_ConsoleAddMessage	binding "ConsoleAddMessage" in s_ScriptFunctions ~ table 00ac80b0
+00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
