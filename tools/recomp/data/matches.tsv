@@ -329,7 +329,7 @@ addr	how	frozen	evidence
 0049e880	table	CSimpleFrame_SetFrameStrata	binding "SetFrameStrata" in SimpleFrameMethods ~ table 00ac1550
 0049e980	table	CSimpleFrame_GetFrameLevel	binding "GetFrameLevel" in SimpleFrameMethods ~ table 00ac1550
 0049e9d0	table	CSimpleFrame_SetFrameLevel	binding "SetFrameLevel" in SimpleFrameMethods ~ table 00ac1550
-0049eab0	table	CSimpleFrame_HasScript	binding "HasScript" in SimpleFrameMethods ~ table 00ac1550
+0049eab0	annotated	CSimpleFrame_HasScript	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049eb70	table	CSimpleFrame_GetScript	binding "GetScript" in SimpleFrameMethods ~ table 00ac1550
 0049ec80	table	CSimpleFrame_SetScript	binding "SetScript" in SimpleFrameMethods ~ table 00ac1550
 0049edb0	table	CSimpleFrame_HookScript	binding "HookScript" in SimpleFrameMethods ~ table 00ac1550

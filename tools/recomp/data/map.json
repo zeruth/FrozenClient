@@ -5263,18 +5263,18 @@
  "0049eab0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_HasScript",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 186,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 181,
-  "status": "stub"
+  "status": "ported"
  },
  "0049eb70": {
   "branchRatio": 0.0,

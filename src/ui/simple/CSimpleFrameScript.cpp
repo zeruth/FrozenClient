@@ -355,8 +355,30 @@ int32_t CSimpleFrame_SetFrameLevel(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049eab0
+// Whether this frame defines the named script handler. Pushes 1 or nil, never false.
+//
+// Note the address. The reference has three byte-identical HasScript bodies, one per class, and the
+// binding-table matcher offers 004a7480 for this one. That is a different class: 0049eab0 is the
+// one whose method-table entry sits inside the frame's run (00ac15b8, just below RegisterAllEvents)
+// and whose body reads DAT_00b49984, the frame object type. Both checks agree.
 int32_t CSimpleFrame_HasScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:HasScript(\"script\")", frame->GetDisplayName());
+    }
+
+    FrameScript_Object::ScriptData data;
+
+    if (frame->GetScriptByName(lua_tostring(L, 2), data)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetScript(lua_State* L) {

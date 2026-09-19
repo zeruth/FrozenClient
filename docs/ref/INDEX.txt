@@ -128,3 +128,11 @@ three tags were aimed at the wrong sibling.
   DAT_00b49984  CSimpleFrame            DAT_00dce4bc  CSimpleScrollFrame
   DAT_00c5cf4c  CGTooltip               DAT_00dce4d4  CSimpleSlider
   DAT_00dce650  CSimpleButton
+
+binding-table entries (ref-tables.jsonl "table" field) are the ENTRY address, not the table base,
+so a class's methods occupy a consecutive run. That makes the run an independent check on which
+class a duplicated method name belongs to, and it disagrees with the name matcher: HasScript has
+three byte-identical bodies, and the matcher offered 004a7480 for CSimpleFrame when the frame's is
+0049eab0 (entry 00ac15b8, inside the frame's run 00ac15b8-00ac1730; object type DAT_00b49984).
+Frame run anchors: RegisterAllEvents 00ac15e8, GetScale 00ac1628, Lower 00ac16a8,
+StopMovingOrSizing 00ac1730.
