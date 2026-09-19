@@ -1251,8 +1251,8 @@ addr	how	frozen	evidence
 0060f680	table	Script_UnitIsDeadOrGhost	binding "UnitIsDeadOrGhost" in s_UnitFunctions ~ table 00ad21d8
 0060f790	table	Script_UnitIsConnected	binding "UnitIsConnected" in s_UnitFunctions ~ table 00ad21d8
 0060f860	table	Script_UnitAffectingCombat	binding "UnitAffectingCombat" in s_UnitFunctions ~ table 00ad21d8
-0060f8e0	table	Script_UnitSex	binding "UnitSex" in s_UnitFunctions ~ table 00ad21d8
-0060f9e0	table	Script_UnitLevel	binding "UnitLevel" in s_UnitFunctions ~ table 00ad21d8
+0060f8e0	annotated	Script_UnitSex	tag in src/ui/game/ScriptEvents.cpp
+0060f9e0	annotated	Script_UnitLevel	tag in src/ui/game/ScriptEvents.cpp
 0060fba0	table	Script_GetMoney	binding "GetMoney" in s_UnitFunctions ~ table 00ad21d8
 0060fc40	table	Script_GetHonorCurrency	binding "GetHonorCurrency" in s_UnitFunctions ~ table 00ad21d8
 0060fcc0	table	Script_GetArenaCurrency	binding "GetArenaCurrency" in s_UnitFunctions ~ table 00ad21d8

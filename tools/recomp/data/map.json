@@ -19873,33 +19873,33 @@
   "status": "ported"
  },
  "0060f8e0": {
-  "branchRatio": 0.75,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitSex",
-  "frozenSize": 135,
-  "how": "table",
+  "frozenSize": 215,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 248,
   "status": "ported"
  },
  "0060f9e0": {
-  "branchRatio": 0.214,
+  "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitLevel",
-  "frozenSize": 126,
-  "how": "table",
+  "frozenSize": 181,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 433,
   "status": "ported"
@@ -23160,7 +23160,7 @@
    "src/object/client/cgplayer_c.cpp"
   ],
   "frozen": "CGPlayer_C::GetLocalPlayerLevel",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 6,

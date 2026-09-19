@@ -869,31 +869,75 @@ int32_t Script_UnitAffectingCombat(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060f8e0
 int32_t Script_UnitSex(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitSex(\"unit\")");
         return 0;
     }
 
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto token = lua_tostring(L, 1);
 
-    // 1 neuter, 2 male, 3 female
-    lua_pushnumber(L, data ? 2 + ((data->pad1 >> 16) & 0xFF) : 1);
+    // The reference maps the sex through a three-entry table rather than doing arithmetic on it:
+    // male to 2, female to 3, and none to 1 -- and 1 is also what it reports for a unit it cannot
+    // resolve. Arithmetic agrees for male and female but not for none, which it would call 4.
+    static const int32_t s_sexValues[] = { 2, 3, 1 };
+
+    int32_t sex = -1;
+
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        sex = CGPlayer_C::GetLocalPlayerSex();
+    } else {
+        auto unit = Script_GetUnitFromName(token);
+        auto data = unit ? unit->Unit() : nullptr;
+
+        if (data) {
+            sex = (data->pad1 >> 16) & 0xFF;
+        }
+    }
+
+    // The reference indexes without a bound; a sex outside the table cannot occur on the wire.
+    auto value = s_sexValues[2];
+
+    if (sex >= 0 && sex < static_cast<int32_t>(sizeof(s_sexValues) / sizeof(s_sexValues[0]))) {
+        value = s_sexValues[sex];
+    }
+
+    lua_pushnumber(L, value);
 
     return 1;
 }
 
+// ref: FUN_0060f9e0
 int32_t Script_UnitLevel(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitLevel(\"unit\")");
         return 0;
     }
 
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto token = lua_tostring(L, 1);
+    auto unit = Script_GetUnitFromName(token);
     auto data = unit ? unit->Unit() : nullptr;
 
-    lua_pushnumber(L, data ? data->level : 0);
+    if (data) {
+        // TODO the reference does more than report the field. It answers -1 for a unit far enough
+        // above the player to display as "??", and on another branch subtracts an offset and
+        // clamps to 1. Neither condition has been identified -- both hang off helpers that are
+        // still unlinked -- so the plain level is reported for every resolvable unit.
+        lua_pushnumber(L, data->level);
+
+        return 1;
+    }
+
+    // Only once the object lookup misses does the reference consider the token: "player" is
+    // answered from the logged-in character's own record, everything else falls back to 0.
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        lua_pushnumber(L, CGPlayer_C::GetLocalPlayerLevel());
+
+        return 1;
+    }
+
+    lua_pushnumber(L, 0.0);
 
     return 1;
 }
