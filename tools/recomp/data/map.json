@@ -463,6 +463,19 @@
   "refSize": 17,
   "status": "ported"
  },
+ "00403760": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<char *>::Reserve",
+  "frozenSize": 381,
+  "how": "callgraph",
+  "module": "Client.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "00403880": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -579,7 +592,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/client/Archive.cpp",
    "src/client/archive.cpp"
@@ -595,7 +608,7 @@
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.429,
   "files": [
    "src/client/Archive.cpp",
    "src/client/archive.cpp"
@@ -627,7 +640,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -751,6 +764,22 @@
   "refSize": 105,
   "status": "ported"
  },
+ "00408490": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::RsPush",
+  "frozenSize": 60,
+  "how": "callgraph",
+  "module": "Client.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "00408520": {
   "branchRatio": 0.5,
   "constOverlap": 0.143,
@@ -819,7 +848,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/RenderState.cpp",
    "src/gx/renderstate.cpp"
@@ -1176,6 +1205,22 @@
   "how": "annotated",
   "module": "OggDecompress.cpp",
   "refSize": 223,
+  "status": "ported"
+ },
+ "00462000": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsFileEnumerate",
+  "frozenSize": 414,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 156,
   "status": "ported"
  },
  "00464640": {
@@ -4965,7 +5010,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -8488,6 +8533,22 @@
   "refSize": 71,
   "status": "ported"
  },
+ "004e01f0": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/glue/CCharacterCreation.cpp",
+   "src/glue/ccharactercreation.cpp"
+  ],
+  "frozen": "CCharacterCreation::CycleCharCustomization",
+  "frozenSize": 227,
+  "how": "callgraph",
+  "module": "RealmList.cpp",
+  "refSize": 368,
+  "status": "ported"
+ },
  "004e0380": {
   "branchRatio": 0.1,
   "constOverlap": 0.042,
@@ -8668,7 +8729,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
@@ -8940,7 +9001,7 @@
   "branchRatio": 0.417,
   "constOverlap": 0.267,
   "faithful": false,
-  "fidelity": 0.63,
+  "fidelity": 0.593,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -8956,7 +9017,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -13946,7 +14007,7 @@
   ],
   "frozen": "CGLookingForGroup::GetClassRoles",
   "frozenSize": 15,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "KnowledgeBase.cpp",
   "refSize": 14,
   "status": "ported"
@@ -17536,7 +17597,7 @@
   ],
   "frozen": "TextureLodBiasSet",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "callgraph",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 1,
   "status": "excluded"
@@ -23086,8 +23147,8 @@
  "007673f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.167,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/console/Initialize.cpp",
    "src/console/initialize.cpp"
@@ -23209,6 +23270,22 @@
   "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 211,
+  "status": "ported"
+ },
+ "007689e0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/Command.cpp",
+   "src/console/command.cpp"
+  ],
+  "frozen": "ConsoleCommandUnregister",
+  "frozenSize": 192,
+  "how": "callgraph",
+  "module": "ConsoleVar.cpp",
+  "refSize": 57,
   "status": "ported"
  },
  "00769100": {
@@ -26141,16 +26218,13 @@
   "status": "ported"
  },
  "0081b330": {
-  "branchRatio": 0.167,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/ui/simple/CSimpleFrame.cpp",
-   "src/ui/simple/csimpleframe.cpp"
-  ],
-  "frozen": "CSimpleFrame::GetObjectType",
-  "frozenSize": 31,
+  "files": [],
+  "frozen": "TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr",
+  "frozenSize": 139,
   "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 72,
@@ -26667,6 +26741,22 @@
   "refSize": 106,
   "status": "ported"
  },
+ "00831bb0": {
+  "branchRatio": 0.333,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ApplySequencePlayBack",
+  "frozenSize": 218,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 113,
+  "status": "ported"
+ },
  "00831c30": {
   "branchRatio": 0.52,
   "constOverlap": 0.091,
@@ -26831,7 +26921,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.364,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -26946,7 +27036,7 @@
   ],
   "frozen": "pushstr",
   "frozenSize": 105,
-  "how": "order",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 92,
   "status": "ported"
@@ -27621,7 +27711,7 @@
   ],
   "frozen": "lua_settable",
   "frozenSize": 48,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 45,
   "status": "ported"
@@ -28086,7 +28176,7 @@
   ],
   "frozen": "luaL_checklstring",
   "frozenSize": 132,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 94,
   "status": "ported"
@@ -31184,14 +31274,17 @@
   "status": "ported"
  },
  "0088b9c0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
-  "files": [],
-  "frozen": "TSBaseArray<CharacterSelectionDisplay>::operator[]",
-  "frozenSize": 145,
-  "how": "callorder",
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::GetObjectType",
+  "frozenSize": 31,
+  "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 28,
   "status": "excluded"
@@ -32150,22 +32243,6 @@
   "refSize": 139,
   "status": "ported"
  },
- "0095eba0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.25,
-  "files": [
-   "src/ui/simple/CSimpleMovieFrame.cpp",
-   "src/ui/simple/csimplemovieframe.cpp"
-  ],
-  "frozen": "CSimpleMovieFrame::RunOnMovieFinishedScript",
-  "frozenSize": 24,
-  "how": "callgraph",
-  "module": "CSimpleMovieFrame.cpp",
-  "refSize": 80,
-  "status": "ported"
- },
  "0095f420": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -32196,6 +32273,22 @@
   "how": "callgraph",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 42,
+  "status": "ported"
+ },
+ "0095f610": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleModel.cpp",
+   "src/ui/simple/csimplemodel.cpp"
+  ],
+  "frozen": "CSimpleModel::SetSequenceTime",
+  "frozenSize": 78,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 49,
   "status": "ported"
  },
  "0095f800": {
@@ -32362,7 +32455,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.625,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
@@ -32710,6 +32803,54 @@
   "refSize": 425,
   "status": "ported"
  },
+ "00963140": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::GetObjectType",
+  "frozenSize": 31,
+  "how": "callgraph",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
+ "00963350": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::SetCursorPosition",
+  "frozenSize": 53,
+  "how": "callgraph",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 58,
+  "status": "ported"
+ },
+ "00963390": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::RunOnEditFocusLostScript",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 40,
+  "status": "ported"
+ },
  "00963740": {
   "branchRatio": 0.429,
   "constOverlap": 0.0,
@@ -32730,14 +32871,14 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.167,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
   "frozen": "CSimpleEditBox::SetKeyboardFocus",
   "frozenSize": 121,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 195,
   "status": "ported"
@@ -32746,14 +32887,14 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
   "frozen": "CSimpleEditBox::ClearKeyboardFocus",
   "frozenSize": 69,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 103,
   "status": "ported"
@@ -32785,7 +32926,7 @@
   ],
   "frozen": "CSimpleEditBox::SetText",
   "frozenSize": 165,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 122,
   "status": "ported"
@@ -32858,6 +32999,22 @@
   "how": "callgraph",
   "module": "CSimpleMessageFrame.cpp",
   "refSize": 105,
+  "status": "ported"
+ },
+ "009698e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleScrollingMessageFrame.cpp",
+   "src/ui/simple/csimplescrollingmessageframe.cpp"
+  ],
+  "frozen": "CSimpleScrollingMessageFrame::SetMaxLines",
+  "frozenSize": 208,
+  "how": "callgraph",
+  "module": "CSimpleMessageScrollFrame.cpp",
+  "refSize": 126,
   "status": "ported"
  },
  "0096a920": {
@@ -33168,7 +33325,7 @@
   "branchRatio": 0.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/ui/simple/CSimpleMovieFrameScript.cpp",
    "src/ui/simple/csimplemovieframescript.cpp"
@@ -34112,7 +34269,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/ui/simple/CSimpleScrollingMessageFrameScript.cpp",
    "src/ui/simple/csimplescrollingmessageframescript.cpp"
@@ -35392,7 +35549,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"

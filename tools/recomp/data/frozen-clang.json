@@ -164355,7 +164355,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 41
+"line": 44
 },
 "CWorldParam::BaseMipCallback": {
 "files": [
@@ -164368,7 +164368,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 49
+"line": 52
 },
 "CWorldParam::BSPCacheCallback": {
 "files": [
@@ -164381,7 +164381,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 54
+"line": 57
 },
 "CWorldParam::EnvironmentDetailCallback": {
 "files": [
@@ -164401,7 +164401,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 60
+"line": 63
 },
 "CWorldParam::ExtShadowQualityCallback": {
 "files": [
@@ -164414,7 +164414,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CWorldParam::FarClipCallback": {
 "files": [
@@ -164430,7 +164430,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 77
+"line": 80
 },
 "CWorldParam::FarClipOverrideCallback": {
 "files": [
@@ -164450,7 +164450,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 84
+"line": 87
 },
 "CWorldParam::FootstepBiasCallback": {
 "files": [
@@ -164463,7 +164463,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 94
+"line": 97
 },
 "CWorldParam::GroundEffectDensityCallback": {
 "files": [
@@ -164476,7 +164476,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 99
+"line": 102
 },
 "CWorldParam::GroundEffectDistCallback": {
 "files": [
@@ -164489,7 +164489,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 104
+"line": 107
 },
 "CWorldParam::HorizonFarClipScaleCallback": {
 "files": [
@@ -164509,7 +164509,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 110
+"line": 113
 },
 "CWorldParam::HorizonNearClipScaleCallback": {
 "files": [
@@ -164529,7 +164529,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 123
+"line": 126
 },
 "CWorldParam::HwPCFCallback": {
 "files": [
@@ -164542,7 +164542,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 135
+"line": 138
 },
 "CWorldParam::Initialize": {
 "files": [
@@ -164667,7 +164667,7 @@
 "stub": false,
 "lines": 376,
 "refs": [],
-"line": 140
+"line": 143
 },
 "CWorldParam::LodCallback": {
 "files": [
@@ -164680,7 +164680,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 517
+"line": 520
 },
 "CWorldParam::MapObjLightLODCallback": {
 "files": [
@@ -164700,7 +164700,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 523
+"line": 526
 },
 "CWorldParam::MapShadowsCallback": {
 "files": [
@@ -164720,7 +164720,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 538
+"line": 541
 },
 "CWorldParam::MaxLightsCallback": {
 "files": [
@@ -164741,7 +164741,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 553
+"line": 556
 },
 "CWorldParam::NearClipCallback": {
 "files": [
@@ -164757,7 +164757,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 568
+"line": 571
 },
 "CWorldParam::ObjectFadeCallback": {
 "files": [
@@ -164777,7 +164777,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 575
+"line": 578
 },
 "CWorldParam::ObjectFadeZFillCallback": {
 "files": [
@@ -164797,7 +164797,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 590
+"line": 593
 },
 "CWorldParam::OcclusionCallback": {
 "files": [
@@ -164817,7 +164817,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 605
+"line": 608
 },
 "CWorldParam::ParticleDensityCallback": {
 "files": [
@@ -164839,7 +164839,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 618
+"line": 621
 },
 "CWorldParam::ProjectedTexturesCallback": {
 "files": [
@@ -164859,7 +164859,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 633
+"line": 636
 },
 "CWorldParam::ShadowLevelCallback": {
 "files": [
@@ -164881,7 +164881,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 648
+"line": 651
 },
 "CWorldParam::ShowFootprintsCallback": {
 "files": [
@@ -164901,7 +164901,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 661
+"line": 664
 },
 "CWorldParam::SpecularCallback": {
 "files": [
@@ -164914,7 +164914,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 675
+"line": 678
 },
 "CWorldParam::TerrainAlphaBitDepthCallback": {
 "files": [
@@ -164927,7 +164927,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 680
+"line": 683
 },
 "CWorldParam::TextureCacheSizeCallback": {
 "files": [
@@ -164940,7 +164940,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 685
+"line": 688
 },
 "CWorldParam::TextureLodBiasCallback": {
 "files": [
@@ -164961,7 +164961,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 691
+"line": 694
 },
 "CWorldParam::WaterLODCallback": {
 "files": [
@@ -164981,7 +164981,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 706
+"line": 709
 },
 "CWorldParam::WorldPoolUsageCallback": {
 "files": [
@@ -165004,7 +165004,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 719
+"line": 722
 },
 "CMap::AllocEntity": {
 "files": [

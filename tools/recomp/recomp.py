@@ -816,7 +816,14 @@ def match(refs, frozen, overrides, tables):
     for _ in range(4):
         votes = collections.defaultdict(set)
         for addr, (name, how) in list(m.items()):
-            rc = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
+            # Two readings of "the only unmatched callee", strict first. Strict counts every
+            # unmatched callee, which is right when they are all part of the port. Relaxed
+            # ignores excluded ones -- CRT, and the folded nullsub at 005eeb70 that is a single
+            # ret with 1692 callers -- which is right when an unported helper is the only thing
+            # standing between two functions that must be each other. Taking strict first keeps
+            # the links the first reading already found and lets the second add to them.
+            cand = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
+            rc = cand if len(cand) == 1 else [c for c in cand if not refs[c]['excluded']]
             wc_all = [c for c in frozen[name]['callees'] if c not in used and c in frozen]
             # template instantiations (TSBaseArray<X>::operator[]) are usually inlined in the
             # reference, so they must not block a vote; they can still be the vote when alone

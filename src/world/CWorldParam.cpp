@@ -36,8 +36,11 @@ CVar* CWorldParam::cvar_texLodBias;
 CVar* CWorldParam::cvar_waterLOD;
 CVar* CWorldParam::cvar_worldPoolUsage;
 
-// ref: FUN_005eeb70
-// The reference's setter is an empty function in 3.3.5: the bias never reaches the device.
+// The reference's setter is an empty function in 3.3.5: the bias never reaches the device. It is
+// NOT tagged, because the linker folded every empty function in the build onto one address
+// (FUN_005eeb70, a single ret with 1692 callers). Tagging it there made that nullsub the named
+// callee of every one of those call sites, putting a phantom call into the reference sequence of
+// a great many functions and depressing their measured fidelity.
 static void TextureLodBiasSet(float bias) {
 }
 

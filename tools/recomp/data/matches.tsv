@@ -28,6 +28,7 @@ addr	how	frozen	evidence
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
 00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
 004033c0	callorder	CGTooltip::GetObjectType	same slot between linked calls in 0052a980=CGGameUI::Initialize
+00403760	callgraph	TSGrowableArray<char *>::Reserve	only unmatched callee of 00405a10=AddPatchArchive
 00403880	override	CDataStore::~CDataStore	
 00403910	handler	TransferAbortedHandler	SetMessageHandler(SMSG_TRANSFER_ABORTED) on both sides
 00403b70	callorder	LoadNewWorld	same slot between linked calls in 00403de0=LoginVerifyWorldHandler
@@ -46,6 +47,7 @@ addr	how	frozen	evidence
 00407bd0	annotated	UnregisterEvents	tag in src/gx/LoadingScreen.cpp
 00407e30	annotated	LoadingScreenSetTip	tag in src/gx/LoadingScreen.cpp
 00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
+00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
@@ -73,6 +75,7 @@ addr	how	frozen	evidence
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
+00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
 00464640	string	RealmConnection::HandleAuthResponse	unique "SMSG_AUTH_RESPONSE"
 00464b30	callgraph	CDataStore::IsRead	only unmatched callee of 00464c10=RealmConnection::HandleCharEnum
 00464c10	string	RealmConnection::HandleCharEnum	unique "SMSG_CHAR_ENUM"
@@ -529,6 +532,7 @@ addr	how	frozen	evidence
 004dffe0	callgraph	CCharacterCreation::IsRaceClassValid	only unmatched callee of 004e0d00=Script_IsRaceClassValid
 004e0040	callgraph	CCharacterCreation::SetCharCustomizeModel	only unmatched callee of 004e0620=Script_SetCharCustomizeBackground
 004e0160	callgraph	CCharacterCreation::SetFacing	only unmatched callee of 004e0c10=Script_SetCharacterCreateFacing
+004e01f0	callgraph	CCharacterCreation::CycleCharCustomization	only unmatched callee of 004e0b50=Script_CycleCharCustomization
 004e0380	annotated	CCharacterCreation::CreateCharacter	tag in src/glue/CCharacterCreation.cpp
 004e05b0	string	Script_SetCharCustomizeFrame	unique "Usage: SetCharCustomizeFrame("frameName")"
 004e0620	string	Script_SetCharCustomizeBackground	unique "Usage: SetCharCustomizeBackground("filename")"
@@ -866,7 +870,7 @@ addr	how	frozen	evidence
 0054ed80	table	Script_SetupFullscreenScale	binding "SetupFullscreenScale" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ee60	table	Script_GetVideoCaps	binding "GetVideoCaps" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions
+0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f690=Script_GetRefreshRates
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f820=Script_GetMultisampleFormats
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f4a0	table	Script_GetCurrentResolution	binding "GetCurrentResolution" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -875,7 +879,7 @@ addr	how	frozen	evidence
 0054f820	table	Script_GetMultisampleFormats	binding "GetMultisampleFormats" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f8b0	table	Script_GetCurrentMultisampleFormat	binding "GetCurrentMultisampleFormat" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f980	table	Script_SetMultisampleFormat	binding "SetMultisampleFormat" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-00552940	callorder	CGLookingForGroup::GetClassRoles	same slot between linked calls in 004e0a60=Script_GetSelectedClass
+00552940	callgraph	CGLookingForGroup::GetClassRoles	only unmatched callee of 004e0a60=Script_GetSelectedClass
 005564d0	order	Script_Stub_GetLFDChoiceCollapseState	binding table name Script_Stub_GetLFDChoiceCollapseState, in definition order in src/ui/game/miscscriptstubs.cpp
 005567e0	order	Script_Stub_GetLFDChoiceEnabledState	binding table name Script_Stub_GetLFDChoiceEnabledState, in definition order in src/ui/game/miscscriptstubs.cpp
 005576b0	order	Script_Stub_GetLFDChoiceLockedState	binding table name Script_Stub_GetLFDChoiceLockedState, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1103,7 +1107,7 @@ addr	how	frozen	evidence
 005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
-005eeb70	annotated	TextureLodBiasSet	tag in src/world/CWorldParam.cpp
+005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
 005f9e10	order	Script_Stub_VehicleAimGetAngle	binding table name Script_Stub_VehicleAimGetAngle, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1430,7 +1434,7 @@ addr	how	frozen	evidence
 006e7840	handler	ReceiveRemovedSpell	SetMessageHandler(SMSG_UNLEARNED_SPELLS) on both sides
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
-007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e0830=Script_GetAvailableClasses
+007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
@@ -1459,6 +1463,7 @@ addr	how	frozen	evidence
 007681f0	annotated	CVarSetCommandHandler	tag in src/console/CVarHandlers.cpp
 00768340	string	CVar::Initialize	unique "%s%s\"
 00768900	annotated	ConsoleCommandParse	tag in src/console/Command.cpp
+007689e0	callgraph	ConsoleCommandUnregister	only unmatched callee of 007673f0=ConsoleDestroyClientCVar
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
 00769220	callorder	ConsoleDeviceExists	same slot between linked calls in 00765270=ConsoleWrite
@@ -1641,7 +1646,7 @@ addr	how	frozen	evidence
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
+0081b330	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
 0081b380	callgraph	FrameScript_Object::RegisterScriptEvent	only unmatched callee of 0049efe0=CSimpleFrame_RegisterEvent
 0081b410	callgraph	FrameScript_Object::UnregisterScriptEvent	only unmatched callee of 0049f060=CSimpleFrame_UnregisterEvent
 0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d8c60=CGlueMgr::CreateCharacter
@@ -1674,6 +1679,7 @@ addr	how	frozen	evidence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
 00826dd0	override	CM2Model::SetSecondaryBoneSequence	
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
+00831bb0	callgraph	CM2Model::ApplySequencePlayBack	only unmatched callee of 0083d840=CM2Shared::SequenceLoadedCallback
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00832640	override	CM2Model::~CM2Model	
@@ -1691,7 +1697,7 @@ addr	how	frozen	evidence
 0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector
 0084d420	callorder	luaO_rawequalObj	same slot between linked calls in 0085bd70=findindex, 0085c470=luaH_get
 0084d480	callgraph	luaO_str2d	only unmatched callee of 00856e50=luaV_tonumber
-0084d520	order	pushstr	definition order between luaO_str2d and luaO_pushvfstring in vendor/lua-5.1.3/src/lobject.c
+0084d520	callgraph	pushstr	only unmatched callee of 0084d580=luaO_pushvfstring
 0084d580	callgraph	luaO_pushvfstring	only unmatched callee of 0084e3a0=lua_pushvfstring
 0084d840	callgraph	errorlimit	only unmatched callee of 0085efb0=indexupvalue
 0084d860	string	luaO_chunkid	unique "[string ""
@@ -1699,7 +1705,7 @@ addr	how	frozen	evidence
 0084dab0	callgraph	lua_checkstack	only unmatched callee of 004df110=Script_GetRealmCategories, 0084f2c0=luaL_checkstack
 0084db10	callorder	lua_xmove	same slot between linked calls in 00854da0=luaB_cocreate
 0084db90	callorder	lua_newthread	same slot between linked calls in 00854da0=luaB_cocreate
-0084dbd0	callgraph	lua_gettop	only unmatched callee of 008548f0=luaB_select
+0084dbd0	callgraph	lua_gettop	only unmatched callee of 00851640=math_random, 008548f0=luaB_select
 0084dbf0	override	lua_settop	
 0084dc50	callorder	lua_remove	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819ea0=FrameScript_Execute
@@ -1708,7 +1714,7 @@ addr	how	frozen	evidence
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004e06f0=Script_GetFactionForRace, 004fbd90=Script_GetChatWindowInfo, 0061d040=CGTooltip_SetMinimumWidth
+0084df20	callgraph	lua_isnumber	only unmatched callee of 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter, 0061d040=CGTooltip_SetMinimumWidth
 0084df60	callgraph	lua_isstring	only unmatched callee of 004dc260=Script_DefaultServerLogin, 004e0c60=Script_CreateCharacter
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
@@ -1724,7 +1730,7 @@ addr	how	frozen	evidence
 0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004dbe60=Script_GetBuildInfo, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
-0084e3d0	callgraph	tag_error	only unmatched callee of 0084fb60=luaL_checkinteger
+0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
 0084e4d0	override	lua_pushboolean	
 0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
@@ -1736,7 +1742,7 @@ addr	how	frozen	evidence
 0084e6e0	callorder	lua_createtable	same slot between linked calls in 0084f3b0=luaL_findtable, 00854b20=luaB_newproxy
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084e7a0	order	lua_getfenv	definition order between lua_getmetatable and lua_settable in vendor/lua-5.1.3/src/lapi.c
-0084e8d0	callorder	lua_settable	same slot between linked calls in 00488670=CScriptRegion::LoadXML, 0060a510=Script_FillLocalizedClassList
+0084e8d0	callgraph	lua_settable	only unmatched callee of 0060a510=Script_FillLocalizedClassList
 0084e900	callorder	lua_setfield	same slot between linked calls in 00851760=luaopen_math
 0084e970	override	lua_rawset	
 0084ea00	override	lua_rawseti	
@@ -1767,7 +1773,7 @@ addr	how	frozen	evidence
 0084f8b0	string	luaL_argerror	unique "bad argument #%d (%s)"
 0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 008529a0=str_dump, 008542c0=luaB_setmetatable
 0084f9c0	string	luaL_checkany	unique "value expected"
-0084f9f0	callorder	luaL_checklstring	same slot between linked calls in 00818070=FrameScript_Sprintf, 00852800=str_byte, 00854100=luaB_tonumber
+0084f9f0	callgraph	luaL_checklstring	only unmatched callee of 00854100=luaB_tonumber
 0084fa50	callorder	luaL_optlstring	same slot between linked calls in 00851c30=tconcat, 00854810=luaB_assert
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
@@ -1972,7 +1978,7 @@ addr	how	frozen	evidence
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
 0087ebc0	override	SEDiskSound::SEDiskSound	
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
-0088b9c0	callorder	TSBaseArray<CharacterSelectionDisplay>::operator[]	same slot between linked calls in 004e33a0=Script_DeleteCharacter
+0088b9c0	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049e9d0=CSimpleFrame_SetFrameLevel, 0049fb00=CSimpleFrame_SetID
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
@@ -2033,9 +2039,9 @@ addr	how	frozen	evidence
 008d1850	callgraph	TSBaseArray<SEDRIVERNAME>::operator[]	only unmatched callee of 008783b0=SESound::GetInputDriverName
 008e5250	annotated	SwallowEventHandler	tag in src/gx/LoadingScreen.cpp
 0095db80	string	CSimpleMovieFrame::GetScriptByName	unique "OnMovieFinished"
-0095eba0	callgraph	CSimpleMovieFrame::RunOnMovieFinishedScript	only unmatched callee of 00970730=CSimpleMovieFrame_StopMovie
 0095f420	string	CSimpleModel::GetScriptByName	unique "OnAnimFinished"
 0095f5e0	callgraph	CSimpleModel::SetSequence	only unmatched callee of 009607e0=CSimpleModel_SetSequence
+0095f610	callgraph	CSimpleModel::SetSequenceTime	only unmatched callee of 009608b0=CSimpleModel_SetSequenceTime
 0095f800	string	CSimpleModel::LoadXML	unique "FogColor"
 0095f9f0	callgraph	CSimpleModel::SetCameraByIndex	only unmatched callee of 00960970=CSimpleModel_SetCamera
 00960420	callgraph	FrameScript_GetColor	only unmatched callee of 009611a0=CSimpleModel_SetFogColor
@@ -2068,15 +2074,19 @@ addr	how	frozen	evidence
 00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 00976b40=CSimpleCheckbox_SetChecked
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
 009628f0	string	CSimpleEditBox::GetScriptByName	unique "OnCharComposition"
+00963140	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 00976080=CSimpleEditBox_HighlightText
+00963350	callgraph	CSimpleEditBox::SetCursorPosition	only unmatched callee of 009769a0=CSimpleEditBox_SetCursorPosition
+00963390	callgraph	CSimpleEditBox::RunOnEditFocusLostScript	only unmatched callee of 009651f0=CSimpleEditBox::ClearKeyboardFocus
 00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
-00965120	callorder	CSimpleEditBox::SetKeyboardFocus	same slot between linked calls in 00976410=CSimpleEditBox_SetFocus
-009651f0	callorder	CSimpleEditBox::ClearKeyboardFocus	same slot between linked calls in 00976450=CSimpleEditBox_ClearFocus
+00965120	callgraph	CSimpleEditBox::SetKeyboardFocus	only unmatched callee of 00976410=CSimpleEditBox_SetFocus
+009651f0	callgraph	CSimpleEditBox::ClearKeyboardFocus	only unmatched callee of 00976450=CSimpleEditBox_ClearFocus
 00965f20	annotated	CSimpleEditBox::SetMultiLine	tag in src/ui/simple/CSimpleEditBox.cpp
-00966580	callorder	CSimpleEditBox::SetText	same slot between linked calls in 00975e80=CSimpleEditBox_SetText
+00966580	callgraph	CSimpleEditBox::SetText	only unmatched callee of 00975e80=CSimpleEditBox_SetText
 00966fd0	annotated	CSimpleEditBox::SetHistoryLines	tag in src/ui/simple/CSimpleEditBox.cpp
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
+009698e0	callgraph	CSimpleScrollingMessageFrame::SetMaxLines	only unmatched callee of 009737f0=CSimpleScrollingMessageFrame_SetMaxLines
 0096a920	callgraph	CSimpleScrollingMessageFrame::ScrollToTop	only unmatched callee of 009733f0=CSimpleScrollingMessageFrame_ScrollToTop
 0096a950	callgraph	CSimpleScrollingMessageFrame::ScrollToBottom	only unmatched callee of 00973430=CSimpleScrollingMessageFrame_ScrollToBottom
 0096b0b0	string	CSimpleScrollFrame::GetScriptByName	unique "OnHorizontalScroll"
