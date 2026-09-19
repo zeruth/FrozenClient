@@ -841,7 +841,7 @@ addr	how	frozen	evidence
 00516410	table	Script_GetInstanceLockTimeRemainingEncounter	binding "GetInstanceLockTimeRemainingEncounter" in s_ScriptFunctions ~ table 00ac80b0
 005164b0	annotated	Script_GetSummonConfirmTimeLeft	tag in src/ui/game/GameScript.cpp
 00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac80b0
-00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac80b0
+00516580	annotated	Script_GetSummonConfirmAreaName	tag in src/ui/game/GameScript.cpp
 005165e0	table	Script_GetNumTitles	binding "GetNumTitles" in s_ScriptFunctions ~ table 00ac80b0
 00516610	annotated	Script_RandomRoll	tag in src/ui/game/GameScript.cpp
 005166f0	table	Script_OpeningCinematic	binding "OpeningCinematic" in s_ScriptFunctions ~ table 00ac80b0

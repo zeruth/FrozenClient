@@ -1003,6 +1003,7 @@ int32_t Script_GetReleaseTimeRemaining(lua_State* L) {
 static uint32_t s_corpseRecoveryDeadlineMs = 0;      // ref: DAT_00bd0850
 static uint32_t s_instanceBootDeadlineMs = 0;        // ref: DAT_00bd0854
 static uint32_t s_summonConfirmDeadlineMs = 0;       // ref: DAT_00bd0864
+static int32_t s_summonConfirmAreaID = 0;            // ref: DAT_00bd0868
 static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
 
 static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs) {
@@ -1049,8 +1050,16 @@ int32_t Script_GetSummonConfirmSummoner(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00516580
+// The reference reads field +0x2c of the AreaTable record, which is m_areaName in frozen's layout
+// -- eleven dwords in, exactly where it lands. An id outside the table answers with an empty
+// string rather than nil, so a caller concatenating the result never sees a Lua error.
 int32_t Script_GetSummonConfirmAreaName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto rec = g_areaTableDB.GetRecord(s_summonConfirmAreaID);
+
+    lua_pushstring(L, (rec && rec->m_areaName) ? rec->m_areaName : "");
+
+    return 1;
 }
 
 int32_t Script_ConfirmSummon(lua_State* L) {
