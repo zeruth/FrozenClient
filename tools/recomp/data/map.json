@@ -32366,20 +32366,20 @@
   "whoaSize": 266
  },
  "0096e9c0": {
-  "branchRatio": 0.106,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.094,
+  "branchRatio": 0.985,
+  "constOverlap": 0.962,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/Util.cpp",
    "src/ui/util.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 1741,
   "status": "ported",
   "whoa": "StringToClickAction",
-  "whoaSize": 222
+  "whoaSize": 2488
  },
  "0096f200": {
   "branchRatio": 1.0,

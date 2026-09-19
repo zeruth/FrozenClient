@@ -95,6 +95,10 @@ bool StringToBOOL(lua_State* L, int32_t idx, int32_t def) {
     }
 }
 
+// ref: FUN_0096e9c0
+// The reference compares all 64 names in this order; ButtonNDown is bit N-1 and ButtonNUp is
+// bit N+30, so the down bits are 0..30 and the up bits 31..61. AnyDown and AnyUp are the two
+// masks, and AnyUp sets bits 31..63 as the reference writes it.
 uint64_t StringToClickAction(const char* string) {
     if (!string || !*string) {
         return 0;
@@ -113,7 +117,7 @@ uint64_t StringToClickAction(const char* string) {
     }
 
     if (!SStrCmpI(string, "MiddleButtonUp")) {
-        return 0;
+        return 0x100000000ull;
     }
 
     if (!SStrCmpI(string, "RightButtonDown")) {
@@ -121,10 +125,240 @@ uint64_t StringToClickAction(const char* string) {
     }
 
     if (!SStrCmpI(string, "RightButtonUp")) {
-        return 0;
+        return 0x200000000ull;
     }
 
-    // TODO remaining buttons
+    if (!SStrCmpI(string, "Button4Down")) {
+        return 8;
+    }
+
+    if (!SStrCmpI(string, "Button4Up")) {
+        return 0x400000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button5Down")) {
+        return 0x10;
+    }
+
+    if (!SStrCmpI(string, "Button5Up")) {
+        return 0x800000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button6Down")) {
+        return 0x20;
+    }
+
+    if (!SStrCmpI(string, "Button6Up")) {
+        return 0x1000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button7Down")) {
+        return 0x40;
+    }
+
+    if (!SStrCmpI(string, "Button7Up")) {
+        return 0x2000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button8Down")) {
+        return 0x80;
+    }
+
+    if (!SStrCmpI(string, "Button8Up")) {
+        return 0x4000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button9Down")) {
+        return 0x100;
+    }
+
+    if (!SStrCmpI(string, "Button9Up")) {
+        return 0x8000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button10Down")) {
+        return 0x200;
+    }
+
+    if (!SStrCmpI(string, "Button10Up")) {
+        return 0x10000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button11Down")) {
+        return 0x400;
+    }
+
+    if (!SStrCmpI(string, "Button11Up")) {
+        return 0x20000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button12Up")) {
+        return 0x40000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button12Down")) {
+        return 0x800;
+    }
+
+    if (!SStrCmpI(string, "Button13Up")) {
+        return 0x80000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button13Down")) {
+        return 0x1000;
+    }
+
+    if (!SStrCmpI(string, "Button14Up")) {
+        return 0x100000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button14Down")) {
+        return 0x2000;
+    }
+
+    if (!SStrCmpI(string, "Button15Up")) {
+        return 0x200000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button15Down")) {
+        return 0x4000;
+    }
+
+    if (!SStrCmpI(string, "Button16Up")) {
+        return 0x400000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button16Down")) {
+        return 0x8000;
+    }
+
+    if (!SStrCmpI(string, "Button17Up")) {
+        return 0x800000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button17Down")) {
+        return 0x10000;
+    }
+
+    if (!SStrCmpI(string, "Button18Up")) {
+        return 0x1000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button18Down")) {
+        return 0x20000;
+    }
+
+    if (!SStrCmpI(string, "Button19Up")) {
+        return 0x2000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button19Down")) {
+        return 0x40000;
+    }
+
+    if (!SStrCmpI(string, "Button20Down")) {
+        return 0x80000;
+    }
+
+    if (!SStrCmpI(string, "Button20Up")) {
+        return 0x4000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button21Down")) {
+        return 0x100000;
+    }
+
+    if (!SStrCmpI(string, "Button21Up")) {
+        return 0x8000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button22Up")) {
+        return 0x10000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button22Down")) {
+        return 0x200000;
+    }
+
+    if (!SStrCmpI(string, "Button23Up")) {
+        return 0x20000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button23Down")) {
+        return 0x400000;
+    }
+
+    if (!SStrCmpI(string, "Button24Up")) {
+        return 0x40000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button24Down")) {
+        return 0x800000;
+    }
+
+    if (!SStrCmpI(string, "Button25Up")) {
+        return 0x80000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button25Down")) {
+        return 0x1000000;
+    }
+
+    if (!SStrCmpI(string, "Button26Up")) {
+        return 0x100000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button26Down")) {
+        return 0x2000000;
+    }
+
+    if (!SStrCmpI(string, "Button27Up")) {
+        return 0x200000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button27Down")) {
+        return 0x4000000;
+    }
+
+    if (!SStrCmpI(string, "Button28Up")) {
+        return 0x400000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button28Down")) {
+        return 0x8000000;
+    }
+
+    if (!SStrCmpI(string, "Button29Up")) {
+        return 0x800000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button29Down")) {
+        return 0x10000000;
+    }
+
+    if (!SStrCmpI(string, "Button30Down")) {
+        return 0x20000000;
+    }
+
+    if (!SStrCmpI(string, "Button30Up")) {
+        return 0x1000000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "Button31Down")) {
+        return 0x40000000;
+    }
+
+    if (!SStrCmpI(string, "Button31Up")) {
+        return 0x2000000000000000ull;
+    }
+
+    if (!SStrCmpI(string, "AnyDown")) {
+        return 0x7FFFFFFF;
+    }
+
+    if (!SStrCmpI(string, "AnyUp")) {
+        return 0xFFFFFFFF80000000ull;
+    }
 
     return 0;
 }

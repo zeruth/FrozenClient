@@ -161531,9 +161531,125 @@
 "SStrCmpI",
 "SStrCmpI",
 "SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
+"SStrCmpI",
 "SStrCmpI"
 ],
 "strings": [
+"AnyDown",
+"AnyUp",
+"Button10Down",
+"Button10Up",
+"Button11Down",
+"Button11Up",
+"Button12Down",
+"Button12Up",
+"Button13Down",
+"Button13Up",
+"Button14Down",
+"Button14Up",
+"Button15Down",
+"Button15Up",
+"Button16Down",
+"Button16Up",
+"Button17Down",
+"Button17Up",
+"Button18Down",
+"Button18Up",
+"Button19Down",
+"Button19Up",
+"Button20Down",
+"Button20Up",
+"Button21Down",
+"Button21Up",
+"Button22Down",
+"Button22Up",
+"Button23Down",
+"Button23Up",
+"Button24Down",
+"Button24Up",
+"Button25Down",
+"Button25Up",
+"Button26Down",
+"Button26Up",
+"Button27Down",
+"Button27Up",
+"Button28Down",
+"Button28Up",
+"Button29Down",
+"Button29Up",
+"Button30Down",
+"Button30Up",
+"Button31Down",
+"Button31Up",
+"Button4Down",
+"Button4Up",
+"Button5Down",
+"Button5Up",
+"Button6Down",
+"Button6Up",
+"Button7Down",
+"Button7Up",
+"Button8Down",
+"Button8Up",
+"Button9Down",
+"Button9Up",
 "LeftButtonDown",
 "LeftButtonUp",
 "MiddleButtonDown",
@@ -161543,16 +161659,76 @@
 ],
 "consts": [
 "0",
+"0x10",
+"0x100",
+"0x1000",
+"0x10000",
+"0x100000",
+"0x1000000",
+"0x10000000",
+"0x1000000000000000ull",
+"0x100000000000000ull",
+"0x10000000000000ull",
+"0x1000000000000ull",
+"0x100000000000ull",
+"0x10000000000ull",
+"0x1000000000ull",
+"0x100000000ull",
+"0x20",
+"0x200",
+"0x2000",
+"0x20000",
+"0x200000",
+"0x2000000",
+"0x20000000",
+"0x2000000000000000ull",
+"0x200000000000000ull",
+"0x20000000000000ull",
+"0x2000000000000ull",
+"0x200000000000ull",
+"0x20000000000ull",
+"0x2000000000ull",
+"0x200000000ull",
+"0x40",
+"0x400",
+"0x4000",
+"0x40000",
+"0x400000",
+"0x4000000",
+"0x40000000",
+"0x400000000000000ull",
+"0x40000000000000ull",
+"0x4000000000000ull",
+"0x400000000000ull",
+"0x40000000000ull",
+"0x4000000000ull",
+"0x400000000ull",
+"0x7FFFFFFF",
+"0x80",
+"0x800",
+"0x8000",
+"0x80000",
+"0x800000",
+"0x8000000",
 "0x80000000",
+"0x800000000000000ull",
+"0x80000000000000ull",
+"0x8000000000000ull",
+"0x800000000000ull",
+"0x80000000000ull",
+"0x8000000000ull",
+"0x800000000ull",
+"0xFFFFFFFF80000000ull",
 "1",
 "2",
-"4"
+"4",
+"8"
 ],
-"branches": 7,
+"branches": 65,
 "stub": false,
-"lines": 33,
+"lines": 263,
 "refs": [],
-"line": 98
+"line": 102
 },
 "StringToDrawLayer": {
 "files": [
@@ -161573,7 +161749,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 132
+"line": 366
 },
 "FramePointToString": {
 "files": [
@@ -161598,7 +161774,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 157
+"line": 391
 },
 "StringToFramePoint": {
 "files": [
@@ -161623,7 +161799,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 173
+"line": 407
 },
 "StringToTooltipAnchor": {
 "files": [
@@ -161638,7 +161814,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 218
+"line": 452
 },
 "TooltipAnchorToString": {
 "files": [
@@ -161651,7 +161827,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 229
+"line": 463
 },
 "FrameStrataToString": {
 "files": [
@@ -161676,7 +161852,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 239
+"line": 473
 },
 "StringToFrameStrata": {
 "files": [
@@ -161700,7 +161876,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 259
+"line": 493
 },
 "StringToJustify": {
 "files": [
@@ -161729,7 +161905,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 287
+"line": 521
 },
 "StringToOrientation": {
 "files": [
@@ -161747,7 +161923,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 312
+"line": 546
 },
 "JustifyToString": {
 "files": [
@@ -161775,7 +161951,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 334
+"line": 568
 },
 "CStatus::~CStatus": {
 "files": [

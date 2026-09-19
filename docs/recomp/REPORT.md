@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-19 03:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 04:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -12,14 +12,14 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | &nbsp;&nbsp;ported | 1706 (=) | 341.9k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **683 (=) (2.5%)** | **85.3k (1.5%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **684 (=) (2.5%)** | **87.0k (1.6%)** |
 | unmapped | 24907 | 4.94M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 312 (=) (5.6%) | |
 | whoa functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 228, callgraph 133, callorder 129, cvar 30, handler 27, order 321, override 141, string 347, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 229, callgraph 133, callorder 129, cvar 30, handler 27, order 321, override 141, string 346, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 03:52 -- mapped 2254, ported 1706, stub 524, spine mapped 312.
+Previous run: 2026-09-19 04:39 -- mapped 2254, ported 1706, stub 524, spine mapped 312.
 
 ## Lua API coverage (binding tables)
 
@@ -577,7 +577,6 @@ A reference function that formats, asserts or looks up a string its port does no
 |---|---|---|
 | 00877aa0 | `FMOD_ErrorString` | A CDDA read error occurred. ; A HTTP error occurred. This is a catch-all for HTT; A HTTP server error occurred. ; A Win32 COM related error occured. COM failed to i |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
-| 0096e9c0 | `StringToClickAction` | AnyDown; AnyUp; Button10Down; Button10Up |
 | 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
@@ -615,6 +614,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
 | 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
+| 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
 
 ## Largest whoa functions with no reference link
 
@@ -678,7 +678,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
-| 0096e9c0 | `StringToClickAction` | 9% | 64 | 6 | 66 | 7 | 0% | 1741 |
 | 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 0085e600 | `llex` | 69% | 39 | 34 | 39 | 46 | 0% | 1520 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
@@ -709,6 +708,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
 | 0076a220 | `CVGxResolutionCallback` | 30% | 20 | 22 | 25 | 12 | 40% | 856 |
 | 0061eb40 | `CGTooltip_SetOwner` | 30% | 33 | 14 | 25 | 4 | 0% | 836 |
+| 008bfe80 | `EffectGlow::EffectGlow` | 4% | 28 | 1 | 19 | 0 | 0% | 834 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -789,7 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 23:21 | 1656 (6.1%) | 327 (1.2%) | 463 | 193/5530 | 936/2512 | 446 |
 | 2026-09-18 23:22 | 1661 (6.1%) | 330 (1.2%) | 463 | 194/5530 | 936/2512 | 446 |
 | 2026-09-18 23:23 | 1668 (6.1%) | 336 (1.2%) | 463 | 203/5530 | 936/2512 | 446 |
 | 2026-09-18 23:26 | 1814 (6.7%) | 429 (1.6%) | 463 | 250/5530 | 936/2512 | 446 |
@@ -813,7 +812,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 03:46 | 2247 (8.3%) | 681 (2.5%) | 524 | 311/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:47 | 2248 (8.3%) | 681 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
-| 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
+| 2026-09-19 04:39 | 2254 (8.3%) | 684 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
+| 2026-09-19 04:39 | 2254 (8.3%) | 684 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

@@ -2046,7 +2046,7 @@ addr	how	whoa	evidence
 0096da40	string	CSimpleHTML::LoadXML	unique "FontStringHeader1"
 0096dc50	string	CSimpleColorSelect::GetScriptByName	unique "OnColorSelect"
 0096e880	string	CSimpleColorSelect::LoadXML	unique "ColorValueTexture"
-0096e9c0	string	StringToClickAction	unique "LeftButtonDown"
+0096e9c0	annotated	StringToClickAction	tag in src/ui/Util.cpp
 0096f200	string	CSimpleButton::GetScriptByName	unique "OnClick"
 0096f3c0	override	CSimpleButton::SetHighlight	
 0096f4a0	override	CSimpleButton::SetFontString	
