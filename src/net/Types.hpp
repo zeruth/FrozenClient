@@ -814,6 +814,12 @@ enum NETMESSAGE {
     CMSG_MAELSTROM_INVALIDATE_CACHE     = 0x0387,
     SMSG_FLIGHT_SPLINE_SYNC             = 0x0388,
     CMSG_SET_TAXI_BENCHMARK_MODE        = 0x0389,
+    // Read off FUN_005166f0 (OpeningCinematic) and FUN_0051d600 (SetAllowLowLevelRaid). The values
+    // are from the reference; the names are descriptive, since the protocol's own names for them
+    // are not recorded anywhere this port can check.
+    CMSG_OPENING_CINEMATIC              = 0x00F9,
+    CMSG_SET_ALLOW_LOW_LEVEL_RAID_ON    = 0x0508,
+    CMSG_SET_ALLOW_LOW_LEVEL_RAID_OFF   = 0x0509,
     SMSG_JOINED_BATTLEGROUND_QUEUE      = 0x038A,
     SMSG_REALM_SPLIT                    = 0x038B,
     CMSG_REALM_SPLIT                    = 0x038C,

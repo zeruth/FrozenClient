@@ -1,6 +1,9 @@
 #include "util/Lua.hpp"
 #include "ui/game/BattlefieldInfoScript.hpp"
 #include "ui/game/CGBattlefieldInfo.hpp"
+#include <common/DataStore.hpp>
+#include "client/ClientServices.hpp"
+#include "net/Types.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -170,8 +173,14 @@ int32_t Script_SortBattlefieldScoreData(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0054c7a0
 int32_t Script_HearthAndResurrectFromArea(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_HEARTH_AND_RESURRECT));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_CanHearthAndResurrectFromArea(lua_State* L) {

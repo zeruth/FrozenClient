@@ -13642,20 +13642,20 @@
   "status": "ported"
  },
  "005166f0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_OpeningCinematic",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "00516760": {
   "branchRatio": 0.0,
@@ -13980,20 +13980,20 @@
   "status": "stub"
  },
  "00517b50": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetTaxiBenchmarkMode",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 103,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 140,
-  "status": "stub"
+  "status": "ported"
  },
  "00517c20": {
   "branchRatio": 0.5,
@@ -14528,20 +14528,20 @@
   "status": "ported"
  },
  "0051bca0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetPVPDesired",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 92,
-  "status": "stub"
+  "status": "ported"
  },
  "0051bd00": {
   "branchRatio": 0.5,
@@ -14880,20 +14880,20 @@
   "status": "stub"
  },
  "0051d100": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetTaxiBenchmarkMode",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "0051d1b0": {
   "branchRatio": 0.0,
@@ -14976,36 +14976,36 @@
   "status": "stub"
  },
  "0051d5a0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetAllowLowLevelRaid",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 92,
-  "status": "stub"
+  "status": "ported"
  },
  "0051d600": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.273,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetAllowLowLevelRaid",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 93,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 262,
-  "status": "stub"
+  "status": "ported"
  },
  "0051d9b0": {
   "branchRatio": 0.0,
@@ -17855,20 +17855,20 @@
   "status": "stub"
  },
  "0054c7a0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_HearthAndResurrectFromArea",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "0054c810": {
   "branchRatio": 0.0,

@@ -852,7 +852,7 @@ addr	how	frozen	evidence
 00516580	annotated	Script_GetSummonConfirmAreaName	tag in src/ui/game/GameScript.cpp
 005165e0	table	Script_GetNumTitles	binding "GetNumTitles" in s_ScriptFunctions ~ table 00ac80b0
 00516610	annotated	Script_RandomRoll	tag in src/ui/game/GameScript.cpp
-005166f0	table	Script_OpeningCinematic	binding "OpeningCinematic" in s_ScriptFunctions ~ table 00ac80b0
+005166f0	annotated	Script_OpeningCinematic	tag in src/ui/game/GameScript.cpp
 00516760	table	Script_InCinematic	binding "InCinematic" in s_ScriptFunctions ~ table 00ac80b0
 005167e0	table	Script_IsSubZonePVPPOI	binding "IsSubZonePVPPOI" in s_ScriptFunctions ~ table 00ac80b0
 00516840	annotated	Script_TogglePVP	tag in src/ui/game/GameScript.cpp
@@ -873,7 +873,7 @@ addr	how	frozen	evidence
 00517890	table	Script_GetFrameCPUUsage	binding "GetFrameCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
 005179b0	table	Script_GetAddOnDependencies	binding "GetAddOnDependencies" in s_ScriptFunctions ~ table 00ac80b0
 00517aa0	table	Script_GetMirrorTimerProgress	binding "GetMirrorTimerProgress" in s_ScriptFunctions ~ table 00ac80b0
-00517b50	table	Script_SetTaxiBenchmarkMode	binding "SetTaxiBenchmarkMode" in s_ScriptFunctions ~ table 00ac80b0
+00517b50	annotated	Script_SetTaxiBenchmarkMode	tag in src/ui/game/GameScript.cpp
 00517c20	table	Script_SetUIVisibility	binding "SetUIVisibility" in s_ScriptFunctions ~ table 00ac80b0
 00517c60	table	Script_GetTotemTimeLeft	binding "GetTotemTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
 00517d30	table	Script_IsThreatWarningEnabled	binding "IsThreatWarningEnabled" in s_ScriptFunctions ~ table 00ac80b0
@@ -907,7 +907,7 @@ addr	how	frozen	evidence
 0051b8b0	table	Script_GetRestState	binding "GetRestState" in s_ScriptFunctions ~ table 00ac80b0
 0051b960	table	Script_GetXPExhaustion	binding "GetXPExhaustion" in s_ScriptFunctions ~ table 00ac80b0
 0051ba50	table	Script_GetZonePVPInfo	binding "GetZonePVPInfo" in s_ScriptFunctions ~ table 00ac80b0
-0051bca0	table	Script_GetPVPDesired	binding "GetPVPDesired" in s_ScriptFunctions ~ table 00ac80b0
+0051bca0	annotated	Script_GetPVPDesired	tag in src/ui/game/GameScript.cpp
 0051bd00	table	Script_GetPVPTimer	binding "GetPVPTimer" in s_ScriptFunctions ~ table 00ac80b0
 0051bd60	table	Script_IsPVPTimerRunning	binding "IsPVPTimerRunning" in s_ScriptFunctions ~ table 00ac80b0
 0051bdd0	table	Script_DropItemOnUnit	binding "DropItemOnUnit" in s_ScriptFunctions ~ table 00ac80b0
@@ -929,14 +929,14 @@ addr	how	frozen	evidence
 0051cc10	table	Script_GetMirrorTimerInfo	binding "GetMirrorTimerInfo" in s_ScriptFunctions ~ table 00ac80b0
 0051cd00	table	Script_UseItemByName	binding "UseItemByName" in s_ScriptFunctions ~ table 00ac80b0
 0051cdb0	table	Script_EquipItemByName	binding "EquipItemByName" in s_ScriptFunctions ~ table 00ac80b0
-0051d100	table	Script_GetTaxiBenchmarkMode	binding "GetTaxiBenchmarkMode" in s_ScriptFunctions ~ table 00ac80b0
+0051d100	annotated	Script_GetTaxiBenchmarkMode	tag in src/ui/game/GameScript.cpp
 0051d1b0	table	Script_IsReferAFriendLinked	binding "IsReferAFriendLinked" in s_ScriptFunctions ~ table 00ac80b0
 0051d230	table	Script_CanGrantLevel	binding "CanGrantLevel" in s_ScriptFunctions ~ table 00ac80b0
 0051d2b0	table	Script_CanSummonFriend	binding "CanSummonFriend" in s_ScriptFunctions ~ table 00ac80b0
 0051d330	table	Script_GetTotemInfo	binding "GetTotemInfo" in s_ScriptFunctions ~ table 00ac80b0
 0051d520	table	Script_DestroyTotem	binding "DestroyTotem" in s_ScriptFunctions ~ table 00ac80b0
-0051d5a0	table	Script_GetAllowLowLevelRaid	binding "GetAllowLowLevelRaid" in s_ScriptFunctions ~ table 00ac80b0
-0051d600	table	Script_SetAllowLowLevelRaid	binding "SetAllowLowLevelRaid" in s_ScriptFunctions ~ table 00ac80b0
+0051d5a0	annotated	Script_GetAllowLowLevelRaid	tag in src/ui/game/GameScript.cpp
+0051d600	annotated	Script_SetAllowLowLevelRaid	tag in src/ui/game/GameScript.cpp
 0051d9b0	string	CGGameUI::RegisterGameCVars	unique "Always show item comparison tooltips"
 00521040	string	CGGameUI::RegisterFrameFactories	unique "WorldFrame"
 005216f0	annotated	CGGameUI::DisplayError	tag in src/ui/game/CGGameUIErrors.cpp
@@ -1119,7 +1119,7 @@ addr	how	frozen	evidence
 0054c4d0	table	Script_GetBattlefieldVehicleInfo	binding "GetBattlefieldVehicleInfo" in s_ScriptFunctions ~ table 00acd178
 0054c6e0	table	Script_CanJoinBattlefieldAsGroup	binding "CanJoinBattlefieldAsGroup" in s_ScriptFunctions ~ table 00acd178
 0054c740	table	Script_GetBattlefieldMapIconScale	binding "GetBattlefieldMapIconScale" in s_ScriptFunctions ~ table 00acd178
-0054c7a0	table	Script_HearthAndResurrectFromArea	binding "HearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd178
+0054c7a0	annotated	Script_HearthAndResurrectFromArea	tag in src/ui/game/BattlefieldInfoScript.cpp
 0054c810	table	Script_CanHearthAndResurrectFromArea	binding "CanHearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd178
 0054c870	table	Script_GetNumBattlegroundTypes	binding "GetNumBattlegroundTypes" in s_ScriptFunctions ~ table 00acd178
 0054c8a0	table	Script_GetWorldPVPQueueStatus	binding "GetWorldPVPQueueStatus" in s_ScriptFunctions ~ table 00acd178

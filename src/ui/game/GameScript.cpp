@@ -1354,8 +1354,11 @@ int32_t Script_RandomRoll(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_005166f0
 int32_t Script_OpeningCinematic(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_OPENING_CINEMATIC);
+
+    return 0;
 }
 
 int32_t Script_InCinematic(lua_State* L) {
@@ -1651,8 +1654,35 @@ int32_t Script_SetPVP(lua_State* L) {
     return 0;
 }
 
+// Three player flags the interface asks after. The reference reads CGPlayerData::flags -- one of
+// them as a byte at +10, which is byte two of the same dword -- so the bit numbers below are
+// relative to the whole field. Asserted rather than trusted, the way the combat percentages are.
+static_assert(offsetof(CGPlayerData, flags) == 0x8, "CGPlayerData layout");
+
+enum PLAYER_FLAG {
+    PLAYER_FLAG_PVP_DESIRED       = 0x200,      // bit 9
+    PLAYER_FLAG_LOW_LEVEL_RAID    = 0x10000,    // bit 16
+    PLAYER_FLAG_TAXI_BENCHMARK    = 0x20000,    // bit 17
+};
+
+// Pushes 1 when the flag is set and nil when it is not -- never false, which the reference is
+// careful about and FrameXML distinguishes.
+static int32_t PushPlayerFlag(lua_State* L, uint32_t flag) {
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (data && (data->flags & flag)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0051bca0
 int32_t Script_GetPVPDesired(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushPlayerFlag(L, PLAYER_FLAG_PVP_DESIRED);
 }
 
 int32_t Script_GetPVPTimer(lua_State* L) {
@@ -2451,12 +2481,21 @@ int32_t Script_StopAttack(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00517b50
 int32_t Script_SetTaxiBenchmarkMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_SET_TAXI_BENCHMARK_MODE));
+    // Absent argument means on, which is the reference's default here.
+    msg.Put(static_cast<uint8_t>(StringToBOOL(L, 1, 1)));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
+// ref: FUN_0051d100
 int32_t Script_GetTaxiBenchmarkMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushPlayerFlag(L, PLAYER_FLAG_TAXI_BENCHMARK);
 }
 
 int32_t Script_Dismount(lua_State* L) {
@@ -2698,12 +2737,18 @@ int32_t Script_GetExpansionLevel(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0051d5a0
 int32_t Script_GetAllowLowLevelRaid(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushPlayerFlag(L, PLAYER_FLAG_LOW_LEVEL_RAID);
 }
 
+// ref: FUN_0051d600
 int32_t Script_SetAllowLowLevelRaid(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Two opcodes rather than one with a payload: on and off are separate messages.
+    SendEmptyRequest(StringToBOOL(L, 1, 0) ? CMSG_SET_ALLOW_LOW_LEVEL_RAID_ON
+                                           : CMSG_SET_ALLOW_LOW_LEVEL_RAID_OFF);
+
+    return 0;
 }
 
 }
