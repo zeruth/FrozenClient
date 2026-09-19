@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 11:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 11:58 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2413 (=) (8.9%) | 532.3k (9.6%) |
+| mapped to a frozen function | 2414 (=) (8.9%) | 532.4k (9.6%) |
 | &nbsp;&nbsp;ported | 1940 (=) | 399.2k |
 | &nbsp;&nbsp;stub (unimplemented body) | 447 (=) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **907 (=) (3.3%)** | **115.4k (2.1%)** |
-| unmapped | 24748 | 4.89M |
+| unmapped | 24747 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11440, stubs 840 | |
+| frozen functions (src/, from PDB + source) | 11440, stubs 839 | |
 
-Match evidence: annotated 454, callgraph 171, callorder 126, cvar 30, handler 28, order 321, override 181, string 345, table 757. Module anchors: 1479 assert strings.
+Match evidence: annotated 454, callgraph 171, callorder 126, cvar 30, handler 28, order 321, override 182, string 345, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 11:54 -- mapped 2413, ported 1940, stub 447, spine mapped 388.
+Previous run: 2026-09-19 11:58 -- mapped 2414, ported 1940, stub 447, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 549 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 548 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -39,7 +39,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ad0e88 (GetNumTradeSkills..) | 32 | `s_ScriptFunctions` | 31 | 0 | GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex, GetTradeSkillCooldown, GetTradeSkillIcon, GetTradeSkillNumMade ... |
 | 00acd760 (GetLFGBootProposal..) | 36 | `s_ScriptFunctions` | 30 | 0 | GetLFGBootProposal, SetLFGBootVote, GetLFGQueueStats, GetLastQueueStatusIndex, GetLFGDungeonInfo, GetLFGRandomDungeonInfo ... |
 | 00ac8460 (PickupPlayerMoney..) | 34 | `s_ScriptFunctions` | 0 | 29 |  / stubs: PickupPlayerMoney, HasSoulstone, UseSoulstone, GuildInvite ... |
-| 00ac8710 (GetMouseFocus..) | 34 | `CGTooltipMethods, s_ScriptFunctions` | 0 | 28 |  / stubs: GetItemInfo, GetItemGem, GetExtendedItemInfo, GetItemIcon ... |
+| 00ac8710 (GetMouseFocus..) | 34 | `CGTooltipMethods, s_ScriptFunctions` | 0 | 27 |  / stubs: GetItemInfo, GetItemGem, GetExtendedItemInfo, GetItemFamily ... |
 | 00ac18f8 (IsDone..) | 28 | `ScriptRegionMethods, SimpleFrameMethods` | 23 | 2 | IsDone, IsPlaying, IsPaused, IsStopped, IsDelaying, GetElapsed ... / stubs: HasScript, HookScript |
 | 00acf8d0 (QueryGuildBankTab..) | 29 | `s_ScriptFunctions` | 25 | 0 | QueryGuildBankTab, SetCurrentGuildBankTab, GetCurrentGuildBankTab, GetGuildBankItemInfo, SetGuildBankTabInfo, GetGuildBankItemLink ... |
 | 00acde38 (GetNumBindings..) | 26 | `s_ScriptFunctions` | 0 | 24 |  / stubs: GetNumBindings, GetBinding, SetBinding, SetBindingSpell ... |
@@ -290,7 +290,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SComp.cpp | 83 | 15.1k | 1 (1.2%) | 1.2% | 0 | 0 | 2 |
 | PetInfo.cpp | 69 | 14.8k | 4 (5.8%) | 4.4% | 0 | 0 | 7 |
 | ActionBarFrame.cpp | 64 | 14.7k | 18 (28.1%) | 19.9% | 4 | 0 | 8 |
-| PlayerName.cpp | 71 | 14.6k | 3 (4.2%) | 1.9% | 0 | 0 | 7 |
+| PlayerName.cpp | 71 | 14.6k | 4 (5.6%) | 3.1% | 0 | 0 | 7 |
 | UIMacroOptions.cpp | 93 | 14.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_dsp_pitchshift.cpp | 52 | 14.4k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -788,8 +788,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:29 | 2398 (8.8%) | 892 (3.3%) | 450 | 387/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:33 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:36 | 2397 (8.8%) | 893 (3.3%) | 448 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:37 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
@@ -810,6 +808,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 11:49 | 2411 (8.9%) | 906 (3.3%) | 446 | 388/5530 | 1584/2512 | 550 |
 | 2026-09-19 11:54 | 2413 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 549 |
 | 2026-09-19 11:55 | 2413 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 549 |
+| 2026-09-19 11:58 | 2414 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 548 |
+| 2026-09-19 11:58 | 2414 (8.9%) | 907 (3.3%) | 447 | 388/5530 | 1584/2512 | 548 |
 
 ## How to move a row
 

@@ -10679,7 +10679,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.167,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -11300,16 +11300,16 @@
   "status": "stub"
  },
  "00517020": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetItemIcon",
-  "frozenSize": 75,
+  "frozenSize": 236,
   "how": "override",
   "module": "GameUI.cpp",
   "refSize": 213,
@@ -26207,6 +26207,22 @@
   "module": "PlayerName.cpp",
   "refSize": 78,
   "status": "ported"
+ },
+ "007e7cc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.625,
+  "faithful": false,
+  "fidelity": 0.143,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "CoinIconFormat",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "PlayerName.cpp",
+  "refSize": 177,
+  "status": "diverged"
  },
  "007e7d80": {
   "branchRatio": 1.0,

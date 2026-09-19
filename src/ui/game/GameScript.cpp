@@ -1490,8 +1490,37 @@ int32_t Script_GetExtendedItemInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00517020
+// Despite the name this never touches the item cache: it looks its argument up directly in
+// ItemDisplayInfo and returns that record's first inventory icon, so the argument is a DISPLAY id
+// rather than an item entry. Returns no values at all when the id is not in the table, which is
+// what the reference does.
+//
+// DIVERGENCE: the reference passes the icon name through FUN_0070a910 before formatting it. That is
+// not a string transform -- it is a resolution cache, keyed on the name, that checks whether the
+// file exists and remembers the answer. Frozen has no such cache, so the name goes through as the
+// table spells it, which is the same result whenever the file is present under that name.
+//
+// TODO the string form of the argument goes through the reference's name-or-link resolver
+// (FUN_00709de0), which needs the item cache to turn a name into an id. Numbers only for now.
 int32_t Script_GetItemIcon(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        return 0;
+    }
+
+    auto displayID = static_cast<int32_t>(lua_tonumber(L, 1) + 0.5);
+    auto rec = g_itemDisplayInfoDB.GetRecord(displayID);
+
+    if (!rec || !rec->m_inventoryIcon[0] || !rec->m_inventoryIcon[0][0]) {
+        return 0;
+    }
+
+    char icon[260];
+    SStrPrintf(icon, sizeof(icon), "%s%s%s", ICON_DIRECTORY, *ICON_DIRECTORY ? "\\" : "", rec->m_inventoryIcon[0]);
+
+    lua_pushstring(L, icon);
+
+    return 1;
 }
 
 int32_t Script_GetItemFamily(lua_State* L) {

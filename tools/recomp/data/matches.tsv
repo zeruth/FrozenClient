@@ -1646,6 +1646,7 @@ addr	how	frozen	evidence
 007e4480	override	BlobShadowsBegin	
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
+007e7cc0	override	CoinIconFormat	
 007e7d80	annotated	CoinTextFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	

@@ -1091,7 +1091,7 @@
   },
   "00517020": {
     "frozen": "Script_GetItemIcon",
-    "status": "stub",
-    "note": "Does NOT go through the item cache: it looks the argument up directly in ItemDisplayInfo (bounds at 00ad3d5c/58, index table 00ad3d6c) and returns field +0x14, which is m_inventoryIcon[0] in Frozen's ItemDisplayInfoRec. So the argument is a display id, not an item entry. The icon directory it prefixes is now solved -- see 007e7cc0 -- so the one thing left is FUN_0070a910, which the reference applies to the DBC string before formatting and which has not been decompiled. Everything else about this binding is ready."
+    "status": "diverged",
+    "note": "Ported. Three calls the reference makes are deliberately absent, which is why the call-sequence score is low: the icon directory lookup (see 007e7cc0), the name-resolution cache FUN_0070a910, and the name-or-link resolver FUN_00709de0 that the string form of the argument needs. Two facts worth keeping: the argument is a DISPLAY id and not an item entry, since the lookup goes straight to ItemDisplayInfo rather than the item cache; and FUN_0070a910 is not a string transform but a cache keyed on the icon name that checks the file exists, so passing the name through unchanged gives the same answer whenever the file is present as named."
   }
 }
