@@ -119,3 +119,12 @@ Tooling note: C:\Users\tyler\tools\dump.sh + ghidra-scripts\Dump.java replaces d
 work - one headless run mixes d:<addr> decompile, a:<addr> disassemble a function, x:<addr> raw
 disassembly from an address, r:<addr> references to a data address. Use a:/x: whenever a callee
 takes arguments in registers (FUN_007ed3b0 does), since the decompiler silently drops them.
+
+widget object-type globals (RunicWorldGame.exe) -- the first thing a widget script function does is
+lazily allocate its class's object-type id into a global, so that global names the class and is the
+cheapest way to tell which widget a FUN_ belongs to before tagging it. Recovered 2026-09-19 after
+three tags were aimed at the wrong sibling.
+  DAT_00b4793c  CSimpleTexture          DAT_00dce440  CSimpleStatusBar
+  DAT_00b49984  CSimpleFrame            DAT_00dce4bc  CSimpleScrollFrame
+  DAT_00c5cf4c  CGTooltip               DAT_00dce4d4  CSimpleSlider
+  DAT_00dce650  CSimpleButton

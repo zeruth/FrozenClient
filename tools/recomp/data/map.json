@@ -5490,10 +5490,10 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleModelScript.cpp",
-   "src/ui/simple/csimplemodelscript.cpp"
+   "src/ui/simple/CSimpleFrameScript.cpp",
+   "src/ui/simple/csimpleframescript.cpp"
   ],
-  "frozen": "CSimpleModel_GetScale",
+  "frozen": "CSimpleFrame_GetScale",
   "frozenSize": 54,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
@@ -38294,20 +38294,20 @@
   "status": "ported"
  },
  "00961090": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/object/client/CGUnit_C.cpp",
-   "src/object/client/cgunit_c.cpp"
+   "src/ui/simple/CSimpleModelScript.cpp",
+   "src/ui/simple/csimplemodelscript.cpp"
   ],
-  "frozen": "CGUnit_C::GetModelScale",
-  "frozenSize": 139,
-  "how": "order",
+  "frozen": "CSimpleModel_GetScale",
+  "frozenSize": 75,
+  "how": "table",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
-  "status": "ported"
+  "status": "stub"
  },
  "009610e0": {
   "branchRatio": 0.0,
@@ -39550,11 +39550,11 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleSliderScript.cpp",
-   "src/ui/simple/csimplesliderscript.cpp"
+   "src/ui/simple/CSimpleStatusBarScript.cpp",
+   "src/ui/simple/csimplestatusbarscript.cpp"
   ],
-  "frozen": "CSimpleSlider_GetOrientation",
-  "frozenSize": 57,
+  "frozen": "CSimpleStatusBar_GetOrientation",
+  "frozenSize": 61,
   "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,
@@ -39774,11 +39774,11 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleStatusBarScript.cpp",
-   "src/ui/simple/csimplestatusbarscript.cpp"
+   "src/ui/simple/CSimpleSliderScript.cpp",
+   "src/ui/simple/csimplesliderscript.cpp"
   ],
-  "frozen": "CSimpleStatusBar_GetOrientation",
-  "frozenSize": 61,
+  "frozen": "CSimpleSlider_GetOrientation",
+  "frozenSize": 57,
   "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 70,

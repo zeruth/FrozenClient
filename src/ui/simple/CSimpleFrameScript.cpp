@@ -655,6 +655,7 @@ int32_t CSimpleFrame_GetEffectiveScale(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0049f7d0
 int32_t CSimpleFrame_GetScale(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));

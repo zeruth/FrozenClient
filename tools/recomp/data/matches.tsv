@@ -343,7 +343,7 @@ addr	how	frozen	evidence
 0049f2d0	table	CSimpleFrame_GetAttribute	binding "GetAttribute" in SimpleFrameMethods ~ table 00ac1550
 0049f610	table	CSimpleFrame_SetAttribute	binding "SetAttribute" in SimpleFrameMethods ~ table 00ac1550
 0049f790	table	CSimpleFrame_GetEffectiveScale	binding "GetEffectiveScale" in SimpleFrameMethods ~ table 00ac1550
-0049f7d0	annotated	CSimpleModel_GetScale	tag in src/ui/simple/CSimpleModelScript.cpp
+0049f7d0	annotated	CSimpleFrame_GetScale	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f820	table	CSimpleFrame_SetScale	binding "SetScale" in SimpleFrameMethods ~ table 00ac1550
 0049f900	annotated	CSimpleFrame_GetEffectiveAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f980	annotated	CSimpleFrame_GetAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
@@ -2417,7 +2417,7 @@ addr	how	frozen	evidence
 00960dd0	annotated	CSimpleModel_GetLight	tag in src/ui/simple/CSimpleModelScript.cpp
 00960fc0	annotated	CSimpleModel_GetPosition	tag in src/ui/simple/CSimpleModelScript.cpp
 00961040	annotated	CSimpleModel_GetFacing	tag in src/ui/simple/CSimpleModelScript.cpp
-00961090	order	CGUnit_C::GetModelScale	binding table name GetModelScale, in definition order in src/object/client/CGUnit_C.cpp
+00961090	table	CSimpleModel_GetScale	binding "GetModelScale" in SimpleModelMethods ~ table 00b2cb10
 009610e0	table	CSimpleModel_AdvanceTime	binding "AdvanceTime" in SimpleModelMethods ~ table 00b2cb10
 00961120	annotated	CSimpleModel_ReplaceIconTexture	tag in src/ui/simple/CSimpleModelScript.cpp
 009611a0	table	CSimpleModel_SetFogColor	binding "SetFogColor" in SimpleModelMethods ~ table 00b2cb10
@@ -2495,7 +2495,7 @@ addr	how	frozen	evidence
 00970fd0	table	CSimpleColorSelect_GetColorHSV	binding "GetColorHSV" in SimpleColorSelectMethods ~ table 00b2cd50
 00971050	table	CSimpleColorSelect_SetColorRGB	binding "SetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
 009710d0	table	CSimpleColorSelect_GetColorRGB	binding "GetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
-00971240	annotated	CSimpleSlider_GetOrientation	tag in src/ui/simple/CSimpleSliderScript.cpp
+00971240	annotated	CSimpleStatusBar_GetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971290	table	CSimpleStatusBar_SetOrientation	binding "SetOrientation" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971360	table	CSimpleStatusBar_GetMinMaxValues	binding "GetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
 009713c0	table	CSimpleStatusBar_SetMinMaxValues	binding "SetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
@@ -2509,7 +2509,7 @@ addr	how	frozen	evidence
 009719d0	annotated	CSimpleStatusBar_SetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971a90	table	CSimpleSlider_GetThumbTexture	binding "GetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
 00971b10	table	CSimpleSlider_SetThumbTexture	binding "SetThumbTexture" in SimpleSliderMethods ~ table 00b2ce20
-00971c70	annotated	CSimpleStatusBar_GetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp
+00971c70	annotated	CSimpleSlider_GetOrientation	tag in src/ui/simple/CSimpleSliderScript.cpp
 00971cc0	table	CSimpleSlider_SetOrientation	binding "SetOrientation" in SimpleSliderMethods ~ table 00b2ce20
 00971d90	table	CSimpleSlider_GetMinMaxValues	binding "GetMinMaxValues" in SimpleSliderMethods ~ table 00b2ce20
 00971df0	table	CSimpleSlider_SetMinMaxValues	binding "SetMinMaxValues" in SimpleSliderMethods ~ table 00b2ce20

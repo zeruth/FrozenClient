@@ -230,14 +230,11 @@ int32_t CSimpleModel_GetFacing(lua_State* L) {
     return 1;
 }
 
-// ref: FUN_0049f7d0
+// TODO the model's own GetScale has not been found. FUN_0049f7d0 is NOT it: that one reads the
+// frame object-type global and is CSimpleFrame::GetScale, tagged there. Pushing m_scale here is
+// probably right, but "probably" is what put the wrong tag on it the first time.
 int32_t CSimpleModel_GetScale(lua_State* L) {
-    auto type = CSimpleModel::GetObjectType();
-    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
-
-    lua_pushnumber(L, model->m_scale);
-
-    return 1;
+    WHOA_UNIMPLEMENTED(0);
 }
 
 int32_t CSimpleModel_AdvanceTime(lua_State* L) {
