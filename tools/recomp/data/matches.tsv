@@ -912,7 +912,7 @@ addr	how	frozen	evidence
 0051c150	table	Script_GetItemGem	binding "GetItemGem" in s_ScriptFunctions ~ table 00ac80b0
 0051c2e0	table	Script_GetItemCount	binding "GetItemCount" in s_ScriptFunctions ~ table 00ac80b0
 0051c450	table	Script_IsUsableItem	binding "IsUsableItem" in s_ScriptFunctions ~ table 00ac80b0
-0051c690	table	Script_IsEquippedItem	binding "IsEquippedItem" in s_ScriptFunctions ~ table 00ac80b0
+0051c690	annotated	Script_IsEquippedItem	tag in src/ui/game/GameScript.cpp
 0051c740	table	Script_IsEquippedItemType	binding "IsEquippedItemType" in s_ScriptFunctions ~ table 00ac80b0
 0051c870	table	Script_ItemHasRange	binding "ItemHasRange" in s_ScriptFunctions ~ table 00ac80b0
 0051c9c0	table	Script_IsItemInRange	binding "IsItemInRange" in s_ScriptFunctions ~ table 00ac80b0
@@ -1621,9 +1621,9 @@ addr	how	frozen	evidence
 00625b90	table	CGTooltip_SetSpellByID	binding "SetSpellByID" in CGTooltipMethods ~ table 00ad2ae0
 00625d00	table	CGTooltip_SetGlyph	binding "SetGlyph" in CGTooltipMethods ~ table 00ad2ae0
 00625e10	annotated	CGTooltip_SetUnit	tag in src/ui/game/CGTooltipScript.cpp
-00626240	annotated	CGTooltip_SetUnitAura	tag in src/ui/game/CGTooltipScript.cpp
-006262c0	annotated	CGTooltip_SetUnitBuff	tag in src/ui/game/CGTooltipScript.cpp
-00626350	annotated	CGTooltip_SetUnitDebuff	tag in src/ui/game/CGTooltipScript.cpp
+00626240	override	CGTooltip_SetUnitAura	
+006262c0	override	CGTooltip_SetUnitBuff	
+00626350	override	CGTooltip_SetUnitDebuff	
 006263e0	table	CGTooltip_SetQuestRewardSpell	binding "SetQuestRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 00626440	table	CGTooltip_SetQuestLogRewardSpell	binding "SetQuestLogRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 006264d0	table	CGTooltip_SetEquipmentSet	binding "SetEquipmentSet" in CGTooltipMethods ~ table 00ad2ae0
@@ -1734,6 +1734,7 @@ addr	how	frozen	evidence
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
+00754c30	callorder	PlayerHasEquippedItem	same slot between linked calls in 0051c690=Script_IsEquippedItem
 00763680	annotated	GenerateNodeString	tag in src/console/Screen.cpp
 00763c60	callgraph	ConsoleAccessGetEnabled	only unmatched callee of 004dd450=Script_IsConsoleActive
 00763d80	annotated	CONSOLELINE::~CONSOLELINE	tag in src/console/Screen.cpp

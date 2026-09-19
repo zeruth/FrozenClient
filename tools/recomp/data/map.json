@@ -14608,17 +14608,17 @@
   "status": "stub"
  },
  "0051c690": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_IsEquippedItem",
-  "frozenSize": 21,
-  "how": "table",
+  "frozenSize": 447,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 162,
   "status": "ported"
@@ -25832,10 +25832,10 @@
   ],
   "frozen": "CGTooltip_SetUnitAura",
   "frozenSize": 46,
-  "how": "annotated",
+  "how": "override",
   "module": "Tooltip.cpp",
   "refSize": 124,
-  "status": "ported"
+  "status": "diverged"
  },
  "006262c0": {
   "branchRatio": 0.0,
@@ -25848,10 +25848,10 @@
   ],
   "frozen": "CGTooltip_SetUnitBuff",
   "frozenSize": 46,
-  "how": "annotated",
+  "how": "override",
   "module": "Tooltip.cpp",
   "refSize": 136,
-  "status": "ported"
+  "status": "diverged"
  },
  "00626350": {
   "branchRatio": 0.0,
@@ -25864,10 +25864,10 @@
   ],
   "frozen": "CGTooltip_SetUnitDebuff",
   "frozenSize": 46,
-  "how": "annotated",
+  "how": "override",
   "module": "Tooltip.cpp",
   "refSize": 136,
-  "status": "ported"
+  "status": "diverged"
  },
  "006263e0": {
   "branchRatio": 1.0,
@@ -27616,6 +27616,22 @@
   "how": "annotated",
   "module": "UnitCombatLog_C.cpp",
   "refSize": 565,
+  "status": "ported"
+ },
+ "00754c30": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "PlayerHasEquippedItem",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "Bag_C.cpp",
+  "refSize": 148,
   "status": "ported"
  },
  "00763680": {

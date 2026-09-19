@@ -15,6 +15,8 @@
 #include <common/DataStore.hpp>
 #include "client/ClientServices.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "object/client/ClntObjMgr.hpp"
+#include "object/client/ItemCache.hpp"
 #include "ui/Types.hpp"
 #include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
@@ -1798,9 +1800,71 @@ int32_t Script_IsEquippableItem(lua_State* L) {
     return 1;
 }
 
+// Walks the player's equipped slots -- head through tabard, not the bag slots that follow them --
+// and resolves each to its item object. Matches on entry id when one is given, otherwise on the
+// item's name out of the item cache. The reference has two finders here, one per argument kind,
+// both told to search equipped slots only; this is the pair folded together.
+static bool PlayerHasEquippedItem(int32_t itemID, const char* name) {
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (!data) {
+        return false;
+    }
+
+    for (int32_t slot = EQUIPPED_FIRST; slot <= EQUIPPED_LAST; slot++) {
+        auto guid = data->invSlots[slot];
+
+        if (!guid) {
+            continue;
+        }
+
+        auto object = ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__);
+
+        if (!object) {
+            continue;
+        }
+
+        auto entryID = object->GetEntryID();
+
+        if (itemID) {
+            if (entryID == itemID) {
+                return true;
+            }
+
+            continue;
+        }
+
+        // By name: the item cache answers once the server has been asked, and asks on the first
+        // miss, so an early call reports false and a later one succeeds.
+        auto info = ItemCacheGet(entryID);
+
+        if (info && !info->name.empty() && name && !SStrCmpI(info->name.c_str(), name, STORM_MAX_STR)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0051c690
+// Answers nil rather than false when the item is not equipped, which is what the reference pushes.
+// The placeholder this replaces pushed boolean false, and the two are not interchangeable to a
+// caller that counts returns or compares against nil explicitly.
 int32_t Script_IsEquippedItem(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
+    bool equipped = false;
+
+    if (lua_isnumber(L, 1)) {
+        equipped = PlayerHasEquippedItem(static_cast<int32_t>(lua_tonumber(L, 1)), nullptr);
+    } else if (lua_isstring(L, 1)) {
+        equipped = PlayerHasEquippedItem(0, lua_tostring(L, 1));
+    }
+
+    if (equipped) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
