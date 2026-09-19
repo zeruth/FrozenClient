@@ -1087,5 +1087,10 @@
     "frozen": "Script_GetMouseButtonClicked",
     "status": "stub",
     "note": "Reads the clicked button name from a field at +0x1234 of the global at DAT_00b499a8, which is the current script-invocation context object. Frozen has no equivalent context, and the reference treats a null one as fatal rather than returning nil."
+  },
+  "00517020": {
+    "frozen": "Script_GetItemIcon",
+    "status": "stub",
+    "note": "Does NOT go through the item cache: it looks the argument up directly in ItemDisplayInfo (bounds at 00ad3d5c/58, index table 00ad3d6c) and returns field +0x14, which is m_inventoryIcon[0] in Frozen's ItemDisplayInfoRec. So the argument is a display id, not an item entry. Blocked on exactly the same unknown as GetCoinIcon: both prefix the name with a path from FUN_00634910(3), a lookup returning the string at field +4 of row 3 of a table that has not been identified, joined by a backslash only when the prefix is non-empty. One unknown blocks both."
   }
 }

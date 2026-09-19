@@ -40,6 +40,18 @@ struct ItemInfo {
     int32_t allowableRace = 0;
     int32_t itemLevel = 0;
     int32_t requiredLevel = 0;
+    int32_t requiredSkill = 0;
+    int32_t requiredSkillRank = 0;
+    int32_t requiredSpell = 0;
+    int32_t requiredHonorRank = 0;
+    int32_t requiredCityRank = 0;
+    int32_t requiredReputationFaction = 0;
+    int32_t requiredReputationRank = 0;
+
+    // What GetItemInfo reports as the stack size, and what the bag code needs.
+    int32_t maxCount = 0;
+    int32_t stackable = 0;
+    int32_t containerSlots = 0;
 };
 
 // Returns the record when it is known, or null while the query is in flight or the entry is

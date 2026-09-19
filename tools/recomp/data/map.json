@@ -22635,7 +22635,7 @@
    "src/object/client/ItemCache.cpp"
   ],
   "frozen": "ReceiveItemQueryResponse",
-  "frozenSize": 603,
+  "frozenSize": 849,
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 26,

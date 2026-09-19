@@ -106,6 +106,20 @@ int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, C
     info.allowableRace = GetI32(msg);
     info.itemLevel = GetI32(msg);
     info.requiredLevel = GetI32(msg);
+    info.requiredSkill = GetI32(msg);
+    info.requiredSkillRank = GetI32(msg);
+    info.requiredSpell = GetI32(msg);
+    info.requiredHonorRank = GetI32(msg);
+    info.requiredCityRank = GetI32(msg);
+    info.requiredReputationFaction = GetI32(msg);
+    info.requiredReputationRank = GetI32(msg);
+    info.maxCount = GetI32(msg);
+    info.stackable = GetI32(msg);
+    info.containerSlots = GetI32(msg);
+
+    // That is the whole run of seventeen dwords the reference reads between flags2 and the stat
+    // count. The stat count and everything below it -- stats, damage, spells, the description --
+    // stays in the buffer; extend from here in the order documented in parity-itemcache.md.
 
     info.known = true;
     info.missing = false;
