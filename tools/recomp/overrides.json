@@ -1127,5 +1127,10 @@
     "frozen": "CGTooltip_SetUnitDebuff",
     "status": "diverged",
     "note": "Fills the spell body through TooltipSetSpellRec and stops. The reference fills these from FUN_00625f00, 814 bytes and 24 callees, which adds the remaining duration, the caster and a stack count on top of the spell text. Frozen has no tooltip line for any of those three, so the tooltip shows the spell but not how long is left on it -- a visible gap, recorded rather than papered over with an invented duration line."
+  },
+  "00511200": {
+    "frozen": "Script_GetNumAddOns",
+    "status": "diverged",
+    "note": "the reference counts add-ons found by scanning Interface\\AddOns at startup; frozen loads Blizzard_* add-ons on demand and builds no such list, so this answers zero. Implemented rather than left a stub because AddonList.lua loops to this number."
   }
 }

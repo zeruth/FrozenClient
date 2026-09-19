@@ -28,6 +28,7 @@
 #include "ui/game/CGGameUI.hpp"
 #include "ui/game/Types.hpp"
 #include "ui/simple/CSimpleTop.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
 #include "gx/Screen.hpp"
 #include "util/Filesystem.hpp"
 #include "util/Unimplemented.hpp"
@@ -172,6 +173,9 @@ int32_t Script_GetMouseButtonName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_0050f950 pushes a string kept at +0x1234 of the UI manager -- the name of the
+// button whose click is being dispatched. Frozen passes the button name down through
+// CMouseEvent instead of parking it on the manager, so there is no such field to read.
 int32_t Script_GetMouseButtonClicked(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -256,8 +260,22 @@ int32_t Script_IsDebugBuild(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0050ff30
+// The reference is a one-line forward into the shared registrar (FUN_0050fea0) with its flags
+// argument set to zero; the registrar reads the name and the default value off the stack and
+// registers into the GAME category. The error text comes from a localized string lookup that has
+// not been identified, so a usage line stands in for it.
 int32_t Script_RegisterCVar(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: RegisterCVar(\"cvar\" [, \"value\"])");
+    }
+
+    const char* name = lua_tostring(L, 1);
+    const char* value = lua_tostring(L, 2);
+
+    CVar::Register(name, nullptr, 0, value ? value : "", nullptr, GAME, true, nullptr, true);
+
+    return 0;
 }
 
 // ref: FUN_0050ff50
@@ -1635,6 +1653,9 @@ int32_t Script_ShowCloak(lua_State* L) {
     return PlayerSetGearShown(L, CMSG_SHOWING_CLOAK, PLAYER_FLAGS_HIDE_CLOAK);
 }
 
+// TODO FUN_00510de0 takes the boolean and hands it to a number-formatting flag
+// (FUN_00817da0). Frozen formats numbers without a locale separator setting at all, so
+// there is nothing for this to set yet.
 int32_t Script_SetEuropeanNumbers(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1993,8 +2014,14 @@ int32_t Script_IsItemInRange(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Divergence, not a port. The reference counts the add-ons it found by scanning Interface\\AddOns
+// at startup; frozen loads Blizzard_* add-ons on demand (ui/AddOn.hpp) and never builds that list,
+// so there is no count to report and this answers zero. It cannot stay a stub: AddonList.lua loops
+// from one to this number, and a nil upper bound is a Lua error rather than an empty list.
 int32_t Script_GetNumAddOns(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_GetAddOnInfo(lua_State* L) {
@@ -2413,8 +2440,19 @@ int32_t Script_GameMovieFinished(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00511fb0
+// The reference asks its shader table for the desaturating pixel shader and requires the device to
+// support pixel shaders at all; frozen's GetImageModePixelShader answers both at once, since it
+// returns null when the mode has no compiled shader on this device. Pushes 1 when supported and no
+// values at all when not -- not false, which is what the interface distinguishes on.
 int32_t Script_IsDesaturateSupported(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CSimpleTexture::GetImageModePixelShader(ImageMode_Desaturate)) {
+        return 0;
+    }
+
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 // ref: FUN_0061a4f0

@@ -133,7 +133,7 @@ addr	how	frozen	evidence
 00482d10	callgraph	CSimpleFontString::SetFont	only unmatched callee of 004a3a50=FontString_SetFont
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
 004831d0	callgraph	lua_gettop	only unmatched callee of 0048e170=CSimpleTexture_SetTexCoord
-00483290	callgraph	CSimpleTexture::GetImageModePixelShader	only unmatched callee of 0048ca30=CSimpleTexture_IsDesaturated
+00483290	callgraph	CSimpleTexture::GetImageModePixelShader	only unmatched callee of 00511fb0=Script_IsDesaturateSupported
 00483890	annotated	CSimpleFontString::SetTextHeight	tag in src/ui/simple/CSimpleFontString.cpp
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
@@ -154,7 +154,7 @@ addr	how	frozen	evidence
 00487ab0	annotated	CSimpleFontString::GetTextColor	tag in src/ui/simple/CSimpleFontString.cpp
 00487bf0	override	CSimpleRegion::Hide	
 00487c40	override	CSimpleRegion::Show	
-00487ca0	callorder	CSimpleRegion::OnRegionChanged	same slot between linked calls in 004859e0=CSimpleTexture::SetTexture
+00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481700=CSimpleTexture::SetShader
 00487ed0	callgraph	CSimpleRegion::SetFrame	only unmatched callee of 0048bf30=CSimpleTexture_SetDrawLayer
 004883f0	callorder	CScriptRegion::LoadXML_Animations	same slot between linked calls in 00488670=CScriptRegion::LoadXML
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
@@ -732,7 +732,7 @@ addr	how	frozen	evidence
 0050f950	override	Script_GetMouseButtonClicked	
 0050f990	table	Script_SetConsoleKey	binding "SetConsoleKey" in s_ScriptFunctions ~ table 00ac80b0
 0050fe80	annotated	Script_IsDebugBuild	tag in src/ui/game/GameScript.cpp
-0050ff30	table	Script_RegisterCVar	binding "RegisterCVar" in s_ScriptFunctions ~ table 00ac80b0
+0050ff30	annotated	Script_RegisterCVar	tag in src/ui/game/GameScript.cpp
 0050ff50	annotated	Script_GetCVarInfo	tag in src/ui/game/GameScript.cpp
 00510040	table	Script_GetCVar	binding "GetCVar" in s_ScriptFunctions ~ table 00ac80b0
 005100c0	table	Script_GetCVarBool	binding "GetCVarBool" in s_ScriptFunctions ~ table 00ac80b0
@@ -763,7 +763,7 @@ addr	how	frozen	evidence
 00510fc0	table	Script_GetItemCooldown	binding "GetItemCooldown" in s_ScriptFunctions ~ table 00ac80b0
 005110d0	table	Script_IsCurrentItem	binding "IsCurrentItem" in s_ScriptFunctions ~ table 00ac80b0
 00511150	table	Script_IsEquippableItem	binding "IsEquippableItem" in s_ScriptFunctions ~ table 00ac80b0
-00511200	table	Script_GetNumAddOns	binding "GetNumAddOns" in s_ScriptFunctions ~ table 00ac80b0
+00511200	override	Script_GetNumAddOns	
 00511240	table	Script_GetAddOnInfo	binding "GetAddOnInfo" in s_ScriptFunctions ~ table 00ac80b0
 00511430	table	Script_GetAddOnMetadata	binding "GetAddOnMetadata" in s_ScriptFunctions ~ table 00ac80b0
 00511510	table	Script_UpdateAddOnMemoryUsage	binding "UpdateAddOnMemoryUsage" in s_ScriptFunctions ~ table 00ac80b0
@@ -783,7 +783,7 @@ addr	how	frozen	evidence
 00511d30	table	Script_GetSummonFriendCooldown	binding "GetSummonFriendCooldown" in s_ScriptFunctions ~ table 00ac80b0
 00511dd0	table	Script_GetNumDeclensionSets	binding "GetNumDeclensionSets" in s_ScriptFunctions ~ table 00ac80b0
 00511e80	table	Script_DeclineName	binding "DeclineName" in s_ScriptFunctions ~ table 00ac80b0
-00511fb0	table	Script_IsDesaturateSupported	binding "IsDesaturateSupported" in s_ScriptFunctions ~ table 00ac80b0
+00511fb0	annotated	Script_IsDesaturateSupported	tag in src/ui/game/GameScript.cpp
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d

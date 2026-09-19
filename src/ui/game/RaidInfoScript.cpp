@@ -12,6 +12,8 @@ int32_t Script_GetNumRaidMembers(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_00572b80 reads the dword directly after the one GetNumRaidMembers reads -- a
+// second, separately maintained count in the same block, not the same value.
 int32_t Script_GetRealNumRaidMembers(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

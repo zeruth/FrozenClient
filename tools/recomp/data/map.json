@@ -2474,7 +2474,7 @@
   ],
   "frozen": "CSimpleRegion::OnRegionChanged",
   "frozenSize": 36,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleRender.cpp",
   "refSize": 31,
   "status": "ported"
@@ -11695,11 +11695,11 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_RegisterCVar",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 150,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 20,
-  "status": "stub"
+  "status": "ported"
  },
  "0050ff50": {
   "branchRatio": 0.8,
@@ -12192,7 +12192,7 @@
   "status": "ported"
  },
  "00511200": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
@@ -12203,11 +12203,11 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetNumAddOns",
-  "frozenSize": 97,
-  "how": "table",
+  "frozenSize": 44,
+  "how": "override",
   "module": "ChatFrame.cpp",
   "refSize": 52,
-  "status": "ported"
+  "status": "diverged"
  },
  "00511240": {
   "branchRatio": 0.4,
@@ -12526,20 +12526,20 @@
   "status": "stub"
  },
  "00511fb0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_IsDesaturateSupported",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 48,
-  "status": "stub"
+  "status": "ported"
  },
  "00511fe0": {
   "branchRatio": 1.0,

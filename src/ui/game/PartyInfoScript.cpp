@@ -12,6 +12,9 @@ int32_t Script_GetNumPartyMembers(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_0052c190 reads a standalone counter, not the four-guid array that
+// GetNumPartyMembers counts, so CGPartyInfo::NumMembers() is NOT the answer here. Whatever
+// maintains that counter has to be found first.
 int32_t Script_GetRealNumPartyMembers(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

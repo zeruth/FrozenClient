@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 14:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,27 +9,27 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2679 (=) (9.9%) | 570.2k (10.3%) |
-| &nbsp;&nbsp;ported | 2079 (+2) | 416.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 569 (-2) | 119.5k |
+| &nbsp;&nbsp;ported | 2080 (-1) | 416.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 567 (=) | 119.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **920 (=) (3.4%)** | **116.5k (2.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **921 (=) (3.4%)** | **116.6k (2.1%)** |
 | unmapped | 24482 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11451, stubs 815 | |
+| frozen functions (src/, from PDB + source) | 11451, stubs 813 | |
 
-Match evidence: annotated 497, callgraph 185, callorder 125, cvar 30, handler 28, order 190, override 188, string 314, table 1122. Module anchors: 1479 assert strings.
+Match evidence: annotated 499, callgraph 186, callorder 124, cvar 30, handler 28, order 190, override 189, string 314, table 1119. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:03 -- mapped 2679, ported 2077, stub 571, spine mapped 392.
+Previous run: 2026-09-19 14:20 -- mapped 2679, ported 2081, stub 567, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 633 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 631 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
-| 00ac80b0 (FrameXML_Debug..) | 310 | `s_ScriptFunctions` | 0 | 196 |  / stubs: FrameXML_Debug, ReloadUI, RegisterForSave, RegisterForSavePerCharacter ... |
+| 00ac80b0 (FrameXML_Debug..) | 310 | `s_ScriptFunctions` | 0 | 194 |  / stubs: FrameXML_Debug, ReloadUI, RegisterForSave, RegisterForSavePerCharacter ... |
 | 00ad0030 (CalendarGetMonthNames..) | 95 | `s_ScriptFunctions` | 93 | 0 | CalendarGetMonthNames, CalendarGetWeekdayNames, CalendarGetMinDate, CalendarGetMaxDate, CalendarGetMinHistoryDate, CalendarGetMaxCreateDate ... |
 | 00ac7a58 (SendChatMessage..) | 89 | `s_ScriptFunctions` | 73 | 0 | SendChatMessage, SendAddonMessage, SendSystemMessage, GetLanguageByIndex, GetDefaultLanguage, DoEmote ... |
 | 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 63 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
@@ -154,7 +154,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameUI.cpp | 491 | 96.4k | 194 (39.5%) | 44.6% | 119 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 71 (47.0%) | 28.4% | 41 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 27 | 2 | 36 |
+| ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 25 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
@@ -739,8 +739,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 12:37 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
-| 2026-09-19 12:41 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:52 | 2433 (9.0%) | 916 (3.4%) | 445 | 389/5530 | 1584/2512 | 553 |
 | 2026-09-19 12:56 | 2437 (9.0%) | 917 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 13:02 | 2440 (9.0%) | 917 (3.4%) | 446 | 389/5530 | 1584/2512 | 545 |
@@ -764,6 +762,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 13:58 | 2679 (9.9%) | 920 (3.4%) | 573 | 392/5530 | 1791/2964 | 637 |
 | 2026-09-19 14:03 | 2679 (9.9%) | 920 (3.4%) | 571 | 392/5530 | 1791/2964 | 635 |
 | 2026-09-19 14:07 | 2679 (9.9%) | 920 (3.4%) | 569 | 392/5530 | 1791/2964 | 633 |
+| 2026-09-19 14:20 | 2679 (9.9%) | 921 (3.4%) | 567 | 392/5530 | 1791/2964 | 631 |
+| 2026-09-19 14:21 | 2679 (9.9%) | 921 (3.4%) | 567 | 392/5530 | 1791/2964 | 631 |
 
 ## How to move a row
 
