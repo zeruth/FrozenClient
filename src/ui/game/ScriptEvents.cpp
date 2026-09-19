@@ -2111,7 +2111,7 @@ void ScriptEventsInitialize() {
     g_scriptEvents[172] = "SCREENSHOT_FAILED";
     g_scriptEvents[173] = "ACTIONBAR_SHOWGRID";
     g_scriptEvents[174] = "ACTIONBAR_HIDEGRID";
-    g_scriptEvents[175] = "ACTIONBAR_PAGE_CHANGED";
+    g_scriptEvents[SCRIPT_ACTIONBAR_PAGE_CHANGED] = "ACTIONBAR_PAGE_CHANGED";
     g_scriptEvents[SCRIPT_ACTIONBAR_SLOT_CHANGED] = "ACTIONBAR_SLOT_CHANGED";
     g_scriptEvents[177] = "ACTIONBAR_UPDATE_STATE";
     g_scriptEvents[178] = "ACTIONBAR_UPDATE_USABLE";

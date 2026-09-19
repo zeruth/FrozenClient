@@ -9,7 +9,11 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "client/ClientServices.hpp"
+#include "ui/game/Types.hpp"
 #include "ui/game/CGActionBar.hpp"
+
+// The reference names six in its own range error.
+static const int32_t NUM_ACTIONBAR_PAGES = 6;
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -115,10 +119,25 @@ int32_t Script_GetActionTexture(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005a7d10
 int32_t Script_GetActionCount(lua_State* L) {
-    // The stack size drawn in the corner. Only item actions carry one; a spell is always 0, and
-    // FrameXML hides the count text when it is.
-    lua_pushnumber(L, 0.0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetActionCount(slot)");
+
+        return 0;
+    }
+
+    auto slot = static_cast<int32_t>(lua_tonumber(L, 1) + 0.5) - 1;
+    int32_t count = 0;
+
+    if (slot >= 0 && slot < CGActionBar::NUM_ACTION_BUTTONS) {
+        // TODO the reference reads the stack count for this slot out of a parallel table at
+        // 00c1e118, filled as item counts arrive. Frozen keeps no such table yet, so every slot
+        // reports 0 -- which is what a spell or macro slot reports in the reference anyway.
+        count = 0;
+    }
+
+    lua_pushnumber(L, count);
 
     return 1;
 }
@@ -284,6 +303,7 @@ int32_t Script_IsActionInRange(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005a7f20
 int32_t Script_GetBonusBarOffset(lua_State* L) {
     lua_pushnumber(L, CGActionBar::GetBonusBarOffset());
 
@@ -297,10 +317,29 @@ int32_t Script_GetMultiCastBarOffset(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005a7f60
+// TODO the reference first runs the protected-function check for category 0xe (FUN_005191c0),
+// which refuses the change when the script calling it is tainted. Frozen tracks no taint yet,
+// so the change always goes through.
 int32_t Script_ChangeActionBarPage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto page = static_cast<int32_t>(lua_tonumber(L, 1) + 0.5) - 1;
+
+    if (page < 0 || page >= NUM_ACTIONBAR_PAGES) {
+        luaL_error(L, "ChangeActionBarPage() needs a page in the range 1 to %d", NUM_ACTIONBAR_PAGES);
+
+        return 0;
+    }
+
+    if (page != static_cast<int32_t>(CGActionBar::s_currentPage)) {
+        CGActionBar::s_currentPage = page;
+
+        FrameScript_SignalEvent(SCRIPT_ACTIONBAR_PAGE_CHANGED, nullptr);
+    }
+
+    return 0;
 }
 
+// ref: FUN_005a7fd0
 int32_t Script_GetActionBarPage(lua_State* L) {
     if (CGActionBar::s_tempPageActiveFlags) {
         lua_pushinteger(L, 1);
