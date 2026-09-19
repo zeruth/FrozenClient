@@ -81,6 +81,7 @@ class NetClient : public WowConnectionResponse {
         void SetDelete();
         void SetLoginData(LoginData* loginData);
         void SetMessageHandler(NETMESSAGE msgId, MESSAGE_HANDLER handler, void* param);
+        void ClearMessageHandler(NETMESSAGE msgId);
         void SetObjMgr(ClntObjMgr* objMgr);
 
     private:

@@ -84,6 +84,7 @@ python tools/recomp/recomp.py --next 20 --spine  # 2. decompile the next batch -
 #    Identified-but-not-ported? Still tag it (or add it to overrides.json with a note).
 #    CRT / STL / fmod / nullsub? overrides.json status "excluded" so it leaves the denominator.
 cmake --build build --config Release --target Whoa   # 4. build; install exe + PDB with the timestamp guard
+#    (added a .cpp? also run tools/recomp/refresh-compile-db.bat so clangparse sees it)
 python tools/recomp/recomp.py --pdb                   # 5. re-measure; the totals line prints the delta
 git commit                                            # 6. one scoped commit per cycle; put the delta in the
                                                       #    message, e.g. "linked 1425->1490, faithful 129->160"

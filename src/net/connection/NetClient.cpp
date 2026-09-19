@@ -392,6 +392,12 @@ void NetClient::SetMessageHandler(NETMESSAGE msgId, MESSAGE_HANDLER handler, voi
     this->m_handlerParams[msgId] = param;
 }
 
+// ref: FUN_00631fc0
+void NetClient::ClearMessageHandler(NETMESSAGE msgId) {
+    this->m_handlers[msgId] = nullptr;
+    this->m_handlerParams[msgId] = nullptr;
+}
+
 void NetClient::SetObjMgr(ClntObjMgr* objMgr) {
     this->m_objMgr = objMgr;
 }

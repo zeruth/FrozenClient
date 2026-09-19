@@ -5,6 +5,7 @@
 #include "glue/CGlueMgr.hpp"
 #include "net/Connection.hpp"
 #include "net/Login.hpp"
+#include <storm/Error.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <new>
@@ -407,6 +408,21 @@ void ClientServices::SetCharacterInfo(const CHARACTER_INFO* info) {
 void ClientServices::SetMessageHandler(NETMESSAGE msgId, MESSAGE_HANDLER handler, void* param) {
     STORM_ASSERT(handler);
     ClientServices::Connection()->SetMessageHandler(msgId, handler, param);
+}
+
+// ref: FUN_006b0bc0
+// 604 call sites in the reference, one per opcode: every handler registration has a matching
+// clear on the way out.
+void ClientServices::ClearMessageHandler(NETMESSAGE msgId) {
+    if (ClientServices::s_currentConnection) {
+        ClientServices::s_currentConnection->ClearMessageHandler(msgId);
+
+        return;
+    }
+
+    // The reference's FUN_008889b0("", "", 0): a stripped assert that still terminates
+    SErrPrepareAppFatal("", 0);
+    SErrDisplayAppFatal("%s", "");
 }
 
 int32_t ClientServices::SetSelectedRealmInfo(int32_t a1) {

@@ -325,6 +325,8 @@ def overlay_clang(src):
                              'refs': set(), 'stub': c['stub'], 'lines': c['lines']}
         e['callseq'] = seq
         e['calls'] = set(seq)
+        e['refs'] |= set(c.get('refs', []))  # tags above header-inline definitions, read by clangparse
+        e['files'] |= set(c['files'])
         e['strings'] = set(s for s in c['strings'] if len(s) >= 3 and s not in NOISE_STRINGS)
         e['consts'] = set(c['consts'])
         e['branches'] = c['branches']
@@ -337,6 +339,10 @@ def merge_whoa(pdb, src):
     whoa = {}
     for name, s in src.items():
         p = pdb.get(name)
+        if not p and s['files'] and all(f.endswith(('.hpp', '.h')) for f in s['files']):
+            # defined in a header and inlined at every use: no function in whoa's binary, and the
+            # reference inlined it too. Counting it as a callee would break the callgraph votes.
+            continue
         files = sorted(s['files'])
         parts = files[0].split('/')
         whoa[name] = {'name': name, 'files': files, 'strings': s['strings'], 'calls': s['calls'], 'callseq': s['callseq'],

@@ -1,25 +1,25 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 22:44 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:01 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1654 (+2) (6.1%) | 375.3k (6.8%) |
-| &nbsp;&nbsp;ported | 1169 (+2) | 253.6k |
+| reference (non-thunk) | 27162 | 5.41M |
+| mapped to a whoa function | 1657 (+10) (6.1%) | 375.3k (6.8%) |
+| &nbsp;&nbsp;ported | 1172 (+10) | 253.7k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **327 (+1) (1.2%)** | **45.7k (0.8%)** |
-| unmapped | 25507 | 5.04M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 189 (+2) (3.4%) | |
-| whoa functions (src/, from PDB + source) | 10636, stubs 895 | |
+| **faithful** (linked, not stub, call order >= 80%) | **329 (+9) (1.2%)** | **45.7k (0.8%)** |
+| unmapped | 25505 | 5.04M |
+| world spine (reachable from OnFrameRender) | 5531, mapped 190 (+4) (3.4%) | |
+| whoa functions (src/, from PDB + source) | 10653, stubs 895 | |
 
-Match evidence: annotated 159, callgraph 71, callorder 87, cvar 30, handler 27, override 87, string 264, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 161, callgraph 71, callorder 87, cvar 30, handler 27, override 88, string 264, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 22:43 -- mapped 1652, ported 1167, stub 463, spine mapped 187.
+Previous run: 2026-09-18 22:59 -- mapped 1647, ported 1162, stub 463, spine mapped 186.
 
 ## Lua API coverage (binding tables)
 
@@ -217,7 +217,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 20 (8.1%) | 7.4% | 7 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
-| PartyFrame.cpp | 303 | 55.3k | 69 (22.8%) | 31.2% | 56 | 0 | 10 |
+| PartyFrame.cpp | 304 | 55.3k | 70 (23.0%) | 31.3% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 6 (2.7%) | 1.9% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 34 (9.7%) | 4.7% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 11 (4.8%) | 2.7% | 9 | 0 | 7 |
@@ -300,7 +300,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | GxuFontUtil.cpp | 60 | 13.3k | 2 (3.3%) | 1.0% | 0 | 0 | 45 |
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
-| blp.cpp | 94 | 13.0k | 11 (11.7%) | 11.9% | 0 | 0 | 20 |
+| blp.cpp | 94 | 13.0k | 12 (12.8%) | 12.2% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
@@ -357,7 +357,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EZ_LCD_Page.cpp | 69 | 6.1k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | UnitSound_C.cpp | 37 | 6.0k | 0 (0.0%) | 0.0% | 0 | 0 | 13 |
 | UnitVehicle_C.cpp | 36 | 6.0k | 0 (0.0%) | 0.0% | 0 | 0 | 21 |
-| NetClient.cpp | 44 | 5.9k | 0 (0.0%) | 0.0% | 0 | 0 | 6 |
+| NetClient.cpp | 44 | 5.9k | 1 (2.3%) | 0.4% | 0 | 0 | 6 |
 | LootFrame.cpp | 36 | 5.8k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | block.c | 16 | 5.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EZ_LCD.cpp | 54 | 5.7k | 0 (0.0%) | 0.0% | 0 | 0 | 8 |
@@ -523,7 +523,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0080cce0 | Spell_C.cpp | 3395 | 7 |  | .\Spell_C.cpp, GAMEABILITYACTIVATE |
 | 008a65e0 | ComSatSoundIOSoundEngine.cpp? | 6621 | 3 |  |  |
 | 009567a0 | asiolist.cpp? | 374 | 67 |  |  |
-| 006b0bc0 | blp.cpp? | 41 | 604 |  |  |
+| 00681f60 | DBCache.cpp? | 452 | 53 |  | "%s", %s = %g, "%s", %s = %g, %s = %g |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -656,7 +656,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `luaK_posfix` | lib/lua-5.1 | 2528 |  |
 | `CGxString::CreateGeometry` | gx | 2492 | src/gx/font/CGxString.cpp |
 | `CBackdropGenerator::SetOutput` | ui | 2401 | src/ui/CBackdropGenerator.cpp |
-| `normal_prologTok` | lib/expat-2.0 | 2360 |  |
+| `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
 | `CM2Scene::Animate` | model | 2337 | src/model/CM2Scene.cpp |
 | `TEXTURECACHE::PasteGlyphOutlinedAA` | gx | 2309 | src/gx/font/CGxFont.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
@@ -790,8 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 10:28 | 1408 (5.2%) | 195 (0.7%) | 453 | 127/5545 | 936/2512 | 448 |
-| 2026-09-18 10:33 | 1423 (5.2%) | 200 (0.7%) | 453 | 134/5536 | 936/2512 | 448 |
 | 2026-09-18 10:42 | 1429 (5.3%) | 197 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
 | 2026-09-18 17:02 | 1475 (5.4%) | 225 (0.8%) | 453 | 155/5530 | 936/2512 | 448 |
 | 2026-09-18 17:06 | 1482 (5.5%) | 228 (0.8%) | 454 | 162/5530 | 936/2512 | 448 |
@@ -815,6 +813,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 22:35 | 1647 (6.1%) | 324 (1.2%) | 463 | 179/5530 | 936/2512 | 446 |
 | 2026-09-18 22:43 | 1652 (6.1%) | 326 (1.2%) | 463 | 187/5530 | 936/2512 | 446 |
 | 2026-09-18 22:44 | 1654 (6.1%) | 327 (1.2%) | 463 | 189/5530 | 936/2512 | 446 |
+| 2026-09-18 22:59 | 1647 (6.1%) | 320 (1.2%) | 463 | 186/5530 | 936/2512 | 446 |
+| 2026-09-18 23:01 | 1657 (6.1%) | 329 (1.2%) | 463 | 190/5531 | 936/2512 | 446 |
 
 ## How to move a row
 

@@ -94,7 +94,7 @@
   "0047b300": { "whoa": "CDataStore::PutString", "status": "ported", "note": "SStrLen + PutData(len+1); SErrSetLastError(0x57) on null" },
   "0076e6e0": { "whoa": "SStrChr", "status": "ported", "note": "strchr with the 0x57 error on null" },
   "0084e070": { "whoa": "lua_tointeger", "status": "ported" },
-  "00532af0": { "status": "excluded", "note": "7-byte accessor (this + 0x214), folded" },
+  "00532af0": { "whoa": "CGxDevice::Caps", "status": "ported", "note": "7-byte accessor returning this+0x214 (m_caps); the reference keeps it as a real function with 300+ callers because GxCaps() is inlined into them" },
   "00591990": { "status": "excluded", "note": "TSHashTable<>::Clear/Destroy walking the bucket lists, folded template" },
   "007ae270": { "status": "excluded", "note": "TSHashTable<> slot-count normaliser (max 0x15), folded template" },
   "007b5020": { "status": "excluded", "note": "TSList<>::LinkToTail variant, folded template" },

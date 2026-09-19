@@ -32,7 +32,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'whoa-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 2  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 3  # bump when the walk changes so cached entries are re-parsed
+# the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
+REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
               os.path.join(ROOT, 'build', 'compile_commands.json')]
 
@@ -133,12 +135,24 @@ def parse_file(index, path, args, text):
             print('    %s:%d: %s' % (os.path.basename(str(d.location.file)), d.location.line, d.spelling[:120]))
     fns = {}
     norm = os.path.normcase(os.path.abspath(path))
+    root = os.path.normcase(os.path.abspath(ROOT)) + os.sep
+    header_text = {}
     for c in tu.cursor.walk_preorder():
         if c.kind not in DEF_KINDS or not c.is_definition():
             continue
         loc = c.location
-        if loc.file is None or os.path.normcase(os.path.abspath(loc.file.name)) != norm:
+        if loc.file is None:
             continue
+        fpath = os.path.normcase(os.path.abspath(loc.file.name))
+        header = None
+        if fpath != norm:
+            # a definition in one of our headers (inline members, constructors, small accessors):
+            # the PDB has it as a function of its own, so it needs an inventory entry too. It is
+            # seen from every TU that includes the header; main() keeps the first.
+            rel = os.path.relpath(fpath, ROOT).replace('\\', '/')
+            if not fpath.startswith(root) or not (rel.startswith('src/') or rel.startswith('lib/')):
+                continue
+            header = rel
         name = qualified(c)
         body = next((ch for ch in c.get_children() if ch.kind == K.COMPOUND_STMT), None)
         if body is None:
@@ -146,8 +160,19 @@ def parse_file(index, path, args, text):
         out = {'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0}
         walk_body(body, out)
         ext = body.extent
-        src = text[ext.start.offset:ext.end.offset] if text else ''
-        e = fns.setdefault(name, {'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0})
+        if header:
+            if fpath not in header_text:
+                header_text[fpath] = io.open(fpath, encoding='utf-8', errors='replace').read()
+            htext = header_text[fpath]
+            src = htext[ext.start.offset:ext.end.offset]
+            start = c.extent.start.offset
+            above = htext[max(0, htext.rfind('\n\n', 0, start)):start]
+            refs = sorted(set(a.lower().zfill(8) for a in REF_TAG_RE.findall(above)))
+        else:
+            src = text[ext.start.offset:ext.end.offset] if text else ''
+            refs = []
+        e = fns.setdefault(name, {'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0, 'refs': [], 'header': header})
+        e['refs'] = sorted(set(e['refs']) | set(refs))
         e['callseq'] += out['callseq']
         e['strings'] |= out['strings']
         e['consts'] |= out['consts']
@@ -181,12 +206,16 @@ def main():
             text = io.open(path, encoding='utf-8', errors='replace').read()
             fns = parse_file(index, path, split_command(e['command']), text)
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
-                       'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines']} for k, v in fns.items()}
+                       'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],
+                       'header': v['header']} for k, v in fns.items()}
             cache[rel] = {'mtime': mtime, 'v': CACHE_VERSION, 'fns': fns}
             n += 1
         for k, v in fns.items():
-            r = result.setdefault(k, {'files': [], 'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0})
-            r['files'].append(rel)
+            if v.get('header') and k in result:
+                continue  # the same header definition seen from another TU
+            r = result.setdefault(k, {'files': [], 'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0, 'refs': set()})
+            r['files'].append(v.get('header') or rel)
+            r['refs'] |= set(v.get('refs', []))
             r['callseq'] += v['callseq']
             r['strings'] |= set(v['strings'])
             r['consts'] |= set(v['consts'])
@@ -201,6 +230,7 @@ def main():
     for r in result.values():
         r['strings'] = sorted(r['strings'])
         r['consts'] = sorted(r['consts'])
+        r['refs'] = sorted(r['refs'])
     os.makedirs(DATA, exist_ok=True)
     json.dump(cache, io.open(CACHE, 'w', encoding='utf-8'))
     json.dump(result, io.open(OUT, 'w', encoding='utf-8'), indent=0)

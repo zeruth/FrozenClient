@@ -490,7 +490,7 @@ addr	how	whoa	evidence
 005302b0	string	Script_Stub_FlagTutorial	score 0.50 shared FlagTutorial
 00530ec0	table	Script_BNConnected	binding "BNConnected" in s_ScriptFunctions ~ table 00accae8
 00530f20	table	Script_IsBNLogin	binding "IsBNLogin" in s_ScriptFunctions ~ table 00accae8
-00532af0	callgraph	GxCaps	only unmatched callee of 00681be0=CGxTexFlags::CGxTexFlags
+00532af0	override	CGxDevice::Caps	
 005343f0	table	Script_BNGetInfo	binding "BNGetInfo" in s_ScriptFunctions ~ table 00accae8
 00534590	table	Script_BNGetNumFriends	binding "BNGetNumFriends" in s_ScriptFunctions ~ table 00accae8
 005349f0	table	Script_BNGetNumFriendToons	binding "BNGetNumFriendToons" in s_ScriptFunctions ~ table 00accae8
@@ -1026,6 +1026,7 @@ addr	how	whoa	evidence
 00630b90	table	CGTooltip_SetLFGCompletionReward	binding "SetLFGCompletionReward" in CGTooltipMethods ~ table 00ad2ae0
 00631000	table	CGTooltip_SetAction	binding "SetAction" in CGTooltipMethods ~ table 00ad2ae0
 00631b60	table	CGTooltip_SetHyperlinkCompareItem	binding "SetHyperlinkCompareItem" in CGTooltipMethods ~ table 00ad2ae0
+00631fc0	annotated	NetClient::ClearMessageHandler	tag in src/net/connection/NetClient.cpp
 00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
 0067d770	callgraph	Script_GetUnitFromName	only unmatched callee of 00612670=Script_UnitIsSameServer
@@ -1050,6 +1051,7 @@ addr	how	whoa	evidence
 006b0970	callorder	ClientServices::Connection	same slot between linked calls in 004d8c60=CGlueMgr::CreateCharacter, 004d8cc0=CGlueMgr::DeleteCharacter
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
 006b0b80	override	ClientServices::SetMessageHandler	
+006b0bc0	annotated	ClientServices::ClearMessageHandler	tag in src/client/ClientServices.cpp
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
 006b0f40	callorder	ClientServices::GetErrorToken	same slot between linked calls in 004d9bd0=CGlueMgr::EnterWorld
