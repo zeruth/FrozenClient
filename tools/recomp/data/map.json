@@ -9841,6 +9841,24 @@
   "refSize": 171,
   "status": "stub"
  },
+ "004de090": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.889,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp",
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetCVarAbsoluteMin",
+  "frozenSize": 253,
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 158,
+  "status": "ported"
+ },
  "004de1f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -12996,24 +13014,6 @@
   "module": "GameUI.cpp",
   "refSize": 290,
   "status": "ported"
- },
- "00514f60": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/glue/GlueScript.cpp",
-   "src/glue/gluescript.cpp",
-   "src/ui/game/GameScript.cpp",
-   "src/ui/game/gamescript.cpp"
-  ],
-  "frozen": "Script_GetCVarAbsoluteMin",
-  "frozenSize": 150,
-  "how": "table",
-  "module": "GameUI.cpp",
-  "refSize": 170,
-  "status": "stub"
  },
  "00515010": {
   "branchRatio": 0.8,
@@ -21124,7 +21124,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 101,
-  "status": "ported"
+  "status": "stub"
  },
  "005ac390": {
   "branchRatio": 0.5,
@@ -21140,7 +21140,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 231,
-  "status": "ported"
+  "status": "stub"
  },
  "005ac480": {
   "branchRatio": 0.5,
@@ -21156,7 +21156,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 65,
-  "status": "ported"
+  "status": "stub"
  },
  "005ac750": {
   "branchRatio": 0.5,
@@ -21172,7 +21172,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 115,
-  "status": "ported"
+  "status": "stub"
  },
  "005ac7d0": {
   "branchRatio": 0.4,
@@ -21188,7 +21188,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 149,
-  "status": "ported"
+  "status": "stub"
  },
  "005ac870": {
   "branchRatio": 0.667,
@@ -21204,7 +21204,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 117,
-  "status": "ported"
+  "status": "stub"
  },
  "005ad020": {
   "branchRatio": 0.5,
@@ -21220,7 +21220,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 68,
-  "status": "ported"
+  "status": "stub"
  },
  "005ad080": {
   "branchRatio": 0.667,
@@ -21236,7 +21236,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 110,
-  "status": "ported"
+  "status": "stub"
  },
  "005ad0f0": {
   "branchRatio": 1.0,
@@ -21252,7 +21252,7 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 79,
-  "status": "ported"
+  "status": "stub"
  },
  "005ad150": {
   "branchRatio": 1.0,
@@ -21268,20 +21268,20 @@
   "how": "table",
   "module": "GMTicketInfo.cpp",
   "refSize": 83,
-  "status": "ported"
+  "status": "stub"
  },
  "005ad1c0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GMTicketInfoScript.cpp",
    "src/ui/game/gmticketinfoscript.cpp"
   ],
   "frozen": "Script_GetGMStatus",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GMTicketInfo.cpp",
   "refSize": 104,
   "status": "ported"

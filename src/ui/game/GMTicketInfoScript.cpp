@@ -1,4 +1,7 @@
 #include "ui/game/GMTicketInfoScript.hpp"
+#include <common/DataStore.hpp>
+#include "client/ClientServices.hpp"
+#include "net/Types.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -28,8 +31,15 @@ int32_t Script_GMResponseResolve(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005ad1c0
+// Asks the server; the answer arrives later as an event, so this pushes nothing.
 int32_t Script_GetGMStatus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_GM_TICKET_GET_SYSTEM_STATUS));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_GMSurveyQuestion(lua_State* L) {

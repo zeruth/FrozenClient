@@ -453,8 +453,32 @@ int32_t Script_GetCVarMax(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004de090
+// Exactly one cvar has an absolute minimum, and it is zero. Everything else that exists answers
+// nil, and a name that is not registered at all is an error rather than a nil -- three outcomes
+// where two would be the natural design.
+//
+// The reference compares the CVar's own stored name; this compares the argument, which is
+// equivalent because the lookup and the comparison are both case-insensitive, and frozen's CVar
+// does not expose its key.
 int32_t Script_GetCVarAbsoluteMin(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: GetCVarAbsoluteMin(\"cvar\")");
+    }
+
+    auto name = lua_tostring(L, 1);
+
+    if (!CVar::LookupRegistered(name)) {
+        return luaL_error(L, "Couldn't find CVar named '%s'", name);
+    }
+
+    if (!SStrCmpI(name, "extShadowQuality", STORM_MAX_STR)) {
+        lua_pushnumber(L, 0.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_GetCVarAbsoluteMax(lua_State* L) {
