@@ -510,13 +510,14 @@ addr	how	frozen	evidence
 004dbf10	table	Script_GetUsesToken	binding "GetUsesToken" in s_ScriptFunctions ~ table 00ac3e00
 004dbf30	table	Script_SetUsesToken	binding "SetUsesToken" in s_ScriptFunctions ~ table 00ac3e00
 004dbf80	table	Script_SetSavedAccountList	binding "SetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00
-004dbfd0	table	Script_GetLocale	binding "GetLocale" in s_ScriptFunctions ~ table 00ac3e00
+004dbfd0	annotated	Script_GetLocale	tag in src/glue/GlueScript.cpp
 004dc000	table	Script_SetCurrentScreen	binding "SetCurrentScreen" in s_ScriptFunctions ~ table 00ac3e00
 004dc070	string	Script_PlayGlueMusic	unique "Usage: PlayGlueMusic("filename")"
 004dc150	string	Script_PlayCreditsMusic	unique "Usage: PlayCreditsMusic( "Sound kit name" )"
 004dc260	string	Script_DefaultServerLogin	unique "Usage: DefaultServerLogin("accountName", "password")"
 004dcd60	string	Script_GetCreditsText	unique "Usage: Script_GetCreditText(versionIndex)"
 004dce70	string	Script_SetCVar	score 1.00 shared "%s" is read-only; Couldn't find CVar named '%s'; Usage: SetCVar("cvar", value [, "scriptC
+004dd450	annotated	Script_IsConsoleActive	tag in src/glue/GlueScript.cpp
 004dd5d0	table	Script_GetSavedAccountName	binding "GetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
 004dd5f0	table	Script_GetSavedAccountList	binding "GetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00
 004dd610	order	Script_GetMovieResolution	binding table name Script_GetMovieResolution, in definition order in src/glue/GlueScript.cpp
@@ -1487,6 +1488,7 @@ addr	how	frozen	evidence
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
 00763680	annotated	GenerateNodeString	tag in src/console/Screen.cpp
+00763c60	callgraph	ConsoleAccessGetEnabled	only unmatched callee of 004dd450=Script_IsConsoleActive
 00763d80	annotated	CONSOLELINE::~CONSOLELINE	tag in src/console/Screen.cpp
 007644b0	annotated	ReserveLine	tag in src/console/Screen.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf

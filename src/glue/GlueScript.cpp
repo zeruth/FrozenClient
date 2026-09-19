@@ -1,4 +1,5 @@
 #include "glue/GlueScript.hpp"
+#include "console/Console.hpp"
 #include "client/Client.hpp"
 #include "client/ClientServices.hpp"
 #include "console/CVar.hpp"
@@ -42,8 +43,16 @@ int32_t Script_GetBuildInfo(lua_State* L) {
     return 5;
 }
 
+// ref: FUN_004dbfd0
+// The reference indexes a table of locale strings by the locale the client started in. Frozen
+// keeps the same value in the "locale" CVar, which Archive.cpp already reads to pick which MPQs to
+// mount, so the two agree by construction.
 int32_t Script_GetLocale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("locale");
+
+    lua_pushstring(L, var ? var->GetString() : "enUS");
+
+    return 1;
 }
 
 int32_t Script_GetSavedAccountName(lua_State* L) {
@@ -800,8 +809,15 @@ int32_t Script_IsStreamingTrial(lua_State* L) {
     return SFile::IsStreamingTrial();
 }
 
+// ref: FUN_004dd450
 int32_t Script_IsConsoleActive(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (ConsoleAccessGetEnabled()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_RunScript(lua_State* L) {

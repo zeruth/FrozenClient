@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 10:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:42 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2399 (+2) (8.8%) | 530.7k (9.6%) |
-| &nbsp;&nbsp;ported | 1923 (=) | 397.5k |
-| &nbsp;&nbsp;stub (unimplemented body) | 450 (+2) | 99.2k |
+| mapped to a frozen function | 2401 (+2) (8.8%) | 530.7k (9.6%) |
+| &nbsp;&nbsp;ported | 1925 (+2) | 397.6k |
+| &nbsp;&nbsp;stub (unimplemented body) | 450 (=) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **893 (=) (3.3%)** | **114.3k (2.1%)** |
-| unmapped | 24762 | 4.89M |
+| **faithful** (linked, not stub, call order >= 80%) | **895 (+2) (3.3%)** | **114.4k (2.1%)** |
+| unmapped | 24760 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11420, stubs 851 | |
+| frozen functions (src/, from PDB + source) | 11420, stubs 850 | |
 
-Match evidence: annotated 439, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 178, string 345, table 758. Module anchors: 1479 assert strings.
+Match evidence: annotated 441, callgraph 169, callorder 127, cvar 30, handler 27, order 327, override 178, string 345, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 10:36 -- mapped 2397, ported 1923, stub 448, spine mapped 388.
+Previous run: 2026-09-19 10:37 -- mapped 2399, ported 1923, stub 450, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 561 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 560 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -142,7 +142,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ad0970 (GetGuildInfoText..) | 5 | `s_ScriptFunctions` | 4 | 0 | GetGuildInfoText, SetGuildInfoText, QueryGuildEventLog, GetGuildEventInfo |
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 4 |  / stubs: GetOrientation, SetOrientation, SetStatusBarTexture, SetStatusBarColor |
 | 00ac4098 (GetCVar..) | 9 | `s_ScriptFunctions` | 0 | 3 |  / stubs: GetCVarAbsoluteMin, GetCVarAbsoluteMax, GetChangedOptionWarnings |
-| 00ac4160 (IsConsoleActive..) | 5 | `s_ScriptFunctions` | 0 | 3 |  / stubs: IsConsoleActive, RunScript, ReadyForAccountDataTimes |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acd680 (GetLFGInfoLocal..) | 5 | `s_ScriptFunctions` | 3 | 0 | GetLFGInfoLocal, SetLFGComment, LFGTeleport |
 | 00ad0b28 (SetFactionInactive..) | 4 | `s_ScriptFunctions` | 3 | 0 | SetFactionInactive, SetFactionActive, ExpandFactionHeader |
@@ -153,6 +152,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ac3e00 (IsShiftKeyDown..) | 10 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetUsesToken, SetSavedAccountList |
 | 00ac3e78 (GetMovieResolution..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: GetMovieResolution, LaunchURL |
 | 00ac4060 (IsScanDLLFinished..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetRealmSplitState, RequestRealmSplitInfo |
+| 00ac4160 (IsConsoleActive..) | 5 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RunScript, ReadyForAccountDataTimes |
 | 00ac41a8 (GetNumRealms..) | 7 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4390 (GetNumCharacters..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
 | 00acc6d0 (GetNumPartyMembers..) | 6 | `s_ScriptFunctions` | 0 | 2 |  / stubs: GetRealNumPartyMembers, IsRealPartyLeader |
@@ -243,7 +243,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | XMLTree.cpp | 184 | 31.1k | 69 (37.5%) | 44.2% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
-| CGlueMgr.cpp | 183 | 28.9k | 67 (36.6%) | 49.3% | 12 | 0 | 1 |
+| CGlueMgr.cpp | 183 | 28.9k | 68 (37.2%) | 49.5% | 12 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 204 | 27.4k | 93 (45.6%) | 51.1% | 5 | 4 | 50 |
@@ -314,7 +314,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
-| ConsoleClient.cpp | 52 | 10.3k | 7 (13.5%) | 12.8% | 0 | 0 | 6 |
+| ConsoleClient.cpp | 52 | 10.3k | 8 (15.4%) | 12.9% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
 | RaidInfo.cpp | 33 | 10.1k | 14 (42.4%) | 37.8% | 10 | 0 | 1 |
@@ -787,7 +787,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:12 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:12 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
@@ -810,6 +809,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:33 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:36 | 2397 (8.8%) | 893 (3.3%) | 448 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:37 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:42 | 2401 (8.8%) | 895 (3.3%) | 450 | 388/5530 | 1584/2512 | 560 |
 
 ## How to move a row
 

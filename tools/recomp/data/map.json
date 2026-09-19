@@ -8165,8 +8165,8 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetLocale",
-  "frozenSize": 101,
-  "how": "table",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 35,
   "status": "ported"
@@ -8267,6 +8267,22 @@
   "how": "string",
   "module": "CGlueMgr.cpp",
   "refSize": 169,
+  "status": "ported"
+ },
+ "004dd450": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp"
+  ],
+  "frozen": "Script_IsConsoleActive",
+  "frozenSize": 61,
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 58,
   "status": "ported"
  },
  "004dd5d0": {
@@ -23640,6 +23656,22 @@
   "how": "annotated",
   "module": "VehicleCamera_C.cpp",
   "refSize": 172,
+  "status": "ported"
+ },
+ "00763c60": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Console.cpp",
+   "src/console/console.cpp"
+  ],
+  "frozen": "ConsoleAccessGetEnabled",
+  "frozenSize": 7,
+  "how": "callgraph",
+  "module": "ConsoleClient.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "00763d80": {
