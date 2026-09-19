@@ -945,6 +945,7 @@ addr	how	frozen	evidence
 0057bf90	table	CGMinimapFrame_GetZoom	binding "GetZoom" in CGMinimapFrameMethods ~ table 00acebb8
 0057bfd0	table	CGMinimapFrame_SetZoom	binding "SetZoom" in CGMinimapFrameMethods ~ table 00acebb8
 0057c090	string	Script_Stub_GetTrackingInfo	score 0.50 shared GetTrackingInfo
+0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
 0057e100	table	CGMinimapFrame_SetPlayerTexture	binding "SetPlayerTexture" in CGMinimapFrameMethods ~ table 00acebb8
 0057e1c0	table	CGMinimapFrame_SetPlayerTextureHeight	binding "SetPlayerTextureHeight" in CGMinimapFrameMethods ~ table 00acebb8
 0057e280	table	CGMinimapFrame_SetPlayerTextureWidth	binding "SetPlayerTextureWidth" in CGMinimapFrameMethods ~ table 00acebb8
@@ -1664,6 +1665,9 @@ addr	how	frozen	evidence
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
+0081f450	override	CM2SceneRender::SetupTextures	
+0081fb10	override	CM2SceneRender::SetupLighting	
+0081fe90	override	CM2SceneRender::SetupMaterial	
 008203b0	override	CM2SceneRender::DrawBatch	
 00820720	override	CM2SceneRender::DrawBatchProj	
 00820ae0	override	CM2SceneRender::DrawBatchDoodad	
@@ -1967,6 +1971,7 @@ addr	how	frozen	evidence
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00873480	override	CShaderEffect::SetTexMtx_Identity	
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound

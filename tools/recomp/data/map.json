@@ -1951,7 +1951,7 @@
   "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 107,
-  "status": "ported"
+  "status": "stub"
  },
  "00482110": {
   "branchRatio": 0.0,
@@ -4175,7 +4175,7 @@
   "how": "callorder",
   "module": "CSimpleFrame.cpp",
   "refSize": 308,
-  "status": "ported"
+  "status": "stub"
  },
  "004951a0": {
   "branchRatio": 0.556,
@@ -6478,7 +6478,7 @@
   "how": "order",
   "module": "Texture.cpp",
   "refSize": 78,
-  "status": "ported"
+  "status": "stub"
  },
  "004b6e90": {
   "branchRatio": 0.0,
@@ -6622,7 +6622,7 @@
   "how": "order",
   "module": "Texture.cpp",
   "refSize": 136,
-  "status": "ported"
+  "status": "stub"
  },
  "004b74f0": {
   "branchRatio": 0.4,
@@ -15031,6 +15031,22 @@
   "how": "string",
   "module": "QuestTextParser.cpp",
   "refSize": 35,
+  "status": "ported"
+ },
+ "0057c340": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Shader.cpp",
+   "src/gx/shader.cpp"
+  ],
+  "frozen": "GxShaderConstantsSet",
+  "frozenSize": 42,
+  "how": "callgraph",
+  "module": "QuestTextParser.cpp",
+  "refSize": 87,
   "status": "ported"
  },
  "0057e100": {
@@ -26501,11 +26517,59 @@
   "refSize": 281,
   "status": "ported"
  },
+ "0081f450": {
+  "branchRatio": 0.765,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetupTextures",
+  "frozenSize": 684,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 452,
+  "status": "ported"
+ },
+ "0081fb10": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.026,
+  "faithful": false,
+  "fidelity": 0.222,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetupLighting",
+  "frozenSize": 541,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 874,
+  "status": "ported"
+ },
+ "0081fe90": {
+  "branchRatio": 0.341,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.077,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetupMaterial",
+  "frozenSize": 1070,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 1306,
+  "status": "ported"
+ },
  "008203b0": {
   "branchRatio": 0.562,
   "constOverlap": 0.047,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.231,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -26515,7 +26579,7 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 869,
-  "status": "stub"
+  "status": "ported"
  },
  "00820720": {
   "branchRatio": 0.0,
@@ -31096,6 +31160,22 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 197,
+  "status": "ported"
+ },
+ "00873480": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx_Identity",
+  "frozenSize": 97,
+  "how": "override",
+  "module": "OsClipboard.cpp",
+  "refSize": 206,
   "status": "ported"
  },
  "00875d30": {

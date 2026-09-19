@@ -1142,7 +1142,7 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('| reference (non-thunk) | %d | %s |' % (total, fmt_bytes(total_bytes)))
     L.append('| mapped to a frozen function | %d%s (%s) | %s (%s) |' % (snapshot['mapped'], delta('mapped'), pct(snapshot['mapped'], total), fmt_bytes(snapshot['mappedBytes']), pct(snapshot['mappedBytes'], total_bytes)))
     L.append('| &nbsp;&nbsp;ported | %d%s | %s |' % (by_status['ported'], delta('ported'), fmt_bytes(bytes_by_status['ported'])))
-    L.append('| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | %d%s | %s |' % (by_status['stub'], delta('stub'), fmt_bytes(bytes_by_status['stub'])))
+    L.append('| &nbsp;&nbsp;stub (unimplemented body) | %d%s | %s |' % (by_status['stub'], delta('stub'), fmt_bytes(bytes_by_status['stub'])))
     L.append('| &nbsp;&nbsp;verified (override) | %d%s | %s |' % (by_status['verified'], delta('verified'), fmt_bytes(bytes_by_status['verified'])))
     L.append('| **faithful** (linked, not stub, call order >= %.0f%%) | **%d%s (%s)** | **%s (%s)** |' % (FAITHFUL * 100, faithful, delta('faithful'), pct(faithful, total), fmt_bytes(faithful_bytes), pct(faithful_bytes, total_bytes)))
     L.append('| unmapped | %d | %s |' % (by_status['unmapped'], fmt_bytes(bytes_by_status['unmapped'])))

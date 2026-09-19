@@ -249,10 +249,15 @@
 
   "004b9760": { "frozen": "TextureCreate", "status": "ported", "note": "the by-filename overload, tagged in src/gx/Texture.cpp. Pinned as well as tagged because the other overload at 004b8c80 needs an override to share the collapsed TextureCreate key, and a tag cannot share a name an override holds" },
 
-  "008203b0": { "frozen": "CM2SceneRender::DrawBatch", "status": "stub", "note": "logs 'Batch: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "008203b0": { "frozen": "CM2SceneRender::DrawBatch", "status": "ported", "note": "the port implements this one; logs 'Batch: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
   "00820720": { "frozen": "CM2SceneRender::DrawBatchProj", "status": "stub", "note": "logs 'BatchProj: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
   "00820ae0": { "frozen": "CM2SceneRender::DrawBatchDoodad", "status": "stub", "note": "logs 'BatchDoodad: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
   "00820f40": { "frozen": "CM2SceneRender::DrawRibbon", "status": "stub", "note": "logs 'Ribbon: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
   "008214e0": { "frozen": "CM2SceneRender::DrawParticle", "status": "stub", "note": "logs 'Particle: model=%s' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
-  "008230d0": { "frozen": "CM2SceneRender::DrawCallback", "status": "stub", "note": "logs the literal 'Callback' the same way; the only caller is CM2SceneRender::Draw" }
+  "008230d0": { "frozen": "CM2SceneRender::DrawCallback", "status": "stub", "note": "logs the literal 'Callback' the same way; the only caller is CM2SceneRender::Draw" },
+
+  "0081f450": { "frozen": "CM2SceneRender::SetupTextures", "status": "ported", "note": "structural proof: both open with the same early exit, m_curType > 2 then a two-iteration loop of GxRsSet(GxRs_Texture0 + i, 0) and SetTexMtx_Identity(i), then return" },
+  "0081fb10": { "frozen": "CM2SceneRender::SetupLighting", "status": "ported", "note": "call order in DrawBatch: the reference calls 0081fb10, 0081fe90, 0081f450 exactly where the port calls SetupLighting, SetupMaterial, SetupTextures" },
+  "0081fe90": { "frozen": "CM2SceneRender::SetupMaterial", "status": "ported", "note": "call order in DrawBatch, second of the three setup calls (see 0081fb10)" },
+  "00873480": { "frozen": "CShaderEffect::SetTexMtx_Identity", "status": "ported", "note": "the second call in SetupTextures’ early-exit loop, per texture unit" }
 }

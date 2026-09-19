@@ -32,7 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 5  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 6  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
@@ -225,7 +225,11 @@ def parse_file(index, path, args, text):
         e['strings'] |= out['strings']
         e['consts'] |= out['consts']
         e['branches'] += out['branches']
-        e['stub'] = e['stub'] and 'WHOA_UNIMPLEMENTED' in src
+        # Two stub idioms in this tree: the WHOA_UNIMPLEMENTED macro, and a body with no
+        # statements at all carrying a TODO. An empty body without a TODO is left alone,
+        # because some functions are empty on purpose to match an empty reference.
+        empty = next(body.get_children(), None) is None
+        e['stub'] = e['stub'] and ('WHOA_UNIMPLEMENTED' in src or (empty and 'TODO' in src))
         e['lines'] += src.count('\n') + 1
     return fns
 
