@@ -62,8 +62,25 @@ int32_t CSimpleTexture_GetBlendMode(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0048c040
+// The setter for the mode GetBlendMode reports. Note the seed: the reference primes the output with
+// the texture's CURRENT mode before parsing, so a name the table does not know leaves the mode
+// untouched rather than defaulting it -- and then falls through to the usage error anyway.
 int32_t CSimpleTexture_SetBlendMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isstring(L, 2)) {
+        auto blend = texture->m_alphaMode;
+
+        if (StringToBlendMode(lua_tostring(L, 2), blend)) {
+            texture->SetBlendMode(blend);
+
+            return 0;
+        }
+    }
+
+    return luaL_error(L, "Usage: %s:SetBlendMode(\"mode\")", texture->GetDisplayName());
 }
 
 // Colour bytes to 0..1. The reference's constant at 009ead78 is 0.00392156f, which is NOT 1/255

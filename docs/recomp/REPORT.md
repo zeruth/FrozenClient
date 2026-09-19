@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 18:34 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 18:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2698 (=) (9.9%) | 573.0k (10.4%) |
-| &nbsp;&nbsp;ported | 2139 (+7) | 421.5k |
-| &nbsp;&nbsp;stub (unimplemented body) | 523 (-7) | 113.4k |
+| &nbsp;&nbsp;ported | 2141 (+2) | 421.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 521 (-2) | 113.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **987 (+1) (3.6%)** | **122.7k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **988 (+1) (3.6%)** | **122.8k (2.2%)** |
 | unmapped | 24463 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11485, stubs 767 | |
+| frozen functions (src/, from PDB + source) | 11485, stubs 764 | |
 
-Match evidence: annotated 574, callgraph 183, callorder 128, cvar 30, handler 28, order 192, override 194, sticky 4, string 310, table 1055. Module anchors: 1479 assert strings.
+Match evidence: annotated 576, callgraph 183, callorder 128, cvar 30, handler 28, order 192, override 194, sticky 4, string 310, table 1053. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 18:29 -- mapped 2698, ported 2132, stub 530, spine mapped 393.
+Previous run: 2026-09-19 18:34 -- mapped 2698, ported 2139, stub 523, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 582 of those are WHOA_UNIMPLEMENTED stubs (-7). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 581 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -106,11 +106,11 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
 | 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 4 |  / stubs: SetLight, GetModelScale, ReplaceIconTexture, SetGlow |
-| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 3 |  / stubs: SetBlendMode, SetGradient, SetGradientAlpha |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 3 |  / stubs: SetUnit, SetCreature, RefreshUnit |
 | 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 3 |  / stubs: SetFontString, GetMotionScriptsWhileDisabled, SetMotionScriptsWhileDisabled |
+| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 2 |  / stubs: SetGradient, SetGradientAlpha |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 9 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 8 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -199,7 +199,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 30 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 5 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 4 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 33 (19.9%) | 32.0% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 16:10 | 2691 (9.9%) | 944 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
 | 2026-09-19 16:11 | 2692 (9.9%) | 945 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
 | 2026-09-19 16:13 | 2691 (9.9%) | 946 (3.5%) | 550 | 394/5530 | 1791/2964 | 611 |
 | 2026-09-19 16:15 | 2692 (9.9%) | 946 (3.5%) | 551 | 394/5530 | 1791/2964 | 611 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 18:25 | 2698 (9.9%) | 986 (3.6%) | 530 | 393/5530 | 1791/2964 | 589 |
 | 2026-09-19 18:29 | 2698 (9.9%) | 986 (3.6%) | 530 | 393/5530 | 1791/2964 | 589 |
 | 2026-09-19 18:34 | 2698 (9.9%) | 987 (3.6%) | 523 | 393/5530 | 1791/2964 | 582 |
+| 2026-09-19 18:39 | 2698 (9.9%) | 988 (3.6%) | 521 | 393/5530 | 1791/2964 | 581 |
 
 ## How to move a row
 

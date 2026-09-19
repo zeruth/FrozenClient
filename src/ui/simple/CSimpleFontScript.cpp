@@ -32,6 +32,8 @@ int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO the IsObjectType the binding-table matcher offers here, FUN_0048be30, reads
+// DAT_00b4793c -- the texture. The font's is FUN_004a4170, per the note above.
 int32_t CSimpleFont_IsObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

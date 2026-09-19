@@ -185,7 +185,7 @@ addr	how	frozen	evidence
 0048bee0	annotated	CSimpleTexture_GetDrawLayer	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048bf30	table	CSimpleTexture_SetDrawLayer	binding "SetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
 0048bff0	annotated	CSimpleTexture_GetBlendMode	tag in src/ui/simple/CSimpleTextureScript.cpp
-0048c040	table	CSimpleTexture_SetBlendMode	binding "SetBlendMode" in SimpleTextureMethods ~ table 00ac1028
+0048c040	annotated	CSimpleTexture_SetBlendMode	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c0e0	annotated	CSimpleTexture_GetVertexColor	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c1c0	table	CSimpleTexture_SetVertexColor	binding "SetVertexColor" in SimpleTextureMethods ~ table 00ac1028
 0048c240	table	CSimpleTexture_SetGradient	binding "SetGradient" in SimpleTextureMethods ~ table 00ac1028
@@ -2496,7 +2496,7 @@ addr	how	frozen	evidence
 00971050	table	CSimpleColorSelect_SetColorRGB	binding "SetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
 009710d0	table	CSimpleColorSelect_GetColorRGB	binding "GetColorRGB" in SimpleColorSelectMethods ~ table 00b2cd50
 00971240	annotated	CSimpleStatusBar_GetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp
-00971290	table	CSimpleStatusBar_SetOrientation	binding "SetOrientation" in SimpleStatusBarMethods ~ table 00b2cdb8
+00971290	annotated	CSimpleStatusBar_SetOrientation	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971360	table	CSimpleStatusBar_GetMinMaxValues	binding "GetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
 009713c0	table	CSimpleStatusBar_SetMinMaxValues	binding "SetMinMaxValues" in SimpleStatusBarMethods ~ table 00b2cdb8
 009714f0	table	CSimpleStatusBar_GetValue	binding "GetValue" in SimpleStatusBarMethods ~ table 00b2cdb8

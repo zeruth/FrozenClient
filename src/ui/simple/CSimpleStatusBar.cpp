@@ -264,7 +264,11 @@ void CSimpleStatusBar::SetMinMaxValues(float min, float max) {
 }
 
 void CSimpleStatusBar::SetOrientation(ORIENTATION orientation) {
-    // TODO
+    this->m_orientation = orientation;
+
+    // TODO the reference also re-lays-out the bar texture from this, since the fill direction
+    // changes. Only the field is kept for now, so GetOrientation reports what was asked for and the
+    // bar still fills the way it was built.
 }
 
 void CSimpleStatusBar::SetRotatesTexture(int32_t enabled) {

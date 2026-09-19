@@ -84687,6 +84687,148 @@
 "refs": [],
 "line": 4
 },
+"GetI32": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"CDataStore::Get"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 13
+},
+"QueryItem": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"CDataStore::CDataStore",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Finalize",
+"ClientServices::Send"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 20
+},
+"ItemCacheGet": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"_Tree<std::_Tmap_traits<int, ItemInfo, std::less<int>, std::allocator<std::pair<const int, ItemInfo> >, false> >::find",
+"_Tree<std::_Tmap_traits<int, ItemInfo, std::less<int>, std::allocator<std::pair<const int, ItemInfo> >, false> >::end",
+"_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const int, ItemInfo> > > >::operator!=",
+"_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const int, ItemInfo> > > >::operator->",
+"_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const int, ItemInfo> > > >::operator->",
+"map<int,ItemInfo,std::less<int>,std::allocator<std::pair<const int, ItemInfo> > >::operator[]",
+"QueryItem"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 34
+},
+"ItemCacheClear": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"_Tree<std::_Tmap_traits<int, ItemInfo, std::less<int>, std::allocator<std::pair<const int, ItemInfo> >, false> >::clear"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 53
+},
+"ItemCacheRegisterHandlers": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"ClientServices::SetMessageHandler"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 57
+},
+"ReceiveItemQueryResponse": {
+"files": [
+"src/object/client/itemcache.cpp"
+],
+"callseq": [
+"CDataStore::Get",
+"map<int,ItemInfo,std::less<int>,std::allocator<std::pair<const int, ItemInfo> > >::operator[]",
+"map<int,ItemInfo,std::less<int>,std::allocator<std::pair<const int, ItemInfo> > >::operator[]",
+"GetI32",
+"GetI32",
+"GetI32",
+"CDataStore::GetString",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::operator=",
+"GetI32",
+"GetI32",
+"CDataStore::Get",
+"CDataStore::Get",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32",
+"GetI32"
+],
+"strings": [],
+"consts": [
+"0",
+"0x7FFFFFFF",
+"0x80000000",
+"1",
+"256",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 60,
+"refs": [],
+"line": 69
+},
 "SkipSetOfObjects": {
 "files": [
 "src/object/client/messagehandlers.cpp"
@@ -147998,7 +148140,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 35
+"line": 37
 },
 "CSimpleFont_GetName": {
 "files": [
@@ -148018,7 +148160,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 39
+"line": 41
 },
 "CSimpleFont_SetFontObject": {
 "files": [
@@ -148065,7 +148207,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 49
+"line": 51
 },
 "CSimpleFont_GetFontObject": {
 "files": [
@@ -148087,7 +148229,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 90
+"line": 92
 },
 "CSimpleFont_CopyFontObject": {
 "files": [
@@ -148131,7 +148273,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 116
+"line": 118
 },
 "CSimpleFont_SetFont": {
 "files": [
@@ -148169,7 +148311,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 154
+"line": 156
 },
 "CSimpleFont_GetFont": {
 "files": [
@@ -148201,7 +148343,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 182
+"line": 184
 },
 "CSimpleFont_SetAlpha": {
 "files": [
@@ -148229,7 +148371,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 210
+"line": 212
 },
 "CSimpleFont_GetAlpha": {
 "files": [
@@ -148250,7 +148392,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 232
+"line": 234
 },
 "CSimpleFont_SetTextColor": {
 "files": [
@@ -148272,7 +148414,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 243
+"line": 245
 },
 "CSimpleFont_GetTextColor": {
 "files": [
@@ -148297,7 +148439,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 256
+"line": 258
 },
 "CSimpleFont_SetShadowColor": {
 "files": [
@@ -148319,7 +148461,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 275
+"line": 277
 },
 "CSimpleFont_GetShadowColor": {
 "files": [
@@ -148343,7 +148485,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 289
+"line": 291
 },
 "CSimpleFont_SetShadowOffset": {
 "files": [
@@ -148377,7 +148519,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 305
+"line": 307
 },
 "CSimpleFont_GetShadowOffset": {
 "files": [
@@ -148401,7 +148543,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 327
+"line": 329
 },
 "CSimpleFont_SetSpacing": {
 "files": [
@@ -148430,7 +148572,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 341
+"line": 343
 },
 "CSimpleFont_GetSpacing": {
 "files": [
@@ -148452,7 +148594,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 358
+"line": 360
 },
 "CSimpleFont_SetJustifyH": {
 "files": [
@@ -148479,7 +148621,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 371
+"line": 373
 },
 "CSimpleFont_GetJustifyH": {
 "files": [
@@ -148500,7 +148642,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 388
+"line": 390
 },
 "CSimpleFont_SetJustifyV": {
 "files": [
@@ -148527,7 +148669,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 399
+"line": 401
 },
 "CSimpleFont_GetJustifyV": {
 "files": [
@@ -148548,7 +148690,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 416
+"line": 418
 },
 "CSimpleFont_SetIndentedWordWrap": {
 "files": [
@@ -148570,7 +148712,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 427
+"line": 429
 },
 "CSimpleFont_GetIndentedWordWrap": {
 "files": [
@@ -148592,7 +148734,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 438
+"line": 440
 },
 "CSimpleFontString::CreateScriptMetaTable": {
 "files": [
@@ -161469,8 +161611,8 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 7,
 "refs": [],
 "line": 266
 },
@@ -161488,7 +161630,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 270
+"line": 274
 },
 "CSimpleStatusBar::SetStatusBarColor": {
 "files": [
@@ -161503,7 +161645,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 277
+"line": 281
 },
 "CSimpleStatusBar::SetValue": {
 "files": [
@@ -161520,7 +161662,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 283
+"line": 287
 },
 "CSimpleStatusBar_GetOrientation": {
 "files": [
@@ -161548,22 +161690,31 @@
 "src/ui/simple/csimplestatusbarscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleStatusBar::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"StringToOrientation",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleStatusBar::SetOrientation"
 ],
 "strings": [
-"(anonymous namespace)::CSimpleStatusBar_SetOrientation",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplestatusbarscript.cpp"
+"%s:SetOrientation(): Unknown orientation: %s",
+"Usage: %s:SetOrientation(\"orientation\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 19,
 "refs": [],
-"line": 20
+"line": 24
 },
 "CSimpleStatusBar_GetMinMaxValues": {
 "files": [
@@ -161585,7 +161736,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 24
+"line": 44
 },
 "CSimpleStatusBar_SetMinMaxValues": {
 "files": [
@@ -161619,7 +161770,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 34
+"line": 54
 },
 "CSimpleStatusBar_GetValue": {
 "files": [
@@ -161639,7 +161790,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 61
+"line": 81
 },
 "CSimpleStatusBar_SetValue": {
 "files": [
@@ -161665,7 +161816,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 70
+"line": 90
 },
 "CSimpleStatusBar_GetStatusBarTexture": {
 "files": [
@@ -161687,7 +161838,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 89
+"line": 109
 },
 "CSimpleStatusBar_SetStatusBarTexture": {
 "files": [
@@ -161709,7 +161860,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 110
+"line": 130
 },
 "CSimpleStatusBar_GetStatusBarColor": {
 "files": [
@@ -161740,7 +161891,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 117
+"line": 137
 },
 "CSimpleStatusBar_SetStatusBarColor": {
 "files": [
@@ -161761,7 +161912,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 144
+"line": 164
 },
 "CSimpleStatusBar_GetRotatesTexture": {
 "files": [
@@ -161783,7 +161934,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 158
+"line": 178
 },
 "CSimpleStatusBar_SetRotatesTexture": {
 "files": [
@@ -161804,7 +161955,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 172
+"line": 192
 },
 "CSimpleTexture::CreateScriptMetaTable": {
 "files": [
@@ -162468,22 +162619,27 @@
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"StringToBlendMode",
+"CSimpleTexture::SetBlendMode",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleTexture_SetBlendMode",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
+"Usage: %s:SetBlendMode(\"mode\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 16,
 "refs": [],
-"line": 65
+"line": 69
 },
 "CSimpleTexture_GetVertexColor": {
 "files": [
@@ -162507,7 +162663,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 77
+"line": 94
 },
 "CSimpleTexture_SetVertexColor": {
 "files": [
@@ -162531,7 +162687,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 92
+"line": 109
 },
 "CSimpleTexture_SetGradient": {
 "files": [
@@ -162553,7 +162709,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 110
+"line": 127
 },
 "CSimpleTexture_SetGradientAlpha": {
 "files": [
@@ -162575,7 +162731,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 114
+"line": 131
 },
 "CSimpleTexture_SetAlpha": {
 "files": [
@@ -162601,7 +162757,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 118
+"line": 135
 },
 "CSimpleTexture_GetAlpha": {
 "files": [
@@ -162622,7 +162778,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 132
+"line": 149
 },
 "CSimpleTexture_Show": {
 "files": [
@@ -162641,7 +162797,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 143
+"line": 160
 },
 "CSimpleTexture_Hide": {
 "files": [
@@ -162660,7 +162816,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 152
+"line": 169
 },
 "CSimpleTexture_IsVisible": {
 "files": [
@@ -162682,7 +162838,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 161
+"line": 178
 },
 "CSimpleTexture_IsShown": {
 "files": [
@@ -162704,7 +162860,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 174
+"line": 191
 },
 "CSimpleTexture_GetTexture": {
 "files": [
@@ -162725,7 +162881,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 187
+"line": 204
 },
 "CSimpleTexture_SetTexture": {
 "files": [
@@ -162758,7 +162914,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 202
+"line": 219
 },
 "CSimpleTexture_GetTexCoord": {
 "files": [
@@ -162780,7 +162936,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 241
+"line": 258
 },
 "CSimpleTexture_SetTexCoord": {
 "files": [
@@ -162825,7 +162981,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 253
+"line": 270
 },
 "CSimpleTexture_SetRotation": {
 "files": [
@@ -162871,7 +163027,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 311
+"line": 328
 },
 "CSimpleTexture_SetDesaturated": {
 "files": [
@@ -162895,7 +163051,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 349
+"line": 366
 },
 "CSimpleTexture_IsDesaturated": {
 "files": [
@@ -162917,7 +163073,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 368
+"line": 385
 },
 "CSimpleTexture_SetNonBlocking": {
 "files": [
@@ -162938,7 +163094,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 384
+"line": 401
 },
 "CSimpleTexture_GetNonBlocking": {
 "files": [
@@ -162959,7 +163115,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 394
+"line": 411
 },
 "CSimpleTexture_SetHorizTile": {
 "files": [
@@ -162980,7 +163136,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 408
+"line": 425
 },
 "CSimpleTexture_GetHorizTile": {
 "files": [
@@ -163001,7 +163157,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 418
+"line": 435
 },
 "CSimpleTexture_SetVertTile": {
 "files": [
@@ -163022,7 +163178,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 432
+"line": 449
 },
 "CSimpleTexture_GetVertTile": {
 "files": [
@@ -163043,7 +163199,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 442
+"line": 459
 },
 "CSimpleSortedArray::operator[]": {
 "files": [

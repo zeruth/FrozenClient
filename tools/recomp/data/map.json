@@ -2962,18 +2962,18 @@
  "0048c040": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetBlendMode",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 152,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 158,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c0e0": {
   "branchRatio": 0.0,
@@ -26574,12 +26574,13 @@
   "status": "ported"
  },
  "006354d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/ItemCache.cpp"
+   "src/object/client/ItemCache.cpp",
+   "src/object/client/itemcache.cpp"
   ],
   "frozen": "ReceiveItemQueryResponse",
   "frozenSize": 849,
@@ -26605,12 +26606,13 @@
   "status": "ported"
  },
  "0067cbd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.077,
   "files": [
-   "src/object/client/ItemCache.cpp"
+   "src/object/client/ItemCache.cpp",
+   "src/object/client/itemcache.cpp"
   ],
   "frozen": "GetI32",
   "frozenSize": 0,
@@ -38497,7 +38499,7 @@
    "src/ui/simple/csimplestatusbar.cpp"
   ],
   "frozen": "CSimpleStatusBar::LoadXML",
-  "frozenSize": 1230,
+  "frozenSize": 1245,
   "how": "string",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 679,
@@ -39566,17 +39568,17 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
    "src/ui/simple/csimplestatusbarscript.cpp"
   ],
   "frozen": "CSimpleStatusBar_SetOrientation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 212,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 203,
-  "status": "stub"
+  "status": "ported"
  },
  "00971360": {
   "branchRatio": 0.0,

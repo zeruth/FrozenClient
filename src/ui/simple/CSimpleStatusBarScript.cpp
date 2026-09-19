@@ -17,8 +17,28 @@ int32_t CSimpleStatusBar_GetOrientation(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00971290
+// Two distinct errors, which is worth keeping: a missing argument is a usage error, and a string
+// that is not an orientation names itself in a different message. Collapsing them would lose which
+// of the two went wrong.
 int32_t CSimpleStatusBar_SetOrientation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetOrientation(\"orientation\")", statusBar->GetDisplayName());
+    }
+
+    ORIENTATION orientation;
+
+    if (!StringToOrientation(lua_tostring(L, 2), orientation)) {
+        return luaL_error(L, "%s:SetOrientation(): Unknown orientation: %s",
+                          statusBar->GetDisplayName(), lua_tostring(L, 2));
+    }
+
+    statusBar->SetOrientation(orientation);
+
+    return 0;
 }
 
 int32_t CSimpleStatusBar_GetMinMaxValues(lua_State* L) {
