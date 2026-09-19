@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 15:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 15:44 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,31 +8,31 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2688 (+1) (9.9%) | 572.3k (10.3%) |
-| &nbsp;&nbsp;ported | 2092 (+1) | 416.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 560 (=) | 118.0k |
+| mapped to a frozen function | 2688 (=) (9.9%) | 572.3k (10.3%) |
+| &nbsp;&nbsp;ported | 2098 (+6) | 416.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 554 (-6) | 117.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **932 (=) (3.4%)** | **117.7k (2.1%)** |
 | unmapped | 24473 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11467, stubs 806 | |
+| frozen functions (src/, from PDB + source) | 11468, stubs 800 | |
 
-Match evidence: annotated 518, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 193, string 312, table 1105. Module anchors: 1479 assert strings.
+Match evidence: annotated 524, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 193, string 312, table 1099. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 15:34 -- mapped 2687, ported 2091, stub 560, spine mapped 392.
+Previous run: 2026-09-19 15:37 -- mapped 2688, ported 2092, stub 560, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 623 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 617 of those are WHOA_UNIMPLEMENTED stubs (-6). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
 | 00ac80b0 (FrameXML_Debug..) | 310 | `s_ScriptFunctions` | 0 | 190 |  / stubs: FrameXML_Debug, ReloadUI, RegisterForSave, RegisterForSavePerCharacter ... |
 | 00ad0030 (CalendarGetMonthNames..) | 95 | `s_ScriptFunctions` | 93 | 0 | CalendarGetMonthNames, CalendarGetWeekdayNames, CalendarGetMinDate, CalendarGetMaxDate, CalendarGetMinHistoryDate, CalendarGetMaxCreateDate ... |
 | 00ac7a58 (SendChatMessage..) | 89 | `s_ScriptFunctions` | 73 | 0 | SendChatMessage, SendAddonMessage, SendSystemMessage, GetLanguageByIndex, GetDefaultLanguage, DoEmote ... |
-| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 63 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
+| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 57 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
 | 00acd668 (SetLFGDungeon..) | 67 | `s_ScriptFunctions` | 56 | 0 | SetLFGDungeon, ClearLFGDungeon, ClearAllLFGDungeons, GetLFGInfoLocal, SetLFGComment, LFGTeleport ... |
 | 00ac3e00 (IsShiftKeyDown..) | 113 | `s_ScriptFunctions` | 0 | 53 |  / stubs: SetUsesToken, SetSavedAccountList, QuitGameAndRunLauncher, LaunchURL ... |
 | 00ad1020 (GetNumQuestLogEntries..) | 67 | `s_ScriptFunctions` | 52 | 0 | GetQuestLogTitle, GetAbandonQuestName, GetAbandonQuestItems, AbandonQuest, GetQuestLogQuestText, GetQuestLogLeaderBoard ... |
@@ -170,7 +170,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 19 (8.3%) | 8.4% | 9 | 0 | 7 |
-| ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
+| ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 54 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 17 | 2 | 0 |
@@ -739,7 +739,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-19 13:54 | 2679 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
-| 2026-09-19 13:54 | 2679 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
 | 2026-09-19 13:58 | 2679 (9.9%) | 920 (3.4%) | 573 | 392/5530 | 1791/2964 | 637 |
 | 2026-09-19 13:58 | 2679 (9.9%) | 920 (3.4%) | 573 | 392/5530 | 1791/2964 | 637 |
 | 2026-09-19 14:03 | 2679 (9.9%) | 920 (3.4%) | 571 | 392/5530 | 1791/2964 | 635 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 15:29 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 | 2026-09-19 15:34 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 | 2026-09-19 15:37 | 2688 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
+| 2026-09-19 15:44 | 2688 (9.9%) | 932 (3.4%) | 554 | 392/5530 | 1791/2964 | 617 |
 
 ## How to move a row
 

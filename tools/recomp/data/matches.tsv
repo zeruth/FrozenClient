@@ -1469,17 +1469,17 @@ addr	how	frozen	evidence
 0060dd40	table	Script_IsResting	binding "IsResting" in s_UnitFunctions ~ table 00ad21d8
 0060ddb0	table	Script_GetCombatRating	binding "GetCombatRating" in s_UnitFunctions ~ table 00ad21d8
 0060de70	table	Script_GetCombatRatingBonus	binding "GetCombatRatingBonus" in s_UnitFunctions ~ table 00ad21d8
-0060df30	table	Script_GetDodgeChance	binding "GetDodgeChance" in s_UnitFunctions ~ table 00ad21d8
-0060df90	table	Script_GetBlockChance	binding "GetBlockChance" in s_UnitFunctions ~ table 00ad21d8
+0060df30	annotated	Script_GetDodgeChance	tag in src/ui/game/ScriptEvents.cpp
+0060df90	annotated	Script_GetBlockChance	tag in src/ui/game/ScriptEvents.cpp
 0060dff0	table	Script_GetShieldBlock	binding "GetShieldBlock" in s_UnitFunctions ~ table 00ad21d8
-0060e070	table	Script_GetParryChance	binding "GetParryChance" in s_UnitFunctions ~ table 00ad21d8
-0060e0d0	table	Script_GetCritChance	binding "GetCritChance" in s_UnitFunctions ~ table 00ad21d8
+0060e070	annotated	Script_GetParryChance	tag in src/ui/game/ScriptEvents.cpp
+0060e0d0	annotated	Script_GetCritChance	tag in src/ui/game/ScriptEvents.cpp
 0060e130	table	Script_GetCritChanceFromAgility	binding "GetCritChanceFromAgility" in s_UnitFunctions ~ table 00ad21d8
 0060e1b0	table	Script_GetSpellCritChanceFromIntellect	binding "GetSpellCritChanceFromIntellect" in s_UnitFunctions ~ table 00ad21d8
-0060e230	table	Script_GetRangedCritChance	binding "GetRangedCritChance" in s_UnitFunctions ~ table 00ad21d8
+0060e230	annotated	Script_GetRangedCritChance	tag in src/ui/game/ScriptEvents.cpp
 0060e290	table	Script_GetSpellCritChance	binding "GetSpellCritChance" in s_UnitFunctions ~ table 00ad21d8
 0060e310	table	Script_GetSpellBonusDamage	binding "GetSpellBonusDamage" in s_UnitFunctions ~ table 00ad21d8
-0060e3b0	table	Script_GetSpellBonusHealing	binding "GetSpellBonusHealing" in s_UnitFunctions ~ table 00ad21d8
+0060e3b0	annotated	Script_GetSpellBonusHealing	tag in src/ui/game/ScriptEvents.cpp
 0060e410	table	Script_GetPetSpellBonusDamage	binding "GetPetSpellBonusDamage" in s_UnitFunctions ~ table 00ad21d8
 0060e470	table	Script_GetSpellPenetration	binding "GetSpellPenetration" in s_UnitFunctions ~ table 00ad21d8
 0060e4e0	table	Script_GetArmorPenetration	binding "GetArmorPenetration" in s_UnitFunctions ~ table 00ad21d8

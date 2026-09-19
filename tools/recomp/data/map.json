@@ -23390,36 +23390,36 @@
   "status": "ported"
  },
  "0060df30": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetDodgeChance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060df90": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetBlockChance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060dff0": {
   "branchRatio": 0.0,
@@ -23438,36 +23438,36 @@
   "status": "ported"
  },
  "0060e070": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetParryChance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e0d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetCritChance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e130": {
   "branchRatio": 0.0,
@@ -23502,20 +23502,20 @@
   "status": "ported"
  },
  "0060e230": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetRangedCritChance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 71,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e290": {
   "branchRatio": 1.0,
@@ -23550,20 +23550,20 @@
   "status": "stub"
  },
  "0060e3b0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetSpellBonusHealing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 77,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e410": {
   "branchRatio": 0.5,

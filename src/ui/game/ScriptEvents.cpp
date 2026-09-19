@@ -18,6 +18,7 @@
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/game/Types.hpp"
 #include "util/GUID.hpp"
+#include <cstddef>
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -26,6 +27,28 @@
 const char* g_scriptEvents[NUM_SCRIPT_EVENTS];
 
 namespace {
+
+// The character sheet's combat percentages. Each reference function is the same ninety-five bytes:
+// resolve the active player, push one field, and push 0.0 rather than nil when there is no player.
+//
+// The reference addresses these fields by absolute offset into CGPlayerData. The static_asserts
+// below hold frozen's struct to the same layout, so a drift shows up as a build failure instead of
+// the character sheet quietly showing dodge where it means parry.
+static_assert(offsetof(CGPlayerData, blockPercentage) == 0xdb0, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, dodgePercentage) == 0xdb4, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, parryPercentage) == 0xdb8, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, critPercentage) == 0xdc4, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, rangedCritPercentage) == 0xdc8, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, modHealingDonePos) == 0x1050, "CGPlayerData layout");
+
+// The player's own data, or null. Every function below answers 0.0 without it, which is what the
+// reference pushes -- the character sheet shows a zero rather than going blank.
+static CGPlayerData* ActivePlayerData() {
+    auto player = CGPlayer_C::GetActivePtr();
+
+    return player ? player->Player() : nullptr;
+}
+
 
 int32_t Script_UnitExists(lua_State* L) {
     auto token = lua_tostring(L, 1);
@@ -1389,12 +1412,22 @@ int32_t Script_GetMaxCombatRatingBonus(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0060df30
 int32_t Script_GetDodgeChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->dodgePercentage : 0.0f);
+
+    return 1;
 }
 
+// ref: FUN_0060df90
 int32_t Script_GetBlockChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->blockPercentage : 0.0f);
+
+    return 1;
 }
 
 int32_t Script_GetShieldBlock(lua_State* L) {
@@ -1405,8 +1438,13 @@ int32_t Script_GetShieldBlock(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060e070
 int32_t Script_GetParryChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->parryPercentage : 0.0f);
+
+    return 1;
 }
 
 int32_t Script_GetCritChanceFromAgility(lua_State* L) {
@@ -1425,12 +1463,22 @@ int32_t Script_GetSpellCritChanceFromIntellect(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060e0d0
 int32_t Script_GetCritChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->critPercentage : 0.0f);
+
+    return 1;
 }
 
+// ref: FUN_0060e230
 int32_t Script_GetRangedCritChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->rangedCritPercentage : 0.0f);
+
+    return 1;
 }
 
 int32_t Script_GetSpellCritChance(lua_State* L) {
@@ -1441,10 +1489,18 @@ int32_t Script_GetSpellBonusDamage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0060e3b0
 int32_t Script_GetSpellBonusHealing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->modHealingDonePos : 0.0f);
+
+    return 1;
 }
 
+// TODO FUN_0060e410 reads CGPlayerData + 0x1264, which no named field in frozen's struct
+// has been shown to sit at. The five percentages above were safe because three of their
+// offsets matched the struct order exactly; this one has no such corroboration yet.
 int32_t Script_GetPetSpellBonusDamage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1624,6 +1680,9 @@ int32_t Script_IsIndoors(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00612360 and FUN_00612300 (IsIndoors) are one predicate and its negation, both
+// resting on a CGUnit_C method at 0071b7f0 that frozen has no counterpart for. Answering
+// from the map instead would be a guess about what the server considers indoors.
 int32_t Script_IsOutdoors(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
