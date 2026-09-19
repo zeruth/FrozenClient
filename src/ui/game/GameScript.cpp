@@ -1179,8 +1179,11 @@ int32_t Script_GetTimeToWellRested(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00510bb0
 int32_t Script_GMRequestPlayerInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    luaL_error(L, "Access Denied");
+
+    return 0;
 }
 
 // The icon directory. The reference does not hold this as a literal: it reads row 3 of a table
@@ -1620,7 +1623,8 @@ int32_t Script_GetItemGem(lua_State* L) {
 }
 
 int32_t Script_GetExtendedItemInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    // Compiled out of the shipped client: the reference registers this and returns nothing.
+    return 0;
 }
 
 // ref: FUN_00517020
@@ -1749,8 +1753,13 @@ int32_t Script_GetAddOnMemoryUsage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00511610
 int32_t Script_GetScriptCPUUsage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto divisor = FrameScript::s_scriptTimeDivisor;
+
+    lua_pushnumber(L, divisor ? FrameScript::s_scriptTimeUsed / divisor : 0.0);
+
+    return 1;
 }
 
 int32_t Script_UpdateAddOnCPUUsage(lua_State* L) {

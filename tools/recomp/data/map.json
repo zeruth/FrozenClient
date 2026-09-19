@@ -11998,20 +11998,20 @@
   "status": "ported"
  },
  "00510bb0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GMRequestPlayerInfo",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 23,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 24,
-  "status": "stub"
+  "status": "ported"
  },
  "00510bd0": {
   "branchRatio": 1.0,
@@ -12261,17 +12261,17 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetScriptCPUUsage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 33,
-  "status": "stub"
+  "status": "ported"
  },
  "00511640": {
   "branchRatio": 0.0,
@@ -27710,7 +27710,7 @@
   ],
   "frozen": "Script_AccessDenied",
   "frozenSize": 23,
-  "how": "string",
+  "how": "override",
   "module": "ConsoleClient.cpp",
   "refSize": 18,
   "status": "ported"

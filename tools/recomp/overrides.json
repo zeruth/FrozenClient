@@ -1107,5 +1107,10 @@
     "frozen": "CVar::LookupRegistered",
     "status": "ported",
     "note": "Verified from GetCVarInfo (0050ff50), which calls it on the name argument and then tests the result's flags 0x40, 0x10 and 0x20 -- exactly what a registered-CVar lookup returns. Pinned because it came unlinked when the binding tables were widened: the extra table evidence reordered which rule claimed which Frozen name, and this one lost its automatic match."
+  },
+  "00765880": {
+    "frozen": "Script_AccessDenied",
+    "status": "ported",
+    "note": "18 bytes, one callee (luaL_error) and the single string 'Access Denied' -- the shared refusal frozen registers for ReadFile, DeleteFile and their neighbours. Pinned because it came unlinked the moment a SECOND 'Access Denied' literal appeared in the port: GMRequestPlayerInfo raises the same text inline rather than calling this, which the reference also does, and the string rule cannot choose between two identical literals. The rule was right the first time; it just stopped being able to prove it."
   }
 }

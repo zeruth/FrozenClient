@@ -751,7 +751,7 @@ addr	how	frozen	evidence
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac80b0
 00510b30	table	Script_RunScript	binding "RunScript" in s_ScriptFunctions ~ table 00ac80b0
 00510b90	table	Script_IsMacClient	binding "IsMacClient" in s_ScriptFunctions ~ table 00ac80b0
-00510bb0	table	Script_GMRequestPlayerInfo	binding "GMRequestPlayerInfo" in s_ScriptFunctions ~ table 00ac80b0
+00510bb0	annotated	Script_GMRequestPlayerInfo	tag in src/ui/game/GameScript.cpp
 00510bd0	annotated	Script_GetCoinIcon	tag in src/ui/game/GameScript.cpp
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
 00510d00	annotated	Script_GetCoinTextureString	tag in src/ui/game/GameScript.cpp
@@ -767,7 +767,7 @@ addr	how	frozen	evidence
 00511430	table	Script_GetAddOnMetadata	binding "GetAddOnMetadata" in s_ScriptFunctions ~ table 00ac80b0
 00511510	table	Script_UpdateAddOnMemoryUsage	binding "UpdateAddOnMemoryUsage" in s_ScriptFunctions ~ table 00ac80b0
 00511530	table	Script_GetAddOnMemoryUsage	binding "GetAddOnMemoryUsage" in s_ScriptFunctions ~ table 00ac80b0
-00511610	table	Script_GetScriptCPUUsage	binding "GetScriptCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511610	annotated	Script_GetScriptCPUUsage	tag in src/ui/game/GameScript.cpp
 00511640	table	Script_UpdateAddOnCPUUsage	binding "UpdateAddOnCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
 00511660	table	Script_GetAddOnCPUUsage	binding "GetAddOnCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
 00511720	table	Script_GetFunctionCPUUsage	binding "GetFunctionCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
@@ -1739,7 +1739,7 @@ addr	how	frozen	evidence
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
-00765880	string	Script_AccessDenied	score 0.50 shared Access Denied
+00765880	override	Script_AccessDenied	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
 00766400	annotated	s_LoadFromFile	tag in src/console/CVar.cpp
