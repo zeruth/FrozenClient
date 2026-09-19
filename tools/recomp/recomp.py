@@ -1319,6 +1319,17 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
 
 
 def write_map(refs, frozen, m, overrides):
+    # What the last run linked, so this one can say what it lost. A link that disappears is not
+    # always a regression: filling in a stub gives it callees, which can break the "only unmatched
+    # callee" uniqueness some unrelated callgraph inference rested on (README, under callgraph).
+    # Without this, that shows up only as a smaller total, and reads like something broke.
+    prev = {}
+    if os.path.exists(MAP_OUT):
+        try:
+            prev = json.load(io.open(MAP_OUT, encoding='utf-8'))
+        except Exception:
+            prev = {}
+
     out = {}
     for a, (name, how) in sorted(m.items()):
         o = overrides.get(a, {})
@@ -1329,6 +1340,36 @@ def write_map(refs, frozen, m, overrides):
                   'faithful': is_faithful(refs, frozen, m, a, fidelity(refs, frozen, m, a)),
                   'module': refs[a]['module'], 'refSize': refs[a]['size'], 'frozenSize': frozen[name]['size'],
                   'files': frozen[name]['files']}
+    lost = sorted(set(prev) - set(out))
+    gained = sorted(set(out) - set(prev))
+
+    if prev and (lost or gained):
+        print('link churn: %d lost, %d gained' % (len(lost), len(gained)))
+
+        if lost:
+            by_how = collections.Counter(prev[a].get('how') for a in lost)
+            print('  lost by evidence: %s'
+                  % ', '.join('%s %d' % kv for kv in sorted(by_how.items(), key=lambda kv: -kv[1])))
+
+            for a in lost[:12]:
+                print('    - %s  %-44s %s' % (a, prev[a].get('frozen'), prev[a].get('how')))
+
+            if len(lost) > 12:
+                print('    ... and %d more' % (len(lost) - 12))
+
+            # The common false alarm, called out so it is not mistaken for a broken port.
+            if set(by_how) <= {'callgraph', 'callorder'}:
+                print('  all of these were inferred, not tagged. Implementing a stub can delete'
+                      ' them without touching them -- see tools/recomp/README.md under callgraph'
+                      ' before treating this as a regression.')
+
+        if gained:
+            for a in gained[:8]:
+                print('    + %s  %-44s %s' % (a, out[a].get('frozen'), out[a].get('how')))
+
+            if len(gained) > 8:
+                print('    ... and %d more' % (len(gained) - 8))
+
     json.dump(out, io.open(MAP_OUT, 'w', encoding='utf-8'), indent=1, sort_keys=True)
 
 

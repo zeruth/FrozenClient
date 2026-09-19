@@ -40,6 +40,11 @@ static_assert(offsetof(CGPlayerData, parryPercentage) == 0xdb8, "CGPlayerData la
 static_assert(offsetof(CGPlayerData, critPercentage) == 0xdc4, "CGPlayerData layout");
 static_assert(offsetof(CGPlayerData, rangedCritPercentage) == 0xdc8, "CGPlayerData layout");
 static_assert(offsetof(CGPlayerData, modHealingDonePos) == 0x1050, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, expertise) == 0xdbc, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, offhandExpertise) == 0xdc0, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, spellCritPercentage) == 0xdd0, "CGPlayerData layout");
+static_assert(offsetof(CGPlayerData, modTargetResistance) == 0x105c, "CGPlayerData layout");
+
 
 // The player's own data, or null. Every function below answers 0.0 without it, which is what the
 // reference pushes -- the character sheet shows a zero rather than going blank.
@@ -1481,10 +1486,27 @@ int32_t Script_GetRangedCritChance(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060e290
+// School is 1-based from Lua and indexes a seven-entry array. The reference tests the converted
+// index as unsigned, so school 0 and every negative wrap past the end and take the usage error
+// rather than reading in front of the array.
 int32_t Script_GetSpellCritChance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto school = static_cast<uint32_t>(lua_tonumber(L, 1)) - 1;
+
+    if (school >= 7) {
+        return luaL_error(L, "Usage: GetSpellCritChance(school)");
+    }
+
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->spellCritPercentage[school] : 0.0f);
+
+    return 1;
 }
 
+// TODO FUN_0060e310 takes the same 1-based school as GetSpellCritChance but does not read a
+// field directly: it combines two helpers at 00578210 and 00578250, neither identified.
+// The school bounds check and the usage string are the same as the crit one above.
 int32_t Script_GetSpellBonusDamage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1505,8 +1527,16 @@ int32_t Script_GetPetSpellBonusDamage(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0060e470
+// Negated on the way out, which is the whole of the function's content. Spell penetration is held
+// as a *negative* modifier to the target's resistance and reported to the interface as a positive
+// number, so a port that forwarded the field unchanged would show every value with the wrong sign.
 int32_t Script_GetSpellPenetration(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? -data->modTargetResistance : 0.0f);
+
+    return 1;
 }
 
 int32_t Script_GetArmorPenetration(lua_State* L) {
@@ -1709,6 +1739,9 @@ int32_t Script_IsFlying(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_006125a0 reads two fields on the object rather than the descriptor -- a count at
+// +0x9c0 that must be positive and a flag 0x10000000 at +0xa30 that must be clear. Neither
+// has a frozen counterpart, and the mount state is not derivable from the descriptor.
 int32_t Script_IsMounted(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1814,8 +1847,17 @@ int32_t Script_GetExpertise(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00612cb0
+// Two values, main hand and off hand, each the raw expertise scaled by the 0.25 at 00a1f6f4 -- four
+// points of expertise to one percent. Both are pushed even with no player, as zeros, so the sheet
+// keeps two return values rather than going nil.
 int32_t Script_GetExpertisePercent(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->expertise * 0.25f : 0.0f);
+    lua_pushnumber(L, data ? data->offhandExpertise * 0.25f : 0.0f);
+
+    return 2;
 }
 
 int32_t Script_UnitInBattleground(lua_State* L) {
