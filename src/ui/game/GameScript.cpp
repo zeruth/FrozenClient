@@ -879,8 +879,20 @@ int32_t Script_UninviteUnit(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// A request with no payload: the opcode and nothing else. Six of the bindings below are exactly
+// this in the reference, each its own copy differing only in the number.
+static void SendEmptyRequest(NETMESSAGE opcode) {
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(opcode));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_00515880
 int32_t Script_RequestTimePlayed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_REQUEST_PLAYED_TIME);
+
+    return 0;
 }
 
 int32_t Script_RepopMe(lua_State* L) {
@@ -1046,16 +1058,25 @@ int32_t Script_GuildSetMOTD(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00515b70
 int32_t Script_GuildLeave(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_GUILD_LEAVE);
+
+    return 0;
 }
 
+// ref: FUN_00515be0
 int32_t Script_GuildDisband(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_GUILD_DISBAND);
+
+    return 0;
 }
 
+// ref: FUN_00515c50
 int32_t Script_GuildInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_GUILD_INFO);
+
+    return 0;
 }
 
 // TODO FUN_00515cc0, opcode 0x34f. The shape is the guild commands above -- a team index from
@@ -1610,12 +1631,24 @@ int32_t Script_GetZonePVPInfo(lua_State* L) {
     return 3;
 }
 
+// ref: FUN_00516840
 int32_t Script_TogglePVP(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_TOGGLE_PVP);
+
+    return 0;
 }
 
+// ref: FUN_005168b0
+// The same opcode TogglePVP sends, with a byte after it. Toggle is not a different message; it is
+// this one without the byte, and the server reads the shorter packet as "flip it".
 int32_t Script_SetPVP(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_TOGGLE_PVP));
+    msg.Put(static_cast<uint8_t>(lua_isnumber(L, 1) ? lua_tonumber(L, 1) != 0.0 : 0));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_GetPVPDesired(lua_State* L) {
@@ -2275,8 +2308,11 @@ int32_t Script_CanShowResetInstances(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00515630
 int32_t Script_ResetInstances(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SendEmptyRequest(CMSG_RESET_INSTANCES);
+
+    return 0;
 }
 
 int32_t Script_IsInInstance(lua_State* L) {

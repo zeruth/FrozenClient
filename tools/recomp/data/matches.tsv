@@ -822,20 +822,20 @@ addr	how	frozen	evidence
 005155a0	table	Script_GetRealZoneText	binding "GetRealZoneText" in s_ScriptFunctions ~ table 00ac80b0
 005155d0	table	Script_GetSubZoneText	binding "GetSubZoneText" in s_ScriptFunctions ~ table 00ac80b0
 00515600	table	Script_GetMinimapZoneText	binding "GetMinimapZoneText" in s_ScriptFunctions ~ table 00ac80b0
-00515630	table	Script_ResetInstances	binding "ResetInstances" in s_ScriptFunctions ~ table 00ac80b0
+00515630	annotated	Script_ResetInstances	tag in src/ui/game/GameScript.cpp
 005156a0	table	Script_IsInInstance	binding "IsInInstance" in s_ScriptFunctions ~ table 00ac80b0
 00515750	table	Script_GetInstanceDifficulty	binding "GetInstanceDifficulty" in s_ScriptFunctions ~ table 00ac80b0
 00515790	table	Script_GetDungeonDifficulty	binding "GetDungeonDifficulty" in s_ScriptFunctions ~ table 00ac80b0
 00515810	table	Script_GetRaidDifficulty	binding "GetRaidDifficulty" in s_ScriptFunctions ~ table 00ac80b0
-00515880	table	Script_RequestTimePlayed	binding "RequestTimePlayed" in s_ScriptFunctions ~ table 00ac80b0
+00515880	annotated	Script_RequestTimePlayed	tag in src/ui/game/GameScript.cpp
 00515950	table	Script_ResurrectGetOfferer	binding "ResurrectGetOfferer" in s_ScriptFunctions ~ table 00ac80b0
 005159c0	table	Script_ResurrectHasSickness	binding "ResurrectHasSickness" in s_ScriptFunctions ~ table 00ac80b0
 00515a00	table	Script_ResurrectHasTimer	binding "ResurrectHasTimer" in s_ScriptFunctions ~ table 00ac80b0
 00515a50	annotated	Script_GetCursorMoney	tag in src/ui/game/GameScript.cpp
 00515a90	table	Script_GuildSetMOTD	binding "GuildSetMOTD" in s_ScriptFunctions ~ table 00ac80b0
-00515b70	table	Script_GuildLeave	binding "GuildLeave" in s_ScriptFunctions ~ table 00ac80b0
-00515be0	table	Script_GuildDisband	binding "GuildDisband" in s_ScriptFunctions ~ table 00ac80b0
-00515c50	table	Script_GuildInfo	binding "GuildInfo" in s_ScriptFunctions ~ table 00ac80b0
+00515b70	annotated	Script_GuildLeave	tag in src/ui/game/GameScript.cpp
+00515be0	annotated	Script_GuildDisband	tag in src/ui/game/GameScript.cpp
+00515c50	annotated	Script_GuildInfo	tag in src/ui/game/GameScript.cpp
 00515cc0	table	Script_ArenaTeamInviteByName	binding "ArenaTeamInviteByName" in s_ScriptFunctions ~ table 00ac80b0
 00515dd0	table	Script_ArenaTeamLeave	binding "ArenaTeamLeave" in s_ScriptFunctions ~ table 00ac80b0
 00515eb0	table	Script_ArenaTeamUninviteByName	binding "ArenaTeamUninviteByName" in s_ScriptFunctions ~ table 00ac80b0
@@ -854,8 +854,8 @@ addr	how	frozen	evidence
 005166f0	table	Script_OpeningCinematic	binding "OpeningCinematic" in s_ScriptFunctions ~ table 00ac80b0
 00516760	table	Script_InCinematic	binding "InCinematic" in s_ScriptFunctions ~ table 00ac80b0
 005167e0	table	Script_IsSubZonePVPPOI	binding "IsSubZonePVPPOI" in s_ScriptFunctions ~ table 00ac80b0
-00516840	table	Script_TogglePVP	binding "TogglePVP" in s_ScriptFunctions ~ table 00ac80b0
-005168b0	table	Script_SetPVP	binding "SetPVP" in s_ScriptFunctions ~ table 00ac80b0
+00516840	annotated	Script_TogglePVP	tag in src/ui/game/GameScript.cpp
+005168b0	annotated	Script_SetPVP	tag in src/ui/game/GameScript.cpp
 00516970	table	Script_SetPortraitToTexture	binding "SetPortraitToTexture" in s_ScriptFunctions ~ table 00ac80b0
 00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
 00516b20	annotated	Script_GetBindLocation	tag in src/ui/game/GameScript.cpp

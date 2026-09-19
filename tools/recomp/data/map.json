@@ -13162,20 +13162,20 @@
   "status": "ported"
  },
  "00515630": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_ResetInstances",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "005156a0": {
   "branchRatio": 0.0,
@@ -13242,20 +13242,20 @@
   "status": "ported"
  },
  "00515880": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_RequestTimePlayed",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 114,
-  "status": "stub"
+  "status": "ported"
  },
  "00515950": {
   "branchRatio": 1.0,
@@ -13338,52 +13338,52 @@
   "status": "stub"
  },
  "00515b70": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildLeave",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "00515be0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildDisband",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "00515c50": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildInfo",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "00515cc0": {
   "branchRatio": 0.333,
@@ -13674,36 +13674,36 @@
   "status": "ported"
  },
  "00516840": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_TogglePVP",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 104,
-  "status": "stub"
+  "status": "ported"
  },
  "005168b0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetPVP",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 131,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 182,
-  "status": "stub"
+  "status": "ported"
  },
  "00516970": {
   "branchRatio": 0.25,
