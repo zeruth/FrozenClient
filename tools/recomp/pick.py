@@ -129,6 +129,19 @@ def main():
 
 
 
+    # Every binding-table entry a file's already-tagged functions occupy. Used only to ORDER the
+    # candidates for a name that appears in several tables -- nearest first -- never to rule one
+    # out. A span test over these was tried and dropped: frozen's aggregate files draw from several
+    # reference tables, so a span says nothing. Nearness still says something useful, and says it
+    # without claiming to be a verdict.
+    file_entries = {}
+    for addr, rec in mapped.items():
+        es = entry_of.get(addr)
+        if not es:
+            continue
+        for f in rec.get('files', []):
+            file_entries.setdefault(os.path.basename(f), set()).update(es)
+
     ro = rdata_ranges()
 
     def risky(addr):
@@ -152,7 +165,20 @@ def main():
 
             src = io.open(os.path.join(dirpath, f), encoding='utf-8', errors='replace').read()
             for m in re.finditer(r'int32_t (\w+?)_(\w+)\(lua_State\* L\) \{\n    WHOA_UNIMPLEMENTED', src):
-                for addr in sorted(tables.get(m.group(2), ())):
+                own = file_entries.get(os.path.basename(rel), set())
+
+                def nearness(a):
+                    es = entry_of.get(a) or set()
+                    if not own or not es:
+                        return 0
+                    return min(abs(e - o) for e in es for o in own)
+
+                candidates = sorted(tables.get(m.group(2), ()), key=nearness)
+
+                # Only the nearest candidate. A name in several method tables has a copy in each,
+                # and showing them all meant reading whichever the global sort floated to the top --
+                # which named another class's function six times before this was added.
+                for addr in candidates[:1]:
                     r = refs.get(addr)
                     if not r:
                         continue

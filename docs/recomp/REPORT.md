@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 19:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 19:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,10 +9,10 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2135 (+2) | 421.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 527 (-2) | 113.7k |
+| &nbsp;&nbsp;ported | 2135 (=) | 421.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 527 (=) | 113.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1002 (+1) (3.7%)** | **124.4k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1002 (=) (3.7%)** | **124.4k (2.2%)** |
 | unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
@@ -21,11 +21,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 600, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 19:38 -- mapped 2699, ported 2133, stub 529, spine mapped 393.
+Previous run: 2026-09-19 19:41 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 588 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 588 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 17:21 | 2698 (9.9%) | 951 (3.5%) | 540 | 394/5530 | 1791/2964 | 600 |
 | 2026-09-19 17:25 | 2698 (9.9%) | 952 (3.5%) | 539 | 394/5530 | 1791/2964 | 597 |
 | 2026-09-19 17:28 | 2698 (9.9%) | 983 (3.6%) | 537 | 393/5530 | 1791/2964 | 595 |
 | 2026-09-19 17:34 | 2698 (9.9%) | 985 (3.6%) | 534 | 393/5530 | 1791/2964 | 593 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 19:31 | 2699 (9.9%) | 1000 (3.7%) | 534 | 393/5530 | 1791/2964 | 595 |
 | 2026-09-19 19:38 | 2699 (9.9%) | 1001 (3.7%) | 529 | 393/5530 | 1791/2964 | 590 |
 | 2026-09-19 19:41 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
+| 2026-09-19 19:49 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 

@@ -103831,7 +103831,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1110
+"line": 1115
 },
 "CGTooltip_SetQuestLogSpecialItem": {
 "files": [
@@ -103853,7 +103853,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1114
+"line": 1119
 },
 "CGTooltip_SetEquipmentSet": {
 "files": [
@@ -103875,7 +103875,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1118
+"line": 1123
 },
 "CGTooltip_SetFrameStack": {
 "files": [
@@ -103897,7 +103897,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1124
+"line": 1129
 },
 "CGTooltip_SetLFGDungeonReward": {
 "files": [
@@ -103919,7 +103919,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1128
+"line": 1133
 },
 "CGTooltip_SetLFGCompletionReward": {
 "files": [
@@ -103941,7 +103941,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1132
+"line": 1137
 },
 "CGTradeInfo::GetPlayerTradeMoney": {
 "files": [

@@ -1107,6 +1107,11 @@ int32_t CGTooltip_SetBackpackToken(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_0061f1f0 -- the tooltip's own IsEquippedItem, entry 00ad2cd8, not the global
+// IsEquippedItem at 0051c690 that the name matcher offers first. It reads an item GUID the
+// tooltip keeps at +0x340 and searches the player's equipped slots for it. The search is
+// portable; the guid is not, because only the item-tooltip path sets it and that is the
+// 24KB builder at 006277f0. Implementing the search alone would answer nil forever.
 int32_t CGTooltip_IsEquippedItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
