@@ -1,4 +1,5 @@
 addr	how	frozen	evidence
+00401050	callorder	CDataStore::CDataStore	same slot between linked calls in 00516610=Script_RandomRoll
 00401070	annotated	CDataStore::FetchWrite	tag in lib/common/common/datastore/CDataStore.cpp
 00401200	annotated	ComparePatchArchives	tag in src/client/Archive.cpp
 00401280	handler	NotifyHandler	SetMessageHandler(SMSG_NOTIFICATION) on both sides
@@ -708,6 +709,7 @@ addr	how	frozen	evidence
 005164b0	table	Script_GetSummonConfirmTimeLeft	binding "GetSummonConfirmTimeLeft" in s_ScriptFunctions ~ table 00ac8460
 00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac8460
 00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac8460
+00516610	annotated	Script_RandomRoll	tag in src/ui/game/GameScript.cpp
 00517020	override	Script_GetItemIcon	
 0051acd0	table	Script_HasSoulstone	binding "HasSoulstone" in s_ScriptFunctions ~ table 00ac8460
 0051add0	table	Script_UseSoulstone	binding "UseSoulstone" in s_ScriptFunctions ~ table 00ac8460

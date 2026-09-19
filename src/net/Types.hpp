@@ -447,6 +447,7 @@ enum NETMESSAGE {
     SMSG_EXPLORATION_EXPERIENCE         = 0x01F8,
     CMSG_GM_SET_SECURITY_GROUP          = 0x01F9,
     CMSG_GM_NUKE                        = 0x01FA,
+    CMSG_RANDOM_ROLL                    = 0x01FB,
     SMSG_ENVIRONMENTAL_DAMAGE_LOG       = 0x01FC,
     CMSG_CHANGEPLAYER_DIFFICULTY        = 0x01FD,
     SMSG_RWHOIS                         = 0x01FE,

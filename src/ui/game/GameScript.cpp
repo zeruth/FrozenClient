@@ -1074,8 +1074,41 @@ int32_t Script_CheckInteractDistance(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00516610
+// Both bounds arrive as STRINGS and are converted here, which is why the usage text quotes them.
+// The reference drops the call silently rather than erroring on every rejection: a negative low
+// bound, a zero pair, an inverted range, or a high bound of a million or more all just return.
 int32_t Script_RandomRoll(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: RandomRoll(\"max\") or RandomRoll(\"min\", \"max\")");
+
+        return 0;
+    }
+
+    auto low = SStrToInt(lua_tostring(L, 1));
+    auto high = SStrToInt(lua_tostring(L, 2));
+
+    if (low == 0) {
+        if (high == 0) {
+            return 0;
+        }
+    } else if (low < 0) {
+        return 0;
+    }
+
+    // 0xF4241 is one past a million, so a million itself is rejected.
+    if (low > high || high >= 0xF4241) {
+        return 0;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_RANDOM_ROLL));
+    msg.Put(static_cast<uint32_t>(low));
+    msg.Put(static_cast<uint32_t>(high));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_OpeningCinematic(lua_State* L) {

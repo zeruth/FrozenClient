@@ -1,4 +1,20 @@
 {
+ "00401050": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/datastore/CDataStore.cpp",
+   "lib/common/common/datastore/cdatastore.cpp"
+  ],
+  "frozen": "CDataStore::CDataStore",
+  "frozenSize": 71,
+  "how": "callorder",
+  "module": "?",
+  "refSize": 30,
+  "status": "ported"
+ },
  "00401070": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -11314,6 +11330,22 @@
   "module": "GameUI.cpp",
   "refSize": 88,
   "status": "stub"
+ },
+ "00516610": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.846,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_RandomRoll",
+  "frozenSize": 250,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 216,
+  "status": "ported"
  },
  "00517020": {
   "branchRatio": 0.5,
