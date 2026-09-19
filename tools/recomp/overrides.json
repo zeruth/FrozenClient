@@ -198,5 +198,24 @@
   "004910a0": { "whoa": "CSimpleFrame::SetFrameLevel", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): right after SStrToInt of the frameLevel attribute" },
   "00812ce0": { "whoa": "FrameXML_AcquireHashNode", "status": "ported", "note": "call slot in CSimpleFrame::LoadXML (recomp --diff 004932c0): the inherits lookup before FrameScript_GetContext and the ReleaseHashNode" },
   "004905a0": { "whoa": "CSimpleFrame::SetBackdrop", "status": "ported", "note": "CSimpleFrame_SetBackdrop (004a15a0) calls it with the generator it built, and LoadXML with the one from the Backdrop element" },
-  "004a2d40": { "whoa": "CBackdropGenerator::CBackdropGenerator", "status": "ported", "note": "constructed on a fresh 0x6c-byte allocation in CSimpleFrame_SetBackdrop and in CSimpleFrame::LoadXML" }
+  "004a2d40": { "whoa": "CBackdropGenerator::CBackdropGenerator", "status": "ported", "note": "constructed on a fresh 0x6c-byte allocation in CSimpleFrame_SetBackdrop and in CSimpleFrame::LoadXML" },
+
+  "00488670": { "whoa": "CScriptRegion::LoadXML", "status": "ported", "note": "the base LoadXML both CSimpleFrame::LoadXML and CSimpleFontString::LoadXML call right after their CStatus::Add" },
+  "00487bf0": { "whoa": "CSimpleRegion::Hide", "status": "ported", "note": "call slot in CSimpleFontString::LoadXML (recomp --diff 004873e0): the hidden attribute" },
+  "00487c40": { "whoa": "CSimpleRegion::Show", "status": "ported", "note": "call slot in CSimpleFontString::LoadXML (recomp --diff 004873e0): the hidden attribute" },
+  "00482aa0": { "whoa": "FrameScript_Object::GetDisplayName", "status": "ported", "note": "virtual GetName with the <unnamed> fallback, the out-of-line copy of what every binding inlines for its usage message; the earlier callgraph vote at 0061ea00 was in the tooltip block" },
+  "004870d0": { "whoa": "CSimpleFontString::SetSpacing", "status": "ported", "note": "call slot in CSimpleFontString::LoadXML (recomp --diff 004873e0), and the SetSpacing binding (0048dd00) calls it" },
+  "00815080": { "whoa": "StringToJustify", "status": "ported", "note": "call slot in CSimpleFontString::LoadXML (recomp --diff 004873e0) and call slot in CSimpleFont::LoadXML (recomp --diff 00497070); the SetJustifyV binding (0048e430) calls it too" },
+  "004871d0": { "whoa": "CSimpleFontString::SetJustifyV", "status": "ported", "note": "masks 0x38 with the settable bits cleared then UpdateString when live: whoa's body line for line" },
+  "00487190": { "whoa": "CSimpleFontString::SetJustifyH", "status": "ported", "note": "masks 0x7, same shape as SetJustifyV" },
+  "004872a0": { "whoa": "CSimpleFontString::SetIndentedWordWrap", "status": "ported", "note": "call slot in CSimpleFontString::LoadXML (recomp --diff 004873e0)" },
+  "004963c0": { "whoa": "CSimpleFontStringAttributes::SetJustifyV", "status": "ported", "note": "call slot in CSimpleFont::LoadXML (recomp --diff 00497070), the higher address of the pair as for the font string" },
+  "00496390": { "whoa": "CSimpleFontStringAttributes::SetJustifyH", "status": "ported", "note": "call slot in CSimpleFont::LoadXML (recomp --diff 00497070)" },
+  "00815f40": { "whoa": "LoadXML_Texture", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0) (four state textures); an earlier call-order vote had it too" },
+  "00815fa0": { "whoa": "LoadXML_String", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0); next to LoadXML_Texture in the XML helper block" },
+  "0096f920": { "whoa": "CSimpleButton::SetStateTexture", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0)" },
+  "0096f3c0": { "whoa": "CSimpleButton::SetHighlight", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0)" },
+  "0096f4a0": { "whoa": "CSimpleButton::SetFontString", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0): after SetPressedOffset" },
+
+  "0061b040": { "whoa": "StringToTooltipAnchor", "status": "ported", "note": "only unmatched callee of CGTooltip_SetAnchorType while the binding's other helper (0061ea00, in the tooltip block) was mislinked; in the tooltip block itself" }
 }
