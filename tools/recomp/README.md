@@ -106,43 +106,26 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
-> **The stub flag has been unreliable, and the cause is only partly pinned down.** Measured
-> 2026-09-19 on two files. In `CGCooldownScript.cpp`, two byte-identical `WHOA_UNIMPLEMENTED`
-> bodies were recorded as `stub: true` and `stub: false`. In `CGCharacterModelBaseScript.cpp`,
-> three stubs were all recorded `stub: false`. Seven bindings in total were counted **ported while
-> they were stubs**.
+> **The stub flag was unreliable, and the cause is name collision.** Closed 2026-09-19 after three
+> wrong explanations.
 >
-> What is established: the rule is correct and the sources parse. Running `clangparse.py` on either
-> file *on its own*, at the exact commit that held the bad data, flags every stub correctly. So the
-> committed `frozen-clang.json` was stale rather than wrongly computed.
+> The inventory is keyed by bare function name. Thirty-one Lua binding names are defined in **two**
+> files -- `src/glue/GlueScript.cpp` and `src/ui/game/GameScript.cpp` have their own
+> `Script_Screenshot`, `Script_GetCVarBool`, `Script_GetCVarAbsoluteMin` and twenty-eight more, as
+> separate statics. One key, two functions, and usually one implemented and one a stub. Whichever
+> way the merge resolved decided the flag, so thirty-odd bindings across four files were counted
+> **ported while they were stubs**, and editing a file appeared to fix it because a re-parse changed
+> which side won.
 >
-> What is fixed: `clang-cache.json` keyed entries on **mtime alone**, which a fast write-parse-write
-> cycle defeats. It now keys on a hash of the bytes.
+> What the wrong answers were, since they were all published here first: the `and` across sightings
+> (right in mechanism, dismissed because I grepped `src/ui` for duplicate definitions and the twin
+> was in `src/glue`); libclang parse errors (a full parse reports none); and the mtime cache key
+> (a real defect -- it is a content hash now -- but not this one).
 >
-> What is NOT established: why a `CACHE_VERSION` bump plus a full rebuild did not clear the stale
-> entries on the first attempt -- they only corrected when the file itself was edited. Two earlier
-> explanations were published here and both were wrong: the `and` across sightings (there is only
-> one definition of each name) and libclang parse errors (a full 726-file parse reports none; the
-> reporting for that was added at the same time and stays, because a failing TU really does lose
-> call and stub data silently).
->
-> Followed up 2026-09-19 by deleting `clang-cache.json` outright and parsing all 727 files from
-> scratch. That produced totals identical to the state before it, and I wrote here that the data
-> therefore agreed with a clean rebuild. **That was wrong.** Editing one more file afterwards --
-> `CGQuestPOIFrameScript.cpp` -- corrected ten more bindings from ported to stub, on a file the
-> clean rebuild had just parsed.
->
-> So the established fact is narrower and more useful than either explanation I published before:
-> **a bulk parse and a single-file parse of the same file disagree.** Parsing a file on its own
-> flags its stubs correctly every time it has been tried; parsing it as one of 727 sometimes does
-> not. Four files have been caught this way -- four bindings in `CGCooldownScript.cpp`, three in
-> `CGCharacterModelBaseScript.cpp`, thirteen in `GMTicketInfoScript.cpp`, ten in
-> `CGQuestPOIFrameScript.cpp` -- and in each case the flags corrected when the file was edited,
-> which forces a fresh single-file parse.
->
-> Two earlier explanations were published here and both were wrong: the `and` across sightings, and
-> libclang parse errors. A third, that the mtime cache key was at fault, produced a real improvement
-> -- it is now a content hash -- but did not fix this.
+> Mitigated, not fixed: `overlay_clang` now takes `stub` from **either** source rather than letting
+> clang's override the regex scan's, which errs toward counting a binding as a stub when its twin is
+> one. That is the conservative direction for a progress number. The actual fix is to key the
+> inventory by name *and file*, which is a data-model change the matchers would have to follow.
 >
 > Reading the report until this is closed: `linked` is unaffected, since the flag only splits an
 > already-linked function between two columns. `ported` is an upper bound and `stub` a lower one.

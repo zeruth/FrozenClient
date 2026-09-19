@@ -10047,7 +10047,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 169,
-  "status": "ported"
+  "status": "stub"
  },
  "004df270": {
   "branchRatio": 0.4,
@@ -10063,7 +10063,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 127,
-  "status": "ported"
+  "status": "stub"
  },
  "004df2f0": {
   "branchRatio": 0.286,
@@ -10079,7 +10079,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 166,
-  "status": "ported"
+  "status": "stub"
  },
  "004df3a0": {
   "branchRatio": 1.0,
@@ -10111,7 +10111,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 199,
-  "status": "ported"
+  "status": "stub"
  },
  "004df4f0": {
   "branchRatio": 0.667,
@@ -20470,7 +20470,7 @@
   "how": "table",
   "module": "CharacterModelBase.cpp",
   "refSize": 69,
-  "status": "ported"
+  "status": "stub"
  },
  "00598830": {
   "branchRatio": 0.182,
@@ -20486,7 +20486,7 @@
   "how": "table",
   "module": "DressUpModelFrame.cpp",
   "refSize": 431,
-  "status": "ported"
+  "status": "stub"
  },
  "00598e10": {
   "branchRatio": 1.0,
@@ -22587,7 +22587,7 @@
   "how": "table",
   "module": "InputControl.cpp",
   "refSize": 70,
-  "status": "ported"
+  "status": "stub"
  },
  "006082c0": {
   "branchRatio": 0.5,

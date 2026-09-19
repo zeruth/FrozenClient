@@ -374,7 +374,16 @@ def overlay_clang(src):
         e['strings'] = set(s for s in c['strings'] if len(s) >= 3 and s not in NOISE_STRINGS)
         e['consts'] = set(c['consts'])
         e['branches'] = c['branches']
-        e['stub'] = c['stub']
+        # Either source of truth saying "stub" is enough.
+        #
+        # This used to take clang's answer outright, and clang's is not reliable in bulk: parsing a
+        # file on its own flags its stubs correctly, parsing it as one of 727 sometimes does not, and
+        # thirty bindings across four files were counted ported while they were stubs before anyone
+        # noticed (README, under the stub-flag note). The regex scan that produced e['stub'] just
+        # looks for WHOA_UNIMPLEMENTED in the body and does not have that problem; clang's adds the
+        # empty-body-with-TODO case the regex cannot see. Taking either is strictly better than
+        # taking one.
+        e['stub'] = e['stub'] or c['stub']
         e['exact'] = True
     return src, True
 
