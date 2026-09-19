@@ -11,6 +11,78 @@
 
 WOWGUID CGUnit_C::s_activeMover;
 
+// ref: FUN_00715440
+// Pure FactionTemplate.dbc logic, and the answer everything else falls back to. Each side carries a
+// group mask, a friend mask, an enemy mask and four-entry friend and enemy lists of faction ids;
+// each list stops at its first zero entry.
+int32_t CGUnit_C::GetFactionTemplateReaction(const FactionTemplateRec* a, const FactionTemplateRec* b) {
+    if (a->m_enemyGroup & b->m_factionGroup) {
+        return 1;
+    }
+
+    for (int32_t i = 0; i < 4 && a->m_enemies[i]; i++) {
+        if (a->m_enemies[i] == b->m_faction) {
+            return 1;
+        }
+    }
+
+    if (!(a->m_friendGroup & b->m_factionGroup)) {
+        for (int32_t i = 0; i < 4 && a->m_friend[i]; i++) {
+            if (a->m_friend[i] == b->m_faction) {
+                return 4;
+            }
+        }
+
+        if (!(b->m_friendGroup & a->m_factionGroup)) {
+            for (int32_t i = 0; i < 4; i++) {
+                if (!b->m_friend[i]) {
+                    // Neither side claims the other. Neutral, unless this template's flag 0x2000
+                    // says it attacks anything it is not explicitly friendly with.
+                    return (a->m_flags & 0x2000) ? 1 : 3;
+                }
+
+                if (b->m_friend[i] == a->m_faction) {
+                    break;
+                }
+            }
+        }
+    }
+
+    return 4;
+}
+
+// ref: FUN_0071f770
+// TODO the reference reaches for the reputation system first when the other unit is a player: an
+// explicitly set standing wins, and a faction at war is hostile regardless of the templates. None
+// of that is ported, so this is the faction-template answer alone, which is what the reference
+// itself falls back to for everything that is not a player with a reputation entry.
+int32_t CGUnit_C::GetReaction(const CGUnit_C* other) const {
+    if (!other) {
+        return 3;
+    }
+
+    if (this == other) {
+        return 4;
+    }
+
+    auto data = this->Unit();
+    auto otherData = other->Unit();
+
+    if (!data || !otherData) {
+        return 3;
+    }
+
+    auto a = g_factionTemplateDB.GetRecord(data->factionTemplate);
+    auto b = g_factionTemplateDB.GetRecord(otherData->factionTemplate);
+
+    // A template the client cannot resolve is neutral to everything.
+    if (!a || !b) {
+        return 3;
+    }
+
+    return CGUnit_C::GetFactionTemplateReaction(a, b);
+}
+
 const char* CGUnit_C::GetDisplayClassNameFromRecord(const ChrClassesRec* classRec, UNIT_SEX sex, UNIT_SEX* displaySex) {
     if (displaySex) {
         *displaySex = sex;

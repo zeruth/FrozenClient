@@ -18,6 +18,8 @@ class CreatureModelDataRec;
 class CreatureSoundDataRec;
 class UnitBloodLevelsRec;
 
+class FactionTemplateRec;
+
 class CGUnit_C : public CGObject_C, public CGUnit {
     public:
         // Public static variables
@@ -26,6 +28,13 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Public static functions
         static const char* GetDisplayClassNameFromRecord(const ChrClassesRec* classRec, UNIT_SEX sex, UNIT_SEX* displaySex);
         static const char* GetDisplayRaceNameFromRecord(const ChrRacesRec* raceRec, UNIT_SEX sex, UNIT_SEX* displaySex);
+
+        // How the faction template on the left regards the one on the right, on the client's
+        // internal 1..4 scale: 1 hostile, 3 neutral, 4 friendly. The Lua side reports this plus one.
+        static int32_t GetFactionTemplateReaction(const FactionTemplateRec* a, const FactionTemplateRec* b);
+
+        // How this unit regards another.
+        int32_t GetReaction(const CGUnit_C* other) const;
 
         // Virtual public member functions
         virtual ~CGUnit_C();

@@ -19082,39 +19082,39 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitReaction",
-  "frozenSize": 184,
+  "frozenSize": 206,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 168,
   "status": "ported"
  },
  "0060d330": {
-  "branchRatio": 0.2,
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsEnemy",
-  "frozenSize": 130,
+  "frozenSize": 209,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 159,
   "status": "ported"
  },
  "0060d3d0": {
-  "branchRatio": 0.222,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.562,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsFriend",
-  "frozenSize": 184,
+  "frozenSize": 209,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 350,
@@ -19242,7 +19242,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitSelectionColor",
-  "frozenSize": 410,
+  "frozenSize": 423,
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 273,
@@ -23469,6 +23469,22 @@
   "refSize": 155,
   "status": "ported"
  },
+ "00715440": {
+  "branchRatio": 0.733,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetFactionTemplateReaction",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameObject_C.cpp",
+  "refSize": 190,
+  "status": "ported"
+ },
  "00715970": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -23499,6 +23515,22 @@
   "how": "callgraph",
   "module": "GameObject_C.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "0071f770": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetReaction",
+  "frozenSize": 388,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 276,
   "status": "ported"
  },
  "0072aab0": {
