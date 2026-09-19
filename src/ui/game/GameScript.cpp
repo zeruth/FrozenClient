@@ -10,6 +10,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include <common/Time.hpp>
 #include "console/Console.hpp"
 #include <common/DataStore.hpp>
 #include "client/ClientServices.hpp"
@@ -991,12 +992,44 @@ int32_t Script_GetReleaseTimeRemaining(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
-int32_t Script_GetCorpseRecoveryDelay(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// Four bindings below report "how long until this deadline", and the reference writes the same
+// seven lines for each: a deadline in milliseconds on the same clock GetTime() exposes, minus now,
+// clamped at zero, then divided by 1000 as an INTEGER so the result is whole seconds truncated
+// rather than rounded. A deadline of zero means there is nothing pending and the answer is zero.
+//
+// The deadlines themselves are set by server messages that are not handled yet, so all four read 0
+// today -- which is exactly what the reference reports when nothing is pending, so the bindings are
+// correct now and stay correct once the handlers land.
+static uint32_t s_corpseRecoveryDeadlineMs = 0;      // ref: DAT_00bd0850
+static uint32_t s_instanceBootDeadlineMs = 0;        // ref: DAT_00bd0854
+static uint32_t s_summonConfirmDeadlineMs = 0;       // ref: DAT_00bd0864
+static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
+
+static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs) {
+    int32_t remaining = 0;
+
+    if (deadlineMs) {
+        auto now = static_cast<int32_t>(OsGetAsyncTimeMs());
+        auto left = static_cast<int32_t>(deadlineMs) - now;
+
+        if (left > 0) {
+            remaining = left;
+        }
+    }
+
+    lua_pushnumber(L, remaining / 1000);
+
+    return 1;
 }
 
+// ref: FUN_00516280
+int32_t Script_GetCorpseRecoveryDelay(lua_State* L) {
+    return PushSecondsUntil(L, s_corpseRecoveryDeadlineMs);
+}
+
+// ref: FUN_005162e0
 int32_t Script_GetInstanceBootTimeRemaining(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushSecondsUntil(L, s_instanceBootDeadlineMs);
 }
 
 int32_t Script_GetInstanceLockTimeRemaining(lua_State* L) {
@@ -1007,8 +1040,9 @@ int32_t Script_GetInstanceLockTimeRemainingEncounter(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005164b0
 int32_t Script_GetSummonConfirmTimeLeft(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushSecondsUntil(L, s_summonConfirmDeadlineMs);
 }
 
 int32_t Script_GetSummonConfirmSummoner(lua_State* L) {
@@ -1562,8 +1596,9 @@ int32_t Script_SetEuropeanNumbers(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00516b90
 int32_t Script_GetAreaSpiritHealerTime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PushSecondsUntil(L, s_areaSpiritHealerDeadlineMs);
 }
 
 int32_t Script_AcceptAreaSpiritHeal(lua_State* L) {

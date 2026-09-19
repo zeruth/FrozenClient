@@ -688,7 +688,7 @@
   "branchRatio": 0.083,
   "constOverlap": 0.095,
   "faithful": false,
-  "fidelity": 0.308,
+  "fidelity": 0.288,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -944,7 +944,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.5,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.444,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -960,7 +960,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.588,
+  "fidelity": 0.471,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -13370,36 +13370,36 @@
   "status": "stub"
  },
  "00516280": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetCorpseRecoveryDelay",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 85,
-  "status": "stub"
+  "status": "ported"
  },
  "005162e0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetInstanceBootTimeRemaining",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 85,
-  "status": "stub"
+  "status": "ported"
  },
  "00516340": {
   "branchRatio": 0.4,
@@ -13434,20 +13434,20 @@
   "status": "stub"
  },
  "005164b0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetSummonConfirmTimeLeft",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 85,
-  "status": "stub"
+  "status": "ported"
  },
  "00516510": {
   "branchRatio": 0.5,
@@ -13642,20 +13642,20 @@
   "status": "stub"
  },
  "00516b90": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetAreaSpiritHealerTime",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 81,
-  "status": "stub"
+  "status": "ported"
  },
  "00516bf0": {
   "branchRatio": 1.0,
@@ -22211,7 +22211,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/ui/InputControl.cpp",
    "src/ui/inputcontrol.cpp"
@@ -22416,8 +22416,8 @@
  "006081f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/ui/ScriptFunctionsSystem.cpp",
    "src/ui/scriptfunctionssystem.cpp"
@@ -24401,7 +24401,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.522,
+  "fidelity": 0.478,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24417,7 +24417,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -36432,16 +36432,16 @@
   "status": "ported"
  },
  "0086ae20": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "lib/common/common/Time.cpp",
-   "lib/common/common/time.cpp"
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
   ],
-  "frozen": "OsGetAsyncTimeMs",
-  "frozenSize": 17,
+  "frozen": "PushSecondsUntil",
+  "frozenSize": 0,
   "how": "callgraph",
   "module": "lmemPool.cpp",
   "refSize": 11,

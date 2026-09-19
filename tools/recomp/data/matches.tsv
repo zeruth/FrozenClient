@@ -835,11 +835,11 @@ addr	how	frozen	evidence
 00515ff0	table	Script_ArenaTeamSetLeaderByName	binding "ArenaTeamSetLeaderByName" in s_ScriptFunctions ~ table 00ac80b0
 00516130	table	Script_ArenaTeamDisband	binding "ArenaTeamDisband" in s_ScriptFunctions ~ table 00ac80b0
 00516210	table	Script_GetReleaseTimeRemaining	binding "GetReleaseTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
-00516280	table	Script_GetCorpseRecoveryDelay	binding "GetCorpseRecoveryDelay" in s_ScriptFunctions ~ table 00ac80b0
-005162e0	table	Script_GetInstanceBootTimeRemaining	binding "GetInstanceBootTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
+00516280	annotated	Script_GetCorpseRecoveryDelay	tag in src/ui/game/GameScript.cpp
+005162e0	annotated	Script_GetInstanceBootTimeRemaining	tag in src/ui/game/GameScript.cpp
 00516340	table	Script_GetInstanceLockTimeRemaining	binding "GetInstanceLockTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
 00516410	table	Script_GetInstanceLockTimeRemainingEncounter	binding "GetInstanceLockTimeRemainingEncounter" in s_ScriptFunctions ~ table 00ac80b0
-005164b0	table	Script_GetSummonConfirmTimeLeft	binding "GetSummonConfirmTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
+005164b0	annotated	Script_GetSummonConfirmTimeLeft	tag in src/ui/game/GameScript.cpp
 00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac80b0
 00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac80b0
 005165e0	table	Script_GetNumTitles	binding "GetNumTitles" in s_ScriptFunctions ~ table 00ac80b0
@@ -852,7 +852,7 @@ addr	how	frozen	evidence
 00516970	table	Script_SetPortraitToTexture	binding "SetPortraitToTexture" in s_ScriptFunctions ~ table 00ac80b0
 00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
 00516b20	table	Script_GetBindLocation	binding "GetBindLocation" in s_ScriptFunctions ~ table 00ac80b0
-00516b90	table	Script_GetAreaSpiritHealerTime	binding "GetAreaSpiritHealerTime" in s_ScriptFunctions ~ table 00ac80b0
+00516b90	annotated	Script_GetAreaSpiritHealerTime	tag in src/ui/game/GameScript.cpp
 00516bf0	table	Script_GetMouseFocus	binding "GetMouseFocus" in s_ScriptFunctions ~ table 00ac80b0
 00516c60	table	Script_GetItemInfo	binding "GetItemInfo" in s_ScriptFunctions ~ table 00ac80b0
 00516ed0	table	Script_GetItemUniqueness	binding "GetItemUniqueness" in s_ScriptFunctions ~ table 00ac80b0
@@ -2300,7 +2300,7 @@ addr	how	frozen	evidence
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
-0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
+0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining, 005164b0=Script_GetSummonConfirmTimeLeft
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872c10	override	CShaderEffect::UpdateProjMatrix	
