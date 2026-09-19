@@ -1132,5 +1132,10 @@
     "frozen": "Script_GetNumAddOns",
     "status": "diverged",
     "note": "the reference counts add-ons found by scanning Interface\\AddOns at startup; frozen loads Blizzard_* add-ons on demand and builds no such list, so this answers zero. Implemented rather than left a stub because AddonList.lua loops to this number."
+  },
+  "00492e70": {
+    "frozen": "CSimpleFrame::IsA",
+    "status": "ported",
+    "note": "pinned: adding IsA call sites in the tooltip and scroll-frame bindings moved the automatic match to 0061ea00 (the tooltip module's own IsA) and took four neighbouring CSimpleFrame methods with it. The CSimpleFrame block is 00492c10-00492f10."
   }
 }

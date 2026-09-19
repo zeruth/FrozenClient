@@ -455,19 +455,37 @@ int32_t CGTooltip_GetOwner(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0061eb40
 int32_t CGTooltip_SetOwner(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     // Every OnEnter handler calls this first; while it was a stub, IsOwned answered false for every
     // frame and no tooltip could ever be shown.
     if (lua_type(L, 2) != LUA_TTABLE) {
-        return luaL_error(L, "Usage: %s:SetOwner(frame [, anchorType, xOffset, yOffset])",
-                          tooltip->GetDisplayName());
+        return luaL_error(L, "Usage: %s:SetOwner(frame)", tooltip->GetDisplayName());
     }
 
     lua_rawgeti(L, 2, 0);
     auto owner = static_cast<CSimpleFrame*>(lua_touserdata(L, -1));
     lua_settop(L, -2);
+
+    // Three checks the reference makes and this did not. Each one used to fail silently: a table
+    // that is not a frame object left the tooltip owned by garbage, and a tooltip set to own itself
+    // anchors to its own moving edge. FrameXML passes whatever an add-on hands it, so these are the
+    // errors an add-on author is meant to see.
+    if (!owner) {
+        return luaL_error(L, "%s:SetOwner(): Couldn't find 'this' in frame object",
+                          tooltip->GetDisplayName());
+    }
+
+    if (!owner->IsA(CSimpleFrame::GetObjectType())) {
+        return luaL_error(L, "%s:SetOwner(): Wrong object type, expected frame",
+                          tooltip->GetDisplayName());
+    }
+
+    if (static_cast<void*>(owner) == static_cast<void*>(tooltip)) {
+        return luaL_error(L, "%s:SetOwner(): Can't set owner to self", tooltip->GetDisplayName());
+    }
 
     tooltip->m_owner = owner;
     tooltip->m_anchorPoint = TOOLTIP_ANCHOR_TOPLEFT;

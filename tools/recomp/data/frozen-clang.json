@@ -102141,6 +102141,14 @@
 "lua_rawgeti",
 "lua_touserdata",
 "lua_settop",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFrame::GetObjectType",
+"CSimpleFrame::IsA",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
 "lua_isstring",
 "lua_tolstring",
 "StringToTooltipAnchor",
@@ -102150,7 +102158,10 @@
 "lua_tonumber"
 ],
 "strings": [
-"Usage: %s:SetOwner(frame [, anchorType, xOffset, yOffset])"
+"%s:SetOwner(): Can't set owner to self",
+"%s:SetOwner(): Couldn't find 'this' in frame object",
+"%s:SetOwner(): Wrong object type, expected frame",
+"Usage: %s:SetOwner(frame)"
 ],
 "consts": [
 "0",
@@ -102161,11 +102172,11 @@
 "4",
 "5"
 ],
-"branches": 4,
+"branches": 7,
 "stub": false,
-"lines": 28,
+"lines": 45,
 "refs": [],
-"line": 458
+"line": 459
 },
 "CGTooltip_GetAnchorType": {
 "files": [
@@ -102185,7 +102196,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 487
+"line": 505
 },
 "CGTooltip_SetAnchorType": {
 "files": [
@@ -102212,7 +102223,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 500
+"line": 518
 },
 "CGTooltip_ClearLines": {
 "files": [
@@ -102230,7 +102241,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 519
+"line": 537
 },
 "CGTooltip_AddLine": {
 "files": [
@@ -102254,7 +102265,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 525
+"line": 543
 },
 "CGTooltip_AddDoubleLine": {
 "files": [
@@ -102282,7 +102293,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 551
+"line": 569
 },
 "CGTooltip_AddTexture": {
 "files": [
@@ -102304,7 +102315,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 578
+"line": 596
 },
 "CGTooltip_SetText": {
 "files": [
@@ -102327,7 +102338,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 582
+"line": 600
 },
 "CGTooltip_AppendText": {
 "files": [
@@ -102360,7 +102371,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 598
+"line": 616
 },
 "CGTooltip_FadeOut": {
 "files": [
@@ -102378,7 +102389,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 628
+"line": 646
 },
 "CGTooltip_SetHyperlink": {
 "files": [
@@ -102433,7 +102444,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 643
+"line": 661
 },
 "CGTooltip_SetAction": {
 "files": [
@@ -102458,7 +102469,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 717
+"line": 735
 },
 "CGTooltip_SetPetAction": {
 "files": [
@@ -102480,7 +102491,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 735
+"line": 753
 },
 "CGTooltip_SetShapeshift": {
 "files": [
@@ -102502,7 +102513,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 739
+"line": 757
 },
 "CGTooltip_SetPossession": {
 "files": [
@@ -102524,7 +102535,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 743
+"line": 761
 },
 "CGTooltip_SetTracking": {
 "files": [
@@ -102546,7 +102557,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 747
+"line": 765
 },
 "CGTooltip_SetSpell": {
 "files": [
@@ -102570,7 +102581,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 752
+"line": 770
 },
 "CGTooltip_SetSpellByID": {
 "files": [
@@ -102592,7 +102603,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 764
+"line": 782
 },
 "CGTooltip_SetGlyph": {
 "files": [
@@ -102614,7 +102625,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 774
+"line": 792
 },
 "CGTooltip_SetInventoryItem": {
 "files": [
@@ -102636,7 +102647,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 778
+"line": 796
 },
 "CGTooltip_SetLootItem": {
 "files": [
@@ -102658,7 +102669,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 782
+"line": 800
 },
 "CGTooltip_SetQuestItem": {
 "files": [
@@ -102680,7 +102691,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 786
+"line": 804
 },
 "CGTooltip_SetQuestLogItem": {
 "files": [
@@ -102702,7 +102713,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 790
+"line": 808
 },
 "CGTooltip_SetTrainerService": {
 "files": [
@@ -102724,7 +102735,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 794
+"line": 812
 },
 "CGTooltip_SetTradeSkillItem": {
 "files": [
@@ -102746,7 +102757,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 798
+"line": 816
 },
 "CGTooltip_SetMerchantItem": {
 "files": [
@@ -102768,7 +102779,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 802
+"line": 820
 },
 "CGTooltip_SetMerchantCostItem": {
 "files": [
@@ -102790,7 +102801,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 806
+"line": 824
 },
 "CGTooltip_SetTradePlayerItem": {
 "files": [
@@ -102812,7 +102823,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 810
+"line": 828
 },
 "CGTooltip_SetTradeTargetItem": {
 "files": [
@@ -102834,7 +102845,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 814
+"line": 832
 },
 "CGTooltip_SetBagItem": {
 "files": [
@@ -102856,7 +102867,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 818
+"line": 836
 },
 "CGTooltip_SetUnit": {
 "files": [
@@ -102891,7 +102902,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 823
+"line": 841
 },
 "CGTooltip_SetUnitBuff": {
 "files": [
@@ -102909,7 +102920,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 869
+"line": 887
 },
 "CGTooltip_SetUnitDebuff": {
 "files": [
@@ -102927,7 +102938,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 876
+"line": 894
 },
 "TooltipSetAura": {
 "files": [
@@ -102955,7 +102966,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 890
+"line": 908
 },
 "CGTooltip_SetUnitAura": {
 "files": [
@@ -102973,7 +102984,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 913
+"line": 931
 },
 "CGTooltip_SetTalent": {
 "files": [
@@ -102995,7 +103006,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 919
+"line": 937
 },
 "CGTooltip_SetSendMailItem": {
 "files": [
@@ -103017,7 +103028,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 923
+"line": 941
 },
 "CGTooltip_SetInboxItem": {
 "files": [
@@ -103039,7 +103050,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 927
+"line": 945
 },
 "CGTooltip_SetAuctionSellItem": {
 "files": [
@@ -103061,7 +103072,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 931
+"line": 949
 },
 "CGTooltip_SetAuctionItem": {
 "files": [
@@ -103083,7 +103094,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 935
+"line": 953
 },
 "CGTooltip_NumLines": {
 "files": [
@@ -103101,7 +103112,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 939
+"line": 957
 },
 "CGTooltip_SetQuestRewardSpell": {
 "files": [
@@ -103123,7 +103134,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 945
+"line": 963
 },
 "CGTooltip_SetQuestLogRewardSpell": {
 "files": [
@@ -103145,7 +103156,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 949
+"line": 967
 },
 "CGTooltip_SetHyperlinkCompareItem": {
 "files": [
@@ -103167,7 +103178,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 953
+"line": 971
 },
 "CGTooltip_SetBuybackItem": {
 "files": [
@@ -103189,7 +103200,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 957
+"line": 975
 },
 "CGTooltip_SetLootRollItem": {
 "files": [
@@ -103211,7 +103222,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 961
+"line": 979
 },
 "CGTooltip_SetSocketedItem": {
 "files": [
@@ -103233,7 +103244,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 965
+"line": 983
 },
 "CGTooltip_SetSocketGem": {
 "files": [
@@ -103255,7 +103266,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 969
+"line": 987
 },
 "CGTooltip_SetExistingSocketGem": {
 "files": [
@@ -103277,7 +103288,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 973
+"line": 991
 },
 "CGTooltip_SetGuildBankItem": {
 "files": [
@@ -103299,7 +103310,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 977
+"line": 995
 },
 "CGTooltip_IsUnit": {
 "files": [
@@ -103326,7 +103337,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 981
+"line": 999
 },
 "CGTooltip_GetUnit": {
 "files": [
@@ -103356,7 +103367,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 997
+"line": 1015
 },
 "CGTooltip_GetItem": {
 "files": [
@@ -103378,7 +103389,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1034
+"line": 1052
 },
 "CGTooltip_GetSpell": {
 "files": [
@@ -103402,7 +103413,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1039
+"line": 1057
 },
 "CGTooltip_SetTotem": {
 "files": [
@@ -103424,7 +103435,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1057
+"line": 1075
 },
 "CGTooltip_SetCurrencyToken": {
 "files": [
@@ -103446,7 +103457,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1061
+"line": 1079
 },
 "CGTooltip_SetBackpackToken": {
 "files": [
@@ -103468,7 +103479,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1065
+"line": 1083
 },
 "CGTooltip_IsEquippedItem": {
 "files": [
@@ -103490,7 +103501,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1069
+"line": 1087
 },
 "CGTooltip_SetQuestLogSpecialItem": {
 "files": [
@@ -103512,7 +103523,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1073
+"line": 1091
 },
 "CGTooltip_SetEquipmentSet": {
 "files": [
@@ -103534,7 +103545,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1077
+"line": 1095
 },
 "CGTooltip_SetFrameStack": {
 "files": [
@@ -103556,7 +103567,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1081
+"line": 1099
 },
 "CGTooltip_SetLFGDungeonReward": {
 "files": [
@@ -103578,7 +103589,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1085
+"line": 1103
 },
 "CGTooltip_SetLFGCompletionReward": {
 "files": [
@@ -103600,7 +103611,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1089
+"line": 1107
 },
 "CGTradeInfo::GetPlayerTradeMoney": {
 "files": [
@@ -159373,22 +159384,48 @@
 "src/ui/simple/csimplescrollframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleScrollFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"CSimpleScrollFrame::SetScrollChild",
+"lua_isstring",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_type",
+"lua_tolstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_rawgeti",
+"lua_touserdata",
+"lua_settop",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFrame::GetObjectType",
+"CSimpleFrame::IsA",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"FrameScript_Object::GetDisplayName",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleScrollFrame::SetScrollChild"
 ],
 "strings": [
-"CSimpleScrollFrame_SetScrollChild",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplescrollframescript.cpp"
+"%s:SetScrollChild(): Couldn't find 'this' in child object",
+"%s:SetScrollChild(): Couldn't find frame named '%s'",
+"%s:SetScrollChild(): Would create a loop adding child %s",
+"%s:SetScrollChild(): Wrong child object type, expected frame"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 7,
+"stub": false,
+"lines": 54,
 "refs": [],
-"line": 8
+"line": 11
 },
 "CSimpleScrollFrame_GetScrollChild": {
 "files": [
@@ -159409,7 +159446,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 12
+"line": 66
 },
 "CSimpleScrollFrame_SetHorizontalScroll": {
 "files": [
@@ -159424,7 +159461,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 33
+"line": 87
 },
 "CSimpleScrollFrame_SetVerticalScroll": {
 "files": [
@@ -159454,7 +159491,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 38
+"line": 92
 },
 "CSimpleScrollFrame_GetHorizontalScroll": {
 "files": [
@@ -159476,7 +159513,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 61
+"line": 115
 },
 "CSimpleScrollFrame_GetVerticalScroll": {
 "files": [
@@ -159498,7 +159535,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 73
+"line": 127
 },
 "CSimpleScrollFrame_GetHorizontalScrollRange": {
 "files": [
@@ -159520,7 +159557,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 85
+"line": 139
 },
 "CSimpleScrollFrame_GetVerticalScrollRange": {
 "files": [
@@ -159542,7 +159579,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 97
+"line": 151
 },
 "CSimpleScrollFrame_UpdateScrollChildRect": {
 "files": [
@@ -159561,7 +159598,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 112
+"line": 166
 },
 "CSimpleScrollingMessageFrame::CreateScriptMetaTable": {
 "files": [

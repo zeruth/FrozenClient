@@ -4442,7 +4442,7 @@
   ],
   "frozen": "CSimpleFrame::IsA",
   "frozenSize": 30,
-  "how": "order",
+  "how": "override",
   "module": "CSimpleFrame.cpp",
   "refSize": 150,
   "status": "ported"
@@ -25518,17 +25518,17 @@
   "status": "ported"
  },
  "0061eb40": {
-  "branchRatio": 0.16,
+  "branchRatio": 0.28,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.303,
+  "fidelity": 0.394,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetOwner",
-  "frozenSize": 339,
-  "how": "table",
+  "frozenSize": 505,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 836,
   "status": "ported"
@@ -38874,11 +38874,27 @@
   "refSize": 151,
   "status": "ported"
  },
+ "0096b3a0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleScrollFrame.cpp",
+   "src/ui/simple/csimplescrollframe.cpp"
+  ],
+  "frozen": "CSimpleScrollFrame::SetScrollChild",
+  "frozenSize": 214,
+  "how": "callorder",
+  "module": "CSimpleMessageScrollFrame.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
  "0096b920": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleScrollFrame.cpp",
    "src/ui/simple/csimplescrollframe.cpp"
@@ -39755,20 +39771,20 @@
   "status": "ported"
  },
  "00972210": {
-  "branchRatio": 0.118,
+  "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.737,
   "files": [
    "src/ui/simple/CSimpleScrollFrameScript.cpp",
    "src/ui/simple/csimplescrollframescript.cpp"
   ],
   "frozen": "CSimpleScrollFrame_SetScrollChild",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 398,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 502,
-  "status": "stub"
+  "status": "ported"
  },
  "00972410": {
   "branchRatio": 0.667,

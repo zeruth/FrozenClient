@@ -274,11 +274,11 @@ addr	how	frozen	evidence
 004910a0	override	CSimpleFrame::SetFrameLevel	
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
-00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
-00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
-00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
-00492e70	order	CSimpleFrame::IsA	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
-00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
+00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
+00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
+00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
+00492e70	override	CSimpleFrame::IsA	
+00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::IsA and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 00494d20	callorder	CFrameStrata::FrameOccluded	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
@@ -1602,7 +1602,7 @@ addr	how	frozen	evidence
 0061d9c0	table	CGTooltip_NumLines	binding "NumLines" in CGTooltipMethods ~ table 00ad2ae0
 0061da20	table	CGTooltip_IsUnit	binding "IsUnit" in CGTooltipMethods ~ table 00ad2ae0
 0061dad0	annotated	CGTooltip_GetUnit	tag in src/ui/game/CGTooltipScript.cpp
-0061eb40	table	CGTooltip_SetOwner	binding "SetOwner" in CGTooltipMethods ~ table 00ad2ae0
+0061eb40	annotated	CGTooltip_SetOwner	tag in src/ui/game/CGTooltipScript.cpp
 0061ee90	annotated	CGTooltip_AppendText	tag in src/ui/game/CGTooltipScript.cpp
 0061ef10	table	CGTooltip_GetItem	binding "GetItem" in CGTooltipMethods ~ table 00ad2ae0
 0061f0f0	annotated	CGTooltip_GetSpell	tag in src/ui/game/CGTooltipScript.cpp
@@ -2453,6 +2453,7 @@ addr	how	frozen	evidence
 0096a920	callgraph	CSimpleScrollingMessageFrame::ScrollToTop	only unmatched callee of 009733f0=CSimpleScrollingMessageFrame_ScrollToTop
 0096a950	callgraph	CSimpleScrollingMessageFrame::ScrollToBottom	only unmatched callee of 00973430=CSimpleScrollingMessageFrame_ScrollToBottom
 0096b0b0	string	CSimpleScrollFrame::GetScriptByName	unique "OnHorizontalScroll"
+0096b3a0	callorder	CSimpleScrollFrame::SetScrollChild	same slot between linked calls in 00972210=CSimpleScrollFrame_SetScrollChild
 0096b920	string	CSimpleScrollFrame::LoadXML	unique "Frame %s: Scroll frame created without scroll child"
 0096c470	callorder	CSimpleSlider::SetMinMaxValues	same slot between linked calls in 0096c500=CSimpleSlider::LoadXML
 0096c500	string	CSimpleSlider::LoadXML	unique "ThumbTexture"
@@ -2508,7 +2509,7 @@ addr	how	frozen	evidence
 00972050	table	CSimpleSlider_IsEnabled	binding "IsEnabled" in SimpleSliderMethods ~ table 00b2ce20
 009720e0	table	CSimpleSlider_Enable	binding "Enable" in SimpleSliderMethods ~ table 00b2ce20
 00972150	table	CSimpleSlider_Disable	binding "Disable" in SimpleSliderMethods ~ table 00b2ce20
-00972210	table	CSimpleScrollFrame_SetScrollChild	binding "SetScrollChild" in SimpleScrollFrameMethods ~ table 00b2ce90
+00972210	annotated	CSimpleScrollFrame_SetScrollChild	tag in src/ui/simple/CSimpleScrollFrameScript.cpp
 00972410	table	CSimpleScrollFrame_GetScrollChild	binding "GetScrollChild" in SimpleScrollFrameMethods ~ table 00b2ce90
 00972490	table	CSimpleScrollFrame_SetHorizontalScroll	binding "SetHorizontalScroll" in SimpleScrollFrameMethods ~ table 00b2ce90
 00972560	table	CSimpleScrollFrame_SetVerticalScroll	binding "SetVerticalScroll" in SimpleScrollFrameMethods ~ table 00b2ce90

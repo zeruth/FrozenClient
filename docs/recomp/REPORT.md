@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 14:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2680 (=) (9.9%) | 570.2k (10.3%) |
-| &nbsp;&nbsp;ported | 2085 (=) | 416.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 563 (=) | 119.4k |
+| mapped to a frozen function | 2681 (+4) (9.9%) | 570.4k (10.3%) |
+| &nbsp;&nbsp;ported | 2087 (+4) | 416.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 562 (=) | 118.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **929 (=) (3.4%)** | **117.0k (2.1%)** |
-| unmapped | 24481 | 4.85M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **930 (=) (3.4%)** | **117.2k (2.1%)** |
+| unmapped | 24480 | 4.85M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 392 (-1) (7.1%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (-1) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11454, stubs 809 | |
+| frozen functions (src/, from PDB + source) | 11454, stubs 808 | |
 
-Match evidence: annotated 509, callgraph 186, callorder 125, cvar 30, handler 28, order 191, override 189, string 313, table 1109. Module anchors: 1479 assert strings.
+Match evidence: annotated 511, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 190, string 313, table 1107. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:34 -- mapped 2680, ported 2085, stub 563, spine mapped 392.
+Previous run: 2026-09-19 14:47 -- mapped 2677, ported 2083, stub 562, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 627 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 626 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -122,7 +122,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 1 |  / stubs: SetUnit |
 | 00acfaf8 (GetGMTicket..) | 15 | `s_ScriptFunctions` | 0 | 1 |  / stubs: GetGMTicket |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
-| 00b2ce90 (SetScrollChild..) | 9 | `SimpleScrollFrameMethods` | 0 | 1 |  / stubs: SetScrollChild |
 | 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 1 |  / stubs: ClearFocus |
 
 ## Packet handler coverage (SetMessageHandler)
@@ -174,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 201 (55.2%) | 61.2% | 18 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 201 (55.2%) | 61.2% | 17 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -264,7 +263,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | UIBindings.cpp | 59 | 11.5k | 18 (30.5%) | 35.2% | 15 | 0 | 4 |
-| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 7 (9.3%) | 10.2% | 0 | 0 | 0 |
+| CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 8 (10.7%) | 11.6% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
@@ -530,7 +529,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
-| 0061eb40 | `CGTooltip_SetOwner` | %s:SetOwner(): Can't set owner to self; %s:SetOwner(): Couldn't find 'this' in frame objec; %s:SetOwner(): Wrong object type, expected frame; ANCHOR_BOTTOM |
 | 0050f990 | `Script_SetConsoleKey` | BACKSPACE; DECIMAL; DELETE; DIVIDE |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | %d%d%d%d%b%d; %d%d%d%d%d%d%d%d%d%d; %s\n%s; CHANGE_REALM |
 | 004067f0 | `InitializeGlobal` | .PAD; Database compression; Desired method for game timing; Error reported by the timing validation system |
@@ -540,6 +538,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00405dd0 | `Sub405DD0` | Country; Data\; Failed to open archive %s.; Failed to read data from the network. Please check |
 | 00403910 | `TransferAbortedHandler` | TRANSFER_ABORT_DIFFICULTY%d; TRANSFER_ABORT_ERROR; TRANSFER_ABORT_INSUF_EXPAN_LVL%d; TRANSFER_ABORT_MAP_NOT_ALLOWED |
 | 006e2e90 | `InventoryChangeFailureHandler` | %d%d%d%d%d%d%d%d%d; %s%s%s%s%s%s; COMPLAINT_ADDED; Godmode disabled |
+| 0061eb40 | `CGTooltip_SetOwner` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 0061d650 | `CGTooltip_GetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | <unknown>; Grunt; My public address is %s; My realm ID is %d |
 | 00515200 | `Script_GetCursorInfo` | CRITTER; MOUNT; UNKNOWN; companion |
@@ -563,8 +562,8 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
-| 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
+| 00860f10 | `forlist` | '%s' expected; function at line %d has more than %d %s; local variables; main function has more than %d %s |
 
 ## Largest frozen functions with no reference link
 
@@ -739,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:06 | 2440 (9.0%) | 917 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
-| 2026-09-19 13:11 | 2676 (9.9%) | 918 (3.4%) | 591 | 392/5530 | 1791/2964 | 658 |
 | 2026-09-19 13:12 | 2676 (9.9%) | 917 (3.4%) | 591 | 391/5530 | 1791/2964 | 658 |
 | 2026-09-19 13:16 | 2676 (9.9%) | 918 (3.4%) | 589 | 391/5530 | 1791/2964 | 656 |
 | 2026-09-19 13:20 | 2675 (9.8%) | 919 (3.4%) | 587 | 391/5530 | 1791/2964 | 653 |
@@ -764,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 14:26 | 2680 (9.9%) | 926 (3.4%) | 566 | 392/5530 | 1791/2964 | 630 |
 | 2026-09-19 14:34 | 2680 (9.9%) | 929 (3.4%) | 563 | 392/5530 | 1791/2964 | 627 |
 | 2026-09-19 14:41 | 2680 (9.9%) | 929 (3.4%) | 563 | 392/5530 | 1791/2964 | 627 |
+| 2026-09-19 14:47 | 2677 (9.9%) | 930 (3.4%) | 562 | 393/5530 | 1791/2964 | 626 |
+| 2026-09-19 14:48 | 2681 (9.9%) | 930 (3.4%) | 562 | 392/5530 | 1791/2964 | 626 |
 
 ## How to move a row
 
