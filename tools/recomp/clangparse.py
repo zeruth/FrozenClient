@@ -33,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 7  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 8  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
@@ -173,9 +173,20 @@ def walk_body(body, out):
             walk_body(c, out)
 
 
+BAD_FILES = []
+
+
 def parse_file(index, path, args, text):
     tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
     errors = [d for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
+    if errors:
+        # Kept for the summary at the end of main(). A file in here has unreliable data of every
+        # kind -- unresolved calls lose their referenced decl, and the stub flag can come out wrong
+        # -- and until 2026-09-19 that was silent, which is how four cooldown bindings and three
+        # character-model ones were counted ported while they were stubs. Both files turned out to
+        # be missing includes.
+        BAD_FILES.append((os.path.relpath(path, ROOT).replace('\\', '/'), len(errors),
+                          errors[0].spelling[:90]))
     if errors and len(sys.argv) > 1:
         # a TU that does not compile under libclang loses calls (unresolved member calls have no
         # referenced decl); print the first few so the flags or headers can be fixed
@@ -302,6 +313,16 @@ def main():
     os.makedirs(DATA, exist_ok=True)
     json.dump(cache, io.open(CACHE, 'w', encoding='utf-8'))
     json.dump(result, io.open(OUT, 'w', encoding='utf-8'), indent=0)
+    if BAD_FILES:
+        print('  %d of the files parsed did not compile under libclang; their call and stub data is'
+              ' unreliable:' % len(BAD_FILES))
+
+        for rel, n, first in sorted(BAD_FILES)[:8]:
+            print('    %-58s %3d errors  %s' % (rel, n, first))
+
+        if len(BAD_FILES) > 8:
+            print('    ... and %d more' % (len(BAD_FILES) - 8))
+
     print('parsed %d files (%d fresh) in %.0fs: %d functions -> %s' % (len([1 for p in db if os.path.relpath(p, ROOT).replace('\\', '/').startswith(('src/', 'lib/'))]), n, time.time() - t0, len(result), os.path.relpath(OUT, ROOT)))
 
 

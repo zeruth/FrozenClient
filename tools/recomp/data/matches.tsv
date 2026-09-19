@@ -1280,7 +1280,7 @@ addr	how	frozen	evidence
 00595c40	order	Script_Stub_GetTrainerServiceStepIncrease	binding table name Script_Stub_GetTrainerServiceStepIncrease, in definition order in src/ui/game/miscscriptstubs.cpp
 005978e0	table	Script_SetUnit	binding "SetUnit" in CGCharacterModelBaseMethods ~ table 00acf514
 00597960	table	Script_SetCreature	binding "SetCreature" in CGCharacterModelBaseMethods ~ table 00acf514
-00597a10	table	Script_SetRotation	binding "SetRotation" in CGCharacterModelBaseMethods ~ table 00acf514
+00597a10	annotated	Script_SetRotation	tag in src/ui/game/CGCharacterModelBaseScript.cpp
 00597b00	table	Script_RefreshUnit	binding "RefreshUnit" in CGCharacterModelBaseMethods ~ table 00acf514
 00597e90	table	Script_Undress	binding "Undress" in CGDressUpModelFrameMethods ~ table 00acf550
 00597ed0	table	Script_Dress	binding "Dress" in CGDressUpModelFrameMethods ~ table 00acf550

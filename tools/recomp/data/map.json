@@ -20390,20 +20390,20 @@
   "how": "table",
   "module": "CharacterModelBase.cpp",
   "refSize": 169,
-  "status": "ported"
+  "status": "stub"
  },
  "00597a10": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/CGCharacterModelBaseScript.cpp",
    "src/ui/game/cgcharactermodelbasescript.cpp"
   ],
   "frozen": "Script_SetRotation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 111,
+  "how": "annotated",
   "module": "CharacterModelBase.cpp",
   "refSize": 106,
   "status": "ported"
@@ -20422,7 +20422,7 @@
   "how": "table",
   "module": "CharacterModelBase.cpp",
   "refSize": 69,
-  "status": "ported"
+  "status": "stub"
  },
  "00597e90": {
   "branchRatio": 0.5,

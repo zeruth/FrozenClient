@@ -106,21 +106,30 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
-> **Fixed 2026-09-19: the stub flag could go stale.** At one commit,
-> `CGCooldown_SetCooldown` and `CGCooldown_GetReverse` were both four-line `WHOA_UNIMPLEMENTED`
-> bodies in the same file, and `data/frozen-clang.json` recorded the first as `stub: true` and the
-> second as `stub: false`. Four cooldown bindings were counted **ported while they were stubs**,
-> and implementing them moved no number at all, which is how it was noticed.
+> **The stub flag has been unreliable, and the cause is only partly pinned down.** Measured
+> 2026-09-19 on two files. In `CGCooldownScript.cpp`, two byte-identical `WHOA_UNIMPLEMENTED`
+> bodies were recorded as `stub: true` and `stub: false`. In `CGCharacterModelBaseScript.cpp`,
+> three stubs were all recorded `stub: false`. Seven bindings in total were counted **ported while
+> they were stubs**.
 >
-> The rule was not at fault -- re-parsing that same file from disk flagged all five correctly. The
-> cache was: `clang-cache.json` keyed entries on **mtime alone**, so a fast write-parse-write cycle
-> inside the filesystem's timestamp granularity served the previous parse for the new content. It
-> now keys on a hash of the bytes, which costs one read per file and cannot go stale. A full
-> re-parse after the change produced identical totals, so nothing else was carrying a stale entry.
+> What is established: the rule is correct and the sources parse. Running `clangparse.py` on either
+> file *on its own*, at the exact commit that held the bad data, flags every stub correctly. So the
+> committed `frozen-clang.json` was stale rather than wrongly computed.
 >
-> My first write-up of this blamed the `and` in the two stub rules, on the theory that a name seen
-> twice keeps `stub` only if every sighting has the macro. That theory was wrong and is recorded
-> here because it was committed before it was checked.
+> What is fixed: `clang-cache.json` keyed entries on **mtime alone**, which a fast write-parse-write
+> cycle defeats. It now keys on a hash of the bytes.
+>
+> What is NOT established: why a `CACHE_VERSION` bump plus a full rebuild did not clear the stale
+> entries on the first attempt -- they only corrected when the file itself was edited. Two earlier
+> explanations were published here and both were wrong: the `and` across sightings (there is only
+> one definition of each name) and libclang parse errors (a full 726-file parse reports none; the
+> reporting for that was added at the same time and stays, because a failing TU really does lose
+> call and stub data silently).
+>
+> Reading the report until this is closed: `linked` is unaffected, since the flag only splits an
+> already-linked function between two columns. `ported` is an upper bound and `stub` a lower one.
+> After a full direct `python tools/recomp/clangparse.py` run the current numbers agree with
+> per-file re-parses.
 
 ## What the report says
 
