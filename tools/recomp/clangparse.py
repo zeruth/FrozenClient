@@ -32,7 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'whoa-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 3  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 4  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
@@ -88,6 +88,51 @@ def qualified(cursor):
     return '::'.join(reversed(parts))
 
 
+def msvc_type(t):
+    """A clang type spelled the way MSVC's PDB spells template arguments: `enum E`, `X const *`,
+    `unsigned __int64`, class names bare."""
+    t = t.get_canonical()
+    k = t.kind
+    if k == ci.TypeKind.POINTER:
+        return msvc_type(t.get_pointee()) + ' *'
+    s = t.spelling
+    const = t.is_const_qualified()
+    if s.startswith('const '):
+        s = s[6:]
+    s = re.sub(r'^(struct|class|union|enum) ', '', s)
+    if k == ci.TypeKind.ENUM:
+        s = 'enum ' + s
+    elif k == ci.TypeKind.ULONGLONG:
+        s = 'unsigned __int64'
+    elif k == ci.TypeKind.LONGLONG:
+        s = '__int64'
+    return s + (' const' if const else '')
+
+
+def instantiated_name(call, ref):
+    """For a call to a member of a class template, the name of the instantiation the PDB holds:
+    TSBaseArray<unsigned int>::operator[] rather than the pattern TSBaseArray::operator[]. The
+    arguments come from the object the call is made on (or the constructed type), so a call from
+    inside template code, where they are still dependent, keeps the pattern name."""
+    # libclang resolves the call to the member of the implicit specialisation, whose parent is a
+    # plain class cursor carrying the instantiated type (TSBaseArray<unsigned int>); from inside the
+    # pattern the parent is the CLASS_TEMPLATE and the arguments are still dependent
+    parent = ref.semantic_parent
+    if parent is None or parent.kind not in (K.CLASS_DECL, K.STRUCT_DECL):
+        return None
+    t = parent.type
+    n = t.get_num_template_arguments()
+    if n is None or n <= 0:
+        return None
+    args = []
+    for i in range(n):
+        a = t.get_template_argument_type(i)
+        if a is None or a.kind in (ci.TypeKind.INVALID, ci.TypeKind.UNEXPOSED):
+            return None
+        args.append(msvc_type(a))
+    return '%s<%s>::%s' % (parent.spelling, ','.join(args), ref.spelling)
+
+
 def walk_body(body, out):
     # Calls are recorded in the order the compiled code makes them, which is what the reference
     # inventory holds: a call's arguments are evaluated before the call itself (post-order), and
@@ -103,7 +148,7 @@ def walk_body(body, out):
                 walk_body(c, out)
             ref = c.referenced
             if ref is not None and ref.kind in DEF_KINDS:
-                out['callseq'].append(qualified(ref))
+                out['callseq'].append(instantiated_name(c, ref) or qualified(ref))
             elif c.spelling:
                 out['callseq'].append('?' + c.spelling)
             continue

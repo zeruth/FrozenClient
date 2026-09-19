@@ -335,13 +335,41 @@ def overlay_clang(src):
     return src, True
 
 
+TEMPLATE_ARGS_RE = re.compile(r'^([\w:]+)(<.+>)::([^:]+)$')
+
+
+def expand_inlined(callseq, whoa, inlined, depth=0):
+    """whoa call sequence with header-only inlined callees replaced by their own calls."""
+    out = []
+    for c in callseq:
+        if c in whoa:
+            out.append(c)
+            continue
+        pattern, args = c, ''
+        m = TEMPLATE_ARGS_RE.match(c)
+        if m and c not in inlined:
+            pattern, args = m.group(1) + '::' + m.group(3), m.group(2)
+        body = inlined.get(pattern)
+        if body is None or depth >= 3:
+            out.append('?' + c)
+            continue
+        if args:
+            # the pattern's callees are spelled without arguments; give them this instantiation's
+            body = [(n.replace('::', args + '::', 1) if n.replace('::', args + '::', 1) in whoa or n.replace('::', args + '::', 1) in inlined else n) if '<' not in n and '::' in n else n for n in body]
+        out.extend(expand_inlined(body, whoa, inlined, depth + 1))
+    return out
+
+
 def merge_whoa(pdb, src):
     whoa = {}
+    inlined = {}  # header-only functions with no PDB symbol: name -> callseq
     for name, s in src.items():
         p = pdb.get(name)
         if not p and s['files'] and all(f.endswith(('.hpp', '.h')) for f in s['files']):
             # defined in a header and inlined at every use: no function in whoa's binary, and the
-            # reference inlined it too. Counting it as a callee would break the callgraph votes.
+            # reference inlined it too. Counting it as a callee would break the callgraph votes;
+            # instead its calls are spliced into its callers below, as the compiler did.
+            inlined[name] = s['callseq']
             continue
         files = sorted(s['files'])
         parts = files[0].split('/')
@@ -371,9 +399,11 @@ def merge_whoa(pdb, src):
             return None
 
         if w['exact']:
-            # libclang already resolved the callee: its qualified name is the key, unless the callee
-            # is inline/header-only and the PDB never saw it
-            w['seq'] = [c if c in whoa else '?' + c for c in w['callseq']]
+            # libclang already resolved the callee: its qualified name is the key. A callee that is
+            # header-only and never got a PDB symbol was inlined, so its own calls stand in for it
+            # (three levels deep), with template arguments carried into the pattern's callee names:
+            # TSGrowableArray<unsigned int>::New expands to TSGrowableArray<unsigned int>::Reserve.
+            w['seq'] = expand_inlined(w['callseq'], whoa, inlined)
             w['callees'] = set(c for c in w['seq'] if not c.startswith('?'))
             continue
         w['callees'] = set(k for k in (resolve(c) for c in w['calls']) if k)
@@ -706,7 +736,10 @@ def match(refs, whoa, overrides, tables):
         votes = collections.defaultdict(set)
         for addr, (name, how) in list(m.items()):
             rc = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
-            wc = [c for c in whoa[name]['callees'] if c not in used and c in whoa]
+            wc_all = [c for c in whoa[name]['callees'] if c not in used and c in whoa]
+            # template instantiations (TSBaseArray<X>::operator[]) are usually inlined in the
+            # reference, so they must not block a vote; they can still be the vote when alone
+            wc = [c for c in wc_all if '<' not in c] or (wc_all if len(wc_all) == 1 else [])
             if len(rc) == 1 and len(wc) == 1:
                 votes[(rc[0], wc[0])].add(addr)
         by_ref = collections.Counter(p[0] for p in votes)
