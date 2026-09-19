@@ -14576,20 +14576,20 @@
   "status": "stub"
  },
  "0051c2e0": {
-  "branchRatio": 0.154,
-  "constOverlap": 0.0,
+  "branchRatio": 0.923,
+  "constOverlap": 0.091,
   "faithful": false,
-  "fidelity": 0.053,
+  "fidelity": 0.316,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetItemCount",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 867,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 364,
-  "status": "stub"
+  "status": "ported"
  },
  "0051c450": {
   "branchRatio": 0.111,

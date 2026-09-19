@@ -17,6 +17,8 @@
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "object/client/ItemCache.hpp"
+#include "object/client/CGContainer_C.hpp"
+#include "object/client/CGItem_C.hpp"
 #include "ui/Types.hpp"
 #include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
@@ -1757,8 +1759,111 @@ int32_t Script_GetItemFamily(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Does this guid hold the item we are counting, and if so how many? Matches on entry id, or on the
+// item cache's name when the caller named it instead.
+static int32_t ItemStackMatching(WOWGUID guid, int32_t itemID, const char* name) {
+    if (!guid) {
+        return 0;
+    }
+
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__);
+
+    if (!object) {
+        return 0;
+    }
+
+    auto item = static_cast<CGItem_C*>(object);
+    auto data = item->Item();
+
+    if (!data) {
+        return 0;
+    }
+
+    auto entryID = object->GetEntryID();
+
+    if (itemID) {
+        if (entryID != itemID) {
+            return 0;
+        }
+    } else {
+        auto info = ItemCacheGet(entryID);
+
+        if (!info || info->name.empty() || !name || SStrCmpI(info->name.c_str(), name, STORM_MAX_STR)) {
+            return 0;
+        }
+    }
+
+    // A slot holding one of something still reports a stack of one, but a freshly created object
+    // can arrive before its count does.
+    return data->stackCount ? static_cast<int32_t>(data->stackCount) : 1;
+}
+
+// ref: FUN_0051c2e0
+// Counts the backpack, then each equipped bag's own slots, then the bank when asked. The reference
+// takes a third argument for counting charges rather than stacks; that path is not ported, and a
+// caller passing it gets the stack count instead.
 int32_t Script_GetItemCount(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto includeBank = StringToBOOL(L, 2, 0);
+
+    int32_t itemID = 0;
+    const char* name = nullptr;
+
+    if (lua_isnumber(L, 1)) {
+        itemID = static_cast<int32_t>(lua_tonumber(L, 1));
+    } else if (lua_isstring(L, 1)) {
+        name = lua_tostring(L, 1);
+    } else {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto playerData = player ? player->Player() : nullptr;
+
+    if (!playerData) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    int32_t count = 0;
+
+    // The backpack is not a container object: its sixteen slots hang off the player directly.
+    for (int32_t i = 0; i < 16; i++) {
+        count += ItemStackMatching(playerData->packSlots[i], itemID, name);
+    }
+
+    // Each equipped bag is a container object whose own slots hold the items.
+    for (int32_t slot = INVSLOT_BAGFIRST; slot <= INVSLOT_BAGLAST; slot++) {
+        auto bag = ClntObjMgrObjectPtr(playerData->invSlots[slot], TYPE_CONTAINER, __FILE__, __LINE__);
+
+        if (!bag) {
+            continue;
+        }
+
+        auto container = static_cast<CGContainer_C*>(bag)->Container();
+
+        if (!container) {
+            continue;
+        }
+
+        auto slots = container->numSlots > 36 ? 36 : container->numSlots;
+
+        for (uint32_t i = 0; i < slots; i++) {
+            count += ItemStackMatching(container->slots[i], itemID, name);
+        }
+    }
+
+    if (includeBank) {
+        for (int32_t i = 0; i < 28; i++) {
+            count += ItemStackMatching(playerData->bankSlots[i], itemID, name);
+        }
+    }
+
+    lua_pushnumber(L, count);
+
+    return 1;
 }
 
 int32_t Script_GetItemSpell(lua_State* L) {

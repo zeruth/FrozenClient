@@ -12,6 +12,10 @@ struct CGContainerData {
 
 class CGContainer {
     public:
+        // Public to match CGUnit::Unit() and CGPlayer::Player(), the sibling accessors for the
+        // other data blocks. The script bindings read these the way the reference does.
+        CGContainerData* Container() const;
+
         // Public static functions
         static uint32_t GetBaseOffset();
         static uint32_t GetBaseOffsetSaved();
@@ -26,7 +30,6 @@ class CGContainer {
         uint32_t* m_contSaved;
 
         // Protected member functions
-        CGContainerData* Container() const;
 };
 
 #endif

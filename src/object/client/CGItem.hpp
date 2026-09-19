@@ -30,6 +30,10 @@ struct CGItemData {
 
 class CGItem {
     public:
+        // Public to match CGUnit::Unit() and CGPlayer::Player(), the sibling accessors for the
+        // other data blocks. The script bindings read these the way the reference does.
+        CGItemData* Item() const;
+
         // Public static functions
         static uint32_t GetBaseOffset();
         static uint32_t GetBaseOffsetSaved();
@@ -44,7 +48,6 @@ class CGItem {
         uint32_t* m_itemSaved;
 
         // Protected member functions
-        CGItemData* Item() const;
 };
 
 #endif

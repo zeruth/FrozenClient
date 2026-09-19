@@ -910,7 +910,7 @@ addr	how	frozen	evidence
 0051c0b0	annotated	Script_ShowHelm	tag in src/ui/game/GameScript.cpp
 0051c100	annotated	Script_ShowCloak	tag in src/ui/game/GameScript.cpp
 0051c150	table	Script_GetItemGem	binding "GetItemGem" in s_ScriptFunctions ~ table 00ac80b0
-0051c2e0	table	Script_GetItemCount	binding "GetItemCount" in s_ScriptFunctions ~ table 00ac80b0
+0051c2e0	annotated	Script_GetItemCount	tag in src/ui/game/GameScript.cpp
 0051c450	table	Script_IsUsableItem	binding "IsUsableItem" in s_ScriptFunctions ~ table 00ac80b0
 0051c690	annotated	Script_IsEquippedItem	tag in src/ui/game/GameScript.cpp
 0051c740	table	Script_IsEquippedItemType	binding "IsEquippedItemType" in s_ScriptFunctions ~ table 00ac80b0
