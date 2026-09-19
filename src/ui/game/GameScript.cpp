@@ -10,6 +10,8 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include <common/DataStore.hpp>
+#include "client/ClientServices.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "ui/Types.hpp"
 #include "console/Command.hpp"
@@ -1313,12 +1315,48 @@ int32_t Script_ShowingCloak(lua_State* L) {
     return PlayerGearShown(L, PLAYER_FLAGS_HIDE_CLOAK);
 }
 
-int32_t Script_ShowHelm(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// The server owns these two bits, so the client asks rather than sets: it sends the opcode and the
+// flag comes back in the next object update. Nothing is written locally, which is why the matching
+// Showing* bindings keep reading the field rather than a cached answer.
+//
+// TODO the reference does two further things around this. It drops a pending item effect before
+// sending when one is up, and it re-runs the character component afterwards so the model changes
+// without waiting for the round trip (FUN_00716e20). Neither is ported, so the helm or cloak
+// appears or disappears only once the server's update lands.
+static int32_t PlayerSetGearShown(lua_State* L, NETMESSAGE opcode, uint32_t hideFlag) {
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (!data) {
+        return 0;
+    }
+
+    auto show = StringToBOOL(L, 1, 1);
+    auto hidden = (data->flags & hideFlag) != 0;
+
+    // Each of the reference's two paths is guarded on the current bit, so nothing is sent unless
+    // the request actually changes it: show while hidden, or hide while shown.
+    if (show != hidden) {
+        return 0;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(opcode));
+    msg.Put(static_cast<uint8_t>(show ? 1 : 0));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
+// ref: FUN_0051c0b0
+int32_t Script_ShowHelm(lua_State* L) {
+    return PlayerSetGearShown(L, CMSG_SHOWING_HELM, PLAYER_FLAGS_HIDE_HELM);
+}
+
+// ref: FUN_0051c100
 int32_t Script_ShowCloak(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PlayerSetGearShown(L, CMSG_SHOWING_CLOAK, PLAYER_FLAGS_HIDE_CLOAK);
 }
 
 int32_t Script_SetEuropeanNumbers(lua_State* L) {

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 11:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 11:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2407 (=) (8.9%) | 531.3k (9.6%) |
-| &nbsp;&nbsp;ported | 1933 (=) | 398.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 448 (=) | 99.1k |
+| &nbsp;&nbsp;ported | 1935 (+2) | 398.5k |
+| &nbsp;&nbsp;stub (unimplemented body) | 446 (-2) | 98.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **903 (=) (3.3%)** | **115.1k (2.1%)** |
 | unmapped | 24754 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11424, stubs 845 | |
+| frozen functions (src/, from PDB + source) | 11426, stubs 843 | |
 
-Match evidence: annotated 449, callgraph 170, callorder 126, cvar 30, handler 27, order 325, override 178, string 345, table 757. Module anchors: 1479 assert strings.
+Match evidence: annotated 451, callgraph 170, callorder 126, cvar 30, handler 27, order 323, override 178, string 345, table 757. Module anchors: 1479 assert strings.
 
 Previous run: 2026-09-19 11:21 -- mapped 2407, ported 1933, stub 448, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 554 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 552 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -100,7 +100,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 7 |  / stubs: IsProtected, CanChangeProtectedState, GetRect, CreateAnimationGroup ... |
 | 00ac80c8 (RegisterForSave..) | 17 | `s_ScriptFunctions` | 0 | 7 |  / stubs: RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode, IsMouseButtonDown ... |
 | 00ac8600 (GetRestState..) | 14 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GMRequestPlayerInfo, GetCoinIcon, GetCoinTextureString, TogglePVP ... |
-| 00ac86b8 (GetBindLocation..) | 9 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetBindLocation, ConfirmTalentWipe, ConfirmBinder, ShowHelm ... |
 | 00acd200 (GetNumBattlefieldScores..) | 8 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetNumBattlefieldScores, GetBattlefieldScore, GetBattlefieldWinner, SetBattlefieldScoreFaction ... |
 | 00acedb0 (CloseTrade..) | 7 | `s_ScriptFunctions` | 0 | 7 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
 | 00adb8e8 (CombatLogAddFilter..) | 7 | `-` | 7 | 0 | CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime, CombatLogGetNumEntries, CombatLogSetCurrentEntry, CombatLogGetCurrentEntry ... |
@@ -124,6 +123,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00ac3fe0 (GetBillingTimeRemaining..) | 6 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetBillingTimeRemaining, GetBillingPlan, SurveyNotificationDone, PINEntered ... |
 | 00ac8158 (GetFramerate..) | 30 | `s_ScriptFunctions` | 0 | 5 |  / stubs: IsDebugBuild, RegisterCVar, GetCVarInfo, GetCVarAbsoluteMin ... |
+| 00ac86b8 (GetBindLocation..) | 9 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetBindLocation, ConfirmTalentWipe, ConfirmBinder, SetEuropeanNumbers ... |
 | 00acf7f8 (GetNumPetitionItems..) | 7 | `s_ScriptFunctions` | 5 | 0 | GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acf9e0 (GetActionInfo..) | 28 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetActionAutocast, PickupAction, PlaceAction, GetMultiCastTotemSpells ... |
 | 00acfb78 (SaveEquipmentSet..) | 5 | `-` | 5 | 0 | SaveEquipmentSet, DeleteEquipmentSet, RenameEquipmentSet, EquipmentManagerIgnoreSlotForSave, EquipmentManagerIsSlotIgnoredForSave |
@@ -197,7 +197,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
-| GameUI.cpp | 491 | 96.4k | 99 (20.2%) | 27.0% | 61 | 0 | 73 |
+| GameUI.cpp | 491 | 96.4k | 99 (20.2%) | 27.0% | 59 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 70 (46.4%) | 27.6% | 44 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 48 (13.8%) | 7.8% | 7 | 2 | 36 |
@@ -788,7 +788,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:22 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:22 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:22 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
@@ -810,6 +809,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
 | 2026-09-19 11:21 | 2407 (8.9%) | 903 (3.3%) | 448 | 388/5530 | 1584/2512 | 554 |
 | 2026-09-19 11:21 | 2407 (8.9%) | 903 (3.3%) | 448 | 388/5530 | 1584/2512 | 554 |
+| 2026-09-19 11:27 | 2407 (8.9%) | 903 (3.3%) | 446 | 388/5530 | 1584/2512 | 552 |
 
 ## How to move a row
 

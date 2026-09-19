@@ -300,6 +300,7 @@ int32_t CDataStore::IsRead() const {
     return this->m_size == this->m_read;
 }
 
+// ref: FUN_0047afe0
 CDataStore& CDataStore::Put(uint8_t val) {
     STORM_ASSERT(!this->IsFinal());
 
@@ -329,6 +330,7 @@ CDataStore& CDataStore::Put(uint16_t val) {
     return *this;
 }
 
+// ref: FUN_0047b0a0
 CDataStore& CDataStore::Put(uint32_t val) {
     STORM_ASSERT(!this->IsFinal());
 
