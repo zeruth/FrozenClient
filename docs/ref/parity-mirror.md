@@ -63,15 +63,45 @@ Frozen signals only three events from the whole object layer (`CGPlayer_C`, `Nam
 `SpellBook`). The glue screens signal many more, which is why character select behaves and the
 world interface does not.
 
-## 3. What implementing it needs
+## 3. The dispatcher is a watcher registry, not a table
 
-1. `FUN_004d5550` decompiled -- it is the dispatcher, and will name the handler table.
-2. The table itself: descriptor block index to handler. The reference registers these per object
-   type, which is what `s_objMirrorBlocks` and `IncTypeID` in frozen's `Mirror.cpp` already shadow.
-3. The old value. `FillInPartialObjectData` has an unused `if (!forFullUpdate)` branch before the
-   write, which is where the reference captures the previous value so a handler can compare; a
-   handler that fires on every write rather than on every *change* would signal far too often.
+`FUN_004d5550` (frozen's `CallMirrorHandlers`) was decompiled after the section above was written,
+and it corrects an assumption in it. There is **no block-index-to-handler table**. The reference
+keeps an intrusive linked list of registered watchers, builds it on the stack for the duration of
+the call, walks it once per descriptor block through `FUN_004d5150`, and flushes it at the end
+(`FUN_007cecd0`).
 
-Suggested order: dispatcher first with a handful of unit fields wired by hand (health, maxhealth,
-power, maxpower, level, faction), since those alone bring the player and target frames to life, and
-they are the fields whose absence is visible on the first frame in the world.
+Each watcher node, by offset:
+
+| offset | meaning |
+|---|---|
+| `+0x10` | the callback, invoked as `(object, guid, fieldOffset)` |
+| `+0x14` | passed to `FUN_004d3bf0` alongside the length to recover the field offset |
+| `+0x1c` | where the watcher's copy of the **old** bytes live |
+| `+0x20` | where the **new** bytes live |
+| `+0x24` | the watched length, in bytes -- watchers cover *ranges*, not single dwords |
+| `+0x2c` | set to 1 when the block is touched |
+| `+0x2e` | when zero, memcmp old against new and fire only on a difference; when set, fire always |
+
+Two consequences for any port:
+
+* A watcher covers a byte range, so one registration can cover, say, all the power fields at once
+  and recover which one moved from the offset handed to its callback.
+* The old-versus-new comparison is the watcher's own, against its private copy -- which is why
+  `FillInPartialObjectData`'s unused `if (!forFullUpdate)` branch matters. Frozen's first pass has
+  already written the new value by the time the second pass runs, so comparing the object against
+  the message in `CallMirrorHandlers` compares a value with itself and can never report a change.
+  The snapshot has to be taken in the first pass, before the write.
+
+## 4. What implementing it needs
+
+1. The watcher list and `FUN_004d5150`'s walk, or a deliberate divergence from it.
+2. The registration sites -- who registers a watcher on the health field, and what their callback
+   does. Not yet recovered; that is the next thing to find.
+3. The old-value snapshot, per the note above.
+
+A shortcut exists and should be taken knowingly if at all: hard-code "health block changed ->
+signal `UNIT_HEALTH`" without the registry. That reaches the right behaviour for the handful of
+fields the player and target frames need (health, maxhealth, power, maxpower, level, faction) and
+diverges from the reference in mechanism rather than in effect. It would have to be recorded as
+`diverged`, with the registry named as the end state, or it will read later as a finished port.
