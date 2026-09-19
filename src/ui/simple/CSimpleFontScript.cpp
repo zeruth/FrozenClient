@@ -19,7 +19,12 @@ int32_t CSimpleFont_IsObjectType(lua_State* L) {
 }
 
 int32_t CSimpleFont_GetName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, font->GetName());
+
+    return 1;
 }
 
 int32_t CSimpleFont_SetFontObject(lua_State* L) {
@@ -34,8 +39,33 @@ int32_t CSimpleFont_CopyFontObject(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004a43a0
 int32_t CSimpleFont_SetFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+    auto& attributes = font->m_attributes;
+
+    if (!lua_isstring(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:SetFont(\"font\", fontHeight [, flags])", font->GetDisplayName());
+    }
+
+    uint32_t fontFlags = 0x0;
+
+    if (lua_isstring(L, 4)) {
+        fontFlags = StringToFontFlags(lua_tostring(L, 4));
+    }
+
+    // See FontString_SetFont for why the height is not converted here: frozen keeps font heights in
+    // the units the caller passed, consistently in both directions.
+    if (attributes.SetFont(lua_tostring(L, 2), static_cast<float>(lua_tonumber(L, 3)), fontFlags)) {
+        font->UpdateObjects();
+
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleFont_GetFont(lua_State* L) {
@@ -65,12 +95,37 @@ int32_t CSimpleFont_GetFont(lua_State* L) {
     return 3;
 }
 
+// ref: FUN_004a4440
 int32_t CSimpleFont_SetAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+    auto& attributes = font->m_attributes;
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetAlpha(alpha)", font->GetDisplayName());
+    }
+
+    // The reference rounds against a 255.0 stored as a double, and writes the byte straight into
+    // the colour's alpha rather than going through SetColor.
+    auto alpha = static_cast<uint8_t>(static_cast<int32_t>(lua_tonumber(L, 2) * 255.0 + 0.5));
+
+    if (attributes.m_color.a != alpha) {
+        attributes.m_color.a = alpha;
+        font->UpdateObjects();
+    }
+
+    return 0;
 }
 
+// ref: FUN_004a4490
 int32_t CSimpleFont_GetAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+    auto& attributes = font->m_attributes;
+
+    lua_pushnumber(L, attributes.m_color.a * (1.0f / 255.0f));
+
+    return 1;
 }
 
 // ref: FUN_004a4500

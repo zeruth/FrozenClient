@@ -6492,6 +6492,70 @@
   "refSize": 96,
   "status": "ported"
  },
+ "004a43a0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetFont",
+  "frozenSize": 296,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a43f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetFont",
+  "frozenSize": 270,
+  "how": "order",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4440": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetAlpha",
+  "frozenSize": 146,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4490": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetAlpha",
+  "frozenSize": 65,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
  "004a4500": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

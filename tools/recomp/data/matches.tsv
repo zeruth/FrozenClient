@@ -406,6 +406,10 @@ addr	how	frozen	evidence
 004a40b0	annotated	FontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40e0	annotated	FontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a4220	order	CScriptObject::GetName	binding table name GetName, in definition order in src/ui/CScriptObject.cpp
+004a43a0	annotated	CSimpleFont_SetFont	tag in src/ui/simple/CSimpleFontScript.cpp
+004a43f0	order	CSimpleFont_GetFont	definition order between CSimpleFont_SetFont and CSimpleFont_SetAlpha in src/ui/simple/CSimpleFontScript.cpp
+004a4440	annotated	CSimpleFont_SetAlpha	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4490	annotated	CSimpleFont_GetAlpha	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4500	annotated	CSimpleFont_SetTextColor	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4590	order	CSimpleFont_GetTextColor	definition order between CSimpleFont_SetTextColor and CSimpleFont_SetShadowColor in src/ui/simple/CSimpleFontScript.cpp
 004a45e0	annotated	CSimpleFont_SetShadowColor	tag in src/ui/simple/CSimpleFontScript.cpp
