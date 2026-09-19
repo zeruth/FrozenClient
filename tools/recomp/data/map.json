@@ -2976,20 +2976,20 @@
   "status": "stub"
  },
  "0048c0e0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetVertexColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 174,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 221,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c1c0": {
   "branchRatio": 0.5,
@@ -3408,20 +3408,20 @@
   "status": "ported"
  },
  "0048cfc0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp",
    "src/ui/simple/csimplefontstringscript.cpp"
   ],
   "frozen": "CSimpleFontString_GetAlpha",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 79,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 105,
-  "status": "stub"
+  "status": "ported"
  },
  "0048d030": {
   "branchRatio": 0.0,
@@ -39675,20 +39675,20 @@
   "status": "stub"
  },
  "00971800": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.714,
   "files": [
    "src/ui/simple/CSimpleStatusBarScript.cpp",
    "src/ui/simple/csimplestatusbarscript.cpp"
   ],
   "frozen": "CSimpleStatusBar_GetStatusBarColor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 233,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 259,
-  "status": "stub"
+  "status": "ported"
  },
  "00971910": {
   "branchRatio": 0.0,

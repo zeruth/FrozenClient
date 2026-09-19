@@ -66,8 +66,27 @@ int32_t CSimpleTexture_SetBlendMode(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Colour bytes to 0..1. The reference's constant at 009ead78 is 0.00392156f, which is NOT 1/255
+// (that is 0.0039215689f, and the reference uses it elsewhere, at 00a45564). Keeping the literal
+// rather than the exact reciprocal so the values match the reference digit for digit.
+static const float COLOR_BYTE_SCALE = 0.00392156f;
+
+// ref: FUN_0048c0e0
+// Four values, red green blue alpha -- the order the shipped interface reads them in
+// (local r, g, b, a = background:GetVertexColor()).
 int32_t CSimpleTexture_GetVertexColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    CImVector color;
+    texture->GetVertexColor(color);
+
+    lua_pushnumber(L, color.r * COLOR_BYTE_SCALE);
+    lua_pushnumber(L, color.g * COLOR_BYTE_SCALE);
+    lua_pushnumber(L, color.b * COLOR_BYTE_SCALE);
+    lua_pushnumber(L, color.a * COLOR_BYTE_SCALE);
+
+    return 4;
 }
 
 int32_t CSimpleTexture_SetVertexColor(lua_State* L) {

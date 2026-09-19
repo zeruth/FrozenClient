@@ -186,7 +186,7 @@ addr	how	frozen	evidence
 0048bf30	table	CSimpleTexture_SetDrawLayer	binding "SetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
 0048bff0	annotated	CSimpleTexture_GetBlendMode	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c040	table	CSimpleTexture_SetBlendMode	binding "SetBlendMode" in SimpleTextureMethods ~ table 00ac1028
-0048c0e0	table	CSimpleTexture_GetVertexColor	binding "GetVertexColor" in SimpleTextureMethods ~ table 00ac1028
+0048c0e0	annotated	CSimpleTexture_GetVertexColor	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c1c0	table	CSimpleTexture_SetVertexColor	binding "SetVertexColor" in SimpleTextureMethods ~ table 00ac1028
 0048c240	table	CSimpleTexture_SetGradient	binding "SetGradient" in SimpleTextureMethods ~ table 00ac1028
 0048c310	table	CSimpleTexture_SetGradientAlpha	binding "SetGradientAlpha" in SimpleTextureMethods ~ table 00ac1028
@@ -213,7 +213,7 @@ addr	how	frozen	evidence
 0048ce20	annotated	CSimpleFontString_GetDrawLayer	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048ce70	table	CSimpleFontString_SetDrawLayer	binding "SetDrawLayer" in SimpleFontStringMethods ~ table 00ac1118
 0048cf30	table	CSimpleFontString_SetVertexColor	binding "SetVertexColor" in SimpleFontStringMethods ~ table 00ac1118
-0048cfc0	table	CSimpleFontString_GetAlpha	binding "GetAlpha" in SimpleFontStringMethods ~ table 00ac1118
+0048cfc0	annotated	CSimpleFontString_GetAlpha	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048d030	table	CSimpleFontString_SetAlpha	binding "SetAlpha" in SimpleFontStringMethods ~ table 00ac1118
 0048d0f0	table	CSimpleFontString_SetAlphaGradient	binding "SetAlphaGradient" in SimpleFontStringMethods ~ table 00ac1118
 0048d1c0	table	CSimpleFontString_Show	binding "Show" in SimpleFontStringMethods ~ table 00ac1118
@@ -503,7 +503,7 @@ addr	how	frozen	evidence
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
 004bc410	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr	same slot between linked calls in 00768900=ConsoleCommandParse
-004bd960	sticky	CSimpleFontString::GetFontName	held from the previous run, where it was callorder
+004bd960	sticky	CSimpleFontString::GetFontName	held from the previous run, where it was sticky
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -2503,7 +2503,7 @@ addr	how	frozen	evidence
 00971540	table	CSimpleStatusBar_SetValue	binding "SetValue" in SimpleStatusBarMethods ~ table 00b2cdb8
 009715d0	annotated	CSimpleStatusBar_GetStatusBarTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971650	table	CSimpleStatusBar_SetStatusBarTexture	binding "SetStatusBarTexture" in SimpleStatusBarMethods ~ table 00b2cdb8
-00971800	table	CSimpleStatusBar_GetStatusBarColor	binding "GetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
+00971800	annotated	CSimpleStatusBar_GetStatusBarColor	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 00971910	table	CSimpleStatusBar_SetStatusBarColor	binding "SetStatusBarColor" in SimpleStatusBarMethods ~ table 00b2cdb8
 00971970	annotated	CSimpleStatusBar_GetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp
 009719d0	annotated	CSimpleStatusBar_SetRotatesTexture	tag in src/ui/simple/CSimpleStatusBarScript.cpp

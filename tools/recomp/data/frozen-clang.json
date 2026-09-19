@@ -150414,20 +150414,20 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"CImVector::CImVector",
+"CSimpleFontString::GetTextColor",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFontString_GetAlpha",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"255.0f"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": [],
 "line": 368
 },
@@ -150444,7 +150444,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 372
+"line": 380
 },
 "CSimpleFontString_SetAlphaGradient": {
 "files": [
@@ -150466,7 +150466,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 377
+"line": 385
 },
 "CSimpleFontString_Show": {
 "files": [
@@ -150485,7 +150485,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 381
+"line": 389
 },
 "CSimpleFontString_Hide": {
 "files": [
@@ -150504,7 +150504,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 390
+"line": 398
 },
 "CSimpleFontString_IsVisible": {
 "files": [
@@ -150526,7 +150526,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 399
+"line": 407
 },
 "CSimpleFontString_IsShown": {
 "files": [
@@ -150548,7 +150548,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 412
+"line": 420
 },
 "CSimpleFontString_GetFontObject": {
 "files": [
@@ -150566,7 +150566,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 425
+"line": 433
 },
 "CSimpleFontString_SetFontObject": {
 "files": [
@@ -150584,7 +150584,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 432
+"line": 440
 },
 "CSimpleFontString_GetFont": {
 "files": [
@@ -150602,7 +150602,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 439
+"line": 447
 },
 "CSimpleFontString_SetFont": {
 "files": [
@@ -150620,7 +150620,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 446
+"line": 454
 },
 "CSimpleFontString_GetText": {
 "files": [
@@ -150640,7 +150640,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 453
+"line": 461
 },
 "CSimpleFontString_GetFieldSize": {
 "files": [
@@ -150658,7 +150658,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 468
+"line": 476
 },
 "CSimpleFontString_SetText": {
 "files": [
@@ -150684,7 +150684,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 474
+"line": 482
 },
 "CSimpleFontString_SetFormattedText": {
 "files": [
@@ -150711,7 +150711,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 488
+"line": 496
 },
 "CSimpleFontString_GetTextColor": {
 "files": [
@@ -150729,7 +150729,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 504
+"line": 512
 },
 "CSimpleFontString_SetTextColor": {
 "files": [
@@ -150747,7 +150747,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 511
+"line": 519
 },
 "CSimpleFontString_GetShadowColor": {
 "files": [
@@ -150765,7 +150765,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 518
+"line": 526
 },
 "CSimpleFontString_SetShadowColor": {
 "files": [
@@ -150783,7 +150783,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 525
+"line": 533
 },
 "CSimpleFontString_GetShadowOffset": {
 "files": [
@@ -150801,7 +150801,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 532
+"line": 540
 },
 "CSimpleFontString_SetShadowOffset": {
 "files": [
@@ -150819,7 +150819,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 539
+"line": 547
 },
 "CSimpleFontString_GetSpacing": {
 "files": [
@@ -150837,7 +150837,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 546
+"line": 554
 },
 "CSimpleFontString_SetSpacing": {
 "files": [
@@ -150855,7 +150855,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 553
+"line": 561
 },
 "CSimpleFontString_SetTextHeight": {
 "files": [
@@ -150887,7 +150887,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 561
+"line": 569
 },
 "CSimpleFontString_GetStringWidth": {
 "files": [
@@ -150907,7 +150907,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 580
+"line": 588
 },
 "CSimpleFontString_GetStringHeight": {
 "files": [
@@ -150927,7 +150927,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 589
+"line": 597
 },
 "CSimpleFontString_GetJustifyH": {
 "files": [
@@ -150945,7 +150945,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 598
+"line": 606
 },
 "CSimpleFontString_SetJustifyH": {
 "files": [
@@ -150963,7 +150963,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 605
+"line": 613
 },
 "CSimpleFontString_GetJustifyV": {
 "files": [
@@ -150981,7 +150981,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 612
+"line": 620
 },
 "CSimpleFontString_SetJustifyV": {
 "files": [
@@ -150999,7 +150999,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 619
+"line": 627
 },
 "CSimpleFontString_CanNonSpaceWrap": {
 "files": [
@@ -151021,7 +151021,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 627
+"line": 635
 },
 "CSimpleFontString_SetNonSpaceWrap": {
 "files": [
@@ -151044,7 +151044,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 641
+"line": 649
 },
 "CSimpleFontString_CanWordWrap": {
 "files": [
@@ -151066,7 +151066,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 654
+"line": 662
 },
 "CSimpleFontString_SetWordWrap": {
 "files": [
@@ -151089,7 +151089,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 668
+"line": 676
 },
 "CSimpleFontString_GetIndentedWordWrap": {
 "files": [
@@ -151107,7 +151107,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 680
+"line": 688
 },
 "CSimpleFontString_SetIndentedWordWrap": {
 "files": [
@@ -151125,7 +151125,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 687
+"line": 695
 },
 "CSimpleFrame::GetObjectType": {
 "files": [
@@ -161730,22 +161730,31 @@
 "src/ui/simple/csimplestatusbarscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleStatusBar::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleStatusBar::GetStatusBarTexture",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"CImVector::CImVector",
+"CSimpleRegion::GetVertexColor",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"(anonymous namespace)::CSimpleStatusBar_GetStatusBarColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplestatusbarscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0.00392156f",
+"1.0",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 26,
 "refs": [],
-"line": 114
+"line": 117
 },
 "CSimpleStatusBar_SetStatusBarColor": {
 "files": [
@@ -161766,7 +161775,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 118
+"line": 144
 },
 "CSimpleStatusBar_GetRotatesTexture": {
 "files": [
@@ -161788,7 +161797,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 132
+"line": 158
 },
 "CSimpleStatusBar_SetRotatesTexture": {
 "files": [
@@ -161809,7 +161818,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 146
+"line": 172
 },
 "CSimpleTexture::CreateScriptMetaTable": {
 "files": [
@@ -162495,22 +162504,24 @@
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"CImVector::CImVector",
+"CSimpleRegion::GetVertexColor",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleTexture_GetVertexColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 14,
 "refs": [],
-"line": 69
+"line": 77
 },
 "CSimpleTexture_SetVertexColor": {
 "files": [
@@ -162534,7 +162545,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 73
+"line": 92
 },
 "CSimpleTexture_SetGradient": {
 "files": [
@@ -162556,7 +162567,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 91
+"line": 110
 },
 "CSimpleTexture_SetGradientAlpha": {
 "files": [
@@ -162578,7 +162589,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 95
+"line": 114
 },
 "CSimpleTexture_SetAlpha": {
 "files": [
@@ -162604,7 +162615,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 99
+"line": 118
 },
 "CSimpleTexture_GetAlpha": {
 "files": [
@@ -162625,7 +162636,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 113
+"line": 132
 },
 "CSimpleTexture_Show": {
 "files": [
@@ -162644,7 +162655,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 124
+"line": 143
 },
 "CSimpleTexture_Hide": {
 "files": [
@@ -162663,7 +162674,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 133
+"line": 152
 },
 "CSimpleTexture_IsVisible": {
 "files": [
@@ -162685,7 +162696,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 142
+"line": 161
 },
 "CSimpleTexture_IsShown": {
 "files": [
@@ -162707,7 +162718,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 155
+"line": 174
 },
 "CSimpleTexture_GetTexture": {
 "files": [
@@ -162728,7 +162739,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 168
+"line": 187
 },
 "CSimpleTexture_SetTexture": {
 "files": [
@@ -162761,7 +162772,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 183
+"line": 202
 },
 "CSimpleTexture_GetTexCoord": {
 "files": [
@@ -162783,7 +162794,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 222
+"line": 241
 },
 "CSimpleTexture_SetTexCoord": {
 "files": [
@@ -162828,7 +162839,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 234
+"line": 253
 },
 "CSimpleTexture_SetRotation": {
 "files": [
@@ -162874,7 +162885,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 292
+"line": 311
 },
 "CSimpleTexture_SetDesaturated": {
 "files": [
@@ -162898,7 +162909,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 330
+"line": 349
 },
 "CSimpleTexture_IsDesaturated": {
 "files": [
@@ -162920,7 +162931,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 349
+"line": 368
 },
 "CSimpleTexture_SetNonBlocking": {
 "files": [
@@ -162941,7 +162952,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 365
+"line": 384
 },
 "CSimpleTexture_GetNonBlocking": {
 "files": [
@@ -162962,7 +162973,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 375
+"line": 394
 },
 "CSimpleTexture_SetHorizTile": {
 "files": [
@@ -162983,7 +162994,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 389
+"line": 408
 },
 "CSimpleTexture_GetHorizTile": {
 "files": [
@@ -163004,7 +163015,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 399
+"line": 418
 },
 "CSimpleTexture_SetVertTile": {
 "files": [
@@ -163025,7 +163036,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 413
+"line": 432
 },
 "CSimpleTexture_GetVertTile": {
 "files": [
@@ -163046,7 +163057,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 423
+"line": 442
 },
 "CSimpleSortedArray::operator[]": {
 "files": [

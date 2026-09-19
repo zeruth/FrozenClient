@@ -111,8 +111,34 @@ int32_t CSimpleStatusBar_SetStatusBarTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00971800
+// The bar texture's colour. A bar with no texture answers opaque white rather than nil -- the
+// reference substitutes 1,1,1,1 before reading, so the four return values are always there.
 int32_t CSimpleStatusBar_GetStatusBarColor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto statusBar = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    auto texture = statusBar->GetStatusBarTexture();
+
+    if (!texture) {
+        lua_pushnumber(L, 1.0);
+        lua_pushnumber(L, 1.0);
+        lua_pushnumber(L, 1.0);
+        lua_pushnumber(L, 1.0);
+
+        return 4;
+    }
+
+    CImVector color;
+    texture->GetVertexColor(color);
+
+    // Same 0.00392156f the texture's own getter uses; see the note there.
+    lua_pushnumber(L, color.r * 0.00392156f);
+    lua_pushnumber(L, color.g * 0.00392156f);
+    lua_pushnumber(L, color.b * 0.00392156f);
+    lua_pushnumber(L, color.a * 0.00392156f);
+
+    return 4;
 }
 
 int32_t CSimpleStatusBar_SetStatusBarColor(lua_State* L) {
