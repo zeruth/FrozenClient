@@ -150579,22 +150579,30 @@
 "src/ui/simple/csimplefontstringscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFontString::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber",
+"lua_pushnumber"
 ],
 "strings": [
-"CSimpleFontString_SetAlphaGradient",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontstringscript.cpp"
+"Usage: %s:SetAlphaGradient(start, length)"
 ],
 "consts": [
-"0"
+"1",
+"1.0",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 15,
 "refs": [],
-"line": 385
+"line": 393
 },
 "CSimpleFontString_Show": {
 "files": [
@@ -150613,7 +150621,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 389
+"line": 409
 },
 "CSimpleFontString_Hide": {
 "files": [
@@ -150632,7 +150640,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 398
+"line": 418
 },
 "CSimpleFontString_IsVisible": {
 "files": [
@@ -150654,7 +150662,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 407
+"line": 427
 },
 "CSimpleFontString_IsShown": {
 "files": [
@@ -150676,7 +150684,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 420
+"line": 440
 },
 "CSimpleFontString_GetFontObject": {
 "files": [
@@ -150694,7 +150702,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 433
+"line": 453
 },
 "CSimpleFontString_SetFontObject": {
 "files": [
@@ -150712,7 +150720,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 440
+"line": 460
 },
 "CSimpleFontString_GetFont": {
 "files": [
@@ -150730,7 +150738,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 447
+"line": 467
 },
 "CSimpleFontString_SetFont": {
 "files": [
@@ -150748,7 +150756,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 454
+"line": 474
 },
 "CSimpleFontString_GetText": {
 "files": [
@@ -150768,7 +150776,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 461
+"line": 481
 },
 "CSimpleFontString_GetFieldSize": {
 "files": [
@@ -150786,7 +150794,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 476
+"line": 496
 },
 "CSimpleFontString_SetText": {
 "files": [
@@ -150812,7 +150820,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 482
+"line": 502
 },
 "CSimpleFontString_SetFormattedText": {
 "files": [
@@ -150839,7 +150847,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 496
+"line": 516
 },
 "CSimpleFontString_GetTextColor": {
 "files": [
@@ -150857,7 +150865,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 512
+"line": 532
 },
 "CSimpleFontString_SetTextColor": {
 "files": [
@@ -150875,7 +150883,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 519
+"line": 539
 },
 "CSimpleFontString_GetShadowColor": {
 "files": [
@@ -150893,7 +150901,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 526
+"line": 546
 },
 "CSimpleFontString_SetShadowColor": {
 "files": [
@@ -150911,7 +150919,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 533
+"line": 553
 },
 "CSimpleFontString_GetShadowOffset": {
 "files": [
@@ -150929,7 +150937,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 540
+"line": 560
 },
 "CSimpleFontString_SetShadowOffset": {
 "files": [
@@ -150947,7 +150955,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 547
+"line": 567
 },
 "CSimpleFontString_GetSpacing": {
 "files": [
@@ -150965,7 +150973,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 554
+"line": 574
 },
 "CSimpleFontString_SetSpacing": {
 "files": [
@@ -150983,7 +150991,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 561
+"line": 581
 },
 "CSimpleFontString_SetTextHeight": {
 "files": [
@@ -151015,7 +151023,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 569
+"line": 589
 },
 "CSimpleFontString_GetStringWidth": {
 "files": [
@@ -151035,7 +151043,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 588
+"line": 608
 },
 "CSimpleFontString_GetStringHeight": {
 "files": [
@@ -151055,7 +151063,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 597
+"line": 617
 },
 "CSimpleFontString_GetJustifyH": {
 "files": [
@@ -151073,7 +151081,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 606
+"line": 626
 },
 "CSimpleFontString_SetJustifyH": {
 "files": [
@@ -151091,7 +151099,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 613
+"line": 633
 },
 "CSimpleFontString_GetJustifyV": {
 "files": [
@@ -151109,7 +151117,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 620
+"line": 640
 },
 "CSimpleFontString_SetJustifyV": {
 "files": [
@@ -151127,7 +151135,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 627
+"line": 647
 },
 "CSimpleFontString_CanNonSpaceWrap": {
 "files": [
@@ -151149,7 +151157,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 635
+"line": 655
 },
 "CSimpleFontString_SetNonSpaceWrap": {
 "files": [
@@ -151172,7 +151180,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 649
+"line": 669
 },
 "CSimpleFontString_CanWordWrap": {
 "files": [
@@ -151194,7 +151202,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 662
+"line": 682
 },
 "CSimpleFontString_SetWordWrap": {
 "files": [
@@ -151217,7 +151225,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 676
+"line": 696
 },
 "CSimpleFontString_GetIndentedWordWrap": {
 "files": [
@@ -151235,7 +151243,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 688
+"line": 708
 },
 "CSimpleFontString_SetIndentedWordWrap": {
 "files": [
@@ -151253,7 +151261,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 695
+"line": 715
 },
 "CSimpleFrame::GetObjectType": {
 "files": [

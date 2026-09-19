@@ -3440,20 +3440,20 @@
   "status": "ported"
  },
  "0048d0f0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.545,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp",
    "src/ui/simple/csimplefontstringscript.cpp"
   ],
   "frozen": "CSimpleFontString_SetAlphaGradient",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 181,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 202,
-  "status": "stub"
+  "status": "ported"
  },
  "0048d1c0": {
   "branchRatio": 0.0,

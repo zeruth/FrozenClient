@@ -39,6 +39,38 @@ REFERENCE = os.path.join(ROOT, '.reference', 'WOTLK 3.3.5a - Windows', 'WoW_WOTL
 # Object-type ids: every widget script function lazily allocates its class's id into one of these,
 # so a read of one says nothing about what state the function needs. Catalogued in
 # docs/ref/INDEX.txt; 00d3f778 is the counter they allocate from.
+
+# Which object-type global each widget's script functions read. A widget script function's first act
+# is to allocate its class's id into one of these, and the address shows up in the reference
+# function's data references -- so the candidate the binding-table matcher offers can be checked
+# against the file it was offered for, without decompiling anything.
+#
+# This exists because that matcher offers an address per NAME, and a name in several method tables
+# resolves to whichever copy it saw first. Five times in one session it named another class's copy:
+# HasScript and the font's type pair (both the animation group's), SetRotation (the texture's),
+# IsObjectType (the texture's), SetOrientation (the status bar's, offered for the slider). Each cost
+# a decompile to catch. Catalogue in docs/ref/INDEX.txt.
+CLASS_GLOBAL = {
+    'CSimpleFontStringScript.cpp': '00b4792c',
+    'CSimpleTextureScript.cpp': '00b4793c',
+    'CScriptRegionScript.cpp': '00b49978',
+    'CSimpleFrameScript.cpp': '00b49984',
+    'CSimpleFontScript.cpp': '00b499b0',
+    'CSimpleModelScript.cpp': '00b499ec',
+    'CGTooltipScript.cpp': '00c5cf4c',
+    'CGCooldownScript.cpp': '00c2423c',
+    'CGCharacterModelBaseScript.cpp': '00c0e4d4',
+    'CSimpleStatusBarScript.cpp': '00dce440',
+    'CSimpleMessageFrameScript.cpp': '00dce4a4',
+    'CSimpleScrollFrameScript.cpp': '00dce4bc',
+    'CSimpleSliderScript.cpp': '00dce4d4',
+    'CSimpleButtonScript.cpp': '00dce650',
+}
+
+# Every object-type global known, whichever file it belongs to, so one can be recognised as such
+# even in a file with no expectation recorded.
+ALL_CLASS_GLOBALS = set(CLASS_GLOBAL.values()) | {'00b499dc', '00b4997c'}
+
 BENIGN = {
     '00d3f778',
     '00b4792c', '00b4793c', '00b49978', '00b49984', '00b499b0', '00b499dc', '00b499ec',
@@ -119,21 +151,33 @@ def main():
 
                     known = sum(1 for c in callees if c in mapped)
                     globals_ = sorted({d for d in r.get('data', []) if risky(d)})
+
+                    # Does this function belong to the class whose file it was offered for?
+                    base = os.path.basename(rel)
+                    expect = CLASS_GLOBAL.get(base)
+                    seen_globals = {d for d in r.get('data', []) if d in ALL_CLASS_GLOBALS}
+                    if not expect or not seen_globals:
+                        verdict = ''
+                    elif expect in seen_globals:
+                        verdict = 'ok'
+                    else:
+                        verdict = 'WRONG:' + sorted(seen_globals)[0]
+
                     rows.append((-(known / len(callees)), len(globals_), r['size'],
-                                 m.group(2), addr, os.path.basename(rel), globals_))
+                                 m.group(2), addr, base, globals_, verdict))
 
     rows.sort()
     seen = set()
-    print('%-5s %-6s %-5s %-30s %-9s %-34s %s'
-          % ('cover', 'risky', 'size', 'name', 'addr', 'file', 'globals'))
+    print('%-5s %-6s %-5s %-30s %-9s %-34s %-16s %s'
+          % ('cover', 'risky', 'size', 'name', 'addr', 'file', 'class', 'globals'))
 
     shown = 0
-    for cover, nglobals, size, name, addr, base, globals_ in rows:
+    for cover, nglobals, size, name, addr, base, globals_, verdict in rows:
         if (name, base) in seen:
             continue
         seen.add((name, base))
-        print('%4.0f%% %6d %5d  %-30s %s  %-34s %s'
-              % (-cover * 100, nglobals, size, name, addr, base, ' '.join(globals_[:4])))
+        print('%4.0f%% %6d %5d  %-30s %s  %-34s %-16s %s'
+              % (-cover * 100, nglobals, size, name, addr, base, verdict, ' '.join(globals_[:4])))
         shown += 1
         if shown >= 40:
             break

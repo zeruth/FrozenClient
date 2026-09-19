@@ -382,8 +382,28 @@ int32_t CSimpleFontString_SetAlpha(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048d0f0
+// Start and length of the fade, in characters. The fields were already here and already read by the
+// render pass (CSimpleFontString.cpp, the m_alphaGradientStart > 0 branch); nothing wrote them.
+//
+// The reference's setter at 00482230 always stores both, then returns true when there is no laid-out
+// string and otherwise asks the layout whether the range fits, failing if it does not. Frozen stores
+// and reports success: the validating call has no counterpart, so the nil return is unreachable
+// here. A caller that checks the result will believe every range it asks for.
 int32_t CSimpleFontString_SetAlphaGradient(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFontString::GetObjectType();
+    auto fontString = static_cast<CSimpleFontString*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:SetAlphaGradient(start, length)", fontString->GetDisplayName());
+    }
+
+    fontString->m_alphaGradientStart = static_cast<int16_t>(lua_tonumber(L, 2));
+    fontString->m_alphaGradientLength = static_cast<int16_t>(lua_tonumber(L, 3));
+
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t CSimpleFontString_Show(lua_State* L) {

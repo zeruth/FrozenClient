@@ -215,7 +215,7 @@ addr	how	frozen	evidence
 0048cf30	table	CSimpleFontString_SetVertexColor	binding "SetVertexColor" in SimpleFontStringMethods ~ table 00ac1118
 0048cfc0	annotated	CSimpleFontString_GetAlpha	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048d030	table	CSimpleFontString_SetAlpha	binding "SetAlpha" in SimpleFontStringMethods ~ table 00ac1118
-0048d0f0	table	CSimpleFontString_SetAlphaGradient	binding "SetAlphaGradient" in SimpleFontStringMethods ~ table 00ac1118
+0048d0f0	annotated	CSimpleFontString_SetAlphaGradient	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048d1c0	table	CSimpleFontString_Show	binding "Show" in SimpleFontStringMethods ~ table 00ac1118
 0048d200	table	CSimpleFontString_Hide	binding "Hide" in SimpleFontStringMethods ~ table 00ac1118
 0048d240	table	CSimpleFontString_IsVisible	binding "IsVisible" in SimpleFontStringMethods ~ table 00ac1118
