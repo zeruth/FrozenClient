@@ -38893,6 +38893,127 @@
 "refs": [],
 "line": 11
 },
+"CGxBuf::CGxBuf": {
+"files": [
+"src/gx/buffer/cgxbuf.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 24
+},
+"CGxPool::CGxPool": {
+"files": [
+"src/gx/buffer/cgxpool.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 24
+},
+"CGxDevice::IRenderTargetSet": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 137
+},
+"CGxDevice::IRenderTargetDump": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 142
+},
+"CGxDevice::IScreenShot": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 143
+},
+"CGxDevice::SceneClear": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 153
+},
+"CGxDevice::Draw": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 156
+},
+"CGxDevice::IShaderBind": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 187
+},
+"CGxDevice::ITexBind": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 189
+},
 "WowConnectionResponse::WCDisconnected": {
 "files": [
 "src/net/connection/wowconnectionresponse.hpp"
@@ -38984,32 +39105,6 @@
 "refs": [],
 "line": 133
 },
-"CGxBuf::CGxBuf": {
-"files": [
-"src/gx/buffer/cgxbuf.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 24
-},
-"CGxPool::CGxPool": {
-"files": [
-"src/gx/buffer/cgxpool.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 24
-},
 "CM2Scene::CM2Scene": {
 "files": [
 "src/model/cm2scene.hpp"
@@ -39073,7 +39168,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 66
+"line": 82
 },
 "GammaCallback": {
 "files": [
@@ -39086,7 +39181,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 71
+"line": 87
 },
 "TextureCacheSizeCallback": {
 "files": [
@@ -39099,7 +39194,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 76
+"line": 92
 },
 "TextureFilteringCallback": {
 "files": [
@@ -39122,7 +39217,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 82
+"line": 98
 },
 "UIFasterCalllback": {
 "files": [
@@ -39135,7 +39230,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 96
+"line": 112
 },
 "AsyncFileInitialize": {
 "files": [
@@ -39153,7 +39248,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 101
+"line": 117
 },
 "BaseInitializeGlobal": {
 "files": [
@@ -39168,7 +39263,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 106
+"line": 122
 },
 "ClientGameTimeTickHandler": {
 "files": [
@@ -39185,7 +39280,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 110
+"line": 126
 },
 "ClientInitializeGameTime": {
 "files": [
@@ -39212,7 +39307,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 118
+"line": 134
 },
 "ClientIdle": {
 "files": [
@@ -39229,7 +39324,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 136
+"line": 152
 },
 "ClientPlayerModelReady": {
 "files": [
@@ -39250,7 +39345,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 145
+"line": 161
 },
 "ClientInitializeGame": {
 "files": [
@@ -39288,7 +39383,147 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 155
+"line": 171
+},
+"MouseSpeedCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"OsGuiSetMouseSpeed"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 216
+},
+"ErrorsCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"Error display disabled",
+"Error display enabled"
+],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 223
+},
+"ShowErrorsCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToInt",
+"ConsoleWrite"
+],
+"strings": [
+"Error display hidden",
+"Error display shown"
+],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 242
+},
+"ErrorLevelMinCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToInt",
+"ConsoleWriteA"
+],
+"strings": [
+"%i is not valid, valid values are 0 - %i"
+],
+"consts": [
+"3",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 261
+},
+"ErrorLevelMaxCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToInt",
+"ConsoleWriteA"
+],
+"strings": [
+"%i is not valid, valid values are 0 - %i"
+],
+"consts": [
+"3",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 276
+},
+"ErrorFilterCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 291
+},
+"ScreenshotFormatCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"ScreenshotSetFormat"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 299
+},
+"ScreenshotQualityCallback": {
+"files": [
+"src/client/client.cpp"
+],
+"callseq": [
+"SStrToInt",
+"ScreenshotSetQuality"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 306
 },
 "ClientRegisterConsoleCommands": {
 "files": [
@@ -39302,23 +39537,58 @@
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
+"OsGuiGetMouseSpeed",
+"SStrPrintf",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
+"CVar::Register",
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
 "CVar::GetInt",
-"CVar::Set"
+"CVar::GetInt",
+"CVar::Set",
+"CVar::Register"
 ],
 "strings": [
 "",
+"%1.1f",
 "-1",
 "0",
 "1",
 "1.0",
+"2",
+"3",
+"Account Type",
+"Check interface addon version number",
 "DesktopGamma",
 "Display the launcher when starting the game",
+"ErrorFilter",
+"ErrorLevelMax",
+"ErrorLevelMin",
+"Errors",
 "Gamma",
+"Last character selected",
 "List of wow accounts for saved Blizzard account",
 "Saved account name",
+"Saved whether uses authenticator",
+"Set the format of screenshots",
+"Set the quality of screenshots (1 - 10)",
+"Show expansion movie on startup",
+"Show movie on startup",
+"Show movie subtitles",
+"ShowErrors",
 "Status of the Contest notice",
 "Status of the EULA",
 "Status of the Scanning notice",
@@ -39326,24 +39596,38 @@
 "Status of the Termination without Notice notice",
 "accountList",
 "accountName",
+"accounttype",
+"all",
+"checkAddonVersion",
+"expansionMovie",
+"g_accountUsesToken",
+"jpeg",
+"lastCharacterIndex",
+"mouseSpeed",
+"movie",
+"movieSubtitle",
 "readContest",
 "readEULA",
 "readScanning",
 "readTOS",
 "readTerminationWithoutNotice",
+"screenshotFormat",
+"screenshotQuality",
 "showToolsUI"
 ],
 "consts": [
 "0",
 "0x0",
+"0x1",
 "0x40",
-"2"
+"1",
+"32"
 ],
 "branches": 1,
 "stub": false,
-"lines": 79,
+"lines": 43,
 "refs": [],
-"line": 199
+"line": 313
 },
 "ClientPostClose": {
 "files": [
@@ -39358,7 +39642,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 279
+"line": 357
 },
 "DestroyEngineCallback": {
 "files": [
@@ -39375,7 +39659,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 284
+"line": 362
 },
 "InitializeEngineCallback": {
 "files": [
@@ -39414,7 +39698,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 294
+"line": 372
 },
 "AddRunOnceFile": {
 "files": [
@@ -39434,7 +39718,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 361
+"line": 439
 },
 "CompareRunOnceFiles": {
 "files": [
@@ -39449,7 +39733,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 367
+"line": 445
 },
 "ProcessRunOnceFiles": {
 "files": [
@@ -39482,7 +39766,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 372
+"line": 450
 },
 "Sub406B70": {
 "files": [
@@ -39498,7 +39782,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 393
+"line": 471
 },
 "Sub405DD0": {
 "files": [
@@ -39518,7 +39802,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 407
+"line": 485
 },
 "LocaleChangedCallback": {
 "files": [
@@ -39531,7 +39815,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 423
+"line": 501
 },
 "InitializeGlobal": {
 "files": [
@@ -39582,7 +39866,7 @@
 "stub": false,
 "lines": 186,
 "refs": [],
-"line": 429
+"line": 507
 },
 "CommonMain": {
 "files": [
@@ -39600,7 +39884,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 616
+"line": 694
 },
 "BlizzardAssertCallback": {
 "files": [
@@ -39620,7 +39904,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 633
+"line": 711
 },
 "StormInitialize": {
 "files": [
@@ -39635,7 +39919,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 641
+"line": 719
 },
 "WowClientDestroy": {
 "files": [
@@ -39650,7 +39934,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 651
+"line": 729
 },
 "WowClientInit": {
 "files": [
@@ -39684,7 +39968,7 @@
 "stub": false,
 "lines": 90,
 "refs": [],
-"line": 659
+"line": 737
 },
 "LoadNewWorld": {
 "files": [
@@ -40841,6 +41125,34 @@
 "refs": [],
 "line": 36
 },
+"OsGuiGetMouseSpeed": {
+"files": [
+"src/client/gui/win/osgui.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.1f"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 45
+},
+"OsGuiSetMouseSpeed": {
+"files": [
+"src/client/gui/win/osgui.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 52
+},
 "ChecksumExecutables": {
 "files": [
 "src/client/util.cpp"
@@ -40853,101 +41165,6 @@
 "lines": 3,
 "refs": [],
 "line": 3
-},
-"CGxDevice::IRenderTargetSet": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 137
-},
-"CGxDevice::IRenderTargetDump": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0"
-],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 142
-},
-"CGxDevice::IScreenShot": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0"
-],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 143
-},
-"CGxDevice::SceneClear": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 153
-},
-"CGxDevice::Draw": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 156
-},
-"CGxDevice::IShaderBind": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 187
-},
-"CGxDevice::ITexBind": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 189
 },
 "ComponentTextureLevelCallback": {
 "files": [
@@ -65792,7 +66009,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 7
+"line": 8
 },
 "GxDevExists": {
 "files": [
@@ -65805,7 +66022,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 50
+"line": 51
 },
 "GxDevApi": {
 "files": [
@@ -65818,7 +66035,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 54
+"line": 55
 },
 "GxDevWindow": {
 "files": [
@@ -65833,7 +66050,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 58
+"line": 59
 },
 "GxMasterEnable": {
 "files": [
@@ -65848,7 +66065,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 63
 },
 "GxScreenShot": {
 "files": [
@@ -65865,7 +66082,43 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 66
+"line": 67
+},
+"ScreenshotSetFormat": {
+"files": [
+"src/gx/device.cpp"
+],
+"callseq": [
+"SStrCopy"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 79
+},
+"ScreenshotSetQuality": {
+"files": [
+"src/gx/device.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.5f",
+"1",
+"10",
+"11",
+"45.0f",
+"5.5f"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 85
 },
 "GxDraw": {
 "files": [

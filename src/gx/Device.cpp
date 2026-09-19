@@ -1,6 +1,7 @@
 #include "gx/Device.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Gx.hpp"
+#include <storm/String.hpp>
 
 CGxDevice* g_theGxDevicePtr = nullptr;
 
@@ -69,4 +70,26 @@ int32_t GxScreenShot(const char* path) {
     }
 
     return g_theGxDevicePtr->ScreenShot(path);
+}
+
+static char s_screenshotFormat[16] = "jpeg";
+static int32_t s_screenshotQuality = 60;
+
+// ref: FUN_004a8480
+void ScreenshotSetFormat(const char* format) {
+    SStrCopy(s_screenshotFormat, format, sizeof(s_screenshotFormat));
+}
+
+// ref: FUN_004a84a0
+// 1..10 on the CVar becomes a JPEG quality of 50..100
+void ScreenshotSetQuality(int32_t quality) {
+    if (quality < 11) {
+        if (quality == 0) {
+            quality = 1;
+        }
+    } else {
+        quality = 10;
+    }
+
+    s_screenshotQuality = static_cast<int32_t>(static_cast<float>(quality) * 5.5f + 45.0f + 0.5f);
 }

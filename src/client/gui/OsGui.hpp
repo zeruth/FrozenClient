@@ -14,4 +14,9 @@ void OsGuiSetGxWindow(void* window);
 // windowResizeLock CVar (reference DAT_00d41580)
 void OsGuiSetWindowResizeLock(int32_t lock);
 
+// mouseSpeed CVar: the OS pointer speed setting (reference DAT_00d41548), reported in tenths
+float OsGuiGetMouseSpeed();
+
+void OsGuiSetMouseSpeed(float speed);
+
 #endif

@@ -7,6 +7,8 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/NameCache.hpp"
 #include "client/Client.hpp"
+#include "client/gui/OsGui.hpp"
+#include "gx/Device.hpp"
 #include "async/AsyncFile.hpp"
 #include "client/Archive.hpp"
 #include "client/ClientHandlers.hpp"
@@ -59,6 +61,20 @@ CGameTime g_clientGameTime;
 
 static CVar* s_desktopGammaCvar;
 static CVar* s_gammaCvar;
+static CVar* s_accountUsesTokenCvar;
+static CVar* s_movieCvar;
+static CVar* s_expansionMovieCvar;
+static CVar* s_movieSubtitleCvar;
+static CVar* s_checkAddonVersionCvar;
+static CVar* s_mouseSpeedCvar;
+static CVar* s_errorsCvar;
+static CVar* s_showErrorsCvar;
+static CVar* s_errorLevelMinCvar;
+static CVar* s_errorLevelMaxCvar;
+static CVar* s_errorFilterCvar;
+static CVar* s_lastCharacterIndexCvar;
+static CVar* s_screenshotFormatCvar;
+static CVar* s_screenshotQualityCvar;
 static CVar* s_textureCacheSizeCvar;
 static CVar* s_textureFilteringModeCvar;
 static CVar* s_uiFasterCvar;
@@ -196,84 +212,146 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     // TODO
 }
 
+// ref: FUN_004015e0
+bool MouseSpeedCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    OsGuiSetMouseSpeed(SStrToFloat(value));
+
+    return true;
+}
+
+// ref: FUN_00401600
+bool ErrorsCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    int32_t enabled = SStrToInt(value);
+    const char* message;
+
+    if (!enabled) {
+        // TODO FUN_0040b3c0: disable the error display
+        message = "Error display disabled";
+    } else {
+        // TODO FUN_0040b390: enable the error display
+        message = "Error display enabled";
+    }
+
+    ConsoleWrite(message, DEFAULT_COLOR);
+    // TODO FUN_004b4e50(enabled)
+
+    return true;
+}
+
+// ref: FUN_00401650
+bool ShowErrorsCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    int32_t shown = SStrToInt(value);
+    const char* message;
+
+    if (!shown) {
+        // TODO FUN_0040b400: hide the error display
+        message = "Error display hidden";
+    } else {
+        // TODO FUN_0040b3e0: show the error display
+        message = "Error display shown";
+    }
+
+    ConsoleWrite(message, DEFAULT_COLOR);
+    // TODO FUN_004b4e50(shown)
+
+    return true;
+}
+
+// ref: FUN_004017c0
+bool ErrorLevelMinCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    uint32_t level = SStrToInt(value);
+
+    if (level < 4) {
+        // TODO FUN_004b4e60(level); FUN_004016a0()
+
+        return true;
+    }
+
+    ConsoleWriteA("%i is not valid, valid values are 0 - %i", DEFAULT_COLOR, level, 3);
+
+    return false;
+}
+
+// ref: FUN_00401800
+bool ErrorLevelMaxCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    uint32_t level = SStrToInt(value);
+
+    if (level < 4) {
+        // TODO FUN_004b4e80(level); FUN_004016a0()
+
+        return true;
+    }
+
+    ConsoleWriteA("%i is not valid, valid values are 0 - %i", DEFAULT_COLOR, level, 3);
+
+    return false;
+}
+
+// ref: FUN_00401a10
+bool ErrorFilterCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    // TODO FUN_004018d0(value): parse the filter, refuse the value when it does not parse;
+    // FUN_00401840(): apply it
+
+    return true;
+}
+
+// ref: FUN_00401b20
+bool ScreenshotFormatCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    ScreenshotSetFormat(value);
+
+    return true;
+}
+
+// ref: FUN_00401b40
+bool ScreenshotQualityCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    ScreenshotSetQuality(SStrToInt(value));
+
+    return true;
+}
+
+// ref: FUN_00401b60
 void ClientRegisterConsoleCommands() {
-    // TODO
+    // TODO ConsoleCommandRegister("reloadUI", <tail jump at 00401b00>, GRAPHICS, nullptr);
+    // TODO ConsoleCommandRegister("perf", <FUN_008c8de0>, DEBUG, nullptr);
 
-    Client::g_accountNameVar = CVar::Register(
-        "accountName",
-        "Saved account name",
-        0x40,
-        "",
-        nullptr,
-        GAME,
-        false,
-        nullptr,
-        false
-    );
+    Client::g_accountNameVar = CVar::Register("accountName", "Saved account name", 0x40, "", nullptr, GAME, false, nullptr, false);
+    Client::g_accountListVar = CVar::Register("accountList", "List of wow accounts for saved Blizzard account", 0x0, "", nullptr, GAME, false, nullptr, false);
+    s_accountUsesTokenCvar = CVar::Register("g_accountUsesToken", "Saved whether uses authenticator", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    s_movieCvar = CVar::Register("movie", "Show movie on startup", 0x0, "1", nullptr, GAME, false, nullptr, false);
+    s_expansionMovieCvar = CVar::Register("expansionMovie", "Show expansion movie on startup", 0x0, "1", nullptr, GAME, false, nullptr, false);
+    s_movieSubtitleCvar = CVar::Register("movieSubtitle", "Show movie subtitles", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    s_checkAddonVersionCvar = CVar::Register("checkAddonVersion", "Check interface addon version number", 0x0, "1", nullptr, GAME, false, nullptr, false);
 
-    Client::g_accountListVar = CVar::Register(
-        "accountList",
-        "List of wow accounts for saved Blizzard account",
-        0,
-        "",
-        nullptr,
-        GAME,
-        false,
-        nullptr,
-        false
-    );
+    char mouseSpeed[32];
+    SStrPrintf(mouseSpeed, sizeof(mouseSpeed), "%1.1f", OsGuiGetMouseSpeed());
+    s_mouseSpeedCvar = CVar::Register("mouseSpeed", nullptr, 0x0, mouseSpeed, &MouseSpeedCallback, GAME, false, nullptr, false);
 
+    s_errorsCvar = CVar::Register("Errors", nullptr, 0x0, "0", &ErrorsCallback, DEBUG, false, nullptr, false);
+    s_showErrorsCvar = CVar::Register("ShowErrors", nullptr, 0x0, "1", &ShowErrorsCallback, DEBUG, false, nullptr, false);
+    s_errorLevelMinCvar = CVar::Register("ErrorLevelMin", nullptr, 0x0, "2", &ErrorLevelMinCallback, DEBUG, false, nullptr, false);
+    s_errorLevelMaxCvar = CVar::Register("ErrorLevelMax", nullptr, 0x0, "3", &ErrorLevelMaxCallback, DEBUG, false, nullptr, false);
+    s_errorFilterCvar = CVar::Register("ErrorFilter", nullptr, 0x0, "all", &ErrorFilterCallback, DEBUG, false, nullptr, false);
+    s_desktopGammaCvar = CVar::Register("DesktopGamma", nullptr, 0x0, "0", &DesktopGammaCallback, GRAPHICS, false, nullptr, false);
+    s_gammaCvar = CVar::Register("Gamma", nullptr, 0x0, "1.0", &GammaCallback, GRAPHICS, false, nullptr, false);
+    s_lastCharacterIndexCvar = CVar::Register("lastCharacterIndex", "Last character selected", 0x0, "0", nullptr, GAME, false, nullptr, false);
     Client::g_readTOSVar = CVar::Register("readTOS", "Status of the TOS", 0x0, "0", nullptr, GAME, false, nullptr, false);
     Client::g_readEULAVar = CVar::Register("readEULA", "Status of the EULA", 0x0, "0", nullptr, GAME, false, nullptr, false);
     Client::g_readTerminationWithoutNoticeVar = CVar::Register("readTerminationWithoutNotice", "Status of the Termination without Notice notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
     Client::g_readScanningVar = CVar::Register("readScanning", "Status of the Scanning notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
     Client::g_readContestVar = CVar::Register("readContest", "Status of the Contest notice", 0x0, "0", nullptr, GAME, false, nullptr, false);
+    s_screenshotFormatCvar = CVar::Register("screenshotFormat", "Set the format of screenshots", 0x1, "jpeg", &ScreenshotFormatCallback, GRAPHICS, false, nullptr, false);
+    s_screenshotQualityCvar = CVar::Register("screenshotQuality", "Set the quality of screenshots (1 - 10)", 0x1, "3", &ScreenshotQualityCallback, GRAPHICS, false, nullptr, false);
 
-    // TODO
+    auto showToolsVar = CVar::Register("showToolsUI", "Display the launcher when starting the game", 0x0, "-1", nullptr, GAME, false, nullptr, false);
 
-    s_desktopGammaCvar = CVar::Register(
-        "DesktopGamma",
-        nullptr,
-        0x0,
-        "0",
-        &DesktopGammaCallback,
-        GRAPHICS,
-        false,
-        nullptr,
-        false
-    );
-
-    s_gammaCvar = CVar::Register(
-        "Gamma",
-        nullptr,
-        0x0,
-        "1.0",
-        &GammaCallback,
-        GRAPHICS,
-        false,
-        nullptr,
-        false
-    );
-
-    // TODO
-
-    auto showToolsVar = CVar::Register(
-        "showToolsUI",
-        "Display the launcher when starting the game",
-        0x0,
-        "-1",
-        nullptr,
-        GAME,
-        false,
-        nullptr,
-        false
-    );
-
-    if (showToolsVar->GetInt() >= 2) {
+    if (showToolsVar->GetInt() < 0 || showToolsVar->GetInt() > 1) {
         showToolsVar->Set("1", true, false, false, true);
     }
 
-    // TODO
+    // TODO FUN_00422140 (trial account?): when set, register "converted" ("Trial to Retail", "0")
+    // and pass its value to FUN_004209b0
+
+    CVar::Register("accounttype", "Account Type", 0x0, "", nullptr, GAME, false, nullptr, false);
 }
 
 void ClientPostClose(int32_t a1) {

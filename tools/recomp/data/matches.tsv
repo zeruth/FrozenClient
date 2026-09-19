@@ -4,9 +4,17 @@ addr	how	whoa	evidence
 00401280	handler	NotifyHandler	SetMessageHandler(SMSG_NOTIFICATION) on both sides
 00401390	handler	PlayedTimeHandler	SetMessageHandler(SMSG_PLAYED_TIME) on both sides
 00401480	handler	TransferPendingHandler	SetMessageHandler(SMSG_TRANSFER_PENDING) on both sides
+004015e0	annotated	MouseSpeedCallback	tag in src/client/Client.cpp
+00401600	annotated	ErrorsCallback	tag in src/client/Client.cpp
+00401650	annotated	ShowErrorsCallback	tag in src/client/Client.cpp
+004017c0	annotated	ErrorLevelMinCallback	tag in src/client/Client.cpp
+00401800	annotated	ErrorLevelMaxCallback	tag in src/client/Client.cpp
+00401a10	annotated	ErrorFilterCallback	tag in src/client/Client.cpp
 00401a30	cvar	GammaCallback	callback of CVar::Register("Gamma") on both sides
 00401a80	cvar	DesktopGammaCallback	callback of CVar::Register("DesktopGamma") on both sides
-00401b60	string	ClientRegisterConsoleCommands	unique "DesktopGamma"
+00401b20	annotated	ScreenshotFormatCallback	tag in src/client/Client.cpp
+00401b40	annotated	ScreenshotQualityCallback	tag in src/client/Client.cpp
+00401b60	annotated	ClientRegisterConsoleCommands	tag in src/client/Client.cpp
 00402100	annotated	M2ConvertFasterFlags	tag in src/model/Model2.cpp
 004021c0	annotated	M2FasterChanged	tag in src/model/Model2.cpp
 00402210	annotated	M2DebugFasterChanged	tag in src/model/Model2.cpp
@@ -339,6 +347,8 @@ addr	how	whoa	evidence
 004a8290	table	CScriptObject_IsObjectType	binding "IsObjectType" in ScriptObjectMethods ~ table 00ac1ad0
 004a8340	table	CScriptObject_GetName	binding "GetName" in ScriptObjectMethods ~ table 00ac1ad0
 004a83a0	table	CScriptObject_GetParent	binding "GetParent" in ScriptObjectMethods ~ table 00ac1ad0
+004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
+004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	Script_Screenshot	unique "Screenshots"
 004b6760	callgraph	TextureAllocGxTex	only unmatched callee of 004b6920=FillInSolidTexture
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
@@ -1404,7 +1414,7 @@ addr	how	whoa	evidence
 0076e720	override	SStrChrR	
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
-0076ed20	callgraph	SStrCopy	only unmatched callee of 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32, 008792b0=SESound::GetOutputDriverName
+0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 0076b3b0=ConsoleCommandHistoryAdd, 007714e0=GetExceptionNameWin32
 0076ee30	callgraph	CScriptObject::GetName	only unmatched callee of 0048b540=CScriptObject::CreateName
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
@@ -1836,6 +1846,8 @@ addr	how	whoa	evidence
 008623b0	string	luaK_code	unique "code size overflow"
 00865270	string	inflate	unique "header crc mismatch"
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
+00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
+0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 00875d30	string	EnsureTargets	unique "ShadowCache"

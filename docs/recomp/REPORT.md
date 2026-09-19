@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-19 02:56 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 03:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 2170 (+2) (8.0%) | 470.9k (8.5%) |
-| &nbsp;&nbsp;ported | 1623 (+2) | 332.6k |
+| mapped to a whoa function | 2182 (+12) (8.0%) | 471.5k (8.5%) |
+| &nbsp;&nbsp;ported | 1635 (+12) | 333.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 523 (=) | 104.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **625 (+3) (2.3%)** | **74.0k (1.3%)** |
-| unmapped | 24991 | 4.95M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 289 (+2) (5.2%) | |
-| whoa functions (src/, from PDB + source) | 11305, stubs 865 | |
+| **faithful** (linked, not stub, call order >= 80%) | **632 (+7) (2.3%)** | **75.3k (1.4%)** |
+| unmapped | 24979 | 4.94M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 289 (=) (5.2%) | |
+| whoa functions (src/, from PDB + source) | 11314, stubs 865 | |
 
-Match evidence: annotated 205, callgraph 119, callorder 122, cvar 30, handler 27, order 314, override 107, string 348, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 218, callgraph 119, callorder 122, cvar 30, handler 27, order 314, override 107, string 347, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 02:56 -- mapped 2168, ported 1621, stub 523, spine mapped 287.
+Previous run: 2026-09-19 02:56 -- mapped 2170, ported 1623, stub 523, spine mapped 289.
 
 ## Lua API coverage (binding tables)
 
@@ -182,9 +182,9 @@ Reference-only, by opcode (handler address): SMSG_CHECK_FOR_BOTS 006b9670, SMSG_
 
 ## CVar coverage (CVar::Register)
 
-The reference registers 426 cvars by literal name; whoa registers 376 of them. Missing ones are settings the reference client honours and this one cannot even store.
+The reference registers 426 cvars by literal name; whoa registers 390 of them. Missing ones are settings the reference client honours and this one cannot even store.
 
-Missing: CinematicJoystick, ErrorFilter, ErrorLevelMax, ErrorLevelMin, Errors, FootstepSounds, Joystick, ObjectSelectionCircle, POIShiftComplete, ShowErrors, SkyCloudLOD, SoundMemoryCache, Sound_ChaosMode, Sound_EnableDSPEffects, asyncHandlerTimeout, asyncThreadSleep, chatStyle, checkAddonVersion, conversationMode, converted, enableWowMouse, expansionMovie, ffxNetherWorld, ffxRectangle, ffxSpecial, g_accountUsesToken, gxApi, heapAllocTracking, hwDetect, lastCharacterIndex, mouseSpeed, movie, movieSubtitle, pathDistTol, processAffinityMask, realmList, screenshotFormat, screenshotQuality, scriptProfile, shadowCull, shadowInstancing, shadowLOD, shadowScissor, showTimestamps, showfootprintparticles, synchronizeSettings, taintLog, timingMethod, timingTestError, violenceLevel
+Missing: CinematicJoystick, FootstepSounds, Joystick, ObjectSelectionCircle, POIShiftComplete, SkyCloudLOD, SoundMemoryCache, Sound_ChaosMode, Sound_EnableDSPEffects, asyncHandlerTimeout, asyncThreadSleep, chatStyle, conversationMode, converted, enableWowMouse, ffxNetherWorld, ffxRectangle, ffxSpecial, gxApi, heapAllocTracking, hwDetect, pathDistTol, processAffinityMask, realmList, scriptProfile, shadowCull, shadowInstancing, shadowLOD, shadowScissor, showTimestamps, showfootprintparticles, synchronizeSettings, taintLog, timingMethod, timingTestError, violenceLevel
 
 ## Coverage by reference module
 
@@ -204,7 +204,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 355 | 86.2k | 10 (2.8%) | 4.8% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 45 (12.9%) | 7.4% | 13 | 2 | 36 |
-| lmemPool.cpp | 342 | 80.2k | 83 (24.3%) | 33.4% | 0 | 0 | 107 |
+| lmemPool.cpp | 342 | 80.2k | 85 (24.9%) | 33.6% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 5 (2.7%) | 3.3% | 0 | 0 | 118 |
@@ -217,7 +217,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SpellBookFrame.cpp | 246 | 57.0k | 35 (14.2%) | 11.0% | 15 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 2 (0.9%) | 2.1% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 74 (24.3%) | 32.2% | 57 | 0 | 11 |
-| CSimpleAnimScript.cpp | 223 | 51.5k | 6 (2.7%) | 1.9% | 0 | 0 | 8 |
+| CSimpleAnimScript.cpp | 223 | 51.5k | 8 (3.6%) | 2.2% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 177 (50.3%) | 41.0% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 20 (8.7%) | 8.7% | 9 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
@@ -245,7 +245,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 1 | 0 | 3 |
 | XMLTree.cpp | 184 | 31.1k | 55 (29.9%) | 38.2% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
-| Client.cpp | 169 | 30.8k | 39 (23.1%) | 35.1% | 0 | 0 | 31 |
+| Client.cpp | 169 | 30.8k | 47 (27.8%) | 36.2% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 66 (36.1%) | 49.2% | 12 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -581,7 +581,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
-| 00401b60 | `ClientRegisterConsoleCommands` | %1.1f; Account Type; Check interface addon version number; ErrorFilter |
 | 0061eb40 | `CGTooltip_SetOwner` | %s:SetOwner(): Can't set owner to self; %s:SetOwner(): Couldn't find 'this' in frame objec; %s:SetOwner(): Wrong object type, expected frame; ANCHOR_BOTTOM |
 | 0050f990 | `Script_SetConsoleKey` | BACKSPACE; DECIMAL; DELETE; DIVIDE |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | %d%d%d%d%b%d; %d%d%d%d%d%d%d%d%d%d; %s\n%s; CHANGE_REALM |
@@ -615,6 +614,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
+| 00972210 | `CSimpleScrollFrame_SetScrollChild` | %s:SetScrollChild(): Couldn't find 'this' in child; %s:SetScrollChild(): Couldn't find frame named '%s; %s:SetScrollChild(): Would create a loop adding ch; %s:SetScrollChild(): Wrong child object type, expe |
 
 ## Largest whoa functions with no reference link
 
@@ -695,7 +695,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
 | 0096fed0 | `CSimpleButton::LoadXML` | 50% | 46 | 49 | 34 | 23 | 0% | 1174 |
 | 00497070 | `CSimpleFont::LoadXML` | 69% | 36 | 49 | 50 | 23 | 0% | 1155 |
-| 00401b60 | `ClientRegisterConsoleCommands` | 33% | 33 | 12 | 3 | 1 | 11% | 1126 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetGUIDFromToken` | 71% | 42 | 37 | 34 | 27 | 20% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 76% | 42 | 46 | 35 | 24 | 19% | 1104 |
@@ -709,6 +708,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
 | 0085e160 | `read_string` | 47% | 30 | 21 | 15 | 25 | 6% | 904 |
 | 004d9bd0 | `CGlueMgr::EnterWorld` | 55% | 38 | 37 | 23 | 15 | 29% | 895 |
+| 0048fef0 | `CSimpleFrame::LoadXML_Scripts` | 67% | 24 | 41 | 31 | 18 | 12% | 889 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -789,7 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 21:58 | 1612 (5.9%) | 274 (1.0%) | 457 | 173/5530 | 936/2512 | 446 |
 | 2026-09-18 22:12 | 1620 (6.0%) | 295 (1.1%) | 463 | 174/5530 | 936/2512 | 446 |
 | 2026-09-18 22:25 | 1636 (6.0%) | 316 (1.2%) | 463 | 176/5530 | 936/2512 | 446 |
 | 2026-09-18 22:28 | 1640 (6.0%) | 319 (1.2%) | 463 | 178/5530 | 936/2512 | 446 |
@@ -814,6 +813,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 00:14 | 2167 (8.0%) | 621 (2.3%) | 523 | 288/5530 | 1584/2512 | 752 |
 | 2026-09-19 02:56 | 2168 (8.0%) | 622 (2.3%) | 523 | 287/5529 | 1584/2512 | 752 |
 | 2026-09-19 02:56 | 2170 (8.0%) | 625 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:03 | 2182 (8.0%) | 632 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

@@ -79,6 +79,102 @@
   "whoa": "TransferPendingHandler",
   "whoaSize": 3
  },
+ "004015e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 28,
+  "status": "ported",
+  "whoa": "MouseSpeedCallback",
+  "whoaSize": 24
+ },
+ "00401600": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 67,
+  "status": "ported",
+  "whoa": "ErrorsCallback",
+  "whoaSize": 46
+ },
+ "00401650": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 67,
+  "status": "ported",
+  "whoa": "ShowErrorsCallback",
+  "whoaSize": 46
+ },
+ "004017c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 57,
+  "status": "ported",
+  "whoa": "ErrorLevelMinCallback",
+  "whoaSize": 54
+ },
+ "00401800": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 57,
+  "status": "ported",
+  "whoa": "ErrorLevelMaxCallback",
+  "whoaSize": 54
+ },
+ "00401a10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 32,
+  "status": "ported",
+  "whoa": "ErrorFilterCallback",
+  "whoaSize": 3
+ },
  "00401a30": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -111,21 +207,53 @@
   "whoa": "DesktopGammaCallback",
   "whoaSize": 3
  },
- "00401b60": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.333,
+ "00401b20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 19,
+  "status": "ported",
+  "whoa": "ScreenshotFormatCallback",
+  "whoaSize": 19
+ },
+ "00401b40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 25,
+  "status": "ported",
+  "whoa": "ScreenshotQualityCallback",
+  "whoaSize": 26
+ },
+ "00401b60": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 0.848,
+  "files": [
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
+  ],
+  "how": "annotated",
   "module": "Client.cpp",
   "refSize": 1126,
   "status": "ported",
   "whoa": "ClientRegisterConsoleCommands",
-  "whoaSize": 682
+  "whoaSize": 1761
  },
  "00402100": {
   "branchRatio": 0.778,
@@ -5427,6 +5555,38 @@
   "status": "ported",
   "whoa": "CScriptObject_GetParent",
   "whoaSize": 118
+ },
+ "004a8480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "how": "annotated",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 21,
+  "status": "ported",
+  "whoa": "ScreenshotSetFormat",
+  "whoaSize": 21
+ },
+ "004a84a0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "how": "annotated",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 95,
+  "status": "ported",
+  "whoa": "ScreenshotSetQuality",
+  "whoaSize": 64
  },
  "004a8570": {
   "branchRatio": 0.5,
@@ -29011,6 +29171,44 @@
   "status": "ported",
   "whoa": "OsGuiSetWindowResizeLock",
   "whoaSize": 7
+ },
+ "00869630": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/gui/android/OsGui.cpp",
+   "src/client/gui/linux/OsGui.cpp",
+   "src/client/gui/mac/OsGui.cpp",
+   "src/client/gui/win/OsGui.cpp",
+   "src/client/gui/win/osgui.cpp"
+  ],
+  "how": "annotated",
+  "module": "lmemPool.cpp",
+  "refSize": 13,
+  "status": "ported",
+  "whoa": "OsGuiGetMouseSpeed",
+  "whoaSize": 20
+ },
+ "0086a070": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/gui/android/OsGui.cpp",
+   "src/client/gui/linux/OsGui.cpp",
+   "src/client/gui/mac/OsGui.cpp",
+   "src/client/gui/win/OsGui.cpp",
+   "src/client/gui/win/osgui.cpp"
+  ],
+  "how": "annotated",
+  "module": "lmemPool.cpp",
+  "refSize": 88,
+  "status": "ported",
+  "whoa": "OsGuiSetMouseSpeed",
+  "whoaSize": 11
  },
  "0086ae20": {
   "branchRatio": 1.0,

@@ -21,4 +21,9 @@ int32_t GxMasterEnable(EGxMasterEnables state);
 
 int32_t GxScreenShot(const char* path);
 
+// screenshotFormat / screenshotQuality CVars (reference DAT_00ac1b88 / DAT_00ac1b98)
+void ScreenshotSetFormat(const char* format);
+
+void ScreenshotSetQuality(int32_t quality);
+
 #endif
