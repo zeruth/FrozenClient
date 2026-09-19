@@ -24,6 +24,9 @@ void ParticleFxRender();
 // Simulations of models not updated for a while are released; call once per frame
 void ParticleFxEndFrame();
 
+// particleDensity CVar, clamped to [0, 1] (reference DAT_00b2d678).
+void ParticleFxSetDensity(float density);
+
 // How far, in world yards, this model's emitters can reach beyond its origin; 0 for a model with no
 // emitters. Add it to the model's cull radius.
 //

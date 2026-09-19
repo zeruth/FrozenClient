@@ -137,11 +137,11 @@ bool MasterVolume_CVarCallback(CVar* var, const char* oldValue, const char* valu
     return true;
 }
 
+// ref: FUN_004d0eb0
 bool MusicVolume_CVarCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    auto volume = SStrToFloat(value);
-
-    SESound::SetChannelGroupVolume("MUSIC", volume);
-    SESound::SetChannelGroupVolume("SCRIPTMUSIC", volume);
+    // The reference parses the value once per channel group.
+    SESound::SetChannelGroupVolume("MUSIC", SStrToFloat(value));
+    SESound::SetChannelGroupVolume("SCRIPTMUSIC", SStrToFloat(value));
 
     return true;
 }

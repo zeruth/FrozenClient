@@ -2,6 +2,7 @@
 #include "model/CM2Cache.hpp"
 #include "model/M2Internal.hpp"
 #include "console/CVar.hpp"
+#include "console/Console.hpp"
 #include "util/Filesystem.hpp"
 #include <cstring>
 #include <new>
@@ -18,70 +19,127 @@ static CVar* s_M2ForceAdditiveParticleSortVar;
 static CVar* s_M2FasterVar;
 static CVar* s_M2FasterDebugVar;
 
+// ref: FUN_00402100
 uint32_t M2ConvertFasterFlags(int32_t faster, int32_t debugFaster) {
     uint32_t flags = 0x0;
 
     switch (faster) {
         case 0: {
-            if (debugFaster) {
-                // TODO
-            } else {
-                flags = 0x0;
-            }
-
             break;
         }
 
         case 1: {
-            flags = 0x2000 | 0x4000 | 0x8000;
-            break;
+            return 0x2000 | 0x4000 | 0x8000;
         }
 
         case 2:
         case 3: {
             flags = 0x2000;
-            break;
+            return flags;
         }
 
         default: {
-            flags = 0x0;
+            return flags;
         }
     }
 
-    return flags;
+    if (debugFaster) {
+        // The ones digit picks the level, the hundreds digit demands a capability the reference
+        // checks through FUN_0047d230(2) (unported); when that check fails no flags are set.
+        int32_t level = debugFaster % 10;
+
+        if (level == 1) {
+            flags = 0x2000;
+        } else if (level == 2) {
+            flags = 0x2000 | 0x4000;
+        } else if (level == 3) {
+            flags = 0x2000 | 0x4000 | 0x8000;
+        }
+
+        if ((debugFaster / 100) % 10 == 0) {
+            return flags;
+        }
+
+        // TODO FUN_0047d230(2) == 0 -> return flags
+        return flags;
+    }
+
+    return 0;
 }
 
 bool BatchDoodadsCallback(CVar* cvar, char const* oldValue, char const* newValue, void* userArg) {
-    // TODO
+    int32_t enabled = SStrToInt(newValue);
+    uint32_t flags = M2GetCacheFlags();
+
+    if (enabled) {
+        M2SetCacheFlags(flags | 0x20);
+        ConsoleWrite("Doodad batching enabled.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    M2SetCacheFlags(flags & ~0x20);
+    ConsoleWrite("Doodad batching disabled.", DEFAULT_COLOR);
+
     return true;
 }
 
+// ref: FUN_00402470
 bool BatchParticlesCallback(CVar* cvar, char const* oldValue, char const* newValue, void* userArg) {
-    // TODO
+    int32_t enabled = SStrToInt(newValue);
+    uint32_t flags = M2GetCacheFlags();
+
+    if (enabled) {
+        M2SetCacheFlags(flags | 0x80);
+        ConsoleWrite("Particle batching enabled.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    M2SetCacheFlags(flags & ~0x80);
+    ConsoleWrite("Particle batching disabled.", DEFAULT_COLOR);
+
     return true;
 }
 
+// ref: FUN_004024d0
 bool ForceAdditiveParticleSortCallback(CVar* cvar, char const* oldValue, char const* newValue, void* userArg) {
-    // TODO
+    int32_t enabled = SStrToInt(newValue);
+    uint32_t flags = M2GetCacheFlags();
+
+    if (enabled) {
+        M2SetCacheFlags(flags | 0x100);
+        ConsoleWrite("Sorting all particles as though they were additive.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    M2SetCacheFlags(flags & ~0x100);
+    ConsoleWrite("Sorting particles normally.", DEFAULT_COLOR);
+
     return true;
 }
 
+// ref: FUN_004021c0
 bool M2FasterChanged(CVar* cvar, char const* oldValue, char const* newValue, void* userArg) {
-    uint16_t flags = s_M2FasterDebugVar
-        ? M2ConvertFasterFlags(SStrToInt(newValue), s_M2FasterDebugVar->GetInt())
-        : M2ConvertFasterFlags(SStrToInt(newValue), 0);
+    int32_t faster = SStrToInt(newValue);
 
-    M2SetGlobalOptFlags(flags);
+    if (s_M2FasterDebugVar) {
+        M2SetGlobalOptFlags(M2ConvertFasterFlags(faster, s_M2FasterDebugVar->GetInt()));
+
+        return true;
+    }
+
+    M2SetGlobalOptFlags(M2ConvertFasterFlags(faster, 0));
 
     return true;
 }
 
+// ref: FUN_00402210
 bool M2DebugFasterChanged(CVar* cvar, char const* oldValue, char const* newValue, void* userArg) {
-    uint16_t flags = s_M2FasterVar
-        ? M2ConvertFasterFlags(s_M2FasterVar->GetInt(), SStrToInt(newValue))
-        : M2ConvertFasterFlags(0, SStrToInt(newValue));
+    int32_t faster = s_M2FasterVar ? s_M2FasterVar->GetInt() : 0;
 
-    M2SetGlobalOptFlags(flags);
+    M2SetGlobalOptFlags(M2ConvertFasterFlags(faster, SStrToInt(newValue)));
 
     return true;
 }
@@ -120,8 +178,14 @@ CM2Scene* M2CreateScene() {
     return new (m) CM2Scene(&CM2Cache::s_cache);
 }
 
+// ref: FUN_0081c0b0
 uint32_t M2GetCacheFlags() {
     return CM2Cache::s_cache.m_flags;
+}
+
+// ref: FUN_0081c0c0
+void M2SetCacheFlags(uint32_t flags) {
+    CM2Cache::s_cache.m_flags = flags;
 }
 
 void M2Initialize(uint16_t flags, uint32_t a2) {
@@ -137,6 +201,7 @@ void M2Initialize(uint16_t flags, uint32_t a2) {
     g_modelPool = heapId;
 }
 
+// ref: FUN_0081c060
 void M2SetGlobalOptFlags(uint16_t flags) {
     flags &= (0x2000 | 0x4000 | 0x8000);
     CM2Cache::s_cache.m_flags |= flags;

@@ -6,17 +6,19 @@ addr	how	whoa	evidence
 00401a30	cvar	GammaCallback	callback of CVar::Register("Gamma") on both sides
 00401a80	cvar	DesktopGammaCallback	callback of CVar::Register("DesktopGamma") on both sides
 00401b60	string	ClientRegisterConsoleCommands	unique "DesktopGamma"
-004021c0	cvar	M2FasterChanged	callback of CVar::Register("M2Faster") on both sides
-00402210	cvar	M2DebugFasterChanged	callback of CVar::Register("M2FasterDebug") on both sides
+00402100	annotated	M2ConvertFasterFlags	tag in src/model/Model2.cpp
+004021c0	annotated	M2FasterChanged	tag in src/model/Model2.cpp
+00402210	annotated	M2DebugFasterChanged	tag in src/model/Model2.cpp
 00402250	cvar	UIFasterCalllback	callback of CVar::Register("UIFaster") on both sides
 00402320	cvar	TextureCacheSizeCallback	callback of CVar::Register("textureCacheSize") on both sides
-004023c0	cvar	TextureFilteringCallback	callback of CVar::Register("textureFilteringMode") on both sides
+004023c0	annotated	TextureFilteringCallback	tag in src/client/Client.cpp
 00402410	cvar	BatchDoodadsCallback	callback of CVar::Register("M2BatchDoodads") on both sides
-00402470	cvar	BatchParticlesCallback	callback of CVar::Register("M2BatchParticles") on both sides
-004024d0	cvar	ForceAdditiveParticleSortCallback	callback of CVar::Register("M2ForceAdditiveParticleSort") on both sides
+00402470	annotated	BatchParticlesCallback	tag in src/model/Model2.cpp
+004024d0	annotated	ForceAdditiveParticleSortCallback	tag in src/model/Model2.cpp
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
 00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
+004033c0	callorder	CGTooltip::GetObjectType	same slot between linked calls in 0052a980=CGGameUI::Initialize
 00403880	override	CDataStore::~CDataStore	
 00403910	handler	TransferAbortedHandler	SetMessageHandler(SMSG_TRANSFER_ABORTED) on both sides
 00403b70	callorder	LoadNewWorld	same slot between linked calls in 00403de0=LoginVerifyWorldHandler
@@ -79,7 +81,7 @@ addr	how	whoa	evidence
 0047b480	override	CDataStore::GetString	
 0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
 0047bf50	callorder	HandleCreate	same slot between linked calls in 004b8c80=TextureCreate
-0047bf90	callorder	CoordinateSetAspectRatio	same slot between linked calls in 004da5f0=CGlueMgr::Resume
+0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	callorder	NDCToDDC	same slot between linked calls in 00510a10=Script_GetCursorPosition
 0047c050	callgraph	CSimpleScrollFrame::GetObjectType	only unmatched callee of 00972630=CSimpleScrollFrame_GetHorizontalScroll, 00972690=CSimpleScrollFrame_GetVerticalScroll, 009726f0=CSimpleScrollFrame_GetHorizontalScrollRange
@@ -97,8 +99,10 @@ addr	how	whoa	evidence
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
-00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
+00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 0048d380=CSimpleFontString_SetFontObject
 00485f40	override	CSimpleTexture::LoadXML	
+00487210	callorder	CSimpleFontString::SetNonWordWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
+00487250	callorder	CSimpleFontString::SetNonSpaceWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004873e0	string	CSimpleFontString::LoadXML	unique "FontString %s: Unable to load font file %s"
 00487a10	callgraph	CSimpleRegion::SetVertexColor	only unmatched callee of 004a25f0=CBackdropGenerator::SetVertexColor, 004a2630=CBackdropGenerator::SetBorderVertexColor
 00488540	callorder	CScriptRegion::ProtectedFunctionsAllowed	same slot between linked calls in 0049d480=CScriptRegion_SetWidth, 0049d620=CScriptRegion_SetHeight, 0049d7a0=CScriptRegion_SetSize
@@ -111,7 +115,7 @@ addr	how	whoa	evidence
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
 00489de0	override	CLayoutFrame::Resize	
 0048a130	annotated	CSimpleFrame::SetClampedToScreen	tag in src/ui/simple/CSimpleFrame.cpp
-0048a3e0	callorder	CLayoutFrame::SetAllPoints	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML
+0048a3e0	callorder	CLayoutFrame::SetAllPoints	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 0049de40=CScriptRegion_SetAllPoints
 0048a510	callorder	CLayoutFrame::ClearAllPoints	same slot between linked calls in 0049e010=CScriptRegion_ClearAllPoints
 0048b2d0	string	CLayoutFrame::LoadXML	unique "Anchors"
 0048b540	string	CScriptObject::CreateName	unique "$parent"
@@ -169,13 +173,13 @@ addr	how	whoa	evidence
 0048ee40	string	KeyCodeToString	score 4.75 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
-0048f820	callorder	CSimpleFrame::SetHitRectInsets	same slot between linked calls in 004932c0=CSimpleFrame::LoadXML
+0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
-00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004a2240=CSimpleFrame_CreateFontString, 00813ee0=FrameXML_ProcessFile
+00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML, 00813ee0=FrameXML_ProcessFile, 00967290=CSimpleEditBox::LoadXML
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
@@ -280,14 +284,16 @@ addr	how	whoa	evidence
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
 004c5af0	annotated	SI2::GetOutputDriverName	tag in src/sound/SI2.cpp
+004c5be0	callorder	SI2::IsPlaying	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
+004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
 004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
 004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
 004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
 004d0e60	cvar	MasterVolume_CVarCallback	callback of CVar::Register("Sound_MasterVolume") on both sides
 004d0e80	override	SFXVolume_CVarCallback	
-004d0eb0	cvar	MusicVolume_CVarCallback	callback of CVar::Register("Sound_MusicVolume") on both sides
+004d0eb0	annotated	MusicVolume_CVarCallback	tag in src/sound/CVarHandlers.cpp
 004d0ef0	cvar	AmbienceVolume_CVarCallback	callback of CVar::Register("Sound_AmbienceVolume") on both sides
 004d1050	string	SI2::RegisterCVars	unique "Enables Hardware"
 004d13e0	override	EnableAllSound_CVarCallback	
@@ -417,7 +423,7 @@ addr	how	whoa	evidence
 005012f0	string	Script_Stub_ChannelUnSilenceVoice	unique "ChannelUnSilenceVoice"
 00501400	string	Script_Stub_ChannelUnSilenceAll	unique "ChannelUnSilenceAll"
 00504e50	string	Script_Stub_GetChannelRosterInfo	score 0.50 shared GetChannelRosterInfo
-0050f7c0	callorder	CalculateAspectRatio	same slot between linked calls in 004d8860=CGlueMgr::HandleDisplaySizeChanged
+0050f7c0	override	CalculateAspectRatio	
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac8460
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
@@ -757,6 +763,7 @@ addr	how	whoa	evidence
 005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
+005eeb70	annotated	TextureLodBiasSet	tag in src/world/CWorldParam.cpp
 005fd630	annotated	ValidateCameraView	tag in src/ui/game/CGCamera.cpp
 005fd680	annotated	ValidateCameraDistance	tag in src/ui/game/CGCamera.cpp
 005fd6d0	annotated	ValidateCameraPitch	tag in src/ui/game/CGCamera.cpp
@@ -1015,6 +1022,8 @@ addr	how	whoa	evidence
 00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
 0067d770	callgraph	Script_GetUnitFromName	only unmatched callee of 00612670=Script_UnitIsSameServer
+00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
+00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	
@@ -1026,12 +1035,16 @@ addr	how	whoa	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006b0850	callorder	ClientConnection::Cleanup	same slot between linked calls in 004d98d0=CGlueMgr::StatusDialogClick
+006b0970	callorder	ClientServices::Connection	same slot between linked calls in 004d8c60=CGlueMgr::CreateCharacter, 004d8cc0=CGlueMgr::DeleteCharacter
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
 006b0b50	callgraph	lua_type	only unmatched callee of 005a8290=Script_SetActionBarToggles
 006b0b80	override	ClientServices::SetMessageHandler	
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
-006b0f40	callorder	CGlueMgr::SetIdleState	same slot between linked calls in 004d8c60=CGlueMgr::CreateCharacter, 004d8cc0=CGlueMgr::DeleteCharacter
+006b0f40	callorder	ClientServices::GetErrorToken	same slot between linked calls in 004d9bd0=CGlueMgr::EnterWorld
+006b1390	callorder	ClientConnection::Connect	same slot between linked calls in 004d8ba0=CGlueMgr::Sub4D8BA0
+006b14c0	callorder	ClientConnection::GetCharacterList	same slot between linked calls in 004d95c0=CGlueMgr::GetCharacterList
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
 006b1a70	annotated	ClientConnection::DeleteCharacter	tag in src/net/connection/ClientConnection.cpp
 006b3450	string	Script_Stub_GetFriendInfo	score 0.50 shared GetFriendInfo
@@ -1073,15 +1086,22 @@ addr	how	whoa	evidence
 00768900	annotated	ConsoleCommandParse	tag in src/console/Command.cpp
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
-00769240	cvar	CVGxColorBitsCallback	callback of CVar::Register("gxColorBits") on both sides
-007692d0	cvar	CVGxDepthBitsCallback	callback of CVar::Register("gxDepthBits") on both sides
-00769360	cvar	CVGxTripleBufferCallback	callback of CVar::Register("gxTripleBuffer") on both sides
+00769240	annotated	CVGxColorBitsCallback	tag in src/console/Device.cpp
+007692d0	annotated	CVGxDepthBitsCallback	tag in src/console/Device.cpp
+00769360	annotated	CVGxTripleBufferCallback	tag in src/console/Device.cpp
 00769520	annotated	CVGxVSyncCallback	tag in src/console/Device.cpp
 00769550	annotated	CVGxWindowCallback	tag in src/console/Device.cpp
+00769580	annotated	CVGxAspectCallback	tag in src/console/Device.cpp
 007695b0	annotated	CVGxMaximizeCallback	tag in src/console/Device.cpp
 007695e0	annotated	CVGxCursorCallback	tag in src/console/Device.cpp
+00769610	annotated	CVGxMultisampleCallback	tag in src/console/Device.cpp
+00769650	annotated	CVGxMultisampleQualityCallback	tag in src/console/Device.cpp
 007696a0	annotated	CVGxFixLagCallback	tag in src/console/Device.cpp
-00769890	cvar	CVWindowResizeLockCallback	callback of CVar::Register("windowResizeLock") on both sides
+007696d0	annotated	CVGxOverrideParse	tag in src/console/Device.cpp
+00769810	annotated	CVGxOverrideCallback	tag in src/console/Device.cpp
+00769830	annotated	CVGxMaxFPSCallback	tag in src/console/Device.cpp
+00769860	annotated	CVGxMaxFPSBkCallback	tag in src/console/Device.cpp
+00769890	annotated	CVWindowResizeLockCallback	tag in src/console/Device.cpp
 00769c00	annotated	CVGxStereoEnabledCallback	tag in src/console/Device.cpp
 00769c30	cvar	CVGxStereoConvergenceCallback	callback of CVar::Register("gxStereoConvergence") on both sides
 00769c60	cvar	CVGxStereoSeparationCallback	callback of CVar::Register("gxStereoSeparation") on both sides
@@ -1092,6 +1112,7 @@ addr	how	whoa	evidence
 0076b3b0	annotated	ConsoleCommandHistoryAdd	tag in src/console/Command.cpp
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
 0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
+0076dd20	callorder	NameNeedsDeclension	same slot between linked calls in 004d9bd0=CGlueMgr::EnterWorld
 0076e540	override	SMemAlloc	
 0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
@@ -1103,10 +1124,10 @@ addr	how	whoa	evidence
 0076ee30	callorder	SStrLen	same slot between linked calls in 0048b540=CScriptObject::CreateName, 00814340=FrameXML_CreateFrames
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
-0076f070	callgraph	SStrPrintf	only unmatched callee of 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
+0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
 0076f0d0	override	SStrToInt	
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
-0076f1e0	callorder	SStrTokenize	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames, 004932c0=CSimpleFrame::LoadXML, 0081bb20=Script_CreateFrame
+0076f1e0	callgraph	SStrTokenize	only unmatched callee of 007696d0=CVGxOverrideParse
 0076f640	override	SStrHash	
 0076f700	callorder	SStrStr	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0076fb80	override	SStrToFloat	
@@ -1122,31 +1143,33 @@ addr	how	whoa	evidence
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
+0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
+0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
 00787780	string	Weather::Weather	unique "useWeatherShaders"
 0078d660	annotated	CWorldParam::MapShadowsCallback	tag in src/world/CWorldParam.cpp
 0078d6b0	annotated	CWorldParam::MaxLightsCallback	tag in src/world/CWorldParam.cpp
 0078d6f0	annotated	CWorldParam::ShadowLevelCallback	tag in src/world/CWorldParam.cpp
-0078d730	cvar	CWorldParam::TextureLodBiasCallback	callback of CVar::Register("texLodBias") on both sides
+0078d730	annotated	CWorldParam::TextureLodBiasCallback	tag in src/world/CWorldParam.cpp
 0078d7a0	annotated	CWorldParam::NearClipCallback	tag in src/world/CWorldParam.cpp
-0078d7c0	cvar	CWorldParam::HorizonFarClipScaleCallback	callback of CVar::Register("horizonFarclipScale") on both sides
-0078d810	cvar	CWorldParam::HorizonNearClipScaleCallback	callback of CVar::Register("horizonNearclipScale") on both sides
-0078d860	cvar	CWorldParam::ParticleDensityCallback	callback of CVar::Register("particleDensity") on both sides
+0078d7c0	annotated	CWorldParam::HorizonFarClipScaleCallback	tag in src/world/CWorldParam.cpp
+0078d810	annotated	CWorldParam::HorizonNearClipScaleCallback	tag in src/world/CWorldParam.cpp
+0078d860	annotated	CWorldParam::ParticleDensityCallback	tag in src/world/CWorldParam.cpp
 0078d8b0	annotated	CWorldParam::WaterLODCallback	tag in src/world/CWorldParam.cpp
-0078d8f0	cvar	CWorldParam::ShowFootprintsCallback	callback of CVar::Register("showfootprints") on both sides
+0078d8f0	annotated	CWorldParam::ShowFootprintsCallback	tag in src/world/CWorldParam.cpp
 0078d940	cvar	CWorldParam::FootstepBiasCallback	callback of CVar::Register("footstepBias") on both sides
 0078d9d0	annotated	CWorldParam::OcclusionCallback	tag in src/world/CWorldParam.cpp
 0078da10	annotated	CWorldParam::WorldPoolUsageCallback	tag in src/world/CWorldParam.cpp
 0078da50	cvar	CWorldParam::TerrainAlphaBitDepthCallback	callback of CVar::Register("terrainAlphaBitDepth") on both sides
 0078dab0	cvar	CWorldParam::GroundEffectDensityCallback	callback of CVar::Register("groundEffectDensity") on both sides
 0078db10	cvar	CWorldParam::GroundEffectDistCallback	callback of CVar::Register("groundEffectDist") on both sides
-0078db90	cvar	CWorldParam::ObjectFadeCallback	callback of CVar::Register("objectFade") on both sides
-0078dbe0	cvar	CWorldParam::ObjectFadeZFillCallback	callback of CVar::Register("objectFadeZFill") on both sides
+0078db90	annotated	CWorldParam::ObjectFadeCallback	tag in src/world/CWorldParam.cpp
+0078dbe0	annotated	CWorldParam::ObjectFadeZFillCallback	tag in src/world/CWorldParam.cpp
 0078dc30	annotated	CWorldParam::FarClipOverrideCallback	tag in src/world/CWorldParam.cpp
-0078dc60	cvar	CWorldParam::EnvironmentDetailCallback	callback of CVar::Register("environmentDetail") on both sides
+0078dc60	annotated	CWorldParam::EnvironmentDetailCallback	tag in src/world/CWorldParam.cpp
 0078dcb0	cvar	CWorldParam::ExtShadowQualityCallback	callback of CVar::Register("extShadowQuality") on both sides
-0078dcf0	cvar	CWorldParam::ProjectedTexturesCallback	callback of CVar::Register("projectedTextures") on both sides
+0078dcf0	annotated	CWorldParam::ProjectedTexturesCallback	tag in src/world/CWorldParam.cpp
 0078de60	cvar	CWorldParam::SpecularCallback	callback of CVar::Register("specular") on both sides
 0078ded0	annotated	CWorldParam::MapObjLightLODCallback	tag in src/world/CWorldParam.cpp
 0078df00	cvar	CWorldParam::BaseMipCallback	callback of CVar::Register("baseMip") on both sides
@@ -1154,6 +1177,7 @@ addr	how	whoa	evidence
 0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
 0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
+0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007dc010	string	GetButtonName	score 14.05 shared Button10; Button11; Button12
@@ -1175,7 +1199,6 @@ addr	how	whoa	evidence
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides
 0080fee0	handler	ReceiveSpellStart	SetMessageHandler(SMSG_SPELL_START) on both sides
-00812ce0	callorder	FrameXML_AcquireHashNode	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture
 00812d20	callorder	FrameXML_ReleaseHashNode	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames
 00812fa0	string	FrameXML_CreateFrame	unique "-- Creating %s named %s"
 00813be0	string	FrameXML_StoreHashNode	unique "-- Added virtual frame %s"
@@ -1183,19 +1206,19 @@ addr	how	whoa	evidence
 00813ee0	string	FrameXML_ProcessFile	unique "%s:<Scripts>"
 00814340	string	FrameXML_CreateFrames	unique "** Loading table of contents %s"
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
-00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00813ee0=FrameXML_ProcessFile, 00815600=LoadXML_Value, 00815740=LoadXML_Dimensions
-00814ed0	callorder	StringToFramePoint	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
-00814f20	callorder	lua_pushnil	same slot between linked calls in 0049d950=CScriptRegion_GetPoint
+00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames, 004932c0=CSimpleFrame::LoadXML, 00813ee0=FrameXML_ProcessFile
+00814ed0	override	StringToFramePoint	
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
 00814ff0	string	StringToBlendMode	unique "DISABLE"
 00815110	string	StringToOrientation	unique "HORIZONTAL"
-008154e0	callorder	StringToBOOL	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML
+008154e0	callorder	StringToBOOL	same slot between linked calls in 00492f70=CSimpleFrame::LoadXML_Attributes
 00815500	callgraph	lua_toboolean	only unmatched callee of 004a0d70=CSimpleFrame_SetClampedToScreen
 00815600	string	LoadXML_Value	unique "AbsValue"
 00815740	string	LoadXML_Dimensions	unique "AbsDimension"
 00815910	string	LoadXML_Insets	unique "AbsInset"
-00815c30	callorder	LoadXML_Color	same slot between linked calls in 00497070=CSimpleFont::LoadXML
+00815c30	callorder	LoadXML_Color	same slot between linked calls in 004a2780=CBackdropGenerator::LoadXML, 00815df0=LoadXML_Gradient
 00815df0	string	LoadXML_Gradient	unique "MaxColor"
+00815f40	callorder	LoadXML_Texture	same slot between linked calls in 0096fed0=CSimpleButton::LoadXML
 00816830	string	FrameScript_Object::GetScriptByName	unique "OnEvent"
 008168d0	annotated	sub_8168D0	tag in src/ui/LuaExtraFuncs.cpp
 00816910	annotated	sub_816910	tag in src/ui/LuaExtraFuncs.cpp
@@ -1224,6 +1247,9 @@ addr	how	whoa	evidence
 0081bab0	table	Script_GetNumFrames	binding "GetNumFrames" in s_ScriptFunctions ~ table 00af5848
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	table	Script_GetFramesRegisteredForEvent	binding "GetFramesRegisteredForEvent" in s_ScriptFunctions ~ table 00af5848
+0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
+0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
+0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
 0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
@@ -1287,6 +1313,7 @@ addr	how	whoa	evidence
 0085b950	override	luaC_step	
 0085c3a0	override	luaH_getnum	
 00860760	string	XML_ErrorString	unique "syntax error"
+00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	OsGetAsyncTimeMs	only unmatched callee of 006081f0=Script_GetTime
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 00875d30	string	EnsureTargets	unique "ShadowCache"
@@ -1393,7 +1420,6 @@ addr	how	whoa	evidence
 009614b0	table	CSimpleModel_SetGlow	binding "SetGlow" in SimpleModelMethods ~ table 00b2cb10
 00961d70	callorder	CSimpleStatusBar::SetRotatesTexture	same slot between linked calls in 00961e30=CSimpleStatusBar::LoadXML
 00961e30	string	CSimpleStatusBar::LoadXML	unique "BarColor"
-00962340	callorder	CSimpleCheckbox::SetChecked	same slot between linked calls in 009624c0=CSimpleCheckbox::LoadXML
 009624c0	string	CSimpleCheckbox::LoadXML	unique "CheckedTexture"
 009628f0	string	CSimpleEditBox::GetScriptByName	unique "OnCharComposition"
 00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
@@ -1416,7 +1442,9 @@ addr	how	whoa	evidence
 0096e880	string	CSimpleColorSelect::LoadXML	unique "ColorValueTexture"
 0096e9c0	string	StringToClickAction	unique "LeftButtonDown"
 0096f200	string	CSimpleButton::GetScriptByName	unique "OnClick"
+0096f3c0	callorder	CSimpleButton::SetHighlight	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
 0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText
+0096f920	callorder	CSimpleButton::SetStateTexture	same slot between linked calls in 00977a70=CSimpleButton_SetStateTexture
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
 00970660	table	CSimpleMovieFrame_StartMovie	binding "StartMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970730	table	CSimpleMovieFrame_StopMovie	binding "StopMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
@@ -1603,6 +1631,7 @@ addr	how	whoa	evidence
 00978360	table	CSimpleButton_GetMotionScriptsWhileDisabled	binding "GetMotionScriptsWhileDisabled" in SimpleButtonMethods ~ table 00b2d418
 009783b0	table	CSimpleButton_SetMotionScriptsWhileDisabled	binding "SetMotionScriptsWhileDisabled" in SimpleButtonMethods ~ table 00b2d418
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
+00980f70	annotated	ParticleFxSetDensity	tag in src/world/ParticleFx.cpp
 009858b0	string	Script_PlaySound	unique "Usage: PlaySound("sound")"
 00985a50	string	Script_Sound_ChatSystem_GetInputDriverNameByIndex	unique "Usage: Sound_ChatSystem_GetInputDriverNameByIndex(InputDrive"
 00985b10	string	Script_Sound_ChatSystem_GetOutputDriverNameByIndex	unique "Usage: Sound_ChatSystem_GetOutputDriverNameByIndex(OutputDri"

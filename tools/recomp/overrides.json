@@ -135,5 +135,10 @@
   "004d0e80": { "whoa": "SFXVolume_CVarCallback", "status": "ported", "note": "Sound_SFXVolume callback" },
   "00489de0": { "whoa": "CLayoutFrame::Resize", "status": "ported", "note": "(force): the resize-pending queueing behind SetClampedToScreen and 60 other callers" },
 
-  "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" }
+  "00685970": { "whoa": "CGxDevice::IRsDirty", "status": "ported", "note": "m_appRenderStates[which] at this+0x28f4 stride 0x18; dirty list New(); pushed-state save when stackDepth != m_stackOffsets.Count() (this+0x18)" },
+
+  "0050f7c0": { "whoa": "CalculateAspectRatio", "status": "ported", "note": "strings %d%c%d/gxResolution/widescreen with CVar::Lookup and sscanf callees; callers CGlueMgr::HandleDisplaySizeChanged, CGlueMgr::Resume, CGGameUI::Initialize" },
+  "0048f820": { "whoa": "CSimpleFrame::SetHitRectInsets", "status": "ported", "note": "only callers are CSimpleFrame::LoadXML and the CSimpleFrame_SetHitRectInsets binding" },
+  "00814ed0": { "whoa": "StringToFramePoint", "status": "ported", "note": "strings BOTTOM/BOTTOMLEFT with an SStrCmpI callee; callers CLayoutFrame::LoadXML, CScriptRegion_SetPoint, CSimpleFrame_StartSizing" },
+  "0047bf90": { "whoa": "CoordinateSetAspectRatio", "status": "ported", "note": "call-order slot in CGlueMgr::Resume (2026-09-18); the CGGameUI::Initialize caller is not ported yet" }
 }

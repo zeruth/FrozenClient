@@ -21,6 +21,8 @@ float CWorld::s_curTimeSec;
 uint32_t CWorld::s_enables;
 uint32_t CWorld::s_enables2;
 float CWorld::s_farClip;
+float CWorld::s_horizonFarClipScale = 1.0f;
+float CWorld::s_horizonNearClipScale = 0.7f;
 uint32_t CWorld::s_gameTimeFixed;
 float CWorld::s_gameTimeSec;
 CM2Scene* CWorld::s_m2Scene;
@@ -673,7 +675,7 @@ void CWorld::Initialize() {
         | Enables::Enable_100
         | Enables::Enable_200
         | Enables::Enable_800
-        | Enables::Enable_4000
+        | Enables::Enable_ObjectFade
         | Enables::Enable_DetailDoodads
         | Enables::Enable_1000000
         | Enables::Enable_Particulates
@@ -862,4 +864,56 @@ const C3Vector& CWorld::GetCameraDir() {
 // ref: FUN_0077f490
 void CWorld::SetNearClip(float nearClip) {
     CWorld::s_nearClip = nearClip;
+}
+
+// ref: FUN_0077f4a0
+void CWorld::SetHorizonFarClipScale(float scale) {
+    CWorld::s_horizonFarClipScale = scale;
+}
+
+// ref: FUN_0077f4b0
+void CWorld::SetHorizonNearClipScale(float scale) {
+    CWorld::s_horizonNearClipScale = scale;
+}
+
+// The five model distance bands the reference keeps at DAT_00adf350: per band a default near and
+// far distance and a fade width, and the environmentDetail-scaled results derived from them (far,
+// far squared, fade start, fade start squared). The first and last bands are never scaled.
+struct WorldDetailBands {
+    float defaultNear[5];
+    float defaultFar[5];
+    float nearDist[5];
+    float fadeWidth[5];
+    float farDist[5];
+    float farDistSq[5];
+    float fadeStart[5];
+    float fadeStartSq[5];
+};
+
+static WorldDetailBands s_detailBands = {
+    { 1.0f, 4.0f, 15.0f, 100.0f, 100000.0f },
+    { 30.0f, 100.0f, 200.0f, 750.0f, 1250.0f },
+    { 1.0f, 4.0f, 15.0f, 100.0f, 100000.0f },
+    { 5.0f, 10.0f, 15.0f, 20.0f, 50.0f },
+    { 30.0f, 100.0f, 200.0f, 750.0f, 1250.0f },
+    { 900.0f, 10000.0f, 40000.0f, 562500.0f, 1562500.0f },
+    { 25.0f, 90.0f, 185.0f, 730.0f, 1200.0f },
+    { 625.0f, 8100.0f, 34225.0f, 532900.0f, 1440000.0f },
+};
+
+// ref: FUN_0078f570
+void CWorld::SetEnvironmentDetail(float detail) {
+    for (int32_t i = 0; i < 5; i++) {
+        s_detailBands.nearDist[i] = s_detailBands.defaultNear[i];
+
+        float farDist = s_detailBands.defaultFar[i];
+        if (i != 0 && i != 4) {
+            farDist *= detail;
+        }
+
+        s_detailBands.farDist[i] = farDist;
+        s_detailBands.fadeStart[i] = farDist - s_detailBands.fadeWidth[i];
+        s_detailBands.farDistSq[i] = farDist * farDist;
+        s_detailBands.fadeStartSq[i] = s_detailBands.fadeStart[i] * s_detailBands.fadeStart[i];
+    }
 }

@@ -59,3 +59,16 @@ void GxFormatColor(CImVector& color) {
         color = formattedColor;
     }
 }
+
+static int32_t s_maxFps;    // maxFPS (reference DAT_00c5df7c)
+static int32_t s_maxFpsBk;  // maxFPSBk (reference DAT_00c5df74)
+
+// ref: FUN_00681770
+void GxMaxFpsSet(int32_t maxFps) {
+    s_maxFps = maxFps;
+}
+
+// ref: FUN_00681790
+void GxMaxFpsBkSet(int32_t maxFps) {
+    s_maxFpsBk = maxFps;
+}

@@ -36,7 +36,16 @@ class CGxFormat {
         uint32_t refreshRate;
         uint32_t vsync;
         C2iVector pos;
+        int32_t aspect;           // gxAspect: constrain the window aspect
+        int32_t backBufferCount;  // gxTripleBuffer: 1 or 2 (the D3D device's "int1C")
+        float multisampleQuality; // gxMultisampleQuality, [0, 1)
 };
+
+// Reference layout (3.3.5a, the requested format at 0x00cabcd8), recovered from the gx CVar
+// callbacks and still to be confirmed field by field before this struct is reordered to match:
+//   +0x04 hwTnL, +0x05 cursor, +0x06 fixLag, +0x07 window (bytes), +0x08 aspect, +0x0c maximize,
+//   +0x10 depthFormat, +0x14 size, +0x1c backBufferCount, +0x20 multisampleCount,
+//   +0x24 multisampleQuality, +0x28 colorFormat, +0x30 vsync. +0x00 and +0x2c are not yet known.
 
 int32_t AdapterFormatSort(const void* a, const void* b);
 

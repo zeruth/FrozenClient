@@ -30,6 +30,8 @@ const uint32_t MAX_PARTICLES_PER_EMITTER = 96;
 // moved.
 const uint32_t MAX_QUADS_PER_FRAME = 24000;
 
+float s_particleDensity = 1.0f;
+
 struct Particle {
     C3Vector pos;
     C3Vector vel;
@@ -656,4 +658,17 @@ void ParticleFxRender() {
     }
 
     GxRsPop();
+}
+
+// ref: FUN_00980f70
+void ParticleFxSetDensity(float density) {
+    s_particleDensity = 0.0f;
+
+    if (density >= 0.0f) {
+        s_particleDensity = density;
+
+        if (density >= 1.0f) {
+            s_particleDensity = 1.0f;
+        }
+    }
 }

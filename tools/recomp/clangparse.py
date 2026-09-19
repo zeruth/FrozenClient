@@ -32,6 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'whoa-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
+CACHE_VERSION = 2  # bump when the walk changes so cached entries are re-parsed
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
               os.path.join(ROOT, 'build', 'compile_commands.json')]
 
@@ -86,14 +87,24 @@ def qualified(cursor):
 
 
 def walk_body(body, out):
-    for c in body.get_children():
+    # Calls are recorded in the order the compiled code makes them, which is what the reference
+    # inventory holds: a call's arguments are evaluated before the call itself (post-order), and
+    # MSVC x86 evaluates them right to left, the callee object last. So for a CALL_EXPR the
+    # children are walked in reverse and the call is appended after them.
+    children = list(body.get_children())
+    if body.kind == K.CALL_EXPR:
+        children.reverse()
+    for c in children:
         k = c.kind
         if k == K.CALL_EXPR:
+            if k != K.LAMBDA_EXPR:
+                walk_body(c, out)
             ref = c.referenced
             if ref is not None and ref.kind in DEF_KINDS:
                 out['callseq'].append(qualified(ref))
             elif c.spelling:
                 out['callseq'].append('?' + c.spelling)
+            continue
         elif k == K.STRING_LITERAL:
             s = c.spelling
             if s.startswith('"') and s.endswith('"'):
@@ -164,14 +175,14 @@ def main():
             continue
         mtime = os.path.getmtime(path)
         c = cache.get(rel)
-        if c and c['mtime'] == mtime:
+        if c and c['mtime'] == mtime and c.get('v') == CACHE_VERSION:
             fns = c['fns']
         else:
             text = io.open(path, encoding='utf-8', errors='replace').read()
             fns = parse_file(index, path, split_command(e['command']), text)
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines']} for k, v in fns.items()}
-            cache[rel] = {'mtime': mtime, 'fns': fns}
+            cache[rel] = {'mtime': mtime, 'v': CACHE_VERSION, 'fns': fns}
             n += 1
         for k, v in fns.items():
             r = result.setdefault(k, {'files': [], 'callseq': [], 'strings': set(), 'consts': set(), 'branches': 0, 'stub': True, 'lines': 0})

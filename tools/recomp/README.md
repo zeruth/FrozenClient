@@ -16,7 +16,7 @@ python tools/recomp/recomp.py --show CGWorldFrame::OnWorldRender # one whoa func
 
 | tool | what it does |
 |---|---|
-| `clangparse.py` | exact whoa inventory through libclang (ordered resolved calls, literals, branch counts) from `cmake-build-release/compile_commands.json`; cached by file mtime in `data/clang-cache.json`; ~30 min cold, seconds warm. Run after editing sources. |
+| `clangparse.py` | exact whoa inventory through libclang (resolved calls in evaluation order: arguments right to left before the call, as MSVC x86 emits them; literals; branch counts) from `cmake-build-release/compile_commands.json`; cached by file mtime in `data/clang-cache.json`; ~10 min cold, seconds warm. Run after editing sources. |
 | `calltrace.py ref\|whoa` | attaches as a debugger to the running client, plants int3 on every linked function (hot leaves skipped), logs the hit sequence for N frames, detaches cleanly. WOW64-aware for the 32-bit reference. |
 | `tracecompare.py` | cuts both traces into frames, translates the reference side through the map, writes `data/verified.json` (same per-frame count on both sides), `data/suspect.json` (links the runtime contradicts) and `data/trace-summary.json`; the report's Runtime section reads them. |
 

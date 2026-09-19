@@ -78,9 +78,19 @@ bool TextureCacheSizeCallback(CVar* var, const char* oldValue, const char* value
     return true;
 }
 
+// ref: FUN_004023c0
 bool TextureFilteringCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    int32_t mode = SStrToInt(value);
+
+    if (mode >= 0 && mode < 6) {
+        return true;
+    }
+
+    char msg[256];
+    SStrPrintf(msg, sizeof(msg), "Texture filtering mode must be in range 0 to %d.", 6);
+    ConsoleWrite(msg, DEFAULT_COLOR);
+
+    return false;
 }
 
 bool UIFasterCalllback(CVar* var, const char* oldValue, const char* value, void* arg) {

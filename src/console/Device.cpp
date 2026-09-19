@@ -1,4 +1,7 @@
 #include "console/Device.hpp"
+#include <cstdlib>
+#include "gx/Gx.hpp"
+#include "client/gui/OsGui.hpp"
 #include <storm/String.hpp>
 #include "client/Gui.hpp"
 #include "console/CVar.hpp"
@@ -10,11 +13,17 @@
 #include <cstring>
 
 static CGxDevice* s_device;
+static CVar* s_cvGxAspect;
 static CVar* s_cvGxColorBits;
 static CVar* s_cvGxCursor;
 static CVar* s_cvGxDepthBits;
 static CVar* s_cvGxFixLag;
 static CVar* s_cvGxMaximize;
+static CVar* s_cvGxMaxFPS;
+static CVar* s_cvGxMaxFPSBk;
+static CVar* s_cvGxMultisample;
+static CVar* s_cvGxMultisampleQuality;
+static CVar* s_cvGxOverride;
 static CVar* s_cvGxRefresh;
 static CVar* s_cvGxResolution;
 static CVar* s_cvGxStereoConvergence;
@@ -24,17 +33,46 @@ static CVar* s_cvGxTripleBuffer;
 static CVar* s_cvGxVSync;
 static CVar* s_cvGxWidescreen;
 static CVar* s_cvGxWindow;
+static CVar* s_cvVideoOptionsVersion;
+static CVar* s_cvFixedFunction;
 static CVar* s_cvWindowResizeLock;
 static DefaultSettings s_defaults;
 static TSGrowableArray<CGxMonitorMode> s_gxMonitorModes;
 static bool s_hwDetect;
 static bool s_hwChanged;
 static CGxFormat s_requestedFormat;
-static bool s_requestedStereoEnabled;  // gxStereoEnabled, the reference's DAT_00cabd0c beside the format
+static bool s_requestedStereoEnabled;
+static bool s_gxOverrideSet[9];      // gxOverride: which slots were given (reference DAT_00cabac8)
+static int32_t s_gxOverrideValue[9]; // and their values (DAT_00cabb7c)  // gxStereoEnabled, the reference's DAT_00cabd0c beside the format
 
-bool CVGxColorBitsCallback(CVar*, const char*, const char*, void*) {
-    // TODO
-    return true;
+// ref: FUN_00769240
+bool CVGxColorBitsCallback(CVar*, const char*, const char* value, void*) {
+    int32_t bits = SStrToInt(value);
+
+    if (bits == 16) {
+        s_requestedFormat.colorFormat = CGxFormat::Fmt_Rgb565;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    if (bits == 24) {
+        s_requestedFormat.colorFormat = CGxFormat::Fmt_ArgbX888;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    if (bits == 30) {
+        s_requestedFormat.colorFormat = CGxFormat::Fmt_Argb2101010;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("Color bits must be 16, 24, or 30", DEFAULT_COLOR);
+
+    return false;
 }
 
 // ref: FUN_007695e0
@@ -45,9 +83,34 @@ bool CVGxCursorCallback(CVar*, const char*, const char* value, void*) {
     return true;
 }
 
-bool CVGxDepthBitsCallback(CVar*, const char*, const char*, void*) {
-    // TODO
-    return true;
+// ref: FUN_007692d0
+bool CVGxDepthBitsCallback(CVar*, const char*, const char* value, void*) {
+    int32_t bits = SStrToInt(value);
+
+    if (bits == 16) {
+        s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds160;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    if (bits == 24) {
+        s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds24X;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    if (bits == 32) {
+        s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds320;
+        ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("Depth bits must be 16, 24, or 32", DEFAULT_COLOR);
+
+    return false;
 }
 
 // ref: FUN_007696a0
@@ -94,8 +157,160 @@ bool CVGxStereoSeparationCallback(CVar*, const char*, const char*, void*) {
     return true;
 }
 
-bool CVGxTripleBufferCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_00769360
+bool CVGxTripleBufferCallback(CVar*, const char*, const char* value, void*) {
+    int32_t tripleBuffer = SStrToInt(value);
+
+    if (tripleBuffer != 0 && tripleBuffer != 1) {
+        ConsoleWrite("TripleBuffer must be 0 or 1", DEFAULT_COLOR);
+
+        return false;
+    }
+
+    s_requestedFormat.backBufferCount = (tripleBuffer != 0) + 1;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+    return true;
+}
+
+// ref: FUN_00769580
+bool CVGxAspectCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.aspect = SStrToInt(value) != 0;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+    return true;
+}
+
+// ref: FUN_00769610
+bool CVGxMultisampleCallback(CVar*, const char*, const char* value, void*) {
+    s_requestedFormat.multisampleCount = SStrToInt(value);
+
+    if (s_requestedFormat.multisampleCount < 2) {
+        s_requestedFormat.multisampleCount = 1;
+    } else if (s_requestedFormat.multisampleCount > 15) {
+        s_requestedFormat.multisampleCount = 16;
+    }
+
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+    return true;
+}
+
+// ref: FUN_00769650
+bool CVGxMultisampleQualityCallback(CVar*, const char*, const char* value, void*) {
+    float quality = SStrToFloat(value);
+    float clamped = 0.0f;
+
+    if (quality >= 0.0f && quality < 1.0f) {
+        clamped = quality;
+    } else if (quality >= 1.0f) {
+        clamped = 1.0f;
+    }
+
+    s_requestedFormat.multisampleQuality = clamped;
+    ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
+
+    return true;
+}
+
+// ref: FUN_007696d0
+// "slot=value" pairs separated by spaces, commas or semicolons; slot 0 is remapped through the
+// reference's table.
+static void CVGxOverrideParse(const char* text) {
+    char slotText[256];
+    char valueText[256];
+
+    while (*text) {
+        SStrTokenize(&text, slotText, sizeof(slotText), " ,", nullptr);
+        SStrTokenize(&text, valueText, sizeof(valueText), " ;", nullptr);
+
+        if (!slotText[0] || !valueText[0]) {
+            continue;
+        }
+
+        uint32_t slot = atol(slotText);
+        int32_t value = atol(valueText);
+
+        if (slot >= 9) {
+            continue;
+        }
+
+        if (slot == 0) {
+            switch (value) {
+                case 0:
+                case 1:
+                case 2:
+                    value = 1;
+                    break;
+                case 3:
+                    value = 2;
+                    break;
+                case 4:
+                    value = 3;
+                    break;
+                case 5:
+                    value = 7;
+                    break;
+                case 6:
+                    value = 8;
+                    break;
+                case 7:
+                    value = 9;
+                    break;
+                case 8:
+                    value = 10;
+                    break;
+                case 10:
+                    value = 12;
+                    break;
+                case 11:
+                    value = 13;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        s_gxOverrideSet[slot] = true;
+        s_gxOverrideValue[slot] = value;
+    }
+}
+
+// ref: FUN_00769810
+bool CVGxOverrideCallback(CVar*, const char*, const char* value, void*) {
+    CVGxOverrideParse(value);
+
+    return true;
+}
+
+// ref: FUN_00769830
+bool CVGxMaxFPSCallback(CVar*, const char*, const char* value, void*) {
+    int32_t maxFps = SStrToInt(value);
+
+    if (static_cast<uint32_t>(maxFps - 1) < 7) {
+        maxFps = 8;
+    }
+
+    GxMaxFpsSet(maxFps);
+
+    return true;
+}
+
+// ref: FUN_00769860
+bool CVGxMaxFPSBkCallback(CVar*, const char*, const char* value, void*) {
+    int32_t maxFps = SStrToInt(value);
+
+    if (static_cast<uint32_t>(maxFps - 1) < 7) {
+        maxFps = 8;
+    }
+
+    GxMaxFpsBkSet(maxFps);
+
+    return true;
+}
+
+// The reference's callback is the folded "return true" at FUN_008a1420.
+bool CVVideoOptionsVersionCallback(CVar*, const char*, const char*, void*) {
     return true;
 }
 
@@ -115,8 +330,10 @@ bool CVGxWindowCallback(CVar*, const char*, const char* value, void*) {
     return true;
 }
 
-bool CVWindowResizeLockCallback(CVar*, const char*, const char*, void*) {
-    // TODO
+// ref: FUN_00769890
+bool CVWindowResizeLockCallback(CVar*, const char*, const char* value, void*) {
+    OsGuiSetWindowResizeLock(SStrToInt(value));
+
     return true;
 }
 
@@ -242,7 +459,17 @@ void RegisterGxCVars() {
         false
     );
 
-    // TODO s_cvGxAspect
+    s_cvGxAspect = CVar::Register(
+        "gxAspect",
+        "constrain window aspect",
+        0x1 | 0x2,
+        "1",
+        &CVGxAspectCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
 
     s_cvGxCursor = CVar::Register(
         "gxCursor",
@@ -256,7 +483,31 @@ void RegisterGxCVars() {
         false
     );
 
-    // TODO s_cvGxMultisample
+    char multisample[260];
+    SStrPrintf(multisample, sizeof(multisample), "%d", 1); // TODO the reference formats the device's current multisample count
+    s_cvGxMultisample = CVar::Register(
+        "gxMultisample",
+        "multisample",
+        0x1 | 0x2,
+        multisample,
+        &CVGxMultisampleCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    s_cvGxMultisampleQuality = CVar::Register(
+        "gxMultisampleQuality",
+        "multisample quality",
+        0x1 | 0x2,
+        "0.0",
+        &CVGxMultisampleQualityCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
 
     char fixLag[260];
     SStrPrintf(fixLag, sizeof(fixLag), "%d", 0); // TODO value from s_hardware
@@ -284,10 +535,53 @@ void RegisterGxCVars() {
         false
     );
 
-    // TODO s_cvGxOverride
-    // TODO s_cvGxAspect
-    // TODO s_cvGxMaxFPS
-    // TODO s_cvGxMaxFPSBk
+    s_cvGxOverride = CVar::Register(
+        "gxOverride",
+        "gx overrides",
+        0x1,
+        "",
+        &CVGxOverrideCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    s_cvGxMaxFPS = CVar::Register(
+        "maxFPS",
+        "Set FPS limit",
+        0x1,
+        "200",
+        &CVGxMaxFPSCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    s_cvGxMaxFPSBk = CVar::Register(
+        "maxFPSBk",
+        "Set background FPS limit",
+        0x1,
+        "30",
+        &CVGxMaxFPSBkCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    s_cvVideoOptionsVersion = CVar::Register(
+        "videoOptionsVersion",
+        "Video options version",
+        0x1 | 0x2,
+        "0",
+        &CVVideoOptionsVersionCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
 
     s_cvWindowResizeLock = CVar::Register(
         "windowResizeLock",
@@ -301,7 +595,17 @@ void RegisterGxCVars() {
         false
     );
 
-    // TODO s_cvFixedFunction
+    s_cvFixedFunction = CVar::Register(
+        "fixedFunction",
+        "Force fixed function rendering",
+        0x1 | 0x2,
+        "0",
+        nullptr,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
 }
 
 void UpdateGxCVars() {

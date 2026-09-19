@@ -16,3 +16,10 @@ int32_t OsGuiProcessMessage(void* message) {
 void OsGuiSetGxWindow(void* window) {
     // TODO
 }
+
+static int32_t s_windowResizeLock;
+
+// ref: FUN_00869620
+void OsGuiSetWindowResizeLock(int32_t lock) {
+    s_windowResizeLock = lock;
+}

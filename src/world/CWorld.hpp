@@ -38,11 +38,11 @@ class CWorld {
             Enable_80 = 0x80,
             Enable_100 = 0x100,
             Enable_200 = 0x200,
-            Enable_400 = 0x400,
+            Enable_Footprints = 0x400,      // showfootprints
             Enable_800 = 0x800,
             Enable_1000 = 0x1000,
-            Enable_4000 = 0x4000,
-            Enable_8000 = 0x8000,
+            Enable_ObjectFade = 0x4000,     // objectFade
+            Enable_ObjectFadeZFill = 0x8000, // objectFadeZFill
             Enable_10000 = 0x10000,
             Enable_20000 = 0x20000,
             Enable_40000 = 0x40000,
@@ -60,7 +60,8 @@ class CWorld {
 
         enum Enables2 {
             Enable_VertexShader = 0x1,
-            Enable_HwPcf = 0x2
+            Enable_HwPcf = 0x2,
+            Enable_ProjectedTextures = 0x4  // projectedTextures
         };
 
         // Public static variables
@@ -102,6 +103,9 @@ class CWorld {
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
         static void SetFarClip(float farClip);
         static void SetNearClip(float nearClip);
+        static void SetHorizonFarClipScale(float scale);
+        static void SetHorizonNearClipScale(float scale);
+        static void SetEnvironmentDetail(float detail);
         static void SetLoadProgressCallback(void (*callback)(float));
         static void LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg);
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
@@ -112,6 +116,8 @@ class CWorld {
         static uint32_t s_curTimeMs;
         static float s_curTimeSec;
         static float s_farClip;
+        static float s_horizonFarClipScale;   // horizonFarclipScale (reference DAT_00adeecc)
+        static float s_horizonNearClipScale;  // horizonNearclipScale (DAT_00adeed0)
         static uint32_t s_gameTimeFixed;
         static float s_gameTimeSec;
         static CM2Scene* s_m2Scene;

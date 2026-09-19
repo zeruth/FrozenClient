@@ -3,6 +3,7 @@
 #include "console/Console.hpp"
 #include "world/CWorld.hpp"
 #include "console/CVar.hpp"
+#include "world/ParticleFx.hpp"
 
 CVar* CWorldParam::cvar_baseMip;
 CVar* CWorldParam::cvar_bspCache;
@@ -35,6 +36,11 @@ CVar* CWorldParam::cvar_texLodBias;
 CVar* CWorldParam::cvar_waterLOD;
 CVar* CWorldParam::cvar_worldPoolUsage;
 
+// ref: FUN_005eeb70
+// The reference's setter is an empty function in 3.3.5: the bias never reaches the device.
+static void TextureLodBiasSet(float bias) {
+}
+
 int32_t CWorldParam::s_maxLights = 4;
 uint32_t CWorldParam::s_mapObjLightLOD = 0;
 int32_t CWorldParam::s_waterLOD = 0;
@@ -50,8 +56,16 @@ bool CWorldParam::BSPCacheCallback(CVar* var, const char* oldValue, const char* 
     return true;
 }
 
+// ref: FUN_0078dc60
 bool CWorldParam::EnvironmentDetailCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    float detail = SStrToFloat(value);
+
+    if (detail >= 0.5f && detail <= 1.5f) {
+        CWorld::SetEnvironmentDetail(detail);
+    } else {
+        CWorld::SetEnvironmentDetail(1.5f);
+    }
+
     return true;
 }
 
@@ -92,13 +106,29 @@ bool CWorldParam::GroundEffectDistCallback(CVar* var, const char* oldValue, cons
     return true;
 }
 
+// ref: FUN_0078d7c0
 bool CWorldParam::HorizonFarClipScaleCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    float scale = SStrToFloat(value);
+
+    if (scale >= 3.0f && scale <= 6.0f) {
+        CWorld::SetHorizonFarClipScale(scale);
+    } else {
+        CWorld::SetHorizonFarClipScale(6.0f);
+    }
+
     return true;
 }
 
+// ref: FUN_0078d810
 bool CWorldParam::HorizonNearClipScaleCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    float scale = SStrToFloat(value);
+
+    if (scale >= 0.01f && scale <= 1.0f) {
+        CWorld::SetHorizonNearClipScale(scale);
+    } else {
+        CWorld::SetHorizonNearClipScale(1.0f);
+    }
+
     return true;
 }
 
@@ -468,7 +498,20 @@ void CWorldParam::Initialize() {
         false
     );
 
-    // TODO
+    CVar::Register(
+        "spellEffectLevel",
+        "Video Option: Spell Effects",
+        0x1,
+        "9",
+        nullptr,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    // TODO the video options callback list (FUN_0076aab0 / FUN_0078e1a0) and the hardware-class
+    // defaults for groundEffectDensity and terrain shadows (FUN_0078dd40 / FUN_0078ddf0)
 }
 
 bool CWorldParam::LodCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
@@ -528,13 +571,33 @@ bool CWorldParam::NearClipCallback(CVar* var, const char* oldValue, const char* 
     return true;
 }
 
+// ref: FUN_0078db90
 bool CWorldParam::ObjectFadeCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Object distance fade enabled.", DEFAULT_COLOR);
+        CWorld::s_enables |= CWorld::Enable_ObjectFade;
+
+        return true;
+    }
+
+    ConsoleWrite("Object distance fade disabled.", DEFAULT_COLOR);
+    CWorld::s_enables &= ~CWorld::Enable_ObjectFade;
+
     return true;
 }
 
+// ref: FUN_0078dbe0
 bool CWorldParam::ObjectFadeZFillCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Object distance fade ZFill pass enabled.", DEFAULT_COLOR);
+        CWorld::s_enables |= CWorld::Enable_ObjectFadeZFill;
+
+        return true;
+    }
+
+    ConsoleWrite("Object distance fade ZFill pass disabled.", DEFAULT_COLOR);
+    CWorld::s_enables &= ~CWorld::Enable_ObjectFadeZFill;
+
     return true;
 }
 
@@ -551,13 +614,33 @@ bool CWorldParam::OcclusionCallback(CVar* var, const char* oldValue, const char*
     return true;
 }
 
+// ref: FUN_0078d860
 bool CWorldParam::ParticleDensityCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    float density = SStrToFloat(value);
+
+    if (density >= 0.1f && density <= 1.0f) {
+        ParticleFxSetDensity(density);
+
+        return true;
+    }
+
+    ConsoleWrite("Value must be between 0.1 and 1.0.", DEFAULT_COLOR);
+
+    return false;
 }
 
+// ref: FUN_0078dcf0
 bool CWorldParam::ProjectedTexturesCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Projected textures enabled.", DEFAULT_COLOR);
+        CWorld::s_enables2 |= CWorld::Enable_ProjectedTextures;
+
+        return true;
+    }
+
+    ConsoleWrite("Projected textures disabled.", DEFAULT_COLOR);
+    CWorld::s_enables2 &= ~CWorld::Enable_ProjectedTextures;
+
     return true;
 }
 
@@ -574,8 +657,18 @@ bool CWorldParam::ShadowLevelCallback(CVar* var, const char* oldValue, const cha
     return true;
 }
 
+// ref: FUN_0078d8f0
 bool CWorldParam::ShowFootprintsCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Showing foot prints.", DEFAULT_COLOR);
+        CWorld::s_enables |= CWorld::Enable_Footprints;
+
+        return true;
+    }
+
+    ConsoleWrite("Hiding foot prints.", DEFAULT_COLOR);
+    CWorld::s_enables &= ~CWorld::Enable_Footprints;
+
     return true;
 }
 
@@ -594,9 +687,19 @@ bool CWorldParam::TextureCacheSizeCallback(CVar* var, const char* oldValue, cons
     return true;
 }
 
+// ref: FUN_0078d730
 bool CWorldParam::TextureLodBiasCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    float bias = SStrToFloat(value);
+
+    if (bias >= -1.0f && bias <= 1.0f) {
+        TextureLodBiasSet(bias);
+
+        return true;
+    }
+
+    ConsoleWrite("TexLodBias must be in range -1.0 - 1.0.", DEFAULT_COLOR);
+
+    return false;
 }
 
 // ref: FUN_0078d8b0

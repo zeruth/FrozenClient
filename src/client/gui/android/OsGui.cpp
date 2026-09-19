@@ -17,3 +17,10 @@ int32_t OsGuiProcessMessage(void* message) {
 void OsGuiSetGxWindow(void* window) {
     // The window comes from the activity, nothing to do
 }
+
+static int32_t s_windowResizeLock;
+
+// ref: FUN_00869620
+void OsGuiSetWindowResizeLock(int32_t lock) {
+    s_windowResizeLock = lock;
+}
