@@ -1102,5 +1102,10 @@
     "frozen": "CSimpleFont_CopyFontObject",
     "status": "ported",
     "note": "Found by scanning .data for a pointer to the 'CopyFontObject' string and reading the function pointer beside it, because tools/recomp/data/ref-tables.jsonl does not contain this entry at all. The table it belongs to, 00ac1818..00ac1840, holds GetObjectType, IsObjectType, GetName, SetFontObject, GetFontObject and this one, and the export captured the first five but stopped before the last. Worth a look at the exporter: a truncated table is silent, and five of CSimpleFont's bindings looked unresolvable earlier in the session for the same reason."
+  },
+  "00767460": {
+    "frozen": "CVar::LookupRegistered",
+    "status": "ported",
+    "note": "Verified from GetCVarInfo (0050ff50), which calls it on the name argument and then tests the result's flags 0x40, 0x10 and 0x20 -- exactly what a registered-CVar lookup returns. Pinned because it came unlinked when the binding tables were widened: the extra table evidence reordered which rule claimed which Frozen name, and this one lost its automatic match."
   }
 }

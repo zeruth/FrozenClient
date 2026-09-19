@@ -66,11 +66,12 @@ addr	how	frozen	evidence
 0040bb50	callorder	CSimpleFontString::GetObjectType	same slot between linked calls in 0048d800=CSimpleFontString_SetFormattedText
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
+004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
-00422140	callorder	SFile::IsStreamingTrial	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
+00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
 00424b50	override	SFile::OpenEx	
@@ -118,7 +119,7 @@ addr	how	frozen	evidence
 0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
-0047d230	callgraph	EventIsKeyDown	only unmatched callee of 004dbe10=Script_IsShiftKeyDown
+0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
 0047d3c0	callgraph	EventRegisterEx	only unmatched callee of 00407b00=RegisterEvents
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
@@ -154,7 +155,7 @@ addr	how	frozen	evidence
 00487bf0	override	CSimpleRegion::Hide	
 00487c40	override	CSimpleRegion::Show	
 00487ca0	callorder	CSimpleRegion::OnRegionChanged	same slot between linked calls in 004859e0=CSimpleTexture::SetTexture
-00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f920=CSimpleButton::SetStateTexture
+00487ed0	callgraph	CSimpleRegion::SetFrame	only unmatched callee of 0048bf30=CSimpleTexture_SetDrawLayer
 004883f0	callorder	CScriptRegion::LoadXML_Animations	same slot between linked calls in 00488670=CScriptRegion::LoadXML
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
@@ -179,23 +180,27 @@ addr	how	frozen	evidence
 0048b5f0	callgraph	CScriptObject::GetScriptObjectByName	only unmatched callee of 004e05b0=Script_SetCharCustomizeFrame, 004e2f60=Script_SetCharSelectModelFrame
 0048bc70	annotated	CSimpleFontString_GetFieldSize	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048bd20	callgraph	CImVector::Set	only unmatched callee of 004a2d40=CBackdropGenerator::CBackdropGenerator
-0048bff0	order	CSimpleTexture_GetBlendMode	binding table name CSimpleTexture_GetBlendMode, in definition order in src/ui/simple/CSimpleTextureScript.cpp
-0048c040	order	CSimpleTexture::SetBlendMode	binding table name SetBlendMode, in definition order in src/ui/simple/CSimpleTexture.cpp
-0048c0e0	order	CSimpleTexture_GetVertexColor	binding table name CSimpleTexture_GetVertexColor, in definition order in src/ui/simple/CSimpleTextureScript.cpp
-0048c1c0	order	CSimpleTexture_SetVertexColor	definition order between CSimpleTexture_GetVertexColor and CSimpleTexture_SetGradient in src/ui/simple/CSimpleTextureScript.cpp
-0048c240	order	CSimpleTexture_SetGradient	binding table name CSimpleTexture_SetGradient, in definition order in src/ui/simple/CSimpleTextureScript.cpp
-0048c310	order	CSimpleTexture_SetGradientAlpha	binding table name CSimpleTexture_SetGradientAlpha, in definition order in src/ui/simple/CSimpleTextureScript.cpp
-0048c3e0	order	CSimpleTexture_SetAlpha	definition order between CSimpleTexture_SetGradientAlpha and CSimpleTexture_IsVisible in src/ui/simple/CSimpleTextureScript.cpp
-0048c4c0	order	CSimpleTexture_GetAlpha	definition order between CSimpleTexture_SetGradientAlpha and CSimpleTexture_IsVisible in src/ui/simple/CSimpleTextureScript.cpp
-0048c530	order	CSimpleTexture_Show	definition order between CSimpleTexture_SetGradientAlpha and CSimpleTexture_IsVisible in src/ui/simple/CSimpleTextureScript.cpp
-0048c570	order	CSimpleTexture_Hide	definition order between CSimpleTexture_SetGradientAlpha and CSimpleTexture_IsVisible in src/ui/simple/CSimpleTextureScript.cpp
-0048c5b0	table	CSimpleTexture_IsVisible	binding "IsVisible" in SimpleTextureMethods ~ table 00ac1098
-0048c610	table	CSimpleTexture_IsShown	binding "IsShown" in SimpleTextureMethods ~ table 00ac1098
-0048c670	table	CSimpleTexture_GetTexture	binding "GetTexture" in SimpleTextureMethods ~ table 00ac1098
-0048c6f0	table	CSimpleTexture_SetTexture	binding "SetTexture" in SimpleTextureMethods ~ table 00ac1098
+0048bde0	table	CSimpleTexture_GetObjectType	binding "GetObjectType" in SimpleTextureMethods ~ table 00ac1028
+0048be30	table	CSimpleTexture_IsObjectType	binding "IsObjectType" in SimpleTextureMethods ~ table 00ac1028
+0048bee0	table	CSimpleTexture_GetDrawLayer	binding "GetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
+0048bf30	table	CSimpleTexture_SetDrawLayer	binding "SetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
+0048bff0	table	CSimpleTexture_GetBlendMode	binding "GetBlendMode" in SimpleTextureMethods ~ table 00ac1028
+0048c040	table	CSimpleTexture_SetBlendMode	binding "SetBlendMode" in SimpleTextureMethods ~ table 00ac1028
+0048c0e0	table	CSimpleTexture_GetVertexColor	binding "GetVertexColor" in SimpleTextureMethods ~ table 00ac1028
+0048c1c0	table	CSimpleTexture_SetVertexColor	binding "SetVertexColor" in SimpleTextureMethods ~ table 00ac1028
+0048c240	table	CSimpleTexture_SetGradient	binding "SetGradient" in SimpleTextureMethods ~ table 00ac1028
+0048c310	table	CSimpleTexture_SetGradientAlpha	binding "SetGradientAlpha" in SimpleTextureMethods ~ table 00ac1028
+0048c3e0	table	CSimpleTexture_SetAlpha	binding "SetAlpha" in SimpleTextureMethods ~ table 00ac1028
+0048c4c0	table	CSimpleTexture_GetAlpha	binding "GetAlpha" in SimpleTextureMethods ~ table 00ac1028
+0048c530	table	CSimpleTexture_Show	binding "Show" in SimpleTextureMethods ~ table 00ac1028
+0048c570	table	CSimpleTexture_Hide	binding "Hide" in SimpleTextureMethods ~ table 00ac1028
+0048c5b0	table	CSimpleTexture_IsVisible	binding "IsVisible" in SimpleTextureMethods ~ table 00ac1028
+0048c610	table	CSimpleTexture_IsShown	binding "IsShown" in SimpleTextureMethods ~ table 00ac1028
+0048c670	table	CSimpleTexture_GetTexture	binding "GetTexture" in SimpleTextureMethods ~ table 00ac1028
+0048c6f0	table	CSimpleTexture_SetTexture	binding "SetTexture" in SimpleTextureMethods ~ table 00ac1028
 0048c7f0	annotated	CSimpleTexture_GetTexCoord	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c860	annotated	CSimpleTexture_SetRotation	tag in src/ui/simple/CSimpleTextureScript.cpp
-0048c9a0	table	CSimpleTexture_SetDesaturated	binding "SetDesaturated" in SimpleTextureMethods ~ table 00ac1098
+0048c9a0	table	CSimpleTexture_SetDesaturated	binding "SetDesaturated" in SimpleTextureMethods ~ table 00ac1028
 0048ca30	annotated	CSimpleTexture_IsDesaturated	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048caa0	annotated	CSimpleTexture_SetNonBlocking	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048cb00	annotated	CSimpleTexture_GetNonBlocking	tag in src/ui/simple/CSimpleTextureScript.cpp
@@ -203,43 +208,51 @@ addr	how	frozen	evidence
 0048cbc0	annotated	CSimpleTexture_GetHorizTile	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048cc30	annotated	CSimpleTexture_SetVertTile	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048cc90	annotated	CSimpleTexture_GetVertTile	tag in src/ui/simple/CSimpleTextureScript.cpp
-0048d0f0	order	CSimpleFontString_SetAlphaGradient	binding table name CSimpleFontString_SetAlphaGradient, in definition order in src/ui/simple/CSimpleFontStringScript.cpp
-0048d1c0	order	CSimpleFontString_Show	definition order between CSimpleFontString_SetAlphaGradient and CSimpleFontString_IsVisible in src/ui/simple/CSimpleFontStringScript.cpp
-0048d200	order	CSimpleFontString_Hide	definition order between CSimpleFontString_SetAlphaGradient and CSimpleFontString_IsVisible in src/ui/simple/CSimpleFontStringScript.cpp
-0048d240	table	CSimpleFontString_IsVisible	binding "IsVisible" in SimpleFontStringMethods ~ table 00ac1168
-0048d2a0	table	CSimpleFontString_IsShown	binding "IsShown" in SimpleFontStringMethods ~ table 00ac1168
-0048d300	table	CSimpleFontString_GetFontObject	binding "GetFontObject" in SimpleFontStringMethods ~ table 00ac1168
-0048d380	table	CSimpleFontString_SetFontObject	binding "SetFontObject" in SimpleFontStringMethods ~ table 00ac1168
-0048d510	table	CSimpleFontString_GetFont	binding "GetFont" in SimpleFontStringMethods ~ table 00ac1168
-0048d5b0	table	CSimpleFontString_SetFont	binding "SetFont" in SimpleFontStringMethods ~ table 00ac1168
-0048d730	table	CSimpleFontString_GetText	binding "GetText" in SimpleFontStringMethods ~ table 00ac1168
-0048d780	table	CSimpleFontString_SetText	binding "SetText" in SimpleFontStringMethods ~ table 00ac1168
-0048d800	table	CSimpleFontString_SetFormattedText	binding "SetFormattedText" in SimpleFontStringMethods ~ table 00ac1168
-0048d890	table	CSimpleFontString_GetTextColor	binding "GetTextColor" in SimpleFontStringMethods ~ table 00ac1168
-0048d970	table	CSimpleFontString_SetTextColor	binding "SetTextColor" in SimpleFontStringMethods ~ table 00ac1168
-0048d9e0	table	CSimpleFontString_GetShadowColor	binding "GetShadowColor" in SimpleFontStringMethods ~ table 00ac1168
-0048dab0	table	CSimpleFontString_SetShadowColor	binding "SetShadowColor" in SimpleFontStringMethods ~ table 00ac1168
-0048db20	table	CSimpleFontString_GetShadowOffset	binding "GetShadowOffset" in SimpleFontStringMethods ~ table 00ac1168
-0048dbb0	table	CSimpleFontString_SetShadowOffset	binding "SetShadowOffset" in SimpleFontStringMethods ~ table 00ac1168
-0048dca0	table	CSimpleFontString_GetSpacing	binding "GetSpacing" in SimpleFontStringMethods ~ table 00ac1168
-0048dd00	table	CSimpleFontString_SetSpacing	binding "SetSpacing" in SimpleFontStringMethods ~ table 00ac1168
+0048cd20	table	CSimpleFontString_GetObjectType	binding "GetObjectType" in SimpleFontStringMethods ~ table 00ac1118
+0048cd70	table	CSimpleFontString_IsObjectType	binding "IsObjectType" in SimpleFontStringMethods ~ table 00ac1118
+0048ce20	table	CSimpleFontString_GetDrawLayer	binding "GetDrawLayer" in SimpleFontStringMethods ~ table 00ac1118
+0048ce70	table	CSimpleFontString_SetDrawLayer	binding "SetDrawLayer" in SimpleFontStringMethods ~ table 00ac1118
+0048cf30	table	CSimpleFontString_SetVertexColor	binding "SetVertexColor" in SimpleFontStringMethods ~ table 00ac1118
+0048cfc0	table	CSimpleFontString_GetAlpha	binding "GetAlpha" in SimpleFontStringMethods ~ table 00ac1118
+0048d030	table	CSimpleFontString_SetAlpha	binding "SetAlpha" in SimpleFontStringMethods ~ table 00ac1118
+0048d0f0	table	CSimpleFontString_SetAlphaGradient	binding "SetAlphaGradient" in SimpleFontStringMethods ~ table 00ac1118
+0048d1c0	table	CSimpleFontString_Show	binding "Show" in SimpleFontStringMethods ~ table 00ac1118
+0048d200	table	CSimpleFontString_Hide	binding "Hide" in SimpleFontStringMethods ~ table 00ac1118
+0048d240	table	CSimpleFontString_IsVisible	binding "IsVisible" in SimpleFontStringMethods ~ table 00ac1118
+0048d2a0	table	CSimpleFontString_IsShown	binding "IsShown" in SimpleFontStringMethods ~ table 00ac1118
+0048d300	table	CSimpleFontString_GetFontObject	binding "GetFontObject" in SimpleFontStringMethods ~ table 00ac1118
+0048d380	table	CSimpleFontString_SetFontObject	binding "SetFontObject" in SimpleFontStringMethods ~ table 00ac1118
+0048d510	table	CSimpleFontString_GetFont	binding "GetFont" in SimpleFontStringMethods ~ table 00ac1118
+0048d5b0	table	CSimpleFontString_SetFont	binding "SetFont" in SimpleFontStringMethods ~ table 00ac1118
+0048d730	table	CSimpleFontString_GetText	binding "GetText" in SimpleFontStringMethods ~ table 00ac1118
+0048d780	table	CSimpleFontString_SetText	binding "SetText" in SimpleFontStringMethods ~ table 00ac1118
+0048d800	table	CSimpleFontString_SetFormattedText	binding "SetFormattedText" in SimpleFontStringMethods ~ table 00ac1118
+0048d890	table	CSimpleFontString_GetTextColor	binding "GetTextColor" in SimpleFontStringMethods ~ table 00ac1118
+0048d970	table	CSimpleFontString_SetTextColor	binding "SetTextColor" in SimpleFontStringMethods ~ table 00ac1118
+0048d9e0	table	CSimpleFontString_GetShadowColor	binding "GetShadowColor" in SimpleFontStringMethods ~ table 00ac1118
+0048dab0	table	CSimpleFontString_SetShadowColor	binding "SetShadowColor" in SimpleFontStringMethods ~ table 00ac1118
+0048db20	table	CSimpleFontString_GetShadowOffset	binding "GetShadowOffset" in SimpleFontStringMethods ~ table 00ac1118
+0048dbb0	table	CSimpleFontString_SetShadowOffset	binding "SetShadowOffset" in SimpleFontStringMethods ~ table 00ac1118
+0048dca0	table	CSimpleFontString_GetSpacing	binding "GetSpacing" in SimpleFontStringMethods ~ table 00ac1118
+0048dd00	table	CSimpleFontString_SetSpacing	binding "SetSpacing" in SimpleFontStringMethods ~ table 00ac1118
 0048ddb0	annotated	CSimpleFontString_SetTextHeight	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048de90	table	CSimpleFontString_GetStringWidth	binding "GetStringWidth" in SimpleFontStringMethods ~ table 00ac1168
-0048df00	table	CSimpleFontString_GetStringHeight	binding "GetStringHeight" in SimpleFontStringMethods ~ table 00ac1168
-0048df70	table	CSimpleFontString_GetJustifyH	binding "GetJustifyH" in SimpleFontStringMethods ~ table 00ac1168
-0048dfc0	table	CSimpleFontString_GetJustifyV	binding "GetJustifyV" in SimpleFontStringMethods ~ table 00ac1168
+0048de90	table	CSimpleFontString_GetStringWidth	binding "GetStringWidth" in SimpleFontStringMethods ~ table 00ac1118
+0048df00	table	CSimpleFontString_GetStringHeight	binding "GetStringHeight" in SimpleFontStringMethods ~ table 00ac1118
+0048df70	table	CSimpleFontString_GetJustifyH	binding "GetJustifyH" in SimpleFontStringMethods ~ table 00ac1118
+0048dfc0	table	CSimpleFontString_GetJustifyV	binding "GetJustifyV" in SimpleFontStringMethods ~ table 00ac1118
 0048e010	annotated	CSimpleFontString_CanNonSpaceWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e080	annotated	CSimpleFontString_CanWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048e0e0	table	CSimpleFontString_SetIndentedWordWrap	binding "SetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1168
-0048e170	table	CSimpleTexture_SetTexCoord	binding "SetTexCoord" in SimpleTextureMethods ~ table 00ac1098
-0048e360	table	CSimpleFontString_SetJustifyH	binding "SetJustifyH" in SimpleFontStringMethods ~ table 00ac1168
-0048e430	table	CSimpleFontString_SetJustifyV	binding "SetJustifyV" in SimpleFontStringMethods ~ table 00ac1168
+0048e0e0	table	CSimpleFontString_SetIndentedWordWrap	binding "SetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1118
+0048e170	table	CSimpleTexture_SetTexCoord	binding "SetTexCoord" in SimpleTextureMethods ~ table 00ac1028
+0048e360	table	CSimpleFontString_SetJustifyH	binding "SetJustifyH" in SimpleFontStringMethods ~ table 00ac1118
+0048e430	table	CSimpleFontString_SetJustifyV	binding "SetJustifyV" in SimpleFontStringMethods ~ table 00ac1118
 0048e500	annotated	CSimpleFontString_SetNonSpaceWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e580	annotated	CSimpleFontString_SetWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-0048e600	table	CSimpleFontString_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1168
+0048e600	table	CSimpleFontString_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1118
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
-0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition, 004a0980=CSimpleFrame_SetResizable
+0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
 0048e9a0	override	CSimpleFrame::Raise	
+0048ea10	callgraph	CSimpleFrame::SetFrameAlpha	only unmatched callee of 0049f9e0=CSimpleFrame_SetAlpha
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
@@ -253,7 +266,10 @@ addr	how	frozen	evidence
 0048f6f0	override	CSimpleFrame::DisableEvent	
 0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
+00490270	callgraph	CSimpleFrame::NotifyDrawLayerChanged	only unmatched callee of 00490600=CSimpleFrame::EnableDrawLayer, 00490620=CSimpleFrame::DisableDrawLayer
 004905a0	override	CSimpleFrame::SetBackdrop	
+00490600	callgraph	CSimpleFrame::EnableDrawLayer	only unmatched callee of 0049fc90=CSimpleFrame_EnableDrawLayer
+00490620	callgraph	CSimpleFrame::DisableDrawLayer	only unmatched callee of 0049fd00=CSimpleFrame_DisableDrawLayer
 00491020	override	CSimpleFrame::SetFrameStrata	
 004910a0	override	CSimpleFrame::SetFrameLevel	
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
@@ -304,87 +320,91 @@ addr	how	frozen	evidence
 0049e100	table	CScriptRegion_IsMouseOver	binding "IsMouseOver" in ScriptRegionMethods ~ table 00ac1480
 0049e260	table	CScriptRegion_GetAnimationGroups	binding "GetAnimationGroups" in ScriptRegionMethods ~ table 00ac1480
 0049e350	table	CScriptRegion_CreateAnimationGroup	binding "CreateAnimationGroup" in ScriptRegionMethods ~ table 00ac1480
-0049e5b0	order	CSimpleFrame_GetTitleRegion	binding table name CSimpleFrame_GetTitleRegion, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e630	order	CSimpleFrame_CreateTitleRegion	binding table name CSimpleFrame_CreateTitleRegion, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e700	order	CSimpleFrame_GetBoundsRect	binding table name CSimpleFrame_GetBoundsRect, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e830	order	CSimpleFrame_GetFrameStrata	binding table name CSimpleFrame_GetFrameStrata, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e880	order	CSimpleFrame_SetFrameStrata	binding table name CSimpleFrame_SetFrameStrata, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e980	order	CSimpleFrame_GetFrameLevel	binding table name CSimpleFrame_GetFrameLevel, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049e9d0	string	CSimpleFrame_SetFrameLevel	unique "%s:SetFrameLevel(): Passed negative frame level: %d"
-0049eab0	order	CSimpleFrame_HasScript	definition order between CSimpleFrame_SetFrameLevel and CSimpleFrame_RegisterEvent in src/ui/simple/CSimpleFrameScript.cpp
-0049eb70	order	CSimpleFrame_GetScript	definition order between CSimpleFrame_SetFrameLevel and CSimpleFrame_RegisterEvent in src/ui/simple/CSimpleFrameScript.cpp
-0049ec80	order	CSimpleFrame_SetScript	definition order between CSimpleFrame_SetFrameLevel and CSimpleFrame_RegisterEvent in src/ui/simple/CSimpleFrameScript.cpp
-0049edb0	order	CSimpleFrame_HookScript	definition order between CSimpleFrame_SetFrameLevel and CSimpleFrame_RegisterEvent in src/ui/simple/CSimpleFrameScript.cpp
-0049efe0	string	CSimpleFrame_RegisterEvent	unique "Usage: %s:RegisterEvent("event")"
-0049f060	string	CSimpleFrame_UnregisterEvent	unique "Usage: %s:UnregisterEvent("event")"
-0049f0e0	order	CSimpleFrame_RegisterAllEvents	binding table name CSimpleFrame_RegisterAllEvents, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049f120	order	CSimpleFrame_UnregisterAllEvents	binding table name CSimpleFrame_UnregisterAllEvents, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049f160	string	CSimpleFrame_IsEventRegistered	unique "Usage: %s:IsEventRegistered("event")"
-0049f210	order	CSimpleFrame_AllowAttributeChanges	binding table name CSimpleFrame_AllowAttributeChanges, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049f260	order	CSimpleFrame_CanChangeAttributes	definition order between CSimpleFrame_AllowAttributeChanges and CSimpleFrame_GetAttribute in src/ui/simple/CSimpleFrameScript.cpp
-0049f2d0	string	CSimpleFrame_GetAttribute	unique "Usage: %s:GetAttribute("name")"
-0049f610	string	CSimpleFrame_SetAttribute	unique "Usage: %s:SetAttribute("name", value)"
-0049f790	order	CSimpleFrame_GetEffectiveScale	binding table name CSimpleFrame_GetEffectiveScale, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049f7d0	order	CSimpleFrame_GetScale	definition order between CSimpleFrame_GetEffectiveScale and CSimpleFrame_SetScale in src/ui/simple/CSimpleFrameScript.cpp
-0049f820	string	CSimpleFrame_SetScale	unique "%s:SetScale(): Scale must be > 0"
-0049f900	order	CSimpleFrame_GetEffectiveAlpha	binding table name CSimpleFrame_GetEffectiveAlpha, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049f980	order	CSimpleFrame_GetAlpha	definition order between CSimpleFrame_GetEffectiveAlpha and CSimpleFrame_GetID in src/ui/simple/CSimpleFrameScript.cpp
-0049f9e0	order	CSimpleFrame_SetAlpha	definition order between CSimpleFrame_GetEffectiveAlpha and CSimpleFrame_GetID in src/ui/simple/CSimpleFrameScript.cpp
-0049fab0	order	CSimpleFrame_GetID	binding table name CSimpleFrame_GetID, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049fb00	string	CSimpleFrame_SetID	unique "Usage: %s:SetID(ID)"
-0049fbb0	order	CSimpleFrame_SetToplevel	binding table name CSimpleFrame_SetToplevel, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049fc30	order	CSimpleFrame_IsToplevel	binding table name CSimpleFrame_IsToplevel, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049fc90	order	CSimpleFrame_EnableDrawLayer	binding table name CSimpleFrame_EnableDrawLayer, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049fd00	order	CSimpleFrame_DisableDrawLayer	binding table name CSimpleFrame_DisableDrawLayer, in definition order in src/ui/simple/CSimpleFrameScript.cpp
-0049fd70	order	CSimpleFrame_Show	definition order between CSimpleFrame_DisableDrawLayer and CSimpleFrame_IsVisible in src/ui/simple/CSimpleFrameScript.cpp
-0049fdd0	order	CSimpleFrame_Hide	definition order between CSimpleFrame_DisableDrawLayer and CSimpleFrame_IsVisible in src/ui/simple/CSimpleFrameScript.cpp
-0049fe30	table	CSimpleFrame_IsVisible	binding "IsVisible" in SimpleFrameMethods ~ table 00ac1690
-0049fe90	table	CSimpleFrame_IsShown	binding "IsShown" in SimpleFrameMethods ~ table 00ac1690
-0049fef0	table	CSimpleFrame_Raise	binding "Raise" in SimpleFrameMethods ~ table 00ac1690
-0049ff50	table	CSimpleFrame_Lower	binding "Lower" in SimpleFrameMethods ~ table 00ac1690
+0049e5b0	table	CSimpleFrame_GetTitleRegion	binding "GetTitleRegion" in SimpleFrameMethods ~ table 00ac1550
+0049e630	table	CSimpleFrame_CreateTitleRegion	binding "CreateTitleRegion" in SimpleFrameMethods ~ table 00ac1550
+0049e700	table	CSimpleFrame_GetBoundsRect	binding "GetBoundsRect" in SimpleFrameMethods ~ table 00ac1550
+0049e830	table	CSimpleFrame_GetFrameStrata	binding "GetFrameStrata" in SimpleFrameMethods ~ table 00ac1550
+0049e880	table	CSimpleFrame_SetFrameStrata	binding "SetFrameStrata" in SimpleFrameMethods ~ table 00ac1550
+0049e980	table	CSimpleFrame_GetFrameLevel	binding "GetFrameLevel" in SimpleFrameMethods ~ table 00ac1550
+0049e9d0	table	CSimpleFrame_SetFrameLevel	binding "SetFrameLevel" in SimpleFrameMethods ~ table 00ac1550
+0049eab0	table	CSimpleFrame_HasScript	binding "HasScript" in SimpleFrameMethods ~ table 00ac1550
+0049eb70	table	CSimpleFrame_GetScript	binding "GetScript" in SimpleFrameMethods ~ table 00ac1550
+0049ec80	table	CSimpleFrame_SetScript	binding "SetScript" in SimpleFrameMethods ~ table 00ac1550
+0049edb0	table	CSimpleFrame_HookScript	binding "HookScript" in SimpleFrameMethods ~ table 00ac1550
+0049efe0	table	CSimpleFrame_RegisterEvent	binding "RegisterEvent" in SimpleFrameMethods ~ table 00ac1550
+0049f060	table	CSimpleFrame_UnregisterEvent	binding "UnregisterEvent" in SimpleFrameMethods ~ table 00ac1550
+0049f0e0	table	CSimpleFrame_RegisterAllEvents	binding "RegisterAllEvents" in SimpleFrameMethods ~ table 00ac1550
+0049f120	table	CSimpleFrame_UnregisterAllEvents	binding "UnregisterAllEvents" in SimpleFrameMethods ~ table 00ac1550
+0049f160	table	CSimpleFrame_IsEventRegistered	binding "IsEventRegistered" in SimpleFrameMethods ~ table 00ac1550
+0049f210	table	CSimpleFrame_AllowAttributeChanges	binding "AllowAttributeChanges" in SimpleFrameMethods ~ table 00ac1550
+0049f260	table	CSimpleFrame_CanChangeAttributes	binding "CanChangeAttribute" in SimpleFrameMethods ~ table 00ac1550
+0049f2d0	table	CSimpleFrame_GetAttribute	binding "GetAttribute" in SimpleFrameMethods ~ table 00ac1550
+0049f610	table	CSimpleFrame_SetAttribute	binding "SetAttribute" in SimpleFrameMethods ~ table 00ac1550
+0049f790	table	CSimpleFrame_GetEffectiveScale	binding "GetEffectiveScale" in SimpleFrameMethods ~ table 00ac1550
+0049f7d0	table	CSimpleFrame_GetScale	binding "GetScale" in SimpleFrameMethods ~ table 00ac1550
+0049f820	table	CSimpleFrame_SetScale	binding "SetScale" in SimpleFrameMethods ~ table 00ac1550
+0049f900	table	CSimpleFrame_GetEffectiveAlpha	binding "GetEffectiveAlpha" in SimpleFrameMethods ~ table 00ac1550
+0049f980	table	CSimpleFrame_GetAlpha	binding "GetAlpha" in SimpleFrameMethods ~ table 00ac1550
+0049f9e0	table	CSimpleFrame_SetAlpha	binding "SetAlpha" in SimpleFrameMethods ~ table 00ac1550
+0049fab0	table	CSimpleFrame_GetID	binding "GetID" in SimpleFrameMethods ~ table 00ac1550
+0049fb00	table	CSimpleFrame_SetID	binding "SetID" in SimpleFrameMethods ~ table 00ac1550
+0049fbb0	table	CSimpleFrame_SetToplevel	binding "SetToplevel" in SimpleFrameMethods ~ table 00ac1550
+0049fc30	table	CSimpleFrame_IsToplevel	binding "IsToplevel" in SimpleFrameMethods ~ table 00ac1550
+0049fc90	table	CSimpleFrame_EnableDrawLayer	binding "EnableDrawLayer" in SimpleFrameMethods ~ table 00ac1550
+0049fd00	table	CSimpleFrame_DisableDrawLayer	binding "DisableDrawLayer" in SimpleFrameMethods ~ table 00ac1550
+0049fd70	table	CSimpleFrame_Show	binding "Show" in SimpleFrameMethods ~ table 00ac1550
+0049fdd0	table	CSimpleFrame_Hide	binding "Hide" in SimpleFrameMethods ~ table 00ac1550
+0049fe30	table	CSimpleFrame_IsVisible	binding "IsVisible" in SimpleFrameMethods ~ table 00ac1550
+0049fe90	table	CSimpleFrame_IsShown	binding "IsShown" in SimpleFrameMethods ~ table 00ac1550
+0049fef0	table	CSimpleFrame_Raise	binding "Raise" in SimpleFrameMethods ~ table 00ac1550
+0049ff50	table	CSimpleFrame_Lower	binding "Lower" in SimpleFrameMethods ~ table 00ac1550
 0049ffb0	annotated	CSimpleFrame_GetHitRectInsets	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a0090	table	CSimpleFrame_SetHitRectInsets	binding "SetHitRectInsets" in SimpleFrameMethods ~ table 00ac1690
+004a0090	table	CSimpleFrame_SetHitRectInsets	binding "SetHitRectInsets" in SimpleFrameMethods ~ table 00ac1550
 004a0230	annotated	CSimpleFrame_GetClampRectInsets	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a0310	table	CSimpleFrame_SetClampRectInsets	binding "SetClampRectInsets" in SimpleFrameMethods ~ table 00ac1690
+004a0310	table	CSimpleFrame_SetClampRectInsets	binding "SetClampRectInsets" in SimpleFrameMethods ~ table 00ac1550
 004a0480	annotated	CSimpleFrame_GetMinResize	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a0520	annotated	CSimpleFrame_SetMinResize	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a0640	annotated	CSimpleFrame_GetMaxResize	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a06e0	annotated	CSimpleFrame_SetMaxResize	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a0800	table	CSimpleFrame_SetMovable	binding "SetMovable" in SimpleFrameMethods ~ table 00ac1690
-004a0850	table	CSimpleFrame_IsMovable	binding "IsMovable" in SimpleFrameMethods ~ table 00ac1690
+004a0800	table	CSimpleFrame_SetMovable	binding "SetMovable" in SimpleFrameMethods ~ table 00ac1550
+004a0850	table	CSimpleFrame_IsMovable	binding "IsMovable" in SimpleFrameMethods ~ table 00ac1550
 004a08c0	annotated	CSimpleFrame_SetDontSavePosition	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a0910	annotated	CSimpleFrame_GetDontSavePosition	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a0980	table	CSimpleFrame_SetResizable	binding "SetResizable" in SimpleFrameMethods ~ table 00ac1690
-004a09d0	table	CSimpleFrame_IsResizable	binding "IsResizable" in SimpleFrameMethods ~ table 00ac1690
+004a0980	table	CSimpleFrame_SetResizable	binding "SetResizable" in SimpleFrameMethods ~ table 00ac1550
+004a09d0	table	CSimpleFrame_IsResizable	binding "IsResizable" in SimpleFrameMethods ~ table 00ac1550
 004a0a40	annotated	CSimpleFrame_StartMoving	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a0b10	annotated	CSimpleFrame_StartSizing	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a0c20	table	CSimpleFrame_StopMovingOrSizing	binding "StopMovingOrSizing" in SimpleFrameMethods ~ table 00ac1690
-004a0c70	table	CSimpleFrame_SetUserPlaced	binding "SetUserPlaced" in SimpleFrameMethods ~ table 00ac1690
-004a0d00	table	CSimpleFrame_IsUserPlaced	binding "IsUserPlaced" in SimpleFrameMethods ~ table 00ac1690
-004a0d70	table	CSimpleFrame_SetClampedToScreen	binding "SetClampedToScreen" in SimpleFrameMethods ~ table 00ac1690
-004a0dc0	table	CSimpleFrame_IsClampedToScreen	binding "IsClampedToScreen" in SimpleFrameMethods ~ table 00ac1690
-004a0e20	table	CSimpleFrame_RegisterForDrag	binding "RegisterForDrag" in SimpleFrameMethods ~ table 00ac1690
-004a0ec0	table	CSimpleFrame_EnableKeyboard	binding "EnableKeyboard" in SimpleFrameMethods ~ table 00ac1690
-004a0f60	table	CSimpleFrame_IsKeyboardEnabled	binding "IsKeyboardEnabled" in SimpleFrameMethods ~ table 00ac1690
-004a0fd0	table	CSimpleFrame_EnableMouse	binding "EnableMouse" in SimpleFrameMethods ~ table 00ac1690
-004a1060	table	CSimpleFrame_IsMouseEnabled	binding "IsMouseEnabled" in SimpleFrameMethods ~ table 00ac1690
-004a10d0	table	CSimpleFrame_EnableMouseWheel	binding "EnableMouseWheel" in SimpleFrameMethods ~ table 00ac1690
-004a1160	table	CSimpleFrame_IsMouseWheelEnabled	binding "IsMouseWheelEnabled" in SimpleFrameMethods ~ table 00ac1690
+004a0c20	table	CSimpleFrame_StopMovingOrSizing	binding "StopMovingOrSizing" in SimpleFrameMethods ~ table 00ac1550
+004a0c70	table	CSimpleFrame_SetUserPlaced	binding "SetUserPlaced" in SimpleFrameMethods ~ table 00ac1550
+004a0d00	table	CSimpleFrame_IsUserPlaced	binding "IsUserPlaced" in SimpleFrameMethods ~ table 00ac1550
+004a0d70	table	CSimpleFrame_SetClampedToScreen	binding "SetClampedToScreen" in SimpleFrameMethods ~ table 00ac1550
+004a0dc0	table	CSimpleFrame_IsClampedToScreen	binding "IsClampedToScreen" in SimpleFrameMethods ~ table 00ac1550
+004a0e20	table	CSimpleFrame_RegisterForDrag	binding "RegisterForDrag" in SimpleFrameMethods ~ table 00ac1550
+004a0ec0	table	CSimpleFrame_EnableKeyboard	binding "EnableKeyboard" in SimpleFrameMethods ~ table 00ac1550
+004a0f60	table	CSimpleFrame_IsKeyboardEnabled	binding "IsKeyboardEnabled" in SimpleFrameMethods ~ table 00ac1550
+004a0fd0	table	CSimpleFrame_EnableMouse	binding "EnableMouse" in SimpleFrameMethods ~ table 00ac1550
+004a1060	table	CSimpleFrame_IsMouseEnabled	binding "IsMouseEnabled" in SimpleFrameMethods ~ table 00ac1550
+004a10d0	table	CSimpleFrame_EnableMouseWheel	binding "EnableMouseWheel" in SimpleFrameMethods ~ table 00ac1550
+004a1160	table	CSimpleFrame_IsMouseWheelEnabled	binding "IsMouseWheelEnabled" in SimpleFrameMethods ~ table 00ac1550
 004a11d0	annotated	CSimpleFrame_EnableJoystick	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a1260	table	CSimpleFrame_IsJoystickEnabled	binding "IsJoystickEnabled" in SimpleFrameMethods ~ table 00ac1690
+004a1260	table	CSimpleFrame_IsJoystickEnabled	binding "IsJoystickEnabled" in SimpleFrameMethods ~ table 00ac1550
 004a12d0	annotated	CSimpleFrame_GetBackdrop	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a15a0	annotated	CSimpleFrame_SetBackdrop	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a19a0	annotated	CSimpleFrame_GetBackdropColor	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a1a80	table	CSimpleFrame_SetBackdropColor	binding "SetBackdropColor" in SimpleFrameMethods ~ table 00ac1690
+004a1a80	table	CSimpleFrame_SetBackdropColor	binding "SetBackdropColor" in SimpleFrameMethods ~ table 00ac1550
 004a1af0	annotated	CSimpleFrame_GetBackdropBorderColor	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a1bd0	table	CSimpleFrame_SetBackdropBorderColor	binding "SetBackdropBorderColor" in SimpleFrameMethods ~ table 00ac1690
+004a1bd0	table	CSimpleFrame_SetBackdropBorderColor	binding "SetBackdropBorderColor" in SimpleFrameMethods ~ table 00ac1550
 004a1c40	annotated	CSimpleFrame_SetDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1cc0	annotated	CSimpleFrame_GetDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
 004a1d20	annotated	CSimpleFrame_GetEffectiveDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a1d80	table	CSimpleFrame_IgnoreDepth	binding "IgnoreDepth" in SimpleFrameMethods ~ table 00ac1690
+004a1d80	table	CSimpleFrame_IgnoreDepth	binding "IgnoreDepth" in SimpleFrameMethods ~ table 00ac1550
 004a1e00	annotated	CSimpleFrame_IsIgnoringDepth	tag in src/ui/simple/CSimpleFrameScript.cpp
-004a2010	string	CSimpleFrame_CreateTexture	unique "%s:CreateTexture(): Couldn't find inherited node "%s""
-004a2240	string	CSimpleFrame_CreateFontString	unique "%s:CreateFontString(): Couldn't find inherited node "%s""
+004a1e80	table	CSimpleFrame_GetNumRegions	binding "GetNumRegions" in SimpleFrameMethods ~ table 00ac1550
+004a1f10	table	CSimpleFrame_GetRegions	binding "GetRegions" in SimpleFrameMethods ~ table 00ac1550
+004a2010	table	CSimpleFrame_CreateTexture	binding "CreateTexture" in SimpleFrameMethods ~ table 00ac1550
+004a2240	table	CSimpleFrame_CreateFontString	binding "CreateFontString" in SimpleFrameMethods ~ table 00ac1550
+004a2490	table	CSimpleFrame_GetNumChildren	binding "GetNumChildren" in SimpleFrameMethods ~ table 00ac1550
+004a2510	table	CSimpleFrame_GetChildren	binding "GetChildren" in SimpleFrameMethods ~ table 00ac1550
 004a25f0	callgraph	CBackdropGenerator::SetVertexColor	only unmatched callee of 004a1a80=CSimpleFrame_SetBackdropColor
 004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
@@ -405,16 +425,18 @@ addr	how	frozen	evidence
 004a4080	annotated	FontString_GetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40b0	annotated	FontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40e0	annotated	FontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-004a4220	order	CScriptObject::GetName	binding table name GetName, in definition order in src/ui/CScriptObject.cpp
+004a4120	table	CSimpleFont_GetObjectType	binding "GetObjectType" in SimpleFontMethods ~ table 00ac1818
+004a4170	table	CSimpleFont_IsObjectType	binding "IsObjectType" in SimpleFontMethods ~ table 00ac1818
+004a4220	table	CSimpleFont_GetName	binding "GetName" in SimpleFontMethods ~ table 00ac1818
 004a4280	annotated	CSimpleFont_SetFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
 004a42d0	annotated	CSimpleFont_GetFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
-004a4350	annotated	CSimpleFont_CopyFontObject	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4350	override	CSimpleFont_CopyFontObject	
 004a43a0	annotated	CSimpleFont_SetFont	tag in src/ui/simple/CSimpleFontScript.cpp
-004a43f0	order	CSimpleFont_GetFont	definition order between CSimpleFont_SetFont and CSimpleFont_SetAlpha in src/ui/simple/CSimpleFontScript.cpp
+004a43f0	table	CSimpleFont_GetFont	binding "GetFont" in SimpleFontMethods ~ table 00ac1818
 004a4440	annotated	CSimpleFont_SetAlpha	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4490	annotated	CSimpleFont_GetAlpha	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4500	annotated	CSimpleFont_SetTextColor	tag in src/ui/simple/CSimpleFontScript.cpp
-004a4590	order	CSimpleFont_GetTextColor	definition order between CSimpleFont_SetTextColor and CSimpleFont_SetShadowColor in src/ui/simple/CSimpleFontScript.cpp
+004a4590	table	CSimpleFont_GetTextColor	binding "GetTextColor" in SimpleFontMethods ~ table 00ac1818
 004a45e0	annotated	CSimpleFont_SetShadowColor	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4630	annotated	CSimpleFont_GetShadowColor	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4680	annotated	CSimpleFont_SetShadowOffset	tag in src/ui/simple/CSimpleFontScript.cpp
@@ -432,10 +454,10 @@ addr	how	frozen	evidence
 004a4b50	annotated	CSimpleFont_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontScript.cpp
 004a6f60	order	ClientConnection::AccountLogin_Finish	binding table name AccountLogin_Finish, in definition order in src/net/connection/ClientConnection.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
-004a8240	table	CScriptObject_GetObjectType	binding "GetObjectType" in ScriptObjectMethods ~ table 00ac1ad0
-004a8290	table	CScriptObject_IsObjectType	binding "IsObjectType" in ScriptObjectMethods ~ table 00ac1ad0
-004a8340	table	CScriptObject_GetName	binding "GetName" in ScriptObjectMethods ~ table 00ac1ad0
-004a83a0	table	CScriptObject_GetParent	binding "GetParent" in ScriptObjectMethods ~ table 00ac1ad0
+004a8240	table	CScriptObject_GetObjectType	binding "GetObjectType" in ScriptObjectMethods ~ table 00ac1ab8
+004a8290	table	CScriptObject_IsObjectType	binding "IsObjectType" in ScriptObjectMethods ~ table 00ac1ab8
+004a8340	table	CScriptObject_GetName	binding "GetName" in ScriptObjectMethods ~ table 00ac1ab8
+004a83a0	table	CScriptObject_GetParent	binding "GetParent" in ScriptObjectMethods ~ table 00ac1ab8
 004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	Script_Screenshot	unique "Screenshots"
@@ -520,107 +542,137 @@ addr	how	frozen	evidence
 004d8cc0	annotated	CGlueMgr::DeleteCharacter	tag in src/glue/CGlueMgr.cpp
 004d9500	handler	CGlueMgr::OnKickReasonMsg	SetMessageHandler(SMSG_KICK_REASON) on both sides
 004d95c0	string	CGlueMgr::GetCharacterList	unique "CHAR_LIST_RETRIEVING"
+004d9610	callgraph	CGlueMgr::GetRealmList	only unmatched callee of 004de430=Script_RequestRealmList
+004d98a0	callgraph	CCharacterSelection::GetCharacterDisplay	only unmatched callee of 004e3620=Script_GetSelectBackgroundModel
 004d98d0	string	CGlueMgr::StatusDialogClick	score 0.53 shared login; patchdownload
 004d9bd0	string	CGlueMgr::EnterWorld	unique "CHAR_RENAME_DESCRIPTION"
 004da5f0	string	CGlueMgr::Resume	unique "Interface\GlueXML\GlueXML.toc"
 004dab40	string	CGlueMgr::PollAccountLogin	unique "AUTH_DB_BUSY_URL"
 004db9f0	string	CGlueMgr::Initialize	unique "ModelFFX"
 004dbc70	string	GlueScriptEventsInitialize	unique "ACCOUNT_MESSAGES_AVAILABLE"
-004dbe10	table	Script_IsShiftKeyDown	binding "IsShiftKeyDown" in s_ScriptFunctions ~ table 00ac3e00
-004dbe60	table	Script_GetBuildInfo	binding "GetBuildInfo" in s_ScriptFunctions ~ table 00ac3e00
 004dbec0	table	Script_SetSavedAccountName	binding "SetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
 004dbf10	table	Script_GetUsesToken	binding "GetUsesToken" in s_ScriptFunctions ~ table 00ac3e00
 004dbf30	table	Script_SetUsesToken	binding "SetUsesToken" in s_ScriptFunctions ~ table 00ac3e00
 004dbf80	table	Script_SetSavedAccountList	binding "SetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00
 004dbfd0	annotated	Script_GetLocale	tag in src/glue/GlueScript.cpp
 004dc000	table	Script_SetCurrentScreen	binding "SetCurrentScreen" in s_ScriptFunctions ~ table 00ac3e00
-004dc070	string	Script_PlayGlueMusic	unique "Usage: PlayGlueMusic("filename")"
-004dc150	string	Script_PlayCreditsMusic	unique "Usage: PlayCreditsMusic( "Sound kit name" )"
-004dc260	string	Script_DefaultServerLogin	unique "Usage: DefaultServerLogin("accountName", "password")"
-004dcd60	string	Script_GetCreditsText	unique "Usage: Script_GetCreditText(versionIndex)"
-004dce70	string	Script_SetCVar	score 1.00 shared "%s" is read-only; Couldn't find CVar named '%s'; Usage: SetCVar("cvar", value [, "scriptC
+004dc070	table	Script_PlayGlueMusic	binding "PlayGlueMusic" in s_ScriptFunctions ~ table 00ac3e00
+004dc0c0	table	Script_PlayGlueAmbience	binding "PlayGlueAmbience" in s_ScriptFunctions ~ table 00ac3e00
+004dc150	table	Script_PlayCreditsMusic	binding "PlayCreditsMusic" in s_ScriptFunctions ~ table 00ac3e00
+004dc1c0	table	Script_LaunchURL	binding "LaunchURL" in s_ScriptFunctions ~ table 00ac3e00
+004dc260	table	Script_DefaultServerLogin	binding "DefaultServerLogin" in s_ScriptFunctions ~ table 00ac3e00
+004dc2d0	table	Script_PINEntered	binding "PINEntered" in s_ScriptFunctions ~ table 00ac3e00
+004dc3a0	table	Script_MatrixEntered	binding "MatrixEntered" in s_ScriptFunctions ~ table 00ac3e00
+004dc440	table	Script_GetMatrixCoordinates	binding "GetMatrixCoordinates" in s_ScriptFunctions ~ table 00ac3e00
+004dc4d0	table	Script_TokenEntered	binding "TokenEntered" in s_ScriptFunctions ~ table 00ac3e00
+004dc720	table	Script_LaunchAddOnURL	binding "LaunchAddOnURL" in s_ScriptFunctions ~ table 00ac3e00
+004dc7c0	table	Script_GetAddOnEnableState	binding "GetAddOnEnableState" in s_ScriptFunctions ~ table 00ac3e00
+004dc960	table	Script_EnableAllAddOns	binding "EnableAllAddOns" in s_ScriptFunctions ~ table 00ac3e00
+004dca70	table	Script_DisableAllAddOns	binding "DisableAllAddOns" in s_ScriptFunctions ~ table 00ac3e00
+004dcae0	table	Script_IsAddonVersionCheckEnabled	binding "IsAddonVersionCheckEnabled" in s_ScriptFunctions ~ table 00ac3e00
+004dcb20	table	Script_SetAddonVersionCheck	binding "SetAddonVersionCheck" in s_ScriptFunctions ~ table 00ac3e00
+004dcbf0	table	Script_GetClientExpansionLevel	binding "GetClientExpansionLevel" in s_ScriptFunctions ~ table 00ac3e00
+004dccc0	table	Script_SurveyNotificationDone	binding "SurveyNotificationDone" in s_ScriptFunctions ~ table 00ac3e00
+004dccf0	table	Script_ScanDLLStart	binding "ScanDLLStart" in s_ScriptFunctions ~ table 00ac3e00
+004dcd60	table	Script_GetCreditsText	binding "GetCreditsText" in s_ScriptFunctions ~ table 00ac3e00
+004dce00	table	Script_IsScanDLLFinished	binding "IsScanDLLFinished" in s_ScriptFunctions ~ table 00ac3e00
+004dce40	table	Script_IsWindowsClient	binding "IsWindowsClient" in s_ScriptFunctions ~ table 00ac80b0
+004dcf30	table	Script_ShowChangedOptionWarnings	binding "ShowChangedOptionWarnings" in s_ScriptFunctions ~ table 00ac3e00
+004dd130	table	Script_GetNumGameAccounts	binding "GetNumGameAccounts" in s_ScriptFunctions ~ table 00ac3e00
+004dd1c0	table	Script_GetGameAccountInfo	binding "GetGameAccountInfo" in s_ScriptFunctions ~ table 00ac3e00
+004dd2b0	table	Script_SetGameAccount	binding "SetGameAccount" in s_ScriptFunctions ~ table 00ac3e00
+004dd380	table	Script_StopAllSFX	binding "StopAllSFX" in s_ScriptFunctions ~ table 00ac3e00
+004dd3b0	table	Script_SetClearConfigData	binding "SetClearConfigData" in s_ScriptFunctions ~ table 00ac3e00
 004dd400	annotated	Script_RestartGx	tag in src/glue/GlueScript.cpp
 004dd450	annotated	Script_IsConsoleActive	tag in src/glue/GlueScript.cpp
+004dd4d0	table	Script_IsTrialAccount	binding "IsTrialAccount" in s_ScriptFunctions ~ table 00ac3e00
+004dd540	table	Script_IsSystemSupported	binding "IsSystemSupported" in s_ScriptFunctions ~ table 00ac3e00
 004dd5d0	table	Script_GetSavedAccountName	binding "GetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
 004dd5f0	table	Script_GetSavedAccountList	binding "GetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00
-004dd610	order	Script_GetMovieResolution	binding table name Script_GetMovieResolution, in definition order in src/glue/GlueScript.cpp
-004dd680	order	Script_ShowTOSNotice	binding table name Script_ShowTOSNotice, in definition order in src/glue/GlueScript.cpp
-004dd6c0	order	Script_TOSAccepted	binding table name Script_TOSAccepted, in definition order in src/glue/GlueScript.cpp
-004dd700	order	Script_ShowEULANotice	binding table name Script_ShowEULANotice, in definition order in src/glue/GlueScript.cpp
-004dd740	order	Script_EULAAccepted	binding table name Script_EULAAccepted, in definition order in src/glue/GlueScript.cpp
-004dd780	order	Script_ShowTerminationWithoutNoticeNotice	binding table name Script_ShowTerminationWithoutNoticeNotice, in definition order in src/glue/GlueScript.cpp
-004dd7c0	order	Script_TerminationWithoutNoticeAccepted	binding table name Script_TerminationWithoutNoticeAccepted, in definition order in src/glue/GlueScript.cpp
-004dd800	order	Script_ShowScanningNotice	binding table name Script_ShowScanningNotice, in definition order in src/glue/GlueScript.cpp
-004dd840	order	Script_ScanningAccepted	binding table name Script_ScanningAccepted, in definition order in src/glue/GlueScript.cpp
-004dd880	order	Script_ShowContestNotice	binding table name Script_ShowContestNotice, in definition order in src/glue/GlueScript.cpp
-004dd8c0	order	Script_ContestAccepted	binding table name Script_ContestAccepted, in definition order in src/glue/GlueScript.cpp
-004dd900	order	Script_GetServerName	binding table name Script_GetServerName, in definition order in src/glue/GlueScript.cpp
-004dda50	order	Script_IsConnectedToServer	binding table name Script_IsConnectedToServer, in definition order in src/glue/GlueScript.cpp
-004dda90	order	Script_PatchDownloadProgress	binding table name Script_PatchDownloadProgress, in definition order in src/glue/GlueScript.cpp
-004ddbd0	order	Script_GetBillingTimeRemaining	binding table name Script_GetBillingTimeRemaining, in definition order in src/glue/GlueScript.cpp
-004ddc20	table	Script_GetAccountExpansionLevel	binding "GetAccountExpansionLevel" in s_SystemFunctions ~ table 00ad2184
-004ddc60	order	Script_GetBillingPlan	binding table name Script_GetBillingPlan, in definition order in src/glue/GlueScript.cpp
-004ddd10	string	Script_GetCVar	score 0.50 shared Couldn't find CVar named '%s'; Usage: GetCVar("cvar")
-004ddd90	string	Script_GetCVarBool	score 0.50 shared Usage: GetCVarBool("cvar")
-004dde10	string	Script_GetCVarDefault	score 0.50 shared Couldn't find CVar named '%s'; Usage: GetCVarDefault("cvar")
-004ddea0	string	Script_GetCVarMin	score 0.50 shared Couldn't find CVar named '%s'; Usage: GetCVarMin("cvar"); extShadowQuality
-004ddf80	order	Script_GetCVarMax	definition order between Script_GetCVarMin and Script_GetChangedOptionWarnings in src/glue/GlueScript.cpp
-004de090	order	Script_GetCVarAbsoluteMin	definition order between Script_GetCVarMin and Script_GetChangedOptionWarnings in src/glue/GlueScript.cpp
-004de130	order	Script_GetCVarAbsoluteMax	definition order between Script_GetCVarMin and Script_GetChangedOptionWarnings in src/glue/GlueScript.cpp
-004de1f0	order	Script_GetChangedOptionWarnings	binding table name Script_GetChangedOptionWarnings, in definition order in src/glue/GlueScript.cpp
-004de390	order	Script_ReadyForAccountDataTimes	binding table name Script_ReadyForAccountDataTimes, in definition order in src/glue/GlueScript.cpp
-004de430	order	Script_RequestRealmList	binding table name Script_RequestRealmList, in definition order in src/glue/CRealmListScript.cpp
-004de450	order	Script_RealmListUpdateRate	binding table name Script_RealmListUpdateRate, in definition order in src/glue/CRealmListScript.cpp
+004dd610	table	Script_GetMovieResolution	binding "GetMovieResolution" in s_ScriptFunctions ~ table 00ac80b0
+004dd680	table	Script_ShowTOSNotice	binding "ShowTOSNotice" in s_ScriptFunctions ~ table 00ac3e00
+004dd6c0	table	Script_TOSAccepted	binding "TOSAccepted" in s_ScriptFunctions ~ table 00ac3e00
+004dd700	table	Script_ShowEULANotice	binding "ShowEULANotice" in s_ScriptFunctions ~ table 00ac3e00
+004dd740	table	Script_EULAAccepted	binding "EULAAccepted" in s_ScriptFunctions ~ table 00ac3e00
+004dd780	table	Script_ShowTerminationWithoutNoticeNotice	binding "ShowTerminationWithoutNoticeNotice" in s_ScriptFunctions ~ table 00ac3e00
+004dd7c0	table	Script_TerminationWithoutNoticeAccepted	binding "TerminationWithoutNoticeAccepted" in s_ScriptFunctions ~ table 00ac3e00
+004dd800	table	Script_ShowScanningNotice	binding "ShowScanningNotice" in s_ScriptFunctions ~ table 00ac3e00
+004dd840	table	Script_ScanningAccepted	binding "ScanningAccepted" in s_ScriptFunctions ~ table 00ac3e00
+004dd880	table	Script_ShowContestNotice	binding "ShowContestNotice" in s_ScriptFunctions ~ table 00ac3e00
+004dd8c0	table	Script_ContestAccepted	binding "ContestAccepted" in s_ScriptFunctions ~ table 00ac3e00
+004dd900	table	Script_GetServerName	binding "GetServerName" in s_ScriptFunctions ~ table 00ac3e00
+004dda50	table	Script_IsConnectedToServer	binding "IsConnectedToServer" in s_ScriptFunctions ~ table 00ac3e00
+004dda90	table	Script_PatchDownloadProgress	binding "PatchDownloadProgress" in s_ScriptFunctions ~ table 00ac3e00
+004ddbd0	table	Script_GetBillingTimeRemaining	binding "GetBillingTimeRemaining" in s_ScriptFunctions ~ table 00ac3e00
+004ddc20	table	Script_GetExpansionLevel	binding "GetExpansionLevel" in s_ScriptFunctions ~ table 00ac80b0
+004ddc60	table	Script_GetBillingPlan	binding "GetBillingPlan" in s_ScriptFunctions ~ table 00ac3e00
+004de1f0	table	Script_GetChangedOptionWarnings	binding "GetChangedOptionWarnings" in s_ScriptFunctions ~ table 00ac3e00
+004de250	table	Script_SetRealmSplitState	binding "SetRealmSplitState" in s_ScriptFunctions ~ table 00ac3e00
+004de2e0	table	Script_RequestRealmSplitInfo	binding "RequestRealmSplitInfo" in s_ScriptFunctions ~ table 00ac3e00
+004de390	table	Script_ReadyForAccountDataTimes	binding "ReadyForAccountDataTimes" in s_ScriptFunctions ~ table 00ac3e00
+004de430	table	Script_RequestRealmList	binding "RequestRealmList" in s_ScriptFunctions ~ table 00ac4190
+004de450	table	Script_RealmListUpdateRate	binding "RealmListUpdateRate" in s_ScriptFunctions ~ table 00ac4190
 004de910	annotated	CRealmList::Sub4DE910	tag in src/glue/CRealmList.cpp
 004de960	callgraph	CRealmList::SetPreferredInfo	only unmatched callee of 004df3a0=Script_SetPreferredInfo
-004deaf0	table	Script_GetNumRealms	binding "GetNumRealms" in s_ScriptFunctions ~ table 00ac41a8
-004debc0	table	Script_GetRealmInfo	binding "GetRealmInfo" in s_ScriptFunctions ~ table 00ac41a8
-004defb0	table	Script_ChangeRealm	binding "ChangeRealm" in s_ScriptFunctions ~ table 00ac41a8
-004df110	table	Script_GetRealmCategories	binding "GetRealmCategories" in s_ScriptFunctions ~ table 00ac41a8
-004df3a0	table	Script_SetPreferredInfo	binding "SetPreferredInfo" in s_ScriptFunctions ~ table 00ac41a8
-004df420	table	Script_SortRealms	binding "SortRealms" in s_ScriptFunctions ~ table 00ac41a8
-004df4f0	table	Script_GetSelectedCategory	binding "GetSelectedCategory" in s_ScriptFunctions ~ table 00ac41a8
+004deaf0	table	Script_GetNumRealms	binding "GetNumRealms" in s_ScriptFunctions ~ table 00ac4190
+004debc0	table	Script_GetRealmInfo	binding "GetRealmInfo" in s_ScriptFunctions ~ table 00ac4190
+004defb0	table	Script_ChangeRealm	binding "ChangeRealm" in s_ScriptFunctions ~ table 00ac4190
+004df110	table	Script_GetRealmCategories	binding "GetRealmCategories" in s_ScriptFunctions ~ table 00ac4190
+004df1c0	table	Script_IsInvalidTournamentRealmCategory	binding "IsInvalidTournamentRealmCategory" in s_ScriptFunctions ~ table 00ac4190
+004df270	table	Script_IsTournamentRealmCategory	binding "IsTournamentRealmCategory" in s_ScriptFunctions ~ table 00ac4190
+004df2f0	table	Script_IsInvalidLocale	binding "IsInvalidLocale" in s_ScriptFunctions ~ table 00ac4190
+004df3a0	table	Script_SetPreferredInfo	binding "SetPreferredInfo" in s_ScriptFunctions ~ table 00ac4190
+004df420	table	Script_SortRealms	binding "SortRealms" in s_ScriptFunctions ~ table 00ac4190
+004df4f0	table	Script_GetSelectedCategory	binding "GetSelectedCategory" in s_ScriptFunctions ~ table 00ac4190
 004df580	callorder	CRealmList::Initialize	same slot between linked calls in 004db9f0=CGlueMgr::Initialize
+004dfa70	table	Script_IsRaceClassRestricted	binding "IsRaceClassRestricted" in s_ScriptFunctions ~ table 00ac4228
+004dfca0	table	Script_GetRandomName	binding "GetRandomName" in s_ScriptFunctions ~ table 00ac4228
 004dffe0	callgraph	CCharacterCreation::IsRaceClassValid	only unmatched callee of 004e0d00=Script_IsRaceClassValid
 004e0040	callgraph	CCharacterCreation::SetCharCustomizeModel	only unmatched callee of 004e0620=Script_SetCharCustomizeBackground
 004e0160	callgraph	CCharacterCreation::SetFacing	only unmatched callee of 004e0c10=Script_SetCharacterCreateFacing
 004e01f0	callgraph	CCharacterCreation::CycleCharCustomization	only unmatched callee of 004e0b50=Script_CycleCharCustomization
 004e0380	annotated	CCharacterCreation::CreateCharacter	tag in src/glue/CCharacterCreation.cpp
-004e05b0	string	Script_SetCharCustomizeFrame	unique "Usage: SetCharCustomizeFrame("frameName")"
-004e0620	string	Script_SetCharCustomizeBackground	unique "Usage: SetCharCustomizeBackground("filename")"
-004e0670	table	Script_GetNameForRace	binding "GetNameForRace" in s_ScriptFunctions ~ table 00ac4240
-004e06f0	table	Script_GetFactionForRace	binding "GetFactionForRace" in s_ScriptFunctions ~ table 00ac4240
-004e0830	table	Script_GetAvailableClasses	binding "GetAvailableClasses" in s_ScriptFunctions ~ table 00ac4240
-004e0900	table	Script_GetHairCustomization	binding "GetHairCustomization" in s_ScriptFunctions ~ table 00ac4240
-004e0970	table	Script_GetFacialHairCustomization	binding "GetFacialHairCustomization" in s_ScriptFunctions ~ table 00ac4240
-004e09f0	table	Script_GetSelectedRace	binding "GetSelectedRace" in s_ScriptFunctions ~ table 00ac4240
-004e0a30	table	Script_GetSelectedSex	binding "GetSelectedSex" in s_ScriptFunctions ~ table 00ac4240
-004e0a60	table	Script_GetSelectedClass	binding "GetSelectedClass" in s_ScriptFunctions ~ table 00ac4240
-004e0b50	string	Script_CycleCharCustomization	unique "Usage: CycleCharCustomization(index, delta)"
-004e0be0	order	Script_GetCharacterCreateFacing	binding table name Script_GetCharacterCreateFacing, in definition order in src/glue/CCharacterCreationScript.cpp
-004e0c10	string	Script_SetCharacterCreateFacing	unique "Usage: SetCharacterCreateFacing(degrees)"
+004e05b0	table	Script_SetCharCustomizeFrame	binding "SetCharCustomizeFrame" in s_ScriptFunctions ~ table 00ac4228
+004e0620	table	Script_SetCharCustomizeBackground	binding "SetCharCustomizeBackground" in s_ScriptFunctions ~ table 00ac4228
+004e0670	table	Script_GetNameForRace	binding "GetNameForRace" in s_ScriptFunctions ~ table 00ac4228
+004e06f0	table	Script_GetFactionForRace	binding "GetFactionForRace" in s_ScriptFunctions ~ table 00ac4228
+004e0830	table	Script_GetAvailableClasses	binding "GetAvailableClasses" in s_ScriptFunctions ~ table 00ac4228
+004e0900	table	Script_GetHairCustomization	binding "GetHairCustomization" in s_ScriptFunctions ~ table 00ac4228
+004e0970	table	Script_GetFacialHairCustomization	binding "GetFacialHairCustomization" in s_ScriptFunctions ~ table 00ac4228
+004e09f0	table	Script_GetSelectedRace	binding "GetSelectedRace" in s_ScriptFunctions ~ table 00ac4228
+004e0a30	table	Script_GetSelectedSex	binding "GetSelectedSex" in s_ScriptFunctions ~ table 00ac4228
+004e0a60	table	Script_GetSelectedClass	binding "GetSelectedClass" in s_ScriptFunctions ~ table 00ac4228
+004e0b50	table	Script_CycleCharCustomization	binding "CycleCharCustomization" in s_ScriptFunctions ~ table 00ac4228
+004e0be0	table	Script_GetCharacterCreateFacing	binding "GetCharacterCreateFacing" in s_ScriptFunctions ~ table 00ac4228
+004e0c10	table	Script_SetCharacterCreateFacing	binding "SetCharacterCreateFacing" in s_ScriptFunctions ~ table 00ac4228
 004e0c60	annotated	Script_CreateCharacter	tag in src/glue/CCharacterCreationScript.cpp
-004e0d00	string	Script_IsRaceClassValid	unique "Usage: IsRaceClassValid(raceIndex, classIndex)"
+004e0ca0	table	Script_PaidChange_GetCurrentRaceIndex	binding "PaidChange_GetCurrentRaceIndex" in s_ScriptFunctions ~ table 00ac4228
+004e0cd0	table	Script_PaidChange_GetCurrentClassIndex	binding "PaidChange_GetCurrentClassIndex" in s_ScriptFunctions ~ table 00ac4228
+004e0d00	table	Script_IsRaceClassValid	binding "IsRaceClassValid" in s_ScriptFunctions ~ table 00ac4228
+004e0dd0	table	Script_GetCreateBackgroundModel	binding "GetCreateBackgroundModel" in s_ScriptFunctions ~ table 00ac4228
 004e1540	callgraph	CCharacterCreation::SetSelectedSex	only unmatched callee of 004e1a60=Script_SetSelectedSex
-004e1880	table	Script_GetAvailableRaces	binding "GetAvailableRaces" in s_ScriptFunctions ~ table 00ac4240
-004e19a0	table	Script_GetClassesForRace	binding "GetClassesForRace" in s_ScriptFunctions ~ table 00ac4240
-004e1a60	table	Script_SetSelectedSex	binding "SetSelectedSex" in s_ScriptFunctions ~ table 00ac4240
-004e1ac0	table	Script_SetSelectedClass	binding "SetSelectedClass" in s_ScriptFunctions ~ table 00ac4240
+004e1880	table	Script_GetAvailableRaces	binding "GetAvailableRaces" in s_ScriptFunctions ~ table 00ac4228
+004e19a0	table	Script_GetClassesForRace	binding "GetClassesForRace" in s_ScriptFunctions ~ table 00ac4228
+004e1a60	table	Script_SetSelectedSex	binding "SetSelectedSex" in s_ScriptFunctions ~ table 00ac4228
+004e1ac0	table	Script_SetSelectedClass	binding "SetSelectedClass" in s_ScriptFunctions ~ table 00ac4228
+004e1b70	table	Script_PaidChange_GetName	binding "PaidChange_GetName" in s_ScriptFunctions ~ table 00ac4228
 004e20b0	callgraph	CCharacterCreation::SetSelectedRace	only unmatched callee of 004e2470=Script_SetSelectedRace
-004e2470	table	Script_SetSelectedRace	binding "SetSelectedRace" in s_ScriptFunctions ~ table 00ac4240
-004e2500	order	Script_CustomizeExistingCharacter	binding table name Script_CustomizeExistingCharacter, in definition order in src/glue/CCharacterCreationScript.cpp
+004e2470	table	Script_SetSelectedRace	binding "SetSelectedRace" in s_ScriptFunctions ~ table 00ac4228
+004e2500	table	Script_CustomizeExistingCharacter	binding "CustomizeExistingCharacter" in s_ScriptFunctions ~ table 00ac4228
 004e2e70	callgraph	CCharacterSelection::SetFacing	only unmatched callee of 004e3030=Script_SetCharacterSelectFacing
-004e2f60	string	Script_SetCharSelectModelFrame	unique "Usage: SetCharSelectModelFrame("frameName")"
-004e3030	string	Script_SetCharacterSelectFacing	unique "Usage: SetCharacterSelectFacing(degrees)"
-004e3140	table	Script_GetNumCharacters	binding "GetNumCharacters" in s_ScriptFunctions ~ table 00ac4390
-004e3170	table	Script_GetCharacterInfo	binding "GetCharacterInfo" in s_ScriptFunctions ~ table 00ac4390
+004e2f60	table	Script_SetCharSelectModelFrame	binding "SetCharSelectModelFrame" in s_ScriptFunctions ~ table 00ac4378
+004e3000	table	Script_GetCharacterSelectFacing	binding "GetCharacterSelectFacing" in s_ScriptFunctions ~ table 00ac4378
+004e3030	table	Script_SetCharacterSelectFacing	binding "SetCharacterSelectFacing" in s_ScriptFunctions ~ table 00ac4378
+004e3140	table	Script_GetNumCharacters	binding "GetNumCharacters" in s_ScriptFunctions ~ table 00ac4378
+004e3170	table	Script_GetCharacterInfo	binding "GetCharacterInfo" in s_ScriptFunctions ~ table 00ac4378
 004e33a0	annotated	Script_DeleteCharacter	tag in src/glue/CCharacterSelectionScript.cpp
-004e3410	table	Script_RenameCharacter	binding "RenameCharacter" in s_ScriptFunctions ~ table 00ac4390
-004e3530	table	Script_DeclineCharacter	binding "DeclineCharacter" in s_ScriptFunctions ~ table 00ac4390
-004e3620	string	Script_GetSelectBackgroundModel	unique "Usage: GetSelectBackgroundModel(index)"
+004e3410	table	Script_RenameCharacter	binding "RenameCharacter" in s_ScriptFunctions ~ table 00ac4378
+004e3530	table	Script_DeclineCharacter	binding "DeclineCharacter" in s_ScriptFunctions ~ table 00ac4378
+004e3620	table	Script_GetSelectBackgroundModel	binding "GetSelectBackgroundModel" in s_ScriptFunctions ~ table 00ac4378
 004e3c10	callgraph	CCharacterSelection::SetBackgroundModel	only unmatched callee of 004e44e0=Script_SetCharSelectBackground
-004e44e0	string	Script_SetCharSelectBackground	unique "Usage: SetCharSelectBackground("filename")"
-004e4580	table	Script_SelectCharacter	binding "SelectCharacter" in s_ScriptFunctions ~ table 00ac4390
+004e44e0	table	Script_SetCharSelectBackground	binding "SetCharSelectBackground" in s_ScriptFunctions ~ table 00ac4378
+004e4580	table	Script_SelectCharacter	binding "SelectCharacter" in s_ScriptFunctions ~ table 00ac4378
+004e63a0	callorder	CNameGenerator::Generate	same slot between linked calls in 004dfca0=Script_GetRandomName
 004e6be0	annotated	CSimpleModelFFX_ResetLights	tag in src/ui/simple/CSimpleModelFFXScript.cpp
 004e6c60	annotated	CSimpleModelFFX_AddLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
 004e6d60	annotated	CSimpleModelFFX_AddCharacterLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
@@ -673,12 +725,17 @@ addr	how	frozen	evidence
 00504e50	string	Script_Stub_GetChannelRosterInfo	score 0.50 shared GetChannelRosterInfo
 00505360	order	Script_Stub_ExpandChannelHeader	binding table name Script_Stub_ExpandChannelHeader, in definition order in src/ui/game/miscscriptstubs.cpp
 0050f7c0	override	CalculateAspectRatio	
-0050f8f0	order	Script_SetLayoutMode	binding table name Script_SetLayoutMode, in definition order in src/ui/game/GameScript.cpp
+0050f830	table	Script_FrameXML_Debug	binding "FrameXML_Debug" in s_ScriptFunctions ~ table 00ac80b0
+0050f890	table	Script_GetBuildInfo	binding "GetBuildInfo" in s_ScriptFunctions ~ table 00ac80b0
+0050f8f0	table	Script_SetLayoutMode	binding "SetLayoutMode" in s_ScriptFunctions ~ table 00ac80b0
 0050f950	override	Script_GetMouseButtonClicked	
-0050f990	order	Script_SetConsoleKey	binding table name Script_SetConsoleKey, in definition order in src/ui/game/GameScript.cpp
+0050f990	table	Script_SetConsoleKey	binding "SetConsoleKey" in s_ScriptFunctions ~ table 00ac80b0
 0050fe80	annotated	Script_IsDebugBuild	tag in src/ui/game/GameScript.cpp
-0050ff30	order	Script_RegisterCVar	binding table name Script_RegisterCVar, in definition order in src/ui/game/GameScript.cpp
+0050ff30	table	Script_RegisterCVar	binding "RegisterCVar" in s_ScriptFunctions ~ table 00ac80b0
 0050ff50	annotated	Script_GetCVarInfo	tag in src/ui/game/GameScript.cpp
+00510040	table	Script_GetCVar	binding "GetCVar" in s_ScriptFunctions ~ table 00ac80b0
+005100c0	table	Script_GetCVarBool	binding "GetCVarBool" in s_ScriptFunctions ~ table 00ac80b0
+00510150	table	Script_GetCVarDefault	binding "GetCVarDefault" in s_ScriptFunctions ~ table 00ac80b0
 005101d0	annotated	Script_SetWaterDetail	tag in src/ui/game/GameScript.cpp
 00510200	annotated	Script_GetFarclip	tag in src/ui/game/GameScript.cpp
 00510230	annotated	Script_SetFarclip	tag in src/ui/game/GameScript.cpp
@@ -686,132 +743,257 @@ addr	how	frozen	evidence
 005102e0	annotated	Script_SetTexLodBias	tag in src/ui/game/GameScript.cpp
 00510360	annotated	Script_GetBaseMip	tag in src/ui/game/GameScript.cpp
 00510390	annotated	Script_SetBaseMip	tag in src/ui/game/GameScript.cpp
-005104a0	order	Script_SetCursor	binding table name Script_SetCursor, in definition order in src/ui/game/GameScript.cpp
-00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac8460
-00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
-00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
+00510470	table	Script_GetFramerate	binding "GetFramerate" in s_ScriptFunctions ~ table 00ac80b0
+005104a0	table	Script_SetCursor	binding "SetCursor" in s_ScriptFunctions ~ table 00ac80b0
+00510930	table	Script_ReportBug	binding "ReportBug" in s_ScriptFunctions ~ table 00ac80b0
+00510980	table	Script_ReportSuggestion	binding "ReportSuggestion" in s_ScriptFunctions ~ table 00ac80b0
+00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac80b0
+00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac80b0
+00510b30	table	Script_RunScript	binding "RunScript" in s_ScriptFunctions ~ table 00ac80b0
+00510b90	table	Script_IsMacClient	binding "IsMacClient" in s_ScriptFunctions ~ table 00ac80b0
+00510bb0	table	Script_GMRequestPlayerInfo	binding "GMRequestPlayerInfo" in s_ScriptFunctions ~ table 00ac80b0
 00510bd0	annotated	Script_GetCoinIcon	tag in src/ui/game/GameScript.cpp
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
 00510d00	annotated	Script_GetCoinTextureString	tag in src/ui/game/GameScript.cpp
+00510de0	table	Script_SetEuropeanNumbers	binding "SetEuropeanNumbers" in s_ScriptFunctions ~ table 00ac80b0
 00510e00	annotated	Script_GetRealmName	tag in src/ui/game/GameScript.cpp
+00510e20	table	Script_GetItemQualityColor	binding "GetItemQualityColor" in s_ScriptFunctions ~ table 00ac80b0
+00510f20	table	Script_GetItemFamily	binding "GetItemFamily" in s_ScriptFunctions ~ table 00ac80b0
+00510fc0	table	Script_GetItemCooldown	binding "GetItemCooldown" in s_ScriptFunctions ~ table 00ac80b0
+005110d0	table	Script_IsCurrentItem	binding "IsCurrentItem" in s_ScriptFunctions ~ table 00ac80b0
+00511150	table	Script_IsEquippableItem	binding "IsEquippableItem" in s_ScriptFunctions ~ table 00ac80b0
+00511200	table	Script_GetNumAddOns	binding "GetNumAddOns" in s_ScriptFunctions ~ table 00ac80b0
+00511240	table	Script_GetAddOnInfo	binding "GetAddOnInfo" in s_ScriptFunctions ~ table 00ac80b0
+00511430	table	Script_GetAddOnMetadata	binding "GetAddOnMetadata" in s_ScriptFunctions ~ table 00ac80b0
+00511510	table	Script_UpdateAddOnMemoryUsage	binding "UpdateAddOnMemoryUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511530	table	Script_GetAddOnMemoryUsage	binding "GetAddOnMemoryUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511610	table	Script_GetScriptCPUUsage	binding "GetScriptCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511640	table	Script_UpdateAddOnCPUUsage	binding "UpdateAddOnCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511660	table	Script_GetAddOnCPUUsage	binding "GetAddOnCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511720	table	Script_GetFunctionCPUUsage	binding "GetFunctionCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+005117c0	table	Script_GetEventCPUUsage	binding "GetEventCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+00511840	table	Script_EnableAddOn	binding "EnableAddOn" in s_ScriptFunctions ~ table 00ac80b0
+00511940	table	Script_DisableAddOn	binding "DisableAddOn" in s_ScriptFunctions ~ table 00ac80b0
+00511a60	table	Script_IsAddOnLoadOnDemand	binding "IsAddOnLoadOnDemand" in s_ScriptFunctions ~ table 00ac80b0
+00511b30	table	Script_IsAddOnLoaded	binding "IsAddOnLoaded" in s_ScriptFunctions ~ table 00ac80b0
+00511c40	table	Script_GetBillingTimeRested	binding "GetBillingTimeRested" in s_ScriptFunctions ~ table 00ac80b0
+00511c80	table	Script_GetExistingLocales	binding "GetExistingLocales" in s_ScriptFunctions ~ table 00ac80b0
+00511cc0	table	Script_InCombatLockdown	binding "InCombatLockdown" in s_ScriptFunctions ~ table 00ac80b0
+00511d30	table	Script_GetSummonFriendCooldown	binding "GetSummonFriendCooldown" in s_ScriptFunctions ~ table 00ac80b0
+00511dd0	table	Script_GetNumDeclensionSets	binding "GetNumDeclensionSets" in s_ScriptFunctions ~ table 00ac80b0
+00511e80	table	Script_DeclineName	binding "DeclineName" in s_ScriptFunctions ~ table 00ac80b0
+00511fb0	table	Script_IsDesaturateSupported	binding "IsDesaturateSupported" in s_ScriptFunctions ~ table 00ac80b0
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
+00512090	table	Script_ConsoleAddMessage	binding "ConsoleAddMessage" in s_ScriptFunctions ~ table 00ac80b0
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
+00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+005144c0	table	Script_IsLeftShiftKeyDown	binding "IsLeftShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514520	table	Script_IsRightShiftKeyDown	binding "IsRightShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514580	table	Script_IsShiftKeyDown	binding "IsShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514610	table	Script_IsLeftControlKeyDown	binding "IsLeftControlKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514670	table	Script_IsRightControlKeyDown	binding "IsRightControlKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+005146d0	table	Script_IsControlKeyDown	binding "IsControlKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514760	table	Script_IsLeftAltKeyDown	binding "IsLeftAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+005147c0	table	Script_IsRightAltKeyDown	binding "IsRightAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+00514820	table	Script_IsAltKeyDown	binding "IsAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
+005148b0	table	Script_IsMouseButtonDown	binding "IsMouseButtonDown" in s_ScriptFunctions ~ table 00ac80b0
 00514ba0	override	Script_GetMouseButtonName	
-00515100	order	Script_CursorHasItem	binding table name Script_CursorHasItem, in definition order in src/ui/game/GameScript.cpp
-00515140	order	Script_CursorHasSpell	binding table name Script_CursorHasSpell, in definition order in src/ui/game/GameScript.cpp
-00515180	order	Script_CursorHasMacro	binding table name Script_CursorHasMacro, in definition order in src/ui/game/GameScript.cpp
-005151c0	order	Script_CursorHasMoney	binding table name Script_CursorHasMoney, in definition order in src/ui/game/GameScript.cpp
-00515200	string	ActionTypeName	score 0.87 shared equipmentset; macro; spell
-00515570	order	Script_GetZoneText	binding table name Script_GetZoneText, in definition order in src/ui/game/GameScript.cpp
-005155a0	order	Script_GetRealZoneText	binding table name Script_GetRealZoneText, in definition order in src/ui/game/GameScript.cpp
-005155d0	order	Script_GetSubZoneText	binding table name Script_GetSubZoneText, in definition order in src/ui/game/GameScript.cpp
-00515600	order	Script_GetMinimapZoneText	binding table name Script_GetMinimapZoneText, in definition order in src/ui/game/GameScript.cpp
-00515880	order	Script_RequestTimePlayed	binding table name Script_RequestTimePlayed, in definition order in src/ui/game/GameScript.cpp
-00515950	order	Script_ResurrectGetOfferer	binding table name Script_ResurrectGetOfferer, in definition order in src/ui/game/GameScript.cpp
-005159c0	order	Script_ResurrectHasSickness	binding table name Script_ResurrectHasSickness, in definition order in src/ui/game/GameScript.cpp
-00515a00	order	Script_ResurrectHasTimer	binding table name Script_ResurrectHasTimer, in definition order in src/ui/game/GameScript.cpp
-00515a50	order	CGGameUI::GetCursorMoney	binding table name GetCursorMoney, in definition order in src/ui/game/CGGameUI.cpp
-00515a90	table	Script_GuildSetMOTD	binding "GuildSetMOTD" in s_ScriptFunctions ~ table 00ac8460
-00515b70	table	Script_GuildLeave	binding "GuildLeave" in s_ScriptFunctions ~ table 00ac8460
-00515be0	table	Script_GuildDisband	binding "GuildDisband" in s_ScriptFunctions ~ table 00ac8460
-00515c50	table	Script_GuildInfo	binding "GuildInfo" in s_ScriptFunctions ~ table 00ac8460
-00515cc0	table	Script_ArenaTeamInviteByName	binding "ArenaTeamInviteByName" in s_ScriptFunctions ~ table 00ac8460
-00515dd0	table	Script_ArenaTeamLeave	binding "ArenaTeamLeave" in s_ScriptFunctions ~ table 00ac8460
-00515eb0	table	Script_ArenaTeamUninviteByName	binding "ArenaTeamUninviteByName" in s_ScriptFunctions ~ table 00ac8460
-00515ff0	table	Script_ArenaTeamSetLeaderByName	binding "ArenaTeamSetLeaderByName" in s_ScriptFunctions ~ table 00ac8460
-00516130	table	Script_ArenaTeamDisband	binding "ArenaTeamDisband" in s_ScriptFunctions ~ table 00ac8460
-00516210	table	Script_GetReleaseTimeRemaining	binding "GetReleaseTimeRemaining" in s_ScriptFunctions ~ table 00ac8460
-00516280	table	Script_GetCorpseRecoveryDelay	binding "GetCorpseRecoveryDelay" in s_ScriptFunctions ~ table 00ac8460
-005162e0	table	Script_GetInstanceBootTimeRemaining	binding "GetInstanceBootTimeRemaining" in s_ScriptFunctions ~ table 00ac8460
-00516340	table	Script_GetInstanceLockTimeRemaining	binding "GetInstanceLockTimeRemaining" in s_ScriptFunctions ~ table 00ac8460
-00516410	table	Script_GetInstanceLockTimeRemainingEncounter	binding "GetInstanceLockTimeRemainingEncounter" in s_ScriptFunctions ~ table 00ac8460
-005164b0	table	Script_GetSummonConfirmTimeLeft	binding "GetSummonConfirmTimeLeft" in s_ScriptFunctions ~ table 00ac8460
-00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac8460
-00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac8460
+00514c10	table	Script_SetCVar	binding "SetCVar" in s_ScriptFunctions ~ table 00ac80b0
+00514d40	table	Script_GetCVarMin	binding "GetCVarMin" in s_ScriptFunctions ~ table 00ac80b0
+00514e30	table	Script_GetCVarMax	binding "GetCVarMax" in s_ScriptFunctions ~ table 00ac80b0
+00514f60	table	Script_GetCVarAbsoluteMin	binding "GetCVarAbsoluteMin" in s_ScriptFunctions ~ table 00ac80b0
+00515010	table	Script_GetCVarAbsoluteMax	binding "GetCVarAbsoluteMax" in s_ScriptFunctions ~ table 00ac80b0
+00515100	table	Script_CursorHasItem	binding "CursorHasItem" in s_ScriptFunctions ~ table 00ac80b0
+00515140	table	Script_CursorHasSpell	binding "CursorHasSpell" in s_ScriptFunctions ~ table 00ac80b0
+00515180	table	Script_CursorHasMacro	binding "CursorHasMacro" in s_ScriptFunctions ~ table 00ac80b0
+005151c0	table	Script_CursorHasMoney	binding "CursorHasMoney" in s_ScriptFunctions ~ table 00ac80b0
+00515200	table	Script_GetCursorInfo	binding "GetCursorInfo" in s_ScriptFunctions ~ table 00ac80b0
+00515570	table	Script_GetZoneText	binding "GetZoneText" in s_ScriptFunctions ~ table 00ac80b0
+005155a0	table	Script_GetRealZoneText	binding "GetRealZoneText" in s_ScriptFunctions ~ table 00ac80b0
+005155d0	table	Script_GetSubZoneText	binding "GetSubZoneText" in s_ScriptFunctions ~ table 00ac80b0
+00515600	table	Script_GetMinimapZoneText	binding "GetMinimapZoneText" in s_ScriptFunctions ~ table 00ac80b0
+00515630	table	Script_ResetInstances	binding "ResetInstances" in s_ScriptFunctions ~ table 00ac80b0
+005156a0	table	Script_IsInInstance	binding "IsInInstance" in s_ScriptFunctions ~ table 00ac80b0
+00515750	table	Script_GetInstanceDifficulty	binding "GetInstanceDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+00515790	table	Script_GetDungeonDifficulty	binding "GetDungeonDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+00515810	table	Script_GetRaidDifficulty	binding "GetRaidDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+00515880	table	Script_RequestTimePlayed	binding "RequestTimePlayed" in s_ScriptFunctions ~ table 00ac80b0
+00515950	table	Script_ResurrectGetOfferer	binding "ResurrectGetOfferer" in s_ScriptFunctions ~ table 00ac80b0
+005159c0	table	Script_ResurrectHasSickness	binding "ResurrectHasSickness" in s_ScriptFunctions ~ table 00ac80b0
+00515a00	table	Script_ResurrectHasTimer	binding "ResurrectHasTimer" in s_ScriptFunctions ~ table 00ac80b0
+00515a50	table	Script_GetCursorMoney	binding "GetCursorMoney" in s_ScriptFunctions ~ table 00ac80b0
+00515a90	table	Script_GuildSetMOTD	binding "GuildSetMOTD" in s_ScriptFunctions ~ table 00ac80b0
+00515b70	table	Script_GuildLeave	binding "GuildLeave" in s_ScriptFunctions ~ table 00ac80b0
+00515be0	table	Script_GuildDisband	binding "GuildDisband" in s_ScriptFunctions ~ table 00ac80b0
+00515c50	table	Script_GuildInfo	binding "GuildInfo" in s_ScriptFunctions ~ table 00ac80b0
+00515cc0	table	Script_ArenaTeamInviteByName	binding "ArenaTeamInviteByName" in s_ScriptFunctions ~ table 00ac80b0
+00515dd0	table	Script_ArenaTeamLeave	binding "ArenaTeamLeave" in s_ScriptFunctions ~ table 00ac80b0
+00515eb0	table	Script_ArenaTeamUninviteByName	binding "ArenaTeamUninviteByName" in s_ScriptFunctions ~ table 00ac80b0
+00515ff0	table	Script_ArenaTeamSetLeaderByName	binding "ArenaTeamSetLeaderByName" in s_ScriptFunctions ~ table 00ac80b0
+00516130	table	Script_ArenaTeamDisband	binding "ArenaTeamDisband" in s_ScriptFunctions ~ table 00ac80b0
+00516210	table	Script_GetReleaseTimeRemaining	binding "GetReleaseTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
+00516280	table	Script_GetCorpseRecoveryDelay	binding "GetCorpseRecoveryDelay" in s_ScriptFunctions ~ table 00ac80b0
+005162e0	table	Script_GetInstanceBootTimeRemaining	binding "GetInstanceBootTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
+00516340	table	Script_GetInstanceLockTimeRemaining	binding "GetInstanceLockTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
+00516410	table	Script_GetInstanceLockTimeRemainingEncounter	binding "GetInstanceLockTimeRemainingEncounter" in s_ScriptFunctions ~ table 00ac80b0
+005164b0	table	Script_GetSummonConfirmTimeLeft	binding "GetSummonConfirmTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
+00516510	table	Script_GetSummonConfirmSummoner	binding "GetSummonConfirmSummoner" in s_ScriptFunctions ~ table 00ac80b0
+00516580	table	Script_GetSummonConfirmAreaName	binding "GetSummonConfirmAreaName" in s_ScriptFunctions ~ table 00ac80b0
+005165e0	table	Script_GetNumTitles	binding "GetNumTitles" in s_ScriptFunctions ~ table 00ac80b0
 00516610	annotated	Script_RandomRoll	tag in src/ui/game/GameScript.cpp
+005166f0	table	Script_OpeningCinematic	binding "OpeningCinematic" in s_ScriptFunctions ~ table 00ac80b0
+00516760	table	Script_InCinematic	binding "InCinematic" in s_ScriptFunctions ~ table 00ac80b0
+005167e0	table	Script_IsSubZonePVPPOI	binding "IsSubZonePVPPOI" in s_ScriptFunctions ~ table 00ac80b0
+00516840	table	Script_TogglePVP	binding "TogglePVP" in s_ScriptFunctions ~ table 00ac80b0
+005168b0	table	Script_SetPVP	binding "SetPVP" in s_ScriptFunctions ~ table 00ac80b0
+00516970	table	Script_SetPortraitToTexture	binding "SetPortraitToTexture" in s_ScriptFunctions ~ table 00ac80b0
+00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
+00516b20	table	Script_GetBindLocation	binding "GetBindLocation" in s_ScriptFunctions ~ table 00ac80b0
+00516b90	table	Script_GetAreaSpiritHealerTime	binding "GetAreaSpiritHealerTime" in s_ScriptFunctions ~ table 00ac80b0
+00516bf0	table	Script_GetMouseFocus	binding "GetMouseFocus" in s_ScriptFunctions ~ table 00ac80b0
+00516c60	table	Script_GetItemInfo	binding "GetItemInfo" in s_ScriptFunctions ~ table 00ac80b0
+00516ed0	table	Script_GetItemUniqueness	binding "GetItemUniqueness" in s_ScriptFunctions ~ table 00ac80b0
 00517020	override	Script_GetItemIcon	
-0051acd0	table	Script_HasSoulstone	binding "HasSoulstone" in s_ScriptFunctions ~ table 00ac8460
-0051add0	table	Script_UseSoulstone	binding "UseSoulstone" in s_ScriptFunctions ~ table 00ac8460
-0051ae80	table	Script_HasKey	binding "HasKey" in s_ScriptFunctions ~ table 00ac8460
-0051aef0	table	Script_GetScreenWidth	binding "GetScreenWidth" in s_ScriptFunctions ~ table 00ac8460
-0051af50	table	Script_GetScreenHeight	binding "GetScreenHeight" in s_ScriptFunctions ~ table 00ac8460
-0051afb0	table	Script_GetDamageBonusStat	binding "GetDamageBonusStat" in s_ScriptFunctions ~ table 00ac8460
-0051b050	table	Script_ConfirmSummon	binding "ConfirmSummon" in s_ScriptFunctions ~ table 00ac8460
-0051b110	table	Script_CancelSummon	binding "CancelSummon" in s_ScriptFunctions ~ table 00ac8460
-0051b1d0	table	Script_SitStandOrDescendStart	binding "SitStandOrDescendStart" in s_ScriptFunctions ~ table 00ac8460
-0051b240	order	Script_CheckInteractDistance	binding table name Script_CheckInteractDistance, in definition order in src/ui/game/GameScript.cpp
-0051b6a0	order	Script_AcceptXPLoss	binding table name Script_AcceptXPLoss, in definition order in src/ui/game/GameScript.cpp
-0051b6e0	order	Script_CheckSpiritHealerDist	binding table name Script_CheckSpiritHealerDist, in definition order in src/ui/game/GameScript.cpp
-0051b740	order	Script_CheckTalentMasterDist	binding table name Script_CheckTalentMasterDist, in definition order in src/ui/game/GameScript.cpp
-0051b7a0	order	Script_CheckBinderDist	binding table name Script_CheckBinderDist, in definition order in src/ui/game/GameScript.cpp
-0051b800	order	Script_RetrieveCorpse	binding table name Script_RetrieveCorpse, in definition order in src/ui/game/GameScript.cpp
-0051b8b0	order	Script_GetRestState	binding table name Script_GetRestState, in definition order in src/ui/game/GameScript.cpp
-0051b960	order	Script_GetXPExhaustion	binding table name Script_GetXPExhaustion, in definition order in src/ui/game/GameScript.cpp
-0051ba50	order	Script_GetZonePVPInfo	binding table name Script_GetZonePVPInfo, in definition order in src/ui/game/GameScript.cpp
-0051bca0	order	Script_GetPVPDesired	binding table name Script_GetPVPDesired, in definition order in src/ui/game/GameScript.cpp
-0051bd00	order	Script_GetPVPTimer	binding table name Script_GetPVPTimer, in definition order in src/ui/game/GameScript.cpp
-0051bd60	order	Script_IsPVPTimerRunning	binding table name Script_IsPVPTimerRunning, in definition order in src/ui/game/GameScript.cpp
-0051bdd0	order	Script_DropItemOnUnit	binding table name Script_DropItemOnUnit, in definition order in src/ui/game/GameScript.cpp
-0051bf50	order	Script_ConfirmTalentWipe	binding table name Script_ConfirmTalentWipe, in definition order in src/ui/game/GameScript.cpp
-0051bf90	order	Script_ConfirmBinder	binding table name Script_ConfirmBinder, in definition order in src/ui/game/GameScript.cpp
+00517100	table	Script_GetItemSpell	binding "GetItemSpell" in s_ScriptFunctions ~ table 00ac80b0
+005171f0	table	Script_IsHelpfulItem	binding "IsHelpfulItem" in s_ScriptFunctions ~ table 00ac80b0
+005172e0	table	Script_IsHarmfulItem	binding "IsHarmfulItem" in s_ScriptFunctions ~ table 00ac80b0
+005173e0	table	Script_IsConsumableItem	binding "IsConsumableItem" in s_ScriptFunctions ~ table 00ac80b0
+00517530	table	Script_IsDressableItem	binding "IsDressableItem" in s_ScriptFunctions ~ table 00ac80b0
+00517890	table	Script_GetFrameCPUUsage	binding "GetFrameCPUUsage" in s_ScriptFunctions ~ table 00ac80b0
+005179b0	table	Script_GetAddOnDependencies	binding "GetAddOnDependencies" in s_ScriptFunctions ~ table 00ac80b0
+00517aa0	table	Script_GetMirrorTimerProgress	binding "GetMirrorTimerProgress" in s_ScriptFunctions ~ table 00ac80b0
+00517b50	table	Script_SetTaxiBenchmarkMode	binding "SetTaxiBenchmarkMode" in s_ScriptFunctions ~ table 00ac80b0
+00517c20	table	Script_SetUIVisibility	binding "SetUIVisibility" in s_ScriptFunctions ~ table 00ac80b0
+00517c60	table	Script_GetTotemTimeLeft	binding "GetTotemTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
+00517d30	table	Script_IsThreatWarningEnabled	binding "IsThreatWarningEnabled" in s_ScriptFunctions ~ table 00ac80b0
+00517d70	table	Script_CanMapChangeDifficulty	binding "CanMapChangeDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+0051a3d0	table	Script_EquipCursorItem	binding "EquipCursorItem" in s_ScriptFunctions ~ table 00ac80b0
+0051a530	table	Script_EquipPendingItem	binding "EquipPendingItem" in s_ScriptFunctions ~ table 00ac80b0
+0051a5c0	table	Script_CancelPendingEquip	binding "CancelPendingEquip" in s_ScriptFunctions ~ table 00ac80b0
+0051a6e0	table	Script_InviteUnit	binding "InviteUnit" in s_ScriptFunctions ~ table 00ac80b0
+0051a7a0	table	Script_UninviteUnit	binding "UninviteUnit" in s_ScriptFunctions ~ table 00ac80b0
+0051a880	table	Script_CanShowResetInstances	binding "CanShowResetInstances" in s_ScriptFunctions ~ table 00ac80b0
+0051a8c0	table	Script_GetInstanceInfo	binding "GetInstanceInfo" in s_ScriptFunctions ~ table 00ac80b0
+0051ab20	table	Script_AcceptGroup	binding "AcceptGroup" in s_ScriptFunctions ~ table 00ac80b0
+0051acd0	table	Script_HasSoulstone	binding "HasSoulstone" in s_ScriptFunctions ~ table 00ac80b0
+0051add0	table	Script_UseSoulstone	binding "UseSoulstone" in s_ScriptFunctions ~ table 00ac80b0
+0051ae80	table	Script_HasKey	binding "HasKey" in s_ScriptFunctions ~ table 00ac80b0
+0051aef0	table	Script_GetScreenWidth	binding "GetScreenWidth" in s_ScriptFunctions ~ table 00ac80b0
+0051af50	table	Script_GetScreenHeight	binding "GetScreenHeight" in s_ScriptFunctions ~ table 00ac80b0
+0051afb0	table	Script_GetDamageBonusStat	binding "GetDamageBonusStat" in s_ScriptFunctions ~ table 00ac80b0
+0051b050	table	Script_ConfirmSummon	binding "ConfirmSummon" in s_ScriptFunctions ~ table 00ac80b0
+0051b110	table	Script_CancelSummon	binding "CancelSummon" in s_ScriptFunctions ~ table 00ac80b0
+0051b1d0	table	Script_SitStandOrDescendStart	binding "SitStandOrDescendStart" in s_ScriptFunctions ~ table 00ac80b0
+0051b240	table	Script_CheckInteractDistance	binding "CheckInteractDistance" in s_ScriptFunctions ~ table 00ac80b0
+0051b3b0	table	Script_GetCurrentTitle	binding "GetCurrentTitle" in s_ScriptFunctions ~ table 00ac80b0
+0051b410	table	Script_IsTitleKnown	binding "IsTitleKnown" in s_ScriptFunctions ~ table 00ac80b0
+0051b4e0	table	Script_GetTitleName	binding "GetTitleName" in s_ScriptFunctions ~ table 00ac80b0
+0051b6a0	table	Script_AcceptXPLoss	binding "AcceptXPLoss" in s_ScriptFunctions ~ table 00ac80b0
+0051b6e0	table	Script_CheckSpiritHealerDist	binding "CheckSpiritHealerDist" in s_ScriptFunctions ~ table 00ac80b0
+0051b740	table	Script_CheckTalentMasterDist	binding "CheckTalentMasterDist" in s_ScriptFunctions ~ table 00ac80b0
+0051b7a0	table	Script_CheckBinderDist	binding "CheckBinderDist" in s_ScriptFunctions ~ table 00ac80b0
+0051b800	table	Script_RetrieveCorpse	binding "RetrieveCorpse" in s_ScriptFunctions ~ table 00ac80b0
+0051b8b0	table	Script_GetRestState	binding "GetRestState" in s_ScriptFunctions ~ table 00ac80b0
+0051b960	table	Script_GetXPExhaustion	binding "GetXPExhaustion" in s_ScriptFunctions ~ table 00ac80b0
+0051ba50	table	Script_GetZonePVPInfo	binding "GetZonePVPInfo" in s_ScriptFunctions ~ table 00ac80b0
+0051bca0	table	Script_GetPVPDesired	binding "GetPVPDesired" in s_ScriptFunctions ~ table 00ac80b0
+0051bd00	table	Script_GetPVPTimer	binding "GetPVPTimer" in s_ScriptFunctions ~ table 00ac80b0
+0051bd60	table	Script_IsPVPTimerRunning	binding "IsPVPTimerRunning" in s_ScriptFunctions ~ table 00ac80b0
+0051bdd0	table	Script_DropItemOnUnit	binding "DropItemOnUnit" in s_ScriptFunctions ~ table 00ac80b0
+0051bf50	table	Script_ConfirmTalentWipe	binding "ConfirmTalentWipe" in s_ScriptFunctions ~ table 00ac80b0
+0051bf90	table	Script_ConfirmBinder	binding "ConfirmBinder" in s_ScriptFunctions ~ table 00ac80b0
 0051bfd0	annotated	Script_ShowingHelm	tag in src/ui/game/GameScript.cpp
 0051c040	annotated	Script_ShowingCloak	tag in src/ui/game/GameScript.cpp
 0051c0b0	annotated	Script_ShowHelm	tag in src/ui/game/GameScript.cpp
 0051c100	annotated	Script_ShowCloak	tag in src/ui/game/GameScript.cpp
-0051c150	order	Script_GetItemGem	binding table name Script_GetItemGem, in definition order in src/ui/game/GameScript.cpp
-0051c2e0	order	Script_GetItemCount	binding table name Script_GetItemCount, in definition order in src/ui/game/GameScript.cpp
-0051c450	order	Script_IsUsableItem	binding table name Script_IsUsableItem, in definition order in src/ui/game/GameScript.cpp
-0051c690	order	Script_IsEquippedItem	binding table name Script_IsEquippedItem, in definition order in src/ui/game/GameScript.cpp
-0051c740	order	Script_IsEquippedItemType	binding table name Script_IsEquippedItemType, in definition order in src/ui/game/GameScript.cpp
-0051c870	order	Script_ItemHasRange	binding table name Script_ItemHasRange, in definition order in src/ui/game/GameScript.cpp
-0051c9c0	order	Script_IsItemInRange	binding table name Script_IsItemInRange, in definition order in src/ui/game/GameScript.cpp
-0051cb30	order	Script_PartialPlayTime	binding table name Script_PartialPlayTime, in definition order in src/ui/game/GameScript.cpp
-0051cba0	order	Script_NoPlayTime	binding table name Script_NoPlayTime, in definition order in src/ui/game/GameScript.cpp
-0051cc10	order	Script_GetMirrorTimerInfo	binding table name Script_GetMirrorTimerInfo, in definition order in src/ui/game/GameScript.cpp
-0051cd00	order	Script_UseItemByName	binding table name Script_UseItemByName, in definition order in src/ui/game/GameScript.cpp
-0051cdb0	order	Script_EquipItemByName	binding table name Script_EquipItemByName, in definition order in src/ui/game/GameScript.cpp
-0051d100	order	Script_GetTaxiBenchmarkMode	binding table name Script_GetTaxiBenchmarkMode, in definition order in src/ui/game/GameScript.cpp
-0051d1b0	order	Script_IsReferAFriendLinked	binding table name Script_IsReferAFriendLinked, in definition order in src/ui/game/GameScript.cpp
-0051d230	order	Script_CanGrantLevel	binding table name Script_CanGrantLevel, in definition order in src/ui/game/GameScript.cpp
-0051d2b0	order	Script_CanSummonFriend	binding table name Script_CanSummonFriend, in definition order in src/ui/game/GameScript.cpp
-0051d330	order	Script_GetTotemInfo	binding table name Script_GetTotemInfo, in definition order in src/ui/game/GameScript.cpp
-0051d520	order	Script_DestroyTotem	binding table name Script_DestroyTotem, in definition order in src/ui/game/GameScript.cpp
+0051c150	table	Script_GetItemGem	binding "GetItemGem" in s_ScriptFunctions ~ table 00ac80b0
+0051c2e0	table	Script_GetItemCount	binding "GetItemCount" in s_ScriptFunctions ~ table 00ac80b0
+0051c450	table	Script_IsUsableItem	binding "IsUsableItem" in s_ScriptFunctions ~ table 00ac80b0
+0051c690	table	Script_IsEquippedItem	binding "IsEquippedItem" in s_ScriptFunctions ~ table 00ac80b0
+0051c740	table	Script_IsEquippedItemType	binding "IsEquippedItemType" in s_ScriptFunctions ~ table 00ac80b0
+0051c870	table	Script_ItemHasRange	binding "ItemHasRange" in s_ScriptFunctions ~ table 00ac80b0
+0051c9c0	table	Script_IsItemInRange	binding "IsItemInRange" in s_ScriptFunctions ~ table 00ac80b0
+0051cb30	table	Script_PartialPlayTime	binding "PartialPlayTime" in s_ScriptFunctions ~ table 00ac80b0
+0051cba0	table	Script_NoPlayTime	binding "NoPlayTime" in s_ScriptFunctions ~ table 00ac80b0
+0051cc10	table	Script_GetMirrorTimerInfo	binding "GetMirrorTimerInfo" in s_ScriptFunctions ~ table 00ac80b0
+0051cd00	table	Script_UseItemByName	binding "UseItemByName" in s_ScriptFunctions ~ table 00ac80b0
+0051cdb0	table	Script_EquipItemByName	binding "EquipItemByName" in s_ScriptFunctions ~ table 00ac80b0
+0051d100	table	Script_GetTaxiBenchmarkMode	binding "GetTaxiBenchmarkMode" in s_ScriptFunctions ~ table 00ac80b0
+0051d1b0	table	Script_IsReferAFriendLinked	binding "IsReferAFriendLinked" in s_ScriptFunctions ~ table 00ac80b0
+0051d230	table	Script_CanGrantLevel	binding "CanGrantLevel" in s_ScriptFunctions ~ table 00ac80b0
+0051d2b0	table	Script_CanSummonFriend	binding "CanSummonFriend" in s_ScriptFunctions ~ table 00ac80b0
+0051d330	table	Script_GetTotemInfo	binding "GetTotemInfo" in s_ScriptFunctions ~ table 00ac80b0
+0051d520	table	Script_DestroyTotem	binding "DestroyTotem" in s_ScriptFunctions ~ table 00ac80b0
+0051d5a0	table	Script_GetAllowLowLevelRaid	binding "GetAllowLowLevelRaid" in s_ScriptFunctions ~ table 00ac80b0
+0051d600	table	Script_SetAllowLowLevelRaid	binding "SetAllowLowLevelRaid" in s_ScriptFunctions ~ table 00ac80b0
 0051d9b0	string	CGGameUI::RegisterGameCVars	unique "Always show item comparison tooltips"
 00521040	string	CGGameUI::RegisterFrameFactories	unique "WorldFrame"
 005216f0	annotated	CGGameUI::DisplayError	tag in src/ui/game/CGGameUIErrors.cpp
-00522980	table	Script_PickupPlayerMoney	binding "PickupPlayerMoney" in s_ScriptFunctions ~ table 00ac8460
-00522a20	table	Script_GuildInvite	binding "GuildInvite" in s_ScriptFunctions ~ table 00ac8460
-00522af0	table	Script_GuildUninvite	binding "GuildUninvite" in s_ScriptFunctions ~ table 00ac8460
-00522bc0	table	Script_GuildPromote	binding "GuildPromote" in s_ScriptFunctions ~ table 00ac8460
-00522c90	table	Script_GuildDemote	binding "GuildDemote" in s_ScriptFunctions ~ table 00ac8460
-00522d60	table	Script_GuildSetLeader	binding "GuildSetLeader" in s_ScriptFunctions ~ table 00ac8460
-00523370	order	Script_EndRefund	binding table name Script_EndRefund, in definition order in src/ui/game/GameScript.cpp
-005233d0	order	Script_EndBoundTradeable	binding table name Script_EndBoundTradeable, in definition order in src/ui/game/GameScript.cpp
+00522320	table	Script_DeleteCursorItem	binding "DeleteCursorItem" in s_ScriptFunctions ~ table 00ac80b0
+00522480	table	Script_FocusUnit	binding "FocusUnit" in s_ScriptFunctions ~ table 00ac80b0
+005224c0	table	Script_FollowUnit	binding "FollowUnit" in s_ScriptFunctions ~ table 00ac80b0
+005225e0	table	Script_ClearFocus	binding "ClearFocus" in s_ScriptFunctions ~ table 00ac80b0
+00522600	table	Script_InitiateTrade	binding "InitiateTrade" in s_ScriptFunctions ~ table 00ac80b0
+00522710	table	Script_CanInspect	binding "CanInspect" in s_ScriptFunctions ~ table 00ac80b0
+00522870	table	Script_NotifyInspect	binding "NotifyInspect" in s_ScriptFunctions ~ table 00ac80b0
+00522980	table	Script_PickupPlayerMoney	binding "PickupPlayerMoney" in s_ScriptFunctions ~ table 00ac80b0
+00522a20	table	Script_GuildInvite	binding "GuildInvite" in s_ScriptFunctions ~ table 00ac80b0
+00522af0	table	Script_GuildUninvite	binding "GuildUninvite" in s_ScriptFunctions ~ table 00ac80b0
+00522bc0	table	Script_GuildPromote	binding "GuildPromote" in s_ScriptFunctions ~ table 00ac80b0
+00522c90	table	Script_GuildDemote	binding "GuildDemote" in s_ScriptFunctions ~ table 00ac80b0
+00522d60	table	Script_GuildSetLeader	binding "GuildSetLeader" in s_ScriptFunctions ~ table 00ac80b0
+00522e30	table	Script_SetCurrentTitle	binding "SetCurrentTitle" in s_ScriptFunctions ~ table 00ac80b0
+00522fb0	table	Script_PickupItem	binding "PickupItem" in s_ScriptFunctions ~ table 00ac80b0
+00523090	table	Script_StartAttack	binding "StartAttack" in s_ScriptFunctions ~ table 00ac80b0
+00523160	table	Script_GrantLevel	binding "GrantLevel" in s_ScriptFunctions ~ table 00ac80b0
+00523260	table	Script_SummonFriend	binding "SummonFriend" in s_ScriptFunctions ~ table 00ac80b0
+00523370	table	Script_EndRefund	binding "EndRefund" in s_ScriptFunctions ~ table 00ac80b0
+005233d0	table	Script_EndBoundTradeable	binding "EndBoundTradeable" in s_ScriptFunctions ~ table 00ac80b0
+00525a30	table	Script_TargetUnit	binding "TargetUnit" in s_ScriptFunctions ~ table 00ac80b0
+00525a90	table	Script_TargetNearest	binding "TargetNearest" in s_ScriptFunctions ~ table 00ac80b0
+00525ad0	table	Script_TargetNearestEnemy	binding "TargetNearestEnemy" in s_ScriptFunctions ~ table 00ac80b0
+00525b10	table	Script_TargetNearestEnemyPlayer	binding "TargetNearestEnemyPlayer" in s_ScriptFunctions ~ table 00ac80b0
+00525b50	table	Script_TargetNearestFriend	binding "TargetNearestFriend" in s_ScriptFunctions ~ table 00ac80b0
+00525b90	table	Script_TargetNearestFriendPlayer	binding "TargetNearestFriendPlayer" in s_ScriptFunctions ~ table 00ac80b0
+00525bd0	table	Script_TargetNearestPartyMember	binding "TargetNearestPartyMember" in s_ScriptFunctions ~ table 00ac80b0
+00525c00	table	Script_TargetNearestRaidMember	binding "TargetNearestRaidMember" in s_ScriptFunctions ~ table 00ac80b0
+00525c30	table	Script_TargetDirectionEnemy	binding "TargetDirectionEnemy" in s_ScriptFunctions ~ table 00ac80b0
+00525cd0	table	Script_TargetDirectionFriend	binding "TargetDirectionFriend" in s_ScriptFunctions ~ table 00ac80b0
+00525d70	table	Script_TargetLastTarget	binding "TargetLastTarget" in s_ScriptFunctions ~ table 00ac80b0
+00525eb0	table	Script_AssistUnit	binding "AssistUnit" in s_ScriptFunctions ~ table 00ac80b0
+00525fc0	table	Script_ClearTarget	binding "ClearTarget" in s_ScriptFunctions ~ table 00ac80b0
+00526050	table	Script_SetDungeonDifficulty	binding "SetDungeonDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+005261a0	table	Script_SetRaidDifficulty	binding "SetRaidDifficulty" in s_ScriptFunctions ~ table 00ac80b0
+005262e0	table	Script_TargetTotem	binding "TargetTotem" in s_ScriptFunctions ~ table 00ac80b0
 00526530	handler	ReceiveWeather	SetMessageHandler(SMSG_WEATHER) on both sides
+00527f00	table	Script_InteractUnit	binding "InteractUnit" in s_ScriptFunctions ~ table 00ac80b0
+00528920	table	Script_LoadAddOn	binding "LoadAddOn" in s_ScriptFunctions ~ table 00ac80b0
 0052a980	string	CGGameUI::Initialize	unique "Interface\FrameXML\Bindings.xml"
-0052c110	order	Script_GetNumPartyMembers	binding table name Script_GetNumPartyMembers, in definition order in src/ui/game/PartyInfoScript.cpp
-0052c190	order	Script_GetRealNumPartyMembers	binding table name Script_GetRealNumPartyMembers, in definition order in src/ui/game/PartyInfoScript.cpp
-0052c1d0	order	Script_GetPartyMember	binding table name Script_GetPartyMember, in definition order in src/ui/game/PartyInfoScript.cpp
-0052c270	order	Script_GetPartyLeaderIndex	binding table name Script_GetPartyLeaderIndex, in definition order in src/ui/game/PartyInfoScript.cpp
-0052c2a0	table	Script_GetLootThreshold	binding "GetLootThreshold" in s_ScriptFunctions ~ table 00acc708
-0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc708
-0052c310	table	Script_IsPartyLFG	binding "IsPartyLFG" in s_ScriptFunctions ~ table 00acc708
-0052c350	table	Script_HasLFGRestrictions	binding "HasLFGRestrictions" in s_ScriptFunctions ~ table 00acc708
-0052ccd0	order	Script_IsPartyLeader	binding table name Script_IsPartyLeader, in definition order in src/ui/game/PartyInfoScript.cpp
-0052cd30	order	Script_IsRealPartyLeader	binding table name Script_IsRealPartyLeader, in definition order in src/ui/game/PartyInfoScript.cpp
-0052cd90	table	Script_GetLootMethod	binding "GetLootMethod" in s_ScriptFunctions ~ table 00acc708
-0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc708
-0052cf60	table	Script_GetPartyAssignment	binding "GetPartyAssignment" in s_ScriptFunctions ~ table 00acc708
-0052d000	table	Script_CanChangePlayerDifficulty	binding "CanChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc708
-0052d9c0	table	Script_SilenceMember	binding "SilenceMember" in s_ScriptFunctions ~ table 00acc708
-0052daf0	table	Script_UnSilenceMember	binding "UnSilenceMember" in s_ScriptFunctions ~ table 00acc708
-0052dc20	table	Script_SetLootMethod	binding "SetLootMethod" in s_ScriptFunctions ~ table 00acc708
-0052de60	table	Script_SetLootThreshold	binding "SetLootThreshold" in s_ScriptFunctions ~ table 00acc708
-0052e1b0	table	Script_SetPartyAssignment	binding "SetPartyAssignment" in s_ScriptFunctions ~ table 00acc708
-0052e400	table	Script_ClearPartyAssignment	binding "ClearPartyAssignment" in s_ScriptFunctions ~ table 00acc708
-0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc708
+0052b470	table	Script_RegisterForSave	binding "RegisterForSave" in s_ScriptFunctions ~ table 00ac80b0
+0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
+0052c110	table	Script_GetNumPartyMembers	binding "GetNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
+0052c190	table	Script_GetRealNumPartyMembers	binding "GetRealNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
+0052c1d0	table	Script_GetPartyMember	binding "GetPartyMember" in s_ScriptFunctions ~ table 00acc6d0
+0052c270	table	Script_GetPartyLeaderIndex	binding "GetPartyLeaderIndex" in s_ScriptFunctions ~ table 00acc6d0
+0052c2a0	table	Script_GetLootThreshold	binding "GetLootThreshold" in s_ScriptFunctions ~ table 00acc6d0
+0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
+0052c310	table	Script_IsPartyLFG	binding "IsPartyLFG" in s_ScriptFunctions ~ table 00acc6d0
+0052c350	table	Script_HasLFGRestrictions	binding "HasLFGRestrictions" in s_ScriptFunctions ~ table 00acc6d0
+0052ccd0	table	Script_IsPartyLeader	binding "IsPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
+0052cd30	table	Script_IsRealPartyLeader	binding "IsRealPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
+0052cd90	table	Script_GetLootMethod	binding "GetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
+0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
+0052cf60	table	Script_GetPartyAssignment	binding "GetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
+0052d000	table	Script_CanChangePlayerDifficulty	binding "CanChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
+0052d9c0	table	Script_SilenceMember	binding "SilenceMember" in s_ScriptFunctions ~ table 00acc6d0
+0052daf0	table	Script_UnSilenceMember	binding "UnSilenceMember" in s_ScriptFunctions ~ table 00acc6d0
+0052dc20	table	Script_SetLootMethod	binding "SetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
+0052de60	table	Script_SetLootThreshold	binding "SetLootThreshold" in s_ScriptFunctions ~ table 00acc6d0
+0052e1b0	table	Script_SetPartyAssignment	binding "SetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
+0052e400	table	Script_ClearPartyAssignment	binding "ClearPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
+0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
 0052e850	order	Script_Stub_GetBarberShopStyleInfo	binding table name Script_Stub_GetBarberShopStyleInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 0052ed60	order	Script_Stub_GetBarberShopTotalCost	binding table name Script_Stub_GetBarberShopTotalCost, in definition order in src/ui/game/miscscriptstubs.cpp
 005302b0	string	Script_Stub_FlagTutorial	score 0.50 shared FlagTutorial
@@ -874,10 +1056,14 @@ addr	how	frozen	evidence
 0053a540	table	Script_BNGetBlockedInfo	binding "BNGetBlockedInfo" in s_ScriptFunctions ~ table 00accae8
 0053a660	table	Script_BNRequestFOFInfo	binding "BNRequestFOFInfo" in s_ScriptFunctions ~ table 00accae8
 0053b5c0	table	Script_GetNumSpellTabs	binding "GetNumSpellTabs" in s_ScriptFunctions ~ table 00accce0
+0053b650	table	Script_GetKnownSlotFromHighestRankSlot	binding "GetKnownSlotFromHighestRankSlot" in s_ScriptFunctions ~ table 00accce0
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
+0053c0b0	table	Script_ReturnZero	binding "GetNumShapeshiftForms" in s_ScriptFunctions ~ table 00accce0
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
 0053dc20	callgraph	SpellIconPath	only unmatched callee of 00540d70=Script_GetSpellTexture
+0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
+0053e2c0	table	Script_ReturnNothing	binding "GetCompanionInfo" in s_ScriptFunctions ~ table 00accce0
 0053e490	order	Script_Stub_GetCompanionCooldown	binding table name Script_Stub_GetCompanionCooldown, in definition order in src/ui/game/miscscriptstubs.cpp
 00540670	callgraph	SpellAtSlot	only unmatched callee of 005407f0=Script_GetSpellName, 00541340=Script_IsPassiveSpell
 005407f0	table	Script_GetSpellName	binding "GetSpellName" in s_ScriptFunctions ~ table 00accce0
@@ -888,46 +1074,59 @@ addr	how	frozen	evidence
 00541010	table	Script_GetSpellAutocast	binding "GetSpellAutocast" in s_ScriptFunctions ~ table 00accce0
 00541250	table	Script_CastSpell	binding "CastSpell" in s_ScriptFunctions ~ table 00accce0
 00541340	table	Script_IsPassiveSpell	binding "IsPassiveSpell" in s_ScriptFunctions ~ table 00accce0
-00541420	table	Script_ReturnNil	binding "IsAttackSpell" in s_ScriptFunctions ~ table 00accce0
 00544e10	order	Script_Stub_GetCurrentMapAreaID	binding table name Script_Stub_GetCurrentMapAreaID, in definition order in src/ui/game/miscscriptstubs.cpp
 00544e80	order	Script_Stub_GetCurrentMapZone	binding table name Script_Stub_GetCurrentMapZone, in definition order in src/ui/game/miscscriptstubs.cpp
 005459c0	order	Script_Stub_GetDeathReleasePosition	binding table name Script_Stub_GetDeathReleasePosition, in definition order in src/ui/game/miscscriptstubs.cpp
 005485b0	string	Script_Stub_GetWorldStateUIInfo	score 0.50 shared GetWorldStateUIInfo
-00549ad0	order	Script_IsActiveBattlefieldArena	binding table name Script_IsActiveBattlefieldArena, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549b80	order	Script_GetBattlefieldPortExpiration	binding table name Script_GetBattlefieldPortExpiration, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549c40	order	Script_GetBattlefieldInstanceExpiration	binding table name Script_GetBattlefieldInstanceExpiration, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549cd0	order	Script_GetBattlefieldInstanceRunTime	binding table name Script_GetBattlefieldInstanceRunTime, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549d30	order	Script_GetBattlefieldEstimatedWaitTime	binding table name Script_GetBattlefieldEstimatedWaitTime, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549dd0	order	Script_GetBattlefieldTimeWaited	binding table name Script_GetBattlefieldTimeWaited, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549e80	order	Script_GetNumBattlefieldScores	binding table name Script_GetNumBattlefieldScores, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549ec0	order	Script_GetBattlefieldWinner	binding table name Script_GetBattlefieldWinner, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549f20	order	Script_GetNumBattlefieldStats	binding table name Script_GetNumBattlefieldStats, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-00549f60	order	Script_GetBattlefieldStatData	binding table name Script_GetBattlefieldStatData, in definition order in src/ui/game/BattlefieldInfoScript.cpp
-0054a040	table	Script_GetNumBattlefieldPositions	binding "GetNumBattlefieldPositions" in s_ScriptFunctions ~ table 00acd248
-0054a0e0	table	Script_GetNumBattlefieldFlagPositions	binding "GetNumBattlefieldFlagPositions" in s_ScriptFunctions ~ table 00acd248
-0054a140	table	Script_GetNumBattlefieldVehicles	binding "GetNumBattlefieldVehicles" in s_ScriptFunctions ~ table 00acd248
-0054a180	table	Script_GetBattlefieldTeamInfo	binding "GetBattlefieldTeamInfo" in s_ScriptFunctions ~ table 00acd248
-0054a280	table	Script_GetBattlefieldArenaFaction	binding "GetBattlefieldArenaFaction" in s_ScriptFunctions ~ table 00acd248
-0054a2c0	table	Script_GetNumArenaOpponents	binding "GetNumArenaOpponents" in s_ScriptFunctions ~ table 00acd248
-0054a300	table	Script_GetHolidayBGHonorCurrencyBonuses	binding "GetHolidayBGHonorCurrencyBonuses" in s_ScriptFunctions ~ table 00acd248
-0054a370	table	Script_GetRandomBGHonorCurrencyBonuses	binding "GetRandomBGHonorCurrencyBonuses" in s_ScriptFunctions ~ table 00acd248
-0054c2e0	table	Script_GetBattlefieldPosition	binding "GetBattlefieldPosition" in s_ScriptFunctions ~ table 00acd248
-0054c4d0	table	Script_GetBattlefieldVehicleInfo	binding "GetBattlefieldVehicleInfo" in s_ScriptFunctions ~ table 00acd248
-0054c6e0	table	Script_CanJoinBattlefieldAsGroup	binding "CanJoinBattlefieldAsGroup" in s_ScriptFunctions ~ table 00acd248
-0054c740	table	Script_GetBattlefieldMapIconScale	binding "GetBattlefieldMapIconScale" in s_ScriptFunctions ~ table 00acd248
-0054c7a0	table	Script_HearthAndResurrectFromArea	binding "HearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd248
-0054c810	table	Script_CanHearthAndResurrectFromArea	binding "CanHearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd248
-0054c870	table	Script_GetNumBattlegroundTypes	binding "GetNumBattlegroundTypes" in s_ScriptFunctions ~ table 00acd248
-0054c8a0	table	Script_GetWorldPVPQueueStatus	binding "GetWorldPVPQueueStatus" in s_ScriptFunctions ~ table 00acd248
-0054c9f0	table	Script_SortBGList	binding "SortBGList" in s_ScriptFunctions ~ table 00acd248
-0054dcc0	table	Script_GetBattlefieldFlagPosition	binding "GetBattlefieldFlagPosition" in s_ScriptFunctions ~ table 00acd248
-0054de00	table	Script_SortBattlefieldScoreData	binding "SortBattlefieldScoreData" in s_ScriptFunctions ~ table 00acd248
-0054e010	table	Script_GetBattlegroundInfo	binding "GetBattlegroundInfo" in s_ScriptFunctions ~ table 00acd248
-0054e160	table	Script_BattlefieldMgrEntryInviteResponse	binding "BattlefieldMgrEntryInviteResponse" in s_ScriptFunctions ~ table 00acd248
-0054e1a0	table	Script_BattlefieldMgrQueueRequest	binding "BattlefieldMgrQueueRequest" in s_ScriptFunctions ~ table 00acd248
-0054e1c0	table	Script_BattlefieldMgrQueueInviteResponse	binding "BattlefieldMgrQueueInviteResponse" in s_ScriptFunctions ~ table 00acd248
-0054e200	table	Script_BattlefieldMgrExitRequest	binding "BattlefieldMgrExitRequest" in s_ScriptFunctions ~ table 00acd248
-0054e6d0	table	Script_RequestBattlegroundInstanceInfo	binding "RequestBattlegroundInstanceInfo" in s_ScriptFunctions ~ table 00acd248
+00549ad0	table	Script_IsActiveBattlefieldArena	binding "IsActiveBattlefieldArena" in s_ScriptFunctions ~ table 00acd178
+00549b40	table	Script_CloseBattlefield	binding "CloseBattlefield" in s_ScriptFunctions ~ table 00acd178
+00549b80	table	Script_GetBattlefieldPortExpiration	binding "GetBattlefieldPortExpiration" in s_ScriptFunctions ~ table 00acd178
+00549c40	table	Script_GetBattlefieldInstanceExpiration	binding "GetBattlefieldInstanceExpiration" in s_ScriptFunctions ~ table 00acd178
+00549cd0	table	Script_GetBattlefieldInstanceRunTime	binding "GetBattlefieldInstanceRunTime" in s_ScriptFunctions ~ table 00acd178
+00549d30	table	Script_GetBattlefieldEstimatedWaitTime	binding "GetBattlefieldEstimatedWaitTime" in s_ScriptFunctions ~ table 00acd178
+00549dd0	table	Script_GetBattlefieldTimeWaited	binding "GetBattlefieldTimeWaited" in s_ScriptFunctions ~ table 00acd178
+00549e80	table	Script_GetNumBattlefieldScores	binding "GetNumBattlefieldScores" in s_ScriptFunctions ~ table 00acd178
+00549ec0	table	Script_GetBattlefieldWinner	binding "GetBattlefieldWinner" in s_ScriptFunctions ~ table 00acd178
+00549f20	table	Script_GetNumBattlefieldStats	binding "GetNumBattlefieldStats" in s_ScriptFunctions ~ table 00acd178
+00549f60	table	Script_GetBattlefieldStatData	binding "GetBattlefieldStatData" in s_ScriptFunctions ~ table 00acd178
+0054a040	table	Script_GetNumBattlefieldPositions	binding "GetNumBattlefieldPositions" in s_ScriptFunctions ~ table 00acd178
+0054a0e0	table	Script_GetNumBattlefieldFlagPositions	binding "GetNumBattlefieldFlagPositions" in s_ScriptFunctions ~ table 00acd178
+0054a140	table	Script_GetNumBattlefieldVehicles	binding "GetNumBattlefieldVehicles" in s_ScriptFunctions ~ table 00acd178
+0054a180	table	Script_GetBattlefieldTeamInfo	binding "GetBattlefieldTeamInfo" in s_ScriptFunctions ~ table 00acd178
+0054a280	table	Script_GetBattlefieldArenaFaction	binding "GetBattlefieldArenaFaction" in s_ScriptFunctions ~ table 00acd178
+0054a2c0	table	Script_GetNumArenaOpponents	binding "GetNumArenaOpponents" in s_ScriptFunctions ~ table 00acd178
+0054a300	table	Script_GetHolidayBGHonorCurrencyBonuses	binding "GetHolidayBGHonorCurrencyBonuses" in s_ScriptFunctions ~ table 00acd178
+0054a370	table	Script_GetRandomBGHonorCurrencyBonuses	binding "GetRandomBGHonorCurrencyBonuses" in s_ScriptFunctions ~ table 00acd178
+0054baa0	table	Script_GetNumBattlefields	binding "GetNumBattlefields" in s_ScriptFunctions ~ table 00acd178
+0054bae0	table	Script_IsBattlefieldArena	binding "IsBattlefieldArena" in s_ScriptFunctions ~ table 00acd178
+0054bb40	table	Script_SetSelectedBattlefield	binding "SetSelectedBattlefield" in s_ScriptFunctions ~ table 00acd178
+0054bbd0	table	Script_GetSelectedBattlefield	binding "GetSelectedBattlefield" in s_ScriptFunctions ~ table 00acd178
+0054bc30	table	Script_GetBattlefieldStatus	binding "GetBattlefieldStatus" in s_ScriptFunctions ~ table 00acd178
+0054be90	table	Script_GetBattlefieldScore	binding "GetBattlefieldScore" in s_ScriptFunctions ~ table 00acd178
+0054c120	table	Script_SetBattlefieldScoreFaction	binding "SetBattlefieldScoreFaction" in s_ScriptFunctions ~ table 00acd178
+0054c170	table	Script_GetBattlefieldStatInfo	binding "GetBattlefieldStatInfo" in s_ScriptFunctions ~ table 00acd178
+0054c250	table	Script_LeaveBattlefield	binding "LeaveBattlefield" in s_ScriptFunctions ~ table 00acd178
+0054c2e0	table	Script_GetBattlefieldPosition	binding "GetBattlefieldPosition" in s_ScriptFunctions ~ table 00acd178
+0054c4d0	table	Script_GetBattlefieldVehicleInfo	binding "GetBattlefieldVehicleInfo" in s_ScriptFunctions ~ table 00acd178
+0054c6e0	table	Script_CanJoinBattlefieldAsGroup	binding "CanJoinBattlefieldAsGroup" in s_ScriptFunctions ~ table 00acd178
+0054c740	table	Script_GetBattlefieldMapIconScale	binding "GetBattlefieldMapIconScale" in s_ScriptFunctions ~ table 00acd178
+0054c7a0	table	Script_HearthAndResurrectFromArea	binding "HearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd178
+0054c810	table	Script_CanHearthAndResurrectFromArea	binding "CanHearthAndResurrectFromArea" in s_ScriptFunctions ~ table 00acd178
+0054c870	table	Script_GetNumBattlegroundTypes	binding "GetNumBattlegroundTypes" in s_ScriptFunctions ~ table 00acd178
+0054c8a0	table	Script_GetWorldPVPQueueStatus	binding "GetWorldPVPQueueStatus" in s_ScriptFunctions ~ table 00acd178
+0054c9f0	table	Script_SortBGList	binding "SortBGList" in s_ScriptFunctions ~ table 00acd178
+0054d770	table	Script_GetBattlefieldInfo	binding "GetBattlefieldInfo" in s_ScriptFunctions ~ table 00acd178
+0054d8f0	table	Script_GetBattlefieldInstanceInfo	binding "GetBattlefieldInstanceInfo" in s_ScriptFunctions ~ table 00acd178
+0054d990	table	Script_JoinBattlefield	binding "JoinBattlefield" in s_ScriptFunctions ~ table 00acd178
+0054da10	table	Script_AcceptBattlefieldPort	binding "AcceptBattlefieldPort" in s_ScriptFunctions ~ table 00acd178
+0054dcc0	table	Script_GetBattlefieldFlagPosition	binding "GetBattlefieldFlagPosition" in s_ScriptFunctions ~ table 00acd178
+0054de00	table	Script_SortBattlefieldScoreData	binding "SortBattlefieldScoreData" in s_ScriptFunctions ~ table 00acd178
+0054e010	table	Script_GetBattlegroundInfo	binding "GetBattlegroundInfo" in s_ScriptFunctions ~ table 00acd178
+0054e160	table	Script_BattlefieldMgrEntryInviteResponse	binding "BattlefieldMgrEntryInviteResponse" in s_ScriptFunctions ~ table 00acd178
+0054e1a0	table	Script_BattlefieldMgrQueueRequest	binding "BattlefieldMgrQueueRequest" in s_ScriptFunctions ~ table 00acd178
+0054e1c0	table	Script_BattlefieldMgrQueueInviteResponse	binding "BattlefieldMgrQueueInviteResponse" in s_ScriptFunctions ~ table 00acd178
+0054e200	table	Script_BattlefieldMgrExitRequest	binding "BattlefieldMgrExitRequest" in s_ScriptFunctions ~ table 00acd178
+0054e6d0	table	Script_RequestBattlegroundInstanceInfo	binding "RequestBattlegroundInstanceInfo" in s_ScriptFunctions ~ table 00acd178
 0054ea60	table	Script_GetGamma	binding "GetGamma" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054ea90	table	Script_SetGamma	binding "SetGamma" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054eb10	table	Script_GetTerrainMip	binding "GetTerrainMip" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -936,7 +1135,8 @@ addr	how	frozen	evidence
 0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions, 0054f690=Script_GetRefreshRates
+0054efe0	callgraph	ConsoleDetectGetResolutions	only unmatched callee of 0054f050=SetupResolutions
+0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f430=Script_GetScreenResolutions
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f820=Script_GetMultisampleFormats
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f4a0	table	Script_GetCurrentResolution	binding "GetCurrentResolution" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -960,7 +1160,6 @@ addr	how	frozen	evidence
 0055e8d0	table	Script_GetBinding	binding "GetBinding" in s_ScriptFunctions ~ table 00acde38
 0055e9b0	table	Script_GetBindingKey	binding "GetBindingKey" in s_ScriptFunctions ~ table 00acde38
 0055ea70	table	Script_GetModifiedClickAction	binding "GetModifiedClickAction" in s_ScriptFunctions ~ table 00acde38
-0055f4d0	callgraph	TSHashTable<HashedNode,HASHKEY_STRI>::Ptr	only unmatched callee of 00812ce0=FrameXML_AcquireHashNode
 0055fad0	table	Script_RunBinding	binding "RunBinding" in s_ScriptFunctions ~ table 00acde38
 0055fb90	table	Script_SetModifiedClick	binding "SetModifiedClick" in s_ScriptFunctions ~ table 00acde38
 0055fc20	table	Script_GetModifiedClick	binding "GetModifiedClick" in s_ScriptFunctions ~ table 00acde38
@@ -993,6 +1192,7 @@ addr	how	frozen	evidence
 00572b80	table	Script_GetRealNumRaidMembers	binding "GetRealNumRaidMembers" in s_ScriptFunctions ~ table 00ace790
 00572bc0	table	Script_SetRaidRosterSelection	binding "SetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c50	table	Script_GetRaidRosterSelection	binding "GetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
+00572c80	table	Script_GetReadyCheckTimeLeft	binding "GetReadyCheckTimeLeft" in s_ScriptFunctions ~ table 00ace790
 00573690	table	Script_GetRaidRosterInfo	binding "GetRaidRosterInfo" in s_ScriptFunctions ~ table 00ace790
 00573a60	table	Script_IsRaidLeader	binding "IsRaidLeader" in s_ScriptFunctions ~ table 00ace790
 00573ab0	table	Script_IsRealRaidLeader	binding "IsRealRaidLeader" in s_ScriptFunctions ~ table 00ace790
@@ -1002,8 +1202,8 @@ addr	how	frozen	evidence
 00573e10	table	Script_PromoteToLeader	binding "PromoteToLeader" in s_ScriptFunctions ~ table 00ace790
 00573ef0	table	Script_PromoteToAssistant	binding "PromoteToAssistant" in s_ScriptFunctions ~ table 00ace790
 00573fd0	table	Script_DemoteAssistant	binding "DemoteAssistant" in s_ScriptFunctions ~ table 00ace790
-005740c0	order	Script_ConfirmReadyCheck	binding table name Script_ConfirmReadyCheck, in definition order in src/ui/game/RaidInfoScript.cpp
-00574180	order	Script_GetReadyCheckStatus	binding table name Script_GetReadyCheckStatus, in definition order in src/ui/game/RaidInfoScript.cpp
+005740c0	table	Script_ConfirmReadyCheck	binding "ConfirmReadyCheck" in s_ScriptFunctions ~ table 00ace790
+00574180	table	Script_GetReadyCheckStatus	binding "GetReadyCheckStatus" in s_ScriptFunctions ~ table 00ace790
 00574a00	table	Script_ConvertToRaid	binding "ConvertToRaid" in s_ScriptFunctions ~ table 00ace790
 00574ab0	table	Script_SetRaidTarget	binding "SetRaidTarget" in s_ScriptFunctions ~ table 00ace790
 00575820	string	Script_Stub_PlayDance	score 0.50 shared PlayDance
@@ -1030,10 +1230,10 @@ addr	how	frozen	evidence
 00584e10	order	Script_Stub_GetMerchantItemInfo	binding table name Script_Stub_GetMerchantItemInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00585990	order	Script_GetRepairAllCost	binding table name Script_GetRepairAllCost, in definition order in src/ui/game/MiscScript.cpp
 005865f0	table	Script_GetTradeTargetItemLink	binding "GetTradeTargetItemLink" in s_ScriptFunctions ~ table 00acedb0
-00586780	order	Script_GetPlayerTradeMoney	binding table name Script_GetPlayerTradeMoney, in definition order in src/ui/game/TradeInfoScript.cpp
-005867d0	order	Script_GetTargetTradeMoney	binding table name Script_GetTargetTradeMoney, in definition order in src/ui/game/TradeInfoScript.cpp
-00586810	order	Script_PickupTradeMoney	binding table name Script_PickupTradeMoney, in definition order in src/ui/game/TradeInfoScript.cpp
-00586870	order	Script_SetTradeMoney	binding table name Script_SetTradeMoney, in definition order in src/ui/game/TradeInfoScript.cpp
+00586780	table	Script_GetPlayerTradeMoney	binding "GetPlayerTradeMoney" in s_ScriptFunctions ~ table 00acedb0
+005867d0	table	Script_GetTargetTradeMoney	binding "GetTargetTradeMoney" in s_ScriptFunctions ~ table 00acedb0
+00586810	table	Script_PickupTradeMoney	binding "PickupTradeMoney" in s_ScriptFunctions ~ table 00acedb0
+00586870	table	Script_SetTradeMoney	binding "SetTradeMoney" in s_ScriptFunctions ~ table 00acedb0
 00586c80	table	Script_ClickTargetTradeButton	binding "ClickTargetTradeButton" in s_ScriptFunctions ~ table 00acedb0
 00586d00	table	Script_GetTradePlayerItemLink	binding "GetTradePlayerItemLink" in s_ScriptFunctions ~ table 00acedb0
 00587940	table	Script_CloseTrade	binding "CloseTrade" in s_ScriptFunctions ~ table 00acedb0
@@ -1078,14 +1278,16 @@ addr	how	frozen	evidence
 00597ed0	table	Script_Dress	binding "Dress" in CGDressUpModelFrameMethods ~ table 00acf550
 00598830	table	Script_TryOn	binding "TryOn" in CGDressUpModelFrameMethods ~ table 00acf550
 00598e10	string	Script_Stub_CloseTabardCreation	score 0.50 shared CloseTabardCreation
-00598fa0	table	CGTabardModelFrame_CanSaveTabardNow	binding "CanSaveTabardNow" in CGTabardModelFrameMethods ~ table 00acf598
+00598fa0	table	CGTabardModelFrame_CanSaveTabardNow	binding "CanSaveTabardNow" in CGTabardModelFrameMethods ~ table 00acf588
 005991d0	annotated	CGTabardModelFrame_GetUpperBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 00599240	annotated	CGTabardModelFrame_GetLowerBackgroundFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 005992b0	annotated	CGTabardModelFrame_GetUpperEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
 00599320	annotated	CGTabardModelFrame_GetLowerEmblemFileName	tag in src/ui/game/CGTabardModelFrameScript.cpp
-00599500	table	CGTabardModelFrame_CycleVariation	binding "CycleVariation" in CGTabardModelFrameMethods ~ table 00acf598
-00599890	table	CGTabardModelFrame_GetUpperEmblemTexture	binding "GetUpperEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
-00599b20	table	CGTabardModelFrame_GetLowerEmblemTexture	binding "GetLowerEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf598
+005994c0	table	CGTabardModelFrame_Save	binding "Save" in CGTabardModelFrameMethods ~ table 00acf588
+00599500	table	CGTabardModelFrame_CycleVariation	binding "CycleVariation" in CGTabardModelFrameMethods ~ table 00acf588
+005997c0	table	CGTabardModelFrame_InitializeTabardColors	binding "InitializeTabardColors" in CGTabardModelFrameMethods ~ table 00acf588
+00599890	table	CGTabardModelFrame_GetUpperEmblemTexture	binding "GetUpperEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf588
+00599b20	table	CGTabardModelFrame_GetLowerEmblemTexture	binding "GetLowerEmblemTexture" in CGTabardModelFrameMethods ~ table 00acf588
 005a20f0	string	Script_Stub_ClosePetitionVendor	score 0.50 shared ClosePetitionVendor
 005a7d10	annotated	Script_GetActionCount	tag in src/ui/game/ActionBarScript.cpp
 005a7d90	table	Script_GetActionText	binding "GetActionText" in s_ScriptFunctions ~ table 00acf9e0
@@ -1114,15 +1316,17 @@ addr	how	frozen	evidence
 005ab8a0	table	Script_SetMultiCastSpell	binding "SetMultiCastSpell" in s_ScriptFunctions ~ table 00acf9e0
 005ac000	table	Script_UseAction	binding "UseAction" in s_ScriptFunctions ~ table 00acf9e0
 005ac090	override	Script_PickupAction	
-005ac390	table	Script_GMSurveyAnswerSubmit	binding "GMSurveyAnswerSubmit" in s_ScriptFunctions ~ table 00acfb28
-005ac480	table	Script_GMSurveyCommentSubmit	binding "GMSurveyCommentSubmit" in s_ScriptFunctions ~ table 00acfb28
-005ac750	table	Script_GMSurveyQuestion	binding "GMSurveyQuestion" in s_ScriptFunctions ~ table 00acfb28
-005ac7d0	table	Script_GMSurveyAnswer	binding "GMSurveyAnswer" in s_ScriptFunctions ~ table 00acfb28
-005ac870	table	Script_GMSurveyNumAnswers	binding "GMSurveyNumAnswers" in s_ScriptFunctions ~ table 00acfb28
-005ad080	order	Script_NewGMTicket	binding table name Script_NewGMTicket, in definition order in src/ui/game/GMTicketInfoScript.cpp
-005ad0f0	order	Script_UpdateGMTicket	binding table name Script_UpdateGMTicket, in definition order in src/ui/game/GMTicketInfoScript.cpp
-005ad150	order	Script_GMResponseNeedMoreHelp	binding table name Script_GMResponseNeedMoreHelp, in definition order in src/ui/game/GMTicketInfoScript.cpp
-005ad1c0	table	Script_GetGMStatus	binding "GetGMStatus" in s_ScriptFunctions ~ table 00acfb28
+005ac320	table	Script_RegisterStaticConstants	binding "RegisterStaticConstants" in s_ScriptFunctions ~ table 00acfaf8
+005ac390	table	Script_GMSurveyAnswerSubmit	binding "GMSurveyAnswerSubmit" in s_ScriptFunctions ~ table 00acfaf8
+005ac480	table	Script_GMSurveyCommentSubmit	binding "GMSurveyCommentSubmit" in s_ScriptFunctions ~ table 00acfaf8
+005ac750	table	Script_GMSurveyQuestion	binding "GMSurveyQuestion" in s_ScriptFunctions ~ table 00acfaf8
+005ac7d0	table	Script_GMSurveyAnswer	binding "GMSurveyAnswer" in s_ScriptFunctions ~ table 00acfaf8
+005ac870	table	Script_GMSurveyNumAnswers	binding "GMSurveyNumAnswers" in s_ScriptFunctions ~ table 00acfaf8
+005ad020	table	Script_GMReportLag	binding "GMReportLag" in s_ScriptFunctions ~ table 00acfaf8
+005ad080	table	Script_NewGMTicket	binding "NewGMTicket" in s_ScriptFunctions ~ table 00acfaf8
+005ad0f0	table	Script_UpdateGMTicket	binding "UpdateGMTicket" in s_ScriptFunctions ~ table 00acfaf8
+005ad150	table	Script_GMResponseNeedMoreHelp	binding "GMResponseNeedMoreHelp" in s_ScriptFunctions ~ table 00acfaf8
+005ad1c0	table	Script_GetGMStatus	binding "GetGMStatus" in s_ScriptFunctions ~ table 00acfaf8
 005afd40	string	Script_Stub_GetCurrencyListInfo	score 0.50 shared GetCurrencyListInfo
 005b71e0	table	Script_GetMultiCastBarOffset	binding "GetMultiCastBarOffset" in s_ScriptFunctions ~ table 00acf9e0
 005b7210	string	Script_Stub_GetGlyphSocketInfo	score 0.50 shared GetGlyphSocketInfo
@@ -1144,9 +1348,13 @@ addr	how	frozen	evidence
 005e4ed0	order	Script_Stub_QuestLogPushQuest	binding table name Script_Stub_QuestLogPushQuest, in definition order in src/ui/game/miscscriptstubs.cpp
 005e63d0	order	Script_Stub_QuestMapUpdateAllQuests	binding table name Script_Stub_QuestMapUpdateAllQuests, in definition order in src/ui/game/miscscriptstubs.cpp
 005e7700	table	Script_KeyRingButtonIDToInvSlotID	binding "KeyRingButtonIDToInvSlotID" in s_ScriptFunctions ~ table 00ad1270
+005e7780	table	Script_HasInspectHonorData	binding "HasInspectHonorData" in s_ScriptFunctions ~ table 00ad1270
+005e77c0	table	Script_GetInspectHonorData	binding "GetInspectHonorData" in s_ScriptFunctions ~ table 00ad1270
+005e7890	table	Script_ClearInspectPlayer	binding "ClearInspectPlayer" in s_ScriptFunctions ~ table 00ad1270
 005e7d60	table	Script_GetInventorySlotInfo	binding "GetInventorySlotInfo" in s_ScriptFunctions ~ table 00ad1270
 005e7e60	table	Script_GetInventoryItemCooldown	binding "GetInventoryItemCooldown" in s_ScriptFunctions ~ table 00ad1270
 005e7fa0	table	Script_GetInventoryAlertStatus	binding "GetInventoryAlertStatus" in s_ScriptFunctions ~ table 00ad1270
+005e8030	table	Script_GetInspectArenaTeamData	binding "GetInspectArenaTeamData" in s_ScriptFunctions ~ table 00ad1270
 005e95c0	table	Script_GetInventoryItemsForSlot	binding "GetInventoryItemsForSlot" in s_ScriptFunctions ~ table 00ad1270
 005e9bc0	table	Script_GetInventoryItemTexture	binding "GetInventoryItemTexture" in s_ScriptFunctions ~ table 00ad1270
 005e9d80	table	Script_GetInventoryItemBroken	binding "GetInventoryItemBroken" in s_ScriptFunctions ~ table 00ad1270
@@ -1167,15 +1375,17 @@ addr	how	frozen	evidence
 005ea930	table	Script_ShowInventorySellCursor	binding "ShowInventorySellCursor" in s_ScriptFunctions ~ table 00ad1270
 005ea9b0	table	Script_SetInventoryPortraitTexture	binding "SetInventoryPortraitTexture" in s_ScriptFunctions ~ table 00ad1270
 005eaaf0	table	Script_GetGuildInfo	binding "GetGuildInfo" in s_ScriptFunctions ~ table 00ad1270
-005eac10	order	Script_OffhandHasWeapon	binding table name Script_OffhandHasWeapon, in definition order in src/ui/game/CharacterInfoScript.cpp
-005eaca0	order	Script_GetWeaponEnchantInfo	binding table name Script_GetWeaponEnchantInfo, in definition order in src/ui/game/CharacterInfoScript.cpp
-005eae90	order	Script_HasWandEquipped	binding table name Script_HasWandEquipped, in definition order in src/ui/game/CharacterInfoScript.cpp
+005eac10	table	Script_OffhandHasWeapon	binding "OffhandHasWeapon" in s_ScriptFunctions ~ table 00ad1270
+005eaca0	table	Script_GetWeaponEnchantInfo	binding "GetWeaponEnchantInfo" in s_ScriptFunctions ~ table 00ad1270
+005eae90	table	Script_HasWandEquipped	binding "HasWandEquipped" in s_ScriptFunctions ~ table 00ad1270
 005ec9a0	table	CGCooldown_SetReverse	binding "SetReverse" in CGCooldownMethods ~ table 00ad13a4
 005ec9f0	table	CGCooldown_GetReverse	binding "GetReverse" in CGCooldownMethods ~ table 00ad13a4
 005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
+005ef490	string	ActionTypeName	score 0.87 shared equipmentset; macro; spell
+005f7630	callorder	AddOnIsLoaded	same slot between linked calls in 00511b30=Script_IsAddOnLoaded
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
 005f9e10	order	Script_Stub_VehicleAimGetAngle	binding table name Script_Stub_VehicleAimGetAngle, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1208,7 +1418,7 @@ addr	how	frozen	evidence
 00608880	string	ScriptEventsInitialize	unique "ACHIEVEMENT_EARNED"
 0060a450	table	Script_IsLoggedIn	binding "IsLoggedIn" in s_UnitFunctions ~ table 00ad21d8
 0060a490	table	Script_GetPlayerFacing	binding "GetPlayerFacing" in s_UnitFunctions ~ table 00ad21d8
-0060a510	string	Script_FillLocalizedClassList	unique "Usage: FillLocalizedClassList(classTable[, isFemale])"
+0060a510	table	Script_FillLocalizedClassList	binding "FillLocalizedClassList" in s_UnitFunctions ~ table 00ad21d8
 0060a630	annotated	Script_GetGUIDFromString	tag in src/ui/game/ScriptUtil.cpp
 0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
 0060abf0	annotated	Script_GetGUIDFromToken	tag in src/ui/game/ScriptUtil.cpp
@@ -1476,16 +1686,17 @@ addr	how	frozen	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
-006b0850	callorder	ClientConnection::Cleanup	same slot between linked calls in 004d98d0=CGlueMgr::StatusDialogClick
-006b0970	callgraph	ClientServices::Connection	only unmatched callee of 004e1880=Script_GetAvailableRaces
-006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 00530f20=Script_IsBNLogin
+006b0970	callgraph	ClientServices::IsConnected	only unmatched callee of 004dda50=Script_IsConnectedToServer
+006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin
 006b0b50	annotated	ClientServices::Send	tag in src/client/ClientServices.cpp
 006b0b80	override	ClientServices::SetMessageHandler	
 006b0bc0	annotated	ClientServices::ClearMessageHandler	tag in src/client/ClientServices.cpp
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
+006b0e10	callorder	ClientServices::GetRealmList	same slot between linked calls in 004d9610=CGlueMgr::GetRealmList
 006b0ed0	override	ClientServices::GetInstance	
 006b0f40	override	ClientServices::GetErrorToken	
+006b0f90	callorder	ValidateName	same slot between linked calls in 004dfca0=Script_GetRandomName
 006b0fe0	override	ClientServices::SetAccountName	
 006b1020	override	ClientServices::SetCharacterInfo	
 006b1050	annotated	CGPlayer_C::GetLocalPlayerInfo	tag in src/object/client/CGPlayer_C.cpp
@@ -1494,8 +1705,6 @@ addr	how	frozen	evidence
 006b1080	annotated	CGPlayer_C::GetLocalPlayerClass	tag in src/object/client/CGPlayer_C.cpp
 006b1090	annotated	CGPlayer_C::GetLocalPlayerSex	tag in src/object/client/CGPlayer_C.cpp
 006b10a0	annotated	CGPlayer_C::GetLocalPlayerLevel	tag in src/object/client/CGPlayer_C.cpp
-006b1390	callorder	ClientConnection::Connect	same slot between linked calls in 004d8ba0=CGlueMgr::Sub4D8BA0
-006b14c0	callorder	ClientConnection::GetCharacterList	same slot between linked calls in 004d95c0=CGlueMgr::GetCharacterList
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
 006b1a70	annotated	ClientConnection::DeleteCharacter	tag in src/net/connection/ClientConnection.cpp
 006b3450	string	Script_Stub_GetFriendInfo	score 0.50 shared GetFriendInfo
@@ -1506,6 +1715,7 @@ addr	how	frozen	evidence
 006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
+006d5c30	callgraph	Player_C_GetDisplayId	only unmatched callee of 006dc810=Player_C_GetModelName
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
 006d8750	handler	ReceiveActionButtons	SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS) on both sides
 006dc810	string	Player_C_GetModelName	unique "Error, unknown displayInfo %d specified for player race %d s"
@@ -1529,6 +1739,7 @@ addr	how	frozen	evidence
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
+00765880	string	Script_AccessDenied	score 0.50 shared Access Denied
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
 00766400	annotated	s_LoadFromFile	tag in src/console/CVar.cpp
@@ -1541,7 +1752,7 @@ addr	how	frozen	evidence
 00767100	annotated	CVar::Save	tag in src/console/CVar.cpp
 007673f0	annotated	ConsoleDestroyClientCVar	tag in src/console/Initialize.cpp
 00767440	callgraph	CVar::Lookup	only unmatched callee of 00510230=Script_SetFarclip, 005102e0=Script_SetTexLodBias, 00510390=Script_SetBaseMip
-00767460	callorder	CVar::LookupRegistered	same slot between linked calls in 004dce70=Script_SetCVar
+00767460	override	CVar::LookupRegistered	
 00767680	annotated	CVarCommandHandler	tag in src/console/CVarHandlers.cpp
 00767fc0	annotated	CVar::Register	tag in src/console/CVar.cpp
 007681f0	annotated	CVarSetCommandHandler	tag in src/console/CVarHandlers.cpp
@@ -1693,6 +1904,7 @@ addr	how	frozen	evidence
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
 00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML, 004873e0=CSimpleFontString::LoadXML, 0048f400=CSimpleFrame::PostLoadXML_Frames
 00814e40	override	StringToFrameStrata	
+00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
 00814ff0	string	StringToBlendMode	unique "DISABLE"
@@ -1725,12 +1937,12 @@ addr	how	frozen	evidence
 00817370	order	debugprofilestop	binding table name debugprofilestop, in definition order in src/ui/LuaExtraFuncs.cpp
 008173c0	string	seterrorhandler	unique "Usage: seterrorhandler(errfunc)"
 00817420	order	geterrorhandler	binding table name geterrorhandler, in definition order in src/ui/LuaExtraFuncs.cpp
+00817450	order	os_date	binding table name os_date, in definition order in src/ui/LuaExtraFuncs.cpp
 00817650	string	getfield	unique "field '%s' missing in date table"
 008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
 00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
-00817f90	callgraph	fprintf	only unmatched callee of 005302b0=Script_Stub_FlagTutorial, 005485b0=Script_Stub_GetWorldStateUIInfo, 00575820=Script_Stub_PlayDance
 00818010	callorder	FrameScript_GetVariable	same slot between linked calls in 00819d40=FrameScript_GetText
 00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
@@ -1741,10 +1953,10 @@ addr	how	frozen	evidence
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
+0081b330	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
 0081b380	callgraph	FrameScript_Object::RegisterScriptEvent	only unmatched callee of 0049efe0=CSimpleFrame_RegisterEvent
 0081b410	callgraph	FrameScript_Object::UnregisterScriptEvent	only unmatched callee of 0049f060=CSimpleFrame_UnregisterEvent
-0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d8c60=CGlueMgr::CreateCharacter
+0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d9bd0=CGlueMgr::EnterWorld
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848
 0081b820	table	Script_GetCurrentKeyBoardFocus	binding "GetCurrentKeyBoardFocus" in s_ScriptFunctions ~ table 00af5848
@@ -1827,7 +2039,7 @@ addr	how	frozen	evidence
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter
+0084df20	callgraph	fprintf	only unmatched callee of 004df270=Script_IsTournamentRealmCategory, 004dfa70=Script_IsRaceClassRestricted, 00515dd0=Script_ArenaTeamLeave
 0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
@@ -1841,9 +2053,9 @@ addr	how	frozen	evidence
 0084e2a0	override	lua_pushnumber	
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
 0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
-0084e350	callgraph	lua_pushstring	only unmatched callee of 004dbe60=Script_GetBuildInfo, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
+0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization, 00510e00=Script_GetRealmName
 0084e3a0	override	lua_pushvfstring	
-0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger
+0084e3d0	callgraph	tag_error	only unmatched callee of 0084fb60=luaL_checkinteger
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
 0084e4d0	override	lua_pushboolean	
 0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
@@ -1889,6 +2101,7 @@ addr	how	frozen	evidence
 0084f9f0	callgraph	luaL_checklstring	only unmatched callee of 00854100=luaB_tonumber
 0084fa50	callgraph	luaL_optlstring	only unmatched callee of 00510c60=Script_GetCoinText
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
+0084fb30	order	luaL_optnumber	definition order between luaL_checknumber and luaL_checkinteger in vendor/lua-5.1.3/src/lauxlib.c
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
 0084fbd0	callgraph	luaL_optinteger	only unmatched callee of 008545c0=luaB_collectgarbage
 0084fc00	callgraph	luaL_openlib	only unmatched callee of 0084fdd0=luaL_register
@@ -1907,37 +2120,50 @@ addr	how	frozen	evidence
 00850c20	string	luaG_aritherror	unique "perform arithmetic on"
 00850c60	string	luaG_ordererror	unique "attempt to compare %s with %s"
 00851010	callorder	luaopen_bit	same slot between linked calls in 00819bb0=FrameScript_Initialize
+00851040	order	math_abs	binding table name math_abs, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851070	order	math_sin	binding table name math_sin, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008510a0	order	math_sinh	binding table name math_sinh, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008510d0	order	math_cos	binding table name math_cos, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851100	order	math_cosh	binding table name math_cosh, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851130	order	math_tan	binding table name math_tan, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851160	order	math_tanh	binding table name math_tanh, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851190	order	math_asin	binding table name math_asin, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008511c0	order	math_acos	binding table name math_acos, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008511f0	order	math_atan	binding table name math_atan, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 00851220	order	math_atan2	binding table name math_atan2, in definition order in vendor/lua-5.1.3/src/lmathlib.c
-00851260	order	math_ceil	definition order between math_atan2 and math_floor in vendor/lua-5.1.3/src/lmathlib.c
+00851260	order	math_ceil	binding table name math_ceil, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 00851290	order	math_floor	binding table name math_floor, in definition order in vendor/lua-5.1.3/src/lmathlib.c
-008512c0	order	math_fmod	definition order between math_floor and math_log10 in vendor/lua-5.1.3/src/lmathlib.c
-00851310	order	math_modf	definition order between math_floor and math_log10 in vendor/lua-5.1.3/src/lmathlib.c
-00851360	order	math_sqrt	definition order between math_floor and math_log10 in vendor/lua-5.1.3/src/lmathlib.c
-00851390	order	math_pow	definition order between math_floor and math_log10 in vendor/lua-5.1.3/src/lmathlib.c
-008513e0	order	math_log	definition order between math_floor and math_log10 in vendor/lua-5.1.3/src/lmathlib.c
+008512c0	order	math_fmod	binding table name math_fmod, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851310	order	math_modf	binding table name math_modf, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851360	order	math_sqrt	binding table name math_sqrt, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851390	order	math_pow	binding table name math_pow, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008513e0	order	math_log	binding table name math_log, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 00851410	order	math_log10	binding table name math_log10, in definition order in vendor/lua-5.1.3/src/lmathlib.c
-00851440	order	math_exp	definition order between math_log10 and math_frexp in vendor/lua-5.1.3/src/lmathlib.c
-00851480	order	math_deg	definition order between math_log10 and math_frexp in vendor/lua-5.1.3/src/lmathlib.c
-008514b0	order	math_rad	definition order between math_log10 and math_frexp in vendor/lua-5.1.3/src/lmathlib.c
+00851440	order	math_exp	binding table name math_exp, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+00851480	order	math_deg	binding table name math_deg, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008514b0	order	math_rad	binding table name math_rad, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 008514e0	order	math_frexp	binding table name math_frexp, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 00851520	order	math_ldexp	binding table name math_ldexp, in definition order in vendor/lua-5.1.3/src/lmathlib.c
-00851560	order	math_min	definition order between math_ldexp and math_random in vendor/lua-5.1.3/src/lmathlib.c
-008515d0	order	math_max	definition order between math_ldexp and math_random in vendor/lua-5.1.3/src/lmathlib.c
+00851560	order	math_min	binding table name math_min, in definition order in vendor/lua-5.1.3/src/lmathlib.c
+008515d0	order	math_max	binding table name math_max, in definition order in vendor/lua-5.1.3/src/lmathlib.c
 00851640	string	math_random	unique "wrong number of arguments"
 00851760	callorder	luaopen_math	same slot between linked calls in 00819bb0=FrameScript_Initialize
 008517c0	order	foreachi	binding table name foreachi, in definition order in vendor/lua-5.1.3/src/ltablib.c
 00851850	order	foreach	binding table name foreach, in definition order in vendor/lua-5.1.3/src/ltablib.c
-008518e0	order	maxn	definition order between foreach and setn in vendor/lua-5.1.3/src/ltablib.c
-00851980	order	getn	definition order between foreach and setn in vendor/lua-5.1.3/src/ltablib.c
+008518e0	order	maxn	binding table name maxn, in definition order in vendor/lua-5.1.3/src/ltablib.c
+00851980	order	getn	binding table name getn, in definition order in vendor/lua-5.1.3/src/ltablib.c
 008519b0	string	setn	unique "'setn' is obsolete"
 008519e0	string	tinsert	unique "wrong number of arguments to 'insert'"
 00851c30	string	tconcat	unique "table contains non-strings"
 00851d20	string	auxsort	unique "invalid order function for sorting"
+00852120	order	sort	binding table name sort, in definition order in vendor/lua-5.1.3/src/ltablib.c
 008521f0	string	luaopen_table	unique "table"
+00852400	order	str_len	binding table name str_len, in definition order in vendor/lua-5.1.3/src/lstrlib.c
+00852430	order	str_sub	binding table name str_sub, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 008524e0	order	str_reverse	binding table name str_reverse, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 00852580	order	str_lower	binding table name str_lower, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 00852680	order	str_upper	binding table name str_upper, in definition order in vendor/lua-5.1.3/src/lstrlib.c
-00852780	order	str_rep	definition order between str_upper and str_byte in vendor/lua-5.1.3/src/lstrlib.c
+00852780	order	str_rep	binding table name str_rep, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 00852800	string	str_byte	unique "string slice too long"
 008528d0	string	str_char	unique "invalid value"
 00852980	order	writer	definition order between str_char and str_dump in vendor/lua-5.1.3/src/lstrlib.c
@@ -1949,13 +2175,14 @@ addr	how	frozen	evidence
 00853340	string	push_onecapture	unique "unfinished capture"
 008533c0	callorder	push_captures	same slot between linked calls in 00853860=add_value
 00853410	string	str_find_aux	unique "^$*+?.([%-"
-008535b0	order	str_find	definition order between str_find_aux and str_match in vendor/lua-5.1.3/src/lstrlib.c
+008535b0	order	Find	binding table name Find, in definition order in src/object/client/NameCache.cpp
 008535d0	order	str_match	binding table name str_match, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 008535f0	order	gmatch_aux	definition order between str_match and gmatch in vendor/lua-5.1.3/src/lstrlib.c
 00853710	order	gmatch	binding table name gmatch, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 00853760	string	gfind_nodef	unique "'string.gfind' was renamed to 'string.gmatch'"
 00853780	callorder	add_s	same slot between linked calls in 00853860=add_value
 00853860	string	add_value	unique "invalid replacement value (a %s)"
+00853980	order	luaL_gsub	binding table name luaL_gsub, in definition order in vendor/lua-5.1.3/src/lauxlib.c
 00853c50	order	str_format	binding table name str_format, in definition order in vendor/lua-5.1.3/src/lstrlib.c
 00854070	order	createmetatable	definition order between str_format and luaopen_string in vendor/lua-5.1.3/src/lstrlib.c
 008540d0	callorder	luaopen_string	same slot between linked calls in 00819bb0=FrameScript_Initialize
@@ -1971,6 +2198,8 @@ addr	how	frozen	evidence
 00854550	order	luaB_rawset	binding table name luaB_rawset, in definition order in vendor/lua-5.1.3/src/lbaselib.c
 00854590	order	luaB_gcinfo	binding table name luaB_gcinfo, in definition order in vendor/lua-5.1.3/src/lbaselib.c
 008545c0	string	luaB_collectgarbage	unique "collect"
+00854660	order	luaB_type	binding table name luaB_type, in definition order in vendor/lua-5.1.3/src/lbaselib.c
+00854690	order	luaB_next	binding table name luaB_next, in definition order in vendor/lua-5.1.3/src/lbaselib.c
 008547b0	order	luaL_loadstring	binding table name luaL_loadstring, in definition order in vendor/lua-5.1.3/src/lauxlib.c
 00854810	string	luaB_assert	unique "assertion failed!"
 00854860	string	luaB_unpack	unique "table too big to unpack"
@@ -1981,7 +2210,6 @@ addr	how	frozen	evidence
 00854b20	string	luaB_newproxy	unique "boolean or proxy expected"
 00854c00	string	auxresume	unique "too many arguments to resume"
 00854da0	string	luaB_cocreate	unique "Lua function expected"
-00854e00	order	luaB_cowrap	definition order between luaB_cocreate and luaB_yield in vendor/lua-5.1.3/src/lbaselib.c
 00854e30	order	luaB_yield	binding table name luaB_yield, in definition order in vendor/lua-5.1.3/src/lbaselib.c
 00854f40	string	base_open	unique "Lua 5.1"
 00855060	string	luaopen_base	unique "coroutine"
@@ -2086,6 +2314,7 @@ addr	how	frozen	evidence
 00879460	callgraph	SESound::SetMasterVolume	only unmatched callee of 004d0e60=MasterVolume_CVarCallback
 0087a6f0	callgraph	SESound::GetChannelGroup	only unmatched callee of 0087a850=SESound::SetChannelGroupVolume
 0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback, 004d0eb0=MusicVolume_CVarCallback, 004d0ef0=AmbienceVolume_CVarCallback
+0087a8e0	callgraph	SESound::MuteChannelGroup	only unmatched callee of 004d13e0=EnableAllSound_CVarCallback, 004d14e0=EnableSFX_CVarCallback
 0087a9b0	annotated	s_SystemCallback	tag in src/sound/SESound.cpp
 0087acc0	annotated	SESound::SetDeviceListChangedCallback	tag in src/sound/SESound.cpp
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -2093,7 +2322,8 @@ addr	how	frozen	evidence
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
 0087ebc0	override	SEDiskSound::SEDiskSound	
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
-0088b9c0	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049e9d0=CSimpleFrame_SetFrameLevel, 0049fb00=CSimpleFrame_SetID
+008889b0	callgraph	FrameScript_Object::RegisterScriptObject	only unmatched callee of 00516bf0=Script_GetMouseFocus
+0088b9c0	callgraph	lua_isnumber	only unmatched callee of 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter, 00510d00=Script_GetCoinTextureString
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
@@ -2424,15 +2654,21 @@ addr	how	frozen	evidence
 009783b0	table	CSimpleButton_SetMotionScriptsWhileDisabled	binding "SetMotionScriptsWhileDisabled" in SimpleButtonMethods ~ table 00b2d418
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00980f70	annotated	ParticleFxSetDensity	tag in src/world/ParticleFx.cpp
-009858b0	string	Script_PlaySound	unique "Usage: PlaySound("sound")"
-00985950	order	Script_PlayMusic	binding table name Script_PlayMusic, in definition order in src/sound/SI2Script.cpp
-009859b0	order	Script_PlaySoundFile	binding table name Script_PlaySoundFile, in definition order in src/sound/SI2Script.cpp
-00985a50	string	Script_Sound_ChatSystem_GetInputDriverNameByIndex	unique "Usage: Sound_ChatSystem_GetInputDriverNameByIndex(InputDrive"
-00985b10	string	Script_Sound_ChatSystem_GetOutputDriverNameByIndex	unique "Usage: Sound_ChatSystem_GetOutputDriverNameByIndex(OutputDri"
-00985bb0	table	Script_Sound_GameSystem_GetNumInputDrivers	binding "Sound_GameSystem_GetNumInputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d948
-00985be0	table	Script_Sound_GameSystem_GetInputDriverNameByIndex	binding "Sound_GameSystem_GetInputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d948
-00985c70	table	Script_Sound_GameSystem_GetNumOutputDrivers	binding "Sound_GameSystem_GetNumOutputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d948
-00985ca0	table	Script_Sound_GameSystem_GetOutputDriverNameByIndex	binding "Sound_GameSystem_GetOutputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d948
+009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
+009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985a20	table	Script_Sound_ChatSystem_GetNumInputDrivers	binding "Sound_ChatSystem_GetNumInputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985a50	table	Script_Sound_ChatSystem_GetInputDriverNameByIndex	binding "Sound_ChatSystem_GetInputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985ae0	table	Script_Sound_ChatSystem_GetNumOutputDrivers	binding "Sound_ChatSystem_GetNumOutputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985b10	table	Script_Sound_ChatSystem_GetOutputDriverNameByIndex	binding "Sound_ChatSystem_GetOutputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985bb0	table	Script_Sound_GameSystem_GetNumInputDrivers	binding "Sound_GameSystem_GetNumInputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985be0	table	Script_Sound_GameSystem_GetInputDriverNameByIndex	binding "Sound_GameSystem_GetInputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985c70	table	Script_Sound_GameSystem_GetNumOutputDrivers	binding "Sound_GameSystem_GetNumOutputDrivers" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985ca0	table	Script_Sound_GameSystem_GetOutputDriverNameByIndex	binding "Sound_GameSystem_GetOutputDriverNameByIndex" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985d60	table	Script_VoiceChat_RecordLoopbackSound	binding "VoiceChat_RecordLoopbackSound" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985e00	table	Script_VoiceChat_IsRecordingLoopbackSound	binding "VoiceChat_IsRecordingLoopbackSound" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985e30	table	Script_VoiceChat_IsPlayingLoopbackSound	binding "VoiceChat_IsPlayingLoopbackSound" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985e60	table	Script_VoiceChat_GetCurrentMicrophoneSignalLevel	binding "VoiceChat_GetCurrentMicrophoneSignalLevel" in SI2::s_ScriptFunctions ~ table 00b2d928
 009860e0	callorder	SI2::StopGlueMusic	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 009861c0	callgraph	SI2::StartGlueMusic	only unmatched callee of 004dc070=Script_PlayGlueMusic
 009862c0	callgraph	SI2::StartCreditsMusic	only unmatched callee of 004dc150=Script_PlayCreditsMusic
