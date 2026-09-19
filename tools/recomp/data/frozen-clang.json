@@ -98945,97 +98945,89 @@
 ],
 "branches": 2,
 "stub": true,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 7
+"line": 10
 },
 "CGCooldown_SetReverse": {
 "files": [
 "src/ui/game/cgcooldownscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGCooldown::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"(anonymous namespace)::CGCooldown_SetReverse",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgcooldownscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 11
+"line": 15
 },
 "CGCooldown_GetReverse": {
 "files": [
 "src/ui/game/cgcooldownscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGCooldown::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushboolean"
 ],
-"strings": [
-"(anonymous namespace)::CGCooldown_GetReverse",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgcooldownscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 8,
 "refs": [],
-"line": 15
+"line": 26
 },
 "CGCooldown_SetDrawEdge": {
 "files": [
 "src/ui/game/cgcooldownscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGCooldown::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL"
 ],
-"strings": [
-"(anonymous namespace)::CGCooldown_SetDrawEdge",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgcooldownscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 19
+"line": 36
 },
 "CGCooldown_GetDrawEdge": {
 "files": [
 "src/ui/game/cgcooldownscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGCooldown::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushboolean"
 ],
-"strings": [
-"(anonymous namespace)::CGCooldown_GetDrawEdge",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgcooldownscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 8,
 "refs": [],
-"line": 23
+"line": 47
 },
 "CGDressUpModelFrame::Create": {
 "files": [

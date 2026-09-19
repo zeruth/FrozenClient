@@ -22085,65 +22085,65 @@
   "status": "ported"
  },
  "005ec9a0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGCooldownScript.cpp",
    "src/ui/game/cgcooldownscript.cpp"
   ],
   "frozen": "CGCooldown_SetReverse",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 72,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 68,
   "status": "ported"
  },
  "005ec9f0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGCooldownScript.cpp",
    "src/ui/game/cgcooldownscript.cpp"
   ],
   "frozen": "CGCooldown_GetReverse",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 49,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 64,
   "status": "ported"
  },
  "005eca30": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGCooldownScript.cpp",
    "src/ui/game/cgcooldownscript.cpp"
   ],
   "frozen": "CGCooldown_SetDrawEdge",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 72,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 68,
   "status": "ported"
  },
  "005eca80": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGCooldownScript.cpp",
    "src/ui/game/cgcooldownscript.cpp"
   ],
   "frozen": "CGCooldown_GetDrawEdge",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 49,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 64,
   "status": "ported"

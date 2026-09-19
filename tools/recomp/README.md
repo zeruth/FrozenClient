@@ -106,6 +106,21 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
+> **Known defect: the stub flag is not reliable.** Measured 2026-09-19. At one commit,
+> `CGCooldown_SetCooldown` and `CGCooldown_GetReverse` were both four-line `WHOA_UNIMPLEMENTED`
+> bodies in the same file, and `data/frozen-clang.json` recorded the first as `stub: true` and the
+> second as `stub: false`. So four cooldown bindings were counted as **ported while they were
+> stubs**, and implementing them moved no number at all.
+>
+> The suspect is the `and` in both stub rules (`recomp.py` merge, `clangparse.py`): a name seen
+> more than once keeps `stub` only if *every* sighting carries the macro, so one sighting without
+> it -- a second parse of the same file, an empty `src` when the text was not loaded -- clears the
+> flag permanently. Not yet confirmed, and not yet fixed.
+>
+> Consequence for reading the report: `ported` is an upper bound and `stub` a lower one. The
+> `linked` total is unaffected, since the flag only splits an already-linked function between the
+> two columns.
+
 ## What the report says
 
 - **Totals** — functions and code bytes: linked / ported / stub / verified / unlinked, plus the

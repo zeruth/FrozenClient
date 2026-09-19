@@ -1387,10 +1387,10 @@ addr	how	frozen	evidence
 005eac10	table	Script_OffhandHasWeapon	binding "OffhandHasWeapon" in s_ScriptFunctions ~ table 00ad1270
 005eaca0	table	Script_GetWeaponEnchantInfo	binding "GetWeaponEnchantInfo" in s_ScriptFunctions ~ table 00ad1270
 005eae90	table	Script_HasWandEquipped	binding "HasWandEquipped" in s_ScriptFunctions ~ table 00ad1270
-005ec9a0	table	CGCooldown_SetReverse	binding "SetReverse" in CGCooldownMethods ~ table 00ad13a4
-005ec9f0	table	CGCooldown_GetReverse	binding "GetReverse" in CGCooldownMethods ~ table 00ad13a4
-005eca30	table	CGCooldown_SetDrawEdge	binding "SetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
-005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
+005ec9a0	annotated	CGCooldown_SetReverse	tag in src/ui/game/CGCooldownScript.cpp
+005ec9f0	annotated	CGCooldown_GetReverse	tag in src/ui/game/CGCooldownScript.cpp
+005eca30	annotated	CGCooldown_SetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
+005eca80	annotated	CGCooldown_GetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
 005ef490	string	ActionTypeName	score 0.87 shared equipmentset; macro; spell
