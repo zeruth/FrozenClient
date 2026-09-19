@@ -47,23 +47,23 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **2,254 / 27,161** &nbsp;·&nbsp; ~8% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **684** &nbsp;·&nbsp; ~3% of the client, ~30% of what is linked |
+| **Linked** | an original function has a known counterpart here | **2,678 / 27,161** &nbsp;·&nbsp; ~10% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **920** &nbsp;·&nbsp; ~3% of the client, ~34% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
 
 | | covered |
 |---|---|
-| Lua bindings the original registers | 1,584 / 2,512 registered &nbsp;·&nbsp; ~63% |
-| &nbsp;&nbsp;of those, actually implemented rather than a stub | 832 &nbsp;·&nbsp; **~33%** |
-| Functions reachable from the world render entry point | 312 / 5,530 &nbsp;·&nbsp; ~6% |
-| Original code, by bytes rather than function count | ~9% linked, ~2% faithful |
+| Lua bindings the original registers | 1,791 / 2,512 registered &nbsp;·&nbsp; ~71% |
+| &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,150 &nbsp;·&nbsp; **~46%** |
+| Functions reachable from the world render entry point | 392 / 5,530 &nbsp;·&nbsp; ~7% |
+| Original code, by bytes rather than function count | ~10% linked, ~2% faithful |
 
 A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
 returns nothing, which is why the two are counted apart. So: the interface has the broadest
-coverage but a third of it is still hollow, the engine underneath is early, and the distance from
-"linked" to "verified" is the honest size of the work left. The report also carries
+coverage and is now a little under half filled in, the engine underneath is early, and the distance
+from "linked" to "verified" is the honest size of the work left. The report also carries
 per-module coverage, the ranked queue of what to port next, and a history row per run, so progress
 is a table rather than a feeling. A function is only ever marked verified by a trace or a scene
 comparison, never by a clean build or a plausible reading of a decompilation.
@@ -75,7 +75,7 @@ comparison, never by a clean build or a plausible reading of a decompilation.
 2. **Subsystem ports.** Chat, the spell cast pipeline, inventory and the tooltip, sound. These are
    the large functions at the top of the report's unfaithful queue and the reason several Lua tables
    are still stubs.
-3. **Lua surface.** Close the remaining 928 bindings so Blizzard's interface stops meeting `nil`.
+3. **Lua surface.** Close the remaining 721 bindings so Blizzard's interface stops meeting `nil`.
 4. **Runtime verification at scale.** The call tracer and the scene comparison exist; the work is
    running them broadly enough to move the verified column, not just the linked one.
 5. **1.0.0.** Every reference function linked and faithful, the render verified against the original
