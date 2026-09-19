@@ -7,6 +7,7 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/NameCache.hpp"
 #include "client/Client.hpp"
+#include "ui/InputControl.hpp"
 #include "client/gui/OsGui.hpp"
 #include "gx/Device.hpp"
 #include "async/AsyncFile.hpp"
@@ -780,7 +781,7 @@ void WowClientInit() {
     // ShadowInit();
     // GxuLightInitialize();
     // GxuLightBucketSizeSet(16.665001);
-    // InputControlInitialize();
+    InputControlInitialize();
 
     CGlueMgr::Initialize();
 

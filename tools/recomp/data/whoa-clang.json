@@ -39168,7 +39168,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 82
+"line": 83
 },
 "GammaCallback": {
 "files": [
@@ -39181,7 +39181,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 87
+"line": 88
 },
 "TextureCacheSizeCallback": {
 "files": [
@@ -39194,7 +39194,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 92
+"line": 93
 },
 "TextureFilteringCallback": {
 "files": [
@@ -39217,7 +39217,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 98
+"line": 99
 },
 "UIFasterCalllback": {
 "files": [
@@ -39230,7 +39230,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 112
+"line": 113
 },
 "AsyncFileInitialize": {
 "files": [
@@ -39248,7 +39248,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 117
+"line": 118
 },
 "BaseInitializeGlobal": {
 "files": [
@@ -39263,7 +39263,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 122
+"line": 123
 },
 "ClientGameTimeTickHandler": {
 "files": [
@@ -39280,7 +39280,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 126
+"line": 127
 },
 "ClientInitializeGameTime": {
 "files": [
@@ -39307,7 +39307,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 134
+"line": 135
 },
 "ClientIdle": {
 "files": [
@@ -39324,7 +39324,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 152
+"line": 153
 },
 "ClientPlayerModelReady": {
 "files": [
@@ -39345,7 +39345,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 161
+"line": 162
 },
 "ClientInitializeGame": {
 "files": [
@@ -39383,7 +39383,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 171
+"line": 172
 },
 "MouseSpeedCallback": {
 "files": [
@@ -39399,7 +39399,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 216
+"line": 217
 },
 "ErrorsCallback": {
 "files": [
@@ -39418,7 +39418,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 223
+"line": 224
 },
 "ShowErrorsCallback": {
 "files": [
@@ -39437,7 +39437,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 242
+"line": 243
 },
 "ErrorLevelMinCallback": {
 "files": [
@@ -39458,7 +39458,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 261
+"line": 262
 },
 "ErrorLevelMaxCallback": {
 "files": [
@@ -39479,7 +39479,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 276
+"line": 277
 },
 "ErrorFilterCallback": {
 "files": [
@@ -39492,7 +39492,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 291
+"line": 292
 },
 "ScreenshotFormatCallback": {
 "files": [
@@ -39507,7 +39507,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 299
+"line": 300
 },
 "ScreenshotQualityCallback": {
 "files": [
@@ -39523,7 +39523,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 306
+"line": 307
 },
 "ClientRegisterConsoleCommands": {
 "files": [
@@ -39627,7 +39627,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 313
+"line": 314
 },
 "ClientPostClose": {
 "files": [
@@ -39642,7 +39642,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 357
+"line": 358
 },
 "DestroyEngineCallback": {
 "files": [
@@ -39659,7 +39659,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 362
+"line": 363
 },
 "InitializeEngineCallback": {
 "files": [
@@ -39698,7 +39698,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 372
+"line": 373
 },
 "AddRunOnceFile": {
 "files": [
@@ -39718,7 +39718,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 439
+"line": 440
 },
 "CompareRunOnceFiles": {
 "files": [
@@ -39733,7 +39733,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 445
+"line": 446
 },
 "ProcessRunOnceFiles": {
 "files": [
@@ -39766,7 +39766,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 450
+"line": 451
 },
 "Sub406B70": {
 "files": [
@@ -39782,7 +39782,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 471
+"line": 472
 },
 "Sub405DD0": {
 "files": [
@@ -39802,7 +39802,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 485
+"line": 486
 },
 "LocaleChangedCallback": {
 "files": [
@@ -39815,7 +39815,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 501
+"line": 502
 },
 "InitializeGlobal": {
 "files": [
@@ -39866,7 +39866,7 @@
 "stub": false,
 "lines": 186,
 "refs": [],
-"line": 507
+"line": 508
 },
 "CommonMain": {
 "files": [
@@ -39884,7 +39884,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 694
+"line": 695
 },
 "BlizzardAssertCallback": {
 "files": [
@@ -39904,7 +39904,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 711
+"line": 712
 },
 "StormInitialize": {
 "files": [
@@ -39919,7 +39919,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 719
+"line": 720
 },
 "WowClientDestroy": {
 "files": [
@@ -39934,7 +39934,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 729
+"line": 730
 },
 "WowClientInit": {
 "files": [
@@ -39954,6 +39954,7 @@
 "ClientServices::Initialize",
 "CWorldParam::Initialize",
 "CWorld::Initialize",
+"InputControlInitialize",
 "CGlueMgr::Initialize",
 "CGlueMgr::SetScreen",
 "EventRegister"
@@ -39968,7 +39969,7 @@
 "stub": false,
 "lines": 90,
 "refs": [],
-"line": 737
+"line": 738
 },
 "LoadNewWorld": {
 "files": [
@@ -139627,6 +139628,98 @@
 "lines": 5,
 "refs": [],
 "line": 146
+},
+"CInputControl::CInputControl": {
+"files": [
+"src/ui/inputcontrol.cpp"
+],
+"callseq": [
+"OsGetAsyncTimeMs"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 15
+},
+"CInputControl::SetWowMouseEnabled": {
+"files": [
+"src/ui/inputcontrol.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 3,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 22
+},
+"JoystickCallback": {
+"files": [
+"src/ui/inputcontrol.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 34
+},
+"EnableWowMouseCallback": {
+"files": [
+"src/ui/inputcontrol.cpp"
+],
+"callseq": [
+"SStrToInt",
+"CInputControl::SetWowMouseEnabled"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 55
+},
+"InputControlInitialize": {
+"files": [
+"src/ui/inputcontrol.cpp"
+],
+"callseq": [
+"CVar::Register",
+"CVar::Register",
+"SMemAlloc",
+"CInputControl::CInputControl",
+"CVar::Register"
+],
+"strings": [
+"0",
+"CinematicJoystick",
+"Enable Steelseries RunicWorld        Mouse",
+"Joystick",
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\inputcontrol.cpp",
+"enable cinematic joystick control",
+"enable joystick control",
+"enableWowMouse"
+],
+"consts": [
+"0x0",
+"0x1"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 68
 },
 "DeleteInterfaceFiles": {
 "files": [

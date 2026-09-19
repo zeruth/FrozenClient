@@ -16395,6 +16395,38 @@
   "whoa": "TextureLodBiasSet",
   "whoaSize": 0
  },
+ "005f96f0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/InputControl.cpp",
+   "src/ui/inputcontrol.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 96,
+  "status": "ported",
+  "whoa": "CInputControl::SetWowMouseEnabled",
+  "whoaSize": 0
+ },
+ "005f9c80": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/InputControl.cpp",
+   "src/ui/inputcontrol.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 150,
+  "status": "ported",
+  "whoa": "JoystickCallback",
+  "whoaSize": 28
+ },
  "005f9e10": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -16424,6 +16456,22 @@
   "status": "ported",
   "whoa": "Script_Stub_VehicleAimGetNormAngle",
   "whoaSize": 60
+ },
+ "005fa9b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/InputControl.cpp",
+   "src/ui/inputcontrol.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 39,
+  "status": "ported",
+  "whoa": "EnableWowMouseCallback",
+  "whoaSize": 59
  },
  "005fb770": {
   "branchRatio": 1.0,
@@ -16469,6 +16517,38 @@
   "status": "ported",
   "whoa": "Script_Stub_VehicleAimRequestNormAngle",
   "whoaSize": 60
+ },
+ "005fd1d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/InputControl.cpp",
+   "src/ui/inputcontrol.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 72,
+  "status": "ported",
+  "whoa": "CInputControl::CInputControl",
+  "whoaSize": 0
+ },
+ "005fd2c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/InputControl.cpp",
+   "src/ui/inputcontrol.cpp"
+  ],
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 163,
+  "status": "ported",
+  "whoa": "InputControlInitialize",
+  "whoaSize": 343
  },
  "005fd630": {
   "branchRatio": 0.5,

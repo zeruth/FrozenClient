@@ -1032,11 +1032,16 @@ addr	how	whoa	evidence
 005eca80	table	CGCooldown_GetDrawEdge	binding "GetDrawEdge" in CGCooldownMethods ~ table 00ad13a4
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	annotated	TextureLodBiasSet	tag in src/world/CWorldParam.cpp
+005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
+005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
 005f9e10	order	Script_Stub_VehicleAimGetAngle	binding table name Script_Stub_VehicleAimGetAngle, in definition order in src/ui/game/miscscriptstubs.cpp
 005f9e60	order	Script_Stub_VehicleAimGetNormAngle	binding table name Script_Stub_VehicleAimGetNormAngle, in definition order in src/ui/game/miscscriptstubs.cpp
+005fa9b0	annotated	EnableWowMouseCallback	tag in src/ui/InputControl.cpp
 005fb770	order	Script_Stub_VehicleAimIncrement	binding table name Script_Stub_VehicleAimIncrement, in definition order in src/ui/game/miscscriptstubs.cpp
 005fb820	order	Script_Stub_VehicleAimRequestAngle	binding table name Script_Stub_VehicleAimRequestAngle, in definition order in src/ui/game/miscscriptstubs.cpp
 005fb8c0	order	Script_Stub_VehicleAimRequestNormAngle	binding table name Script_Stub_VehicleAimRequestNormAngle, in definition order in src/ui/game/miscscriptstubs.cpp
+005fd1d0	annotated	CInputControl::CInputControl	tag in src/ui/InputControl.cpp
+005fd2c0	annotated	InputControlInitialize	tag in src/ui/InputControl.cpp
 005fd630	annotated	ValidateCameraView	tag in src/ui/game/CGCamera.cpp
 005fd680	annotated	ValidateCameraDistance	tag in src/ui/game/CGCamera.cpp
 005fd6d0	annotated	ValidateCameraPitch	tag in src/ui/game/CGCamera.cpp

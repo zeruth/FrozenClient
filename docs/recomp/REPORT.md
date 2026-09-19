@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-19 03:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 03:09 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 2182 (+12) (8.0%) | 471.5k (8.5%) |
-| &nbsp;&nbsp;ported | 1635 (+12) | 333.1k |
+| mapped to a whoa function | 2187 (+5) (8.1%) | 472.0k (8.5%) |
+| &nbsp;&nbsp;ported | 1640 (+5) | 333.7k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 523 (=) | 104.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **632 (+7) (2.3%)** | **75.3k (1.4%)** |
-| unmapped | 24979 | 4.94M |
+| **faithful** (linked, not stub, call order >= 80%) | **634 (+2) (2.3%)** | **75.5k (1.4%)** |
+| unmapped | 24974 | 4.94M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 289 (=) (5.2%) | |
-| whoa functions (src/, from PDB + source) | 11314, stubs 865 | |
+| whoa functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 218, callgraph 119, callorder 122, cvar 30, handler 27, order 314, override 107, string 347, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 223, callgraph 119, callorder 122, cvar 30, handler 27, order 314, override 107, string 347, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 02:56 -- mapped 2170, ported 1623, stub 523, spine mapped 289.
+Previous run: 2026-09-19 03:03 -- mapped 2182, ported 1635, stub 523, spine mapped 289.
 
 ## Lua API coverage (binding tables)
 
@@ -182,9 +182,9 @@ Reference-only, by opcode (handler address): SMSG_CHECK_FOR_BOTS 006b9670, SMSG_
 
 ## CVar coverage (CVar::Register)
 
-The reference registers 426 cvars by literal name; whoa registers 390 of them. Missing ones are settings the reference client honours and this one cannot even store.
+The reference registers 426 cvars by literal name; whoa registers 393 of them. Missing ones are settings the reference client honours and this one cannot even store.
 
-Missing: CinematicJoystick, FootstepSounds, Joystick, ObjectSelectionCircle, POIShiftComplete, SkyCloudLOD, SoundMemoryCache, Sound_ChaosMode, Sound_EnableDSPEffects, asyncHandlerTimeout, asyncThreadSleep, chatStyle, conversationMode, converted, enableWowMouse, ffxNetherWorld, ffxRectangle, ffxSpecial, gxApi, heapAllocTracking, hwDetect, pathDistTol, processAffinityMask, realmList, scriptProfile, shadowCull, shadowInstancing, shadowLOD, shadowScissor, showTimestamps, showfootprintparticles, synchronizeSettings, taintLog, timingMethod, timingTestError, violenceLevel
+Missing: FootstepSounds, ObjectSelectionCircle, POIShiftComplete, SkyCloudLOD, SoundMemoryCache, Sound_ChaosMode, Sound_EnableDSPEffects, asyncHandlerTimeout, asyncThreadSleep, chatStyle, conversationMode, converted, ffxNetherWorld, ffxRectangle, ffxSpecial, gxApi, heapAllocTracking, hwDetect, pathDistTol, processAffinityMask, realmList, scriptProfile, shadowCull, shadowInstancing, shadowLOD, shadowScissor, showTimestamps, showfootprintparticles, synchronizeSettings, taintLog, timingMethod, timingTestError, violenceLevel
 
 ## Coverage by reference module
 
@@ -210,7 +210,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | WorldParam.cpp | 187 | 64.3k | 5 (2.7%) | 3.3% | 0 | 0 | 118 |
 | M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
-| InputControl.cpp | 287 | 61.8k | 25 (8.7%) | 17.5% | 3 | 0 | 115 |
+| InputControl.cpp | 287 | 61.8k | 30 (10.5%) | 18.3% | 3 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 14 (3.4%) | 17.4% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 31 (12.8%) | 4.1% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -789,7 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 22:12 | 1620 (6.0%) | 295 (1.1%) | 463 | 174/5530 | 936/2512 | 446 |
 | 2026-09-18 22:25 | 1636 (6.0%) | 316 (1.2%) | 463 | 176/5530 | 936/2512 | 446 |
 | 2026-09-18 22:28 | 1640 (6.0%) | 319 (1.2%) | 463 | 178/5530 | 936/2512 | 446 |
 | 2026-09-18 22:35 | 1647 (6.1%) | 324 (1.2%) | 463 | 179/5530 | 936/2512 | 446 |
@@ -814,6 +813,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 02:56 | 2168 (8.0%) | 622 (2.3%) | 523 | 287/5529 | 1584/2512 | 752 |
 | 2026-09-19 02:56 | 2170 (8.0%) | 625 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:03 | 2182 (8.0%) | 632 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:09 | 2187 (8.1%) | 634 (2.3%) | 523 | 289/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 
