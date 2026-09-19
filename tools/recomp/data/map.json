@@ -24833,17 +24833,17 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetExpertise",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 116,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 180,
-  "status": "stub"
+  "status": "ported"
  },
  "00612cb0": {
   "branchRatio": 0.5,

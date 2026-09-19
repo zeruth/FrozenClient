@@ -852,6 +852,9 @@ int32_t Script_UnitOnTaxi(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_0060f3d0 tests bit 5 of a dword at +0x124 of whatever the unit keeps at +0xd0.
+// That is not the descriptor: the same +0xd0 holds a power-type byte at +0x47, which no
+// CGUnitData offset matches. Identify that member before reading flags out of it.
 int32_t Script_UnitIsFeignDeath(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1164,10 +1167,14 @@ int32_t Script_UnitRangedAttackPower(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00610de0 reads its two values through a virtual at vtable+0x140 rather than from
+// the descriptor, so the field offsets that made the combat percentages safe do not help.
 int32_t Script_UnitDefense(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00610ec0 returns five values built by FUN_006337a0 and FUN_004f54d0, neither
+// identified. Only the first is the armour itself.
 int32_t Script_UnitArmor(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1804,10 +1811,15 @@ int32_t Script_GetUnitManaRegenRateFromSpirit(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_00612a90. Two returns, the not-casting and casting rates, each from a regen
+// helper at 004f5390 that frozen has no counterpart for -- the fields alone are not the
+// answer. This one also gates on the player's power type being mana; GetPowerRegen below
+// is the same function without that gate.
 int32_t Script_GetManaRegen(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00612b40, blocked on the same 004f5390 as GetManaRegen.
 int32_t Script_GetPowerRegen(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1843,8 +1855,16 @@ int32_t Script_PlayerIsPVPInactive(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00612bf0
+// The same two fields GetExpertisePercent reads, unscaled. Both are pushed as zeros with no
+// player so the sheet keeps two return values rather than going nil.
 int32_t Script_GetExpertise(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? data->expertise : 0);
+    lua_pushnumber(L, data ? data->offhandExpertise : 0);
+
+    return 2;
 }
 
 // ref: FUN_00612cb0

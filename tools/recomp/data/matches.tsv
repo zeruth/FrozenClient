@@ -1559,7 +1559,7 @@ addr	how	frozen	evidence
 00612a00	table	Script_GetUnitManaRegenRateFromSpirit	binding "GetUnitManaRegenRateFromSpirit" in s_UnitFunctions ~ table 00ad21d8
 00612a90	table	Script_GetManaRegen	binding "GetManaRegen" in s_UnitFunctions ~ table 00ad21d8
 00612b40	table	Script_GetPowerRegen	binding "GetPowerRegen" in s_UnitFunctions ~ table 00ad21d8
-00612bf0	table	Script_GetExpertise	binding "GetExpertise" in s_UnitFunctions ~ table 00ad21d8
+00612bf0	annotated	Script_GetExpertise	tag in src/ui/game/ScriptEvents.cpp
 00612cb0	annotated	Script_GetExpertisePercent	tag in src/ui/game/ScriptEvents.cpp
 00612d50	table	Script_ReportPlayerIsPVPAFK	binding "ReportPlayerIsPVPAFK" in s_UnitFunctions ~ table 00ad21d8
 00612e20	table	Script_PlayerIsPVPInactive	binding "PlayerIsPVPInactive" in s_UnitFunctions ~ table 00ad21d8
