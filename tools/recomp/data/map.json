@@ -5360,33 +5360,33 @@
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_RegisterAllEvents",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 225,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "0049f120": {
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_UnregisterAllEvents",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 225,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "0049f160": {
   "branchRatio": 1.0,

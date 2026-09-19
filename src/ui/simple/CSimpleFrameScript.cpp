@@ -408,12 +408,42 @@ int32_t CSimpleFrame_UnregisterEvent(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049f0e0
+// Every event the client defines, in one call. Goes through the same per-name path
+// RegisterEvent uses, so the de-duplication and the pending-signal handling there apply
+// unchanged rather than being restated here.
 int32_t CSimpleFrame_RegisterAllEvents(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    for (uint32_t i = 0; i < FrameScript::s_scriptEvents.Count(); i++) {
+        auto event = FrameScript::s_scriptEvents[i];
+
+        // The table is sparse: an id with no name registered leaves a null behind.
+        if (event) {
+            frame->RegisterScriptEvent(event->GetName());
+        }
+    }
+
+    return 0;
 }
 
+// ref: FUN_0049f120
+// The mirror of RegisterAllEvents, through the same per-name path as UnregisterEvent.
 int32_t CSimpleFrame_UnregisterAllEvents(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    for (uint32_t i = 0; i < FrameScript::s_scriptEvents.Count(); i++) {
+        auto event = FrameScript::s_scriptEvents[i];
+
+        // The table is sparse: an id with no name registered leaves a null behind.
+        if (event) {
+            frame->UnregisterScriptEvent(event->GetName());
+        }
+    }
+
+    return 0;
 }
 
 int32_t CSimpleFrame_IsEventRegistered(lua_State* L) {

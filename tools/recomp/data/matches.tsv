@@ -335,8 +335,8 @@ addr	how	frozen	evidence
 0049edb0	table	CSimpleFrame_HookScript	binding "HookScript" in SimpleFrameMethods ~ table 00ac1550
 0049efe0	table	CSimpleFrame_RegisterEvent	binding "RegisterEvent" in SimpleFrameMethods ~ table 00ac1550
 0049f060	table	CSimpleFrame_UnregisterEvent	binding "UnregisterEvent" in SimpleFrameMethods ~ table 00ac1550
-0049f0e0	table	CSimpleFrame_RegisterAllEvents	binding "RegisterAllEvents" in SimpleFrameMethods ~ table 00ac1550
-0049f120	table	CSimpleFrame_UnregisterAllEvents	binding "UnregisterAllEvents" in SimpleFrameMethods ~ table 00ac1550
+0049f0e0	annotated	CSimpleFrame_RegisterAllEvents	tag in src/ui/simple/CSimpleFrameScript.cpp
+0049f120	annotated	CSimpleFrame_UnregisterAllEvents	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f160	table	CSimpleFrame_IsEventRegistered	binding "IsEventRegistered" in SimpleFrameMethods ~ table 00ac1550
 0049f210	table	CSimpleFrame_AllowAttributeChanges	binding "AllowAttributeChanges" in SimpleFrameMethods ~ table 00ac1550
 0049f260	table	CSimpleFrame_CanChangeAttributes	binding "CanChangeAttribute" in SimpleFrameMethods ~ table 00ac1550
