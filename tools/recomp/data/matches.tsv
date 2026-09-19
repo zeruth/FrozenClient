@@ -406,9 +406,23 @@ addr	how	frozen	evidence
 004a40b0	annotated	FontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40e0	annotated	FontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a4220	order	CScriptObject::GetName	binding table name GetName, in definition order in src/ui/CScriptObject.cpp
+004a4500	annotated	CSimpleFont_SetTextColor	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4590	order	CSimpleFont_GetTextColor	definition order between CSimpleFont_SetTextColor and CSimpleFont_SetShadowColor in src/ui/simple/CSimpleFontScript.cpp
+004a45e0	annotated	CSimpleFont_SetShadowColor	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4630	annotated	CSimpleFont_GetShadowColor	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4680	annotated	CSimpleFont_SetShadowOffset	tag in src/ui/simple/CSimpleFontScript.cpp
+004a46d0	annotated	CSimpleFont_GetShadowOffset	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4720	annotated	CSimpleFont_SetSpacing	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4770	annotated	CSimpleFont_GetSpacing	tag in src/ui/simple/CSimpleFontScript.cpp
+004a47e0	annotated	CSimpleFont_GetJustifyH	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4840	annotated	CSimpleFont_GetJustifyV	tag in src/ui/simple/CSimpleFontScript.cpp
+004a48a0	annotated	CSimpleFont_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4930	annotated	FontString_SetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a49c0	annotated	FontString_SetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a4a50	annotated	FontString_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
+004a4ab0	annotated	CSimpleFont_SetJustifyH	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4b00	annotated	CSimpleFont_SetJustifyV	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4b50	annotated	CSimpleFont_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontScript.cpp
 004a6f60	order	ClientConnection::AccountLogin_Finish	binding table name AccountLogin_Finish, in definition order in src/net/connection/ClientConnection.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
 004a8240	table	CScriptObject_GetObjectType	binding "GetObjectType" in ScriptObjectMethods ~ table 00ac1ad0

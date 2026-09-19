@@ -101684,7 +101684,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 51,
+"lines": 58,
 "refs": [],
 "line": 101
 },
@@ -101708,7 +101708,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 153
+"line": 160
 },
 "TooltipThis": {
 "files": [
@@ -101724,7 +101724,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 169
+"line": 176
 },
 "TooltipUIToLayout": {
 "files": [
@@ -101742,7 +101742,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 187
+"line": 194
 },
 "TooltipUnitName": {
 "files": [
@@ -101764,7 +101764,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 194
+"line": 201
 },
 "TooltipResizeToFit": {
 "files": [
@@ -101795,7 +101795,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 224
+"line": 231
 },
 "TooltipShow": {
 "files": [
@@ -101811,7 +101811,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 286
+"line": 293
 },
 "TooltipClear": {
 "files": [
@@ -101832,7 +101832,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 293
+"line": 300
 },
 "TooltipSetSpellRec": {
 "files": [
@@ -101854,7 +101854,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 309
+"line": 316
 },
 "CGTooltip_AddFontStrings": {
 "files": [
@@ -101890,7 +101890,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 332
+"line": 339
 },
 "CGTooltip_SetMinimumWidth": {
 "files": [
@@ -101910,7 +101910,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 365
+"line": 372
 },
 "CGTooltip_GetMinimumWidth": {
 "files": [
@@ -101928,7 +101928,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 375
+"line": 382
 },
 "CGTooltip_SetPadding": {
 "files": [
@@ -101948,7 +101948,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 381
+"line": 388
 },
 "CGTooltip_GetPadding": {
 "files": [
@@ -101966,7 +101966,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 391
+"line": 398
 },
 "CGTooltip_IsOwned": {
 "files": [
@@ -102005,7 +102005,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 397
+"line": 404
 },
 "CGTooltip_GetOwner": {
 "files": [
@@ -102026,7 +102026,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 429
+"line": 436
 },
 "CGTooltip_SetOwner": {
 "files": [
@@ -102064,7 +102064,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 450
+"line": 457
 },
 "CGTooltip_GetAnchorType": {
 "files": [
@@ -102084,7 +102084,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 479
+"line": 486
 },
 "CGTooltip_SetAnchorType": {
 "files": [
@@ -102111,7 +102111,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 492
+"line": 499
 },
 "CGTooltip_ClearLines": {
 "files": [
@@ -102129,7 +102129,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 511
+"line": 518
 },
 "CGTooltip_AddLine": {
 "files": [
@@ -102151,9 +102151,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 21,
+"lines": 25,
 "refs": [],
-"line": 517
+"line": 524
 },
 "CGTooltip_AddDoubleLine": {
 "files": [
@@ -102179,9 +102179,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 22,
+"lines": 26,
 "refs": [],
-"line": 539
+"line": 550
 },
 "CGTooltip_AddTexture": {
 "files": [
@@ -102203,7 +102203,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 562
+"line": 577
 },
 "CGTooltip_SetText": {
 "files": [
@@ -102226,7 +102226,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 566
+"line": 581
 },
 "CGTooltip_AppendText": {
 "files": [
@@ -102259,7 +102259,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 582
+"line": 597
 },
 "CGTooltip_FadeOut": {
 "files": [
@@ -102277,7 +102277,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 612
+"line": 627
 },
 "CGTooltip_SetHyperlink": {
 "files": [
@@ -102332,7 +102332,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 627
+"line": 642
 },
 "CGTooltip_SetAction": {
 "files": [
@@ -102357,7 +102357,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 701
+"line": 716
 },
 "CGTooltip_SetPetAction": {
 "files": [
@@ -102379,7 +102379,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 719
+"line": 734
 },
 "CGTooltip_SetShapeshift": {
 "files": [
@@ -102401,7 +102401,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 723
+"line": 738
 },
 "CGTooltip_SetPossession": {
 "files": [
@@ -102423,7 +102423,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 727
+"line": 742
 },
 "CGTooltip_SetTracking": {
 "files": [
@@ -102445,7 +102445,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 731
+"line": 746
 },
 "CGTooltip_SetSpell": {
 "files": [
@@ -102469,7 +102469,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 736
+"line": 751
 },
 "CGTooltip_SetSpellByID": {
 "files": [
@@ -102491,7 +102491,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 748
+"line": 763
 },
 "CGTooltip_SetGlyph": {
 "files": [
@@ -102513,7 +102513,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 758
+"line": 773
 },
 "CGTooltip_SetInventoryItem": {
 "files": [
@@ -102535,7 +102535,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 762
+"line": 777
 },
 "CGTooltip_SetLootItem": {
 "files": [
@@ -102557,7 +102557,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 766
+"line": 781
 },
 "CGTooltip_SetQuestItem": {
 "files": [
@@ -102579,7 +102579,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 770
+"line": 785
 },
 "CGTooltip_SetQuestLogItem": {
 "files": [
@@ -102601,7 +102601,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 774
+"line": 789
 },
 "CGTooltip_SetTrainerService": {
 "files": [
@@ -102623,7 +102623,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 778
+"line": 793
 },
 "CGTooltip_SetTradeSkillItem": {
 "files": [
@@ -102645,7 +102645,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 782
+"line": 797
 },
 "CGTooltip_SetMerchantItem": {
 "files": [
@@ -102667,7 +102667,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 786
+"line": 801
 },
 "CGTooltip_SetMerchantCostItem": {
 "files": [
@@ -102689,7 +102689,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 790
+"line": 805
 },
 "CGTooltip_SetTradePlayerItem": {
 "files": [
@@ -102711,7 +102711,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 794
+"line": 809
 },
 "CGTooltip_SetTradeTargetItem": {
 "files": [
@@ -102733,7 +102733,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 798
+"line": 813
 },
 "CGTooltip_SetBagItem": {
 "files": [
@@ -102755,7 +102755,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 802
+"line": 817
 },
 "CGTooltip_SetUnit": {
 "files": [
@@ -102790,7 +102790,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 807
+"line": 822
 },
 "CGTooltip_SetUnitBuff": {
 "files": [
@@ -102812,7 +102812,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 848
+"line": 863
 },
 "CGTooltip_SetUnitDebuff": {
 "files": [
@@ -102834,7 +102834,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 852
+"line": 867
 },
 "CGTooltip_SetUnitAura": {
 "files": [
@@ -102856,7 +102856,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 856
+"line": 871
 },
 "CGTooltip_SetTalent": {
 "files": [
@@ -102878,7 +102878,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 860
+"line": 875
 },
 "CGTooltip_SetSendMailItem": {
 "files": [
@@ -102900,7 +102900,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 864
+"line": 879
 },
 "CGTooltip_SetInboxItem": {
 "files": [
@@ -102922,7 +102922,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 868
+"line": 883
 },
 "CGTooltip_SetAuctionSellItem": {
 "files": [
@@ -102944,7 +102944,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 872
+"line": 887
 },
 "CGTooltip_SetAuctionItem": {
 "files": [
@@ -102966,7 +102966,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 876
+"line": 891
 },
 "CGTooltip_NumLines": {
 "files": [
@@ -102984,7 +102984,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 880
+"line": 895
 },
 "CGTooltip_SetQuestRewardSpell": {
 "files": [
@@ -103006,7 +103006,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 886
+"line": 901
 },
 "CGTooltip_SetQuestLogRewardSpell": {
 "files": [
@@ -103028,7 +103028,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 890
+"line": 905
 },
 "CGTooltip_SetHyperlinkCompareItem": {
 "files": [
@@ -103050,7 +103050,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 894
+"line": 909
 },
 "CGTooltip_SetBuybackItem": {
 "files": [
@@ -103072,7 +103072,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 898
+"line": 913
 },
 "CGTooltip_SetLootRollItem": {
 "files": [
@@ -103094,7 +103094,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 902
+"line": 917
 },
 "CGTooltip_SetSocketedItem": {
 "files": [
@@ -103116,7 +103116,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 906
+"line": 921
 },
 "CGTooltip_SetSocketGem": {
 "files": [
@@ -103138,7 +103138,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 910
+"line": 925
 },
 "CGTooltip_SetExistingSocketGem": {
 "files": [
@@ -103160,7 +103160,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 914
+"line": 929
 },
 "CGTooltip_SetGuildBankItem": {
 "files": [
@@ -103182,7 +103182,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 918
+"line": 933
 },
 "CGTooltip_IsUnit": {
 "files": [
@@ -103209,7 +103209,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 922
+"line": 937
 },
 "CGTooltip_GetUnit": {
 "files": [
@@ -103239,7 +103239,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 938
+"line": 953
 },
 "CGTooltip_GetItem": {
 "files": [
@@ -103261,7 +103261,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 975
+"line": 990
 },
 "CGTooltip_GetSpell": {
 "files": [
@@ -103285,7 +103285,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 980
+"line": 995
 },
 "CGTooltip_SetTotem": {
 "files": [
@@ -103307,7 +103307,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 998
+"line": 1013
 },
 "CGTooltip_SetCurrencyToken": {
 "files": [
@@ -103329,7 +103329,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1002
+"line": 1017
 },
 "CGTooltip_SetBackpackToken": {
 "files": [
@@ -103351,7 +103351,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1006
+"line": 1021
 },
 "CGTooltip_IsEquippedItem": {
 "files": [
@@ -103373,7 +103373,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1010
+"line": 1025
 },
 "CGTooltip_SetQuestLogSpecialItem": {
 "files": [
@@ -103395,7 +103395,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1014
+"line": 1029
 },
 "CGTooltip_SetEquipmentSet": {
 "files": [
@@ -103417,7 +103417,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1018
+"line": 1033
 },
 "CGTooltip_SetFrameStack": {
 "files": [
@@ -103439,7 +103439,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1022
+"line": 1037
 },
 "CGTooltip_SetLFGDungeonReward": {
 "files": [
@@ -103461,7 +103461,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1026
+"line": 1041
 },
 "CGTooltip_SetLFGCompletionReward": {
 "files": [
@@ -103483,7 +103483,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1030
+"line": 1045
 },
 "CGTradeInfo::GetPlayerTradeMoney": {
 "files": [
@@ -147592,10 +147592,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 9
+"line": 13
 },
 "CSimpleFont_IsObjectType": {
 "files": [
@@ -147614,10 +147614,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 13
+"line": 17
 },
 "CSimpleFont_GetName": {
 "files": [
@@ -147636,10 +147636,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 17
+"line": 21
 },
 "CSimpleFont_SetFontObject": {
 "files": [
@@ -147658,10 +147658,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 21
+"line": 25
 },
 "CSimpleFont_GetFontObject": {
 "files": [
@@ -147680,10 +147680,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 25
+"line": 29
 },
 "CSimpleFont_CopyFontObject": {
 "files": [
@@ -147702,10 +147702,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 29
+"line": 33
 },
 "CSimpleFont_SetFont": {
 "files": [
@@ -147724,10 +147724,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 33
+"line": 37
 },
 "CSimpleFont_GetFont": {
 "files": [
@@ -147757,9 +147757,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 28,
+"lines": 26,
 "refs": [],
-"line": 37
+"line": 41
 },
 "CSimpleFont_SetAlpha": {
 "files": [
@@ -147778,10 +147778,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 64
+"line": 68
 },
 "CSimpleFont_GetAlpha": {
 "files": [
@@ -147800,32 +147800,32 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 68
+"line": 72
 },
 "CSimpleFont_SetTextColor": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_GetColor",
+"CSimpleFontStringAttributes::SetColor"
 ],
-"strings": [
-"CSimpleFont_SetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x00",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 12,
 "refs": [],
-"line": 72
+"line": 77
 },
 "CSimpleFont_GetTextColor": {
 "files": [
@@ -147848,273 +147848,304 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 20,
+"lines": 16,
 "refs": [],
-"line": 76
+"line": 90
 },
 "CSimpleFont_SetShadowColor": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_GetColor",
+"CSimpleFontStringAttributes::SetShadow"
 ],
-"strings": [
-"CSimpleFont_SetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x00",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 12,
 "refs": [],
-"line": 94
+"line": 109
 },
 "CSimpleFont_GetShadowColor": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFont_GetShadowColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1.0f",
+"255.0f",
+"4"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 14,
 "refs": [],
-"line": 98
+"line": 123
 },
 "CSimpleFont_SetShadowOffset": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"C2Vector::C2Vector",
+"CSimpleFontStringAttributes::SetShadow"
 ],
 "strings": [
-"CSimpleFont_SetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
+"Usage: %s:SetShadowOffset(x, y)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 20,
 "refs": [],
-"line": 102
+"line": 139
 },
 "CSimpleFont_GetShadowOffset": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFont_GetShadowOffset",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 12,
 "refs": [],
-"line": 106
+"line": 161
 },
 "CSimpleFont_SetSpacing": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"CSimpleFontStringAttributes::SetSpacing"
 ],
 "strings": [
-"CSimpleFont_SetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
+"Usage: %s:SetSpacing(spacing)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 1,
+"lines": 15,
 "refs": [],
-"line": 110
+"line": 175
 },
 "CSimpleFont_GetSpacing": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleFont_GetSpacing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1024.0f"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 11,
 "refs": [],
-"line": 114
+"line": 192
 },
 "CSimpleFont_SetJustifyH": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFontStringAttributes::SetJustifyH"
 ],
 "strings": [
-"CSimpleFont_SetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
+"Usage: %s:SetJustifyH(\"justify\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 1,
+"lines": 15,
 "refs": [],
-"line": 118
+"line": 205
 },
 "CSimpleFont_GetJustifyH": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"JustifyToString",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleFont_GetJustifyH",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x7",
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 9,
 "refs": [],
-"line": 122
+"line": 222
 },
 "CSimpleFont_SetJustifyV": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"StringToJustify",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFontStringAttributes::SetJustifyV"
 ],
 "strings": [
-"CSimpleFont_SetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
+"Usage: %s:SetJustifyV(\"justify\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 1,
+"lines": 15,
 "refs": [],
-"line": 126
+"line": 233
 },
 "CSimpleFont_GetJustifyV": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"JustifyToString",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleFont_GetJustifyV",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x38",
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 9,
 "refs": [],
-"line": 130
+"line": 250
 },
 "CSimpleFont_SetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"StringToBOOL",
+"CSimpleFontStringAttributes::SetIndented"
 ],
-"strings": [
-"CSimpleFont_SetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 9,
 "refs": [],
-"line": 134
+"line": 261
 },
 "CSimpleFont_GetIndentedWordWrap": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"CSimpleFont_GetIndentedWordWrap",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0x20000",
+"1",
+"1.0"
 ],
-"branches": 2,
+"branches": 1,
 "stub": false,
-"lines": 2,
+"lines": 13,
 "refs": [],
-"line": 138
+"line": 272
 },
 "CSimpleFontString::CreateScriptMetaTable": {
 "files": [

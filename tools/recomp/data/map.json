@@ -6492,6 +6492,182 @@
   "refSize": 96,
   "status": "ported"
  },
+ "004a4500": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetTextColor",
+  "frozenSize": 84,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 132,
+  "status": "ported"
+ },
+ "004a4590": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetTextColor",
+  "frozenSize": 169,
+  "how": "order",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a45e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetShadowColor",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4630": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetShadowColor",
+  "frozenSize": 169,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4680": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetShadowOffset",
+  "frozenSize": 244,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a46d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetShadowOffset",
+  "frozenSize": 131,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4720": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetSpacing",
+  "frozenSize": 161,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4770": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetSpacing",
+  "frozenSize": 102,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 109,
+  "status": "ported"
+ },
+ "004a47e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetJustifyH",
+  "frozenSize": 57,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "004a4840": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetJustifyV",
+  "frozenSize": 57,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "004a48a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetIndentedWordWrap",
+  "frozenSize": 76,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 108,
+  "status": "ported"
+ },
  "004a4930": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -6538,6 +6714,54 @@
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 85,
+  "status": "ported"
+ },
+ "004a4ab0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetJustifyH",
+  "frozenSize": 145,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4b00": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetJustifyV",
+  "frozenSize": 145,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a4b50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetIndentedWordWrap",
+  "frozenSize": 75,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
   "status": "ported"
  },
  "004a6f60": {
