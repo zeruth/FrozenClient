@@ -139,14 +139,17 @@ const char* TooltipUnitName(CGUnit_C* unit) {
 // The reference does this in its own layout pass, which has not been decompiled; what is ported
 // here is only the template's geometry (above). Without it the frame keeps the zero size the
 // template gives it, which leaves the backdrop invisible and the text floating over the world.
-// KNOWN DEFECT, two-column lines overlap. The width below reserves room for a right-hand column,
-// but nothing positions that column: GameTooltipTemplate.xml anchors $parentTextRightN by its RIGHT
-// to $parentTextLeftN's LEFT with x=40, and no FrameXML file touches it afterwards, so the
-// reference must re-anchor it from C++ in a layout pass that is not decompiled here. Until that
-// pass is recovered, any line with right-hand text -- the spell rank from TooltipSetSpellRec, and
-// every AddDoubleLine -- draws on top of its own left text. The width term is kept because it is
-// what a correct two-column layout needs; inventing an anchor to match it would be guessing the
-// layout from how the tooltip ought to look, which is how this codebase acquired its graphics bugs.
+// A note corrected in place, because the first version of it was wrong. It claimed the reference
+// must re-anchor the right-hand column from C++ in a pass that had not been decompiled, and that
+// two-column lines therefore overlap here. That pass has since been found -- it is the reference's
+// on-demand line creation at 0061fec0 -- and it anchors the right region by its RIGHT to the same
+// line's LEFT region at point LEFT with x=40, which is exactly what GameTooltipTemplate.xml already
+// declares. So the reference and the template agree, and frozen's geometry for the eight
+// template-declared lines matches the reference without doing anything.
+//
+// What that leaves genuinely open is narrower: whether that anchoring visually overlaps, and what
+// the width term below is for if it does. Both are questions for a run, not for more decompiling.
+// The width term is kept because it is what the reference's own resize computes.
 void TooltipResizeToFit(CGTooltip* tooltip) {
     if (tooltip->m_lineCount < 1) {
         return;
