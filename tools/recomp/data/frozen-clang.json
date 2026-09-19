@@ -72421,9 +72421,9 @@
 "6",
 "6u"
 ],
-"branches": 11,
+"branches": 12,
 "stub": false,
-"lines": 142,
+"lines": 149,
 "refs": [],
 "line": 625
 },
@@ -72440,7 +72440,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 768
+"line": 775
 },
 "CreateBlpAsync": {
 "files": [
@@ -72453,7 +72453,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 774
+"line": 781
 },
 "CreateBlpSync": {
 "files": [
@@ -72489,7 +72489,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 780
+"line": 787
 },
 "CreateBlpTexture": {
 "files": [
@@ -72516,7 +72516,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 838
+"line": 845
 },
 "CreateTgaTexture": {
 "files": [
@@ -72529,7 +72529,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 866
+"line": 873
 },
 "TextureCacheGetTexture": {
 "files": [
@@ -72546,7 +72546,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 872
+"line": 879
 },
 "TextureCacheNewTexture": {
 "files": [
@@ -72562,7 +72562,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 899
+"line": 906
 },
 "TextureCalcMipCount": {
 "files": [
@@ -72579,7 +72579,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 910
+"line": 917
 },
 "TextureCreate": {
 "files": [
@@ -72628,9 +72628,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 113,
+"lines": 109,
 "refs": [],
-"line": 931
+"line": 938
 },
 "TextureCreateSolid": {
 "files": [
@@ -72654,7 +72654,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1047
+"line": 1050
 },
 "TextureGetDimensions": {
 "files": [
@@ -72673,7 +72673,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1064
+"line": 1067
 },
 "TextureGetGxTex": {
 "files": [
@@ -72698,7 +72698,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1088
+"line": 1091
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -72711,7 +72711,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1139
+"line": 1142
 },
 "TextureIncreasePriority": {
 "files": [
@@ -72724,7 +72724,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1143
+"line": 1146
 },
 "TextureInitialize": {
 "files": [
@@ -72746,7 +72746,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1147
+"line": 1150
 },
 "TextureIsSame": {
 "files": [
@@ -72768,7 +72768,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1155
+"line": 1158
 },
 "CGxTexFlags::operator==": {
 "files": [

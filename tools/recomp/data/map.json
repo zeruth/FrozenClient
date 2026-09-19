@@ -6660,7 +6660,7 @@
   "status": "ported"
  },
  "004b7bd0": {
-  "branchRatio": 0.786,
+  "branchRatio": 0.857,
   "constOverlap": 0.077,
   "faithful": false,
   "fidelity": 0.143,
@@ -6669,7 +6669,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "PumpBlpTextureAsync",
-  "frozenSize": 1196,
+  "frozenSize": 1212,
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 684,

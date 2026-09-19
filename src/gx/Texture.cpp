@@ -699,9 +699,16 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
     texture->dataFormat = dataFormat;
     texture->gxTexFormat = gxTexFormat;
 
-    if (gxWidth < 256 && image.m_numLevels == 1) {
-        if (!texture->gxTexFlags.m_generateMipMaps) {
-            texture->gxTexFlags.m_filter = 0;
+    // A single-level BLP has no mip chain, so the filter must not ask for one: ITexWHDStartEnd
+    // returns a full mip count for any filter above Linear, and the upload then reads mip pointers
+    // that were never filled. The narrow form of this guard (width < 256 only) was enough while
+    // most textures kept the filter their caller built, and became a fault the moment the global
+    // texture-filtering mode was applied the way the reference applies it.
+    if (image.m_numLevels == 1 && !texture->gxTexFlags.m_generateMipMaps) {
+        if (gxWidth < 256) {
+            texture->gxTexFlags.m_filter = GxTex_Nearest;
+        } else if (texture->gxTexFlags.m_filter > GxTex_Linear) {
+            texture->gxTexFlags.m_filter = GxTex_Linear;
         }
     }
 
@@ -933,14 +940,10 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
     STORM_ASSERT(*fileName);
     STORM_ASSERT(status);
 
-    // DIVERGENCE, deliberate. The reference tests this the other way round: bit 0 CLEAR means "no
-    // explicit filter", so the global texture-filtering mode wins, and only the loading screen
-    // (the one caller passing 1) keeps the flags it built. Frozen cannot take that yet -- flipping
-    // the test to match makes the client fault during world load, before the first frame, every
-    // run -- so something downstream assumes the filter a caller asked for. Until that is found,
-    // this keeps the condition Frozen can survive, and the texture-filtering CVar consequently
-    // does nothing for world and character textures.
-    if (createFlags & 0x1) {
+    // Bit 0 CLEAR means "no explicit filter", so the global texture-filtering mode wins; only the
+    // loading screen, the one caller passing 1, keeps the flags it built. This had been inverted,
+    // which left the texture-filtering CVar with no effect on world and character textures.
+    if (!(createFlags & 0x1)) {
         texFlags.m_filter = CTexture::s_filterMode;
     }
 

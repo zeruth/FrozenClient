@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 06:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 07:00 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -12,16 +12,16 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | &nbsp;&nbsp;ported | 1746 (=) | 358.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **686 (+1) (2.5%)** | **87.2k (1.6%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **686 (=) (2.5%)** | **87.2k (1.6%)** |
 | unmapped | 24867 | 4.92M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 344 (=) (6.2%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 346 (=) (6.0%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 127 (-1) (2.1%)** | |
+| **render surface** (the modules that draw the world) | **6005, mapped 127 (=) (2.1%)** | |
 | frozen functions (src/, from PDB + source) | 11319, stubs 865 | |
 
 Match evidence: annotated 230, callgraph 135, callorder 132, cvar 30, handler 27, order 340, override 157, string 345, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 06:04 -- mapped 2294, ported 1746, stub 524, spine mapped 344.
+Previous run: 2026-09-19 06:05 -- mapped 2294, ported 1746, stub 524, spine mapped 344.
 
 ## Lua API coverage (binding tables)
 
@@ -791,7 +791,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 23:48 | 1833 (6.7%) | 447 (1.6%) | 446 | 269/5530 | 1584/2512 | 765 |
 | 2026-09-18 23:55 | 1834 (6.8%) | 452 (1.7%) | 433 | 269/5530 | 1584/2512 | 752 |
 | 2026-09-18 23:56 | 1839 (6.8%) | 540 (2.0%) | 433 | 265/5530 | 1584/2512 | 752 |
 | 2026-09-18 23:57 | 1853 (6.8%) | 551 (2.0%) | 433 | 276/5530 | 1584/2512 | 752 |
@@ -816,6 +815,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 05:58 | 2267 (8.3%) | 685 (2.5%) | 524 | 325/5530 | 1584/2512 | 752 |
 | 2026-09-19 06:04 | 2294 (8.4%) | 685 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
 | 2026-09-19 06:05 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:00 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 
