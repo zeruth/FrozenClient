@@ -59913,7 +59913,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "GxRsPush": {
 "files": [
@@ -59926,7 +59926,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "GxRsSet": {
 "files": [
@@ -59941,7 +59941,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 13
+"lines": 10
 },
 "GxRsSetAlphaRef": {
 "files": [
@@ -76635,7 +76635,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 12
+"lines": 11
 },
 "SynthesizeCenter": {
 "files": [
@@ -76649,7 +76649,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 12
+"lines": 11
 },
 "CLayoutFrame::ResizePending": {
 "files": [
@@ -76690,7 +76690,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 15
+"lines": 12
 },
 "CLayoutFrame::~CLayoutFrame": {
 "files": [
@@ -76703,7 +76703,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "CLayoutFrame::AddToResizeList": {
 "files": [
@@ -76726,7 +76726,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 31
+"lines": 29
 },
 "CLayoutFrame::Bottom": {
 "files": [
@@ -76772,7 +76772,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 68
+"lines": 65
 },
 "CLayoutFrame::CanBeAnchorFor": {
 "files": [
@@ -76783,7 +76783,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 5
 },
 "CLayoutFrame::CenterX": {
 "files": [
@@ -76804,7 +76804,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 30
+"lines": 28
 },
 "CLayoutFrame::CenterY": {
 "files": [
@@ -76838,7 +76838,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CLayoutFrame::DestroyLayout": {
 "files": [
@@ -76861,7 +76861,7 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 34
+"lines": 32
 },
 "CLayoutFrame::FreePoints": {
 "files": [
@@ -76879,7 +76879,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 15
+"lines": 13
 },
 "CLayoutFrame::GetClampRectInsets": {
 "files": [
@@ -76892,7 +76892,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 6
 },
 "CLayoutFrame::GetFirstPointX": {
 "files": [
@@ -76908,7 +76908,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 11
+"lines": 7
 },
 "CLayoutFrame::GetFirstPointY": {
 "files": [
@@ -76924,7 +76924,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 9
+"lines": 7
 },
 "CLayoutFrame::GetHeight": {
 "files": [
@@ -76935,7 +76935,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "CLayoutFrame::GetLayoutFrameByName": {
 "files": [
@@ -76946,7 +76946,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6
+"lines": 3
 },
 "CLayoutFrame::GetLayoutParent": {
 "files": [
@@ -76957,7 +76957,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "CLayoutFrame::GetRect": {
 "files": [
@@ -76972,7 +76972,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 9
+"lines": 12
 },
 "CLayoutFrame::GetSize": {
 "files": [
@@ -76992,7 +76992,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 26
+"lines": 15
 },
 "CLayoutFrame::GetWidth": {
 "files": [
@@ -77003,7 +77003,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4
+"lines": 3
 },
 "CLayoutFrame::HasPoints": {
 "files": [
@@ -77018,7 +77018,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 8
+"lines": 11
 },
 "CLayoutFrame::IsAttachmentOrigin": {
 "files": [
@@ -77031,7 +77031,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CLayoutFrame::IsObjectLoaded": {
 "files": [
@@ -77044,7 +77044,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CLayoutFrame::IsResizeDependency": {
 "files": [
@@ -77066,7 +77066,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 29
+"lines": 23
 },
 "CLayoutFrame::IsResizePending": {
 "files": [
@@ -77079,7 +77079,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 3
 },
 "CLayoutFrame::Left": {
 "files": [
@@ -77100,7 +77100,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 29
+"lines": 28
 },
 "CLayoutFrame::LoadXML": {
 "files": [
@@ -77155,7 +77155,7 @@
 ],
 "branches": 13,
 "stub": false,
-"lines": 117
+"lines": 114
 },
 "CLayoutFrame::OnFrameResize": {
 "files": [
@@ -77182,7 +77182,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 42
+"lines": 38
 },
 "CLayoutFrame::OnFrameSizeChanged": {
 "files": [
@@ -77200,7 +77200,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 8
+"lines": 5
 },
 "CLayoutFrame::OnProtectedAttach": {
 "files": [
@@ -77218,7 +77218,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 7
+"lines": 9
 },
 "CLayoutFrame::PtInFrameRect": {
 "files": [
@@ -77256,7 +77256,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 18
+"lines": 21
 },
 "CLayoutFrame::Resize": {
 "files": [
@@ -77283,7 +77283,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 34
+"lines": 24
 },
 "CLayoutFrame::Right": {
 "files": [
@@ -77304,7 +77304,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 24
+"lines": 28
 },
 "CLayoutFrame::SetAllPoints": {
 "files": [
@@ -77339,7 +77339,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 53
+"lines": 47
 },
 "CLayoutFrame::SetDeferredResize": {
 "files": [
@@ -77359,7 +77359,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 15
+"lines": 17
 },
 "CLayoutFrame::SetHeight": {
 "files": [
@@ -77375,7 +77375,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 7
+"lines": 5
 },
 "CLayoutFrame::SetLayoutScale": {
 "files": [
@@ -77400,7 +77400,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 9
+"lines": 17
 },
 "CLayoutFrame::SetPoint": {
 "files": [
@@ -77437,7 +77437,7 @@
 ],
 "branches": 10,
 "stub": false,
-"lines": 62
+"lines": 52
 },
 "CLayoutFrame::SetProtectFlag": {
 "files": [
@@ -77455,7 +77455,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 14
+"lines": 13
 },
 "CLayoutFrame::SetSize": {
 "files": [
@@ -77471,7 +77471,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2
+"lines": 6
 },
 "CLayoutFrame::SetWidth": {
 "files": [
@@ -77487,7 +77487,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 3
+"lines": 5
 },
 "CLayoutFrame::Sub488DB0": {
 "files": [
@@ -77505,7 +77505,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 26
+"lines": 22
 },
 "CLayoutFrame::Sub488E40": {
 "files": [
@@ -77523,7 +77523,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 25
+"lines": 22
 },
 "CLayoutFrame::Sub489190": {
 "files": [
@@ -77539,7 +77539,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 7
+"lines": 9
 },
 "CLayoutFrame::Top": {
 "files": [
@@ -77560,7 +77560,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 15
+"lines": 28
 },
 "CLayoutFrame::UnflattenFrame": {
 "files": [
@@ -77571,7 +77571,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1
+"lines": 3
 },
 "CLayoutFrame::UnregisterResize": {
 "files": [
@@ -77592,7 +77592,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 1
+"lines": 19
 },
 "SortByTexture": {
 "files": [

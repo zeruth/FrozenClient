@@ -481,6 +481,7 @@ char* CGxDevice::BufLock(CGxBuf* buf) {
     return nullptr;
 }
 
+// ref: FUN_00684850
 CGxBuf* CGxDevice::BufStream(EGxPoolTarget target, uint32_t itemSize, uint32_t itemCount) {
     CGxBuf* buf = this->m_streamBufs[target];
     CGxPool* pool = buf->m_pool;

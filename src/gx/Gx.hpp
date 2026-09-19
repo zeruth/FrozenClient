@@ -22,16 +22,4 @@ void GxMaxFpsSet(int32_t maxFps);
 
 void GxMaxFpsBkSet(int32_t maxFps);
 
-void GxMaxFpsSet(int32_t maxFps);
-
-void GxMaxFpsBkSet(int32_t maxFps);
-
-void GxMaxFpsSet(int32_t maxFps);
-
-void GxMaxFpsBkSet(int32_t maxFps);
-
-void GxMaxFpsSet(int32_t maxFps);
-
-void GxMaxFpsBkSet(int32_t maxFps);
-
 #endif

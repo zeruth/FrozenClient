@@ -33,6 +33,7 @@ world), whoa with `WHOA_AUTO_LOGIN=TEST:TEST`, then `calltrace.py ref`, `calltra
 | `data/whoa-pdb.txt` | `llvm-pdbutil dump -symbols Whoa.pdb` (`--pdb`) | whoa's compiled functions with code sizes and object files (not committed: 100+ MB) |
 | `src/**/*.cpp`, `lib/**/*.cpp` | the tree | bodies, string literals, calls, `WHOA_UNIMPLEMENTED`, `// ref:` tags, binding arrays |
 | `overrides.json` | you | hand-confirmed links and statuses; trusted over everything |
+| (struct layouts) | `ExportStructRefs.java <out> <base> <size>` | every code reference into a global range with the accessing instruction: read a reference struct's layout off the binary (used for CGxFormat) |
 
 ## How a link is made (most to least trusted)
 

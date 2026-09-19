@@ -795,6 +795,7 @@ bool CLayoutFrame::SetLayoutScale(float scale, bool force) {
     return false;
 }
 
+// ref: FUN_0048a260
 void CLayoutFrame::SetPoint(FRAMEPOINT point, CLayoutFrame* relative, FRAMEPOINT relativePoint, float offsetX, float offsetY, int32_t doResize) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(relative);

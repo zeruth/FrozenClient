@@ -1908,6 +1908,7 @@ void CM2Model::ProcessCallbacksRecursive() {
     this->Release();
 }
 
+// ref: FUN_00824ed0
 uint32_t CM2Model::Release() {
     STORM_ASSERT(this->m_refCount > 0);
 

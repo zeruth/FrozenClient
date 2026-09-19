@@ -13,6 +13,7 @@ void GxRsPush() {
     g_theGxDevicePtr->RsPush();
 }
 
+// ref: FUN_00408bf0
 void GxRsSet(EGxRenderState which, int32_t value) {
     STORM_ASSERT(which < GxRenderStates_Last);
     g_theGxDevicePtr->RsSet(which, value);

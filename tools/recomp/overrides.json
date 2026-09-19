@@ -140,5 +140,13 @@
   "0050f7c0": { "whoa": "CalculateAspectRatio", "status": "ported", "note": "strings %d%c%d/gxResolution/widescreen with CVar::Lookup and sscanf callees; callers CGlueMgr::HandleDisplaySizeChanged, CGlueMgr::Resume, CGGameUI::Initialize" },
   "0048f820": { "whoa": "CSimpleFrame::SetHitRectInsets", "status": "ported", "note": "only callers are CSimpleFrame::LoadXML and the CSimpleFrame_SetHitRectInsets binding" },
   "00814ed0": { "whoa": "StringToFramePoint", "status": "ported", "note": "strings BOTTOM/BOTTOMLEFT with an SStrCmpI callee; callers CLayoutFrame::LoadXML, CScriptRegion_SetPoint, CSimpleFrame_StartSizing" },
-  "0047bf90": { "whoa": "CoordinateSetAspectRatio", "status": "ported", "note": "call-order slot in CGlueMgr::Resume (2026-09-18); the CGGameUI::Initialize caller is not ported yet" }
+  "0047bf90": { "whoa": "CoordinateSetAspectRatio", "status": "ported", "note": "call-order slot in CGlueMgr::Resume (2026-09-18); the CGGameUI::Initialize caller is not ported yet" },
+
+  "0084deb0": { "whoa": "lua_type", "status": "ported", "note": "index2adr then LUA_TNONE (-1) for luaO_nilobject else ttype; 229 callers" },
+  "0076f9e0": { "whoa": "SStrDupA", "status": "ported", "note": "SStrLen + SMemAlloc(len+1, file, line) + memcpy; SErrSetLastError(ERROR_INVALID_PARAMETER) on null" },
+  "00771800": { "whoa": "SErrPrepareAppFatal", "status": "ported", "note": "stores file/line/thread id under the error critical section; called by the 241-caller fatal helper FUN_008889b0" },
+  "00681be0": { "whoa": "CGxTexFlags::CGxTexFlags", "status": "ported", "note": "bit-packs filter(3)/wrapU/wrapV/forceMip/generateMips/renderTarget, anisotropy clamped to Caps().m_maxTexAnisotropy; header-inline in whoa so only an override can link it" },
+
+  "00832640": { "whoa": "CM2Model::~CM2Model", "status": "ported", "note": "498 bytes, recursive (child models), frees through ObjectFree; the destructor CM2Model::Release calls before ObjectFree" },
+  "004d3100": { "whoa": "ObjectFree", "status": "ported", "note": "ObjectFree(heapId, ptr): the release half of CM2Model::Release, 54 callers" }
 }
