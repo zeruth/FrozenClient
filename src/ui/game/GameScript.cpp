@@ -2,6 +2,7 @@
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
 #include "event/Event.hpp"
+#include "event/Input.hpp"
 #include "db/Db.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGObject_C.hpp"
@@ -165,8 +166,37 @@ int32_t Script_IsAltKeyDown(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005148b0
+// With no argument at all the reference asks after every one of the thirty-one buttons in turn and
+// answers yes if any is down, which on a bitmask is one test.
 int32_t Script_IsMouseButtonDown(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    uint32_t button;
+
+    if (lua_isnumber(L, 1)) {
+        auto number = static_cast<int32_t>(lua_tonumber(L, 1));
+
+        // ConvertButtonNumberToMOUSEBUTTON indexes a sixteen-entry table without checking, so the
+        // range has to be checked here.
+        if (number < 0 || number > 15) {
+            lua_pushnil(L);
+
+            return 1;
+        }
+
+        button = ConvertButtonNumberToMOUSEBUTTON(number);
+    } else if (lua_isstring(L, 1)) {
+        button = StringToMouseButton(lua_tostring(L, 1));
+    } else {
+        button = MOUSE_BUTTON_ALL;
+    }
+
+    if (Input::s_buttonState & button) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_GetMouseButtonName(lua_State* L) {

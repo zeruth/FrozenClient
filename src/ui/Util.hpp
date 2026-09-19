@@ -9,6 +9,7 @@ struct lua_State;
 
 const char* LanguageProcess(const char* string);
 
+uint32_t StringToMouseButton(const char* name);
 int32_t StringToBlendMode(const char* string, EGxBlend& blend);
 const char* BlendModeToString(EGxBlend blend);
 

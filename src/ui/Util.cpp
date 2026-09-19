@@ -1,4 +1,5 @@
 #include "ui/Util.hpp"
+#include "event/Types.hpp"
 #include "gx/font/TextBlock.hpp"
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
@@ -25,6 +26,42 @@ BlendEntry g_blendMap[] = {
     { "MOD",        GxBlend_Mod },
 };
 
+}
+
+// ref: FUN_007dc010
+// The mouse button a FrameXML name stands for, as a MOUSEBUTTON flag, or 0 for a name that is not
+// one. The reference spells all thirty-one comparisons out in a row; the mapping underneath is
+// uniform -- LeftButton is bit 0, MiddleButton bit 1, RightButton bit 2, and ButtonN bit N-1 from
+// Button4 up to Button31 -- so the tail is a loop here. The first three are deliberately not in
+// that sequence: the reference orders them left, right, middle while the bits go left, middle,
+// right, and following the bits instead would silently swap two buttons.
+uint32_t StringToMouseButton(const char* name) {
+    if (!name || !*name) {
+        return 0;
+    }
+
+    if (!SStrCmpI(name, "LeftButton", STORM_MAX_STR)) {
+        return MOUSE_BUTTON_LEFT;
+    }
+
+    if (!SStrCmpI(name, "RightButton", STORM_MAX_STR)) {
+        return MOUSE_BUTTON_RIGHT;
+    }
+
+    if (!SStrCmpI(name, "MiddleButton", STORM_MAX_STR)) {
+        return MOUSE_BUTTON_MIDDLE;
+    }
+
+    for (int32_t button = 4; button <= 31; button++) {
+        char candidate[16];
+        SStrPrintf(candidate, sizeof(candidate), "Button%d", button);
+
+        if (!SStrCmpI(name, candidate, STORM_MAX_STR)) {
+            return 1u << (button - 1);
+        }
+    }
+
+    return 0;
 }
 
 int32_t StringToBlendMode(const char* string, EGxBlend& blend) {

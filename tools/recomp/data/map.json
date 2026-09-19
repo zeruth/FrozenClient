@@ -6061,16 +6061,16 @@
   "status": "ported"
  },
  "004a0e20": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_RegisterForDrag",
-  "frozenSize": 272,
+  "frozenSize": 107,
   "how": "table",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 155,
@@ -12784,20 +12784,20 @@
   "status": "ported"
  },
  "005148b0": {
-  "branchRatio": 0.061,
+  "branchRatio": 0.121,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.024,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_IsMouseButtonDown",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 146,
+  "how": "override",
   "module": "GameUI.cpp",
   "refSize": 740,
-  "status": "stub"
+  "status": "diverged"
  },
  "00514ba0": {
   "branchRatio": 1.0,
@@ -29802,20 +29802,20 @@
   "status": "ported"
  },
  "007dc010": {
-  "branchRatio": 0.969,
-  "constOverlap": 0.923,
+  "branchRatio": 0.188,
+  "constOverlap": 0.038,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.129,
   "files": [
-   "src/event/Input.cpp",
-   "src/event/input.cpp"
+   "src/ui/Util.cpp",
+   "src/ui/util.cpp"
   ],
-  "frozen": "GetButtonName",
-  "frozenSize": 680,
-  "how": "string",
+  "frozen": "StringToMouseButton",
+  "frozenSize": 253,
+  "how": "override",
   "module": "WardenClient.cpp",
   "refSize": 831,
-  "status": "ported"
+  "status": "diverged"
  },
  "007dc770": {
   "branchRatio": 0.4,
@@ -39112,6 +39112,22 @@
   "how": "override",
   "module": "CSimpleHTML.cpp",
   "refSize": 127,
+  "status": "ported"
+ },
+ "0096f530": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.955,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/event/Input.cpp",
+   "src/event/input.cpp"
+  ],
+  "frozen": "GetButtonName",
+  "frozenSize": 680,
+  "how": "string",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 418,
   "status": "ported"
  },
  "0096f860": {

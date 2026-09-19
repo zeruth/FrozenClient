@@ -1137,5 +1137,15 @@
     "frozen": "CSimpleFrame::IsA",
     "status": "ported",
     "note": "pinned: adding IsA call sites in the tooltip and scroll-frame bindings moved the automatic match to 0061ea00 (the tooltip module's own IsA) and took four neighbouring CSimpleFrame methods with it. The CSimpleFrame block is 00492c10-00492f10."
+  },
+  "007dc010": {
+    "frozen": "StringToMouseButton",
+    "status": "diverged",
+    "note": "structural only: the reference spells out thirty-one string comparisons in a row, this loops over the uniform Button4..Button31 tail. Same names, same flags. Low call-order fidelity is the metric seeing the loop, not missing behaviour."
+  },
+  "005148b0": {
+    "frozen": "Script_IsMouseButtonDown",
+    "status": "diverged",
+    "note": "structural only: with no argument the reference asks after each of thirty-one buttons in turn; frozen keeps the same information as a bitmask in Input::s_buttonState, so that is one test. Same answers."
   }
 }

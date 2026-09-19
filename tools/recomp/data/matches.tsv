@@ -799,7 +799,7 @@ addr	how	frozen	evidence
 00514760	table	Script_IsLeftAltKeyDown	binding "IsLeftAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 005147c0	table	Script_IsRightAltKeyDown	binding "IsRightAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 00514820	table	Script_IsAltKeyDown	binding "IsAltKeyDown" in s_ScriptFunctions ~ table 00ac80b0
-005148b0	table	Script_IsMouseButtonDown	binding "IsMouseButtonDown" in s_ScriptFunctions ~ table 00ac80b0
+005148b0	override	Script_IsMouseButtonDown	
 00514ba0	override	Script_GetMouseButtonName	
 00514c10	table	Script_SetCVar	binding "SetCVar" in s_ScriptFunctions ~ table 00ac80b0
 00514d40	table	Script_GetCVarMin	binding "GetCVarMin" in s_ScriptFunctions ~ table 00ac80b0
@@ -1869,7 +1869,7 @@ addr	how	frozen	evidence
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
 007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
-007dc010	string	GetButtonName	score 14.05 shared Button10; Button11; Button12
+007dc010	override	StringToMouseButton	
 007dc770	cvar	EnableMicrophoneHandler	callback of CVar::Register("EnableMicrophone") on both sides
 007dc910	order	Script_Stub_VoiceIsDisabledByClient	binding table name Script_Stub_VoiceIsDisabledByClient, in definition order in src/ui/game/miscscriptstubs.cpp
 007dcec0	cvar	InboundChatVolumeHandler	callback of CVar::Register("InboundChatVolume") on both sides
@@ -2468,6 +2468,7 @@ addr	how	frozen	evidence
 0096f200	string	CSimpleButton::GetScriptByName	unique "OnClick"
 0096f3c0	override	CSimpleButton::SetHighlight	
 0096f4a0	override	CSimpleButton::SetFontString	
+0096f530	string	GetButtonName	score 14.55 shared Button10; Button11; Button12
 0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText
 0096f920	override	CSimpleButton::SetStateTexture	
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
