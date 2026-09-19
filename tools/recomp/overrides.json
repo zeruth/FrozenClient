@@ -186,7 +186,5 @@
 
   "00632b50": { "whoa": "NetClient::Send", "status": "ported", "note": "the connection-side send ClientServices::Send (006b0b50, 465 callers) reaches through s_currentConnection; in the NetClient block beside ClearMessageHandler (00631fc0)" },
 
-  "00819210": { "whoa": "FrameScript_Execute", "status": "ported", "note": "the (source, filename, a3) overload; the tag on the (function, this, argCount, a4, event) overload at 00819ea0 shares the whoa key, so this one is pinned" },
-  "0084e0b0": { "whoa": "lua_toboolean", "status": "ported", "note": "lapi.c order: lua_tonumber 0084e030, lua_toboolean 0084e0b0, lua_tolstring 0084e0e0; the case StringToBOOL reaches for LUA_TBOOLEAN" },
   "0084f0f0": { "whoa": "lua_newuserdata", "status": "ported", "note": "lapi.c order after lua_concat 0084ef90; call-order slot in luaB_newproxy" }
 }
