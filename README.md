@@ -41,21 +41,32 @@ been watched doing it at runtime.
 
 Guessing an implementation from what the screen looks like is how most of the graphics bugs in this
 codebase got in, so accuracy is measured rather than asserted. `tools/recomp/` links the original's
-27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`. It tracks three numbers that are
-deliberately never rolled into one:
+27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`.
 
-| measure | meaning | today |
-|---|---|---:|
-| **linked** | an original function has a known counterpart here | 2,254 |
-| **faithful** | linked, not a stub, and the port reproduces at least 80% of the original's call sequence in order | 684 |
-| **verified** | a run was observed behaving like the original | 14 |
+Three measures, deliberately never rolled into one, because each is a stronger claim than the last:
 
-Alongside those: 1,584 of the 2,512 Lua bindings the original registers, and 312 of the 5,530
-functions reachable from the world render entry point.
+| | what it claims | where it stands |
+|---|---|---|
+| **Linked** | an original function has a known counterpart here | **2,254 / 27,161** &nbsp;·&nbsp; ~8% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **684** &nbsp;·&nbsp; ~3% of the client, ~30% of what is linked |
+| **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
-The report also carries per-module coverage, the ranked queue of what to port next, and a history
-row per run, so progress is a table rather than a feeling. A function is only ever marked verified
-by a trace or a scene comparison, never by a clean build or a plausible reading of a decompilation.
+By surface, roughly:
+
+| | covered |
+|---|---|
+| Lua bindings the original registers | 1,584 / 2,512 registered &nbsp;·&nbsp; ~63% |
+| &nbsp;&nbsp;of those, actually implemented rather than a stub | 832 &nbsp;·&nbsp; **~33%** |
+| Functions reachable from the world render entry point | 312 / 5,530 &nbsp;·&nbsp; ~6% |
+| Original code, by bytes rather than function count | ~9% linked, ~2% faithful |
+
+A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
+returns nothing, which is why the two are counted apart. So: the interface has the broadest
+coverage but a third of it is still hollow, the engine underneath is early, and the distance from
+"linked" to "verified" is the honest size of the work left. The report also carries
+per-module coverage, the ranked queue of what to port next, and a history row per run, so progress
+is a table rather than a feeling. A function is only ever marked verified by a trace or a scene
+comparison, never by a clean build or a plausible reading of a decompilation.
 
 ## Roadmap
 
