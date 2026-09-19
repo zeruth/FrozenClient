@@ -247,5 +247,12 @@
   "004b6760": { "frozen": "TextureAllocGxTex", "status": "ported", "note": "called by both TextureCreate overloads with (target, w, h, depth, format, flags, userArg, userFunc, dataFormat); the reference passes the texture name as a tenth argument that the port drops" },
   "004b8770": { "frozen": "CTexture::CTexture", "status": "ported", "note": "constructed on the 0x170-byte allocation at the head of the target-based TextureCreate" },
 
-  "004b9760": { "frozen": "TextureCreate", "status": "ported", "note": "the by-filename overload, tagged in src/gx/Texture.cpp. Pinned as well as tagged because the other overload at 004b8c80 needs an override to share the collapsed TextureCreate key, and a tag cannot share a name an override holds" }
+  "004b9760": { "frozen": "TextureCreate", "status": "ported", "note": "the by-filename overload, tagged in src/gx/Texture.cpp. Pinned as well as tagged because the other overload at 004b8c80 needs an override to share the collapsed TextureCreate key, and a tag cannot share a name an override holds" },
+
+  "008203b0": { "frozen": "CM2SceneRender::DrawBatch", "status": "stub", "note": "logs 'Batch: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "00820720": { "frozen": "CM2SceneRender::DrawBatchProj", "status": "stub", "note": "logs 'BatchProj: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "00820ae0": { "frozen": "CM2SceneRender::DrawBatchDoodad", "status": "stub", "note": "logs 'BatchDoodad: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "00820f40": { "frozen": "CM2SceneRender::DrawRibbon", "status": "stub", "note": "logs 'Ribbon: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "008214e0": { "frozen": "CM2SceneRender::DrawParticle", "status": "stub", "note": "logs 'Particle: model=%s' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind" },
+  "008230d0": { "frozen": "CM2SceneRender::DrawCallback", "status": "stub", "note": "logs the literal 'Callback' the same way; the only caller is CM2SceneRender::Draw" }
 }

@@ -26501,6 +26501,86 @@
   "refSize": 281,
   "status": "ported"
  },
+ "008203b0": {
+  "branchRatio": 0.562,
+  "constOverlap": 0.047,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawBatch",
+  "frozenSize": 966,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 869,
+  "status": "stub"
+ },
+ "00820720": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawBatchProj",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 957,
+  "status": "stub"
+ },
+ "00820ae0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawBatchDoodad",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 1109,
+  "status": "stub"
+ },
+ "00820f40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawRibbon",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 251,
+  "status": "stub"
+ },
+ "008214e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawParticle",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 391,
+  "status": "stub"
+ },
  "00821a20": {
   "branchRatio": 0.196,
   "constOverlap": 0.083,
@@ -26517,11 +26597,27 @@
   "refSize": 5621,
   "status": "ported"
  },
+ "008230d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawCallback",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 90,
+  "status": "stub"
+ },
  "00823130": {
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.36,
+  "fidelity": 0.6,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"

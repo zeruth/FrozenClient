@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 07:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 07:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2306 (=) (8.5%) | 498.2k (9.0%) |
+| mapped to a frozen function | 2312 (=) (8.5%) | 501.8k (9.1%) |
 | &nbsp;&nbsp;ported | 1758 (=) | 359.6k |
-| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
+| &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 530 (=) | 108.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **736 (+47) (2.7%)** | **95.0k (1.7%)** |
-| unmapped | 24855 | 4.92M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 348 (=) (6.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 350 (=) (6.0%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 130 (=) (2.2%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **736 (=) (2.7%)** | **95.0k (1.7%)** |
+| unmapped | 24849 | 4.92M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 354 (=) (6.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 356 (=) (6.1%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 136 (=) (2.3%)** | |
 | frozen functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 229, callgraph 152, callorder 125, cvar 30, handler 27, order 339, override 161, string 345, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 229, callgraph 152, callorder 125, cvar 30, handler 27, order 339, override 167, string 345, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 07:11 -- mapped 2306, ported 1758, stub 524, spine mapped 348.
+Previous run: 2026-09-19 07:21 -- mapped 2312, ported 1758, stub 530, spine mapped 354.
 
 ## Lua API coverage (binding tables)
 
@@ -200,7 +200,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 25 (8.8%) | 14.6% | 0 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 31 (11.0%) | 18.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 99 (20.2%) | 27.0% | 63 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 11 (3.1%) | 4.9% | 0 | 0 | 121 |
@@ -530,6 +530,9 @@ Module = the source file named by the reference's own assert strings near the fu
 
 | addr | module | size | callers | frozen | strings |
 |---|---|---:|---:|---|---|
+| 00820ae0 | M2Scene.cpp? | 1109 | 1 | `CM2SceneRender::DrawBatchDoodad` [override] | BatchDoodad: model=%s index=%d |
+| 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
+| 008203b0 | M2Scene.cpp? | 869 | 1 | `CM2SceneRender::DrawBatch` [override] | Batch: model=%s index=%d |
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
 | 0062dae0 | Tooltip.cpp | 1382 | 0 | `CGTooltip_SetHyperlink` [table] | %I64X:, %s:SetHyperlink(): Unknown link type |
 | 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [order] | BACKSPACE, DECIMAL |
@@ -538,6 +541,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 004a15a0 | CSimpleFrameScript.cpp | 1022 | 0 | `CSimpleFrame_SetBackdrop` [table] | .\CSimpleFrameScript.cpp, Usage: %s:SetBackdrop(nil or {bgFile = " |
 | 00573690 | RaidInfo.cpp | 975 | 0 | `Script_GetRaidRosterInfo` [table] | .\RaidInfo.cpp, MAINASSIST |
 | 0062f420 | Tooltip.cpp | 800 | 0 | `CGTooltip_SetBagItem` [table] | .\Tooltip.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
+| 008214e0 | M2Scene.cpp? | 391 | 1 | `CM2SceneRender::DrawParticle` [override] | Particle: model=%s |
 | 0051cdb0 | GameUI.cpp | 754 | 0 | `Script_EquipItemByName` [order] | EquipItemByName(): Invalid inventory dst, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 00537240 | PartyFrame.cpp? | 719 | 0 | `Script_BNGetFOFInfo` [table] | BNUI: BNGetFOFInfo for ID %u index %d is, Incorrect ID |
 | 004a12d0 | CSimpleFrameScript.cpp | 718 | 0 | `CSimpleFrame_GetBackdrop` [table] | bgFile, bottom |
@@ -560,16 +564,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
 | 005e9e40 | PaperDollInfoFrame.cpp | 512 | 0 | `Script_GetInventoryItemCount` [table] |  |
 | 00535180 | PartyFrame.cpp? | 510 | 0 | `Script_BNGetFriendInviteInfo` [table] | BNUI: Invite Info Account name: %s %s, BNUI: Invite Info ID: %u |
+| 00820f40 | M2Scene.cpp? | 251 | 1 | `CM2SceneRender::DrawRibbon` [override] | Ribbon: model=%s index=%d |
 | 00972210 | CSimpleHTML.cpp? | 502 | 0 | `CSimpleScrollFrame_SetScrollChild` [table] | %s:SetScrollChild(): Couldn't find 'this, %s:SetScrollChild(): Couldn't find frame |
 | 0062eff0 | Tooltip.cpp | 496 | 0 | `CGTooltip_SetTradePlayerItem` [table] | .\Tooltip.cpp, Invalid trade slot in SetTradePlayerItem |
 | 0054c2e0 | BattlefieldInfo.cpp | 496 | 0 | `Script_GetBattlefieldPosition` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldPosition(index) |
 | 0062e900 | Tooltip.cpp | 480 | 0 | `CGTooltip_SetTrainerService` [table] | Invalid trainer service in SetTrainerSer |
 | 0061ef10 | Tooltip.cpp | 480 | 0 | `CGTooltip_GetItem` [table] | .\Tooltip.cpp |
-| 00817170 | XMLTree.cpp? | 467 | 0 | `hooksecurefunc` [order] | Usage: hooksecurefunc([table,] "function, hooksecurefunc(): %s is not a function |
-| 00536e40 | PartyFrame.cpp? | 457 | 0 | `Script_BNReportPlayer` [table] | ABUSE, BNET_REPORT_SENT |
-| 00535ce0 | PartyFrame.cpp? | 452 | 0 | `Script_BNCreateConversation` [table] | Usage: BNCreateConversation(id,id) |
-| 00630620 | Tooltip.cpp | 443 | 0 | `CGTooltip_SetCurrencyToken` [table] | .\Tooltip.cpp, Usage: %s:SetCurrencyToken(index) |
-| 00625470 | Tooltip.cpp | 437 | 0 | `CGTooltip_SetPetAction` [table] | Usage: %s:SetPetAction(slot) |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -677,7 +677,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00857ca0 | `luaV_execute` | 50% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 20% | 148 | 29 | 90 | 15 | 10% | 3696 |
-| 00823130 | `CM2SceneRender::Draw` | 36% | 25 | 28 | 39 | 12 | 0% | 2909 |
+| 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
@@ -791,8 +791,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 03:16 | 2193 (8.1%) | 636 (2.3%) | 523 | 295/5530 | 1584/2512 | 752 |
-| 2026-09-19 03:44 | 2219 (8.2%) | 654 (2.4%) | 523 | 307/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:46 | 2247 (8.3%) | 681 (2.5%) | 524 | 311/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:47 | 2248 (8.3%) | 681 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
@@ -816,6 +814,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 07:10 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:11 | 2306 (8.5%) | 689 (2.5%) | 524 | 348/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:17 | 2306 (8.5%) | 736 (2.7%) | 524 | 348/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:21 | 2312 (8.5%) | 736 (2.7%) | 530 | 354/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:21 | 2312 (8.5%) | 736 (2.7%) | 530 | 354/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

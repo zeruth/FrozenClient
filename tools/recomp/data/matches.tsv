@@ -1664,7 +1664,13 @@ addr	how	frozen	evidence
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
+008203b0	override	CM2SceneRender::DrawBatch	
+00820720	override	CM2SceneRender::DrawBatchProj	
+00820ae0	override	CM2SceneRender::DrawBatchDoodad	
+00820f40	override	CM2SceneRender::DrawRibbon	
+008214e0	override	CM2SceneRender::DrawParticle	
 00821a20	override	CM2Scene::Animate	
+008230d0	override	CM2SceneRender::DrawCallback	
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
