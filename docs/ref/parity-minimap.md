@@ -57,10 +57,23 @@ installs both vtables, and then does three things worth knowing:
 - **It records itself as a singleton** in `DAT_00beba88`, but only if that is still null, so the
   first minimap created wins. This is consistent with the texture set living at module scope rather
   than per frame.
-- **It precomputes the zoom radius table** into `DAT_00beba44` through `DAT_00beba5c`: four radii,
-  each also halved into the slot below it, scaled from a base and three constants at `00a11f88`,
-  `00a11f90` and `00a11f94`. This is the table frozen's header refers to when it says the interior
-  flag selects "which zoom radius table" -- it is one table of pairs, not two tables.
+- **It precomputes the zoom radius table** into `DAT_00beba44` through `DAT_00beba5c`. The base is
+  `NDCToDDCHeight(1.0f) * 1.6666666` (5/3, at `00a0b634`), scaled by four constants read out of the
+  image at `00a11f88` and the three words after it: **0.055, 0.045, 0.0375 and 0.0125**. Each radius
+  is stored beside its own half, the halving constant being the same 0.5 at `009e2ec4` that
+  `SetTextInsets` uses. Reading the four words on either side confirms the run is exactly four long:
+  `00a11f84` holds -0.8 and `00a11f98` onward is unrelated data.
+
+  This is the table frozen's header means by "which zoom radius table" the interior flag picks: one
+  table of pairs, full outdoors and half indoors, rather than two tables.
+
+  **Open question.** Four radii against six zoom levels does not divide, and `GetZoomLevels` really
+  does return a literal 6. So a zoom level does not index this table directly and something between
+  them is still unidentified. Do not wire `SetZoom` to these values on the strength of the
+  arithmetic alone.
+
+- **It initialises `+0x2a4` to -10000**, a sentinel rather than a coordinate *(uncertain: the field
+  is not otherwise identified)*.
 
 ### 2d. The texture globals are wider than frozen's header records
 

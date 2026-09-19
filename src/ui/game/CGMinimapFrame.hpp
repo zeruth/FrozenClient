@@ -24,6 +24,22 @@ class CGMinimapFrame : public CSimpleFrame {
         static HTEXTURE s_blipTexture;           // ref: DAT_00beba38
         static HTEXTURE s_iconTexture;           // ref: DAT_00beba3c
 
+        // The teardown at FUN_0057bd90 releases two more groups this list used to miss, so the set
+        // is wider than the seven above. One unnamed neighbour sits below them, and a run of seven
+        // more below that which the teardown frees in a single 0x1c-byte loop. Named by position
+        // until the renderer shows what each is for.
+        static HTEXTURE s_unknownTexture;        // ref: DAT_00beba20
+        static HTEXTURE s_overlayTextures[7];    // ref: DAT_00beba04
+
+        // Zoom radii, precomputed once in the reference's constructor (FUN_0057dca0) into
+        // DAT_00beba44..5c. Four radii, each stored beside its own half, which is what the
+        // interior flag below picks between: the full value outdoors and the half indoors. The
+        // reference derives them as NDCToDDCHeight(1.0f) * (5/3), scaled by 0.055, 0.045, 0.0375
+        // and 0.0125. TODO four radii against six zoom levels does not divide, so how a level
+        // indexes this is still unknown -- do not wire SetZoom to it on the strength of the
+        // arithmetic alone.
+        static float s_zoomRadius[4][2];         // ref: DAT_00beba44
+
         // The zoom level, one per map kind: index 0 outdoors, index 1 indoors. The reference keeps
         // this pair in the minimap module too (DAT_00af4e4c and DAT_00af4e50, adjacent), selected
         // by the interior flag below; both start at 3.

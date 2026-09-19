@@ -1,6 +1,9 @@
 #include "ui/game/CGMinimapFrame.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
 
+HTEXTURE CGMinimapFrame::s_unknownTexture;
+HTEXTURE CGMinimapFrame::s_overlayTextures[7];
+float CGMinimapFrame::s_zoomRadius[4][2];
 int32_t CGMinimapFrame::s_metatable;
 int32_t CGMinimapFrame::s_objectType;
 
