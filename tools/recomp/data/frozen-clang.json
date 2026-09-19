@@ -85250,7 +85250,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 40
+"line": 41
 },
 "QueryCreatureName": {
 "files": [
@@ -85271,7 +85271,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 56
+"line": 57
 },
 "Find": {
 "files": [
@@ -85314,24 +85314,29 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 73
+"line": 74
 },
 "NameCacheGetName": {
 "files": [
 "src/object/client/namecache.cpp"
 ],
 "callseq": [
+"CGObject::IsA",
+"CGObject::GetEntryID",
+"ItemCacheGet",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::empty",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::c_str",
 "Find",
 "basic_string<char,std::char_traits<char>,std::allocator<char> >::empty",
 "basic_string<char,std::char_traits<char>,std::allocator<char> >::c_str"
 ],
 "strings": [],
 "consts": [],
-"branches": 1,
+"branches": 3,
 "stub": false,
-"lines": 4,
+"lines": 14,
 "refs": [],
-"line": 113
+"line": 114
 },
 "NameCacheHasName": {
 "files": [
@@ -85347,7 +85352,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 118
+"line": 129
 },
 "NameCacheClear": {
 "files": [
@@ -85363,7 +85368,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 123
+"line": 134
 },
 "NameCacheRegisterHandlers": {
 "files": [
@@ -85379,7 +85384,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 128
+"line": 139
 },
 "ReceiveNameQueryResponse": {
 "files": [
@@ -85410,7 +85415,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 135
+"line": 146
 },
 "ReceiveCreatureQueryResponse": {
 "files": [
@@ -85438,7 +85443,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 171
+"line": 182
 },
 "CCommand_ObjUsage": {
 "files": [

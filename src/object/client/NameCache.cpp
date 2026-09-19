@@ -1,4 +1,5 @@
 #include "object/client/NameCache.hpp"
+#include "object/client/ItemCache.hpp"
 #include "object/client/CGObject.hpp"
 #include "object/Types.hpp"
 #include "client/ClientServices.hpp"
@@ -111,6 +112,16 @@ CachedName* Find(CGObject* object, bool query) {
 } // namespace
 
 const char* NameCacheGetName(CGObject* object) {
+    // Items are not in this cache and never were: Find handles players by guid and units by entry
+    // and returns null for everything else, so an item object in the world had no name at all.
+    // Their names live in the item cache, keyed the same way creatures are -- by entry -- and the
+    // lookup there sends its own query on the first miss.
+    if (object && object->IsA(TYPE_ITEM)) {
+        auto info = ItemCacheGet(object->GetEntryID());
+
+        return (info && !info->name.empty()) ? info->name.c_str() : nullptr;
+    }
+
     CachedName* entry = Find(object, true);
     return (entry && !entry->name.empty()) ? entry->name.c_str() : nullptr;
 }

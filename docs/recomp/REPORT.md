@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 12:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 12:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,11 +17,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5530, mapped 389 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 393 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11444, stubs 836 | |
+| frozen functions (src/, from PDB + source) | 11446, stubs 836 | |
 
 Match evidence: annotated 458, callgraph 171, callorder 127, cvar 30, handler 28, order 320, override 182, string 346, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 12:33 -- mapped 2419, ported 1946, stub 445, spine mapped 389.
+Previous run: 2026-09-19 12:37 -- mapped 2419, ported 1946, stub 445, spine mapped 389.
 
 ## Lua API coverage (binding tables)
 
@@ -786,7 +786,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-19 11:12 | 2405 (8.9%) | 899 (3.3%) | 450 | 388/5530 | 1584/2512 | 557 |
-| 2026-09-19 11:12 | 2405 (8.9%) | 899 (3.3%) | 450 | 388/5530 | 1584/2512 | 557 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
@@ -810,6 +809,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 12:18 | 2418 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:33 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:37 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
+| 2026-09-19 12:41 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 
 ## How to move a row
 
