@@ -162516,22 +162516,29 @@
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"CScriptObject::IsA",
+"lua_pushnumber",
+"lua_pushnil"
 ],
 "strings": [
-"CSimpleTexture_IsObjectType",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
+"Usage: %s:IsObjectType(\"type\")"
 ],
 "consts": [
-"0"
+"1",
+"1.0",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 18,
 "refs": [],
-"line": 10
+"line": 15
 },
 "CSimpleTexture_GetObjectType": {
 "files": [
@@ -162551,7 +162558,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 14
+"line": 34
 },
 "CSimpleTexture_GetDrawLayer": {
 "files": [
@@ -162571,7 +162578,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 24
+"line": 44
 },
 "CSimpleTexture_SetDrawLayer": {
 "files": [
@@ -162600,7 +162607,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 33
+"line": 53
 },
 "CSimpleTexture_GetBlendMode": {
 "files": [
@@ -162620,7 +162627,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 56
+"line": 76
 },
 "CSimpleTexture_SetBlendMode": {
 "files": [
@@ -162647,7 +162654,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 69
+"line": 89
 },
 "CSimpleTexture_GetVertexColor": {
 "files": [
@@ -162671,7 +162678,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 94
+"line": 114
 },
 "CSimpleTexture_SetVertexColor": {
 "files": [
@@ -162695,7 +162702,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 109
+"line": 129
 },
 "CSimpleTexture_SetGradient": {
 "files": [
@@ -162717,29 +162724,39 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 127
+"line": 147
 },
 "CSimpleTexture_SetGradientAlpha": {
 "files": [
 "src/ui/simple/csimpletexturescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleTexture::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"StringToOrientation",
+"FrameScript_GetColor",
+"FrameScript_GetColor",
+"CSimpleRegion::SetVertexGradient",
+"FrameScript_Object::GetDisplayName",
+"luaL_error"
 ],
 "strings": [
-"CSimpleTexture_SetGradientAlpha",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpletexturescript.cpp"
+"Usage: %s:SetGradientAlpha(\"orientation\", minR, minG, minB, minA, maxR, maxG, maxB, maxA)"
 ],
 "consts": [
-"0"
+"0",
+"0x00",
+"2",
+"3",
+"7"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 24,
 "refs": [],
-"line": 131
+"line": 155
 },
 "CSimpleTexture_SetAlpha": {
 "files": [
@@ -162765,7 +162782,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 135
+"line": 180
 },
 "CSimpleTexture_GetAlpha": {
 "files": [
@@ -162786,7 +162803,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 149
+"line": 194
 },
 "CSimpleTexture_Show": {
 "files": [
@@ -162805,7 +162822,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 160
+"line": 205
 },
 "CSimpleTexture_Hide": {
 "files": [
@@ -162824,7 +162841,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 169
+"line": 214
 },
 "CSimpleTexture_IsVisible": {
 "files": [
@@ -162846,7 +162863,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 178
+"line": 223
 },
 "CSimpleTexture_IsShown": {
 "files": [
@@ -162868,7 +162885,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 191
+"line": 236
 },
 "CSimpleTexture_GetTexture": {
 "files": [
@@ -162889,7 +162906,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 204
+"line": 249
 },
 "CSimpleTexture_SetTexture": {
 "files": [
@@ -162922,7 +162939,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 219
+"line": 264
 },
 "CSimpleTexture_GetTexCoord": {
 "files": [
@@ -162944,7 +162961,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 258
+"line": 303
 },
 "CSimpleTexture_SetTexCoord": {
 "files": [
@@ -162989,7 +163006,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 270
+"line": 315
 },
 "CSimpleTexture_SetRotation": {
 "files": [
@@ -163035,7 +163052,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 328
+"line": 373
 },
 "CSimpleTexture_SetDesaturated": {
 "files": [
@@ -163059,7 +163076,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 366
+"line": 411
 },
 "CSimpleTexture_IsDesaturated": {
 "files": [
@@ -163081,7 +163098,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 385
+"line": 430
 },
 "CSimpleTexture_SetNonBlocking": {
 "files": [
@@ -163102,7 +163119,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 401
+"line": 446
 },
 "CSimpleTexture_GetNonBlocking": {
 "files": [
@@ -163123,7 +163140,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 411
+"line": 456
 },
 "CSimpleTexture_SetHorizTile": {
 "files": [
@@ -163144,7 +163161,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 425
+"line": 470
 },
 "CSimpleTexture_GetHorizTile": {
 "files": [
@@ -163165,7 +163182,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 435
+"line": 480
 },
 "CSimpleTexture_SetVertTile": {
 "files": [
@@ -163186,7 +163203,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 449
+"line": 494
 },
 "CSimpleTexture_GetVertTile": {
 "files": [
@@ -163207,7 +163224,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 459
+"line": 504
 },
 "CSimpleSortedArray::operator[]": {
 "files": [

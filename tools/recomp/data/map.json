@@ -2243,7 +2243,7 @@
   "branchRatio": 0.345,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.967,
+  "fidelity": 0.984,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp",
    "src/ui/simple/csimpletexture.cpp"
@@ -2429,6 +2429,22 @@
   "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 70,
+  "status": "ported"
+ },
+ "00487b00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "CSimpleRegion::SetVertexGradient",
+  "frozenSize": 217,
+  "how": "callgraph",
+  "module": "CSimpleRender.cpp",
+  "refSize": 226,
   "status": "ported"
  },
  "00487bf0": {
@@ -2898,18 +2914,18 @@
  "0048be30": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_IsObjectType",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 179,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 170,
-  "status": "stub"
+  "status": "ported"
  },
  "0048bee0": {
   "branchRatio": 0.0,
@@ -3024,20 +3040,20 @@
   "status": "stub"
  },
  "0048c310": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetGradientAlpha",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 205,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 206,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c3e0": {
   "branchRatio": 0.2,

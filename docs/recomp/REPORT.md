@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 18:45 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 18:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2698 (=) (9.9%) | 573.0k (10.4%) |
-| &nbsp;&nbsp;ported | 2142 (+1) | 422.0k |
-| &nbsp;&nbsp;stub (unimplemented body) | 520 (-1) | 112.9k |
+| mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
+| &nbsp;&nbsp;ported | 2145 (+1) | 422.6k |
+| &nbsp;&nbsp;stub (unimplemented body) | 518 (-1) | 112.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **988 (=) (3.6%)** | **122.8k (2.2%)** |
-| unmapped | 24463 | 4.85M |
+| **faithful** (linked, not stub, call order >= 80%) | **990 (+1) (3.6%)** | **123.2k (2.2%)** |
+| unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11485, stubs 763 | |
+| frozen functions (src/, from PDB + source) | 11485, stubs 761 | |
 
-Match evidence: annotated 577, callgraph 183, callorder 128, cvar 30, handler 28, order 192, override 194, sticky 4, string 310, table 1052. Module anchors: 1479 assert strings.
+Match evidence: annotated 579, callgraph 184, callorder 128, cvar 30, handler 28, order 192, override 194, sticky 4, string 310, table 1050. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 18:39 -- mapped 2698, ported 2141, stub 521, spine mapped 393.
+Previous run: 2026-09-19 18:47 -- mapped 2699, ported 2144, stub 519, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 580 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 579 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -110,7 +110,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 3 |  / stubs: SetUnit, SetCreature, RefreshUnit |
 | 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 3 |  / stubs: SetFontString, GetMotionScriptsWhileDisabled, SetMotionScriptsWhileDisabled |
-| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 2 |  / stubs: SetGradient, SetGradientAlpha |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
@@ -118,6 +117,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 2 |  / stubs: SetOrientation, SetStatusBarTexture |
 | 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 2 |  / stubs: SetThumbTexture, SetOrientation |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
+| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 1 |  / stubs: SetGradient |
 | 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 1 |  / stubs: SetFillTexture |
 | 00acfaf8 (GetGMTicket..) | 15 | `s_ScriptFunctions` | 0 | 1 |  / stubs: GetGMTicket |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
@@ -198,9 +198,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 30 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 3 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 1 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 0 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 33 (19.9%) | 32.0% | 1 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 34 (20.5%) | 32.8% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 26 (18.1%) | 25.8% | 1 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 1 | 0 | 5 |
@@ -737,8 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 16:13 | 2691 (9.9%) | 946 (3.5%) | 550 | 394/5530 | 1791/2964 | 611 |
-| 2026-09-19 16:15 | 2692 (9.9%) | 946 (3.5%) | 551 | 394/5530 | 1791/2964 | 611 |
 | 2026-09-19 16:18 | 2692 (9.9%) | 946 (3.5%) | 552 | 394/5530 | 1791/2964 | 612 |
 | 2026-09-19 16:24 | 2692 (9.9%) | 946 (3.5%) | 550 | 394/5530 | 1791/2964 | 610 |
 | 2026-09-19 16:29 | 2692 (9.9%) | 947 (3.5%) | 546 | 394/5530 | 1791/2964 | 607 |
@@ -762,6 +760,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 18:34 | 2698 (9.9%) | 987 (3.6%) | 523 | 393/5530 | 1791/2964 | 582 |
 | 2026-09-19 18:39 | 2698 (9.9%) | 988 (3.6%) | 521 | 393/5530 | 1791/2964 | 581 |
 | 2026-09-19 18:45 | 2698 (9.9%) | 988 (3.6%) | 520 | 393/5530 | 1791/2964 | 580 |
+| 2026-09-19 18:47 | 2699 (9.9%) | 989 (3.6%) | 519 | 393/5530 | 1791/2964 | 579 |
+| 2026-09-19 18:48 | 2699 (9.9%) | 990 (3.6%) | 518 | 393/5530 | 1791/2964 | 579 |
 
 ## How to move a row
 

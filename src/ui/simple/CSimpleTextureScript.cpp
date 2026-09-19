@@ -2,13 +2,33 @@
 #include "ui/Types.hpp"
 #include "ui/Util.hpp"
 #include "ui/simple/CSimpleTexture.hpp"
+#include "ui/CScriptObject.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <cmath>
 #include <cstdint>
 
+// ref: FUN_0048be30
+// The same shape as CScriptObject's, which CSimpleTexture inherits the machinery for -- IsA by name
+// and GetObjectTypeName are both on that base, which is why this one is a few lines and the font's
+// is still a stub: CSimpleFont derives from FrameScript_Object instead and has neither.
 int32_t CSimpleTexture_IsObjectType(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:IsObjectType(\"type\")", texture->GetDisplayName());
+    }
+
+    // CSimpleTexture::IsA(int32_t) hides the base's IsA(const char*), so the name-based one is
+    // reached through CScriptObject. Still a virtual call, so the texture's own override runs.
+    if (static_cast<CScriptObject*>(texture)->IsA(lua_tostring(L, 2))) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleTexture_GetObjectType(lua_State* L) {
@@ -128,8 +148,33 @@ int32_t CSimpleTexture_SetGradient(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0048c310
+// An orientation and two RGBA colours: arguments 3-6 are the minimum end, 7-10 the maximum.
+// FrameScript_GetColor reads four consecutive slots from the index it is given and defaults alpha
+// to 1 when the fourth is absent, which is why the two calls are four apart.
 int32_t CSimpleTexture_SetGradientAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    ORIENTATION orientation;
+
+    if (lua_isstring(L, 2) && StringToOrientation(lua_tostring(L, 2), orientation)) {
+        CImVector minColor = { 0x00, 0x00, 0x00, 0x00 };
+        CImVector maxColor = { 0x00, 0x00, 0x00, 0x00 };
+
+        FrameScript_GetColor(L, 3, minColor);
+        FrameScript_GetColor(L, 7, maxColor);
+
+        texture->SetVertexGradient(orientation, minColor, maxColor);
+
+        return 0;
+    }
+
+    // One error for both a missing orientation and an unknown one, which is how the reference has
+    // it -- unlike SetOrientation next door, which distinguishes them.
+    return luaL_error(L,
+                      "Usage: %s:SetGradientAlpha(\"orientation\", minR, minG, minB, minA, maxR, maxG, maxB, maxA)",
+                      texture->GetDisplayName());
 }
 
 int32_t CSimpleTexture_SetAlpha(lua_State* L) {
