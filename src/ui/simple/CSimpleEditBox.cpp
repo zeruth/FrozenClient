@@ -1138,14 +1138,116 @@ void CSimpleEditBox::SetCursorPosition(int32_t position) {
 }
 
 // ref: FUN_00966fd0
+// ref: FUN_00964690
+void CSimpleEditBox::AddHistoryLine(const char* text, const char* source) {
+    // A history of no lines keeps nothing, and the index below would divide by zero.
+    if (!this->m_historyLines) {
+        return;
+    }
+
+    auto& line = this->m_history[this->m_historyIndex];
+
+    line.text = static_cast<char*>(
+        SMemReAlloc(line.text, SStrLen(text) + 1, __FILE__, __LINE__, 0)
+    );
+    line.source = source;
+
+    SStrCopy(line.text, text, STORM_MAX_STR);
+
+    // A ring: the oldest line is the one about to be overwritten.
+    this->m_historyIndex = (this->m_historyIndex + 1) % this->m_historyLines;
+}
+
+// ref: FUN_00964720
+void CSimpleEditBox::ClearHistory() {
+    this->m_historyIndex = 0;
+
+    for (int32_t i = 0; i < this->m_historyLines && i < static_cast<int32_t>(this->m_history.Count()); i++) {
+        auto& line = this->m_history[i];
+
+        if (line.text) {
+            SMemFree(line.text, __FILE__, __LINE__, 0);
+        }
+
+        line.text = nullptr;
+        line.source = nullptr;
+    }
+}
+
+// The reference resizes the history storage from here (FUN_00966b10), zeroing the slots it adds.
 void CSimpleEditBox::SetHistoryLines(int32_t lines) {
-    // TODO FUN_00966b10(lines): resize the history storage
+    if (lines < 0) {
+        lines = 0;
+    }
+
+    if (lines != this->m_historyLines) {
+        auto count = static_cast<int32_t>(this->m_history.Count());
+
+        // Free whatever a shrinking history can no longer hold, before the count moves past it.
+        for (int32_t i = lines; i < count; i++) {
+            auto& line = this->m_history[i];
+
+            if (line.text) {
+                SMemFree(line.text, __FILE__, __LINE__, 0);
+            }
+
+            line.text = nullptr;
+            line.source = nullptr;
+        }
+
+        if (lines) {
+            this->m_history.GrowToFit(lines - 1, 1);
+        }
+
+        this->m_history.SetCount(lines);
+    }
 
     this->m_historyLines = lines;
 
     if (lines <= this->m_historyIndex) {
         this->m_historyIndex = lines ? lines - 1 : 0;
     }
+}
+
+// ref: FUN_00962c50
+const char* CSimpleEditBox::GetInputLanguage() {
+    static const char* s_inputLanguages[] = { "ROMAN", "KOREAN", "CHINESE", "JAPANESE" };
+
+    auto mode = this->m_imeInputMode;
+
+    if (mode < 0 || mode >= static_cast<int32_t>(sizeof(s_inputLanguages) / sizeof(s_inputLanguages[0]))) {
+        mode = 0;
+    }
+
+    return s_inputLanguages[mode];
+}
+
+// ref: FUN_00962c60
+void CSimpleEditBox::ToggleInputLanguage() {
+    // TODO the reference hands (m_imeInputMode == 0) to the OS input-method layer (FUN_0086d030),
+    // which then drives the mode back. Frozen has no IME, so there is nothing to toggle yet and
+    // the mode stays ROMAN.
+}
+
+// ref: FUN_00965550
+void CSimpleEditBox::SetTextInsets(float left, float right, float top, float bottom) {
+    // This rect keeps top in maxY and bottom in minY, as the XML loader does.
+    this->m_editTextInset.minX = left;
+    this->m_editTextInset.maxX = right;
+    this->m_editTextInset.maxY = top;
+    this->m_editTextInset.minY = bottom;
+
+    this->UpdateSizes();
+}
+
+// ref: FUN_00965580
+void CSimpleEditBox::GetTextInsets(float& left, float& right, float& top, float& bottom) {
+    left = this->m_editTextInset.minX;
+    right = this->m_editTextInset.maxX;
+    top = this->m_editTextInset.maxY;
+    bottom = this->m_editTextInset.minY;
+
+    this->UpdateSizes();
 }
 
 // ref: FUN_00962bb0

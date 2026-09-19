@@ -59,6 +59,7 @@ int32_t CDataStore::FetchRead(uint32_t pos, uint32_t bytes) {
     return 0;
 }
 
+// ref: FUN_00401070
 int32_t CDataStore::FetchWrite(uint32_t pos, uint32_t bytes, const char* fileName, int32_t lineNumber) {
     if (pos >= this->m_base && pos + bytes <= this->m_base + this->m_alloc) {
         return 1;
@@ -313,6 +314,7 @@ CDataStore& CDataStore::Put(uint8_t val) {
     return *this;
 }
 
+// ref: FUN_0047b040
 CDataStore& CDataStore::Put(uint16_t val) {
     STORM_ASSERT(!this->IsFinal());
 
@@ -369,6 +371,7 @@ CDataStore& CDataStore::Put(float val) {
     return *this;
 }
 
+// ref: FUN_0047b1c0
 CDataStore& CDataStore::PutArray(const uint8_t* val, uint32_t count) {
     STORM_ASSERT(!this->IsFinal());
     STORM_ASSERT(val || !count);
@@ -400,6 +403,7 @@ CDataStore& CDataStore::PutArray(const uint8_t* val, uint32_t count) {
     return *this;
 }
 
+// ref: FUN_0047b280
 CDataStore& CDataStore::PutData(const void* val, uint32_t bytes) {
     return this->PutArray(static_cast<const uint8_t*>(val), bytes);
 }
@@ -425,6 +429,7 @@ void CDataStore::Seek(uint32_t pos) {
     this->m_read = pos;
 }
 
+// ref: FUN_0047af40
 CDataStore& CDataStore::Set(uint32_t pos, uint16_t val) {
     STORM_ASSERT(!this->IsFinal());
     STORM_ASSERT(pos + sizeof(val) <= this->m_size);

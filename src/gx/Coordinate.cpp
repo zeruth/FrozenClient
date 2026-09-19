@@ -8,6 +8,7 @@ namespace Coordinate {
     float s_x = 0.8f;
 }
 
+// ref: FUN_0047bfe0
 float CoordinateGetAspectCompensation() {
     return Coordinate::s_aspectCompensation;
 }
@@ -21,6 +22,7 @@ void CoordinateSetAspectRatio(float aspect) {
     Coordinate::s_x = aspect * v1;
 }
 
+// ref: FUN_0047c020
 void DDCToNDC(float ddcx, float ddcy, float* ndcx, float* ndcy) {
     if (ndcx) {
         *ndcx = ddcx / Coordinate::s_x;
@@ -31,14 +33,17 @@ void DDCToNDC(float ddcx, float ddcy, float* ndcx, float* ndcy) {
     }
 }
 
+// ref: FUN_0047c060
 float DDCToNDCHeight(float ddcy) {
     return ddcy / Coordinate::s_y;
 }
 
+// ref: FUN_0047c050
 float DDCToNDCWidth(float ddcx) {
     return ddcx / Coordinate::s_x;
 }
 
+// ref: FUN_0047bff0
 void NDCToDDC(float ndcx, float ndcy, float* ddcx, float* ddcy) {
     if (ddcx) {
         *ddcx = Coordinate::s_x * ndcx;
@@ -49,10 +54,12 @@ void NDCToDDC(float ndcx, float ndcy, float* ddcx, float* ddcy) {
     }
 }
 
+// ref: FUN_0047c080
 float NDCToDDCHeight(float ndcy) {
     return Coordinate::s_y * ndcy;
 }
 
+// ref: FUN_0047c070
 float NDCToDDCWidth(float ndcx) {
     return Coordinate::s_x * ndcx;
 }

@@ -1014,7 +1014,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 24,
+"lines": 21,
 "refs": [],
 "line": 8
 },
@@ -1029,7 +1029,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
 "line": 32
 },
@@ -1057,8 +1057,8 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
 "line": 42
 },
@@ -1094,9 +1094,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 15,
+"lines": 11,
 "refs": [],
-"line": 62
+"line": 63
 },
 "CDataStore::Finalize": {
 "files": [
@@ -1109,9 +1109,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 5,
 "refs": [],
-"line": 74
+"line": 75
 },
 "CDataStore::Get": {
 "files": [
@@ -1128,9 +1128,9 @@
 "consts": [],
 "branches": 5,
 "stub": false,
-"lines": 76,
+"lines": 75,
 "refs": [],
-"line": 80
+"line": 81
 },
 "CDataStore::GetArray": {
 "files": [
@@ -1148,9 +1148,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 41,
+"lines": 37,
 "refs": [],
-"line": 160
+"line": 161
 },
 "CDataStore::GetBufferParams": {
 "files": [
@@ -1161,9 +1161,9 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 6,
+"lines": 13,
 "refs": [],
-"line": 198
+"line": 199
 },
 "CDataStore::GetDataInSitu": {
 "files": [
@@ -1176,9 +1176,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 15,
+"lines": 13,
 "refs": [],
-"line": 212
+"line": 213
 },
 "CDataStore::GetHeaderSpace": {
 "files": [
@@ -1191,9 +1191,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 226
+"line": 227
 },
 "CDataStore::GetString": {
 "files": [
@@ -1209,9 +1209,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 21,
+"lines": 22,
 "refs": [],
-"line": 230
+"line": 231
 },
 "CDataStore::Initialize": {
 "files": [
@@ -1225,9 +1225,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 9,
+"lines": 5,
 "refs": [],
-"line": 253
+"line": 254
 },
 "CDataStore::InternalDestroy": {
 "files": [
@@ -1244,9 +1244,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 259
+"line": 260
 },
 "CDataStore::InternalFetchRead": {
 "files": [
@@ -1259,9 +1259,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 269
+"line": 270
 },
 "CDataStore::InternalFetchWrite": {
 "files": [
@@ -1281,9 +1281,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 14,
+"lines": 12,
 "refs": [],
-"line": 273
+"line": 274
 },
 "CDataStore::IsFinal": {
 "files": [
@@ -1296,9 +1296,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 286
+"line": 287
 },
 "CDataStore::IsReadOnly": {
 "files": [
@@ -1311,9 +1311,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 290
+"line": 291
 },
 "CDataStore::IsValid": {
 "files": [
@@ -1324,9 +1324,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 294
+"line": 295
 },
 "CDataStore::IsRead": {
 "files": [
@@ -1339,7 +1339,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 298
+"line": 299
 },
 "CDataStore::Put": {
 "files": [
@@ -1358,9 +1358,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 68,
+"lines": 65,
 "refs": [],
-"line": 302
+"line": 303
 },
 "CDataStore::PutArray": {
 "files": [
@@ -1380,9 +1380,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 29,
+"lines": 30,
 "refs": [],
-"line": 372
+"line": 375
 },
 "CDataStore::PutData": {
 "files": [
@@ -1395,9 +1395,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 403
+"line": 407
 },
 "CDataStore::PutString": {
 "files": [
@@ -1413,9 +1413,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 4,
 "refs": [],
-"line": 407
+"line": 411
 },
 "CDataStore::Reset": {
 "files": [
@@ -1431,9 +1431,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 6,
+"lines": 9,
 "refs": [],
-"line": 412
+"line": 416
 },
 "CDataStore::Seek": {
 "files": [
@@ -1446,7 +1446,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 422
+"line": 426
 },
 "CDataStore::Set": {
 "files": [
@@ -1461,9 +1461,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 12,
 "refs": [],
-"line": 428
+"line": 433
 },
 "CDataStore::SetSize": {
 "files": [
@@ -1474,9 +1474,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 441
+"line": 446
 },
 "CDataStore::Size": {
 "files": [
@@ -1487,9 +1487,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 445
+"line": 450
 },
 "CDataStore::Tell": {
 "files": [
@@ -1500,9 +1500,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 449
+"line": 454
 },
 "CHandleObject::~CHandleObject": {
 "files": [
@@ -13682,7 +13682,7 @@
 ],
 "branches": 17,
 "stub": false,
-"lines": 99,
+"lines": 95,
 "refs": [],
 "line": 67
 },
@@ -13702,7 +13702,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 34,
+"lines": 29,
 "refs": [],
 "line": 163
 },
@@ -13721,7 +13721,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 23,
+"lines": 22,
 "refs": [],
 "line": 193
 },
@@ -13738,7 +13738,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 6,
 "refs": [],
 "line": 216
 },
@@ -13758,7 +13758,7 @@
 "consts": [],
 "branches": 10,
 "stub": false,
-"lines": 34,
+"lines": 38,
 "refs": [],
 "line": 223
 },
@@ -13778,7 +13778,7 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 11,
+"lines": 12,
 "refs": [],
 "line": 263
 },
@@ -13798,7 +13798,7 @@
 "consts": [],
 "branches": 8,
 "stub": false,
-"lines": 21,
+"lines": 30,
 "refs": [],
 "line": 276
 },
@@ -13840,7 +13840,7 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 16,
+"lines": 14,
 "refs": [],
 "line": 317
 },
@@ -13862,7 +13862,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 31,
+"lines": 34,
 "refs": [],
 "line": 332
 },
@@ -13886,7 +13886,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 12,
+"lines": 11,
 "refs": [],
 "line": 367
 },
@@ -13912,7 +13912,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 37,
+"lines": 35,
 "refs": [],
 "line": 379
 },
@@ -13933,7 +13933,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 29,
+"lines": 30,
 "refs": [],
 "line": 415
 },
@@ -13959,7 +13959,7 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 52,
+"lines": 43,
 "refs": [],
 "line": 446
 },
@@ -13977,9 +13977,9 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 16,
+"lines": 12,
 "refs": [],
-"line": 490
+"line": 491
 },
 "SStrLower": {
 "files": [
@@ -13994,7 +13994,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 503
+"line": 504
 },
 "SStrPack": {
 "files": [
@@ -14015,9 +14015,9 @@
 ],
 "branches": 10,
 "stub": false,
-"lines": 35,
+"lines": 44,
 "refs": [],
-"line": 510
+"line": 511
 },
 "SStrPrintf": {
 "files": [
@@ -14038,9 +14038,9 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 10,
+"lines": 11,
 "refs": [],
-"line": 555
+"line": 556
 },
 "SStrVPrintf": {
 "files": [
@@ -14059,9 +14059,9 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 7,
+"lines": 8,
 "refs": [],
-"line": 567
+"line": 568
 },
 "SStrStr": {
 "files": [
@@ -14086,9 +14086,9 @@
 "consts": [],
 "branches": 10,
 "stub": false,
-"lines": 32,
+"lines": 30,
 "refs": [],
-"line": 576
+"line": 577
 },
 "SStrStrI": {
 "files": [
@@ -14113,9 +14113,9 @@
 "consts": [],
 "branches": 10,
 "stub": false,
-"lines": 23,
+"lines": 30,
 "refs": [],
-"line": 608
+"line": 609
 },
 "SStrTokenize": {
 "files": [
@@ -14143,9 +14143,9 @@
 ],
 "branches": 15,
 "stub": false,
-"lines": 72,
+"lines": 66,
 "refs": [],
-"line": 640
+"line": 641
 },
 "ISStrToDouble": {
 "files": [
@@ -14171,9 +14171,9 @@
 ],
 "branches": 13,
 "stub": false,
-"lines": 102,
+"lines": 94,
 "refs": [],
-"line": 707
+"line": 708
 },
 "SStrToDouble": {
 "files": [
@@ -14190,9 +14190,9 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 8,
+"lines": 7,
 "refs": [],
-"line": 802
+"line": 803
 },
 "SStrToFloat": {
 "files": [
@@ -14209,9 +14209,9 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 7,
 "refs": [],
-"line": 810
+"line": 811
 },
 "SStrToInt": {
 "files": [
@@ -14230,9 +14230,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 5,
+"lines": 25,
 "refs": [],
-"line": 818
+"line": 819
 },
 "SStrToUnsigned": {
 "files": [
@@ -14251,9 +14251,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 1,
+"lines": 15,
 "refs": [],
-"line": 844
+"line": 845
 },
 "SStrUpper": {
 "files": [
@@ -14266,9 +14266,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 1,
+"lines": 6,
 "refs": [],
-"line": 860
+"line": 861
 },
 "bjhash": {
 "files": [
@@ -64334,9 +64334,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 11
+"line": 12
 },
 "CoordinateSetAspectRatio": {
 "files": [
@@ -64352,9 +64352,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 8,
 "refs": [],
-"line": 15
+"line": 16
 },
 "DDCToNDC": {
 "files": [
@@ -64367,7 +64367,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 24
+"line": 26
 },
 "DDCToNDCHeight": {
 "files": [
@@ -64378,9 +64378,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 34
+"line": 37
 },
 "DDCToNDCWidth": {
 "files": [
@@ -64393,7 +64393,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 38
+"line": 42
 },
 "NDCToDDC": {
 "files": [
@@ -64404,9 +64404,9 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 9,
 "refs": [],
-"line": 42
+"line": 47
 },
 "NDCToDDCHeight": {
 "files": [
@@ -64417,9 +64417,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 52
+"line": 58
 },
 "NDCToDDCWidth": {
 "files": [
@@ -64430,9 +64430,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 56
+"line": 63
 },
 "WindowClassCreate": {
 "files": [
@@ -144644,21 +144644,136 @@
 "refs": [],
 "line": 1117
 },
+"CSimpleEditBox::AddHistoryLine": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
+"SStrLen",
+"SMemReAlloc",
+"SStrCopy"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditbox.cpp"
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 1142
+},
+"CSimpleEditBox::ClearHistory": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleEditBox::HISTORYLINE>::Count",
+"TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditbox.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 1162
+},
 "CSimpleEditBox::SetHistoryLines": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleEditBox::HISTORYLINE>::Count",
+"TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
+"SMemFree",
+"TSGrowableArray<CSimpleEditBox::HISTORYLINE>::GrowToFit",
+"TSGrowableArray<CSimpleEditBox::HISTORYLINE>::SetCount"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditbox.cpp"
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 7,
+"stub": false,
+"lines": 33,
+"refs": [],
+"line": 1178
+},
+"CSimpleEditBox::GetInputLanguage": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [],
+"strings": [
+"CHINESE",
+"JAPANESE",
+"KOREAN",
+"ROMAN"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1213
+},
+"CSimpleEditBox::ToggleInputLanguage": {
 "files": [
 "src/ui/simple/csimpleeditbox.cpp"
 ],
 "callseq": [],
 "strings": [],
-"consts": [
-"0",
-"1"
+"consts": [],
+"branches": 0,
+"stub": true,
+"lines": 5,
+"refs": [],
+"line": 1226
+},
+"CSimpleEditBox::SetTextInsets": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
 ],
-"branches": 2,
+"callseq": [
+"CSimpleEditBox::UpdateSizes"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1141
+"line": 1233
+},
+"CSimpleEditBox::GetTextInsets": {
+"files": [
+"src/ui/simple/csimpleeditbox.cpp"
+],
+"callseq": [
+"CSimpleEditBox::UpdateSizes"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 1244
 },
 "CSimpleEditBox::SetAutoFocus": {
 "files": [
@@ -144673,7 +144788,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1152
+"line": 1254
 },
 "CSimpleEditBox::SetCountInvisibleLetters": {
 "files": [
@@ -144688,7 +144803,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1157
+"line": 1259
 },
 "CSimpleEditBox::SetNumeric": {
 "files": [
@@ -144703,7 +144818,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1162
+"line": 1264
 },
 "CSimpleEditBox::SetPassword": {
 "files": [
@@ -144718,7 +144833,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1167
+"line": 1269
 },
 "CSimpleEditBox::SetAltArrowKeyMode": {
 "files": [
@@ -144733,7 +144848,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1172
+"line": 1274
 },
 "CSimpleEditBox::LetterCount": {
 "files": [
@@ -144750,7 +144865,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1179
+"line": 1281
 },
 "CSimpleEditBox::SetMultiLine": {
 "files": [
@@ -144777,7 +144892,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1192
+"line": 1294
 },
 "CSimpleEditBox::SetText": {
 "files": [
@@ -144799,7 +144914,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1222
+"line": 1324
 },
 "CSimpleEditBox::StartHighlight": {
 "files": [
@@ -144812,7 +144927,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1237
+"line": 1339
 },
 "CSimpleEditBox::UpdateDirtyBits": {
 "files": [
@@ -144835,7 +144950,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1242
+"line": 1344
 },
 "CSimpleEditBox::UpdateSizes": {
 "files": [
@@ -144869,7 +144984,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1271
+"line": 1373
 },
 "CSimpleEditBox::UpdateTextInfo": {
 "files": [
@@ -144890,7 +145005,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1321
+"line": 1423
 },
 "CSimpleEditBox::UpdateVisibleCursor": {
 "files": [
@@ -144945,7 +145060,7 @@
 "stub": false,
 "lines": 133,
 "refs": [],
-"line": 1349
+"line": 1451
 },
 "CSimpleEditBox::UpdateVisibleHighlight": {
 "files": [
@@ -144958,7 +145073,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1483
+"line": 1585
 },
 "CSimpleEditBox::UpdateVisibleText": {
 "files": [
@@ -144995,7 +145110,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 1487
+"line": 1589
 },
 "CSimpleEditBox_SetFontObject": {
 "files": [
@@ -145013,7 +145128,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 11
+"line": 13
 },
 "CSimpleEditBox_GetFontObject": {
 "files": [
@@ -145031,7 +145146,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 19
+"line": 21
 },
 "CSimpleEditBox_SetFont": {
 "files": [
@@ -145049,7 +145164,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 27
+"line": 29
 },
 "CSimpleEditBox_GetFont": {
 "files": [
@@ -145067,7 +145182,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 35
+"line": 37
 },
 "CSimpleEditBox_SetTextColor": {
 "files": [
@@ -145085,7 +145200,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 43
+"line": 45
 },
 "CSimpleEditBox_GetTextColor": {
 "files": [
@@ -145103,7 +145218,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 51
+"line": 53
 },
 "CSimpleEditBox_SetShadowColor": {
 "files": [
@@ -145121,7 +145236,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 59
+"line": 61
 },
 "CSimpleEditBox_GetShadowColor": {
 "files": [
@@ -145139,7 +145254,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 67
+"line": 69
 },
 "CSimpleEditBox_SetShadowOffset": {
 "files": [
@@ -145157,7 +145272,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 75
+"line": 77
 },
 "CSimpleEditBox_GetShadowOffset": {
 "files": [
@@ -145175,7 +145290,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 83
+"line": 85
 },
 "CSimpleEditBox_SetSpacing": {
 "files": [
@@ -145193,7 +145308,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 91
+"line": 93
 },
 "CSimpleEditBox_GetSpacing": {
 "files": [
@@ -145211,7 +145326,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 99
+"line": 101
 },
 "CSimpleEditBox_SetJustifyH": {
 "files": [
@@ -145229,7 +145344,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 107
+"line": 109
 },
 "CSimpleEditBox_GetJustifyH": {
 "files": [
@@ -145247,7 +145362,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 115
+"line": 117
 },
 "CSimpleEditBox_SetJustifyV": {
 "files": [
@@ -145265,7 +145380,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 123
+"line": 125
 },
 "CSimpleEditBox_GetJustifyV": {
 "files": [
@@ -145283,7 +145398,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 131
+"line": 133
 },
 "CSimpleEditBox_SetIndentedWordWrap": {
 "files": [
@@ -145301,7 +145416,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 139
+"line": 141
 },
 "CSimpleEditBox_GetIndentedWordWrap": {
 "files": [
@@ -145319,7 +145434,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 147
+"line": 149
 },
 "CSimpleEditBox_SetAutoFocus": {
 "files": [
@@ -145341,7 +145456,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 155
+"line": 157
 },
 "CSimpleEditBox_IsAutoFocus": {
 "files": [
@@ -145362,7 +145477,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 165
+"line": 167
 },
 "CSimpleEditBox_SetCountInvisibleLetters": {
 "files": [
@@ -145384,7 +145499,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 179
+"line": 181
 },
 "CSimpleEditBox_IsCountInvisibleLetters": {
 "files": [
@@ -145405,7 +145520,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 189
+"line": 191
 },
 "CSimpleEditBox_SetMultiLine": {
 "files": [
@@ -145427,7 +145542,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 203
+"line": 205
 },
 "CSimpleEditBox_IsMultiLine": {
 "files": [
@@ -145448,7 +145563,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 213
+"line": 215
 },
 "CSimpleEditBox_SetNumeric": {
 "files": [
@@ -145470,7 +145585,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 227
+"line": 229
 },
 "CSimpleEditBox_IsNumeric": {
 "files": [
@@ -145491,7 +145606,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 237
+"line": 239
 },
 "CSimpleEditBox_SetPassword": {
 "files": [
@@ -145513,7 +145628,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 251
+"line": 253
 },
 "CSimpleEditBox_IsPassword": {
 "files": [
@@ -145534,73 +145649,74 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 261
+"line": 263
 },
 "CSimpleEditBox_SetBlinkSpeed": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tonumber"
 ],
 "strings": [
-"CSimpleEditBox_SetBlinkSpeed",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetBlinkSpeed(speed)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 274
+"line": 277
 },
 "CSimpleEditBox_GetBlinkSpeed": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetBlinkSpeed",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 278
+"line": 291
 },
 "CSimpleEditBox_Insert": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"lua_tolstring",
+"CSimpleEditBox::Insert"
 ],
-"strings": [
-"CSimpleEditBox_Insert",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 282
+"line": 301
 },
 "CSimpleEditBox_SetText": {
 "files": [
@@ -145626,7 +145742,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 286
+"line": 313
 },
 "CSimpleEditBox_GetText": {
 "files": [
@@ -145645,51 +145761,53 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 301
+"line": 328
 },
 "CSimpleEditBox_SetNumber": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isstring",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"CSimpleEditBox::SetText"
 ],
 "strings": [
-"CSimpleEditBox_SetNumber",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetNumber(number)"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 14,
 "refs": [],
-"line": 316
+"line": 344
 },
 "CSimpleEditBox_GetNumber": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"SStrToFloat",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetNumber",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 320
+"line": 360
 },
 "CSimpleEditBox_HighlightText": {
 "files": [
@@ -145714,95 +145832,122 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 324
+"line": 369
 },
 "CSimpleEditBox_AddHistoryLine": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_gettop",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_tolstring",
+"CSimpleEditBox::AddHistoryLine"
 ],
 "strings": [
-"CSimpleEditBox_AddHistoryLine",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:AddHistoryLine(\"text\")"
 ],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 13,
 "refs": [],
-"line": 345
+"line": 391
 },
 "CSimpleEditBox_ClearHistory": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleEditBox::ClearHistory"
 ],
-"strings": [
-"CSimpleEditBox_ClearHistory",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
 "0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 349
+"line": 406
 },
 "CSimpleEditBox_SetTextInsets": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_isnumber",
+"lua_isnumber",
+"lua_isnumber",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"CSimpleEditBox::SetTextInsets"
 ],
 "strings": [
-"CSimpleEditBox_SetTextInsets",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
+"Usage: %s:SetTextInsets(l, r, t, b)"
 ],
 "consts": [
-"0"
+"0",
+"1024.0f",
+"2",
+"3",
+"4",
+"5"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 19,
 "refs": [],
-"line": 353
+"line": 416
 },
 "CSimpleEditBox_GetTextInsets": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleEditBox::GetTextInsets",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CSimpleEditBox_GetTextInsets",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1024.0f",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 16,
 "refs": [],
-"line": 357
+"line": 437
 },
 "CSimpleEditBox_SetFocus": {
 "files": [
@@ -145821,7 +145966,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 361
+"line": 454
 },
 "CSimpleEditBox_ClearFocus": {
 "files": [
@@ -145840,7 +145985,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 370
+"line": 463
 },
 "CSimpleEditBox_HasFocus": {
 "files": [
@@ -145859,7 +146004,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 380
+"line": 473
 },
 "CSimpleEditBox_SetMaxBytes": {
 "files": [
@@ -145885,7 +146030,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 390
+"line": 483
 },
 "CSimpleEditBox_GetMaxBytes": {
 "files": [
@@ -145904,7 +146049,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 405
+"line": 498
 },
 "CSimpleEditBox_SetMaxLetters": {
 "files": [
@@ -145929,7 +146074,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 415
+"line": 508
 },
 "CSimpleEditBox_GetMaxLetters": {
 "files": [
@@ -145948,7 +146093,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 429
+"line": 522
 },
 "CSimpleEditBox_GetNumLetters": {
 "files": [
@@ -145968,7 +146113,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 439
+"line": 532
 },
 "CSimpleEditBox_GetHistoryLines": {
 "files": [
@@ -145987,7 +146132,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 449
+"line": 542
 },
 "CSimpleEditBox_SetHistoryLines": {
 "files": [
@@ -146013,51 +146158,46 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 459
+"line": 552
 },
 "CSimpleEditBox_GetInputLanguage": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleEditBox::GetInputLanguage",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleEditBox_GetInputLanguage",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 476
+"line": 570
 },
 "CSimpleEditBox_ToggleInputLanguage": {
 "files": [
 "src/ui/simple/csimpleeditboxscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleEditBox::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleEditBox::ToggleInputLanguage"
 ],
-"strings": [
-"CSimpleEditBox_ToggleInputLanguage",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleeditboxscript.cpp"
-],
+"strings": [],
 "consts": [
 "0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 480
+"line": 580
 },
 "CSimpleEditBox_SetAltArrowKeyMode": {
 "files": [
@@ -146079,7 +146219,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 485
+"line": 590
 },
 "CSimpleEditBox_GetAltArrowKeyMode": {
 "files": [
@@ -146100,7 +146240,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 495
+"line": 600
 },
 "CSimpleEditBox_IsInIMECompositionMode": {
 "files": [
@@ -146119,7 +146259,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 509
+"line": 614
 },
 "CSimpleEditBox_SetCursorPosition": {
 "files": [
@@ -146145,7 +146285,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 519
+"line": 624
 },
 "CSimpleEditBox_GetCursorPosition": {
 "files": [
@@ -146164,7 +146304,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 536
+"line": 641
 },
 "CSimpleEditBox_GetUTF8CursorPosition": {
 "files": [
@@ -146186,7 +146326,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 546
+"line": 651
 },
 "SIMPLEFONT::SIMPLEFONT": {
 "files": [

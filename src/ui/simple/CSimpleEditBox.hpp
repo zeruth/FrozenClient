@@ -21,6 +21,13 @@ class CSimpleEditBox : public CSimpleFrame, CSimpleFontedFrame {
             NUM_EDITBOX_ACTIONS,
         };
 
+        // Structs
+        struct HISTORYLINE {
+            char* text = nullptr;
+            // The taint source the line was entered under, carried so replaying it keeps it.
+            const char* source = nullptr;
+        };
+
         // Static variables
         static CSimpleEditBox* s_currentFocus;
         static int32_t s_metatable;
@@ -38,6 +45,8 @@ class CSimpleEditBox : public CSimpleFrame, CSimpleFontedFrame {
         int32_t m_multiline : 1;
         int32_t m_historyLines = 0;  // +0x310 in the reference: lines the history keeps
         int32_t m_historyIndex = 0;  // +0x314: the current history slot, clamped below the count
+        // +0x320: m_historyLines entries used as a ring, oldest overwritten first
+        TSGrowableArray<HISTORYLINE> m_history;
         int32_t m_numeric : 1;
         int32_t m_password : 1;
         int32_t m_ignoreArrows : 1;
@@ -127,6 +136,12 @@ class CSimpleEditBox : public CSimpleFrame, CSimpleFontedFrame {
         void RunOnTextChangedScript(int32_t userInput);
         void RunOnTextSetScript(const char* a2);
         void SetCursorPosition(int32_t position);
+        void AddHistoryLine(const char* text, const char* source);
+        void ClearHistory();
+        const char* GetInputLanguage();
+        void GetTextInsets(float& left, float& right, float& top, float& bottom);
+        void SetTextInsets(float left, float right, float top, float bottom);
+        void ToggleInputLanguage();
         void SetHistoryLines(int32_t a2);
         void SetAltArrowKeyMode(int32_t ignore);
         void SetAutoFocus(int32_t autoFocus);

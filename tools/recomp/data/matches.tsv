@@ -1,5 +1,5 @@
 addr	how	frozen	evidence
-00401070	callgraph	CDataStore::FetchWrite	only unmatched callee of 0047b1c0=CDataStore::PutArray
+00401070	annotated	CDataStore::FetchWrite	tag in lib/common/common/datastore/CDataStore.cpp
 00401200	annotated	ComparePatchArchives	tag in src/client/Archive.cpp
 00401280	handler	NotifyHandler	SetMessageHandler(SMSG_NOTIFICATION) on both sides
 00401390	handler	PlayedTimeHandler	SetMessageHandler(SMSG_PLAYED_TIME) on both sides
@@ -64,7 +64,6 @@ addr	how	frozen	evidence
 0040bb50	callorder	CSimpleFontString::GetObjectType	same slot between linked calls in 0048d800=CSimpleFontString_SetFormattedText
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
-0040cb10	callgraph	SStrLen	only unmatched callee of 0076f9e0=SStrDupA
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
@@ -88,16 +87,13 @@ addr	how	frozen	evidence
 0047a5d0	override	mainSort	
 0047ac70	string	BZ2_blockSort	unique "      %d work, %d block, ratio %5.2f "
 0047ae50	override	CDataStore::InternalDestroy	
-0047aea0	order	CDataStore::InternalFetchRead	definition order between CDataStore::InternalDestroy and CDataStore::Put in lib/common/common/datastore/CDataStore.cpp
-0047aef0	order	CDataStore::InternalFetchWrite	definition order between CDataStore::InternalDestroy and CDataStore::Put in lib/common/common/datastore/CDataStore.cpp
-0047af40	order	CDataStore::IsFinal	definition order between CDataStore::InternalDestroy and CDataStore::Put in lib/common/common/datastore/CDataStore.cpp
-0047af90	order	CDataStore::IsReadOnly	definition order between CDataStore::InternalDestroy and CDataStore::Put in lib/common/common/datastore/CDataStore.cpp
+0047af40	annotated	CDataStore::Set	tag in lib/common/common/datastore/CDataStore.cpp
 0047afe0	override	CDataStore::Put	
-0047b040	order	CDataStore::IsValid	definition order between CDataStore::InternalDestroy and CDataStore::Put in lib/common/common/datastore/CDataStore.cpp
+0047b040	annotated	CDataStore::Put	tag in lib/common/common/datastore/CDataStore.cpp
 0047b0a0	override	CDataStore::Put	
 0047b100	override	CDataStore::Put	
-0047b1c0	callgraph	CDataStore::PutArray	only unmatched callee of 0047b300=CDataStore::PutString
-0047b280	order	CDataStore::PutData	definition order between CDataStore::PutArray and CDataStore::PutString in lib/common/common/datastore/CDataStore.cpp
+0047b1c0	annotated	CDataStore::PutArray	tag in lib/common/common/datastore/CDataStore.cpp
+0047b280	annotated	CDataStore::PutData	tag in lib/common/common/datastore/CDataStore.cpp
 0047b290	override	CDataStore::FetchRead	
 0047b300	override	CDataStore::PutString	
 0047b340	override	CDataStore::Get	
@@ -110,10 +106,12 @@ addr	how	frozen	evidence
 0047bf50	override	HandleCreate	
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
-0047bff0	callorder	NDCToDDC	same slot between linked calls in 00510a10=Script_GetCursorPosition
+0047bff0	annotated	NDCToDDC	tag in src/gx/Coordinate.cpp
+0047c020	annotated	DDCToNDC	tag in src/gx/Coordinate.cpp
 0047c050	override	DDCToNDCWidth	
+0047c060	annotated	DDCToNDCHeight	tag in src/gx/Coordinate.cpp
 0047c070	override	NDCToDDCWidth	
-0047c080	callgraph	NDCToDDCHeight	only unmatched callee of 0051af50=Script_GetScreenHeight
+0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
 0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
@@ -398,7 +396,7 @@ addr	how	frozen	evidence
 004a4080	annotated	FontString_GetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40b0	annotated	FontString_GetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a40e0	annotated	FontString_GetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
-004a4220	order	FrameScript_EventObject::GetName	binding table name GetName, in definition order in src/ui/FrameScript.cpp
+004a4220	order	CScriptObject::GetName	binding table name GetName, in definition order in src/ui/CScriptObject.cpp
 004a4930	annotated	FontString_SetJustifyH	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a49c0	annotated	FontString_SetJustifyV	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a4a50	annotated	FontString_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
@@ -450,6 +448,7 @@ addr	how	frozen	evidence
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
+004bc410	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr	same slot between linked calls in 00768900=ConsoleCommandParse
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -937,6 +936,7 @@ addr	how	frozen	evidence
 00564130	table	Script_GetClickFrame	binding "GetClickFrame" in s_ScriptFunctions ~ table 00acde38
 00564760	string	FrameXML_LoadXML	score 0.67 shared Couldn't open %s; Couldn't parse XML in %s
 00564e90	order	Script_Stub_GetMacroIconInfo	binding table name Script_Stub_GetMacroIconInfo, in definition order in src/ui/game/miscscriptstubs.cpp
+00565030	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete	same slot between linked calls in 007689e0=ConsoleCommandUnregister
 005666a0	order	Script_Stub_GetMacroIndexByName	binding table name Script_Stub_GetMacroIndexByName, in definition order in src/ui/game/miscscriptstubs.cpp
 00566eb0	order	Script_Stub_GetMacroInfo	binding table name Script_Stub_GetMacroInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00567200	order	Script_Stub_GetMacroItem	binding table name Script_Stub_GetMacroItem, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1526,7 +1526,7 @@ addr	how	frozen	evidence
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
-0076ee30	callgraph	CScriptObject::GetName	only unmatched callee of 0048b540=CScriptObject::CreateName
+0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars, 008151e0=FontFlagsToString
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 006b0bf0=ClientServices::InitLoginServerCVars, 0086bd80=OsBuildFontFilePath
@@ -1658,6 +1658,7 @@ addr	how	frozen	evidence
 00817650	string	getfield	unique "field '%s' missing in date table"
 008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
+00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 00818010	callorder	FrameScript_GetVariable	same slot between linked calls in 00819d40=FrameScript_GetText
 00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
@@ -2113,14 +2114,24 @@ addr	how	frozen	evidence
 00962bf0	annotated	CSimpleEditBox::SetNumeric	tag in src/ui/simple/CSimpleEditBox.cpp
 00962c10	annotated	CSimpleEditBox::SetPassword	tag in src/ui/simple/CSimpleEditBox.cpp
 00962c30	annotated	CSimpleEditBox::SetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBox.cpp
+00962c50	annotated	CSimpleEditBox::GetInputLanguage	tag in src/ui/simple/CSimpleEditBox.cpp
+00962c60	annotated	CSimpleEditBox::ToggleInputLanguage	tag in src/ui/simple/CSimpleEditBox.cpp
+00962f90	callorder	CSimpleEditBox::DeleteSubstring	same slot between linked calls in 00966580=CSimpleEditBox::SetText
 00963350	callgraph	CSimpleEditBox::SetCursorPosition	only unmatched callee of 009769a0=CSimpleEditBox_SetCursorPosition
 00963390	callgraph	CSimpleEditBox::RunOnEditFocusLostScript	only unmatched callee of 009651f0=CSimpleEditBox::ClearKeyboardFocus
-00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
+00963740	callgraph	CSimpleEditBox::UpdateSizes	only unmatched callee of 00965550=CSimpleEditBox::SetTextInsets, 00965580=CSimpleEditBox::GetTextInsets
+00964690	annotated	CSimpleEditBox::AddHistoryLine	tag in src/ui/simple/CSimpleEditBox.cpp
+00964720	annotated	CSimpleEditBox::ClearHistory	tag in src/ui/simple/CSimpleEditBox.cpp
 00965120	callgraph	CSimpleEditBox::SetKeyboardFocus	only unmatched callee of 00976410=CSimpleEditBox_SetFocus
 009651f0	callgraph	CSimpleEditBox::ClearKeyboardFocus	only unmatched callee of 00976450=CSimpleEditBox_ClearFocus
+009654e0	callorder	CSimpleEditBox::RunOnTextSetScript	same slot between linked calls in 00966580=CSimpleEditBox::SetText
+00965550	annotated	CSimpleEditBox::SetTextInsets	tag in src/ui/simple/CSimpleEditBox.cpp
+00965580	annotated	CSimpleEditBox::GetTextInsets	tag in src/ui/simple/CSimpleEditBox.cpp
+00965960	callgraph	CSimpleEditBox::Insert	only unmatched callee of 00975e10=CSimpleEditBox_Insert
 00965f20	annotated	CSimpleEditBox::SetMultiLine	tag in src/ui/simple/CSimpleEditBox.cpp
-00966580	callgraph	CSimpleEditBox::SetText	only unmatched callee of 00975e80=CSimpleEditBox_SetText
-00966fd0	annotated	CSimpleEditBox::SetHistoryLines	tag in src/ui/simple/CSimpleEditBox.cpp
+00966580	callgraph	CSimpleEditBox::SetText	only unmatched callee of 00975e80=CSimpleEditBox_SetText, 00975f80=CSimpleEditBox_SetNumber
+00966b10	callgraph	TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]	only unmatched callee of 00966fd0=CSimpleEditBox::AddHistoryLine
+00966fd0	annotated	CSimpleEditBox::AddHistoryLine	tag in src/ui/simple/CSimpleEditBox.cpp
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
@@ -2257,18 +2268,18 @@ addr	how	frozen	evidence
 00975c30	annotated	CSimpleEditBox_IsNumeric	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00975c90	annotated	CSimpleEditBox_SetPassword	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00975ce0	annotated	CSimpleEditBox_IsPassword	tag in src/ui/simple/CSimpleEditBoxScript.cpp
-00975d40	table	CSimpleEditBox_SetBlinkSpeed	binding "SetBlinkSpeed" in SimpleEditBoxMethods ~ table 00b2d210
-00975dc0	table	CSimpleEditBox_GetBlinkSpeed	binding "GetBlinkSpeed" in SimpleEditBoxMethods ~ table 00b2d210
-00975e10	table	CSimpleEditBox_Insert	binding "Insert" in SimpleEditBoxMethods ~ table 00b2d210
+00975d40	annotated	CSimpleEditBox_SetBlinkSpeed	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975dc0	annotated	CSimpleEditBox_GetBlinkSpeed	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00975e10	annotated	CSimpleEditBox_Insert	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00975e80	table	CSimpleEditBox_SetText	binding "SetText" in SimpleEditBoxMethods ~ table 00b2d210
 00975f10	table	CSimpleEditBox_GetText	binding "GetText" in SimpleEditBoxMethods ~ table 00b2d210
-00975f80	table	CSimpleEditBox_SetNumber	binding "SetNumber" in SimpleEditBoxMethods ~ table 00b2d210
-00976010	table	CSimpleEditBox_GetNumber	binding "GetNumber" in SimpleEditBoxMethods ~ table 00b2d210
+00975f80	annotated	CSimpleEditBox_SetNumber	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976010	annotated	CSimpleEditBox_GetNumber	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976080	table	CSimpleEditBox_HighlightText	binding "HighlightText" in SimpleEditBoxMethods ~ table 00b2d210
-00976110	table	CSimpleEditBox_AddHistoryLine	binding "AddHistoryLine" in SimpleEditBoxMethods ~ table 00b2d210
-009761a0	table	CSimpleEditBox_ClearHistory	binding "ClearHistory" in SimpleEditBoxMethods ~ table 00b2d210
-009761e0	table	CSimpleEditBox_SetTextInsets	binding "SetTextInsets" in SimpleEditBoxMethods ~ table 00b2d210
-00976330	table	CSimpleEditBox_GetTextInsets	binding "GetTextInsets" in SimpleEditBoxMethods ~ table 00b2d210
+00976110	annotated	CSimpleEditBox_AddHistoryLine	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009761a0	annotated	CSimpleEditBox_ClearHistory	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+009761e0	annotated	CSimpleEditBox_SetTextInsets	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976330	annotated	CSimpleEditBox_GetTextInsets	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976410	table	CSimpleEditBox_SetFocus	binding "SetFocus" in SimpleEditBoxMethods ~ table 00b2d210
 00976450	table	CSimpleEditBox_ClearFocus	binding "ClearFocus" in SimpleEditBoxMethods ~ table 00b2d210
 00976490	annotated	CSimpleEditBox_HasFocus	tag in src/ui/simple/CSimpleEditBoxScript.cpp
@@ -2279,8 +2290,8 @@ addr	how	frozen	evidence
 009766a0	annotated	CSimpleEditBox_GetNumLetters	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976720	annotated	CSimpleEditBox_GetHistoryLines	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976770	annotated	CSimpleEditBox_SetHistoryLines	tag in src/ui/simple/CSimpleEditBoxScript.cpp
-00976800	table	CSimpleEditBox_GetInputLanguage	binding "GetInputLanguage" in SimpleEditBoxMethods ~ table 00b2d210
-00976850	table	CSimpleEditBox_ToggleInputLanguage	binding "ToggleInputLanguage" in SimpleEditBoxMethods ~ table 00b2d210
+00976800	annotated	CSimpleEditBox_GetInputLanguage	tag in src/ui/simple/CSimpleEditBoxScript.cpp
+00976850	annotated	CSimpleEditBox_ToggleInputLanguage	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976890	annotated	CSimpleEditBox_SetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 009768e0	annotated	CSimpleEditBox_GetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp
 00976940	annotated	CSimpleEditBox_IsInIMECompositionMode	tag in src/ui/simple/CSimpleEditBoxScript.cpp

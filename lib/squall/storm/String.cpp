@@ -487,6 +487,7 @@ int64_t STORMAPI SStrHash64(const char* string, uint32_t flags, int64_t seed) {
     return result ? result : 1LL;
 }
 
+// ref: FUN_0076ee30
 size_t STORMAPI SStrLen(const char* string) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(string);

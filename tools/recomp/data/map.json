@@ -10,7 +10,7 @@
   ],
   "frozen": "CDataStore::FetchWrite",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "annotated",
   "module": "?",
   "refSize": 83,
   "status": "ported"
@@ -1030,23 +1030,6 @@
   "refSize": 123,
   "status": "ported"
  },
- "0040cb10": {
-  "branchRatio": 0.176,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "lib/squall/storm/String.cpp",
-   "lib/squall/storm/string.cpp",
-   "lib/squall/test/stormdll/stormstubs.cpp"
-  ],
-  "frozen": "SStrLen",
-  "frozenSize": 50,
-  "how": "callgraph",
-  "module": "LoadingScreen.cpp",
-  "refSize": 711,
-  "status": "excluded"
- },
  "00421880": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -1409,38 +1392,6 @@
   "refSize": 67,
   "status": "ported"
  },
- "0047aea0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "lib/common/common/datastore/CDataStore.cpp",
-   "lib/common/common/datastore/cdatastore.cpp"
-  ],
-  "frozen": "CDataStore::InternalFetchRead",
-  "frozenSize": 3,
-  "how": "order",
-  "module": "framing.c",
-  "refSize": 79,
-  "status": "ported"
- },
- "0047aef0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/common/common/datastore/CDataStore.cpp",
-   "lib/common/common/datastore/cdatastore.cpp"
-  ],
-  "frozen": "CDataStore::InternalFetchWrite",
-  "frozenSize": 95,
-  "how": "order",
-  "module": "framing.c",
-  "refSize": 78,
-  "status": "ported"
- },
  "0047af40": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -1450,27 +1401,11 @@
    "lib/common/common/datastore/CDataStore.cpp",
    "lib/common/common/datastore/cdatastore.cpp"
   ],
-  "frozen": "CDataStore::IsFinal",
-  "frozenSize": 10,
-  "how": "order",
+  "frozen": "CDataStore::Set",
+  "frozenSize": 110,
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 80,
-  "status": "ported"
- },
- "0047af90": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/common/common/datastore/CDataStore.cpp",
-   "lib/common/common/datastore/cdatastore.cpp"
-  ],
-  "frozen": "CDataStore::IsReadOnly",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "framing.c",
-  "refSize": 78,
   "status": "ported"
  },
  "0047afe0": {
@@ -1498,9 +1433,9 @@
    "lib/common/common/datastore/CDataStore.cpp",
    "lib/common/common/datastore/cdatastore.cpp"
   ],
-  "frozen": "CDataStore::IsValid",
-  "frozenSize": 12,
-  "how": "order",
+  "frozen": "CDataStore::Put",
+  "frozenSize": 517,
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 85,
   "status": "ported"
@@ -1541,14 +1476,14 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "lib/common/common/datastore/CDataStore.cpp",
    "lib/common/common/datastore/cdatastore.cpp"
   ],
   "frozen": "CDataStore::PutArray",
   "frozenSize": 326,
-  "how": "callgraph",
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 177,
   "status": "ported"
@@ -1564,7 +1499,7 @@
   ],
   "frozen": "CDataStore::PutData",
   "frozenSize": 5,
-  "how": "order",
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 9,
   "status": "ported"
@@ -1773,7 +1708,23 @@
   ],
   "frozen": "NDCToDDC",
   "frozenSize": 37,
-  "how": "callorder",
+  "how": "annotated",
+  "module": "framing.c",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "0047c020": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Coordinate.cpp",
+   "src/gx/coordinate.cpp"
+  ],
+  "frozen": "DDCToNDC",
+  "frozenSize": 37,
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 41,
   "status": "ported"
@@ -1790,6 +1741,22 @@
   "frozen": "DDCToNDCWidth",
   "frozenSize": 9,
   "how": "override",
+  "module": "framing.c",
+  "refSize": 14,
+  "status": "ported"
+ },
+ "0047c060": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Coordinate.cpp",
+   "src/gx/coordinate.cpp"
+  ],
+  "frozen": "DDCToNDCHeight",
+  "frozenSize": 9,
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 14,
   "status": "ported"
@@ -1821,7 +1788,7 @@
   ],
   "frozen": "NDCToDDCHeight",
   "frozenSize": 9,
-  "how": "callgraph",
+  "how": "annotated",
   "module": "framing.c",
   "refSize": 14,
   "status": "ported"
@@ -2069,7 +2036,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.545,
   "files": [
    "src/ui/simple/CSimpleFontString.cpp",
    "src/ui/simple/csimplefontstring.cpp"
@@ -2724,8 +2691,8 @@
  "0048b540": {
   "branchRatio": 1.0,
   "constOverlap": 0.25,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/CScriptObject.cpp",
    "src/ui/cscriptobject.cpp"
@@ -5057,8 +5024,8 @@
  "0049f2d0": {
   "branchRatio": 0.889,
   "constOverlap": 0.188,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.963,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -6372,11 +6339,11 @@
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/FrameScript.cpp",
-   "src/ui/framescript.cpp"
+   "src/ui/CScriptObject.cpp",
+   "src/ui/cscriptobject.cpp"
   ],
-  "frozen": "FrameScript_EventObject::GetName",
-  "frozenSize": 0,
+  "frozen": "CScriptObject::GetName",
+  "frozenSize": 5,
   "how": "order",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 96,
@@ -7200,6 +7167,19 @@
   "refSize": 185,
   "status": "ported"
  },
+ "004bc410": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr",
+  "frozenSize": 139,
+  "how": "callorder",
+  "module": "Profile.cpp",
+  "refSize": 144,
+  "status": "ported"
+ },
  "004bd9d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -7220,7 +7200,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.267,
+  "fidelity": 0.333,
   "files": [
    "src/gx/font/TextBlock.cpp",
    "src/gx/font/textblock.cpp"
@@ -14910,6 +14890,19 @@
   "how": "order",
   "module": "UIBindings.cpp",
   "refSize": 196,
+  "status": "ported"
+ },
+ "00565030": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete",
+  "frozenSize": 46,
+  "how": "callorder",
+  "module": "UIBindings.cpp",
+  "refSize": 133,
   "status": "ported"
  },
  "005666a0": {
@@ -22622,7 +22615,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.7,
   "files": [
    "src/gx/gll/CGxDeviceGLL.cpp"
   ],
@@ -23292,7 +23285,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.727,
+  "fidelity": 0.818,
   "files": [
    "src/console/Screen.cpp",
    "src/console/screen.cpp"
@@ -23324,7 +23317,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.545,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -23596,7 +23589,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.5,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -23611,8 +23604,8 @@
  "007689e0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -23628,7 +23621,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -24028,7 +24021,7 @@
   "branchRatio": 0.48,
   "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.35,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
@@ -24294,17 +24287,18 @@
   "status": "ported"
  },
  "0076ee30": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/CScriptObject.cpp",
-   "src/ui/cscriptobject.cpp"
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
   ],
-  "frozen": "CScriptObject::GetName",
-  "frozenSize": 5,
-  "how": "callgraph",
+  "frozen": "SStrLen",
+  "frozenSize": 50,
+  "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 46,
   "status": "ported"
@@ -24463,8 +24457,8 @@
  "0076f9e0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/storm/string.cpp",
@@ -25793,7 +25787,7 @@
   "branchRatio": 0.684,
   "constOverlap": 0.12,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.562,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -26412,6 +26406,22 @@
   "refSize": 745,
   "status": "ported"
  },
+ "00817d10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_GetPluralIndex",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "XMLTree.cpp",
+  "refSize": 139,
+  "status": "ported"
+ },
  "00817db0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -26448,7 +26458,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.032,
   "faithful": false,
-  "fidelity": 0.722,
+  "fidelity": 0.778,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"
@@ -26543,8 +26553,8 @@
  "00819d40": {
   "branchRatio": 1.0,
   "constOverlap": 0.375,
-  "faithful": false,
-  "fidelity": 0.583,
+  "faithful": true,
+  "fidelity": 0.917,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"
@@ -28595,8 +28605,8 @@
  "0084f610": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -30367,7 +30377,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lstring.c"
   ],
@@ -30502,7 +30512,7 @@
   "branchRatio": 0.467,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.636,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -31402,7 +31412,7 @@
   "branchRatio": 0.692,
   "constOverlap": 0.479,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.045,
   "files": [
    "vendor/zlib-1.2.2/inflate.c"
   ],
@@ -33431,6 +33441,54 @@
   "refSize": 31,
   "status": "ported"
  },
+ "00962c50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::GetInputLanguage",
+  "frozenSize": 29,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
+ "00962c60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::ToggleInputLanguage",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 19,
+  "status": "stub"
+ },
+ "00962f90": {
+  "branchRatio": 0.767,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::DeleteSubstring",
+  "frozenSize": 528,
+  "how": "callorder",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 427,
+  "status": "ported"
+ },
  "00963350": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -33474,9 +33532,41 @@
   ],
   "frozen": "CSimpleEditBox::UpdateSizes",
   "frozenSize": 401,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 518,
+  "status": "ported"
+ },
+ "00964690": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::AddHistoryLine",
+  "frozenSize": 166,
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 142,
+  "status": "ported"
+ },
+ "00964720": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::ClearHistory",
+  "frozenSize": 280,
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 98,
   "status": "ported"
  },
  "00965120": {
@@ -33511,6 +33601,70 @@
   "refSize": 103,
   "status": "ported"
  },
+ "009654e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::RunOnTextSetScript",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "00965550": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::SetTextInsets",
+  "frozenSize": 43,
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 48,
+  "status": "ported"
+ },
+ "00965580": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::GetTextInsets",
+  "frozenSize": 44,
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "00965960": {
+  "branchRatio": 0.417,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.179,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::Insert",
+  "frozenSize": 728,
+  "how": "callgraph",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 891,
+  "status": "ported"
+ },
  "00965f20": {
   "branchRatio": 0.111,
   "constOverlap": 0.059,
@@ -33530,8 +33684,8 @@
  "00966580": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -33543,17 +33697,30 @@
   "refSize": 122,
   "status": "ported"
  },
- "00966fd0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
+ "00966b10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
+  "frozenSize": 145,
+  "how": "callgraph",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
+ "00966fd0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
-  "frozen": "CSimpleEditBox::SetHistoryLines",
-  "frozenSize": 33,
+  "frozen": "CSimpleEditBox::AddHistoryLine",
+  "frozenSize": 166,
   "how": "annotated",
   "module": "CSimpleEditBox.cpp",
   "refSize": 71,
@@ -33563,13 +33730,13 @@
   "branchRatio": 0.476,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.833,
+  "fidelity": 0.806,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
   "frozen": "CSimpleEditBox::LoadXML",
-  "frozenSize": 1164,
+  "frozenSize": 1425,
   "how": "string",
   "module": "CSimpleEditBox.cpp",
   "refSize": 989,
@@ -33745,7 +33912,7 @@
   "branchRatio": 0.583,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.417,
   "files": [
    "src/ui/simple/CSimpleHTML.cpp",
    "src/ui/simple/csimplehtml.cpp"
@@ -35739,52 +35906,52 @@
   "status": "ported"
  },
  "00975d40": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_SetBlinkSpeed",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 125,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "00975dc0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_GetBlinkSpeed",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 67,
-  "status": "stub"
+  "status": "ported"
  },
  "00975e10": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_Insert",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 107,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "00975e80": {
   "branchRatio": 0.333,
@@ -35819,36 +35986,36 @@
   "status": "ported"
  },
  "00975f80": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_SetNumber",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 127,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 130,
-  "status": "stub"
+  "status": "ported"
  },
  "00976010": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_GetNumber",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 62,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 112,
-  "status": "stub"
+  "status": "ported"
  },
  "00976080": {
   "branchRatio": 0.75,
@@ -35867,68 +36034,68 @@
   "status": "ported"
  },
  "00976110": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_AddHistoryLine",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 123,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 129,
-  "status": "stub"
+  "status": "ported"
  },
  "009761a0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_ClearHistory",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 40,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "009761e0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.167,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.579,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_SetTextInsets",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 425,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 328,
-  "status": "stub"
+  "status": "ported"
  },
  "00976330": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.786,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_GetTextInsets",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 214,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 220,
-  "status": "stub"
+  "status": "ported"
  },
  "00976410": {
   "branchRatio": 0.0,
@@ -36077,8 +36244,8 @@
  "00976770": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.833,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -36091,36 +36258,36 @@
   "status": "ported"
  },
  "00976800": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_GetInputLanguage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 68,
-  "status": "stub"
+  "status": "ported"
  },
  "00976850": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
   ],
   "frozen": "CSimpleEditBox_ToggleInputLanguage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 40,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "00976890": {
   "branchRatio": 0.0,

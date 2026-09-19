@@ -2,6 +2,8 @@
 #include "ui/simple/CSimpleEditBox.hpp"
 #include "ui/simple/CSimpleFontStringScript.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
+#include "gx/Coordinate.hpp"
+#include <storm/String.hpp>
 #include "util/Lua.hpp"
 #include "ui/Util.hpp"
 #include "util/Unimplemented.hpp"
@@ -271,16 +273,41 @@ int32_t CSimpleEditBox_IsPassword(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00975d40
 int32_t CSimpleEditBox_SetBlinkSpeed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetBlinkSpeed(speed)", editBox->GetDisplayName());
+    }
+
+    editBox->m_cursorBlinkSpeed = static_cast<float>(lua_tonumber(L, 2));
+
+    return 0;
 }
 
+// ref: FUN_00975dc0
 int32_t CSimpleEditBox_GetBlinkSpeed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, editBox->m_cursorBlinkSpeed);
+
+    return 1;
 }
 
+// ref: FUN_00975e10
 int32_t CSimpleEditBox_Insert(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_isstring(L, 2)) {
+        // TODO lua_tainted
+        editBox->Insert(lua_tostring(L, 2), nullptr, 1, 0, 0);
+    }
+
+    return 0;
 }
 
 int32_t CSimpleEditBox_SetText(lua_State* L) {
@@ -313,12 +340,30 @@ int32_t CSimpleEditBox_GetText(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00975f80
 int32_t CSimpleEditBox_SetNumber(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetNumber(number)", editBox->GetDisplayName());
+    }
+
+    // Lua renders the number for us, so this is SetText on its decimal spelling.
+    // TODO lua_tainted
+    editBox->SetText(lua_tostring(L, 2), nullptr);
+
+    return 0;
 }
 
+// ref: FUN_00976010
 int32_t CSimpleEditBox_GetNumber(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, SStrToFloat(editBox->m_text));
+
+    return 1;
 }
 
 int32_t CSimpleEditBox_HighlightText(lua_State* L) {
@@ -342,20 +387,68 @@ int32_t CSimpleEditBox_HighlightText(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00976110
 int32_t CSimpleEditBox_AddHistoryLine(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_gettop(L) != 2) {
+        return luaL_error(L, "Usage: %s:AddHistoryLine(\"text\")", editBox->GetDisplayName());
+    }
+
+    // TODO lua_tainted
+    editBox->AddHistoryLine(lua_tostring(L, 2), nullptr);
+
+    return 0;
 }
 
+// ref: FUN_009761a0
 int32_t CSimpleEditBox_ClearHistory(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->ClearHistory();
+
+    return 0;
 }
 
+// ref: FUN_009761e0
 int32_t CSimpleEditBox_SetTextInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3) || !lua_isnumber(L, 4) || !lua_isnumber(L, 5)) {
+        return luaL_error(L, "Usage: %s:SetTextInsets(l, r, t, b)", editBox->GetDisplayName());
+    }
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    editBox->SetTextInsets(
+        NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale),
+        NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale),
+        NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 4)) / scale),
+        NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 5)) / scale)
+    );
+
+    return 0;
 }
 
+// ref: FUN_00976330
 int32_t CSimpleEditBox_GetTextInsets(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    float left, right, top, bottom;
+    editBox->GetTextInsets(left, right, top, bottom);
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(left) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(right) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(top) * scale);
+    lua_pushnumber(L, DDCToNDCWidth(bottom) * scale);
+
+    return 4;
 }
 
 int32_t CSimpleEditBox_SetFocus(lua_State* L) {
@@ -473,12 +566,24 @@ int32_t CSimpleEditBox_SetHistoryLines(lua_State* L) {
     return luaL_error(L, "Usage: %s:SetHistoryLines(numLines)", editBox->GetDisplayName());
 }
 
+// ref: FUN_00976800
 int32_t CSimpleEditBox_GetInputLanguage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, editBox->GetInputLanguage());
+
+    return 1;
 }
 
+// ref: FUN_00976850
 int32_t CSimpleEditBox_ToggleInputLanguage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleEditBox::GetObjectType();
+    auto editBox = static_cast<CSimpleEditBox*>(FrameScript_GetObjectThis(L, type));
+
+    editBox->ToggleInputLanguage();
+
+    return 0;
 }
 
 // ref: FUN_00976890
