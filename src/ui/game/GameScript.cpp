@@ -987,24 +987,59 @@ int32_t Script_HasKey(lua_State* L) {
     return 1;
 }
 
+// The five guild commands that name a player are one function in five copies in the reference,
+// differing only in the opcode: a null name raises error 0x145, a name over 0x30 characters is
+// refused with "Name too long", and anything else goes out as opcode plus the name.
+//
+// Frozen shares one helper where the reference repeats itself. A structural divergence, not a
+// behavioural one, and the opcodes were read off each copy rather than recalled: invite 0x82,
+// promote 0x8b, demote 0x8c, officer-remove 0x8e, leader 0x90.
+static int32_t GuildCommandByName(lua_State* L, NETMESSAGE opcode) {
+    auto name = lua_tostring(L, 1);
+
+    if (!name) {
+        // 0x145 is the reference's error id for this; frozen has no name for it yet.
+        CGGameUI::DisplayError(0x145);
+
+        return 0;
+    }
+
+    if (SStrLen(name) > 0x30) {
+        return luaL_error(L, "Name too long");
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(opcode));
+    msg.PutString(name);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
+}
+
+// ref: FUN_00522a20
 int32_t Script_GuildInvite(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return GuildCommandByName(L, CMSG_GUILD_INVITE);
 }
 
+// ref: FUN_00522af0
 int32_t Script_GuildUninvite(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return GuildCommandByName(L, CMSG_GUILD_OFFICER_REMOVE_MEMBER);
 }
 
+// ref: FUN_00522bc0
 int32_t Script_GuildPromote(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return GuildCommandByName(L, CMSG_GUILD_PROMOTE_MEMBER);
 }
 
+// ref: FUN_00522c90
 int32_t Script_GuildDemote(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return GuildCommandByName(L, CMSG_GUILD_DEMOTE_MEMBER);
 }
 
+// ref: FUN_00522d60
 int32_t Script_GuildSetLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return GuildCommandByName(L, CMSG_GUILD_LEADER);
 }
 
 int32_t Script_GuildSetMOTD(lua_State* L) {

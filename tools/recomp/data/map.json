@@ -15168,84 +15168,84 @@
   "status": "stub"
  },
  "00522a20": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildInvite",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 10,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 196,
-  "status": "stub"
+  "status": "ported"
  },
  "00522af0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildUninvite",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 10,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 196,
-  "status": "stub"
+  "status": "ported"
  },
  "00522bc0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildPromote",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 10,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 196,
-  "status": "stub"
+  "status": "ported"
  },
  "00522c90": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildDemote",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 10,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 196,
-  "status": "stub"
+  "status": "ported"
  },
  "00522d60": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GuildSetLeader",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 10,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 196,
-  "status": "stub"
+  "status": "ported"
  },
  "00522e30": {
   "branchRatio": 0.25,

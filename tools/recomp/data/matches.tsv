@@ -947,11 +947,11 @@ addr	how	frozen	evidence
 00522710	table	Script_CanInspect	binding "CanInspect" in s_ScriptFunctions ~ table 00ac80b0
 00522870	table	Script_NotifyInspect	binding "NotifyInspect" in s_ScriptFunctions ~ table 00ac80b0
 00522980	table	Script_PickupPlayerMoney	binding "PickupPlayerMoney" in s_ScriptFunctions ~ table 00ac80b0
-00522a20	table	Script_GuildInvite	binding "GuildInvite" in s_ScriptFunctions ~ table 00ac80b0
-00522af0	table	Script_GuildUninvite	binding "GuildUninvite" in s_ScriptFunctions ~ table 00ac80b0
-00522bc0	table	Script_GuildPromote	binding "GuildPromote" in s_ScriptFunctions ~ table 00ac80b0
-00522c90	table	Script_GuildDemote	binding "GuildDemote" in s_ScriptFunctions ~ table 00ac80b0
-00522d60	table	Script_GuildSetLeader	binding "GuildSetLeader" in s_ScriptFunctions ~ table 00ac80b0
+00522a20	annotated	Script_GuildInvite	tag in src/ui/game/GameScript.cpp
+00522af0	annotated	Script_GuildUninvite	tag in src/ui/game/GameScript.cpp
+00522bc0	annotated	Script_GuildPromote	tag in src/ui/game/GameScript.cpp
+00522c90	annotated	Script_GuildDemote	tag in src/ui/game/GameScript.cpp
+00522d60	annotated	Script_GuildSetLeader	tag in src/ui/game/GameScript.cpp
 00522e30	table	Script_SetCurrentTitle	binding "SetCurrentTitle" in s_ScriptFunctions ~ table 00ac80b0
 00522fb0	table	Script_PickupItem	binding "PickupItem" in s_ScriptFunctions ~ table 00ac80b0
 00523090	table	Script_StartAttack	binding "StartAttack" in s_ScriptFunctions ~ table 00ac80b0
