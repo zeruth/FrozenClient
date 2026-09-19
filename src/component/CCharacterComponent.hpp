@@ -48,6 +48,8 @@ class CCharacterComponent {
         static MipBits* s_textureBuffer;
         static MipBits* s_textureBufferCompressed;
         static uint32_t s_textureSize;
+        static int32_t s_thread;    // componentThread: compose on a worker thread (reference DAT_00b6b4e8)
+        static int32_t s_compress;  // componentCompress, only with the thread (DAT_00b6b4e4)
 
         // Static functions
         static int32_t AddHandItem(CM2Model* model, const ItemDisplayInfoRec* displayRec, INVENTORY_SLOTS invSlot, SHEATHE_TYPE sheatheType, bool sheathed, bool shield, bool a7, int32_t a8);
@@ -61,7 +63,6 @@ class CCharacterComponent {
         static GEOCOMPONENTLINKS GetSheatheLink(SHEATHE_TYPE sheatheType, bool a2);
         static void Initialize();
         static void Initialize(EGxTexFormat textureFormat, uint32_t textureLevel, int32_t thread, int32_t compress);
-        static void InitDbData();
         static void Paste(void* srcTexture, MipBits* dstMips, const C2iVector& a3, const C2iVector& a4, const C2iVector& a5, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel);
         static void PasteFromSkin(COMPONENT_SECTIONS section, void* srcTexture, MipBits* dstMips);
         static void PasteOpaque(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs);

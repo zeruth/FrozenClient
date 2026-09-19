@@ -53,7 +53,6 @@ addr	how	whoa	evidence
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 0040cb10	callgraph	SStrLen	only unmatched callee of 0076f9e0=SStrDupA
-004102b2	string	luaO_pushvfstring	unique "(null)"
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
@@ -491,8 +490,10 @@ addr	how	whoa	evidence
 004e6fb0	string	CCharacterComponent::CreateTexture	unique "Item\TextureComponents\%s\%s_%s.blp"
 004eacd0	string	CCharacterComponent::AddHandItem	score 0.83 shared Item\ObjectComponents\Shield\; Item\ObjectComponents\Weapon\
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
-004f1a20	string	CCharacterComponent::Initialize	unique "CCharacterComponent"
+004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
+004f3dd0	annotated	BuildComponentArray	tag in src/component/Util.cpp
+004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
 004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
 004f8ea0	override	CGWorldFrame::OnWorldRender	
@@ -1579,7 +1580,8 @@ addr	how	whoa	evidence
 0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector
 0084d420	callorder	luaO_rawequalObj	same slot between linked calls in 0085bd70=findindex, 0085c470=luaH_get
 0084d480	callgraph	luaO_str2d	only unmatched callee of 00856e50=luaV_tonumber
-0084d580	callgraph	luaL_typerror	only unmatched callee of 0084e3d0=tag_error
+0084d520	order	pushstr	definition order between luaO_str2d and luaO_pushvfstring in vendor/lua-5.1.3/src/lobject.c
+0084d580	callgraph	luaO_pushvfstring	only unmatched callee of 0084e3a0=lua_pushvfstring
 0084d840	callgraph	errorlimit	only unmatched callee of 0085efb0=indexupvalue
 0084d860	string	luaO_chunkid	unique "[string ""
 0084d9c0	override	index2adr	
@@ -1663,6 +1665,7 @@ addr	how	whoa	evidence
 0084fe40	callorder	lua_getstack	same slot between linked calls in 0084f8b0=luaL_argerror, 00854340=getfunc
 0084fec0	string	findlocal	unique "(*temporary)"
 008505a0	string	getobjname	unique "field"
+008507c0	callgraph	addinfo	only unmatched callee of 00850920=luaG_runerror
 00850830	callgraph	luaG_errormsg	only unmatched callee of 0084ef30=lua_error
 00850920	callgraph	luaG_runerror	only unmatched callee of 00850c60=luaG_ordererror, 00856150=lua_yield, 0085d6d0=luaM_toobig
 00850950	string	info_tailcall	unique "=(tail call)"

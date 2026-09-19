@@ -28,6 +28,8 @@ CompSectionInfo CCharacterComponent::s_sectionInfo[];
 MipBits* CCharacterComponent::s_textureBuffer;
 MipBits* CCharacterComponent::s_textureBufferCompressed;
 uint32_t CCharacterComponent::s_textureSize;
+int32_t CCharacterComponent::s_thread;
+int32_t CCharacterComponent::s_compress;
 
 CompSectionInfo CCharacterComponent::s_sectionInfoRaw[] = {
     { { 0,   0   }, { 256, 128 } }, // SECTION_ARM_UPPER
@@ -382,12 +384,15 @@ void CCharacterComponent::Initialize() {
     CCharacterComponent::Initialize(GxTex_Rgb565, textureLevel, thread, compress);
 }
 
+// ref: FUN_004f1a20
 void CCharacterComponent::Initialize(EGxTexFormat textureFormat, uint32_t textureLevel, int32_t thread, int32_t compress) {
-    if (!s_componentHeap) {
-        auto heapId = static_cast<uint32_t*>(STORM_ALLOC(sizeof(uint32_t)));
-        *heapId = ObjectAllocAddHeap(sizeof(CCharacterComponent), 32, "CCharacterComponent", true);
+    auto heapId = static_cast<uint32_t*>(STORM_ALLOC(sizeof(uint32_t)));
 
+    if (heapId) {
+        *heapId = ObjectAllocAddHeap(sizeof(CCharacterComponent), 32, "CCharacterComponent", true);
         s_componentHeap = heapId;
+    } else {
+        s_componentHeap = nullptr;
     }
 
     s_pathEnd = s_path;
@@ -407,61 +412,72 @@ void CCharacterComponent::Initialize(EGxTexFormat textureFormat, uint32_t textur
     CCharacterComponent::s_itemFunc[SECTION_ARM_UPPER]      = &CCharacterComponent::UpdateItemAU;
     CCharacterComponent::s_itemFunc[SECTION_ARM_LOWER]      = &CCharacterComponent::UpdateItemAL;
     CCharacterComponent::s_itemFunc[SECTION_HAND]           = &CCharacterComponent::UpdateItemHA;
+    CCharacterComponent::s_itemFunc[SECTION_HEAD_UPPER]     = &CCharacterComponent::UpdateItemHU;
+    CCharacterComponent::s_itemFunc[SECTION_HEAD_LOWER]     = &CCharacterComponent::UpdateItemHL;
     CCharacterComponent::s_itemFunc[SECTION_TORSO_UPPER]    = &CCharacterComponent::UpdateItemTU;
     CCharacterComponent::s_itemFunc[SECTION_TORSO_LOWER]    = &CCharacterComponent::UpdateItemTL;
     CCharacterComponent::s_itemFunc[SECTION_LEG_UPPER]      = &CCharacterComponent::UpdateItemLU;
     CCharacterComponent::s_itemFunc[SECTION_LEG_LOWER]      = &CCharacterComponent::UpdateItemLL;
     CCharacterComponent::s_itemFunc[SECTION_FOOT]           = &CCharacterComponent::UpdateItemFO;
-    CCharacterComponent::s_itemFunc[SECTION_HEAD_UPPER]     = &CCharacterComponent::UpdateItemHU;
-    CCharacterComponent::s_itemFunc[SECTION_HEAD_LOWER]     = &CCharacterComponent::UpdateItemHL;
 
-    // Clamp mip levels between 6 and 9
-    uint32_t mipLevels = std::min(std::max(textureLevel, 6u), 9u);
-
-    // Cap mip levels to 8 if compression isn't enabled
-    if (!compress && mipLevels > 8) {
-        mipLevels = 8;
+    // Mip levels between 6 and 9; 9 needs compression
+    if (textureLevel < 10) {
+        if (textureLevel < 6) {
+            textureLevel = 6;
+        }
+    } else {
+        textureLevel = 9;
     }
 
-    CCharacterComponent::s_mipLevels = mipLevels;
-    CCharacterComponent::s_textureSize = 1 << mipLevels;
+    if (!compress && textureLevel > 8) {
+        textureLevel = 8;
+    }
+
+    CCharacterComponent::s_textureSize = 1 << textureLevel;
 
     // Scale section info to match mip levels
     for (int32_t i = 0; i < NUM_COMPONENT_SECTIONS; i++) {
         auto& info = CCharacterComponent::s_sectionInfo[i];
         auto& infoRaw = CCharacterComponent::s_sectionInfoRaw[i];
 
-        info.pos.x = infoRaw.pos.x >> (9 - mipLevels);
-        info.pos.y = infoRaw.pos.y >> (9 - mipLevels);
-        info.size.x = infoRaw.size.x >> (9 - mipLevels);
-        info.size.y = infoRaw.size.y >> (9 - mipLevels);
+        info.pos.x = infoRaw.pos.x >> (9 - textureLevel);
+        info.pos.y = infoRaw.pos.y >> (9 - textureLevel);
+        info.size.x = infoRaw.size.x >> (9 - textureLevel);
+        info.size.y = infoRaw.size.y >> (9 - textureLevel);
     }
 
-    // TODO
+    CCharacterComponent::s_mipLevels = textureLevel;
 
-    CCharacterComponent::s_gxFormat = textureFormat;
+    // TODO FUN_004f2db0: clears one component counter (DAT_00b6ba50), not identified yet
 
-    // TODO
-
-    CCharacterComponent::InitDbData();
-
-    // TODO
-
-    CCharacterComponent::s_textureBuffer = TextureAllocMippedImg(
-        PIXEL_ARGB8888,
-        CCharacterComponent::s_textureSize,
-        CCharacterComponent::s_textureSize
-    );
-
-    // TODO
-}
-
-void CCharacterComponent::InitDbData() {
     uint32_t varArrayLength = (g_chrRacesDB.m_maxID + 1) * UNITSEX_NUM_SEXES;
     CCharacterComponent::s_chrVarArrayLength = varArrayLength;
 
     BuildComponentArray(varArrayLength, &CCharacterComponent::s_chrVarArray);
     CountFacialFeatures(varArrayLength, &CCharacterComponent::s_characterFacialHairStylesList);
+
+    CCharacterComponent::s_thread = thread;
+    CCharacterComponent::s_compress = 0;
+    CCharacterComponent::s_gxFormat = textureFormat;
+
+    if (thread) {
+        if (compress) {
+            CCharacterComponent::s_gxFormat = static_cast<EGxTexFormat>(6);
+        }
+
+        CCharacterComponent::s_compress = compress != 0;
+
+        // TODO FUN_004f16f0: start the component worker thread
+    }
+    // else: the reference clears the ten words of worker-thread state here; whoa keeps none
+
+    // whoa-only: the reference allocates the composition buffer lazily on its worker; this port
+    // composes on the main thread and needs the buffer up front
+    CCharacterComponent::s_textureBuffer = TextureAllocMippedImg(
+        PIXEL_ARGB8888,
+        CCharacterComponent::s_textureSize,
+        CCharacterComponent::s_textureSize
+    );
 }
 
 int32_t CCharacterComponent::NextBeardStyle(COMPONENT_CONTEXT context) {

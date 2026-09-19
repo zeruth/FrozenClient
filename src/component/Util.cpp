@@ -6,6 +6,7 @@
 #include "object/Types.hpp"
 #include <storm/Memory.hpp>
 
+// ref: FUN_004f3dd0
 int32_t BuildComponentArray(uint32_t varArrayLength, st_race** varArrayPtr) {
     if (!varArrayLength) {
         return 0;
@@ -569,6 +570,7 @@ bool ComponentValidateSkin(int32_t raceId, int32_t sexId, int32_t classId, int32
     return ComponentCheckSectionFlags(rec->m_flags, GetSelectionFromContext(context, classId));
 }
 
+// ref: FUN_004f41b0
 int32_t CountFacialFeatures(uint32_t varArrayLength, uint32_t** featuresListPtr) {
     auto featuresList = static_cast<uint32_t*>(STORM_ALLOC_ZERO(sizeof(uint32_t) * varArrayLength));
 

@@ -40958,9 +40958,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 4,
 "refs": [],
-"line": 111
+"line": 113
 },
 "ComponentThreadCallback": {
 "files": [
@@ -40971,9 +40971,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 4,
 "refs": [],
-"line": 116
+"line": 118
 },
 "ComponentCompressCallback": {
 "files": [
@@ -40984,9 +40984,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": [],
-"line": 121
+"line": 123
 },
 "ReplaceParticleColor": {
 "files": [
@@ -40997,9 +40997,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 126
+"line": 128
 },
 "CCharacterComponent::AddHandItem": {
 "files": [
@@ -41032,9 +41032,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 57,
+"lines": 59,
 "refs": [],
-"line": 130
+"line": 132
 },
 "CCharacterComponent::AddLink": {
 "files": [
@@ -41062,9 +41062,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 48,
+"lines": 51,
 "refs": [],
-"line": 190
+"line": 192
 },
 "CCharacterComponent::AllocComponent": {
 "files": [
@@ -41078,9 +41078,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 9,
+"lines": 13,
 "refs": [],
-"line": 242
+"line": 244
 },
 "CCharacterComponent::ApplyMonsterGeosets": {
 "files": [
@@ -41102,9 +41102,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 24,
+"lines": 19,
 "refs": [],
-"line": 256
+"line": 258
 },
 "CCharacterComponent::ComponentCloseFingers": {
 "files": [
@@ -41127,9 +41127,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 16,
 "refs": [],
-"line": 276
+"line": 278
 },
 "CCharacterComponent::ComponentOpenFingers": {
 "files": [
@@ -41149,9 +41149,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 11,
+"lines": 16,
 "refs": [],
-"line": 293
+"line": 295
 },
 "CCharacterComponent::CreateTexture": {
 "files": [
@@ -41177,9 +41177,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 20,
+"lines": 21,
 "refs": [],
-"line": 310
+"line": 312
 },
 "CCharacterComponent::FreeComponent": {
 "files": [
@@ -41193,9 +41193,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 4,
 "refs": [],
-"line": 315
+"line": 317
 },
 "CCharacterComponent::GetSheatheLink": {
 "files": [
@@ -41206,9 +41206,9 @@
 "consts": [],
 "branches": 7,
 "stub": false,
-"lines": 18,
+"lines": 14,
 "refs": [],
-"line": 320
+"line": 322
 },
 "CCharacterComponent::Initialize": {
 "files": [
@@ -41223,9 +41223,8 @@
 "CCharacterComponent::Initialize",
 "SMemAlloc",
 "ObjectAllocAddHeap",
-"std::max",
-"std::min",
-"CCharacterComponent::InitDbData",
+"BuildComponentArray",
+"CountFacialFeatures",
 "TextureAllocMippedImg"
 ],
 "strings": [
@@ -41244,36 +41243,18 @@
 "0",
 "0x1",
 "1",
+"10",
 "32",
-"6u",
+"6",
 "7",
 "8",
-"9",
-"9u"
+"9"
 ],
-"branches": 5,
+"branches": 9,
 "stub": false,
-"lines": 120,
+"lines": 143,
 "refs": [],
-"line": 335
-},
-"CCharacterComponent::InitDbData": {
-"files": [
-"src/component/ccharactercomponent.cpp"
-],
-"callseq": [
-"BuildComponentArray",
-"CountFacialFeatures"
-],
-"strings": [],
-"consts": [
-"1"
-],
-"branches": 0,
-"stub": false,
-"lines": 8,
-"refs": [],
-"line": 459
+"line": 337
 },
 "CCharacterComponent::NextBeardStyle": {
 "files": [
@@ -41300,9 +41281,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 71,
+"lines": 62,
 "refs": [],
-"line": 467
+"line": 483
 },
 "CCharacterComponent::NextFace": {
 "files": [
@@ -41335,9 +41316,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 64,
+"lines": 63,
 "refs": [],
-"line": 530
+"line": 546
 },
 "CCharacterComponent::NextHairColor": {
 "files": [
@@ -41357,9 +41338,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 34,
+"lines": 32,
 "refs": [],
-"line": 594
+"line": 610
 },
 "CCharacterComponent::NextHairStyle": {
 "files": [
@@ -41387,9 +41368,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 58,
+"lines": 57,
 "refs": [],
-"line": 627
+"line": 643
 },
 "CCharacterComponent::NextSkinColor": {
 "files": [
@@ -41413,9 +41394,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 44,
+"lines": 38,
 "refs": [],
-"line": 685
+"line": 701
 },
 "CCharacterComponent::Paste": {
 "files": [
@@ -41437,9 +41418,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 70,
+"lines": 81,
 "refs": [],
-"line": 724
+"line": 740
 },
 "CCharacterComponent::PasteFromSkin": {
 "files": [
@@ -41460,9 +41441,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 24,
+"lines": 27,
 "refs": [],
-"line": 806
+"line": 822
 },
 "CCharacterComponent::PasteOpaque": {
 "files": [
@@ -41485,10 +41466,10 @@
 "4"
 ],
 "branches": 3,
-"stub": true,
-"lines": 60,
+"stub": false,
+"lines": 59,
 "refs": [],
-"line": 834
+"line": 850
 },
 "CCharacterComponent::PasteScale": {
 "files": [
@@ -41505,10 +41486,10 @@
 ],
 "consts": [],
 "branches": 2,
-"stub": false,
+"stub": true,
 "lines": 3,
 "refs": [],
-"line": 894
+"line": 910
 },
 "CCharacterComponent::PasteToSection": {
 "files": [
@@ -41531,9 +41512,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 19,
+"lines": 28,
 "refs": [],
-"line": 898
+"line": 914
 },
 "CCharacterComponent::PasteTransparent1Bit": {
 "files": [
@@ -41558,9 +41539,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 67,
+"lines": 69,
 "refs": [],
-"line": 927
+"line": 943
 },
 "CCharacterComponent::PasteTransparent4Bit": {
 "files": [
@@ -41587,9 +41568,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 71,
+"lines": 74,
 "refs": [],
-"line": 997
+"line": 1013
 },
 "CCharacterComponent::PasteTransparent8Bit": {
 "files": [
@@ -41614,9 +41595,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 73,
+"lines": 69,
 "refs": [],
-"line": 1072
+"line": 1088
 },
 "CCharacterComponent::PrevBeardStyle": {
 "files": [
@@ -41643,9 +41624,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 59,
+"lines": 62,
 "refs": [],
-"line": 1142
+"line": 1158
 },
 "CCharacterComponent::PrevFace": {
 "files": [
@@ -41678,9 +41659,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 79,
+"lines": 63,
 "refs": [],
-"line": 1205
+"line": 1221
 },
 "CCharacterComponent::PrevHairColor": {
 "files": [
@@ -41700,9 +41681,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 18,
+"lines": 32,
 "refs": [],
-"line": 1269
+"line": 1285
 },
 "CCharacterComponent::PrevHairStyle": {
 "files": [
@@ -41730,9 +41711,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 64,
+"lines": 57,
 "refs": [],
-"line": 1302
+"line": 1318
 },
 "CCharacterComponent::PrevSkinColor": {
 "files": [
@@ -41756,9 +41737,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 34,
+"lines": 38,
 "refs": [],
-"line": 1360
+"line": 1376
 },
 "CCharacterComponent::RandomBeardStyle": {
 "files": [
@@ -41778,9 +41759,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 15,
 "refs": [],
-"line": 1399
+"line": 1415
 },
 "CCharacterComponent::RandomFace": {
 "files": [
@@ -41800,9 +41781,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 15,
 "refs": [],
-"line": 1415
+"line": 1431
 },
 "CCharacterComponent::RandomHairColor": {
 "files": [
@@ -41822,9 +41803,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 20,
+"lines": 15,
 "refs": [],
-"line": 1431
+"line": 1447
 },
 "CCharacterComponent::RandomHairStyle": {
 "files": [
@@ -41844,9 +41825,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 16,
+"lines": 15,
 "refs": [],
-"line": 1447
+"line": 1463
 },
 "CCharacterComponent::RandomSkinColor": {
 "files": [
@@ -41866,9 +41847,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 11,
+"lines": 15,
 "refs": [],
-"line": 1463
+"line": 1479
 },
 "CCharacterComponent::RemoveHandItem": {
 "files": [
@@ -41884,9 +41865,9 @@
 "consts": [],
 "branches": 4,
 "stub": false,
-"lines": 30,
+"lines": 19,
 "refs": [],
-"line": 1479
+"line": 1495
 },
 "CCharacterComponent::RemoveItem": {
 "files": [
@@ -41924,9 +41905,9 @@
 ],
 "branches": 11,
 "stub": false,
-"lines": 103,
+"lines": 82,
 "refs": [],
-"line": 1499
+"line": 1515
 },
 "CCharacterComponent::RemoveItemByInventoryType": {
 "files": [
@@ -41949,9 +41930,9 @@
 "consts": [],
 "branches": 12,
 "stub": false,
-"lines": 38,
+"lines": 51,
 "refs": [],
-"line": 1582
+"line": 1598
 },
 "CCharacterComponent::RemoveLinkpt": {
 "files": [
@@ -41970,9 +41951,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 14,
+"lines": 19,
 "refs": [],
-"line": 1634
+"line": 1650
 },
 "CCharacterComponent::ReplaceMonsterSkin": {
 "files": [
@@ -41997,9 +41978,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 57,
+"lines": 47,
 "refs": [],
-"line": 1654
+"line": 1670
 },
 "CCharacterComponent::UpdateBaseTexture": {
 "files": [
@@ -42015,9 +41996,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 30,
+"lines": 38,
 "refs": [],
-"line": 1702
+"line": 1718
 },
 "CCharacterComponent::~CCharacterComponent": {
 "files": [
@@ -42033,9 +42014,9 @@
 "consts": [],
 "branches": 5,
 "stub": false,
-"lines": 18,
+"lines": 29,
 "refs": [],
-"line": 1741
+"line": 1757
 },
 "CCharacterComponent::AddItem": {
 "files": [
@@ -42073,9 +42054,9 @@
 ],
 "branches": 16,
 "stub": false,
-"lines": 134,
+"lines": 104,
 "refs": [],
-"line": 1771
+"line": 1787
 },
 "CCharacterComponent::AddItemBySlot": {
 "files": [
@@ -42098,9 +42079,9 @@
 "consts": [],
 "branches": 12,
 "stub": false,
-"lines": 50,
+"lines": 56,
 "refs": [],
-"line": 1877
+"line": 1893
 },
 "CCharacterComponent::AddItemByInventoryType": {
 "files": [
@@ -42130,9 +42111,9 @@
 ],
 "branches": 18,
 "stub": false,
-"lines": 55,
+"lines": 71,
 "refs": [],
-"line": 1934
+"line": 1950
 },
 "CCharacterComponent::AddHandItemDisplay": {
 "files": [
@@ -42150,7 +42131,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 2006
+"line": 2022
 },
 "CCharacterComponent::ClearItemDisplay": {
 "files": [
@@ -42166,9 +42147,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 14,
 "refs": [],
-"line": 2018
+"line": 2034
 },
 "CCharacterComponent::ClearTorsoItemDisplays": {
 "files": [
@@ -42185,9 +42166,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 19,
+"lines": 13,
 "refs": [],
-"line": 2033
+"line": 2049
 },
 "CCharacterComponent::CreateBaseTexture": {
 "files": [
@@ -42209,9 +42190,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 25,
+"lines": 26,
 "refs": [],
-"line": 2047
+"line": 2063
 },
 "CCharacterComponent::GeosRenderPrep": {
 "files": [
@@ -42235,9 +42216,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 32,
+"lines": 37,
 "refs": [],
-"line": 2092
+"line": 2108
 },
 "CCharacterComponent::GetPreferences": {
 "files": [
@@ -42248,9 +42229,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 18,
+"lines": 14,
 "refs": [],
-"line": 2130
+"line": 2146
 },
 "CCharacterComponent::GetSectionsRecord": {
 "files": [
@@ -42263,9 +42244,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 11,
 "refs": [],
-"line": 2145
+"line": 2161
 },
 "CCharacterComponent::Init": {
 "files": [
@@ -42284,9 +42265,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 13,
+"lines": 16,
 "refs": [],
-"line": 2157
+"line": 2173
 },
 "CCharacterComponent::ItemsLoaded": {
 "files": [
@@ -42312,9 +42293,9 @@
 ],
 "branches": 15,
 "stub": false,
-"lines": 86,
+"lines": 76,
 "refs": [],
-"line": 2174
+"line": 2190
 },
 "CCharacterComponent::LoadBaseVariation": {
 "files": [
@@ -42335,9 +42316,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 44,
+"lines": 35,
 "refs": [],
-"line": 2251
+"line": 2267
 },
 "UpdateBaseTextureRect": {
 "files": [
@@ -42353,9 +42334,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 4,
+"lines": 7,
 "refs": [],
-"line": 2287
+"line": 2303
 },
 "CCharacterComponent::PrepSections": {
 "files": [
@@ -42376,9 +42357,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 39,
+"lines": 40,
 "refs": [],
-"line": 2295
+"line": 2311
 },
 "CCharacterComponent::RenderPrep": {
 "files": [
@@ -42399,9 +42380,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 12,
+"lines": 28,
 "refs": [],
-"line": 2336
+"line": 2352
 },
 "CCharacterComponent::RenderPrepAL": {
 "files": [
@@ -42420,9 +42401,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 18,
+"lines": 16,
 "refs": [],
-"line": 2365
+"line": 2381
 },
 "CCharacterComponent::RenderPrepAU": {
 "files": [
@@ -42441,9 +42422,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 14,
+"lines": 16,
 "refs": [],
-"line": 2382
+"line": 2398
 },
 "CCharacterComponent::RenderPrepFO": {
 "files": [
@@ -42461,9 +42442,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 15,
+"lines": 16,
 "refs": [],
-"line": 2399
+"line": 2415
 },
 "CCharacterComponent::RenderPrepHA": {
 "files": [
@@ -42481,9 +42462,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 16,
 "refs": [],
-"line": 2416
+"line": 2432
 },
 "CCharacterComponent::RenderPrepHL": {
 "files": [
@@ -42505,9 +42486,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 35,
+"lines": 29,
 "refs": [],
-"line": 2433
+"line": 2449
 },
 "CCharacterComponent::RenderPrepHU": {
 "files": [
@@ -42530,9 +42511,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 30,
+"lines": 29,
 "refs": [],
-"line": 2463
+"line": 2479
 },
 "CCharacterComponent::RenderPrepLL": {
 "files": [
@@ -42553,9 +42534,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 25,
+"lines": 24,
 "refs": [],
-"line": 2493
+"line": 2509
 },
 "CCharacterComponent::RenderPrepLU": {
 "files": [
@@ -42575,9 +42556,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 49,
+"lines": 27,
 "refs": [],
-"line": 2518
+"line": 2534
 },
 "CCharacterComponent::RenderPrepTL": {
 "files": [
@@ -42596,9 +42577,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 25,
+"lines": 16,
 "refs": [],
-"line": 2546
+"line": 2562
 },
 "CCharacterComponent::RenderPrepTU": {
 "files": [
@@ -42619,9 +42600,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 36,
+"lines": 25,
 "refs": [],
-"line": 2563
+"line": 2579
 },
 "CCharacterComponent::RenderPrepAll": {
 "files": [
@@ -42640,9 +42621,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 20,
 "refs": [],
-"line": 2589
+"line": 2605
 },
 "CCharacterComponent::RenderPrepSections": {
 "files": [
@@ -42664,9 +42645,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 17,
+"lines": 32,
 "refs": [],
-"line": 2610
+"line": 2626
 },
 "CCharacterComponent::ReplaceExtraSkinTexture": {
 "files": [
@@ -42688,9 +42669,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 22,
+"lines": 27,
 "refs": [],
-"line": 2643
+"line": 2659
 },
 "CCharacterComponent::ReplaceHairTexture": {
 "files": [
@@ -42711,9 +42692,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 17,
+"lines": 25,
 "refs": [],
-"line": 2671
+"line": 2687
 },
 "CCharacterComponent::SetBeardStyle": {
 "files": [
@@ -42745,9 +42726,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 51,
+"lines": 42,
 "refs": [],
-"line": 2697
+"line": 2713
 },
 "CCharacterComponent::SetFace": {
 "files": [
@@ -42772,9 +42753,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 42,
+"lines": 34,
 "refs": [],
-"line": 2740
+"line": 2756
 },
 "CCharacterComponent::SetHairColor": {
 "files": [
@@ -42800,9 +42781,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 37,
+"lines": 34,
 "refs": [],
-"line": 2775
+"line": 2791
 },
 "CCharacterComponent::SetHairStyle": {
 "files": [
@@ -42826,9 +42807,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 40,
+"lines": 33,
 "refs": [],
-"line": 2810
+"line": 2826
 },
 "CCharacterComponent::SetSkinColor": {
 "files": [
@@ -42859,9 +42840,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 70,
+"lines": 79,
 "refs": [],
-"line": 2844
+"line": 2860
 },
 "CCharacterComponent::UpdateItem": {
 "files": [
@@ -42886,9 +42867,9 @@
 ],
 "branches": 14,
 "stub": false,
-"lines": 40,
+"lines": 59,
 "refs": [],
-"line": 2924
+"line": 2940
 },
 "CCharacterComponent::UpdateItemAL": {
 "files": [
@@ -42901,9 +42882,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 2984
+"line": 3000
 },
 "CCharacterComponent::UpdateItemAU": {
 "files": [
@@ -42916,9 +42897,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 2988
+"line": 3004
 },
 "CCharacterComponent::UpdateItemFO": {
 "files": [
@@ -42931,67 +42912,11 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
-"refs": [],
-"line": 2992
-},
-"CCharacterComponent::UpdateItemHA": {
-"files": [
-"src/component/ccharactercomponent.cpp"
-],
-"callseq": [
-"CCharacterComponent::UpdateItem"
-],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 2,
-"refs": [],
-"line": 2996
-},
-"CCharacterComponent::UpdateItemHL": {
-"files": [
-"src/component/ccharactercomponent.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 3000
-},
-"CCharacterComponent::UpdateItemHU": {
-"files": [
-"src/component/ccharactercomponent.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 3004
-},
-"CCharacterComponent::UpdateItemLL": {
-"files": [
-"src/component/ccharactercomponent.cpp"
-],
-"callseq": [
-"CCharacterComponent::UpdateItem"
-],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
 "line": 3008
 },
-"CCharacterComponent::UpdateItemLU": {
+"CCharacterComponent::UpdateItemHA": {
 "files": [
 "src/component/ccharactercomponent.cpp"
 ],
@@ -43006,6 +42931,62 @@
 "refs": [],
 "line": 3012
 },
+"CCharacterComponent::UpdateItemHL": {
+"files": [
+"src/component/ccharactercomponent.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 3016
+},
+"CCharacterComponent::UpdateItemHU": {
+"files": [
+"src/component/ccharactercomponent.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 3020
+},
+"CCharacterComponent::UpdateItemLL": {
+"files": [
+"src/component/ccharactercomponent.cpp"
+],
+"callseq": [
+"CCharacterComponent::UpdateItem"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 3024
+},
+"CCharacterComponent::UpdateItemLU": {
+"files": [
+"src/component/ccharactercomponent.cpp"
+],
+"callseq": [
+"CCharacterComponent::UpdateItem"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 3028
+},
 "CCharacterComponent::UpdateItemTL": {
 "files": [
 "src/component/ccharactercomponent.cpp"
@@ -43017,9 +42998,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 3016
+"line": 3032
 },
 "CCharacterComponent::UpdateItemTU": {
 "files": [
@@ -43032,9 +43013,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 3020
+"line": 3036
 },
 "CCharacterComponent::UpdateItemDisplay": {
 "files": [
@@ -43052,9 +43033,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 25,
+"lines": 28,
 "refs": [],
-"line": 3024
+"line": 3040
 },
 "CCharacterComponent::ValidateComponentData": {
 "files": [
@@ -43093,9 +43074,9 @@
 ],
 "branches": 16,
 "stub": false,
-"lines": 34,
+"lines": 85,
 "refs": [],
-"line": 3053
+"line": 3069
 },
 "CCharacterComponent::VariationsLoaded": {
 "files": [
@@ -43114,9 +43095,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 1,
+"lines": 17,
 "refs": [],
-"line": 3139
+"line": 3155
 },
 "ComponentData::SetPreferences": {
 "files": [
@@ -43502,7 +43483,7 @@
 "stub": false,
 "lines": 124,
 "refs": [],
-"line": 9
+"line": 10
 },
 "ComponentCheckSectionFlags": {
 "files": [
@@ -43521,7 +43502,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 134
+"line": 135
 },
 "ComponentGetFaceByIndex": {
 "files": [
@@ -43541,7 +43522,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 162
+"line": 163
 },
 "ComponentGetFacialHairStyleByIndex": {
 "files": [
@@ -43563,7 +43544,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 183
+"line": 184
 },
 "ComponentGetHairColorByIndex": {
 "files": [
@@ -43583,7 +43564,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 219
+"line": 220
 },
 "ComponentGetFacialHairStyleRecord": {
 "files": [
@@ -43601,7 +43582,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 240
+"line": 241
 },
 "ComponentGetHairGeoset": {
 "files": [
@@ -43620,7 +43601,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 252
+"line": 253
 },
 "ComponentGetHairStyleByIndex": {
 "files": [
@@ -43640,7 +43621,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 265
+"line": 266
 },
 "ComponentValidateRaceSex": {
 "files": [
@@ -43655,7 +43636,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 291
+"line": 292
 },
 "ComponentGetNumColors": {
 "files": [
@@ -43672,7 +43653,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 301
+"line": 302
 },
 "ComponentGetNumFaces": {
 "files": [
@@ -43692,7 +43673,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 319
+"line": 320
 },
 "ComponentGetNumFacialHairStyles": {
 "files": [
@@ -43712,7 +43693,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 337
+"line": 338
 },
 "ComponentGetNumHairColors": {
 "files": [
@@ -43732,7 +43713,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 359
+"line": 360
 },
 "ComponentGetNumHairStyles": {
 "files": [
@@ -43752,7 +43733,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 377
+"line": 378
 },
 "ComponentGetNumSkinColors": {
 "files": [
@@ -43772,7 +43753,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 395
+"line": 396
 },
 "ComponentGetNumVariations": {
 "files": [
@@ -43789,7 +43770,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 413
+"line": 414
 },
 "ComponentGetSkinColorByIndex": {
 "files": [
@@ -43809,7 +43790,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 427
+"line": 428
 },
 "ComponentGetSectionsRecord": {
 "files": [
@@ -43824,7 +43805,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 448
+"line": 449
 },
 "ComponentValidateBase": {
 "files": [
@@ -43842,7 +43823,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 466
+"line": 467
 },
 "ComponentValidateFace": {
 "files": [
@@ -43860,7 +43841,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 494
+"line": 495
 },
 "ComponentValidateFacialHair": {
 "files": [
@@ -43878,7 +43859,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 510
+"line": 511
 },
 "ComponentValidateHair": {
 "files": [
@@ -43896,7 +43877,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 540
+"line": 541
 },
 "ComponentValidateSkin": {
 "files": [
@@ -43916,7 +43897,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 556
+"line": 557
 },
 "CountFacialFeatures": {
 "files": [
@@ -43940,7 +43921,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 572
+"line": 574
 },
 "GetContextFromSelection": {
 "files": [
@@ -43953,7 +43934,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 593
+"line": 595
 },
 "GetSelectionFromContext": {
 "files": [
@@ -43968,7 +43949,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 611
+"line": 613
 },
 "ConsoleCommandParse": {
 "files": [

@@ -178,5 +178,9 @@
   "0084ea00": { "whoa": "lua_rawseti", "status": "ported", "note": "lapi.c order (see 0084e970); call-order slot in luaL_ref" },
   "0084ed50": { "whoa": "lua_gc", "status": "ported", "note": "call-order slot in FrameScript_Initialize; sits before lua_error 0084ef30 as in lapi.c" },
   "006b0f40": { "whoa": "ClientServices::GetErrorToken", "status": "ported", "note": "30 bytes, no callees, 11 callers in the glue (CreateCharacter, DeleteCharacter, EnterWorld, CCharacterCreation); in the ClientServices block" },
-  "0076dd20": { "whoa": "NameNeedsDeclension", "status": "ported", "note": "call-order slot in CGlueMgr::EnterWorld (2026-09-18)" }
+  "0076dd20": { "whoa": "NameNeedsDeclension", "status": "ported", "note": "call-order slot in CGlueMgr::EnterWorld (2026-09-18)" },
+
+  "004102b2": { "status": "unlinked", "note": "CRT printf core (2420 bytes, unaligned entry in the CRT block, string (null), calls other CRT internals); the string vote had made it luaO_pushvfstring" },
+  "00865270": { "status": "vendor", "note": "zlib inflate (header crc mismatch / incorrect data check strings)" },
+  "00995230": { "status": "vendor", "note": "FreeType parse_charstrings (.notdef)" }
 }

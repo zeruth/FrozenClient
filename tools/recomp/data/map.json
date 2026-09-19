@@ -858,21 +858,6 @@
   "whoa": "SStrLen",
   "whoaSize": 50
  },
- "004102b2": {
-  "branchRatio": 0.132,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lobject.c"
-  ],
-  "how": "string",
-  "module": "LoadingScreen.cpp",
-  "refSize": 2420,
-  "status": "ported",
-  "whoa": "luaO_pushvfstring",
-  "whoaSize": 871
- },
  "00421880": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -7886,20 +7871,20 @@
   "whoaSize": 0
  },
  "004f1a20": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.9,
   "constOverlap": 0.286,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
   ],
-  "how": "string",
+  "how": "annotated",
   "module": "CharacterComponent.cpp",
   "refSize": 1189,
   "status": "ported",
   "whoa": "CCharacterComponent::Initialize",
-  "whoaSize": 1388
+  "whoaSize": 1446
  },
  "004f3110": {
   "branchRatio": 0.5,
@@ -7916,6 +7901,38 @@
   "status": "ported",
   "whoa": "TextureCacheAllocEntry",
   "whoaSize": 0
+ },
+ "004f3dd0": {
+  "branchRatio": 0.053,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Util.cpp",
+   "src/component/util.cpp"
+  ],
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 18,
+  "status": "ported",
+  "whoa": "BuildComponentArray",
+  "whoaSize": 899
+ },
+ "004f41b0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Util.cpp",
+   "src/component/util.cpp"
+  ],
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 122,
+  "status": "ported",
+  "whoa": "CountFacialFeatures",
+  "whoaSize": 137
  },
  "004f5720": {
   "branchRatio": 1.0,
@@ -25150,20 +25167,35 @@
   "whoa": "luaO_str2d",
   "whoaSize": 206
  },
+ "0084d520": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lobject.c"
+  ],
+  "how": "order",
+  "module": "Minigame_C.cpp",
+  "refSize": 92,
+  "status": "ported",
+  "whoa": "pushstr",
+  "whoaSize": 105
+ },
  "0084d580": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.786,
   "files": [
-   "vendor/lua-5.1.3/src/lauxlib.c"
+   "vendor/lua-5.1.3/src/lobject.c"
   ],
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 574,
   "status": "ported",
-  "whoa": "luaL_typerror",
-  "whoaSize": 87
+  "whoa": "luaO_pushvfstring",
+  "whoaSize": 871
  },
  "0084d840": {
   "branchRatio": 0.0,
@@ -25618,8 +25650,8 @@
  "0084e3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lapi.c"
   ],
@@ -25634,7 +25666,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -26410,6 +26442,21 @@
   "whoa": "getobjname",
   "whoaSize": 557
  },
+ "008507c0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "vendor/lua-5.1.3/src/ldebug.c"
+  ],
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 110,
+  "status": "ported",
+  "whoa": "addinfo",
+  "whoaSize": 0
+ },
  "00850830": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -26428,8 +26475,8 @@
  "00850920": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/ldebug.c"
   ],
@@ -28942,7 +28989,7 @@
   "how": "string",
   "module": "lmemPool.cpp",
   "refSize": 4934,
-  "status": "ported",
+  "status": "vendor",
   "whoa": "inflate",
   "whoaSize": 5368
  },
@@ -34329,7 +34376,7 @@
   "how": "order",
   "module": "HealthBar.cpp",
   "refSize": 985,
-  "status": "ported",
+  "status": "vendor",
   "whoa": "parse_charstrings",
   "whoaSize": 1679
  },
