@@ -48,6 +48,23 @@ world), frozen with `FROZEN_AUTO_LOGIN=TEST:TEST`, then `calltrace.py ref`, `cal
    with a clear winner (asserts, usage strings, DBC paths, CVar descriptions).
 5. **callgraph** — a linked pair whose only unlinked callee on each side must be each other.
    Repeated until it stops adding.
+
+   > **Implementing a stub can delete unrelated callgraph links.** Measured 2026-09-19: filling in
+   > three one-line stat bindings in `ScriptEvents.cpp` cost **14** callgraph links across
+   > `lua_gettop`, `CSimpleModel::*`, `CSimpleTexture::SetTexCoord`, `CCharacterCreation::*` and
+   > others, none of them touched. Reverting the three restored all 14, so the cause is not in
+   > doubt.
+   >
+   > The mechanism is the uniqueness test above. A `WHOA_UNIMPLEMENTED` stub calls nothing, so it
+   > contributes no unlinked callee to any caller; give it a body and its callers suddenly have one
+   > more, and the "only unlinked callee" condition that some *other* inference rested on stops
+   > holding. The links do not move — they stop being derivable.
+   >
+   > Consequences: a negative delta after a batch of stub fills is worth diagnosing before it is
+   > treated as a regression, since the port may have improved while the measurement fell; and the
+   > count is not monotonic in the way the report's history table implies. Worth fixing in the
+   > instrument — candidates are iterating to a fixed point rather than one pass, and not counting a
+   > stub as "has no callees" when testing uniqueness.
 6. **callorder** — inside a linked pair, between two linked calls, a single unlinked call on each
    side is the same call. Both propagation rules need two parents to agree, or a proposal nobody
    contests.

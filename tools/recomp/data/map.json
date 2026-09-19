@@ -22571,7 +22571,7 @@
   "how": "table",
   "module": "InputControl.cpp",
   "refSize": 164,
-  "status": "stub"
+  "status": "ported"
  },
  "00608560": {
   "branchRatio": 1.0,
@@ -22619,7 +22619,7 @@
   "how": "table",
   "module": "InputControl.cpp",
   "refSize": 208,
-  "status": "stub"
+  "status": "ported"
  },
  "00608760": {
   "branchRatio": 0.286,
@@ -22635,7 +22635,7 @@
   "how": "table",
   "module": "InputControl.cpp",
   "refSize": 282,
-  "status": "stub"
+  "status": "ported"
  },
  "00608880": {
   "branchRatio": 1.0,
@@ -22912,7 +22912,7 @@
  "0060c920": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
@@ -22923,7 +22923,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 120,
-  "status": "ported"
+  "status": "stub"
  },
  "0060c9a0": {
   "branchRatio": 0.5,
@@ -22939,12 +22939,12 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "0060ca20": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
@@ -22955,7 +22955,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 116,
-  "status": "ported"
+  "status": "stub"
  },
  "0060caa0": {
   "branchRatio": 0.0,
@@ -22987,7 +22987,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "0060cba0": {
   "branchRatio": 1.0,
@@ -23040,7 +23040,7 @@
  "0060ce20": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
@@ -23051,7 +23051,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 245,
-  "status": "ported"
+  "status": "stub"
  },
  "0060cf20": {
   "branchRatio": 0.667,
@@ -23067,7 +23067,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 132,
-  "status": "stub"
+  "status": "ported"
  },
  "0060cfb0": {
   "branchRatio": 0.0,
@@ -23435,7 +23435,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 119,
-  "status": "ported"
+  "status": "stub"
  },
  "0060e070": {
   "branchRatio": 1.0,
@@ -23483,7 +23483,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "0060e1b0": {
   "branchRatio": 0.0,
@@ -23531,7 +23531,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 126,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e310": {
   "branchRatio": 1.0,
@@ -23547,7 +23547,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 152,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e3b0": {
   "branchRatio": 1.0,
@@ -23579,7 +23579,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e470": {
   "branchRatio": 0.5,
@@ -23595,7 +23595,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 108,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e4e0": {
   "branchRatio": 0.0,
@@ -23627,7 +23627,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 198,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e630": {
   "branchRatio": 0.3,
@@ -23787,7 +23787,7 @@
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 591,
-  "status": "ported"
+  "status": "stub"
  },
  "0060f350": {
   "branchRatio": 0.667,
@@ -23803,7 +23803,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 126,
-  "status": "stub"
+  "status": "ported"
  },
  "0060f3d0": {
   "branchRatio": 0.5,
@@ -23819,7 +23819,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 170,
-  "status": "stub"
+  "status": "ported"
  },
  "0060f480": {
   "branchRatio": 0.429,
@@ -24011,7 +24011,7 @@
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 380,
-  "status": "ported"
+  "status": "stub"
  },
  "00610040": {
   "branchRatio": 0.222,
@@ -24027,7 +24027,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 344,
-  "status": "stub"
+  "status": "ported"
  },
  "006101a0": {
   "branchRatio": 0.286,
@@ -24043,7 +24043,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 337,
-  "status": "stub"
+  "status": "ported"
  },
  "00610300": {
   "branchRatio": 0.4,
@@ -24059,7 +24059,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 321,
-  "status": "stub"
+  "status": "ported"
  },
  "00610450": {
   "branchRatio": 0.222,
@@ -24075,7 +24075,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 251,
-  "status": "stub"
+  "status": "ported"
  },
  "00610550": {
   "branchRatio": 0.143,
@@ -24091,7 +24091,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 625,
-  "status": "stub"
+  "status": "ported"
  },
  "006107d0": {
   "branchRatio": 1.0,
@@ -24107,7 +24107,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 141,
-  "status": "stub"
+  "status": "ported"
  },
  "00610860": {
   "branchRatio": 0.667,
@@ -24123,7 +24123,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 402,
-  "status": "stub"
+  "status": "ported"
  },
  "00610a00": {
   "branchRatio": 0.2,
@@ -24139,7 +24139,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 345,
-  "status": "stub"
+  "status": "ported"
  },
  "00610b60": {
   "branchRatio": 0.667,
@@ -24155,7 +24155,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 307,
-  "status": "stub"
+  "status": "ported"
  },
  "00610ca0": {
   "branchRatio": 0.667,
@@ -24171,7 +24171,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 307,
-  "status": "stub"
+  "status": "ported"
  },
  "00610de0": {
   "branchRatio": 0.286,
@@ -24187,7 +24187,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 212,
-  "status": "stub"
+  "status": "ported"
  },
  "00610ec0": {
   "branchRatio": 0.667,
@@ -24203,7 +24203,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 230,
-  "status": "stub"
+  "status": "ported"
  },
  "00610fb0": {
   "branchRatio": 0.0,
@@ -24315,7 +24315,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 169,
-  "status": "stub"
+  "status": "ported"
  },
  "006113e0": {
   "branchRatio": 0.0,
@@ -24363,7 +24363,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 265,
-  "status": "ported"
+  "status": "stub"
  },
  "00611780": {
   "branchRatio": 0.333,
@@ -24395,7 +24395,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 146,
-  "status": "stub"
+  "status": "ported"
  },
  "006118c0": {
   "branchRatio": 0.2,
@@ -24411,7 +24411,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 348,
-  "status": "stub"
+  "status": "ported"
  },
  "00611a20": {
   "branchRatio": 0.0,
@@ -24539,7 +24539,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 148,
-  "status": "stub"
+  "status": "ported"
  },
  "00612300": {
   "branchRatio": 1.0,
@@ -24555,7 +24555,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 91,
-  "status": "stub"
+  "status": "ported"
  },
  "00612360": {
   "branchRatio": 1.0,
@@ -24571,7 +24571,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 91,
-  "status": "stub"
+  "status": "ported"
  },
  "006123c0": {
   "branchRatio": 0.0,
@@ -24619,7 +24619,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 92,
-  "status": "stub"
+  "status": "ported"
  },
  "00612500": {
   "branchRatio": 0.4,
@@ -24635,7 +24635,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 146,
-  "status": "stub"
+  "status": "ported"
  },
  "006125a0": {
   "branchRatio": 0.667,
@@ -24651,7 +24651,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 101,
-  "status": "stub"
+  "status": "ported"
  },
  "00612610": {
   "branchRatio": 1.0,
@@ -24667,7 +24667,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "00612670": {
   "branchRatio": 0.077,
@@ -24683,7 +24683,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 374,
-  "status": "ported"
+  "status": "stub"
  },
  "006127f0": {
   "branchRatio": 0.0,
@@ -24699,7 +24699,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "00612870": {
   "branchRatio": 0.0,
@@ -24715,7 +24715,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 139,
-  "status": "ported"
+  "status": "stub"
  },
  "00612900": {
   "branchRatio": 0.0,
@@ -24731,7 +24731,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "00612980": {
   "branchRatio": 0.0,
@@ -24747,7 +24747,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "00612a00": {
   "branchRatio": 0.0,
@@ -24795,7 +24795,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 166,
-  "status": "stub"
+  "status": "ported"
  },
  "00612bf0": {
   "branchRatio": 0.667,
@@ -24811,7 +24811,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 180,
-  "status": "stub"
+  "status": "ported"
  },
  "00612cb0": {
   "branchRatio": 0.5,
@@ -24827,7 +24827,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 155,
-  "status": "stub"
+  "status": "ported"
  },
  "00612d50": {
   "branchRatio": 0.333,
@@ -24843,7 +24843,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 199,
-  "status": "stub"
+  "status": "ported"
  },
  "00612e20": {
   "branchRatio": 0.0,
@@ -24875,7 +24875,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 272,
-  "status": "stub"
+  "status": "ported"
  },
  "00613020": {
   "branchRatio": 0.0,
@@ -24907,7 +24907,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 155,
-  "status": "stub"
+  "status": "ported"
  },
  "006131e0": {
   "branchRatio": 0.333,
@@ -24923,7 +24923,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 39,
-  "status": "ported"
+  "status": "stub"
  },
  "00613290": {
   "branchRatio": 1.0,
@@ -24939,7 +24939,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 155,
-  "status": "stub"
+  "status": "ported"
  },
  "00613330": {
   "branchRatio": 1.0,
@@ -24955,12 +24955,12 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 155,
-  "status": "stub"
+  "status": "ported"
  },
  "006133d0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 0.875,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
@@ -24971,7 +24971,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 206,
-  "status": "ported"
+  "status": "stub"
  },
  "006134a0": {
   "branchRatio": 0.333,
@@ -24987,7 +24987,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 206,
-  "status": "stub"
+  "status": "ported"
  },
  "00613570": {
   "branchRatio": 0.5,
@@ -25003,7 +25003,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 142,
-  "status": "ported"
+  "status": "stub"
  },
  "00613700": {
   "branchRatio": 0.5,
@@ -25035,7 +25035,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 64,
-  "status": "ported"
+  "status": "stub"
  },
  "00613780": {
   "branchRatio": 0.5,
@@ -25051,7 +25051,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 65,
-  "status": "stub"
+  "status": "ported"
  },
  "006137d0": {
   "branchRatio": 1.0,
@@ -25067,7 +25067,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 82,
-  "status": "stub"
+  "status": "ported"
  },
  "00613830": {
   "branchRatio": 0.4,
@@ -25083,7 +25083,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 140,
-  "status": "stub"
+  "status": "ported"
  },
  "006138c0": {
   "branchRatio": 0.333,
@@ -25099,7 +25099,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 230,
-  "status": "stub"
+  "status": "ported"
  },
  "006139b0": {
   "branchRatio": 0.286,
@@ -25115,7 +25115,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 172,
-  "status": "stub"
+  "status": "ported"
  },
  "00613a60": {
   "branchRatio": 0.0,
@@ -25147,7 +25147,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 325,
-  "status": "stub"
+  "status": "ported"
  },
  "00613c90": {
   "branchRatio": 0.0,
@@ -25195,7 +25195,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 189,
-  "status": "stub"
+  "status": "ported"
  },
  "00613ed0": {
   "branchRatio": 1.0,
@@ -25211,7 +25211,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 188,
-  "status": "stub"
+  "status": "ported"
  },
  "00613f90": {
   "branchRatio": 0.222,
@@ -25227,7 +25227,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 426,
-  "status": "stub"
+  "status": "ported"
  },
  "00614140": {
   "branchRatio": 0.0,
@@ -25291,7 +25291,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 67,
-  "status": "ported"
+  "status": "stub"
  },
  "00614e60": {
   "branchRatio": 0.5,
@@ -25307,7 +25307,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 142,
-  "status": "stub"
+  "status": "ported"
  },
  "00614ef0": {
   "branchRatio": 0.5,
@@ -25323,7 +25323,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 214,
-  "status": "stub"
+  "status": "ported"
  },
  "0061a280": {
   "branchRatio": 0.727,

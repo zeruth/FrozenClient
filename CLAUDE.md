@@ -28,7 +28,7 @@ Gotchas, each of which has cost a session before:
   has sent debugging down the wrong path more than once.
 - Only the Release build is trustworthy for visuals; RelWithDebInfo renders hair untextured.
 - Lua errors go to stdout: redirect it to capture them.
-- **Do not generate C++ through a shell heredoc.** Backslashes and character escapes are eaten
+- **Do not generate code through a shell heredoc** (the rule was written for C++; it applies to any file with escapes -- on 2026-09-19 the same trap ate the newline escapes inside a *python* patch script, twice in one cycle). Backslashes and character escapes are eaten
   twice, once by the shell and once by python, and the damage is invisible at the call site.
   It has produced a literal NUL byte where '\0' was meant (twice), and
   "Interface\Icons" where "Interface\\Icons" was meant, which silently drops the separator
@@ -37,6 +37,8 @@ Gotchas, each of which has cost a session before:
   paths from a different author, so it is a property of the method rather than of who is using
   it. Write the patch script to a file with the Write tool, then run it.
   (This very note was mangled by the trap it describes on its first attempt.)
+  When quoting defeats you, build the awkward characters with chr(): chr(10) for a
+  newline, chr(92) for a backslash. That is what finally worked both times.
 
 ### Servers
 
