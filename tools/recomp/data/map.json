@@ -10482,20 +10482,20 @@
   "status": "stub"
  },
  "0050ff50": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.714,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetCVarInfo",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 240,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 229,
-  "status": "stub"
+  "status": "ported"
  },
  "005101d0": {
   "branchRatio": 1.0,

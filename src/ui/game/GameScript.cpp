@@ -254,8 +254,44 @@ int32_t Script_RegisterCVar(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0050ff50
+// Four returns, and four nils rather than none when the variable is unknown or hidden. The 0x40
+// flag is the same "hidden" bit the neighbouring GetCVar and SetCVar bindings already test.
 int32_t Script_GetCVarInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: GetCVarInfo(\"cvar\")");
+
+        return 0;
+    }
+
+    auto var = CVar::LookupRegistered(lua_tostring(L, 1));
+
+    if (!var || (var->m_flags & 0x40)) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 4;
+    }
+
+    lua_pushstring(L, var->GetString());
+    lua_pushstring(L, var->m_defaultValue.GetString());
+
+    // The two storage flags the interface shows as "account wide" and "per character".
+    if (var->m_flags & 0x10) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    if (var->m_flags & 0x20) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 4;
 }
 
 int32_t Script_SetCVar(lua_State* L) {

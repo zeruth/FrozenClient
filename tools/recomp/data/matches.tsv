@@ -656,7 +656,7 @@ addr	how	frozen	evidence
 0050f990	order	Script_SetConsoleKey	binding table name Script_SetConsoleKey, in definition order in src/ui/game/GameScript.cpp
 0050fe80	annotated	Script_IsDebugBuild	tag in src/ui/game/GameScript.cpp
 0050ff30	order	Script_RegisterCVar	binding table name Script_RegisterCVar, in definition order in src/ui/game/GameScript.cpp
-0050ff50	order	Script_GetCVarInfo	binding table name Script_GetCVarInfo, in definition order in src/ui/game/GameScript.cpp
+0050ff50	annotated	Script_GetCVarInfo	tag in src/ui/game/GameScript.cpp
 005101d0	annotated	Script_SetWaterDetail	tag in src/ui/game/GameScript.cpp
 00510200	annotated	Script_GetFarclip	tag in src/ui/game/GameScript.cpp
 00510230	annotated	Script_SetFarclip	tag in src/ui/game/GameScript.cpp
