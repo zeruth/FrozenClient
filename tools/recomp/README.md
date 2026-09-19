@@ -127,11 +127,22 @@ right answer in `overrides.json`.
 > call and stub data silently).
 >
 > Followed up 2026-09-19 by deleting `clang-cache.json` outright and parsing all 727 files from
-> scratch: the totals came out **identical** to the current state, so the data in the repo now
-> agrees with a clean rebuild and can be trusted. Three files had carried wrong flags -- four
-> bindings in `CGCooldownScript.cpp`, three in `CGCharacterModelBaseScript.cpp`, thirteen in
-> `GMTicketInfoScript.cpp` -- and in each case they corrected when the file itself was edited,
-> which is not a mechanism the content-hash key should permit. The cause is still not explained.
+> scratch. That produced totals identical to the state before it, and I wrote here that the data
+> therefore agreed with a clean rebuild. **That was wrong.** Editing one more file afterwards --
+> `CGQuestPOIFrameScript.cpp` -- corrected ten more bindings from ported to stub, on a file the
+> clean rebuild had just parsed.
+>
+> So the established fact is narrower and more useful than either explanation I published before:
+> **a bulk parse and a single-file parse of the same file disagree.** Parsing a file on its own
+> flags its stubs correctly every time it has been tried; parsing it as one of 727 sometimes does
+> not. Four files have been caught this way -- four bindings in `CGCooldownScript.cpp`, three in
+> `CGCharacterModelBaseScript.cpp`, thirteen in `GMTicketInfoScript.cpp`, ten in
+> `CGQuestPOIFrameScript.cpp` -- and in each case the flags corrected when the file was edited,
+> which forces a fresh single-file parse.
+>
+> Two earlier explanations were published here and both were wrong: the `and` across sightings, and
+> libclang parse errors. A third, that the mtime cache key was at fault, produced a real improvement
+> -- it is now a content hash -- but did not fix this.
 >
 > Reading the report until this is closed: `linked` is unaffected, since the flag only splits an
 > already-linked function between two columns. `ported` is an upper bound and `stub` a lower one.

@@ -16,7 +16,16 @@ class CGQuestPOIFrame : public CSimpleFrame {
         static void RegisterScriptMethods(lua_State* L);
 
         // Member variables
-        // TODO
+        // Two flags and a count the script surface reaches. The reference keeps the flags as
+        // adjacent bytes at +0x2ac and +0x2ad and the count at +0x2bc.
+        //
+        // Nothing draws points of interest yet, so the flags record what was asked for and the
+        // count stays zero -- truthfully, since no tooltips are built rather than as a placeholder.
+        bool m_smoothing = false;
+        bool m_merging = false;
+        int32_t m_numTooltips = 0;
+
+        // TODO the rest
 
         // Virtual member functions
         virtual int32_t GetScriptMetaTable();

@@ -20046,7 +20046,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 140,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e6f0": {
   "branchRatio": 0.5,
@@ -20062,7 +20062,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 140,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e780": {
   "branchRatio": 0.5,
@@ -20078,36 +20078,36 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 121,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e800": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGQuestPOIFrameScript.cpp",
    "src/ui/game/cgquestpoiframescript.cpp"
   ],
   "frozen": "CGQuestPOIFrame_EnableSmoothing",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GossipInfo.cpp",
   "refSize": 71,
   "status": "ported"
  },
  "0058e850": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGQuestPOIFrameScript.cpp",
    "src/ui/game/cgquestpoiframescript.cpp"
   ],
   "frozen": "CGQuestPOIFrame_EnableMerging",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 68,
+  "how": "annotated",
   "module": "GossipInfo.cpp",
   "refSize": 71,
   "status": "ported"
@@ -20126,7 +20126,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 125,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e920": {
   "branchRatio": 0.667,
@@ -20142,7 +20142,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 98,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e990": {
   "branchRatio": 0.5,
@@ -20158,7 +20158,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 48,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e9c0": {
   "branchRatio": 1.0,
@@ -20174,7 +20174,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 141,
-  "status": "ported"
+  "status": "stub"
  },
  "0058ea50": {
   "branchRatio": 0.667,
@@ -20190,20 +20190,20 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 111,
-  "status": "ported"
+  "status": "stub"
  },
  "0058eac0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGQuestPOIFrameScript.cpp",
    "src/ui/game/cgquestpoiframescript.cpp"
   ],
   "frozen": "CGQuestPOIFrame_GetNumTooltips",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 50,
+  "how": "annotated",
   "module": "GossipInfo.cpp",
   "refSize": 64,
   "status": "ported"
@@ -20238,7 +20238,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 70,
-  "status": "ported"
+  "status": "stub"
  },
  "005905f0": {
   "branchRatio": 0.667,
@@ -20254,7 +20254,7 @@
   "how": "table",
   "module": "GossipInfo.cpp",
   "refSize": 111,
-  "status": "ported"
+  "status": "stub"
  },
  "00593d90": {
   "branchRatio": 0.0,

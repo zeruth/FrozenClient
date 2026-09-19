@@ -169,7 +169,7 @@ addr	how	frozen	evidence
 00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
-004898b0	sticky	CLayoutFrame::ResizePending	held from the previous run, where it was callgraph
+004898b0	sticky	CLayoutFrame::ResizePending	held from the previous run, where it was sticky
 00489de0	override	CLayoutFrame::Resize	
 0048a130	annotated	CSimpleFrame::SetClampedToScreen	tag in src/ui/simple/CSimpleFrame.cpp
 0048a260	annotated	CLayoutFrame::SetPoint	tag in src/ui/CLayoutFrame.cpp
@@ -253,13 +253,13 @@ addr	how	frozen	evidence
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
 0048e970	callorder	CSimpleFrame::SetFrameFlag	same slot between linked calls in 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
 0048e9a0	override	CSimpleFrame::Raise	
-0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was callgraph
+0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was sticky
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
 0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
-0048f580	sticky	CSimpleFrame::SetFrameScale	held from the previous run, where it was callgraph
+0048f580	sticky	CSimpleFrame::SetFrameScale	held from the previous run, where it was sticky
 0048f5d0	annotated	CSimpleFrame::SetDepth	tag in src/ui/simple/CSimpleFrame.cpp
 0048f620	override	CSimpleFrame::Hide	
 0048f660	override	CSimpleFrame::Show	
@@ -1260,14 +1260,14 @@ addr	how	frozen	evidence
 0058e660	table	CGQuestPOIFrame_SetFillAlpha	binding "SetFillAlpha" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e6f0	table	CGQuestPOIFrame_SetBorderAlpha	binding "SetBorderAlpha" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e780	table	CGQuestPOIFrame_SetBorderScalar	binding "SetBorderScalar" in CGQuestPOIFrameMethods ~ table 00acf180
-0058e800	table	CGQuestPOIFrame_EnableSmoothing	binding "EnableSmoothing" in CGQuestPOIFrameMethods ~ table 00acf180
-0058e850	table	CGQuestPOIFrame_EnableMerging	binding "EnableMerging" in CGQuestPOIFrameMethods ~ table 00acf180
+0058e800	annotated	CGQuestPOIFrame_EnableSmoothing	tag in src/ui/game/CGQuestPOIFrameScript.cpp
+0058e850	annotated	CGQuestPOIFrame_EnableMerging	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e8a0	table	CGQuestPOIFrame_SetMergeThreshold	binding "SetMergeThreshold" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e920	table	CGQuestPOIFrame_SetNumSplinePoints	binding "SetNumSplinePoints" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e990	table	CGQuestPOIFrame_UpdateQuestPOI	binding "UpdateQuestPOI" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e9c0	table	CGQuestPOIFrame_UpdateMouseOverTooltip	binding "UpdateMouseOverTooltip" in CGQuestPOIFrameMethods ~ table 00acf180
 0058ea50	table	CGQuestPOIFrame_GetTooltipIndex	binding "GetTooltipIndex" in CGQuestPOIFrameMethods ~ table 00acf180
-0058eac0	table	CGQuestPOIFrame_GetNumTooltips	binding "GetNumTooltips" in CGQuestPOIFrameMethods ~ table 00acf180
+0058eac0	annotated	CGQuestPOIFrame_GetNumTooltips	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058fe50	table	CGQuestPOIFrame_SetFillTexture	binding "SetFillTexture" in CGQuestPOIFrameMethods ~ table 00acf180
 0058fea0	table	CGQuestPOIFrame_SetBorderTexture	binding "SetBorderTexture" in CGQuestPOIFrameMethods ~ table 00acf180
 005905f0	table	CGQuestPOIFrame_DrawQuestBlob	binding "DrawQuestBlob" in CGQuestPOIFrameMethods ~ table 00acf180
@@ -1968,9 +1968,9 @@ addr	how	frozen	evidence
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was callgraph
-0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was callgraph
-0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was callgraph
+0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was sticky
+0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was sticky
+0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was sticky
 0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d9bd0=CGlueMgr::EnterWorld
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848
@@ -2058,7 +2058,7 @@ addr	how	frozen	evidence
 0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
-0084e0b0	callorder	lua_toboolean	same slot between linked calls in 00815500=StringToBOOL, 00854810=luaB_assert, 00854b20=luaB_newproxy
+0084e0b0	callorder	lua_toboolean	same slot between linked calls in 0058e800=CGQuestPOIFrame_EnableSmoothing, 0058e850=CGQuestPOIFrame_EnableMerging, 00815500=StringToBOOL
 0084e0e0	override	lua_tolstring	
 0084e150	callorder	lua_objlen	same slot between linked calls in 00851c30=tconcat, 00854860=luaB_unpack
 0084e1c0	callgraph	lua_touserdata	only unmatched callee of 004a81b0=FrameScript_GetObjectThis

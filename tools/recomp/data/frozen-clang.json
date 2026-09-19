@@ -101116,9 +101116,9 @@
 ],
 "branches": 2,
 "stub": true,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 7
+"line": 9
 },
 "CGQuestPOIFrame_SetFillAlpha": {
 "files": [
@@ -101137,10 +101137,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 11
+"line": 13
 },
 "CGQuestPOIFrame_SetBorderTexture": {
 "files": [
@@ -101159,10 +101159,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 15
+"line": 17
 },
 "CGQuestPOIFrame_SetBorderAlpha": {
 "files": [
@@ -101181,10 +101181,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 19
+"line": 21
 },
 "CGQuestPOIFrame_SetBorderScalar": {
 "files": [
@@ -101203,10 +101203,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 23
+"line": 25
 },
 "CGQuestPOIFrame_DrawQuestBlob": {
 "files": [
@@ -101225,54 +101225,50 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 4,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 27
+"line": 29
 },
 "CGQuestPOIFrame_EnableSmoothing": {
 "files": [
 "src/ui/game/cgquestpoiframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGQuestPOIFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_toboolean"
 ],
-"strings": [
-"(anonymous namespace)::CGQuestPOIFrame_EnableSmoothing",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgquestpoiframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 8,
 "refs": [],
-"line": 31
+"line": 34
 },
 "CGQuestPOIFrame_EnableMerging": {
 "files": [
 "src/ui/game/cgquestpoiframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGQuestPOIFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_toboolean"
 ],
-"strings": [
-"(anonymous namespace)::CGQuestPOIFrame_EnableMerging",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgquestpoiframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 8,
 "refs": [],
-"line": 35
+"line": 44
 },
 "CGQuestPOIFrame_SetMergeThreshold": {
 "files": [
@@ -101291,10 +101287,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 39
+"line": 53
 },
 "CGQuestPOIFrame_SetNumSplinePoints": {
 "files": [
@@ -101313,10 +101309,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 43
+"line": 57
 },
 "CGQuestPOIFrame_UpdateQuestPOI": {
 "files": [
@@ -101335,10 +101331,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 47
+"line": 61
 },
 "CGQuestPOIFrame_UpdateMouseOverTooltip": {
 "files": [
@@ -101357,10 +101353,10 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 51
+"line": 65
 },
 "CGQuestPOIFrame_GetTooltipIndex": {
 "files": [
@@ -101379,32 +101375,29 @@
 "0"
 ],
 "branches": 2,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 55
+"line": 69
 },
 "CGQuestPOIFrame_GetNumTooltips": {
 "files": [
 "src/ui/game/cgquestpoiframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGQuestPOIFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_pushinteger"
 ],
-"strings": [
-"(anonymous namespace)::CGQuestPOIFrame_GetNumTooltips",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgquestpoiframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 8,
 "refs": [],
-"line": 59
+"line": 74
 },
 "CGRaidInfo::NumMembers": {
 "files": [

@@ -67,6 +67,7 @@ CLASS_GLOBAL = {
     'CSimpleModelScript.cpp': '00b499ec',
     'CGTooltipScript.cpp': '00c5cf4c',
     'CGCooldownScript.cpp': '00c2423c',
+    'CGQuestPOIFrameScript.cpp': '00c0d7c4',
     'CGCharacterModelBaseScript.cpp': '00c0e4d4',
     'CSimpleStatusBarScript.cpp': '00dce440',
     'CSimpleMessageFrameScript.cpp': '00dce4a4',

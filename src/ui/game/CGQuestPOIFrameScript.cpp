@@ -1,4 +1,6 @@
 #include "ui/game/CGQuestPOIFrameScript.hpp"
+#include "util/Lua.hpp"
+#include "ui/game/CGQuestPOIFrame.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -28,12 +30,24 @@ int32_t CGQuestPOIFrame_DrawQuestBlob(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0058e800
 int32_t CGQuestPOIFrame_EnableSmoothing(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->m_smoothing = lua_toboolean(L, 2) != 0;
+
+    return 0;
 }
 
+// ref: FUN_0058e850
 int32_t CGQuestPOIFrame_EnableMerging(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->m_merging = lua_toboolean(L, 2) != 0;
+
+    return 0;
 }
 
 int32_t CGQuestPOIFrame_SetMergeThreshold(lua_State* L) {
@@ -56,8 +70,14 @@ int32_t CGQuestPOIFrame_GetTooltipIndex(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0058eac0
 int32_t CGQuestPOIFrame_GetNumTooltips(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushinteger(L, frame->m_numTooltips);
+
+    return 1;
 }
 
 }
