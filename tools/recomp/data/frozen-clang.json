@@ -147595,7 +147595,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 13
+"line": 20
 },
 "CSimpleFont_IsObjectType": {
 "files": [
@@ -147617,7 +147617,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 17
+"line": 24
 },
 "CSimpleFont_GetName": {
 "files": [
@@ -147637,51 +147637,76 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 21
+"line": 28
 },
 "CSimpleFont_SetFontObject": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_type",
+"lua_rawgeti",
+"lua_touserdata",
+"lua_settop",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFont::GetObjectType",
+"CSimpleFont::IsA",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_type",
+"lua_tolstring",
+"CSimpleFont::GetFont",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_type",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"CSimpleFontable::SetFontObject"
 ],
 "strings": [
-"CSimpleFont_SetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
+"%s:SetFontObject(): Can't create a font object loop",
+"%s:SetFontObject(): Couldn't find 'this' in font object",
+"%s:SetFontObject(): Couldn't find font named %s",
+"%s:SetFontObject(): Wrong object type, expected font",
+"Usage: %s:SetFontObject(font or \"font\" or nil)"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 8,
+"stub": false,
+"lines": 39,
 "refs": [],
-"line": 30
+"line": 38
 },
 "CSimpleFont_GetFontObject": {
 "files": [
 "src/ui/simple/csimplefontscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleFont::GetObjectType",
+"FrameScript_GetObjectThis",
+"CSimpleFontable::GetFontObject",
+"lua_pushnil",
+"FrameScript_Object::RegisterScriptObject",
+"lua_rawgeti"
 ],
-"strings": [
-"CSimpleFont_GetFontObject",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplefontscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 20,
 "refs": [],
-"line": 34
+"line": 79
 },
 "CSimpleFont_CopyFontObject": {
 "files": [
@@ -147703,7 +147728,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 38
+"line": 100
 },
 "CSimpleFont_SetFont": {
 "files": [
@@ -147741,7 +147766,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 43
+"line": 105
 },
 "CSimpleFont_GetFont": {
 "files": [
@@ -147773,7 +147798,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 71
+"line": 133
 },
 "CSimpleFont_SetAlpha": {
 "files": [
@@ -147801,7 +147826,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 99
+"line": 161
 },
 "CSimpleFont_GetAlpha": {
 "files": [
@@ -147822,7 +147847,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 121
+"line": 183
 },
 "CSimpleFont_SetTextColor": {
 "files": [
@@ -147844,7 +147869,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 132
+"line": 194
 },
 "CSimpleFont_GetTextColor": {
 "files": [
@@ -147869,7 +147894,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 145
+"line": 207
 },
 "CSimpleFont_SetShadowColor": {
 "files": [
@@ -147891,7 +147916,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 164
+"line": 226
 },
 "CSimpleFont_GetShadowColor": {
 "files": [
@@ -147915,7 +147940,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 178
+"line": 240
 },
 "CSimpleFont_SetShadowOffset": {
 "files": [
@@ -147949,7 +147974,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 194
+"line": 256
 },
 "CSimpleFont_GetShadowOffset": {
 "files": [
@@ -147973,7 +147998,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 216
+"line": 278
 },
 "CSimpleFont_SetSpacing": {
 "files": [
@@ -148002,7 +148027,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 230
+"line": 292
 },
 "CSimpleFont_GetSpacing": {
 "files": [
@@ -148024,7 +148049,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 247
+"line": 309
 },
 "CSimpleFont_SetJustifyH": {
 "files": [
@@ -148051,7 +148076,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 260
+"line": 322
 },
 "CSimpleFont_GetJustifyH": {
 "files": [
@@ -148072,7 +148097,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 277
+"line": 339
 },
 "CSimpleFont_SetJustifyV": {
 "files": [
@@ -148099,7 +148124,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 288
+"line": 350
 },
 "CSimpleFont_GetJustifyV": {
 "files": [
@@ -148120,7 +148145,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 305
+"line": 367
 },
 "CSimpleFont_SetIndentedWordWrap": {
 "files": [
@@ -148142,7 +148167,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 316
+"line": 378
 },
 "CSimpleFont_GetIndentedWordWrap": {
 "files": [
@@ -148164,7 +148189,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 327
+"line": 389
 },
 "CSimpleFontString::CreateScriptMetaTable": {
 "files": [

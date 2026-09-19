@@ -6492,6 +6492,54 @@
   "refSize": 96,
   "status": "ported"
  },
+ "004a4280": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_SetFontObject",
+  "frozenSize": 436,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "ported"
+ },
+ "004a42d0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_GetFontObject",
+  "frozenSize": 118,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
+ "004a4350": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleFontScript.cpp",
+   "src/ui/simple/csimplefontscript.cpp"
+  ],
+  "frozen": "CSimpleFont_CopyFontObject",
+  "frozenSize": 75,
+  "how": "order",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 79,
+  "status": "stub"
+ },
  "004a43a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,

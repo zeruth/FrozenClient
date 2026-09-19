@@ -4,12 +4,19 @@
 #include "ui/FrameScript.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/simple/CSimpleFontStringAttributes.hpp"
+#include "ui/CScriptObject.hpp"
+#include "ui/simple/CSimpleFontable.hpp"
 #include "util/Lua.hpp"
 #include "gx/font/TextBlock.hpp"
 #include <storm/String.hpp>
 #include "util/Unimplemented.hpp"
 #include <cstdint>
 
+// TODO the reference answers both of these from a virtual at vtable+0x1c that returns the object's
+// type name as a string. CSimpleFont does not derive from CScriptObject here -- it is a
+// FrameScript_Object plus a CSimpleFontable -- so it has neither that virtual nor the string form
+// of IsA that CSimpleFontString uses. Adding the type-name virtual to FrameScript_Object is the
+// missing piece; pushing a literal "Font" instead would be inventing the answer the virtual gives.
 int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -27,12 +34,67 @@ int32_t CSimpleFont_GetName(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a4280
 int32_t CSimpleFont_SetFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+
+    CSimpleFont* inherited = nullptr;
+
+    if (lua_type(L, 2) == LUA_TTABLE) {
+        lua_rawgeti(L, 2, 0);
+        inherited = static_cast<CSimpleFont*>(lua_touserdata(L, -1));
+        lua_settop(L, -2);
+
+        if (!inherited) {
+            return luaL_error(L, "%s:SetFontObject(): Couldn't find 'this' in font object", font->GetDisplayName());
+        }
+
+        if (!inherited->IsA(CSimpleFont::GetObjectType())) {
+            return luaL_error(L, "%s:SetFontObject(): Wrong object type, expected font", font->GetDisplayName());
+        }
+    } else if (lua_type(L, 2) == LUA_TSTRING) {
+        auto fontName = lua_tostring(L, 2);
+        inherited = CSimpleFont::GetFont(fontName, 0);
+
+        if (!inherited) {
+            return luaL_error(L, "%s:SetFontObject(): Couldn't find font named %s", font->GetDisplayName(), fontName);
+        }
+    } else if (lua_type(L, 2) != LUA_TNIL) {
+        return luaL_error(L, "Usage: %s:SetFontObject(font or \"font\" or nil)", font->GetDisplayName());
+    }
+
+    for (CSimpleFontable* fontable = inherited; fontable; fontable = fontable->m_fontObject) {
+        if (fontable == static_cast<CSimpleFontable*>(font)) {
+            return luaL_error(L, "%s:SetFontObject(): Can't create a font object loop", font->GetDisplayName());
+        }
+    }
+
+    font->SetFontObject(inherited);
+
+    return 0;
 }
 
+// ref: FUN_004a42d0
 int32_t CSimpleFont_GetFontObject(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFont::GetObjectType();
+    auto font = static_cast<CSimpleFont*>(FrameScript_GetObjectThis(L, type));
+
+    auto inherited = font->GetFontObject();
+
+    if (!inherited) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    if (!inherited->lua_registered) {
+        inherited->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, inherited->lua_objectRef);
+
+    return 1;
 }
 
 int32_t CSimpleFont_CopyFontObject(lua_State* L) {
