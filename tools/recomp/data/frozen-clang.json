@@ -100659,7 +100659,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 19,
+"lines": 24,
 "refs": [],
 "line": 202
 },
@@ -100690,7 +100690,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 223
+"line": 228
 },
 "CGMinimapFrame_SetPlayerTextureWidth": {
 "files": [
@@ -100719,7 +100719,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 244
+"line": 249
 },
 "CGMinimapFrame_GetZoomLevels": {
 "files": [
@@ -100737,7 +100737,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 264
+"line": 269
 },
 "CGMinimapFrame_GetZoom": {
 "files": [
@@ -100755,7 +100755,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 272
+"line": 277
 },
 "CGMinimapFrame_SetZoom": {
 "files": [
@@ -100779,7 +100779,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 279
+"line": 284
 },
 "CGMinimapFrame_PingLocation": {
 "files": [
@@ -100801,7 +100801,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 300
+"line": 305
 },
 "CGMinimapFrame_GetPingPosition": {
 "files": [
@@ -100823,7 +100823,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 307
+"line": 312
 },
 "CGPartyInfo::NumMembers": {
 "files": [

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 15:29 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 15:34 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,8 +9,8 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2687 (=) (9.9%) | 571.9k (10.3%) |
-| &nbsp;&nbsp;ported | 2091 (+1) | 415.9k |
-| &nbsp;&nbsp;stub (unimplemented body) | 560 (-1) | 118.0k |
+| &nbsp;&nbsp;ported | 2091 (=) | 415.9k |
+| &nbsp;&nbsp;stub (unimplemented body) | 560 (=) | 118.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **932 (=) (3.4%)** | **117.7k (2.1%)** |
 | unmapped | 24474 | 4.85M |
@@ -21,11 +21,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 517, callgraph 186, callorder 126, cvar 30, handler 28, order 190, override 193, string 312, table 1105. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 15:25 -- mapped 2687, ported 2090, stub 561, spine mapped 392.
+Previous run: 2026-09-19 15:29 -- mapped 2687, ported 2091, stub 560, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 623 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 623 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:40 | 2678 (9.9%) | 920 (3.4%) | 577 | 392/5530 | 1791/2964 | 641 |
 | 2026-09-19 13:49 | 2678 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
 | 2026-09-19 13:54 | 2679 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
 | 2026-09-19 13:54 | 2679 (9.9%) | 920 (3.4%) | 574 | 392/5530 | 1791/2964 | 638 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 15:22 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:25 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:29 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
+| 2026-09-19 15:34 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 
 ## How to move a row
 

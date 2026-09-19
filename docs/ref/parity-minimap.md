@@ -6,7 +6,8 @@ session scratchpad; the addresses below were each decompiled and read, and infer
 *(uncertain)*.
 
 **Status: not started.** `src/ui/game/CGMinimapFrame.cpp` is 75 lines and holds the script
-metatable, the object type and the zoom accessors. Nothing draws. The Lua surface is ahead of the
+metatable, the object type and the zoom accessors. Nothing draws. The player-arrow question raised
+in 2a is answered in 2a-i: it is a texture, and the model attributes in Minimap.xml are inert. The Lua surface is ahead of the
 renderer: 13 of the 15 bindings are implemented and tagged, and the two that are not
 (`PingLocation`, `GetPingPosition`) are blocked on this, not on themselves.
 
@@ -108,6 +109,62 @@ The constructor has since been found (2e) and it settles half the question: it s
 zero, so the region genuinely starts null in the reference as well. Two neighbours were ruled out
 on the way -- `0057bd90` and `0057bd10`, immediately before `LoadXML`, are the texture teardown and
 the blip insertion (2d).
+
+### 2a-i. The shipped Minimap.xml sets a model, and the client ignores it
+
+Resolved 2026-09-19 from the data rather than the binary. `build/framexml/Minimap.xml` line 90:
+
+```xml
+<Minimap name="Minimap" enableMouse="true"
+         minimapPlayerModel="Interface\Minimap\MinimapArrow.mdx"
+         minimapArrowModel="Interface\Minimap\Rotating-MinimapArrow.mdl">
+```
+
+It does **not** set `minimapPlayerTexture`. It sets two *model* attributes instead, and reading
+only the XML one would conclude the player arrow is an `.mdx` model.
+
+It is not, in this build. Checking which of these names exist as strings in `WoW.exe`:
+
+| name | in WoW.exe |
+|---|---|
+| `minimapPlayerTexture` | **yes** -- the attribute `LoadXML` reads |
+| `minimapPlayerModel` | **no** |
+| `minimapArrowModel` | **no** |
+| `MinimapArrow.tga` | **yes** -- the hardcoded fallback |
+| `MinimapArrow.mdx` | yes, but reached from somewhere other than these attributes |
+
+An attribute the parser never names cannot be read, so **both model attributes in the shipped XML
+are inert** in 3.3.5a -- leftovers the client of this build does not parse. Since the XML never
+sets `minimapPlayerTexture` either, `LoadXML` always takes its fallback, and the player arrow in
+this build is the texture `Interface\Minimap\MinimapArrow.tga`.
+
+Two consequences for the port: wiring the arrow to a model because Minimap.xml names one would be
+wrong, and the attribute path in `LoadXML`, while worth porting for fidelity, can never fire with
+the shipped interface -- so a port that only ever produces the fallback is behaving correctly.
+
+### 2a-ii. LoadXML uses the arrow region, it does not create it
+
+Re-read `0057bea0` on 2026-09-19 with the map able to name its callees, which changes the reading.
+The whole function is:
+
+1. chain to the base `CSimpleFrame::LoadXML` (`FUN_00490410`, still unmapped in frozen);
+2. `XMLNode::GetAttributeByName("minimapPlayerTexture")`, falling back to the literal
+   `Interface\Minimap\MinimapArrow.tga`;
+3. **`CSimpleTexture::SetTexture`** (`004859e0`) with that path -- a member call whose `this`
+   Ghidra dropped, and the only candidate for it is the arrow region at `+0x2a0`;
+4. on failure, the status error `Invalid minimapPlayerTexture in Minimap.xml`;
+5. resolve the child region named `MinimapCompassTexture` and store it at `+0x2a8`, **less 0x20** --
+   a base-subobject adjustment, so the stored pointer is not the region pointer; a port that stores
+   the region directly will be off by that much.
+
+So the earlier note stands that there is no assignment to `+0x2a0` here, but the conclusion drawn
+from it was too weak. LoadXML *dereferences* the arrow region. For the reference not to fault, the
+region already exists by the time the override runs -- so it is created by the base `LoadXML` at
+step 1, which is therefore the thing to decompile next, not this function.
+
+That also corrects a comment in frozen's `CGMinimapFrame_SetPlayerTexture`, which said the
+`minimapPlayerTexture` attribute is what creates the region. It is not; it only names the file, and
+in the shipped interface it is never even set (2a-i).
 
 ### 2b. Orientation comes from the player object, not the camera
 
