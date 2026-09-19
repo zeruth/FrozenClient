@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 10:42 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2401 (+2) (8.8%) | 530.7k (9.6%) |
-| &nbsp;&nbsp;ported | 1925 (+2) | 397.6k |
+| mapped to a frozen function | 2402 (+1) (8.8%) | 530.7k (9.6%) |
+| &nbsp;&nbsp;ported | 1926 (+1) | 397.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 450 (=) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **895 (+2) (3.3%)** | **114.4k (2.1%)** |
-| unmapped | 24760 | 4.89M |
+| **faithful** (linked, not stub, call order >= 80%) | **896 (+1) (3.3%)** | **114.4k (2.1%)** |
+| unmapped | 24759 | 4.89M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 388 (=) (7.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 392 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 160 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11420, stubs 850 | |
+| frozen functions (src/, from PDB + source) | 11420, stubs 849 | |
 
-Match evidence: annotated 441, callgraph 169, callorder 127, cvar 30, handler 27, order 327, override 178, string 345, table 757. Module anchors: 1479 assert strings.
+Match evidence: annotated 442, callgraph 169, callorder 127, cvar 30, handler 27, order 327, override 178, string 345, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 10:37 -- mapped 2399, ported 1923, stub 450, spine mapped 388.
+Previous run: 2026-09-19 10:42 -- mapped 2401, ported 1925, stub 450, spine mapped 388.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 560 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2512 Lua bindings across 151 tables (widget methods per class, and the global function blocks). frozen registers 1584 of them (=); 558 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -80,7 +80,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00a44400 (securecall..) | 9 | `-` | 9 | 0 | securecall, hooksecurefunc, debugload, debuginfo, debugprint, debugdump ... |
 | 00a47cc0 (pcall..) | 9 | `-` | 9 | 0 | pcall, rawequal, rawget, rawset, select, setfenv ... |
 | 00ac1550 (GetTitleRegion..) | 38 | `SimpleFontMethods, SimpleFrameMethods` | 0 | 9 |  / stubs: GetTitleRegion, CreateTitleRegion, HasScript, HookScript ... |
-| 00ac40e8 (ShowChangedOptionWarnings..) | 10 | `s_ScriptFunctions` | 0 | 9 |  / stubs: TokenEntered, GetNumDeclensionSets, DeclineName, GetNumGameAccounts ... |
 | 00ac8578 (RunScript..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: RunScript, CheckInteractDistance, RandomRoll, OpeningCinematic ... |
 | 00ac86b8 (GetBindLocation..) | 9 | `s_ScriptFunctions` | 0 | 9 |  / stubs: GetBindLocation, ConfirmTalentWipe, ConfirmBinder, ShowingHelm ... |
 | 00ac8970 (SetUIVisibility..) | 13 | `s_ScriptFunctions` | 0 | 9 |  / stubs: SetUIVisibility, GrantLevel, CanSummonFriend, SummonFriend ... |
@@ -94,6 +93,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions` | 9 | 0 | GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent, SetActiveTalentGroup, AddPreviewTalentPoints ... |
 | 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 9 |  / stubs: GetNormalFontObject, GetDisabledFontObject, GetHighlightFontObject, SetFontString ... |
 | 00ac3f60 (GetNumAddOns..) | 9 | `s_ScriptFunctions` | 0 | 8 |  / stubs: GetAddOnInfo, LaunchAddOnURL, GetAddOnDependencies, GetAddOnEnableState ... |
+| 00ac40e8 (ShowChangedOptionWarnings..) | 10 | `s_ScriptFunctions` | 0 | 8 |  / stubs: TokenEntered, GetNumDeclensionSets, DeclineName, GetNumGameAccounts ... |
 | 00ac8600 (GetRestState..) | 14 | `s_ScriptFunctions` | 0 | 8 |  / stubs: GMRequestPlayerInfo, GetCoinIcon, GetCoinText, GetCoinTextureString ... |
 | 00ad02e0 (CalendarEventGetTextures..) | 8 | `-` | 8 | 0 | CalendarEventGetTextures, CalendarEventHasPendingInvite, CalendarEventHaveSettingsChanged, CalendarEventCanEdit, CalendarEventGetCalendarType, CalendarCanSendInvite ... |
 | 00ad1a68 (VehicleAimIncrement..) | 13 | `s_ScriptFunctions` | 8 | 0 | VehicleAimIncrement, VehicleAimDecrement, VehicleAimRequestAngle, VehicleAimGetAngle, VehicleAimRequestNormAngle, VehicleAimGetNormAngle ... |
@@ -135,7 +135,6 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00a44478 (difftime..) | 4 | `-` | 4 | 0 | difftime, debugstack, debuglocals, scrub |
 | 00a47d28 (create..) | 4 | `-` | 4 | 0 | create, resume, running, status |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
-| 00ac8678 (SetPortraitToTexture..) | 5 | `s_ScriptFunctions` | 0 | 4 |  / stubs: SetPortraitToTexture, GetGMTicketCategories, DropItemOnUnit, RestartGx |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 3 | GetTrackingInfo / stubs: PingLocation, GetPingPosition, SetTracking |
 | 00acf598 (CycleVariation..) | 8 | `CGTabardModelFrameMethods` | 0 | 4 |  / stubs: CycleVariation, GetUpperEmblemTexture, GetLowerEmblemTexture, CanSaveTabardNow |
@@ -143,6 +142,7 @@ The reference registers 2512 Lua bindings across 151 tables (widget methods per 
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 4 |  / stubs: GetOrientation, SetOrientation, SetStatusBarTexture, SetStatusBarColor |
 | 00ac4098 (GetCVar..) | 9 | `s_ScriptFunctions` | 0 | 3 |  / stubs: GetCVarAbsoluteMin, GetCVarAbsoluteMax, GetChangedOptionWarnings |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
+| 00ac8678 (SetPortraitToTexture..) | 5 | `s_ScriptFunctions` | 0 | 3 |  / stubs: SetPortraitToTexture, GetGMTicketCategories, DropItemOnUnit |
 | 00acd680 (GetLFGInfoLocal..) | 5 | `s_ScriptFunctions` | 3 | 0 | GetLFGInfoLocal, SetLFGComment, LFGTeleport |
 | 00ad0b28 (SetFactionInactive..) | 4 | `s_ScriptFunctions` | 3 | 0 | SetFactionInactive, SetFactionActive, ExpandFactionHeader |
 | 00ad1350 (GetInspectHonorData..) | 5 | `s_ScriptFunctions` | 0 | 3 |  / stubs: GetInspectHonorData, GetInspectArenaTeamData, ClearInspectPlayer |
@@ -243,7 +243,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | XMLTree.cpp | 184 | 31.1k | 69 (37.5%) | 44.2% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
-| CGlueMgr.cpp | 183 | 28.9k | 68 (37.2%) | 49.5% | 12 | 0 | 1 |
+| CGlueMgr.cpp | 183 | 28.9k | 69 (37.7%) | 49.6% | 12 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 204 | 27.4k | 93 (45.6%) | 51.1% | 5 | 4 | 50 |
@@ -786,7 +786,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
-| 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:12 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:12 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
@@ -810,6 +809,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:36 | 2397 (8.8%) | 893 (3.3%) | 448 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:37 | 2399 (8.8%) | 893 (3.3%) | 450 | 388/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:42 | 2401 (8.8%) | 895 (3.3%) | 450 | 388/5530 | 1584/2512 | 560 |
+| 2026-09-19 10:47 | 2402 (8.8%) | 896 (3.3%) | 450 | 388/5530 | 1584/2512 | 558 |
 
 ## How to move a row
 

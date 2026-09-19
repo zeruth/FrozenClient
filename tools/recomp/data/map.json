@@ -8269,6 +8269,24 @@
   "refSize": 169,
   "status": "ported"
  },
+ "004dd400": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp",
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_RestartGx",
+  "frozenSize": 56,
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 18,
+  "status": "ported"
+ },
  "004dd450": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

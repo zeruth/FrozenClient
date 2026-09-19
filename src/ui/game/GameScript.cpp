@@ -10,6 +10,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
@@ -1180,8 +1181,16 @@ int32_t Script_DropItemOnUnit(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004dd400
+// The whole binding is one console command. Frozen does not register "gxRestart" yet -- the CVar
+// callbacks in console/Device.cpp already accumulate the new mode into s_requestedFormat and print
+// "set pending gxRestart", but nothing recreates the device -- so this currently reports an unknown
+// command, which is also what the reference does for a command that is not registered. Porting the
+// binding is separate from building the restart, and this is the binding.
 int32_t Script_RestartGx(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ConsoleCommandExecute("gxRestart", 1);
+
+    return 0;
 }
 
 int32_t Script_RestoreVideoResolutionDefaults(lua_State* L) {

@@ -517,6 +517,7 @@ addr	how	frozen	evidence
 004dc260	string	Script_DefaultServerLogin	unique "Usage: DefaultServerLogin("accountName", "password")"
 004dcd60	string	Script_GetCreditsText	unique "Usage: Script_GetCreditText(versionIndex)"
 004dce70	string	Script_SetCVar	score 1.00 shared "%s" is read-only; Couldn't find CVar named '%s'; Usage: SetCVar("cvar", value [, "scriptC
+004dd400	annotated	Script_RestartGx	tag in src/glue/GlueScript.cpp
 004dd450	annotated	Script_IsConsoleActive	tag in src/glue/GlueScript.cpp
 004dd5d0	table	Script_GetSavedAccountName	binding "GetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
 004dd5f0	table	Script_GetSavedAccountList	binding "GetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00

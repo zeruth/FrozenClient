@@ -1065,5 +1065,9 @@
     "frozen": "Script_PlaceAction",
     "status": "stub",
     "note": "Same shape as PickupAction and blocked on the same missing cursor. Worth noting for when it lands: the reference refuses slots 0x78..0x83, the multi-cast/totem range, placing only outside that window."
+  },
+  "0076ab80": {
+    "status": "unlinked",
+    "note": "The gxRestart path. Frozen's console/Device.cpp already accumulates mode changes into s_requestedFormat and prints 'set pending gxRestart' from every gx CVar callback, but nothing consumes it: there is no registered gxRestart command and no device recreation, so a resolution or colour-depth change cannot be applied without restarting the process. Recreating the D3D device at runtime means releasing and rebuilding every GPU resource, which is a subsystem, not a missing call. Script_RestartGx is ported as the console command it is; this is what the command would have to do."
   }
 }

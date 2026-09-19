@@ -58922,7 +58922,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 20
+"line": 21
 },
 "Script_GetBuildInfo": {
 "files": [
@@ -58959,7 +58959,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 30
+"line": 31
 },
 "Script_GetLocale": {
 "files": [
@@ -58983,7 +58983,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 50
+"line": 51
 },
 "Script_GetSavedAccountName": {
 "files": [
@@ -59001,7 +59001,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 58
+"line": 59
 },
 "Script_SetSavedAccountName": {
 "files": [
@@ -59024,7 +59024,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 64
+"line": 65
 },
 "Script_GetUsesToken": {
 "files": [
@@ -59042,7 +59042,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 76
+"line": 77
 },
 "Script_SetUsesToken": {
 "files": [
@@ -59064,7 +59064,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 83
+"line": 84
 },
 "Script_GetSavedAccountList": {
 "files": [
@@ -59082,7 +59082,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 87
+"line": 88
 },
 "Script_SetSavedAccountList": {
 "files": [
@@ -59104,7 +59104,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 92
+"line": 93
 },
 "Script_SetCurrentScreen": {
 "files": [
@@ -59127,7 +59127,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 96
+"line": 97
 },
 "Script_QuitGame": {
 "files": [
@@ -59144,7 +59144,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 112
+"line": 113
 },
 "Script_QuitGameAndRunLauncher": {
 "files": [
@@ -59166,7 +59166,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 118
+"line": 119
 },
 "Script_PlayGlueMusic": {
 "files": [
@@ -59189,7 +59189,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 122
+"line": 123
 },
 "Script_PlayCreditsMusic": {
 "files": [
@@ -59212,7 +59212,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 134
+"line": 135
 },
 "Script_StopGlueMusic": {
 "files": [
@@ -59231,7 +59231,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 146
+"line": 147
 },
 "Script_GetMovieResolution": {
 "files": [
@@ -59258,7 +59258,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 153
+"line": 154
 },
 "Script_GetScreenWidth": {
 "files": [
@@ -59287,7 +59287,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 157
+"line": 158
 },
 "Script_GetScreenHeight": {
 "files": [
@@ -59312,7 +59312,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 167
+"line": 168
 },
 "Script_LaunchURL": {
 "files": [
@@ -59334,7 +59334,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 177
+"line": 178
 },
 "Script_ShowTOSNotice": {
 "files": [
@@ -59353,7 +59353,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 181
+"line": 182
 },
 "Script_TOSAccepted": {
 "files": [
@@ -59372,7 +59372,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 191
+"line": 192
 },
 "Script_AcceptTOS": {
 "files": [
@@ -59389,7 +59389,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 201
+"line": 202
 },
 "Script_ShowEULANotice": {
 "files": [
@@ -59408,7 +59408,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 207
+"line": 208
 },
 "Script_EULAAccepted": {
 "files": [
@@ -59427,7 +59427,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 217
+"line": 218
 },
 "Script_AcceptEULA": {
 "files": [
@@ -59444,7 +59444,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 227
+"line": 228
 },
 "Script_ShowTerminationWithoutNoticeNotice": {
 "files": [
@@ -59463,7 +59463,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 233
+"line": 234
 },
 "Script_TerminationWithoutNoticeAccepted": {
 "files": [
@@ -59482,7 +59482,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 243
+"line": 244
 },
 "Script_AcceptTerminationWithoutNotice": {
 "files": [
@@ -59499,7 +59499,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 253
+"line": 254
 },
 "Script_ShowScanningNotice": {
 "files": [
@@ -59518,7 +59518,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 259
+"line": 260
 },
 "Script_ScanningAccepted": {
 "files": [
@@ -59537,7 +59537,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 269
+"line": 270
 },
 "Script_AcceptScanning": {
 "files": [
@@ -59554,7 +59554,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 279
+"line": 280
 },
 "Script_ShowContestNotice": {
 "files": [
@@ -59573,7 +59573,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 285
+"line": 286
 },
 "Script_ContestAccepted": {
 "files": [
@@ -59592,7 +59592,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 295
+"line": 296
 },
 "Script_AcceptContest": {
 "files": [
@@ -59609,7 +59609,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 305
+"line": 306
 },
 "Script_DefaultServerLogin": {
 "files": [
@@ -59635,7 +59635,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 311
+"line": 312
 },
 "Script_StatusDialogClick": {
 "files": [
@@ -59652,7 +59652,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 324
+"line": 325
 },
 "Script_GetServerName": {
 "files": [
@@ -59682,7 +59682,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 330
+"line": 331
 },
 "Script_DisconnectFromServer": {
 "files": [
@@ -59703,7 +59703,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 381
+"line": 382
 },
 "Script_IsConnectedToServer": {
 "files": [
@@ -59723,7 +59723,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 392
+"line": 393
 },
 "Script_EnterWorld": {
 "files": [
@@ -59740,7 +59740,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 402
+"line": 403
 },
 "Script_Screenshot": {
 "files": [
@@ -59777,7 +59777,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 408
+"line": 409
 },
 "Script_PatchDownloadProgress": {
 "files": [
@@ -59799,7 +59799,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 412
+"line": 413
 },
 "Script_PatchDownloadCancel": {
 "files": [
@@ -59821,7 +59821,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 416
+"line": 417
 },
 "Script_PatchDownloadApply": {
 "files": [
@@ -59843,7 +59843,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 420
+"line": 421
 },
 "Script_GetNumAddOns": {
 "files": [
@@ -59868,7 +59868,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 424
+"line": 425
 },
 "Script_GetAddOnInfo": {
 "files": [
@@ -59895,7 +59895,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 431
+"line": 432
 },
 "Script_LaunchAddOnURL": {
 "files": [
@@ -59917,7 +59917,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 435
+"line": 436
 },
 "Script_GetAddOnDependencies": {
 "files": [
@@ -59944,7 +59944,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 439
+"line": 440
 },
 "Script_GetAddOnEnableState": {
 "files": [
@@ -59966,7 +59966,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 443
+"line": 444
 },
 "Script_EnableAddOn": {
 "files": [
@@ -59993,7 +59993,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 447
+"line": 448
 },
 "Script_EnableAllAddOns": {
 "files": [
@@ -60020,7 +60020,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 451
+"line": 452
 },
 "Script_DisableAddOn": {
 "files": [
@@ -60047,7 +60047,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 455
+"line": 456
 },
 "Script_DisableAllAddOns": {
 "files": [
@@ -60074,7 +60074,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 459
+"line": 460
 },
 "Script_SaveAddOns": {
 "files": [
@@ -60096,7 +60096,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 463
+"line": 464
 },
 "Script_ResetAddOns": {
 "files": [
@@ -60118,7 +60118,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 467
+"line": 468
 },
 "Script_IsAddonVersionCheckEnabled": {
 "files": [
@@ -60140,7 +60140,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 471
+"line": 472
 },
 "Script_SetAddonVersionCheck": {
 "files": [
@@ -60162,7 +60162,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 475
+"line": 476
 },
 "Script_GetCursorPosition": {
 "files": [
@@ -60195,7 +60195,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 479
+"line": 480
 },
 "Script_ShowCursor": {
 "files": [
@@ -60217,7 +60217,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 501
+"line": 502
 },
 "Script_HideCursor": {
 "files": [
@@ -60239,7 +60239,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 505
+"line": 506
 },
 "Script_GetBillingTimeRemaining": {
 "files": [
@@ -60261,7 +60261,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 509
+"line": 510
 },
 "Script_GetBillingPlan": {
 "files": [
@@ -60283,7 +60283,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 513
+"line": 514
 },
 "Script_GetBillingTimeRested": {
 "files": [
@@ -60309,7 +60309,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 517
+"line": 518
 },
 "Script_SurveyNotificationDone": {
 "files": [
@@ -60331,7 +60331,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 521
+"line": 522
 },
 "Script_PINEntered": {
 "files": [
@@ -60353,7 +60353,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 525
+"line": 526
 },
 "Script_PlayGlueAmbience": {
 "files": [
@@ -60375,7 +60375,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 529
+"line": 530
 },
 "Script_StopGlueAmbience": {
 "files": [
@@ -60397,7 +60397,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 533
+"line": 534
 },
 "Script_GetCreditsText": {
 "files": [
@@ -60426,7 +60426,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 537
+"line": 538
 },
 "Script_GetClientExpansionLevel": {
 "files": [
@@ -60444,7 +60444,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 562
+"line": 563
 },
 "Script_MatrixEntered": {
 "files": [
@@ -60466,7 +60466,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 573
+"line": 574
 },
 "Script_MatrixRevert": {
 "files": [
@@ -60488,7 +60488,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 577
+"line": 578
 },
 "Script_MatrixCommit": {
 "files": [
@@ -60510,7 +60510,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 581
+"line": 582
 },
 "Script_GetMatrixCoordinates": {
 "files": [
@@ -60532,7 +60532,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 585
+"line": 586
 },
 "Script_ScanDLLStart": {
 "files": [
@@ -60554,7 +60554,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 589
+"line": 590
 },
 "Script_ScanDLLContinueAnyway": {
 "files": [
@@ -60576,7 +60576,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 593
+"line": 594
 },
 "Script_IsScanDLLFinished": {
 "files": [
@@ -60593,7 +60593,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 597
+"line": 598
 },
 "Script_SetRealmSplitState": {
 "files": [
@@ -60615,7 +60615,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 604
+"line": 605
 },
 "Script_RequestRealmSplitInfo": {
 "files": [
@@ -60637,7 +60637,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 608
+"line": 609
 },
 "Script_CancelLogin": {
 "files": [
@@ -60659,7 +60659,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 612
+"line": 613
 },
 "Script_GetCVar": {
 "files": [
@@ -60695,7 +60695,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 616
+"line": 617
 },
 "Script_GetCVarBool": {
 "files": [
@@ -60730,7 +60730,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 633
+"line": 634
 },
 "Script_SetCVar": {
 "files": [
@@ -60779,7 +60779,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 637
+"line": 638
 },
 "Script_GetCVarDefault": {
 "files": [
@@ -60816,7 +60816,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 663
+"line": 664
 },
 "Script_GetCVarMin": {
 "files": [
@@ -60853,7 +60853,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 686
+"line": 687
 },
 "Script_GetCVarMax": {
 "files": [
@@ -60890,7 +60890,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 709
+"line": 710
 },
 "Script_GetCVarAbsoluteMin": {
 "files": [
@@ -60917,7 +60917,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 733
+"line": 734
 },
 "Script_GetCVarAbsoluteMax": {
 "files": [
@@ -60944,7 +60944,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 737
+"line": 738
 },
 "Script_GetChangedOptionWarnings": {
 "files": [
@@ -60966,7 +60966,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 741
+"line": 742
 },
 "Script_AcceptChangedOptionWarnings": {
 "files": [
@@ -60988,7 +60988,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 745
+"line": 746
 },
 "Script_ShowChangedOptionWarnings": {
 "files": [
@@ -61005,7 +61005,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 749
+"line": 750
 },
 "Script_TokenEntered": {
 "files": [
@@ -61027,7 +61027,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 756
+"line": 757
 },
 "Script_GetNumDeclensionSets": {
 "files": [
@@ -61054,7 +61054,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 760
+"line": 761
 },
 "Script_DeclineName": {
 "files": [
@@ -61081,7 +61081,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 764
+"line": 765
 },
 "Script_GetNumGameAccounts": {
 "files": [
@@ -61103,7 +61103,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 768
+"line": 769
 },
 "Script_GetGameAccountInfo": {
 "files": [
@@ -61125,7 +61125,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 772
+"line": 773
 },
 "Script_SetGameAccount": {
 "files": [
@@ -61147,7 +61147,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 776
+"line": 777
 },
 "Script_StopAllSFX": {
 "files": [
@@ -61169,7 +61169,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 780
+"line": 781
 },
 "Script_SetClearConfigData": {
 "files": [
@@ -61191,7 +61191,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 784
+"line": 785
 },
 "Script_RestartGx": {
 "files": [
@@ -61199,26 +61199,21 @@
 "src/ui/game/gamescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf",
-"__acrt_iob_func",
-"fprintf"
+"ConsoleCommandExecute",
+"ConsoleCommandExecute"
 ],
 "strings": [
-"(anonymous namespace)::Script_RestartGx",
-"Function not yet implemented: %s in %s (line %i)\n",
-"Script_RestartGx",
-"c:\\users\\tyler\\runicworld-client\\src\\glue\\gluescript.cpp",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\gamescript.cpp"
+"gxRestart"
 ],
 "consts": [
-"0"
+"0",
+"1"
 ],
-"branches": 4,
-"stub": true,
-"lines": 6,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": [],
-"line": 788
+"line": 795
 },
 "Script_RestoreVideoResolutionDefaults": {
 "files": [
@@ -61245,7 +61240,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 792
+"line": 801
 },
 "Script_RestoreVideoEffectsDefaults": {
 "files": [
@@ -61272,7 +61267,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 796
+"line": 805
 },
 "Script_RestoreVideoStereoDefaults": {
 "files": [
@@ -61299,7 +61294,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 800
+"line": 809
 },
 "Script_IsStreamingMode": {
 "files": [
@@ -61321,7 +61316,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 804
+"line": 813
 },
 "Script_IsStreamingTrial": {
 "files": [
@@ -61336,7 +61331,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 808
+"line": 817
 },
 "Script_IsConsoleActive": {
 "files": [
@@ -61356,7 +61351,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 813
+"line": 822
 },
 "Script_RunScript": {
 "files": [
@@ -61383,7 +61378,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 823
+"line": 832
 },
 "Script_ReadyForAccountDataTimes": {
 "files": [
@@ -61405,7 +61400,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 827
+"line": 836
 },
 "Script_IsTrialAccount": {
 "files": [
@@ -61422,7 +61417,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 831
+"line": 840
 },
 "Script_IsSystemSupported": {
 "files": [
@@ -61439,7 +61434,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 838
+"line": 847
 },
 "GlueScriptEventsRegisterFunctions": {
 "files": [
@@ -61456,7 +61451,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 961
+"line": 970
 },
 "GlueScriptEventsInitialize": {
 "files": [
@@ -105133,7 +105128,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 27
+"line": 28
 },
 "Script_ReloadUI": {
 "files": [
@@ -105155,7 +105150,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 40
+"line": 41
 },
 "Script_RegisterForSave": {
 "files": [
@@ -105177,7 +105172,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 44
+"line": 45
 },
 "Script_RegisterForSavePerCharacter": {
 "files": [
@@ -105199,7 +105194,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 48
+"line": 49
 },
 "Script_SetLayoutMode": {
 "files": [
@@ -105221,7 +105216,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 52
+"line": 53
 },
 "Script_IsModifierKeyDown": {
 "files": [
@@ -105246,7 +105241,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 56
+"line": 57
 },
 "Script_IsLeftShiftKeyDown": {
 "files": [
@@ -105266,7 +105261,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 66
+"line": 67
 },
 "Script_IsRightShiftKeyDown": {
 "files": [
@@ -105286,7 +105281,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 76
+"line": 77
 },
 "Script_IsLeftControlKeyDown": {
 "files": [
@@ -105306,7 +105301,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 96
+"line": 97
 },
 "Script_IsRightControlKeyDown": {
 "files": [
@@ -105326,7 +105321,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 106
+"line": 107
 },
 "Script_IsControlKeyDown": {
 "files": [
@@ -105347,7 +105342,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 116
+"line": 117
 },
 "Script_IsLeftAltKeyDown": {
 "files": [
@@ -105367,7 +105362,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 126
+"line": 127
 },
 "Script_IsRightAltKeyDown": {
 "files": [
@@ -105387,7 +105382,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 136
+"line": 137
 },
 "Script_IsAltKeyDown": {
 "files": [
@@ -105408,7 +105403,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 146
+"line": 147
 },
 "Script_IsMouseButtonDown": {
 "files": [
@@ -105430,7 +105425,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 156
+"line": 157
 },
 "Script_GetMouseButtonName": {
 "files": [
@@ -105452,7 +105447,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 160
+"line": 161
 },
 "Script_GetMouseButtonClicked": {
 "files": [
@@ -105474,7 +105469,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 164
+"line": 165
 },
 "Script_SetConsoleKey": {
 "files": [
@@ -105496,7 +105491,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 168
+"line": 169
 },
 "Script_GetFramerate": {
 "files": [
@@ -105514,7 +105509,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 207
+"line": 208
 },
 "Script_TogglePerformanceDisplay": {
 "files": [
@@ -105529,7 +105524,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 214
+"line": 215
 },
 "Script_TogglePerformancePause": {
 "files": [
@@ -105544,7 +105539,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 219
+"line": 220
 },
 "Script_TogglePerformanceValues": {
 "files": [
@@ -105559,7 +105554,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 224
+"line": 225
 },
 "Script_ResetPerformanceValues": {
 "files": [
@@ -105574,7 +105569,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 229
+"line": 230
 },
 "Script_GetDebugStats": {
 "files": [
@@ -105589,7 +105584,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 234
+"line": 235
 },
 "Script_IsDebugBuild": {
 "files": [
@@ -105611,7 +105606,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 239
+"line": 240
 },
 "Script_RegisterCVar": {
 "files": [
@@ -105633,7 +105628,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 243
+"line": 244
 },
 "Script_GetCVarInfo": {
 "files": [
@@ -105655,7 +105650,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 247
+"line": 248
 },
 "Script_GetWaterDetail": {
 "files": [
@@ -105673,7 +105668,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 365
+"line": 366
 },
 "Script_SetWaterDetail": {
 "files": [
@@ -105694,7 +105689,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 372
+"line": 373
 },
 "Script_GetFarclip": {
 "files": [
@@ -105715,7 +105710,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 381
+"line": 382
 },
 "Script_SetFarclip": {
 "files": [
@@ -105743,7 +105738,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 390
+"line": 391
 },
 "Script_GetTexLodBias": {
 "files": [
@@ -105764,7 +105759,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 408
+"line": 409
 },
 "Script_SetTexLodBias": {
 "files": [
@@ -105792,7 +105787,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 417
+"line": 418
 },
 "Script_SetBaseMip": {
 "files": [
@@ -105821,7 +105816,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 435
+"line": 436
 },
 "Script_GetBaseMip": {
 "files": [
@@ -105843,7 +105838,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 453
+"line": 454
 },
 "Script_ToggleTris": {
 "files": [
@@ -105858,7 +105853,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 461
+"line": 462
 },
 "Script_TogglePortals": {
 "files": [
@@ -105873,7 +105868,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 466
+"line": 467
 },
 "Script_ToggleCollision": {
 "files": [
@@ -105888,7 +105883,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 471
+"line": 472
 },
 "Script_ToggleCollisionDisplay": {
 "files": [
@@ -105903,7 +105898,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 476
+"line": 477
 },
 "Script_TogglePlayerBounds": {
 "files": [
@@ -105918,7 +105913,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 481
+"line": 482
 },
 "Script_Stuck": {
 "files": [
@@ -105940,7 +105935,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 486
+"line": 487
 },
 "Script_Logout": {
 "files": [
@@ -105962,7 +105957,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 490
+"line": 491
 },
 "Script_Quit": {
 "files": [
@@ -105984,7 +105979,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 494
+"line": 495
 },
 "Script_SetCursor": {
 "files": [
@@ -106006,7 +106001,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 498
+"line": 499
 },
 "Script_ResetCursor": {
 "files": [
@@ -106028,7 +106023,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 502
+"line": 503
 },
 "Script_ClearCursor": {
 "files": [
@@ -106050,7 +106045,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 506
+"line": 507
 },
 "Script_CursorHasItem": {
 "files": [
@@ -106068,7 +106063,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 510
+"line": 511
 },
 "Script_CursorHasSpell": {
 "files": [
@@ -106090,7 +106085,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 517
+"line": 518
 },
 "Script_CursorHasMacro": {
 "files": [
@@ -106112,7 +106107,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 521
+"line": 522
 },
 "Script_CursorHasMoney": {
 "files": [
@@ -106134,7 +106129,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 525
+"line": 526
 },
 "Script_GetCursorInfo": {
 "files": [
@@ -106156,7 +106151,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 529
+"line": 530
 },
 "Script_EquipCursorItem": {
 "files": [
@@ -106178,7 +106173,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 533
+"line": 534
 },
 "Script_DeleteCursorItem": {
 "files": [
@@ -106200,7 +106195,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 537
+"line": 538
 },
 "Script_EquipPendingItem": {
 "files": [
@@ -106222,7 +106217,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 541
+"line": 542
 },
 "Script_CancelPendingEquip": {
 "files": [
@@ -106244,7 +106239,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 545
+"line": 546
 },
 "Script_TargetUnit": {
 "files": [
@@ -106266,7 +106261,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 549
+"line": 550
 },
 "Script_TargetNearest": {
 "files": [
@@ -106288,7 +106283,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 553
+"line": 554
 },
 "Script_TargetNearestEnemy": {
 "files": [
@@ -106310,7 +106305,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 557
+"line": 558
 },
 "Script_TargetNearestEnemyPlayer": {
 "files": [
@@ -106332,7 +106327,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 561
+"line": 562
 },
 "Script_TargetNearestFriend": {
 "files": [
@@ -106354,7 +106349,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 565
+"line": 566
 },
 "Script_TargetNearestFriendPlayer": {
 "files": [
@@ -106376,7 +106371,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 569
+"line": 570
 },
 "Script_TargetNearestPartyMember": {
 "files": [
@@ -106398,7 +106393,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 573
+"line": 574
 },
 "Script_TargetNearestRaidMember": {
 "files": [
@@ -106420,7 +106415,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 577
+"line": 578
 },
 "Script_TargetDirectionEnemy": {
 "files": [
@@ -106442,7 +106437,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 581
+"line": 582
 },
 "Script_TargetDirectionFriend": {
 "files": [
@@ -106464,7 +106459,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 585
+"line": 586
 },
 "Script_TargetDirectionFinished": {
 "files": [
@@ -106486,7 +106481,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 589
+"line": 590
 },
 "Script_TargetLastTarget": {
 "files": [
@@ -106508,7 +106503,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 593
+"line": 594
 },
 "Script_TargetLastEnemy": {
 "files": [
@@ -106530,7 +106525,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 597
+"line": 598
 },
 "Script_TargetLastFriend": {
 "files": [
@@ -106552,7 +106547,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 601
+"line": 602
 },
 "Script_AttackTarget": {
 "files": [
@@ -106574,7 +106569,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 605
+"line": 606
 },
 "Script_AssistUnit": {
 "files": [
@@ -106596,7 +106591,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 609
+"line": 610
 },
 "Script_FocusUnit": {
 "files": [
@@ -106618,7 +106613,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 613
+"line": 614
 },
 "Script_FollowUnit": {
 "files": [
@@ -106640,7 +106635,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 617
+"line": 618
 },
 "Script_InteractUnit": {
 "files": [
@@ -106662,7 +106657,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 621
+"line": 622
 },
 "Script_ClearTarget": {
 "files": [
@@ -106684,7 +106679,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 625
+"line": 626
 },
 "Script_ClearFocus": {
 "files": [
@@ -106706,7 +106701,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 629
+"line": 630
 },
 "Script_AutoEquipCursorItem": {
 "files": [
@@ -106728,7 +106723,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 633
+"line": 634
 },
 "Script_ToggleSheath": {
 "files": [
@@ -106750,7 +106745,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 637
+"line": 638
 },
 "ResolveArea": {
 "files": [
@@ -106775,7 +106770,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 646
+"line": 647
 },
 "PushAreaName": {
 "files": [
@@ -106793,7 +106788,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 684
+"line": 685
 },
 "Script_GetZoneText": {
 "files": [
@@ -106811,7 +106806,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 692
+"line": 693
 },
 "Script_GetRealZoneText": {
 "files": [
@@ -106829,7 +106824,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 703
+"line": 704
 },
 "Script_GetSubZoneText": {
 "files": [
@@ -106847,7 +106842,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 714
+"line": 715
 },
 "Script_GetMinimapZoneText": {
 "files": [
@@ -106865,7 +106860,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 726
+"line": 727
 },
 "Script_InitiateTrade": {
 "files": [
@@ -106887,7 +106882,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 737
+"line": 738
 },
 "Script_CanInspect": {
 "files": [
@@ -106909,7 +106904,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 741
+"line": 742
 },
 "Script_NotifyInspect": {
 "files": [
@@ -106931,7 +106926,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 745
+"line": 746
 },
 "Script_InviteUnit": {
 "files": [
@@ -106953,7 +106948,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 749
+"line": 750
 },
 "Script_UninviteUnit": {
 "files": [
@@ -106975,7 +106970,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 753
+"line": 754
 },
 "Script_RequestTimePlayed": {
 "files": [
@@ -106997,7 +106992,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 757
+"line": 758
 },
 "Script_RepopMe": {
 "files": [
@@ -107019,7 +107014,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 761
+"line": 762
 },
 "Script_AcceptResurrect": {
 "files": [
@@ -107041,7 +107036,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 765
+"line": 766
 },
 "Script_DeclineResurrect": {
 "files": [
@@ -107063,7 +107058,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 769
+"line": 770
 },
 "Script_ResurrectGetOfferer": {
 "files": [
@@ -107085,7 +107080,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 773
+"line": 774
 },
 "Script_ResurrectHasSickness": {
 "files": [
@@ -107103,7 +107098,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 777
+"line": 778
 },
 "Script_ResurrectHasTimer": {
 "files": [
@@ -107121,7 +107116,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 784
+"line": 785
 },
 "Script_BeginTrade": {
 "files": [
@@ -107143,7 +107138,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 791
+"line": 792
 },
 "Script_CancelTrade": {
 "files": [
@@ -107165,7 +107160,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 795
+"line": 796
 },
 "Script_AcceptGroup": {
 "files": [
@@ -107187,7 +107182,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 799
+"line": 800
 },
 "Script_DeclineGroup": {
 "files": [
@@ -107209,7 +107204,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 803
+"line": 804
 },
 "Script_AcceptGuild": {
 "files": [
@@ -107231,7 +107226,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 807
+"line": 808
 },
 "Script_DeclineGuild": {
 "files": [
@@ -107253,7 +107248,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 811
+"line": 812
 },
 "Script_AcceptArenaTeam": {
 "files": [
@@ -107275,7 +107270,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 815
+"line": 816
 },
 "Script_DeclineArenaTeam": {
 "files": [
@@ -107297,7 +107292,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 819
+"line": 820
 },
 "Script_CancelLogout": {
 "files": [
@@ -107319,7 +107314,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 823
+"line": 824
 },
 "Script_ForceLogout": {
 "files": [
@@ -107341,7 +107336,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 827
+"line": 828
 },
 "Script_ForceQuit": {
 "files": [
@@ -107363,7 +107358,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 831
+"line": 832
 },
 "Script_GetCursorMoney": {
 "files": [
@@ -107381,7 +107376,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 835
+"line": 836
 },
 "Script_DropCursorMoney": {
 "files": [
@@ -107403,7 +107398,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 841
+"line": 842
 },
 "Script_PickupPlayerMoney": {
 "files": [
@@ -107425,7 +107420,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 845
+"line": 846
 },
 "Script_HasSoulstone": {
 "files": [
@@ -107447,7 +107442,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 849
+"line": 850
 },
 "Script_UseSoulstone": {
 "files": [
@@ -107469,7 +107464,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 853
+"line": 854
 },
 "Script_HasKey": {
 "files": [
@@ -107487,7 +107482,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 857
+"line": 858
 },
 "Script_GuildInvite": {
 "files": [
@@ -107509,7 +107504,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 864
+"line": 865
 },
 "Script_GuildUninvite": {
 "files": [
@@ -107531,7 +107526,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 868
+"line": 869
 },
 "Script_GuildPromote": {
 "files": [
@@ -107553,7 +107548,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 872
+"line": 873
 },
 "Script_GuildDemote": {
 "files": [
@@ -107575,7 +107570,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 876
+"line": 877
 },
 "Script_GuildSetLeader": {
 "files": [
@@ -107597,7 +107592,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 880
+"line": 881
 },
 "Script_GuildSetMOTD": {
 "files": [
@@ -107619,7 +107614,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 884
+"line": 885
 },
 "Script_GuildLeave": {
 "files": [
@@ -107641,7 +107636,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 888
+"line": 889
 },
 "Script_GuildDisband": {
 "files": [
@@ -107663,7 +107658,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 892
+"line": 893
 },
 "Script_GuildInfo": {
 "files": [
@@ -107685,7 +107680,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 896
+"line": 897
 },
 "Script_ArenaTeamInviteByName": {
 "files": [
@@ -107707,7 +107702,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 900
+"line": 901
 },
 "Script_ArenaTeamLeave": {
 "files": [
@@ -107729,7 +107724,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 904
+"line": 905
 },
 "Script_ArenaTeamUninviteByName": {
 "files": [
@@ -107751,7 +107746,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 908
+"line": 909
 },
 "Script_ArenaTeamSetLeaderByName": {
 "files": [
@@ -107773,7 +107768,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 912
+"line": 913
 },
 "Script_ArenaTeamDisband": {
 "files": [
@@ -107795,7 +107790,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 916
+"line": 917
 },
 "Script_GetDamageBonusStat": {
 "files": [
@@ -107817,7 +107812,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 939
+"line": 940
 },
 "Script_GetReleaseTimeRemaining": {
 "files": [
@@ -107839,7 +107834,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 943
+"line": 944
 },
 "Script_GetCorpseRecoveryDelay": {
 "files": [
@@ -107861,7 +107856,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 947
+"line": 948
 },
 "Script_GetInstanceBootTimeRemaining": {
 "files": [
@@ -107883,7 +107878,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 951
+"line": 952
 },
 "Script_GetInstanceLockTimeRemaining": {
 "files": [
@@ -107905,7 +107900,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 955
+"line": 956
 },
 "Script_GetInstanceLockTimeRemainingEncounter": {
 "files": [
@@ -107927,7 +107922,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 959
+"line": 960
 },
 "Script_GetSummonConfirmTimeLeft": {
 "files": [
@@ -107949,7 +107944,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 963
+"line": 964
 },
 "Script_GetSummonConfirmSummoner": {
 "files": [
@@ -107971,7 +107966,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 967
+"line": 968
 },
 "Script_GetSummonConfirmAreaName": {
 "files": [
@@ -107993,7 +107988,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 971
+"line": 972
 },
 "Script_ConfirmSummon": {
 "files": [
@@ -108015,7 +108010,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 975
+"line": 976
 },
 "Script_CancelSummon": {
 "files": [
@@ -108037,7 +108032,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 979
+"line": 980
 },
 "Script_GetNetStats": {
 "files": [
@@ -108058,7 +108053,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1005
+"line": 1006
 },
 "Script_SitStandOrDescendStart": {
 "files": [
@@ -108080,7 +108075,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1015
+"line": 1016
 },
 "Script_StopCinematic": {
 "files": [
@@ -108102,7 +108097,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1019
+"line": 1020
 },
 "Script_CheckInteractDistance": {
 "files": [
@@ -108124,7 +108119,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1027
+"line": 1028
 },
 "Script_RandomRoll": {
 "files": [
@@ -108146,7 +108141,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1031
+"line": 1032
 },
 "Script_OpeningCinematic": {
 "files": [
@@ -108168,7 +108163,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1035
+"line": 1036
 },
 "Script_InCinematic": {
 "files": [
@@ -108186,7 +108181,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1039
+"line": 1040
 },
 "Script_AcceptXPLoss": {
 "files": [
@@ -108208,7 +108203,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1046
+"line": 1047
 },
 "Script_CheckSpiritHealerDist": {
 "files": [
@@ -108230,7 +108225,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1050
+"line": 1051
 },
 "Script_CheckTalentMasterDist": {
 "files": [
@@ -108252,7 +108247,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1054
+"line": 1055
 },
 "Script_CheckBinderDist": {
 "files": [
@@ -108274,7 +108269,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1058
+"line": 1059
 },
 "Script_RetrieveCorpse": {
 "files": [
@@ -108296,7 +108291,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1062
+"line": 1063
 },
 "Script_BindEnchant": {
 "files": [
@@ -108318,7 +108313,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1066
+"line": 1067
 },
 "Script_ReplaceEnchant": {
 "files": [
@@ -108340,7 +108335,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1070
+"line": 1071
 },
 "Script_ReplaceTradeEnchant": {
 "files": [
@@ -108362,7 +108357,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1074
+"line": 1075
 },
 "Script_NotWhileDeadError": {
 "files": [
@@ -108384,7 +108379,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1078
+"line": 1079
 },
 "Script_GetRestState": {
 "files": [
@@ -108407,7 +108402,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1082
+"line": 1083
 },
 "Script_GetXPExhaustion": {
 "files": [
@@ -108424,7 +108419,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1091
+"line": 1092
 },
 "Script_GetTimeToWellRested": {
 "files": [
@@ -108441,7 +108436,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1097
+"line": 1098
 },
 "Script_GMRequestPlayerInfo": {
 "files": [
@@ -108463,7 +108458,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1103
+"line": 1104
 },
 "Script_GetCoinIcon": {
 "files": [
@@ -108485,7 +108480,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1107
+"line": 1108
 },
 "Script_GetCoinText": {
 "files": [
@@ -108507,7 +108502,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1111
+"line": 1112
 },
 "Script_GetCoinTextureString": {
 "files": [
@@ -108529,7 +108524,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1115
+"line": 1116
 },
 "Script_IsSubZonePVPPOI": {
 "files": [
@@ -108547,7 +108542,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1119
+"line": 1120
 },
 "Script_GetZonePVPInfo": {
 "files": [
@@ -108567,7 +108562,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1126
+"line": 1127
 },
 "Script_TogglePVP": {
 "files": [
@@ -108589,7 +108584,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1138
+"line": 1139
 },
 "Script_SetPVP": {
 "files": [
@@ -108611,7 +108606,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1142
+"line": 1143
 },
 "Script_GetPVPDesired": {
 "files": [
@@ -108633,7 +108628,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1146
+"line": 1147
 },
 "Script_GetPVPTimer": {
 "files": [
@@ -108655,7 +108650,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1150
+"line": 1151
 },
 "Script_IsPVPTimerRunning": {
 "files": [
@@ -108673,7 +108668,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1154
+"line": 1155
 },
 "Script_ConfirmBindOnUse": {
 "files": [
@@ -108695,7 +108690,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1161
+"line": 1162
 },
 "Script_SetPortraitToTexture": {
 "files": [
@@ -108717,7 +108712,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1165
+"line": 1166
 },
 "Script_GetGMTicketCategories": {
 "files": [
@@ -108739,7 +108734,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1175
+"line": 1176
 },
 "Script_DropItemOnUnit": {
 "files": [
@@ -108761,7 +108756,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1179
+"line": 1180
 },
 "Script_GetBindLocation": {
 "files": [
@@ -108783,7 +108778,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1199
+"line": 1208
 },
 "Script_ConfirmTalentWipe": {
 "files": [
@@ -108805,7 +108800,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1203
+"line": 1212
 },
 "Script_ConfirmBinder": {
 "files": [
@@ -108827,7 +108822,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1207
+"line": 1216
 },
 "Script_ShowingHelm": {
 "files": [
@@ -108849,7 +108844,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1211
+"line": 1220
 },
 "Script_ShowingCloak": {
 "files": [
@@ -108871,7 +108866,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1215
+"line": 1224
 },
 "Script_ShowHelm": {
 "files": [
@@ -108893,7 +108888,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1219
+"line": 1228
 },
 "Script_ShowCloak": {
 "files": [
@@ -108915,7 +108910,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1223
+"line": 1232
 },
 "Script_SetEuropeanNumbers": {
 "files": [
@@ -108937,7 +108932,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1227
+"line": 1236
 },
 "Script_GetAreaSpiritHealerTime": {
 "files": [
@@ -108959,7 +108954,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1231
+"line": 1240
 },
 "Script_AcceptAreaSpiritHeal": {
 "files": [
@@ -108981,7 +108976,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1235
+"line": 1244
 },
 "Script_CancelAreaSpiritHeal": {
 "files": [
@@ -109003,7 +108998,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1239
+"line": 1248
 },
 "Script_GetMouseFocus": {
 "files": [
@@ -109023,7 +109018,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1252
+"line": 1261
 },
 "Script_GetRealmName": {
 "files": [
@@ -109045,7 +109040,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1271
+"line": 1280
 },
 "Script_GetItemQualityColor": {
 "files": [
@@ -109084,7 +109079,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1275
+"line": 1284
 },
 "Script_GetItemInfo": {
 "files": [
@@ -109106,7 +109101,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1297
+"line": 1306
 },
 "Script_GetItemGem": {
 "files": [
@@ -109128,7 +109123,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1301
+"line": 1310
 },
 "Script_GetExtendedItemInfo": {
 "files": [
@@ -109150,7 +109145,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1305
+"line": 1314
 },
 "Script_GetItemIcon": {
 "files": [
@@ -109172,7 +109167,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1309
+"line": 1318
 },
 "Script_GetItemFamily": {
 "files": [
@@ -109194,7 +109189,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1313
+"line": 1322
 },
 "Script_GetItemCount": {
 "files": [
@@ -109216,7 +109211,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1317
+"line": 1326
 },
 "Script_GetItemSpell": {
 "files": [
@@ -109238,7 +109233,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1321
+"line": 1330
 },
 "Script_GetItemCooldown": {
 "files": [
@@ -109260,7 +109255,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1325
+"line": 1334
 },
 "Script_PickupItem": {
 "files": [
@@ -109282,7 +109277,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1329
+"line": 1338
 },
 "Script_IsCurrentItem": {
 "files": [
@@ -109304,7 +109299,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1333
+"line": 1342
 },
 "Script_IsUsableItem": {
 "files": [
@@ -109326,7 +109321,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1337
+"line": 1346
 },
 "Script_IsHelpfulItem": {
 "files": [
@@ -109348,7 +109343,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1341
+"line": 1350
 },
 "Script_IsHarmfulItem": {
 "files": [
@@ -109370,7 +109365,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1345
+"line": 1354
 },
 "Script_IsConsumableItem": {
 "files": [
@@ -109392,7 +109387,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1349
+"line": 1358
 },
 "Script_IsEquippableItem": {
 "files": [
@@ -109410,7 +109405,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1353
+"line": 1362
 },
 "Script_IsEquippedItem": {
 "files": [
@@ -109428,7 +109423,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1360
+"line": 1369
 },
 "Script_IsEquippedItemType": {
 "files": [
@@ -109450,7 +109445,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1367
+"line": 1376
 },
 "Script_IsDressableItem": {
 "files": [
@@ -109468,7 +109463,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1371
+"line": 1380
 },
 "Script_ItemHasRange": {
 "files": [
@@ -109490,7 +109485,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1378
+"line": 1387
 },
 "Script_IsItemInRange": {
 "files": [
@@ -109512,7 +109507,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1382
+"line": 1391
 },
 "Script_GetAddOnMetadata": {
 "files": [
@@ -109534,7 +109529,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1394
+"line": 1403
 },
 "Script_UpdateAddOnMemoryUsage": {
 "files": [
@@ -109556,7 +109551,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1398
+"line": 1407
 },
 "Script_GetAddOnMemoryUsage": {
 "files": [
@@ -109578,7 +109573,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1402
+"line": 1411
 },
 "Script_GetScriptCPUUsage": {
 "files": [
@@ -109600,7 +109595,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1406
+"line": 1415
 },
 "Script_UpdateAddOnCPUUsage": {
 "files": [
@@ -109622,7 +109617,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1410
+"line": 1419
 },
 "Script_GetAddOnCPUUsage": {
 "files": [
@@ -109644,7 +109639,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1414
+"line": 1423
 },
 "Script_GetFunctionCPUUsage": {
 "files": [
@@ -109666,7 +109661,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1418
+"line": 1427
 },
 "Script_GetFrameCPUUsage": {
 "files": [
@@ -109688,7 +109683,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1422
+"line": 1431
 },
 "Script_GetEventCPUUsage": {
 "files": [
@@ -109710,7 +109705,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1426
+"line": 1435
 },
 "Script_ResetCPUUsage": {
 "files": [
@@ -109732,7 +109727,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1430
+"line": 1439
 },
 "Script_ResetDisabledAddOns": {
 "files": [
@@ -109754,7 +109749,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1454
+"line": 1463
 },
 "Script_IsAddOnLoadOnDemand": {
 "files": [
@@ -109776,7 +109771,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1458
+"line": 1467
 },
 "Script_IsAddOnLoaded": {
 "files": [
@@ -109797,7 +109792,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1462
+"line": 1471
 },
 "Script_LoadAddOn": {
 "files": [
@@ -109822,7 +109817,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1474
+"line": 1483
 },
 "Script_PartialPlayTime": {
 "files": [
@@ -109840,7 +109835,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1490
+"line": 1499
 },
 "Script_NoPlayTime": {
 "files": [
@@ -109858,7 +109853,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1496
+"line": 1505
 },
 "Script_CanShowResetInstances": {
 "files": [
@@ -109880,7 +109875,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1511
+"line": 1520
 },
 "Script_ResetInstances": {
 "files": [
@@ -109902,7 +109897,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1515
+"line": 1524
 },
 "Script_IsInInstance": {
 "files": [
@@ -109922,7 +109917,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1519
+"line": 1528
 },
 "Script_GetInstanceDifficulty": {
 "files": [
@@ -109944,7 +109939,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1526
+"line": 1535
 },
 "Script_GetInstanceInfo": {
 "files": [
@@ -109972,7 +109967,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1530
+"line": 1539
 },
 "Script_GetDungeonDifficulty": {
 "files": [
@@ -109990,7 +109985,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1546
+"line": 1555
 },
 "Script_SetDungeonDifficulty": {
 "files": [
@@ -110012,7 +110007,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1554
+"line": 1563
 },
 "Script_GetRaidDifficulty": {
 "files": [
@@ -110030,7 +110025,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1558
+"line": 1567
 },
 "Script_SetRaidDifficulty": {
 "files": [
@@ -110052,7 +110047,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1564
+"line": 1573
 },
 "Script_ReportBug": {
 "files": [
@@ -110074,7 +110069,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1568
+"line": 1577
 },
 "Script_ReportSuggestion": {
 "files": [
@@ -110096,7 +110091,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1572
+"line": 1581
 },
 "Script_GetMirrorTimerInfo": {
 "files": [
@@ -110122,7 +110117,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1576
+"line": 1585
 },
 "Script_GetMirrorTimerProgress": {
 "files": [
@@ -110144,7 +110139,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1588
+"line": 1597
 },
 "Script_GetNumTitles": {
 "files": [
@@ -110162,7 +110157,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1592
+"line": 1601
 },
 "Script_GetCurrentTitle": {
 "files": [
@@ -110180,7 +110175,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1600
+"line": 1609
 },
 "Script_SetCurrentTitle": {
 "files": [
@@ -110202,7 +110197,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1608
+"line": 1617
 },
 "Script_IsTitleKnown": {
 "files": [
@@ -110220,7 +110215,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1612
+"line": 1621
 },
 "Script_GetTitleName": {
 "files": [
@@ -110242,7 +110237,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1619
+"line": 1628
 },
 "Script_UseItemByName": {
 "files": [
@@ -110264,7 +110259,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1623
+"line": 1632
 },
 "Script_EquipItemByName": {
 "files": [
@@ -110286,7 +110281,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1627
+"line": 1636
 },
 "Script_GetExistingLocales": {
 "files": [
@@ -110308,7 +110303,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1631
+"line": 1640
 },
 "Script_InCombatLockdown": {
 "files": [
@@ -110326,7 +110321,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1635
+"line": 1644
 },
 "Script_StartAttack": {
 "files": [
@@ -110348,7 +110343,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1642
+"line": 1651
 },
 "Script_StopAttack": {
 "files": [
@@ -110370,7 +110365,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1646
+"line": 1655
 },
 "Script_SetTaxiBenchmarkMode": {
 "files": [
@@ -110392,7 +110387,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1650
+"line": 1659
 },
 "Script_GetTaxiBenchmarkMode": {
 "files": [
@@ -110414,7 +110409,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1654
+"line": 1663
 },
 "Script_Dismount": {
 "files": [
@@ -110436,7 +110431,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1658
+"line": 1667
 },
 "Script_VoicePushToTalkStart": {
 "files": [
@@ -110458,7 +110453,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1662
+"line": 1671
 },
 "Script_VoicePushToTalkStop": {
 "files": [
@@ -110480,7 +110475,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1666
+"line": 1675
 },
 "Script_SetUIVisibility": {
 "files": [
@@ -110502,7 +110497,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1670
+"line": 1679
 },
 "Script_IsReferAFriendLinked": {
 "files": [
@@ -110519,7 +110514,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1674
+"line": 1683
 },
 "Script_CanGrantLevel": {
 "files": [
@@ -110537,7 +110532,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1680
+"line": 1689
 },
 "Script_GrantLevel": {
 "files": [
@@ -110559,7 +110554,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1687
+"line": 1696
 },
 "Script_CanSummonFriend": {
 "files": [
@@ -110581,7 +110576,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1691
+"line": 1700
 },
 "Script_SummonFriend": {
 "files": [
@@ -110603,7 +110598,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1695
+"line": 1704
 },
 "Script_GetSummonFriendCooldown": {
 "files": [
@@ -110622,7 +110617,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1699
+"line": 1708
 },
 "Script_GetTotemInfo": {
 "files": [
@@ -110645,7 +110640,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1711
+"line": 1720
 },
 "Script_GetTotemTimeLeft": {
 "files": [
@@ -110667,7 +110662,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1726
+"line": 1735
 },
 "Script_TargetTotem": {
 "files": [
@@ -110689,7 +110684,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1730
+"line": 1739
 },
 "Script_DestroyTotem": {
 "files": [
@@ -110711,7 +110706,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1734
+"line": 1743
 },
 "Script_AcceptLevelGrant": {
 "files": [
@@ -110733,7 +110728,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1746
+"line": 1755
 },
 "Script_DeclineLevelGrant": {
 "files": [
@@ -110755,7 +110750,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1750
+"line": 1759
 },
 "Script_UploadSettings": {
 "files": [
@@ -110777,7 +110772,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1754
+"line": 1763
 },
 "Script_DownloadSettings": {
 "files": [
@@ -110799,7 +110794,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1758
+"line": 1767
 },
 "Script_GameMovieFinished": {
 "files": [
@@ -110821,7 +110816,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1766
+"line": 1775
 },
 "Script_IsDesaturateSupported": {
 "files": [
@@ -110843,7 +110838,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1770
+"line": 1779
 },
 "Script_GetThreatStatusColor": {
 "files": [
@@ -110865,7 +110860,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1774
+"line": 1783
 },
 "Script_IsThreatWarningEnabled": {
 "files": [
@@ -110882,7 +110877,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1778
+"line": 1787
 },
 "Script_ConsoleAddMessage": {
 "files": [
@@ -110904,7 +110899,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1784
+"line": 1793
 },
 "Script_GetItemUniqueness": {
 "files": [
@@ -110926,7 +110921,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1788
+"line": 1797
 },
 "Script_EndRefund": {
 "files": [
@@ -110948,7 +110943,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1792
+"line": 1801
 },
 "Script_EndBoundTradeable": {
 "files": [
@@ -110970,7 +110965,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1796
+"line": 1805
 },
 "Script_CanMapChangeDifficulty": {
 "files": [
@@ -110992,7 +110987,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1800
+"line": 1809
 },
 "Script_GetExpansionLevel": {
 "files": [
@@ -111010,7 +111005,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1804
+"line": 1813
 },
 "Script_GetAllowLowLevelRaid": {
 "files": [
@@ -111032,7 +111027,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1811
+"line": 1820
 },
 "Script_SetAllowLowLevelRaid": {
 "files": [
@@ -111054,7 +111049,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1815
+"line": 1824
 },
 "GameScriptRegisterFunctions": {
 "files": [
@@ -111069,7 +111064,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2134
+"line": 2143
 },
 "Script_GetGMTicket": {
 "files": [
