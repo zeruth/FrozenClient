@@ -754,6 +754,10 @@ int32_t CGTooltip_SetPetAction(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00625630. Reachable only once there are stance buttons: GetNumShapeshiftForms
+// answers zero (MiscScript.cpp binds it to Script_ReturnZero), so FrameXML builds no stance
+// bar and nothing ever calls this. Implementing it first would be inert, the same way the
+// tooltip line-growth path was before AddLine was taught to ask for a new line.
 int32_t CGTooltip_SetShapeshift(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -762,8 +766,27 @@ int32_t CGTooltip_SetPossession(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00625940
+// The minimap tracking button's tooltip. The reference picks between three answers: the name of
+// the selected tracking type, the tooltip of a tracking *spell* when one is active instead, and
+// otherwise the localized MINIMAP_TRACKING_TOOLTIP_NONE.
+//
+// Frozen keeps no minimap tracking state, so the third answer is always the right one -- not a
+// placeholder for the other two but the same line the reference shows when nothing is tracked,
+// which is the client's actual condition. When tracking arrives, the two branches above it go
+// here, reading the selected record's name and the tracking spell respectively.
 int32_t CGTooltip_SetTracking(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    TooltipClear(tooltip);
+
+    tooltip->m_lineCount = 1;
+    TooltipSetLine(tooltip, 1, false,
+                   FrameScript_GetText("MINIMAP_TRACKING_TOOLTIP_NONE", -1, GENDER_NOT_APPLICABLE));
+
+    TooltipShow(tooltip);
+
+    return 0;
 }
 
 // SetSpell(slot, bookType): a spellbook entry.

@@ -1621,7 +1621,7 @@ addr	how	frozen	evidence
 00625470	table	CGTooltip_SetPetAction	binding "SetPetAction" in CGTooltipMethods ~ table 00ad2ae0
 00625630	table	CGTooltip_SetShapeshift	binding "SetShapeshift" in CGTooltipMethods ~ table 00ad2ae0
 006257c0	table	CGTooltip_SetPossession	binding "SetPossession" in CGTooltipMethods ~ table 00ad2ae0
-00625940	table	CGTooltip_SetTracking	binding "SetTracking" in CGTooltipMethods ~ table 00ad2ae0
+00625940	annotated	CGTooltip_SetTracking	tag in src/ui/game/CGTooltipScript.cpp
 006259e0	table	CGTooltip_SetSpell	binding "SetSpell" in CGTooltipMethods ~ table 00ad2ae0
 00625b90	table	CGTooltip_SetSpellByID	binding "SetSpellByID" in CGTooltipMethods ~ table 00ad2ae0
 00625d00	table	CGTooltip_SetGlyph	binding "SetGlyph" in CGTooltipMethods ~ table 00ad2ae0

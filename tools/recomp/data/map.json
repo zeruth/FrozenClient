@@ -25822,20 +25822,20 @@
   "status": "stub"
  },
  "00625940": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetTracking",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 188,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 157,
-  "status": "stub"
+  "status": "ported"
  },
  "006259e0": {
   "branchRatio": 0.167,
