@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-19 03:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 03:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 2248 (+1) (8.3%) | 479.8k (8.7%) |
-| &nbsp;&nbsp;ported | 1700 (+1) | 341.3k |
+| mapped to a whoa function | 2254 (=) (8.3%) | 480.5k (8.7%) |
+| &nbsp;&nbsp;ported | 1706 (=) | 341.9k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **681 (=) (2.5%)** | **85.3k (1.5%)** |
-| unmapped | 24913 | 4.94M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 312 (+1) (5.6%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **683 (=) (2.5%)** | **85.3k (1.5%)** |
+| unmapped | 24907 | 4.94M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 312 (=) (5.6%) | |
 | whoa functions (src/, from PDB + source) | 11319, stubs 865 | |
 
-Match evidence: annotated 226, callgraph 133, callorder 129, cvar 30, handler 27, order 321, override 137, string 347, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 228, callgraph 133, callorder 129, cvar 30, handler 27, order 321, override 141, string 347, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 03:46 -- mapped 2247, ported 1699, stub 524, spine mapped 311.
+Previous run: 2026-09-19 03:52 -- mapped 2254, ported 1706, stub 524, spine mapped 312.
 
 ## Lua API coverage (binding tables)
 
@@ -246,7 +246,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | XMLTree.cpp | 184 | 31.1k | 64 (34.8%) | 43.0% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 47 (27.8%) | 36.2% | 0 | 0 | 31 |
-| CGlueMgr.cpp | 183 | 28.9k | 66 (36.1%) | 49.2% | 12 | 0 | 1 |
+| CGlueMgr.cpp | 183 | 28.9k | 67 (36.6%) | 49.3% | 12 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 204 | 27.4k | 92 (45.1%) | 50.8% | 14 | 4 | 50 |
@@ -268,7 +268,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Cursor.cpp | 117 | 20.7k | 2 (1.7%) | 4.3% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
+| CSimpleEditBox.cpp | 94 | 20.4k | 7 (7.4%) | 11.6% | 0 | 0 | 0 |
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 35 (27.3%) | 30.0% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
@@ -299,7 +299,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | GxuFontUtil.cpp | 60 | 13.3k | 2 (3.3%) | 1.0% | 0 | 0 | 45 |
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
-| blp.cpp | 94 | 13.0k | 13 (13.8%) | 12.5% | 0 | 0 | 20 |
+| blp.cpp | 94 | 13.0k | 16 (17.0%) | 13.3% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
@@ -700,12 +700,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 2% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 00851d20 | `auxsort` | 29% | 73 | 32 | 18 | 13 | 0% | 1011 |
 | 004debc0 | `Script_GetRealmInfo` | 62% | 53 | 55 | 24 | 17 | 6% | 990 |
-| 00967290 | `CSimpleEditBox::LoadXML` | 81% | 36 | 42 | 42 | 20 | 0% | 989 |
+| 00967290 | `CSimpleEditBox::LoadXML` | 83% | 36 | 42 | 42 | 20 | 0% | 989 |
 | 00853c50 | `str_format` | 63% | 30 | 25 | 23 | 18 | 3% | 969 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
 | 0085e160 | `read_string` | 47% | 30 | 21 | 15 | 25 | 6% | 904 |
-| 004d9bd0 | `CGlueMgr::EnterWorld` | 55% | 38 | 37 | 23 | 15 | 29% | 895 |
+| 004d9bd0 | `CGlueMgr::EnterWorld` | 63% | 38 | 37 | 23 | 15 | 29% | 895 |
 | 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
 | 0076a220 | `CVGxResolutionCallback` | 30% | 20 | 22 | 25 | 12 | 40% | 856 |
 | 0061eb40 | `CGTooltip_SetOwner` | 30% | 33 | 14 | 25 | 4 | 0% | 836 |
@@ -789,8 +789,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 23:01 | 1657 (6.1%) | 329 (1.2%) | 463 | 190/5531 | 936/2512 | 446 |
-| 2026-09-18 23:05 | 1658 (6.1%) | 329 (1.2%) | 463 | 191/5530 | 936/2512 | 446 |
 | 2026-09-18 23:21 | 1656 (6.1%) | 327 (1.2%) | 463 | 193/5530 | 936/2512 | 446 |
 | 2026-09-18 23:22 | 1661 (6.1%) | 330 (1.2%) | 463 | 194/5530 | 936/2512 | 446 |
 | 2026-09-18 23:23 | 1668 (6.1%) | 336 (1.2%) | 463 | 203/5530 | 936/2512 | 446 |
@@ -814,6 +812,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 03:44 | 2219 (8.2%) | 654 (2.4%) | 523 | 307/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:46 | 2247 (8.3%) | 681 (2.5%) | 524 | 311/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:47 | 2248 (8.3%) | 681 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
+| 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

@@ -427,6 +427,7 @@ addr	how	whoa	evidence
 004d63b0	string	PostInitObject	unique "PostInitObject: unknown object type %d"
 004d7050	string	ObjectUpdateFirstPass	unique "Unknown client update packet type (%d)!"
 004d80c0	string	CGlueMgr::DisplayLoginStatus	unique "CONNECTION_HELP"
+004d8580	override	WowClientDB<GameTipsRec>::GetRecordByIndex	
 004d8860	string	CGlueMgr::HandleDisplaySizeChanged	score 0.50 shared GlueParent
 004d8a30	string	CGlueMgr::LoginServerLogin	unique "LOGIN_ENTER_NAME"
 004d8ba0	annotated	CGlueMgr::Sub4D8BA0	tag in src/glue/CGlueMgr.cpp
@@ -1370,7 +1371,10 @@ addr	how	whoa	evidence
 006b0bc0	annotated	ClientServices::ClearMessageHandler	tag in src/client/ClientServices.cpp
 006b0bf0	string	ClientServices::InitLoginServerCVars	unique "%srealmlist.wtf"
 006b0dc0	string	ClientServices::GetSelectedRealmName	score 0.75 shared Last realm connected to; realmName
+006b0ed0	override	ClientServices::GetInstance	
 006b0f40	override	ClientServices::GetErrorToken	
+006b0fe0	override	ClientServices::SetAccountName	
+006b1020	override	ClientServices::SetCharacterInfo	
 006b1390	callorder	ClientConnection::Connect	same slot between linked calls in 004d8ba0=CGlueMgr::Sub4D8BA0
 006b14c0	callorder	ClientConnection::GetCharacterList	same slot between linked calls in 004d95c0=CGlueMgr::GetCharacterList
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
@@ -2025,7 +2029,9 @@ addr	how	whoa	evidence
 00963740	callorder	CSimpleEditBox::UpdateSizes	same slot between linked calls in 00967290=CSimpleEditBox::LoadXML
 00965120	callorder	CSimpleEditBox::SetKeyboardFocus	same slot between linked calls in 00976410=CSimpleEditBox_SetFocus
 009651f0	callorder	CSimpleEditBox::ClearKeyboardFocus	same slot between linked calls in 00976450=CSimpleEditBox_ClearFocus
+00965f20	annotated	CSimpleEditBox::SetMultiLine	tag in src/ui/simple/CSimpleEditBox.cpp
 00966580	callorder	CSimpleEditBox::SetText	same slot between linked calls in 00975e80=CSimpleEditBox_SetText
+00966fd0	annotated	CSimpleEditBox::SetHistoryLines	tag in src/ui/simple/CSimpleEditBox.cpp
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages

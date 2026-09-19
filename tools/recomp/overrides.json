@@ -217,5 +217,10 @@
   "0096f3c0": { "whoa": "CSimpleButton::SetHighlight", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0)" },
   "0096f4a0": { "whoa": "CSimpleButton::SetFontString", "status": "ported", "note": "call slot in CSimpleButton::LoadXML (recomp --diff 0096fed0): after SetPressedOffset" },
 
-  "0061b040": { "whoa": "StringToTooltipAnchor", "status": "ported", "note": "only unmatched callee of CGTooltip_SetAnchorType while the binding's other helper (0061ea00, in the tooltip block) was mislinked; in the tooltip block itself" }
+  "0061b040": { "whoa": "StringToTooltipAnchor", "status": "ported", "note": "only unmatched callee of CGTooltip_SetAnchorType while the binding's other helper (0061ea00, in the tooltip block) was mislinked; in the tooltip block itself" },
+
+  "006b0ed0": { "whoa": "ClientServices::GetInstance", "status": "ported", "note": "returns the instance block when the initialised flag is set (call slot in CGlueMgr::EnterWorld, recomp --diff 004d9bd0)" },
+  "006b0fe0": { "whoa": "ClientServices::SetAccountName", "status": "ported", "note": "SStrCopy into the 0x500-byte account name with the stripped-assert fatal on null; slot in CGlueMgr::EnterWorld" },
+  "006b1020": { "whoa": "ClientServices::SetCharacterInfo", "status": "ported", "note": "copies the 0x188-byte CHARACTER_INFO with the stripped-assert fatal on null; slot in CGlueMgr::EnterWorld" },
+  "004d8580": { "whoa": "WowClientDB<GameTipsRec>::GetRecordByIndex", "status": "ported", "note": "bounds check against the count at +8 then rows at +0x1c with 8-byte records; the game tip pick in CGlueMgr::EnterWorld" }
 }

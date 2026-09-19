@@ -6835,6 +6835,19 @@
   "whoa": "CGlueMgr::DisplayLoginStatus",
   "whoaSize": 297
  },
+ "004d8580": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "how": "override",
+  "module": "CGlueMgr.cpp",
+  "refSize": 31,
+  "status": "ported",
+  "whoa": "WowClientDB<GameTipsRec>::GetRecordByIndex",
+  "whoaSize": 36
+ },
  "004d8860": {
   "branchRatio": 0.429,
   "constOverlap": 0.0,
@@ -6967,7 +6980,7 @@
   "branchRatio": 0.652,
   "constOverlap": 0.29,
   "faithful": false,
-  "fidelity": 0.553,
+  "fidelity": 0.632,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -21791,6 +21804,22 @@
   "whoa": "ClientServices::GetSelectedRealmName",
   "whoaSize": 90
  },
+ "006b0ed0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/client/ClientServices.cpp",
+   "src/client/clientservices.cpp"
+  ],
+  "how": "override",
+  "module": "blp.cpp",
+  "refSize": 15,
+  "status": "ported",
+  "whoa": "ClientServices::GetInstance",
+  "whoaSize": 93
+ },
  "006b0f40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -21806,6 +21835,38 @@
   "status": "ported",
   "whoa": "ClientServices::GetErrorToken",
   "whoaSize": 28
+ },
+ "006b0fe0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/client/ClientServices.cpp",
+   "src/client/clientservices.cpp"
+  ],
+  "how": "override",
+  "module": "blp.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "ClientServices::SetAccountName",
+  "whoaSize": 21
+ },
+ "006b1020": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/client/ClientServices.cpp",
+   "src/client/clientservices.cpp"
+  ],
+  "how": "override",
+  "module": "blp.cpp",
+  "refSize": 45,
+  "status": "ported",
+  "whoa": "ClientServices::SetCharacterInfo",
+  "whoaSize": 106
  },
  "006b1390": {
   "branchRatio": 0.5,
@@ -32026,6 +32087,22 @@
   "whoa": "CSimpleEditBox::ClearKeyboardFocus",
   "whoaSize": 69
  },
+ "00965f20": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 435,
+  "status": "ported",
+  "whoa": "CSimpleEditBox::SetMultiLine",
+  "whoaSize": 0
+ },
  "00966580": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -32042,11 +32119,27 @@
   "whoa": "CSimpleEditBox::SetText",
   "whoaSize": 165
  },
+ "00966fd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "how": "annotated",
+  "module": "CSimpleEditBox.cpp",
+  "refSize": 71,
+  "status": "ported",
+  "whoa": "CSimpleEditBox::SetHistoryLines",
+  "whoaSize": 0
+ },
  "00967290": {
   "branchRatio": 0.476,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.806,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -32056,7 +32149,7 @@
   "refSize": 989,
   "status": "ported",
   "whoa": "CSimpleEditBox::LoadXML",
-  "whoaSize": 1132
+  "whoaSize": 1164
  },
  "009690c0": {
   "branchRatio": 0.0,

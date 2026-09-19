@@ -1137,10 +1137,18 @@ void CSimpleEditBox::SetCursorPosition(int32_t position) {
     this->UpdateVisibleCursor();
 }
 
-void CSimpleEditBox::SetHistoryLines(int32_t a2) {
-    // TODO
+// ref: FUN_00966fd0
+void CSimpleEditBox::SetHistoryLines(int32_t lines) {
+    // TODO FUN_00966b10(lines): resize the history storage
+
+    this->m_historyLines = lines;
+
+    if (lines <= this->m_historyIndex) {
+        this->m_historyIndex = lines ? lines - 1 : 0;
+    }
 }
 
+// ref: FUN_00965f20
 void CSimpleEditBox::SetMultiLine(int32_t enabled) {
     if (enabled) {
         this->m_multiline = 1;

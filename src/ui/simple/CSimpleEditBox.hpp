@@ -36,6 +36,8 @@ class CSimpleEditBox : public CSimpleFrame, CSimpleFontedFrame {
         // Member variables
         int32_t m_autoFocus : 1;
         int32_t m_multiline : 1;
+        int32_t m_historyLines = 0;  // +0x310 in the reference: lines the history keeps
+        int32_t m_historyIndex = 0;  // +0x314: the current history slot, clamped below the count
         int32_t m_numeric : 1;
         int32_t m_password : 1;
         int32_t m_ignoreArrows : 1;
