@@ -103726,7 +103726,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1122
+"line": 1124
 },
 "CGTooltip_SetLFGDungeonReward": {
 "files": [
@@ -103748,7 +103748,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1126
+"line": 1128
 },
 "CGTooltip_SetLFGCompletionReward": {
 "files": [
@@ -103770,7 +103770,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1130
+"line": 1132
 },
 "CGTradeInfo::GetPlayerTradeMoney": {
 "files": [
@@ -105023,22 +105023,23 @@
 "src/ui/game/characterinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"lua_pushnumber"
 ],
 "strings": [
-"(anonymous namespace)::Script_KeyRingButtonIDToInvSlotID",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\characterinfoscript.cpp"
+"Usage: KeyRingButtonIDToInvSlotID(buttonID)"
 ],
 "consts": [
-"0"
+"0x56",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 9,
 "refs": [],
-"line": 192
+"line": 196
 },
 "Script_PickupInventoryItem": {
 "files": [
@@ -105060,7 +105061,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 196
+"line": 206
 },
 "Script_UseInventoryItem": {
 "files": [
@@ -105082,7 +105083,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 200
+"line": 210
 },
 "Script_SocketInventoryItem": {
 "files": [
@@ -105104,7 +105105,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 204
+"line": 214
 },
 "Script_IsInventoryItemLocked": {
 "files": [
@@ -105121,7 +105122,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 208
+"line": 218
 },
 "Script_PutItemInBag": {
 "files": [
@@ -105143,7 +105144,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 214
+"line": 224
 },
 "Script_PutItemInBackpack": {
 "files": [
@@ -105165,7 +105166,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 218
+"line": 228
 },
 "Script_PickupBagFromSlot": {
 "files": [
@@ -105187,7 +105188,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 222
+"line": 232
 },
 "Script_CursorCanGoInSlot": {
 "files": [
@@ -105205,7 +105206,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 226
+"line": 236
 },
 "Script_ShowInventorySellCursor": {
 "files": [
@@ -105227,7 +105228,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 233
+"line": 243
 },
 "Script_SetInventoryPortraitTexture": {
 "files": [
@@ -105249,7 +105250,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 237
+"line": 247
 },
 "Script_GetGuildInfo": {
 "files": [
@@ -105271,7 +105272,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 241
+"line": 251
 },
 "Script_GetInventoryAlertStatus": {
 "files": [
@@ -105289,7 +105290,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 245
+"line": 255
 },
 "Script_UpdateInventoryAlertStatus": {
 "files": [
@@ -105311,7 +105312,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 251
+"line": 261
 },
 "Script_OffhandHasWeapon": {
 "files": [
@@ -105329,7 +105330,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 255
+"line": 265
 },
 "Script_HasInspectHonorData": {
 "files": [
@@ -105351,7 +105352,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 262
+"line": 272
 },
 "Script_RequestInspectHonorData": {
 "files": [
@@ -105373,7 +105374,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 266
+"line": 276
 },
 "Script_GetInspectHonorData": {
 "files": [
@@ -105395,7 +105396,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 270
+"line": 280
 },
 "Script_GetInspectArenaTeamData": {
 "files": [
@@ -105417,7 +105418,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 274
+"line": 284
 },
 "Script_ClearInspectPlayer": {
 "files": [
@@ -105439,7 +105440,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 278
+"line": 288
 },
 "Script_GetWeaponEnchantInfo": {
 "files": [
@@ -105463,7 +105464,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 282
+"line": 292
 },
 "Script_HasWandEquipped": {
 "files": [
@@ -105481,7 +105482,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 298
+"line": 308
 },
 "CharacterInfoRegisterScriptFunctions": {
 "files": [
@@ -105496,7 +105497,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 343
+"line": 353
 },
 "Script_FrameXML_Debug": {
 "files": [
@@ -143460,22 +143461,22 @@
 "src/ui/simple/csimplebuttonscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleButton::GetObjectType",
+"FrameScript_GetObjectThis",
+"FrameScript_Sprintf",
+"CSimpleButton::SetText"
 ],
-"strings": [
-"CSimpleButton_SetFormattedText",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplebuttonscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"2",
+"4096"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 10,
 "refs": [],
-"line": 307
+"line": 312
 },
 "CSimpleButton_GetText": {
 "files": [
@@ -143497,7 +143498,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 311
+"line": 323
 },
 "CSimpleButton_SetNormalTexture": {
 "files": [
@@ -143514,7 +143515,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 326
+"line": 338
 },
 "CSimpleButton_GetNormalTexture": {
 "files": [
@@ -143529,7 +143530,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 330
+"line": 342
 },
 "CSimpleButton_SetPushedTexture": {
 "files": [
@@ -143546,7 +143547,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 334
+"line": 346
 },
 "CSimpleButton_GetPushedTexture": {
 "files": [
@@ -143561,7 +143562,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 338
+"line": 350
 },
 "CSimpleButton_SetDisabledTexture": {
 "files": [
@@ -143578,7 +143579,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 342
+"line": 354
 },
 "CSimpleButton_GetDisabledTexture": {
 "files": [
@@ -143593,7 +143594,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 346
+"line": 358
 },
 "CSimpleButton_SetHighlightTexture": {
 "files": [
@@ -143639,7 +143640,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 350
+"line": 362
 },
 "CSimpleButton_GetHighlightTexture": {
 "files": [
@@ -143660,7 +143661,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 390
+"line": 402
 },
 "CSimpleButton_SetPushedTextOffset": {
 "files": [
@@ -143682,7 +143683,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 409
+"line": 421
 },
 "CSimpleButton_GetPushedTextOffset": {
 "files": [
@@ -143704,7 +143705,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 413
+"line": 425
 },
 "CSimpleButton_GetTextWidth": {
 "files": [
@@ -143728,7 +143729,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 417
+"line": 429
 },
 "CSimpleButton_GetTextHeight": {
 "files": [
@@ -143752,7 +143753,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 432
+"line": 444
 },
 "CSimpleButton_RegisterForClicks": {
 "files": [
@@ -143775,7 +143776,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 447
+"line": 459
 },
 "CSimpleButton_Click": {
 "files": [
@@ -143801,7 +143802,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 463
+"line": 475
 },
 "CSimpleButton_LockHighlight": {
 "files": [
@@ -143821,7 +143822,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 479
+"line": 491
 },
 "CSimpleButton_UnlockHighlight": {
 "files": [
@@ -143840,7 +143841,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 488
+"line": 500
 },
 "CSimpleButton_GetMotionScriptsWhileDisabled": {
 "files": [
@@ -143862,7 +143863,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 501
+"line": 513
 },
 "CSimpleButton_SetMotionScriptsWhileDisabled": {
 "files": [
@@ -143884,7 +143885,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 505
+"line": 517
 },
 "FaceDirection": {
 "files": [
@@ -150404,7 +150405,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 364
+"line": 368
 },
 "CSimpleFontString_SetAlpha": {
 "files": [
@@ -150419,7 +150420,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 368
+"line": 372
 },
 "CSimpleFontString_SetAlphaGradient": {
 "files": [
@@ -150441,7 +150442,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 373
+"line": 377
 },
 "CSimpleFontString_Show": {
 "files": [
@@ -150460,7 +150461,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 377
+"line": 381
 },
 "CSimpleFontString_Hide": {
 "files": [
@@ -150479,7 +150480,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 386
+"line": 390
 },
 "CSimpleFontString_IsVisible": {
 "files": [
@@ -150501,7 +150502,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 395
+"line": 399
 },
 "CSimpleFontString_IsShown": {
 "files": [
@@ -150523,7 +150524,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 408
+"line": 412
 },
 "CSimpleFontString_GetFontObject": {
 "files": [
@@ -150541,7 +150542,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 421
+"line": 425
 },
 "CSimpleFontString_SetFontObject": {
 "files": [
@@ -150559,7 +150560,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 428
+"line": 432
 },
 "CSimpleFontString_GetFont": {
 "files": [
@@ -150577,7 +150578,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 435
+"line": 439
 },
 "CSimpleFontString_SetFont": {
 "files": [
@@ -150595,7 +150596,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 442
+"line": 446
 },
 "CSimpleFontString_GetText": {
 "files": [
@@ -150615,7 +150616,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 449
+"line": 453
 },
 "CSimpleFontString_GetFieldSize": {
 "files": [
@@ -150633,7 +150634,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 464
+"line": 468
 },
 "CSimpleFontString_SetText": {
 "files": [
@@ -150659,7 +150660,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 470
+"line": 474
 },
 "CSimpleFontString_SetFormattedText": {
 "files": [
@@ -150686,7 +150687,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 484
+"line": 488
 },
 "CSimpleFontString_GetTextColor": {
 "files": [
@@ -150704,7 +150705,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 500
+"line": 504
 },
 "CSimpleFontString_SetTextColor": {
 "files": [
@@ -150722,7 +150723,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 507
+"line": 511
 },
 "CSimpleFontString_GetShadowColor": {
 "files": [
@@ -150740,7 +150741,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 514
+"line": 518
 },
 "CSimpleFontString_SetShadowColor": {
 "files": [
@@ -150758,7 +150759,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 521
+"line": 525
 },
 "CSimpleFontString_GetShadowOffset": {
 "files": [
@@ -150776,7 +150777,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 528
+"line": 532
 },
 "CSimpleFontString_SetShadowOffset": {
 "files": [
@@ -150794,7 +150795,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 535
+"line": 539
 },
 "CSimpleFontString_GetSpacing": {
 "files": [
@@ -150812,7 +150813,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 542
+"line": 546
 },
 "CSimpleFontString_SetSpacing": {
 "files": [
@@ -150830,7 +150831,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 549
+"line": 553
 },
 "CSimpleFontString_SetTextHeight": {
 "files": [
@@ -150862,7 +150863,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 557
+"line": 561
 },
 "CSimpleFontString_GetStringWidth": {
 "files": [
@@ -150882,7 +150883,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 576
+"line": 580
 },
 "CSimpleFontString_GetStringHeight": {
 "files": [
@@ -150902,7 +150903,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 585
+"line": 589
 },
 "CSimpleFontString_GetJustifyH": {
 "files": [
@@ -150920,7 +150921,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 594
+"line": 598
 },
 "CSimpleFontString_SetJustifyH": {
 "files": [
@@ -150938,7 +150939,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 601
+"line": 605
 },
 "CSimpleFontString_GetJustifyV": {
 "files": [
@@ -150956,7 +150957,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 608
+"line": 612
 },
 "CSimpleFontString_SetJustifyV": {
 "files": [
@@ -150974,7 +150975,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 615
+"line": 619
 },
 "CSimpleFontString_CanNonSpaceWrap": {
 "files": [
@@ -150996,7 +150997,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 623
+"line": 627
 },
 "CSimpleFontString_SetNonSpaceWrap": {
 "files": [
@@ -151019,7 +151020,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 637
+"line": 641
 },
 "CSimpleFontString_CanWordWrap": {
 "files": [
@@ -151041,7 +151042,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 650
+"line": 654
 },
 "CSimpleFontString_SetWordWrap": {
 "files": [
@@ -151064,7 +151065,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 664
+"line": 668
 },
 "CSimpleFontString_GetIndentedWordWrap": {
 "files": [
@@ -151082,7 +151083,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 676
+"line": 680
 },
 "CSimpleFontString_SetIndentedWordWrap": {
 "files": [
@@ -151100,7 +151101,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 683
+"line": 687
 },
 "CSimpleFrame::GetObjectType": {
 "files": [

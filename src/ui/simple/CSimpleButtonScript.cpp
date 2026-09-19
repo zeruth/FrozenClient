@@ -304,8 +304,20 @@ int32_t CSimpleButton_SetText(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_009779b0
+// Formats the arguments the way string.format would and sets the label. Note what it does NOT do:
+// the font string's SetFormattedText refuses with "Font not set" first, and the button's has no
+// such check in the reference, so a button without a font takes the text and shows nothing rather
+// than raising.
 int32_t CSimpleButton_SetFormattedText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    char buffer[4096];
+
+    button->SetText(FrameScript_Sprintf(L, 2, buffer, sizeof(buffer)));
+
+    return 0;
 }
 
 int32_t CSimpleButton_GetText(lua_State* L) {

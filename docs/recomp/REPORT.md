@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 16:50 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 17:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2698 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2119 (=) | 418.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 543 (=) | 116.6k |
+| &nbsp;&nbsp;ported | 2121 (+2) | 418.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 541 (-2) | 116.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **950 (+4) (3.5%)** | **119.2k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **950 (=) (3.5%)** | **119.2k (2.2%)** |
 | unmapped | 24463 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 394 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 398 (=) (6.9%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11475, stubs 787 | |
+| frozen functions (src/, from PDB + source) | 11475, stubs 785 | |
 
-Match evidence: annotated 551, callgraph 156, callorder 142, cvar 30, handler 28, order 192, override 194, sticky 17, string 310, table 1078. Module anchors: 1479 assert strings.
+Match evidence: annotated 553, callgraph 156, callorder 142, cvar 30, handler 28, order 192, override 194, sticky 17, string 310, table 1076. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 16:43 -- mapped 2698, ported 2119, stub 543, spine mapped 394.
+Previous run: 2026-09-19 17:07 -- mapped 2698, ported 2119, stub 543, spine mapped 394.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 604 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 601 of those are WHOA_UNIMPLEMENTED stubs (-3). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -57,9 +57,9 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ad0c30 (PetHasActionBar..) | 31 | `s_ScriptFunctions` | 24 | 0 | GetPetActionsUsable, GetPetActionSlotUsable, PickupPetAction, TogglePetAutocast, CastPetAction, PetPassiveMode ... |
 | 00ad93d8 (GetNumFriends..) | 31 | `s_ScriptFunctions` | 23 | 0 | GetFriendInfo, SetSelectedFriend, GetSelectedFriend, AddOrRemoveFriend, AddFriend, RemoveFriend ... |
 | 00acd488 (KBSetup_BeginLoading..) | 22 | `-` | 22 | 0 | KBSetup_BeginLoading, KBSetup_IsLoaded, KBSetup_GetLanguageCount, KBSetup_GetLanguageData, KBSetup_GetCategoryCount, KBSetup_GetCategoryData ... |
-| 00ad1270 (GetInventorySlotInfo..) | 33 | `s_ScriptFunctions` | 0 | 22 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemBroken, GetInventoryItemQuality, GetInventoryItemCooldown ... |
 | 00ad2060 (CameraZoomIn..) | 22 | `-` | 22 | 0 | CameraZoomIn, CameraZoomOut, MoveViewInStart, MoveViewInStop, MoveViewOutStart, MoveViewOutStop ... |
 | 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 21 | 0 | ContainerIDToInventoryID, GetContainerNumSlots, GetContainerItemInfo, GetContainerItemID, GetContainerItemLink, GetContainerItemCooldown ... |
+| 00ad1270 (GetInventorySlotInfo..) | 33 | `s_ScriptFunctions` | 0 | 21 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemBroken, GetInventoryItemQuality, GetInventoryItemCooldown ... |
 | 00a47c80 (assert..) | 20 | `-` | 20 | 0 | assert, collectgarbage, error, gcinfo, getfenv, getmetatable ... |
 | 00ac1ab8 (Play..) | 26 | `ScriptObjectMethods` | 18 | 2 | Play, Pause, Stop, Finish, GetProgress, IsDone ... / stubs: HasScript, HookScript |
 | 00ace1f0 (SecureCmdOptionParse..) | 22 | `s_ScriptFunctions` | 19 | 0 | SecureCmdOptionParse, RunMacro, RunMacroText, StopMacro, CreateMacro, GetMacroInfo ... |
@@ -95,7 +95,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
-| 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 6 |  / stubs: SetFontString, SetFormattedText, SetPushedTextOffset, GetPushedTextOffset ... |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions` | 5 | 0 | GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle, BarberShopReset |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions` | 5 | 0 | FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial, GetPrevCompleatedTutorial |
@@ -104,6 +103,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions` | 5 | 0 | GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
 | 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
+| 00b2d418 (Enable..) | 34 | `SimpleButtonMethods` | 0 | 5 |  / stubs: SetFontString, SetPushedTextOffset, GetPushedTextOffset, GetMotionScriptsWhileDisabled ... |
 | 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 4 |  / stubs: SetBlendMode, GetVertexColor, SetGradient, SetGradientAlpha |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
@@ -111,13 +111,13 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 3 |  / stubs: SetOrientation, SetStatusBarTexture, GetStatusBarColor |
-| 00ac1118 (IsObjectType..) | 41 | `SimpleFontStringMethods` | 0 | 2 |  / stubs: SetAlphaGradient, SetFormattedText |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
 | 00b2cd50 (GetColorWheelTexture..) | 12 | `SimpleColorSelectMethods` | 2 | 0 | SetColorWheelThumbTexture, SetColorValueThumbTexture |
 | 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 2 |  / stubs: SetThumbTexture, SetOrientation |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
+| 00ac1118 (IsObjectType..) | 41 | `SimpleFontStringMethods` | 0 | 1 |  / stubs: SetAlphaGradient |
 | 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 1 |  / stubs: SetFillTexture |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 1 |  / stubs: SetUnit |
 | 00acfaf8 (GetGMTicket..) | 15 | `s_ScriptFunctions` | 0 | 1 |  / stubs: GetGMTicket |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 13 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 12 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -232,7 +232,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | OsClipboard.cpp | 74 | 16.8k | 3 (4.1%) | 5.8% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 6 (6.9%) | 2.1% | 0 | 0 | 33 |
 | Item_C.cpp | 107 | 16.4k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
-| QuestLog.cpp | 80 | 16.4k | 10 (12.5%) | 12.9% | 6 | 0 | 2 |
+| QuestLog.cpp | 80 | 16.4k | 10 (12.5%) | 12.9% | 5 | 0 | 2 |
 | CGxDevice.cpp | 54 | 16.2k | 5 (9.3%) | 4.0% | 0 | 0 | 9 |
 | tga.cpp | 82 | 16.2k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | AuctionHouse.cpp | 49 | 16.1k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
@@ -738,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 15:34 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
-| 2026-09-19 15:37 | 2688 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 | 2026-09-19 15:44 | 2688 (9.9%) | 932 (3.4%) | 554 | 392/5530 | 1791/2964 | 617 |
 | 2026-09-19 15:47 | 2676 (9.9%) | 926 (3.4%) | 551 | 388/5530 | 1791/2964 | 614 |
 | 2026-09-19 15:48 | 2676 (9.9%) | 926 (3.4%) | 551 | 388/5530 | 1791/2964 | 614 |
@@ -763,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 16:43 | 2698 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 | 2026-09-19 16:43 | 2698 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 | 2026-09-19 16:50 | 2698 (9.9%) | 950 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
+| 2026-09-19 17:07 | 2698 (9.9%) | 950 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
+| 2026-09-19 17:15 | 2698 (9.9%) | 950 (3.5%) | 541 | 394/5530 | 1791/2964 | 601 |
 
 ## How to move a row
 

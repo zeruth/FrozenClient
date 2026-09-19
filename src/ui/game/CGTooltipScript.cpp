@@ -1119,6 +1119,8 @@ int32_t CGTooltip_SetEquipmentSet(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00626560 toggles one global through FUN_006230d0 -- the frame-stack debug overlay.
+// Frozen has neither the flag nor the overlay that reads it.
 int32_t CGTooltip_SetFrameStack(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

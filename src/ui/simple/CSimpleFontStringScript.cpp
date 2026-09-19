@@ -361,6 +361,10 @@ int32_t CSimpleFontString_SetVertexColor(lua_State* L) {
 // and is CSimpleFrame::GetAlpha, tagged there. Reading m_alpha[0] here looks right -- it is the
 // entry the region's colour uses -- but which entry the reference reads has not been checked, and
 // the other three are the gradient.
+// TODO FUN_0048cfc0 is the right address -- it reads DAT_00b4792c, the font string object
+// type, distinct from the texture and frame ones. It takes its alpha from a helper at
+// 00487ab0 rather than from a field, and that helper is unidentified, so which alpha it
+// reports -- the region's own or one inherited down the parent chain -- is still open.
 int32_t CSimpleFontString_GetAlpha(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

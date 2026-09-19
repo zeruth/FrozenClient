@@ -1031,7 +1031,7 @@
   ],
   "frozen": "CSimpleFontString::GetObjectType",
   "frozenSize": 31,
-  "how": "callorder",
+  "how": "sticky",
   "module": "LoadingScreen.cpp",
   "refSize": 43,
   "status": "ported"
@@ -21589,20 +21589,20 @@
   "status": "ported"
  },
  "005e7700": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_KeyRingButtonIDToInvSlotID",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 87,
+  "how": "annotated",
   "module": "QuestLog.cpp",
   "refSize": 88,
-  "status": "stub"
+  "status": "ported"
  },
  "005e7780": {
   "branchRatio": 0.5,
@@ -42057,20 +42057,20 @@
   "status": "ported"
  },
  "009779b0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
   ],
   "frozen": "CSimpleButton_SetFormattedText",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 128,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 92,
-  "status": "stub"
+  "status": "ported"
  },
  "00977a10": {
   "branchRatio": 0.25,

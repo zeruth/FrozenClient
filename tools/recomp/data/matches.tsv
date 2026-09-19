@@ -63,7 +63,7 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
-0040bb50	callorder	CSimpleFontString::GetObjectType	same slot between linked calls in 0048d800=CSimpleFontString_SetFormattedText
+0040bb50	sticky	CSimpleFontString::GetObjectType	held from the previous run, where it was callorder
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
@@ -1356,7 +1356,7 @@ addr	how	frozen	evidence
 005dfd20	string	Script_Stub_GetQuestLogTitle	score 0.50 shared GetQuestLogTitle
 005e4ed0	order	Script_Stub_QuestLogPushQuest	binding table name Script_Stub_QuestLogPushQuest, in definition order in src/ui/game/miscscriptstubs.cpp
 005e63d0	order	Script_Stub_QuestMapUpdateAllQuests	binding table name Script_Stub_QuestMapUpdateAllQuests, in definition order in src/ui/game/miscscriptstubs.cpp
-005e7700	table	Script_KeyRingButtonIDToInvSlotID	binding "KeyRingButtonIDToInvSlotID" in s_ScriptFunctions ~ table 00ad1270
+005e7700	annotated	Script_KeyRingButtonIDToInvSlotID	tag in src/ui/game/CharacterInfoScript.cpp
 005e7780	table	Script_HasInspectHonorData	binding "HasInspectHonorData" in s_ScriptFunctions ~ table 00ad1270
 005e77c0	table	Script_GetInspectHonorData	binding "GetInspectHonorData" in s_ScriptFunctions ~ table 00ad1270
 005e7890	table	Script_ClearInspectPlayer	binding "ClearInspectPlayer" in s_ScriptFunctions ~ table 00ad1270
@@ -2479,7 +2479,7 @@ addr	how	frozen	evidence
 0096f3c0	override	CSimpleButton::SetHighlight	
 0096f4a0	override	CSimpleButton::SetFontString	
 0096f530	string	GetButtonName	score 14.55 shared Button10; Button11; Button12
-0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText
+0096f860	callorder	CSimpleButton::SetText	same slot between linked calls in 00977960=CSimpleButton_SetText, 009779b0=CSimpleButton_SetFormattedText
 0096f920	override	CSimpleButton::SetStateTexture	
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
 00970660	table	CSimpleMovieFrame_StartMovie	binding "StartMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
@@ -2652,7 +2652,7 @@ addr	how	frozen	evidence
 009777c0	table	CSimpleButton_SetFontString	binding "SetFontString" in SimpleButtonMethods ~ table 00b2d418
 009778e0	table	CSimpleButton_GetFontString	binding "GetFontString" in SimpleButtonMethods ~ table 00b2d418
 00977960	table	CSimpleButton_SetText	binding "SetText" in SimpleButtonMethods ~ table 00b2d418
-009779b0	table	CSimpleButton_SetFormattedText	binding "SetFormattedText" in SimpleButtonMethods ~ table 00b2d418
+009779b0	annotated	CSimpleButton_SetFormattedText	tag in src/ui/simple/CSimpleButtonScript.cpp
 00977a10	table	CSimpleButton_GetText	binding "GetText" in SimpleButtonMethods ~ table 00b2d418
 00977a70	string	CSimpleButton_SetStateTexture	unique "%s:%s(): Couldn't find 'this' in texture"
 00977bf0	callgraph	CSimpleButton_GetStateTexture	only unmatched callee of 00977c90=CSimpleButton_GetNormalTexture, 00977cd0=CSimpleButton_GetPushedTexture, 00977d10=CSimpleButton_GetDisabledTexture

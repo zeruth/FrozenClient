@@ -189,8 +189,18 @@ int32_t Script_GetInventoryItemGems(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005e7700
+// The whole function is an offset. Key ring buttons are numbered from one by the interface and sit
+// at inventory slots 0x56 upward, so this adds 86 and hands it back; it does not range-check,
+// and neither does the reference.
 int32_t Script_KeyRingButtonIDToInvSlotID(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        return luaL_error(L, "Usage: KeyRingButtonIDToInvSlotID(buttonID)");
+    }
+
+    lua_pushnumber(L, static_cast<int32_t>(lua_tonumber(L, 1)) + 0x56);
+
+    return 1;
 }
 
 int32_t Script_PickupInventoryItem(lua_State* L) {
