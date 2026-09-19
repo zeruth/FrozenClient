@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 07:11 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 07:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2306 (+10) (8.5%) | 498.2k (9.0%) |
-| &nbsp;&nbsp;ported | 1758 (+10) | 359.6k |
+| mapped to a frozen function | 2306 (=) (8.5%) | 498.2k (9.0%) |
+| &nbsp;&nbsp;ported | 1758 (=) | 359.6k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 524 (=) | 104.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **689 (+3) (2.5%)** | **87.3k (1.6%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **736 (+47) (2.7%)** | **95.0k (1.7%)** |
 | unmapped | 24855 | 4.92M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 348 (+2) (6.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 350 (+2) (6.0%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 130 (+1) (2.2%)** | |
+| world spine (reachable from OnFrameRender) | 5530, mapped 348 (=) (6.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 350 (=) (6.0%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 130 (=) (2.2%)** | |
 | frozen functions (src/, from PDB + source) | 11319, stubs 865 | |
 
 Match evidence: annotated 229, callgraph 152, callorder 125, cvar 30, handler 27, order 339, override 161, string 345, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 07:10 -- mapped 2296, ported 1748, stub 524, spine mapped 346.
+Previous run: 2026-09-19 07:11 -- mapped 2306, ported 1758, stub 524, spine mapped 348.
 
 ## Lua API coverage (binding tables)
 
@@ -674,43 +674,43 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00821a20 | `CM2Scene::Animate` | 0% | 54 | 30 | 219 | 43 | 8% | 5621 |
-| 00857ca0 | `luaV_execute` | 48% | 50 | 48 | 163 | 115 | 2% | 5138 |
+| 00857ca0 | `luaV_execute` | 50% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
-| 004dab40 | `CGlueMgr::PollAccountLogin` | 7% | 148 | 29 | 90 | 15 | 10% | 3696 |
-| 00823130 | `CM2SceneRender::Draw` | 8% | 25 | 28 | 39 | 12 | 0% | 2909 |
+| 004dab40 | `CGlueMgr::PollAccountLogin` | 20% | 148 | 29 | 90 | 15 | 10% | 3696 |
+| 00823130 | `CM2SceneRender::Draw` | 36% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
-| 00405dd0 | `Sub405DD0` | 2% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 0085e600 | `llex` | 69% | 39 | 34 | 39 | 46 | 0% | 1520 |
+| 00405dd0 | `Sub405DD0` | 20% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 9% | 33 | 9 | 37 | 5 | 0% | 1395 |
-| 00631000 | `CGTooltip_SetAction` | 4% | 51 | 7 | 43 | 2 | 0% | 1377 |
+| 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
+| 00631000 | `CGTooltip_SetAction` | 12% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 007e4480 | `BlobShadowsBegin` | 24% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
 | 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 33 | 35 | 19 | 0% | 1303 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
-| 0052a980 | `CGGameUI::Initialize` | 14% | 59 | 30 | 23 | 6 | 5% | 1267 |
-| 004f1a20 | `CCharacterComponent::Initialize` | 50% | 10 | 11 | 10 | 9 | 29% | 1189 |
+| 0052a980 | `CGGameUI::Initialize` | 17% | 59 | 30 | 23 | 6 | 5% | 1267 |
+| 004f1a20 | `CCharacterComponent::Initialize` | 70% | 10 | 11 | 10 | 9 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
 | 0096fed0 | `CSimpleButton::LoadXML` | 72% | 46 | 49 | 34 | 23 | 0% | 1174 |
 | 00497070 | `CSimpleFont::LoadXML` | 94% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetGUIDFromToken` | 71% | 42 | 37 | 34 | 27 | 20% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 76% | 42 | 46 | 35 | 24 | 19% | 1104 |
-| 0040a270 | `Paint` | 33% | 27 | 35 | 19 | 12 | 0% | 1055 |
-| 004f8ea0 | `CGWorldFrame::OnWorldRender` | 14% | 59 | 81 | 14 | 34 | 0% | 1016 |
-| 00851d20 | `auxsort` | 29% | 73 | 32 | 18 | 13 | 0% | 1011 |
+| 0040a270 | `Paint` | 37% | 27 | 35 | 19 | 12 | 0% | 1055 |
+| 004f8ea0 | `CGWorldFrame::OnWorldRender` | 19% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 004debc0 | `Script_GetRealmInfo` | 62% | 53 | 55 | 24 | 17 | 6% | 990 |
 | 00967290 | `CSimpleEditBox::LoadXML` | 83% | 36 | 42 | 42 | 20 | 0% | 989 |
-| 00853c50 | `str_format` | 63% | 30 | 25 | 23 | 18 | 3% | 969 |
+| 00853c50 | `str_format` | 67% | 30 | 25 | 23 | 18 | 3% | 969 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
-| 0085e160 | `read_string` | 47% | 30 | 21 | 15 | 25 | 6% | 904 |
-| 004d9bd0 | `CGlueMgr::EnterWorld` | 63% | 38 | 37 | 23 | 15 | 29% | 895 |
-| 004067f0 | `InitializeGlobal` | 17% | 52 | 19 | 12 | 1 | 10% | 887 |
+| 0085e160 | `read_string` | 77% | 30 | 21 | 15 | 25 | 6% | 904 |
+| 004d9bd0 | `CGlueMgr::EnterWorld` | 66% | 38 | 37 | 23 | 15 | 29% | 895 |
+| 004067f0 | `InitializeGlobal` | 31% | 52 | 19 | 12 | 1 | 10% | 887 |
 | 007831a0 | `CWorld::Update` | 0% | 16 | 3 | 29 | 1 | 0% | 862 |
+| 0076a220 | `CVGxResolutionCallback` | 30% | 20 | 22 | 25 | 12 | 40% | 856 |
+| 0061eb40 | `CGTooltip_SetOwner` | 36% | 33 | 14 | 25 | 4 | 0% | 836 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -791,7 +791,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 03:13 | 2184 (8.0%) | 635 (2.3%) | 523 | 292/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:16 | 2193 (8.1%) | 636 (2.3%) | 523 | 295/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:44 | 2219 (8.2%) | 654 (2.4%) | 523 | 307/5530 | 1584/2512 | 752 |
 | 2026-09-19 03:46 | 2247 (8.3%) | 681 (2.5%) | 524 | 311/5530 | 1584/2512 | 752 |
@@ -816,6 +815,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 07:09 | 2307 (8.5%) | 693 (2.6%) | 524 | 349/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:10 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:11 | 2306 (8.5%) | 689 (2.5%) | 524 | 348/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:17 | 2306 (8.5%) | 736 (2.7%) | 524 | 348/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

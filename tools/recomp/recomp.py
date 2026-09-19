@@ -500,6 +500,36 @@ def frozen_seq(frozen, name):
     return out
 
 
+def expand_inlined_calls(wseq, rset, frozen, _memo=None):
+    """The reference compiler inlined the small gx wrappers: where the port calls GxRsSet five
+    times, the reference shows five CGxDevice::IRsDirty, which is the same work done. Rewrite a
+    port call into the calls it makes, but only on evidence and only for this pair: the callee is
+    absent from the reference's own sequence while its expansion reaches something the reference
+    does call. A callee the reference really calls is left alone, and so is one whose expansion has
+    nothing in common with the reference, so this cannot manufacture agreement. The test is on the
+    whole expansion, not the immediate children, because a wrapper often reaches the inlined work
+    through another wrapper (GxRsSet -> CGxDevice::RsSet -> IRsDirty)."""
+    memo = {} if _memo is None else _memo
+
+    def one(c, depth):
+        if c in rset or depth >= 4 or c not in frozen:
+            return [c]
+        key = (c, depth)
+        if key in memo:
+            return memo[key]
+        memo[key] = [c]  # cycle guard while this call is being expanded
+        sub = [x for x in frozen[c]['seq'] if not x.startswith('?')]
+        out = [c]
+        if sub:
+            expanded = [t for x in sub for t in one(x, depth + 1)]
+            if any(t in rset for t in expanded):
+                out = expanded
+        memo[key] = out
+        return out
+
+    return [t for c in wseq for t in one(c, 0)]
+
+
 def fidelity(refs, frozen, m, addr):
     """How much of the reference's call sequence the port reproduces, in order: LCS of the two call
     sequences over the longer one, with reference callees translated through the map. 1.0 means every
@@ -510,6 +540,7 @@ def fidelity(refs, frozen, m, addr):
     wseq = frozen_seq(frozen, name)
     if not rseq:
         return 1.0 if not frozen[name]['stub'] else 0.0
+    wseq = expand_inlined_calls(wseq, set(rseq), frozen)
     # Recall of the reference's sequence: extra calls on the frozen side (helpers the reference
     # compiler inlined, constructors) do not count against it; missing or reordered ones do.
     return lcs_len(rseq, wseq) / float(len(rseq))
@@ -1309,7 +1340,7 @@ def diff_seq(target, refs, frozen, m):
         return
     name = m[a][0]
     rseq = ref_seq(refs, m, a)
-    wseq = frozen_seq(frozen, name)
+    wseq = expand_inlined_calls(frozen_seq(frozen, name), set(rseq), frozen)
     n, k = len(rseq), len(wseq)
     L = [[0] * (k + 1) for _ in range(n + 1)]
     for i in range(n - 1, -1, -1):

@@ -56,6 +56,13 @@ world), frozen with `FROZEN_AUTO_LOGIN=TEST:TEST`, then `calltrace.py ref`, `cal
    when their counts agree; anchors that break the address order (a wrong link) are skipped via
    the longest increasing subsequence.
 
+Fidelity sees through the reference compiler's inlining, on evidence and per pair: a port call is
+rewritten into the calls it makes when the reference's own sequence does not contain it but does
+contain something its expansion reaches (`GxRsSet` -> `CGxDevice::RsSet` -> `IRsDirty`). A callee
+the reference really calls is left alone, and so is one whose expansion has nothing in common, so
+the rewrite cannot manufacture agreement. `--diff` shows the expanded sequence, which is why a
+port's column can be much longer than the reference's.
+
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
