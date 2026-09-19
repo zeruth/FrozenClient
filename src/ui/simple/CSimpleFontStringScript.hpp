@@ -16,6 +16,22 @@ struct lua_State;
 // string it draws its text with. These are those helpers.
 int32_t FontString_SetFontObject(const char* displayName, CSimpleFontString* string, lua_State* L);
 int32_t FontString_GetFontObject(const char* displayName, CSimpleFontString* string, lua_State* L);
+// These take CSimpleFontString*, and the reference's equivalents take something wider.
+//
+// CSimpleMessageFrame's SetFont and SetTextColor (FUN_00972920, FUN_009729e0) call straight into
+// FUN_004a3a50 and FUN_004a3c50 -- the same two tagged here as FontString_SetFont and
+// FontString_SetTextColor -- passing the CSimpleFont at the frame's +0x2dc rather than a font
+// string. So the message frame's font trio is not three new ports; it is three one-line forwards,
+// once the parameter type covers a CSimpleFont as well.
+//
+// What that type is has NOT been established. The obvious answer is wrong: CSimpleFontString and
+// CSimpleFont do share CSimpleFontable, but that base is thin -- m_fontObject, m_fontableFlags,
+// SetFontObject and one pure virtual -- and carries none of SetFont, GetFontName, GetFontHeight,
+// GetFontFlags or SetVertexColor, which is what these helpers actually call. Widening to
+// CSimpleFontable* will not compile, let alone work.
+//
+// Find what the reference passes before changing the signatures.
+//
 int32_t FontString_SetFont(const char* displayName, CSimpleFontString* string, lua_State* L);
 int32_t FontString_GetFont(const char* displayName, CSimpleFontString* string, lua_State* L);
 int32_t FontString_SetTextColor(const char* displayName, CSimpleFontString* string, lua_State* L);

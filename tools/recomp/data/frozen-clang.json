@@ -157203,7 +157203,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 109
+"line": 113
 },
 "CSimpleMessageFrame_SetFont": {
 "files": [
@@ -157225,7 +157225,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 113
+"line": 121
 },
 "CSimpleMessageFrame_GetFont": {
 "files": [
@@ -157247,7 +157247,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 117
+"line": 129
 },
 "CSimpleModel::CreateScriptMetaTable": {
 "files": [

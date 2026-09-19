@@ -106,14 +106,26 @@ int32_t CSimpleMessageFrame_GetInsertMode(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_009729e0 forwards into the shared font helpers frozen already has in
+// CSimpleFontStringScript, passing its own CSimpleFont. They are typed CSimpleFontString*
+// here, and a CSimpleFont is not one. One-line forward once the parameter type covers both;
+// what that type is has not been established -- see the note above the helper declarations.
 int32_t CSimpleMessageFrame_SetTextColor(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00972920 forwards into the shared font helpers frozen already has in
+// CSimpleFontStringScript, passing its own CSimpleFont. They are typed CSimpleFontString*
+// here, and a CSimpleFont is not one. One-line forward once the parameter type covers both;
+// what that type is has not been established -- see the note above the helper declarations.
 int32_t CSimpleMessageFrame_SetFont(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00972980 forwards into the shared font helpers frozen already has in
+// CSimpleFontStringScript, passing its own CSimpleFont. They are typed CSimpleFontString*
+// here, and a CSimpleFont is not one. One-line forward once the parameter type covers both;
+// what that type is has not been established -- see the note above the helper declarations.
 int32_t CSimpleMessageFrame_GetFont(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
