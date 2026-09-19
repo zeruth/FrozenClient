@@ -9,6 +9,44 @@
 #include "ui/Game.hpp"
 #include <storm/Error.hpp>
 
+CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
+
+// ref: FUN_006b1050
+const CHARACTER_INFO* CGPlayer_C::GetLocalPlayerInfo() {
+    return &CGPlayer_C::s_localPlayerInfo;
+}
+
+// ref: FUN_006b1060
+// Empty rather than null when nothing has been captured: the reference returns the name pointer
+// only while the first byte is non-zero, and null otherwise.
+const char* CGPlayer_C::GetLocalPlayerName() {
+    return CGPlayer_C::s_localPlayerInfo.name[0] ? CGPlayer_C::s_localPlayerInfo.name : nullptr;
+}
+
+// ref: FUN_006b1070
+uint8_t CGPlayer_C::GetLocalPlayerRace() {
+    return CGPlayer_C::s_localPlayerInfo.raceID;
+}
+
+// ref: FUN_006b1080
+uint8_t CGPlayer_C::GetLocalPlayerClass() {
+    return CGPlayer_C::s_localPlayerInfo.classID;
+}
+
+// ref: FUN_006b1090
+uint8_t CGPlayer_C::GetLocalPlayerSex() {
+    return CGPlayer_C::s_localPlayerInfo.sexID;
+}
+
+// ref: FUN_006b10a0
+uint8_t CGPlayer_C::GetLocalPlayerLevel() {
+    return CGPlayer_C::s_localPlayerInfo.experienceLevel;
+}
+
+void CGPlayer_C::SetLocalPlayerInfo(const CHARACTER_INFO& info) {
+    CGPlayer_C::s_localPlayerInfo = info;
+}
+
 CGPlayer_C* CGPlayer_C::GetActivePtr() {
     return static_cast<CGPlayer_C*>(
         ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)

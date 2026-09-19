@@ -19617,16 +19617,16 @@
   "status": "ported"
  },
  "0060e740": {
-  "branchRatio": 0.316,
+  "branchRatio": 0.421,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.318,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitName",
-  "frozenSize": 247,
+  "frozenSize": 306,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 596,
@@ -19642,7 +19642,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitPVPName",
-  "frozenSize": 329,
+  "frozenSize": 388,
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 179,
@@ -19972,7 +19972,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.438,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23070,6 +23070,102 @@
   "refSize": 45,
   "status": "ported"
  },
+ "006b1050": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerInfo",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "006b1060": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerName",
+  "frozenSize": 20,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "006b1070": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerRace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "006b1080": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerClass",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "006b1090": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerSex",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "006b10a0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetLocalPlayerLevel",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "006b1390": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -23403,6 +23499,19 @@
   "how": "callgraph",
   "module": "GameObject_C.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "0072aab0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "WowClientDB<ChrClassesRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "callgraph",
+  "module": "Unit_C.cpp",
+  "refSize": 60,
   "status": "ported"
  },
  "0072d940": {

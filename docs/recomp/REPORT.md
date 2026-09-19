@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 09:59 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2389 (=) (8.8%) | 530.1k (9.6%) |
-| &nbsp;&nbsp;ported | 1913 (-2) | 396.9k |
+| mapped to a frozen function | 2396 (=) (8.8%) | 530.2k (9.6%) |
+| &nbsp;&nbsp;ported | 1920 (=) | 397.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 450 (=) | 99.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **885 (=) (3.3%)** | **114.1k (2.1%)** |
-| unmapped | 24772 | 4.89M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 384 (=) (6.9%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 388 (=) (6.7%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 157 (=) (2.6%)** | |
-| frozen functions (src/, from PDB + source) | 11411, stubs 848 | |
+| **faithful** (linked, not stub, call order >= 80%) | **891 (=) (3.3%)** | **114.1k (2.1%)** |
+| unmapped | 24765 | 4.89M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 385 (=) (7.0%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 389 (=) (6.7%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 158 (=) (2.6%)** | |
+| frozen functions (src/, from PDB + source) | 11418, stubs 851 | |
 
-Match evidence: annotated 420, callgraph 167, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 770. Module anchors: 1479 assert strings.
+Match evidence: annotated 426, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 770. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 09:51 -- mapped 2389, ported 1915, stub 450, spine mapped 384.
+Previous run: 2026-09-19 10:05 -- mapped 2396, ported 1920, stub 450, spine mapped 385.
 
 ## Lua API coverage (binding tables)
 
@@ -192,7 +192,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | DBClient.cpp | 1261 | 274.2k | 2 (0.2%) | 0.2% | 0 | 0 | 81 |
 | OggDecompress.cpp | 1504 | 260.7k | 12 (0.8%) | 0.9% | 0 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 52 (5.3%) | 0.2% | 0 | 0 | 107 |
-| Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
+| Unit_C.cpp | 705 | 182.3k | 4 (0.6%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
@@ -296,7 +296,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | GxuFontUtil.cpp | 60 | 13.3k | 2 (3.3%) | 1.0% | 0 | 0 | 45 |
 | EffectGlow.cpp | 64 | 13.1k | 2 (3.1%) | 6.6% | 0 | 0 | 5 |
-| blp.cpp | 94 | 13.0k | 16 (17.0%) | 13.3% | 0 | 0 | 20 |
+| blp.cpp | 94 | 13.0k | 22 (23.4%) | 13.6% | 0 | 0 | 20 |
 | fmod_output_wasapi.cpp | 68 | 12.8k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ObjectMgrClient.cpp | 89 | 12.8k | 4 (4.5%) | 6.5% | 0 | 0 | 23 |
 | VehiclePassenger_C.cpp | 49 | 12.7k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
@@ -785,9 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 06:05 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:00 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:02 | 2294 (8.4%) | 686 (2.5%) | 524 | 344/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:07 | 2292 (8.4%) | 686 (2.5%) | 524 | 342/5530 | 1584/2512 | 752 |
@@ -810,6 +807,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 09:45 | 2389 (8.8%) | 885 (3.3%) | 450 | 384/5530 | 1584/2512 | 561 |
 | 2026-09-19 09:51 | 2389 (8.8%) | 885 (3.3%) | 450 | 384/5530 | 1584/2512 | 561 |
 | 2026-09-19 09:59 | 2389 (8.8%) | 885 (3.3%) | 450 | 384/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:00 | 2389 (8.8%) | 885 (3.3%) | 450 | 384/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 
 ## How to move a row
 

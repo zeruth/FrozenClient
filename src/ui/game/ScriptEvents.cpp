@@ -3,6 +3,7 @@
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
 #include "db/Db.hpp"
@@ -522,11 +523,23 @@ int32_t Script_UnitName(lua_State* L) {
         return 0;
     }
 
-    // TODO the reference answers the "player" token from a dedicated local-player name accessor
-    // (FUN_006b1060) before it ever touches the object manager, so the player frame has a name even
-    // when the player object is not resolvable. Frozen resolves it like any other unit; see the
-    // note below for why the glue selection is still consulted first.
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto token = lua_tostring(L, 1);
+
+    // The reference answers "player" from its own copy of the logged-in character before it ever
+    // touches the object manager, so the player frame has a name whether or not the player object
+    // resolves. The second return is the realm, which is nil for a same-realm character.
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        auto localName = CGPlayer_C::GetLocalPlayerName();
+
+        if (localName) {
+            lua_pushstring(L, localName);
+            lua_pushnil(L);
+
+            return 2;
+        }
+    }
+
+    auto unit = Script_GetUnitFromName(token);
 
     if (!unit) {
         lua_pushnil(L);

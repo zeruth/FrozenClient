@@ -1451,6 +1451,12 @@ addr	how	frozen	evidence
 006b0f40	override	ClientServices::GetErrorToken	
 006b0fe0	override	ClientServices::SetAccountName	
 006b1020	override	ClientServices::SetCharacterInfo	
+006b1050	annotated	CGPlayer_C::GetLocalPlayerInfo	tag in src/object/client/CGPlayer_C.cpp
+006b1060	annotated	CGPlayer_C::GetLocalPlayerName	tag in src/object/client/CGPlayer_C.cpp
+006b1070	annotated	CGPlayer_C::GetLocalPlayerRace	tag in src/object/client/CGPlayer_C.cpp
+006b1080	annotated	CGPlayer_C::GetLocalPlayerClass	tag in src/object/client/CGPlayer_C.cpp
+006b1090	annotated	CGPlayer_C::GetLocalPlayerSex	tag in src/object/client/CGPlayer_C.cpp
+006b10a0	annotated	CGPlayer_C::GetLocalPlayerLevel	tag in src/object/client/CGPlayer_C.cpp
 006b1390	callorder	ClientConnection::Connect	same slot between linked calls in 004d8ba0=CGlueMgr::Sub4D8BA0
 006b14c0	callorder	ClientConnection::GetCharacterList	same slot between linked calls in 004d95c0=CGlueMgr::GetCharacterList
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
@@ -1472,6 +1478,7 @@ addr	how	frozen	evidence
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
+0072aab0	callgraph	WowClientDB<ChrClassesRec>::GetRecord	only unmatched callee of 0060fec0=Script_UnitClass
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote

@@ -1,4 +1,6 @@
 #include "glue/CGlueMgr.hpp"
+#include "glue/CharacterSelectionDisplay.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "client/Client.hpp"
 #include "client/ClientServices.hpp"
 #include "client/Util.hpp"
@@ -1402,6 +1404,15 @@ void CGlueMgr::Sub4D8BA0() {
 
 void CGlueMgr::Suspend() {
     CGlueMgr::m_suspended = 1;
+
+    // Last moment the chosen character is readable: CCharacterSelection::Shutdown below frees
+    // s_characterList. The reference keeps its own copy of this record for the whole session and
+    // answers the player's own name, race, class, sex and level from it.
+    auto selected = CCharacterSelection::GetSelectedCharacter();
+
+    if (selected) {
+        CGPlayer_C::SetLocalPlayerInfo(selected->m_info);
+    }
 
     // TODO
 
