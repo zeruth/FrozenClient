@@ -135393,32 +135393,35 @@
 "lua_isstring",
 "luaL_error",
 "lua_tolstring",
+"SStrCmpI",
+"CGPlayer_C::GetLocalPlayerRace",
+"WowClientDB<ChrRacesRec>::GetRecord",
+"CGPlayer_C::GetLocalPlayerSex",
 "Script_GetUnitFromName",
 "CGUnit::Unit",
 "WowClientDB<ChrRacesRec>::GetRecord",
 "lua_pushnil",
 "lua_pushnil",
-"lua_pushnil",
 "CGUnit_C::GetDisplayRaceNameFromRecord",
 "lua_pushstring",
-"lua_pushstring",
-"lua_pushnumber"
+"lua_pushstring"
 ],
 "strings": [
-"Usage: UnitRace(\"unit\")"
+"Usage: UnitRace(\"unit\")",
+"player"
 ],
 "consts": [
 "0",
 "0xFF",
 "1",
 "16",
-"3"
+"2"
 ],
-"branches": 4,
+"branches": 5,
 "stub": false,
-"lines": 26,
+"lines": 39,
 "refs": [],
-"line": 926
+"line": 927
 },
 "Script_UnitClass": {
 "files": [
@@ -135428,33 +135431,36 @@
 "lua_isstring",
 "luaL_error",
 "lua_tolstring",
+"SStrCmpI",
+"CGPlayer_C::GetLocalPlayerClass",
+"WowClientDB<ChrClassesRec>::GetRecord",
+"CGPlayer_C::GetLocalPlayerSex",
 "Script_GetUnitFromName",
 "CGUnit::Unit",
 "WowClientDB<ChrClassesRec>::GetRecord",
 "lua_pushnil",
 "lua_pushnil",
-"lua_pushnil",
 "CGUnit_C::GetDisplayClassNameFromRecord",
 "lua_pushstring",
-"lua_pushstring",
-"lua_pushnumber"
+"lua_pushstring"
 ],
 "strings": [
-"Usage: UnitClass(\"unit\")"
+"Usage: UnitClass(\"unit\")",
+"player"
 ],
 "consts": [
 "0",
 "0xFF",
 "1",
 "16",
-"3",
+"2",
 "8"
 ],
-"branches": 4,
+"branches": 5,
 "stub": false,
-"lines": 26,
+"lines": 37,
 "refs": [],
-"line": 953
+"line": 968
 },
 "Script_UnitClassBase": {
 "files": [
@@ -135476,7 +135482,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 980
+"line": 1006
 },
 "Script_UnitResistance": {
 "files": [
@@ -135498,7 +135504,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 984
+"line": 1010
 },
 "Script_UnitStat": {
 "files": [
@@ -135520,7 +135526,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 988
+"line": 1014
 },
 "Script_UnitAttackBothHands": {
 "files": [
@@ -135542,7 +135548,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 992
+"line": 1018
 },
 "Script_UnitDamage": {
 "files": [
@@ -135564,7 +135570,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 996
+"line": 1022
 },
 "Script_UnitRangedDamage": {
 "files": [
@@ -135586,7 +135592,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1000
+"line": 1026
 },
 "Script_UnitRangedAttack": {
 "files": [
@@ -135608,7 +135614,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1004
+"line": 1030
 },
 "Script_UnitAttackSpeed": {
 "files": [
@@ -135630,7 +135636,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1008
+"line": 1034
 },
 "Script_UnitAttackPower": {
 "files": [
@@ -135652,7 +135658,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1012
+"line": 1038
 },
 "Script_UnitRangedAttackPower": {
 "files": [
@@ -135674,7 +135680,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1016
+"line": 1042
 },
 "Script_UnitDefense": {
 "files": [
@@ -135696,7 +135702,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1020
+"line": 1046
 },
 "Script_UnitArmor": {
 "files": [
@@ -135718,7 +135724,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1024
+"line": 1050
 },
 "Script_UnitCharacterPoints": {
 "files": [
@@ -135736,7 +135742,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1028
+"line": 1054
 },
 "Script_UnitAuraFiltered": {
 "files": [
@@ -135755,7 +135761,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1041
+"line": 1067
 },
 "Script_UnitBuff": {
 "files": [
@@ -135772,7 +135778,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1050
+"line": 1076
 },
 "Script_UnitDebuff": {
 "files": [
@@ -135789,7 +135795,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1054
+"line": 1080
 },
 "Script_UnitAura": {
 "files": [
@@ -135845,7 +135851,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 1065
+"line": 1091
 },
 "Script_UnitIsTapped": {
 "files": [
@@ -135872,7 +135878,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1148
+"line": 1174
 },
 "Script_UnitIsTappedByPlayer": {
 "files": [
@@ -135890,7 +135896,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1166
+"line": 1192
 },
 "Script_UnitIsTappedByAllThreatList": {
 "files": [
@@ -135908,7 +135914,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1173
+"line": 1199
 },
 "Script_UnitIsTrivial": {
 "files": [
@@ -135935,7 +135941,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1180
+"line": 1206
 },
 "Script_UnitHasRelicSlot": {
 "files": [
@@ -135957,7 +135963,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1198
+"line": 1224
 },
 "Script_SetPortraitTexture": {
 "files": [
@@ -135972,7 +135978,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1202
+"line": 1228
 },
 "Script_HasFullControl": {
 "files": [
@@ -135990,7 +135996,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1207
+"line": 1233
 },
 "Script_GetComboPoints": {
 "files": [
@@ -136008,7 +136014,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1214
+"line": 1240
 },
 "Script_IsInGuild": {
 "files": [
@@ -136026,7 +136032,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1220
+"line": 1246
 },
 "Script_IsGuildLeader": {
 "files": [
@@ -136044,7 +136050,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1228
+"line": 1254
 },
 "Script_IsArenaTeamCaptain": {
 "files": [
@@ -136062,7 +136068,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1234
+"line": 1260
 },
 "Script_IsInArenaTeam": {
 "files": [
@@ -136080,7 +136086,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1240
+"line": 1266
 },
 "Script_IsResting": {
 "files": [
@@ -136098,7 +136104,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1246
+"line": 1272
 },
 "Script_GetCombatRating": {
 "files": [
@@ -136116,7 +136122,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1253
+"line": 1279
 },
 "Script_GetCombatRatingBonus": {
 "files": [
@@ -136134,7 +136140,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1261
+"line": 1287
 },
 "Script_GetMaxCombatRatingBonus": {
 "files": [
@@ -136156,7 +136162,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1269
+"line": 1295
 },
 "Script_GetDodgeChance": {
 "files": [
@@ -136178,7 +136184,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1273
+"line": 1299
 },
 "Script_GetBlockChance": {
 "files": [
@@ -136200,7 +136206,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1277
+"line": 1303
 },
 "Script_GetShieldBlock": {
 "files": [
@@ -136218,7 +136224,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1281
+"line": 1307
 },
 "Script_GetParryChance": {
 "files": [
@@ -136240,7 +136246,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1289
+"line": 1315
 },
 "Script_GetCritChanceFromAgility": {
 "files": [
@@ -136258,7 +136264,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1293
+"line": 1319
 },
 "Script_GetSpellCritChanceFromIntellect": {
 "files": [
@@ -136276,7 +136282,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1301
+"line": 1327
 },
 "Script_GetCritChance": {
 "files": [
@@ -136298,7 +136304,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1309
+"line": 1335
 },
 "Script_GetRangedCritChance": {
 "files": [
@@ -136320,7 +136326,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1313
+"line": 1339
 },
 "Script_GetSpellCritChance": {
 "files": [
@@ -136342,7 +136348,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1317
+"line": 1343
 },
 "Script_GetSpellBonusDamage": {
 "files": [
@@ -136364,7 +136370,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1321
+"line": 1347
 },
 "Script_GetSpellBonusHealing": {
 "files": [
@@ -136386,7 +136392,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1325
+"line": 1351
 },
 "Script_GetPetSpellBonusDamage": {
 "files": [
@@ -136408,7 +136414,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1329
+"line": 1355
 },
 "Script_GetSpellPenetration": {
 "files": [
@@ -136430,7 +136436,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1333
+"line": 1359
 },
 "Script_GetArmorPenetration": {
 "files": [
@@ -136448,7 +136454,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1337
+"line": 1363
 },
 "Script_GetAttackPowerForStat": {
 "files": [
@@ -136470,7 +136476,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1345
+"line": 1371
 },
 "Script_UnitCreatureType": {
 "files": [
@@ -136495,7 +136501,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1349
+"line": 1375
 },
 "Script_UnitCreatureFamily": {
 "files": [
@@ -136517,7 +136523,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1363
+"line": 1389
 },
 "Script_GetResSicknessDuration": {
 "files": [
@@ -136539,7 +136545,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1367
+"line": 1393
 },
 "Script_GetPVPSessionStats": {
 "files": [
@@ -136558,7 +136564,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1371
+"line": 1397
 },
 "Script_GetPVPYesterdayStats": {
 "files": [
@@ -136578,7 +136584,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1379
+"line": 1405
 },
 "Script_GetPVPLifetimeStats": {
 "files": [
@@ -136598,7 +136604,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1388
+"line": 1414
 },
 "Script_UnitPVPRank": {
 "files": [
@@ -136616,7 +136622,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1397
+"line": 1423
 },
 "Script_GetPVPRankInfo": {
 "files": [
@@ -136635,7 +136641,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1403
+"line": 1429
 },
 "Script_GetPVPRankProgress": {
 "files": [
@@ -136653,7 +136659,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1410
+"line": 1436
 },
 "PushCastInfo": {
 "files": [
@@ -136697,7 +136703,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1424
+"line": 1450
 },
 "Script_UnitCastingInfo": {
 "files": [
@@ -136712,7 +136718,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1485
+"line": 1511
 },
 "Script_UnitChannelInfo": {
 "files": [
@@ -136727,7 +136733,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1489
+"line": 1515
 },
 "Script_IsLoggedIn": {
 "files": [
@@ -136745,7 +136751,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1493
+"line": 1519
 },
 "Script_IsFlyableArea": {
 "files": [
@@ -136767,7 +136773,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1500
+"line": 1526
 },
 "Script_IsIndoors": {
 "files": [
@@ -136789,7 +136795,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1504
+"line": 1530
 },
 "Script_IsOutdoors": {
 "files": [
@@ -136811,7 +136817,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1508
+"line": 1534
 },
 "Script_IsOutOfBounds": {
 "files": [
@@ -136829,7 +136835,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1512
+"line": 1538
 },
 "Script_IsFalling": {
 "files": [
@@ -136847,7 +136853,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1519
+"line": 1545
 },
 "Script_IsSwimming": {
 "files": [
@@ -136869,7 +136875,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1526
+"line": 1552
 },
 "Script_IsFlying": {
 "files": [
@@ -136891,7 +136897,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1530
+"line": 1556
 },
 "Script_IsMounted": {
 "files": [
@@ -136913,7 +136919,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1534
+"line": 1560
 },
 "Script_IsStealthed": {
 "files": [
@@ -136935,7 +136941,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1538
+"line": 1564
 },
 "Script_UnitIsSameServer": {
 "files": [
@@ -136959,7 +136965,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1542
+"line": 1568
 },
 "Script_GetUnitHealthModifier": {
 "files": [
@@ -136977,7 +136983,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1556
+"line": 1582
 },
 "Script_GetUnitMaxHealthModifier": {
 "files": [
@@ -136995,7 +137001,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1564
+"line": 1590
 },
 "Script_GetUnitPowerModifier": {
 "files": [
@@ -137013,7 +137019,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1572
+"line": 1598
 },
 "Script_GetUnitHealthRegenRateFromSpirit": {
 "files": [
@@ -137031,7 +137037,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1580
+"line": 1606
 },
 "Script_GetUnitManaRegenRateFromSpirit": {
 "files": [
@@ -137049,7 +137055,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1588
+"line": 1614
 },
 "Script_GetManaRegen": {
 "files": [
@@ -137071,7 +137077,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1596
+"line": 1622
 },
 "Script_GetPowerRegen": {
 "files": [
@@ -137093,7 +137099,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1600
+"line": 1626
 },
 "Script_GetRuneCooldown": {
 "files": [
@@ -137114,7 +137120,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1604
+"line": 1630
 },
 "Script_GetRuneCount": {
 "files": [
@@ -137136,7 +137142,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1612
+"line": 1638
 },
 "Script_GetRuneType": {
 "files": [
@@ -137158,7 +137164,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1616
+"line": 1642
 },
 "Script_ReportPlayerIsPVPAFK": {
 "files": [
@@ -137180,7 +137186,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1624
+"line": 1650
 },
 "Script_PlayerIsPVPInactive": {
 "files": [
@@ -137198,7 +137204,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1628
+"line": 1654
 },
 "Script_GetExpertise": {
 "files": [
@@ -137220,7 +137226,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1635
+"line": 1661
 },
 "Script_GetExpertisePercent": {
 "files": [
@@ -137242,7 +137248,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1639
+"line": 1665
 },
 "Script_UnitInBattleground": {
 "files": [
@@ -137259,7 +137265,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1643
+"line": 1669
 },
 "Script_UnitInRange": {
 "files": [
@@ -137281,7 +137287,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1649
+"line": 1675
 },
 "Script_GetUnitSpeed": {
 "files": [
@@ -137303,7 +137309,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1653
+"line": 1679
 },
 "Script_GetUnitPitch": {
 "files": [
@@ -137325,7 +137331,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1657
+"line": 1683
 },
 "Script_UnitInVehicle": {
 "files": [
@@ -137352,7 +137358,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1661
+"line": 1687
 },
 "Script_UnitUsingVehicle": {
 "files": [
@@ -137374,7 +137380,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1679
+"line": 1705
 },
 "Script_UnitControllingVehicle": {
 "files": [
@@ -137401,7 +137407,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1683
+"line": 1709
 },
 "Script_UnitInVehicleControlSeat": {
 "files": [
@@ -137423,7 +137429,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1701
+"line": 1727
 },
 "Script_UnitHasVehicleUI": {
 "files": [
@@ -137450,7 +137456,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1705
+"line": 1731
 },
 "Script_UnitTargetsVehicleInRaidUI": {
 "files": [
@@ -137472,7 +137478,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1723
+"line": 1749
 },
 "Script_UnitVehicleSkin": {
 "files": [
@@ -137494,7 +137500,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1727
+"line": 1753
 },
 "Script_UnitVehicleSeatCount": {
 "files": [
@@ -137516,7 +137522,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1731
+"line": 1757
 },
 "Script_UnitVehicleSeatInfo": {
 "files": [
@@ -137538,7 +137544,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1735
+"line": 1761
 },
 "Script_UnitSwitchToVehicleSeat": {
 "files": [
@@ -137560,7 +137566,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1739
+"line": 1765
 },
 "Script_CanSwitchVehicleSeat": {
 "files": [
@@ -137578,7 +137584,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1743
+"line": 1769
 },
 "Script_GetVehicleUIIndicator": {
 "files": [
@@ -137600,7 +137606,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1750
+"line": 1776
 },
 "Script_GetVehicleUIIndicatorSeat": {
 "files": [
@@ -137622,7 +137628,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1754
+"line": 1780
 },
 "Script_UnitThreatSituation": {
 "files": [
@@ -137639,7 +137645,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1758
+"line": 1784
 },
 "Script_UnitDetailedThreatSituation": {
 "files": [
@@ -137661,7 +137667,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1764
+"line": 1790
 },
 "Script_UnitIsControlling": {
 "files": [
@@ -137679,7 +137685,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1768
+"line": 1794
 },
 "Script_EjectPassengerFromSeat": {
 "files": [
@@ -137701,7 +137707,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1775
+"line": 1801
 },
 "Script_CanEjectPassengerFromSeat": {
 "files": [
@@ -137719,7 +137725,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1779
+"line": 1805
 },
 "Script_RespondInstanceLock": {
 "files": [
@@ -137741,7 +137747,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1786
+"line": 1812
 },
 "Script_GetPlayerFacing": {
 "files": [
@@ -137764,7 +137770,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1790
+"line": 1816
 },
 "Script_GetPlayerInfoByGUID": {
 "files": [
@@ -137786,7 +137792,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1804
+"line": 1830
 },
 "Script_GetItemStats": {
 "files": [
@@ -137808,7 +137814,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1808
+"line": 1834
 },
 "Script_GetItemStatDelta": {
 "files": [
@@ -137830,7 +137836,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1812
+"line": 1838
 },
 "Script_IsXPUserDisabled": {
 "files": [
@@ -137848,7 +137854,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1816
+"line": 1842
 },
 "Script_FillLocalizedClassList": {
 "files": [
@@ -137879,7 +137885,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1823
+"line": 1849
 },
 "ScriptEventsRegisterFunctions": {
 "files": [
@@ -137895,7 +137901,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2023
+"line": 2049
 },
 "ScriptEventsInitialize": {
 "files": [
@@ -139158,7 +139164,7 @@
 "stub": false,
 "lines": 649,
 "refs": [],
-"line": 2031
+"line": 2057
 },
 "ScriptEventsRegisterEvents": {
 "files": [
@@ -139175,7 +139181,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2681
+"line": 2707
 },
 "ParseIndex": {
 "files": [

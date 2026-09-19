@@ -19953,33 +19953,33 @@
   "status": "ported"
  },
  "0060fd40": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.5,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.562,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitRace",
-  "frozenSize": 260,
-  "how": "table",
+  "frozenSize": 325,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 380,
   "status": "ported"
  },
  "0060fec0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.5,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitClass",
-  "frozenSize": 265,
-  "how": "table",
+  "frozenSize": 334,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 380,
   "status": "ported"
@@ -23112,7 +23112,7 @@
    "src/object/client/cgplayer_c.cpp"
   ],
   "frozen": "CGPlayer_C::GetLocalPlayerRace",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 6,
@@ -23128,7 +23128,7 @@
    "src/object/client/cgplayer_c.cpp"
   ],
   "frozen": "CGPlayer_C::GetLocalPlayerClass",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 6,
@@ -23144,7 +23144,7 @@
    "src/object/client/cgplayer_c.cpp"
   ],
   "frozen": "CGPlayer_C::GetLocalPlayerSex",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 6,

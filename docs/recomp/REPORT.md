@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 10:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -19,9 +19,9 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | **render surface** (the modules that draw the world) | **6005, mapped 158 (=) (2.6%)** | |
 | frozen functions (src/, from PDB + source) | 11418, stubs 851 | |
 
-Match evidence: annotated 426, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 770. Module anchors: 1479 assert strings.
+Match evidence: annotated 428, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 768. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 10:05 -- mapped 2396, ported 1920, stub 450, spine mapped 385.
+Previous run: 2026-09-19 10:08 -- mapped 2396, ported 1920, stub 450, spine mapped 385.
 
 ## Lua API coverage (binding tables)
 
@@ -785,9 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:03 | 2296 (8.5%) | 686 (2.5%) | 524 | 346/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:07 | 2292 (8.4%) | 686 (2.5%) | 524 | 342/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:08 | 2292 (8.4%) | 686 (2.5%) | 524 | 342/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:08 | 2307 (8.5%) | 692 (2.5%) | 524 | 349/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:09 | 2307 (8.5%) | 693 (2.6%) | 524 | 349/5530 | 1584/2512 | 752 |
@@ -810,6 +807,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:00 | 2389 (8.8%) | 885 (3.3%) | 450 | 384/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:05 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:08 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 
 ## How to move a row
 

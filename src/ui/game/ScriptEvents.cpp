@@ -923,58 +923,84 @@ int32_t Script_GetArenaCurrency(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060fd40
 int32_t Script_UnitRace(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitRace(\"unit\")");
         return 0;
     }
 
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto token = lua_tostring(L, 1);
 
-    auto raceRec = data ? g_chrRacesDB.GetRecord(data->pad1 & 0xFF) : nullptr;
+    const ChrRacesRec* raceRec = nullptr;
+    auto sex = UNITSEX_MALE;
 
+    // "player" is answered from the logged-in character's own record, ahead of the object manager.
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        raceRec = g_chrRacesDB.GetRecord(CGPlayer_C::GetLocalPlayerRace());
+        sex = static_cast<UNIT_SEX>(CGPlayer_C::GetLocalPlayerSex());
+    } else {
+        auto unit = Script_GetUnitFromName(token);
+        auto data = unit ? unit->Unit() : nullptr;
+
+        if (data) {
+            raceRec = g_chrRacesDB.GetRecord(data->pad1 & 0xFF);
+            sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+        }
+    }
+
+    // Two returns, not three: the race id as a third value is a later expansion's signature, and
+    // the reference here pushes exactly the display name and the client file string.
     if (!raceRec) {
         lua_pushnil(L);
         lua_pushnil(L);
-        lua_pushnil(L);
 
-        return 3;
+        return 2;
     }
 
-    auto sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
     lua_pushstring(L, CGUnit_C::GetDisplayRaceNameFromRecord(raceRec, sex, nullptr));
     lua_pushstring(L, raceRec->m_clientFileString);
-    lua_pushnumber(L, raceRec->m_ID);
 
-    return 3;
+    return 2;
 }
 
+// ref: FUN_0060fec0
 int32_t Script_UnitClass(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitClass(\"unit\")");
         return 0;
     }
 
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto token = lua_tostring(L, 1);
 
-    auto classRec = data ? g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF) : nullptr;
+    const ChrClassesRec* classRec = nullptr;
+    auto sex = UNITSEX_MALE;
 
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        classRec = g_chrClassesDB.GetRecord(CGPlayer_C::GetLocalPlayerClass());
+        sex = static_cast<UNIT_SEX>(CGPlayer_C::GetLocalPlayerSex());
+    } else {
+        auto unit = Script_GetUnitFromName(token);
+        auto data = unit ? unit->Unit() : nullptr;
+
+        if (data) {
+            classRec = g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF);
+            sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+        }
+    }
+
+    // Two returns, not three, for the same reason as UnitRace.
     if (!classRec) {
         lua_pushnil(L);
         lua_pushnil(L);
-        lua_pushnil(L);
 
-        return 3;
+        return 2;
     }
 
-    auto sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
     lua_pushstring(L, CGUnit_C::GetDisplayClassNameFromRecord(classRec, sex, nullptr));
     lua_pushstring(L, classRec->m_filename);
-    lua_pushnumber(L, classRec->m_ID);
 
-    return 3;
+    return 2;
 }
 
 int32_t Script_UnitClassBase(lua_State* L) {

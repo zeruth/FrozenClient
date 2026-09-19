@@ -1256,8 +1256,8 @@ addr	how	frozen	evidence
 0060fba0	table	Script_GetMoney	binding "GetMoney" in s_UnitFunctions ~ table 00ad21d8
 0060fc40	table	Script_GetHonorCurrency	binding "GetHonorCurrency" in s_UnitFunctions ~ table 00ad21d8
 0060fcc0	table	Script_GetArenaCurrency	binding "GetArenaCurrency" in s_UnitFunctions ~ table 00ad21d8
-0060fd40	table	Script_UnitRace	binding "UnitRace" in s_UnitFunctions ~ table 00ad21d8
-0060fec0	table	Script_UnitClass	binding "UnitClass" in s_UnitFunctions ~ table 00ad21d8
+0060fd40	annotated	Script_UnitRace	tag in src/ui/game/ScriptEvents.cpp
+0060fec0	annotated	Script_UnitClass	tag in src/ui/game/ScriptEvents.cpp
 00610040	table	Script_UnitClassBase	binding "UnitClassBase" in s_UnitFunctions ~ table 00ad21d8
 006101a0	table	Script_UnitResistance	binding "UnitResistance" in s_UnitFunctions ~ table 00ad21d8
 00610300	table	Script_UnitStat	binding "UnitStat" in s_UnitFunctions ~ table 00ad21d8
