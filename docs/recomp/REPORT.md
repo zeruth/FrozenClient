@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1814 (+146) (6.7%) | 416.3k (7.5%) |
-| &nbsp;&nbsp;ported | 1329 (+146) | 294.7k |
+| mapped to a whoa function | 1817 (+3) (6.7%) | 417.0k (7.5%) |
+| &nbsp;&nbsp;ported | 1332 (+3) | 295.3k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **429 (+93) (1.6%)** | **55.1k (1.0%)** |
-| unmapped | 25347 | 5.00M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 250 (+47) (4.5%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **430 (+1) (1.6%)** | **55.2k (1.0%)** |
+| unmapped | 25344 | 5.00M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 252 (+2) (4.6%) | |
 | whoa functions (src/, from PDB + source) | 11294, stubs 895 | |
 
-Match evidence: annotated 162, callgraph 107, callorder 117, cvar 30, handler 27, override 93, string 349, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 162, callgraph 107, callorder 117, cvar 30, handler 27, override 96, string 349, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 23:23 -- mapped 1668, ported 1183, stub 463, spine mapped 203.
+Previous run: 2026-09-18 23:26 -- mapped 1814, ported 1329, stub 463, spine mapped 250.
 
 ## Lua API coverage (binding tables)
 
@@ -205,14 +205,14 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 355 | 86.2k | 10 (2.8%) | 4.8% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 69 (45.7%) | 26.9% | 51 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 29 (8.3%) | 2.6% | 0 | 2 | 36 |
-| lmemPool.cpp | 342 | 80.2k | 66 (19.3%) | 29.2% | 0 | 0 | 107 |
+| lmemPool.cpp | 342 | 80.2k | 67 (19.6%) | 29.6% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 187 | 64.3k | 5 (2.7%) | 3.3% | 0 | 0 | 118 |
 | M2Shared.cpp | 66 | 63.3k | 6 (9.1%) | 2.2% | 0 | 0 | 20 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 18 (6.3%) | 16.4% | 3 | 0 | 115 |
-| SoundEngine.cpp | 406 | 59.7k | 13 (3.2%) | 16.9% | 0 | 0 | 58 |
+| SoundEngine.cpp | 406 | 59.7k | 14 (3.4%) | 17.4% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 31 (12.8%) | 4.1% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 20 (8.1%) | 7.4% | 7 | 0 | 15 |
@@ -236,7 +236,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameObject_C.cpp | 285 | 38.0k | 1 (0.4%) | 0.3% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 1 (0.6%) | 0.2% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 66 (27.2%) | 28.9% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 67 (27.6%) | 29.1% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 21 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 10 (4.7%) | 9.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
@@ -691,7 +691,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00631000 | `CGTooltip_SetAction` | 4% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 007e4480 | `BlobShadowsBegin` | 21% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
-| 0087ee60 | `SESound::LoadDiskSound` | 69% | 29 | 33 | 35 | 19 | 0% | 1303 |
+| 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 33 | 35 | 19 | 0% | 1303 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `CGGameUI::Initialize` | 14% | 59 | 30 | 23 | 6 | 5% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 20% | 10 | 10 | 10 | 5 | 29% | 1189 |
@@ -701,7 +701,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00401b60 | `ClientRegisterConsoleCommands` | 33% | 33 | 12 | 3 | 1 | 11% | 1126 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetGUIDFromToken` | 71% | 42 | 37 | 34 | 27 | 20% | 1121 |
-| 00813ee0 | `FrameXML_ProcessFile` | 69% | 42 | 46 | 35 | 24 | 19% | 1104 |
+| 00813ee0 | `FrameXML_ProcessFile` | 76% | 42 | 46 | 35 | 24 | 19% | 1104 |
 | 0040a270 | `Paint` | 11% | 27 | 35 | 19 | 12 | 0% | 1055 |
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 2% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 00851d20 | `auxsort` | 29% | 73 | 32 | 18 | 13 | 0% | 1011 |
@@ -775,7 +775,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 0060eb60 | `Script_UnitHealth` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 0060ed40 | `Script_UnitMana` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00767460 | `CVar::LookupRegistered` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
-| 0076e720 | `SStrChrR` | unlinked | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
+| 0076e720 | `SStrChrR` | override | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
 | 007e4480 | `BlobShadowsBegin` | override | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 008154e0 | `StringToBOOL` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 17:32 | 1489 (5.5%) | 230 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
 | 2026-09-18 17:36 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:42 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 23:22 | 1661 (6.1%) | 330 (1.2%) | 463 | 194/5530 | 936/2512 | 446 |
 | 2026-09-18 23:23 | 1668 (6.1%) | 336 (1.2%) | 463 | 203/5530 | 936/2512 | 446 |
 | 2026-09-18 23:26 | 1814 (6.7%) | 429 (1.6%) | 463 | 250/5530 | 936/2512 | 446 |
+| 2026-09-18 23:27 | 1817 (6.7%) | 430 (1.6%) | 463 | 252/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

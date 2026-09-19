@@ -873,23 +873,6 @@
   "whoa": "luaO_pushvfstring",
   "whoaSize": 871
  },
- "004144a0": {
-  "branchRatio": 0.125,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/squall/storm/String.cpp",
-   "lib/squall/storm/string.cpp",
-   "lib/squall/test/stormdll/stormstubs.cpp"
-  ],
-  "how": "callgraph",
-  "module": "LoadingScreen.cpp",
-  "refSize": 45,
-  "status": "ported",
-  "whoa": "SStrChrR",
-  "whoaSize": 102
- },
  "00421880": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -8942,7 +8925,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -18350,6 +18333,23 @@
   "whoa": "SStrChr",
   "whoaSize": 120
  },
+ "0076e720": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "how": "override",
+  "module": "ConsoleVar.cpp",
+  "refSize": 54,
+  "status": "ported",
+  "whoa": "SStrChrR",
+  "whoaSize": 102
+ },
  "0076e760": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -19776,7 +19776,7 @@
   "branchRatio": 0.686,
   "constOverlap": 0.19,
   "faithful": false,
-  "fidelity": 0.69,
+  "fidelity": 0.762,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -19792,7 +19792,7 @@
   "branchRatio": 0.684,
   "constOverlap": 0.12,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.5,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -20765,7 +20765,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -23454,6 +23454,21 @@
   "whoa": "enterlevel",
   "whoaSize": 0
  },
+ "00860760": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/common/vendor/expat-2.0.1/lib/xmlparse.c"
+  ],
+  "how": "override",
+  "module": "lmemPool.cpp",
+  "refSize": 296,
+  "status": "ported",
+  "whoa": "XML_ErrorString",
+  "whoaSize": 0
+ },
  "00860890": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -23849,11 +23864,27 @@
   "whoa": "SESound::Init",
   "whoaSize": 1207
  },
+ "0087ebc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.222,
+  "files": [
+   "src/sound/SESoundInternal.cpp",
+   "src/sound/sesoundinternal.cpp"
+  ],
+  "how": "override",
+  "module": "SoundEngine.cpp",
+  "refSize": 291,
+  "status": "ported",
+  "whoa": "SEDiskSound::SEDiskSound",
+  "whoaSize": 258
+ },
  "0087ee60": {
   "branchRatio": 0.543,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.69,
+  "fidelity": 0.759,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"
