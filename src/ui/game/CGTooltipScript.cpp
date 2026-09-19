@@ -110,6 +110,13 @@ CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right) {
 
         // One past the end is the line being added right now, so make it. Anything further is a
         // caller reaching for a line that was never added, which still returns null.
+        //
+        // This accessor therefore has a side effect, which is worth being careful about because two
+        // loops in this file bound themselves on TooltipMaxLines -- and that grows when a line is
+        // created. Neither can run away, and the reason is arithmetic rather than luck: the bound
+        // is TOOLTIP_MAX_LINES + Count(), and the highest line it reaches maps to extra index
+        // Count() - 1, which already exists. The branch below needs index Count(), one further on.
+        // So a loop over every line never creates one, and only an add can.
         if (extra == tooltip->m_extraLines.Count() && !TooltipCreateLine(tooltip)) {
             return nullptr;
         }
@@ -525,6 +532,10 @@ int32_t CGTooltip_AddLine(lua_State* L) {
     // eight plus whatever has been created so far, so without this the tooltip could never grow:
     // nothing would ask for line nine, so line nine would never be created, so the limit would stay
     // at eight forever.
+    //
+    // There is deliberately no ceiling here. The reference does not impose one either -- its own
+    // growth is bounded only by the caller running out of lines to add -- so a runaway caller can
+    // allocate font strings without limit in both. Matching that rather than inventing a cap.
     if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
         return 0;
     }
@@ -547,6 +558,10 @@ int32_t CGTooltip_AddDoubleLine(lua_State* L) {
     // eight plus whatever has been created so far, so without this the tooltip could never grow:
     // nothing would ask for line nine, so line nine would never be created, so the limit would stay
     // at eight forever.
+    //
+    // There is deliberately no ceiling here. The reference does not impose one either -- its own
+    // growth is bounded only by the caller running out of lines to add -- so a runaway caller can
+    // allocate font strings without limit in both. Matching that rather than inventing a cap.
     if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
         return 0;
     }
