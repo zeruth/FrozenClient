@@ -988,8 +988,24 @@ int32_t Script_GetDamageBonusStat(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Defined with the other countdown state further down; declared here because this binding appears
+// above it in the file.
+static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs);
+extern uint32_t s_releaseDeadlineMs;
+extern bool s_releaseBlocked;
+
+// ref: FUN_00516210
+// The same countdown as the four above, with one extra state in front of it: when the "cannot
+// release yet" flag is set the reference answers -1000 milliseconds, which the integer divide turns
+// into -1 second. So a negative second is a sentinel here, not an expired timer.
 int32_t Script_GetReleaseTimeRemaining(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (s_releaseBlocked) {
+        lua_pushnumber(L, -1000 / 1000);
+
+        return 1;
+    }
+
+    return PushSecondsUntil(L, s_releaseDeadlineMs);
 }
 
 // Four bindings below report "how long until this deadline", and the reference writes the same
@@ -1004,6 +1020,9 @@ static uint32_t s_corpseRecoveryDeadlineMs = 0;      // ref: DAT_00bd0850
 static uint32_t s_instanceBootDeadlineMs = 0;        // ref: DAT_00bd0854
 static uint32_t s_summonConfirmDeadlineMs = 0;       // ref: DAT_00bd0864
 static int32_t s_summonConfirmAreaID = 0;            // ref: DAT_00bd0868
+uint32_t s_releaseDeadlineMs = 0;                    // ref: DAT_00bd0848
+bool s_releaseBlocked = false;                       // ref: DAT_00bd084c
+static int32_t s_bindAreaID = 0;                     // the bind point's area, from the player
 static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
 
 static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs) {
@@ -1517,8 +1536,19 @@ int32_t Script_RestoreVideoStereoDefaults(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00516b20
+// The bind point's area name, falling back to the localized HOME_INN string when the area is not
+// in the table -- which is what an unbound character gets.
 int32_t Script_GetBindLocation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto rec = g_areaTableDB.GetRecord(s_bindAreaID);
+
+    if (rec && rec->m_areaName) {
+        lua_pushstring(L, rec->m_areaName);
+    } else {
+        lua_pushstring(L, FrameScript_GetText("HOME_INN", -1, GENDER_NOT_APPLICABLE));
+    }
+
+    return 1;
 }
 
 int32_t Script_ConfirmTalentWipe(lua_State* L) {
@@ -2175,8 +2205,39 @@ int32_t Script_DownloadSettings(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004dd610
+// Reads the gxResolution CVar, which is stored as "<width>x<height>", and pushes ONLY the width.
+// The height is parsed and discarded by the reference too; the name suggests a pair and it is one
+// number.
 int32_t Script_GetMovieResolution(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("gxResolution");
+    auto value = var ? var->GetString() : nullptr;
+
+    if (!value) {
+        return 0;
+    }
+
+    int32_t width = 0;
+    int32_t height = 0;
+
+    // "<width>x<height>". Split on the x rather than scanning: the width is all this returns, and
+    // a malformed value leaves both at zero the way a failed scan would.
+    const char* cross = value;
+
+    while (*cross && *cross != 'x' && *cross != 'X') {
+        cross++;
+    }
+
+    if (*cross) {
+        width = SStrToInt(value);
+        height = SStrToInt(cross + 1);
+    }
+
+    (void)height;
+
+    lua_pushnumber(L, width);
+
+    return 1;
 }
 
 int32_t Script_GameMovieFinished(lua_State* L) {

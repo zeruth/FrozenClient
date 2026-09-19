@@ -590,7 +590,7 @@ addr	how	frozen	evidence
 004dd540	table	Script_IsSystemSupported	binding "IsSystemSupported" in s_ScriptFunctions ~ table 00ac3e00
 004dd5d0	table	Script_GetSavedAccountName	binding "GetSavedAccountName" in s_ScriptFunctions ~ table 00ac3e00
 004dd5f0	table	Script_GetSavedAccountList	binding "GetSavedAccountList" in s_ScriptFunctions ~ table 00ac3e00
-004dd610	table	Script_GetMovieResolution	binding "GetMovieResolution" in s_ScriptFunctions ~ table 00ac80b0
+004dd610	annotated	Script_GetMovieResolution	tag in src/glue/GlueScript.cpp
 004dd680	table	Script_ShowTOSNotice	binding "ShowTOSNotice" in s_ScriptFunctions ~ table 00ac3e00
 004dd6c0	table	Script_TOSAccepted	binding "TOSAccepted" in s_ScriptFunctions ~ table 00ac3e00
 004dd700	table	Script_ShowEULANotice	binding "ShowEULANotice" in s_ScriptFunctions ~ table 00ac3e00
@@ -834,7 +834,7 @@ addr	how	frozen	evidence
 00515eb0	table	Script_ArenaTeamUninviteByName	binding "ArenaTeamUninviteByName" in s_ScriptFunctions ~ table 00ac80b0
 00515ff0	table	Script_ArenaTeamSetLeaderByName	binding "ArenaTeamSetLeaderByName" in s_ScriptFunctions ~ table 00ac80b0
 00516130	table	Script_ArenaTeamDisband	binding "ArenaTeamDisband" in s_ScriptFunctions ~ table 00ac80b0
-00516210	table	Script_GetReleaseTimeRemaining	binding "GetReleaseTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
+00516210	annotated	Script_GetReleaseTimeRemaining	tag in src/ui/game/GameScript.cpp
 00516280	annotated	Script_GetCorpseRecoveryDelay	tag in src/ui/game/GameScript.cpp
 005162e0	annotated	Script_GetInstanceBootTimeRemaining	tag in src/ui/game/GameScript.cpp
 00516340	table	Script_GetInstanceLockTimeRemaining	binding "GetInstanceLockTimeRemaining" in s_ScriptFunctions ~ table 00ac80b0
@@ -851,7 +851,7 @@ addr	how	frozen	evidence
 005168b0	table	Script_SetPVP	binding "SetPVP" in s_ScriptFunctions ~ table 00ac80b0
 00516970	table	Script_SetPortraitToTexture	binding "SetPortraitToTexture" in s_ScriptFunctions ~ table 00ac80b0
 00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
-00516b20	table	Script_GetBindLocation	binding "GetBindLocation" in s_ScriptFunctions ~ table 00ac80b0
+00516b20	annotated	Script_GetBindLocation	tag in src/ui/game/GameScript.cpp
 00516b90	annotated	Script_GetAreaSpiritHealerTime	tag in src/ui/game/GameScript.cpp
 00516bf0	table	Script_GetMouseFocus	binding "GetMouseFocus" in s_ScriptFunctions ~ table 00ac80b0
 00516c60	table	Script_GetItemInfo	binding "GetItemInfo" in s_ScriptFunctions ~ table 00ac80b0
@@ -1715,6 +1715,7 @@ addr	how	frozen	evidence
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
+006cef10	callgraph	WowClientDB<AreaTableRec>::GetRecord	only unmatched callee of 00516b20=Script_GetBindLocation
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
 006d5c30	callgraph	Player_C_GetDisplayId	only unmatched callee of 006dc810=Player_C_GetModelName
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
@@ -2300,7 +2301,7 @@ addr	how	frozen	evidence
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
-0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining, 005164b0=Script_GetSummonConfirmTimeLeft
+0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516210=Script_GetReleaseTimeRemaining, 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872c10	override	CShaderEffect::UpdateProjMatrix	
@@ -2325,7 +2326,7 @@ addr	how	frozen	evidence
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
 008889b0	callgraph	FrameScript_Object::RegisterScriptObject	only unmatched callee of 00516bf0=Script_GetMouseFocus
 0088b9c0	callgraph	lua_isnumber	only unmatched callee of 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter, 00510d00=Script_GetCoinTextureString
-0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
+0088be0d	callgraph	CVar::GetString	only unmatched callee of 004dd610=Script_GetMovieResolution
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"

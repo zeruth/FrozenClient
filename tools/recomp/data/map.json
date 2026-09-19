@@ -9440,10 +9440,10 @@
   "status": "ported"
  },
  "004dd610": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp",
@@ -9451,11 +9451,11 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetMovieResolution",
-  "frozenSize": 150,
-  "how": "table",
+  "frozenSize": 298,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 96,
-  "status": "stub"
+  "status": "ported"
  },
  "004dd680": {
   "branchRatio": 1.0,
@@ -13354,20 +13354,20 @@
   "status": "stub"
  },
  "00516210": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetReleaseTimeRemaining",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 124,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 98,
-  "status": "stub"
+  "status": "ported"
  },
  "00516280": {
   "branchRatio": 0.0,
@@ -13626,20 +13626,20 @@
   "status": "stub"
  },
  "00516b20": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetBindLocation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 106,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 98,
-  "status": "stub"
+  "status": "ported"
  },
  "00516b90": {
   "branchRatio": 0.0,
@@ -26862,7 +26862,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.5,
   "files": [
    "src/gx/gll/CGxDeviceGLL.cpp"
   ],
@@ -27318,6 +27318,19 @@
   "how": "string",
   "module": "GxuFontMiscClasses.cpp",
   "refSize": 86,
+  "status": "ported"
+ },
+ "006cef10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "WowClientDB<AreaTableRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "callgraph",
+  "module": "Player_C.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "006cfe70": {
@@ -28441,7 +28454,7 @@
   "branchRatio": 0.48,
   "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.35,
+  "fidelity": 0.3,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
@@ -36830,14 +36843,17 @@
   "status": "excluded"
  },
  "0088be0d": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
-  "frozen": "sscanf",
-  "frozenSize": 82,
-  "how": "callorder",
+  "files": [
+   "src/console/CVar.cpp",
+   "src/console/cvar.cpp"
+  ],
+  "frozen": "CVar::GetString",
+  "frozenSize": 9,
+  "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
   "status": "ported"

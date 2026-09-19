@@ -151,8 +151,39 @@ int32_t Script_StopGlueMusic(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004dd610
+// Reads the gxResolution CVar, which is stored as "<width>x<height>", and pushes ONLY the width.
+// The height is parsed and discarded by the reference too; the name suggests a pair and it is one
+// number.
 int32_t Script_GetMovieResolution(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto var = CVar::Lookup("gxResolution");
+    auto value = var ? var->GetString() : nullptr;
+
+    if (!value) {
+        return 0;
+    }
+
+    int32_t width = 0;
+    int32_t height = 0;
+
+    // "<width>x<height>". Split on the x rather than scanning: the width is all this returns, and
+    // a malformed value leaves both at zero the way a failed scan would.
+    const char* cross = value;
+
+    while (*cross && *cross != 'x' && *cross != 'X') {
+        cross++;
+    }
+
+    if (*cross) {
+        width = SStrToInt(value);
+        height = SStrToInt(cross + 1);
+    }
+
+    (void)height;
+
+    lua_pushnumber(L, width);
+
+    return 1;
 }
 
 int32_t Script_GetScreenWidth(lua_State* L) {
