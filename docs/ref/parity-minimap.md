@@ -41,12 +41,21 @@ The cluster is five functions plus the tracking helpers:
 0051d9b0   CVars: portal traversal limit, and the saved tracking flags
 ```
 
-### 2a. The player arrow comes from a CVar, with a hardcoded fallback
+### 2a. The player arrow comes from an XML attribute, with a hardcoded fallback
 
-`0057bea0` reads the CVar `minimapPlayerTexture` and falls back to
-`Interface\Minimap\MinimapArrow.tga` when it is unset, then creates the texture. It also raises
-`Invalid minimapPlayerTexture in Minimap.xml` when the named texture fails to load. This is the
-smallest self-contained piece in the cluster and the obvious first port.
+`0057bea0` is `CGMinimapFrame::LoadXML`. It chains to the base `CSimpleFrame::LoadXML` first, then
+reads the **XML attribute** `minimapPlayerTexture`, not a CVar despite reading like one, falling
+back to `Interface\Minimap\MinimapArrow.tga` when the attribute is absent and handing it to
+`CSimpleTexture::SetTexture`. The error it raises names the file: `Invalid minimapPlayerTexture in
+Minimap.xml`. It then resolves a child region named `MinimapCompassTexture` by name and stores it
+at `+0x2a8`, or null when there is none.
+
+Note for whoever ports it: the decompilation shows **no assignment to `+0x2a0`**, the player arrow
+region itself. Only the compass at `+0x2a8` is assigned here. So the arrow region is created
+somewhere else, in the constructor or by the base LoadXML from a `<Texture>` child in Minimap.xml,
+and this function only points it at a file. That makes it less self-contained than it first looks:
+porting it without finding what creates `m_playerTexture` would call `SetTexture` on the null that
+`CGMinimapFrame::m_playerTexture` already documents.
 
 ### 2b. Orientation comes from the player object, not the camera
 
@@ -80,10 +89,12 @@ Ordered by how much is missing, not by draw order:
 
 ## 4. Suggested order
 
-The first two steps are worth doing even alone, because each is visible and neither depends on the
-terrain imagery:
+Step 1 carries a prerequisite of its own (see 2a). Even so, steps 1 and 2 are the cheapest in the
+cluster and neither depends on the terrain imagery:
 
-1. Port `0057bea0` — the player arrow texture with its CVar and fallback. Self-contained.
+1. Find what creates `m_playerTexture` (see 2a), then port `0057bea0`: `LoadXML`, the attribute
+   and its fallback, and the compass lookup. The first half is the prerequisite for the second.
+   `SetPlayerTexture` is already ported and already guards against the null this would leave.
 2. Port `0057c6a0` — player facing. Two calls, and it makes the arrow point somewhere.
 3. Build the `md5translate.trs` reader, then the tile draw. This is the large one.
 4. Blips and tracking (`00581e80`, `0057f7f0`, `0057f1b0`), which unblock the tracking bindings.
