@@ -5069,20 +5069,20 @@
   "status": "stub"
  },
  "0049e0b0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
   ],
   "frozen": "CScriptRegion_IsDragging",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 55,
+  "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 73,
-  "status": "stub"
+  "status": "ported"
  },
  "0049e100": {
   "branchRatio": 0.2,

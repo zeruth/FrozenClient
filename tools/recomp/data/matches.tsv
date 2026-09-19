@@ -317,7 +317,7 @@ addr	how	frozen	evidence
 0049de40	table	CScriptRegion_SetAllPoints	binding "SetAllPoints" in ScriptRegionMethods ~ table 00ac1480
 0049e010	table	CScriptRegion_ClearAllPoints	binding "ClearAllPoints" in ScriptRegionMethods ~ table 00ac1480
 0049e070	table	CScriptRegion_StopAnimating	binding "StopAnimating" in ScriptRegionMethods ~ table 00ac1480
-0049e0b0	table	CScriptRegion_IsDragging	binding "IsDragging" in ScriptRegionMethods ~ table 00ac1480
+0049e0b0	annotated	CScriptRegion_IsDragging	tag in src/ui/CScriptRegionScript.cpp
 0049e100	table	CScriptRegion_IsMouseOver	binding "IsMouseOver" in ScriptRegionMethods ~ table 00ac1480
 0049e260	table	CScriptRegion_GetAnimationGroups	binding "GetAnimationGroups" in ScriptRegionMethods ~ table 00ac1480
 0049e350	table	CScriptRegion_CreateAnimationGroup	binding "CreateAnimationGroup" in ScriptRegionMethods ~ table 00ac1480

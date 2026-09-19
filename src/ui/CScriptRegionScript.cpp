@@ -650,8 +650,14 @@ int32_t CScriptRegion_StopAnimating(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0049e0b0
 int32_t CScriptRegion_IsDragging(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushboolean(L, region->IsDragging());
+
+    return 1;
 }
 
 // IsMouseOver([top, bottom, left, right]) -> is the cursor inside this region.

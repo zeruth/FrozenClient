@@ -127,7 +127,10 @@ three tags were aimed at the wrong sibling.
   DAT_00b4793c  CSimpleTexture          DAT_00dce440  CSimpleStatusBar
   DAT_00b49984  CSimpleFrame            DAT_00dce4bc  CSimpleScrollFrame
   DAT_00c5cf4c  CGTooltip               DAT_00dce4d4  CSimpleSlider
-  DAT_00dce650  CSimpleButton
+  DAT_00dce650  CSimpleButton           DAT_00b4792c  CSimpleFontString
+  DAT_00b49978  CScriptRegion           DAT_00b499b0  CSimpleFont
+  DAT_00b499ec  CSimpleModel            DAT_00dce4a4  CSimpleMessageFrame
+  DAT_00c2423c  CGCooldown              DAT_00b4997c  (not CSimpleFont -- unidentified)
 
 binding-table entries (ref-tables.jsonl "table" field) are the ENTRY address, not the table base,
 so a class's methods occupy a consecutive run. That makes the run an independent check on which

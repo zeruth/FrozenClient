@@ -17,6 +17,11 @@
 // FrameScript_Object plus a CSimpleFontable -- so it has neither that virtual nor the string form
 // of IsA that CSimpleFontString uses. Adding the type-name virtual to FrameScript_Object is the
 // missing piece; pushing a literal "Font" instead would be inventing the answer the virtual gives.
+// TODO not FUN_004a8240 / FUN_004a8290, which the binding-table matcher offers: both read
+// DAT_00b4997c and CSimpleFont is DAT_00b499b0 (its GetFont and SetFont, 004a43f0 and
+// 004a43a0, read that one). The font's own pair has not been located. An earlier attempt
+// this session pushed a literal "Font" here and was reverted; the address being wrong is the
+// better reason to leave it alone.
 int32_t CSimpleFont_GetObjectType(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

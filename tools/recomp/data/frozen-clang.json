@@ -93051,22 +93051,20 @@
 "src/ui/cscriptregionscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CScriptRegion::GetObjectType",
+"FrameScript_GetObjectThis",
+"CScriptRegion::IsDragging",
+"lua_pushboolean"
 ],
-"strings": [
-"CScriptRegion_IsDragging",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 653
+"line": 654
 },
 "CScriptRegion_IsMouseOver": {
 "files": [
@@ -93079,10 +93077,10 @@
 "CLayoutFrame::GetRect",
 "lua_pushboolean",
 "CoordinateGetAspectCompensation",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:689:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:689:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:689:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:689:19)::operator()",
 "C2Vector::C2Vector",
 "CRect::IsPointInside",
 "lua_pushboolean"
@@ -93102,7 +93100,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 667
+"line": 673
 },
 "FrameScript_EventObject::GetName": {
 "files": [
@@ -147990,7 +147988,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 20
+"line": 25
 },
 "CSimpleFont_IsObjectType": {
 "files": [
@@ -148012,7 +148010,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 24
+"line": 29
 },
 "CSimpleFont_GetName": {
 "files": [
@@ -148032,7 +148030,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 28
+"line": 33
 },
 "CSimpleFont_SetFontObject": {
 "files": [
@@ -148079,7 +148077,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 38
+"line": 43
 },
 "CSimpleFont_GetFontObject": {
 "files": [
@@ -148101,7 +148099,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 79
+"line": 84
 },
 "CSimpleFont_CopyFontObject": {
 "files": [
@@ -148145,7 +148143,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 105
+"line": 110
 },
 "CSimpleFont_SetFont": {
 "files": [
@@ -148183,7 +148181,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 143
+"line": 148
 },
 "CSimpleFont_GetFont": {
 "files": [
@@ -148215,7 +148213,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 171
+"line": 176
 },
 "CSimpleFont_SetAlpha": {
 "files": [
@@ -148243,7 +148241,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 199
+"line": 204
 },
 "CSimpleFont_GetAlpha": {
 "files": [
@@ -148264,7 +148262,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 221
+"line": 226
 },
 "CSimpleFont_SetTextColor": {
 "files": [
@@ -148286,7 +148284,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 232
+"line": 237
 },
 "CSimpleFont_GetTextColor": {
 "files": [
@@ -148311,7 +148309,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 245
+"line": 250
 },
 "CSimpleFont_SetShadowColor": {
 "files": [
@@ -148333,7 +148331,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 264
+"line": 269
 },
 "CSimpleFont_GetShadowColor": {
 "files": [
@@ -148357,7 +148355,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 278
+"line": 283
 },
 "CSimpleFont_SetShadowOffset": {
 "files": [
@@ -148391,7 +148389,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 294
+"line": 299
 },
 "CSimpleFont_GetShadowOffset": {
 "files": [
@@ -148415,7 +148413,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 316
+"line": 321
 },
 "CSimpleFont_SetSpacing": {
 "files": [
@@ -148444,7 +148442,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 330
+"line": 335
 },
 "CSimpleFont_GetSpacing": {
 "files": [
@@ -148466,7 +148464,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 347
+"line": 352
 },
 "CSimpleFont_SetJustifyH": {
 "files": [
@@ -148493,7 +148491,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 360
+"line": 365
 },
 "CSimpleFont_GetJustifyH": {
 "files": [
@@ -148514,7 +148512,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 377
+"line": 382
 },
 "CSimpleFont_SetJustifyV": {
 "files": [
@@ -148541,7 +148539,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 388
+"line": 393
 },
 "CSimpleFont_GetJustifyV": {
 "files": [
@@ -148562,7 +148560,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 405
+"line": 410
 },
 "CSimpleFont_SetIndentedWordWrap": {
 "files": [
@@ -148584,7 +148582,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 416
+"line": 421
 },
 "CSimpleFont_GetIndentedWordWrap": {
 "files": [
@@ -148606,7 +148604,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 427
+"line": 432
 },
 "CSimpleFontString::CreateScriptMetaTable": {
 "files": [
