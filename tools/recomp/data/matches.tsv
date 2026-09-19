@@ -2529,6 +2529,9 @@ addr	how	frozen	evidence
 009726f0	table	CSimpleScrollFrame_GetHorizontalScrollRange	binding "GetHorizontalScrollRange" in SimpleScrollFrameMethods ~ table 00b2ce90
 00972750	table	CSimpleScrollFrame_GetVerticalScrollRange	binding "GetVerticalScrollRange" in SimpleScrollFrameMethods ~ table 00b2ce90
 009727b0	annotated	CSimpleScrollFrame_UpdateScrollChildRect	tag in src/ui/simple/CSimpleScrollFrameScript.cpp
+00972920	annotated	CSimpleMessageFrame_SetFont	tag in src/ui/simple/CSimpleMessageFrameScript.cpp
+00972980	annotated	CSimpleMessageFrame_GetFont	tag in src/ui/simple/CSimpleMessageFrameScript.cpp
+009729e0	annotated	CSimpleMessageFrame_SetTextColor	tag in src/ui/simple/CSimpleMessageFrameScript.cpp
 009732f0	table	CSimpleScrollingMessageFrame_ScrollUp	binding "ScrollUp" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973330	table	CSimpleScrollingMessageFrame_ScrollDown	binding "ScrollDown" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973370	table	CSimpleScrollingMessageFrame_PageUp	binding "PageUp" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
@@ -2544,6 +2547,9 @@ addr	how	frozen	evidence
 009737a0	table	CSimpleScrollingMessageFrame_GetMaxLines	binding "GetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 009737f0	table	CSimpleScrollingMessageFrame_SetMaxLines	binding "SetMaxLines" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973c40	table	CSimpleScrollingMessageFrame_SetHyperlinksEnabled	binding "SetHyperlinksEnabled" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
+00973e30	order	HTMLFont_SetFont	binding table name HTMLFont_SetFont, in definition order in src/ui/simple/CSimpleHTMLScript.cpp
+00973ea0	order	HTMLFont_GetFont	binding table name HTMLFont_GetFont, in definition order in src/ui/simple/CSimpleHTMLScript.cpp
+00973f00	order	HTMLFont_SetTextColor	binding table name HTMLFont_SetTextColor, in definition order in src/ui/simple/CSimpleHTMLScript.cpp
 009748f0	annotated	CSimpleHTML_GetTextTypeArg	tag in src/ui/simple/CSimpleHTMLScript.cpp
 00974a10	annotated	CSimpleHTML_SetFontObject	tag in src/ui/simple/CSimpleHTMLScript.cpp
 00974a70	annotated	CSimpleHTML_GetFontObject	tag in src/ui/simple/CSimpleHTMLScript.cpp

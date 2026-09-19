@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 16:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 16:43 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2692 (=) (9.9%) | 572.7k (10.3%) |
-| &nbsp;&nbsp;ported | 2113 (=) | 418.1k |
+| mapped to a frozen function | 2698 (=) (9.9%) | 573.2k (10.4%) |
+| &nbsp;&nbsp;ported | 2119 (=) | 418.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 543 (=) | 116.6k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **946 (=) (3.5%)** | **118.9k (2.1%)** |
-| unmapped | 24469 | 4.85M |
+| unmapped | 24463 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 394 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 398 (=) (6.9%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11474, stubs 790 | |
+| frozen functions (src/, from PDB + source) | 11475, stubs 787 | |
 
-Match evidence: annotated 544, callgraph 156, callorder 142, cvar 30, handler 28, order 189, override 194, sticky 17, string 310, table 1082. Module anchors: 1479 assert strings.
+Match evidence: annotated 547, callgraph 156, callorder 142, cvar 30, handler 28, order 192, override 194, sticky 17, string 310, table 1082. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 16:33 -- mapped 2692, ported 2113, stub 543, spine mapped 394.
+Previous run: 2026-09-19 16:43 -- mapped 2698, ported 2119, stub 543, spine mapped 394.
 
 ## Lua API coverage (binding tables)
 
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 50 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 202 (55.5%) | 62.1% | 13 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 13 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -738,8 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 15:22 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
-| 2026-09-19 15:25 | 2687 (9.9%) | 932 (3.4%) | 561 | 392/5530 | 1791/2964 | 625 |
 | 2026-09-19 15:29 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 | 2026-09-19 15:34 | 2687 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
 | 2026-09-19 15:37 | 2688 (9.9%) | 932 (3.4%) | 560 | 392/5530 | 1791/2964 | 623 |
@@ -763,6 +761,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 16:29 | 2692 (9.9%) | 947 (3.5%) | 546 | 394/5530 | 1791/2964 | 607 |
 | 2026-09-19 16:33 | 2692 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 | 2026-09-19 16:40 | 2692 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
+| 2026-09-19 16:43 | 2698 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
+| 2026-09-19 16:43 | 2698 (9.9%) | 946 (3.5%) | 543 | 394/5530 | 1791/2964 | 604 |
 
 ## How to move a row
 

@@ -156972,7 +156972,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 19
+"line": 23
 },
 "CSimpleMessageFrame_AddMessage": {
 "files": [
@@ -157006,7 +157006,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 25
+"line": 29
 },
 "CSimpleMessageFrame_Clear": {
 "files": [
@@ -157024,7 +157024,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 45
+"line": 49
 },
 "CSimpleMessageFrame_SetFading": {
 "files": [
@@ -157043,7 +157043,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 51
+"line": 55
 },
 "CSimpleMessageFrame_GetFading": {
 "files": [
@@ -157061,7 +157061,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 57
+"line": 61
 },
 "CSimpleMessageFrame_SetFadeDuration": {
 "files": [
@@ -157081,7 +157081,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 63
+"line": 67
 },
 "CSimpleMessageFrame_GetFadeDuration": {
 "files": [
@@ -157099,7 +157099,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 71
+"line": 75
 },
 "CSimpleMessageFrame_SetTimeVisible": {
 "files": [
@@ -157119,7 +157119,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 77
+"line": 81
 },
 "CSimpleMessageFrame_GetTimeVisible": {
 "files": [
@@ -157137,7 +157137,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 85
+"line": 89
 },
 "CSimpleMessageFrame_SetInsertMode": {
 "files": [
@@ -157160,7 +157160,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 91
+"line": 95
 },
 "CSimpleMessageFrame_GetInsertMode": {
 "files": [
@@ -157181,73 +157181,111 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 103
+"line": 107
+},
+"MessageFrameFont": {
+"files": [
+"src/ui/simple/csimplemessageframescript.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 119
 },
 "CSimpleMessageFrame_SetTextColor": {
 "files": [
 "src/ui/simple/csimplemessageframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleMessageFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"MessageFrameFont",
+"FrameScript_GetColor",
+"CSimpleFontStringAttributes::SetColor",
+"CSimpleFont::UpdateObjects"
 ],
-"strings": [
-"CSimpleMessageFrame_SetTextColor",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemessageframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0x00",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": [],
-"line": 113
+"line": 124
 },
 "CSimpleMessageFrame_SetFont": {
 "files": [
 "src/ui/simple/csimplemessageframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleMessageFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"MessageFrameFont",
+"lua_isstring",
+"lua_isnumber",
+"FrameScript_Object::GetDisplayName",
+"luaL_error",
+"lua_pushnil",
+"lua_isstring",
+"lua_tolstring",
+"StringToFontFlags",
+"lua_tonumber",
+"lua_tolstring",
+"CSimpleFontStringAttributes::SetFont",
+"CSimpleFont::UpdateObjects",
+"lua_pushnumber",
+"lua_pushnil"
 ],
 "strings": [
-"CSimpleMessageFrame_SetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemessageframescript.cpp"
+"Usage: %s:SetFont(\"font\", fontHeight [, flags])"
 ],
 "consts": [
-"0"
+"0x0",
+"1",
+"1.0",
+"2",
+"3",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 4,
+"stub": false,
+"lines": 33,
 "refs": [],
-"line": 121
+"line": 143
 },
 "CSimpleMessageFrame_GetFont": {
 "files": [
 "src/ui/simple/csimplemessageframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CSimpleMessageFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"MessageFrameFont",
+"RCString::GetString",
+"lua_pushnil",
+"RCString::GetString",
+"lua_pushstring",
+"lua_pushnumber",
+"FontFlagsToString",
+"lua_pushstring"
 ],
-"strings": [
-"CSimpleMessageFrame_GetFont",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimplemessageframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 17,
 "refs": [],
-"line": 129
+"line": 178
 },
 "CSimpleModel::CreateScriptMetaTable": {
 "files": [

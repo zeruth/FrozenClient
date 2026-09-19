@@ -40088,6 +40088,54 @@
   "refSize": 58,
   "status": "ported"
  },
+ "00972920": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleMessageFrameScript.cpp",
+   "src/ui/simple/csimplemessageframescript.cpp"
+  ],
+  "frozen": "CSimpleMessageFrame_SetFont",
+  "frozenSize": 322,
+  "how": "annotated",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "00972980": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleMessageFrameScript.cpp",
+   "src/ui/simple/csimplemessageframescript.cpp"
+  ],
+  "frozen": "CSimpleMessageFrame_GetFont",
+  "frozenSize": 164,
+  "how": "annotated",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "009729e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleMessageFrameScript.cpp",
+   "src/ui/simple/csimplemessageframescript.cpp"
+  ],
+  "frozen": "CSimpleMessageFrame_SetTextColor",
+  "frozenSize": 101,
+  "how": "annotated",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
  "009732f0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -40326,6 +40374,54 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 88,
+  "status": "ported"
+ },
+ "00973e30": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleHTMLScript.cpp",
+   "src/ui/simple/csimplehtmlscript.cpp"
+  ],
+  "frozen": "HTMLFont_SetFont",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "00973ea0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleHTMLScript.cpp",
+   "src/ui/simple/csimplehtmlscript.cpp"
+  ],
+  "frozen": "HTMLFont_GetFont",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "00973f00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleHTMLScript.cpp",
+   "src/ui/simple/csimplehtmlscript.cpp"
+  ],
+  "frozen": "HTMLFont_SetTextColor",
+  "frozenSize": 0,
+  "how": "order",
+  "module": "CSimpleHTML.cpp",
+  "refSize": 83,
   "status": "ported"
  },
  "009748f0": {
