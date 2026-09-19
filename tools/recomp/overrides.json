@@ -162,5 +162,7 @@
 
   "0076e720": { "whoa": "SStrChrR", "status": "ported", "note": "call-order slot in FrameXML_ProcessFile (2026-09-18); vote displaced once the lua sources were inventoried" },
   "00860760": { "whoa": "XML_ErrorString", "status": "ported", "note": "unique string 'syntax error' in the XMLTree block; the match became ambiguous with lua's syntax error once lua was inventoried" },
-  "0087ebc0": { "whoa": "SEDiskSound::SEDiskSound", "status": "ported", "note": "call-order slot in SESound::LoadDiskSound (2026-09-18)" }
+  "0087ebc0": { "whoa": "SEDiskSound::SEDiskSound", "status": "ported", "note": "call-order slot in SESound::LoadDiskSound (2026-09-18)" },
+
+  "0047bf30": { "whoa": "HandleClose", "status": "ported", "note": "22 bytes: --refcount at +4, deleting virtual destructor when it hits zero; 189 callers, right before HandleCreate (0047bf50); the console font release in FUN_00764f30 goes through it" }
 }

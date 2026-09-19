@@ -130,7 +130,10 @@ def instantiated_name(call, ref):
         if a is None or a.kind in (ci.TypeKind.INVALID, ci.TypeKind.UNEXPOSED):
             return None
         args.append(msvc_type(a))
-    return '%s<%s>::%s' % (parent.spelling, ','.join(args), ref.spelling)
+    name = '%s<%s>::%s' % (parent.spelling, ','.join(args), ref.spelling)
+    while '>>' in name:
+        name = name.replace('>>', '> >')  # MSVC separates nested closers in the PDB
+    return name
 
 
 def walk_body(body, out):

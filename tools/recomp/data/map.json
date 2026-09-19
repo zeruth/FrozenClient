@@ -659,7 +659,7 @@
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.083,
+  "fidelity": 0.333,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1395,6 +1395,22 @@
   "status": "ported",
   "whoa": "SUniSPutUTF8",
   "whoaSize": 279
+ },
+ "0047bf30": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/Handle.cpp",
+   "lib/common/common/handle.cpp"
+  ],
+  "how": "override",
+  "module": "framing.c",
+  "refSize": 22,
+  "status": "ported",
+  "whoa": "HandleClose",
+  "whoaSize": 18
  },
  "0047bf50": {
   "branchRatio": 0.5,

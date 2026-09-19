@@ -310,6 +310,13 @@ def parse_sources():
 CLANG_JSON = os.path.join(DATA, 'whoa-clang.json')
 
 
+def msvc_nested(name):
+    """MSVC's PDB separates nested template closers: TSList<X,TSGetLink<X> >::Head."""
+    while '>>' in name:
+        name = name.replace('>>', '> >')
+    return name
+
+
 def overlay_clang(src):
     """Replace the regex parser's guesses with libclang's exact answers where clangparse.py has
     run: ordered resolved calls, literals, branch counts. Tags (refs) stay with the regex pass, which
@@ -318,7 +325,7 @@ def overlay_clang(src):
         return src, False
     clang = json.load(io.open(CLANG_JSON, encoding='utf-8'))
     for name, c in clang.items():
-        seq = [x for x in c['callseq'] if not x.startswith('std::') and '(lambda' not in x and not x.startswith('?')]
+        seq = [msvc_nested(x) for x in c['callseq'] if not x.startswith('std::') and '(lambda' not in x and not x.startswith('?')]
         e = src.get(name)
         if not e:
             e = src[name] = {'name': name, 'files': set(c['files']), 'strings': set(), 'calls': set(), 'callseq': [],

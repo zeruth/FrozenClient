@@ -87,6 +87,7 @@ addr	how	whoa	evidence
 0047b440	override	CDataStore::Get	
 0047b480	override	CDataStore::GetString	
 0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
+0047bf30	override	HandleClose	
 0047bf50	callorder	HandleCreate	same slot between linked calls in 004b8c80=TextureCreate
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:31 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1824 (+7) (6.7%) | 417.5k (7.5%) |
-| &nbsp;&nbsp;ported | 1339 (+7) | 295.9k |
+| mapped to a whoa function | 1825 (+1) (6.7%) | 417.5k (7.5%) |
+| &nbsp;&nbsp;ported | 1340 (+1) | 295.9k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **431 (+1) (1.6%)** | **55.2k (1.0%)** |
-| unmapped | 25337 | 5.00M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 259 (+7) (4.7%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **432 (+1) (1.6%)** | **55.2k (1.0%)** |
+| unmapped | 25336 | 5.00M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 260 (+1) (4.7%) | |
 | whoa functions (src/, from PDB + source) | 11300, stubs 895 | |
 
-Match evidence: annotated 165, callgraph 110, callorder 118, cvar 30, handler 27, override 96, string 349, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 165, callgraph 110, callorder 118, cvar 30, handler 27, override 97, string 349, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 23:27 -- mapped 1817, ported 1332, stub 463, spine mapped 252.
+Previous run: 2026-09-18 23:31 -- mapped 1824, ported 1339, stub 463, spine mapped 259.
 
 ## Lua API coverage (binding tables)
 
@@ -231,7 +231,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
 | TextureCache.cpp | 252 | 38.9k | 7 (2.8%) | 5.5% | 0 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 2 (1.2%) | 0.2% | 0 | 0 | 23 |
-| framing.c | 125 | 38.8k | 27 (21.6%) | 51.7% | 0 | 0 | 39 |
+| framing.c | 125 | 38.8k | 28 (22.4%) | 51.7% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 9 (3.8%) | 3.1% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 1 (0.4%) | 0.3% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 17:42 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
 | 2026-09-18 17:54 | 1510 (5.6%) | 246 (0.9%) | 451 | 172/5530 | 936/2512 | 446 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 23:26 | 1814 (6.7%) | 429 (1.6%) | 463 | 250/5530 | 936/2512 | 446 |
 | 2026-09-18 23:27 | 1817 (6.7%) | 430 (1.6%) | 463 | 252/5530 | 936/2512 | 446 |
 | 2026-09-18 23:31 | 1824 (6.7%) | 431 (1.6%) | 463 | 259/5530 | 936/2512 | 446 |
+| 2026-09-18 23:36 | 1825 (6.7%) | 432 (1.6%) | 463 | 260/5530 | 936/2512 | 446 |
 
 ## How to move a row
 
