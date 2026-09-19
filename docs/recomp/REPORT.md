@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:34 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 14:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,10 +9,10 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2680 (=) (9.9%) | 570.2k (10.3%) |
-| &nbsp;&nbsp;ported | 2085 (+3) | 416.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 563 (-3) | 119.4k |
+| &nbsp;&nbsp;ported | 2085 (=) | 416.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 563 (=) | 119.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **929 (+3) (3.4%)** | **117.0k (2.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **929 (=) (3.4%)** | **117.0k (2.1%)** |
 | unmapped | 24481 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
@@ -21,11 +21,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 509, callgraph 186, callorder 125, cvar 30, handler 28, order 191, override 189, string 313, table 1109. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:26 -- mapped 2680, ported 2082, stub 566, spine mapped 392.
+Previous run: 2026-09-19 14:34 -- mapped 2680, ported 2085, stub 563, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 627 of those are WHOA_UNIMPLEMENTED stubs (-3). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 627 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -133,9 +133,9 @@ Reference-only, by opcode (handler address): SMSG_CHECK_FOR_BOTS 006b9670, SMSG_
 
 ## CVar coverage (CVar::Register)
 
-The reference registers 426 cvars by literal name; frozen registers 393 of them. Missing ones are settings the reference client honours and this one cannot even store.
+The reference registers 426 cvars by literal name; frozen registers 417 of them. Missing ones are settings the reference client honours and this one cannot even store.
 
-Missing: FootstepSounds, ObjectSelectionCircle, POIShiftComplete, SkyCloudLOD, SoundMemoryCache, Sound_ChaosMode, Sound_EnableDSPEffects, asyncHandlerTimeout, asyncThreadSleep, chatStyle, conversationMode, converted, ffxNetherWorld, ffxRectangle, ffxSpecial, gxApi, heapAllocTracking, hwDetect, pathDistTol, processAffinityMask, realmList, scriptProfile, shadowCull, shadowInstancing, shadowLOD, shadowScissor, showTimestamps, showfootprintparticles, synchronizeSettings, taintLog, timingMethod, timingTestError, violenceLevel
+Missing: POIShiftComplete, SkyCloudLOD, Sound_EnableDSPEffects, ffxSpecial, gxApi, processAffinityMask, scriptProfile, taintLog, violenceLevel
 
 ## Coverage by reference module
 
@@ -528,8 +528,8 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00877aa0 | `FMOD_ErrorString` | A CDDA read error occurred. ; A HTTP error occurred. This is a catch-all for HTT; A HTTP server error occurred. ; A Win32 COM related error occured. COM failed to i |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
 | 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
-| 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
+| 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 0061eb40 | `CGTooltip_SetOwner` | %s:SetOwner(): Can't set owner to self; %s:SetOwner(): Couldn't find 'this' in frame objec; %s:SetOwner(): Wrong object type, expected frame; ANCHOR_BOTTOM |
 | 0050f990 | `Script_SetConsoleKey` | BACKSPACE; DECIMAL; DELETE; DIVIDE |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | %d%d%d%d%b%d; %d%d%d%d%d%d%d%d%d%d; %s\n%s; CHANGE_REALM |
@@ -619,7 +619,7 @@ The port exists but does not make the calls the reference makes, in the order it
 
 | addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 206 | 4 | 0 | 40% | 6776 |
+| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 0% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 13% | 71 | 27 | 170 | 51 | 2% | 5663 |
@@ -739,7 +739,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 13:02 | 2440 (9.0%) | 917 (3.4%) | 446 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 13:06 | 2440 (9.0%) | 917 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 13:11 | 2676 (9.9%) | 918 (3.4%) | 591 | 392/5530 | 1791/2964 | 658 |
 | 2026-09-19 13:12 | 2676 (9.9%) | 917 (3.4%) | 591 | 391/5530 | 1791/2964 | 658 |
@@ -764,6 +763,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 14:21 | 2679 (9.9%) | 921 (3.4%) | 567 | 392/5530 | 1791/2964 | 631 |
 | 2026-09-19 14:26 | 2680 (9.9%) | 926 (3.4%) | 566 | 392/5530 | 1791/2964 | 630 |
 | 2026-09-19 14:34 | 2680 (9.9%) | 929 (3.4%) | 563 | 392/5530 | 1791/2964 | 627 |
+| 2026-09-19 14:41 | 2680 (9.9%) | 929 (3.4%) | 563 | 392/5530 | 1791/2964 | 627 |
 
 ## How to move a row
 

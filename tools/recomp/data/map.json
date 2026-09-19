@@ -14889,7 +14889,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::RegisterGameCVars",
-  "frozenSize": 11832,
+  "frozenSize": 13179,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 6776,

@@ -543,4 +543,39 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("questPOI", "If enabled, the quest POI system will be used.", 0x20, "1", nullptr, GAME);
     CVar::Register("miniWorldMap", "Whether or not the world map has been toggled to smaller size", 0x20, "0", nullptr, GAME);
     CVar::Register("dontShowEquipmentSetsOnItems", "Don't show which equipment sets an item is associated with", 0x10, "0", nullptr, GAME);
+
+    // Settings the reference registers and frozen could not previously even store, so every
+    // GetCVar on one of them answered nil and every SetCVar was dropped. Names, help text, flags,
+    // defaults and categories are all taken from the reference's own Register call sites
+    // (tools/recomp/data/ref-cvars.jsonl), with the string defaults read out of the binary.
+    //
+    // Two things these are NOT. The reference registers them from the ffx, render, sound and
+    // timing modules; frozen has no home for those yet, so they are grouped here -- the
+    // registration is faithful, its placement is not. And registering a setting is not honouring
+    // it: shadowCull and the rest are stored and readable, and nothing yet consults them.
+
+    CVar::Register("shadowLOD", "Unit shadow LOD", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_007e3a20
+    CVar::Register("showfootprintparticles", "toggles rendering of footprint particles", 0x1, "1", nullptr, GRAPHICS);
+    CVar::Register("hwDetect", "do hardware detection", 0x1, "1", nullptr, GRAPHICS);
+    CVar::Register("ffxNetherWorld", "full screen nether world effect (for invisibility)", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
+    CVar::Register("ffxRectangle", "use rectangle texture for full screen effects", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
+    CVar::Register("shadowCull", "enable shadow frustum culling", 0x0, "1", nullptr, DEFAULT);
+    CVar::Register("shadowInstancing", "enable instancing when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
+    CVar::Register("shadowScissor", "enable scissoring when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
+    CVar::Register("ObjectSelectionCircle", "", 0x0, "1", nullptr, DEBUG);
+    CVar::Register("FootstepSounds", "", 0x0, "1", nullptr, DEFAULT);
+    CVar::Register("pathDistTol", "Sets acceptable distance from pathing destination in yards", 0x0, "1", nullptr, GAME);
+    CVar::Register("chatStyle", "The style of Edit Boxes for the ChatFrame. Valid values: \"classic\", \"im\"", 0x10, "im", nullptr, GAME);
+    CVar::Register("conversationMode", "The action new Real ID Conversations take by default: \"popout\", \"inline\"", 0x10, "popout", nullptr, GAME);
+    CVar::Register("showTimestamps", "The format of timestamps in chat or \"none\"", 0x10, "none", nullptr, GAME);
+    CVar::Register("converted", "Trial to Retail", 0x0, "0", nullptr, GAME);
+    CVar::Register("heapAllocTracking", "Enables/disables allocation tracking & dumping", 0x0, "1", nullptr, GAME);  // TODO callback FUN_004d2780
+    CVar::Register("synchronizeSettings", "Whether client settings should be stored on the server", 0x0, "1", nullptr, DEFAULT);
+    CVar::Register("timingMethod", "Desired method for game timing", 0x2, "0", nullptr, DEFAULT);  // TODO callback FUN_00403200
+    CVar::Register("timingTestError", "Error reported by the timing validation system", 0x6, "0", nullptr, DEFAULT);
+    CVar::Register("asyncThreadSleep", "Engine option: Async read thread sleep", 0x1, "0", nullptr, DEBUG);  // TODO callback FUN_00402670
+    CVar::Register("asyncHandlerTimeout", "Engine option: Async read main thread timeout", 0x1, "100", nullptr, DEBUG);  // TODO callback FUN_00402690
+    CVar::Register("Sound_ChaosMode", "Testing to break sound engine", 0x0, "0", nullptr, SOUND);  // TODO callback FUN_004d0f20
+    CVar::Register("SoundMemoryCache", "sound cache memory size (MB)", 0x2, "4", nullptr, SOUND);
+    CVar::Register("realmList", "Address of realm list server", 0x0, "us.logon.worldofwarcraft.com:3724", nullptr, NET);
 }

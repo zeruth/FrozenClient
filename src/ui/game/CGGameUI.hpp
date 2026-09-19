@@ -10,7 +10,7 @@ class CGGameUI {
     public:
         // What the mouse is carrying: a spell on its way to the hotbar, an item between bags, a
         // stack of money. The reference keeps this beside the rest of the game UI state -- its
-        // cursor code names .\\GameUI.cpp -- and s_cursorMoney below was already one member of it.
+        // cursor code names .\GameUI.cpp -- and s_cursorMoney below was already one member of it.
         // docs/ref/parity-cursor.md maps every address, kind and setter.
         //
         // Nothing picks anything up yet: the setters need the cursor image, the sound engine and
