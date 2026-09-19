@@ -1093,5 +1093,9 @@
     "frozen": "Script_GetItemIcon",
     "status": "diverged",
     "note": "Ported. Three calls the reference makes are deliberately absent, which is why the call-sequence score is low: the icon directory lookup (see 007e7cc0), the name-resolution cache FUN_0070a910, and the name-or-link resolver FUN_00709de0 that the string form of the argument needs. Two facts worth keeping: the argument is a DISPLAY id and not an item entry, since the lookup goes straight to ItemDisplayInfo rather than the item cache; and FUN_0070a910 is not a string transform but a cache keyed on the icon name that checks the file exists, so passing the name through unchanged gives the same answer whenever the file is present as named."
+  },
+  "0061fec0": {
+    "status": "unlinked",
+    "note": "CGTooltip's shared add-a-line helper, taking left and right text together; 204 callers and the top of the world-spine queue after the big M2 and chat functions. It is the ON-DEMAND LINE CREATION frozen's CGTooltip.hpp already flags as missing: when the requested line is one past the current count it formats a region name with '%sTextLeft%d' from the tooltip's display name, creates a CSimpleFontString, and appends it, which is exactly how a tooltip grows past the eight lines GameTooltipTemplate.xml declares. Frozen splits the setting half across CGTooltip_AddLine, CGTooltip_AddDoubleLine and TooltipSetLine and does not create regions at all, so there is no single function to tag. Porting it is also the route to fixing the two-column overlap recorded at TooltipResizeToFit, since this is where the right-hand region is made and therefore where the reference must anchor it."
   }
 }
