@@ -652,7 +652,7 @@ addr	how	frozen	evidence
 00505360	order	Script_Stub_ExpandChannelHeader	binding table name Script_Stub_ExpandChannelHeader, in definition order in src/ui/game/miscscriptstubs.cpp
 0050f7c0	override	CalculateAspectRatio	
 0050f8f0	order	Script_SetLayoutMode	binding table name Script_SetLayoutMode, in definition order in src/ui/game/GameScript.cpp
-0050f950	order	Script_GetMouseButtonClicked	binding table name Script_GetMouseButtonClicked, in definition order in src/ui/game/GameScript.cpp
+0050f950	override	Script_GetMouseButtonClicked	
 0050f990	order	Script_SetConsoleKey	binding table name Script_SetConsoleKey, in definition order in src/ui/game/GameScript.cpp
 0050fe80	annotated	Script_IsDebugBuild	tag in src/ui/game/GameScript.cpp
 0050ff30	order	Script_RegisterCVar	binding table name Script_RegisterCVar, in definition order in src/ui/game/GameScript.cpp
@@ -674,6 +674,7 @@ addr	how	frozen	evidence
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
+00514ba0	override	Script_GetMouseButtonName	
 00515100	order	Script_CursorHasItem	binding table name Script_CursorHasItem, in definition order in src/ui/game/GameScript.cpp
 00515140	order	Script_CursorHasSpell	binding table name Script_CursorHasSpell, in definition order in src/ui/game/GameScript.cpp
 00515180	order	Script_CursorHasMacro	binding table name Script_CursorHasMacro, in definition order in src/ui/game/GameScript.cpp
@@ -1422,7 +1423,9 @@ addr	how	frozen	evidence
 00631fc0	annotated	NetClient::ClearMessageHandler	tag in src/net/connection/NetClient.cpp
 00632b50	override	NetClient::Send	
 00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
+006354d0	handler	ReceiveItemQueryResponse	SetMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE) on both sides
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
+0067cbd0	callgraph	GetI32	only unmatched callee of 006354d0=ReceiveItemQueryResponse
 0067d770	override	Script_GetUnitFromName	
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
 006813b0	override	GxSceneClear	

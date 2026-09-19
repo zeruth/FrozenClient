@@ -38893,6 +38893,21 @@
 "refs": [],
 "line": 11
 },
+"ItemInfo::Name": {
+"files": [
+"src/object/client/itemcache.hpp"
+],
+"callseq": [
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::c_str"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 23
+},
 "CGxBuf::CGxBuf": {
 "files": [
 "src/gx/buffer/cgxbuf.hpp"
@@ -39103,7 +39118,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 133
+"line": 154
 },
 "CM2Scene::CM2Scene": {
 "files": [
@@ -39168,7 +39183,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 83
+"line": 84
 },
 "GammaCallback": {
 "files": [
@@ -39181,7 +39196,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 88
+"line": 89
 },
 "TextureCacheSizeCallback": {
 "files": [
@@ -39194,7 +39209,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 93
+"line": 94
 },
 "TextureFilteringCallback": {
 "files": [
@@ -39217,7 +39232,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 99
+"line": 100
 },
 "UIFasterCalllback": {
 "files": [
@@ -39230,7 +39245,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 113
+"line": 114
 },
 "AsyncFileInitialize": {
 "files": [
@@ -39248,7 +39263,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 118
+"line": 119
 },
 "BaseInitializeGlobal": {
 "files": [
@@ -39263,7 +39278,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 123
+"line": 124
 },
 "ClientGameTimeTickHandler": {
 "files": [
@@ -39280,7 +39295,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 127
+"line": 128
 },
 "ClientInitializeGameTime": {
 "files": [
@@ -39295,6 +39310,7 @@
 "ClientServices::SetMessageHandler",
 "ClientServices::SetMessageHandler",
 "NameCacheRegisterHandlers",
+"ItemCacheRegisterHandlers",
 "AuraCacheRegisterHandlers",
 "CastCacheRegisterHandlers",
 "QuestStatusRegisterHandlers",
@@ -39305,9 +39321,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 17,
+"lines": 18,
 "refs": [],
-"line": 135
+"line": 136
 },
 "ClientIdle": {
 "files": [
@@ -39324,7 +39340,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 153
+"line": 155
 },
 "ClientPlayerModelReady": {
 "files": [
@@ -39345,7 +39361,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 162
+"line": 164
 },
 "ClientInitializeGame": {
 "files": [
@@ -39383,7 +39399,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 172
+"line": 174
 },
 "MouseSpeedCallback": {
 "files": [
@@ -39399,7 +39415,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 217
+"line": 219
 },
 "ErrorsCallback": {
 "files": [
@@ -39418,7 +39434,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 224
+"line": 226
 },
 "ShowErrorsCallback": {
 "files": [
@@ -39437,7 +39453,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 243
+"line": 245
 },
 "ErrorLevelMinCallback": {
 "files": [
@@ -39458,7 +39474,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 262
+"line": 264
 },
 "ErrorLevelMaxCallback": {
 "files": [
@@ -39479,7 +39495,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 277
+"line": 279
 },
 "ErrorFilterCallback": {
 "files": [
@@ -39492,7 +39508,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 292
+"line": 294
 },
 "ScreenshotFormatCallback": {
 "files": [
@@ -39507,7 +39523,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 300
+"line": 302
 },
 "ScreenshotQualityCallback": {
 "files": [
@@ -39523,7 +39539,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 307
+"line": 309
 },
 "ClientRegisterConsoleCommands": {
 "files": [
@@ -39627,7 +39643,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 314
+"line": 316
 },
 "ClientPostClose": {
 "files": [
@@ -39642,7 +39658,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 358
+"line": 360
 },
 "DestroyEngineCallback": {
 "files": [
@@ -39659,7 +39675,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 363
+"line": 365
 },
 "InitializeEngineCallback": {
 "files": [
@@ -39698,7 +39714,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 373
+"line": 375
 },
 "AddRunOnceFile": {
 "files": [
@@ -39718,7 +39734,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 440
+"line": 442
 },
 "CompareRunOnceFiles": {
 "files": [
@@ -39733,7 +39749,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 446
+"line": 448
 },
 "ProcessRunOnceFiles": {
 "files": [
@@ -39766,7 +39782,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 451
+"line": 453
 },
 "Sub406B70": {
 "files": [
@@ -39782,7 +39798,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 472
+"line": 474
 },
 "Sub405DD0": {
 "files": [
@@ -39802,7 +39818,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 486
+"line": 488
 },
 "LocaleChangedCallback": {
 "files": [
@@ -39815,7 +39831,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 502
+"line": 504
 },
 "InitializeGlobal": {
 "files": [
@@ -39866,7 +39882,7 @@
 "stub": false,
 "lines": 186,
 "refs": [],
-"line": 508
+"line": 510
 },
 "CommonMain": {
 "files": [
@@ -39884,7 +39900,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 695
+"line": 697
 },
 "BlizzardAssertCallback": {
 "files": [
@@ -39904,7 +39920,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 712
+"line": 714
 },
 "StormInitialize": {
 "files": [
@@ -39919,7 +39935,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 720
+"line": 722
 },
 "WowClientDestroy": {
 "files": [
@@ -39934,7 +39950,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 730
+"line": 732
 },
 "WowClientInit": {
 "files": [
@@ -39969,7 +39985,7 @@
 "stub": false,
 "lines": 90,
 "refs": [],
-"line": 738
+"line": 740
 },
 "LoadNewWorld": {
 "files": [

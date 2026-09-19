@@ -6,6 +6,7 @@
 #include "object/client/SpellBook.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/NameCache.hpp"
+#include "object/client/ItemCache.hpp"
 #include "client/Client.hpp"
 #include "ui/InputControl.hpp"
 #include "client/gui/OsGui.hpp"
@@ -141,6 +142,7 @@ void ClientInitializeGameTime() {
     ClientServices::SetMessageHandler(SMSG_WEATHER, &ReceiveWeather, nullptr);
     ClientServices::SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS, &ReceiveActionButtons, nullptr);
     NameCacheRegisterHandlers();
+    ItemCacheRegisterHandlers();
     AuraCacheRegisterHandlers();
     CastCacheRegisterHandlers();
     QuestStatusRegisterHandlers();

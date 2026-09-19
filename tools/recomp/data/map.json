@@ -598,7 +598,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "ClientInitializeGame",
-  "frozenSize": 572,
+  "frozenSize": 577,
   "how": "string",
   "module": "Client.cpp",
   "refSize": 789,
@@ -10428,7 +10428,7 @@
   ],
   "frozen": "Script_GetMouseButtonClicked",
   "frozenSize": 75,
-  "how": "order",
+  "how": "override",
   "module": "ChatFrame.cpp",
   "refSize": 55,
   "status": "stub"
@@ -10770,6 +10770,22 @@
   "module": "GameUI.cpp",
   "refSize": 54,
   "status": "ported"
+ },
+ "00514ba0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetMouseButtonName",
+  "frozenSize": 75,
+  "how": "override",
+  "module": "GameUI.cpp",
+  "refSize": 111,
+  "status": "stub"
  },
  "00515100": {
   "branchRatio": 0.0,
@@ -22610,6 +22626,21 @@
   "refSize": 26,
   "status": "ported"
  },
+ "006354d0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/ItemCache.cpp"
+  ],
+  "frozen": "ReceiveItemQueryResponse",
+  "frozenSize": 603,
+  "how": "handler",
+  "module": "DBClient.cpp",
+  "refSize": 26,
+  "status": "ported"
+ },
  "006357d0": {
   "branchRatio": 0.3,
   "constOverlap": 0.045,
@@ -22624,6 +22655,21 @@
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 519,
+  "status": "ported"
+ },
+ "0067cbd0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/ItemCache.cpp"
+  ],
+  "frozen": "GetI32",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 497,
   "status": "ported"
  },
  "0067d770": {
