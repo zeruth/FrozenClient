@@ -63,6 +63,12 @@ the reference really calls is left alone, and so is one whose expansion has noth
 the rewrite cannot manufacture agreement. `--diff` shows the expanded sequence, which is why a
 port's column can be much longer than the reference's.
 
+`--show <addr>` on an unlinked reference function now ranks frozen candidates for it. The strongest
+signal is a shared callee, weighted by rarity: everything calls `SStrLen`, so sharing it says almost
+nothing, while sharing `CGxDevice::PoolCreate` nearly names the function. Shared strings and a
+similar call and branch count break ties. "No candidate shares a linked callee" is a useful answer
+too -- it usually means the function is not ported at all rather than waiting to be identified.
+
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 

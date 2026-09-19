@@ -41,6 +41,7 @@ import datetime
 import glob
 import io
 import json
+import math
 import os
 import re
 import subprocess
@@ -1390,13 +1391,51 @@ def show(target, refs, frozen, m):
         print('  frozen strings missing on ref side:', sorted(w['strings'] - set(r['strings']))[:10])
         print('  ref strings missing on frozen side:', sorted(set(r['strings']) - w['strings'])[:10])
     else:
-        # candidates by shared strings
-        cands = collections.Counter()
-        for n, w in frozen.items():
-            k = len(w['strings'] & set(r['strings']))
-            if k:
-                cands[n] = k
-        print('  unmapped. candidates by shared strings:', cands.most_common(8))
+        propose(a, refs, frozen, m)
+
+
+def propose(a, refs, frozen, m):
+    """Rank frozen functions that could be this unlinked reference function. The strongest signal
+    is a shared callee: translate the reference's callees through the map and see which frozen
+    functions call the same ones. Shared strings, and a similar number of calls and branches, break
+    the ties. This is for the sparsely linked corners -- the map and model code -- where the
+    automatic matchers have too few anchors to propose anything at all."""
+    r = refs[a]
+    used = set(v[0] for v in m.values())
+    want = set(m[c][0] for c in r['calls'] if c in m)
+    rs = set(r['strings'])
+    rcalls, rbr = len(r['calls']), r.get('branches', -1)
+    # weight a shared callee by how rare it is: everything calls SStrLen, so sharing it says
+    # almost nothing, while sharing CGxDevice::PoolCreate nearly names the function
+    popularity = collections.Counter()
+    for w in frozen.values():
+        for c in set(w['seq']):
+            popularity[c] += 1
+    scored = []
+    for n, w in frozen.items():
+        if n in used or not w['files']:
+            continue
+        shared = want & set(w['seq'])
+        strs = rs & w['strings']
+        if not shared and not strs:
+            continue
+        score = sum(6.0 / math.log(2 + popularity[c], 2) for c in shared) + 2.0 * len(strs)
+        if rcalls and w['seq']:
+            score += 1.0 - min(1.0, abs(len(w['seq']) - rcalls) / float(max(len(w['seq']), rcalls)))
+        if rbr >= 0 and w.get('branches', -1) >= 0:
+            hi = max(rbr, w['branches'], 1)
+            score += 1.0 - min(1.0, abs(w['branches'] - rbr) / float(hi))
+        scored.append((score, n, sorted(shared)[:3], sorted(strs)[:2], len(w['seq']), w.get('branches', -1)))
+    scored.sort(reverse=True)
+    print('  unmapped. reference makes %d calls, %d branches; linked callees: %s'
+          % (rcalls, rbr, ', '.join(sorted(want)[:6]) or '-'))
+    if not scored:
+        print('  no candidate shares a linked callee or a string with it')
+        return
+    print('  %-46s %5s  %4s %4s  %s' % ('candidate', 'score', 'call', 'brch', 'shared callees / strings'))
+    for sc, n, shared, strs, nc, br in scored[:8]:
+        why = ', '.join(shared) or ', '.join('"%s"' % x[:18] for x in strs)
+        print('  %-46s %5.1f  %4d %4d  %s' % (n[:46], sc, nc, br, why[:60]))
 
 
 def queue_next(args, refs, frozen, m):
