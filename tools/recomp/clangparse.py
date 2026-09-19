@@ -6,13 +6,14 @@ The regex parser in recomp.py collapses overloads, misses lambdas and guesses at
 call means. This resolves calls to their declarations, so the call sequence the fidelity score
 compares against the reference is the real one.
 
-    python tools/recomp/clangparse.py                 # parse everything (cached by file mtime)
+    python tools/recomp/clangparse.py                 # parse everything (cached by content hash)
     python tools/recomp/clangparse.py src/world/Terrain.cpp   # one file, printed
 
 Output: tools/recomp/data/frozen-clang.json  { qualified name: { files, callseq, strings, consts,
 branches, stub, lines } }. recomp.py prefers it over the regex inventory when present.
 """
 
+import hashlib
 import io
 import json
 import os
@@ -32,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 6  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 7  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
@@ -234,6 +235,22 @@ def parse_file(index, path, args, text):
     return fns
 
 
+
+def content_key(path):
+    """Cache key for a source file.
+
+    Was the mtime alone, which is wrong twice over: an mtime can repeat inside the filesystem's
+    granularity during a fast write-parse-write cycle, and a checkout can hand back different
+    content with a newer stamp that looks fresh but is served from cache anyway. Measured on
+    2026-09-19: four WHOA_UNIMPLEMENTED bindings were cached as non-stubs and stayed that way
+    across runs, so they were counted ported while still stubs. Hashing the bytes costs one read
+    per file and cannot go stale.
+    """
+    h = hashlib.blake2b(digest_size=16)
+    h.update(io.open(path, 'rb').read())
+
+    return h.hexdigest()
+
 def main():
     db = load_compile_db()
     index = ci.Index.create()
@@ -250,9 +267,8 @@ def main():
             continue
         if only and path not in only:
             continue
-        mtime = os.path.getmtime(path)
         c = cache.get(rel)
-        if c and c['mtime'] == mtime and c.get('v') == CACHE_VERSION:
+        if c and c.get('key') == content_key(path) and c.get('v') == CACHE_VERSION:
             fns = c['fns']
         else:
             text = io.open(path, encoding='utf-8', errors='replace').read()
@@ -260,7 +276,7 @@ def main():
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],
                        'header': v['header'], 'line': v['line']} for k, v in fns.items()}
-            cache[rel] = {'mtime': mtime, 'v': CACHE_VERSION, 'fns': fns}
+            cache[rel] = {'key': content_key(path), 'v': CACHE_VERSION, 'fns': fns}
             n += 1
         for k, v in fns.items():
             if v.get('header') and k in result:

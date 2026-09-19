@@ -106,20 +106,21 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
-> **Known defect: the stub flag is not reliable.** Measured 2026-09-19. At one commit,
+> **Fixed 2026-09-19: the stub flag could go stale.** At one commit,
 > `CGCooldown_SetCooldown` and `CGCooldown_GetReverse` were both four-line `WHOA_UNIMPLEMENTED`
 > bodies in the same file, and `data/frozen-clang.json` recorded the first as `stub: true` and the
-> second as `stub: false`. So four cooldown bindings were counted as **ported while they were
-> stubs**, and implementing them moved no number at all.
+> second as `stub: false`. Four cooldown bindings were counted **ported while they were stubs**,
+> and implementing them moved no number at all, which is how it was noticed.
 >
-> The suspect is the `and` in both stub rules (`recomp.py` merge, `clangparse.py`): a name seen
-> more than once keeps `stub` only if *every* sighting carries the macro, so one sighting without
-> it -- a second parse of the same file, an empty `src` when the text was not loaded -- clears the
-> flag permanently. Not yet confirmed, and not yet fixed.
+> The rule was not at fault -- re-parsing that same file from disk flagged all five correctly. The
+> cache was: `clang-cache.json` keyed entries on **mtime alone**, so a fast write-parse-write cycle
+> inside the filesystem's timestamp granularity served the previous parse for the new content. It
+> now keys on a hash of the bytes, which costs one read per file and cannot go stale. A full
+> re-parse after the change produced identical totals, so nothing else was carrying a stale entry.
 >
-> Consequence for reading the report: `ported` is an upper bound and `stub` a lower one. The
-> `linked` total is unaffected, since the flag only splits an already-linked function between the
-> two columns.
+> My first write-up of this blamed the `and` in the two stub rules, on the theory that a name seen
+> twice keeps `stub` only if every sighting has the macro. That theory was wrong and is recorded
+> here because it was committed before it was checked.
 
 ## What the report says
 
