@@ -73,8 +73,38 @@ int32_t CScriptRegion_SetParent(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049ce50
+// Left, bottom, width and height, in the same units GetCenter and GetLeft already report.
+//
+// The reference resolves the rect and then makes four identical conversions, and the decompiler
+// lost their arguments, so the ORDER is not recoverable from the disassembly. It comes from the
+// shipped interface instead: RestrictedFrames.lua and SecureHoverDriver.lua both spell it
+// "local l, b, w, h = frame:GetRect()", at four call sites between them.
+//
+// A region with no rect answers with no values at all, which is what the reference returns; that
+// differs from GetCenter next door, which pushes two nils to keep its arity.
 int32_t CScriptRegion_GetRect(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsResizePending()) {
+        region->Resize(1);
+    }
+
+    CRect rect;
+
+    if (!region->GetRect(&rect)) {
+        return 0;
+    }
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    lua_pushnumber(L, DDCToNDCWidth(scale * (rect.minX / region->m_layoutScale)));
+    lua_pushnumber(L, DDCToNDCWidth(scale * (rect.minY / region->m_layoutScale)));
+    lua_pushnumber(L, DDCToNDCWidth(scale * ((rect.maxX - rect.minX) / region->m_layoutScale)));
+    lua_pushnumber(L, DDCToNDCWidth(scale * ((rect.maxY - rect.minY) / region->m_layoutScale)));
+
+    return 4;
 }
 
 int32_t CScriptRegion_GetCenter(lua_State* L) {

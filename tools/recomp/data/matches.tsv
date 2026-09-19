@@ -63,7 +63,7 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
-0040bb50	sticky	CSimpleFontString::GetObjectType	held from the previous run, where it was callorder
+0040bb50	sticky	CSimpleFontString::GetObjectType	held from the previous run, where it was sticky
 0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
@@ -160,12 +160,12 @@ addr	how	frozen	evidence
 004883f0	callorder	CScriptRegion::LoadXML_Animations	same slot between linked calls in 00488670=CScriptRegion::LoadXML
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
-00488cf0	callorder	CLayoutFrame::IsResizePending	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame, 0049cf90=CScriptRegion_GetCenter, 0049d0b0=CScriptRegion_GetLeft
+00488cf0	callorder	CLayoutFrame::IsResizePending	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame, 0049ce50=CScriptRegion_GetRect, 0049cf90=CScriptRegion_GetCenter
 00488db0	annotated	CLayoutFrame::Sub488DB0	tag in src/ui/CLayoutFrame.cpp
 00488e40	annotated	CLayoutFrame::Sub488E40	tag in src/ui/CLayoutFrame.cpp
 00489190	annotated	CLayoutFrame::Sub489190	tag in src/ui/CLayoutFrame.cpp
 004891d0	callorder	CLayoutFrame::IsResizeDependency	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
-00489230	callorder	CLayoutFrame::GetRect	same slot between linked calls in 0049cf90=CScriptRegion_GetCenter, 0049d0b0=CScriptRegion_GetLeft, 0049d170=CScriptRegion_GetRight
+00489230	callorder	CLayoutFrame::GetRect	same slot between linked calls in 0049ce50=CScriptRegion_GetRect, 0049cf90=CScriptRegion_GetCenter, 0049d0b0=CScriptRegion_GetLeft
 00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
@@ -300,7 +300,7 @@ addr	how	frozen	evidence
 0049cad0	table	CScriptRegion_IsProtected	binding "IsProtected" in ScriptRegionMethods ~ table 00ac1480
 0049cb60	table	CScriptRegion_CanChangeProtectedState	binding "CanChangeProtectedState" in ScriptRegionMethods ~ table 00ac1480
 0049cbd0	table	CScriptRegion_SetParent	binding "SetParent" in ScriptRegionMethods ~ table 00ac1480
-0049ce50	table	CScriptRegion_GetRect	binding "GetRect" in ScriptRegionMethods ~ table 00ac1480
+0049ce50	annotated	CScriptRegion_GetRect	tag in src/ui/CScriptRegionScript.cpp
 0049cf90	table	CScriptRegion_GetCenter	binding "GetCenter" in ScriptRegionMethods ~ table 00ac1480
 0049d0b0	table	CScriptRegion_GetLeft	binding "GetLeft" in ScriptRegionMethods ~ table 00ac1480
 0049d170	table	CScriptRegion_GetRight	binding "GetRight" in ScriptRegionMethods ~ table 00ac1480

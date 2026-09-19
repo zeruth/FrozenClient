@@ -92414,22 +92414,34 @@
 "src/ui/cscriptregionscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CScriptRegion::GetObjectType",
+"FrameScript_GetObjectThis",
+"CLayoutFrame::IsResizePending",
+"CLayoutFrame::Resize",
+"CRect::CRect",
+"CLayoutFrame::GetRect",
+"CoordinateGetAspectCompensation",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber",
+"DDCToNDCWidth",
+"lua_pushnumber"
 ],
-"strings": [
-"CScriptRegion_GetRect",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"1024.0f",
+"4"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 23,
 "refs": [],
-"line": 76
+"line": 86
 },
 "CScriptRegion_GetCenter": {
 "files": [
@@ -92462,7 +92474,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 80
+"line": 110
 },
 "CScriptRegion_GetLeft": {
 "files": [
@@ -92489,7 +92501,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 108
+"line": 138
 },
 "CScriptRegion_GetRight": {
 "files": [
@@ -92516,7 +92528,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 128
+"line": 158
 },
 "CScriptRegion_GetTop": {
 "files": [
@@ -92543,7 +92555,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 148
+"line": 178
 },
 "CScriptRegion_GetBottom": {
 "files": [
@@ -92570,7 +92582,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 168
+"line": 198
 },
 "CScriptRegion_GetWidth": {
 "files": [
@@ -92601,7 +92613,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 188
+"line": 218
 },
 "CScriptRegion_SetWidth": {
 "files": [
@@ -92631,7 +92643,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 213
+"line": 243
 },
 "CScriptRegion_GetHeight": {
 "files": [
@@ -92662,7 +92674,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 237
+"line": 267
 },
 "CScriptRegion_SetHeight": {
 "files": [
@@ -92692,7 +92704,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 262
+"line": 292
 },
 "CScriptRegion_SetSize": {
 "files": [
@@ -92727,7 +92739,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 286
+"line": 316
 },
 "CScriptRegion_GetSize": {
 "files": [
@@ -92761,7 +92773,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 314
+"line": 344
 },
 "CScriptRegion_GetNumPoints": {
 "files": [
@@ -92781,7 +92793,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 349
+"line": 379
 },
 "CScriptRegion_GetPoint": {
 "files": [
@@ -92822,7 +92834,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 371
+"line": 401
 },
 "CScriptRegion_SetPoint": {
 "files": [
@@ -92902,7 +92914,7 @@
 "stub": false,
 "lines": 114,
 "refs": [],
-"line": 433
+"line": 463
 },
 "CScriptRegion_SetAllPoints": {
 "files": [
@@ -92946,7 +92958,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 548
+"line": 578
 },
 "CScriptRegion_ClearAllPoints": {
 "files": [
@@ -92966,7 +92978,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 593
+"line": 623
 },
 "CScriptRegion_CreateAnimationGroup": {
 "files": [
@@ -92988,7 +93000,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 611
+"line": 641
 },
 "CScriptRegion_GetAnimationGroups": {
 "files": [
@@ -93010,7 +93022,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 615
+"line": 645
 },
 "CScriptRegion_StopAnimating": {
 "files": [
@@ -93032,7 +93044,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 619
+"line": 649
 },
 "CScriptRegion_IsDragging": {
 "files": [
@@ -93054,7 +93066,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 623
+"line": 653
 },
 "CScriptRegion_IsMouseOver": {
 "files": [
@@ -93067,10 +93079,10 @@
 "CLayoutFrame::GetRect",
 "lua_pushboolean",
 "CoordinateGetAspectCompensation",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
-"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:653:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
+"CScriptRegion_IsMouseOver::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregionscript.cpp:683:19)::operator()",
 "C2Vector::C2Vector",
 "CRect::IsPointInside",
 "lua_pushboolean"
@@ -93090,7 +93102,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 637
+"line": 667
 },
 "FrameScript_EventObject::GetName": {
 "files": [

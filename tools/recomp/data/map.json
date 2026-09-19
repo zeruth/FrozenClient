@@ -4799,18 +4799,18 @@
  "0049ce50": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.812,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
   ],
   "frozen": "CScriptRegion_GetRect",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 311,
+  "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 308,
-  "status": "stub"
+  "status": "ported"
  },
  "0049cf90": {
   "branchRatio": 0.667,
