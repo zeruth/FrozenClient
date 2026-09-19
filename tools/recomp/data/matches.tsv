@@ -1264,9 +1264,9 @@ addr	how	frozen	evidence
 0058e850	annotated	CGQuestPOIFrame_EnableMerging	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e8a0	annotated	CGQuestPOIFrame_SetMergeThreshold	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e920	annotated	CGQuestPOIFrame_SetNumSplinePoints	tag in src/ui/game/CGQuestPOIFrameScript.cpp
-0058e990	table	CGQuestPOIFrame_UpdateQuestPOI	binding "UpdateQuestPOI" in CGQuestPOIFrameMethods ~ table 00acf180
+0058e990	annotated	CGQuestPOIFrame_UpdateQuestPOI	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e9c0	table	CGQuestPOIFrame_UpdateMouseOverTooltip	binding "UpdateMouseOverTooltip" in CGQuestPOIFrameMethods ~ table 00acf180
-0058ea50	table	CGQuestPOIFrame_GetTooltipIndex	binding "GetTooltipIndex" in CGQuestPOIFrameMethods ~ table 00acf180
+0058ea50	annotated	CGQuestPOIFrame_GetTooltipIndex	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058eac0	annotated	CGQuestPOIFrame_GetNumTooltips	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058fe50	table	CGQuestPOIFrame_SetFillTexture	binding "SetFillTexture" in CGQuestPOIFrameMethods ~ table 00acf180
 0058fea0	table	CGQuestPOIFrame_SetBorderTexture	binding "SetBorderTexture" in CGQuestPOIFrameMethods ~ table 00acf180
@@ -2067,7 +2067,7 @@ addr	how	frozen	evidence
 0084e280	override	lua_pushnil	
 0084e2a0	override	lua_pushnumber	
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
-0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
+0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring, 00853340=push_onecapture
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization, 00510e00=Script_GetRealmName
 0084e3a0	override	lua_pushvfstring	
 0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger

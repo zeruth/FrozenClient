@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 19:38 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 19:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2133 (+5) | 421.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 529 (-5) | 113.8k |
+| &nbsp;&nbsp;ported | 2135 (+2) | 421.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 527 (-2) | 113.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1001 (+1) (3.7%)** | **124.3k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1002 (+1) (3.7%)** | **124.4k (2.2%)** |
 | unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11492, stubs 789 | |
+| frozen functions (src/, from PDB + source) | 11492, stubs 787 | |
 
-Match evidence: annotated 598, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1030. Module anchors: 1479 assert strings.
+Match evidence: annotated 600, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 19:31 -- mapped 2699, ported 2128, stub 534, spine mapped 393.
+Previous run: 2026-09-19 19:38 -- mapped 2699, ported 2133, stub 529, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 590 of those are WHOA_UNIMPLEMENTED stubs (-5). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 588 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -92,7 +92,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac1550 (GetTitleRegion..) | 85 | `SimpleFrameMethods` | 0 | 6 |  / stubs: CreateTitleRegion, HookScript, AllowAttributeChanges, CanChangeAttribute ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 6 |  / stubs: SetPreferredInfo, SortRealms, GetSelectedCategory, IsInvalidTournamentRealmCategory ... |
-| 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 6 |  / stubs: SetFillTexture, SetBorderTexture, DrawQuestBlob, UpdateQuestPOI ... |
 | 00acf588 (InitializeTabardColors..) | 10 | `CGTabardModelFrameMethods` | 0 | 6 |  / stubs: InitializeTabardColors, Save, CycleVariation, GetUpperEmblemTexture ... |
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
@@ -108,6 +107,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
+| 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 4 |  / stubs: SetFillTexture, SetBorderTexture, DrawQuestBlob, UpdateMouseOverTooltip |
 | 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 4 |  / stubs: SetLight, GetModelScale, ReplaceIconTexture, SetGlow |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 2 | GetTrackingInfo / stubs: PingLocation, GetPingPosition |
@@ -204,7 +204,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleRender.cpp | 166 | 26.6k | 34 (20.5%) | 32.8% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 26 (18.1%) | 25.8% | 1 | 0 | 36 |
-| GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 6 | 0 | 5 |
+| GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 4 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 15 (10.8%) | 17.3% | 3 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 15 | 0 | 8 |
 | CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 4 | 2 | 7 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 17:15 | 2698 (9.9%) | 950 (3.5%) | 541 | 394/5530 | 1791/2964 | 601 |
 | 2026-09-19 17:21 | 2698 (9.9%) | 951 (3.5%) | 540 | 394/5530 | 1791/2964 | 600 |
 | 2026-09-19 17:25 | 2698 (9.9%) | 952 (3.5%) | 539 | 394/5530 | 1791/2964 | 597 |
 | 2026-09-19 17:28 | 2698 (9.9%) | 983 (3.6%) | 537 | 393/5530 | 1791/2964 | 595 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 19:26 | 2699 (9.9%) | 998 (3.7%) | 536 | 393/5530 | 1791/2964 | 597 |
 | 2026-09-19 19:31 | 2699 (9.9%) | 1000 (3.7%) | 534 | 393/5530 | 1791/2964 | 595 |
 | 2026-09-19 19:38 | 2699 (9.9%) | 1001 (3.7%) | 529 | 393/5530 | 1791/2964 | 590 |
+| 2026-09-19 19:41 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 

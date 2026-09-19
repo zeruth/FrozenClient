@@ -20145,20 +20145,20 @@
   "status": "ported"
  },
  "0058e990": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGQuestPOIFrameScript.cpp",
    "src/ui/game/cgquestpoiframescript.cpp"
   ],
   "frozen": "CGQuestPOIFrame_UpdateQuestPOI",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 32,
+  "how": "annotated",
   "module": "GossipInfo.cpp",
   "refSize": 48,
-  "status": "stub"
+  "status": "ported"
  },
  "0058e9c0": {
   "branchRatio": 1.0,
@@ -20177,20 +20177,20 @@
   "status": "stub"
  },
  "0058ea50": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/CGQuestPOIFrameScript.cpp",
    "src/ui/game/cgquestpoiframescript.cpp"
   ],
   "frozen": "CGQuestPOIFrame_GetTooltipIndex",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 89,
+  "how": "annotated",
   "module": "GossipInfo.cpp",
   "refSize": 111,
-  "status": "stub"
+  "status": "ported"
  },
  "0058eac0": {
   "branchRatio": 0.0,

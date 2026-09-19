@@ -32,6 +32,9 @@ class CGQuestPOIFrame : public CSimpleFrame {
         float m_mergeThreshold = 0.0f;
         int32_t m_numSplinePoints = 30;
         int32_t m_numTooltips = 0;
+        // Four of them, immediately after the count at +0x2c0. GetTooltipIndex takes a 1-based
+        // index and answers 0 for anything outside one to four rather than erroring.
+        int32_t m_tooltipIndex[4] = { 0, 0, 0, 0 };
 
         // TODO the rest
 

@@ -101338,22 +101338,18 @@
 "src/ui/game/cgquestpoiframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGQuestPOIFrame::GetObjectType",
+"FrameScript_GetObjectThis"
 ],
-"strings": [
-"(anonymous namespace)::CGQuestPOIFrame_UpdateQuestPOI",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgquestpoiframescript.cpp"
-],
+"strings": [],
 "consts": [
 "0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 6,
 "refs": [],
-"line": 104
+"line": 109
 },
 "CGQuestPOIFrame_UpdateMouseOverTooltip": {
 "files": [
@@ -101375,29 +101371,30 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 108
+"line": 116
 },
 "CGQuestPOIFrame_GetTooltipIndex": {
 "files": [
 "src/ui/game/cgquestpoiframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGQuestPOIFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"lua_tointeger",
+"lua_pushinteger"
 ],
-"strings": [
-"(anonymous namespace)::CGQuestPOIFrame_GetTooltipIndex",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgquestpoiframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2",
+"4"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 12,
 "refs": [],
-"line": 112
+"line": 121
 },
 "CGQuestPOIFrame_GetNumTooltips": {
 "files": [
@@ -101416,7 +101413,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 117
+"line": 135
 },
 "CGRaidInfo::NumMembers": {
 "files": [

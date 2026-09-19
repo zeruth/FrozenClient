@@ -101,16 +101,34 @@ int32_t CGQuestPOIFrame_SetNumSplinePoints(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0058e990
+// Empty, and empty in the reference too: it resolves the frame and returns. Not a stub -- the
+// points of interest are refreshed elsewhere, and FrameXML calls this for a redraw that the
+// original apparently stopped needing. Left as a real implementation so it is not "finished"
+// later into something the reference does not do.
 int32_t CGQuestPOIFrame_UpdateQuestPOI(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    return 0;
 }
 
 int32_t CGQuestPOIFrame_UpdateMouseOverTooltip(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0058ea50
 int32_t CGQuestPOIFrame_GetTooltipIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // 1-based from Lua. The reference tests the converted index as unsigned, so zero and anything
+    // negative wrap past the end and take the same answer as an index that is simply too large.
+    auto index = static_cast<uint32_t>(lua_tointeger(L, 2)) - 1;
+
+    lua_pushinteger(L, index < 4 ? frame->m_tooltipIndex[index] : 0);
+
+    return 1;
 }
 
 // ref: FUN_0058eac0
