@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 14:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 14:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2679 (=) (9.9%) | 570.2k (10.3%) |
-| &nbsp;&nbsp;ported | 2080 (-1) | 416.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 567 (=) | 119.4k |
+| mapped to a frozen function | 2680 (+1) (9.9%) | 570.2k (10.3%) |
+| &nbsp;&nbsp;ported | 2082 (+2) | 416.0k |
+| &nbsp;&nbsp;stub (unimplemented body) | 566 (-1) | 119.6k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **921 (=) (3.4%)** | **116.6k (2.1%)** |
-| unmapped | 24482 | 4.85M |
+| **faithful** (linked, not stub, call order >= 80%) | **926 (+5) (3.4%)** | **116.9k (2.1%)** |
+| unmapped | 24481 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 392 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 396 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11451, stubs 813 | |
+| frozen functions (src/, from PDB + source) | 11452, stubs 812 | |
 
-Match evidence: annotated 499, callgraph 186, callorder 124, cvar 30, handler 28, order 190, override 189, string 314, table 1119. Module anchors: 1479 assert strings.
+Match evidence: annotated 504, callgraph 186, callorder 125, cvar 30, handler 28, order 191, override 189, string 313, table 1114. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 14:20 -- mapped 2679, ported 2081, stub 567, spine mapped 392.
+Previous run: 2026-09-19 14:21 -- mapped 2679, ported 2080, stub 567, spine mapped 392.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 631 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1791 of them (=); 630 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -91,12 +91,12 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetClassesForRace, CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex ... |
 | 00ad09b8 (GetNumSkillLines..) | 13 | `s_ScriptFunctions` | 7 | 0 | AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp, RemoveSkillUp, AcceptSkillUps ... |
 | 00a47d28 (create..) | 6 | `-` | 6 | 0 | create, resume, running, status, wrap, yield |
-| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 6 |  / stubs: GetDrawLayer, GetBlendMode, SetBlendMode, GetVertexColor ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
 | 00acf588 (InitializeTabardColors..) | 10 | `CGTabardModelFrameMethods` | 0 | 6 |  / stubs: InitializeTabardColors, Save, CycleVariation, GetUpperEmblemTexture ... |
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
+| 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 5 |  / stubs: GetDrawLayer, SetBlendMode, GetVertexColor, SetGradient ... |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions` | 5 | 0 | GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle, BarberShopReset |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions` | 5 | 0 | FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial, GetPrevCompleatedTutorial |
@@ -104,25 +104,25 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf9e0 (GetActionInfo..) | 28 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetActionAutocast, PickupAction, PlaceAction, GetMultiCastTotemSpells ... |
 | 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions` | 5 | 0 | GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket, GetGlyphLink |
 | 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
-| 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 5 |  / stubs: GetThumbTexture, SetThumbTexture, GetOrientation, SetOrientation ... |
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
 | 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions` | 4 | 0 | BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
 | 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 1 | 3 | GetTrackingInfo / stubs: PingLocation, GetPingPosition, SetTracking |
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 4 |  / stubs: GetOrientation, SetOrientation, SetStatusBarTexture, SetStatusBarColor |
+| 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 4 |  / stubs: GetThumbTexture, SetThumbTexture, GetOrientation, SetOrientation |
 | 00ac1118 (IsObjectType..) | 41 | `SimpleFontStringMethods` | 0 | 3 |  / stubs: GetDrawLayer, SetAlphaGradient, SetFormattedText |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
+| 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 3 |  / stubs: SetLight, ReplaceIconTexture, SetGlow |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 2 |  / stubs: SetPreferredInfo, GetSelectedCategory |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
 | 00b2cd50 (GetColorWheelTexture..) | 12 | `SimpleColorSelectMethods` | 2 | 0 | SetColorWheelThumbTexture, SetColorValueThumbTexture |
-| 00b2ce90 (SetScrollChild..) | 9 | `SimpleScrollFrameMethods` | 0 | 2 |  / stubs: SetScrollChild, UpdateScrollChildRect |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
 | 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 1 |  / stubs: SetFillTexture |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 1 |  / stubs: SetUnit |
 | 00acfaf8 (GetGMTicket..) | 15 | `s_ScriptFunctions` | 0 | 1 |  / stubs: GetGMTicket |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
-| 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 1 |  / stubs: GetFacing |
+| 00b2ce90 (SetScrollChild..) | 9 | `SimpleScrollFrameMethods` | 0 | 1 |  / stubs: SetScrollChild |
 | 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 1 |  / stubs: ClearFocus |
 
 ## Packet handler coverage (SetMessageHandler)
@@ -174,7 +174,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.9% | 60 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
-| CSimpleHTML.cpp | 364 | 44.4k | 201 (55.2%) | 61.2% | 20 | 2 | 0 |
+| CSimpleHTML.cpp | 364 | 44.4k | 201 (55.2%) | 61.2% | 18 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
@@ -194,13 +194,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 2 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 70 (38.0%) | 45.8% | 17 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 71 (38.6%) | 45.9% | 17 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 30 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 10 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 9 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 0 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 33 (19.9%) | 32.0% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
@@ -220,7 +220,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 42 (32.8%) | 30.8% | 2 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 42 (32.8%) | 30.8% | 4 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 0 | 0 | 2 |
@@ -739,7 +739,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 12:52 | 2433 (9.0%) | 916 (3.4%) | 445 | 389/5530 | 1584/2512 | 553 |
 | 2026-09-19 12:56 | 2437 (9.0%) | 917 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 13:02 | 2440 (9.0%) | 917 (3.4%) | 446 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 13:06 | 2440 (9.0%) | 917 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
@@ -764,6 +763,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 14:07 | 2679 (9.9%) | 920 (3.4%) | 569 | 392/5530 | 1791/2964 | 633 |
 | 2026-09-19 14:20 | 2679 (9.9%) | 921 (3.4%) | 567 | 392/5530 | 1791/2964 | 631 |
 | 2026-09-19 14:21 | 2679 (9.9%) | 921 (3.4%) | 567 | 392/5530 | 1791/2964 | 631 |
+| 2026-09-19 14:26 | 2680 (9.9%) | 926 (3.4%) | 566 | 392/5530 | 1791/2964 | 630 |
 
 ## How to move a row
 

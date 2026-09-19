@@ -8,21 +8,27 @@ const char* LanguageProcess(const char* string) {
     return string;
 }
 
+namespace {
+
+struct BlendEntry {
+    const char* string;
+    EGxBlend value;
+};
+
+// One table, read from both directions, which is how the reference keeps the two conversions from
+// drifting apart: FUN_00815040 walks the same five pairs StringToBlendMode matches against.
+BlendEntry g_blendMap[] = {
+    { "DISABLE",    GxBlend_Opaque },
+    { "BLEND",      GxBlend_Alpha },
+    { "ALPHAKEY",   GxBlend_AlphaKey },
+    { "ADD",        GxBlend_Add },
+    { "MOD",        GxBlend_Mod },
+};
+
+}
+
 int32_t StringToBlendMode(const char* string, EGxBlend& blend) {
-    struct BlendEntry {
-        const char* string;
-        EGxBlend value;
-    };
-
-    static BlendEntry blendMap[] = {
-        { "DISABLE",    GxBlend_Opaque },
-        { "BLEND",      GxBlend_Alpha },
-        { "ALPHAKEY",   GxBlend_AlphaKey },
-        { "ADD",        GxBlend_Add },
-        { "MOD",        GxBlend_Mod },
-    };
-
-    for (const auto& entry : blendMap) {
+    for (const auto& entry : g_blendMap) {
         if (!SStrCmpI(entry.string, string)) {
             blend = entry.value;
             return true;
@@ -30,6 +36,19 @@ int32_t StringToBlendMode(const char* string, EGxBlend& blend) {
     }
 
     return false;
+}
+
+// ref: FUN_00815040
+// A blend mode frozen supports but the table does not name comes back as "UNKNOWN" rather than
+// null, so a caller pushing this straight onto the Lua stack cannot push nil by accident.
+const char* BlendModeToString(EGxBlend blend) {
+    for (const auto& entry : g_blendMap) {
+        if (entry.value == blend) {
+            return entry.string;
+        }
+    }
+
+    return "UNKNOWN";
 }
 
 int32_t StringToBOOL(const char* string) {

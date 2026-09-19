@@ -10,6 +10,7 @@ struct lua_State;
 const char* LanguageProcess(const char* string);
 
 int32_t StringToBlendMode(const char* string, EGxBlend& blend);
+const char* BlendModeToString(EGxBlend blend);
 
 int32_t StringToBOOL(const char* string);
 

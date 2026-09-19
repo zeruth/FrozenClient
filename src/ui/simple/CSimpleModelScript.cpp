@@ -230,8 +230,14 @@ int32_t CSimpleModel_GetFacing(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0049f7d0
 int32_t CSimpleModel_GetScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_scale);
+
+    return 1;
 }
 
 int32_t CSimpleModel_AdvanceTime(lua_State* L) {

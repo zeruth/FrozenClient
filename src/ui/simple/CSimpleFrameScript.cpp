@@ -1106,6 +1106,9 @@ int32_t CSimpleFrame_StartSizing(lua_State* L) {
     return 0;
 }
 
+// TODO FUN_004a0c20 stops the drag only when this frame is the one the UI manager currently
+// has under the mouse (a frame pointer it parks at +0xd0c). Frozen does not track a moving or
+// sizing frame, so there is nothing to compare against and nothing to stop.
 int32_t CSimpleFrame_StopMovingOrSizing(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

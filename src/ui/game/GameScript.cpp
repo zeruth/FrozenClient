@@ -584,6 +584,9 @@ int32_t Script_CursorHasItem(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_00515140, FUN_00515180 and FUN_005151c0 are the same function three times over:
+// each compares one global cursor-kind against a constant (3 spell, 8 macro, 2 money) and
+// pushes 1 or nil. Frozen tracks no cursor contents at all, so all three wait on that.
 int32_t Script_CursorHasSpell(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }

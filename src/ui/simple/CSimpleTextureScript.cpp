@@ -46,8 +46,14 @@ int32_t CSimpleTexture_SetDrawLayer(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048bff0
 int32_t CSimpleTexture_GetBlendMode(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushstring(L, BlendModeToString(texture->m_alphaMode));
+
+    return 1;
 }
 
 int32_t CSimpleTexture_SetBlendMode(lua_State* L) {

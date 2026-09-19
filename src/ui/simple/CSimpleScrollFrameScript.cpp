@@ -106,8 +106,16 @@ int32_t CSimpleScrollFrame_GetVerticalScrollRange(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_009727b0
+// Raises the dirty flag and nothing else. The recalculation itself happens on the next layer
+// update, so this is the whole of the reference function -- the name promises more than it does.
 int32_t CSimpleScrollFrame_UpdateScrollChildRect(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleScrollFrame::GetObjectType();
+    auto scrollFrame = static_cast<CSimpleScrollFrame*>(FrameScript_GetObjectThis(L, type));
+
+    scrollFrame->m_updateScrollChild = 1;
+
+    return 0;
 }
 
 FrameScript_Method SimpleScrollFrameMethods[NUM_SIMPLE_SCROLL_FRAME_SCRIPT_METHODS] = {

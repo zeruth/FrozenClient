@@ -71,8 +71,14 @@ int32_t CSimpleSlider_SetValue(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00971f80
 int32_t CSimpleSlider_GetValueStep(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto slider = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, slider->m_valueStep);
+
+    return 1;
 }
 
 int32_t CSimpleSlider_SetValueStep(lua_State* L) {

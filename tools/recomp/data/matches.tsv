@@ -184,7 +184,7 @@ addr	how	frozen	evidence
 0048be30	table	CSimpleTexture_IsObjectType	binding "IsObjectType" in SimpleTextureMethods ~ table 00ac1028
 0048bee0	table	CSimpleTexture_GetDrawLayer	binding "GetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
 0048bf30	table	CSimpleTexture_SetDrawLayer	binding "SetDrawLayer" in SimpleTextureMethods ~ table 00ac1028
-0048bff0	table	CSimpleTexture_GetBlendMode	binding "GetBlendMode" in SimpleTextureMethods ~ table 00ac1028
+0048bff0	annotated	CSimpleTexture_GetBlendMode	tag in src/ui/simple/CSimpleTextureScript.cpp
 0048c040	table	CSimpleTexture_SetBlendMode	binding "SetBlendMode" in SimpleTextureMethods ~ table 00ac1028
 0048c0e0	table	CSimpleTexture_GetVertexColor	binding "GetVertexColor" in SimpleTextureMethods ~ table 00ac1028
 0048c1c0	table	CSimpleTexture_SetVertexColor	binding "SetVertexColor" in SimpleTextureMethods ~ table 00ac1028
@@ -341,7 +341,7 @@ addr	how	frozen	evidence
 0049f2d0	table	CSimpleFrame_GetAttribute	binding "GetAttribute" in SimpleFrameMethods ~ table 00ac1550
 0049f610	table	CSimpleFrame_SetAttribute	binding "SetAttribute" in SimpleFrameMethods ~ table 00ac1550
 0049f790	table	CSimpleFrame_GetEffectiveScale	binding "GetEffectiveScale" in SimpleFrameMethods ~ table 00ac1550
-0049f7d0	table	CSimpleFrame_GetScale	binding "GetScale" in SimpleFrameMethods ~ table 00ac1550
+0049f7d0	annotated	CSimpleModel_GetScale	tag in src/ui/simple/CSimpleModelScript.cpp
 0049f820	table	CSimpleFrame_SetScale	binding "SetScale" in SimpleFrameMethods ~ table 00ac1550
 0049f900	annotated	CSimpleFrame_GetEffectiveAlpha	tag in src/ui/simple/CSimpleFrameScript.cpp
 0049f980	table	CSimpleFrame_GetAlpha	binding "GetAlpha" in SimpleFrameMethods ~ table 00ac1550
@@ -1910,7 +1910,8 @@ addr	how	frozen	evidence
 00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
 00814f60	string	StringToDrawLayer	score 0.67 shared BACKGROUND; BORDER
-00814ff0	string	StringToBlendMode	unique "DISABLE"
+00814ff0	callorder	StringToBlendMode	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
+00815040	annotated	BlendModeToString	tag in src/ui/Util.cpp
 00815080	override	StringToJustify	
 008150d0	callgraph	JustifyToString	only unmatched callee of 004a4080=FontString_GetJustifyH, 004a40b0=FontString_GetJustifyV
 00815110	string	StringToOrientation	unique "HORIZONTAL"
@@ -2406,7 +2407,7 @@ addr	how	frozen	evidence
 00960dd0	annotated	CSimpleModel_GetLight	tag in src/ui/simple/CSimpleModelScript.cpp
 00960fc0	annotated	CSimpleModel_GetPosition	tag in src/ui/simple/CSimpleModelScript.cpp
 00961040	annotated	CSimpleModel_GetFacing	tag in src/ui/simple/CSimpleModelScript.cpp
-00961090	table	CSimpleModel_GetScale	binding "GetModelScale" in SimpleModelMethods ~ table 00b2cb10
+00961090	order	CGUnit_C::GetModelScale	binding table name GetModelScale, in definition order in src/object/client/CGUnit_C.cpp
 009610e0	table	CSimpleModel_AdvanceTime	binding "AdvanceTime" in SimpleModelMethods ~ table 00b2cb10
 00961120	annotated	CSimpleModel_ReplaceIconTexture	tag in src/ui/simple/CSimpleModelScript.cpp
 009611a0	table	CSimpleModel_SetFogColor	binding "SetFogColor" in SimpleModelMethods ~ table 00b2cb10
@@ -2502,7 +2503,7 @@ addr	how	frozen	evidence
 00971df0	table	CSimpleSlider_SetMinMaxValues	binding "SetMinMaxValues" in SimpleSliderMethods ~ table 00b2ce20
 00971eb0	table	CSimpleSlider_GetValue	binding "GetValue" in SimpleSliderMethods ~ table 00b2ce20
 00971f00	table	CSimpleSlider_SetValue	binding "SetValue" in SimpleSliderMethods ~ table 00b2ce20
-00971f80	table	CSimpleSlider_GetValueStep	binding "GetValueStep" in SimpleSliderMethods ~ table 00b2ce20
+00971f80	annotated	CSimpleSlider_GetValueStep	tag in src/ui/simple/CSimpleSliderScript.cpp
 00971fd0	table	CSimpleSlider_SetValueStep	binding "SetValueStep" in SimpleSliderMethods ~ table 00b2ce20
 00972050	table	CSimpleSlider_IsEnabled	binding "IsEnabled" in SimpleSliderMethods ~ table 00b2ce20
 009720e0	table	CSimpleSlider_Enable	binding "Enable" in SimpleSliderMethods ~ table 00b2ce20
@@ -2515,7 +2516,7 @@ addr	how	frozen	evidence
 00972690	table	CSimpleScrollFrame_GetVerticalScroll	binding "GetVerticalScroll" in SimpleScrollFrameMethods ~ table 00b2ce90
 009726f0	table	CSimpleScrollFrame_GetHorizontalScrollRange	binding "GetHorizontalScrollRange" in SimpleScrollFrameMethods ~ table 00b2ce90
 00972750	table	CSimpleScrollFrame_GetVerticalScrollRange	binding "GetVerticalScrollRange" in SimpleScrollFrameMethods ~ table 00b2ce90
-009727b0	table	CSimpleScrollFrame_UpdateScrollChildRect	binding "UpdateScrollChildRect" in SimpleScrollFrameMethods ~ table 00b2ce90
+009727b0	annotated	CSimpleScrollFrame_UpdateScrollChildRect	tag in src/ui/simple/CSimpleScrollFrameScript.cpp
 009732f0	table	CSimpleScrollingMessageFrame_ScrollUp	binding "ScrollUp" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973330	table	CSimpleScrollingMessageFrame_ScrollDown	binding "ScrollDown" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0
 00973370	table	CSimpleScrollingMessageFrame_PageUp	binding "PageUp" in SimpleScrollingMessageFrameMethods ~ table 00b2cee0

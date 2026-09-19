@@ -2944,20 +2944,20 @@
   "status": "ported"
  },
  "0048bff0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_GetBlendMode",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 70,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c040": {
   "branchRatio": 0.5,
@@ -5458,12 +5458,12 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleFrameScript.cpp",
-   "src/ui/simple/csimpleframescript.cpp"
+   "src/ui/simple/CSimpleModelScript.cpp",
+   "src/ui/simple/csimplemodelscript.cpp"
   ],
-  "frozen": "CSimpleFrame_GetScale",
+  "frozen": "CSimpleModel_GetScale",
   "frozenSize": 54,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 67,
   "status": "ported"
@@ -30467,9 +30467,25 @@
   ],
   "frozen": "StringToBlendMode",
   "frozenSize": 92,
-  "how": "string",
+  "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 74,
+  "status": "ported"
+ },
+ "00815040": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/Util.cpp",
+   "src/ui/util.cpp"
+  ],
+  "frozen": "BlendModeToString",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
   "status": "ported"
  },
  "00815080": {
@@ -38069,7 +38085,7 @@
   "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 166,
-  "status": "ported"
+  "status": "stub"
  },
  "00960dd0": {
   "branchRatio": 0.375,
@@ -38106,7 +38122,7 @@
  "00961040": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
@@ -38117,20 +38133,20 @@
   "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
-  "status": "stub"
+  "status": "ported"
  },
  "00961090": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/simple/CSimpleModelScript.cpp",
-   "src/ui/simple/csimplemodelscript.cpp"
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
   ],
-  "frozen": "CSimpleModel_GetScale",
-  "frozenSize": 75,
-  "how": "table",
+  "frozen": "CGUnit_C::GetModelScale",
+  "frozenSize": 139,
+  "how": "order",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
   "status": "ported"
@@ -38165,7 +38181,7 @@
   "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 126,
-  "status": "ported"
+  "status": "stub"
  },
  "009611a0": {
   "branchRatio": 0.0,
@@ -38293,7 +38309,7 @@
   "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 132,
-  "status": "ported"
+  "status": "stub"
  },
  "00961d70": {
   "branchRatio": 0.0,
@@ -39659,20 +39675,20 @@
   "status": "ported"
  },
  "00971f80": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp",
    "src/ui/simple/csimplesliderscript.cpp"
   ],
   "frozen": "CSimpleSlider_GetValueStep",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 67,
-  "status": "stub"
+  "status": "ported"
  },
  "00971fd0": {
   "branchRatio": 0.333,
@@ -39867,20 +39883,20 @@
   "status": "ported"
  },
  "009727b0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleScrollFrameScript.cpp",
    "src/ui/simple/csimplescrollframescript.cpp"
   ],
   "frozen": "CSimpleScrollFrame_UpdateScrollChildRect",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 42,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "009732f0": {
   "branchRatio": 0.0,
