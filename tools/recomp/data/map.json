@@ -11624,36 +11624,36 @@
   "status": "stub"
  },
  "0051bfd0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_ShowingHelm",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 99,
-  "status": "stub"
+  "status": "ported"
  },
  "0051c040": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_ShowingCloak",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 91,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 99,
-  "status": "stub"
+  "status": "ported"
  },
  "0051c0b0": {
   "branchRatio": 1.0,

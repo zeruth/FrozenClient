@@ -727,8 +727,8 @@ addr	how	frozen	evidence
 0051bdd0	order	Script_DropItemOnUnit	binding table name Script_DropItemOnUnit, in definition order in src/ui/game/GameScript.cpp
 0051bf50	order	Script_ConfirmTalentWipe	binding table name Script_ConfirmTalentWipe, in definition order in src/ui/game/GameScript.cpp
 0051bf90	order	Script_ConfirmBinder	binding table name Script_ConfirmBinder, in definition order in src/ui/game/GameScript.cpp
-0051bfd0	order	Script_ShowingHelm	binding table name Script_ShowingHelm, in definition order in src/ui/game/GameScript.cpp
-0051c040	order	Script_ShowingCloak	binding table name Script_ShowingCloak, in definition order in src/ui/game/GameScript.cpp
+0051bfd0	annotated	Script_ShowingHelm	tag in src/ui/game/GameScript.cpp
+0051c040	annotated	Script_ShowingCloak	tag in src/ui/game/GameScript.cpp
 0051c0b0	order	Script_ShowHelm	binding table name Script_ShowHelm, in definition order in src/ui/game/GameScript.cpp
 0051c100	order	Script_ShowCloak	binding table name Script_ShowCloak, in definition order in src/ui/game/GameScript.cpp
 0051c150	order	Script_GetItemGem	binding table name Script_GetItemGem, in definition order in src/ui/game/GameScript.cpp

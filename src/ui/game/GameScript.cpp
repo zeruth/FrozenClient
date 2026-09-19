@@ -10,6 +10,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "console/CVar.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "ui/Types.hpp"
 #include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
@@ -1284,12 +1285,32 @@ int32_t Script_ConfirmBinder(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
-int32_t Script_ShowingHelm(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// The player data flags carry two "hide this piece of gear" bits. Both bindings below report the
+// inverse -- whether the piece is SHOWN -- so a set bit means hidden.
+static const uint32_t PLAYER_FLAGS_HIDE_HELM  = 0x400;   // bit 10
+static const uint32_t PLAYER_FLAGS_HIDE_CLOAK = 0x800;   // bit 11
+
+static int32_t PlayerGearShown(lua_State* L, uint32_t hideFlag) {
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (data && !(data->flags & hideFlag)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_0051bfd0
+int32_t Script_ShowingHelm(lua_State* L) {
+    return PlayerGearShown(L, PLAYER_FLAGS_HIDE_HELM);
+}
+
+// ref: FUN_0051c040
 int32_t Script_ShowingCloak(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return PlayerGearShown(L, PLAYER_FLAGS_HIDE_CLOAK);
 }
 
 int32_t Script_ShowHelm(lua_State* L) {

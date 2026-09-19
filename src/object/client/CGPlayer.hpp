@@ -153,13 +153,15 @@ class CGPlayer {
         uint32_t GetNextLevelXP() const;
         uint32_t GetXP() const;
 
+        // Public to match CGUnit::Unit(), which is the sibling accessor for the unit block and has
+        // always been public. The script bindings read player flags straight off this the way the
+        // reference does.
+        CGPlayerData* Player() const;
+
     protected:
         // Protected member variables
         CGPlayerData* m_player;
         uint32_t* m_playerSaved;
-
-        // Protected member functions
-        CGPlayerData* Player() const;
 };
 
 #endif
