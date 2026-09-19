@@ -1394,23 +1394,11 @@ def show(target, refs, frozen, m):
         propose(a, refs, frozen, m)
 
 
-def propose(a, refs, frozen, m):
-    """Rank frozen functions that could be this unlinked reference function. The strongest signal
-    is a shared callee: translate the reference's callees through the map and see which frozen
-    functions call the same ones. Shared strings, and a similar number of calls and branches, break
-    the ties. This is for the sparsely linked corners -- the map and model code -- where the
-    automatic matchers have too few anchors to propose anything at all."""
+def propose_scores(a, refs, frozen, m, used, popularity):
     r = refs[a]
-    used = set(v[0] for v in m.values())
     want = set(m[c][0] for c in r['calls'] if c in m)
     rs = set(r['strings'])
     rcalls, rbr = len(r['calls']), r.get('branches', -1)
-    # weight a shared callee by how rare it is: everything calls SStrLen, so sharing it says
-    # almost nothing, while sharing CGxDevice::PoolCreate nearly names the function
-    popularity = collections.Counter()
-    for w in frozen.values():
-        for c in set(w['seq']):
-            popularity[c] += 1
     scored = []
     for n, w in frozen.items():
         if n in used or not w['files']:
@@ -1427,8 +1415,69 @@ def propose(a, refs, frozen, m):
             score += 1.0 - min(1.0, abs(w['branches'] - rbr) / float(hi))
         scored.append((score, n, sorted(shared)[:3], sorted(strs)[:2], len(w['seq']), w.get('branches', -1)))
     scored.sort(reverse=True)
+    return scored, want
+
+
+def callee_popularity(frozen):
+    pop = collections.Counter()
+    for w in frozen.values():
+        for c in set(w['seq']):
+            pop[c] += 1
+    return pop
+
+
+def propose_sweep(args, refs, frozen, m):
+    """Run the proposer across every unlinked function on the render surface (or the spine) and
+    report what it finds, split three ways: nothing to go on, a candidate worth reading, and the
+    answer that matters most -- a function with linked callees that no frozen function shares,
+    which is not ported at all."""
+    sp = spine(refs, RENDER_ROOTS if args.render else None)
+    if args.render:
+        sp = set(a for a in sp if refs[a].get('module') in RENDER_MODULES)
+    used = set(v[0] for v in m.values())
+    pop = callee_popularity(frozen)
+    rows, nothing, unported = [], 0, []
+    for a in sorted(sp, key=lambda x: -((refs[x]['callers'] + 1) * refs[x]['size'])):
+        if a in m or refs[a]['thunk'] or refs[a]['excluded']:
+            continue
+        scored, want = propose_scores(a, refs, frozen, m, used, pop)
+        if not want:
+            nothing += 1
+            continue
+        if not scored:
+            unported.append(a)
+            continue
+        rows.append((scored[0][0], a, scored))
+    rows.sort(reverse=True)
+    print('render surface' if args.render else 'world spine')
+    print('  unlinked with no linked callee to go on: %d' % nothing)
+    print('  unlinked whose linked callees NO frozen function shares (not ported): %d' % len(unported))
+    print('  unlinked with at least one candidate: %d' % len(rows))
+    print()
+    print('  %-9s %-20s %-38s %5s  %s' % ('ref', 'module', 'best candidate', 'score', 'shared callees'))
+    for sc, a, scored in rows[:args.propose]:
+        gap = ' *' if len(scored) == 1 or sc >= 1.8 * scored[1][0] else '  '
+        print('  %-9s %-20s %-38s %5.1f%s %s' % (a, (refs[a].get('module') or '?')[:20],
+              scored[0][1][:38], sc, gap, ', '.join(scored[0][2])[:36]))
+    print()
+    print('  * = clearly ahead of the runner-up. Everything else needs reading before it is pinned.')
+    if unported:
+        print()
+        print('  not ported, biggest first: %s' % ', '.join(
+            '%s(%s)' % (a, refs[a].get('module') or '?') for a in
+            sorted(unported, key=lambda x: -refs[x]['size'])[:10]))
+
+
+def propose(a, refs, frozen, m):
+    """Rank frozen functions that could be this unlinked reference function. The strongest signal
+    is a shared callee: translate the reference's callees through the map and see which frozen
+    functions call the same ones. Shared strings, and a similar number of calls and branches, break
+    the ties. This is for the sparsely linked corners -- the map and model code -- where the
+    automatic matchers have too few anchors to propose anything at all."""
+    r = refs[a]
+    scored, want = propose_scores(a, refs, frozen, m, set(v[0] for v in m.values()), callee_popularity(frozen))
     print('  unmapped. reference makes %d calls, %d branches; linked callees: %s'
-          % (rcalls, rbr, ', '.join(sorted(want)[:6]) or '-'))
+          % (len(r['calls']), r.get('branches', -1), ', '.join(sorted(want)[:6]) or '-'))
     if not scored:
         print('  no candidate shares a linked callee or a string with it')
         return
@@ -1523,6 +1572,7 @@ def main():
     ap.add_argument('--no-history', action='store_true', help='do not append this run to history.jsonl')
     ap.add_argument('--next', type=int, metavar='N', help='decompile the next N functions to port into docs/recomp/queue/')
     ap.add_argument('--spine', action='store_true', help='with --next: only functions on the world spine')
+    ap.add_argument('--propose', type=int, metavar='N', help='sweep unlinked functions and rank candidates for each (use with --render)')
     ap.add_argument('--render', action='store_true', help='with --next: only the render spine (world update, map and M2 scene roots)')
     ap.add_argument('--module', metavar='FILE.cpp', help='with --next: only functions anchored to this reference module')
     ap.add_argument('--fix', action='store_true', help='with --next: queue linked-but-unfaithful ports instead of unlinked functions')
@@ -1567,6 +1617,9 @@ def main():
         if a in m and m[a][0] == v['frozen'] and a not in overrides:
             overrides[a] = {'frozen': v['frozen'], 'status': 'verified', 'note': v['note'], 'auto': True}
 
+    if args.propose:
+        propose_sweep(args, refs, frozen, m)
+        return
     if args.diff:
         diff_seq(args.diff, refs, frozen, m)
     if args.show:

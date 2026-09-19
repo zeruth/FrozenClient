@@ -1063,6 +1063,22 @@
   "refSize": 33,
   "status": "ported"
  },
+ "004218c0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/SFile.cpp",
+   "src/util/sfile.cpp"
+  ],
+  "frozen": "SFile::GetFileSize",
+  "frozenSize": 17,
+  "how": "callorder",
+  "module": "OggDecompress.cpp",
+  "refSize": 112,
+  "status": "ported"
+ },
  "00421ca0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -6347,7 +6363,7 @@
   ],
   "frozen": "FindSubstitution",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 103,
   "status": "ported"
@@ -6768,11 +6784,43 @@
   "refSize": 175,
   "status": "ported"
  },
+ "004b8910": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.733,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "CreateBlpSync",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 315,
+  "status": "ported"
+ },
+ "004b8a50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "CreateBlpAsync",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 388,
+  "status": "ported"
+ },
  "004b8be0": {
   "branchRatio": 1.0,
   "constOverlap": 0.25,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9349,11 +9397,27 @@
   "refSize": 1016,
   "status": "ported"
  },
+ "004fa5f0": {
+  "branchRatio": 0.259,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.135,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "CGWorldFrame::OnWorldUpdate",
+  "frozenSize": 642,
+  "how": "override",
+  "module": "TextureCache.cpp",
+  "refSize": 1493,
+  "status": "ported"
+ },
  "004faf90": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -25261,6 +25325,22 @@
   "refSize": 1370,
   "status": "ported"
  },
+ "007e6480": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/PlayerName.cpp",
+   "src/ui/game/playername.cpp"
+  ],
+  "frozen": "PlayerNameUpdateWorldText",
+  "frozenSize": 3,
+  "how": "callorder",
+  "module": "PlayerName.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
  "007ea260": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -27113,7 +27193,7 @@
   "branchRatio": 0.583,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.571,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -31437,7 +31517,7 @@
   "branchRatio": 0.543,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.759,
+  "fidelity": 0.793,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"

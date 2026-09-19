@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 07:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 07:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2317 (=) (8.5%) | 504.6k (9.1%) |
-| &nbsp;&nbsp;ported | 1760 (=) | 362.7k |
+| mapped to a frozen function | 2322 (+5) (8.5%) | 507.0k (9.2%) |
+| &nbsp;&nbsp;ported | 1765 (+5) | 365.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 533 (=) | 108.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **737 (=) (2.7%)** | **95.1k (1.7%)** |
-| unmapped | 24844 | 4.91M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 359 (=) (6.5%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 361 (=) (6.2%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 139 (=) (2.3%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **738 (+1) (2.7%)** | **95.3k (1.7%)** |
+| unmapped | 24839 | 4.91M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 362 (+3) (6.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 366 (+5) (6.3%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 142 (+3) (2.4%)** | |
 | frozen functions (src/, from PDB + source) | 11319, stubs 962 | |
 
-Match evidence: annotated 229, callgraph 153, callorder 125, cvar 30, handler 27, order 339, override 171, string 345, table 898. Module anchors: 1479 assert strings.
+Match evidence: annotated 229, callgraph 154, callorder 126, cvar 30, handler 27, order 339, override 174, string 345, table 898. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 07:45 -- mapped 2317, ported 1760, stub 533, spine mapped 359.
+Previous run: 2026-09-19 07:49 -- mapped 2317, ported 1760, stub 533, spine mapped 359.
 
 ## Lua API coverage (binding tables)
 
@@ -195,7 +195,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | module | ref fns | bytes | mapped | bytes | stub | verified | spine |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1261 | 274.2k | 2 (0.2%) | 0.2% | 0 | 0 | 81 |
-| OggDecompress.cpp | 1504 | 260.7k | 11 (0.7%) | 0.9% | 0 | 0 | 476 |
+| OggDecompress.cpp | 1504 | 260.7k | 12 (0.8%) | 0.9% | 0 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 52 (5.3%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
@@ -230,7 +230,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
 | VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
-| TextureCache.cpp | 252 | 38.9k | 14 (5.6%) | 8.3% | 0 | 0 | 79 |
+| TextureCache.cpp | 252 | 38.9k | 15 (6.0%) | 12.0% | 0 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 0 | 0 | 23 |
 | framing.c | 125 | 38.8k | 34 (27.2%) | 52.8% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 12 (5.1%) | 4.8% | 0 | 0 | 83 |
@@ -265,7 +265,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 34 (28.3%) | 29.3% | 18 | 0 | 0 |
-| Texture.cpp | 146 | 22.2k | 36 (24.7%) | 35.8% | 2 | 0 | 75 |
+| Texture.cpp | 146 | 22.2k | 38 (26.0%) | 38.9% | 2 | 0 | 75 |
 | MapMem.cpp | 101 | 21.3k | 0 (0.0%) | 0.0% | 0 | 0 | 63 |
 | Cursor.cpp | 117 | 20.7k | 2 (1.7%) | 4.3% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
@@ -295,7 +295,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SComp.cpp | 83 | 15.1k | 1 (1.2%) | 1.2% | 0 | 0 | 2 |
 | PetInfo.cpp | 69 | 14.8k | 4 (5.8%) | 4.4% | 0 | 0 | 7 |
 | ActionBarFrame.cpp | 64 | 14.7k | 18 (28.1%) | 19.9% | 4 | 0 | 8 |
-| PlayerName.cpp | 71 | 14.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
+| PlayerName.cpp | 71 | 14.6k | 1 (1.4%) | 0.5% | 0 | 0 | 7 |
 | UIMacroOptions.cpp | 93 | 14.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_dsp_pitchshift.cpp | 52 | 14.4k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
 | fmod_codec_wav_riff.cpp | 46 | 14.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -683,13 +683,14 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 00405dd0 | `Sub405DD0` | 20% | 50 | 2 | 59 | 0 | 0% | 1706 |
+| 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 13% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 00631000 | `CGTooltip_SetAction` | 12% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 007e4480 | `BlobShadowsBegin` | 24% | 33 | 17 | 10 | 2 | 0% | 1370 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
-| 0087ee60 | `SESound::LoadDiskSound` | 76% | 29 | 33 | 35 | 19 | 0% | 1303 |
+| 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `CGGameUI::Initialize` | 17% | 59 | 30 | 23 | 6 | 5% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 70% | 10 | 11 | 10 | 9 | 29% | 1189 |
@@ -710,7 +711,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004d9bd0 | `CGlueMgr::EnterWorld` | 66% | 38 | 37 | 23 | 15 | 29% | 895 |
 | 004067f0 | `InitializeGlobal` | 31% | 52 | 19 | 12 | 1 | 10% | 887 |
 | 0081fb10 | `CM2SceneRender::SetupLighting` | 22% | 9 | 9 | 24 | 15 | 3% | 874 |
-| 008203b0 | `CM2SceneRender::DrawBatch` | 23% | 13 | 18 | 16 | 9 | 5% | 869 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -791,7 +791,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 03:52 | 2254 (8.3%) | 683 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 | 2026-09-19 04:39 | 2254 (8.3%) | 684 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 | 2026-09-19 05:25 | 2254 (8.3%) | 684 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
 | 2026-09-19 05:48 | 2254 (8.3%) | 684 (2.5%) | 524 | 312/5530 | 1584/2512 | 752 |
@@ -816,6 +815,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 07:44 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:45 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:49 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
+| 2026-09-19 07:54 | 2322 (8.5%) | 738 (2.7%) | 533 | 362/5530 | 1584/2512 | 752 |
 
 ## How to move a row
 

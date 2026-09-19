@@ -259,5 +259,9 @@
   "0081f450": { "frozen": "CM2SceneRender::SetupTextures", "status": "ported", "note": "structural proof: both open with the same early exit, m_curType > 2 then a two-iteration loop of GxRsSet(GxRs_Texture0 + i, 0) and SetTexMtx_Identity(i), then return" },
   "0081fb10": { "frozen": "CM2SceneRender::SetupLighting", "status": "ported", "note": "call order in DrawBatch: the reference calls 0081fb10, 0081fe90, 0081f450 exactly where the port calls SetupLighting, SetupMaterial, SetupTextures" },
   "0081fe90": { "frozen": "CM2SceneRender::SetupMaterial", "status": "ported", "note": "call order in DrawBatch, second of the three setup calls (see 0081fb10)" },
-  "00873480": { "frozen": "CShaderEffect::SetTexMtx_Identity", "status": "ported", "note": "the second call in SetupTextures’ early-exit loop, per texture unit" }
+  "00873480": { "frozen": "CShaderEffect::SetTexMtx_Identity", "status": "ported", "note": "the second call in SetupTextures’ early-exit loop, per texture unit" },
+
+  "004b8910": { "frozen": "CreateBlpSync", "status": "ported", "note": "string CreateBlpTexture() failed read and the Texture.cpp assert path; the only caller is the linked CreateBlpTexture, and it shares six callees with the port including CTexture::CTexture, FillInSolidTexture, PumpBlpTextureAsync and the SFile trio. Scored 19.9 against 5.3 for the runner-up" },
+  "004b8a50": { "frozen": "CreateBlpAsync", "status": "ported", "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left" },
+  "004fa5f0": { "frozen": "CGWorldFrame::OnWorldUpdate", "status": "ported", "note": "the world update body: its only caller is the linked CGWorldFrame::RenderWorld, it shares CWorld::Update, ClntObjMgrGetActivePlayer and CVar::Lookup with the port, and its Sound_ListenerBackDist / Sound_ListenerUpDist strings match the listener setup docs/world-render-inventory.md describes at this address" }
 }

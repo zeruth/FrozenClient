@@ -66,6 +66,7 @@ addr	how	frozen	evidence
 0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 0040cb10	callgraph	SStrLen	only unmatched callee of 0076f9e0=SStrDupA
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
+004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
 00422140	callorder	SFile::IsStreamingTrial	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -396,7 +397,7 @@ addr	how	frozen	evidence
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b5170	callgraph	TextureGetTexturePtr	only unmatched callee of 004b9760=TextureCreate
 004b51c0	override	OsPathFindExtensionWithDot	
-004b5210	callorder	FindSubstitution	same slot between linked calls in 004b8be0=CreateBlpTexture
+004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
 004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
@@ -423,6 +424,8 @@ addr	how	frozen	evidence
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8770	override	CTexture::CTexture	
+004b8910	override	CreateBlpSync	
+004b8a50	override	CreateBlpAsync	
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
 004b9480	override	TextureCacheNewTexture	
@@ -583,6 +586,7 @@ addr	how	frozen	evidence
 004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
 004f8ea0	override	CGWorldFrame::OnWorldRender	
+004fa5f0	override	CGWorldFrame::OnWorldUpdate	
 004faf90	override	CGWorldFrame::RenderWorld	
 004fb080	override	CGWorldFrame::OnFrameRender	
 004fbd90	string	Script_GetChatWindowInfo	unique "Usage: GetChatWindowInfo(index)"
@@ -1586,6 +1590,7 @@ addr	how	frozen	evidence
 007e2a50	handler	ReceiveServerTime	SetMessageHandler(SMSG_SERVERTIME) on both sides
 007e2b40	handler	ReceiveNewGameTime	SetMessageHandler(SMSG_GAME_TIME_SET) on both sides
 007e4480	override	BlobShadowsBegin	
+007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007f09b0	override	SkyRender	
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
