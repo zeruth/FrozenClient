@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 12:33 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 12:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,8 +8,8 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2419 (+1) (8.9%) | 533.6k (9.6%) |
-| &nbsp;&nbsp;ported | 1946 (+1) | 400.6k |
+| mapped to a frozen function | 2419 (=) (8.9%) | 533.6k (9.6%) |
+| &nbsp;&nbsp;ported | 1946 (=) | 400.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 445 (=) | 98.8k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **911 (=) (3.4%)** | **115.8k (2.1%)** |
@@ -21,7 +21,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 458, callgraph 171, callorder 127, cvar 30, handler 28, order 320, override 182, string 346, table 757. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 12:18 -- mapped 2418, ported 1945, stub 445, spine mapped 389.
+Previous run: 2026-09-19 12:33 -- mapped 2419, ported 1946, stub 445, spine mapped 389.
 
 ## Lua API coverage (binding tables)
 
@@ -785,7 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 10:47 | 2402 (8.8%) | 896 (3.3%) | 450 | 388/5530 | 1584/2512 | 558 |
 | 2026-09-19 11:12 | 2405 (8.9%) | 899 (3.3%) | 450 | 388/5530 | 1584/2512 | 557 |
 | 2026-09-19 11:12 | 2405 (8.9%) | 899 (3.3%) | 450 | 388/5530 | 1584/2512 | 557 |
 | 2026-09-19 11:16 | 2405 (8.9%) | 901 (3.3%) | 448 | 388/5530 | 1584/2512 | 555 |
@@ -810,6 +809,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 12:18 | 2418 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:18 | 2418 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 | 2026-09-19 12:33 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
+| 2026-09-19 12:37 | 2419 (8.9%) | 911 (3.4%) | 445 | 389/5530 | 1584/2512 | 545 |
 
 ## How to move a row
 

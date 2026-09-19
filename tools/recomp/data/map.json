@@ -21900,7 +21900,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddLine",
-  "frozenSize": 207,
+  "frozenSize": 215,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 162,
@@ -21916,7 +21916,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddDoubleLine",
-  "frozenSize": 350,
+  "frozenSize": 356,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 229,

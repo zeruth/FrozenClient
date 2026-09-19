@@ -34,6 +34,7 @@ int32_t TooltipMaxLines(CGTooltip* tooltip) {
 }
 
 CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right);
+static bool TooltipCreateLine(CGTooltip* tooltip);
 
 // The offsets the reference anchors new lines with, in UI units before the coordinate conversion:
 // each line sits two below the one above it, and the right column's right edge sits forty to the
@@ -520,7 +521,11 @@ int32_t CGTooltip_AddLine(lua_State* L) {
         return 0;
     }
 
-    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip)) {
+    // Full means full only if another line cannot be made. TooltipMaxLines counts the template's
+    // eight plus whatever has been created so far, so without this the tooltip could never grow:
+    // nothing would ask for line nine, so line nine would never be created, so the limit would stay
+    // at eight forever.
+    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
         return 0;
     }
 
@@ -538,7 +543,11 @@ int32_t CGTooltip_AddDoubleLine(lua_State* L) {
         return 0;
     }
 
-    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip)) {
+    // Full means full only if another line cannot be made. TooltipMaxLines counts the template's
+    // eight plus whatever has been created so far, so without this the tooltip could never grow:
+    // nothing would ask for line nine, so line nine would never be created, so the limit would stay
+    // at eight forever.
+    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
         return 0;
     }
 

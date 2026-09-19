@@ -101651,7 +101651,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 52
+"line": 53
 },
 "TooltipLine": {
 "files": [
@@ -101681,7 +101681,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 100
+"line": 101
 },
 "TooltipSetLine": {
 "files": [
@@ -101703,7 +101703,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 152
+"line": 153
 },
 "TooltipThis": {
 "files": [
@@ -101719,7 +101719,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 168
+"line": 169
 },
 "TooltipUIToLayout": {
 "files": [
@@ -101737,7 +101737,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 186
+"line": 187
 },
 "TooltipUnitName": {
 "files": [
@@ -101759,7 +101759,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 193
+"line": 194
 },
 "TooltipResizeToFit": {
 "files": [
@@ -101790,7 +101790,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 223
+"line": 224
 },
 "TooltipShow": {
 "files": [
@@ -101806,7 +101806,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 285
+"line": 286
 },
 "TooltipClear": {
 "files": [
@@ -101827,7 +101827,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 292
+"line": 293
 },
 "TooltipSetSpellRec": {
 "files": [
@@ -101849,7 +101849,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 308
+"line": 309
 },
 "CGTooltip_AddFontStrings": {
 "files": [
@@ -101885,7 +101885,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 331
+"line": 332
 },
 "CGTooltip_SetMinimumWidth": {
 "files": [
@@ -101905,7 +101905,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 364
+"line": 365
 },
 "CGTooltip_GetMinimumWidth": {
 "files": [
@@ -101923,7 +101923,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 374
+"line": 375
 },
 "CGTooltip_SetPadding": {
 "files": [
@@ -101943,7 +101943,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 380
+"line": 381
 },
 "CGTooltip_GetPadding": {
 "files": [
@@ -101961,7 +101961,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 390
+"line": 391
 },
 "CGTooltip_IsOwned": {
 "files": [
@@ -102000,7 +102000,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 396
+"line": 397
 },
 "CGTooltip_GetOwner": {
 "files": [
@@ -102021,7 +102021,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 428
+"line": 429
 },
 "CGTooltip_SetOwner": {
 "files": [
@@ -102059,7 +102059,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 449
+"line": 450
 },
 "CGTooltip_GetAnchorType": {
 "files": [
@@ -102079,7 +102079,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 478
+"line": 479
 },
 "CGTooltip_SetAnchorType": {
 "files": [
@@ -102106,7 +102106,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 491
+"line": 492
 },
 "CGTooltip_ClearLines": {
 "files": [
@@ -102124,7 +102124,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 510
+"line": 511
 },
 "CGTooltip_AddLine": {
 "files": [
@@ -102134,6 +102134,7 @@
 "TooltipThis",
 "lua_isstring",
 "TooltipMaxLines",
+"TooltipCreateLine",
 "lua_tolstring",
 "TooltipSetLine",
 "TooltipResizeToFit"
@@ -102145,9 +102146,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 21,
 "refs": [],
-"line": 516
+"line": 517
 },
 "CGTooltip_AddDoubleLine": {
 "files": [
@@ -102158,6 +102159,7 @@
 "lua_isstring",
 "lua_isstring",
 "TooltipMaxLines",
+"TooltipCreateLine",
 "lua_tolstring",
 "TooltipSetLine",
 "lua_tolstring",
@@ -102172,9 +102174,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 18,
+"lines": 22,
 "refs": [],
-"line": 534
+"line": 539
 },
 "CGTooltip_AddTexture": {
 "files": [
@@ -102196,7 +102198,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 553
+"line": 562
 },
 "CGTooltip_SetText": {
 "files": [
@@ -102219,7 +102221,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 557
+"line": 566
 },
 "CGTooltip_AppendText": {
 "files": [
@@ -102252,7 +102254,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 573
+"line": 582
 },
 "CGTooltip_FadeOut": {
 "files": [
@@ -102270,7 +102272,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 603
+"line": 612
 },
 "CGTooltip_SetHyperlink": {
 "files": [
@@ -102325,7 +102327,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 618
+"line": 627
 },
 "CGTooltip_SetAction": {
 "files": [
@@ -102350,7 +102352,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 692
+"line": 701
 },
 "CGTooltip_SetPetAction": {
 "files": [
@@ -102372,7 +102374,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 710
+"line": 719
 },
 "CGTooltip_SetShapeshift": {
 "files": [
@@ -102394,7 +102396,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 714
+"line": 723
 },
 "CGTooltip_SetPossession": {
 "files": [
@@ -102416,7 +102418,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 718
+"line": 727
 },
 "CGTooltip_SetTracking": {
 "files": [
@@ -102438,7 +102440,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 722
+"line": 731
 },
 "CGTooltip_SetSpell": {
 "files": [
@@ -102462,7 +102464,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 727
+"line": 736
 },
 "CGTooltip_SetSpellByID": {
 "files": [
@@ -102484,7 +102486,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 739
+"line": 748
 },
 "CGTooltip_SetGlyph": {
 "files": [
@@ -102506,7 +102508,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 749
+"line": 758
 },
 "CGTooltip_SetInventoryItem": {
 "files": [
@@ -102528,7 +102530,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 753
+"line": 762
 },
 "CGTooltip_SetLootItem": {
 "files": [
@@ -102550,7 +102552,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 757
+"line": 766
 },
 "CGTooltip_SetQuestItem": {
 "files": [
@@ -102572,7 +102574,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 761
+"line": 770
 },
 "CGTooltip_SetQuestLogItem": {
 "files": [
@@ -102594,7 +102596,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 765
+"line": 774
 },
 "CGTooltip_SetTrainerService": {
 "files": [
@@ -102616,7 +102618,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 769
+"line": 778
 },
 "CGTooltip_SetTradeSkillItem": {
 "files": [
@@ -102638,7 +102640,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 773
+"line": 782
 },
 "CGTooltip_SetMerchantItem": {
 "files": [
@@ -102660,7 +102662,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 777
+"line": 786
 },
 "CGTooltip_SetMerchantCostItem": {
 "files": [
@@ -102682,7 +102684,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 781
+"line": 790
 },
 "CGTooltip_SetTradePlayerItem": {
 "files": [
@@ -102704,7 +102706,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 785
+"line": 794
 },
 "CGTooltip_SetTradeTargetItem": {
 "files": [
@@ -102726,7 +102728,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 789
+"line": 798
 },
 "CGTooltip_SetBagItem": {
 "files": [
@@ -102748,7 +102750,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 793
+"line": 802
 },
 "CGTooltip_SetUnit": {
 "files": [
@@ -102783,7 +102785,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 798
+"line": 807
 },
 "CGTooltip_SetUnitBuff": {
 "files": [
@@ -102805,7 +102807,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 839
+"line": 848
 },
 "CGTooltip_SetUnitDebuff": {
 "files": [
@@ -102827,7 +102829,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 843
+"line": 852
 },
 "CGTooltip_SetUnitAura": {
 "files": [
@@ -102849,7 +102851,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 847
+"line": 856
 },
 "CGTooltip_SetTalent": {
 "files": [
@@ -102871,7 +102873,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 851
+"line": 860
 },
 "CGTooltip_SetSendMailItem": {
 "files": [
@@ -102893,7 +102895,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 855
+"line": 864
 },
 "CGTooltip_SetInboxItem": {
 "files": [
@@ -102915,7 +102917,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 859
+"line": 868
 },
 "CGTooltip_SetAuctionSellItem": {
 "files": [
@@ -102937,7 +102939,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 863
+"line": 872
 },
 "CGTooltip_SetAuctionItem": {
 "files": [
@@ -102959,7 +102961,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 867
+"line": 876
 },
 "CGTooltip_NumLines": {
 "files": [
@@ -102977,7 +102979,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 871
+"line": 880
 },
 "CGTooltip_SetQuestRewardSpell": {
 "files": [
@@ -102999,7 +103001,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 877
+"line": 886
 },
 "CGTooltip_SetQuestLogRewardSpell": {
 "files": [
@@ -103021,7 +103023,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 881
+"line": 890
 },
 "CGTooltip_SetHyperlinkCompareItem": {
 "files": [
@@ -103043,7 +103045,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 885
+"line": 894
 },
 "CGTooltip_SetBuybackItem": {
 "files": [
@@ -103065,7 +103067,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 889
+"line": 898
 },
 "CGTooltip_SetLootRollItem": {
 "files": [
@@ -103087,7 +103089,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 893
+"line": 902
 },
 "CGTooltip_SetSocketedItem": {
 "files": [
@@ -103109,7 +103111,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 897
+"line": 906
 },
 "CGTooltip_SetSocketGem": {
 "files": [
@@ -103131,7 +103133,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 901
+"line": 910
 },
 "CGTooltip_SetExistingSocketGem": {
 "files": [
@@ -103153,7 +103155,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 905
+"line": 914
 },
 "CGTooltip_SetGuildBankItem": {
 "files": [
@@ -103175,7 +103177,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 909
+"line": 918
 },
 "CGTooltip_IsUnit": {
 "files": [
@@ -103202,7 +103204,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 913
+"line": 922
 },
 "CGTooltip_GetUnit": {
 "files": [
@@ -103232,7 +103234,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 929
+"line": 938
 },
 "CGTooltip_GetItem": {
 "files": [
@@ -103254,7 +103256,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 966
+"line": 975
 },
 "CGTooltip_GetSpell": {
 "files": [
@@ -103278,7 +103280,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 971
+"line": 980
 },
 "CGTooltip_SetTotem": {
 "files": [
@@ -103300,7 +103302,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 989
+"line": 998
 },
 "CGTooltip_SetCurrencyToken": {
 "files": [
@@ -103322,7 +103324,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 993
+"line": 1002
 },
 "CGTooltip_SetBackpackToken": {
 "files": [
@@ -103344,7 +103346,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 997
+"line": 1006
 },
 "CGTooltip_IsEquippedItem": {
 "files": [
@@ -103366,7 +103368,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1001
+"line": 1010
 },
 "CGTooltip_SetQuestLogSpecialItem": {
 "files": [
@@ -103388,7 +103390,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1005
+"line": 1014
 },
 "CGTooltip_SetEquipmentSet": {
 "files": [
@@ -103410,7 +103412,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1009
+"line": 1018
 },
 "CGTooltip_SetFrameStack": {
 "files": [
@@ -103432,7 +103434,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1013
+"line": 1022
 },
 "CGTooltip_SetLFGDungeonReward": {
 "files": [
@@ -103454,7 +103456,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1017
+"line": 1026
 },
 "CGTooltip_SetLFGCompletionReward": {
 "files": [
@@ -103476,7 +103478,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1021
+"line": 1030
 },
 "CGTradeInfo::GetPlayerTradeMoney": {
 "files": [
