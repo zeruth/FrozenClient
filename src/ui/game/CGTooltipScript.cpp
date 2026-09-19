@@ -33,6 +33,70 @@ int32_t TooltipMaxLines(CGTooltip* tooltip) {
     return TOOLTIP_MAX_LINES + static_cast<int32_t>(tooltip->m_extraLines.Count());
 }
 
+CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right);
+
+// The offsets the reference anchors new lines with, in UI units before the coordinate conversion:
+// each line sits two below the one above it, and the right column's right edge sits forty to the
+// right of its own line's left edge. Both read out of the image at 009e8d00 and 00a0ff3c.
+static const float TOOLTIP_LINE_ANCHOR_Y = -2.0f;
+static const float TOOLTIP_COLUMN_ANCHOR_X = 40.0f;
+
+// Makes the next line's pair of font strings and registers it, which is how a tooltip grows past
+// the eight lines GameTooltipTemplate.xml declares. The reference does this inside its shared
+// add-a-line helper (0061fec0); frozen keeps the template's lines and its own extras apart, so this
+// only ever appends to the extras.
+//
+// Anchoring is the reference's, and it is the same anchoring the template already uses for lines
+// 1..8: the left string hangs off the previous line's bottom-left, and the right string's RIGHT
+// edge attaches to its own line's LEFT edge.
+static bool TooltipCreateLine(CGTooltip* tooltip) {
+    auto name = tooltip->GetName();
+
+    if (!name) {
+        return false;
+    }
+
+    auto line = TOOLTIP_MAX_LINES + static_cast<int32_t>(tooltip->m_extraLines.Count()) + 1;
+    auto previousLeft = TooltipLine(tooltip, line - 1, false);
+
+    if (!previousLeft) {
+        return false;
+    }
+
+    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+    auto leftMem = SMemAlloc(sizeof(CSimpleFontString), __FILE__, __LINE__, 0x0);
+    auto left = new (leftMem) CSimpleFontString(tooltip, DRAWLAYER_ARTWORK, 1);
+
+    auto rightMem = SMemAlloc(sizeof(CSimpleFontString), __FILE__, __LINE__, 0x0);
+    auto rightString = new (rightMem) CSimpleFontString(tooltip, DRAWLAYER_ARTWORK, 1);
+
+    char path[260];
+
+    SStrPrintf(path, sizeof(path), "%sTextLeft%d", name, line);
+    left->SetName(path);
+    left->SetFontObject(previousLeft->GetFontObject());
+    left->SetPoint(
+        FRAMEPOINT_TOPLEFT, previousLeft, FRAMEPOINT_BOTTOMLEFT,
+        0.0f, NDCToDDCWidth(TOOLTIP_LINE_ANCHOR_Y / scale), 0
+    );
+
+    SStrPrintf(path, sizeof(path), "%sTextRight%d", name, line);
+    rightString->SetName(path);
+    rightString->SetFontObject(previousLeft->GetFontObject());
+    rightString->SetPoint(
+        FRAMEPOINT_RIGHT, left, FRAMEPOINT_LEFT,
+        NDCToDDCWidth(TOOLTIP_COLUMN_ANCHOR_X / scale), 0.0f, 0
+    );
+
+    CGTooltip::TOOLTIPLINE pair;
+    pair.left = left;
+    pair.right = rightString;
+    tooltip->m_extraLines.Add(1, &pair);
+
+    return true;
+}
+
 CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right) {
     if (line < 1) {
         return nullptr;
@@ -42,6 +106,12 @@ CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right) {
     // order they arrived.
     if (line > TOOLTIP_MAX_LINES) {
         uint32_t extra = static_cast<uint32_t>(line - TOOLTIP_MAX_LINES - 1);
+
+        // One past the end is the line being added right now, so make it. Anything further is a
+        // caller reaching for a line that was never added, which still returns null.
+        if (extra == tooltip->m_extraLines.Count() && !TooltipCreateLine(tooltip)) {
+            return nullptr;
+        }
 
         if (extra >= tooltip->m_extraLines.Count()) {
             return nullptr;

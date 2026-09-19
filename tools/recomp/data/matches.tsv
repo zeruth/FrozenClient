@@ -1375,6 +1375,7 @@ addr	how	frozen	evidence
 0061ef10	table	CGTooltip_GetItem	binding "GetItem" in CGTooltipMethods ~ table 00ad2ae0
 0061f0f0	annotated	CGTooltip_GetSpell	tag in src/ui/game/CGTooltipScript.cpp
 0061f1f0	table	CGTooltip_IsEquippedItem	binding "IsEquippedItem" in CGTooltipMethods ~ table 00ad2ae0
+0061fb30	string	TooltipCreateLine	score 1.00 shared %sTextLeft%d; %sTextRight%d
 006201f0	annotated	CGTooltip_AddFontStrings	tag in src/ui/game/CGTooltipScript.cpp
 00620340	table	CGTooltip_AddLine	binding "AddLine" in CGTooltipMethods ~ table 00ad2ae0
 006203f0	table	CGTooltip_AddDoubleLine	binding "AddDoubleLine" in CGTooltipMethods ~ table 00ad2ae0

@@ -21542,7 +21542,7 @@
   "branchRatio": 0.071,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.417,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -21857,6 +21857,22 @@
   "module": "Tooltip.cpp",
   "refSize": 177,
   "status": "stub"
+ },
+ "0061fb30": {
+  "branchRatio": 0.087,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/ui/game/CGTooltipScript.cpp",
+   "src/ui/game/cgtooltipscript.cpp"
+  ],
+  "frozen": "TooltipCreateLine",
+  "frozenSize": 640,
+  "how": "string",
+  "module": "Tooltip.cpp",
+  "refSize": 760,
+  "status": "ported"
  },
  "006201f0": {
   "branchRatio": 0.444,
