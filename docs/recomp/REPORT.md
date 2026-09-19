@@ -1,25 +1,25 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:01 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 27162 | 5.41M |
-| mapped to a whoa function | 1657 (+10) (6.1%) | 375.3k (6.8%) |
-| &nbsp;&nbsp;ported | 1172 (+10) | 253.7k |
+| reference (non-thunk) | 27161 | 5.41M |
+| mapped to a whoa function | 1658 (+1) (6.1%) | 375.7k (6.8%) |
+| &nbsp;&nbsp;ported | 1173 (+1) | 254.1k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **329 (+9) (1.2%)** | **45.7k (0.8%)** |
-| unmapped | 25505 | 5.04M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 190 (+4) (3.4%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **329 (=) (1.2%)** | **45.7k (0.8%)** |
+| unmapped | 25503 | 5.04M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 191 (+1) (3.5%) | |
 | whoa functions (src/, from PDB + source) | 10653, stubs 895 | |
 
-Match evidence: annotated 161, callgraph 71, callorder 87, cvar 30, handler 27, override 88, string 264, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 162, callgraph 71, callorder 87, cvar 30, handler 27, override 88, string 264, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 22:59 -- mapped 1647, ported 1162, stub 463, spine mapped 186.
+Previous run: 2026-09-18 23:01 -- mapped 1657, ported 1172, stub 463, spine mapped 190.
 
 ## Lua API coverage (binding tables)
 
@@ -195,7 +195,7 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1261 | 274.2k | 2 (0.2%) | 0.2% | 0 | 0 | 81 |
 | OggDecompress.cpp | 1504 | 260.7k | 9 (0.6%) | 0.8% | 0 | 0 | 476 |
-| ComSatSoundIOSoundEngine.cpp | 976 | 190.0k | 52 (5.3%) | 0.2% | 0 | 0 | 108 |
+| ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 52 (5.3%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 3 (0.4%) | 0.5% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 8 (1.1%) | 4.1% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 0 (0.0%) | 0.0% | 0 | 0 | 68 |
@@ -284,7 +284,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | QuestTextParser.cpp | 87 | 16.5k | 5 (5.7%) | 1.6% | 0 | 0 | 33 |
 | Item_C.cpp | 107 | 16.4k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
 | QuestLog.cpp | 80 | 16.4k | 4 (5.0%) | 4.7% | 2 | 0 | 2 |
-| CGxDevice.cpp | 54 | 16.2k | 3 (5.6%) | 1.6% | 0 | 0 | 9 |
+| CGxDevice.cpp | 54 | 16.2k | 4 (7.4%) | 3.8% | 0 | 0 | 9 |
 | tga.cpp | 82 | 16.2k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | AuctionHouse.cpp | 49 | 16.1k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | fmod_codec_dls.cpp | 36 | 16.0k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -446,12 +446,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0072a000 | Unit_C.cpp | 651 | 69 |  | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
-| 0088ce30 | ComSatSoundIOSoundEngine.cpp? | 498 | 83 |  |  |
 | 008d67d0 | fmod_systemi.cpp | 7647 | 4 |  | ..\..\src\fmod_systemi.cpp, TITLE |
 | 00621070 | Tooltip.cpp | 5010 | 6 |  |  - %s, %s - %s |
 | 004cfd20 | SoundInterface2Internal.cpp? | 101 | 345 |  |  |
 | 005fbbc0 | InputControl.cpp | 588 | 53 |  | .\InputControl.cpp |
-| 00685fb0 | CGxDevice.cpp | 358 | 87 |  |  |
 | 00729740 | Unit_C.cpp | 815 | 37 |  |  |
 | 00464580 | TextureBlob.cpp | 182 | 161 |  | .\TextureBlob.cpp |
 | 007413f0 | Unit_C.cpp | 695 | 41 |  |  |
@@ -475,6 +473,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | 006b0b50 | blp.cpp? | 41 | 465 |  |  |
 | 008cfda0 | fmod_memory.cpp | 388 | 48 |  | ..\..\src\fmod_memory.cpp |
 | 00802f80 | Spell_C.cpp | 1396 | 12 |  | .\Spell_C.cpp |
+| 004922f0 | CSimpleFrame.cpp | 951 | 18 |  |  |
+| 00603330 | InputControl.cpp? | 1379 | 12 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 
 ## Next to port: unmapped, anywhere
 
@@ -501,13 +501,11 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0093cd10 | fmod_output_dsound.cpp? | 2731 | 15 |  |  |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
-| 0088ce30 | ComSatSoundIOSoundEngine.cpp? | 498 | 83 |  |  |
 | 00546310 | SpellBookFrame.cpp? | 1486 | 25 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 008d67d0 | fmod_systemi.cpp | 7647 | 4 |  | ..\..\src\fmod_systemi.cpp, TITLE |
 | 00621070 | Tooltip.cpp | 5010 | 6 |  |  - %s, %s - %s |
 | 004cfd20 | SoundInterface2Internal.cpp? | 101 | 345 |  |  |
 | 005fbbc0 | InputControl.cpp | 588 | 53 |  | .\InputControl.cpp |
-| 00685fb0 | CGxDevice.cpp | 358 | 87 |  |  |
 | 00729740 | Unit_C.cpp | 815 | 37 |  |  |
 | 009411a0 | fmod_sample_software.cpp? | 7717 | 3 |  |  |
 | 00464580 | TextureBlob.cpp | 182 | 161 |  | .\TextureBlob.cpp |
@@ -524,6 +522,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | 008a65e0 | ComSatSoundIOSoundEngine.cpp? | 6621 | 3 |  |  |
 | 009567a0 | asiolist.cpp? | 374 | 67 |  |  |
 | 00681f60 | DBCache.cpp? | 452 | 53 |  | "%s", %s = %g, "%s", %s = %g, %s = %g |
+| 0093f9b0 | fmod_sample_software.cpp? | 6100 | 3 |  |  |
+| 00492770 | CSimpleFrame.cpp | 1133 | 20 |  |  |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 10:42 | 1429 (5.3%) | 197 (0.7%) | 453 | 139/5530 | 936/2512 | 448 |
 | 2026-09-18 17:02 | 1475 (5.4%) | 225 (0.8%) | 453 | 155/5530 | 936/2512 | 448 |
 | 2026-09-18 17:06 | 1482 (5.5%) | 228 (0.8%) | 454 | 162/5530 | 936/2512 | 448 |
 | 2026-09-18 17:20 | 1490 (5.5%) | 229 (0.8%) | 453 | 167/5530 | 936/2512 | 448 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 22:44 | 1654 (6.1%) | 327 (1.2%) | 463 | 189/5530 | 936/2512 | 446 |
 | 2026-09-18 22:59 | 1647 (6.1%) | 320 (1.2%) | 463 | 186/5530 | 936/2512 | 446 |
 | 2026-09-18 23:01 | 1657 (6.1%) | 329 (1.2%) | 463 | 190/5531 | 936/2512 | 446 |
+| 2026-09-18 23:05 | 1658 (6.1%) | 329 (1.2%) | 463 | 191/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

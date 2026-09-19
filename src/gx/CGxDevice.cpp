@@ -1063,6 +1063,7 @@ void CGxDevice::RsSetAlphaRef() {
     this->RsSet(GxRs_AlphaRef, CGxDevice::s_alphaRef[blendingMode]);
 }
 
+// ref: FUN_00685fb0
 void CGxDevice::RsPop() {
     auto topOfStack = this->m_stackOffsets[this->m_stackOffsets.Count() - 1];
 

@@ -16561,6 +16561,22 @@
   "whoa": "CGxDevice::RsSet",
   "whoaSize": 274
  },
+ "00685fb0": {
+  "branchRatio": 0.214,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 358,
+  "status": "ported",
+  "whoa": "CGxDevice::RsPop",
+  "whoaSize": 414
+ },
  "006876d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

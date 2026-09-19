@@ -148,5 +148,8 @@
   "00681be0": { "whoa": "CGxTexFlags::CGxTexFlags", "status": "ported", "note": "bit-packs filter(3)/wrapU/wrapV/forceMip/generateMips/renderTarget, anisotropy clamped to Caps().m_maxTexAnisotropy; header-inline in whoa so only an override can link it" },
 
   "00832640": { "whoa": "CM2Model::~CM2Model", "status": "ported", "note": "498 bytes, recursive (child models), frees through ObjectFree; the destructor CM2Model::Release calls before ObjectFree" },
-  "004d3100": { "whoa": "ObjectFree", "status": "ported", "note": "ObjectFree(heapId, ptr): the release half of CM2Model::Release, 54 callers" }
+  "004d3100": { "whoa": "ObjectFree", "status": "ported", "note": "ObjectFree(heapId, ptr): the release half of CM2Model::Release, 54 callers" },
+
+  "0088ce30": { "status": "excluded", "note": "CRT floor (libm, checks MXCSR/FPU control word, ___libm_error_support); 83 callers" },
+  "008d67d0": { "status": "vendor", "note": "fmod_systemi.cpp: FMOD System internal, 7647 bytes" }
 }
