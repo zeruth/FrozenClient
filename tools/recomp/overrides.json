@@ -1077,5 +1077,15 @@
   "00619330": {
     "status": "unlinked",
     "note": "The portrait texture setter behind SetPortraitToTexture. Blocked on a subsystem, not a call: it looks a path up in a hashed portrait-texture cache (FUN_00617c50), and on a miss hashes the path, lazily builds the table on the DAT_00c5ce7c sentinel, and inserts a new entry into buckets at DAT_00c5ce74 with a 12-byte stride. Frozen has no portrait cache, so the binding around it is portable but its one piece of real work is not."
+  },
+  "00514ba0": {
+    "frozen": "Script_GetMouseButtonName",
+    "status": "stub",
+    "note": "Two of its three paths are trivial -- a string argument is returned unchanged via lua_settop(L,1), anything else is nil -- but the number path converts a 1-based button index to a name through FUN_005eec20 and that conversion is unidentified. Frozen's Input::GetButtonName takes a BITMASK (0x1 LeftButton, 0x2 MiddleButton, 0x4 RightButton), so the obvious 1 << (index-1) would make button 2 the middle button, while the Lua convention has button 2 as the right button. Implementing two thirds of it would leave the interesting third silently wrong."
+  },
+  "0050f950": {
+    "frozen": "Script_GetMouseButtonClicked",
+    "status": "stub",
+    "note": "Reads the clicked button name from a field at +0x1234 of the global at DAT_00b499a8, which is the current script-invocation context object. Frozen has no equivalent context, and the reference treats a null one as fatal rather than returning nil."
   }
 }

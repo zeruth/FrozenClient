@@ -654,7 +654,7 @@ addr	how	frozen	evidence
 0050f8f0	order	Script_SetLayoutMode	binding table name Script_SetLayoutMode, in definition order in src/ui/game/GameScript.cpp
 0050f950	order	Script_GetMouseButtonClicked	binding table name Script_GetMouseButtonClicked, in definition order in src/ui/game/GameScript.cpp
 0050f990	order	Script_SetConsoleKey	binding table name Script_SetConsoleKey, in definition order in src/ui/game/GameScript.cpp
-0050fe80	order	Script_IsDebugBuild	binding table name Script_IsDebugBuild, in definition order in src/ui/game/GameScript.cpp
+0050fe80	annotated	Script_IsDebugBuild	tag in src/ui/game/GameScript.cpp
 0050ff30	order	Script_RegisterCVar	binding table name Script_RegisterCVar, in definition order in src/ui/game/GameScript.cpp
 0050ff50	order	Script_GetCVarInfo	binding table name Script_GetCVarInfo, in definition order in src/ui/game/GameScript.cpp
 005101d0	annotated	Script_SetWaterDetail	tag in src/ui/game/GameScript.cpp
@@ -669,6 +669,7 @@ addr	how	frozen	evidence
 00510ac0	table	Script_GetNetStats	binding "GetNetStats" in s_ScriptFunctions ~ table 00ac8460
 00510bb0	table	Script_AccessDenied	binding "ReadFile" in s_SystemFunctions ~ table 00ad2184
 00510c60	annotated	Script_GetCoinText	tag in src/ui/game/GameScript.cpp
+00510e00	annotated	Script_GetRealmName	tag in src/ui/game/GameScript.cpp
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer

@@ -10450,20 +10450,20 @@
   "status": "stub"
  },
  "0050fe80": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_IsDebugBuild",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 21,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 24,
-  "status": "stub"
+  "status": "ported"
  },
  "0050ff30": {
   "branchRatio": 0.0,
@@ -10689,6 +10689,22 @@
   "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 150,
+  "status": "ported"
+ },
+ "00510e00": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "Script_GetRealmName",
+  "frozenSize": 36,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 28,
   "status": "ported"
  },
  "00511fe0": {

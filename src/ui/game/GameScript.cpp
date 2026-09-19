@@ -241,8 +241,13 @@ int32_t Script_GetDebugStats(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0050fe80
+// A constant false in the shipped client, not a check: the reference pushes the boolean 0 and
+// returns, with nothing behind it to consult.
 int32_t Script_IsDebugBuild(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushboolean(L, 0);
+
+    return 1;
 }
 
 int32_t Script_RegisterCVar(lua_State* L) {
@@ -1403,8 +1408,11 @@ int32_t Script_GetMouseFocus(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00510e00
 int32_t Script_GetRealmName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushstring(L, ClientServices::GetSelectedRealmName());
+
+    return 1;
 }
 
 int32_t Script_GetItemQualityColor(lua_State* L) {
