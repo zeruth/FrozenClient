@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs whoa
 
-Generated 2026-09-18 23:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-18 23:31 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above whoa definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a whoa function | 1817 (+3) (6.7%) | 417.0k (7.5%) |
-| &nbsp;&nbsp;ported | 1332 (+3) | 295.3k |
+| mapped to a whoa function | 1824 (+7) (6.7%) | 417.5k (7.5%) |
+| &nbsp;&nbsp;ported | 1339 (+7) | 295.9k |
 | &nbsp;&nbsp;stub (WHOA_UNIMPLEMENTED) | 463 (=) | 93.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **430 (+1) (1.6%)** | **55.2k (1.0%)** |
-| unmapped | 25344 | 5.00M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 252 (+2) (4.6%) | |
-| whoa functions (src/, from PDB + source) | 11294, stubs 895 | |
+| **faithful** (linked, not stub, call order >= 80%) | **431 (+1) (1.6%)** | **55.2k (1.0%)** |
+| unmapped | 25337 | 5.00M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 259 (+7) (4.7%) | |
+| whoa functions (src/, from PDB + source) | 11300, stubs 895 | |
 
-Match evidence: annotated 162, callgraph 107, callorder 117, cvar 30, handler 27, override 96, string 349, table 929. Module anchors: 1479 assert strings.
+Match evidence: annotated 165, callgraph 110, callorder 118, cvar 30, handler 27, override 96, string 349, table 929. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-18 23:26 -- mapped 1814, ported 1329, stub 463, spine mapped 250.
+Previous run: 2026-09-18 23:27 -- mapped 1817, ported 1332, stub 463, spine mapped 252.
 
 ## Lua API coverage (binding tables)
 
@@ -228,15 +228,15 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
-| VehicleCamera_C.cpp | 95 | 40.7k | 0 (0.0%) | 0.0% | 0 | 0 | 39 |
+| VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
 | TextureCache.cpp | 252 | 38.9k | 7 (2.8%) | 5.5% | 0 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 2 (1.2%) | 0.2% | 0 | 0 | 23 |
 | framing.c | 125 | 38.8k | 27 (21.6%) | 51.7% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 9 (3.8%) | 3.1% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 1 (0.4%) | 0.3% | 0 | 0 | 59 |
-| GxuFontMiscClasses.cpp | 156 | 37.5k | 1 (0.6%) | 0.2% | 0 | 0 | 86 |
+| GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 67 (27.6%) | 29.1% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 68 (28.0%) | 29.1% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 58 (24.0%) | 32.9% | 21 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 10 (4.7%) | 9.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 2 (1.1%) | 0.2% | 0 | 0 | 0 |
@@ -271,10 +271,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 5 (5.3%) | 9.2% | 0 | 0 | 0 |
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 31 (24.2%) | 28.0% | 5 | 1 | 2 |
-| CheckExecutableSignature.cpp | 95 | 19.5k | 1 (1.1%) | 1.1% | 0 | 0 | 29 |
+| CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| Profile.cpp | 128 | 19.1k | 1 (0.8%) | 2.3% | 0 | 0 | 28 |
+| Profile.cpp | 128 | 19.1k | 2 (1.6%) | 2.5% | 0 | 0 | 28 |
 | DressUpModelFrame.cpp | 116 | 18.8k | 10 (8.6%) | 12.8% | 0 | 0 | 7 |
 | AddOns.cpp | 101 | 18.1k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | KnowledgeBase.cpp | 119 | 17.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -318,7 +318,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
-| ConsoleClient.cpp | 52 | 10.3k | 5 (9.6%) | 10.9% | 0 | 0 | 6 |
+| ConsoleClient.cpp | 52 | 10.3k | 7 (13.5%) | 12.8% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
 | RaidInfo.cpp | 33 | 10.1k | 12 (36.4%) | 32.1% | 9 | 0 | 1 |
@@ -790,7 +790,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-18 17:36 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:42 | 1498 (5.5%) | 238 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:43 | 1498 (5.5%) | 250 (0.9%) | 453 | 168/5530 | 936/2512 | 448 |
 | 2026-09-18 17:49 | 1499 (5.5%) | 243 (0.9%) | 451 | 168/5530 | 936/2512 | 446 |
@@ -815,6 +814,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-18 23:23 | 1668 (6.1%) | 336 (1.2%) | 463 | 203/5530 | 936/2512 | 446 |
 | 2026-09-18 23:26 | 1814 (6.7%) | 429 (1.6%) | 463 | 250/5530 | 936/2512 | 446 |
 | 2026-09-18 23:27 | 1817 (6.7%) | 430 (1.6%) | 463 | 252/5530 | 936/2512 | 446 |
+| 2026-09-18 23:31 | 1824 (6.7%) | 431 (1.6%) | 463 | 259/5530 | 936/2512 | 446 |
 
 ## How to move a row
 

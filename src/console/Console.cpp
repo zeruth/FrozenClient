@@ -39,10 +39,6 @@ void ConsoleSetResizeState(CONSOLERESIZESTATE state) {
     s_consoleResizeState = state;
 }
 
-void ConsoleWrite(const char* text, COLOR_T color) {
-    // TODO
-}
-
 // ref: FUN_00765360
 void ConsoleWriteA(const char* format, COLOR_T color, ...) {
     char buffer[1024];

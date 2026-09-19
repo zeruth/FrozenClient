@@ -4693,6 +4693,22 @@
   "whoa": "AsyncFileReadAllocObject",
   "whoaSize": 401
  },
+ "004bd9d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/font/TextBlock.cpp",
+   "src/gx/font/textblock.cpp"
+  ],
+  "how": "callgraph",
+  "module": "Profile.cpp",
+  "refSize": 26,
+  "status": "ported",
+  "whoa": "TextBlockGetFontPtr",
+  "whoaSize": 5
+ },
  "004be9c0": {
   "branchRatio": 0.5,
   "constOverlap": 0.1,
@@ -17141,11 +17157,27 @@
   "whoa": "Script_Stub_GetFriendInfo",
   "whoaSize": 60
  },
+ "006bdfc0": {
+  "branchRatio": 0.25,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/GxuFont.cpp",
+   "src/gx/font/gxufont.cpp"
+  ],
+  "how": "callgraph",
+  "module": "CheckExecutableSignature.cpp",
+  "refSize": 84,
+  "status": "ported",
+  "whoa": "GxuFontDestroyString",
+  "whoaSize": 99
+ },
  "006be2b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/gx/font/GxuFont.cpp",
    "src/gx/font/gxufont.cpp"
@@ -17188,6 +17220,22 @@
   "status": "ported",
   "whoa": "Sub6C2280",
   "whoaSize": 88
+ },
+ "006c75e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/font/CGxString.cpp",
+   "src/gx/font/cgxstring.cpp"
+  ],
+  "how": "callgraph",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 81,
+  "status": "ported",
+  "whoa": "CGxString::Recycle",
+  "whoaSize": 167
  },
  "006ca050": {
   "branchRatio": 0.0,
@@ -17429,6 +17477,54 @@
   "whoa": "InventoryResultToError",
   "whoaSize": 0
  },
+ "00763680": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Screen.cpp",
+   "src/console/screen.cpp"
+  ],
+  "how": "annotated",
+  "module": "VehicleCamera_C.cpp",
+  "refSize": 172,
+  "status": "ported",
+  "whoa": "GenerateNodeString",
+  "whoaSize": 0
+ },
+ "00763d80": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Screen.cpp",
+   "src/console/screen.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleClient.cpp",
+  "refSize": 98,
+  "status": "ported",
+  "whoa": "CONSOLELINE::~CONSOLELINE",
+  "whoaSize": 0
+ },
+ "007644b0": {
+  "branchRatio": 0.333,
+  "constOverlap": 1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Screen.cpp",
+   "src/console/screen.cpp"
+  ],
+  "how": "annotated",
+  "module": "ConsoleClient.cpp",
+  "refSize": 108,
+  "status": "ported",
+  "whoa": "ReserveLine",
+  "whoaSize": 0
+ },
  "00764f30": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
@@ -17446,20 +17542,20 @@
   "whoaSize": 305
  },
  "00765270": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.727,
   "files": [
-   "src/console/Console.cpp",
-   "src/console/console.cpp"
+   "src/console/Screen.cpp",
+   "src/console/screen.cpp"
   ],
   "how": "override",
   "module": "ConsoleClient.cpp",
   "refSize": 233,
   "status": "ported",
   "whoa": "ConsoleWrite",
-  "whoaSize": 3
+  "whoaSize": 999
  },
  "00765360": {
   "branchRatio": 0.0,
@@ -17475,7 +17571,7 @@
   "refSize": 77,
   "status": "ported",
   "whoa": "ConsoleWriteA",
-  "whoaSize": 89
+  "whoaSize": 106
  },
  "007658a0": {
   "branchRatio": 0.429,
@@ -17796,6 +17892,22 @@
   "status": "ported",
   "whoa": "ConsoleCommandInitialize",
   "whoaSize": 247
+ },
+ "00769220": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/Device.cpp",
+   "src/console/device.cpp"
+  ],
+  "how": "callorder",
+  "module": "ConsoleVar.cpp",
+  "refSize": 12,
+  "status": "ported",
+  "whoa": "ConsoleDeviceExists",
+  "whoaSize": 13
  },
  "00769240": {
   "branchRatio": 0.6,

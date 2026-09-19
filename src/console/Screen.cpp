@@ -11,10 +11,18 @@
 #include "gx/RenderState.hpp"
 #include "gx/Screen.hpp"
 #include <storm/String.hpp>
+#include <storm/Memory.hpp>
+#include <storm/thread/SCritSect.hpp>
+#include "console/Device.hpp"
+#include <new>
 #include <tempest/Rect.hpp>
 #include <algorithm>
 
 static CGxStringBatch* s_batch;
+static SCritSect s_critsect;
+static TSList<CONSOLELINE, TSGetLink<CONSOLELINE>> s_linelist;
+static uint32_t s_NumLines;
+static CONSOLELINE* s_scrollLine;  // the line the view is scrolled to (reference DAT_00ca1720)
 static uint32_t s_baseTextFlags;
 static float s_caretpixwidth;
 static float s_caretpixheight;
@@ -74,6 +82,7 @@ static void SetInputString(char* text) {
     }
 }
 
+// ref: FUN_00763d80
 CONSOLELINE::~CONSOLELINE() {
     if (this->buffer) {
         STORM_FREE(this->buffer);
@@ -82,6 +91,94 @@ CONSOLELINE::~CONSOLELINE() {
     if (this->fontPointer) {
         GxuFontDestroyString(this->fontPointer);
     }
+}
+
+// ref: FUN_00763680
+static void GenerateNodeString(CONSOLELINE* node) {
+    auto font = TextBlockGetFontPtr(s_textFont);
+
+    if (!font || !node || !node->buffer || !*node->buffer) {
+        return;
+    }
+
+    if (node->fontPointer) {
+        GxuFontDestroyString(node->fontPointer);
+    }
+
+    C3Vector pos = { 0.0f, 0.0f, 1.0f };
+
+    GxuFontCreateString(
+        font,
+        node->buffer,
+        s_fontHeight,
+        pos,
+        1.0f,
+        s_fontHeight,
+        0.0f,
+        node->fontPointer,
+        EGxFontVJusts::GxVJ_Middle,
+        EGxFontHJusts::GxHJ_Left,
+        s_baseTextFlags,
+        s_colorArray[node->colorType],
+        s_charSpacing,
+        1.0f
+    );
+}
+
+// ref: FUN_007644b0
+// Keeps the buffer at 256 lines: past that the oldest line goes, and the scroll position moves
+// off it first.
+static void ReserveLine() {
+    if (s_NumLines > 256) {
+        auto node = s_linelist.Tail();
+
+        if (node == s_scrollLine) {
+            s_scrollLine = s_linelist.Link(node)->Prev();
+        }
+
+        node->~CONSOLELINE();
+        SMemFree(node, __FILE__, __LINE__, 0);
+
+        s_NumLines--;
+    }
+}
+
+// ref: FUN_00765270
+void ConsoleWrite(const char* text, COLOR_T color) {
+    if (!text || !*text) {
+        return;
+    }
+
+    if (!ConsoleDeviceExists() || !s_textFont) {
+        return;
+    }
+
+    s_critsect.Enter();
+
+    auto m = SMemAlloc(sizeof(CONSOLELINE), __FILE__, __LINE__, 0x8);
+    auto node = new (m) CONSOLELINE();
+
+    // The input line, when there is one, stays at the head; new output goes right behind it
+    auto head = s_linelist.Head();
+    if (head && head->inputpos) {
+        s_linelist.LinkNode(node, STORM_LIST_LINK_AFTER, head);
+    } else {
+        s_linelist.LinkToHead(node);
+    }
+
+    uint32_t len = SStrLen(text) + 1;
+    node->chars = len;
+    node->charsalloc = len;
+    node->buffer = static_cast<char*>(SMemAlloc(len, __FILE__, __LINE__, 0x0));
+    SStrCopy(node->buffer, text, STORM_MAX_STR);
+    node->colorType = color;
+
+    GenerateNodeString(node);
+
+    s_NumLines++;
+    ReserveLine();
+
+    s_critsect.Leave();
 }
 
 void DrawBackground() {

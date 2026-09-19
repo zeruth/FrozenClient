@@ -42246,18 +42246,6 @@
 "lines": 3,
 "refs": []
 },
-"ConsoleWrite": {
-"files": [
-"src/console/console.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 3,
-"refs": []
-},
 "ConsoleWriteA": {
 "files": [
 "src/console/console.cpp"
@@ -43869,6 +43857,32 @@
 "lines": 13,
 "refs": []
 },
+"TSLink::Prev": {
+"files": [
+"lib/squall/storm/list/tslink.hpp"
+],
+"callseq": [
+"TSLink::Next"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": []
+},
+"TSList::Tail": {
+"files": [
+"lib/squall/storm/list/tslist.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": []
+},
 "SetInputString": {
 "files": [
 "src/console/screen.cpp"
@@ -43886,7 +43900,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 32,
+"lines": 30,
 "refs": []
 },
 "CONSOLELINE::~CONSOLELINE": {
@@ -43903,7 +43917,82 @@
 "consts": [],
 "branches": 2,
 "stub": false,
-"lines": 11,
+"lines": 9,
+"refs": []
+},
+"GenerateNodeString": {
+"files": [
+"src/console/screen.cpp"
+],
+"callseq": [
+"TextBlockGetFontPtr",
+"GxuFontDestroyString",
+"C3Vector::C3Vector",
+"GxuFontCreateString"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 2,
+"stub": false,
+"lines": 30,
+"refs": []
+},
+"ReserveLine": {
+"files": [
+"src/console/screen.cpp"
+],
+"callseq": [
+"TSList<CONSOLELINE,TSGetLink<CONSOLELINE>>::Tail",
+"TSList<CONSOLELINE,TSGetLink<CONSOLELINE>>::Link",
+"TSLink<CONSOLELINE>::Prev",
+"CONSOLELINE::~CONSOLELINE",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\console\\screen.cpp"
+],
+"consts": [
+"0",
+"256"
+],
+"branches": 2,
+"stub": false,
+"lines": 14,
+"refs": []
+},
+"ConsoleWrite": {
+"files": [
+"src/console/screen.cpp"
+],
+"callseq": [
+"ConsoleDeviceExists",
+"SCritSect::Enter",
+"SMemAlloc",
+"CONSOLELINE::CONSOLELINE",
+"TSList<CONSOLELINE,TSGetLink<CONSOLELINE>>::Head",
+"TSList<CONSOLELINE,TSGetLink<CONSOLELINE>>::LinkNode",
+"TSList<CONSOLELINE,TSGetLink<CONSOLELINE>>::LinkToHead",
+"SStrLen",
+"SMemAlloc",
+"SStrCopy",
+"GenerateNodeString",
+"ReserveLine",
+"SCritSect::Leave"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\console\\screen.cpp"
+],
+"consts": [
+"0x0",
+"0x8",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 36,
 "refs": []
 },
 "DrawBackground": {
@@ -43948,7 +44037,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "PaintBackground": {
@@ -43965,7 +44054,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 9,
 "refs": []
 },
 "PaintText": {
@@ -43977,7 +44066,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": []
 },
 "ResetHighlight": {
@@ -43993,7 +44082,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 4,
 "refs": []
 },
 "SetHighlightState": {
@@ -44005,7 +44094,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": []
 },
 "PasteInInputLine": {
@@ -44017,7 +44106,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": []
 },
 "ConsoleScreenAnimate": {
@@ -44043,7 +44132,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 25,
+"lines": 22,
 "refs": []
 },
 "ConsoleScreenInitialize": {
@@ -44075,7 +44164,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 20,
+"lines": 25,
 "refs": []
 },
 "WowClientDB::Load": {
@@ -62889,32 +62978,6 @@
 "branches": 4,
 "stub": false,
 "lines": 21,
-"refs": []
-},
-"TSLink::Prev": {
-"files": [
-"lib/squall/storm/list/tslink.hpp"
-],
-"callseq": [
-"TSLink::Next"
-],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 3,
-"refs": []
-},
-"TSList::Tail": {
-"files": [
-"lib/squall/storm/list/tslist.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 2,
 "refs": []
 },
 "GLYPHBITMAPDATA::~GLYPHBITMAPDATA": {

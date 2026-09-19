@@ -293,6 +293,7 @@ addr	how	whoa	evidence
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8c80	string	TextureCreate	unique "UniqueTexture"
 004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
+004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
@@ -1076,9 +1077,11 @@ addr	how	whoa	evidence
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
 006b1a70	annotated	ClientConnection::DeleteCharacter	tag in src/net/connection/ClientConnection.cpp
 006b3450	string	Script_Stub_GetFriendInfo	score 0.50 shared GetFriendInfo
+006bdfc0	callgraph	GxuFontDestroyString	only unmatched callee of 00763d80=CONSOLELINE::~CONSOLELINE
 006be2b0	string	GxuFontCreateString	unique "vertJustification < GxVJ_Last"
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
+006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
@@ -1094,6 +1097,9 @@ addr	how	whoa	evidence
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00753bb0	annotated	InventoryResultToError	tag in src/client/ClientHandlers.cpp
+00763680	annotated	GenerateNodeString	tag in src/console/Screen.cpp
+00763d80	annotated	CONSOLELINE::~CONSOLELINE	tag in src/console/Screen.cpp
+007644b0	annotated	ReserveLine	tag in src/console/Screen.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
@@ -1117,6 +1123,7 @@ addr	how	whoa	evidence
 00768900	annotated	ConsoleCommandParse	tag in src/console/Command.cpp
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
+00769220	callorder	ConsoleDeviceExists	same slot between linked calls in 00765270=ConsoleWrite
 00769240	annotated	CVGxColorBitsCallback	tag in src/console/Device.cpp
 007692d0	annotated	CVGxDepthBitsCallback	tag in src/console/Device.cpp
 00769360	annotated	CVGxTripleBufferCallback	tag in src/console/Device.cpp
@@ -1147,7 +1154,7 @@ addr	how	whoa	evidence
 0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
 0076dd20	callorder	NameNeedsDeclension	same slot between linked calls in 004d9bd0=CGlueMgr::EnterWorld
 0076e540	override	SMemAlloc	
-0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
+0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete, 007644b0=ReserveLine
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	
@@ -1174,7 +1181,7 @@ addr	how	whoa	evidence
 00772aa0	override	SErrDisplayAppFatal	
 00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
 00774640	override	SCritSect::Enter	
-00774650	callorder	SCritSect::Leave	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
+00774650	callorder	SCritSect::Leave	same slot between linked calls in 00765270=ConsoleWrite, 0087ee60=SESound::LoadDiskSound
 00774740	callorder	SThread::Create	same slot between linked calls in 00469320=WowConnectionNet::Start
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
