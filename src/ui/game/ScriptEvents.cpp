@@ -679,48 +679,49 @@ int32_t Script_UnitHealthMax(lua_State* L) {
     return 1;
 }
 
+// Defined below; the mana names are aliases for these.
+int32_t Script_UnitPower(lua_State* L);
+int32_t Script_UnitPowerMax(lua_State* L);
+
+// ref: FUN_0060ed40
+// The reference registers one function under both names, so UnitMana is UnitPower -- including its
+// usage string. It is NOT "the mana field": asking a warrior through this name answers with rage,
+// because the underlying function reads whichever power the unit actually uses.
 int32_t Script_UnitMana(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitMana(\"unit\")");
-        return 0;
-    }
-
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
-
-    lua_pushnumber(L, data ? data->power[0] : 0);
-
-    return 1;
+    return Script_UnitPower(L);
 }
 
+// ref: FUN_0060ef40
+// One function under both names again; see Script_UnitMana.
 int32_t Script_UnitManaMax(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitManaMax(\"unit\")");
-        return 0;
-    }
-
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
-
-    lua_pushnumber(L, data ? data->maxPower[0] : 0);
-
-    return 1;
+    return Script_UnitPowerMax(L);
 }
 
+// ref: FUN_0060ed40
 int32_t Script_UnitPower(lua_State* L) {
     if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitPower(\"unit\")");
+        luaL_error(L, "Usage: UnitPower(\"unit\"[, type])");
         return 0;
+    }
+
+    // 7 is the reference's sentinel for "the power this unit actually uses".
+    int32_t type = 7;
+
+    if (lua_isnumber(L, 2)) {
+        type = static_cast<int32_t>(lua_tointeger(L, 2));
+
+        if (type < 0 || type > 7) {
+            lua_pushnumber(L, 0.0);
+
+            return 1;
+        }
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
     auto data = unit ? unit->Unit() : nullptr;
 
-    // An explicit power type, else the unit's own
-    int32_t type = data ? Script_UnitPowerTypeOf(data) : 0;
-
-    if (lua_isnumber(L, 2)) {
-        type = static_cast<int32_t>(lua_tonumber(L, 2));
+    if (type == 7) {
+        type = data ? Script_UnitPowerTypeOf(data) : 0;
     }
 
     lua_pushnumber(L, data && type >= 0 && type < 7 ? data->power[type] : 0);
@@ -728,19 +729,30 @@ int32_t Script_UnitPower(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060ef40
 int32_t Script_UnitPowerMax(lua_State* L) {
     if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitPowerMax(\"unit\")");
+        luaL_error(L, "Usage: UnitPowerMax(\"unit\"[, type])");
         return 0;
+    }
+
+    int32_t type = 7;
+
+    if (lua_isnumber(L, 2)) {
+        type = static_cast<int32_t>(lua_tointeger(L, 2));
+
+        if (type < 0 || type > 7) {
+            lua_pushnumber(L, 0.0);
+
+            return 1;
+        }
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
     auto data = unit ? unit->Unit() : nullptr;
 
-    int32_t type = data ? Script_UnitPowerTypeOf(data) : 0;
-
-    if (lua_isnumber(L, 2)) {
-        type = static_cast<int32_t>(lua_tonumber(L, 2));
+    if (type == 7) {
+        type = data ? Script_UnitPowerTypeOf(data) : 0;
     }
 
     lua_pushnumber(L, data && type >= 0 && type < 7 ? data->maxPower[type] : 0);
@@ -748,10 +760,29 @@ int32_t Script_UnitPowerMax(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060f100
 int32_t Script_UnitPowerType(lua_State* L) {
     if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitPowerType(\"unit\")");
+        luaL_error(L, "Usage: UnitPowerType(\"unit\"[, index])");
         return 0;
+    }
+
+    // The optional index selects one of the alternate power displays a vehicle exposes, 1-based on
+    // the Lua side. When one is present the reference answers with five values -- type, token and
+    // an r,g,b taken from the display record. Frozen has no vehicle or alternate power, so that
+    // branch cannot be reached, and any index but the default gets the reference's own "no such
+    // power" answer: zero and an empty token.
+    int32_t index = 0;
+
+    if (lua_isnumber(L, 2)) {
+        index = static_cast<int32_t>(lua_tointeger(L, 2)) - 1;
+    }
+
+    if (index != 0) {
+        lua_pushnumber(L, 0.0);
+        lua_pushstring(L, "");
+
+        return 2;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));

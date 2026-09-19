@@ -19713,49 +19713,49 @@
   "status": "ported"
  },
  "0060ed40": {
-  "branchRatio": 0.158,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.412,
+  "fidelity": 0.588,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitMana",
-  "frozenSize": 123,
-  "how": "table",
+  "frozenSize": 236,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 507,
   "status": "ported"
  },
  "0060ef40": {
-  "branchRatio": 0.188,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.714,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitManaMax",
-  "frozenSize": 123,
-  "how": "table",
+  "frozenSize": 236,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 434,
   "status": "ported"
  },
  "0060f100": {
-  "branchRatio": 0.308,
+  "branchRatio": 0.462,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.455,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitPowerType",
-  "frozenSize": 177,
-  "how": "table",
+  "frozenSize": 249,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 591,
   "status": "ported"

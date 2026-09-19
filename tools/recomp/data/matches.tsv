@@ -1241,9 +1241,9 @@ addr	how	frozen	evidence
 0060eae0	table	Script_UnitXPMax	binding "UnitXPMax" in s_UnitFunctions ~ table 00ad21d8
 0060eb60	table	Script_UnitHealth	binding "UnitHealth" in s_UnitFunctions ~ table 00ad21d8
 0060ec60	table	Script_UnitHealthMax	binding "UnitHealthMax" in s_UnitFunctions ~ table 00ad21d8
-0060ed40	table	Script_UnitMana	binding "UnitMana" in s_UnitFunctions ~ table 00ad21d8
-0060ef40	table	Script_UnitManaMax	binding "UnitManaMax" in s_UnitFunctions ~ table 00ad21d8
-0060f100	table	Script_UnitPowerType	binding "UnitPowerType" in s_UnitFunctions ~ table 00ad21d8
+0060ed40	annotated	Script_UnitMana	tag in src/ui/game/ScriptEvents.cpp
+0060ef40	annotated	Script_UnitManaMax	tag in src/ui/game/ScriptEvents.cpp
+0060f100	annotated	Script_UnitPowerType	tag in src/ui/game/ScriptEvents.cpp
 0060f350	table	Script_UnitOnTaxi	binding "UnitOnTaxi" in s_UnitFunctions ~ table 00ad21d8
 0060f3d0	table	Script_UnitIsFeignDeath	binding "UnitIsFeignDeath" in s_UnitFunctions ~ table 00ad21d8
 0060f480	table	Script_UnitIsDead	binding "UnitIsDead" in s_UnitFunctions ~ table 00ad21d8

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 10:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 10:19 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -19,9 +19,9 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | **render surface** (the modules that draw the world) | **6005, mapped 158 (=) (2.6%)** | |
 | frozen functions (src/, from PDB + source) | 11418, stubs 851 | |
 
-Match evidence: annotated 430, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 766. Module anchors: 1479 assert strings.
+Match evidence: annotated 433, callgraph 168, callorder 127, cvar 30, handler 27, order 327, override 176, string 345, table 763. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 10:13 -- mapped 2396, ported 1920, stub 450, spine mapped 385.
+Previous run: 2026-09-19 10:19 -- mapped 2396, ported 1920, stub 450, spine mapped 385.
 
 ## Lua API coverage (binding tables)
 
@@ -768,7 +768,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 004dab40 | `CGlueMgr::PollAccountLogin` | string | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 0060abf0 | `Script_GetGUIDFromToken` | annotated | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 0060eb60 | `Script_UnitHealth` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
-| 0060ed40 | `Script_UnitMana` | table | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
+| 0060ed40 | `Script_UnitMana` | annotated | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
 | 00767460 | `CVar::LookupRegistered` | callorder | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 0076e720 | `SStrChrR` | override | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
@@ -785,11 +785,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 07:17 | 2306 (8.5%) | 736 (2.7%) | 524 | 348/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:21 | 2312 (8.5%) | 736 (2.7%) | 530 | 354/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:44 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:45 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
-| 2026-09-19 07:49 | 2317 (8.5%) | 737 (2.7%) | 533 | 359/5530 | 1584/2512 | 752 |
 | 2026-09-19 07:54 | 2322 (8.5%) | 738 (2.7%) | 533 | 362/5530 | 1584/2512 | 752 |
 | 2026-09-19 08:19 | 2345 (8.6%) | 767 (2.8%) | 493 | 360/5530 | 1584/2512 | 622 |
 | 2026-09-19 08:27 | 2345 (8.6%) | 774 (2.8%) | 483 | 354/5530 | 1584/2512 | 611 |
@@ -810,6 +805,11 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 | 2026-09-19 10:13 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:15 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
+| 2026-09-19 10:19 | 2396 (8.8%) | 891 (3.3%) | 450 | 385/5530 | 1584/2512 | 561 |
 
 ## How to move a row
 
