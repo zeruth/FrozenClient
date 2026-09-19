@@ -1257,13 +1257,13 @@ addr	how	frozen	evidence
 0058d620	order	Script_Stub_GetQuestReward	binding table name Script_Stub_GetQuestReward, in definition order in src/ui/game/miscscriptstubs.cpp
 0058d670	order	Script_Stub_GetRewardSpell	binding table name Script_Stub_GetRewardSpell, in definition order in src/ui/game/miscscriptstubs.cpp
 0058d810	order	Script_Stub_GetRewardTitle	binding table name Script_Stub_GetRewardTitle, in definition order in src/ui/game/miscscriptstubs.cpp
-0058e660	table	CGQuestPOIFrame_SetFillAlpha	binding "SetFillAlpha" in CGQuestPOIFrameMethods ~ table 00acf180
-0058e6f0	table	CGQuestPOIFrame_SetBorderAlpha	binding "SetBorderAlpha" in CGQuestPOIFrameMethods ~ table 00acf180
-0058e780	table	CGQuestPOIFrame_SetBorderScalar	binding "SetBorderScalar" in CGQuestPOIFrameMethods ~ table 00acf180
+0058e660	annotated	CGQuestPOIFrame_SetFillAlpha	tag in src/ui/game/CGQuestPOIFrameScript.cpp
+0058e6f0	annotated	CGQuestPOIFrame_SetBorderAlpha	tag in src/ui/game/CGQuestPOIFrameScript.cpp
+0058e780	annotated	CGQuestPOIFrame_SetBorderScalar	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e800	annotated	CGQuestPOIFrame_EnableSmoothing	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e850	annotated	CGQuestPOIFrame_EnableMerging	tag in src/ui/game/CGQuestPOIFrameScript.cpp
-0058e8a0	table	CGQuestPOIFrame_SetMergeThreshold	binding "SetMergeThreshold" in CGQuestPOIFrameMethods ~ table 00acf180
-0058e920	table	CGQuestPOIFrame_SetNumSplinePoints	binding "SetNumSplinePoints" in CGQuestPOIFrameMethods ~ table 00acf180
+0058e8a0	annotated	CGQuestPOIFrame_SetMergeThreshold	tag in src/ui/game/CGQuestPOIFrameScript.cpp
+0058e920	annotated	CGQuestPOIFrame_SetNumSplinePoints	tag in src/ui/game/CGQuestPOIFrameScript.cpp
 0058e990	table	CGQuestPOIFrame_UpdateQuestPOI	binding "UpdateQuestPOI" in CGQuestPOIFrameMethods ~ table 00acf180
 0058e9c0	table	CGQuestPOIFrame_UpdateMouseOverTooltip	binding "UpdateMouseOverTooltip" in CGQuestPOIFrameMethods ~ table 00acf180
 0058ea50	table	CGQuestPOIFrame_GetTooltipIndex	binding "GetTooltipIndex" in CGQuestPOIFrameMethods ~ table 00acf180

@@ -10,20 +10,47 @@ int32_t CGQuestPOIFrame_SetFillTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// Every one of these clamps before storing, and the bounds are the reference's own. A caller
+// handing in nonsense gets the nearest legal value rather than an error.
+static float ClampPOI(float value, float low, float high) {
+    return value < low ? low : (value > high ? high : value);
+}
+
+// ref: FUN_0058e660
 int32_t CGQuestPOIFrame_SetFillAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // 0 to 255, stored as a byte: the interface passes these in byte range, not 0..1.
+    frame->m_fillAlpha = static_cast<uint8_t>(
+        ClampPOI(static_cast<float>(lua_tonumber(L, 2)), 0.0f, 255.0f) + 0.5f);
+
+    return 0;
 }
 
 int32_t CGQuestPOIFrame_SetBorderTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0058e6f0
 int32_t CGQuestPOIFrame_SetBorderAlpha(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->m_borderAlpha = static_cast<uint8_t>(
+        ClampPOI(static_cast<float>(lua_tonumber(L, 2)), 0.0f, 255.0f) + 0.5f);
+
+    return 0;
 }
 
+// ref: FUN_0058e780
 int32_t CGQuestPOIFrame_SetBorderScalar(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    frame->m_borderScalar = ClampPOI(static_cast<float>(lua_tonumber(L, 2)), 0.0f, 10.0f);
+
+    return 0;
 }
 
 int32_t CGQuestPOIFrame_DrawQuestBlob(lua_State* L) {
@@ -50,12 +77,28 @@ int32_t CGQuestPOIFrame_EnableMerging(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0058e8a0
 int32_t CGQuestPOIFrame_SetMergeThreshold(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // Neither bound is zero: below a tenth or above a half the reference refuses to go.
+    frame->m_mergeThreshold = ClampPOI(static_cast<float>(lua_tonumber(L, 2)), 0.1f, 0.5f);
+
+    return 0;
 }
 
+// ref: FUN_0058e920
 int32_t CGQuestPOIFrame_SetNumSplinePoints(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CGQuestPOIFrame::GetObjectType();
+    auto frame = static_cast<CGQuestPOIFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // Eight to thirty, and thirty is also what a non-number falls back to.
+    auto points = static_cast<int32_t>(lua_tointeger(L, 2));
+
+    frame->m_numSplinePoints = points < 8 ? 8 : (points > 30 ? 30 : points);
+
+    return 0;
 }
 
 int32_t CGQuestPOIFrame_UpdateQuestPOI(lua_State* L) {

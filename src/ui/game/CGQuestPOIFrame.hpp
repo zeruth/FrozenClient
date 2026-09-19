@@ -16,13 +16,21 @@ class CGQuestPOIFrame : public CSimpleFrame {
         static void RegisterScriptMethods(lua_State* L);
 
         // Member variables
-        // Two flags and a count the script surface reaches. The reference keeps the flags as
-        // adjacent bytes at +0x2ac and +0x2ad and the count at +0x2bc.
+        // The tunables the script surface reaches, in the reference's own order so the offsets line
+        // up: fill alpha +0x2a4, border alpha +0x2a5, border scalar +0x2a8, smoothing +0x2ac,
+        // merging +0x2ad, merge threshold +0x2b0, spline points +0x2b4, tooltip count +0x2bc.
         //
-        // Nothing draws points of interest yet, so the flags record what was asked for and the
-        // count stays zero -- truthfully, since no tooltips are built rather than as a placeholder.
+        // Nothing draws points of interest yet, so these record what was asked for. The defaults
+        // are frozen's own -- the reference sets them in a constructor that has not been
+        // decompiled -- except the thirty spline points, which is the value its setter falls back
+        // to and so is at least a number the original uses.
+        uint8_t m_fillAlpha = 0;
+        uint8_t m_borderAlpha = 0;
+        float m_borderScalar = 0.0f;
         bool m_smoothing = false;
         bool m_merging = false;
+        float m_mergeThreshold = 0.0f;
+        int32_t m_numSplinePoints = 30;
         int32_t m_numTooltips = 0;
 
         // TODO the rest
