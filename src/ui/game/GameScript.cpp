@@ -1058,22 +1058,52 @@ int32_t Script_GuildInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00515cc0, opcode 0x34f. The shape is the guild commands above -- a team index from
+// argument 1, minus one, then the packet -- except that the index does not go on the wire.
+// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
+// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
+// stride is seven dwords, so it is not the same table and the id is not available.
+// Sending the index would be a well-formed packet naming the wrong team.
 int32_t Script_ArenaTeamInviteByName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00515dd0, opcode 0x353. The shape is the guild commands above -- a team index from
+// argument 1, minus one, then the packet -- except that the index does not go on the wire.
+// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
+// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
+// stride is seven dwords, so it is not the same table and the id is not available.
+// Sending the index would be a well-formed packet naming the wrong team.
 int32_t Script_ArenaTeamLeave(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00515eb0, opcode 0x354. The shape is the guild commands above -- a team index from
+// argument 1, minus one, then the packet -- except that the index does not go on the wire.
+// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
+// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
+// stride is seven dwords, so it is not the same table and the id is not available.
+// Sending the index would be a well-formed packet naming the wrong team.
 int32_t Script_ArenaTeamUninviteByName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00515ff0, opcode 0x356. The shape is the guild commands above -- a team index from
+// argument 1, minus one, then the packet -- except that the index does not go on the wire.
+// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
+// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
+// stride is seven dwords, so it is not the same table and the id is not available.
+// Sending the index would be a well-formed packet naming the wrong team.
 int32_t Script_ArenaTeamSetLeaderByName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// TODO FUN_00516130, opcode 0x355. The shape is the guild commands above -- a team index from
+// argument 1, minus one, then the packet -- except that the index does not go on the wire.
+// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
+// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
+// stride is seven dwords, so it is not the same table and the id is not available.
+// Sending the index would be a well-formed packet naming the wrong team.
 int32_t Script_ArenaTeamDisband(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -2349,6 +2379,11 @@ int32_t Script_IsTitleKnown(lua_State* L) {
     return 1;
 }
 
+// TODO FUN_0051b4e0 walks CharTitles.dbc: a record array at DAT_00ad3390 with DAT_00ad337c
+// entries and a stride of 0x14, matching argument 1 against the mask id at +0x10 and then
+// taking the male name at +8 or the female one at +0xc according to the player's sex byte.
+// Frozen does not load CharTitles.dbc at all -- there is no src/db/rec entry for it -- so
+// this needs the DBC before it needs the binding.
 int32_t Script_GetTitleName(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
