@@ -28421,19 +28421,19 @@
  },
  "00612610": {
   "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_IsStealthed",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 94,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "00612670": {
   "branchRatio": 0.077,

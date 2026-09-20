@@ -1788,7 +1788,7 @@ addr	how	frozen	evidence
 006124a0	table	Script_IsSwimming	binding "IsSwimming" in s_UnitFunctions ~ table 00ad21d8
 00612500	table	Script_IsFlying	binding "IsFlying" in s_UnitFunctions ~ table 00ad21d8
 006125a0	table	Script_IsMounted	binding "IsMounted" in s_UnitFunctions ~ table 00ad21d8
-00612610	table	Script_IsStealthed	binding "IsStealthed" in s_UnitFunctions ~ table 00ad21d8
+00612610	annotated	Script_IsStealthed	tag in src/ui/game/ScriptEvents.cpp
 00612670	table	Script_UnitIsSameServer	binding "UnitIsSameServer" in s_UnitFunctions ~ table 00ad21d8
 006127f0	table	Script_GetUnitHealthModifier	binding "GetUnitHealthModifier" in s_UnitFunctions ~ table 00ad21d8
 00612870	table	Script_GetUnitMaxHealthModifier	binding "GetUnitMaxHealthModifier" in s_UnitFunctions ~ table 00ad21d8

@@ -46,7 +46,16 @@ struct CGUnitData {
     // the reference takes all four through a float load.
     float minOffhandDamage;
     float maxOffhandDamage;
-    int32_t pad2;
+    // UNIT_FIELD_BYTES_1, four bytes packed into one field, which is why it sat here unnamed as
+    // padding while one of its bytes was already being read. Its position is not guesswork: the
+    // 3.3.5 field order puts it exactly here, after the offhand damage pair and before the pet
+    // block, and CGUnit_C already pulled the stand state out of byte 0.
+    //
+    //   byte 0  stand state          (sitting, kneeling, sleeping ...)
+    //   byte 1  pet loyalty / talents, unused by this client
+    //   byte 2  visibility flags     0x02 is the stealth creep flag IsStealthed tests
+    //   byte 3  animation tier       (ground, swim, hover, fly)
+    uint32_t bytes1;
     uint32_t petNumber;
     uint32_t petNameTimestamp;
     uint32_t petExperience;

@@ -458,7 +458,7 @@ void CGUnit_C::UpdateIdleAnimation() {
     auto unitData = this->Unit();
     uint32_t now = this->m_model && this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
     bool dead = unitData && unitData->maxHealth > 0 && unitData->health <= 0;
-    int32_t standState = unitData ? (unitData->pad2 & 0xFF) : 0;
+    int32_t standState = unitData ? (unitData->bytes1 & 0xFF) : 0;
     int32_t seq;
 
     if (dead) {

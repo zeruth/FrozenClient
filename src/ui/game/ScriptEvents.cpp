@@ -2334,8 +2334,27 @@ int32_t Script_IsMounted(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00612610
+// Takes no unit: it asks about the active player and nobody else, which is true of every Is*
+// predicate in this group.
+//
+// Reads byte 2 of UNIT_FIELD_BYTES_1, the visibility flags, and tests 0x02 -- the creep flag the
+// server sets while stealthed or prowling. Not an aura scan: a stealth aura that has not yet been
+// reflected into this flag does not count, in either client.
+//
+// Returns nil rather than false when not stealthed, which is what the reference pushes and what
+// FrameXML's truthiness tests expect.
 int32_t Script_IsStealthed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Unit() : nullptr;
+
+    if (data && ((data->bytes1 >> 16) & 0x02)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsSameServer(lua_State* L) {
