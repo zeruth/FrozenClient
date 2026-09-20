@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 05:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 05:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2962 (=) (10.9%) | 626.9k (11.3%) |
-| &nbsp;&nbsp;ported | 2258 (=) | 451.8k |
+| mapped to a frozen function | 2963 (=) (10.9%) | 627.4k (11.3%) |
+| &nbsp;&nbsp;ported | 2259 (=) | 452.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 659 (=) | 135.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1073 (=) (4.0%)** | **132.6k (2.4%)** |
-| unmapped | 24200 | 4.79M |
+| unmapped | 24199 | 4.79M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 418 (=) (7.6%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 422 (=) (7.3%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 171 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11845, stubs 1720 | |
+| **render surface** (the modules that draw the world) | **6005, mapped 172 (=) (2.9%)** | |
+| frozen functions (src/, from PDB + source) | 11850, stubs 1720 | |
 
-Match evidence: annotated 762, callgraph 177, callorder 130, cvar 32, handler 28, order 179, override 207, sticky 13, string 310, table 1124. Module anchors: 1479 assert strings.
+Match evidence: annotated 763, callgraph 177, callorder 130, cvar 32, handler 28, order 179, override 207, sticky 13, string 310, table 1124. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-20 05:08 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
+Previous run: 2026-09-20 05:26 -- mapped 2963, ported 2259, stub 659, spine mapped 418.
 
 ## Lua API coverage (binding tables)
 
@@ -156,7 +156,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SEvt.cpp | 242 | 59.1k | 32 (13.2%) | 5.5% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 41 (16.7%) | 13.2% | 22 | 0 | 15 |
-| FFXEffects.cpp | 219 | 56.2k | 9 (4.1%) | 3.8% | 0 | 0 | 72 |
+| FFXEffects.cpp | 219 | 56.2k | 10 (4.6%) | 4.7% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 11 (4.9%) | 5.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
@@ -729,8 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 03:24 | 2933 (10.8%) | 1052 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
-| 2026-09-20 03:25 | 2933 (10.8%) | 1052 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:28 | 2934 (10.8%) | 1053 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:39 | 2952 (10.9%) | 1063 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:40 | 2941 (10.8%) | 1059 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
@@ -754,6 +752,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 05:04 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:08 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:13 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 05:26 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 05:27 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 
 ## How to move a row
 

@@ -1201,7 +1201,7 @@ addr	how	frozen	evidence
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
 0053c0b0	override	Script_ReturnZero	
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
-0053d990	sticky	CGActionBar::GetActionID	held from the previous run, where it was callorder
+0053d990	sticky	CGActionBar::GetActionID	held from the previous run, where it was sticky
 0053dc20	sticky	SpellIconPath	held from the previous run, where it was sticky
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
 0053de10	override	Script_Stub_GetShapeshiftForm	
@@ -2157,6 +2157,7 @@ addr	how	frozen	evidence
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b90	annotated	CGMinimapFrame::GetRadius	tag in src/ui/game/CGMinimapFrame.cpp
+007f6540	annotated	MinimapLoadTranslate	tag in src/world/Minimap.cpp
 007fdf60	annotated	CGMinimapFrame::IsTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides

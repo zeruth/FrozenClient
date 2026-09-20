@@ -34338,6 +34338,22 @@
   "refSize": 75,
   "status": "ported"
  },
+ "007f6540": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.312,
+  "files": [
+   "src/world/Minimap.cpp",
+   "src/world/minimap.cpp"
+  ],
+  "frozen": "MinimapLoadTranslate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 483,
+  "status": "ported"
+ },
  "007fdf60": {
   "branchRatio": 0.75,
   "constOverlap": 0.75,

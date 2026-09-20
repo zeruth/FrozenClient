@@ -175165,6 +175165,105 @@
 "refs": [],
 "line": 350
 },
+"Fold": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::basic_string",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::push_back",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::basic_string"
+],
+"strings": [],
+"consts": [],
+"branches": 3,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 24
+},
+"MinimapLoadTranslate": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"SStrPrintf",
+"SFile::Load",
+"memcpy",
+"SStrLen",
+"SStrCmpI",
+"SStrChr",
+"SStrCopy",
+"Fold",
+"unordered_map<std::basic_string<char>,std::basic_string<char>,std::hash<std::basic_string<char> >,std::equal_to<std::basic_string<char> >,std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > > >::operator[]",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::operator=",
+"SFile::Unload"
+],
+"strings": [
+"%s\\md5translate.trs"
+],
+"consts": [
+"0",
+"0x28",
+"1",
+"260"
+],
+"branches": 8,
+"stub": false,
+"lines": 63,
+"refs": [],
+"line": 57
+},
+"MinimapUnloadTranslate": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"_Hash<std::_Umap_traits<std::basic_string<char>, std::basic_string<char>, std::_Uhash_compare<std::basic_string<char>, std::hash<std::basic_string<char> >, std::equal_to<std::basic_string<char> > >, std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > >, false> >::clear"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 121
+},
+"MinimapTranslate": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"Fold",
+"_Hash<std::_Umap_traits<std::basic_string<char>, std::basic_string<char>, std::_Uhash_compare<std::basic_string<char>, std::hash<std::basic_string<char> >, std::equal_to<std::basic_string<char> > >, std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > >, false> >::find",
+"_Hash<std::_Umap_traits<std::basic_string<char>, std::basic_string<char>, std::_Uhash_compare<std::basic_string<char>, std::hash<std::basic_string<char> >, std::equal_to<std::basic_string<char> > >, std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > >, false> >::end",
+"_List_const_iterator<std::_List_val<std::_List_simple_types<std::pair<const std::basic_string<char>, std::basic_string<char> > > > >::operator==",
+"_List_iterator<std::_List_val<std::_List_simple_types<std::pair<const std::basic_string<char>, std::basic_string<char> > > > >::operator->",
+"basic_string<char,std::char_traits<char>,std::allocator<char> >::c_str"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 126
+},
+"MinimapTranslateCount": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"_Hash<std::_Umap_traits<std::basic_string<char>, std::basic_string<char>, std::_Uhash_compare<std::basic_string<char>, std::hash<std::basic_string<char> >, std::equal_to<std::basic_string<char> > >, std::allocator<std::pair<const std::basic_string<char>, std::basic_string<char> > >, false> >::size"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 136
+},
 "IconTexture": {
 "files": [
 "src/world/overheadicons.cpp"
