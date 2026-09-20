@@ -138,4 +138,8 @@ Not signalled, and each for a stated reason:
 * Every other field -- there is no watcher registry, so each one is a hand-written case. The six
   plus three above are the ones the player and target frames read on the first frame in the world.
 
-Still narrow in the same two ways: no registry, and only two tokens.
+Still narrow in one way: there is no watcher registry, so each field is a hand-written case.
+The token resolver now answers player, target and pet, and resolves each the way
+Script_GetGUIDFromToken does -- target from CGGameUI::GetLockedTarget() rather than from the
+player descriptor's target field, which is what it used to read and which is not the same
+thing.

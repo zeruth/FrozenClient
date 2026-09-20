@@ -85271,7 +85271,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 38
+"line": 39
 },
 "GetNumDwordBlocks": {
 "files": [
@@ -85297,7 +85297,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 62
+"line": 63
 },
 "IncTypeID": {
 "files": [
@@ -85312,7 +85312,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 98
+"line": 99
 },
 "IsMaskBitSet": {
 "files": [
@@ -85328,7 +85328,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 155
+"line": 156
 },
 "MirrorBeginUpdate": {
 "files": [
@@ -85343,7 +85343,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 176
+"line": 177
 },
 "MirrorNoteChange": {
 "files": [
@@ -85358,7 +85358,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 180
+"line": 181
 },
 "UnitToken": {
 "files": [
@@ -85367,19 +85367,21 @@
 "callseq": [
 "CGObject::GetGUID",
 "ClntObjMgrGetActivePlayer",
+"CGGameUI::GetLockedTarget",
 "CGPlayer_C::GetActivePtr",
 "CGUnit::Unit"
 ],
 "strings": [
+"pet",
 "player",
 "target"
 ],
 "consts": [],
-"branches": 3,
+"branches": 6,
 "stub": false,
-"lines": 16,
+"lines": 30,
 "refs": [],
-"line": 190
+"line": 191
 },
 "BlockRangeChanged": {
 "files": [
@@ -85394,7 +85396,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 208
+"line": 223
 },
 "SignalUnitFieldEvents": {
 "files": [
@@ -85451,7 +85453,7 @@
 "stub": false,
 "lines": 124,
 "refs": [],
-"line": 221
+"line": 236
 },
 "SignalPlayerFieldEvents": {
 "files": [
@@ -85481,7 +85483,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 348
+"line": 363
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85514,7 +85516,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 385
+"line": 400
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85542,7 +85544,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 436
+"line": 451
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85564,7 +85566,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 479
+"line": 494
 },
 "QueryPlayerName": {
 "files": [

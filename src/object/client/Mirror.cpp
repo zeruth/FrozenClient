@@ -12,6 +12,7 @@
 #include "object/Types.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
 #include <vector>
@@ -194,11 +195,25 @@ const char* UnitToken(const CGUnit_C* unit) {
         return "player";
     }
 
+    // The same way Script_GetGUIDFromToken resolves it: the UI's locked target, not the target
+    // field on the player's descriptor. They are not always the same -- the descriptor carries what
+    // the server last said, and the interface means the one it is showing -- and an event naming
+    // "target" has to mean the interface's.
+    if (guid == CGGameUI::GetLockedTarget()) {
+        return "target";
+    }
+
     auto player = CGPlayer_C::GetActivePtr();
     auto playerData = player ? player->Unit() : nullptr;
 
-    if (playerData && playerData->target && guid == playerData->target) {
-        return "target";
+    if (playerData) {
+        // "pet" is the charmed unit if there is one, else the summoned one -- again matching the
+        // token resolver rather than inventing a second rule.
+        auto pet = playerData->charm ? playerData->charm : playerData->summon;
+
+        if (pet && guid == pet) {
+            return "pet";
+        }
     }
 
     return nullptr;
