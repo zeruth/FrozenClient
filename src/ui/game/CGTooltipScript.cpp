@@ -158,6 +158,28 @@ CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right) {
     return static_cast<CSimpleFontString*>(region);
 }
 
+// Whether a line was added with wrapping asked for. Lines never marked do not wrap, which is the
+// reference's default too -- its helper reads the flag with a default of 0.
+bool TooltipLineWraps(CGTooltip* tooltip, int32_t line) {
+    auto index = static_cast<size_t>(line - 1);
+
+    return index < tooltip->m_lineWrap.size() && tooltip->m_lineWrap[index] != 0;
+}
+
+void TooltipSetLineWrap(CGTooltip* tooltip, int32_t line, bool wrap) {
+    if (line < 1) {
+        return;
+    }
+
+    auto index = static_cast<size_t>(line - 1);
+
+    if (tooltip->m_lineWrap.size() <= index) {
+        tooltip->m_lineWrap.resize(index + 1, 0);
+    }
+
+    tooltip->m_lineWrap[index] = wrap ? 1 : 0;
+}
+
 void TooltipSetLine(CGTooltip* tooltip, int32_t line, bool right, const char* text) {
     auto fontString = TooltipLine(tooltip, line, right);
 
@@ -165,7 +187,9 @@ void TooltipSetLine(CGTooltip* tooltip, int32_t line, bool right, const char* te
         return;
     }
 
-    fontString->SetText(text ? text : "", 0);
+    // The reference passes 1 here, which runs the text through the language pass -- that is what
+    // resolves the |4 plural and gender escapes FrameXML puts in tooltip strings.
+    fontString->SetText(text ? text : "", 1);
 
     if (text && *text) {
         fontString->Show();
@@ -337,9 +361,13 @@ CGTooltip* TooltipThis(lua_State* L) {
 const float TOOLTIP_INSET = 10.0f;
 const float TOOLTIP_LINE_GAP = 2.0f;
 
-// Space kept between a line's left and right text. The reference's own resize pass has not been
-// decompiled, so unlike the two above this is Frozen's own number, not the reference's.
-const float TOOLTIP_COLUMN_GAP = 12.0f;
+// Space kept between a line's left and right text. This WAS Frozen's own guess at 12; the
+// reference's layout pass has since been read (FUN_0061caf0) and it uses 38.4, from 00a246cc.
+const float TOOLTIP_COLUMN_GAP = 38.4f;
+
+// How wide a wrapping line is allowed to get before it is broken. The reference's layout clamps to
+// this (00a246dc) and then fits the text inside it.
+const float TOOLTIP_WRAP_MAX_WIDTH = 230.4f;
 
 // Lua hands out lengths in UI units; frame widths and heights are layout units. Both of
 // CScriptRegion's size bindings convert with exactly this expression.
@@ -380,42 +408,125 @@ const char* TooltipUnitName(CGUnit_C* unit) {
 // What that leaves genuinely open is narrower: whether that anchoring visually overlaps, and what
 // the width term below is for if it does. Both are questions for a run, not for more decompiling.
 // The width term is kept because it is what the reference's own resize computes.
+// ref: the width half of FUN_0061caf0, the tooltip's layout pass.
+//
+// Two passes, and the order is the point. The tooltip's width is decided by the lines that do NOT
+// wrap; a wrapping line is then fitted into whatever width those settled on. Letting a long
+// wrapping line vote on the width first would just make the tooltip as wide as the line and there
+// would be nothing left to wrap.
+//
+// A wrapping line can still widen the tooltip, but only as far as TOOLTIP_WRAP_MAX_WIDTH. That cap
+// is why a long description becomes a paragraph instead of a single line running off the screen.
+//
+// NOT a complete port: the reference measures each broken segment and takes the widest, walking up
+// to thirty break points per line (FUN_00482450). This asks the font string for the wrapped height
+// at the chosen width instead and lets the text block do the breaking, so the width can come out
+// narrower than the reference would choose on a line whose longest word is wider than the cap.
 void TooltipResizeToFit(CGTooltip* tooltip) {
     if (tooltip->m_lineCount < 1) {
         return;
     }
 
-    float textWidth = 0.0f;
+    float inset = TooltipUIToLayout(TOOLTIP_INSET);
+    float columnGap = TooltipUIToLayout(TOOLTIP_COLUMN_GAP);
+    float wrapMax = TooltipUIToLayout(TOOLTIP_WRAP_MAX_WIDTH);
+
+    // The minimum width is a whole-tooltip measurement; the passes below work in text width.
+    float textWidth = TooltipUIToLayout(tooltip->m_minimumWidth) - inset - inset;
+
+    if (textWidth < 0.0f) {
+        textWidth = 0.0f;
+    }
+
+    // Pass 1 -- the lines that do not wrap.
+    //
+    // Every line's width is cleared first. A font string keeps whatever width it was last given,
+    // so without this a line that wrapped in the previous tooltip would still be measuring itself
+    // against that old width.
+    for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
+        auto left = TooltipLine(tooltip, line, false);
+        auto right = TooltipLine(tooltip, line, true);
+
+        if (left) {
+            left->SetWidth(0.0f);
+        }
+
+        if (right) {
+            right->SetWidth(0.0f);
+        }
+
+        if (TooltipLineWraps(tooltip, line)) {
+            continue;
+        }
+
+        const char* leftText = left ? left->GetText() : nullptr;
+        const char* rightText = right ? right->GetText() : nullptr;
+
+        float lineWidth = 0.0f;
+
+        if (leftText && *leftText) {
+            lineWidth += left->GetStringWidth();
+        }
+
+        if (rightText && *rightText) {
+            if (lineWidth > 0.0f) {
+                lineWidth += columnGap;
+            }
+
+            lineWidth += right->GetStringWidth();
+        }
+
+        if (lineWidth > textWidth) {
+            textWidth = lineWidth;
+        }
+    }
+
+    // Pass 2 -- a wrapping line may widen the tooltip, but not past the cap.
+    for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
+        if (!TooltipLineWraps(tooltip, line)) {
+            continue;
+        }
+
+        auto left = TooltipLine(tooltip, line, false);
+        const char* leftText = left ? left->GetText() : nullptr;
+
+        if (!leftText || !*leftText) {
+            continue;
+        }
+
+        // Measured with no width set, so this is the natural single-line extent.
+        float natural = left->GetStringWidth();
+        float target = natural > wrapMax ? wrapMax : natural;
+
+        if (target > textWidth) {
+            textWidth = target;
+        }
+    }
+
+    // Give every wrapping line the final width so it breaks against it, then measure heights. This
+    // has to follow both passes: the width is not known until they are done.
     float textHeight = 0.0f;
 
     for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
         auto left = TooltipLine(tooltip, line, false);
         auto right = TooltipLine(tooltip, line, true);
 
+        if (TooltipLineWraps(tooltip, line) && left) {
+            left->SetWidth(textWidth);
+        }
+
         const char* leftText = left ? left->GetText() : nullptr;
         const char* rightText = right ? right->GetText() : nullptr;
 
-        float lineWidth = 0.0f;
         float lineHeight = 0.0f;
 
         if (leftText && *leftText) {
-            lineWidth += left->GetStringWidth();
             lineHeight = left->GetStringHeight();
         }
 
         if (rightText && *rightText) {
-            if (lineWidth > 0.0f) {
-                lineWidth += TooltipUIToLayout(TOOLTIP_COLUMN_GAP);
-            }
-
-            lineWidth += right->GetStringWidth();
-
             float rightHeight = right->GetStringHeight();
             lineHeight = lineHeight > rightHeight ? lineHeight : rightHeight;
-        }
-
-        if (lineWidth > textWidth) {
-            textWidth = lineWidth;
         }
 
         if (line > 1) {
@@ -425,13 +536,7 @@ void TooltipResizeToFit(CGTooltip* tooltip) {
         textHeight += lineHeight;
     }
 
-    float inset = TooltipUIToLayout(TOOLTIP_INSET);
     float width = textWidth + inset + inset;
-    float minimumWidth = TooltipUIToLayout(tooltip->m_minimumWidth);
-
-    if (width < minimumWidth) {
-        width = minimumWidth;
-    }
 
     // The padding FrameXML sets aside at the bottom for the money frames it parents to the tooltip.
     float height = textHeight + inset + inset + TooltipUIToLayout(tooltip->m_padding);
@@ -458,6 +563,7 @@ void TooltipClear(CGTooltip* tooltip) {
     tooltip->m_lineCount = 0;
     tooltip->m_unitGUID = 0;
     tooltip->m_spellID = 0;
+    tooltip->m_lineWrap.clear();
 
     // FrameXML hangs the money-line and decoration resets off this.
     tooltip->RunOnTooltipClearedScript();
@@ -711,6 +817,10 @@ int32_t CGTooltip_AddLine(lua_State* L) {
     }
 
     tooltip->m_lineCount++;
+
+    // AddLine(text, r, g, b, wrapText) -- argument 6, confirmed against FUN_00620340, which reads
+    // it with a default of 0.
+    TooltipSetLineWrap(tooltip, tooltip->m_lineCount, lua_toboolean(L, 6) != 0);
     TooltipSetLine(tooltip, tooltip->m_lineCount, false, lua_tostring(L, 2));
     TooltipResizeToFit(tooltip);
 
@@ -737,6 +847,9 @@ int32_t CGTooltip_AddDoubleLine(lua_State* L) {
     }
 
     tooltip->m_lineCount++;
+
+    // Never wraps: the reference's helper clears the flag as soon as there is right-hand text.
+    TooltipSetLineWrap(tooltip, tooltip->m_lineCount, false);
     TooltipSetLine(tooltip, tooltip->m_lineCount, false, lua_tostring(L, 2));
     TooltipSetLine(tooltip, tooltip->m_lineCount, true, lua_tostring(L, 3));
     TooltipResizeToFit(tooltip);
@@ -768,6 +881,9 @@ int32_t CGTooltip_SetText(lua_State* L) {
     TooltipClear(tooltip);
 
     tooltip->m_lineCount = 1;
+
+    // SetText(text, r, g, b, alpha, textWrap) -- argument 7, which is where FUN_006204e0 reads it.
+    TooltipSetLineWrap(tooltip, 1, lua_toboolean(L, 7) != 0);
     TooltipSetLine(tooltip, 1, false, lua_tostring(L, 2));
 
     // The reference tail-calls its show here, which is why FrameXML never calls GameTooltip:Show()

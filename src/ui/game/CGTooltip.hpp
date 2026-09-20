@@ -2,6 +2,7 @@
 #define UI_GAME_C_G_TOOLTIP_HPP
 
 #include "ui/simple/CSimpleFrame.hpp"
+#include <vector>
 #include "util/guid/Types.hpp"
 #include <storm/Array.hpp>
 
@@ -46,6 +47,13 @@ class CGTooltip : public CSimpleFrame {
 
         // Lines beyond the ones the template declares, in the order AddFontStrings registered them.
         TSGrowableArray<TOOLTIPLINE> m_extraLines;
+
+        // Whether each line may be broken across several lines, indexed the same way m_lineCount
+        // counts. The reference keeps exactly this: a per-line array (its +0x2cc) written by the
+        // add-a-line helper and read by the layout pass, which is what decides a line's width.
+        // A line carrying right-hand text never wraps -- the reference clears the flag rather than
+        // trying to wrap around a second column.
+        std::vector<uint8_t> m_lineWrap;
 
         // The spell the tooltip was last filled from, which is what GetSpell reports. The reference
         // keeps two spell slots (+0x364 and +0x370) and returns name/rank/id for each; only the
