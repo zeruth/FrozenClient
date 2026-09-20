@@ -248,8 +248,58 @@ Each stage should end in a committable increment; none of it should go in blind 
    OUT_IN sharing IN_OUT's pair is the same quirk that stops `GetSmoothing` ever answering
    "OUT_IN": one cause, visible two ways.
 
-   **4b -- application to the region.** The `AddAnim*` family and whatever consumes the
-   accumulated transform. This is render-surface work and the part that must be seen on screen.
+   **4b -- application to the region.** Split again in practice.
+
+   **The animation half is DONE, unverified** -- landed 2026-09-20. Each subclass forms its
+   contribution in `OnApply` and hands it to the region; `OnUnapply` takes it back off, and Scale
+   overrides that because it composes multiplicatively.
+
+   **The region half is NOT started.** It is render-surface work and the part that must be seen on
+   screen. What was missing until now was the composition rule -- whether the region accumulates
+   additively, multiplicatively, or by replacement. That is answered below.
+
+### The region side, and how it composes
+
+The `CScriptRegion` family vtable was found by scanning `.rdata` for tables whose slots cluster in
+the `00487000`-`00489000` band where the known `CScriptRegion` code lives. The alignment is
+confirmed rather than assumed: slot `+0x30` lands on `FUN_004889c0`, which allocates from
+`".\CScriptRegion.cpp"` line 0xdf and is unmistakably `NotifyAnimBegin` -- it builds the region's
+list node and looks up the Alpha animation type id to see whether the group carries a fade.
+
+A texture's table (`009ea1d8`) then reads:
+
+| slot | method | address |
+|---|---|---|
+| `+0x30` | `NotifyAnimBegin` | `004889c0` |
+| `+0x34` | `NotifyAnimEnd` | `00488980` |
+| `+0x38` | `StopAnimating` | `004888f0` |
+| `+0x3c` | `AnimActivated` | `00488000` |
+| `+0x40` | `AnimDeactivated` | `00488060` |
+| `+0x44` | `AddAnimTranslation` | `00481740` (CSimpleTexture's own) |
+| `+0x48` | `AddAnimRotation` | `00481770` |
+| `+0x4c` | `AddAnimScale` | `004817a0` |
+| `+0x50` | `AddAnimAlpha` | `00487ce0` (CScriptRegion's, inherited) |
+
+**The composition is additive and cumulative, onto live state.** Two bodies settle it:
+
+`CSimpleTexture::AddAnimTranslation` (`00481740`) is two calls: accumulate the incoming vector into
+a field at `texture+0xe0`, then `CSimpleRegion::OnRegionChanged` (`00487ca0`) to mark the region
+dirty. It does not replace, and it does not recompute from progress.
+
+`CScriptRegion::AddAnimAlpha` (`00487ce0`) reads the region's CURRENT colour -- a packed ARGB at
+`+0xa4`..`+0xae`, or opaque white when the region has no colour set -- adds the incoming integer to
+the alpha byte, clamps above at 255 and below at 0, and writes the colour back through
+`FUN_00487a10`.
+
+That cumulative design is exactly why `OnUnapply` exists and why `PreOnAnimUpdate` runs before the
+tick: nothing recomputes an absolute value, so last frame's contribution has to be subtracted
+before this frame's is added. It is also why porting this half blind is a poor idea -- an
+un-apply that does not exactly cancel its apply makes a region drift a little every frame, which
+looks like a slow colour or position leak rather than an obvious break.
+
+**Remaining unknowns for the region half:** what `FUN_00487a10` does with the colour, what
+`texture+0xe0` is in frozen's layout, and the rotation and scale accumulators (`00481770`,
+`004817a0`), none of which have been read yet.
 
    **NOT STARTED, but no longer blocked.** The advance function was found on 2026-09-20 by
    scanning for call sites of the script runner `FUN_0081a2c0` inside the animation address range
