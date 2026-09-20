@@ -26615,7 +26615,7 @@
    "src/object/client/namecache.cpp"
   ],
   "frozen": "ReceiveNameQueryResponse",
-  "frozenSize": 319,
+  "frozenSize": 318,
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 519,

@@ -1,4 +1,6 @@
 #include "object/client/NameCache.hpp"
+#include "ui/game/Types.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "object/client/ItemCache.hpp"
 #include "object/client/CGObject.hpp"
 #include "object/Types.hpp"
@@ -167,11 +169,15 @@ int32_t ReceiveNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, C
     // is why the player frame kept showing "Unknown" even after UnitName itself was fixed: the
     // binding was right and the label was simply never refreshed.
     //
-    // The event carries a unit token, and the cache is keyed by guid, so only tokens that can be
-    // resolved without a reverse lookup are signalled. "player" is the one that matters here.
-    if (guid == ClntObjMgrGetActivePlayer()) {
-        // 144 is UNIT_NAME_UPDATE in g_scriptEvents; there is no constant for it.
-        FrameScript_SignalEvent(144, "%s", "player");
+    // The event carries a unit token and the cache is keyed by guid, so this used to signal only
+    // for the player -- the one token that could be recognised without a reverse lookup. There is
+    // one now: Script_GetTokenFromGUID, beside the resolver it inverts. So the target's name, a
+    // pet's and a party member's all refresh too, which is what "Unknown" on a target frame was
+    // waiting for.
+    auto token = Script_GetTokenFromGUID(guid);
+
+    if (token) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_NAME_UPDATE, "%s", token);
     }
 
     return 1;

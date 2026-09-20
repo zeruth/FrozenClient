@@ -85627,7 +85627,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 41
+"line": 43
 },
 "QueryCreatureName": {
 "files": [
@@ -85648,7 +85648,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 57
+"line": 59
 },
 "Find": {
 "files": [
@@ -85691,7 +85691,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 74
+"line": 76
 },
 "NameCacheGetName": {
 "files": [
@@ -85713,7 +85713,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 114
+"line": 116
 },
 "NameCacheHasName": {
 "files": [
@@ -85729,7 +85729,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 129
+"line": 131
 },
 "NameCacheClear": {
 "files": [
@@ -85745,7 +85745,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 134
+"line": 136
 },
 "NameCacheRegisterHandlers": {
 "files": [
@@ -85761,7 +85761,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 139
+"line": 141
 },
 "ReceiveNameQueryResponse": {
 "files": [
@@ -85774,25 +85774,23 @@
 "basic_string<char,std::char_traits<char>,std::allocator<char> >::operator=",
 "CDataStore::GetString",
 "basic_string<char,std::char_traits<char>,std::allocator<char> >::operator=",
-"ClntObjMgrGetActivePlayer",
+"Script_GetTokenFromGUID",
 "FrameScript_SignalEvent"
 ],
 "strings": [
 "%s",
-"Unknown",
-"player"
+"Unknown"
 ],
 "consts": [
 "0",
 "1",
-"144",
 "64"
 ],
 "branches": 3,
 "stub": false,
-"lines": 33,
+"lines": 37,
 "refs": [],
-"line": 146
+"line": 148
 },
 "ReceiveCreatureQueryResponse": {
 "files": [
@@ -85820,7 +85818,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 182
+"line": 188
 },
 "CCommand_ObjUsage": {
 "files": [

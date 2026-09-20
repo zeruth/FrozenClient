@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 20:34 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 20:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -21,7 +21,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 600, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 20:31 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
+Previous run: 2026-09-19 20:34 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 18:29 | 2698 (9.9%) | 986 (3.6%) | 530 | 393/5530 | 1791/2964 | 589 |
 | 2026-09-19 18:34 | 2698 (9.9%) | 987 (3.6%) | 523 | 393/5530 | 1791/2964 | 582 |
 | 2026-09-19 18:39 | 2698 (9.9%) | 988 (3.6%) | 521 | 393/5530 | 1791/2964 | 581 |
 | 2026-09-19 18:45 | 2698 (9.9%) | 988 (3.6%) | 520 | 393/5530 | 1791/2964 | 580 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 20:25 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:31 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:34 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
+| 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 
