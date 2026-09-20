@@ -440,5 +440,41 @@ The shape the arrays imply is a map with a per-tile grid: `+0x1f8` an array of p
 tile, `+0x130` a parallel array of 0x20-byte records on the same index, `+0x1e0` a "has data at
 all" guard. That is consistent with `CMap`, but it is a reading of the arrays and not yet a fact.
 
+### 5d. The owner, settled (2026-09-20)
+
+The decompiler cannot show it, so read the instruction bytes instead. At the call site inside
+`FUN_007a1480` (0x007a14c5):
+
+```
+8b 71 08                mov esi, [ecx+8]           ; the child object
+8b 40 50                mov eax, [eax+0x50]        ; the index
+8b 8e f4 00 00 00       mov ecx, [esi+0xf4]        ; <-- this, for FUN_007aea80
+6a 00                   push 0
+50                      push eax
+e8 b6 d5 00 00          call FUN_007aea80
+```
+
+**The owner is `child + 0xf4`.** That is the same `+0xf4` that `FUN_007a18d0` and `FUN_007a1640`
+dereference and then read `+0x120` and `+0x158` out of, and the same one `FUN_007a1150` fetches as
+`*(DAT_00cd87a4 + 0xf4)` before its first query. So the chain is:
+
+```
+DAT_00cd87a4        the active map/area object (has a transform at +0xb0)
+  +0xf4             the tile manager -- owns +0x130, +0x1f8, +0x1e0, +0x158, +0x160, +0x194
+  node obj +0x50    the index into the manager's two parallel arrays
+```
+
+More of the manager, from the same pass:
+- `+0x194 == 1` means "no data"; `FUN_007a1150` gives up on it before doing anything else
+- `+0x158` is an array of 0x30-byte records, indexed by a byte out of the tile object's `+0x58`
+  (four of them) -- the light/fog bands, with a position at +4..+0xc and a radius at +0x14
+- `+0x160` is the base of a 0x40-stride array, indexed by a `u16` at the tile object's `+0x130`
+  (`FUN_007a6d70` is the whole accessor: `tile->[0x130] * 0x40 + manager->[0x160]`)
+
+**This is as far as reading gets it.** The remaining obstacle is not knowledge, it is structure:
+frozen's `CMap`/`CWorld` are not laid out like this, so there is no `child + 0xf4` to port onto.
+The query cannot be written faithfully until those classes exist in this shape, and inventing a
+frozen-shaped equivalent would be the silent divergence the 1.0.0 rule exists to prevent.
+
 Until those are named this cannot be written honestly -- a port built on guessed offsets would be
 exactly the kind of "looks right" code the recomp cycle exists to stop.

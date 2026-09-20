@@ -1,6 +1,7 @@
 #include "ui/game/CGTooltipScript.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "object/client/SpellBook.hpp"
+#include "console/CVar.hpp"
 #include "db/Db.hpp"
 #include "glue/CCharacterSelection.hpp"
 #include "glue/CharacterSelectionDisplay.hpp"
@@ -1134,8 +1135,12 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
 // (_DAT_009e1134 in the reference).
 static const float DELAY_TO_SECONDS = 0.001f;
 
-// Item class 2. The speed and damage-per-second lines are gated on it.
+// Item classes the tooltip gates lines on. The speed and damage-per-second lines want a weapon;
+// the item level line wants any of the four below.
 static const int32_t ITEM_CLASS_WEAPON = 2;
+static const int32_t ITEM_CLASS_ARMOR = 4;
+static const int32_t ITEM_CLASS_REAGENT = 5;
+static const int32_t ITEM_CLASS_PROJECTILE = 6;
 
 void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability) {
     TooltipClear(tooltip);
@@ -1220,6 +1225,30 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("DURABILITY_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
                    durability, maxDurability);
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    // "Requires Level N". The test is > 1, not > 0: an item anyone can use from the first level
+    // shows no line at all, and using > 0 would put "Requires Level 1" on half the starting gear.
+    if (info->requiredLevel > 1) {
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("ITEM_MIN_LEVEL", -1, GENDER_NOT_APPLICABLE),
+                   info->requiredLevel);
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    // "Item Level N" is off by default and is not shown for every item even when it is on: the
+    // reference gates it on the showItemLevel CVar AND on the item being a weapon, a piece of
+    // armour, a reagent or a projectile. A consumable never shows one however the CVar is set.
+    auto showItemLevel = CVar::Lookup("showItemLevel");
+
+    if (showItemLevel && showItemLevel->GetInt()
+        && (info->itemClass == ITEM_CLASS_WEAPON
+            || info->itemClass == ITEM_CLASS_ARMOR
+            || info->itemClass == ITEM_CLASS_REAGENT
+            || info->itemClass == ITEM_CLASS_PROJECTILE)) {
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("ITEM_LEVEL", -1, GENDER_NOT_APPLICABLE), info->itemLevel);
         TooltipSetLine(tooltip, line++, false, text);
     }
 
