@@ -24444,7 +24444,7 @@
   "status": "ported"
  },
  "00610a00": {
-  "branchRatio": 0.3,
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.615,
@@ -24453,11 +24453,11 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitAttackSpeed",
-  "frozenSize": 146,
-  "how": "annotated",
+  "frozenSize": 372,
+  "how": "override",
   "module": "ScriptEvents.cpp",
   "refSize": 345,
-  "status": "ported"
+  "status": "diverged"
  },
  "00610b60": {
   "branchRatio": 0.75,

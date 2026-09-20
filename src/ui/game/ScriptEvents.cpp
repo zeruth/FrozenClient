@@ -7,6 +7,7 @@
 #include "object/client/CGPlayer_C.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CGItem_C.hpp"
 #include "db/Db.hpp"
 #include "object/Client.hpp"
 #include "ui/FrameScript.hpp"
@@ -1429,17 +1430,43 @@ int32_t Script_UnitRangedAttack(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// The class of whatever sits in one of the active player's equipment slots, or -1 when the slot is
+// empty or unreadable. The reference gets this from Item.dbc keyed by the item's entry id
+// (FUN_00707220), which is what g_itemDB is here.
+//
+// Only the active player's slots can be answered: nobody else's item guids are sent, so frozen's
+// invSlots is the player's alone. The reference reads an array on the unit object itself, which is
+// populated for the same one unit, so the reachable answers agree.
+static int32_t EquippedItemClass(const CGUnit_C* unit, int32_t slot) {
+    if (!unit || unit->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return -1;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (!data) {
+        return -1;
+    }
+
+    auto object = ClntObjMgrObjectPtr(data->invSlots[slot], TYPE_ITEM, __FILE__, __LINE__);
+
+    if (!object) {
+        return -1;
+    }
+
+    auto rec = g_itemDB.GetRecord(static_cast<CGItem_C*>(object)->GetEntryID());
+
+    return rec ? rec->m_classID : -1;
+}
+
 // ref: FUN_00610a00
 // Main-hand and off-hand swing times in seconds. The stored value is milliseconds and UNSIGNED --
 // the reference converts it with the uint32-to-float fixup, not the signed one -- then scales by
 // the 0.001f at 009e1134.
 //
-// The off-hand value is PARTIAL. The reference returns it only for a player who actually has a
-// weapon in the off-hand slot, which it establishes by reading the equipment array off the object,
-// fetching that item and checking its inventory type; frozen has no equipped-item lookup, so the
-// second return is always nil here. That is the right answer for every unit without an off-hand
-// weapon, which is most of them, and wrong for a dual-wielder -- stated rather than left to look
-// complete.
+// The off-hand time is reported only when the off-hand slot holds a WEAPON: a shield or an
+// off-hand frill is a different item class and leaves the second return nil.
 int32_t Script_UnitAttackSpeed(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitAttackSpeed(\"unit\")");
@@ -1461,9 +1488,12 @@ int32_t Script_UnitAttackSpeed(lua_State* L) {
 
     lua_pushnumber(L, static_cast<float>(data->attackRoundBaseTime[0]) * 0.001f);
 
-    // TODO the off-hand swing time is attackRoundBaseTime[1], gated on the player holding an
-    // off-hand weapon. Needs the equipped-item lookup.
-    lua_pushnil(L);
+    // Item class 2 is weapon. The reference compares against the literal too.
+    if (EquippedItemClass(unit, INVSLOT_OFFHAND) == 2) {
+        lua_pushnumber(L, static_cast<float>(data->attackRoundBaseTime[1]) * 0.001f);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 2;
 }

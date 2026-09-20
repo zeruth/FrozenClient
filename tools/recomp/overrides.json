@@ -1178,5 +1178,10 @@
     "frozen": "Script_UnitRangedDamage",
     "status": "diverged",
     "note": "The swing time and both damage bounds are faithful. The three damage modifiers are read for school 0 where the reference derives the school from the equipped ranged weapon: it resolves the weapon's item id (FUN_006de330), looks the record up in the item cache (FUN_0067ca30), scans the damage entries at +0xc0 for the first with positive damage and takes its school from +0xd0. Frozen has neither the equipped-weapon lookup nor damage fields on ItemInfo. School 0 is correct for any physical ranged weapon and wrong for an elemental one."
+  },
+  "00610a00": {
+    "frozen": "Script_UnitAttackSpeed",
+    "status": "diverged",
+    "note": "One gate is skipped. When the unit is the ACTIVE player, the reference requires FUN_006ceb00 -- which is just \"DAT_00c9eac8 != 0\" -- before reporting the off-hand time, and what sets that global is not identified. It is skipped here. The branch it guards is probably unreachable anyway: it is only reached once the off-hand item has already been confirmed to be item class 2 (weapon), and the server will not let a character equip an off-hand weapon without Dual Wield. That is an argument, not evidence, which is why this is recorded rather than treated as faithful. Everything else matches: main hand from attackRoundBaseTime[0], off-hand from [1], both unsigned milliseconds scaled by the 0.001f at 009e1134."
   }
 }

@@ -1535,7 +1535,7 @@ addr	how	frozen	evidence
 00610550	override	Script_UnitRangedDamage	
 006107d0	table	Script_UnitRangedAttack	binding "UnitRangedAttack" in s_UnitFunctions ~ table 00ad21d8
 00610860	annotated	Script_UnitDamage	tag in src/ui/game/ScriptEvents.cpp
-00610a00	annotated	Script_UnitAttackSpeed	tag in src/ui/game/ScriptEvents.cpp
+00610a00	override	Script_UnitAttackSpeed	
 00610b60	annotated	Script_UnitAttackPower	tag in src/ui/game/ScriptEvents.cpp
 00610ca0	annotated	Script_UnitRangedAttackPower	tag in src/ui/game/ScriptEvents.cpp
 00610de0	table	Script_UnitDefense	binding "UnitDefense" in s_UnitFunctions ~ table 00ad21d8
