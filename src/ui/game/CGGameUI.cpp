@@ -20,6 +20,7 @@
 #include "ui/game/CGTabardModelFrame.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/CGMinimapFrameScript.hpp"
 #include "ui/game/MiscScript.hpp"
 #include "ui/game/MiscScriptStubs.hpp"
 #include "ui/game/CharacterInfoScript.hpp"
@@ -65,6 +66,7 @@ void LoadScriptFunctions() {
 
     GameScriptRegisterFunctions();
     MiscScriptRegisterFunctions();
+    CGMinimapFrameScriptRegisterFunctions();
     MiscScriptRegisterStubs();
     UIBindingsRegisterScriptFunctions();
 

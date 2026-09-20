@@ -8243,7 +8243,7 @@
   "files": [],
   "frozen": "WowClientDB<SpellRec>::GetRecord",
   "frozenSize": 29,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SoundInterface2Internal.cpp",
   "refSize": 101,
   "status": "ported"
@@ -15689,7 +15689,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 870,
+  "frozenSize": 875,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 1267,
@@ -17086,7 +17086,7 @@
   ],
   "frozen": "SpellIconPath",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SpellBookFrame.cpp",
   "refSize": 240,
   "status": "ported"
@@ -17149,7 +17149,7 @@
   ],
   "frozen": "SpellAtSlot",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SpellBookFrame.cpp",
   "refSize": 380,
   "status": "ported"
@@ -19452,21 +19452,6 @@
   "refSize": 97,
   "status": "ported"
  },
- "0057c090": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_GetTrackingInfo",
-  "frozenSize": 60,
-  "how": "string",
-  "module": "QuestTextParser.cpp",
-  "refSize": 35,
-  "status": "ported"
- },
  "0057c340": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -19481,6 +19466,22 @@
   "how": "callgraph",
   "module": "QuestTextParser.cpp",
   "refSize": 87,
+  "status": "ported"
+ },
+ "0057e070": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::SetOtherTracking",
+  "frozenSize": 92,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 135,
   "status": "ported"
  },
  "0057e100": {
@@ -19531,6 +19532,38 @@
   "refSize": 187,
   "status": "ported"
  },
+ "0057e980": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetNumOtherTrackingTypes",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "0057eb00": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetOtherTrackingType",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
  "0057ed70": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -19562,6 +19595,70 @@
   "module": "MinimapFrame.cpp",
   "refSize": 390,
   "status": "stub"
+ },
+ "0057f170": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrameScript.cpp",
+   "src/ui/game/cgminimapframescript.cpp"
+  ],
+  "frozen": "Script_GetNumTrackingTypes",
+  "frozenSize": 47,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
+ "0057f1b0": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.474,
+  "files": [
+   "src/ui/game/CGMinimapFrameScript.cpp",
+   "src/ui/game/cgminimapframescript.cpp"
+  ],
+  "frozen": "Script_GetTrackingInfo",
+  "frozenSize": 251,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 458,
+  "status": "ported"
+ },
+ "0057f380": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.222,
+  "files": [
+   "src/ui/game/CGMinimapFrameScript.cpp",
+   "src/ui/game/cgminimapframescript.cpp"
+  ],
+  "frozen": "Script_SetTracking",
+  "frozenSize": 121,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 368,
+  "status": "ported"
+ },
+ "0057f4f0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/ui/game/CGMinimapFrameScript.cpp",
+   "src/ui/game/cgminimapframescript.cpp"
+  ],
+  "frozen": "Script_GetTrackingTexture",
+  "frozenSize": 132,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 222,
+  "status": "ported"
  },
  "00583860": {
   "branchRatio": 0.5,

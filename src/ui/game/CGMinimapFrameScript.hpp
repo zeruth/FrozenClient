@@ -7,4 +7,6 @@
 
 extern FrameScript_Method CGMinimapFrameMethods[NUM_CG_MINIMAP_FRAME_SCRIPT_METHODS];
 
+void CGMinimapFrameScriptRegisterFunctions();
+
 #endif

@@ -553,8 +553,6 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetNumVoiceSessions",            &Script_ReturnZero },
     { "GetRepairAllCost",               &Script_GetRepairAllCost },
     { "GetNumShapeshiftForms",          &Script_ReturnZero },
-    { "GetNumTrackingTypes",            &Script_ReturnZero },
-    { "GetTrackingTexture",             &Script_ReturnNil },
     { "GetLFGProposal",                 &Script_ReturnNothing },
     { "CalendarGetDate",                &Script_CalendarGetDate },
     { "GetSpellTabInfo",                &Script_GetSpellTabInfo },

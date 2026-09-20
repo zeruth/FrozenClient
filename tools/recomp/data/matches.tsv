@@ -515,7 +515,7 @@ addr	how	frozen	evidence
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
-004cfd20	callgraph	WowClientDB<SpellRec>::GetRecord	only unmatched callee of 0061f0f0=CGTooltip_GetSpell
+004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was callgraph
 004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
 004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
 004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
@@ -1070,11 +1070,11 @@ addr	how	frozen	evidence
 0053c0b0	table	Script_ReturnZero	binding "GetNumShapeshiftForms" in s_ScriptFunctions ~ table 00accce0
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
-0053dc20	callgraph	SpellIconPath	only unmatched callee of 00540d70=Script_GetSpellTexture
+0053dc20	sticky	SpellIconPath	held from the previous run, where it was callgraph
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
 0053e2c0	table	Script_ReturnNothing	binding "GetCompanionInfo" in s_ScriptFunctions ~ table 00accce0
 0053e490	order	Script_Stub_GetCompanionCooldown	binding table name Script_Stub_GetCompanionCooldown, in definition order in src/ui/game/miscscriptstubs.cpp
-00540670	callgraph	SpellAtSlot	only unmatched callee of 005407f0=Script_GetSpellName, 00541340=Script_IsPassiveSpell
+00540670	sticky	SpellAtSlot	held from the previous run, where it was callgraph
 005407f0	table	Script_GetSpellName	binding "GetSpellName" in s_ScriptFunctions ~ table 00accce0
 005408e0	table	Script_GetSpellLink	binding "GetSpellLink" in s_ScriptFunctions ~ table 00accce0
 00540a30	table	Script_GetSpellInfo	binding "GetSpellInfo" in s_ScriptFunctions ~ table 00accce0
@@ -1220,13 +1220,19 @@ addr	how	frozen	evidence
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
-0057c090	string	Script_Stub_GetTrackingInfo	score 0.50 shared GetTrackingInfo
 0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
+0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e280	annotated	CGMinimapFrame_SetPlayerTextureWidth	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057e980	annotated	CGMinimapFrame::GetNumOtherTrackingTypes	tag in src/ui/game/CGMinimapFrame.cpp
+0057eb00	annotated	CGMinimapFrame::GetOtherTrackingType	tag in src/ui/game/CGMinimapFrame.cpp
 0057ed70	table	CGMinimapFrame_PingLocation	binding "PingLocation" in CGMinimapFrameMethods ~ table 00acebb8
 0057efe0	table	CGMinimapFrame_GetPingPosition	binding "GetPingPosition" in CGMinimapFrameMethods ~ table 00acebb8
+0057f170	annotated	Script_GetNumTrackingTypes	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057f1b0	annotated	Script_GetTrackingInfo	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057f380	annotated	Script_SetTracking	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057f4f0	annotated	Script_GetTrackingTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 00583860	annotated	CGMinimapFrame_SetMaskTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 00583980	annotated	CGMinimapFrame_SetPOIArrowTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 00583aa0	annotated	CGMinimapFrame_SetStaticPOIArrowTexture	tag in src/ui/game/CGMinimapFrameScript.cpp

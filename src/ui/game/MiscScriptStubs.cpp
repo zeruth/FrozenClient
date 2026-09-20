@@ -215,7 +215,6 @@ WHOA_LUA_STUB(SetSendMailCOD)
 WHOA_LUA_STUB(SetSendMailMoney)
 WHOA_LUA_STUB(SetSendMailShowing)
 WHOA_LUA_STUB(SetTaxiMap)
-WHOA_LUA_STUB(SetTracking)
 WHOA_LUA_STUB(SetTradeSkillInvSlotFilter)
 WHOA_LUA_STUB(SetTradeSkillItemLevelFilter)
 WHOA_LUA_STUB(SetTradeSkillItemNameFilter)
@@ -866,7 +865,6 @@ WHOA_LUA_STUB(GetTalentLink)
 WHOA_LUA_STUB(GetTalentPrereqs)
 WHOA_LUA_STUB(GetTitleText)
 WHOA_LUA_STUB(GetTotalAchievementPoints)
-WHOA_LUA_STUB(GetTrackingInfo)
 WHOA_LUA_STUB(GetTradeSkillCooldown)
 WHOA_LUA_STUB(GetTradeSkillDescription)
 WHOA_LUA_STUB(GetTradeSkillIcon)
@@ -1366,7 +1364,6 @@ const ScriptFunction s_stubs[] = {
     { "SetSendMailMoney",                        &Script_Stub_SetSendMailMoney },
     { "SetSendMailShowing",                      &Script_Stub_SetSendMailShowing },
     { "SetTaxiMap",                              &Script_Stub_SetTaxiMap },
-    { "SetTracking",                             &Script_Stub_SetTracking },
     { "SetTradeSkillInvSlotFilter",              &Script_Stub_SetTradeSkillInvSlotFilter },
     { "SetTradeSkillItemLevelFilter",            &Script_Stub_SetTradeSkillItemLevelFilter },
     { "SetTradeSkillItemNameFilter",             &Script_Stub_SetTradeSkillItemNameFilter },
@@ -1939,7 +1936,6 @@ const ScriptFunction s_stubs[] = {
     { "GetTalentPrereqs",                        &Script_Stub_GetTalentPrereqs },
     { "GetTitleText",                            &Script_Stub_GetTitleText },
     { "GetTotalAchievementPoints",               &Script_Stub_GetTotalAchievementPoints },
-    { "GetTrackingInfo",                         &Script_Stub_GetTrackingInfo },
     { "GetTradeSkillCooldown",                   &Script_Stub_GetTradeSkillCooldown },
     { "GetTradeSkillDescription",                &Script_Stub_GetTradeSkillDescription },
     { "GetTradeSkillIcon",                       &Script_Stub_GetTradeSkillIcon },

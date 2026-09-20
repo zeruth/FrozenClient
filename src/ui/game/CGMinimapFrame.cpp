@@ -1,5 +1,9 @@
 #include "ui/game/CGMinimapFrame.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include "console/CVar.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/game/Types.hpp"
 
 HTEXTURE CGMinimapFrame::s_unknownTexture;
 HTEXTURE CGMinimapFrame::s_overlayTextures[7];
@@ -18,6 +22,108 @@ HTEXTURE CGMinimapFrame::s_iconTexture = nullptr;
 uint32_t CGMinimapFrame::s_zoom[2] = { 3, 3 };
 uint8_t CGMinimapFrame::s_indoors = 0;
 const uint32_t CGMinimapFrame::s_zoomLevels = 6;
+
+// ref: DAT_00a11c50
+// Read out of the reference's .rdata. The NPC flag values are the ones the minimap matches against
+// UNIT_NPC_FLAGS; mailbox is a game object type rather than a flag, and trivial quests are neither.
+const MINIMAP_TRACKING_TYPE CGMinimapFrame::s_trackingTypes[NUM_MINIMAP_TRACKING_TYPES] = {
+    { 1, 0x00001000, "MINIMAP_TRACKING_REPAIR",             "Repair",        0x00000000 },
+    { 1, 0x00000200, "MINIMAP_TRACKING_VENDOR_FOOD",        "Food",          0x00000000 },
+    { 1, 0x00000400, "MINIMAP_TRACKING_VENDOR_POISON",      "Poisons",       0x00000010 },
+    { 1, 0x00000100, "MINIMAP_TRACKING_VENDOR_AMMO",        "Ammunition",    0x0000001a },
+    { 1, 0x00000800, "MINIMAP_TRACKING_VENDOR_REAGENT",     "Reagents",      0x00000000 },
+    { 1, 0x00010000, "MINIMAP_TRACKING_INNKEEPER",          "Innkeeper",     0x00000000 },
+    { 1, 0x00002000, "MINIMAP_TRACKING_FLIGHTMASTER",       "FlightMaster",  0x00000000 },
+    { 1, 0x00400000, "MINIMAP_TRACKING_STABLEMASTER",       "StableMaster",  0x00000008 },
+    { 1, 0x00100000, "MINIMAP_TRACKING_BATTLEMASTER",       "BattleMaster",  0x00000000 },
+    { 1, 0x00000020, "MINIMAP_TRACKING_TRAINER_CLASS",      "Class",         0x00000000 },
+    { 1, 0x00000040, "MINIMAP_TRACKING_TRAINER_PROFESSION", "Profession",    0x00000000 },
+    { 1, 0x00200000, "MINIMAP_TRACKING_AUCTIONEER",         "Auctioneer",    0x00000000 },
+    { 1, 0x00020000, "MINIMAP_TRACKING_BANKER",             "Banker",        0x00000000 },
+    { 2, 0x00000013, "MINIMAP_TRACKING_MAILBOX",            "Mailbox",       0x00000000 },
+    { 3, 0x00000000, "MINIMAP_TRACKING_TRIVIAL_QUESTS",     "TrivialQuests", 0x00000000 },
+};
+
+const MINIMAP_TRACKING_TYPE* CGMinimapFrame::s_otherTracking = nullptr;
+const uint32_t CGMinimapFrame::s_numTrackingSpells = 0;
+uint32_t CGMinimapFrame::s_trackingSpell = 0;
+
+namespace {
+
+// The reference reads the class off the active player and shifts by it directly, so the bit for
+// warrior (class 1) is 0x02, not 0x01. With no player it uses a mask of zero, which leaves only the
+// rows that are open to everyone -- so the guard here is not a defensive extra, it is the behaviour.
+uint32_t LocalPlayerClassMask() {
+    auto playerClass = CGPlayer_C::GetLocalPlayerClass();
+
+    return playerClass ? 1u << (playerClass & 0x1f) : 0u;
+}
+
+bool TrackingTypeAllowed(const MINIMAP_TRACKING_TYPE& type, uint32_t classMask) {
+    return !type.classMask || (classMask & type.classMask);
+}
+
+} // namespace
+
+// ref: FUN_0057e980
+uint32_t CGMinimapFrame::GetNumOtherTrackingTypes() {
+    auto classMask = LocalPlayerClassMask();
+    uint32_t count = 0;
+
+    for (auto& type : CGMinimapFrame::s_trackingTypes) {
+        if (TrackingTypeAllowed(type, classMask)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// ref: FUN_0057eb00
+// Indexes the filtered list, not the table, so the ids FrameXML hands back line up with what
+// GetNumOtherTrackingTypes counted.
+const MINIMAP_TRACKING_TYPE* CGMinimapFrame::GetOtherTrackingType(uint32_t index) {
+    auto classMask = LocalPlayerClassMask();
+    uint32_t seen = 0;
+
+    for (auto& type : CGMinimapFrame::s_trackingTypes) {
+        if (TrackingTypeAllowed(type, classMask)) {
+            if (seen == index) {
+                return &type;
+            }
+
+            seen++;
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0057e070
+void CGMinimapFrame::SetOtherTracking(const MINIMAP_TRACKING_TYPE* type) {
+    auto wasTrivialQuests = CGMinimapFrame::s_otherTracking
+        && CGMinimapFrame::s_otherTracking->kind == 3;
+
+    CGMinimapFrame::s_otherTracking = type;
+
+    // The selection persists across sessions as the global string name, not as an index -- the
+    // index moves when the class filter does.
+    auto cvar = CVar::Lookup("minimapTrackedInfo");
+
+    if (cvar) {
+        cvar->Set(type ? type->name : "", true, false, false, true);
+    }
+
+    auto isTrivialQuests = type && type->kind == 3;
+
+    if (wasTrivialQuests != isTrivialQuests) {
+        // TODO the reference walks every object here (FUN_004d4b30 over FUN_0057e020) to add or
+        // drop the trivial-quest marker on each. There is no minimap POI renderer yet, so there is
+        // nothing to walk; the selection itself is still reported correctly through GetTrackingInfo.
+    }
+
+    FrameScript_SignalEvent(SCRIPT_MINIMAP_UPDATE_TRACKING, nullptr);
+}
 
 CSimpleFrame* CGMinimapFrame::Create(CSimpleFrame* parent) {
     // TODO use CDataAllocator

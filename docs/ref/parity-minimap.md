@@ -202,6 +202,46 @@ one described as *Stores the minimap tracking that was active last session*. So 
 restart and the minimap has a portal-traversal budget, which implies the terrain it draws is
 gathered by walking the world like the main scene rather than blitted from a prebaked tile.
 
+### 2f. The tracking list has two halves, and only one of them needs the minimap
+
+Recovered 2026-09-19 and ported the same day. A tracking id is 1-based and indexes two lists laid
+end to end:
+
+**The spell half** comes first: the tracking spells the player knows, kept in `DAT_00be8dec` with
+its count in `DAT_00be8de8`. `SetTracking` on one of these just *casts the spell* (`FUN_0080da40`);
+the active one is remembered in `DAT_00beba68` and its icon comes from `SpellIcon.dbc` (the active
+icon if it is the one being tracked, the normal icon otherwise). **Not ported** -- it needs the
+spellbook side to build the list. `CGMinimapFrame::s_numTrackingSpells` is 0 until then, so the
+arithmetic below is the reference's with an empty first half rather than a different scheme.
+
+**The table half** is a static 15-row table at `DAT_00a11c50`, 0x14 bytes per row, read out of
+.rdata rather than transcribed from FrameXML. Each row is `{kind, value, globalString, texture,
+classMask}`:
+
+| kind | meaning | value |
+|---|---|---|
+| 1 | match an NPC flag | the `UNIT_NPC_FLAGS` bit |
+| 2 | match a game object type | `0x13`, the mailbox |
+| 3 | trivial quests | unused -- no flag behind it |
+
+`classMask` is 0 for everyone, else a mask of `1 << classId` **with no -1**: Poisons is `0x10`
+(rogue, class 4), Ammunition `0x1a` (warrior, hunter, rogue) and StableMaster `0x08` (hunter). With
+no active player the reference uses a mask of 0, which leaves only the unrestricted rows -- that is
+behaviour, not a defensive guard. `GetNumTrackingTypes` and `GetTrackingInfo` index the *filtered*
+list, so ids shift with the player's class.
+
+`FUN_0057e070` sets the selection: it writes the row's **global string name** (not an index, which
+would move) into the `minimapTrackedInfo` CVar from 2c, and signals `MINIMAP_UPDATE_TRACKING` (170).
+When the trivial-quest row is switched on or off it also walks every object (`FUN_004d4b30` over
+`FUN_0057e020`) to add or drop that marker -- **not ported**, there is no POI renderer to refresh.
+
+`GetTrackingTexture` always returns a path, falling back to `Interface\Minimap\Tracking\None`
+when nothing is tracked, so the minimap button never shows an empty square.
+
+All four bindings register **globally**, not as frame methods, even though their function pointers
+sit next to `CGMinimapFrameMethods` in .rdata: FrameXML calls each one bare (`Minimap.lua` 409, 421,
+427, 430) and never as `Minimap:GetTrackingInfo()`.
+
 ---
 
 ## 3. What porting it needs that frozen does not have

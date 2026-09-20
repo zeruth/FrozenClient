@@ -6,6 +6,32 @@
 
 class CSimpleTexture;
 
+// One row of the minimap's non-spell tracking list. The reference keeps 15 of these in a static
+// table (DAT_00a11c50, 0x14 bytes each); the contents here were read out of its .rdata rather than
+// transcribed from FrameXML, so the order, the flags and the class masks are the binary's own.
+struct MINIMAP_TRACKING_TYPE {
+    // What the minimap should look for. 1 matches an NPC flag, 2 a game object type, 3 is the
+    // trivial-quest special case that has no flag behind it at all.
+    uint32_t kind;
+
+    // The NPC flag bit for kind 1, the game object type for kind 2 (0x13, mailbox), unused for 3.
+    uint32_t value;
+
+    // A global string name, looked up through FrameScript_GetText -- not the display text itself.
+    // It doubles as the value stored in the minimapTrackedInfo CVar.
+    const char* name;
+
+    // Basename under Interface\\Minimap\\Tracking.
+    const char* texture;
+
+    // Which classes may select this. Zero means everyone; otherwise it is a bitmask of 1 << class
+    // id, so Poisons is 0x10 (rogue), Ammunition 0x1a (warrior, hunter, rogue) and StableMaster
+    // 0x08 (hunter).
+    uint32_t classMask;
+};
+
+#define NUM_MINIMAP_TRACKING_TYPES 15
+
 class CGMinimapFrame : public CSimpleFrame {
     public:
         // Static variables
@@ -50,6 +76,21 @@ class CGMinimapFrame : public CSimpleFrame {
         // has no minimap update yet, so it stays 0.
         static uint8_t s_indoors;                // ref: DAT_00d39434
 
+        // The non-spell half of the tracking list, and which of its rows is currently selected.
+        static const MINIMAP_TRACKING_TYPE s_trackingTypes[NUM_MINIMAP_TRACKING_TYPES]; // ref: DAT_00a11c50
+        static const MINIMAP_TRACKING_TYPE* s_otherTracking;                            // ref: DAT_00beba64
+
+        // The spell half. The reference builds a list of the tracking spells the player knows into
+        // DAT_00be8dec/DAT_00be8de8 and puts it BEFORE the rows above, so a tracking id indexes the
+        // spells first and the table second. That list needs the spellbook side, which is not
+        // ported, so the count stays zero -- the indexing below is the reference's arithmetic with
+        // an empty first half, not a different scheme.
+        static const uint32_t s_numTrackingSpells;
+
+        // The tracking spell currently active, 0 for none (ref: DAT_00beba68). Nothing sets it yet
+        // for the same reason.
+        static uint32_t s_trackingSpell;
+
         // How many zoom levels the minimap offers. The reference returns a literal 6, and clamps
         // SetZoom to 5.
         static const uint32_t s_zoomLevels;
@@ -62,6 +103,9 @@ class CGMinimapFrame : public CSimpleFrame {
         static uint32_t GetZoomLevels();
         static uint32_t GetZoom();
         static void SetZoom(uint32_t level);
+        static uint32_t GetNumOtherTrackingTypes();
+        static const MINIMAP_TRACKING_TYPE* GetOtherTrackingType(uint32_t index);
+        static void SetOtherTracking(const MINIMAP_TRACKING_TYPE* type);
 
         // Member variables
         // The region the player arrow is drawn into, at +0x2a0 in the reference. SetPlayerTexture
