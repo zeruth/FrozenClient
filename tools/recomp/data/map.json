@@ -1884,7 +1884,7 @@
   ],
   "frozen": "CStatus::Add",
   "frozenSize": 201,
-  "how": "callorder",
+  "how": "sticky",
   "module": "framing.c",
   "refSize": 264,
   "status": "ported"
@@ -2528,20 +2528,20 @@
   "status": "ported"
  },
  "004883f0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/CScriptRegion.cpp",
    "src/ui/cscriptregion.cpp"
   ],
   "frozen": "CScriptRegion::LoadXML_Animations",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 181,
-  "status": "stub"
+  "status": "ported"
  },
  "00488540": {
   "branchRatio": 0.0,
@@ -2569,7 +2569,7 @@
    "src/ui/cscriptregion.cpp"
   ],
   "frozen": "CScriptRegion::LoadXML",
-  "frozenSize": 231,
+  "frozenSize": 579,
   "how": "override",
   "module": "CSimpleRender.cpp",
   "refSize": 201,
@@ -4732,6 +4732,22 @@
   "refSize": 275,
   "status": "ported"
  },
+ "00497c30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.067,
+  "faithful": false,
+  "fidelity": 0.636,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "AnimLoadXML_Scripts",
+  "frozenSize": 475,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 516,
+  "status": "ported"
+ },
  "00497fe0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -4748,18 +4764,50 @@
   "refSize": 14,
   "status": "ported"
  },
+ "004980d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleScaleAnim::GetScale",
+  "frozenSize": 18,
+  "how": "override",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 31,
+  "status": "diverged"
+ },
+ "004987e0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.7,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleControlPoint::LoadXML",
+  "frozenSize": 108,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 451,
+  "status": "ported"
+ },
  "0049a060": {
-  "branchRatio": 0.175,
+  "branchRatio": 0.2,
   "constOverlap": 0.037,
   "faithful": false,
-  "fidelity": 0.211,
+  "fidelity": 0.491,
   "files": [
    "src/ui/simple/CSimpleAnimGroup.cpp",
    "src/ui/simple/csimpleanimgroup.cpp"
   ],
-  "frozen": "CSimpleAnimGroup::CreateAnimation",
-  "frozenSize": 669,
-  "how": "string",
+  "frozen": "CSimpleAnimGroup::LoadXML",
+  "frozenSize": 420,
+  "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 1310,
   "status": "ported"
@@ -4794,6 +4842,102 @@
   "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 62,
+  "status": "ported"
+ },
+ "0049b810": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.158,
+  "faithful": false,
+  "fidelity": 0.704,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "CSimpleAnim::LoadXML",
+  "frozenSize": 1080,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 739,
+  "status": "ported"
+ },
+ "0049bb00": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.818,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleTranslationAnim::LoadXML",
+  "frozenSize": 114,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
+ "0049bc10": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleRotationAnim::LoadXML",
+  "frozenSize": 354,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 264,
+  "status": "ported"
+ },
+ "0049bd20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleScaleAnim::LoadXML",
+  "frozenSize": 447,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 467,
+  "status": "ported"
+ },
+ "0049bf00": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimplePathAnim::LoadXML",
+  "frozenSize": 710,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 302,
+  "status": "ported"
+ },
+ "0049c170": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimpleAlphaAnim::LoadXML",
+  "frozenSize": 73,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 283,
   "status": "ported"
  },
  "0049c830": {
@@ -8032,13 +8176,13 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
   ],
   "frozen": "CSimpleScaleAnim_GetScale",
-  "frozenSize": 85,
+  "frozenSize": 87,
   "how": "table",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 100,
@@ -33871,7 +34015,7 @@
   ],
   "frozen": "XMLNode::GetAttributeByName",
   "frozenSize": 130,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 92,
   "status": "ported"
@@ -34194,6 +34338,22 @@
   "how": "string",
   "module": "XMLTree.cpp",
   "refSize": 184,
+  "status": "ported"
+ },
+ "00815eb0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/LoadXML.cpp",
+   "src/ui/loadxml.cpp"
+  ],
+  "frozen": "LoadXML_AnimOrigin",
+  "frozenSize": 214,
+  "how": "string",
+  "module": "XMLTree.cpp",
+  "refSize": 134,
   "status": "ported"
  },
  "00815f40": {

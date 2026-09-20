@@ -117,7 +117,7 @@ addr	how	frozen	evidence
 0047c060	annotated	DDCToNDCHeight	tag in src/gx/Coordinate.cpp
 0047c070	override	NDCToDDCWidth	
 0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
-0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0047c360	sticky	CStatus::Add	held from the previous run, where it was sticky
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
@@ -136,7 +136,7 @@ addr	how	frozen	evidence
 004831d0	callgraph	lua_gettop	only unmatched callee of 0048e170=CSimpleTexture_SetTexCoord
 00483290	callgraph	CSimpleTexture::GetImageModePixelShader	only unmatched callee of 00511fb0=Script_IsDesaturateSupported
 00483890	annotated	CSimpleFontString::SetTextHeight	tag in src/ui/simple/CSimpleFontString.cpp
-00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
+00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML, 0048d780=CSimpleFontString_SetText, 0048d800=CSimpleFontString_SetFormattedText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483dd0	annotated	CSimpleFontString::SetShadowOffset	tag in src/ui/simple/CSimpleFontString.cpp
 00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
@@ -158,7 +158,7 @@ addr	how	frozen	evidence
 00487c40	override	CSimpleRegion::Show	
 00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481700=CSimpleTexture::SetShader
 00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f920=CSimpleButton::SetStateTexture
-004883f0	callorder	CScriptRegion::LoadXML_Animations	same slot between linked calls in 00488670=CScriptRegion::LoadXML
+004883f0	annotated	CScriptRegion::LoadXML_Animations	tag in src/ui/CScriptRegion.cpp
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
 00488cf0	callorder	CLayoutFrame::IsResizePending	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame, 0049ce50=CScriptRegion_GetRect, 0049cf90=CScriptRegion_GetCenter
@@ -293,13 +293,22 @@ addr	how	frozen	evidence
 00495900	callgraph	CSimpleTop::UnregisterForEvent	only unmatched callee of 0048f6f0=CSimpleFrame::DisableEvent
 00496390	override	CSimpleFontStringAttributes::SetJustifyH	
 004963c0	override	CSimpleFontStringAttributes::SetJustifyV	
-00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004a2240=CSimpleFrame_CreateFontString, 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject
+00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004a2240=CSimpleFrame_CreateFontString, 00813ee0=FrameXML_ProcessFile, 00977340=CSimpleButton_SetNormalFontObject
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 00497800	annotated	CSimpleAnimGroup::GetScriptByName	tag in src/ui/simple/CSimpleAnimGroup.cpp
+00497c30	annotated	AnimLoadXML_Scripts	tag in src/ui/simple/CSimpleAnim.cpp
 00497fe0	annotated	CSimpleAnim::GetRegionParent	tag in src/ui/simple/CSimpleAnim.cpp
-0049a060	string	CSimpleAnimGroup::CreateAnimation	score 1.40 shared Alpha; Animation; Rotation
+004980d0	override	CSimpleScaleAnim::GetScale	
+004987e0	annotated	CSimpleControlPoint::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049a060	annotated	CSimpleAnimGroup::LoadXML	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049a8f0	annotated	CSimpleAnimGroup::Play	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049ad80	annotated	CSimpleAnim::Play	tag in src/ui/simple/CSimpleAnim.cpp
+0049b810	annotated	CSimpleAnim::LoadXML	tag in src/ui/simple/CSimpleAnim.cpp
+0049bb00	annotated	CSimpleTranslationAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049bc10	annotated	CSimpleRotationAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049bd20	annotated	CSimpleScaleAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049bf00	annotated	CSimplePathAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049c170	annotated	CSimpleAlphaAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
 0049c9a0	callgraph	CFramePoint::Y	only unmatched callee of 00488e40=CLayoutFrame::Sub488E40
@@ -2127,7 +2136,7 @@ addr	how	frozen	evidence
 00813ee0	string	FrameXML_ProcessFile	unique "%s:<Scripts>"
 00814340	string	FrameXML_CreateFrames	unique "** Loading table of contents %s"
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
-00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML, 004873e0=CSimpleFontString::LoadXML, 0048f400=CSimpleFrame::PostLoadXML_Frames
+00814730	callgraph	XMLNode::GetAttributeByName	only unmatched callee of 0049c170=CSimpleAlphaAnim::LoadXML
 00814e40	override	StringToFrameStrata	
 00814e90	callorder	FrameStrataToString	same slot between linked calls in 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
@@ -2148,6 +2157,7 @@ addr	how	frozen	evidence
 00815910	string	LoadXML_Insets	unique "AbsInset"
 00815c30	callorder	LoadXML_Color	same slot between linked calls in 00815df0=LoadXML_Gradient
 00815df0	string	LoadXML_Gradient	unique "MaxColor"
+00815eb0	string	LoadXML_AnimOrigin	unique "Invalid origin point %s in element %s"
 00815f40	override	LoadXML_Texture	
 00815fa0	override	LoadXML_String	
 00816830	string	FrameScript_Object::GetScriptByName	unique "OnEvent"

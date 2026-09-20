@@ -173,10 +173,13 @@ int32_t CSimpleScaleAnim_SetScale(lua_State* L) {
 }
 
 int32_t CSimpleScaleAnim_GetScale(lua_State* L) {
-    auto anim = AnimThisOf<CSimpleScaleAnim>(L);
+    float x;
+    float y;
 
-    lua_pushnumber(L, anim->m_scaleX);
-    lua_pushnumber(L, anim->m_scaleY);
+    AnimThisOf<CSimpleScaleAnim>(L)->GetScale(x, y);
+
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
 
     return 2;
 }

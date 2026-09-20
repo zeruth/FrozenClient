@@ -4,6 +4,8 @@
 #include "ui/simple/CSimpleAnimScript.hpp"
 #include "ui/CScriptRegion.hpp"
 #include "ui/FrameScript.hpp"
+#include "util/CStatus.hpp"
+#include <common/XML.hpp>
 #include <storm/String.hpp>
 #include <storm/Memory.hpp>
 #include <cstdint>
@@ -151,6 +153,57 @@ const char* CSimpleAnimGroup::GetObjectTypeName() {
 
 CScriptObject* CSimpleAnimGroup::GetScriptObjectParent() {
     return this->m_region;
+}
+
+// ref: FUN_0049a060
+// NOT CreateAnimation, which an earlier cycle tagged this address as on the strength of the two
+// inherited-node strings it shares with it. This is the group's XML loader: it recurses into the
+// inherited node, then reads looping and the initial offsets.
+void CSimpleAnimGroup::LoadXML(const XMLNode* node, CStatus* status) {
+    this->PreLoadXML(node, status);
+
+    const char* loopingAttr = node->GetAttributeByName("looping");
+
+    if (loopingAttr && *loopingAttr) {
+        ANIM_LOOPTYPE loopType;
+
+        if (AnimLoopTypeFromName(loopingAttr, loopType)) {
+            this->m_looping = loopType;
+        } else {
+            status->Add(STATUS_WARNING, "%s %s: Invalid looping value: %s",
+                        this->GetObjectTypeName(),
+                        this->GetName() ? this->GetName() : "<unnamed>", loopingAttr);
+        }
+    }
+
+    const char* offsetXAttr = node->GetAttributeByName("initialOffsetX");
+
+    if (offsetXAttr && *offsetXAttr) {
+        this->m_initialOffsetX = AnimXmlOffset(offsetXAttr);
+    }
+
+    const char* offsetYAttr = node->GetAttributeByName("initialOffsetY");
+
+    if (offsetYAttr && *offsetYAttr) {
+        this->m_initialOffsetY = AnimXmlOffset(offsetYAttr);
+    }
+
+    for (auto child = node->GetChild(); child; child = child->GetSibling()) {
+        if (!SStrCmpI(child->GetName(), "Scripts", 0x7FFFFFFF)) {
+            AnimLoadXML_Scripts(this, child, status);
+
+            continue;
+        }
+
+        // Every other child is an animation, named by its type. CreateAnimation already maps an
+        // unrecognised name onto the base Animation, so a typo yields an inert animation rather
+        // than a dropped one -- the reference behaves the same way.
+        CSimpleAnim* anim = this->CreateAnimation(child->GetName(), nullptr);
+
+        if (anim) {
+            anim->LoadXML(child, status);
+        }
+    }
 }
 
 // ref: FUN_0049a8f0

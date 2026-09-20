@@ -92505,7 +92505,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 12
+"line": 15
 },
 "CScriptRegion::RegisterScriptMethods": {
 "files": [
@@ -92521,7 +92521,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 20
+"line": 23
 },
 "CScriptRegion::GetLayoutParent": {
 "files": [
@@ -92536,7 +92536,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 26
+"line": 29
 },
 "CScriptRegion::GetLayoutFrameByName": {
 "files": [
@@ -92555,7 +92555,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 34
+"line": 37
 },
 "CScriptRegion::GetObjectTypeName": {
 "files": [
@@ -92568,7 +92568,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 44
+"line": 47
 },
 "CScriptRegion::GetScriptObjectParent": {
 "files": [
@@ -92581,7 +92581,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 49
+"line": 52
 },
 "CScriptRegion::IsA": {
 "files": [
@@ -92599,7 +92599,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 53
+"line": 56
 },
 "CScriptRegion::IsDragging": {
 "files": [
@@ -92612,7 +92612,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 63
+"line": 66
 },
 "CScriptRegion::LoadXML": {
 "files": [
@@ -92644,20 +92644,46 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CScriptRegion::LoadXML_Animations": {
 "files": [
 "src/ui/cscriptregion.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"callseq": [
+"XMLNode::GetChildByName",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"XMLNode::GetName",
+"XMLNode::GetName",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CScriptRegion::GetObjectTypeName",
+"CStatus::Add",
+"SMemAlloc",
+"CSimpleAnimGroup::CSimpleAnimGroup",
+"TSGrowableArray<CSimpleAnimGroup *>::Add",
+"CSimpleAnimGroup::LoadXML"
+],
+"strings": [
+"%s %s: Unknown child node in %s element: %s",
+"<unnamed>",
+"AnimationGroup",
+"Animations",
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\cscriptregion.cpp"
+],
+"consts": [
+"0x0",
+"0x7FFFFFFF",
+"1"
+],
+"branches": 4,
+"stub": false,
+"lines": 25,
 "refs": [],
-"line": 102
+"line": 105
 },
 "CScriptRegion::NotifyAnimBegin": {
 "files": [
@@ -92670,7 +92696,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 106
+"line": 131
 },
 "CScriptRegion::NotifyAnimEnd": {
 "files": [
@@ -92683,7 +92709,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 110
+"line": 135
 },
 "CScriptRegion::OnLayerUpdate": {
 "files": [
@@ -92696,7 +92722,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 114
+"line": 139
 },
 "CScriptRegion::ProtectedFunctionsAllowed": {
 "files": [
@@ -92709,7 +92735,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 118
+"line": 143
 },
 "CScriptRegion::SetParent": {
 "files": [
@@ -92722,7 +92748,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 124
+"line": 149
 },
 "CScriptRegion::StopAnimating": {
 "files": [
@@ -92735,7 +92761,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 128
+"line": 153
 },
 "CScriptRegion_IsProtected": {
 "files": [
@@ -143441,6 +143467,33 @@
 "refs": [],
 "line": 3
 },
+"LoadXML_AnimOrigin": {
+"files": [
+"src/ui/loadxml.cpp"
+],
+"callseq": [
+"XMLNode::GetAttributeByName",
+"StringToFramePoint",
+"XMLNode::GetName",
+"CStatus::Add",
+"XMLNode::GetChildByName",
+"LoadXML_Dimensions"
+],
+"strings": [
+"Invalid origin point %s in element %s",
+"Offset",
+"point"
+],
+"consts": [
+"0.0f",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 26,
+"refs": [],
+"line": 10
+},
 "LoadXML_Color": {
 "files": [
 "src/ui/loadxml.cpp"
@@ -143477,9 +143530,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 55,
+"lines": 54,
 "refs": [],
-"line": 9
+"line": 38
 },
 "LoadXML_Dimensions": {
 "files": [
@@ -143529,9 +143582,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 65,
+"lines": 66,
 "refs": [],
-"line": 64
+"line": 93
 },
 "LoadXML_Gradient": {
 "files": [
@@ -143562,7 +143615,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 131
+"line": 160
 },
 "LoadXML_Insets": {
 "files": [
@@ -143636,9 +143689,9 @@
 ],
 "branches": 16,
 "stub": false,
-"lines": 113,
+"lines": 114,
 "refs": [],
-"line": 153
+"line": 182
 },
 "LoadXML_String": {
 "files": [
@@ -143661,9 +143714,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 12,
+"lines": 13,
 "refs": [],
-"line": 268
+"line": 297
 },
 "LoadXML_Texture": {
 "files": [
@@ -143686,9 +143739,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 16,
+"lines": 13,
 "refs": [],
-"line": 282
+"line": 311
 },
 "LoadXML_Value": {
 "files": [
@@ -143731,9 +143784,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 35,
+"lines": 47,
 "refs": [],
-"line": 296
+"line": 325
 },
 "setglobal": {
 "files": [
@@ -144852,7 +144905,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 20
+"line": 25
 },
 "AnimSmoothingFromName": {
 "files": [
@@ -144870,7 +144923,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 35
+"line": 40
 },
 "CSimpleAnim::CreateScriptMetaTable": {
 "files": [
@@ -144886,7 +144939,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 47
+"line": 52
 },
 "CSimpleAnim::GetObjectType": {
 "files": [
@@ -144899,7 +144952,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 54
+"line": 59
 },
 "CSimpleAnim::RegisterScriptMethods": {
 "files": [
@@ -144914,7 +144967,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 67
 },
 "CSimpleAnim::CSimpleAnim": {
 "files": [
@@ -144927,7 +144980,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 66
+"line": 71
 },
 "CSimpleAnim::~CSimpleAnim": {
 "files": [
@@ -144942,7 +144995,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 70
+"line": 75
 },
 "CSimpleAnim::GetScriptByName": {
 "files": [
@@ -144970,7 +145023,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 80
+"line": 85
 },
 "CSimpleAnim::GetScriptMetaTable": {
 "files": [
@@ -144983,7 +145036,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 113
+"line": 118
 },
 "CSimpleAnim::IsA": {
 "files": [
@@ -145003,7 +145056,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 117
+"line": 122
 },
 "CSimpleAnim::GetObjectTypeName": {
 "files": [
@@ -145016,7 +145069,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 126
+"line": 131
 },
 "CSimpleAnim::GetScriptObjectParent": {
 "files": [
@@ -145029,7 +145082,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 130
+"line": 135
 },
 "CSimpleAnim::Play": {
 "files": [
@@ -145044,7 +145097,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 137
+"line": 142
 },
 "CSimpleAnim::Pause": {
 "files": [
@@ -145057,7 +145110,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 150
+"line": 155
 },
 "CSimpleAnim::Stop": {
 "files": [
@@ -145072,7 +145125,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 156
+"line": 161
 },
 "CSimpleAnim::Finish": {
 "files": [
@@ -145087,7 +145140,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 166
+"line": 171
 },
 "CSimpleAnim::IsDone": {
 "files": [
@@ -145102,7 +145155,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 177
+"line": 182
 },
 "CSimpleAnim::IsDelaying": {
 "files": [
@@ -145115,7 +145168,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 181
+"line": 186
 },
 "CSimpleAnim::IsStopped": {
 "files": [
@@ -145128,7 +145181,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 185
+"line": 190
 },
 "CSimpleAnim::GetRegionParent": {
 "files": [
@@ -145141,7 +145194,84 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 194
+"line": 199
+},
+"AnimXmlOffset": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [
+"SStrToFloat",
+"CoordinateGetAspectCompensation",
+"NDCToDDCWidth"
+],
+"strings": [],
+"consts": [
+"1024.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 207
+},
+"CSimpleAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [
+"CScriptObject::PreLoadXML",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetAttributeByName",
+"AnimSmoothingFromName",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CStatus::Add",
+"XMLNode::GetAttributeByName",
+"SStrToInt",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CStatus::Add",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"AnimLoadXML_Scripts"
+],
+"strings": [
+"%s: Invalid order value: %s. Order must be between %d and %d.",
+"%s: Invalid smoothing value: %s",
+"<unnamed>",
+"Scripts",
+"duration",
+"endDelay",
+"maxFramerate",
+"order",
+"smoothing",
+"startDelay"
+],
+"consts": [
+"0",
+"0.0001f",
+"0.0f",
+"0x7FFFFFFF",
+"1",
+"1.0f",
+"100",
+"99"
+],
+"branches": 17,
+"stub": false,
+"lines": 72,
+"refs": [],
+"line": 221
 },
 "CSimpleAnim::SetParentGroup": {
 "files": [
@@ -145157,7 +145287,46 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 198
+"line": 294
+},
+"AnimLoadXML_Scripts": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"XMLNode::GetName",
+"FrameScript_Object::ScriptData::ScriptData",
+"FrameScript_Object::GetScriptByName",
+"luaL_unref",
+"XMLNode::GetAttributeByName",
+"lua_pushstring",
+"lua_rawget",
+"luaL_ref",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CScriptObject::GetObjectTypeName",
+"CStatus::Add",
+"SStrPrintf",
+"FrameScript_CompileFunction"
+],
+"strings": [
+"%s %s: Unknown function %s in element %s",
+"*:%s",
+"<unnamed>",
+"function",
+"return function(self) %s end"
+],
+"consts": [
+"0",
+"1",
+"1024"
+],
+"branches": 7,
+"stub": false,
+"lines": 52,
+"refs": [],
+"line": 311
 },
 "CSimpleTranslationAnim::CSimpleTranslationAnim": {
 "files": [
@@ -145170,7 +145339,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 48
+"line": 51
 },
 "CSimpleRotationAnim::CSimpleRotationAnim": {
 "files": [
@@ -145183,7 +145352,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 76
+"line": 80
 },
 "CSimpleScaleAnim::CSimpleScaleAnim": {
 "files": [
@@ -145196,7 +145365,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 103
+"line": 108
 },
 "CSimpleAlphaAnim::CSimpleAlphaAnim": {
 "files": [
@@ -145209,7 +145378,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 128
+"line": 134
 },
 "CSimplePathAnim::CSimplePathAnim": {
 "files": [
@@ -145222,7 +145391,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 186
+"line": 194
 },
 "AnimLoopTypeName": {
 "files": [
@@ -145239,7 +145408,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 18
+"line": 20
 },
 "AnimLoopTypeFromName": {
 "files": [
@@ -145257,7 +145426,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 28
+"line": 30
 },
 "AnimLoopStateName": {
 "files": [
@@ -145274,7 +145443,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 40
+"line": 42
 },
 "CSimpleAnimGroup::CreateScriptMetaTable": {
 "files": [
@@ -145290,7 +145459,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 48
+"line": 50
 },
 "CSimpleAnimGroup::GetObjectType": {
 "files": [
@@ -145303,7 +145472,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 55
+"line": 57
 },
 "CSimpleAnimGroup::RegisterScriptMethods": {
 "files": [
@@ -145318,7 +145487,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 63
+"line": 65
 },
 "CSimpleAnimGroup::CSimpleAnimGroup": {
 "files": [
@@ -145331,7 +145500,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 69
+"line": 71
 },
 "CSimpleAnimGroup::~CSimpleAnimGroup": {
 "files": [
@@ -145355,7 +145524,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 73
+"line": 75
 },
 "CSimpleAnimGroup::GetScriptByName": {
 "files": [
@@ -145388,7 +145557,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 93
+"line": 95
 },
 "CSimpleAnimGroup::GetScriptMetaTable": {
 "files": [
@@ -145401,7 +145570,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 135
+"line": 137
 },
 "CSimpleAnimGroup::IsA": {
 "files": [
@@ -145421,7 +145590,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 139
+"line": 141
 },
 "CSimpleAnimGroup::GetObjectTypeName": {
 "files": [
@@ -145434,7 +145603,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 148
+"line": 150
 },
 "CSimpleAnimGroup::GetScriptObjectParent": {
 "files": [
@@ -145447,7 +145616,49 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 152
+"line": 154
+},
+"CSimpleAnimGroup::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"CScriptObject::PreLoadXML",
+"XMLNode::GetAttributeByName",
+"AnimLoopTypeFromName",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CSimpleAnimGroup::GetObjectTypeName",
+"CStatus::Add",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"AnimLoadXML_Scripts",
+"XMLNode::GetName",
+"CSimpleAnimGroup::CreateAnimation",
+"CSimpleAnim::LoadXML"
+],
+"strings": [
+"%s %s: Invalid looping value: %s",
+"<unnamed>",
+"Scripts",
+"initialOffsetX",
+"initialOffsetY",
+"looping"
+],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 8,
+"stub": false,
+"lines": 46,
+"refs": [],
+"line": 162
 },
 "CSimpleAnimGroup::Play": {
 "files": [
@@ -145465,7 +145676,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 161
+"line": 214
 },
 "CSimpleAnimGroup::Pause": {
 "files": [
@@ -145484,7 +145695,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 179
+"line": 232
 },
 "CSimpleAnimGroup::Stop": {
 "files": [
@@ -145504,7 +145715,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 189
+"line": 242
 },
 "CSimpleAnimGroup::Finish": {
 "files": [
@@ -145517,7 +145728,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 205
+"line": 258
 },
 "CSimpleAnimGroup::IsDone": {
 "files": [
@@ -145537,7 +145748,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 211
+"line": 264
 },
 "CSimpleAnimGroup::GetMaxOrder": {
 "files": [
@@ -145556,7 +145767,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 225
+"line": 278
 },
 "CSimpleAnimGroup::GetDuration": {
 "files": [
@@ -145577,7 +145788,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 243
+"line": 296
 },
 "CSimpleAnimGroup::CreateAnimation": {
 "files": [
@@ -145621,7 +145832,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 280
+"line": 333
 },
 "CSimpleAnimGroup::AddAnimation": {
 "files": [
@@ -145641,7 +145852,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 308
+"line": 361
 },
 "CSimpleAnimGroup::RemoveAnimation": {
 "files": [
@@ -145663,7 +145874,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 322
+"line": 375
 },
 "AnimName": {
 "files": [
@@ -146918,7 +147129,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 11
+"line": 14
 },
 "AnimCurveFromName": {
 "files": [
@@ -146936,7 +147147,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 19
+"line": 22
 },
 "CSimpleTranslationAnim::CreateScriptMetaTable": {
 "files": [
@@ -146952,7 +147163,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 64
+"line": 67
 },
 "CSimpleTranslationAnim::GetObjectType": {
 "files": [
@@ -146965,7 +147176,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 64
+"line": 67
 },
 "CSimpleTranslationAnim::RegisterScriptMethods": {
 "files": [
@@ -146982,7 +147193,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 64
+"line": 67
 },
 "CSimpleTranslationAnim::GetScriptMetaTable": {
 "files": [
@@ -146995,7 +147206,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 64
+"line": 67
 },
 "CSimpleTranslationAnim::GetObjectTypeName": {
 "files": [
@@ -147008,7 +147219,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 64
+"line": 67
 },
 "CSimpleRotationAnim::CreateScriptMetaTable": {
 "files": [
@@ -147024,7 +147235,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CSimpleRotationAnim::GetObjectType": {
 "files": [
@@ -147037,7 +147248,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CSimpleRotationAnim::RegisterScriptMethods": {
 "files": [
@@ -147054,7 +147265,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CSimpleRotationAnim::GetScriptMetaTable": {
 "files": [
@@ -147067,7 +147278,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CSimpleRotationAnim::GetObjectTypeName": {
 "files": [
@@ -147080,7 +147291,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CSimpleScaleAnim::CreateScriptMetaTable": {
 "files": [
@@ -147096,7 +147307,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CSimpleScaleAnim::GetObjectType": {
 "files": [
@@ -147109,7 +147320,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CSimpleScaleAnim::RegisterScriptMethods": {
 "files": [
@@ -147126,7 +147337,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CSimpleScaleAnim::GetScriptMetaTable": {
 "files": [
@@ -147139,7 +147350,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CSimpleScaleAnim::GetObjectTypeName": {
 "files": [
@@ -147152,7 +147363,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 68
+"line": 71
 },
 "CSimpleAlphaAnim::CreateScriptMetaTable": {
 "files": [
@@ -147168,7 +147379,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CSimpleAlphaAnim::GetObjectType": {
 "files": [
@@ -147181,7 +147392,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CSimpleAlphaAnim::RegisterScriptMethods": {
 "files": [
@@ -147198,7 +147409,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CSimpleAlphaAnim::GetScriptMetaTable": {
 "files": [
@@ -147211,7 +147422,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CSimpleAlphaAnim::GetObjectTypeName": {
 "files": [
@@ -147224,7 +147435,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CSimplePathAnim::CreateScriptMetaTable": {
 "files": [
@@ -147240,7 +147451,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CSimplePathAnim::GetObjectType": {
 "files": [
@@ -147253,7 +147464,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CSimplePathAnim::RegisterScriptMethods": {
 "files": [
@@ -147270,7 +147481,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CSimplePathAnim::GetScriptMetaTable": {
 "files": [
@@ -147283,7 +147494,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CSimplePathAnim::GetObjectTypeName": {
 "files": [
@@ -147296,7 +147507,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 72
+"line": 75
 },
 "CSimpleControlPoint::CreateScriptMetaTable": {
 "files": [
@@ -147312,7 +147523,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 74
+"line": 77
 },
 "CSimpleControlPoint::GetObjectType": {
 "files": [
@@ -147325,7 +147536,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 74
+"line": 77
 },
 "CSimpleControlPoint::RegisterScriptMethods": {
 "files": [
@@ -147342,7 +147553,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 74
+"line": 77
 },
 "CSimpleControlPoint::GetScriptMetaTable": {
 "files": [
@@ -147355,7 +147566,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 74
+"line": 77
 },
 "CSimpleControlPoint::GetObjectTypeName": {
 "files": [
@@ -147368,7 +147579,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 74
+"line": 77
 },
 "CSimpleTranslationAnim::IsA": {
 "files": [
@@ -147388,7 +147599,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 91
+"line": 94
 },
 "CSimpleRotationAnim::IsA": {
 "files": [
@@ -147408,7 +147619,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 92
+"line": 95
 },
 "CSimpleScaleAnim::IsA": {
 "files": [
@@ -147428,7 +147639,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 93
+"line": 96
 },
 "CSimpleAlphaAnim::IsA": {
 "files": [
@@ -147448,7 +147659,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 94
+"line": 97
 },
 "CSimplePathAnim::IsA": {
 "files": [
@@ -147468,7 +147679,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 95
+"line": 98
 },
 "CSimpleControlPoint::IsA": {
 "files": [
@@ -147488,7 +147699,20 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 96
+"line": 99
+},
+"CSimpleScaleAnim::GetScale": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 114
 },
 "CSimpleControlPoint::CSimpleControlPoint": {
 "files": [
@@ -147501,7 +147725,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 102
+"line": 121
 },
 "CSimpleControlPoint::~CSimpleControlPoint": {
 "files": [
@@ -147516,7 +147740,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 106
+"line": 125
 },
 "CSimpleControlPoint::GetScriptObjectParent": {
 "files": [
@@ -147529,7 +147753,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 113
+"line": 132
 },
 "CSimpleControlPoint::SetParentPath": {
 "files": [
@@ -147545,7 +147769,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 117
+"line": 136
 },
 "CSimplePathAnim::~CSimplePathAnim": {
 "files": [
@@ -147569,7 +147793,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 135
+"line": 154
 },
 "CSimplePathAnim::GetMaxOrder": {
 "files": [
@@ -147588,7 +147812,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 149
+"line": 168
 },
 "CSimplePathAnim::CreateControlPoint": {
 "files": [
@@ -147610,7 +147834,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 163
+"line": 182
 },
 "CSimplePathAnim::AddControlPoint": {
 "files": [
@@ -147630,7 +147854,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 176
+"line": 195
 },
 "CSimplePathAnim::RemoveControlPoint": {
 "files": [
@@ -147652,7 +147876,207 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 190
+"line": 209
+},
+"LoadOriginChild": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"LoadXML_AnimOrigin",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CScriptObject::GetObjectTypeName",
+"CStatus::Add"
+],
+"strings": [
+"%s %s: Error loading Origin element",
+"<unnamed>"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 231
+},
+"CSimpleTranslationAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAnim::LoadXML",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset"
+],
+"strings": [
+"offsetX",
+"offsetY"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 241
+},
+"CSimpleRotationAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAnim::LoadXML",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"LoadOriginChild"
+],
+"strings": [
+"Origin",
+"degrees",
+"radians"
+],
+"consts": [
+"0.017453292519943295f",
+"0x7FFFFFFF"
+],
+"branches": 4,
+"stub": false,
+"lines": 22,
+"refs": [],
+"line": 259
+},
+"CSimpleScaleAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAnim::LoadXML",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CStatus::Add",
+"XMLNode::GetAttributeByName",
+"SStrToFloat",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CStatus::Add",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"LoadOriginChild"
+],
+"strings": [
+"%s: Invalid scaleX value: %s. Value must be at least %g.",
+"%s: Invalid scaleY value: %s. Value must be at least %g.",
+"<unnamed>",
+"Origin",
+"scaleX",
+"scaleY"
+],
+"consts": [
+"0.001",
+"0.001f",
+"0x7FFFFFFF"
+],
+"branches": 8,
+"stub": false,
+"lines": 44,
+"refs": [],
+"line": 289
+},
+"CSimpleAlphaAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAnim::LoadXML",
+"XMLNode::GetAttributeByName",
+"SStrToFloat"
+],
+"strings": [
+"change"
+],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 335
+},
+"CSimplePathAnim::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAnim::LoadXML",
+"XMLNode::GetAttributeByName",
+"AnimCurveFromName",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CSimplePathAnim::GetObjectTypeName",
+"CStatus::Add",
+"XMLNode::GetChildByName",
+"XMLNode::GetChild",
+"XMLNode::GetSibling",
+"XMLNode::GetName",
+"SStrCmpI",
+"CSimplePathAnim::CreateControlPoint",
+"CSimpleControlPoint::LoadXML",
+"XMLNode::GetName",
+"XMLNode::GetName",
+"CScriptObject::GetName",
+"CScriptObject::GetName",
+"CSimplePathAnim::GetObjectTypeName",
+"CStatus::Add"
+],
+"strings": [
+"%s %s: Invalid curve value: %s",
+"%s %s: Unknown child node in %s element: %s",
+"<unnamed>",
+"ControlPoint",
+"ControlPoints",
+"curve"
+],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 8,
+"stub": false,
+"lines": 38,
+"refs": [],
+"line": 348
+},
+"CSimpleControlPoint::LoadXML": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CScriptObject::PreLoadXML",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset",
+"XMLNode::GetAttributeByName",
+"AnimXmlOffset"
+],
+"strings": [
+"offsetX",
+"offsetY"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 390
 },
 "AnimThisOf": {
 "files": [
@@ -147936,6 +148360,7 @@
 ],
 "callseq": [
 "AnimThisOf",
+"CSimpleScaleAnim::GetScale",
 "lua_pushnumber",
 "lua_pushnumber"
 ],
@@ -147945,7 +148370,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 11,
 "refs": [],
 "line": 175
 },
@@ -147971,7 +148396,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 186
+"line": 189
 },
 "CSimpleAlphaAnim_GetChange": {
 "files": [
@@ -147989,7 +148414,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 200
+"line": 203
 },
 "CSimpleControlPoint_SetParent": {
 "files": [
@@ -148036,7 +148461,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 211
+"line": 214
 },
 "CSimpleControlPoint_SetOffset": {
 "files": [
@@ -148063,7 +148488,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 263
+"line": 266
 },
 "CSimpleControlPoint_GetOffset": {
 "files": [
@@ -148082,7 +148507,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 278
+"line": 281
 },
 "CSimpleControlPoint_SetOrder": {
 "files": [
@@ -148107,7 +148532,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 287
+"line": 290
 },
 "CSimpleControlPoint_GetOrder": {
 "files": [
@@ -148125,7 +148550,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 301
+"line": 304
 },
 "CSimplePathAnim_SetCurve": {
 "files": [
@@ -148153,7 +148578,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 311
+"line": 314
 },
 "CSimplePathAnim_GetCurve": {
 "files": [
@@ -148172,7 +148597,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 334
+"line": 337
 },
 "CSimplePathAnim_GetMaxOrder": {
 "files": [
@@ -148191,7 +148616,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 340
+"line": 343
 },
 "CSimplePathAnim_GetControlPoints": {
 "files": [
@@ -148217,7 +148642,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 346
+"line": 349
 },
 "CSimplePathAnim_CreateControlPoint": {
 "files": [
@@ -148241,7 +148666,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 370
+"line": 373
 },
 "CSimpleButton::CreateScriptMetaTable": {
 "files": [

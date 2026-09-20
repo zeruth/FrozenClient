@@ -1,10 +1,39 @@
 #include "ui/LoadXML.hpp"
+#include "ui/Util.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "ui/simple/CSimpleTexture.hpp"
 #include "util/CStatus.hpp"
 #include <common/XML.hpp>
 #include <storm/String.hpp>
+
+int32_t LoadXML_AnimOrigin(const XMLNode* node, FRAMEPOINT& point, float& offsetX, float& offsetY,
+                           CStatus* status) {
+    point = FRAMEPOINT_CENTER;
+    offsetX = 0.0f;
+    offsetY = 0.0f;
+
+    const char* pointAttr = node->GetAttributeByName("point");
+
+    if (!pointAttr || !*pointAttr) {
+        return 1;
+    }
+
+    if (!StringToFramePoint(pointAttr, point)) {
+        status->Add(STATUS_WARNING, "Invalid origin point %s in element %s", pointAttr,
+                    node->GetName());
+    }
+
+    // Read INSIDE the point branch, as the reference does: an <Origin> with an <Offset> but no
+    // point attribute contributes nothing at all.
+    auto offsetNode = node->GetChildByName("Offset");
+
+    if (offsetNode) {
+        LoadXML_Dimensions(offsetNode, offsetX, offsetY, status);
+    }
+
+    return 1;
+}
 
 int32_t LoadXML_Color(const XMLNode* node, CImVector& color) {
     float r = 0.0f;

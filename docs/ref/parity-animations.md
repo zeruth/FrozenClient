@@ -198,9 +198,23 @@ Each stage should end in a committable increment; none of it should go in blind 
    then a string, then a table -- stage 1 treated "not a table" as the nil case, which reported a
    number as a nil parent instead of letting it reach the type error. `SetParent` also has a
    "Couldn't find 'this' in parent object" branch stage 1 folded into the wrong-type one.
-3. **XML loading.** `CScriptRegion::LoadXML_Animations`, currently an empty TODO, plus the
-   `<Animations>` / `<AnimationGroup>` node shapes. FrameXML declares most animations in XML, so
-   until this lands stage 1 only serves the scripted path.
+3. **XML loading. DONE, unverified** -- landed 2026-09-20. `CScriptRegion::LoadXML_Animations`
+   (`FUN_004883f0`) plus a `LoadXML` on every class, and `LoadXML_AnimOrigin` for the `<Origin>`
+   element. The `<Scripts>` block goes through its own `AnimLoadXML_Scripts` (`FUN_00497c30`)
+   rather than `CSimpleFrame`'s: the reference keeps two of these, and only the frame's says
+   "Frame %s:".
+
+   Constants and quirks taken from the binary rather than assumed: `startDelay`/`endDelay` clamp at
+   zero silently; `order` is 1-based in XML, stored 0-based, and an out-of-range value is reported
+   **and then clamped** rather than dropped; `maxFramerate` is tested against 1e-4, not zero, and a
+   1/rate interval is stored beside it; `scaleX`/`scaleY` are bounded below at 0.001, reported and
+   clamped; `degrees` and `radians` write the same field so the last one in the element wins;
+   offsets go through the `<AbsDimension>` conversion rather than being raw pixels.
+
+   One correction: `FUN_004980d0`, blocked as unlinked in stage 2 on the reading that it was driver
+   arithmetic, is `CSimpleScaleAnim::GetScale`. The loader settles it -- it stores `1 - scale`, so
+   that function's `{1 - x, 1 - y}` is simply how the scale reads back out. Now linked, with the
+   storage difference recorded as a divergence.
 4. **The driver.** Per-frame advance, ordering, delays, smoothing curves, looping, and the
    `OnPlay`/`OnFinished`/`OnUpdate`/`OnLoop` script handlers via `NotifyAnimBegin` (also a TODO in
    `CScriptRegion`). This is the stage that makes anything move, and the one to verify on screen.

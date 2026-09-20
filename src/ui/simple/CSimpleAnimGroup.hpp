@@ -7,6 +7,8 @@
 
 class CSimpleAnim;
 class CScriptRegion;
+class CStatus;
+class XMLNode;
 
 // Recovered from the reference's tables at 00a440a4 and 00a440bc, both {int, const char*} triples.
 enum ANIM_LOOPTYPE {
@@ -85,6 +87,7 @@ class CSimpleAnimGroup : public CScriptObject {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual CScriptObject* GetScriptObjectParent();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         // Member functions
         CSimpleAnimGroup(CScriptRegion* region);

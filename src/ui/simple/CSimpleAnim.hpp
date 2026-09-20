@@ -6,6 +6,8 @@
 
 class CSimpleAnimGroup;
 class CScriptRegion;
+class CStatus;
+class XMLNode;
 
 // The smoothing curve names, recovered from the reference's enum-to-string table at 00a44068:
 // five {float, float, const char*} rows, the pair being the ease-in and ease-out weights.
@@ -52,6 +54,10 @@ class CSimpleAnim : public CScriptObject {
         ANIM_SMOOTHING m_smoothing = ANIM_SMOOTHING_NONE;
         float m_maxFramerate = 0.0f;
 
+        // Seconds per frame, which the reference derives and stores beside the rate rather than
+        // dividing each frame. Zero when the rate is zero, meaning uncapped.
+        float m_maxFramerateInterval = 0.0f;
+
         // Advanced by the driver, which is not written yet (stage 4 in
         // docs/ref/parity-animations.md). Until then these stay at zero and every animation reads
         // as sitting at its start.
@@ -90,6 +96,7 @@ class CSimpleAnim : public CScriptObject {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual CScriptObject* GetScriptObjectParent();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         // Member functions
         CSimpleAnim(CSimpleAnimGroup* group);
@@ -109,5 +116,14 @@ class CSimpleAnim : public CScriptObject {
         CScriptRegion* GetRegionParent();
         void SetParentGroup(CSimpleAnimGroup* group);
 };
+
+// ref: FUN_00497c30
+// The <Scripts> block on an animation. Deliberately NOT CSimpleFrame::LoadXML_Scripts: the
+// reference keeps two of these, one for frames at 0048fef0 whose complaint begins "Frame %s:" and
+// this one whose complaint begins with the object's type and name. Sharing them would change the
+// message FrameXML authors see.
+void AnimLoadXML_Scripts(CScriptObject* object, const XMLNode* root, CStatus* status);
+
+float AnimXmlOffset(const char* attr);
 
 #endif

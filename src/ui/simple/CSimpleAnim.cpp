@@ -2,6 +2,11 @@
 #include "ui/simple/CSimpleAnimGroup.hpp"
 #include "ui/simple/CSimpleAnimScript.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/LoadXML.hpp"
+#include "gx/Coordinate.hpp"
+#include "util/CStatus.hpp"
+#include "util/Lua.hpp"
+#include <common/XML.hpp>
 #include <storm/String.hpp>
 #include <cstdint>
 
@@ -195,6 +200,97 @@ CScriptRegion* CSimpleAnim::GetRegionParent() {
     return this->m_group ? this->m_group->m_region : nullptr;
 }
 
+// An offsetX / offsetY / initialOffset attribute. The reference converts these the same way
+// <AbsDimension> is converted -- divide by 1024 scaled by the aspect compensation, then NDC to
+// DDC -- rather than taking them as raw pixels. Translation, ControlPoint and AnimationGroup all
+// go through it.
+float AnimXmlOffset(const char* attr) {
+    float value = SStrToFloat(attr);
+
+    return NDCToDDCWidth(value / (CoordinateGetAspectCompensation() * 1024.0f));
+}
+
+// ref: FUN_0049b810
+// Every attribute the base animation understands. Two of them do not behave the way their names
+// suggest and are worth stating:
+//
+//  - startDelay and endDelay are CLAMPED at zero. A negative value is silently raised to 0, not
+//    reported.
+//  - order is 1-based in XML and stored 0-based. Out of range is reported AND THEN CLAMPED, so a
+//    bad order still yields a usable animation rather than dropping it. The bounds are 1 to 100.
+void CSimpleAnim::LoadXML(const XMLNode* node, CStatus* status) {
+    this->PreLoadXML(node, status);
+
+    const char* startDelayAttr = node->GetAttributeByName("startDelay");
+
+    if (startDelayAttr && *startDelayAttr) {
+        float value = SStrToFloat(startDelayAttr);
+        this->m_startDelay = value < 0.0f ? 0.0f : value;
+    }
+
+    const char* endDelayAttr = node->GetAttributeByName("endDelay");
+
+    if (endDelayAttr && *endDelayAttr) {
+        float value = SStrToFloat(endDelayAttr);
+        this->m_endDelay = value < 0.0f ? 0.0f : value;
+    }
+
+    const char* durationAttr = node->GetAttributeByName("duration");
+
+    if (durationAttr && *durationAttr) {
+        this->m_duration = SStrToFloat(durationAttr);
+    }
+
+    const char* maxFramerateAttr = node->GetAttributeByName("maxFramerate");
+
+    if (maxFramerateAttr && *maxFramerateAttr) {
+        float value = SStrToFloat(maxFramerateAttr);
+
+        // Against 1e-4, not against zero: the reference's threshold is _DAT_009e8cd0. A rate
+        // below it counts as uncapped rather than producing an enormous interval.
+        if (value > 0.0001f) {
+            this->m_maxFramerate = value;
+            this->m_maxFramerateInterval = 1.0f / value;
+        } else {
+            this->m_maxFramerate = 0.0f;
+            this->m_maxFramerateInterval = 0.0f;
+        }
+    }
+
+    const char* smoothingAttr = node->GetAttributeByName("smoothing");
+
+    if (smoothingAttr && *smoothingAttr) {
+        ANIM_SMOOTHING smoothing;
+
+        if (AnimSmoothingFromName(smoothingAttr, smoothing)) {
+            this->m_smoothing = smoothing;
+        } else {
+            status->Add(STATUS_WARNING, "%s: Invalid smoothing value: %s",
+                        this->GetName() ? this->GetName() : "<unnamed>", smoothingAttr);
+        }
+    }
+
+    const char* orderAttr = node->GetAttributeByName("order");
+
+    if (orderAttr && *orderAttr) {
+        int32_t order = SStrToInt(orderAttr) - 1;
+
+        if (order < 0 || order > 99) {
+            status->Add(STATUS_WARNING,
+                        "%s: Invalid order value: %s. Order must be between %d and %d.",
+                        this->GetName() ? this->GetName() : "<unnamed>", orderAttr, 1, 100);
+        }
+
+        this->m_order = static_cast<int8_t>(order < 0 ? 0 : (order > 99 ? 99 : order));
+    }
+
+    for (auto child = node->GetChild(); child; child = child->GetSibling()) {
+        if (!SStrCmpI(child->GetName(), "Scripts", 0x7FFFFFFF)) {
+            AnimLoadXML_Scripts(this, child, status);
+        }
+    }
+}
+
 void CSimpleAnim::SetParentGroup(CSimpleAnimGroup* group) {
     if (this->m_group == group) {
         return;
@@ -208,5 +304,59 @@ void CSimpleAnim::SetParentGroup(CSimpleAnimGroup* group) {
 
     if (group) {
         group->AddAnimation(this);
+    }
+}
+
+// ref: FUN_00497c30
+void AnimLoadXML_Scripts(CScriptObject* object, const XMLNode* root, CStatus* status) {
+    lua_State* L = FrameScript_GetContext();
+
+    for (auto node = root->m_child; node; node = node->m_next) {
+        const char* scriptName = node->GetName();
+
+        FrameScript_Object::ScriptData scriptData;
+        scriptData.wrapper = "return function(self) %s end";
+
+        auto script = object->GetScriptByName(scriptName, scriptData);
+
+        if (!script) {
+            continue;
+        }
+
+        if (script->luaRef) {
+            luaL_unref(L, LUA_REGISTRYINDEX, script->luaRef);
+            script->luaRef = 0;
+        }
+
+        const char* functionLookup = node->GetAttributeByName("function");
+
+        if (functionLookup && *functionLookup) {
+            lua_pushstring(L, functionLookup);
+            lua_rawget(L, LUA_GLOBALSINDEX);
+
+            int32_t luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
+            if (luaRef == -1) {
+                status->Add(STATUS_WARNING, "%s %s: Unknown function %s in element %s",
+                            object->GetObjectTypeName(),
+                            object->GetName() ? object->GetName() : "<unnamed>",
+                            functionLookup, scriptName);
+            } else {
+                script->luaRef = luaRef;
+            }
+
+            continue;
+        }
+
+        const char* scriptBody = node->m_body;
+
+        if (scriptBody && *scriptBody) {
+            char compileName[1024];
+            SStrPrintf(compileName, sizeof(compileName), "*:%s", scriptName);
+
+            script->luaRef = FrameScript_CompileFunction(
+                compileName, scriptData.wrapper, scriptBody, status
+            );
+        }
     }
 }

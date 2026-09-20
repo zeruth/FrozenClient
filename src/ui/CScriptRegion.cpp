@@ -4,6 +4,9 @@
 #include "ui/CScriptRegionScript.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "util/Lua.hpp"
+#include "util/CStatus.hpp"
+#include <storm/Memory.hpp>
+#include <storm/String.hpp>
 #include <common/XML.hpp>
 
 int32_t CScriptRegion::s_objectType;
@@ -96,11 +99,33 @@ void CScriptRegion::LoadXML(const XMLNode* node, CStatus* status) {
     this->LoadXML_Animations(node, status);
 }
 
-// TODO stage 3 in docs/ref/parity-animations.md. FrameXML declares most of its animations in XML
-// rather than building them from Lua, so until this reads <Animations> the classes below only
-// serve the scripted path.
+// ref: FUN_004883f0
+// The <Animations> block on a region: a flat list of <AnimationGroup> elements, each of which
+// owns its animations. Anything else in there is reported by name and skipped.
 void CScriptRegion::LoadXML_Animations(const XMLNode* node, CStatus* status) {
-    // TODO
+    auto animations = node->GetChildByName("Animations");
+
+    if (!animations) {
+        return;
+    }
+
+    for (auto child = animations->GetChild(); child; child = child->GetSibling()) {
+        if (SStrCmpI(child->GetName(), "AnimationGroup", 0x7FFFFFFF)) {
+            status->Add(STATUS_WARNING, "%s %s: Unknown child node in %s element: %s",
+                        this->GetObjectTypeName(),
+                        this->GetName() ? this->GetName() : "<unnamed>",
+                        animations->GetName(), child->GetName());
+
+            continue;
+        }
+
+        void* m = SMemAlloc(sizeof(CSimpleAnimGroup), __FILE__, __LINE__, 0x0);
+        auto group = new (m) CSimpleAnimGroup(this);
+
+        this->m_animGroups.Add(1, &group);
+
+        group->LoadXML(child, status);
+    }
 }
 
 void CScriptRegion::NotifyAnimBegin(CSimpleAnimGroup* animGroup) {

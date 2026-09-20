@@ -14,6 +14,8 @@
 // because control points belong to a Path and are made by Path:CreateControlPoint.
 
 class CSimplePathAnim;
+class CStatus;
+class XMLNode;
 
 // Only two curve types, from the reference's table at 00a440d4.
 enum ANIM_CURVE {
@@ -44,6 +46,7 @@ class CSimpleTranslationAnim : public CSimpleAnim {
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimpleTranslationAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 };
@@ -72,6 +75,7 @@ class CSimpleRotationAnim : public CSimpleAnim {
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimpleRotationAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 };
@@ -99,8 +103,11 @@ class CSimpleScaleAnim : public CSimpleAnim {
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimpleScaleAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
+
+        void GetScale(float& x, float& y) const;
 };
 
 // ---------------------------------------------------------------------------- Alpha
@@ -124,6 +131,7 @@ class CSimpleAlphaAnim : public CSimpleAnim {
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimpleAlphaAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 };
@@ -154,6 +162,7 @@ class CSimpleControlPoint : public CScriptObject {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual CScriptObject* GetScriptObjectParent();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimpleControlPoint(CSimplePathAnim* path);
 
@@ -182,6 +191,7 @@ class CSimplePathAnim : public CSimpleAnim {
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
+        virtual void LoadXML(const XMLNode* node, CStatus* status);
 
         CSimplePathAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 
