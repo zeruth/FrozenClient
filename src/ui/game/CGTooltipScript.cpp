@@ -1135,6 +1135,31 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
 // (_DAT_009e1134 in the reference).
 static const float DELAY_TO_SECONDS = 0.001f;
 
+// The order the stat block lists stats in, read out of the reference's DAT_00a262f0. This is a
+// display order, not the record's storage order, and the loop over it is what decides which stat
+// types appear at all: the rating stats (12 upward) are absent on purpose.
+static const int32_t STAT_DISPLAY_ORDER[] = { 4, 3, 7, 5, 6, 1, 0, 8, 9, 2, 10 };
+
+// The GlobalStrings key per stat type, from the reference's table at 00ad6640. Only the entries
+// the order above can reach are here; the full table runs to 48 and then continues into the socket
+// colour names. The empty ones are empty in the reference too and emit no line.
+static const char* const STAT_NAME_KEYS[] = {
+    "ITEM_MOD_MANA",      // 0
+    "ITEM_MOD_HEALTH",    // 1
+    "",                   // 2
+    "ITEM_MOD_AGILITY",   // 3
+    "ITEM_MOD_STRENGTH",  // 4
+    "ITEM_MOD_INTELLECT", // 5
+    "ITEM_MOD_SPIRIT",    // 6
+    "ITEM_MOD_STAMINA",   // 7
+    "",                   // 8
+    "",                   // 9
+    "",                   // 10
+};
+
+static const int32_t STAT_NAME_KEY_COUNT =
+    static_cast<int32_t>(sizeof(STAT_NAME_KEYS) / sizeof(STAT_NAME_KEYS[0]));
+
 // Item classes the tooltip gates lines on. The speed and damage-per-second lines want a weapon;
 // the item level line wants any of the four below.
 static const int32_t ITEM_CLASS_WEAPON = 2;
@@ -1217,6 +1242,48 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("SHIELD_BLOCK_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->block);
         TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    // The stat block.
+    //
+    // Two things here are the reference's and would not survive being guessed from a screenshot.
+    //
+    // The stats are shown in a FIXED display order (DAT_00a262f0), not in the order the record
+    // carries them, so a chest with stamina stored before strength still lists strength first.
+    // And the order table only names eleven stat types, all of them primary -- the rating stats
+    // (types 12 upward: crit, haste, expertise and the rest) are not part of this block at all.
+    // Those appear as green "Equip:" lines out of the spell block, which is not ported.
+    //
+    // The whole block is skipped for an item with a scaling stat distribution, which computes its
+    // stats instead of storing them.
+    if (info->scalingStatValue == 0) {
+        for (auto wanted : STAT_DISPLAY_ORDER) {
+            for (int32_t i = 0; i < ItemInfo::MAX_STATS; i++) {
+                if (info->statValue[i] == 0 || info->statType[i] == -1 || info->statType[i] != wanted) {
+                    continue;
+                }
+
+                auto key = (wanted >= 0 && wanted < STAT_NAME_KEY_COUNT) ? STAT_NAME_KEYS[wanted] : "";
+                auto format = *key ? FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE) : nullptr;
+
+                // Several entries in the reference's table are deliberately empty; it tests the
+                // resolved string and emits nothing rather than a line reading "%c%d".
+                if (format && *format) {
+                    auto value = info->statValue[i];
+
+                    // The format's leading %c is the sign and the %d after it is the magnitude, so
+                    // the value is split rather than printed signed.
+                    SStrPrintf(text, sizeof(text), format,
+                               value < 1 ? '-' : '+',
+                               value < 0 ? -value : value);
+                    TooltipSetLine(tooltip, line, false, text);
+                    TooltipSetLineWrap(tooltip, line, true);
+                    line++;
+                }
+
+                break;
+            }
+        }
     }
 
     // Durability comes from the item instance, not the record, so it is passed in; an item with no
