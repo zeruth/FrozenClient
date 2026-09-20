@@ -15,6 +15,18 @@ namespace {
 std::vector<UIBindingCommand> s_commands;
 bool s_loaded = false;
 
+// Lookup during the load itself, before EnsureLoaded has finished -- the public UIBindingsFind
+// would recurse into it. The reference guards every registration with the same test.
+const UIBindingCommand* UIBindingsFindLoaded(const char* name) {
+    for (auto& command : s_commands) {
+        if (!SStrCmpI(command.name.c_str(), name, 0x7FFFFFFF)) {
+            return &command;
+        }
+    }
+
+    return nullptr;
+}
+
 // DIVERGENCE: the reference parses Bindings.xml during UI initialisation, alongside the rest of
 // FrameXML. This loads on the first query instead. For a table that is read-only and has no
 // dependency on anything else being up, the two are indistinguishable from the outside, and it
@@ -39,8 +51,7 @@ void EnsureLoaded() {
     auto root = XMLTree_GetRoot(tree);
 
     // The header attribute appears once, on the first command of a group, and every command after
-    // it belongs to that group until the next one says otherwise. Resolving it here means nothing
-    // downstream has to remember the previous row.
+    // it belongs to that group until the next one says otherwise.
     std::string header;
 
     for (auto node = root ? root->GetChild() : nullptr; node; node = node->GetSibling()) {
@@ -57,10 +68,43 @@ void EnsureLoaded() {
             continue;
         }
 
+        // Rows the reference drops on the floor before registering anything. A debug binding is
+        // only for a debug build, and a row that names a platform is only for that platform --
+        // the reference compares against "windows" literally.
+        auto debug = node->GetAttributeByName("debug");
+
+        if (debug && StringToBOOL(debug)) {
+            continue;
+        }
+
+        auto platform = node->GetAttributeByName("platform");
+
+        if (platform && *platform && SStrCmpI(platform, "windows", 0x7FFFFFFF)) {
+            continue;
+        }
+
+        if (UIBindingsFindLoaded(commandName)) {
+            continue;
+        }
+
         auto groupName = node->GetAttributeByName("header");
 
         if (groupName && *groupName) {
             header = groupName;
+
+            // A header is registered as a command in its own right, named HEADER_<name>, and it
+            // takes an index in the list like any other. That is not a quirk to work around: it
+            // is how the key binding pane draws its section titles, by walking the same indices
+            // and finding a HEADER_ row where a heading belongs. Dropping them would renumber
+            // every command after the first group.
+            UIBindingCommand headerRow;
+            headerRow.name = "HEADER_" + header;
+            headerRow.header = header;
+            headerRow.isHeader = true;
+
+            if (!UIBindingsFindLoaded(headerRow.name.c_str())) {
+                s_commands.push_back(headerRow);
+            }
         }
 
         UIBindingCommand command;
@@ -72,6 +116,22 @@ void EnsureLoaded() {
 
         auto runOnUp = node->GetAttributeByName("runOnUp");
         command.runOnUp = runOnUp && StringToBOOL(runOnUp);
+
+        // A hidden row, or a joystick row on a machine with no joystick, is still registered --
+        // SetBinding can still name it -- but the reference gives it a negative index so it never
+        // appears in the numbered walk the pane does.
+        auto hidden = node->GetAttributeByName("hidden");
+        command.hidden = hidden && StringToBOOL(hidden);
+
+        // The default key, which is the ONLY place a default binding can come from: the parser
+        // reads this attribute and writes it straight into binding set 0. See
+        // docs/ref/parity-bindings.md -- the shipped 3.3.5a file uses it on no Binding row at all,
+        // so this is implemented and inert against that data rather than left out.
+        auto defaultKey = node->GetAttributeByName("default");
+
+        if (defaultKey && *defaultKey) {
+            command.keys[0] = defaultKey;
+        }
 
         s_commands.push_back(command);
     }

@@ -28,6 +28,13 @@ struct UIBindingCommand {
     // The command fires on key release as well as press.
     bool runOnUp = false;
 
+    // A section title rather than a real command, named HEADER_<group>. The reference registers
+    // these in the command list so the key binding pane finds its headings by walking indices.
+    bool isHeader = false;
+
+    // Registered, and bindable by name, but left out of the numbered walk the pane does.
+    bool hidden = false;
+
     // Up to two keys may be bound to one command. Empty means not bound.
     std::string keys[2];
 };

@@ -21,11 +21,9 @@ The command names are not in the executable either -- searching it for `ACTIONBU
 `MOVEFORWARD` or `TOGGLEGAMEMENU` finds nothing. So the command list has exactly one source, and
 this half is fully portable from data.
 
-The keys live in a saved profile. The executable references `bindings-cache` (twice) and
-`Bindings.xml` (twice); the reference install used here has no `WTF` bindings cache to read, so
-**the default key set has not been located yet.** That is the open question, and the next thing to
-chase: whichever function writes `bindings-cache` will name the format, and whatever seeds it on a
-fresh profile is the default table.
+The keys live in a saved profile, or in a `default` attribute the shipped file never uses --
+**see section 3c, which answers this; sections 3a and 3b are kept as the record of how, including
+one hypothesis that turned out wrong.**
 
 ---
 
@@ -134,15 +132,56 @@ on top of the four in section 1:
    shipped `bindings-cache.wtf` were each probed by exact path against the archives (the listfile
    is incomplete, so a name search is not enough) and none exists.
 
-**The next probe**, and the one place left that fits: the handler that consumes a `<Binding>`
-element while Bindings.xml is parsed. It has to register the command, and it is the only code that
-sees a command and its position at the same moment -- which is what an index-keyed default table
-would need. Find it from the FrameXML XML dispatch, not from the binding module.
+## 3c. Answered (2026-09-20, third pass)
+
+The `<Binding>` handler is `FUN_00564470`, reached from the element dispatch at 0x00564828. It
+ends with exactly this:
+
+```c
+key = GetAttribute("default");
+if (key && *key && !AlreadyBound(key)) {
+    FUN_00562ed0(0, 0, key, commandName);   // bind, into SET 0
+    return;
+}
+```
+
+**So the mechanism was the `default` attribute all along, and it writes straight into set 0.**
+There is no index-keyed table and no hidden data file; the hypothesis in 3b was wrong.
+
+What makes this confusing is that the shipped 3.3.5a `Interface\FrameXML\Bindings.xml` uses
+`default` on **no `<Binding>` row at all** -- its sixteen uses are all on `<ModifiedClick>` -- and
+no Blizzard add-on ships a `Bindings.xml` either (probed by exact path). Against this data the
+mechanism is real and produces nothing, which is consistent with every other observation: a
+constructor that seeds nothing, a FrameXML that never calls `LoadBindings`, and an install played
+across three characters with no `bindings-cache.wtf` ever written.
+
+Frozen implements the attribute. It is correct against the reference and inert against this data,
+which is the right state to be in: if a `Bindings.xml` with defaults ever appears, it works.
+
+### What the same handler gave up, which matters more
+
+Reading it corrected a real fidelity bug in the frozen port:
+
+- **A header is registered as a command in its own right**, named `HEADER_<group>`, and consumes
+  an index. That is how the key binding pane draws its section titles -- by walking indices and
+  finding a `HEADER_` row where a heading belongs. Frozen was skipping them, which renumbered
+  every command after the first group.
+- Rows with `debug` set are dropped, and rows naming a `platform` are dropped unless it is
+  literally `windows`.
+- `hidden` rows (and joystick rows with no joystick) are still registered and still bindable by
+  name, but take a NEGATIVE index so the numbered walk never reaches them.
+- The Lua body is wrapped as
+  `return function(keystate, pressure, angle, precision) %s end`.
+- `pressure` and `angle` are attributes too, alongside `runOnUp`.
+- Every registration is guarded against a duplicate name, headers included.
+
+With the header rows and the two drops, the shipped file yields **270 entries: 253 commands and
+17 headers** -- not the 273 a naive pass produces.
 
 ## 4. What is left
 
-1. **The default key set** (section 1). Everything else is blocked behind it -- without keys, the
-   table is complete and inert.
+1. ~~**The default key set**~~ -- answered in section 3c. The mechanism is the `default` attribute
+   on `<Binding>`, which the shipped file never uses. Implemented and inert against this data.
 2. `SetBinding` and friends, and saving to a bindings cache.
 3. The dispatch half: a key event resolving to a command and running its Lua body. The bodies are
    already parsed and kept for it.
