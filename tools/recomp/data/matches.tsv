@@ -1199,11 +1199,12 @@ addr	how	frozen	evidence
 0053b5c0	table	Script_GetNumSpellTabs	binding "GetNumSpellTabs" in s_ScriptFunctions ~ table 00accce0
 0053b650	table	Script_GetKnownSlotFromHighestRankSlot	binding "GetKnownSlotFromHighestRankSlot" in s_ScriptFunctions ~ table 00accce0
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
-0053c0b0	table	Script_ReturnZero	binding "GetNumShapeshiftForms" in s_ScriptFunctions ~ table 00accce0
+0053c0b0	override	Script_ReturnZero	
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
 0053dc20	sticky	SpellIconPath	held from the previous run, where it was sticky
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
+0053de10	override	Script_Stub_GetShapeshiftForm	
 0053e2c0	table	Script_ReturnNothing	binding "GetCompanionInfo" in s_ScriptFunctions ~ table 00accce0
 0053e490	order	Script_Stub_GetCompanionCooldown	binding table name Script_Stub_GetCompanionCooldown, in definition order in src/ui/game/miscscriptstubs.cpp
 00540670	sticky	SpellAtSlot	held from the previous run, where it was sticky

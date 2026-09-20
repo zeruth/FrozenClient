@@ -19151,10 +19151,10 @@
   ],
   "frozen": "Script_ReturnZero",
   "frozenSize": 22,
-  "how": "table",
+  "how": "override",
   "module": "SpellBookFrame.cpp",
   "refSize": 52,
-  "status": "ported"
+  "status": "diverged"
  },
  "0053c430": {
   "branchRatio": 0.4,
@@ -19219,6 +19219,21 @@
   "module": "SpellBookFrame.cpp",
   "refSize": 217,
   "status": "ported"
+ },
+ "0053de10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GetShapeshiftForm",
+  "frozenSize": 60,
+  "how": "override",
+  "module": "SpellBookFrame.cpp",
+  "refSize": 65,
+  "status": "stub"
  },
  "0053e2c0": {
   "branchRatio": 0.0,

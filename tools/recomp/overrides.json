@@ -1221,5 +1221,15 @@
   "00481720": {
     "status": "unlinked",
     "note": "A CSimpleTexture getter for the underlying GxTex, and NOT the destructor the order matcher offered. Read directly: it returns TextureGetGxTex(this[0xd4], 1, 0) when the handle is set and 0 otherwise. That +0xd4 is the texture handle is independently confirmed -- it is the same field CSimpleTexture::SetTextureObject (FUN_00481520) writes, found earlier while chasing SetPortraitToTexture. Frozen exposes no such accessor; its callers reach m_texture directly, so there is nothing to point at and this is blocked rather than linked. One of three false links the order matcher produced across 00481620-00481720 once AddAnimTranslation at 00481740 gave it a fresh anchor to fill backwards from; the other two were identifiable and are now tagged."
+  },
+  "0053de10": {
+    "frozen": "Script_Stub_GetShapeshiftForm",
+    "status": "stub",
+    "note": "GetShapeshiftForm([useUnit]). Traced end to end 2026-09-20 so the next attempt does not have to: the binding reads an optional boolean and hands it to FUN_0053d4b0, which walks the server-sent shapeshift bar DOWNWARD from its count (DAT_00be8e28, entries at DAT_00be8e2c, 8 bytes each with the spell id first), looks each spell up, and asks FUN_00802cb0 whether the player is currently in that spell's form. The result is a ONE-BASED index into the bar, 0 when not shapeshifted, and count+1 for a form that is not on the bar at all. The useUnit argument only gates whether an unshifted player short-circuits to 0. Blocked on two things frozen does not have, and one it now does. It HAS the unit's current form: CGUnit_C::GetShapeshiftForm, byte 3 of UNIT_FIELD_BYTES_2, ported from FUN_0071af70. It does NOT have the shapeshift bar -- no opcode in net/Types.hpp carries it -- and it does NOT have the form field on SpellRec that FUN_00802cb0 compares against. Either alone leaves this unanswerable, so it stays a stub rather than a guess."
+  },
+  "0053c0b0": {
+    "frozen": "Script_ReturnZero",
+    "status": "diverged",
+    "note": "GetNumShapeshiftForms. The reference returns the count of entries on the server-sent shapeshift bar (DAT_00be8e28) and nothing else -- the whole body is that global pushed as a number. Frozen registers the shared zero-returner instead, which is correct in the only sense available to it: with no bar received the count really is zero, and FrameXML builds no form buttons. It becomes a real port the moment the bar arrives; see 0053de10 for what that needs."
   }
 }
