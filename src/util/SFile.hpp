@@ -9,6 +9,14 @@
 struct SOVERLAPPED;
 struct TASYNCPARAMBLOCK;
 
+// Open flag: also look for the file loose on disk, not only inside the archives.
+//
+// Without it, SFile::OpenEx consults local files only when no archive is open at all -- so on a
+// normal install anything shipped outside the MPQs is invisible. The cinematics under
+// Data/<locale>/Interface/Cinematics are exactly that. Named here because callers were passing a
+// bare 0x1 and the meaning was not recoverable from the call site.
+#define SFILE_OPEN_ALLOW_LOCAL 0x1
+
 // An open MPQ archive.
 //
 // Archives are kept in a global list ordered by priority. When a file is opened without naming

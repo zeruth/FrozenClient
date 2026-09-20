@@ -82,6 +82,11 @@ class CSimpleTexture : public CSimpleRegion {
         void SetTexCoord(const C2Vector* texCoord);
         int32_t SetTexture(const char* fileName, bool wrapU, bool wrapV, EGxTexFilter filter, TextureImageMode mode);
         int32_t SetTexture(const CImVector& color);
+
+        // Take an already-created texture. Used for pixels the client generates rather than loads
+        // -- the cinematic surface is one. Ownership passes to the region: the previous handle is
+        // closed, and this one is closed when the next is set.
+        int32_t SetTextureHandle(HTEXTURE texture);
 };
 
 #endif

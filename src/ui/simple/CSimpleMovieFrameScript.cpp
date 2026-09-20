@@ -3,6 +3,7 @@
 #include "ui/simple/CSimpleMovieFrame.hpp"
 #include "util/Lua.hpp"
 #include <cstdint>
+#include <storm/String.hpp>
 
 namespace {
 
@@ -14,22 +15,43 @@ CSimpleMovieFrame* This(lua_State* L) {
 
 } // namespace
 
+// StartMovie("path", volume) -- the path carries no extension; the container is always .avi.
+//
+// Answers 1 when the movie is playing and nil when it is not, and on failure fires OnMovieFinished
+// so FrameXML takes the same path it takes for a missing file rather than waiting on a movie that
+// never ends.
 int32_t CSimpleMovieFrame_StartMovie(lua_State* L) {
-    // There is no video decoder in this client. Report failure the way a missing movie file would
-    // and let FrameXML take the path it already has for that -- MovieFrame_OnMovieFinished closes
-    // the frame and moves on. Returning success here would leave the interface waiting on a movie
-    // that never plays and never ends.
     auto frame = This(L);
 
-    lua_pushnil(L);
+    if (!lua_isstring(L, 2)) {
+        lua_pushnil(L);
+        frame->RunOnMovieFinishedScript();
 
-    frame->RunOnMovieFinishedScript();
+        return 1;
+    }
+
+    // MovieFrame.lua passes "Interface\Cinematics\Logo_1024"; the reference appends .avi when
+    // it opens the file, so the extension belongs here and not in the caller.
+    char path[512];
+    SStrPrintf(path, sizeof(path), "%s.avi", lua_tostring(L, 2));
+
+    if (!frame->StartMovie(path)) {
+        lua_pushnil(L);
+        frame->RunOnMovieFinishedScript();
+
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
 
     return 1;
 }
 
 int32_t CSimpleMovieFrame_StopMovie(lua_State* L) {
-    This(L)->RunOnMovieFinishedScript();
+    auto frame = This(L);
+
+    frame->StopMovie();
+    frame->RunOnMovieFinishedScript();
 
     return 0;
 }

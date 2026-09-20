@@ -25,6 +25,8 @@ target_link_libraries(ui
         net
         object
         util
+        # MPEG-4 decoder for the cinematics (vendor/m4vh263dec)
+        m4vh263dec
     PUBLIC
         common
         storm

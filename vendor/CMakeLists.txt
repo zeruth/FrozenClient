@@ -2,6 +2,8 @@ add_subdirectory(freetype-2.0.9)
 add_subdirectory(lua-5.1.3)
 add_subdirectory(zlib-1.2.2)
 add_subdirectory(stormlib-9.31)
+# MPEG-4 Part 2 / H.263 video decoder (Apache-2.0, from AOSP) for the intro cinematics
+add_subdirectory(m4vh263dec)
 
 # FMOD
 

@@ -83,7 +83,12 @@ bool MovieAviOpen(const char* path, MovieAvi& movie) {
     void* raw = nullptr;
     size_t size = 0;
 
-    if (!SFile::Load(nullptr, path, &raw, &size, 0, 0, nullptr) || !raw) {
+    // SFILE_OPEN_ALLOW_LOCAL matters here and is not optional. SFile::OpenEx only falls back to
+    // loose files when the caller asks for it or when no archives are open at all -- and the
+    // cinematics are shipped OUTSIDE the archives, loose under Data/<locale>/Interface/Cinematics.
+    // Without the flag every movie looks missing on a normal install, which is exactly how it
+    // looked before this was traced.
+    if (!SFile::Load(nullptr, path, &raw, &size, 0, SFILE_OPEN_ALLOW_LOCAL, nullptr) || !raw) {
         return false;
     }
 

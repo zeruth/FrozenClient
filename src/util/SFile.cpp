@@ -15,7 +15,7 @@
 
 // Flags for SFile::OpenEx / SFile::Load
 // TODO confirm against the original client's mopaq SFile flags
-#define SFILE_OPEN_ALLOW_LOCAL 0x1
+// SFILE_OPEN_ALLOW_LOCAL now lives in the header, beside the function that reads it.
 
 namespace {
 

@@ -106,6 +106,28 @@ if(WHOA_SYSTEM_WIN)
             stormlib-9.31
     )
 
+    # Developer tool for decoding cinematic frames to .ppm, so the video decoder can be checked
+    # by looking at its output rather than by trusting it
+    add_executable(MovieTool
+        tools/MovieTool.cpp
+        ${CMAKE_SOURCE_DIR}/src/ui/simple/MovieAvi.cpp
+        ${CMAKE_SOURCE_DIR}/src/ui/simple/MovieDecoder.cpp
+    )
+
+    target_include_directories(MovieTool
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(MovieTool
+        PRIVATE
+            client
+            console
+            util
+            stormlib-9.31
+            m4vh263dec
+    )
+
     # Developer tool for checking the ARB to GLSL ES translation used by the Android device
     add_executable(ArbTool tools/ArbTool.cpp ${CMAKE_SOURCE_DIR}/src/gx/gles/ArbToGlsl.cpp)
 

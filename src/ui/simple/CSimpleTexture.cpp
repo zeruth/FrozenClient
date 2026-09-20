@@ -612,6 +612,27 @@ int32_t CSimpleTexture::SetTexture(const char* fileName, bool wrapU, bool wrapV,
     return 1;
 }
 
+int32_t CSimpleTexture::SetTextureHandle(HTEXTURE texture) {
+    // No file behind it, so GetTexture() must stop naming whatever was there before.
+    this->m_texturePath[0] = '\0';
+
+    if (this->m_texture == texture) {
+        this->OnRegionChanged();
+
+        return 1;
+    }
+
+    if (this->m_texture) {
+        HandleClose(this->m_texture);
+    }
+
+    this->m_texture = texture;
+
+    this->OnRegionChanged();
+
+    return 1;
+}
+
 int32_t CSimpleTexture::SetTexture(const CImVector& color) {
     HTEXTURE texture = TextureCreateSolid(color);
 
