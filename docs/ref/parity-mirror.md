@@ -119,6 +119,7 @@ records the blocks whose value actually changed; the second pass turns those int
 | `CGUnitData::maxPower[0..6]` | `UNIT_MAXMANA` | player, target |
 | `CGUnitData::level` | `UNIT_LEVEL` | player, target |
 | `CGUnitData::factionTemplate` | `UNIT_FACTION` | player, target |
+| `CGUnitData::displayID`, `nativeDisplayID`, `mountDisplayID` (3 blocks) | `UNIT_MODEL_CHANGED` | player, target |
 | `CGUnitData::target` (2 blocks) | `UNIT_TARGET`, and `PLAYER_TARGET_CHANGED` for the player | player, target |
 | `CGPlayerData::xp`, `nextLevelXP` | `PLAYER_XP_UPDATE` | player only |
 | `CGPlayerData::coinage` | `PLAYER_MONEY` | player only |

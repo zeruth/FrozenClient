@@ -85419,6 +85419,9 @@
 "CGObject_C::BlockIndexOf",
 "BlockRangeChanged",
 "FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
 "CGObject::GetGUID",
 "ClntObjMgrGetActivePlayer",
 "FrameScript_SignalEvent"
@@ -85428,11 +85431,12 @@
 ],
 "consts": [
 "0",
-"2"
+"2",
+"3"
 ],
-"branches": 18,
+"branches": 19,
 "stub": false,
-"lines": 92,
+"lines": 100,
 "refs": [],
 "line": 221
 },
@@ -85460,7 +85464,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 316
+"line": 324
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85493,7 +85497,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 347
+"line": 355
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85521,7 +85525,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 398
+"line": 406
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85543,7 +85547,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 441
+"line": 449
 },
 "QueryPlayerName": {
 "files": [
@@ -148133,7 +148137,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 31
+"line": 39
 },
 "CSimpleFont_IsObjectType": {
 "files": [
@@ -148155,7 +148159,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 37
+"line": 45
 },
 "CSimpleFont_GetName": {
 "files": [
@@ -148175,7 +148179,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 41
+"line": 49
 },
 "CSimpleFont_SetFontObject": {
 "files": [
@@ -148222,7 +148226,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 51
+"line": 59
 },
 "CSimpleFont_GetFontObject": {
 "files": [
@@ -148244,7 +148248,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 92
+"line": 100
 },
 "CSimpleFont_CopyFontObject": {
 "files": [
@@ -148288,7 +148292,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 118
+"line": 126
 },
 "CSimpleFont_SetFont": {
 "files": [
@@ -148326,7 +148330,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 156
+"line": 164
 },
 "CSimpleFont_GetFont": {
 "files": [
@@ -148358,7 +148362,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 184
+"line": 192
 },
 "CSimpleFont_SetAlpha": {
 "files": [
@@ -148386,7 +148390,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 212
+"line": 220
 },
 "CSimpleFont_GetAlpha": {
 "files": [
@@ -148407,7 +148411,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 234
+"line": 242
 },
 "CSimpleFont_SetTextColor": {
 "files": [
@@ -148429,7 +148433,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 245
+"line": 253
 },
 "CSimpleFont_GetTextColor": {
 "files": [
@@ -148454,7 +148458,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 258
+"line": 266
 },
 "CSimpleFont_SetShadowColor": {
 "files": [
@@ -148476,7 +148480,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 277
+"line": 285
 },
 "CSimpleFont_GetShadowColor": {
 "files": [
@@ -148500,7 +148504,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 291
+"line": 299
 },
 "CSimpleFont_SetShadowOffset": {
 "files": [
@@ -148534,7 +148538,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 307
+"line": 315
 },
 "CSimpleFont_GetShadowOffset": {
 "files": [
@@ -148558,7 +148562,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 329
+"line": 337
 },
 "CSimpleFont_SetSpacing": {
 "files": [
@@ -148587,7 +148591,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 343
+"line": 351
 },
 "CSimpleFont_GetSpacing": {
 "files": [
@@ -148609,7 +148613,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 360
+"line": 368
 },
 "CSimpleFont_SetJustifyH": {
 "files": [
@@ -148636,7 +148640,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 373
+"line": 381
 },
 "CSimpleFont_GetJustifyH": {
 "files": [
@@ -148657,7 +148661,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 390
+"line": 398
 },
 "CSimpleFont_SetJustifyV": {
 "files": [
@@ -148684,7 +148688,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 401
+"line": 409
 },
 "CSimpleFont_GetJustifyV": {
 "files": [
@@ -148705,7 +148709,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 418
+"line": 426
 },
 "CSimpleFont_SetIndentedWordWrap": {
 "files": [
@@ -148727,7 +148731,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 429
+"line": 437
 },
 "CSimpleFont_GetIndentedWordWrap": {
 "files": [
@@ -148749,7 +148753,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 440
+"line": 448
 },
 "CSimpleFontString::CreateScriptMetaTable": {
 "files": [

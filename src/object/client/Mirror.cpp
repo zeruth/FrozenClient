@@ -297,6 +297,14 @@ void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
         FrameScript_SignalEvent(SCRIPT_UNIT_FACTION, "%s", token);
     }
 
+    // The three display ids sit together, and any of them changing is a model change: the base
+    // display, the native one it falls back to, and the mount that replaces it. FrameXML rebuilds
+    // the character portrait and the dress-up model from this, so missing one leaves a stale model
+    // on screen rather than an obviously wrong number.
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->displayID), 3)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_MODEL_CHANGED, "%s", token);
+    }
+
     // The target guid is eight bytes, so two blocks, and either may move on its own -- a target
     // change that only alters the high dword is still a target change.
     if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->target), 2)) {
