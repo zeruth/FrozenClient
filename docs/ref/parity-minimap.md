@@ -387,8 +387,44 @@ set, and carries its own list at `+0x20` whose first object supplies a flags wor
 against `0x400`. The loop is looking for the first entry whose `0x400` flag is set AND whose
 `FUN_007ae7b0(obj + 0x50)` result has bit 3 set -- in other words the active, loaded one.
 
-Still unidentified, and the next thing to decompile: `FUN_007ae7b0` and `FUN_007aea80` (both take
-the `+0x50` handle), `FUN_007b00a0` (the query proper), `FUN_007f9430` (transforms the caller's
-bounds into a local frame before the query) and `FUN_00990560` (a two-key lookup used only by
-`007a1640`). The member offsets `+0x50`, `+0xf4`, `+0x104` and `+0x120` need names before any of
-this can be written honestly.
+### 5b. The five callees, read (2026-09-20)
+
+All five are short. What they are, not yet what their classes are called:
+
+- `FUN_007ae7b0(owner, index)` -- `if (!owner[0x1e0]) return 0; return *(u32*)(owner[0x130] +
+  index * 0x20);`. So `+0x130` is an array of **0x20-byte records** whose first dword is a flags
+  word, `+0x1e0` is a "there is data at all" guard, and the caller's `+0x50` member is the index
+  into it. The `& 8` the callers test, and the `& 0x40` in the query below, live in that word.
+- `FUN_007aea80(owner, index, allowUnloaded)` -- same guard, then `obj = owner[0x1f8 + index*4]`,
+  returning null unless `obj[0x198] & 1` (loaded) or the caller passed `allowUnloaded`. So `+0x1f8`
+  is a **parallel array of pointers** on the same index, and `+0x198 & 1` is the residency bit.
+- `FUN_007b00a0(owner, index, box, out, outCount, wantFlags, pointQuery)` -- the query proper.
+  Bumps a global counter (`DAT_00d1c418`), copies the caller's **five** dwords of box into a local
+  and fills the sixth from `obj[0x48]`, then splits: `pointQuery` goes to `FUN_007afe70(&box, out,
+  outCount)`, otherwise `FUN_007afc70(index, index, &box, out, outCount, wantFlags, mask, 0)` where
+  `mask` is 8 when `wantFlags` is zero and `record.flags & 0x40` otherwise. Returns 0 when the
+  entry is not resident, which is what makes the minimap go blank indoors.
+- `FUN_007f9430(transform, box, out)` -- writes `out[0..2]` and `out[3..5]` both from
+  `transform[0x30..0x38]`, then calls `FUN_007f9320(transform + 0x20)`. That is an **AABB
+  transform**: seed min and max at the translation, then expand by the rotated extents, with
+  `+0x20` the rotation and `+0x30` the translation. Ghidra drops the box argument and the
+  expansion, so do not port this one from the listing above -- decompile `FUN_007f9320` first.
+- `FUN_00990560(a, b, c)` -- a `bsearch` over a global table (`_DAT_00ad4e48`, `DAT_00ad4e34`
+  entries of 0x30 bytes) with comparator `FUN_00990530`, keyed on the triple, bracketed by what
+  look like a critical section enter and leave. A cache lookup, not a computation.
+
+### 5c. What is still missing
+
+The shapes above are clear; the **identities** are not. Two objects appear throughout and neither
+is named yet:
+
+- the list node's object -- flags at `+0x8` (bit 2 = skip), a child list at `+0x20`, and the index
+  at `+0x50` that feeds all of `007ae7b0`/`007aea80`/`007b00a0`
+- its child's object -- flags at `+0xc` (bit 10 = active), and `+0xb0`, `+0xf4`, `+0x104`, `+0x120`
+
+Worse, the `owner` that `007ae7b0` and friends are called *on* does not appear in the decompiled
+callers at all: Ghidra shows those calls with one argument because `this` arrives in ECX and was
+lost. Finding what supplies it is the next step, and `callers.sh 007ae7b0` is the way to it.
+
+Until those are named this cannot be written honestly -- a port built on guessed offsets would be
+exactly the kind of "looks right" code the recomp cycle exists to stop.

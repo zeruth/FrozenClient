@@ -55,6 +55,73 @@ struct ItemInfo {
     // The stack size GetItemInfo reports.
     int32_t stackable = 0;
     int32_t containerSlots = 0;
+
+    // The stat block. The reference keeps ten slots and fills the unused TYPES with -1 while
+    // leaving their values at zero, so a reader walks until it sees -1 rather than counting.
+    static const int32_t MAX_STATS = 10;
+    int32_t statsCount = 0;
+    int32_t statType[MAX_STATS] = {};
+    int32_t statValue[MAX_STATS] = {};
+
+    int32_t scalingStatDistribution = 0;
+    int32_t scalingStatValue = 0;
+
+    // Two damage bands, each a float pair and a school.
+    static const int32_t MAX_DAMAGES = 2;
+    float damageMin[MAX_DAMAGES] = {};
+    float damageMax[MAX_DAMAGES] = {};
+    int32_t damageType[MAX_DAMAGES] = {};
+
+    // Armor first, then the six schools in the order the wire sends them: holy, fire, nature,
+    // frost, shadow, arcane.
+    int32_t armor = 0;
+    int32_t resistance[6] = {};
+
+    int32_t delay = 0;
+    int32_t ammoType = 0;
+    float rangedModRange = 0.0f;
+
+    // Five "on use"/"on equip" spell slots, six parallel arrays -- which is how the wire carries
+    // them, not a convenience: the reference reads one index across all six before moving on.
+    static const int32_t MAX_SPELLS = 5;
+    int32_t spellID[MAX_SPELLS] = {};
+    int32_t spellTrigger[MAX_SPELLS] = {};
+    int32_t spellCharges[MAX_SPELLS] = {};
+    int32_t spellCooldown[MAX_SPELLS] = {};
+    int32_t spellCategory[MAX_SPELLS] = {};
+    int32_t spellCategoryCooldown[MAX_SPELLS] = {};
+
+    int32_t bonding = 0;
+    std::string description;
+
+    int32_t pageText = 0;
+    int32_t languageID = 0;
+    int32_t pageMaterial = 0;
+    int32_t startQuest = 0;
+    int32_t lockID = 0;
+    int32_t material = 0;
+    int32_t sheath = 0;
+    int32_t randomProperty = 0;
+    int32_t randomSuffix = 0;
+    int32_t block = 0;
+    int32_t itemSet = 0;
+    int32_t maxDurability = 0;
+    int32_t area = 0;
+    int32_t map = 0;
+    int32_t bagFamily = 0;
+    int32_t totemCategory = 0;
+
+    static const int32_t MAX_SOCKETS = 3;
+    int32_t socketColor[MAX_SOCKETS] = {};
+    int32_t socketContent[MAX_SOCKETS] = {};
+
+    int32_t socketBonus = 0;
+    int32_t gemProperties = 0;
+    int32_t requiredDisenchantSkill = 0;
+    float armorDamageModifier = 0.0f;
+    int32_t duration = 0;
+    int32_t itemLimitCategory = 0;
+    int32_t holidayID = 0;
 };
 
 // Returns the record when it is known, or null while the query is in flight or the entry is

@@ -87,7 +87,7 @@ int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, C
     // Four name fields. Only the first is the item's name; the reference keeps all four and stores
     // a null for any that arrive empty.
     for (int32_t i = 0; i < 4; i++) {
-        char name[256] = { 0 };
+        char name[400] = { 0 };
         msg->GetString(name, sizeof(name));
 
         if (i == 0) {
@@ -117,9 +117,104 @@ int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, C
     info.stackable = GetI32(msg);
     info.containerSlots = GetI32(msg);
 
-    // That is the whole run of seventeen dwords the reference reads between flags2 and the stat
-    // count. The stat count and everything below it -- stats, damage, spells, the description --
-    // stays in the buffer; extend from here in the order documented in parity-itemcache.md.
+    // The stat block.
+    //
+    // DIVERGENCE, deliberately: the reference reads statsCount pairs with no bound at all, into a
+    // ten-slot pair of arrays. A server sending eleven would walk it off the end of the record and
+    // into the fields below. That is a bug, not behaviour worth reproducing, so the read stays in
+    // step with the stream -- every pair is consumed -- while only the first ten are stored.
+    info.statsCount = GetI32(msg);
+
+    for (int32_t i = 0; i < info.statsCount; i++) {
+        int32_t type = GetI32(msg);
+        int32_t value = GetI32(msg);
+
+        if (i < ItemInfo::MAX_STATS) {
+            info.statType[i] = type;
+            info.statValue[i] = value;
+        }
+    }
+
+    // The reference marks the unused slots by TYPE only, leaving their values at zero, so a reader
+    // that walks the array stops on -1 rather than trusting the count.
+    for (int32_t i = info.statsCount; i < ItemInfo::MAX_STATS; i++) {
+        info.statType[i] = -1;
+    }
+
+    info.scalingStatDistribution = GetI32(msg);
+    info.scalingStatValue = GetI32(msg);
+
+    // Two damage bands. Note the interleave: min, max and school are read together per band, not
+    // as three runs, even though the record stores them as three parallel arrays.
+    for (int32_t i = 0; i < ItemInfo::MAX_DAMAGES; i++) {
+        msg->Get(info.damageMin[i]);
+        msg->Get(info.damageMax[i]);
+        info.damageType[i] = GetI32(msg);
+    }
+
+    info.armor = GetI32(msg);
+
+    for (int32_t i = 0; i < 6; i++) {
+        info.resistance[i] = GetI32(msg);
+    }
+
+    info.delay = GetI32(msg);
+    info.ammoType = GetI32(msg);
+    msg->Get(info.rangedModRange);
+
+    // Six parallel arrays, read one index across all six before advancing -- the wire order, and
+    // the reason this is a loop over slots rather than six separate runs.
+    for (int32_t i = 0; i < ItemInfo::MAX_SPELLS; i++) {
+        info.spellID[i] = GetI32(msg);
+        info.spellTrigger[i] = GetI32(msg);
+        info.spellCharges[i] = GetI32(msg);
+        info.spellCooldown[i] = GetI32(msg);
+        info.spellCategory[i] = GetI32(msg);
+        info.spellCategoryCooldown[i] = GetI32(msg);
+    }
+
+    info.bonding = GetI32(msg);
+
+    {
+        // The reference reads the description into a 1024 byte buffer and the names above into 400
+        // byte ones. Matching those sizes matters: GetString truncates to the buffer, so a smaller
+        // one here would silently clip a long description.
+        char description[1024] = { 0 };
+        msg->GetString(description, sizeof(description));
+        info.description = description;
+    }
+
+    info.pageText = GetI32(msg);
+    info.languageID = GetI32(msg);
+    info.pageMaterial = GetI32(msg);
+    info.startQuest = GetI32(msg);
+    info.lockID = GetI32(msg);
+    info.material = GetI32(msg);
+    info.sheath = GetI32(msg);
+    info.randomProperty = GetI32(msg);
+    info.randomSuffix = GetI32(msg);
+    info.block = GetI32(msg);
+    info.itemSet = GetI32(msg);
+    info.maxDurability = GetI32(msg);
+    info.area = GetI32(msg);
+    info.map = GetI32(msg);
+    info.bagFamily = GetI32(msg);
+    info.totemCategory = GetI32(msg);
+
+    for (int32_t i = 0; i < ItemInfo::MAX_SOCKETS; i++) {
+        info.socketColor[i] = GetI32(msg);
+        info.socketContent[i] = GetI32(msg);
+    }
+
+    info.socketBonus = GetI32(msg);
+    info.gemProperties = GetI32(msg);
+    info.requiredDisenchantSkill = GetI32(msg);
+    msg->Get(info.armorDamageModifier);
+    info.duration = GetI32(msg);
+    info.itemLimitCategory = GetI32(msg);
+    info.holidayID = GetI32(msg);
+
+    // That is the whole record. holidayID is the last field the reference reads.
 
     info.known = true;
     info.missing = false;

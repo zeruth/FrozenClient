@@ -48,31 +48,83 @@ Offsets are into the record. Names are by behaviour and by what 3.3.5a's respons
 carry; the **order and widths** below are read directly out of the decompilation, the **names** are
 the inference.
 
+**Superseded 2026-09-20.** The table that used to be here was a summary and it was wrong in two
+places -- it put the stat block at `+0x4c` when `+0x4c..+0x60` are plain dwords, and it mislabelled
+the `+0x100` block as damage and resistances when that is the spell block. The read order below is
+transcribed instruction by instruction from the decompilation and then **verified** (section 3a).
+
 ```
-+0x04, +0x08, +0x0c    three dwords          class, subclass, sound override subclass
-+0x1f4 .. +0x200       four strings          the four name fields, SStrDup'd, null when empty
-+0x10, +0x14           two dwords            display info id, quality
-+0x18, +0x1c           two dwords (loop x2)  flags, flags2
-+0x20 .. +0x48         eleven dwords         buy/sell price, inventory type, allowable class and
-                                             race, item level, required level, skill, skill rank,
-                                             required spell
-+0x4c .. +0xf0         a counted loop        the stat block: each entry a float and a dword 8 apart
-+0xf4, +0xf8           two dwords
-+0xfc                  one float
-+0x100 .. +0x174       a loop of six reads   stride 0x14, six parallel arrays -- the damage and
-                                             resistance block
-+0x178                 one dword
-+0x17c                 one string            the description, SStrDup'd
-+0x180 .. +0x1bc       sixteen dwords        spell triggers and their charges, cooldowns, categories
-+0x1c0 .. +0x1d4       a loop of two reads   stride 0xc
-+0x1d8, +0x1dc, +0x1e0 three dwords
-+0x1e4                 one float
-+0x1e8, +0x1ec, +0x1f0 three dwords
++0x04  u32     class
++0x08  u32     subclass
++0x0c  u32     soundOverrideSubclass
++0x1f4 .. +0x200   four strings, SStrDup'd into a 400-byte buffer, null when empty
++0x10  u32     displayInfoID
++0x14  u32     quality
++0x18  u32     flags            \  read as a 2-iteration loop
++0x1c  u32     flags2           /
++0x20 .. +0x60  seventeen dwords, in order:
+               buyPrice, sellPrice, inventoryType, allowableClass, allowableRace, itemLevel,
+               requiredLevel, requiredSkill, requiredSkillRank, requiredSpell, requiredHonorRank,
+               requiredCityRank, requiredReputationFaction, requiredReputationRank, maxCount,
+               stackable, containerSlots
++0x64  u32     statsCount
+               then statsCount pairs: statType[i] at +0x68+i*4, statValue[i] at +0x90+i*4
+               afterwards the unused TYPES (only) are filled with -1; the values stay 0
++0xb8  u32     scalingStatDistribution
++0xbc  u32     scalingStatValue
+               two damage bands, read interleaved (min, max, school) though stored as three arrays:
+               damageMin[i] float at +0xc0+i*4, damageMax[i] float at +0xc8+i*4,
+               damageType[i] u32 at +0xd0+i*4
++0xd8 .. +0xf0  seven dwords: armor, then holy, fire, nature, frost, shadow, arcane resistance
++0xf4  u32     delay
++0xf8  u32     ammoType
++0xfc  float   rangedModRange
+               five spell slots, read one index across all SIX arrays before advancing:
+               spellID +0x100, spellTrigger +0x114, spellCharges +0x128, spellCooldown +0x13c,
+               spellCategory +0x150, spellCategoryCooldown +0x164 (each 5 dwords)
++0x178 u32     bonding
++0x17c string  description, into a 1024-byte buffer
++0x180 .. +0x1bc  sixteen dwords, in order:
+               pageText, languageID, pageMaterial, startQuest, lockID, material, sheath,
+               randomProperty, randomSuffix, block, itemSet, maxDurability, area, map, bagFamily,
+               totemCategory
+               three socket slots: socketColor[i] at +0x1c0+i*4, socketContent[i] at +0x1cc+i*4
++0x1d8 u32     socketBonus
++0x1dc u32     gemProperties
++0x1e0 u32     requiredDisenchantSkill
++0x1e4 float   armorDamageModifier
++0x1e8 u32     duration
++0x1ec u32     itemLimitCategory
++0x1f0 u32     holidayID        -- the last field read
 ```
+
+**One reference bug, not reproduced.** The stat loop reads `statsCount` pairs with no bound, into
+ten-slot arrays. A server sending eleven walks off the end of the record and into the fields below.
+Frozen consumes every pair -- it has to, or the rest of the message desyncs -- but stores only the
+first ten. Recorded here because a silent divergence is a bug.
+
+### 3a. How the layout was verified
+
+The reference writes these records back out verbatim, so its own cache file is a fixture. Decoding
+`Cache/WDB/enUS/itemcache.wdb` with exactly the order above: **all 31 records consume exactly their
+declared byte count**, with no slack and no overrun, and the walk lands on the terminator. A single
+wrong width anywhere would have thrown the very first record's length off.
+
+That is a check on the field ORDER and WIDTHS only. It says nothing about the field NAMES, which
+remain inference -- though they agree with what 3.3.5a's item query response is known to carry.
 
 ---
 
 ## 4. What frozen would have to build
+
+**Done, by route 2, as of 2026-09-20.** `src/object/client/ItemCache.cpp` holds the whole record:
+it sent the query and read as far as `containerSlots` since 2026-09-19, and now reads every field
+in section 3 through to `holidayID`. What remains is not the cache -- it is the consumers, chiefly
+the tooltip filler `FUN_006277f0` that eight `CGTooltipScript` setters share.
+
+The original assessment is kept below because the choice it records still stands.
+
+---
 
 Frozen has the opcodes (`CMSG_ITEM_QUERY_SINGLE` 0x56, response 0x58) and the item world objects
 (`CGItem`, `CGItem_C`), but no cache of static item data by entry id.
