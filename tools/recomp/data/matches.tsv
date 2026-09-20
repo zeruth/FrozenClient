@@ -1385,6 +1385,7 @@ addr	how	frozen	evidence
 005d5670	order	Script_Stub_PetRename	binding table name Script_Stub_PetRename, in definition order in src/ui/game/miscscriptstubs.cpp
 005d6f60	annotated	Script_ContainerIDToInventoryID	tag in src/ui/game/ContainerFrameScript.cpp
 005d74a0	annotated	Script_GetContainerNumSlots	tag in src/ui/game/ContainerFrameScript.cpp
+005d7590	annotated	Script_GetContainerNumFreeSlots	tag in src/ui/game/ContainerFrameScript.cpp
 005d7a90	annotated	Script_GetContainerItemInfo	tag in src/ui/game/ContainerFrameScript.cpp
 005d7c80	annotated	Script_GetContainerItemLink	tag in src/ui/game/ContainerFrameScript.cpp
 005d7d00	annotated	Script_GetContainerItemID	tag in src/ui/game/ContainerFrameScript.cpp

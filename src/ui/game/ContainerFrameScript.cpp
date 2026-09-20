@@ -316,6 +316,55 @@ int32_t Script_GetBagName(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005d7590
+// Two returns: how many slots are empty, and the bag's FAMILY -- the class of item it will take.
+// Not one value, which is what the name suggests.
+//
+// The backpack's family is literally 0 in the reference: it takes anything, and 0 is how that is
+// said. Frozen reports 0 for real bags too, which is right for a generic bag and wrong for a
+// quiver or a soul bag -- the family lives on the bag's item record and frozen's ItemInfo does not
+// carry it.
+int32_t Script_GetContainerNumFreeSlots(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetContainerFreeSlots(index)");
+
+        return 0;
+    }
+
+    auto bag = static_cast<int32_t>(lua_tonumber(L, 1));
+    int32_t free = 0;
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (data && bag == 0) {
+        for (int32_t slot = 0; slot < BACKPACK_SLOTS; slot++) {
+            if (!data->packSlots[slot]) {
+                free++;
+            }
+        }
+    } else if (data && bag >= 1 && bag <= NUM_BAG_SLOTS) {
+        auto bagObject = ClntObjMgrObjectPtr(
+            data->invSlots[INVSLOT_BAGFIRST + bag - 1], TYPE_CONTAINER, __FILE__, __LINE__
+        );
+
+        auto container = bagObject ? static_cast<CGContainer_C*>(bagObject)->Container() : nullptr;
+
+        for (uint32_t slot = 0; container && slot < container->numSlots; slot++) {
+            if (!container->slots[slot]) {
+                free++;
+            }
+        }
+    }
+
+    // The bank and keyring answer zero free rather than being rejected: frozen has no storage for
+    // them, and from Lua a bank you cannot see and a full one look the same.
+    lua_pushnumber(L, static_cast<double>(free));
+    lua_pushnumber(L, 0.0);
+
+    return 2;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
@@ -324,6 +373,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "ContainerIDToInventoryID", &Script_ContainerIDToInventoryID },
     { "GetContainerItemDurability", &Script_GetContainerItemDurability },
     { "GetBagName",             &Script_GetBagName },
+    { "GetContainerNumFreeSlots", &Script_GetContainerNumFreeSlots },
 };
 
 } // namespace
