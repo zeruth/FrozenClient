@@ -1242,7 +1242,7 @@ addr	how	frozen	evidence
 0057ea30	annotated	CGMinimapFrame::SetTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 0057eb00	annotated	CGMinimapFrame::GetOtherTrackingType	tag in src/ui/game/CGMinimapFrame.cpp
 0057eb80	annotated	CGMinimapFrame::SetPing	tag in src/ui/game/CGMinimapFrame.cpp
-0057ed70	table	CGMinimapFrame_PingLocation	binding "PingLocation" in CGMinimapFrameMethods ~ table 00acebb8
+0057ed70	annotated	CGMinimapFrame_PingLocation	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057efe0	annotated	CGMinimapFrame_GetPingPosition	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057f170	annotated	Script_GetNumTrackingTypes	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057f1b0	annotated	Script_GetTrackingInfo	tag in src/ui/game/CGMinimapFrameScript.cpp

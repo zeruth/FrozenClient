@@ -1498,7 +1498,7 @@
    "lib/common/common/datastore/cdatastore.cpp"
   ],
   "frozen": "CDataStore::Put",
-  "frozenSize": 517,
+  "frozenSize": 648,
   "how": "override",
   "module": "framing.c",
   "refSize": 83,
@@ -1514,7 +1514,7 @@
    "lib/common/common/datastore/cdatastore.cpp"
   ],
   "frozen": "CDataStore::Put",
-  "frozenSize": 517,
+  "frozenSize": 648,
   "how": "annotated",
   "module": "framing.c",
   "refSize": 85,
@@ -1530,7 +1530,7 @@
    "lib/common/common/datastore/cdatastore.cpp"
   ],
   "frozen": "CDataStore::Put",
-  "frozenSize": 517,
+  "frozenSize": 648,
   "how": "override",
   "module": "framing.c",
   "refSize": 83,
@@ -1546,7 +1546,7 @@
    "lib/common/common/datastore/cdatastore.cpp"
   ],
   "frozen": "CDataStore::Put",
-  "frozenSize": 517,
+  "frozenSize": 648,
   "how": "override",
   "module": "framing.c",
   "refSize": 90,
@@ -19795,27 +19795,27 @@
    "src/ui/game/cgminimapframe.cpp"
   ],
   "frozen": "CGMinimapFrame::SetPing",
-  "frozenSize": 0,
+  "frozenSize": 176,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 493,
   "status": "ported"
  },
  "0057ed70": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.565,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_PingLocation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 508,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 622,
-  "status": "stub"
+  "status": "ported"
  },
  "0057efe0": {
   "branchRatio": 0.0,
@@ -30757,7 +30757,7 @@
    "src/ui/game/cgminimapframe.cpp"
   ],
   "frozen": "CGMinimapFrame::GetRadius",
-  "frozenSize": 0,
+  "frozenSize": 83,
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 75,

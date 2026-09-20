@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 23:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 23:30 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2732 (+1) (10.1%) | 580.1k (10.5%) |
-| &nbsp;&nbsp;ported | 2192 (+2) | 433.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 501 (-1) | 107.6k |
+| mapped to a frozen function | 2732 (=) (10.1%) | 580.1k (10.5%) |
+| &nbsp;&nbsp;ported | 2193 (+1) | 433.9k |
+| &nbsp;&nbsp;stub (unimplemented body) | 500 (-1) | 107.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1017 (=) (3.7%)** | **126.1k (2.3%)** |
 | unmapped | 24430 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 164 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11536, stubs 759 | |
+| frozen functions (src/, from PDB + source) | 11537, stubs 758 | |
 
-Match evidence: annotated 648, callgraph 173, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 1009. Module anchors: 1479 assert strings.
+Match evidence: annotated 649, callgraph 173, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 1008. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 23:20 -- mapped 2731, ported 2190, stub 502, spine mapped 407.
+Previous run: 2026-09-19 23:27 -- mapped 2732, ported 2192, stub 501, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 570 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 569 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -118,7 +118,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 2 |  / stubs: SetThumbTexture, SetOrientation |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
 | 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 1 |  / stubs: SetGradient |
-| 00acebb8 (SetMaskTexture..) | 19 | `CGMinimapFrameMethods` | 0 | 1 |  / stubs: PingLocation |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
 | 00ad2184 (GetTime..) | 7 | `s_SystemFunctions` | 0 | 1 |  / stubs: ConsoleExec |
 | 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 1 |  / stubs: ClearFocus |
@@ -192,7 +191,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Calendar.cpp | 109 | 32.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
-| MinimapFrame.cpp | 78 | 31.1k | 21 (26.9%) | 17.9% | 1 | 0 | 3 |
+| MinimapFrame.cpp | 78 | 31.1k | 21 (26.9%) | 17.9% | 0 | 0 | 3 |
 | XMLTree.cpp | 184 | 31.1k | 76 (41.3%) | 47.0% | 9 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
@@ -496,7 +495,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00599890 | DressUpModelFrame.cpp? | 646 | 0 | `CGTabardModelFrame_GetUpperEmblemTexture` [table] | %s:GetUpperEmblemTexture(): Couldn't fin, %s:GetUpperEmblemTexture(): Wrong object |
 | 0054da10 | BattlefieldInfo.cpp | 641 | 0 | `Script_AcceptBattlefieldPort` [table] | Usage: AcceptBattlefieldPort(index, acce, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062eae0 | Tooltip.cpp | 640 | 0 | `CGTooltip_SetTradeSkillItem` [table] | Invalid trade skill item in SetTradeSkil |
-| 0057ed70 | MinimapFrame.cpp | 622 | 0 | `CGMinimapFrame_PingLocation` [table] | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062fcf0 | Tooltip.cpp | 621 | 0 | `CGTooltip_SetAuctionItem` [table] | Usage: %s:SetAuctionItem("type", index), bidder |
 | 00516c60 | GameUI.cpp | 616 | 0 | `Script_GetItemInfo` [table] | %s%s%s, Usage: GetItemInfo(itemID\|"name"\|"itemli |
 | 00495060 | CSimpleFrame.cpp? | 308 | 1 | `CSimpleTop::CompressStrata` [callorder] |  |
@@ -517,6 +515,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
 | 00535180 | PartyFrame.cpp? | 510 | 0 | `Script_BNGetFriendInviteInfo` [table] | BNUI: Invite Info Account name: %s %s, BNUI: Invite Info ID: %u |
 | 00820f40 | M2Scene.cpp? | 251 | 1 | `CM2SceneRender::DrawRibbon` [override] | Ribbon: model=%s index=%d |
+| 0062eff0 | Tooltip.cpp | 496 | 0 | `CGTooltip_SetTradePlayerItem` [table] | .\Tooltip.cpp, Invalid trade slot in SetTradePlayerItem |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -738,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 21:35 | 2716 (10.0%) | 997 (3.7%) | 518 | 399/5530 | 1792/2964 | 584 |
 | 2026-09-19 21:44 | 2718 (10.0%) | 999 (3.7%) | 517 | 401/5530 | 1792/2964 | 583 |
 | 2026-09-19 21:48 | 2719 (10.0%) | 1001 (3.7%) | 514 | 401/5530 | 1792/2964 | 583 |
 | 2026-09-19 21:54 | 2722 (10.0%) | 1003 (3.7%) | 514 | 404/5530 | 1792/2964 | 583 |
@@ -763,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 23:15 | 2732 (10.1%) | 1018 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:20 | 2731 (10.1%) | 1017 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:27 | 2732 (10.1%) | 1017 (3.7%) | 501 | 407/5531 | 1792/2964 | 570 |
+| 2026-09-19 23:30 | 2732 (10.1%) | 1017 (3.7%) | 500 | 407/5531 | 1792/2964 | 569 |
 
 ## How to move a row
 

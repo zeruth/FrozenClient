@@ -101049,7 +101049,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 23
+"line": 29
 },
 "CGMinimapFrame_SetMaskTexture": {
 "files": [
@@ -101083,7 +101083,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 28
+"line": 34
 },
 "CGMinimapFrame_SetIconTexture": {
 "files": [
@@ -101117,7 +101117,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 52
+"line": 58
 },
 "CGMinimapFrame_SetBlipTexture": {
 "files": [
@@ -101152,7 +101152,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 76
+"line": 82
 },
 "CGMinimapFrame_SetClassBlipTexture": {
 "files": [
@@ -101186,7 +101186,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 108
+"line": 114
 },
 "CGMinimapFrame_SetPOIArrowTexture": {
 "files": [
@@ -101220,7 +101220,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 132
+"line": 138
 },
 "CGMinimapFrame_SetStaticPOIArrowTexture": {
 "files": [
@@ -101254,7 +101254,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 157
+"line": 163
 },
 "CGMinimapFrame_SetCorpsePOIArrowTexture": {
 "files": [
@@ -101288,7 +101288,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 181
+"line": 187
 },
 "CGMinimapFrame_SetPlayerTexture": {
 "files": [
@@ -101318,7 +101318,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 206
+"line": 212
 },
 "CGMinimapFrame_SetPlayerTextureHeight": {
 "files": [
@@ -101347,7 +101347,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 233
+"line": 239
 },
 "CGMinimapFrame_SetPlayerTextureWidth": {
 "files": [
@@ -101376,7 +101376,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 254
+"line": 260
 },
 "CGMinimapFrame_GetZoomLevels": {
 "files": [
@@ -101394,7 +101394,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 274
+"line": 280
 },
 "CGMinimapFrame_GetZoom": {
 "files": [
@@ -101412,7 +101412,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 282
+"line": 288
 },
 "CGMinimapFrame_SetZoom": {
 "files": [
@@ -101436,29 +101436,52 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 289
+"line": 295
 },
 "CGMinimapFrame_PingLocation": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGPlayer_C::GetActivePtr",
+"CGMinimapFrame::GetObjectType",
+"FrameScript_GetObjectThis",
+"CGMinimapFrame::GetRadius",
+"lua_isnumber",
+"lua_isnumber",
+"CoordinateGetAspectCompensation",
+"lua_tonumber",
+"NDCToDDCWidth",
+"lua_tonumber",
+"NDCToDDCWidth",
+"CLayoutFrame::GetWidth",
+"CLayoutFrame::GetHeight",
+"CGUnit_C::GetPosition",
+"CGPartyInfo::NumMembers",
+"CGRaidInfo::NumMembers",
+"CDataStore::CDataStore",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Finalize",
+"ClientServices::Send",
+"ClntObjMgrGetActivePlayer",
+"CGMinimapFrame::SetPing"
 ],
-"strings": [
-"(anonymous namespace)::CGMinimapFrame_PingLocation",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"0.0f",
+"1024.0f",
+"2",
+"2.0f",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 7,
+"stub": false,
+"lines": 52,
 "refs": [],
-"line": 310
+"line": 325
 },
 "CGMinimapFrame_GetPingPosition": {
 "files": [
@@ -101478,7 +101501,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 319
+"line": 382
 },
 "TrackingTexturePath": {
 "files": [
@@ -101496,7 +101519,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 337
+"line": 400
 },
 "Script_GetNumTrackingTypes": {
 "files": [
@@ -101515,7 +101538,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 344
+"line": 407
 },
 "Script_GetTrackingInfo": {
 "files": [
@@ -101557,7 +101580,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 354
+"line": 417
 },
 "Script_SetTracking": {
 "files": [
@@ -101583,7 +101606,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 420
+"line": 483
 },
 "Script_GetTrackingTexture": {
 "files": [
@@ -101604,7 +101627,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 460
+"line": 523
 },
 "CGMinimapFrameScriptRegisterFunctions": {
 "files": [
@@ -101619,7 +101642,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 487
+"line": 550
 },
 "CGPartyInfo::NumMembers": {
 "files": [

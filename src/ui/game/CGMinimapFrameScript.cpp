@@ -1,4 +1,10 @@
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include <common/DataStore.hpp>
+#include "client/ClientServices.hpp"
+#include "ui/game/CGRaidInfo.hpp"
+#include "ui/game/CGPartyInfo.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "object/client/SpellBook.hpp"
 #include "db/Db.hpp"
 #include <storm/String.hpp>
@@ -302,15 +308,72 @@ int32_t CGMinimapFrame_SetZoom(lua_State* L) {
     return 0;
 }
 
-// FUN_0057ed70. Not ported: the ping itself is a game system Frozen does not have. The reference
-// turns the click into a world position with the active player object and the rotateMinimap CVar's
-// facing matrix, then hands it to the ping store (FUN_0057eb80), which names the pinging unit,
-// broadcasts the ping and raises MINIMAP_PING. None of that exists here, so the binding stays a
-// stub rather than pretending to record a ping.
+// ref: FUN_0057ed70
+// Turns a click inside the minimap into a world position and pings it.
+//
+// The offsets arrive in the same units SetPlayerTextureWidth above takes, and go through the same
+// conversion -- NDCToDDCWidth over the aspect compensation times 1024 -- which is what identified
+// it. Both axes use the WIDTH conversion; only the division afterwards differs, x by the frame's
+// width and y by its height.
+//
+// The axes swap: the horizontal offset becomes a world Y and the vertical one a world X. That is
+// the usual world convention rather than anything about the minimap, and the horizontal one is
+// also negated.
+//
+// The packet is only sent to a group -- a solo ping still shows locally, which is why SetPing is
+// called either way rather than only on the send path.
 int32_t CGMinimapFrame_PingLocation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
+    auto player = CGPlayer_C::GetActivePtr();
 
+    if (!player) {
+        return 0;
+    }
+
+    auto type = CGMinimapFrame::GetObjectType();
+    auto frame = static_cast<CGMinimapFrame*>(FrameScript_GetObjectThis(L, type));
+
+    // Twice the radius, because the offsets below are measured across the whole minimap.
+    auto diameter = CGMinimapFrame::GetRadius() * 2.0f;
+
+    float offsetX = 0.0f;
+    float offsetY = 0.0f;
+
+    // Both offsets or neither: the reference checks them together and pings the player's own
+    // position when they are missing.
+    if (lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
+        auto scale = CoordinateGetAspectCompensation() * 1024.0f;
+
+        offsetY = -NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 2)) / scale);
+        offsetX = NDCToDDCWidth(static_cast<float>(lua_tonumber(L, 3)) / scale);
+
+        auto width = frame ? frame->GetWidth() : 0.0f;
+        auto height = frame ? frame->GetHeight() : 0.0f;
+
+        offsetX = height ? offsetX / height * diameter : 0.0f;
+        offsetY = width ? offsetY / width * diameter : 0.0f;
+    }
+
+    // TODO with rotateMinimap set the reference rotates the offset by the player's facing here,
+    // the same rotation the ping store applies in reverse. Not ported for the same reason.
+
+    auto position = player->GetPosition();
+    auto worldX = position.x + offsetX;
+    auto worldY = position.y + offsetY;
+
+    if (CGPartyInfo::NumMembers() || CGRaidInfo::NumMembers()) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(MSG_MINIMAP_PING));
+        msg.Put(worldX);
+        msg.Put(worldY);
+        msg.Finalize();
+
+        ClientServices::Send(&msg);
+    }
+
+    CGMinimapFrame::SetPing(ClntObjMgrGetActivePlayer(), worldX, worldY);
+
+    return 0;
+}
 // ref: FUN_0057efe0
 // Where the last ping sits relative to the player right now, in the same units the MINIMAP_PING
 // event uses. Recomputed on each call rather than stored, so it follows the player as they move.
