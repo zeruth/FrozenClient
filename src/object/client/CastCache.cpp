@@ -1,4 +1,7 @@
 #include "object/client/CastCache.hpp"
+#include "ui/game/Types.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "client/ClientServices.hpp"
 #include <common/DataStore.hpp>
 #include <common/Time.hpp>
@@ -66,6 +69,19 @@ void CastCacheClear() {
 //
 // Everything this client needs sits before the variable-length target block, so the prefix is read
 // and the rest ignored rather than porting SpellCastTargets to reach nothing beyond it.
+// The cast bar is driven entirely by these. The cache was filling and telling nobody, so no bar
+// ever appeared for the player or anyone else.
+//
+// A unit with no token is skipped: FrameXML addresses the bar by unit, and an event for a creature
+// nothing is displaying has nowhere to go.
+static void SignalCast(WOWGUID caster, SCRIPTEVENT event) {
+    auto token = Script_GetTokenFromGUID(caster);
+
+    if (token) {
+        FrameScript_SignalEvent(event, "%s", token);
+    }
+}
+
 int32_t ReceiveSpellStart(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     if (!Remaining(msg, 2)) {
         return 1;
@@ -89,8 +105,10 @@ int32_t ReceiveSpellStart(void* param, NETMESSAGE msgId, uint32_t time, CDataSto
     msg->Get(*reinterpret_cast<uint32_t*>(&timer));
 
     if (!spellID || timer <= 0) {
-        // An instant cast has no bar to show.
-        s_casts.erase(caster);
+        // An instant cast has no bar to show -- but one may already be up, so say it stopped.
+        if (s_casts.erase(caster)) {
+            SignalCast(caster, SCRIPT_UNIT_SPELLCAST_STOP);
+        }
 
         return 1;
     }
@@ -102,6 +120,8 @@ int32_t ReceiveSpellStart(void* param, NETMESSAGE msgId, uint32_t time, CDataSto
     cast.channeled = false;
 
     s_casts[caster] = cast;
+
+    SignalCast(caster, SCRIPT_UNIT_SPELLCAST_START);
 
     return 1;
 }
@@ -121,6 +141,10 @@ int32_t ReceiveSpellGo(void* param, NETMESSAGE msgId, uint32_t time, CDataStore*
     // it as an end would clear the bar the instant it appeared.
     if (it != s_casts.end() && !it->second.channeled) {
         s_casts.erase(it);
+
+        // Both, in this order: SUCCEEDED says what happened and STOP is what takes the bar down.
+        SignalCast(caster, SCRIPT_UNIT_SPELLCAST_SUCCEEDED);
+        SignalCast(caster, SCRIPT_UNIT_SPELLCAST_STOP);
     }
 
     return 1;
@@ -132,7 +156,12 @@ int32_t ReceiveSpellFailure(void* param, NETMESSAGE msgId, uint32_t time, CDataS
         return 1;
     }
 
-    s_casts.erase(GetPackedGuid(msg));
+    auto caster = GetPackedGuid(msg);
+
+    if (s_casts.erase(caster)) {
+        SignalCast(caster, SCRIPT_UNIT_SPELLCAST_FAILED);
+        SignalCast(caster, SCRIPT_UNIT_SPELLCAST_STOP);
+    }
 
     return 1;
 }
@@ -156,7 +185,9 @@ int32_t ReceiveChannelStart(void* param, NETMESSAGE msgId, uint32_t time, CDataS
     msg->Get(duration);
 
     if (!spellID) {
-        s_casts.erase(caster);
+        if (s_casts.erase(caster)) {
+            SignalCast(caster, SCRIPT_UNIT_SPELLCAST_CHANNEL_STOP);
+        }
 
         return 1;
     }
@@ -168,6 +199,8 @@ int32_t ReceiveChannelStart(void* param, NETMESSAGE msgId, uint32_t time, CDataS
     cast.channeled = true;
 
     s_casts[caster] = cast;
+
+    SignalCast(caster, SCRIPT_UNIT_SPELLCAST_CHANNEL_START);
 
     return 1;
 }
@@ -196,12 +229,18 @@ int32_t ReceiveChannelUpdate(void* param, NETMESSAGE msgId, uint32_t time, CData
     if (!remaining) {
         s_casts.erase(it);
 
+        SignalCast(caster, SCRIPT_UNIT_SPELLCAST_CHANNEL_STOP);
+
         return 1;
     }
 
     // The server is authoritative on how much is left, so the end moves rather than the start: a
     // channel shortened by haste or extended by a tick should not rewrite when it began.
     it->second.endMs = static_cast<uint32_t>(OsGetAsyncTimeMs()) + remaining;
+
+    // The bar has to re-read its end time; a channel that is extended or cut short otherwise keeps
+    // draining against the old one.
+    SignalCast(caster, SCRIPT_UNIT_SPELLCAST_CHANNEL_UPDATE);
 
     return 1;
 }

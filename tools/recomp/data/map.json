@@ -30315,16 +30315,16 @@
   "status": "ported"
  },
  "00801c90": {
-  "branchRatio": 0.3,
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
   ],
   "frozen": "ReceiveChannelStart",
-  "frozenSize": 238,
+  "frozenSize": 299,
   "how": "handler",
   "module": "Spell_C.cpp",
   "refSize": 283,
@@ -30334,45 +30334,45 @@
   "branchRatio": 0.364,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.182,
+  "fidelity": 0.364,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
   ],
   "frozen": "ReceiveChannelUpdate",
-  "frozenSize": 250,
+  "frozenSize": 302,
   "how": "handler",
   "module": "Spell_C.cpp",
   "refSize": 338,
   "status": "ported"
  },
  "00809c70": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.059,
+  "fidelity": 0.176,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
   ],
   "frozen": "ReceiveSpellFailure",
-  "frozenSize": 88,
+  "frozenSize": 177,
   "how": "handler",
   "module": "Spell_C.cpp",
   "refSize": 444,
   "status": "ported"
  },
  "0080fee0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.545,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
   ],
   "frozen": "ReceiveSpellStart",
-  "frozenSize": 288,
+  "frozenSize": 349,
   "how": "handler",
   "module": "Spell_C.cpp",
   "refSize": 368,

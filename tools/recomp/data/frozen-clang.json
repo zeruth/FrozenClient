@@ -81536,7 +81536,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 29
+"line": 32
 },
 "CastCacheGet": {
 "files": [
@@ -81560,7 +81560,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 35
+"line": 38
 },
 "CastCacheClear": {
 "files": [
@@ -81575,7 +81575,25 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 54
+"line": 57
+},
+"SignalCast": {
+"files": [
+"src/object/client/castcache.cpp"
+],
+"callseq": [
+"Script_GetTokenFromGUID",
+"FrameScript_SignalEvent"
+],
+"strings": [
+"%s"
+],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 77
 },
 "ReceiveSpellStart": {
 "files": [
@@ -81591,10 +81609,12 @@
 "CDataStore::Get",
 "CDataStore::Get",
 "_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase",
+"SignalCast",
 "ClientCast::ClientCast",
 "OsGetAsyncTimeMs",
 "map<unsigned __int64,ClientCast,std::less<unsigned long long>,std::allocator<std::pair<const unsigned long long, ClientCast> > >::operator[]",
-"ClientCast::operator="
+"ClientCast::operator=",
+"SignalCast"
 ],
 "strings": [],
 "consts": [
@@ -81603,11 +81623,11 @@
 "13",
 "2"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 39,
+"lines": 43,
 "refs": [],
-"line": 69
+"line": 85
 },
 "ReceiveSpellGo": {
 "files": [
@@ -81622,7 +81642,9 @@
 "_Tree_const_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::operator!=",
 "_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::operator->",
 "_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::_Tree_iterator",
-"_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase"
+"_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase",
+"SignalCast",
+"SignalCast"
 ],
 "strings": [],
 "consts": [
@@ -81631,9 +81653,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 18,
+"lines": 22,
 "refs": [],
-"line": 110
+"line": 130
 },
 "ReceiveSpellFailure": {
 "files": [
@@ -81642,17 +81664,19 @@
 "callseq": [
 "Remaining",
 "GetPackedGuid",
-"_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase"
+"_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase",
+"SignalCast",
+"SignalCast"
 ],
 "strings": [],
 "consts": [
 "1"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 9,
+"lines": 14,
 "refs": [],
-"line": 130
+"line": 154
 },
 "ReceiveChannelStart": {
 "files": [
@@ -81665,10 +81689,12 @@
 "CDataStore::Get",
 "CDataStore::Get",
 "_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase",
+"SignalCast",
 "ClientCast::ClientCast",
 "OsGetAsyncTimeMs",
 "map<unsigned __int64,ClientCast,std::less<unsigned long long>,std::allocator<std::pair<const unsigned long long, ClientCast> > >::operator[]",
-"ClientCast::operator="
+"ClientCast::operator=",
+"SignalCast"
 ],
 "strings": [],
 "consts": [
@@ -81676,11 +81702,11 @@
 "1",
 "8"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 33,
+"lines": 37,
 "refs": [],
-"line": 141
+"line": 170
 },
 "ReceiveChannelUpdate": {
 "files": [
@@ -81697,8 +81723,10 @@
 "_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::operator->",
 "_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::_Tree_iterator",
 "_Tree<std::_Tmap_traits<unsigned long long, ClientCast, std::less<unsigned long long>, std::allocator<std::pair<const unsigned long long, ClientCast> >, false> >::erase",
+"SignalCast",
 "_Tree_iterator<std::_Tree_val<std::_Tree_simple_types<std::pair<const unsigned long long, ClientCast> > > >::operator->",
-"OsGetAsyncTimeMs"
+"OsGetAsyncTimeMs",
+"SignalCast"
 ],
 "strings": [],
 "consts": [
@@ -81708,9 +81736,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 32,
+"lines": 38,
 "refs": [],
-"line": 176
+"line": 209
 },
 "CastCacheRegisterHandlers": {
 "files": [
@@ -81730,7 +81758,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 209
+"line": 248
 },
 "CClientMoveUpdate::Skip": {
 "files": [
