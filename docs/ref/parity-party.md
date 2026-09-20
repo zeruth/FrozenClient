@@ -39,7 +39,7 @@ same trick will find any other unhandled opcode's reference implementation.
 | `DAT_00bd1948` | member guid array, 4 entries of 8 bytes |
 | `DAT_00bd0e68` | member pet guids |
 | `DAT_00bd0d08` | per-member record block, copied wholesale (0xc4 dwords) when the roster is rebuilt |
-| `DAT_00bd1968` / `DAT_00bd196c` | the group guid |
+| `DAT_00bd1968` / `DAT_00bd196c` | the **leader** guid -- `IsPartyLeader` compares it against the active player, so it is not the group guid as first recorded |
 | `DAT_00bd198a` | loot method or difficulty byte |
 
 ## Wire format, as far as it is read

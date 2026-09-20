@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 23:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 23:57 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2733 (+1) (10.1%) | 582.6k (10.5%) |
-| &nbsp;&nbsp;ported | 2196 (+1) | 436.6k |
+| mapped to a frozen function | 2733 (=) (10.1%) | 582.6k (10.5%) |
+| &nbsp;&nbsp;ported | 2196 (=) | 436.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 498 (=) | 106.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1019 (=) (3.8%)** | **126.3k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1021 (+2) (3.8%)** | **126.6k (2.3%)** |
 | unmapped | 24429 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 165 (+1) (2.7%)** | |
+| **render surface** (the modules that draw the world) | **6005, mapped 165 (=) (2.7%)** | |
 | frozen functions (src/, from PDB + source) | 11545, stubs 756 | |
 
-Match evidence: annotated 652, callgraph 173, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 1006. Module anchors: 1479 assert strings.
+Match evidence: annotated 655, callgraph 173, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 1003. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 23:44 -- mapped 2732, ported 2195, stub 498, spine mapped 407.
+Previous run: 2026-09-19 23:54 -- mapped 2733, ported 2196, stub 498, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 22:00 | 2721 (10.0%) | 1003 (3.7%) | 513 | 403/5530 | 1792/2964 | 582 |
 | 2026-09-19 22:02 | 2722 (10.0%) | 1004 (3.7%) | 513 | 404/5531 | 1792/2964 | 582 |
 | 2026-09-19 22:02 | 2722 (10.0%) | 1004 (3.7%) | 513 | 404/5531 | 1792/2964 | 582 |
 | 2026-09-19 22:07 | 2724 (10.0%) | 1008 (3.7%) | 511 | 405/5531 | 1792/2964 | 580 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 23:36 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:44 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:54 | 2733 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
+| 2026-09-19 23:57 | 2733 (10.1%) | 1021 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 
 ## How to move a row
 

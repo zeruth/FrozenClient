@@ -134683,7 +134683,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 9
+"line": 10
 },
 "Script_GetRealNumPartyMembers": {
 "files": [
@@ -134705,59 +134705,77 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 18
+"line": 19
 },
 "Script_GetPartyMember": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"luaL_error",
+"CGPartyInfo::GetMember",
+"lua_pushnumber",
 "lua_pushnil"
 ],
-"strings": [],
-"consts": [
-"1"
+"strings": [
+"Usage: GetPartyMember(1-4)"
 ],
-"branches": 0,
+"consts": [
+"0",
+"1",
+"1.0",
+"4"
+],
+"branches": 3,
 "stub": false,
-"lines": 5,
+"lines": 23,
 "refs": [],
-"line": 22
+"line": 26
 },
 "Script_GetPartyLeaderIndex": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
+"CGPartyInfo::GetLeader",
+"CGPartyInfo::GetMember",
 "lua_pushnumber"
 ],
 "strings": [],
 "consts": [
-"0.0",
-"1"
+"0",
+"1",
+"4"
 ],
-"branches": 0,
+"branches": 3,
 "stub": false,
-"lines": 5,
+"lines": 18,
 "refs": [],
-"line": 28
+"line": 56
 },
 "Script_IsPartyLeader": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
+"CGPartyInfo::GetLeader",
+"ClntObjMgrGetActivePlayer",
+"lua_pushnumber",
 "lua_pushnil"
 ],
 "strings": [],
 "consts": [
-"1"
+"1",
+"1.0"
 ],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 5,
+"lines": 11,
 "refs": [],
-"line": 34
+"line": 78
 },
 "Script_IsRealPartyLeader": {
 "files": [
@@ -134779,7 +134797,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 40
+"line": 90
 },
 "Script_LeaveParty": {
 "files": [
@@ -134801,7 +134819,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 44
+"line": 94
 },
 "Script_GetLootMethod": {
 "files": [
@@ -134822,7 +134840,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 48
+"line": 98
 },
 "Script_SetLootMethod": {
 "files": [
@@ -134844,7 +134862,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 57
+"line": 107
 },
 "Script_GetLootThreshold": {
 "files": [
@@ -134862,7 +134880,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 61
+"line": 111
 },
 "Script_SetLootThreshold": {
 "files": [
@@ -134884,7 +134902,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 68
+"line": 118
 },
 "Script_SetPartyAssignment": {
 "files": [
@@ -134906,7 +134924,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 72
+"line": 122
 },
 "Script_ClearPartyAssignment": {
 "files": [
@@ -134928,7 +134946,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 76
+"line": 126
 },
 "Script_GetPartyAssignment": {
 "files": [
@@ -134950,7 +134968,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 80
+"line": 130
 },
 "Script_SilenceMember": {
 "files": [
@@ -134972,7 +134990,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 84
+"line": 134
 },
 "Script_UnSilenceMember": {
 "files": [
@@ -134994,7 +135012,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 88
+"line": 138
 },
 "Script_SetOptOutOfLoot": {
 "files": [
@@ -135016,7 +135034,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 92
+"line": 142
 },
 "Script_GetOptOutOfLoot": {
 "files": [
@@ -135034,7 +135052,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 96
+"line": 146
 },
 "Script_CanChangePlayerDifficulty": {
 "files": [
@@ -135052,7 +135070,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 103
+"line": 153
 },
 "Script_ChangePlayerDifficulty": {
 "files": [
@@ -135074,7 +135092,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 110
+"line": 160
 },
 "Script_IsPartyLFG": {
 "files": [
@@ -135092,7 +135110,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 114
+"line": 164
 },
 "Script_HasLFGRestrictions": {
 "files": [
@@ -135110,7 +135128,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 121
+"line": 171
 },
 "PartyInfoRegisterScriptFunctions": {
 "files": [
@@ -135125,7 +135143,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 155
+"line": 205
 },
 "DestroyText": {
 "files": [

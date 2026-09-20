@@ -989,13 +989,13 @@ addr	how	frozen	evidence
 0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
 0052c110	table	Script_GetNumPartyMembers	binding "GetNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
 0052c190	table	Script_GetRealNumPartyMembers	binding "GetRealNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
-0052c1d0	table	Script_GetPartyMember	binding "GetPartyMember" in s_ScriptFunctions ~ table 00acc6d0
-0052c270	table	Script_GetPartyLeaderIndex	binding "GetPartyLeaderIndex" in s_ScriptFunctions ~ table 00acc6d0
+0052c1d0	annotated	Script_GetPartyMember	tag in src/ui/game/PartyInfoScript.cpp
+0052c270	annotated	Script_GetPartyLeaderIndex	tag in src/ui/game/PartyInfoScript.cpp
 0052c2a0	table	Script_GetLootThreshold	binding "GetLootThreshold" in s_ScriptFunctions ~ table 00acc6d0
 0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
 0052c310	table	Script_IsPartyLFG	binding "IsPartyLFG" in s_ScriptFunctions ~ table 00acc6d0
 0052c350	table	Script_HasLFGRestrictions	binding "HasLFGRestrictions" in s_ScriptFunctions ~ table 00acc6d0
-0052ccd0	table	Script_IsPartyLeader	binding "IsPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
+0052ccd0	annotated	Script_IsPartyLeader	tag in src/ui/game/PartyInfoScript.cpp
 0052cd30	table	Script_IsRealPartyLeader	binding "IsRealPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
 0052cd90	table	Script_GetLootMethod	binding "GetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
 0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0

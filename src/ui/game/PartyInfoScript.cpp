@@ -1,4 +1,5 @@
 #include "ui/game/PartyInfoScript.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "util/Lua.hpp"
@@ -19,20 +20,69 @@ int32_t Script_GetRealNumPartyMembers(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0052c1d0
+// Whether party slot 1-4 is occupied. 1 or nil, and an index outside the range is a usage error
+// rather than a nil -- the reference names the range in the message.
 int32_t Script_GetPartyMember(lua_State* L) {
-    lua_pushnil(L);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetPartyMember(1-4)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1))) - 1;
+
+    if (index >= 4) {
+        luaL_error(L, "Usage: GetPartyMember(1-4)");
+
+        return 0;
+    }
+
+    if (CGPartyInfo::GetMember(index + 1)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
 
+// ref: FUN_0052c270
+// Which party slot holds the leader, or 0 when the leader is the player or there is no party.
+//
+// The reference keeps this as an index that starts at -1 and adds one on the way out, so "nobody"
+// and "slot 0" are the same answer by construction. Derived here instead, from the leader guid
+// against the roster, which gives the same 0 for both.
 int32_t Script_GetPartyLeaderIndex(lua_State* L) {
-    lua_pushnumber(L, 0.0);
+    auto leader = CGPartyInfo::GetLeader();
+    uint32_t index = 0;
+
+    if (leader) {
+        for (uint32_t slot = 1; slot <= 4; slot++) {
+            if (CGPartyInfo::GetMember(slot) == leader) {
+                index = slot;
+
+                break;
+            }
+        }
+    }
+
+    lua_pushnumber(L, static_cast<double>(index));
 
     return 1;
 }
 
+// ref: FUN_0052ccd0
+// The leader guid has to be set AND be the player's: an empty guid is not "you lead a party of
+// one", it is "there is no party", and the reference tests both.
 int32_t Script_IsPartyLeader(lua_State* L) {
-    lua_pushnil(L);
+    auto leader = CGPartyInfo::GetLeader();
+
+    if (leader && leader == ClntObjMgrGetActivePlayer()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }

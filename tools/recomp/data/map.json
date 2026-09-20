@@ -15842,23 +15842,23 @@
   "status": "stub"
  },
  "0052c1d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.2,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetPartyMember",
-  "frozenSize": 19,
-  "how": "table",
+  "frozenSize": 124,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 154,
   "status": "ported"
  },
  "0052c270": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -15867,8 +15867,8 @@
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetPartyLeaderIndex",
-  "frozenSize": 22,
-  "how": "table",
+  "frozenSize": 115,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 45,
   "status": "ported"
@@ -15938,17 +15938,17 @@
   "status": "ported"
  },
  "0052ccd0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_IsPartyLeader",
-  "frozenSize": 19,
-  "how": "table",
+  "frozenSize": 92,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 86,
   "status": "ported"
