@@ -22070,6 +22070,21 @@
   "refSize": 246,
   "status": "ported"
  },
+ "005d8c70": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetBagName",
+  "frozenSize": 311,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
  "005da3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

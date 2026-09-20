@@ -558,7 +558,6 @@ int32_t Script_Stub_GetAvailableRoles(lua_State* L) {
 }
 WHOA_LUA_STUB(GetAvailableTitle)
 WHOA_LUA_STUB(GetBackpackCurrencyInfo)
-WHOA_LUA_STUB(GetBagName)
 WHOA_LUA_STUB(GetBankSlotCost)
 WHOA_LUA_STUB(GetBarberShopStyleInfo)
 WHOA_LUA_STUB(GetBarberShopTotalCost)
@@ -1677,7 +1676,6 @@ const ScriptFunction s_stubs[] = {
     { "GetAvailableRoles",                       &Script_Stub_GetAvailableRoles },
     { "GetAvailableTitle",                       &Script_Stub_GetAvailableTitle },
     { "GetBackpackCurrencyInfo",                 &Script_Stub_GetBackpackCurrencyInfo },
-    { "GetBagName",                              &Script_Stub_GetBagName },
     { "GetBankSlotCost",                         &Script_Stub_GetBankSlotCost },
     { "GetBarberShopStyleInfo",                  &Script_Stub_GetBarberShopStyleInfo },
     { "GetBarberShopTotalCost",                  &Script_Stub_GetBarberShopTotalCost },

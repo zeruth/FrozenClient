@@ -10,6 +10,7 @@
 #include "object/client/ItemLink.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/Types.hpp"
 #include "util/Lua.hpp"
 
 namespace {
@@ -271,6 +272,50 @@ int32_t Script_GetContainerItemDurability(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_005d8c70
+// The backpack is a global string, not an item: it has no item behind it, so its name comes from
+// BACKPACK_TOOLTIP. Every other bag is the name of the bag item sitting in that slot.
+int32_t Script_GetBagName(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBagName(index)");
+
+        return 0;
+    }
+
+    auto bag = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    if (bag == 0) {
+        lua_pushstring(L, FrameScript_GetText("BACKPACK_TOOLTIP", -1, GENDER_NOT_APPLICABLE));
+
+        return 1;
+    }
+
+    // The reference accepts 1-11, the four worn bags and seven bank bags. Frozen has no bank, so
+    // the upper seven resolve to nothing rather than being rejected -- the same no-values answer
+    // an empty bag slot gives.
+    if (bag < 1 || bag > NUM_BAG_SLOTS) {
+        return 0;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    auto object = data
+        ? ClntObjMgrObjectPtr(data->invSlots[INVSLOT_BAGFIRST + bag - 1], TYPE_ITEM,
+                              __FILE__, __LINE__)
+        : nullptr;
+
+    auto info = object ? ItemCacheGet(static_cast<CGItem_C*>(object)->GetEntryID()) : nullptr;
+
+    if (!info || !info->Name() || !info->Name()[0]) {
+        return 0;
+    }
+
+    lua_pushstring(L, info->Name());
+
+    return 1;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
@@ -278,6 +323,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerItemInfo",   &Script_GetContainerItemInfo },
     { "ContainerIDToInventoryID", &Script_ContainerIDToInventoryID },
     { "GetContainerItemDurability", &Script_GetContainerItemDurability },
+    { "GetBagName",             &Script_GetBagName },
 };
 
 } // namespace
