@@ -10,6 +10,19 @@
 static uint32_t s_lasterror = ERROR_SUCCESS;
 static uint32_t s_suppress;
 
+// Leaves the process without running static destructors.
+//
+// exit() runs them, and this client keeps ~20 caches and lists as namespace-scope Storm containers
+// whose nodes live in Storm heaps that the same teardown is busy freeing -- so a dying client dies
+// a second time on the way out and the second death is the one the crash reporter shows. That cost
+// a session on Android, where an assertion's message was buried under an abort inside a destroyed
+// mutex. _Exit skips destructors and atexit handlers, so the report has to flush stdio itself.
+[[noreturn]] static void ErrExitNow(uint32_t exitcode) {
+    fflush(nullptr);
+
+    _Exit(static_cast<int32_t>(exitcode));
+}
+
 [[noreturn]] void STORMCDECL SErrDisplayAppFatal(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -17,7 +30,7 @@ static uint32_t s_suppress;
     printf("\n");
     va_end(args);
 
-    exit(EXIT_FAILURE);
+    ErrExitNow(EXIT_FAILURE);
 }
 
 int32_t STORMAPI SErrDisplayError(uint32_t errorcode, const char* filename, int32_t linenumber, const char* description, int32_t recoverable, uint32_t exitcode, uint32_t a7) {
@@ -56,7 +69,7 @@ int32_t STORMAPI SErrDisplayError(uint32_t errorcode, const char* filename, int3
     if (recoverable) {
         return 1;
     } else {
-        exit(exitcode);
+        ErrExitNow(exitcode);
     }
 }
 

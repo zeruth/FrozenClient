@@ -658,7 +658,14 @@ uint16_t s_skyIdx[SKY_RINGS * SKY_SEGS * 6];
 int32_t s_skyIdxCount = 0;
 bool s_skyBuilt = false;
 HTEXTURE s_skyWhite = nullptr;
-CImVector s_skyWhitePixels[4] = { { 0xFF, 0xFF, 0xFF, 0xFF }, { 0xFF, 0xFF, 0xFF, 0xFF }, { 0xFF, 0xFF, 0xFF, 0xFF }, { 0xFF, 0xFF, 0xFF, 0xFF } };
+
+// GxTexCreate asserts width >= 8, so the dome cannot have the 2x2 white sheet it wants --
+// the sheet is uniform, so widening it to the smallest legal size costs 256 bytes and
+// changes nothing on screen. On Windows the assertion is compiled out and a 2x2 texture
+// went through unnoticed; on Android assertions are live and it killed the client a few
+// seconds into the world, the moment the sky first drew.
+const int32_t SKY_WHITE_DIM = 8;
+CImVector s_skyWhitePixels[SKY_WHITE_DIM * SKY_WHITE_DIM];
 
 void SkyWhiteCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uint32_t mip, void* userArg, uint32_t& stride, const void*& texels) {
     if (cmd == GxTex_Latch) {
@@ -5863,9 +5870,13 @@ void SkyRender() {
     }
 
     if (!s_skyWhite) {
+        for (int32_t i = 0; i < SKY_WHITE_DIM * SKY_WHITE_DIM; i++) {
+            s_skyWhitePixels[i] = CImVector { 0xFF, 0xFF, 0xFF, 0xFF };
+        }
+
         // Last argument 0: a non-zero value replaces the filter above with the global mipmapped
         // one, which makes the device ask this callback for mip levels it cannot supply.
-        s_skyWhite = TextureCreate(2, 2, GxTex_Argb8888, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 1, 1, 0, 0, 0, 1), s_skyWhitePixels, SkyWhiteCallback, __FILE__, 0);
+        s_skyWhite = TextureCreate(SKY_WHITE_DIM, SKY_WHITE_DIM, GxTex_Argb8888, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 1, 1, 0, 0, 0, 1), s_skyWhitePixels, SkyWhiteCallback, __FILE__, 0);
     }
 
     // One colour per ring by altitude. The five sky bands span zenith to 45 degrees, where the

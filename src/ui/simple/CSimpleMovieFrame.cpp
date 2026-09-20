@@ -201,6 +201,12 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
 
     this->LoadCaptions(base);
 
+    // DIVERGENCE: the reference's MovieFrame.xml declares enableKeyboard and no enableMouse, so a
+    // cinematic there is skippable only by a key. A touch device has no key to press, so the frame
+    // takes mouse events for as long as it is playing and gives them back in StopMovie -- a hidden
+    // MovieFrame that stayed in the mouse queue would sit in front of the whole UI eating clicks.
+    this->EnableEvent(SIMPLE_EVENT_MOUSE, -1);
+
     this->m_playing = true;
 
     return true;
@@ -427,6 +433,8 @@ void CSimpleMovieFrame::StopMovie() {
 
     this->m_captions.clear();
     this->m_caption = -1;
+
+    this->DisableEvent(SIMPLE_EVENT_MOUSE);
 
     this->m_playing = false;
     this->m_elapsed = 0.0f;

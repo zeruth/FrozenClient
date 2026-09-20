@@ -58,6 +58,29 @@ void SLogWrite(HSLOG log, const char* format, ...) {
     fputc('\n', static_cast<FILE*>(log));
 }
 
+// Client diagnostics. Until now this was an empty TODO, so everything handed to it was thrown
+// away silently -- including the two warnings about being unable to create the interface log
+// files, which is exactly the kind of thing worth hearing about.
+//
+// Routed to stderr because that is the one channel that reaches every target: the console on
+// desktop, and logcat on Android, where the entry point pumps stdout and stderr into the log.
+// The severity is spelled out rather than printed as a number so a line is readable on its own.
 void SysMsgPrintf(SYSMSG_TYPE severity, const char* format, ...) {
-    // TODO
+    static const char* const s_names[SYSMSG_NUMTYPES] = {
+        "info",
+        "warning",
+        "error",
+        "fatal",
+    };
+
+    const char* name = (severity >= 0 && severity < SYSMSG_NUMTYPES) ? s_names[severity] : "?";
+
+    char text[1024];
+
+    va_list args;
+    va_start(args, format);
+    vsnprintf(text, sizeof(text), format, args);
+    va_end(args);
+
+    fprintf(stderr, "SysMsg %s: %s\n", name, text);
 }
