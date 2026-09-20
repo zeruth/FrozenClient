@@ -1,17 +1,54 @@
 #include "util/Lua.hpp"
 #include "ui/game/UIBindingsScript.hpp"
 #include "ui/game/CGUIBindings.hpp"
+#include "ui/game/UIBindings.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
 namespace {
 
+// ref: FUN_0055dc00
 int32_t Script_GetNumBindings(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, UIBindingsGetCount());
+
+    return 1;
 }
 
+// ref: FUN_0055e8d0
+//
+// GetBinding(index[, mode]) -> command, key1, key2, ...
+//
+// The index is 1-based. The reference pushes the command name and then every key bound to it,
+// returning 1 + however many keys there were, so a command with nothing bound returns just the
+// name -- which is every command here until a bindings cache exists.
+//
+// The optional mode selects one of five binding sets. Only the effective set exists here, so the
+// argument is accepted and ignored rather than rejected.
 int32_t Script_GetBinding(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        return luaL_error(L, "Usage: GetBinding(index[, mode])");
+    }
+
+    auto command = UIBindingsGetByIndex(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    // The reference pushes its empty-string global when the index names nothing, rather than
+    // failing, so the pane can walk past a gap.
+    lua_pushstring(L, command ? command->name.c_str() : "");
+
+    int32_t keys = 0;
+
+    while (command) {
+        auto key = UIBindingsGetKey(command->name.c_str(), keys);
+
+        if (!key) {
+            break;
+        }
+
+        lua_pushstring(L, key);
+        keys++;
+    }
+
+    return keys + 1;
 }
 
 int32_t Script_SetBinding(lua_State* L) {
@@ -58,13 +95,50 @@ int32_t Script_ClearOverrideBindings(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0055e9b0
+//
+// GetBindingKey("COMMAND"[, mode]) -> key1, key2, ...
+//
+// Returns nothing at all when the command has no keys, which is what FrameXML expects: the action
+// button asks for a key and shows no hotkey text when it gets none.
 int32_t Script_GetBindingKey(lua_State* L) {
-    // TODO key bindings
-    return 0;
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: GetBindingKey(\"COMMAND\"[, mode])");
+    }
+
+    auto command = lua_tostring(L, 1);
+    int32_t keys = 0;
+
+    while (true) {
+        auto key = UIBindingsGetKey(command, keys);
+
+        if (!key) {
+            break;
+        }
+
+        lua_pushstring(L, key);
+        keys++;
+    }
+
+    return keys;
 }
 
+// ref: FUN_00562550
+//
+// GetBindingAction("KEY"[, checkOverride][, mode]) -> command, or the empty string.
+//
+// The empty string rather than nil is the reference's answer for an unbound key, and FrameXML
+// tests it with a string compare.
 int32_t Script_GetBindingAction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: GetBindingAction(\"KEY\"[, checkOverride][, mode])");
+    }
+
+    auto command = UIBindingsGetCommandForKey(lua_tostring(L, 1));
+
+    lua_pushstring(L, command ? command : "");
+
+    return 1;
 }
 
 int32_t Script_GetBindingByKey(lua_State* L) {
