@@ -296,9 +296,12 @@ width and height, and multiplies by twice this radius.
 
 Ordered by how much is missing, not by draw order:
 
-1. **Minimap terrain imagery.** The 3.3.5a client keeps per-tile minimap BLPs under `textures\Minimap`
-   indexed by `md5translate.trs`, which maps `<map>\map<x>_<y>.blp` to a hashed filename. Frozen has
-   no reader for that index. Until it does there is nothing to draw underneath the blips.
+1. ~~**Minimap terrain imagery.**~~ **The index reader is DONE.** `src/world/Minimap.cpp` reads
+   `md5translate.trs` (`MinimapLoadTranslate`, ref `FUN_007f6540`) and builds both key shapes:
+   `MinimapWorldTile` for `<map>\map<x>_<y>.blp` and `MinimapWmoTexture` for the interior pieces.
+   Measured while porting it: only 7534 of the 18644 entries are world tiles -- the other 11110 are
+   buildings and dungeons carrying their own minimap imagery. What is still missing is the DRAW,
+   and what that needs is section 5 below.
 2. **The circular mask.** The frame is square and the art is round; the reference masks it.
 3. **Blips.** `00581e80` and `0057f7f0` decide, per object, whether it appears and with which icon,
    which needs the object manager walk plus the tracking flags from 2c.
@@ -316,10 +319,48 @@ cluster and neither depends on the terrain imagery:
    and its fallback, and the compass lookup. The first half is the prerequisite for the second.
    `SetPlayerTexture` is already ported and already guards against the null this would leave.
 2. Port `0057c6a0` — player facing. Two calls, and it makes the arrow point somewhere.
-3. Build the `md5translate.trs` reader, then the tile draw. This is the large one.
+3. ~~Build the `md5translate.trs` reader~~ (done), then the tile draw. This is the large one, and
+   section 5 is what it actually costs.
 4. Blips and tracking (`00581e80`, `0057f7f0`, `0057f1b0`), which unblock the tracking bindings.
 5. Ping, which unblocks `PingLocation` and `GetPingPosition`.
 
 Do **not** port `SetZoom`'s missing side effects until step 3 exists: the dirty bit and terrain
 refill have nothing to invalidate while no tiles are drawn, which is why that divergence is recorded
 rather than treated as a defect.
+
+---
+
+## 5. The tile updater, and why it is not a single cycle
+
+`FUN_00581e80` is the minimap's render (4905 bytes). The part that decides WHICH tiles are on
+screen and keeps their textures resident is separate: `FUN_007f5ba0`, in the same translation unit
+as the `.trs` reader already ported.
+
+What it does, read rather than guessed:
+
+- Keeps a **256-entry tile table**, stride `0x29` dwords (`0xA4` bytes). Each slot holds a texture
+  handle just below its flags word -- the flag word is at `+0x94` of the slot and the handle at
+  `+0x90` -- and the update walks all 256 with that stride in four separate loops (invalidate,
+  mark, resolve, release).
+- Recomputes a visible block only when the camera leaves it. The block bounds live in six globals
+  (`00d39460`..`00d39474`); the camera position that last defined them is `00d39454`..`0039445c`.
+  The test at the end of the "did we move" branch is literally whether the camera is still inside
+  those bounds.
+- Snaps the block to the zoom radius: `radius = UNK_00a41e1c[zoom]`, tile index = `floor(pos /
+  radius)`, bounds = `index * radius` to `+ radius`. **That confirms the zoom table already
+  recorded in section 2g from the other side** -- it is the same array, indexed by the same
+  `00af4e50`.
+- Asks the map for the chunks inside the block: `FUN_0077f130(map, &bounds, &outCount, 0x100, ...)`,
+  capped at the same 256. Then `FUN_007f3ce0` per chunk to test one, and `FUN_007f5070` to load it.
+- Signals a script event (`FUN_0081b530`) when the "is there terrain here at all" answer flips,
+  which is what drives the minimap going blank indoors.
+
+**The blocker is the map query, not the minimap.** `FUN_0077f090`, `FUN_0077f130`, `FUN_0077f160`
+and `FUN_0077f1b0` are the map-side calls this leans on, and none is ported -- frozen has other
+functions from that module (`FUN_0077f490`/`4a0`/`4b0` are in `CWorld.cpp`) but not these. So the
+tile draw is not one cycle: it is the map's chunk-bounds query first, then the 256-slot residency
+table, then the draw.
+
+Do not start it from the render end. `FUN_00581e80` has around 47 unlinked callees and mixes the
+mask, the rotation, the tiles, the blips and the POI arrows in one body; porting it before the
+query exists would be guesswork with nothing to check it against.
