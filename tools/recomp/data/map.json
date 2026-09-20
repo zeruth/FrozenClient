@@ -8875,7 +8875,7 @@
   "branchRatio": 0.652,
   "constOverlap": 0.29,
   "faithful": false,
-  "fidelity": 0.605,
+  "fidelity": 0.632,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -10871,7 +10871,7 @@
   "branchRatio": 0.818,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.692,
+  "fidelity": 0.769,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -24284,20 +24284,20 @@
   "status": "ported"
  },
  "00610040": {
-  "branchRatio": 0.222,
+  "branchRatio": 0.556,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.692,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitClassBase",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 292,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 344,
-  "status": "stub"
+  "status": "ported"
  },
  "006101a0": {
   "branchRatio": 0.286,
@@ -26859,6 +26859,19 @@
   "refSize": 519,
   "status": "ported"
  },
+ "0065c290": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "WowClientDB<ChrClassesRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "override",
+  "module": "DBClient.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
  "0067cbd0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -27907,19 +27920,6 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 276,
-  "status": "ported"
- },
- "0072aab0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "WowClientDB<ChrClassesRec>::GetRecord",
-  "frozenSize": 29,
-  "how": "callgraph",
-  "module": "Unit_C.cpp",
-  "refSize": 60,
   "status": "ported"
  },
  "0072d940": {

@@ -5,8 +5,25 @@ bags, a stack of money — is one small global state block in the reference, rea
 bindings and written by about twenty more. Frozen has none of it, which is why the whole
 `Pickup*` / `Place*` / `Cursor*` family is stubbed.
 
-Recovered 2026-09-19 by decompiling the readers, the setters and the clear path. Nothing here is
-implemented yet; this is the map that makes implementing it a porting job rather than a hunt.
+Recovered 2026-09-19 by decompiling the readers, the setters and the clear path. This is the map
+that makes implementing it a porting job rather than a hunt.
+
+**Status.** The state block and all five pure readers in section 3 are landed -- `CursorHasItem`,
+`CursorHasSpell`, `CursorHasMacro`, `CursorHasMoney` and `GetCursorMoney` read `CGGameUI`'s cursor
+statics and answer truthfully, which today means "the cursor is empty" because nothing sets it.
+
+The next step in the suggested order, `FUN_00520960`, is **blocked twice over** and that was
+confirmed rather than assumed:
+
+- Frozen has no game cursor image. The only `SetCursor`-shaped thing in the tree is the edit box's
+  caret, so step 5 of the setter shape below has nothing to call.
+- `SpellRec` carries `m_ID`, `m_spellIconID`, `m_name`, `m_rank`, `m_spellVisualID` and
+  `m_attributes` -- not the spell category, and not the override-icon flags. Step 2 picks the icon
+  from exactly those, and it *bails when there is no icon*, so guessing the icon would not be a
+  cosmetic shortcut: it decides whether the pickup happens at all.
+
+So `GetCursorInfo` and `ClearCursor` are left stubbed on purpose. Implementing them against an
+empty cursor would add a switch whose every arm is unreachable, and would read as working code.
 
 ## 1. The state block
 

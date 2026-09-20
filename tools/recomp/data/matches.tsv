@@ -1525,7 +1525,7 @@ addr	how	frozen	evidence
 0060fcc0	table	Script_GetArenaCurrency	binding "GetArenaCurrency" in s_UnitFunctions ~ table 00ad21d8
 0060fd40	annotated	Script_UnitRace	tag in src/ui/game/ScriptEvents.cpp
 0060fec0	annotated	Script_UnitClass	tag in src/ui/game/ScriptEvents.cpp
-00610040	table	Script_UnitClassBase	binding "UnitClassBase" in s_UnitFunctions ~ table 00ad21d8
+00610040	annotated	Script_UnitClassBase	tag in src/ui/game/ScriptEvents.cpp
 006101a0	table	Script_UnitResistance	binding "UnitResistance" in s_UnitFunctions ~ table 00ad21d8
 00610300	table	Script_UnitStat	binding "UnitStat" in s_UnitFunctions ~ table 00ad21d8
 00610450	table	Script_UnitAttackBothHands	binding "UnitAttackBothHands" in s_UnitFunctions ~ table 00ad21d8
@@ -1686,6 +1686,7 @@ addr	how	frozen	evidence
 00635190	handler	ReceiveCreatureQueryResponse	SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE) on both sides
 006354d0	handler	ReceiveItemQueryResponse	SetMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE) on both sides
 006357d0	handler	ReceiveNameQueryResponse	SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE) on both sides
+0065c290	override	WowClientDB<ChrClassesRec>::GetRecord	
 0067cbd0	callgraph	GetI32	only unmatched callee of 006354d0=ReceiveItemQueryResponse
 0067d770	override	Script_GetUnitFromName	
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
@@ -1752,7 +1753,6 @@ addr	how	frozen	evidence
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
-0072aab0	callgraph	WowClientDB<ChrClassesRec>::GetRecord	only unmatched callee of 0060fec0=Script_UnitClass
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote

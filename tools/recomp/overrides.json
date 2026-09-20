@@ -331,8 +331,9 @@
     "note": "TSList<>::LinkNode (unlink + insert before/after), folded template"
   },
   "0065c290": {
-    "status": "excluded",
-    "note": "WowClientDB<T>::GetRecord (min/max id -> row pointer), folded template"
+    "frozen": "WowClientDB<ChrClassesRec>::GetRecord",
+    "status": "ported",
+    "note": "Pinned: the callgraph matcher drifts between template instantiations of GetRecord. This one reads min at this-8, max at this-0xc and the array at this+8, and those land exactly on the ChrClasses globals 00ad3414/00ad3410/00ad3424 that UnitClassBase (00610040) inlines. It had been on 0072aab0, which does object-type checks and is not a DB lookup at all."
   },
   "006f6020": {
     "status": "excluded",

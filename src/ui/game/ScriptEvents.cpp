@@ -1127,8 +1127,52 @@ int32_t Script_UnitClass(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_00610040
+// Two returns, like UnitClass above, and the token is the same. The difference is the first value:
+// this one is the record's neutral name, where UnitClass picks the sex-appropriate display name.
+// That is the whole reason both bindings exist.
+//
+// The reference reads the class from the byte at descriptor +0x45, which is what pad1 >> 8 is here
+// -- the same byte the modified-click class masks test.
 int32_t Script_UnitClassBase(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitClassBase(\"unit\")");
+
+        return 0;
+    }
+
+    auto token = lua_tostring(L, 1);
+
+    const ChrClassesRec* classRec = nullptr;
+
+    if (!SStrCmpI(token, "player", STORM_MAX_STR)) {
+        classRec = g_chrClassesDB.GetRecord(CGPlayer_C::GetLocalPlayerClass());
+    } else {
+        auto unit = Script_GetUnitFromName(token);
+        auto data = unit ? unit->Unit() : nullptr;
+
+        if (data) {
+            classRec = g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF);
+        }
+
+        // TODO when the token names something that is not a unit, the reference falls back to the
+        // creature display cache and derives a class from it. That cache has no frozen counterpart,
+        // so such a token answers nil here instead.
+    }
+
+    // Two nils rather than none, so the caller's second return does not come back as a stray value
+    // from further up the stack.
+    if (!classRec) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+
+        return 2;
+    }
+
+    lua_pushstring(L, classRec->m_name);
+    lua_pushstring(L, classRec->m_filename);
+
+    return 2;
 }
 
 int32_t Script_UnitResistance(lua_State* L) {
