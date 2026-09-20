@@ -26,6 +26,7 @@
 #include "console/Screen.hpp"
 #include "db/Db.hpp"
 #include "glue/CGlueMgr.hpp"
+#include "ui/Util.hpp"
 #include "glue/GlueScriptEvents.hpp"
 #include "gx/LoadingScreen.hpp"
 #include "gx/Screen.hpp"
@@ -849,27 +850,31 @@ void WowClientInit() {
     //     sub_421630();
     // }
 
-    // TODO
-    // if (byte_B2F9E1 != 1) {
-    //     if ((g_playIntroMovie + 48) == 1) {
-    //         CVar::Set(g_playIntroMovie, "0", 1, 0, 0, 1);
-    //         CGlueMgr::SetScreen("movie");
-    //     } else {
-    //         CGlueMgr::SetScreen("login");
-    //     }
-    // } else {
-    //     if ((dword_B2F980 + 48) == 1) {
-    //         CVar::Set(dword_B2F980, "0", 1, 0, 0, 1);
-    //         CVar::Set(g_playIntroMovie, "0", 1, 0, 0, 1);
-    //         CGlueMgr::SetScreen("movie");
-    //     } else {
-    //         CGlueMgr::SetScreen("login");
-    //     }
-    // }
+    // ref: the tail of FUN_00404130
+    //
+    // The cinematics play on the FIRST start and then never again, which is why they come before
+    // the licence screens rather than after: this runs while the glue is being brought up, before
+    // anything is shown. The movie screen returns to "login" itself when it finishes or is
+    // skipped (MovieFrame_OnHide), so nothing here has to wait for it.
+    //
+    // The cvar is the memory. It ships as "1", is cleared to "0" the moment the movie screen is
+    // chosen, and the write is what stops it playing on every launch -- set movie back to 1 in
+    // Config.wtf to see them again.
+    //
+    // PARTIAL: the reference gates on a flag (its 00b2f9e1) that selects WHICH cvar decides. When
+    // that flag is set it reads expansionMovie instead and clears both, which is how a client
+    // upgraded to a new expansion plays that expansion's intro once more. Frozen does not track
+    // an expansion upgrade, so only the ordinary branch is ported; expansionMovie is left alone
+    // rather than cleared on a condition that cannot be evaluated.
+    bool playIntro = s_movieCvar && StringToBOOL(s_movieCvar->GetString());
 
-    // TODO
-    // - temporary until above logic is implemented
-    CGlueMgr::SetScreen("login");
+    if (playIntro) {
+        s_movieCvar->Set("0", true, false, false, true);
+
+        CGlueMgr::SetScreen("movie");
+    } else {
+        CGlueMgr::SetScreen("login");
+    }
 
     // TODO
     // CGlueMgr::m_pendingTimerAlert = dword_B2F9D8;

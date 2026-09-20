@@ -95,6 +95,12 @@ class CSimpleMovieFrame : public CSimpleFrame {
 
         virtual void OnLayerUpdate(float elapsedSec);
 
+        // DIVERGENCE, asked for: any key or mouse button skips the current movie. The reference's
+        // FrameXML only listens for ESCAPE, SPACE and ENTER (MovieFrame_OnKeyUp), so everything
+        // else fell through and the intro sat there looking unresponsive.
+        virtual int32_t OnLayerKeyDown(const CKeyEvent& evt);
+        virtual int32_t OnLayerMouseDown(const CMouseEvent& evt, const char* btn);
+
     private:
         void StartMovieAudio(int32_t volume);
         void StopMovieAudio();

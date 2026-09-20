@@ -396,7 +396,20 @@ void CSimpleMovieFrame::StopMovieAudio() {
     }
 }
 
+// ref: FUN_0095eba0
+//
+// The whole body is guarded on "was it playing", and that guard is the only thing standing between
+// this and infinite recursion: the script this runs at the end is OnMovieFinished, and FrameXML
+// answers that with MovieFrame_PlayNextMovie, which calls StopMovie straight back. The second call
+// sees the flag already cleared and does nothing.
+//
+// So the order matters as much as the guard -- the flag is cleared BEFORE the script runs, exactly
+// as the reference clears its +0x2a0 before running its +0x3b4.
 void CSimpleMovieFrame::StopMovie() {
+    if (!this->m_playing) {
+        return;
+    }
+
     this->StopMovieAudio();
 
     // Take the last caption off the screen before the frame goes, so nothing is left behind.
@@ -424,6 +437,11 @@ void CSimpleMovieFrame::StopMovie() {
     }
 
     MovieAviClose(this->m_movie);
+
+    // What lets the sequence move on. Pressing SPACE or ENTER reaches StopMovie through the
+    // binding and nothing else would advance the movie list; without this the picture simply
+    // stopped and sat there, which is what it did.
+    this->RunOnMovieFinishedScript();
 }
 
 bool CSimpleMovieFrame::AdvanceMovie(float elapsedSec) {
@@ -493,6 +511,33 @@ bool CSimpleMovieFrame::AdvanceMovie(float elapsedSec) {
     return true;
 }
 
+// DIVERGENCE, asked for. FrameXML's MovieFrame_OnKeyUp answers ESCAPE, SPACE and ENTER and
+// ignores everything else, so most of the keyboard did nothing during a cinematic. These two make
+// any key and any mouse button behave the way SPACE does -- stop the current movie, which advances
+// to the next one and leaves the movie screen after the last.
+//
+// Deliberately not ESCAPE's behaviour: that hides the frame and abandons the whole sequence, which
+// would make a stray keypress skip every remaining movie rather than the one playing.
+int32_t CSimpleMovieFrame::OnLayerKeyDown(const CKeyEvent& evt) {
+    if (this->m_playing) {
+        this->StopMovie();
+
+        return 1;
+    }
+
+    return CSimpleFrame::OnLayerKeyDown(evt);
+}
+
+int32_t CSimpleMovieFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
+    if (this->m_playing) {
+        this->StopMovie();
+
+        return 1;
+    }
+
+    return CSimpleFrame::OnLayerMouseDown(evt, btn);
+}
+
 void CSimpleMovieFrame::OnLayerUpdate(float elapsedSec) {
     CSimpleFrame::OnLayerUpdate(elapsedSec);
 
@@ -500,8 +545,9 @@ void CSimpleMovieFrame::OnLayerUpdate(float elapsedSec) {
         return;
     }
 
+    // StopMovie runs OnMovieFinished itself, so the end of a movie and a skip take the same
+    // path. Firing it here too would deliver it twice.
     if (!this->AdvanceMovie(elapsedSec)) {
         this->StopMovie();
-        this->RunOnMovieFinishedScript();
     }
 }
