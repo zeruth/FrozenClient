@@ -101,8 +101,43 @@ two keys map to one command and be returned in a stable order.
 
 Taken together those say the defaults are a table in the binary that does **not** name commands by
 string -- most likely by position in the parsed `Bindings.xml`, since that file and the executable
-ship together. The next probe is the loader that fills the key-binding list: find what writes the
-`+0xb8` head, and the table it reads from will be sitting next to it.
+ship together.
+
+## 3b. The four sets, and where the search stands (2026-09-20, second pass)
+
+The manager holds **four** binding sets, not one list. Each is a Storm list head at
+`manager + 0x40 + set * 0x28`, with its link offset at `manager + 0x38 + set * 0x28`. The `+0xb8`
+head found earlier is simply set 3.
+
+```
+set 0   default
+set 1   account
+set 2   character
+set 3   effective -- the one every getter reads
+```
+
+`FUN_00562b80(from, to)` copies one set to another, and both Lua entry points are thin wrappers
+over it: `LoadBindings(0|1|2)` is `copy(n, 3)` and `SaveBindings(1|2)` is `copy(3, n)` (plus
+`copy(1, 2)` when saving to the account set). The copy **walks downward from the requested set
+until it finds a non-empty one**, which is the fallback chain: character, else account, else
+default.
+
+So set 0 is where the defaults must land. What fills it is still not found. Ruled out this pass,
+on top of the four in section 1:
+
+5. Not seeded at construction. The manager is allocated in `FUN_005620f0` -- 0x13c bytes, and it
+   names its own source file, `.\UIBindings.cpp` line 187 -- and the constructor `FUN_00561b80`
+   zeroes all four sets and sets the command count to 0. Nothing is populated there.
+6. Not loaded by FrameXML. Nothing under `Interface\FrameXML` calls `LoadBindings` either, so the
+   load is entirely client-side at startup.
+7. Not a separate data file. `BindingsDefault.xml`, `KeyBindings.xml`, `DefaultBindings.xml` and a
+   shipped `bindings-cache.wtf` were each probed by exact path against the archives (the listfile
+   is incomplete, so a name search is not enough) and none exists.
+
+**The next probe**, and the one place left that fits: the handler that consumes a `<Binding>`
+element while Bindings.xml is parsed. It has to register the command, and it is the only code that
+sees a command and its position at the same moment -- which is what an index-keyed default table
+would need. Find it from the FrameXML XML dispatch, not from the binding module.
 
 ## 4. What is left
 

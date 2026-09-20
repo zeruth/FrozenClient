@@ -1341,6 +1341,55 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
         }
     }
 
+    // Resistances.
+    //
+    // The reference first asks whether all six are the same value and, if they are, prints one
+    // "to All Resistances" line instead of six. Otherwise it walks schools 2 through 6 -- fire,
+    // nature, frost, shadow, arcane -- and prints the non-zero ones.
+    //
+    // Holy (resistance[0], school 1) is never printed on its own. It takes part in the all-equal
+    // test and nothing else, which is why no 3.3.5 item shows a holy resistance line.
+    {
+        bool allEqual = true;
+
+        for (int32_t i = 1; i < 6; i++) {
+            if (info->resistance[i] != info->resistance[0]) {
+                allEqual = false;
+                break;
+            }
+        }
+
+        if (allEqual) {
+            if (info->resistance[0] != 0) {
+                auto value = info->resistance[0];
+
+                SStrPrintf(text, sizeof(text),
+                           FrameScript_GetText("ITEM_RESIST_ALL", -1, GENDER_NOT_APPLICABLE),
+                           value < 1 ? '-' : '+',
+                           value < 0 ? -value : value);
+                TooltipSetLine(tooltip, line++, false, text);
+            }
+        } else {
+            for (int32_t school = 2; school < 7; school++) {
+                auto value = info->resistance[school - 1];
+
+                if (value == 0) {
+                    continue;
+                }
+
+                char schoolKey[32];
+                SStrPrintf(schoolKey, sizeof(schoolKey), "SPELL_SCHOOL%d_CAP", school);
+
+                SStrPrintf(text, sizeof(text),
+                           FrameScript_GetText("ITEM_RESIST_SINGLE", -1, GENDER_NOT_APPLICABLE),
+                           value < 1 ? '-' : '+',
+                           value < 0 ? -value : value,
+                           FrameScript_GetText(schoolKey, -1, GENDER_NOT_APPLICABLE));
+                TooltipSetLine(tooltip, line++, false, text);
+            }
+        }
+    }
+
     // Durability comes from the item instance, not the record, so it is passed in; an item with no
     // durability at all shows no line rather than "0 / 0".
     if (maxDurability > 0) {
