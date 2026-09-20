@@ -102628,7 +102628,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 12
+"line": 13
 },
 "CGRaidInfo::GetRealNumMembers": {
 "files": [
@@ -102641,7 +102641,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 16
+"line": 17
 },
 "CGRaidInfo::SetRealNumMembers": {
 "files": [
@@ -102656,7 +102656,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 23
+"line": 24
 },
 "CGRaidInfo::IsMemberOrPet": {
 "files": [
@@ -102676,7 +102676,23 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 30
+"line": 31
+},
+"CGRaidInfo::GetMember": {
+"files": [
+"src/ui/game/cgraidinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 63
 },
 "CGRaidInfo::FindByName": {
 "files": [
@@ -102693,13 +102709,16 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 62
+"line": 71
 },
 "CGRaidInfo::SetRoster": {
 "files": [
 "src/ui/game/cgraidinfo.cpp"
 ],
 "callseq": [
+"SStrCopy",
+"ClntObjMgrGetActivePlayer",
+"CGPlayer_C::GetLocalPlayerName",
 "SStrCopy"
 ],
 "strings": [],
@@ -102707,11 +102726,11 @@
 "0",
 "1"
 ],
-"branches": 4,
+"branches": 5,
 "stub": false,
-"lines": 24,
+"lines": 34,
 "refs": [],
-"line": 76
+"line": 85
 },
 "CGTabardModelFrame::Create": {
 "files": [
@@ -141698,7 +141717,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 16
+"line": 17
 },
 "ParseTrailingTokens": {
 "files": [
@@ -141729,7 +141748,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 31
+"line": 32
 },
 "Script_GetUnitFromName": {
 "files": [
@@ -141747,7 +141766,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 75
+"line": 76
 },
 "Script_GetGUIDFromString": {
 "files": [
@@ -141785,9 +141804,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 54,
+"lines": 53,
 "refs": [],
-"line": 91
+"line": 92
 },
 "Script_GetTokenFromGUID": {
 "files": [
@@ -141844,8 +141863,12 @@
 "CGPartyInfo::GetMember",
 "SStrCmpI",
 "ParseIndex",
+"CGRaidInfo::GetMember",
+"ClntObjMgrObjectPtr",
+"CGUnit::Unit",
 "SStrCmpI",
 "ParseIndex",
+"CGRaidInfo::GetMember",
 "SStrCmpI",
 "ParseIndex",
 "SStrCmpI",
@@ -141899,9 +141922,9 @@
 "8",
 "9"
 ],
-"branches": 30,
+"branches": 33,
 "stub": false,
-"lines": 183,
+"lines": 189,
 "refs": [],
 "line": 173
 },

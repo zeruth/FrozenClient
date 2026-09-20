@@ -1,6 +1,7 @@
 #include "ui/game/ScriptUtil.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 #include "object/Client.hpp"
 #include "ui/game/CGGameUI.hpp"
 #include "object/client/NameCache.hpp"
@@ -112,8 +113,7 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
     if (playerName && !SStrCmpI(name, playerName, 0x7FFFFFFF)) {
         guid = activePlayer->GetGUID();
     } else {
-        // TODO raid%d / arena%d rosters (FUN_00512a80, FUN_00608180). party%d resolves now, but
-        // answers nothing until the party roster is populated -- see CGPartyInfo::GetMember.
+        // TODO arena%d rosters (FUN_00608180).
         guid = 0;
     }
 
@@ -248,16 +248,22 @@ bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTar
     else if (!SStrCmpI(parseToken, "raidpet", 7)) {
         parseToken += 7;
 
-        auto index = ParseIndex(parseToken);
-        // TODO
+        auto member = CGRaidInfo::GetMember(ParseIndex(parseToken));
+        auto object = member
+            ? ClntObjMgrObjectPtr(member, TYPE_UNIT, __FILE__, __LINE__)
+            : nullptr;
+
+        if (object) {
+            auto data = static_cast<CGUnit_C*>(object)->Unit();
+            guid = data->charm ? data->charm : data->summon;
+        }
     }
 
     // raid1-40 - raid member
     else if (!SStrCmpI(parseToken, "raid", 4)) {
         parseToken += 4;
 
-        auto index = ParseIndex(parseToken);
-        // TODO
+        guid = CGRaidInfo::GetMember(ParseIndex(parseToken));
     }
 
     // boss1-5 - boss unit

@@ -104,6 +104,20 @@ player's subgroup.
 reference computes `memberCount + 1`, and answers 0 both for a non-raid group and for a raid whose
 member list is empty — the second case matters, or an empty roster would report 1.
 
-Still missing: `raid1`-`raid40` as unit tokens. Membership is answerable, but the index order is
-not: the player belongs somewhere in that numbering and the packet does not say where, so the
-tokens stay unresolved rather than guessing a position.
+### The raid index order
+
+Resolved 2026-09-20, after blocking three separate things. The raid roster is **the packet's
+members in wire order, then the player last**.
+
+The reference does not put itself in when it parses the list. It adds itself afterwards, in
+`FUN_00572e40`, by scanning its 40-entry roster for the first record whose guid is empty and
+claiming that slot. Since the packet's members fill from the front, the first empty slot is the one
+immediately past them — so the player lands at the end. That is also what makes
+`GetNumRaidMembers` the roster plus one.
+
+The roster itself is an array of 40 **pointers** at `DAT_00beb568`, with the effective count at
+`DAT_00beb608` and the real count at `DAT_00beb60c` immediately after it.
+
+`raid1`-`raid40` and `raidpet1`-`raidpet40` resolve on that order now. Still open: `GetLootMethod`'s
+raid index and `GetPartyAssignment` in a raid, both of which want per-member flags on the raid
+roster rather than only on the four party slots.

@@ -28226,7 +28226,7 @@
   "branchRatio": 0.138,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.325,
+  "fidelity": 0.338,
   "files": [
    "src/ui/game/CGPartyInfo.cpp",
    "src/ui/game/cgpartyinfo.cpp"

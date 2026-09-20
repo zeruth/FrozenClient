@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:35 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2755 (+1) (10.1%) | 586.8k (10.6%) |
-| &nbsp;&nbsp;ported | 2229 (+2) | 443.4k |
-| &nbsp;&nbsp;stub (unimplemented body) | 486 (-1) | 104.0k |
+| mapped to a frozen function | 2755 (=) (10.1%) | 586.8k (10.6%) |
+| &nbsp;&nbsp;ported | 2229 (=) | 443.4k |
+| &nbsp;&nbsp;stub (unimplemented body) | 486 (=) | 104.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1034 (+2) (3.8%)** | **128.0k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1034 (=) (3.8%)** | **128.0k (2.3%)** |
 | unmapped | 24407 | 4.83M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11584, stubs 744 | |
+| frozen functions (src/, from PDB + source) | 11585, stubs 744 | |
 
 Match evidence: annotated 691, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 987. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:30 -- mapped 2754, ported 2227, stub 487, spine mapped 412.
+Previous run: 2026-09-20 01:35 -- mapped 2755, ported 2229, stub 486, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 555 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 555 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -627,7 +627,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
-| 006d8870 | `ReceiveGroupList` | 32% | 77 | 37 | 80 | 11 | 2% | 2482 |
+| 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:36 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:44 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:54 | 2733 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:57 | 2733 (10.1%) | 1021 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:27 | 2754 (10.1%) | 1032 (3.8%) | 488 | 412/5531 | 1799/2964 | 557 |
 | 2026-09-20 01:30 | 2754 (10.1%) | 1032 (3.8%) | 487 | 412/5531 | 1799/2964 | 556 |
 | 2026-09-20 01:35 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
+| 2026-09-20 01:39 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 
 ## How to move a row
 

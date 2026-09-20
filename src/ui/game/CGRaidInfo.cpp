@@ -3,6 +3,7 @@
 
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "object/client/CGPlayer_C.hpp"
 
 uint32_t CGRaidInfo::s_numMembers;
 uint32_t CGRaidInfo::s_realNumMembers;
@@ -59,6 +60,14 @@ bool CGRaidInfo::IsMemberOrPet(WOWGUID guid) {
     return false;
 }
 
+WOWGUID CGRaidInfo::GetMember(uint32_t index) {
+    if (index < 1 || index > MAX_RAID_MEMBERS) {
+        return 0;
+    }
+
+    return CGRaidInfo::s_members[index - 1];
+}
+
 WOWGUID CGRaidInfo::FindByName(const char* name) {
     if (!name || !*name) {
         return 0;
@@ -95,6 +104,16 @@ void CGRaidInfo::SetRoster(const WOWGUID* members, const char* const* names, uin
         SStrCopy(CGRaidInfo::s_names[i], names[i], sizeof(CGRaidInfo::s_names[i]));
     }
 
-    // Plus the player, who is not on the wire.
+    // The player is not on the wire and goes in LAST. The reference adds itself by scanning its
+    // roster for the first record with an empty guid and claiming it (FUN_00572e40) -- and since
+    // the packet's members fill from the front, the first empty slot is the one just past them.
+    // That is what makes GetNumRaidMembers the roster PLUS ONE, and it fixes what raid1..raid40
+    // mean: the wire order, then you.
+    if (stored < MAX_RAID_MEMBERS) {
+        CGRaidInfo::s_members[stored] = ClntObjMgrGetActivePlayer();
+        SStrCopy(CGRaidInfo::s_names[stored], CGPlayer_C::GetLocalPlayerName(),
+                 sizeof(CGRaidInfo::s_names[stored]));
+    }
+
     CGRaidInfo::s_numMembers = count + 1;
 }

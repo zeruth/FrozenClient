@@ -37,6 +37,10 @@ class CGRaidInfo {
         // pointing at a unit. Case-insensitive, as the reference compares.
         static WOWGUID FindByName(const char* name);
 
+        // A member by 1-based index, as raid1..raid40 number them. The PLAYER is in this
+        // numbering -- see SetRoster for where.
+        static WOWGUID GetMember(uint32_t index);
+
     private:
         // Private static variables
         static uint32_t s_numMembers;
