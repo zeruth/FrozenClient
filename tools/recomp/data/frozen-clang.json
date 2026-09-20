@@ -56099,7 +56099,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 30
+"line": 31
 },
 "CCharacterSelection::ClearCharacterModel": {
 "files": [
@@ -56118,7 +56118,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 47
+"line": 48
 },
 "CCharacterSelection::EnumerateCharactersCallback": {
 "files": [
@@ -56134,7 +56134,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 62
+"line": 63
 },
 "CCharacterSelection::GetCharacterDisplay": {
 "files": [
@@ -56152,7 +56152,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 69
+"line": 70
 },
 "CCharacterSelection::GetSelectedCharacter": {
 "files": [
@@ -56170,7 +56170,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 77
+"line": 78
 },
 "CCharacterSelection::OnGetCharacterList": {
 "files": [
@@ -56189,7 +56189,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 85
+"line": 86
 },
 "CCharacterSelection::RenderPrep": {
 "files": [
@@ -56207,7 +56207,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 93
+"line": 94
 },
 "CCharacterSelection::SetBackgroundModel": {
 "files": [
@@ -56226,7 +56226,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 107
+"line": 108
 },
 "CCharacterSelection::SetFacing": {
 "files": [
@@ -56247,7 +56247,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 132
+"line": 133
 },
 "CCharacterSelection::ShowCharacter": {
 "files": [
@@ -56273,7 +56273,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 154
+"line": 155
 },
 "CCharacterSelection::Shutdown": {
 "files": [
@@ -56288,7 +56288,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 198
+"line": 199
 },
 "CCharacterSelection::UpdateCharacterList": {
 "files": [
@@ -56313,12 +56313,16 @@
 "ClientServices::Connection",
 "ClientServices::Connection",
 "ClientServices::Connection",
+"CVar::Lookup",
+"CVar::GetInt",
+"TSBaseArray<CharacterSelectionDisplay>::Count",
 "CCharacterSelection::ShowCharacter",
 "FrameScript_SignalEvent",
 "FrameScript_SignalEvent"
 ],
 "strings": [
-"%d"
+"%d",
+"lastCharacterIndex"
 ],
 "consts": [
 "0",
@@ -56326,11 +56330,11 @@
 "7",
 "8"
 ],
-"branches": 1,
+"branches": 3,
 "stub": false,
-"lines": 59,
+"lines": 69,
 "refs": [],
-"line": 206
+"line": 207
 },
 "Script_SetCharSelectModelFrame": {
 "files": [
@@ -56849,6 +56853,8 @@
 "FrameScript_GetText",
 "FrameScript_SignalEvent",
 "SStrPrintf",
+"CVar::Lookup",
+"CVar::Set",
 "ClientServices::SetAccountName",
 "ClientServices::SetCharacterInfo",
 "CVar::Register",
@@ -56878,6 +56884,7 @@
 "CHAR_RENAME_DESCRIPTION",
 "OKAY",
 "gameTip",
+"lastCharacterIndex",
 "showGameTips"
 ],
 "consts": [
@@ -56896,9 +56903,9 @@
 "84",
 "85"
 ],
-"branches": 15,
+"branches": 16,
 "stub": false,
-"lines": 118,
+"lines": 123,
 "refs": [],
 "line": 142
 },
@@ -56933,7 +56940,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 261
+"line": 266
 },
 "CGlueMgr::GetCharacterList": {
 "files": [
@@ -56959,7 +56966,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 321
+"line": 326
 },
 "CGlueMgr::GetRealmList": {
 "files": [
@@ -56983,7 +56990,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 334
+"line": 339
 },
 "CGlueMgr::HandleBattlenetDisconnect": {
 "files": [
@@ -56998,7 +57005,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 345
+"line": 350
 },
 "CGlueMgr::HandleDisplaySizeChanged": {
 "files": [
@@ -57025,7 +57032,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 351
+"line": 356
 },
 "GlueAutoAdvance": {
 "files": [
@@ -57061,7 +57068,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 391
+"line": 396
 },
 "CGlueMgr::Idle": {
 "files": [
@@ -57091,7 +57098,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 449
+"line": 454
 },
 "s_AcceptAgreement": {
 "files": [
@@ -57116,7 +57123,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 532
+"line": 537
 },
 "s_InitializeAgreement": {
 "files": [
@@ -57135,7 +57142,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 548
+"line": 553
 },
 "CGlueMgr::AcceptContest": {
 "files": [
@@ -57150,7 +57157,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 556
+"line": 561
 },
 "CGlueMgr::AcceptEULA": {
 "files": [
@@ -57165,7 +57172,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 560
+"line": 565
 },
 "CGlueMgr::AcceptScanning": {
 "files": [
@@ -57180,7 +57187,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 564
+"line": 569
 },
 "CGlueMgr::AcceptTerminationWithoutNotice": {
 "files": [
@@ -57195,7 +57202,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 568
+"line": 573
 },
 "CGlueMgr::AcceptTOS": {
 "files": [
@@ -57210,7 +57217,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 572
+"line": 577
 },
 "CGlueMgr::CreateCharacter": {
 "files": [
@@ -57237,7 +57244,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 577
+"line": 582
 },
 "CGlueMgr::DeleteCharacter": {
 "files": [
@@ -57264,7 +57271,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 591
+"line": 596
 },
 "CGlueMgr::Initialize": {
 "files": [
@@ -57297,7 +57304,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 604
+"line": 609
 },
 "CGlueMgr::InitializeFFX": {
 "files": [
@@ -57319,7 +57326,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 642
+"line": 647
 },
 "CGlueMgr::LoginServerLogin": {
 "files": [
@@ -57354,7 +57361,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 655
+"line": 660
 },
 "CGlueMgr::NetDisconnectHandler": {
 "files": [
@@ -57395,7 +57402,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 704
+"line": 709
 },
 "CGlueMgr::OnKickReasonMsg": {
 "files": [
@@ -57415,7 +57422,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 770
+"line": 775
 },
 "CGlueMgr::PollAccountLogin": {
 "files": [
@@ -57488,7 +57495,7 @@
 "stub": false,
 "lines": 108,
 "refs": [],
-"line": 807
+"line": 812
 },
 "CGlueMgr::PollCharacterList": {
 "files": [
@@ -57525,7 +57532,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 916
+"line": 921
 },
 "CGlueMgr::PollCreateCharacter": {
 "files": [
@@ -57555,7 +57562,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 958
+"line": 963
 },
 "CGlueMgr::PollDeleteCharacter": {
 "files": [
@@ -57582,7 +57589,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 989
+"line": 994
 },
 "CGlueMgr::PollEnterWorld": {
 "files": [
@@ -57608,7 +57615,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1017
+"line": 1022
 },
 "CGlueMgr::PollLoginServerLogin": {
 "files": [
@@ -57633,7 +57640,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 1044
+"line": 1049
 },
 "CGlueMgr::PollRealmList": {
 "files": [
@@ -57662,7 +57669,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 1106
+"line": 1111
 },
 "CGlueMgr::QuitGame": {
 "files": [
@@ -57679,7 +57686,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1141
+"line": 1146
 },
 "CGlueMgr::RealmListDialogCancelled": {
 "files": [
@@ -57698,7 +57705,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1145
+"line": 1150
 },
 "CGlueMgr::Resume": {
 "files": [
@@ -57768,7 +57775,7 @@
 "stub": false,
 "lines": 133,
 "refs": [],
-"line": 1151
+"line": 1156
 },
 "CGlueMgr::SetCurrentAccount": {
 "files": [
@@ -57784,7 +57791,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1285
+"line": 1290
 },
 "CGlueMgr::SetIdleState": {
 "files": [
@@ -57799,7 +57806,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1290
+"line": 1295
 },
 "CGlueMgr::SetLoginStateAndResult": {
 "files": [
@@ -57815,7 +57822,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1295
+"line": 1300
 },
 "CGlueMgr::SetScreen": {
 "files": [
@@ -57834,7 +57841,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1311
+"line": 1316
 },
 "CGlueMgr::Shutdown": {
 "files": [
@@ -57852,7 +57859,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1323
+"line": 1328
 },
 "CGlueMgr::StatusDialogClick": {
 "files": [
@@ -57887,7 +57894,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1335
+"line": 1340
 },
 "CGlueMgr::Sub4D8BA0": {
 "files": [
@@ -57904,7 +57911,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1396
+"line": 1401
 },
 "CGlueMgr::Suspend": {
 "files": [
@@ -57925,7 +57932,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1405
+"line": 1410
 },
 "CGlueMgr::UpdateCurrentScreen": {
 "files": [
@@ -57940,7 +57947,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1439
+"line": 1444
 },
 "ToWide": {
 "files": [

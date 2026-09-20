@@ -8872,16 +8872,16 @@
   "status": "ported"
  },
  "004d9bd0": {
-  "branchRatio": 0.652,
+  "branchRatio": 0.696,
   "constOverlap": 0.29,
   "faithful": false,
-  "fidelity": 0.632,
+  "fidelity": 0.658,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
   ],
   "frozen": "CGlueMgr::EnterWorld",
-  "frozenSize": 971,
+  "frozenSize": 1017,
   "how": "string",
   "module": "CGlueMgr.cpp",
   "refSize": 895,

@@ -211,7 +211,12 @@ void CGlueMgr::EnterWorld() {
 
     char indexStr[32];
     SStrPrintf(indexStr, sizeof(indexStr), "%d", CCharacterSelection::s_selectionIndex);
-    // TODO g_lastCharacterIndex->Set(indexStr, 1, 0, 0, 1);
+    // Remembered for the next session; read back by CCharacterSelection::UpdateCharacterList.
+    auto lastCharacterIndex = CVar::Lookup("lastCharacterIndex");
+
+    if (lastCharacterIndex) {
+        lastCharacterIndex->Set(indexStr, true, false, false, true);
+    }
 
     ClientServices::SetAccountName(CGlueMgr::m_accountName);
     ClientServices::SetCharacterInfo(&CGlueMgr::m_characterInfo->m_info);

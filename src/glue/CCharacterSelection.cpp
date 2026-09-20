@@ -1,4 +1,5 @@
 #include "glue/CCharacterSelection.hpp"
+#include "console/CVar.hpp"
 #include "client/ClientServices.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
@@ -253,8 +254,18 @@ void CCharacterSelection::UpdateCharacterList() {
 
     CRealmList::s_preferredCategory = 0;
 
-    // TODO g_lastCharacterIndex stuff
-    int32_t selectionIndex = 0;
+    // Which character was last played is remembered across sessions in the lastCharacterIndex
+    // CVar. A stored index that no longer addresses a character -- one was deleted, or this is a
+    // different realm with fewer -- falls back to the first rather than selecting nothing. The
+    // reference clamps in two steps, negatives first and then the count; one test is the same
+    // predicate.
+    auto lastCharacterIndex = CVar::Lookup("lastCharacterIndex");
+    int32_t selectionIndex = lastCharacterIndex ? lastCharacterIndex->GetInt() : 0;
+
+    if (selectionIndex < 0
+        || selectionIndex >= static_cast<int32_t>(CCharacterSelection::s_characterList.Count())) {
+        selectionIndex = 0;
+    }
 
     CCharacterSelection::s_selectionIndex = selectionIndex;
     CCharacterSelection::ShowCharacter();

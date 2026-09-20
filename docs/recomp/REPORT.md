@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 22:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,10 +9,10 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
 | mapped to a frozen function | 2726 (=) (10.0%) | 577.3k (10.4%) |
-| &nbsp;&nbsp;ported | 2184 (+1) | 429.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 503 (-1) | 108.4k |
+| &nbsp;&nbsp;ported | 2184 (=) | 429.6k |
+| &nbsp;&nbsp;stub (unimplemented body) | 503 (=) | 108.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1013 (+1) (3.7%)** | **125.4k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1013 (=) (3.7%)** | **125.4k (2.3%)** |
 | unmapped | 24436 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
@@ -21,11 +21,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 642, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1011. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:40 -- mapped 2726, ported 2183, stub 504, spine mapped 407.
+Previous run: 2026-09-19 22:47 -- mapped 2726, ported 2184, stub 503, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 572 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 572 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -657,7 +657,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
 | 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
 | 0085e160 | `read_string` | 77% | 30 | 21 | 15 | 25 | 6% | 904 |
-| 004d9bd0 | `CGlueMgr::EnterWorld` | 63% | 38 | 37 | 23 | 15 | 29% | 895 |
+| 004d9bd0 | `CGlueMgr::EnterWorld` | 66% | 38 | 39 | 23 | 16 | 29% | 895 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 20:31 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:34 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:43 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:37 | 2725 (10.0%) | 1011 (3.7%) | 505 | 406/5531 | 1792/2964 | 574 |
 | 2026-09-19 22:40 | 2726 (10.0%) | 1012 (3.7%) | 504 | 407/5531 | 1792/2964 | 573 |
 | 2026-09-19 22:47 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
+| 2026-09-19 22:52 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
 
 ## How to move a row
 
