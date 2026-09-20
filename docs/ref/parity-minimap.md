@@ -364,3 +364,31 @@ table, then the draw.
 Do not start it from the render end. `FUN_00581e80` has around 47 unlinked callees and mixes the
 mask, the rotation, the tiles, the blips and the POI arrows in one body; porting it before the
 query exists would be guesswork with nothing to check it against.
+
+### 5a. Where the query actually lives (decompiled 2026-09-20)
+
+All four "blocker" functions above turn out to be three-line forwarders. Each tests its `this` for
+null and hands straight off to a different object:
+
+| map-side | forwards to | shape |
+|---|---|---|
+| `FUN_0077f090` | `FUN_007a1480` | `bool HasTerrain()` -- no arguments |
+| `FUN_0077f130` | `FUN_007a17e0` | the chunk-bounds query, 5 arguments forwarded |
+| `FUN_0077f160` | `FUN_007a18d0` | fills three out-pointers |
+| `FUN_0077f1b0` | `FUN_007a1640` | fills three out-pointers, returns 0 unless both lookups hit |
+
+So **the four addresses to port are `007a1480`, `007a17e0`, `007a18d0` and `007a1640`**, not the
+`0077f0xx` ones, which are worth a tag each and nothing more.
+
+The four share one preamble, which is the thing to understand first: they walk an intrusive Storm
+list rooted at `this + 0x20`, advanced by `FUN_004b6670`, with the usual sentinel test (`link & 1`
+or `link == 0` means the end). Each node's object is at `+8`, is skipped when `*(obj + 8) & 4` is
+set, and carries its own list at `+0x20` whose first object supplies a flags word at `+0xc` tested
+against `0x400`. The loop is looking for the first entry whose `0x400` flag is set AND whose
+`FUN_007ae7b0(obj + 0x50)` result has bit 3 set -- in other words the active, loaded one.
+
+Still unidentified, and the next thing to decompile: `FUN_007ae7b0` and `FUN_007aea80` (both take
+the `+0x50` handle), `FUN_007b00a0` (the query proper), `FUN_007f9430` (transforms the caller's
+bounds into a local frame before the query) and `FUN_00990560` (a two-key lookup used only by
+`007a1640`). The member offsets `+0x50`, `+0xf4`, `+0x104` and `+0x120` need names before any of
+this can be written honestly.

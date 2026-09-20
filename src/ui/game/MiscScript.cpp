@@ -206,6 +206,40 @@ int32_t Script_GetPetActionInfo(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_005cde20, the path it takes when the index names no skill.
+//
+// GetSkillLineInfo(index) -> skillName, header, isExpanded, skillRank, numTempPoints,
+// skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType,
+// skillDescription.
+//
+// The skill list itself is not built yet -- the reference keeps a flattened, category-headed array
+// of the player's skills that nothing here fills -- so every index misses, and this returns what
+// the reference returns on a miss. That shape is not a placeholder of mine: the reference has three
+// exits and this is one of them, reached whenever the entry pointer comes back null.
+//
+// It matters that the numeric slots are ZERO and not nil. SkillDetailFrame_SetStatusBar does
+// "skillRank = skillRank + numTempPoints" on the way in, so returning nothing at all -- which is
+// what this binding did until now -- raised "attempt to perform arithmetic on local 'skillRank'"
+// the moment the skills pane opened. The reference pushes numbers into exactly the slots the
+// caller does arithmetic on and nil into the ones it tests for absence.
+int32_t Script_GetSkillLineInfo(lua_State* L) {
+    lua_pushnil(L);         // skillName
+    lua_pushnil(L);         // header
+    lua_pushnil(L);         // isExpanded
+    lua_pushnumber(L, 0.0); // skillRank
+    lua_pushnumber(L, 0.0); // numTempPoints
+    lua_pushnumber(L, 0.0); // skillModifier
+    lua_pushnumber(L, 0.0); // skillMaxRank
+    lua_pushnil(L);         // isAbandonable
+    lua_pushnil(L);         // stepCost
+    lua_pushnil(L);         // rankCost
+    lua_pushnumber(L, 0.0); // minLevel
+    lua_pushnumber(L, 0.0); // skillCostType
+    lua_pushnil(L);         // skillDescription
+
+    return 13;
+}
+
 int32_t Script_ReturnZero(lua_State* L) {
     lua_pushnumber(L, 0.0);
 
@@ -704,7 +738,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     // run before.
     { "TriggerTutorial",                &Script_ReturnNothing },  // fires a tutorial; returns nothing
     { "GetTrackedAchievements",         &Script_ReturnNothing },  // varargs of ids; none tracked
-    { "GetSkillLineInfo",               &Script_ReturnNothing },  // 13 values per skill; no skills
+    { "GetSkillLineInfo",               &Script_GetSkillLineInfo },
     { "GetPreviousArenaSeason",         &Script_ReturnZero },     // season number
     { "GetLFGRoles",                    &Script_ReturnNothing },  // leader/tank/healer/damage flags
     { "GetCurrentMapDungeonLevel",      &Script_ReturnZero },     // map floor; ground level
