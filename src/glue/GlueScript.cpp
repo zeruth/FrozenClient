@@ -7,6 +7,7 @@
 #include "db/Db.hpp"
 #include "glue/CGlueMgr.hpp"
 #include "gx/Coordinate.hpp"
+#include "gx/Screen.hpp"
 #include "net/connection/ClientConnection.hpp"
 #include "sound/Interface.hpp"
 #include "ui/FrameScript.hpp"
@@ -437,8 +438,12 @@ int32_t Script_EnterWorld(lua_State* L) {
     return 0;
 }
 
+// The reference binds Screenshot in the glue table as well as the game one, so a screenshot of
+// the login screen works the same way one in the world does. Shared body in gx/Screen.cpp.
 int32_t Script_Screenshot(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ScreenshotRequest();
+
+    return 0;
 }
 
 int32_t Script_PatchDownloadProgress(lua_State* L) {
@@ -546,8 +551,13 @@ int32_t Script_GetBillingPlan(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// The subsystem behind this is not implemented, so the count is genuinely zero -- the same answer
+// the game-side binding gives, and for the same reason it gives it: returning nothing raises
+// "attempt to perform arithmetic on a nil value" in the caller.
 int32_t Script_GetBillingTimeRested(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_SurveyNotificationDone(lua_State* L) {
@@ -662,8 +672,27 @@ int32_t Script_GetCVar(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005100c0
+//
+// The glue has its own binding and it is the same shape as the game's: look the CVar up, ignore it
+// when flag 0x40 is set, and answer 1 or nil on the truthiness of its string. GetCVar already
+// worked on this screen and this did not, so the login screen's option checkboxes had nothing to
+// read their state from.
 int32_t Script_GetCVarBool(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: GetCVarBool(\"cvar\")");
+    }
+
+    auto varName = lua_tostring(L, 1);
+    auto var = CVar::LookupRegistered(varName);
+
+    if (var && !(var->m_flags & 0x40) && StringToBOOL(var->GetString())) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_SetCVar(lua_State* L) {
