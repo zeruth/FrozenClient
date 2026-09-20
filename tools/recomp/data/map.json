@@ -13900,20 +13900,20 @@
   "status": "ported"
  },
  "00516c60": {
-  "branchRatio": 0.125,
-  "constOverlap": 0.0,
+  "branchRatio": 0.375,
+  "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.643,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetItemInfo",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 597,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 616,
-  "status": "stub"
+  "status": "ported"
  },
  "00516ed0": {
   "branchRatio": 0.222,
@@ -26227,7 +26227,7 @@
    "src/object/client/ItemLink.cpp"
   ],
   "frozen": "ItemLinkBuild",
-  "frozenSize": 0,
+  "frozenSize": 333,
   "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 206,
@@ -28248,7 +28248,7 @@
    "src/object/client/ItemLink.cpp"
   ],
   "frozen": "ItemNameFromEntry",
-  "frozenSize": 0,
+  "frozenSize": 102,
   "how": "annotated",
   "module": "Corpse_C.cpp",
   "refSize": 240,

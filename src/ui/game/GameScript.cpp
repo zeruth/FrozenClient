@@ -1,6 +1,7 @@
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
+#include "object/client/ItemLink.hpp"
 #include "ui/game/CGRaidInfo.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "event/Event.hpp"
@@ -1946,8 +1947,107 @@ int32_t Script_GetItemQualityColor(lua_State* L) {
     return 4;
 }
 
+// ref: PTR_DAT_00ac7fd8
+// Equip locations as FrameXML names them, indexed by the record's inventory type. Read out of the
+// reference's table: index 0 is deliberately empty, for an item that equips nowhere.
+static const char* s_equipLocations[] = {
+    "",
+    "INVTYPE_HEAD", "INVTYPE_NECK", "INVTYPE_SHOULDER", "INVTYPE_BODY", "INVTYPE_CHEST",
+    "INVTYPE_WAIST", "INVTYPE_LEGS", "INVTYPE_FEET", "INVTYPE_WRIST", "INVTYPE_HAND",
+    "INVTYPE_FINGER", "INVTYPE_TRINKET", "INVTYPE_WEAPON", "INVTYPE_SHIELD", "INVTYPE_RANGED",
+    "INVTYPE_CLOAK", "INVTYPE_2HWEAPON", "INVTYPE_BAG", "INVTYPE_TABARD", "INVTYPE_ROBE",
+    "INVTYPE_WEAPONMAINHAND", "INVTYPE_WEAPONOFFHAND", "INVTYPE_HOLDABLE", "INVTYPE_AMMO",
+    "INVTYPE_THROWN", "INVTYPE_RANGEDRIGHT", "INVTYPE_QUIVER", "INVTYPE_RELIC",
+};
+
+// The entry id out of an item link, or 0. The reference has its own link parser; this reads the
+// one field it needs.
+static int32_t ItemEntryFromLink(const char* text) {
+    auto at = SStrStr(text, "item:");
+
+    if (!at) {
+        return 0;
+    }
+
+    at += 5;
+
+    int32_t entry = 0;
+
+    while (*at >= '0' && *at <= '9') {
+        entry = entry * 10 + (*at - '0');
+        at++;
+    }
+
+    return entry;
+}
+
+// ref: FUN_00516c60
+// Ten values. The argument is an item id, an item link, or a name.
 int32_t Script_GetItemInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t entry = 0;
+
+    if (lua_isnumber(L, 1)) {
+        entry = static_cast<int32_t>(lua_tonumber(L, 1));
+    } else if (lua_isstring(L, 1)) {
+        auto text = lua_tostring(L, 1);
+
+        // A string with "item:" in it is a link; anything else is a name. The reference resolves
+        // names through an index frozen does not build, so a name answers nothing rather than
+        // being mistaken for a link.
+        entry = ItemEntryFromLink(text);
+    } else {
+        luaL_error(L, "Usage: GetItemInfo(itemID|\"name\"|\"itemlink\")");
+
+        return 0;
+    }
+
+    auto info = entry ? ItemCacheGet(entry) : nullptr;
+
+    // No record, no values. The cache will have asked for it, so a second call once the reply
+    // lands answers properly -- which is why FrameXML retries these.
+    if (!info) {
+        return 0;
+    }
+
+    lua_pushstring(L, ItemNameFromEntry(entry, 0));
+
+    ITEM_LINK_GEMS gems;
+    lua_pushstring(L, ItemLinkBuild(entry, info->quality, 0, gems, 0, 0));
+
+    lua_pushnumber(L, static_cast<double>(info->quality));
+    lua_pushnumber(L, static_cast<double>(info->itemLevel));
+    lua_pushnumber(L, static_cast<double>(info->requiredLevel));
+
+    // TODO itemType and itemSubType come from ItemClass.dbc and ItemSubClass.dbc, neither of which
+    // frozen reads. Empty strings are not a placeholder here: the reference pushes exactly that
+    // when the row is missing, so this is the same answer it would give for an unknown class.
+    lua_pushstring(L, "");
+    lua_pushstring(L, "");
+
+    // The stack size is "stackable", not "maxCount" -- the record's next field along.
+    lua_pushnumber(L, static_cast<double>(info->stackable));
+
+    auto inventoryType = info->inventoryType;
+    auto locations = static_cast<int32_t>(sizeof(s_equipLocations) / sizeof(s_equipLocations[0]));
+
+    lua_pushstring(L, (inventoryType >= 0 && inventoryType < locations)
+        ? s_equipLocations[inventoryType]
+        : "");
+
+    auto rec = g_itemDisplayInfoDB.GetRecord(info->displayInfoID);
+
+    char icon[260] = { 0 };
+
+    if (rec && rec->m_inventoryIcon[0] && rec->m_inventoryIcon[0][0]) {
+        // Through ICON_DIRECTORY rather than a second literal: that constant is already a
+        // recorded divergence -- the reference reads the directory from a data table that has not
+        // been identified -- and the divergence belongs in one place.
+        SStrPrintf(icon, sizeof(icon), "%s\\%s", ICON_DIRECTORY, rec->m_inventoryIcon[0]);
+    }
+
+    lua_pushstring(L, icon);
+
+    return 10;
 }
 
 int32_t Script_GetItemGem(lua_State* L) {

@@ -868,7 +868,7 @@ addr	how	frozen	evidence
 00516b20	annotated	Script_GetBindLocation	tag in src/ui/game/GameScript.cpp
 00516b90	annotated	Script_GetAreaSpiritHealerTime	tag in src/ui/game/GameScript.cpp
 00516bf0	table	Script_GetMouseFocus	binding "GetMouseFocus" in s_ScriptFunctions ~ table 00ac80b0
-00516c60	table	Script_GetItemInfo	binding "GetItemInfo" in s_ScriptFunctions ~ table 00ac80b0
+00516c60	annotated	Script_GetItemInfo	tag in src/ui/game/GameScript.cpp
 00516ed0	table	Script_GetItemUniqueness	binding "GetItemUniqueness" in s_ScriptFunctions ~ table 00ac80b0
 00517020	override	Script_GetItemIcon	
 00517100	table	Script_GetItemSpell	binding "GetItemSpell" in s_ScriptFunctions ~ table 00ac80b0

@@ -48,8 +48,11 @@ struct ItemInfo {
     int32_t requiredReputationFaction = 0;
     int32_t requiredReputationRank = 0;
 
-    // What GetItemInfo reports as the stack size, and what the bag code needs.
+    // The most of this item a character may own at once. NOT what GetItemInfo reports as the
+    // stack size -- that is the next field, which the reference reads at record offset 0x5c.
     int32_t maxCount = 0;
+
+    // The stack size GetItemInfo reports.
     int32_t stackable = 0;
     int32_t containerSlots = 0;
 };
