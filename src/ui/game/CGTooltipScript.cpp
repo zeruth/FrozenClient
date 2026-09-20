@@ -7,6 +7,8 @@
 #include "gx/Coordinate.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/NameCache.hpp"
+#include "object/client/CGItem_C.hpp"
+#include "object/client/ItemCache.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/game/CGTooltip.hpp"
@@ -939,6 +941,9 @@ int32_t CGTooltip_FadeOut(lua_State* L) {
 }
 
 // ref: FUN_0062dae0
+// Defined below, next to the setters that are its other callers.
+void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability);
+
 int32_t CGTooltip_SetHyperlink(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
@@ -953,8 +958,20 @@ int32_t CGTooltip_SetHyperlink(lua_State* L) {
     // the rest are named with the filler they would reach so they are not mistaken for missing
     // cases, and they return quietly rather than falling through to the unknown-type error, which
     // would put a Lua error on screen for a chat link the reference handles.
-    if (SStrStr(link, "item:")) {
-        // FUN_006277f0. Needs the item system.
+    const char* item = SStrStr(link, "item:");
+
+    if (item) {
+        // The link carries the entry as the first field after "item:", with the enchant, the three
+        // gems and the rest following behind colons. Only the entry is read here; the suffix and
+        // the gems change what the reference draws, and neither is ported.
+        auto info = ItemCacheGet(SStrToInt(item + 5));
+
+        if (!info) {
+            return 0;
+        }
+
+        TooltipSetItemInfo(tooltip, info, 0, 0);
+
         return 0;
     }
 
@@ -1097,8 +1114,146 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_006277f0, its leading lines.
+//
+// The reference's item tooltip body is one 3,200 line function that also covers petitions, glyphs,
+// keys, sockets, enchants, set bonuses, arena requirements, refund timers and disenchant skills.
+// This is its spine -- the lines an ordinary weapon or piece of armour shows -- emitted in the
+// order the reference emits them, which was recovered by reading where each global string is
+// fetched: the damage band, then SPEED, then DPS_TEMPLATE, then ARMOR_TEMPLATE, then (far below
+// the parts not ported) DURABILITY_TEMPLATE and the description.
+//
+// Every value here comes from the item record read in ItemCache.cpp, whose field order was
+// verified against the reference's own itemcache.wdb. The formats come from GlobalStrings through
+// FrameScript_GetText rather than being spelled out, so a non-English client formats its own way.
+//
+// Not ported, and each one is a line an item can legitimately want: item level, bind and unique
+// lines, the stat block, resistances, sockets and their bonus, set bonuses, spell triggers,
+// requirements (level, skill, reputation), and the sell price.
+void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability) {
+    TooltipClear(tooltip);
+
+    int32_t line = 1;
+    char text[512];
+
+    // The name carries the quality colour as an escape rather than through a colour call: the
+    // reference colours the font string directly, which frozen's tooltip lines have no API for
+    // yet, and the escape reaches the same place through the text pass.
+    static const uint32_t s_qualityColors[] = {
+        0x9D9D9D, 0xFFFFFF, 0x1EFF00, 0x0070DD, 0xA335EE, 0xFF8000, 0xE6CC80, 0xE6CC80
+    };
+
+    auto quality = (info->quality >= 0 && info->quality <= 7) ? info->quality : 1;
+
+    SStrPrintf(text, sizeof(text), "|cff%06x%s|r", s_qualityColors[quality], info->name.c_str());
+    TooltipSetLine(tooltip, line++, false, text);
+
+    // The damage band. delay is in milliseconds and the speed shown is seconds to one decimal.
+    if (info->delay > 0 && (info->damageMin[0] > 0.0f || info->damageMax[0] > 0.0f)) {
+        auto low = static_cast<int32_t>(info->damageMin[0]);
+        auto high = static_cast<int32_t>(info->damageMax[0]);
+
+        // The reference picks the single-value template when the band has no spread, rather than
+        // printing "5 - 5 Damage".
+        if (low == high) {
+            SStrPrintf(text, sizeof(text),
+                       FrameScript_GetText("SINGLE_DAMAGE_TEMPLATE", -1, GENDER_NOT_APPLICABLE), low);
+        } else {
+            SStrPrintf(text, sizeof(text),
+                       FrameScript_GetText("DAMAGE_TEMPLATE", -1, GENDER_NOT_APPLICABLE), low, high);
+        }
+
+        TooltipSetLine(tooltip, line, false, text);
+
+        char speed[64];
+        SStrPrintf(speed, sizeof(speed), "%s %.2f",
+                   FrameScript_GetText("SPEED", -1, GENDER_NOT_APPLICABLE), info->delay / 1000.0f);
+        TooltipSetLine(tooltip, line++, true, speed);
+
+        // Damage per second across the whole band, not just the first entry the line above shows.
+        float total = 0.0f;
+
+        for (int32_t i = 0; i < ItemInfo::MAX_DAMAGES; i++) {
+            total += info->damageMin[i] + info->damageMax[i];
+        }
+
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("DPS_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
+                   (total * 0.5f) / (info->delay / 1000.0f));
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    if (info->armor) {
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("ARMOR_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->armor);
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    if (info->block) {
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("SHIELD_BLOCK_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->block);
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    // Durability comes from the item instance, not the record, so it is passed in; an item with no
+    // durability at all shows no line rather than "0 / 0".
+    if (maxDurability > 0) {
+        SStrPrintf(text, sizeof(text),
+                   FrameScript_GetText("DURABILITY_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
+                   durability, maxDurability);
+        TooltipSetLine(tooltip, line++, false, text);
+    }
+
+    if (!info->description.empty()) {
+        // The reference shows the flavour text in quotes and lets it wrap.
+        SStrPrintf(text, sizeof(text), "\"%s\"", info->description.c_str());
+        TooltipSetLine(tooltip, line, false, text);
+        TooltipSetLineWrap(tooltip, line, true);
+        line++;
+    }
+
+    tooltip->m_lineCount = line - 1;
+
+    TooltipShow(tooltip);
+}
+
+// ref: FUN_0062e050
+//
+// SetInventoryItem(unit, slot [, nameOnly]) -> hasItem, hasCooldown, repairCost.
+//
+// Only the player's own slots resolve, which is what InventoryItem already enforces and what the
+// server actually sends. The reference also handles the bank bag slots, the equipment-set overlay
+// and a repair cost read from the merchant frame; none of those exist here, so the third return is
+// zero rather than a guess.
 int32_t CGTooltip_SetInventoryItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: %s:SetInventoryItem(unit, slot [, nameOnly])",
+                          tooltip->GetDisplayName());
+    }
+
+    if (!lua_isnumber(L, 3)) {
+        return luaL_error(L, "Invalid inventory slot in SetInventoryItem");
+    }
+
+    auto item = Script_GetInventoryItem(L, 2, 3);
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+    // An item whose record has not arrived yet answers "no item" and leaves the tooltip alone. The
+    // cache has asked for it by now, so the next hover fills in -- which is why FrameXML re-runs
+    // these on every OnEnter rather than caching the answer.
+    if (!info) {
+        return 0;
+    }
+
+    TooltipSetItemInfo(tooltip, info, 0, 0);
+
+    lua_pushboolean(L, 1);
+    lua_pushboolean(L, 0); // hasCooldown: item cooldowns are not tracked yet
+    lua_pushnumber(L, 0.0); // repairCost: needs the merchant frame
+
+    return 3;
 }
 
 int32_t CGTooltip_SetLootItem(lua_State* L) {

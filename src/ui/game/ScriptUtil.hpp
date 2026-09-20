@@ -2,10 +2,20 @@
 #define UI_GAME_SCRIPT_UTIL_HPP
 
 #include "util/GUID.hpp"
+#include <cstdint>
 
+class CGItem_C;
 class CGUnit_C;
+struct lua_State;
 
 CGUnit_C* Script_GetUnitFromName(const char* name);
+
+// The item object in one of a unit's inventory slots, or null. The slot arrives 1-based from Lua
+// -- GetInventorySlotInfo hands FrameXML the number this expects -- and indexes invSlots, which
+// carries the equipped pieces followed by the bag slots.
+//
+// Only the player's own inventory resolves: another unit's slots are never sent.
+CGItem_C* Script_GetInventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg);
 
 bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid);
 

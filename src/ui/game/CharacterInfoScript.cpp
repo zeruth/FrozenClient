@@ -54,39 +54,6 @@ int32_t Script_GetInventorySlotInfo(lua_State* L) {
     return 3;
 }
 
-// The item object in one of a unit's inventory slots, or null. The slot arrives 1-based from Lua
-// -- GetInventorySlotInfo hands FrameXML the number this expects -- and indexes invSlots, which
-// carries the equipped pieces followed by the bag slots.
-CGItem_C* InventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg) {
-    if (!lua_isstring(L, unitArg) || !lua_isnumber(L, slotArg)) {
-        return nullptr;
-    }
-
-    auto unit = Script_GetUnitFromName(lua_tostring(L, unitArg));
-
-    if (!unit || unit->GetGUID() != ClntObjMgrGetActivePlayer()) {
-        // Only the player's own inventory is readable here: another unit's slots are not sent.
-        return nullptr;
-    }
-
-    auto player = CGPlayer_C::GetActivePtr();
-    auto data = player ? player->Player() : nullptr;
-
-    if (!data) {
-        return nullptr;
-    }
-
-    auto slot = static_cast<int32_t>(lua_tonumber(L, slotArg)) - 1;
-
-    if (slot < INVSLOT_FIRST || slot > INVSLOT_LAST) {
-        return nullptr;
-    }
-
-    auto object = ClntObjMgrObjectPtr(data->invSlots[slot], TYPE_ITEM, __FILE__, __LINE__);
-
-    return object ? static_cast<CGItem_C*>(object) : nullptr;
-}
-
 int32_t Script_GetInventoryItemsForSlot(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -96,7 +63,7 @@ int32_t Script_GetInventoryItemsForSlot(lua_State* L) {
 // entry gives a cache record, the record's display id gives an ItemDisplayInfo row, and that row's
 // first inventory icon is the name. Nothing in the slot answers with no values rather than nil.
 int32_t Script_GetInventoryItemTexture(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
 
     if (!item) {
         return 0;
@@ -149,7 +116,7 @@ static int32_t ItemDurability(const CGItemData* data) {
 // but is how the reference is built, so it is kept rather than folded. Without the maxDurability
 // test every item that cannot wear out would read as broken.
 int32_t Script_GetInventoryItemBroken(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
     auto data = item ? item->Item() : nullptr;
 
     if (data && !(data->flags & 0x8) && data->maxDurability && !ItemDurability(data)) {
@@ -163,7 +130,7 @@ int32_t Script_GetInventoryItemBroken(lua_State* L) {
 
 // ref: FUN_005e9e40
 int32_t Script_GetInventoryItemCount(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
     auto data = item ? item->Item() : nullptr;
 
     // An empty slot counts as zero, and a stack that has not arrived yet counts as one, the same
@@ -184,7 +151,7 @@ int32_t Script_GetInventoryItemCount(lua_State* L) {
 // This one answers nil on a miss where its siblings above return no values at all. That asymmetry
 // is the reference's: the failure path here pushes nil and returns 1.
 int32_t Script_GetInventoryItemQuality(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
     auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
 
     if (!info) {
@@ -206,7 +173,7 @@ int32_t Script_GetInventoryItemCooldown(lua_State* L) {
 // Two values, current and maximum. An empty slot answers with none at all rather than a pair of
 // zeros, which is how FrameXML tells "no item" from "an item at full durability".
 int32_t Script_GetInventoryItemDurability(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
     auto data = item ? item->Item() : nullptr;
 
     if (!data || !data->maxDurability) {
@@ -222,7 +189,7 @@ int32_t Script_GetInventoryItemDurability(lua_State* L) {
 // The hyperlink for an equipped item. No values at all for an empty slot, matching its siblings
 // above rather than pushing a nil.
 int32_t Script_GetInventoryItemLink(lua_State* L) {
-    auto link = ItemLinkFromObject(InventoryItem(L, 1, 2));
+    auto link = ItemLinkFromObject(Script_GetInventoryItem(L, 1, 2));
 
     if (!link) {
         return 0;
@@ -235,7 +202,7 @@ int32_t Script_GetInventoryItemLink(lua_State* L) {
 
 // ref: FUN_005ea3e0
 int32_t Script_GetInventoryItemID(lua_State* L) {
-    auto item = InventoryItem(L, 1, 2);
+    auto item = Script_GetInventoryItem(L, 1, 2);
 
     if (!item) {
         return 0;

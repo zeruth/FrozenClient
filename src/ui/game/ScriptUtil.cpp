@@ -1,4 +1,7 @@
 #include "ui/game/ScriptUtil.hpp"
+#include "object/client/CGItem_C.hpp"
+#include "object/Types.hpp"
+#include "util/Lua.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/CGRaidInfo.hpp"
@@ -358,4 +361,34 @@ bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTar
 
     // GUID was not successfully determined
     return false;
+}
+
+CGItem_C* Script_GetInventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg) {
+    if (!lua_isstring(L, unitArg) || !lua_isnumber(L, slotArg)) {
+        return nullptr;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, unitArg));
+
+    if (!unit || unit->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        // Only the player's own inventory is readable here: another unit's slots are not sent.
+        return nullptr;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    if (!data) {
+        return nullptr;
+    }
+
+    auto slot = static_cast<int32_t>(lua_tonumber(L, slotArg)) - 1;
+
+    if (slot < INVSLOT_FIRST || slot > INVSLOT_LAST) {
+        return nullptr;
+    }
+
+    auto object = ClntObjMgrObjectPtr(data->invSlots[slot], TYPE_ITEM, __FILE__, __LINE__);
+
+    return object ? static_cast<CGItem_C*>(object) : nullptr;
 }
