@@ -7,6 +7,23 @@
 
 class CRenderBatch;
 
+// The three transforms an animation applies to a region's four draw vertices. Free functions
+// rather than members because that is how the reference keeps them -- one set, shared by every
+// region type that animates.
+//
+// The vertex order is not arbitrary and the pivot switch in FUN_0048b890 pins it down:
+// 0 top-left, 1 bottom-left, 2 top-right, 3 bottom-right.
+
+// ref: FUN_0048b7b0
+void AnimQuadTranslate(C3Vector position[4], const C2Vector& offset);
+
+// ref: FUN_0048ba80
+void AnimQuadRotate(C3Vector position[4], FRAMEPOINT point, const C2Vector& origin, float angle);
+
+// ref: FUN_0048bb80
+void AnimQuadScale(C3Vector position[4], FRAMEPOINT point, const C2Vector& origin,
+                   const C2Vector& scale);
+
 class CSimpleRegion : public CScriptRegion {
     public:
         // Member variables

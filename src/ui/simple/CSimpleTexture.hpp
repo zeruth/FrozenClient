@@ -36,6 +36,8 @@ class CSimpleTexture : public CSimpleRegion {
         char m_texturePath[260] = {};
         EGxBlend m_alphaMode = GxBlend_Alpha;
         CGxShader* m_shader = s_imageModePixelShaders[0];
+        // Also the animation accumulator. An animation transforms these four vertices in place
+        // and marks the region dirty; nothing recomputes them from the rect until the next layout.
         C3Vector m_position[4];
         C2Vector m_texCoord[4];
         uint32_t m_nonBlocking : 1;
@@ -51,6 +53,21 @@ class CSimpleTexture : public CSimpleRegion {
         virtual float GetWidth();
         virtual float GetHeight();
         virtual void Draw(CRenderBatch* batch);
+
+        // An animation's per-frame contribution, applied straight to m_position. A texture
+        // overrides all three in the reference and inherits only AddAnimAlpha, which belongs to
+        // CSimpleRegion because that is where the colour lives.
+        //
+        // ref: FUN_00481740
+        virtual void AddAnimTranslation(CScriptRegion* source, const C2Vector& offset);
+
+        // ref: FUN_00481770
+        virtual void AddAnimRotation(CScriptRegion* source, FRAMEPOINT point,
+                                     const C2Vector& origin, float angle);
+
+        // ref: FUN_004817a0
+        virtual void AddAnimScale(CScriptRegion* source, FRAMEPOINT point, const C2Vector& origin,
+                                  const C2Vector& scale);
         virtual void OnFrameSizeChanged(const CRect& rect);
 
         // Member functions

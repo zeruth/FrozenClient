@@ -1,4 +1,5 @@
 #include "ui/simple/CSimpleRegion.hpp"
+#include <cmath>
 #include "ui/simple/CSimpleFrame.hpp"
 #include <cstring>
 
@@ -26,6 +27,115 @@ void CSimpleRegion::GetVertexColor(CImVector& color) const {
         color.b = this->m_color[0].b;
     } else {
         color = { 0xFF, 0xFF, 0xFF, 0xFF };
+    }
+}
+
+// ref: FUN_0048b890
+// Where a rotation or a scale pivots. The FRAMEPOINT picks a corner or an edge midpoint of the
+// quad as it stands NOW -- already translated and rotated by anything earlier in the group -- and
+// the origin offset is then added in the region's OWN frame rather than the screen's.
+//
+// That last part is what the tail of the reference does: it takes the quad's local up direction
+// (bottom-right minus bottom-left), normalises it, and rotates the offset by it. A region turned
+// on its side therefore has its origin offset turn with it, which is the behaviour you would want
+// and not the one you would get by adding the offset directly.
+static void AnimQuadPivot(const C3Vector position[4], FRAMEPOINT point, const C2Vector& origin,
+                          C2Vector& pivot) {
+    // 0 top-left, 1 bottom-left, 2 top-right, 3 bottom-right.
+    switch (point) {
+        case FRAMEPOINT_TOPLEFT:     pivot.x = position[0].x; pivot.y = position[0].y; break;
+        case FRAMEPOINT_TOPRIGHT:    pivot.x = position[2].x; pivot.y = position[2].y; break;
+        case FRAMEPOINT_BOTTOMLEFT:  pivot.x = position[1].x; pivot.y = position[1].y; break;
+        case FRAMEPOINT_BOTTOMRIGHT: pivot.x = position[3].x; pivot.y = position[3].y; break;
+
+        case FRAMEPOINT_TOP:
+            pivot.x = (position[0].x + position[2].x) * 0.5f;
+            pivot.y = (position[0].y + position[2].y) * 0.5f;
+            break;
+
+        case FRAMEPOINT_LEFT:
+            pivot.x = (position[0].x + position[1].x) * 0.5f;
+            pivot.y = (position[0].y + position[1].y) * 0.5f;
+            break;
+
+        case FRAMEPOINT_CENTER:
+            pivot.x = (position[0].x + position[3].x) * 0.5f;
+            pivot.y = (position[0].y + position[3].y) * 0.5f;
+            break;
+
+        case FRAMEPOINT_RIGHT:
+            pivot.x = (position[2].x + position[3].x) * 0.5f;
+            pivot.y = (position[2].y + position[3].y) * 0.5f;
+            break;
+
+        case FRAMEPOINT_BOTTOM:
+            pivot.x = (position[1].x + position[3].x) * 0.5f;
+            pivot.y = (position[1].y + position[3].y) * 0.5f;
+            break;
+
+        default:
+            pivot.x = 0.0f;
+            pivot.y = 0.0f;
+            break;
+    }
+
+    if (origin.x * origin.x + origin.y * origin.y <= 1.1920928955078125e-07f) {
+        return;
+    }
+
+    float ux = position[3].x - position[1].x;
+    float uy = position[3].y - position[1].y;
+
+    float lengthSquared = ux * ux + uy * uy;
+
+    if (lengthSquared > 2.384185791015625e-07f) {
+        float inverse = 1.0f / sqrtf(lengthSquared);
+        ux *= inverse;
+        uy *= inverse;
+    }
+
+    pivot.x += origin.x * ux - origin.y * uy;
+    pivot.y += origin.y * ux + origin.x * uy;
+}
+
+// ref: FUN_0048b7b0
+void AnimQuadTranslate(C3Vector position[4], const C2Vector& offset) {
+    for (int32_t i = 0; i < 4; i++) {
+        position[i].x += offset.x;
+        position[i].y += offset.y;
+    }
+}
+
+// ref: FUN_0048ba80
+void AnimQuadRotate(C3Vector position[4], FRAMEPOINT point, const C2Vector& origin, float angle) {
+    C2Vector pivot;
+    AnimQuadPivot(position, point, origin, pivot);
+
+    float c = cosf(angle);
+    float s = sinf(angle);
+
+    for (int32_t i = 0; i < 4; i++) {
+        float x = position[i].x - pivot.x;
+        float y = position[i].y - pivot.y;
+
+        position[i].x = x * c - y * s + pivot.x;
+        position[i].y = y * c + x * s + pivot.y;
+    }
+}
+
+// ref: FUN_0048bb80
+// The incoming vector is the COMPLEMENT of the scale, already multiplied by the animation's
+// progress -- see CSimpleScaleAnim::OnApply. That is what makes this a plain lerp toward the
+// pivot: at a complement of 0 nothing moves, and at 1 every vertex lands on the pivot, which is a
+// scale of zero. Storing the scale itself would need a different expression here.
+void AnimQuadScale(C3Vector position[4], FRAMEPOINT point, const C2Vector& origin,
+                   const C2Vector& scale) {
+    C2Vector pivot;
+    AnimQuadPivot(position, point, origin, pivot);
+
+    for (int32_t i = 0; i < 4; i++) {
+        position[i].x += (pivot.x - position[i].x) * scale.x;
+        position[i].y += (pivot.y - position[i].y) * scale.y;
     }
 }
 

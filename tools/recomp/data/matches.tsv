@@ -125,8 +125,13 @@ addr	how	frozen	evidence
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 004815e0	callgraph	CSimpleTexture::GetObjectType	only unmatched callee of 0048c670=CSimpleTexture_GetTexture
+00481620	annotated	CSimpleTexture::SetBlendMode	tag in src/ui/simple/CSimpleTexture.cpp
 00481640	callgraph	CSimpleTexture::SetTexCoord	only unmatched callee of 0048c860=CSimpleTexture_SetRotation
+004816a0	annotated	CSimpleTexture::GetTexCoord	tag in src/ui/simple/CSimpleTexture.cpp
 00481700	callgraph	CSimpleTexture::SetShader	only unmatched callee of 0048c9a0=CSimpleTexture_SetDesaturated
+00481740	annotated	CSimpleTexture::AddAnimTranslation	tag in src/ui/simple/CSimpleTexture.cpp
+00481770	annotated	CSimpleTexture::AddAnimRotation	tag in src/ui/simple/CSimpleTexture.cpp
+004817a0	annotated	CSimpleTexture::AddAnimScale	tag in src/ui/simple/CSimpleTexture.cpp
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
@@ -156,9 +161,9 @@ addr	how	frozen	evidence
 00487b00	callgraph	CSimpleRegion::SetVertexGradient	only unmatched callee of 0048c310=CSimpleTexture_SetGradientAlpha
 00487bf0	override	CSimpleRegion::Hide	
 00487c40	override	CSimpleRegion::Show	
-00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481700=CSimpleTexture::SetShader
+00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481620=CSimpleTexture::SetBlendMode, 00481740=CSimpleTexture::AddAnimTranslation, 00481770=CSimpleTexture::AddAnimRotation
 00487ce0	annotated	CSimpleRegion::AddAnimAlpha	tag in src/ui/simple/CSimpleRegion.cpp
-00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f920=CSimpleButton::SetStateTexture
+00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f3c0=CSimpleButton::SetHighlight, 0096f920=CSimpleButton::SetStateTexture
 004883f0	annotated	CScriptRegion::LoadXML_Animations	tag in src/ui/CScriptRegion.cpp
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
@@ -181,6 +186,10 @@ addr	how	frozen	evidence
 0048b2d0	string	CLayoutFrame::LoadXML	unique "Anchors"
 0048b540	string	CScriptObject::CreateName	unique "$parent"
 0048b5f0	callgraph	CScriptObject::GetScriptObjectByName	only unmatched callee of 004e05b0=Script_SetCharCustomizeFrame, 004e2f60=Script_SetCharSelectModelFrame
+0048b7b0	annotated	AnimQuadTranslate	tag in src/ui/simple/CSimpleRegion.cpp
+0048b890	annotated	AnimQuadPivot	tag in src/ui/simple/CSimpleRegion.cpp
+0048ba80	annotated	AnimQuadRotate	tag in src/ui/simple/CSimpleRegion.cpp
+0048bb80	annotated	AnimQuadScale	tag in src/ui/simple/CSimpleRegion.cpp
 0048bc70	annotated	CSimpleFontString_GetFieldSize	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048bd20	callgraph	CImVector::Set	only unmatched callee of 004a2d40=CBackdropGenerator::CBackdropGenerator
 0048bde0	table	CSimpleTexture_GetObjectType	binding "GetObjectType" in SimpleTextureMethods ~ table 00ac1028
@@ -269,7 +278,7 @@ addr	how	frozen	evidence
 0048f6f0	override	CSimpleFrame::DisableEvent	
 0048f820	override	CSimpleFrame::SetHitRectInsets	
 0048fef0	string	CSimpleFrame::LoadXML_Scripts	unique "Frame %s: Unknown function %s in element %s"
-00490270	sticky	CSimpleFrame::NotifyDrawLayerChanged	held from the previous run, where it was sticky
+00490270	callgraph	CSimpleFrame::NotifyDrawLayerChanged	only unmatched callee of 00487ca0=CSimpleRegion::OnRegionChanged
 00490410	annotated	CSimpleFrame::PostLoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 004905a0	override	CSimpleFrame::SetBackdrop	
 00490600	sticky	CSimpleFrame::EnableDrawLayer	held from the previous run, where it was sticky
@@ -285,6 +294,7 @@ addr	how	frozen	evidence
 00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::IsA and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
+00493ad0	callgraph	CSimpleFrame::RunOnLeaveScript	only unmatched callee of 00495710=CSimpleFrame::OnLayerCursorExit
 00494d20	callorder	CFrameStrata::FrameOccluded	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 00495060	callorder	CSimpleTop::CompressStrata	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 004951a0	callgraph	CSimpleTop::RaiseFrame	only unmatched callee of 0048e9a0=CSimpleFrame::Raise
@@ -2161,7 +2171,7 @@ addr	how	frozen	evidence
 00814ed0	override	StringToFramePoint	
 00814f60	callorder	StringToDrawLayer	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture, 004a2240=CSimpleFrame_CreateFontString
 00814fb0	annotated	DrawLayerToString	tag in src/ui/Util.cpp
-00814ff0	callorder	StringToBlendMode	same slot between linked calls in 00977d30=CSimpleButton_SetHighlightTexture
+00814ff0	callgraph	StringToBlendMode	only unmatched callee of 0048c040=CSimpleTexture_SetBlendMode
 00815040	annotated	BlendModeToString	tag in src/ui/Util.cpp
 00815080	override	StringToJustify	
 008150d0	callgraph	JustifyToString	only unmatched callee of 004a4080=FontString_GetJustifyH, 004a40b0=FontString_GetJustifyV

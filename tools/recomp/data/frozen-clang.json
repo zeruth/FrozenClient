@@ -165556,7 +165556,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5
+"line": 6
 },
 "CSimpleRegion::CSimpleRegion": {
 "files": [
@@ -165575,7 +165575,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 9
+"line": 10
 },
 "CSimpleRegion::GetVertexColor": {
 "files": [
@@ -165594,7 +165594,88 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 21
+"line": 22
+},
+"AnimQuadPivot": {
+"files": [
+"src/ui/simple/csimpleregion.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"1",
+"1.0f",
+"1.1920928955078125e-07f",
+"2",
+"2.384185791015625e-07f",
+"3"
+],
+"branches": 11,
+"stub": false,
+"lines": 57,
+"refs": [],
+"line": 42
+},
+"AnimQuadTranslate": {
+"files": [
+"src/ui/simple/csimpleregion.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 102
+},
+"AnimQuadRotate": {
+"files": [
+"src/ui/simple/csimpleregion.cpp"
+],
+"callseq": [
+"C2Vector::C2Vector",
+"AnimQuadPivot",
+"cosf",
+"sinf"
+],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 110
+},
+"AnimQuadScale": {
+"files": [
+"src/ui/simple/csimpleregion.cpp"
+],
+"callseq": [
+"C2Vector::C2Vector",
+"AnimQuadPivot"
+],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 131
 },
 "CSimpleRegion::AddAnimAlpha": {
 "files": [
@@ -165614,7 +165695,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 45
+"line": 155
 },
 "CSimpleRegion::Hide": {
 "files": [
@@ -165631,7 +165712,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 62
+"line": 172
 },
 "CSimpleRegion::HideThis": {
 "files": [
@@ -165650,7 +165731,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 67
+"line": 177
 },
 "CSimpleRegion::IsShown": {
 "files": [
@@ -165665,7 +165746,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 78
+"line": 188
 },
 "CSimpleRegion::IsVisible": {
 "files": [
@@ -165680,7 +165761,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 82
+"line": 192
 },
 "CSimpleRegion::OnColorChanged": {
 "files": [
@@ -165700,7 +165781,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 86
+"line": 196
 },
 "CSimpleRegion::OnRegionChanged": {
 "files": [
@@ -165715,7 +165796,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 138
+"line": 248
 },
 "CSimpleRegion::SetVertexColor": {
 "files": [
@@ -165736,7 +165817,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 144
+"line": 254
 },
 "CSimpleRegion::SetVertexGradient": {
 "files": [
@@ -165765,7 +165846,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 180
+"line": 290
 },
 "CSimpleRegion::SetFrame": {
 "files": [
@@ -165793,7 +165874,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 214
+"line": 324
 },
 "CSimpleRegion::Show": {
 "files": [
@@ -165810,7 +165891,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 258
+"line": 368
 },
 "CSimpleRegion::ShowThis": {
 "files": [
@@ -165829,7 +165910,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 263
+"line": 373
 },
 "CSimpleRender::DrawBatch": {
 "files": [
@@ -168650,6 +168731,54 @@
 "refs": [],
 "line": 88
 },
+"CSimpleTexture::AddAnimTranslation": {
+"files": [
+"src/ui/simple/csimpletexture.cpp"
+],
+"callseq": [
+"AnimQuadTranslate",
+"CSimpleRegion::OnRegionChanged"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 101
+},
+"CSimpleTexture::AddAnimRotation": {
+"files": [
+"src/ui/simple/csimpletexture.cpp"
+],
+"callseq": [
+"AnimQuadRotate",
+"CSimpleRegion::OnRegionChanged"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 107
+},
+"CSimpleTexture::AddAnimScale": {
+"files": [
+"src/ui/simple/csimpletexture.cpp"
+],
+"callseq": [
+"AnimQuadScale",
+"CSimpleRegion::OnRegionChanged"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 114
+},
 "CSimpleTexture::Draw": {
 "files": [
 "src/ui/simple/csimpletexture.cpp"
@@ -168663,7 +168792,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 96
+"line": 120
 },
 "CSimpleTexture::GetHeight": {
 "files": [
@@ -168685,7 +168814,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 102
+"line": 126
 },
 "CSimpleTexture::GetScriptMetaTable": {
 "files": [
@@ -168698,7 +168827,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 120
+"line": 144
 },
 "CSimpleTexture::GetTexCoord": {
 "files": [
@@ -168725,7 +168854,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 124
+"line": 151
 },
 "CSimpleTexture::GetWidth": {
 "files": [
@@ -168747,7 +168876,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 131
+"line": 158
 },
 "CSimpleTexture::IsA": {
 "files": [
@@ -168760,7 +168889,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 149
+"line": 176
 },
 "CSimpleTexture::LoadXML": {
 "files": [
@@ -168882,7 +169011,7 @@
 "stub": false,
 "lines": 293,
 "refs": [],
-"line": 156
+"line": 183
 },
 "CSimpleTexture::OnFrameSizeChanged": {
 "files": [
@@ -168902,7 +169031,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 450
+"line": 477
 },
 "CSimpleTexture::PostLoadXML": {
 "files": [
@@ -168921,7 +169050,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 470
+"line": 497
 },
 "CSimpleTexture::SetAlpha": {
 "files": [
@@ -168944,7 +169073,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 485
+"line": 512
 },
 "CSimpleTexture::SetBlendMode": {
 "files": [
@@ -168959,7 +169088,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 495
+"line": 526
 },
 "CSimpleTexture::SetPosition": {
 "files": [
@@ -168986,7 +169115,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 504
+"line": 535
 },
 "CSimpleTexture::SetShader": {
 "files": [
@@ -169001,7 +169130,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 511
+"line": 542
 },
 "CSimpleTexture::SetTexCoord": {
 "files": [
@@ -169036,7 +169165,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 520
+"line": 551
 },
 "CSimpleTexture::SetTexture": {
 "files": [
@@ -169066,7 +169195,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 534
+"line": 565
 },
 "CSimpleTexture_IsObjectType": {
 "files": [

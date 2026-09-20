@@ -93,6 +93,30 @@ CSimpleTexture::~CSimpleTexture() {
     // TODO CSimpleTexture::s_count++;
 }
 
+// All three are the same two steps in the reference: transform the quad, then tell the region it
+// changed. The source argument is ignored, as it is there -- the contribution lands on whichever
+// region the animation's group points at, which is already this one.
+
+// ref: FUN_00481740
+void CSimpleTexture::AddAnimTranslation(CScriptRegion* source, const C2Vector& offset) {
+    AnimQuadTranslate(this->m_position, offset);
+    this->OnRegionChanged();
+}
+
+// ref: FUN_00481770
+void CSimpleTexture::AddAnimRotation(CScriptRegion* source, FRAMEPOINT point,
+                                     const C2Vector& origin, float angle) {
+    AnimQuadRotate(this->m_position, point, origin, angle);
+    this->OnRegionChanged();
+}
+
+// ref: FUN_004817a0
+void CSimpleTexture::AddAnimScale(CScriptRegion* source, FRAMEPOINT point, const C2Vector& origin,
+                                  const C2Vector& scale) {
+    AnimQuadScale(this->m_position, point, origin, scale);
+    this->OnRegionChanged();
+}
+
 void CSimpleTexture::Draw(CRenderBatch* batch) {
     if (this->m_texture) {
         batch->QueueTexture(this);
@@ -121,6 +145,9 @@ int32_t CSimpleTexture::GetScriptMetaTable() {
     return CSimpleTexture::s_metatable;
 }
 
+// ref: FUN_004816a0
+// Also confirmed rather than accepted: the matcher had this one down as the constructor. It copies
+// the four texture coordinates out, eight floats from the same offset, and nothing else.
 void CSimpleTexture::GetTexCoord(C2Vector* texCoord) {
     texCoord[0] = { this->m_texCoord[0].x, this->m_texCoord[0].y };
     texCoord[1] = { this->m_texCoord[1].x, this->m_texCoord[1].y };
@@ -492,6 +519,10 @@ void CSimpleTexture::SetAlpha(float alpha) {
     this->SetVertexColor(color);
 }
 
+// ref: FUN_00481620
+// Confirmed against the reference rather than accepted from the matcher, which had offered this
+// address for RegisterScriptMethods on definition order alone. The bodies agree exactly: compare
+// against the current value, return if unchanged, otherwise assign and mark the region dirty.
 void CSimpleTexture::SetBlendMode(EGxBlend blend) {
     if (blend == this->m_alphaMode) {
         return;

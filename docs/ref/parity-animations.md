@@ -254,7 +254,26 @@ Each stage should end in a committable increment; none of it should go in blind 
    contribution in `OnApply` and hands it to the region; `OnUnapply` takes it back off, and Scale
    overrides that because it composes multiplicatively.
 
-   **The region half is one quarter done.** `CSimpleRegion::AddAnimAlpha` (`FUN_00487ce0`) is
+   **The region half is done for textures.** All four accumulators are ported:
+   `CSimpleTexture::AddAnimTranslation`, `AddAnimRotation` and `AddAnimScale` (`00481740`,
+   `00481770`, `004817a0`) transform the texture's four draw vertices in place and mark the region
+   dirty, and `CSimpleRegion::AddAnimAlpha` (`00487ce0`) folds the delta into the vertex colour.
+   The three quad transforms and the pivot are free helpers in `CSimpleRegion.cpp`, which is how
+   the reference keeps them.
+
+   `CSimpleTexture::m_position[4]` is the accumulator -- the reference's `texture+0xe0`, four
+   vertices of three floats, which the translation helper's stride gives away. The pivot switch in
+   `FUN_0048b890` pins the vertex order down as 0 top-left, 1 bottom-left, 2 top-right,
+   3 bottom-right; corners are taken directly and edges and the centre are midpoints.
+
+   The origin offset is applied in the region's OWN frame, not the screen's: the reference takes
+   the quad's local up direction, normalises it, and rotates the offset by it, so a region turned
+   on its side has its origin offset turn with it.
+
+   **What is left:** other region types. Only `CSimpleTexture` overrides the three geometry
+   accumulators; a font string or a frame animating its position still does nothing.
+
+   (was: one quarter done) `CSimpleRegion::AddAnimAlpha` (`FUN_00487ce0`) is
    ported -- it was the one accumulator whose body could be read end to end and whose frozen
    counterpart already existed, since `GetVertexColor` already returns opaque white for an unset
    colour exactly as the reference's fallback does. Translation, rotation and scale are not:

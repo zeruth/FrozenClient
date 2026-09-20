@@ -2000,6 +2000,22 @@
   "refSize": 60,
   "status": "ported"
  },
+ "00481620": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::SetBlendMode",
+  "frozenSize": 20,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "00481640": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -2012,6 +2028,22 @@
   "frozen": "CSimpleTexture::SetTexCoord",
   "frozenSize": 175,
   "how": "callgraph",
+  "module": "EvtTimer.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "004816a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::GetTexCoord",
+  "frozenSize": 88,
+  "how": "annotated",
   "module": "EvtTimer.cpp",
   "refSize": 81,
   "status": "ported"
@@ -2030,6 +2062,54 @@
   "how": "callgraph",
   "module": "EvtTimer.cpp",
   "refSize": 29,
+  "status": "ported"
+ },
+ "00481740": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::AddAnimTranslation",
+  "frozenSize": 37,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 37,
+  "status": "ported"
+ },
+ "00481770": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::AddAnimRotation",
+  "frozenSize": 46,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 48,
+  "status": "ported"
+ },
+ "004817a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::AddAnimScale",
+  "frozenSize": 48,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 45,
   "status": "ported"
  },
  "004818f0": {
@@ -2895,6 +2975,70 @@
   "refSize": 129,
   "status": "ported"
  },
+ "0048b7b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "AnimQuadTranslate",
+  "frozenSize": 115,
+  "how": "annotated",
+  "module": "CScriptRegion.cpp",
+  "refSize": 77,
+  "status": "ported"
+ },
+ "0048b890": {
+  "branchRatio": 0.273,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "AnimQuadPivot",
+  "frozenSize": 700,
+  "how": "annotated",
+  "module": "CScriptRegion.cpp",
+  "refSize": 453,
+  "status": "ported"
+ },
+ "0048ba80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "AnimQuadRotate",
+  "frozenSize": 286,
+  "how": "annotated",
+  "module": "CScriptRegion.cpp",
+  "refSize": 242,
+  "status": "ported"
+ },
+ "0048bb80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "AnimQuadScale",
+  "frozenSize": 254,
+  "how": "annotated",
+  "module": "CScriptRegion.cpp",
+  "refSize": 153,
+  "status": "ported"
+ },
  "0048bc70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -3011,7 +3155,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
@@ -4314,7 +4458,7 @@
   ],
   "frozen": "CSimpleFrame::NotifyDrawLayerChanged",
   "frozenSize": 153,
-  "how": "sticky",
+  "how": "callgraph",
   "module": "CSimpleFrame.cpp",
   "refSize": 87,
   "status": "ported"
@@ -4559,6 +4703,22 @@
   "refSize": 1858,
   "status": "ported"
  },
+ "00493ad0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::RunOnLeaveScript",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CSimpleFrame.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "00494d20": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -4624,7 +4784,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleFrame.cpp",
    "src/ui/simple/csimpleframe.cpp"
@@ -34414,7 +34574,7 @@
   ],
   "frozen": "StringToBlendMode",
   "frozenSize": 92,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 74,
   "status": "ported"
@@ -43131,8 +43291,8 @@
  "0096f3c0": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButton.cpp",
    "src/ui/simple/csimplebutton.cpp"

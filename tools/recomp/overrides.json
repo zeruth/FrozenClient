@@ -1217,5 +1217,9 @@
   "00497f30": {
     "status": "unlinked",
     "note": "CSimpleAnim::SetSmoothing, the C++ one, and NOT RegisterScriptMethods as the order matcher claimed. Read directly: it takes an ease-in and an ease-out weight, and if either is in (0, 1] it lazily allocates the 12-byte curve object (\".\\CSimpleAnim.cpp\" line 0x30d, vtable 009ebd44) and forwards the pair to the object's own setter. Frozen has no counterpart because it stores the smoothing ENUM and evaluates the curve from that in AnimSmoothingApply, so there is nothing to point at; blocked rather than linked. This address sits inside the run the order matcher filled between AnimSmoothingApply (00497ba0) and CSimpleAnim::Advance (004985f0) -- see the note on that block in docs/ref/parity-animations.md before trusting any link in that range."
+  },
+  "00481720": {
+    "status": "unlinked",
+    "note": "A CSimpleTexture getter for the underlying GxTex, and NOT the destructor the order matcher offered. Read directly: it returns TextureGetGxTex(this[0xd4], 1, 0) when the handle is set and 0 otherwise. That +0xd4 is the texture handle is independently confirmed -- it is the same field CSimpleTexture::SetTextureObject (FUN_00481520) writes, found earlier while chasing SetPortraitToTexture. Frozen exposes no such accessor; its callers reach m_texture directly, so there is nothing to point at and this is blocked rather than linked. One of three false links the order matcher produced across 00481620-00481720 once AddAnimTranslation at 00481740 gave it a fresh anchor to fill backwards from; the other two were identifiable and are now tagged."
   }
 }
