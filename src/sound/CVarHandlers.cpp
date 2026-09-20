@@ -96,9 +96,28 @@ bool EnableAllSound_CVarCallback(CVar* var, const char* oldValue, const char* va
     return true;
 }
 
+// ref: FUN_004d1530
+//
+// Sound_EnableAmbience gates the AMBIENCE channel group, and until now it did nothing at all, so
+// the group kept whatever mute state it was initialised with no matter what the CVar said. The
+// login screen's ambient loop runs through that group.
 bool EnableAmbience_CVarCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    WHOA_UNIMPLEMENTED(true);
+    auto allSoundVar = CVar::Lookup("Sound_EnableAllSound");
+
+    if (allSoundVar) {
+        // The reference also forces the mute when a third global is set (DAT_00bd0800), which is
+        // not identified yet. EnableMusic_CVarCallback has the same gap.
+        bool mute = !SStrToInt(value) || !allSoundVar->GetInt();
+
+        SESound::MuteChannelGroup("AMBIENCE", mute);
+
+        if (mute) {
+            // TODO the reference stops whatever ambience is playing here (FUN_004c85f0), rather
+            // than leaving a muted sound running.
+        }
+    }
+
+    return true;
 }
 
 bool EnableMusic_CVarCallback(CVar* var, const char* oldValue, const char* value, void* arg) {

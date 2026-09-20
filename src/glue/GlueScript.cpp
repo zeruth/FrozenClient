@@ -10,6 +10,7 @@
 #include "gx/Screen.hpp"
 #include "net/connection/ClientConnection.hpp"
 #include "sound/Interface.hpp"
+#include "sound/SI2.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
 #include "ui/Types.hpp"
@@ -568,12 +569,33 @@ int32_t Script_PINEntered(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004dc0c0
+//
+// The second argument is the fade-in time. When it is absent the reference passes -1, not 0: a
+// negative time means "use the sound kit's own default", where 0 would mean "start at full volume
+// immediately", so dropping the argument is not the same as asking for no fade.
 int32_t Script_PlayGlueAmbience(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: PlayGlueAmbience(\"sound name\", \"(optional)fade in time\")");
+
+        return 0;
+    }
+
+    float fadeInTime = lua_isnumber(L, 2)
+        ? static_cast<float>(lua_tonumber(L, 2))
+        : -1.0f;
+
+    SI2::StartGlueAmbience(lua_tostring(L, 1), fadeInTime);
+
+    return 0;
 }
 
+// ref: FUN_004dc130
+// Takes no arguments and always fades out over one second -- the Lua side has no say in it.
 int32_t Script_StopGlueAmbience(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    SI2::StopGlueAmbience(1.0f);
+
+    return 0;
 }
 
 int32_t Script_GetCreditsText(lua_State* L) {

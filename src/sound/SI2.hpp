@@ -40,8 +40,10 @@ class SI2 {
         static void RegisterUserCVars();
         static void RegisterScriptFunctions();
         static void StartCreditsMusic(const char* name);
+        static void StartGlueAmbience(const char* name, float fadeInTime);
         static void StartGlueMusic(const char* name);
         static int32_t StopCreditsMusic();
+        static int32_t StopGlueAmbience(float fadeOutTime);
         static int32_t StopGlueMusic(float fadeOutTime);
         static int32_t StopOrFadeOut(SOUNDKITOBJECT* object, int32_t stop, float fadeOutTime, int32_t a4);
 };

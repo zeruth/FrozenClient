@@ -614,7 +614,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "ClientInitializeGame",
-  "frozenSize": 587,
+  "frozenSize": 592,
   "how": "string",
   "module": "Client.cpp",
   "refSize": 789,
@@ -752,7 +752,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1952,6 +1952,22 @@
   "refSize": 131,
   "status": "ported"
  },
+ "0047d790": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/event/Event.cpp",
+   "src/event/event.cpp"
+  ],
+  "frozen": "EventUnregister",
+  "frozenSize": 199,
+  "how": "callorder",
+  "module": "RCString.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
  "0047f230": {
   "branchRatio": 0.667,
   "constOverlap": 0.333,
@@ -2110,6 +2126,38 @@
   "how": "annotated",
   "module": "EvtTimer.cpp",
   "refSize": 45,
+  "status": "ported"
+ },
+ "004817d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::GetWidth",
+  "frozenSize": 123,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
+ "00481850": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleTexture.cpp",
+   "src/ui/simple/csimpletexture.cpp"
+  ],
+  "frozen": "CSimpleTexture::GetHeight",
+  "frozenSize": 122,
+  "how": "annotated",
+  "module": "EvtTimer.cpp",
+  "refSize": 119,
   "status": "ported"
  },
  "004818f0": {
@@ -2371,7 +2419,7 @@
   "branchRatio": 0.522,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.133,
+  "fidelity": 0.267,
   "files": [
    "src/ui/simple/CSimpleFontString.cpp",
    "src/ui/simple/csimplefontstring.cpp"
@@ -2701,6 +2749,38 @@
   "how": "callorder",
   "module": "CScriptRegion.cpp",
   "refSize": 10,
+  "status": "ported"
+ },
+ "00488d00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/CLayoutFrame.cpp",
+   "src/ui/clayoutframe.cpp"
+  ],
+  "frozen": "CLayoutFrame::GetHeight",
+  "frozenSize": 9,
+  "how": "callgraph",
+  "module": "CScriptRegion.cpp",
+  "refSize": 4,
+  "status": "ported"
+ },
+ "00488d10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/CLayoutFrame.cpp",
+   "src/ui/clayoutframe.cpp"
+  ],
+  "frozen": "CLayoutFrame::GetWidth",
+  "frozenSize": 9,
+  "how": "callgraph",
+  "module": "CScriptRegion.cpp",
+  "refSize": 4,
   "status": "ported"
  },
  "00488db0": {
@@ -9276,18 +9356,16 @@
   "status": "ported"
  },
  "004a8570": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.167,
   "constOverlap": 0.111,
   "faithful": false,
   "fidelity": 0.118,
   "files": [
-   "src/glue/GlueScript.cpp",
-   "src/glue/gluescript.cpp",
-   "src/ui/game/GameScript.cpp",
-   "src/ui/game/gamescript.cpp"
+   "src/gx/Screen.cpp",
+   "src/gx/screen.cpp"
   ],
-  "frozen": "Script_Screenshot",
-  "frozenSize": 328,
+  "frozen": "ScreenshotRequest",
+  "frozenSize": 251,
   "how": "string",
   "module": "CSimpleAnimScript.cpp",
   "refSize": 432,
@@ -9307,22 +9385,6 @@
   "how": "callorder",
   "module": "CSimpleAnimScript.cpp",
   "refSize": 211,
-  "status": "ported"
- },
- "004b5170": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "TextureGetTexturePtr",
-  "frozenSize": 4,
-  "how": "callgraph",
-  "module": "Texture.cpp",
-  "refSize": 76,
   "status": "ported"
  },
  "004b51c0": {
@@ -9355,6 +9417,38 @@
   "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 103,
+  "status": "ported"
+ },
+ "004b64e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureGetTexturePtr",
+  "frozenSize": 4,
+  "how": "callgraph",
+  "module": "Texture.cpp",
+  "refSize": 109,
+  "status": "ported"
+ },
+ "004b6610": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureGetDimensions",
+  "frozenSize": 50,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 90,
   "status": "ported"
  },
  "004b6760": {
@@ -9483,7 +9577,7 @@
   "how": "order",
   "module": "Texture.cpp",
   "refSize": 78,
-  "status": "stub"
+  "status": "ported"
  },
  "004b6e90": {
   "branchRatio": 0.0,
@@ -9627,7 +9721,7 @@
   "how": "order",
   "module": "Texture.cpp",
   "refSize": 136,
-  "status": "stub"
+  "status": "ported"
  },
  "004b74f0": {
   "branchRatio": 0.4,
@@ -9831,7 +9925,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1296,
+  "frozenSize": 1623,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 234,
@@ -9888,14 +9982,14 @@
  "004b9760": {
   "branchRatio": 0.857,
   "constOverlap": 0.167,
-  "faithful": true,
-  "fidelity": 0.818,
+  "faithful": false,
+  "fidelity": 0.727,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1296,
+  "frozenSize": 1623,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,
@@ -10124,6 +10218,22 @@
   "refSize": 15,
   "status": "ported"
  },
+ "004c6390": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/SI2.cpp",
+   "src/sound/si2.cpp"
+  ],
+  "frozen": "SI2::StopOrFadeOut",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 128,
+  "status": "ported"
+ },
  "004c6a40": {
   "branchRatio": 0.324,
   "constOverlap": 0.17,
@@ -10349,13 +10459,13 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/sound/CVarHandlers.cpp",
    "src/sound/cvarhandlers.cpp"
   ],
   "frozen": "EnableAmbience_CVarCallback",
-  "frozenSize": 75,
+  "frozenSize": 88,
   "how": "override",
   "module": "SoundInterface2Internal.cpp",
   "refSize": 96,
@@ -10971,18 +11081,18 @@
  "004dc0c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_PlayGlueAmbience",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 135,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 106,
-  "status": "stub"
+  "status": "ported"
  },
  "004dc150": {
   "branchRatio": 1.0,
@@ -13860,8 +13970,8 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetCVarBool",
-  "frozenSize": 219,
-  "how": "table",
+  "frozenSize": 285,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 133,
   "status": "ported"
@@ -14537,7 +14647,7 @@
   "status": "ported"
  },
  "00511c40": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
@@ -14548,7 +14658,7 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetBillingTimeRested",
-  "frozenSize": 97,
+  "frozenSize": 44,
   "how": "table",
   "module": "ChatFrame.cpp",
   "refSize": 58,
@@ -21294,21 +21404,37 @@
   "refSize": 35,
   "status": "ported"
  },
+ "005728c0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/RaidTarget.cpp",
+   "src/ui/game/raidtarget.cpp"
+  ],
+  "frozen": "RaidTargetGetIndex",
+  "frozenSize": 115,
+  "how": "annotated",
+  "module": "MailInfo.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
  "00572ab0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_GetRaidTargetIndex",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 148,
+  "how": "annotated",
   "module": "MailInfo.cpp",
   "refSize": 138,
-  "status": "stub"
+  "status": "ported"
  },
  "00572b40": {
   "branchRatio": 0.0,
@@ -21389,6 +21515,22 @@
   "module": "MailInfo.cpp",
   "refSize": 135,
   "status": "stub"
+ },
+ "00572ed0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/RaidTarget.cpp",
+   "src/ui/game/raidtarget.cpp"
+  ],
+  "frozen": "RaidTargetSet",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "RaidInfo.cpp",
+  "refSize": 120,
+  "status": "ported"
  },
  "00573200": {
   "branchRatio": 0.538,
@@ -21582,6 +21724,22 @@
   "refSize": 388,
   "status": "ported"
  },
+ "005743b0": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/ui/game/RaidTarget.cpp",
+   "src/ui/game/raidtarget.cpp"
+  ],
+  "frozen": "ReceiveRaidTargetUpdate",
+  "frozenSize": 251,
+  "how": "handler",
+  "module": "RaidInfo.cpp",
+  "refSize": 300,
+  "status": "ported"
+ },
  "00574a00": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
@@ -21599,20 +21757,20 @@
   "status": "stub"
  },
  "00574ab0": {
-  "branchRatio": 0.111,
+  "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.375,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_SetRaidTarget",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 279,
+  "how": "annotated",
   "module": "RaidInfo.cpp",
   "refSize": 579,
-  "status": "stub"
+  "status": "ported"
  },
  "00575820": {
   "branchRatio": 0.0,
@@ -27030,14 +27188,14 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitClassification",
-  "frozenSize": 110,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 131,
   "status": "ported"
@@ -28147,36 +28305,36 @@
   "status": "ported"
  },
  "00611780": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitCreatureType",
-  "frozenSize": 103,
-  "how": "table",
+  "frozenSize": 170,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 146,
   "status": "ported"
  },
  "00611820": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitCreatureFamily",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 170,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 146,
-  "status": "stub"
+  "status": "ported"
  },
  "006118c0": {
   "branchRatio": 0.2,
@@ -29164,7 +29322,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "TooltipClear",
-  "frozenSize": 201,
+  "frozenSize": 230,
   "how": "callgraph",
   "module": "Tooltip.cpp",
   "refSize": 646,
@@ -29548,7 +29706,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddLine",
-  "frozenSize": 215,
+  "frozenSize": 255,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 162,
@@ -29564,24 +29722,24 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_AddDoubleLine",
-  "frozenSize": 356,
+  "frozenSize": 379,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 229,
   "status": "ported"
  },
  "006204e0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.4,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetText",
-  "frozenSize": 208,
-  "how": "table",
+  "frozenSize": 319,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 217,
   "status": "ported"
@@ -29601,6 +29759,22 @@
   "module": "Tooltip.cpp",
   "refSize": 272,
   "status": "stub"
+ },
+ "00621070": {
+  "branchRatio": 0.11,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.19,
+  "files": [
+   "src/ui/game/CGTooltipScript.cpp",
+   "src/ui/game/cgtooltipscript.cpp"
+  ],
+  "frozen": "TooltipUnitLevelLine",
+  "frozenSize": 1210,
+  "how": "string",
+  "module": "Tooltip.cpp",
+  "refSize": 5010,
+  "status": "ported"
  },
  "00625470": {
   "branchRatio": 0.154,
@@ -29660,7 +29834,7 @@
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetTracking",
-  "frozenSize": 188,
+  "frozenSize": 191,
   "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 157,
@@ -29715,16 +29889,16 @@
   "status": "stub"
  },
  "00625e10": {
-  "branchRatio": 0.429,
+  "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetUnit",
-  "frozenSize": 419,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 238,
@@ -30364,7 +30538,7 @@
    "src/object/client/namecache.cpp"
   ],
   "frozen": "ReceiveCreatureQueryResponse",
-  "frozenSize": 256,
+  "frozenSize": 948,
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 26,
@@ -31481,6 +31655,22 @@
   "refSize": 64,
   "status": "diverged"
  },
+ "007153e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetCreatureFamily",
+  "frozenSize": 38,
+  "how": "annotated",
+  "module": "GameObject_C.cpp",
+  "refSize": 17,
+  "status": "ported"
+ },
  "00715440": {
   "branchRatio": 0.733,
   "constOverlap": 0.0,
@@ -31529,6 +31719,38 @@
   "refSize": 102,
   "status": "ported"
  },
+ "00718a00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetClassification",
+  "frozenSize": 73,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 32,
+  "status": "ported"
+ },
+ "00719950": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetSubName",
+  "frozenSize": 94,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
  "0071af70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -31559,6 +31781,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 22,
+  "status": "ported"
+ },
+ "0071f300": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetCreatureType",
+  "frozenSize": 211,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 133,
   "status": "ported"
  },
  "0071f770": {
@@ -31767,6 +32005,22 @@
   "how": "override",
   "module": "ConsoleClient.cpp",
   "refSize": 77,
+  "status": "ported"
+ },
+ "007654a0": {
+  "branchRatio": 0.056,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/Log.cpp",
+   "src/util/log.cpp"
+  ],
+  "frozen": "SysMsgPrintf",
+  "frozenSize": 189,
+  "how": "string",
+  "module": "ConsoleClient.cpp",
+  "refSize": 462,
   "status": "ported"
  },
  "00765880": {
@@ -33086,7 +33340,7 @@
   "files": [],
   "frozen": "printf",
   "frozenSize": 85,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SSignature.cpp",
   "refSize": 205,
   "status": "ported"
@@ -33094,15 +33348,15 @@
  "00772a80": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "lib/squall/storm/Error.cpp",
    "lib/squall/storm/error.cpp",
    "lib/squall/test/stormdll/stormstubs.cpp"
   ],
   "frozen": "SErrDisplayError",
-  "frozenSize": 228,
+  "frozenSize": 227,
   "how": "override",
   "module": "SSignature.cpp",
   "refSize": 25,
@@ -33111,14 +33365,14 @@
  "00772aa0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "lib/squall/storm/error.cpp",
    "lib/squall/test/stormdll/stormstubs.cpp"
   ],
   "frozen": "SErrDisplayAppFatal",
-  "frozenSize": 58,
+  "frozenSize": 76,
   "how": "override",
   "module": "SSignature.cpp",
   "refSize": 26,
@@ -33464,8 +33718,8 @@
  "0078d860": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/world/CWorldParam.cpp",
    "src/world/cworldparam.cpp"
@@ -34227,7 +34481,7 @@
   "status": "ported"
  },
  "007f09b0": {
-  "branchRatio": 0.714,
+  "branchRatio": 0.694,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.238,
@@ -34236,7 +34490,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 2604,
+  "frozenSize": 2957,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
@@ -35835,7 +36089,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::SetupTextures",
-  "frozenSize": 684,
+  "frozenSize": 686,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 452,
@@ -35883,7 +36137,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawBatch",
-  "frozenSize": 966,
+  "frozenSize": 968,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 869,
@@ -35963,7 +36217,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2353,
+  "frozenSize": 2354,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -36187,7 +36441,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetPrimaryBoneSequence",
-  "frozenSize": 932,
+  "frozenSize": 933,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 400,
@@ -36283,7 +36537,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5794,
+  "frozenSize": 5797,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
@@ -36299,7 +36553,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::Animate",
-  "frozenSize": 554,
+  "frozenSize": 555,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 451,
@@ -36315,7 +36569,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AttachToParent",
-  "frozenSize": 965,
+  "frozenSize": 968,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 420,
@@ -36331,7 +36585,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::ApplySequencePlayBack",
-  "frozenSize": 218,
+  "frozenSize": 219,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 113,
@@ -41479,6 +41733,22 @@
   "refSize": 6,
   "status": "ported"
  },
+ "008ad420": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/CreatureFamilyRec.cpp",
+   "src/db/rec/creaturefamilyrec.cpp"
+  ],
+  "frozen": "CreatureFamilyRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "008ad7f0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -41505,6 +41775,22 @@
    "src/db/rec/creaturesounddatarec.cpp"
   ],
   "frozen": "CreatureSoundDataRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008ae030": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/CreatureTypeRec.cpp",
+   "src/db/rec/creaturetyperec.cpp"
+  ],
+  "frozen": "CreatureTypeRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -41793,6 +42079,22 @@
    "src/db/rec/spelliconrec.cpp"
   ],
   "frozen": "SpellIconRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008b8c50": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/SpellShapeshiftFormRec.cpp",
+   "src/db/rec/spellshapeshiftformrec.cpp"
+  ],
+  "frozen": "SpellShapeshiftFormRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -42146,6 +42448,54 @@
   "how": "string",
   "module": "DynamicString.cpp",
   "refSize": 139,
+  "status": "ported"
+ },
+ "0095e880": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.188,
+  "files": [
+   "src/ui/simple/CSimpleMovieFrame.cpp",
+   "src/ui/simple/csimplemovieframe.cpp"
+  ],
+  "frozen": "CSimpleMovieFrame::LoadCaptions",
+  "frozenSize": 1140,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 514,
+  "status": "ported"
+ },
+ "0095eb30": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/ui/simple/CSimpleMovieFrame.cpp",
+   "src/ui/simple/csimplemovieframe.cpp"
+  ],
+  "frozen": "CSimpleMovieFrame::StartMovie",
+  "frozenSize": 1205,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
+ "0095eba0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/ui/simple/CSimpleMovieFrame.cpp",
+   "src/ui/simple/csimplemovieframe.cpp"
+  ],
+  "frozen": "CSimpleMovieFrame::StopMovie",
+  "frozenSize": 334,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 80,
   "status": "ported"
  },
  "0095f420": {
@@ -43512,16 +43862,16 @@
   "status": "ported"
  },
  "00970660": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleMovieFrameScript.cpp",
    "src/ui/simple/csimplemovieframescript.cpp"
   ],
   "frozen": "CSimpleMovieFrame_StartMovie",
-  "frozenSize": 63,
+  "frozenSize": 260,
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 193,
@@ -43530,15 +43880,15 @@
  "00970730": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleMovieFrameScript.cpp",
    "src/ui/simple/csimplemovieframescript.cpp"
   ],
   "frozen": "CSimpleMovieFrame_StopMovie",
   "frozenSize": 40,
-  "how": "table",
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 55,
   "status": "ported"
@@ -46600,7 +46950,7 @@
   "status": "ported"
  },
  "00980f70": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -46608,8 +46958,8 @@
    "src/world/ParticleFx.cpp",
    "src/world/particlefx.cpp"
   ],
-  "frozen": "ParticleFxSetDensity",
-  "frozenSize": 46,
+  "frozen": "ParticleFxRender",
+  "frozenSize": 80,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 50,
@@ -46855,11 +47205,59 @@
   "refSize": 42,
   "status": "stub"
  },
- "009860e0": {
+ "00985f70": {
   "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SI2.cpp",
+   "src/sound/si2.cpp"
+  ],
+  "frozen": "SI2::StopGlueAmbience",
+  "frozenSize": 69,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 50,
+  "status": "ported"
+ },
+ "00985fb0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/sound/SI2.cpp",
+   "src/sound/si2.cpp"
+  ],
+  "frozen": "SI2::StartGlueAmbience",
+  "frozenSize": 483,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 204,
+  "status": "ported"
+ },
+ "00986080": {
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
+  "files": [
+   "src/sound/SI2.cpp",
+   "src/sound/si2.cpp"
+  ],
+  "frozen": "SI2::StopCreditsMusic",
+  "frozenSize": 62,
+  "how": "order",
+  "module": "cmemblock.cpp",
+  "refSize": 93,
+  "status": "ported"
+ },
+ "009860e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
@@ -46875,7 +47273,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.417,
+  "fidelity": 0.583,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
@@ -46891,7 +47289,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.556,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"

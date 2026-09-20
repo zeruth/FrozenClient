@@ -38,6 +38,16 @@ static char s_CreditsMusicName[128];
 static SOUNDKITOBJECT s_CreditsMusicObject;
 static char s_GlueMusicName[128];
 static SOUNDKITOBJECT s_GlueMusicObject;
+static char s_GlueAmbienceName[128];
+static SOUNDKITOBJECT s_GlueAmbienceObject;
+
+// How long the outgoing ambience takes to fade when a new one replaces it (DAT_009ebbc4).
+static const float GLUE_AMBIENCE_FADE_OUT = 3.0f;
+
+// The fade time meaning "whatever the sound kit itself says" (DAT_009e2ef4). It is negative on
+// purpose and must not be flattened to zero: zero means "cut to full volume instantly", which is a
+// different instruction, not a shorter version of the same one.
+static const float GLUE_AMBIENCE_DEFAULT_FADE = -1.0f;
 
 int32_t SI2::CreditsMusicUpdate(const void* data, void* param) {
     if (!SI2::IsPlaying(&s_CreditsMusicObject)) {
@@ -1114,6 +1124,57 @@ void SI2::StartGlueMusic(const char* name) {
     SI2::PlaySoundKit(s_GlueMusicName, 0, &s_GlueMusicObject, &properties);
 
     EventRegister(EVENT_ID_POLL, &SI2::GlueMusicUpdate);
+}
+
+// ref: FUN_00985fb0
+//
+// Starts the login screen's ambient loop, or swaps it for another. Unlike StartGlueMusic this does
+// not bail out merely because something is already playing: it bails out only when the sound that
+// is playing is the one being asked for, so walking between glue screens that share an ambience
+// leaves it running rather than restarting it, while a screen with a different one crossfades.
+void SI2::StartGlueAmbience(const char* name, float fadeInTime) {
+    if (SI2::IsPlaying(&s_GlueAmbienceObject)) {
+        auto def = SI2::GetSoundKitDef(SI2::GetSoundKitID(name));
+        auto userData = static_cast<SI2USERDATA*>(s_GlueAmbienceObject.m_sound.GetUserData());
+
+        if (def && userData && def->ID == userData->m_ID) {
+            return;
+        }
+    }
+
+    SI2::StopOrFadeOut(&s_GlueAmbienceObject, 0, GLUE_AMBIENCE_FADE_OUT, 1);
+
+    if (!name) {
+        return;
+    }
+
+    SStrCopy(s_GlueAmbienceName, name, sizeof(s_GlueAmbienceName));
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+    properties.m_type = 2;
+    properties.m_fadeInTime = fadeInTime;
+    properties.uint28 = 0;
+
+    // TODO the reference also sets properties+0x1c to 1 here, which glue music leaves alone. This
+    // struct is a partial reconstruction with no offsets yet, so there is no field to assign it to;
+    // whatever it selects is not being asked for.
+
+    SI2::PlaySoundKit(s_GlueAmbienceName, 0, &s_GlueAmbienceObject, &properties);
+}
+
+// ref: FUN_00985f70
+//
+// Stops the login screen's ambient loop. Two things it deliberately does not do, both of which
+// StopGlueMusic does: there is no poll handler to unregister, because the ambience is left to the
+// sound kit's own looping rather than re-triggered when it runs out; and the name buffer is left
+// alone, because nothing reads it back.
+int32_t SI2::StopGlueAmbience(float fadeOutTime) {
+    if (fadeOutTime < 0.0f) {
+        fadeOutTime = GLUE_AMBIENCE_DEFAULT_FADE;
+    }
+
+    return SI2::StopOrFadeOut(&s_GlueAmbienceObject, 0, fadeOutTime, 1);
 }
 
 int32_t SI2::StopCreditsMusic() {

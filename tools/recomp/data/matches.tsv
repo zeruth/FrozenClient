@@ -122,6 +122,7 @@ addr	how	frozen	evidence
 0047cf80	override	RCString::Copy	
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
 0047d3c0	callgraph	EventRegisterEx	only unmatched callee of 00407b00=RegisterEvents
+0047d790	callorder	EventUnregister	same slot between linked calls in 009860e0=SI2::StopGlueMusic
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 004815e0	callgraph	CSimpleTexture::GetObjectType	only unmatched callee of 0048c670=CSimpleTexture_GetTexture
@@ -132,6 +133,8 @@ addr	how	frozen	evidence
 00481740	annotated	CSimpleTexture::AddAnimTranslation	tag in src/ui/simple/CSimpleTexture.cpp
 00481770	annotated	CSimpleTexture::AddAnimRotation	tag in src/ui/simple/CSimpleTexture.cpp
 004817a0	annotated	CSimpleTexture::AddAnimScale	tag in src/ui/simple/CSimpleTexture.cpp
+004817d0	annotated	CSimpleTexture::GetWidth	tag in src/ui/simple/CSimpleTexture.cpp
+00481850	annotated	CSimpleTexture::GetHeight	tag in src/ui/simple/CSimpleTexture.cpp
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
@@ -169,6 +172,8 @@ addr	how	frozen	evidence
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	
 00488670	override	CScriptRegion::LoadXML	
 00488cf0	callorder	CLayoutFrame::IsResizePending	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame, 0049ce50=CScriptRegion_GetRect, 0049cf90=CScriptRegion_GetCenter
+00488d00	callgraph	CLayoutFrame::GetHeight	only unmatched callee of 00481850=CSimpleTexture::GetHeight
+00488d10	callgraph	CLayoutFrame::GetWidth	only unmatched callee of 004817d0=CSimpleTexture::GetWidth
 00488db0	annotated	CLayoutFrame::Sub488DB0	tag in src/ui/CLayoutFrame.cpp
 00488e40	annotated	CLayoutFrame::Sub488E40	tag in src/ui/CLayoutFrame.cpp
 00489190	annotated	CLayoutFrame::Sub489190	tag in src/ui/CLayoutFrame.cpp
@@ -580,11 +585,12 @@ addr	how	frozen	evidence
 004a83a0	table	CSimpleAnimGroup_GetParent	binding "GetParent" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
-004a8570	string	Script_Screenshot	unique "Screenshots"
+004a8570	string	ScreenshotRequest	unique "Screenshots"
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
-004b5170	callgraph	TextureGetTexturePtr	only unmatched callee of 004b9760=TextureCreate
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
+004b64e0	callgraph	TextureGetTexturePtr	only unmatched callee of 004b6610=TextureGetDimensions
+004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
 004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
@@ -632,7 +638,8 @@ addr	how	frozen	evidence
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
 004c5af0	annotated	SI2::GetOutputDriverName	tag in src/sound/SI2.cpp
-004c5be0	callorder	SI2::IsPlaying	same slot between linked calls in 009861c0=SI2::StartGlueMusic
+004c5be0	callorder	SI2::IsPlaying	same slot between linked calls in 00985fb0=SI2::StartGlueAmbience, 009861c0=SI2::StartGlueMusic
+004c6390	callgraph	SI2::StopOrFadeOut	only unmatched callee of 00985f70=SI2::StopGlueAmbience
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
@@ -686,7 +693,7 @@ addr	how	frozen	evidence
 004dbfd0	annotated	Script_GetLocale	tag in src/glue/GlueScript.cpp
 004dc000	table	Script_SetCurrentScreen	binding "SetCurrentScreen" in s_ScriptFunctions ~ table 00ac3e00
 004dc070	table	Script_PlayGlueMusic	binding "PlayGlueMusic" in s_ScriptFunctions ~ table 00ac3e00
-004dc0c0	table	Script_PlayGlueAmbience	binding "PlayGlueAmbience" in s_ScriptFunctions ~ table 00ac3e00
+004dc0c0	annotated	Script_PlayGlueAmbience	tag in src/glue/GlueScript.cpp
 004dc150	table	Script_PlayCreditsMusic	binding "PlayCreditsMusic" in s_ScriptFunctions ~ table 00ac3e00
 004dc1c0	table	Script_LaunchURL	binding "LaunchURL" in s_ScriptFunctions ~ table 00ac3e00
 004dc260	table	Script_DefaultServerLogin	binding "DefaultServerLogin" in s_ScriptFunctions ~ table 00ac3e00
@@ -867,7 +874,7 @@ addr	how	frozen	evidence
 0050ff30	annotated	Script_RegisterCVar	tag in src/ui/game/GameScript.cpp
 0050ff50	annotated	Script_GetCVarInfo	tag in src/ui/game/GameScript.cpp
 00510040	table	Script_GetCVar	binding "GetCVar" in s_ScriptFunctions ~ table 00ac80b0
-005100c0	table	Script_GetCVarBool	binding "GetCVarBool" in s_ScriptFunctions ~ table 00ac80b0
+005100c0	annotated	Script_GetCVarBool	tag in src/glue/GlueScript.cpp
 00510150	table	Script_GetCVarDefault	binding "GetCVarDefault" in s_ScriptFunctions ~ table 00ac80b0
 005101d0	annotated	Script_SetWaterDetail	tag in src/ui/game/GameScript.cpp
 00510200	annotated	Script_GetFarclip	tag in src/ui/game/GameScript.cpp
@@ -1335,12 +1342,14 @@ addr	how	frozen	evidence
 00567200	order	Script_Stub_GetMacroItem	binding table name Script_Stub_GetMacroItem, in definition order in src/ui/game/miscscriptstubs.cpp
 00567450	order	Script_Stub_GetMacroSpell	binding table name Script_Stub_GetMacroSpell, in definition order in src/ui/game/miscscriptstubs.cpp
 00572530	annotated	CGRaidInfo::SetRealNumMembers	tag in src/ui/game/CGRaidInfo.cpp
-00572ab0	table	Script_GetRaidTargetIndex	binding "GetRaidTargetIndex" in s_ScriptFunctions ~ table 00ace790
+005728c0	annotated	RaidTargetGetIndex	tag in src/ui/game/RaidTarget.cpp
+00572ab0	annotated	Script_GetRaidTargetIndex	tag in src/ui/game/RaidInfoScript.cpp
 00572b40	table	Script_GetNumRaidMembers	binding "GetNumRaidMembers" in s_ScriptFunctions ~ table 00ace790
 00572b80	annotated	Script_GetRealNumRaidMembers	tag in src/ui/game/RaidInfoScript.cpp
 00572bc0	table	Script_SetRaidRosterSelection	binding "SetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c50	table	Script_GetRaidRosterSelection	binding "GetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c80	table	Script_GetReadyCheckTimeLeft	binding "GetReadyCheckTimeLeft" in s_ScriptFunctions ~ table 00ace790
+00572ed0	annotated	RaidTargetSet	tag in src/ui/game/RaidTarget.cpp
 00573200	annotated	CGRaidInfo::IsMemberOrPet	tag in src/ui/game/CGRaidInfo.cpp
 00573690	table	Script_GetRaidRosterInfo	binding "GetRaidRosterInfo" in s_ScriptFunctions ~ table 00ace790
 00573a60	table	Script_IsRaidLeader	binding "IsRaidLeader" in s_ScriptFunctions ~ table 00ace790
@@ -1353,8 +1362,9 @@ addr	how	frozen	evidence
 00573fd0	table	Script_DemoteAssistant	binding "DemoteAssistant" in s_ScriptFunctions ~ table 00ace790
 005740c0	table	Script_ConfirmReadyCheck	binding "ConfirmReadyCheck" in s_ScriptFunctions ~ table 00ace790
 00574180	table	Script_GetReadyCheckStatus	binding "GetReadyCheckStatus" in s_ScriptFunctions ~ table 00ace790
+005743b0	handler	ReceiveRaidTargetUpdate	SetMessageHandler(MSG_RAID_TARGET_UPDATE) on both sides
 00574a00	table	Script_ConvertToRaid	binding "ConvertToRaid" in s_ScriptFunctions ~ table 00ace790
-00574ab0	table	Script_SetRaidTarget	binding "SetRaidTarget" in s_ScriptFunctions ~ table 00ace790
+00574ab0	annotated	Script_SetRaidTarget	tag in src/ui/game/RaidInfoScript.cpp
 00575820	string	Script_Stub_PlayDance	score 0.50 shared PlayDance
 00578210	annotated	CGPlayer_C::GetModDamageDonePos	tag in src/object/client/CGPlayer_C.cpp
 00578250	annotated	CGPlayer_C::GetModDamageDoneNeg	tag in src/object/client/CGPlayer_C.cpp
@@ -1701,7 +1711,7 @@ addr	how	frozen	evidence
 0060d7d0	table	Script_UnitIsCharmed	binding "UnitIsCharmed" in s_UnitFunctions ~ table 00ad21d8
 0060d860	table	Script_UnitIsPossessed	binding "UnitIsPossessed" in s_UnitFunctions ~ table 00ad21d8
 0060d8f0	table	Script_PlayerCanTeleport	binding "PlayerCanTeleport" in s_UnitFunctions ~ table 00ad21d8
-0060d970	table	Script_UnitClassification	binding "UnitClassification" in s_UnitFunctions ~ table 00ad21d8
+0060d970	annotated	Script_UnitClassification	tag in src/ui/game/ScriptEvents.cpp
 0060da00	table	Script_UnitSelectionColor	binding "UnitSelectionColor" in s_UnitFunctions ~ table 00ad21d8
 0060db20	table	Script_IsInGuild	binding "IsInGuild" in s_UnitFunctions ~ table 00ad21d8
 0060db80	table	Script_IsGuildLeader	binding "IsGuildLeader" in s_UnitFunctions ~ table 00ad21d8
@@ -1771,8 +1781,8 @@ addr	how	frozen	evidence
 006113e0	table	Script_SetPortraitTexture	binding "SetPortraitTexture" in s_UnitFunctions ~ table 00ad21d8
 00611600	table	Script_HasFullControl	binding "HasFullControl" in s_UnitFunctions ~ table 00ad21d8
 00611670	table	Script_GetComboPoints	binding "GetComboPoints" in s_UnitFunctions ~ table 00ad21d8
-00611780	table	Script_UnitCreatureType	binding "UnitCreatureType" in s_UnitFunctions ~ table 00ad21d8
-00611820	table	Script_UnitCreatureFamily	binding "UnitCreatureFamily" in s_UnitFunctions ~ table 00ad21d8
+00611780	annotated	Script_UnitCreatureType	tag in src/ui/game/ScriptEvents.cpp
+00611820	annotated	Script_UnitCreatureFamily	tag in src/ui/game/ScriptEvents.cpp
 006118c0	table	Script_GetResSicknessDuration	binding "GetResSicknessDuration" in s_UnitFunctions ~ table 00ad21d8
 00611a20	table	Script_GetPVPSessionStats	binding "GetPVPSessionStats" in s_UnitFunctions ~ table 00ad21d8
 00611ad0	table	Script_GetPVPYesterdayStats	binding "GetPVPYesterdayStats" in s_UnitFunctions ~ table 00ad21d8
@@ -1860,8 +1870,9 @@ addr	how	frozen	evidence
 006201f0	annotated	CGTooltip_AddFontStrings	tag in src/ui/game/CGTooltipScript.cpp
 00620340	table	CGTooltip_AddLine	binding "AddLine" in CGTooltipMethods ~ table 00ad2ae0
 006203f0	table	CGTooltip_AddDoubleLine	binding "AddDoubleLine" in CGTooltipMethods ~ table 00ad2ae0
-006204e0	table	CGTooltip_SetText	binding "SetText" in CGTooltipMethods ~ table 00ad2ae0
+006204e0	annotated	CGTooltip_SetText	tag in src/ui/game/CGTooltipScript.cpp
 006205c0	table	CGTooltip_SetTotem	binding "SetTotem" in CGTooltipMethods ~ table 00ad2ae0
+00621070	string	TooltipUnitLevelLine	unique "CORPSE"
 00625470	table	CGTooltip_SetPetAction	binding "SetPetAction" in CGTooltipMethods ~ table 00ad2ae0
 00625630	table	CGTooltip_SetShapeshift	binding "SetShapeshift" in CGTooltipMethods ~ table 00ad2ae0
 006257c0	table	CGTooltip_SetPossession	binding "SetPossession" in CGTooltipMethods ~ table 00ad2ae0
@@ -1980,11 +1991,15 @@ addr	how	frozen	evidence
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 00706d70	annotated	ItemNameFromEntry	tag in src/object/client/ItemLink.cpp
 0070aa00	override	ItemDisplayIcon	
+007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
+00718a00	annotated	CGUnit_C::GetClassification	tag in src/object/client/CGUnit_C.cpp
+00719950	annotated	CGUnit_C::GetSubName	tag in src/object/client/CGUnit_C.cpp
 0071af70	annotated	CGUnit_C::GetShapeshiftForm	tag in src/object/client/CGUnit_C.cpp
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
+0071f300	annotated	CGUnit_C::GetCreatureType	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
@@ -1998,6 +2013,7 @@ addr	how	frozen	evidence
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
+007654a0	string	SysMsgPrintf	unique "warning"
 00765880	override	Script_AccessDenied	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
@@ -2078,7 +2094,7 @@ addr	how	frozen	evidence
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
-007729b0	callgraph	printf	only unmatched callee of 00772a80=SErrDisplayError
+007729b0	sticky	printf	held from the previous run, where it was callgraph
 00772a80	override	SErrDisplayError	
 00772aa0	override	SErrDisplayAppFatal	
 00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
@@ -2620,8 +2636,10 @@ addr	how	frozen	evidence
 008ac3c0	string	ChrRacesRec::GetFilename	unique "DBFilesClient\ChrRaces.dbc"
 008ad010	string	CreatureDisplayInfoExtraRec::GetFilename	unique "DBFilesClient\CreatureDisplayInfoExtra.dbc"
 008ad1c0	string	CreatureDisplayInfoRec::GetFilename	unique "DBFilesClient\CreatureDisplayInfo.dbc"
+008ad420	string	CreatureFamilyRec::GetFilename	unique "DBFilesClient\CreatureFamily.dbc"
 008ad7f0	string	CreatureModelDataRec::GetFilename	unique "DBFilesClient\CreatureModelData.dbc"
 008adbb0	string	CreatureSoundDataRec::GetFilename	unique "DBFilesClient\CreatureSoundData.dbc"
+008ae030	string	CreatureTypeRec::GetFilename	unique "DBFilesClient\CreatureType.dbc"
 008aedc0	string	EmotesRec::GetFilename	unique "DBFilesClient\Emotes.dbc"
 008aeee0	string	FactionGroupRec::GetFilename	unique "DBFilesClient\FactionGroup.dbc"
 008af800	string	FactionTemplateRec::GetFilename	unique "DBFilesClient\FactionTemplate.dbc"
@@ -2640,6 +2658,7 @@ addr	how	frozen	evidence
 008b5eb0	string	SkillLineRec::GetFilename	unique "DBFilesClient\SkillLine.dbc"
 008b69b0	string	SoundEntriesRec::GetFilename	unique "DBFilesClient\SoundEntries.dbc"
 008b7dc0	string	SpellIconRec::GetFilename	unique "DBFilesClient\SpellIcon.dbc"
+008b8c50	string	SpellShapeshiftFormRec::GetFilename	unique "DBFilesClient\SpellShapeshiftForm.dbc"
 008b8fd0	string	SpellVisualEffectNameRec::GetFilename	unique "DBFilesClient\SpellVisualEffectName.dbc"
 008b9110	string	SpellVisualKitRec::GetFilename	unique "DBFilesClient\SpellVisualKit.dbc"
 008b93e0	string	SpellVisualRec::GetFilename	unique "DBFilesClient\SpellVisual.dbc"
@@ -2662,6 +2681,9 @@ addr	how	frozen	evidence
 008d1850	callgraph	TSBaseArray<SEDRIVERNAME>::operator[]	only unmatched callee of 008783b0=SESound::GetInputDriverName
 008e5250	annotated	SwallowEventHandler	tag in src/gx/LoadingScreen.cpp
 0095db80	string	CSimpleMovieFrame::GetScriptByName	unique "OnMovieFinished"
+0095e880	annotated	CSimpleMovieFrame::LoadCaptions	tag in src/ui/simple/CSimpleMovieFrame.cpp
+0095eb30	callgraph	CSimpleMovieFrame::StartMovie	only unmatched callee of 00970660=CSimpleMovieFrame_StartMovie
+0095eba0	annotated	CSimpleMovieFrame::StopMovie	tag in src/ui/simple/CSimpleMovieFrame.cpp
 0095f420	string	CSimpleModel::GetScriptByName	unique "OnAnimFinished"
 0095f5e0	callgraph	CSimpleModel::SetSequence	only unmatched callee of 009607e0=CSimpleModel_SetSequence
 0095f610	callgraph	CSimpleModel::SetSequenceTime	only unmatched callee of 009608b0=CSimpleModel_SetSequenceTime
@@ -2748,7 +2770,7 @@ addr	how	frozen	evidence
 0096f920	override	CSimpleButton::SetStateTexture	
 0096fed0	string	CSimpleButton::LoadXML	unique "ButtonText"
 00970660	table	CSimpleMovieFrame_StartMovie	binding "StartMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
-00970730	table	CSimpleMovieFrame_StopMovie	binding "StopMovie" in SimpleMovieFrameMethods ~ table 00b2cd30
+00970730	annotated	CSimpleMovieFrame_StopMovie	tag in src/ui/simple/CSimpleMovieFrameScript.cpp
 00970770	table	CSimpleMovieFrame_EnableSubtitles	binding "EnableSubtitles" in SimpleMovieFrameMethods ~ table 00b2cd30
 00970830	table	CSimpleColorSelect_GetColorWheelTexture	binding "GetColorWheelTexture" in SimpleColorSelectMethods ~ table 00b2cd50
 009708b0	table	CSimpleColorSelect_SetColorWheelTexture	binding "SetColorWheelTexture" in SimpleColorSelectMethods ~ table 00b2cd50
@@ -2940,7 +2962,7 @@ addr	how	frozen	evidence
 00978360	annotated	CSimpleButton_GetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
-00980f70	annotated	ParticleFxSetDensity	tag in src/world/ParticleFx.cpp
+00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928
@@ -2956,6 +2978,9 @@ addr	how	frozen	evidence
 00985e00	table	Script_VoiceChat_IsRecordingLoopbackSound	binding "VoiceChat_IsRecordingLoopbackSound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985e30	table	Script_VoiceChat_IsPlayingLoopbackSound	binding "VoiceChat_IsPlayingLoopbackSound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985e60	table	Script_VoiceChat_GetCurrentMicrophoneSignalLevel	binding "VoiceChat_GetCurrentMicrophoneSignalLevel" in SI2::s_ScriptFunctions ~ table 00b2d928
+00985f70	annotated	SI2::StopGlueAmbience	tag in src/sound/SI2.cpp
+00985fb0	annotated	SI2::StartGlueAmbience	tag in src/sound/SI2.cpp
+00986080	order	SI2::StopCreditsMusic	definition order between SI2::StartGlueAmbience and SI2::StopGlueMusic in src/sound/SI2.cpp
 009860e0	callorder	SI2::StopGlueMusic	same slot between linked calls in 009861c0=SI2::StartGlueMusic
 009861c0	callgraph	SI2::StartGlueMusic	only unmatched callee of 004dc070=Script_PlayGlueMusic
 009862c0	callgraph	SI2::StartCreditsMusic	only unmatched callee of 004dc150=Script_PlayCreditsMusic
