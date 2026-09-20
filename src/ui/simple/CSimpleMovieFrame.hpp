@@ -4,6 +4,9 @@
 #include "ui/simple/CSimpleFrame.hpp"
 #include "ui/simple/MovieAvi.hpp"
 
+#include <string>
+#include <vector>
+
 class CSimpleTexture;
 struct MovieDecoder;
 
@@ -45,6 +48,19 @@ class CSimpleMovieFrame : public CSimpleFrame {
         // sound backend already covers.
         void* m_sound = nullptr;
         void* m_channel = nullptr;
+
+        // One line of the .sbt beside the movie. The reference keeps a 12-byte record per caption
+        // -- start, end, text -- and its own struct is named MOVIECAPTION.
+        struct MovieCaption {
+            int32_t start;
+            int32_t end;
+            std::string text;
+        };
+
+        std::vector<MovieCaption> m_captions;
+
+        // Which caption is on screen, or -1 for none. The reference starts this at -1 too.
+        int32_t m_caption = -1;
         CSimpleTexture* m_surface = nullptr;
         bool m_playing = false;
         float m_elapsed = 0.0f;
@@ -78,6 +94,14 @@ class CSimpleMovieFrame : public CSimpleFrame {
     private:
         void StartMovieAudio(int32_t volume);
         void StopMovieAudio();
+
+        // Read "<movie>.sbt" if there is one. Silence is not an error: most movies have none, and
+        // the reference does not complain either.
+        void LoadCaptions(const char* basePath);
+
+        // Show or hide the caption for the current time, firing the frame's subtitle scripts on
+        // each change the way the reference does.
+        void UpdateCaption();
 };
 
 #endif

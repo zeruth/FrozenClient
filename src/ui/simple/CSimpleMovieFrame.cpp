@@ -5,6 +5,7 @@
 #include "ui/simple/MovieDecoder.hpp"
 #include "gx/Texture.hpp"
 #include "sound/SESound.hpp"
+#include "util/SFile.hpp"
 #include <fmod.hpp>
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
@@ -164,6 +165,19 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
 
     this->StartMovieAudio(volume);
 
+    // Captions are keyed off the movie's own name, so they are read from the path without the
+    // extension the caller appended.
+    char base[512];
+    SStrCopy(base, path, sizeof(base));
+
+    size_t baseLength = SStrLen(base);
+
+    if (baseLength > 4) {
+        base[baseLength - 4] = '\0';
+    }
+
+    this->LoadCaptions(base);
+
     this->m_playing = true;
 
     return true;
@@ -218,6 +232,143 @@ void CSimpleMovieFrame::StartMovieAudio(int32_t volume) {
     this->m_channel = channel;
 }
 
+// ref: FUN_0095e880
+//
+// The format, from the shipped files and the parse that reads them:
+//
+//   HH:MM:SS:FF - HH:MM:SS:FF      a line beginning with '0'
+//   the caption text               the line after it
+//   (blank)
+//
+// Fields are read at FIXED OFFSETS, not by scanning for colons: 0, 3, 6, 9 for the start and 14,
+// 17, 20, 23 for the end, which is what the reference's contiguous two-byte buffers amount to. A
+// line that does not begin with '0' is skipped, which is how the blank separators and the UTF-8
+// BOM line are passed over.
+//
+// The fourth field is multiplied by 41, NOT by 10. That is the reference's own arithmetic
+// (0x29), and it reads as frames at 24fps -- 1000/24 is 41.67 -- even though the shipped files
+// put values above 23 there, which only makes sense as hundredths. Kept as the reference has it
+// rather than "corrected": a caption that appears a beat late in both clients is parity, and a
+// caption that appears at a different time from the reference is not. If the timing ever needs
+// changing, this is the line and this is why.
+void CSimpleMovieFrame::LoadCaptions(const char* basePath) {
+    this->m_captions.clear();
+    this->m_caption = -1;
+
+    char path[512];
+    SStrPrintf(path, sizeof(path), "%s.sbt", basePath);
+
+    void* raw = nullptr;
+    size_t size = 0;
+
+    if (!SFile::Load(nullptr, path, &raw, &size, 1, SFILE_OPEN_ALLOW_LOCAL, nullptr) || !raw) {
+        return;
+    }
+
+    auto text = static_cast<char*>(raw);
+
+    // Skip the UTF-8 byte order mark. The reference tests the first byte alone.
+    if (size >= 3 && static_cast<uint8_t>(text[0]) == 0xEF) {
+        text += 3;
+    }
+
+    auto field = [](const char* line, size_t length, size_t at) -> int32_t {
+        if (at + 2 > length) {
+            return 0;
+        }
+
+        return (line[at] - '0') * 10 + (line[at + 1] - '0');
+    };
+
+    char* cursor = text;
+
+    while (cursor && *cursor) {
+        char* line = cursor;
+
+        while (*cursor && *cursor != '\r' && *cursor != '\n') {
+            cursor++;
+        }
+
+        size_t length = static_cast<size_t>(cursor - line);
+
+        while (*cursor == '\r' || *cursor == '\n') {
+            *cursor = '\0';
+            cursor++;
+        }
+
+        if (length < 24 || line[0] != '0') {
+            continue;
+        }
+
+        MovieCaption caption;
+        caption.start = field(line, length, 9) * 41
+            + (field(line, length, 6) + (field(line, length, 3) + field(line, length, 0) * 60) * 60) * 1000;
+        caption.end = field(line, length, 23) * 41
+            + (field(line, length, 20) + (field(line, length, 17) + field(line, length, 14) * 60) * 60) * 1000;
+
+        // The text is the line after the timings.
+        char* body = cursor;
+
+        while (*cursor && *cursor != '\r' && *cursor != '\n') {
+            cursor++;
+        }
+
+        size_t bodyLength = static_cast<size_t>(cursor - body);
+
+        while (*cursor == '\r' || *cursor == '\n') {
+            *cursor = '\0';
+            cursor++;
+        }
+
+        caption.text.assign(body, bodyLength);
+
+        this->m_captions.push_back(caption);
+    }
+
+    SFile::Unload(raw);
+}
+
+// ref: the caption half of the movie's per-frame work
+//
+// OnMovieShowSubtitle carries the text; OnMovieHideSubtitle takes none. FrameXML fades the caption
+// in and out on those two, so they have to fire on the change and not every frame.
+void CSimpleMovieFrame::UpdateCaption() {
+    if (this->m_captions.empty()) {
+        return;
+    }
+
+    auto now = static_cast<int32_t>(this->m_elapsed * 1000.0f);
+    int32_t wanted = -1;
+
+    for (size_t i = 0; i < this->m_captions.size(); i++) {
+        const MovieCaption& caption = this->m_captions[i];
+
+        if (now >= caption.start && now < caption.end) {
+            wanted = static_cast<int32_t>(i);
+
+            break;
+        }
+    }
+
+    if (wanted == this->m_caption) {
+        return;
+    }
+
+    this->m_caption = wanted;
+
+    if (wanted < 0) {
+        if (this->m_onMovieHideSubtitle.luaRef) {
+            this->RunScript(this->m_onMovieHideSubtitle, 0, nullptr);
+        }
+
+        return;
+    }
+
+    if (this->m_onMovieShowSubtitle.luaRef) {
+        this->RunScript(this->m_onMovieShowSubtitle, 0, this->m_captions[wanted].text.c_str());
+    }
+}
+
 void CSimpleMovieFrame::StopMovieAudio() {
     if (this->m_channel) {
         static_cast<FMOD::Channel*>(this->m_channel)->stop();
@@ -232,6 +383,14 @@ void CSimpleMovieFrame::StopMovieAudio() {
 
 void CSimpleMovieFrame::StopMovie() {
     this->StopMovieAudio();
+
+    // Take the last caption off the screen before the frame goes, so nothing is left behind.
+    if (this->m_caption >= 0 && this->m_onMovieHideSubtitle.luaRef) {
+        this->RunScript(this->m_onMovieHideSubtitle, 0, nullptr);
+    }
+
+    this->m_captions.clear();
+    this->m_caption = -1;
 
     this->m_playing = false;
     this->m_elapsed = 0.0f;
@@ -289,6 +448,10 @@ bool CSimpleMovieFrame::AdvanceMovie(float elapsedSec) {
     if (this->m_surface) {
         // The texture rereads the decoder's buffer through the callback.
         this->m_surface->OnRegionChanged();
+    }
+
+    if (this->m_subtitlesEnabled) {
+        this->UpdateCaption();
     }
 
     return true;
