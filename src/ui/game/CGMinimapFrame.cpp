@@ -1,4 +1,6 @@
 #include "ui/game/CGMinimapFrame.hpp"
+#include "object/client/SpellBook.hpp"
+#include "db/Db.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
 #include "console/CVar.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -45,7 +47,60 @@ const MINIMAP_TRACKING_TYPE CGMinimapFrame::s_trackingTypes[NUM_MINIMAP_TRACKING
 };
 
 const MINIMAP_TRACKING_TYPE* CGMinimapFrame::s_otherTracking = nullptr;
-const uint32_t CGMinimapFrame::s_numTrackingSpells = 0;
+// ref: FUN_007fdf60
+// A spell is a tracking spell when any of its three effect auras is one of the three tracking
+// aura types. Nothing else about the spell matters -- not its school, not its category.
+bool CGMinimapFrame::IsTrackingSpell(uint32_t spellID) {
+    auto spell = g_spellDB.GetRecord(static_cast<int32_t>(spellID));
+
+    if (!spell) {
+        return false;
+    }
+
+    for (auto aura : spell->m_effectAura) {
+        if (aura == 44 || aura == 45 || aura == 151) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Walked from the spellbook rather than kept alongside it. The reference appends to its list when
+// a spell is learned and removes on unlearn; frozen has the known-spell list already, so deriving
+// is the same answer without a second thing to keep in step.
+//
+// The all-ranks view is used, so a player who knows two ranks of a tracking spell sees both -- as
+// the reference does, since it appends every learned spell that matches.
+uint32_t CGMinimapFrame::GetNumTrackingSpells() {
+    uint32_t count = 0;
+
+    for (int32_t i = 0; i < SpellBookCount(); i++) {
+        if (CGMinimapFrame::IsTrackingSpell(SpellBookSpellAt(i))) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+uint32_t CGMinimapFrame::GetTrackingSpell(uint32_t index) {
+    uint32_t seen = 0;
+
+    for (int32_t i = 0; i < SpellBookCount(); i++) {
+        auto spellID = SpellBookSpellAt(i);
+
+        if (CGMinimapFrame::IsTrackingSpell(spellID)) {
+            if (seen == index) {
+                return spellID;
+            }
+
+            seen++;
+        }
+    }
+
+    return 0;
+}
 uint32_t CGMinimapFrame::s_trackingSpell = 0;
 
 namespace {

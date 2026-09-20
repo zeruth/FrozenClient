@@ -210,9 +210,29 @@ end to end:
 **The spell half** comes first: the tracking spells the player knows, kept in `DAT_00be8dec` with
 its count in `DAT_00be8de8`. `SetTracking` on one of these just *casts the spell* (`FUN_0080da40`);
 the active one is remembered in `DAT_00beba68` and its icon comes from `SpellIcon.dbc` (the active
-icon if it is the one being tracked, the normal icon otherwise). **Not ported** -- it needs the
-spellbook side to build the list. `CGMinimapFrame::s_numTrackingSpells` is 0 until then, so the
-arithmetic below is the reference's with an empty first half rather than a different scheme.
+icon if it is the one being tracked, the normal icon otherwise).
+
+Ported 2026-09-19. What makes a spell a tracking spell is `FUN_007fdf60`: **any of its three
+`EffectApplyAuraName` values is 44, 45 or 151** -- TRACK_CREATURES, TRACK_RESOURCES,
+TRACK_STEALTHED. Nothing else about the spell is consulted.
+
+Finding that took a chain worth recording, because none of it needed a name:
+
+| step | how |
+|---|---|
+| the list globals | `DAT_00be8de8`/`dec` from `GetNumTrackingTypes` |
+| who touches them | scan the image for those four bytes -- 21 sites, all consumers, the sort, and the teardown |
+| the real writer | the array is a `{capacity, count, data}` triple, so scan for the **base** `00be8de4` instead: 4 sites, one of them new |
+| the predicate | that site is the learn-spell path (`FUN_00542030`), which appends when `FUN_007fdf60` is true |
+
+The reference maintains the list incrementally (append on learn, remove on unlearn). Frozen derives
+it from the spellbook instead, which is the same answer without a second structure to keep in step.
+
+`SpellRec` gained `m_activeIconID` (column 134) and `m_effectAura[3]` (columns 95-97) for this. The
+95 is corroborated: the reference reads the record at `+0x17c`, and `0x17c / 4` is 95.
+
+**Still missing:** nothing sets `s_trackingSpell`, so a cast tracking spell never reports back as
+active. That needs the aura side -- `DAT_00beba68` is written when the tracking aura applies.
 
 **The table half** is a static 15-row table at `DAT_00a11c50`, 0x14 bytes per row, read out of
 .rdata rather than transcribed from FrameXML. Each row is `{kind, value, globalString, texture,

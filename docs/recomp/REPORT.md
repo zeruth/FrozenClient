@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 23:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2726 (=) (10.0%) | 577.3k (10.4%) |
-| &nbsp;&nbsp;ported | 2185 (+1) | 430.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 502 (-1) | 108.0k |
+| mapped to a frozen function | 2727 (+1) (10.0%) | 577.3k (10.4%) |
+| &nbsp;&nbsp;ported | 2186 (+1) | 430.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 502 (=) | 108.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1013 (=) (3.7%)** | **125.4k (2.3%)** |
-| unmapped | 24436 | 4.84M |
+| **faithful** (linked, not stub, call order >= 80%) | **1015 (+2) (3.7%)** | **125.9k (2.3%)** |
+| unmapped | 24435 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11525, stubs 760 | |
+| frozen functions (src/, from PDB + source) | 11528, stubs 760 | |
 
-Match evidence: annotated 643, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1010. Module anchors: 1479 assert strings.
+Match evidence: annotated 644, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1010. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:52 -- mapped 2726, ported 2184, stub 503, spine mapped 407.
+Previous run: 2026-09-19 22:55 -- mapped 2726, ported 2185, stub 502, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 571 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 571 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -151,7 +151,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 194 (39.5%) | 44.6% | 95 | 0 | 73 |
-| Spell_C.cpp | 355 | 86.2k | 12 (3.4%) | 5.0% | 0 | 0 | 121 |
+| Spell_C.cpp | 355 | 86.2k | 13 (3.7%) | 5.1% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 71 (47.0%) | 28.4% | 40 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 25 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:43 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:50 | 2699 (9.9%) | 991 (3.6%) | 523 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 21:00 | 2702 (9.9%) | 993 (3.7%) | 522 | 394/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:47 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
 | 2026-09-19 22:52 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
 | 2026-09-19 22:55 | 2726 (10.0%) | 1013 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
+| 2026-09-19 23:07 | 2727 (10.0%) | 1015 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 
 ## How to move a row
 

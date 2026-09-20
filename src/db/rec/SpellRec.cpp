@@ -36,6 +36,10 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
 
     this->m_ID = static_cast<int32_t>(columns[0]);
     this->m_spellIconID = static_cast<int32_t>(columns[SpellRec::COLUMN_ICON]);
+    this->m_activeIconID = static_cast<int32_t>(columns[SpellRec::COLUMN_ACTIVE_ICON]);
+    this->m_effectAura[0] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_AURA]);
+    this->m_effectAura[1] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_AURA + 1]);
+    this->m_effectAura[2] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_AURA + 2]);
     this->m_name = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_NAME]] : "";
     this->m_rank = stringBuffer ? &stringBuffer[columns[SpellRec::COLUMN_RANK]] : "";
     this->m_attributes = columns[SpellRec::COLUMN_ATTRIBUTES];

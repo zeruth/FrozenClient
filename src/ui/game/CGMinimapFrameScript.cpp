@@ -1,4 +1,6 @@
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include "object/client/SpellBook.hpp"
+#include "db/Db.hpp"
 #include <storm/String.hpp>
 #include "ui/game/Types.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
@@ -331,7 +333,7 @@ void TrackingTexturePath(char* buffer, size_t size, const char* name) {
 
 // ref: FUN_0057f170
 int32_t Script_GetNumTrackingTypes(lua_State* L) {
-    auto count = CGMinimapFrame::s_numTrackingSpells + CGMinimapFrame::GetNumOtherTrackingTypes();
+    auto count = CGMinimapFrame::GetNumTrackingSpells() + CGMinimapFrame::GetNumOtherTrackingTypes();
 
     lua_pushnumber(L, static_cast<double>(count));
 
@@ -343,15 +345,43 @@ int32_t Script_GetNumTrackingTypes(lua_State* L) {
 int32_t Script_GetTrackingInfo(lua_State* L) {
     auto id = static_cast<uint32_t>(static_cast<int32_t>(luaL_checknumber(L, 1))) - 1;
 
-    if (id < CGMinimapFrame::s_numTrackingSpells) {
-        // TODO the spell half. The reference reads the spell record, picks the active icon when the
-        // spell is the one being tracked and the normal icon otherwise, resolves it through
-        // SpellIcon.dbc and reports the category as "spell". s_numTrackingSpells is zero until the
-        // spellbook side lands, so this branch is unreachable rather than wrong.
-        return 0;
+    auto numSpells = CGMinimapFrame::GetNumTrackingSpells();
+
+    if (id < numSpells) {
+        auto spellID = CGMinimapFrame::GetTrackingSpell(id);
+        auto spell = g_spellDB.GetRecord(static_cast<int32_t>(spellID));
+
+        if (!spell) {
+            return 0;
+        }
+
+        auto active = CGMinimapFrame::s_trackingSpell == spellID;
+
+        lua_pushstring(L, spell->m_name);
+
+        // The active icon is used only while this spell is the one being tracked, and only when it
+        // has one -- a spell with no separate active icon keeps its normal one either way.
+        auto iconID = (active && spell->m_activeIconID) ? spell->m_activeIconID : spell->m_spellIconID;
+        auto icon = g_spellIconDB.GetRecord(iconID);
+
+        if (icon && icon->m_textureFilename) {
+            lua_pushstring(L, icon->m_textureFilename);
+        } else {
+            lua_pushnil(L);
+        }
+
+        if (active) {
+            lua_pushnumber(L, 1.0);
+        } else {
+            lua_pushnil(L);
+        }
+
+        lua_pushstring(L, "spell");
+
+        return 4;
     }
 
-    auto type = CGMinimapFrame::GetOtherTrackingType(id - CGMinimapFrame::s_numTrackingSpells);
+    auto type = CGMinimapFrame::GetOtherTrackingType(id - numSpells);
 
     if (!type) {
         return 0;
@@ -394,12 +424,18 @@ int32_t Script_SetTracking(lua_State* L) {
 
     auto id = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1))) - 1;
 
-    if (id < CGMinimapFrame::s_numTrackingSpells) {
-        // TODO cast the tracking spell. Unreachable for the same reason.
+    auto numSpells = CGMinimapFrame::GetNumTrackingSpells();
+
+    if (id < numSpells) {
+        // Tracking IS the spell: selecting one casts it, and the server's aura is what makes it
+        // take effect. Nothing else is set here, which is why the reference does not signal
+        // MINIMAP_UPDATE_TRACKING on this path.
+        SpellBookCast(CGMinimapFrame::GetTrackingSpell(id), 0);
+
         return 0;
     }
 
-    auto type = CGMinimapFrame::GetOtherTrackingType(id - CGMinimapFrame::s_numTrackingSpells);
+    auto type = CGMinimapFrame::GetOtherTrackingType(id - numSpells);
 
     if (type) {
         // Picking a table row cancels any tracking spell: the two halves share one slot.

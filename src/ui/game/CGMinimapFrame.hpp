@@ -85,7 +85,14 @@ class CGMinimapFrame : public CSimpleFrame {
         // spells first and the table second. That list needs the spellbook side, which is not
         // ported, so the count stays zero -- the indexing below is the reference's arithmetic with
         // an empty first half, not a different scheme.
-        static const uint32_t s_numTrackingSpells;
+        // Every tracking spell the player knows, rebuilt from the spellbook on demand. The
+        // reference keeps this incrementally as spells are learned (ref: FUN_00542030 appends,
+        // FUN_0053fad0 removes) in DAT_00be8dec with its count in DAT_00be8de8.
+        static uint32_t GetNumTrackingSpells();
+        static uint32_t GetTrackingSpell(uint32_t index);
+
+        // ref: FUN_007fdf60
+        static bool IsTrackingSpell(uint32_t spellID);
 
         // The tracking spell currently active, 0 for none (ref: DAT_00beba68). Nothing sets it yet
         // for the same reason.

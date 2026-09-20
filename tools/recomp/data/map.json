@@ -19779,23 +19779,23 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "Script_GetNumTrackingTypes",
-  "frozenSize": 47,
+  "frozenSize": 59,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 62,
   "status": "ported"
  },
  "0057f1b0": {
-  "branchRatio": 0.3,
+  "branchRatio": 0.7,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.474,
+  "faithful": true,
+  "fidelity": 0.842,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "Script_GetTrackingInfo",
-  "frozenSize": 251,
+  "frozenSize": 482,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 458,
@@ -19805,13 +19805,13 @@
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.278,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "Script_SetTracking",
-  "frozenSize": 121,
+  "frozenSize": 146,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 368,
@@ -30681,6 +30681,22 @@
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 6,
+  "status": "ported"
+ },
+ "007fdf60": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::IsTrackingSpell",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Spell_C.cpp",
+  "refSize": 54,
   "status": "ported"
  },
  "00801c90": {

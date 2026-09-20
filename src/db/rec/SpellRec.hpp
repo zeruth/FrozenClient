@@ -19,12 +19,26 @@ class SpellRec {
         static const int32_t COLUMN_COUNT = 234;
         static const int32_t COLUMN_ATTRIBUTES = 4;   // SPELL_ATTR0_*; 0x40 is PASSIVE
         static const int32_t COLUMN_VISUAL = 131;     // SpellVisualID[2]: 131, 132
+        // The three EffectApplyAuraName columns. Identified from the reference reading its spell
+        // record at +0x17c: 0x17c / 4 is 95, and 95 is where this array starts in the 234-column
+        // 3.3.5a layout, which the constants either side of it already assume.
+        static const int32_t COLUMN_EFFECT_AURA = 95;   // 95, 96, 97
+
         static const int32_t COLUMN_ICON = 133;
+        static const int32_t COLUMN_ACTIVE_ICON = 134;  // immediately after the normal icon
         static const int32_t COLUMN_NAME = 136;       // 17 locale columns, then
         static const int32_t COLUMN_RANK = 153;       // "Rank N", or "" for an unranked spell
 
         int32_t m_ID;
         int32_t m_spellIconID;
+
+        // Shown instead of m_spellIconID while the spell is the one being tracked. Zero means the
+        // spell has no separate active icon and the normal one is used.
+        int32_t m_activeIconID;
+
+        // EffectApplyAuraName[3]. Only used to recognise the tracking spells so far: 44 and 45 are
+        // TRACK_CREATURES and TRACK_RESOURCES, 151 is TRACK_STEALTHED.
+        int32_t m_effectAura[3];
         const char* m_name;
         const char* m_rank;
         int32_t m_spellVisualID[2];

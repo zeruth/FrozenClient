@@ -1411,7 +1411,7 @@ addr	how	frozen	evidence
 005eca80	annotated	CGCooldown_GetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
-005ef490	string	ActionTypeName	score 0.87 shared equipmentset; macro; spell
+005ef490	string	ActionTypeName	score 0.77 shared equipmentset; macro; spell
 005f7630	callorder	AddOnIsLoaded	same slot between linked calls in 00511b30=Script_IsAddOnLoaded
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
@@ -1924,6 +1924,7 @@ addr	how	frozen	evidence
 007f3ae0	override	CGMinimapFrame::SetZoom	
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
+007fdf60	annotated	CGMinimapFrame::IsTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides

@@ -52075,11 +52075,12 @@
 ],
 "consts": [
 "0",
-"1"
+"1",
+"2"
 ],
 "branches": 3,
 "stub": false,
-"lines": 19,
+"lines": 23,
 "refs": [],
 "line": 28
 },
@@ -100600,6 +100601,63 @@
 "refs": [],
 "line": 19
 },
+"CGMinimapFrame::IsTrackingSpell": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"WowClientDB<SpellRec>::GetRecord"
+],
+"strings": [],
+"consts": [
+"151",
+"44",
+"45"
+],
+"branches": 3,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 53
+},
+"CGMinimapFrame::GetNumTrackingSpells": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"SpellBookCount",
+"SpellBookSpellAt",
+"CGMinimapFrame::IsTrackingSpell"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 75
+},
+"CGMinimapFrame::GetTrackingSpell": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"SpellBookCount",
+"SpellBookSpellAt",
+"CGMinimapFrame::IsTrackingSpell"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 87
+},
 "LocalPlayerClassMask": {
 "files": [
 "src/ui/game/cgminimapframe.cpp"
@@ -100617,7 +100675,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 56
+"line": 111
 },
 "TrackingTypeAllowed": {
 "files": [
@@ -100630,7 +100688,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 117
 },
 "CGMinimapFrame::GetNumOtherTrackingTypes": {
 "files": [
@@ -100648,7 +100706,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 69
+"line": 124
 },
 "CGMinimapFrame::GetOtherTrackingType": {
 "files": [
@@ -100666,7 +100724,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 85
+"line": 140
 },
 "CGMinimapFrame::SetOtherTracking": {
 "files": [
@@ -100688,7 +100746,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 103
+"line": 158
 },
 "CGMinimapFrame::Create": {
 "files": [
@@ -100706,7 +100764,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 128
+"line": 183
 },
 "CGMinimapFrame::CreateScriptMetaTable": {
 "files": [
@@ -100722,7 +100780,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 134
+"line": 189
 },
 "CGMinimapFrame::GetObjectType": {
 "files": [
@@ -100735,7 +100793,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 139
+"line": 194
 },
 "CGMinimapFrame::RegisterScriptMethods": {
 "files": [
@@ -100751,7 +100809,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 147
+"line": 202
 },
 "CGMinimapFrame::GetZoomLevels": {
 "files": [
@@ -100764,7 +100822,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 208
 },
 "CGMinimapFrame::GetZoom": {
 "files": [
@@ -100780,7 +100838,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 158
+"line": 213
 },
 "CGMinimapFrame::SetZoom": {
 "files": [
@@ -100796,7 +100854,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 163
+"line": 218
 },
 "CGMinimapFrame::CGMinimapFrame": {
 "files": [
@@ -100809,7 +100867,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 178
+"line": 233
 },
 "CGMinimapFrame::GetScriptMetaTable": {
 "files": [
@@ -100822,7 +100880,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 182
+"line": 237
 },
 "MinimapTexFlags": {
 "files": [
@@ -100840,7 +100898,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 21
+"line": 23
 },
 "CGMinimapFrame_SetMaskTexture": {
 "files": [
@@ -100874,7 +100932,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 26
+"line": 28
 },
 "CGMinimapFrame_SetIconTexture": {
 "files": [
@@ -100908,7 +100966,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 50
+"line": 52
 },
 "CGMinimapFrame_SetBlipTexture": {
 "files": [
@@ -100943,7 +101001,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 74
+"line": 76
 },
 "CGMinimapFrame_SetClassBlipTexture": {
 "files": [
@@ -100977,7 +101035,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 106
+"line": 108
 },
 "CGMinimapFrame_SetPOIArrowTexture": {
 "files": [
@@ -101011,7 +101069,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 130
+"line": 132
 },
 "CGMinimapFrame_SetStaticPOIArrowTexture": {
 "files": [
@@ -101045,7 +101103,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 155
+"line": 157
 },
 "CGMinimapFrame_SetCorpsePOIArrowTexture": {
 "files": [
@@ -101079,7 +101137,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 179
+"line": 181
 },
 "CGMinimapFrame_SetPlayerTexture": {
 "files": [
@@ -101109,7 +101167,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 204
+"line": 206
 },
 "CGMinimapFrame_SetPlayerTextureHeight": {
 "files": [
@@ -101138,7 +101196,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 231
+"line": 233
 },
 "CGMinimapFrame_SetPlayerTextureWidth": {
 "files": [
@@ -101167,7 +101225,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 252
+"line": 254
 },
 "CGMinimapFrame_GetZoomLevels": {
 "files": [
@@ -101185,7 +101243,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 272
+"line": 274
 },
 "CGMinimapFrame_GetZoom": {
 "files": [
@@ -101203,7 +101261,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 280
+"line": 282
 },
 "CGMinimapFrame_SetZoom": {
 "files": [
@@ -101227,7 +101285,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 287
+"line": 289
 },
 "CGMinimapFrame_PingLocation": {
 "files": [
@@ -101249,7 +101307,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 308
+"line": 310
 },
 "CGMinimapFrame_GetPingPosition": {
 "files": [
@@ -101271,7 +101329,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 315
+"line": 317
 },
 "TrackingTexturePath": {
 "files": [
@@ -101289,13 +101347,14 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 326
+"line": 328
 },
 "Script_GetNumTrackingTypes": {
 "files": [
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
+"CGMinimapFrame::GetNumTrackingSpells",
 "CGMinimapFrame::GetNumOtherTrackingTypes",
 "lua_pushnumber"
 ],
@@ -101307,7 +101366,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 333
+"line": 335
 },
 "Script_GetTrackingInfo": {
 "files": [
@@ -101315,6 +101374,16 @@
 ],
 "callseq": [
 "luaL_checknumber",
+"CGMinimapFrame::GetNumTrackingSpells",
+"CGMinimapFrame::GetTrackingSpell",
+"WowClientDB<SpellRec>::GetRecord",
+"lua_pushstring",
+"WowClientDB<SpellIconRec>::GetRecord",
+"lua_pushstring",
+"lua_pushnil",
+"lua_pushnumber",
+"lua_pushnil",
+"lua_pushstring",
 "CGMinimapFrame::GetOtherTrackingType",
 "FrameScript_GetText",
 "lua_pushstring",
@@ -101325,7 +101394,8 @@
 "lua_pushstring"
 ],
 "strings": [
-"other"
+"other",
+"spell"
 ],
 "consts": [
 "0",
@@ -101334,11 +101404,11 @@
 "260",
 "4"
 ],
-"branches": 3,
+"branches": 7,
 "stub": false,
-"lines": 34,
+"lines": 62,
 "refs": [],
-"line": 343
+"line": 345
 },
 "Script_SetTracking": {
 "files": [
@@ -101349,6 +101419,9 @@
 "FrameScript_SignalEvent",
 "CGMinimapFrame::SetOtherTracking",
 "lua_tonumber",
+"CGMinimapFrame::GetNumTrackingSpells",
+"CGMinimapFrame::GetTrackingSpell",
+"SpellBookCast",
 "CGMinimapFrame::GetOtherTrackingType",
 "CGMinimapFrame::SetOtherTracking"
 ],
@@ -101359,9 +101432,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 30,
+"lines": 36,
 "refs": [],
-"line": 381
+"line": 411
 },
 "Script_GetTrackingTexture": {
 "files": [
@@ -101382,7 +101455,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 415
+"line": 451
 },
 "CGMinimapFrameScriptRegisterFunctions": {
 "files": [
@@ -101397,7 +101470,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 442
+"line": 478
 },
 "CGPartyInfo::NumMembers": {
 "files": [
