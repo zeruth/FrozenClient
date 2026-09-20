@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:30 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2754 (+1) (10.1%) | 586.7k (10.6%) |
-| &nbsp;&nbsp;ported | 2226 (+3) | 443.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 488 (-2) | 104.2k |
+| mapped to a frozen function | 2754 (=) (10.1%) | 586.7k (10.6%) |
+| &nbsp;&nbsp;ported | 2227 (+1) | 443.3k |
+| &nbsp;&nbsp;stub (unimplemented body) | 487 (-1) | 104.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1032 (+1) (3.8%)** | **127.9k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1032 (=) (3.8%)** | **127.9k (2.3%)** |
 | unmapped | 24408 | 4.83M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 166 (+1) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11581, stubs 746 | |
+| **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
+| frozen functions (src/, from PDB + source) | 11582, stubs 745 | |
 
-Match evidence: annotated 688, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 989. Module anchors: 1479 assert strings.
+Match evidence: annotated 689, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 988. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:20 -- mapped 2753, ported 2223, stub 490, spine mapped 412.
+Previous run: 2026-09-20 01:27 -- mapped 2754, ported 2226, stub 488, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 557 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 556 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -84,8 +84,8 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf838 (GetArenaTeam..) | 13 | `s_ScriptFunctions` | 9 | 0 | GetArenaTeamRosterInfo, GetArenaTeamGdfInfo, SetArenaTeamRosterSelection, GetArenaTeamRosterSelection, SortArenaTeamRoster, SetArenaTeamRosterShowOffline ... |
 | 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions` | 9 | 0 | GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent, SetActiveTalentGroup, AddPreviewTalentPoints ... |
 | 00a475a0 (bnot..) | 8 | `-` | 8 | 0 | bnot, band, bor, bxor, lshift, rshift ... |
-| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 8 |  / stubs: LeaveParty, SetPartyAssignment, ClearPartyAssignment, GetPartyAssignment ... |
 | 00af51c8 (SpellIsTargeting..) | 11 | `s_ScriptFunctions` | 8 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
+| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 7 |  / stubs: LeaveParty, SetPartyAssignment, ClearPartyAssignment, SilenceMember ... |
 | 00ad09b8 (GetNumSkillLines..) | 13 | `s_ScriptFunctions` | 7 | 0 | AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp, RemoveSkillUp, AcceptSkillUps ... |
 | 00a47d28 (create..) | 6 | `-` | 6 | 0 | create, resume, running, status, wrap, yield |
 | 00ac1550 (GetTitleRegion..) | 85 | `SimpleFrameMethods` | 0 | 6 |  / stubs: CreateTitleRegion, HookScript, AllowAttributeChanges, CanChangeAttribute ... |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 40 (16.3%) | 13.1% | 16 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 6 (2.7%) | 2.4% | 0 | 0 | 72 |
-| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 54 | 0 | 11 |
+| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 53 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 5 | 0 | 7 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:27 | 2732 (10.1%) | 1017 (3.7%) | 501 | 407/5531 | 1792/2964 | 570 |
 | 2026-09-19 23:30 | 2732 (10.1%) | 1017 (3.7%) | 500 | 407/5531 | 1792/2964 | 569 |
 | 2026-09-19 23:36 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-19 23:44 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:16 | 2751 (10.1%) | 1028 (3.8%) | 492 | 412/5531 | 1799/2964 | 561 |
 | 2026-09-20 01:20 | 2753 (10.1%) | 1031 (3.8%) | 490 | 412/5531 | 1799/2964 | 559 |
 | 2026-09-20 01:27 | 2754 (10.1%) | 1032 (3.8%) | 488 | 412/5531 | 1799/2964 | 557 |
+| 2026-09-20 01:30 | 2754 (10.1%) | 1032 (3.8%) | 487 | 412/5531 | 1799/2964 | 556 |
 
 ## How to move a row
 

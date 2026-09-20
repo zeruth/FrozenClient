@@ -1006,7 +1006,7 @@ addr	how	frozen	evidence
 0052cd30	annotated	Script_IsRealPartyLeader	tag in src/ui/game/PartyInfoScript.cpp
 0052cd90	annotated	Script_GetLootMethod	tag in src/ui/game/PartyInfoScript.cpp
 0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
-0052cf60	table	Script_GetPartyAssignment	binding "GetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
+0052cf60	annotated	Script_GetPartyAssignment	tag in src/ui/game/PartyInfoScript.cpp
 0052d000	table	Script_CanChangePlayerDifficulty	binding "CanChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
 0052d310	annotated	CGPartyInfo::IsPlayerOrMemberOrPet	tag in src/ui/game/CGPartyInfo.cpp
 0052d9c0	table	Script_SilenceMember	binding "SilenceMember" in s_ScriptFunctions ~ table 00acc6d0

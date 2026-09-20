@@ -290,8 +290,71 @@ int32_t Script_ClearPartyAssignment(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0052cf60 with its worker FUN_0052ca00
+// GetPartyAssignment("assignment" [, "raidmember"] [, exactMatch])
+//
+// The two forms return different SHAPES, which is the thing to get right. Named a member, it
+// answers 1 or nil for that one. Named nobody, it returns a VARIABLE-LENGTH LIST of the party
+// indices holding the assignment -- one value per holder, none at all if there are none. A caller
+// expecting a single value would read the first tank and miss the rest.
+//
+// Main tank is member flag 2 and main assist is 4, out of the same flags byte the group list
+// sends per member.
+//
+// PARTIAL: in a raid the reference walks the whole roster through a separate path. Frozen stores
+// flags only for the four party slots -- which in a raid are your own subgroup -- so an assignment
+// held by someone in another subgroup is invisible here.
 int32_t Script_GetPartyAssignment(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: GetPartyAssignment(\"assignment\" [,\"raidmember\"] [,exactMatch])");
+
+        return 0;
+    }
+
+    auto assignment = lua_tostring(L, 1);
+    uint8_t wanted = 0;
+
+    if (!SStrCmpI(assignment, "MAINTANK", STORM_MAX_STR)) {
+        wanted = 2;
+    } else if (!SStrCmpI(assignment, "MAINASSIST", STORM_MAX_STR)) {
+        wanted = 4;
+    } else {
+        luaL_error(L, "GetPartyAssignment(): Invalid party assignment");
+
+        return 0;
+    }
+
+    if (lua_isstring(L, 2)) {
+        auto member = CGPartyInfo::FindByName(lua_tostring(L, 2));
+
+        if (!member) {
+            // The game's own "no such member" error, carrying the name that failed.
+            CGGameUI::DisplayError(0x51, lua_tostring(L, 2));
+
+            return 0;
+        }
+
+        if (CGPartyInfo::GetMemberFlags(member) & wanted) {
+            lua_pushnumber(L, 1.0);
+        } else {
+            lua_pushnil(L);
+        }
+
+        return 1;
+    }
+
+    int32_t found = 0;
+
+    for (uint32_t slot = 1; slot <= 4; slot++) {
+        auto info = CGPartyInfo::GetMemberInfo(slot);
+
+        if (info && (info->flags & wanted)) {
+            found++;
+            lua_pushnumber(L, static_cast<double>(slot));
+        }
+    }
+
+    return found;
 }
 
 int32_t Script_SilenceMember(lua_State* L) {

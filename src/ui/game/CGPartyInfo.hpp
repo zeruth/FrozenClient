@@ -63,6 +63,9 @@ class CGPartyInfo {
 
         static WOWGUID FindByName(const char* name);
 
+        // The group-list flags for a member, by guid. 0 when the guid is not in the party.
+        static uint8_t GetMemberFlags(WOWGUID guid);
+
         // ref: FUN_006d46d0
         static void SendLootSettings(uint32_t method, WOWGUID looter, uint32_t threshold);
 

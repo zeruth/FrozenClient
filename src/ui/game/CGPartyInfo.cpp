@@ -173,6 +173,18 @@ WOWGUID CGPartyInfo::FindByName(const char* name) {
     return CGRaidInfo::FindByName(name);
 }
 
+uint8_t CGPartyInfo::GetMemberFlags(WOWGUID guid) {
+    for (uint32_t slot = 1; slot <= 4; slot++) {
+        auto info = CGPartyInfo::GetMemberInfo(slot);
+
+        if (info && info->guid == guid) {
+            return info->flags;
+        }
+    }
+
+    return 0;
+}
+
 // ref: FUN_006d46d0
 // One message carries all three loot settings, so changing the threshold resends the method and
 // the master looter unchanged. There is no opcode for one of them alone.

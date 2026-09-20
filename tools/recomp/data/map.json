@@ -16114,20 +16114,20 @@
   "status": "stub"
  },
  "0052cf60": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetPartyAssignment",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 519,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 150,
-  "status": "stub"
+  "status": "ported"
  },
  "0052d000": {
   "branchRatio": 0.0,
