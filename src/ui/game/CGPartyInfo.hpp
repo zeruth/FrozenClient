@@ -55,6 +55,10 @@ class CGPartyInfo {
         static WOWGUID GetMasterLooter();
         static uint32_t GetLootThreshold();
 
+        // The group's difficulties, 0-based as the wire sends them. The bindings add one.
+        static uint32_t GetDungeonDifficulty();
+        static uint32_t GetRaidDifficulty();
+
         // ref: FUN_0052c8c0
         // Whether a guid belongs to a party member or to a member's pet. The player is NOT a
         // member for this purpose -- "player" and "pet" are their own tokens.
@@ -77,6 +81,7 @@ class CGPartyInfo {
         static void SetMember(uint32_t slot, const PARTY_MEMBER& member);
         static void SetLeader(WOWGUID leader);
         static void SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold);
+        static void SetDifficulty(uint32_t dungeon, uint32_t raid);
 
         // Private static variables
         static WOWGUID m_members[];
@@ -85,6 +90,8 @@ class CGPartyInfo {
         static uint32_t m_lootMethod;
         static WOWGUID m_masterLooter;
         static uint32_t m_lootThreshold;
+        static uint32_t m_dungeonDifficulty;
+        static uint32_t m_raidDifficulty;
 };
 
 #endif

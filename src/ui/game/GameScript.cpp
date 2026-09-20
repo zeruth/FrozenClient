@@ -1,6 +1,8 @@
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
+#include "ui/game/CGRaidInfo.hpp"
+#include "ui/game/CGPartyInfo.hpp"
 #include "event/Event.hpp"
 #include "event/Input.hpp"
 #include "db/Db.hpp"
@@ -2432,22 +2434,47 @@ int32_t Script_GetInstanceInfo(lua_State* L) {
     return 7;
 }
 
+// ref: FUN_00515790
+// Two returns: the difficulty in force, and the player's own setting.
+//
+// The values are stored 0-based and reported PLUS ONE, which is why a hardcoded 1 looked correct
+// -- it was normal difficulty by accident of the offset.
+//
+// Which one is "in force" is not simply the group's: with no party, or while in a RAID, the
+// player's own setting wins. A raid is on raid difficulty, so its dungeon setting is personal.
 int32_t Script_GetDungeonDifficulty(lua_State* L) {
-    // 1 is normal. There is no difficulty system to change it, so normal is not a default here --
-    // it is the only state this client can be in.
-    lua_pushnumber(L, 1.0);
+    auto inParty = CGPartyInfo::GetMember(1) != 0;
+    auto inRaid = CGRaidInfo::NumMembers() != 0;
 
-    return 1;
+    // TODO the player's own difficulty, which arrives on its own messages
+    // (SMSG_CHANGE_PLAYER_DIFFICULTY_RESULT and the instance-save one the reference's party init
+    // registers). Until those land it stays at normal, which is what the hardcoded value was.
+    uint32_t ownDifficulty = 0;
+
+    auto effective = (inParty && !inRaid) ? CGPartyInfo::GetDungeonDifficulty() : ownDifficulty;
+
+    lua_pushnumber(L, static_cast<double>(effective + 1));
+    lua_pushnumber(L, static_cast<double>(ownDifficulty + 1));
+
+    return 2;
 }
 
 int32_t Script_SetDungeonDifficulty(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00515810
+// The same pair, and the same plus-one. The group's value is used only while actually in a raid.
 int32_t Script_GetRaidDifficulty(lua_State* L) {
-    lua_pushnumber(L, 1.0);
+    auto inRaid = CGRaidInfo::NumMembers() != 0;
 
-    return 1;
+    uint32_t ownDifficulty = 0;
+    auto effective = inRaid ? CGPartyInfo::GetRaidDifficulty() : ownDifficulty;
+
+    lua_pushnumber(L, static_cast<double>(effective + 1));
+    lua_pushnumber(L, static_cast<double>(ownDifficulty + 1));
+
+    return 2;
 }
 
 int32_t Script_SetRaidDifficulty(lua_State* L) {

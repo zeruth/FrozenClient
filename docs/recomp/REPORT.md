@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 00:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 00:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -12,16 +12,16 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | &nbsp;&nbsp;ported | 2204 (=) | 437.8k |
 | &nbsp;&nbsp;stub (unimplemented body) | 495 (=) | 106.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1026 (=) (3.8%)** | **127.2k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1027 (+1) (3.8%)** | **127.3k (2.3%)** |
 | unmapped | 24424 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 165 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11554, stubs 753 | |
+| frozen functions (src/, from PDB + source) | 11557, stubs 753 | |
 
-Match evidence: annotated 664, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 998. Module anchors: 1479 assert strings.
+Match evidence: annotated 666, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 996. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 00:10 -- mapped 2738, ported 2204, stub 495, spine mapped 412.
+Previous run: 2026-09-20 00:17 -- mapped 2738, ported 2204, stub 495, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
@@ -627,7 +627,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
-| 006d8870 | `ReceiveGroupList` | 26% | 77 | 29 | 80 | 9 | 0% | 2482 |
+| 006d8870 | `ReceiveGroupList` | 30% | 77 | 34 | 80 | 9 | 0% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 22:12 | 2724 (10.0%) | 1010 (3.7%) | 509 | 405/5531 | 1792/2964 | 578 |
 | 2026-09-19 22:17 | 2724 (10.0%) | 1010 (3.7%) | 508 | 405/5531 | 1792/2964 | 577 |
 | 2026-09-19 22:22 | 2725 (10.0%) | 1011 (3.7%) | 507 | 406/5531 | 1792/2964 | 576 |
 | 2026-09-19 22:26 | 2725 (10.0%) | 1011 (3.7%) | 506 | 406/5531 | 1792/2964 | 575 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 00:07 | 2736 (10.1%) | 1024 (3.8%) | 496 | 410/5531 | 1792/2964 | 565 |
 | 2026-09-20 00:10 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
 | 2026-09-20 00:17 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
+| 2026-09-20 00:21 | 2738 (10.1%) | 1027 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
 
 ## How to move a row
 

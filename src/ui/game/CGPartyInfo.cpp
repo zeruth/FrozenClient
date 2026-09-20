@@ -20,6 +20,8 @@ WOWGUID CGPartyInfo::m_leader;
 uint32_t CGPartyInfo::m_lootMethod = 3;
 WOWGUID CGPartyInfo::m_masterLooter = 0;
 uint32_t CGPartyInfo::m_lootThreshold = 2;
+uint32_t CGPartyInfo::m_dungeonDifficulty = 0;
+uint32_t CGPartyInfo::m_raidDifficulty = 0;
 
 namespace {
 
@@ -154,6 +156,19 @@ void CGPartyInfo::SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold) {
     CGPartyInfo::m_lootMethod = method;
     CGPartyInfo::m_masterLooter = looter;
     CGPartyInfo::m_lootThreshold = threshold;
+}
+
+uint32_t CGPartyInfo::GetDungeonDifficulty() {
+    return CGPartyInfo::m_dungeonDifficulty;
+}
+
+uint32_t CGPartyInfo::GetRaidDifficulty() {
+    return CGPartyInfo::m_raidDifficulty;
+}
+
+void CGPartyInfo::SetDifficulty(uint32_t dungeon, uint32_t raid) {
+    CGPartyInfo::m_dungeonDifficulty = dungeon;
+    CGPartyInfo::m_raidDifficulty = raid;
 }
 
 void CGPartyInfo::SetLeader(WOWGUID leader) {
@@ -293,9 +308,18 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
 
         CGPartyInfo::SetLoot(lootMethod, masterLooter, lootThreshold);
 
-        // Then the two difficulty bytes and one more, which nothing reads yet.
+        uint8_t dungeonDifficulty = 0;
+        uint8_t raidDifficulty = 0;
+        uint8_t dynamicDifficulty = 0;
+
+        msg->Get(dungeonDifficulty);
+        msg->Get(raidDifficulty);
+        msg->Get(dynamicDifficulty);
+
+        CGPartyInfo::SetDifficulty(dungeonDifficulty, raidDifficulty);
     } else {
         CGPartyInfo::SetLoot(3, 0, 2);
+        CGPartyInfo::SetDifficulty(0, 0);
     }
 
     FrameScript_SignalEvent(SCRIPT_PARTY_MEMBERS_CHANGED, nullptr);
