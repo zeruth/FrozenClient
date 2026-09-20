@@ -150,9 +150,17 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
 
     CGxTexFlags flags = CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
 
+    // GxTex_NonPow2, and it is not optional.
+    //
+    // A movie is whatever size it was encoded at -- these are 1024x464, 1024x436, 800x342 -- and
+    // none of those heights is a power of two. The 2d target asserts on that
+    // (GxTexCreate, Texture.cpp), which the Windows build never surfaced but the Android build
+    // hit immediately: the client asserted and died the moment the movie screen appeared.
     auto texture = TextureCreate(
+        GxTex_NonPow2,
         static_cast<uint32_t>(MovieDecoderWidth(this->m_decoder)),
         static_cast<uint32_t>(MovieDecoderHeight(this->m_decoder)),
+        1,
         GxTex_Argb8888,
         GxTex_Argb8888,
         flags,
