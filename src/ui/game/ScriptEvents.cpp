@@ -2418,8 +2418,46 @@ int32_t Script_UnitInBattleground(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00612f10
+// Whether a group member is close enough to matter -- what greys out a party frame.
+//
+// It is NOT a plain distance test. The unit has to be in your party or raid first, through the
+// same gate UnitIsFeignDeath uses, so a stranger standing next to you is out of range by
+// definition. FrameXML only asks about group members, but the gate is what makes "in range" mean
+// "in range AND mine".
+//
+// The threshold is 40 yards, read from the reference rather than assumed from the spell range, and
+// the distance is three-dimensional: a group member directly above or below is out of range even
+// when the map positions coincide.
 int32_t Script_UnitInRange(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitInRange(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto player = CGPlayer_C::GetActivePtr();
+    auto inRange = false;
+
+    if (unit && player && InPartyOrRaid(unit->GetGUID())) {
+        auto a = unit->GetPosition();
+        auto b = player->GetPosition();
+
+        auto dx = b.x - a.x;
+        auto dy = b.y - a.y;
+        auto dz = b.z - a.z;
+
+        inRange = sqrtf(dx * dx + dy * dy + dz * dz) < 40.0f;
+    }
+
+    if (inRange) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_GetUnitSpeed(lua_State* L) {

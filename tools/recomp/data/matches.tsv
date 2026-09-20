@@ -1600,7 +1600,7 @@ addr	how	frozen	evidence
 00612cb0	annotated	Script_GetExpertisePercent	tag in src/ui/game/ScriptEvents.cpp
 00612d50	table	Script_ReportPlayerIsPVPAFK	binding "ReportPlayerIsPVPAFK" in s_UnitFunctions ~ table 00ad21d8
 00612e20	table	Script_PlayerIsPVPInactive	binding "PlayerIsPVPInactive" in s_UnitFunctions ~ table 00ad21d8
-00612f10	table	Script_UnitInRange	binding "UnitInRange" in s_UnitFunctions ~ table 00ad21d8
+00612f10	annotated	Script_UnitInRange	tag in src/ui/game/ScriptEvents.cpp
 00613020	table	Script_GetRuneCooldown	binding "GetRuneCooldown" in s_UnitFunctions ~ table 00ad21d8
 00613140	table	Script_GetRuneCount	binding "GetRuneCount" in s_UnitFunctions ~ table 00ad21d8
 006131e0	table	Script_GetRuneType	binding "GetRuneType" in s_UnitFunctions ~ table 00ad21d8

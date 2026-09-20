@@ -139545,22 +139545,33 @@
 "src/ui/game/scriptevents.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_isstring",
+"luaL_error",
+"lua_tolstring",
+"Script_GetUnitFromName",
+"CGPlayer_C::GetActivePtr",
+"CGObject::GetGUID",
+"InPartyOrRaid",
+"CGUnit_C::GetPosition",
+"CGUnit_C::GetPosition",
+"sqrtf",
+"lua_pushnumber",
+"lua_pushnil"
 ],
 "strings": [
-"(anonymous namespace)::Script_UnitInRange",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\scriptevents.cpp"
+"Usage: UnitInRange(\"unit\")"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"1.0",
+"40.0f"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 30,
 "refs": [],
-"line": 2421
+"line": 2432
 },
 "Script_GetUnitSpeed": {
 "files": [
@@ -139582,7 +139593,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2425
+"line": 2463
 },
 "Script_GetUnitPitch": {
 "files": [
@@ -139604,7 +139615,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2429
+"line": 2467
 },
 "Script_UnitInVehicle": {
 "files": [
@@ -139631,7 +139642,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2433
+"line": 2471
 },
 "Script_UnitUsingVehicle": {
 "files": [
@@ -139653,7 +139664,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2451
+"line": 2489
 },
 "Script_UnitControllingVehicle": {
 "files": [
@@ -139680,7 +139691,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2455
+"line": 2493
 },
 "Script_UnitInVehicleControlSeat": {
 "files": [
@@ -139702,7 +139713,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2473
+"line": 2511
 },
 "Script_UnitHasVehicleUI": {
 "files": [
@@ -139729,7 +139740,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2477
+"line": 2515
 },
 "Script_UnitTargetsVehicleInRaidUI": {
 "files": [
@@ -139751,7 +139762,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2495
+"line": 2533
 },
 "Script_UnitVehicleSkin": {
 "files": [
@@ -139773,7 +139784,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2499
+"line": 2537
 },
 "Script_UnitVehicleSeatCount": {
 "files": [
@@ -139795,7 +139806,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2503
+"line": 2541
 },
 "Script_UnitVehicleSeatInfo": {
 "files": [
@@ -139817,7 +139828,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2507
+"line": 2545
 },
 "Script_UnitSwitchToVehicleSeat": {
 "files": [
@@ -139839,7 +139850,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2511
+"line": 2549
 },
 "Script_CanSwitchVehicleSeat": {
 "files": [
@@ -139857,7 +139868,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2515
+"line": 2553
 },
 "Script_GetVehicleUIIndicator": {
 "files": [
@@ -139879,7 +139890,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2522
+"line": 2560
 },
 "Script_GetVehicleUIIndicatorSeat": {
 "files": [
@@ -139901,7 +139912,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2526
+"line": 2564
 },
 "Script_UnitThreatSituation": {
 "files": [
@@ -139918,7 +139929,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2530
+"line": 2568
 },
 "Script_UnitDetailedThreatSituation": {
 "files": [
@@ -139940,7 +139951,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2536
+"line": 2574
 },
 "Script_UnitIsControlling": {
 "files": [
@@ -139958,7 +139969,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2540
+"line": 2578
 },
 "Script_EjectPassengerFromSeat": {
 "files": [
@@ -139980,7 +139991,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2547
+"line": 2585
 },
 "Script_CanEjectPassengerFromSeat": {
 "files": [
@@ -139998,7 +140009,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2551
+"line": 2589
 },
 "Script_RespondInstanceLock": {
 "files": [
@@ -140020,7 +140031,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2558
+"line": 2596
 },
 "Script_GetPlayerFacing": {
 "files": [
@@ -140043,7 +140054,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 2562
+"line": 2600
 },
 "Script_GetPlayerInfoByGUID": {
 "files": [
@@ -140065,7 +140076,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2576
+"line": 2614
 },
 "Script_GetItemStats": {
 "files": [
@@ -140087,7 +140098,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2580
+"line": 2618
 },
 "Script_GetItemStatDelta": {
 "files": [
@@ -140109,7 +140120,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2584
+"line": 2622
 },
 "Script_IsXPUserDisabled": {
 "files": [
@@ -140127,7 +140138,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2588
+"line": 2626
 },
 "Script_FillLocalizedClassList": {
 "files": [
@@ -140158,7 +140169,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 2595
+"line": 2633
 },
 "ScriptEventsRegisterFunctions": {
 "files": [
@@ -140174,7 +140185,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2795
+"line": 2833
 },
 "ScriptEventsInitialize": {
 "files": [
@@ -141437,7 +141448,7 @@
 "stub": false,
 "lines": 649,
 "refs": [],
-"line": 2803
+"line": 2841
 },
 "ScriptEventsRegisterEvents": {
 "files": [
@@ -141454,7 +141465,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 3453
+"line": 3491
 },
 "ParseIndex": {
 "files": [
