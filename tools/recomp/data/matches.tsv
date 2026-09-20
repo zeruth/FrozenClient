@@ -1253,6 +1253,7 @@ addr	how	frozen	evidence
 00583f60	annotated	CGMinimapFrame_SetClassBlipTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 005846e0	order	Script_Stub_GetMerchantItemCostInfo	binding table name Script_Stub_GetMerchantItemCostInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00584820	order	Script_Stub_GetMerchantItemCostItem	binding table name Script_Stub_GetMerchantItemCostItem, in definition order in src/ui/game/miscscriptstubs.cpp
+00584ac0	annotated	ItemDurability	tag in src/ui/game/CharacterInfoScript.cpp
 00584e10	order	Script_Stub_GetMerchantItemInfo	binding table name Script_Stub_GetMerchantItemInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00585990	order	Script_GetRepairAllCost	binding table name Script_GetRepairAllCost, in definition order in src/ui/game/MiscScript.cpp
 005865f0	table	Script_GetTradeTargetItemLink	binding "GetTradeTargetItemLink" in s_ScriptFunctions ~ table 00acedb0
@@ -1383,7 +1384,7 @@ addr	how	frozen	evidence
 005e8030	table	Script_GetInspectArenaTeamData	binding "GetInspectArenaTeamData" in s_ScriptFunctions ~ table 00ad1270
 005e95c0	table	Script_GetInventoryItemsForSlot	binding "GetInventoryItemsForSlot" in s_ScriptFunctions ~ table 00ad1270
 005e9bc0	annotated	Script_GetInventoryItemTexture	tag in src/ui/game/CharacterInfoScript.cpp
-005e9d80	table	Script_GetInventoryItemBroken	binding "GetInventoryItemBroken" in s_ScriptFunctions ~ table 00ad1270
+005e9d80	annotated	Script_GetInventoryItemBroken	tag in src/ui/game/CharacterInfoScript.cpp
 005e9e40	annotated	Script_GetInventoryItemCount	tag in src/ui/game/CharacterInfoScript.cpp
 005ea040	annotated	Script_GetInventoryItemQuality	tag in src/ui/game/CharacterInfoScript.cpp
 005ea170	annotated	Script_GetInventoryItemDurability	tag in src/ui/game/CharacterInfoScript.cpp

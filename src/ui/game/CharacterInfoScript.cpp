@@ -1,4 +1,5 @@
 #include "ui/game/CharacterInfoScript.hpp"
+#include <cstddef>
 #include "db/Db.hpp"
 #include "ui/FrameScript.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -124,8 +125,39 @@ int32_t Script_GetInventoryItemTexture(lua_State* L) {
 // own record, and a second durability field at +0xdc that frozen's CGItemData does not carry. Both
 // have to be identified before this can answer anything but nil, and guessing "durability == 0"
 // would call an undamageable item broken.
+// The reference reads these four by absolute offset into CGItemData; the asserts hold frozen's
+// struct to the same layout. enchantments[12] is what puts durability as far along as 0xd8.
+static_assert(offsetof(CGItemData, flags) == 0x3c, "CGItemData layout");
+static_assert(offsetof(CGItemData, durability) == 0xd8, "CGItemData layout");
+static_assert(offsetof(CGItemData, maxDurability) == 0xdc, "CGItemData layout");
+
+// ref: FUN_00584ac0
+// Current durability, except that an item whose flags carry bit 3 reports none at all.
+static int32_t ItemDurability(const CGItemData* data) {
+    if (data->flags & 0x8) {
+        return 0;
+    }
+
+    return data->durability;
+}
+
+// ref: FUN_005e9d80
+// Broken means: the item can have durability at all, it has a maximum, and it is at zero.
+//
+// The bit-3 test appears twice -- once here and once inside ItemDurability -- which is redundant
+// but is how the reference is built, so it is kept rather than folded. Without the maxDurability
+// test every item that cannot wear out would read as broken.
 int32_t Script_GetInventoryItemBroken(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+    auto data = item ? item->Item() : nullptr;
+
+    if (data && !(data->flags & 0x8) && data->maxDurability && !ItemDurability(data)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 // ref: FUN_005e9e40

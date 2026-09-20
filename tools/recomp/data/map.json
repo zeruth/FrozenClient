@@ -19975,6 +19975,22 @@
   "refSize": 453,
   "status": "ported"
  },
+ "00584ac0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CharacterInfoScript.cpp",
+   "src/ui/game/characterinfoscript.cpp"
+  ],
+  "frozen": "ItemDurability",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MerchantFrame.cpp",
+  "refSize": 24,
+  "status": "ported"
+ },
  "00584e10": {
   "branchRatio": 0.05,
   "constOverlap": 0.0,
@@ -22022,17 +22038,17 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_GetInventoryItemBroken",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 117,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 177,
-  "status": "stub"
+  "status": "ported"
  },
  "005e9e40": {
   "branchRatio": 0.176,
