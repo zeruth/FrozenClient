@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 20:19 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 20:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -12,16 +12,16 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | &nbsp;&nbsp;ported | 2135 (=) | 421.2k |
 | &nbsp;&nbsp;stub (unimplemented body) | 527 (=) | 113.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1002 (=) (3.7%)** | **124.4k (2.2%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **991 (-11) (3.6%)** | **122.4k (2.2%)** |
 | unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11492, stubs 787 | |
+| frozen functions (src/, from PDB + source) | 11494, stubs 787 | |
 
 Match evidence: annotated 600, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 20:14 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
+Previous run: 2026-09-19 20:19 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
@@ -541,6 +541,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0061eb40 | `CGTooltip_SetOwner` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 0061d650 | `CGTooltip_GetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | <unknown>; Grunt; My public address is %s; My realm ID is %d |
+| 0060abf0 | `Script_GetTokenFromGUID` | arena; arenapet; commentator; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
 | 00515200 | `Script_GetCursorInfo` | CRITTER; MOUNT; UNKNOWN; companion |
 | 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
@@ -563,7 +564,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
-| 00860f10 | `forlist` | '%s' expected; function at line %d has more than %d %s; local variables; main function has more than %d %s |
 
 ## Largest frozen functions with no reference link
 
@@ -647,7 +647,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0096fed0 | `CSimpleButton::LoadXML` | 72% | 46 | 49 | 34 | 23 | 0% | 1174 |
 | 00497070 | `CSimpleFont::LoadXML` | 92% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
-| 0060abf0 | `Script_GetGUIDFromToken` | 71% | 42 | 37 | 34 | 27 | 20% | 1121 |
+| 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 71% | 42 | 46 | 35 | 24 | 19% | 1104 |
 | 0040a270 | `Paint` | 52% | 27 | 35 | 19 | 12 | 0% | 1055 |
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 19% | 59 | 81 | 14 | 34 | 0% | 1016 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 17:50 | 2698 (9.9%) | 986 (3.6%) | 535 | 393/5530 | 1791/2964 | 594 |
 | 2026-09-19 18:21 | 2698 (9.9%) | 986 (3.6%) | 535 | 393/5530 | 1791/2964 | 594 |
 | 2026-09-19 18:25 | 2698 (9.9%) | 986 (3.6%) | 530 | 393/5530 | 1791/2964 | 589 |
 | 2026-09-19 18:29 | 2698 (9.9%) | 986 (3.6%) | 530 | 393/5530 | 1791/2964 | 589 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 20:10 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:14 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:19 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
+| 2026-09-19 20:25 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 

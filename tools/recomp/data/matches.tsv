@@ -795,7 +795,7 @@ addr	how	frozen	evidence
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
-00512a00	callgraph	CGGameUI::IsRaidMember	only unmatched callee of 0060c4b0=Script_UnitIsPlayer
+00512a00	callgraph	CGGameUI::GetLockedTarget	only unmatched callee of 0060aaa0=ParseTrailingTokens
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
 00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 005144c0	table	Script_IsLeftShiftKeyDown	binding "IsLeftShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
@@ -1430,7 +1430,7 @@ addr	how	frozen	evidence
 0060a510	table	Script_FillLocalizedClassList	binding "FillLocalizedClassList" in s_UnitFunctions ~ table 00ad21d8
 0060a630	annotated	Script_GetGUIDFromString	tag in src/ui/game/ScriptUtil.cpp
 0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
-0060abf0	annotated	Script_GetGUIDFromToken	tag in src/ui/game/ScriptUtil.cpp
+0060abf0	annotated	Script_GetTokenFromGUID	tag in src/ui/game/ScriptUtil.cpp
 0060c1c0	override	TooltipThis	
 0060c2a0	table	Script_UnitExists	binding "UnitExists" in s_UnitFunctions ~ table 00ad21d8
 0060c350	table	Script_UnitIsVisible	binding "UnitIsVisible" in s_UnitFunctions ~ table 00ad21d8

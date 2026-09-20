@@ -11,4 +11,8 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid);
 
 bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTarget);
 
+// The inverse: the token FrameXML would know this unit by, or null. Walks the candidates and asks
+// the function above, so the two cannot disagree about what a token means.
+const char* Script_GetTokenFromGUID(WOWGUID guid);
+
 #endif

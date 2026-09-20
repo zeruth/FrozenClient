@@ -185,43 +185,10 @@ void MirrorNoteChange(WOWGUID guid, uint32_t block) {
 
 namespace {
 
-// The token FrameXML knows this unit by, or null when it has none. The reference resolves the whole
-// set -- pet, focus, party1-4, raid1-40 -- from rosters frozen does not keep yet, so this answers
-// for the two that the player and target frames need. A unit with no token is not skipped for being
-// unimportant; it is skipped because there is no name to hand the event.
-// The token FrameXML knows this unit by, or null when it has none.
-//
-// Asked of Script_GetGUIDFromToken rather than answered here. An earlier version of this function
-// compared against the fields it thought each token meant, and got "target" wrong -- it read the
-// target field on the player's descriptor where every binding reads CGGameUI::GetLockedTarget(),
-// which is not the same thing and would have fired events naming a unit the target frame was not
-// showing.
-//
-// So the rule lives in one place. The cost is a walk over the candidate tokens per changed unit;
-// the benefit is that this cannot drift from the resolver, and gains whatever tokens the resolver
-// gains. The list is ordered cheapest and likeliest first.
+// The token FrameXML knows this unit by. Script_GetTokenFromGUID is the one implementation, next
+// to the resolver it is the inverse of.
 const char* UnitToken(const CGUnit_C* unit) {
-    static const char* const TOKENS[] = {
-        "player", "target", "pet", "focus",
-        "party1", "party2", "party3", "party4",
-        "partypet1", "partypet2", "partypet3", "partypet4",
-    };
-
-    auto wanted = unit->GetGUID();
-
-    if (!wanted) {
-        return nullptr;
-    }
-
-    for (auto token : TOKENS) {
-        WOWGUID guid = 0;
-
-        if (Script_GetGUIDFromToken(token, guid, false) && guid == wanted) {
-            return token;
-        }
-    }
-
-    return nullptr;
+    return Script_GetTokenFromGUID(unit->GetGUID());
 }
 
 // Whether any block in [first, first + count) changed for this guid.

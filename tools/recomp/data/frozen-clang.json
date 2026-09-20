@@ -81337,7 +81337,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 15
+"line": 18
 },
 "Passes": {
 "files": [
@@ -81350,7 +81350,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 32
+"line": 35
 },
 "ReadAura": {
 "files": [
@@ -81384,7 +81384,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 47
+"line": 50
 },
 "AuraCacheGet": {
 "files": [
@@ -81406,7 +81406,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 105
+"line": 108
 },
 "AuraCacheCount": {
 "files": [
@@ -81428,7 +81428,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 129
+"line": 132
 },
 "AuraCacheClear": {
 "files": [
@@ -81443,7 +81443,25 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 147
+"line": 150
+},
+"SignalAuraChange": {
+"files": [
+"src/object/client/auracache.cpp"
+],
+"callseq": [
+"Script_GetTokenFromGUID",
+"FrameScript_SignalEvent"
+],
+"strings": [
+"%s"
+],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 161
 },
 "ReceiveAuraUpdate": {
 "files": [
@@ -81452,7 +81470,8 @@
 "callseq": [
 "GetPackedGuid",
 "OsGetAsyncTimeMs",
-"ReadAura"
+"ReadAura",
+"SignalAuraChange"
 ],
 "strings": [],
 "consts": [
@@ -81460,9 +81479,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11,
+"lines": 13,
 "refs": [],
-"line": 152
+"line": 169
 },
 "ReceiveAuraUpdateAll": {
 "files": [
@@ -81474,7 +81493,8 @@
 "OsGetAsyncTimeMs",
 "CDataStore::Tell",
 "CDataStore::Size",
-"ReadAura"
+"ReadAura",
+"SignalAuraChange"
 ],
 "strings": [],
 "consts": [
@@ -81482,9 +81502,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 21,
+"lines": 23,
 "refs": [],
-"line": 166
+"line": 185
 },
 "AuraCacheRegisterHandlers": {
 "files": [
@@ -81500,7 +81520,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 188
+"line": 209
 },
 "Remaining": {
 "files": [
@@ -85366,30 +85386,15 @@
 ],
 "callseq": [
 "CGObject::GetGUID",
-"Script_GetGUIDFromToken"
+"Script_GetTokenFromGUID"
 ],
-"strings": [
-"focus",
-"party1",
-"party2",
-"party3",
-"party4",
-"partypet1",
-"partypet2",
-"partypet3",
-"partypet4",
-"pet",
-"player",
-"target"
-],
-"consts": [
-"0"
-],
-"branches": 3,
+"strings": [],
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 23,
+"lines": 3,
 "refs": [],
-"line": 203
+"line": 190
 },
 "BlockRangeChanged": {
 "files": [
@@ -85404,7 +85409,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 228
+"line": 195
 },
 "SignalUnitFieldEvents": {
 "files": [
@@ -85461,7 +85466,7 @@
 "stub": false,
 "lines": 124,
 "refs": [],
-"line": 241
+"line": 208
 },
 "SignalPlayerFieldEvents": {
 "files": [
@@ -85491,7 +85496,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 368
+"line": 335
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85524,7 +85529,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 405
+"line": 372
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85552,7 +85557,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 456
+"line": 423
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85574,7 +85579,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 499
+"line": 466
 },
 "QueryPlayerName": {
 "files": [
@@ -140159,6 +140164,36 @@
 "refs": [],
 "line": 89
 },
+"Script_GetTokenFromGUID": {
+"files": [
+"src/ui/game/scriptutil.cpp"
+],
+"callseq": [
+"Script_GetGUIDFromToken"
+],
+"strings": [
+"focus",
+"party1",
+"party2",
+"party3",
+"party4",
+"partypet1",
+"partypet2",
+"partypet3",
+"partypet4",
+"pet",
+"player",
+"target"
+],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 24,
+"refs": [],
+"line": 144
+},
 "Script_GetGUIDFromToken": {
 "files": [
 "src/ui/game/scriptutil.cpp"
@@ -140239,7 +140274,7 @@
 "stub": false,
 "lines": 175,
 "refs": [],
-"line": 144
+"line": 170
 },
 "Script_CloseTrade": {
 "files": [

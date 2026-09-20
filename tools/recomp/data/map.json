@@ -12726,8 +12726,8 @@
    "src/ui/game/CGGameUI.cpp",
    "src/ui/game/cggameui.cpp"
   ],
-  "frozen": "CGGameUI::IsRaidMember",
-  "frozenSize": 3,
+  "frozen": "CGGameUI::GetLockedTarget",
+  "frozenSize": 8,
   "how": "callgraph",
   "module": "ChatFrame.cpp",
   "refSize": 44,
@@ -22766,16 +22766,16 @@
   "status": "ported"
  },
  "0060abf0": {
-  "branchRatio": 0.794,
-  "constOverlap": 0.2,
+  "branchRatio": 0.088,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.714,
   "files": [
    "src/ui/game/ScriptUtil.cpp",
    "src/ui/game/scriptutil.cpp"
   ],
-  "frozen": "Script_GetGUIDFromToken",
-  "frozenSize": 1189,
+  "frozen": "Script_GetTokenFromGUID",
+  "frozenSize": 118,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 1121,
@@ -22801,7 +22801,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22817,7 +22817,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22848,8 +22848,8 @@
  "0060c4b0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.833,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22881,7 +22881,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22896,8 +22896,8 @@
  "0060c770": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.8,
+  "faithful": false,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22928,8 +22928,8 @@
  "0060c8a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.8,
+  "faithful": false,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22944,8 +22944,8 @@
  "0060c920": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.8,
+  "faithful": false,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -22976,8 +22976,8 @@
  "0060ca20": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.8,
+  "faithful": false,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23025,7 +23025,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23041,7 +23041,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23057,7 +23057,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.875,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23073,7 +23073,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.875,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23169,7 +23169,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.562,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23233,7 +23233,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23281,7 +23281,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23296,8 +23296,8 @@
  "0060da00": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.889,
+  "faithful": false,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23665,7 +23665,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.625,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23696,8 +23696,8 @@
  "0060e9a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23745,7 +23745,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23760,8 +23760,8 @@
  "0060ec60": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23777,7 +23777,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.588,
+  "fidelity": 0.529,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23793,7 +23793,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.643,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23809,7 +23809,7 @@
   "branchRatio": 0.462,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.409,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23857,7 +23857,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.778,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23872,8 +23872,8 @@
  "0060f580": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.889,
+  "faithful": false,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23889,7 +23889,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.778,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23904,8 +23904,8 @@
  "0060f790": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.889,
+  "faithful": false,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23953,7 +23953,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.562,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24992,8 +24992,8 @@
  "006133d0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -25025,7 +25025,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27704,13 +27704,13 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/object/client/AuraCache.cpp",
    "src/object/client/auracache.cpp"
   ],
   "frozen": "ReceiveAuraUpdate",
-  "frozenSize": 65,
+  "frozenSize": 98,
   "how": "handler",
   "module": "Unit_C.cpp",
   "refSize": 94,

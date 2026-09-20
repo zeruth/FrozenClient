@@ -1,4 +1,7 @@
 #include "object/client/AuraCache.hpp"
+#include "ui/game/Types.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "client/ClientServices.hpp"
 #include <common/Time.hpp>
 #include <common/DataStore.hpp>
@@ -149,6 +152,20 @@ void AuraCacheClear() {
 }
 
 // SMSG_AURA_UPDATE: one unit, one slot.
+// UNIT_AURA, once per packet rather than once per aura: a full update rewrites every slot, and
+// FrameXML rebuilds the whole buff row from one event anyway.
+//
+// This is the event the descriptors cannot carry. CGUnitData::auraState looks like the source and
+// is not -- it is a bitfield of aura *categories* for spell requirements, not the aura list -- so
+// the mirror deliberately leaves UNIT_AURA alone and it belongs here, where the auras arrive.
+static void SignalAuraChange(WOWGUID target) {
+    auto token = Script_GetTokenFromGUID(target);
+
+    if (token) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_AURA, "%s", token);
+    }
+}
+
 int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     if (!msg) {
         return 1;
@@ -157,6 +174,8 @@ int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataSto
     WOWGUID target = GetPackedGuid(msg);
 
     ReadAura(msg, target, static_cast<uint32_t>(OsGetAsyncTimeMs()));
+
+    SignalAuraChange(target);
 
     return 1;
 }
@@ -181,6 +200,8 @@ int32_t ReceiveAuraUpdateAll(void* param, NETMESSAGE msgId, uint32_t time, CData
             break;
         }
     }
+
+    SignalAuraChange(target);
 
     return 1;
 }

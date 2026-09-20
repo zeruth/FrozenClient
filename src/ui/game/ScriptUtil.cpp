@@ -141,6 +141,32 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
 }
 
 // ref: FUN_0060abf0
+const char* Script_GetTokenFromGUID(WOWGUID guid) {
+    // Ordered cheapest and likeliest first. Asking the resolver rather than comparing fields is
+    // deliberate: an earlier copy of this logic in the object mirror read the player descriptor's
+    // target field where the resolver reads CGGameUI::GetLockedTarget(), and named the wrong unit.
+    static const char* const TOKENS[] = {
+        "player", "target", "pet", "focus",
+        "party1", "party2", "party3", "party4",
+        "partypet1", "partypet2", "partypet3", "partypet4",
+    };
+
+    if (!guid) {
+        return nullptr;
+    }
+
+    for (auto token : TOKENS) {
+        WOWGUID resolved = 0;
+
+        if (Script_GetGUIDFromToken(token, resolved, false) && resolved == guid) {
+            return token;
+        }
+    }
+
+    return nullptr;
+}
+
+
 bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTarget) {
     auto activePlayer = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
 

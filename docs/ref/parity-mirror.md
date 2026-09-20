@@ -131,10 +131,10 @@ records the blocks whose value actually changed; the second pass turns those int
 
 Not signalled, and each for a stated reason:
 
-* `UNIT_AURA` -- auras do not live in the descriptors. `CGUnitData::auraState` is a bitfield of
-  *categories* for spell requirements, not the aura list, which arrives in its own packet and is
-  already parsed into the aura cache. Wiring `auraState` to `UNIT_AURA` would fire on the wrong
-  thing at the wrong times.
+* `UNIT_AURA` -- **signalled, but not from here.** Auras do not live in the descriptors:
+  `CGUnitData::auraState` is a bitfield of *categories* for spell requirements, not the aura list.
+  The list arrives in its own packet, so the event is raised in `AuraCache.cpp` where it lands,
+  once per packet rather than once per aura.
 * Every other field -- there is no watcher registry, so each one is a hand-written case. The six
   plus three above are the ones the player and target frames read on the first frame in the world.
 
