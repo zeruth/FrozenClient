@@ -424,7 +424,21 @@ is named yet:
 
 Worse, the `owner` that `007ae7b0` and friends are called *on* does not appear in the decompiled
 callers at all: Ghidra shows those calls with one argument because `this` arrives in ECX and was
-lost. Finding what supplies it is the next step, and `callers.sh 007ae7b0` is the way to it.
+lost.
+
+`callers.sh` narrows it (run 2026-09-20). `FUN_007ae7b0` has 13 call sites and `FUN_007aea80` has
+about 24, and **every one lies between `0077f`.. and `007c2`..** -- one module, the map. Two of
+them are worth opening first because they call straight through with no preamble at all, so the
+`this` they pass is whatever their own caller handed them and the wrapper will name the type:
+
+```
+FUN_007a6b60 -> FUN_007aea80 at +0x0a
+FUN_007a6d70 -> FUN_007aea80 at +0x0c
+```
+
+The shape the arrays imply is a map with a per-tile grid: `+0x1f8` an array of pointers indexed by
+tile, `+0x130` a parallel array of 0x20-byte records on the same index, `+0x1e0` a "has data at
+all" guard. That is consistent with `CMap`, but it is a reading of the arrays and not yet a fact.
 
 Until those are named this cannot be written honestly -- a port built on guessed offsets would be
 exactly the kind of "looks right" code the recomp cycle exists to stop.

@@ -43,7 +43,9 @@
 #include "db/rec/FactionGroupRec.hpp"
 #include "db/rec/FactionTemplateRec.hpp"
 #include "db/rec/GameTipsRec.hpp"
+#include "db/rec/ItemClassRec.hpp"
 #include "db/rec/ItemDisplayInfoRec.hpp"
+#include "db/rec/ItemSubClassRec.hpp"
 #include "db/rec/ItemRec.hpp"
 #include "db/rec/ItemVisualsRec.hpp"
 #include "db/rec/LoadingScreensRec.hpp"
@@ -97,7 +99,9 @@ extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;
 extern WowClientDB<FactionTemplateRec> g_factionTemplateDB;
 extern WowClientDB<GameTipsRec> g_gameTipsDB;
+extern WowClientDB<ItemClassRec> g_itemClassDB;
 extern WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
+extern WowClientDB<ItemSubClassRec> g_itemSubClassDB;
 extern WowClientDB<ItemRec> g_itemDB;
 extern WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 extern WowClientDB<LoadingScreensRec> g_loadingScreensDB;

@@ -1999,6 +1999,31 @@ static int32_t ItemEntryFromLink(const char* text) {
     return entry;
 }
 
+// The top-level category name for an item class ("Weapon", "Armor", "Consumable").
+//
+// Keyed on the table's ID rather than on its classID column, which is a coarser grouping: they
+// agree for the first eleven rows and then stop, and a quiver (class 11) would come back
+// "Projectile" if the other column were used.
+static const char* ItemClassName(int32_t itemClass) {
+    auto rec = g_itemClassDB.GetRecord(itemClass);
+
+    return rec && rec->m_name ? rec->m_name : "";
+}
+
+// The subtype name ("Cloth", "Sword", "Potion"). ItemSubClass.dbc has no id column -- a row is
+// identified by the (class, subclass) pair -- so this scans. The shipped table is 119 rows.
+static const char* ItemSubClassName(int32_t itemClass, int32_t subClass) {
+    for (int32_t i = 0; i < g_itemSubClassDB.GetNumRecords(); i++) {
+        auto rec = g_itemSubClassDB.GetRecordByIndex(i);
+
+        if (rec && rec->m_classID == itemClass && rec->m_subClassID == subClass) {
+            return rec->m_displayName ? rec->m_displayName : "";
+        }
+    }
+
+    return "";
+}
+
 // ref: FUN_00516c60
 // Ten values. The argument is an item id, an item link, or a name.
 int32_t Script_GetItemInfo(lua_State* L) {
@@ -2036,11 +2061,8 @@ int32_t Script_GetItemInfo(lua_State* L) {
     lua_pushnumber(L, static_cast<double>(info->itemLevel));
     lua_pushnumber(L, static_cast<double>(info->requiredLevel));
 
-    // TODO itemType and itemSubType come from ItemClass.dbc and ItemSubClass.dbc, neither of which
-    // frozen reads. Empty strings are not a placeholder here: the reference pushes exactly that
-    // when the row is missing, so this is the same answer it would give for an unknown class.
-    lua_pushstring(L, "");
-    lua_pushstring(L, "");
+    lua_pushstring(L, ItemClassName(info->itemClass));
+    lua_pushstring(L, ItemSubClassName(info->itemClass, info->subClass));
 
     // The stack size is "stackable", not "maxCount" -- the record's next field along.
     lua_pushnumber(L, static_cast<double>(info->stackable));
