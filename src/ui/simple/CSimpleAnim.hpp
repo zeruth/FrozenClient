@@ -2,6 +2,7 @@
 #define UI_SIMPLE_C_SIMPLE_ANIM_HPP
 
 #include "ui/CScriptObject.hpp"
+#include "ui/simple/CSimpleAnimGroup.hpp"
 #include <cstdint>
 
 class CSimpleAnimGroup;
@@ -58,12 +59,27 @@ class CSimpleAnim : public CScriptObject {
         // dividing each frame. Zero when the rate is zero, meaning uncapped.
         float m_maxFramerateInterval = 0.0f;
 
-        // Advanced by the driver, which is not written yet (stage 4 in
-        // docs/ref/parity-animations.md). Until then these stay at zero and every animation reads
-        // as sitting at its start.
+        // Driver state. m_progress is the fraction THROUGH THE DURATION, with the start delay
+        // already subtracted and the result clamped to [0, 1]; m_progressWithDelay is the fraction
+        // through startDelay + duration + endDelay, which is what IsDone tests. They differ
+        // whenever either delay is non-zero.
         float m_elapsed = 0.0f;
         float m_progress = 0.0f;
         float m_progressWithDelay = 0.0f;
+
+        // What was last handed to OnApply: the progress put through the smoothing curve, and
+        // mirrored when the group is running this animation backwards.
+        float m_appliedAmount = 0.0f;
+
+        // maxFramerate does NOT slow the animation down. Elapsed advances every frame regardless;
+        // this accumulator gates how often m_progress is RE-SAMPLED, so a capped animation moves
+        // in visible steps while still finishing on time.
+        float m_framerateAccum = 0.0f;
+
+        // NONE unless the group is looping and told this animation which way it is going. A
+        // REVERSE animation subtracts the END delay rather than the start one, and applies
+        // 1 - progress.
+        ANIM_LOOPSTATE m_loopState = ANIM_LOOPSTATE_NONE;
 
         // The reference does not store this: it derives it from m_progress through the smoothing
         // curve, and SetSmoothProgress drives the animation to the matching point. Frozen keeps it
@@ -110,6 +126,20 @@ class CSimpleAnim : public CScriptObject {
         void Pause();
         void Stop();
         void Finish();
+
+        // ref: FUN_004985f0
+        // Advance by step and recompute the progresses. Returns the time actually CONSUMED, which
+        // is less than step on the frame the animation ends -- the group carries the remainder
+        // into the next order rather than dropping it.
+        float Advance(float step);
+
+        // ref: FUN_00498d50
+        // One tick. Returns whether this animation is finished, and writes the time it consumed.
+        bool OnUpdate(float step, float& used);
+
+        // Applied amount for this frame. Empty until stage 4b writes the region side; overridden
+        // by the subclasses there, which is why it is virtual now rather than later.
+        virtual void OnApply(float amount) {}
 
         bool IsDone() const;
         bool IsDelaying() const;

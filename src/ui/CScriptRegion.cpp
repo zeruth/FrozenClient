@@ -128,16 +128,28 @@ void CScriptRegion::LoadXML_Animations(const XMLNode* node, CStatus* status) {
     }
 }
 
+// Frozen ticks every region unconditionally, so there is nothing to switch on here yet. The
+// reference uses this pair to add and remove the region from an active list; that becomes worth
+// porting when the per-frame cost matters, and is noted rather than faked.
 void CScriptRegion::NotifyAnimBegin(CSimpleAnimGroup* animGroup) {
-    // TODO stage 4: this is how a region learns it must start being updated every frame.
+    // TODO stage 4b: join the reference's active-region list.
 }
 
 void CScriptRegion::NotifyAnimEnd(CSimpleAnimGroup* animGroup) {
     // TODO
 }
 
+// Stage 4a of docs/ref/parity-animations.md. The call site already existed --
+// CSimpleFrame::OnLayerUpdate has always run this every frame on the frame and each of its
+// regions -- it was simply empty, so nothing an animation did ever advanced.
+//
+// Iterating a copy of the index rather than caching Count(): a handler fired from inside a tick
+// can call CreateAnimationGroup or StopAnimating on this very region, and the array can move
+// underneath the loop.
 void CScriptRegion::OnLayerUpdate(float elapsedSec) {
-    // TODO
+    for (uint32_t i = 0; i < this->m_animGroups.Count(); i++) {
+        this->m_animGroups[i]->OnUpdate(elapsedSec);
+    }
 }
 
 bool CScriptRegion::ProtectedFunctionsAllowed() {

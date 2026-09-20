@@ -169,6 +169,16 @@ void CSimpleAnim::Stop() {
     this->m_elapsed = 0.0f;
     this->m_progress = 0.0f;
     this->m_progressWithDelay = 0.0f;
+    this->m_framerateAccum = 0.0f;
+    this->m_appliedAmount = 0.0f;
+    this->m_loopState = ANIM_LOOPSTATE_NONE;
+
+    // ref: the tail of FUN_0049adc0, which reports back to the group. The group ends itself once
+    // this was the last animation still going -- and ignores the call while it is already tearing
+    // down, which is what stops Group::Stop from recursing through every animation it stops.
+    if (this->m_group) {
+        this->m_group->OnAnimationFinished(this);
+    }
 }
 
 // Jump to the end. With no driver the visible effect is only the state change; stage 4 is what
@@ -179,6 +189,127 @@ void CSimpleAnim::Finish() {
     this->m_progress = 1.0f;
     this->m_progressWithDelay = 1.0f;
     this->m_elapsed = this->m_duration;
+}
+
+// ref: FUN_004985f0
+// The timing, written out because almost none of it is guessable from the outside.
+//
+// Elapsed always advances. The maxFramerate cap gates only the RE-SAMPLING of m_progress, so a
+// capped animation still ends exactly on time and merely moves in visible steps.
+//
+// The start delay is subtracted from elapsed before dividing by duration, which makes progress
+// negative during the delay -- clamped to 0 -- while progressWithDelay climbs from the first
+// frame. Running backwards, the END delay is the one subtracted.
+//
+// The return value is the time CONSUMED, not the time offered. On the frame an animation ends it
+// consumes only as much as it needed, and the group carries the rest into the next order.
+float CSimpleAnim::Advance(float step) {
+    float previous = this->m_elapsed;
+
+    this->m_elapsed += step;
+
+    float total = this->m_startDelay + this->m_duration + this->m_endDelay;
+    float consumedUpTo;
+
+    if (this->m_elapsed <= total) {
+        consumedUpTo = this->m_elapsed;
+
+        this->m_progressWithDelay = total > 0.0f ? this->m_elapsed / total : 1.0f;
+
+        if (this->m_progressWithDelay > 1.0f) {
+            this->m_progressWithDelay = 1.0f;
+        }
+
+        // A duration of effectively zero is complete the moment it starts; dividing by it would
+        // be the obvious bug here. The threshold is the reference's _DAT_009ea27c, which is two
+        // float epsilons -- deliberately tiny, so a genuinely short animation still runs.
+        float magnitude = this->m_duration < 0.0f ? -this->m_duration : this->m_duration;
+
+        if (magnitude >= 2.384185791015625e-07f) {
+            this->m_framerateAccum += step;
+
+            if (this->m_framerateAccum >= this->m_maxFramerateInterval) {
+                float delay = this->m_loopState == ANIM_LOOPSTATE_REVERSE
+                    ? this->m_endDelay
+                    : this->m_startDelay;
+
+                float progress = (this->m_elapsed - delay) / this->m_duration;
+
+                if (progress < 0.0f) {
+                    progress = 0.0f;
+                } else if (progress > 1.0f) {
+                    progress = 1.0f;
+                }
+
+                this->m_progress = progress;
+                this->m_framerateAccum = 0.0f;
+            }
+        } else {
+            this->m_progress = 1.0f;
+        }
+    } else {
+        consumedUpTo = total;
+
+        this->m_progressWithDelay = 1.0f;
+        this->m_progress = 1.0f;
+    }
+
+    float amount = this->m_loopState == ANIM_LOOPSTATE_REVERSE
+        ? 1.0f - this->m_progress
+        : this->m_progress;
+
+    // TODO the smoothing curve. The reference holds a curve object and calls a virtual on it here;
+    // frozen holds the enum instead and has nowhere to evaluate it yet, so NONE is what every
+    // animation effectively gets. Wrong for IN / OUT / IN_OUT, and the shape of the fix is a
+    // function of m_smoothing applied to amount right here.
+    this->m_appliedAmount = amount;
+
+    return consumedUpTo - previous;
+}
+
+// ref: FUN_00498d50
+// Returns whether this animation is finished. A stopped animation, or one already past the end,
+// reports finished without doing anything -- that is how the group notices an order is complete.
+bool CSimpleAnim::OnUpdate(float step, float& used) {
+    used = 0.0f;
+
+    if (this->m_progressWithDelay >= 1.0f) {
+        this->OnApply(this->m_appliedAmount);
+
+        return true;
+    }
+
+    if (!this->m_playing) {
+        return true;
+    }
+
+    if (this->m_paused) {
+        this->OnApply(this->m_appliedAmount);
+
+        return false;
+    }
+
+    used = this->Advance(step);
+
+    if (this->m_onUpdate.luaRef) {
+        auto L = FrameScript_GetContext();
+        lua_pushnumber(L, step);
+        this->RunScript(this->m_onUpdate, 1, nullptr);
+    }
+
+    this->OnApply(this->m_appliedAmount);
+
+    if (this->m_progressWithDelay >= 1.0f) {
+        // The animation's OnFinished takes no argument. Only the group's is told whether the
+        // finish was requested -- see GetScriptByName above.
+        if (this->m_onFinished.luaRef) {
+            this->RunScript(this->m_onFinished, 0, nullptr);
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 // ref: FUN_004a5000

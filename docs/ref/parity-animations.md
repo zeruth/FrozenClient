@@ -218,9 +218,21 @@ Each stage should end in a committable increment; none of it should go in blind 
 4. **The driver.** Split in two after surveying it on 2026-09-20; the halves have very different
    risk and only the second touches rendering.
 
-   **4a -- timing and callbacks.** Advance, ordering, delays, smoothing, looping, and firing
-   `OnPlay`/`OnUpdate`/`OnFinished`/`OnLoop`. Pure state plus Lua calls, no rendering. This alone
-   fixes FrameXML logic that waits on `OnFinished` to advance a sequence, which today never fires.
+   **4a -- timing and callbacks. DONE, unverified** -- landed 2026-09-20. `CSimpleAnim::Advance`
+   and `OnUpdate`, `CSimpleAnimGroup::OnUpdate`, `AdvanceOrder`, `OnAnimationFinished` and
+   `ShouldStopStepping`, driven from `CScriptRegion::OnLayerUpdate` -- a call site that already ran
+   every frame and was simply empty. Groups advance, orders sequence, REPEAT and BOUNCE loop, and
+   `OnPlay`/`OnUpdate`/`OnFinished`/`OnStop`/`OnLoop` all fire.
+
+   **`ShouldStopStepping` is not optional.** The tick loops so that leftover time carries into the
+   next order, and without that guard a looping group whose animations have zero duration finishes
+   every pass, consumes nothing, and comes straight back round -- a hang, not a glitch. The
+   reference's first test in `FUN_00497920` is exactly that case.
+
+   **Still open in 4a:** the smoothing curve. The reference holds a curve object and calls a
+   virtual on it inside `Advance`; frozen holds the enum and has nowhere to evaluate it, so every
+   animation currently behaves as NONE. Wrong for IN, OUT and IN_OUT, and the fix is a function of
+   `m_smoothing` applied at the one marked line.
 
    **4b -- application to the region.** The `AddAnim*` family and whatever consumes the
    accumulated transform. This is render-surface work and the part that must be seen on screen.

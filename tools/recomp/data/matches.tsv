@@ -297,19 +297,25 @@ addr	how	frozen	evidence
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 00497500	annotated	CSimpleAnim::GetScriptByName	tag in src/ui/simple/CSimpleAnim.cpp
 00497800	annotated	CSimpleAnimGroup::GetScriptByName	tag in src/ui/simple/CSimpleAnimGroup.cpp
+00497920	annotated	CSimpleAnimGroup::ShouldStopStepping	tag in src/ui/simple/CSimpleAnimGroup.cpp
 00497c30	annotated	AnimLoadXML_Scripts	tag in src/ui/simple/CSimpleAnim.cpp
 00497fe0	annotated	CSimpleAnim::GetRegionParent	tag in src/ui/simple/CSimpleAnim.cpp
 004980d0	override	CSimpleScaleAnim::GetScale	
+004985f0	annotated	CSimpleAnim::Advance	tag in src/ui/simple/CSimpleAnim.cpp
 004987e0	annotated	CSimpleControlPoint::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+00498d50	annotated	CSimpleAnim::OnUpdate	tag in src/ui/simple/CSimpleAnim.cpp
 0049a060	annotated	CSimpleAnimGroup::LoadXML	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049a8f0	annotated	CSimpleAnimGroup::Play	tag in src/ui/simple/CSimpleAnimGroup.cpp
+0049ab60	annotated	CSimpleAnimGroup::OnAnimationFinished	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049ad80	annotated	CSimpleAnim::Play	tag in src/ui/simple/CSimpleAnim.cpp
+0049b470	annotated	CSimpleAnimGroup::AdvanceOrder	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049b810	annotated	CSimpleAnim::LoadXML	tag in src/ui/simple/CSimpleAnim.cpp
 0049bb00	annotated	CSimpleTranslationAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
 0049bc10	annotated	CSimpleRotationAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
 0049bd20	annotated	CSimpleScaleAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
 0049bf00	annotated	CSimplePathAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
 0049c170	annotated	CSimpleAlphaAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+0049c350	annotated	CSimpleAnimGroup::OnUpdate	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
 0049c9a0	callgraph	CFramePoint::Y	only unmatched callee of 00488e40=CLayoutFrame::Sub488E40

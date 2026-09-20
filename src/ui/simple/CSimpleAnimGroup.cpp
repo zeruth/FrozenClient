@@ -5,6 +5,7 @@
 #include "ui/CScriptRegion.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/CStatus.hpp"
+#include "util/Lua.hpp"
 #include <common/XML.hpp>
 #include <storm/String.hpp>
 #include <storm/Memory.hpp>
@@ -13,6 +14,11 @@
 int32_t CSimpleAnimGroup::s_metatable;
 int32_t CSimpleAnimGroup::s_objectType;
 const char* CSimpleAnimGroup::s_objectTypeName = "AnimationGroup";
+
+// The largest step the driver will take in one tick: _DAT_009ec218, which is 60 seconds. It is a
+// sanity bound against a stall or a load spike handing the driver an absurd delta, NOT a smoothing
+// cap -- a small value here would make every animation crawl after any hitch.
+static const float ANIM_MAX_STEP = 60.0f;
 
 static const char* s_loopTypeNames[NUM_ANIM_LOOPTYPES] = { "NONE", "REPEAT", "BOUNCE" };
 static const char* s_loopStateNames[NUM_ANIM_LOOPSTATES] = { "NONE", "FORWARD", "REVERSE" };
@@ -155,6 +161,287 @@ CScriptObject* CSimpleAnimGroup::GetScriptObjectParent() {
     return this->m_region;
 }
 
+void CSimpleAnimGroup::CollectOrder(int32_t order, TSGrowableArray<CSimpleAnim*>& out) const {
+    out.SetCount(0);
+
+    for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
+        CSimpleAnim* anim = this->m_animations[i];
+
+        if (anim->m_order + 1 == order) {
+            out.Add(1, &anim);
+        }
+    }
+}
+
+float CSimpleAnimGroup::OrderDuration(int32_t order) const {
+    float longest = 0.0f;
+
+    for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
+        CSimpleAnim* anim = this->m_animations[i];
+
+        if (anim->m_order + 1 != order) {
+            continue;
+        }
+
+        float span = anim->m_startDelay + anim->m_duration + anim->m_endDelay;
+
+        if (span > longest) {
+            longest = span;
+        }
+    }
+
+    return longest;
+}
+
+// ref: FUN_0049b470
+// Every animation of the current order has finished. Step to the next one, or loop, or end.
+//
+// The remaining time is carried in rather than discarded, which is what lets a group of short
+// orders get through several of them in one frame.
+void CSimpleAnimGroup::AdvanceOrder(float remaining) {
+    bool forward = this->m_loopState != ANIM_LOOPSTATE_REVERSE;
+    int32_t maxOrder = this->GetMaxOrder();
+
+    int32_t step = forward ? 1 : -1;
+    int32_t past = forward ? maxOrder : -1;
+    int32_t restart = forward ? 0 : maxOrder - 1;
+
+    this->m_currentOrder += step;
+
+    if (this->m_currentOrder != past) {
+        // Still inside the group: start the animations of the order just reached.
+        TSGrowableArray<CSimpleAnim*> order;
+        this->CollectOrder(this->m_currentOrder, order);
+
+        this->m_orderDuration = this->OrderDuration(this->m_currentOrder);
+
+        for (uint32_t i = 0; i < order.Count(); i++) {
+            CSimpleAnim* anim = order[i];
+
+            if (this->Play() && !anim->m_playing) {
+                anim->m_playing = true;
+                anim->m_paused = false;
+
+                if (anim->m_onPlay.luaRef) {
+                    anim->RunScript(anim->m_onPlay, 0, nullptr);
+                }
+            }
+        }
+
+        return;
+    }
+
+    // Ran off the end. Either finish, or loop back round.
+    if (this->m_looping == ANIM_LOOPTYPE_NONE || this->m_pendingFinish) {
+        auto L = FrameScript_GetContext();
+
+        if (this->m_onUpdate.luaRef) {
+            lua_pushnumber(L, remaining);
+            this->RunScript(this->m_onUpdate, 1, nullptr);
+        }
+
+        if (this->m_onFinished.luaRef) {
+            // Unlike an animation's, the group's OnFinished is told whether the finish was asked
+            // for -- Finish() sets that, a natural end does not.
+            lua_pushboolean(L, this->m_pendingFinish);
+            this->RunScript(this->m_onFinished, 1, nullptr);
+        }
+
+        if (this->m_region) {
+            this->m_region->NotifyAnimEnd(this);
+        }
+
+        this->m_playing = false;
+        this->m_paused = false;
+        this->m_pendingFinish = false;
+        this->m_elapsed = 0.0f;
+        this->m_progress = 0.0f;
+        this->m_loopState = ANIM_LOOPSTATE_NONE;
+        this->m_currentOrder = -1;
+
+        return;
+    }
+
+    if (forward && remaining > 0.0001f) {
+        this->m_unapplyPending = true;
+    }
+
+    if (this->m_looping == ANIM_LOOPTYPE_BOUNCE) {
+        // Turn round rather than jumping back to the start, and step off the end we just hit.
+        this->m_loopState = forward ? ANIM_LOOPSTATE_REVERSE : ANIM_LOOPSTATE_FORWARD;
+        this->m_currentOrder = past - step;
+    } else {
+        this->m_currentOrder = restart;
+    }
+
+    this->m_elapsed = 0.0f;
+    this->m_progress = 0.0f;
+    this->m_orderDuration = this->OrderDuration(this->m_currentOrder);
+
+    // Every animation in the group is rewound, not just the current order's: on the next lap the
+    // earlier orders have to run again from nothing.
+    for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
+        CSimpleAnim* anim = this->m_animations[i];
+
+        anim->m_loopState = this->m_loopState;
+        anim->m_elapsed = 0.0f;
+        anim->m_progressWithDelay = 0.0f;
+        anim->m_progress = 0.0f;
+        anim->m_playing = false;
+        anim->m_paused = false;
+
+        if (anim->m_order + 1 != this->m_currentOrder) {
+            continue;
+        }
+
+        if (this->Play() && !anim->m_playing) {
+            anim->m_playing = true;
+
+            if (anim->m_onPlay.luaRef) {
+                anim->RunScript(anim->m_onPlay, 0, nullptr);
+            }
+        }
+    }
+
+    if (this->m_onLoop.luaRef) {
+        auto L = FrameScript_GetContext();
+        lua_pushstring(L, AnimLoopStateName(this->m_loopState));
+        this->RunScript(this->m_onLoop, 1, nullptr);
+    }
+}
+
+// ref: FUN_0049ab60
+void CSimpleAnimGroup::OnAnimationFinished(CSimpleAnim* anim) {
+    if (!this->m_playing || this->m_stopping) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
+        CSimpleAnim* other = this->m_animations[i];
+
+        if (other != anim && other->m_playing) {
+            return;
+        }
+    }
+
+    this->m_stopping = true;
+
+    for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
+        if (this->m_animations[i] != anim) {
+            this->m_animations[i]->Stop();
+        }
+    }
+
+    if (this->m_onStop.luaRef) {
+        auto L = FrameScript_GetContext();
+        lua_pushboolean(L, 0);
+        this->RunScript(this->m_onStop, 1, nullptr);
+    }
+
+    if (this->m_region) {
+        this->m_region->NotifyAnimEnd(this);
+    }
+
+    this->m_playing = false;
+    this->m_paused = false;
+    this->m_elapsed = 0.0f;
+    this->m_progress = 0.0f;
+    this->m_loopState = ANIM_LOOPSTATE_NONE;
+    this->m_currentOrder = -1;
+    this->m_stopping = false;
+}
+
+// ref: FUN_00497920
+// Whether the tick's loop must stop after this pass. Without it the loop does not terminate: a
+// looping group whose animations have zero duration finishes every pass, consumes no time, and
+// comes straight back round. The reference's first test is exactly that guard.
+//
+// The second half only matters for a group that is NOT looping, where the loop also ends once the
+// group's own progress passes 1.
+bool CSimpleAnimGroup::ShouldStopStepping() const {
+    if (this->m_orderDuration <= 0.0001f) {
+        return true;
+    }
+
+    if (this->m_looping == ANIM_LOOPTYPE_REPEAT || this->m_looping == ANIM_LOOPTYPE_BOUNCE) {
+        return false;
+    }
+
+    if (this->m_loopState == ANIM_LOOPSTATE_FORWARD
+        || this->m_loopState == ANIM_LOOPSTATE_REVERSE) {
+        return false;
+    }
+
+    return this->m_progress > 1.0f;
+}
+
+// ref: FUN_0049c350
+// One frame. The loop is the interesting part: an order that finishes part-way through the frame
+// hands what is left to the next order, so several short orders can complete in one tick.
+//
+// The incoming time is clamped before it is used, so a single enormous frame -- a stall, a load --
+// cannot skip an animation entirely.
+void CSimpleAnimGroup::OnUpdate(float elapsedSec) {
+    if (!this->m_playing || this->m_paused || this->m_currentOrder < 0) {
+        return;
+    }
+
+    float step = elapsedSec;
+
+    if (step < 0.0f) {
+        step = 0.0f;
+    } else if (step > ANIM_MAX_STEP) {
+        step = ANIM_MAX_STEP;
+    }
+
+    TSGrowableArray<CSimpleAnim*> order;
+
+    while (true) {
+        this->m_elapsed += step;
+        this->m_progress = this->m_orderDuration > 0.0f
+            ? this->m_elapsed / this->m_orderDuration
+            : 1.0f;
+
+        if (this->m_progress > 1.0f) {
+            this->m_progress = 1.0f;
+        }
+
+        this->CollectOrder(this->m_currentOrder, order);
+
+        float consumed = 0.0f;
+        bool allDone = true;
+
+        for (uint32_t i = 0; i < order.Count(); i++) {
+            float used = 0.0f;
+
+            if (!order[i]->OnUpdate(step, used)) {
+                allDone = false;
+            }
+
+            if (used > consumed) {
+                consumed = used;
+            }
+
+            // A handler can stop the group from underneath us. The reference re-tests this after
+            // every animation, not just once per pass.
+            if (!this->m_playing) {
+                return;
+            }
+        }
+
+        step -= consumed;
+
+        if (allDone) {
+            this->AdvanceOrder(step);
+        }
+
+        if (step < 0.0001f || this->ShouldStopStepping() || !this->m_playing || this->m_paused
+            || this->m_currentOrder < 0) {
+            return;
+        }
+    }
+}
+
 // ref: FUN_0049a060
 // NOT CreateAnimation, which an earlier cycle tagged this address as on the strength of the two
 // inherited-node strings it shares with it. This is the group's XML loader: it recurses into the
@@ -223,8 +510,21 @@ bool CSimpleAnimGroup::Play() {
         this->m_loopState = ANIM_LOOPSTATE_NONE;
     }
 
+    // Seed the order machine. Without this the tick has no current order and does nothing, which
+    // is the difference between a group that plays and one that merely reports playing.
+    if (this->m_currentOrder < 0) {
+        this->m_currentOrder = 0;
+        this->m_orderDuration = this->OrderDuration(0);
+        this->m_elapsed = 0.0f;
+        this->m_progress = 0.0f;
+    }
+
     this->m_playing = true;
     this->m_paused = false;
+
+    if (this->m_region) {
+        this->m_region->NotifyAnimBegin(this);
+    }
 
     return true;
 }
@@ -240,6 +540,10 @@ void CSimpleAnimGroup::Pause() {
 }
 
 void CSimpleAnimGroup::Stop() {
+    // Held across the loop below so each animation's Stop, which reports back through
+    // OnAnimationFinished, does not start a second teardown inside this one.
+    this->m_stopping = true;
+
     this->m_playing = false;
     this->m_paused = false;
     this->m_pendingFinish = false;
@@ -247,9 +551,13 @@ void CSimpleAnimGroup::Stop() {
     this->m_progress = 0.0f;
     this->m_loopState = ANIM_LOOPSTATE_NONE;
 
+    this->m_currentOrder = -1;
+
     for (uint32_t i = 0; i < this->m_animations.Count(); i++) {
         this->m_animations[i]->Stop();
     }
+
+    this->m_stopping = false;
 }
 
 // Finish() asks the group to stop at the END of the current loop rather than immediately, which is

@@ -92696,7 +92696,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 131
+"line": 134
 },
 "CScriptRegion::NotifyAnimEnd": {
 "files": [
@@ -92709,20 +92709,26 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 135
+"line": 138
 },
 "CScriptRegion::OnLayerUpdate": {
 "files": [
 "src/ui/cscriptregion.cpp"
 ],
-"callseq": [],
+"callseq": [
+"TSBaseArray<CSimpleAnimGroup *>::Count",
+"TSBaseArray<CSimpleAnimGroup *>::operator[]",
+"CSimpleAnimGroup::OnUpdate"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 139
+"line": 149
 },
 "CScriptRegion::ProtectedFunctionsAllowed": {
 "files": [
@@ -92735,7 +92741,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 143
+"line": 155
 },
 "CScriptRegion::SetParent": {
 "files": [
@@ -92748,7 +92754,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 149
+"line": 161
 },
 "CScriptRegion::StopAnimating": {
 "files": [
@@ -92761,7 +92767,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 165
 },
 "CScriptRegion_IsProtected": {
 "files": [
@@ -144890,6 +144896,19 @@
 "refs": [],
 "line": 50
 },
+"CSimpleAnim::OnApply": {
+"files": [
+"src/ui/simple/csimpleanim.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 142
+},
 "AnimSmoothingName": {
 "files": [
 "src/ui/simple/csimpleanim.cpp"
@@ -145118,14 +145137,16 @@
 "files": [
 "src/ui/simple/csimpleanim.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CSimpleAnimGroup::OnAnimationFinished"
+],
 "strings": [],
 "consts": [
 "0.0f"
 ],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 7,
+"lines": 17,
 "refs": [],
 "line": 166
 },
@@ -145142,7 +145163,51 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 176
+"line": 186
+},
+"CSimpleAnim::Advance": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f",
+"2.384185791015625e-07f"
+],
+"branches": 10,
+"stub": false,
+"lines": 63,
+"refs": [],
+"line": 206
+},
+"CSimpleAnim::OnUpdate": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [
+"CSimpleAnim::OnApply",
+"CSimpleAnim::OnApply",
+"CSimpleAnim::Advance",
+"FrameScript_GetContext",
+"lua_pushnumber",
+"FrameScript_Object::RunScript",
+"CSimpleAnim::OnApply",
+"FrameScript_Object::RunScript"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f"
+],
+"branches": 6,
+"stub": false,
+"lines": 41,
+"refs": [],
+"line": 273
 },
 "CSimpleAnim::IsDone": {
 "files": [
@@ -145157,7 +145222,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 187
+"line": 318
 },
 "CSimpleAnim::IsDelaying": {
 "files": [
@@ -145170,7 +145235,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 191
+"line": 322
 },
 "CSimpleAnim::IsStopped": {
 "files": [
@@ -145183,7 +145248,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 195
+"line": 326
 },
 "CSimpleAnim::GetRegionParent": {
 "files": [
@@ -145196,7 +145261,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 204
+"line": 335
 },
 "AnimXmlOffset": {
 "files": [
@@ -145215,7 +145280,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 212
+"line": 343
 },
 "CSimpleAnim::LoadXML": {
 "files": [
@@ -145273,7 +145338,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 226
+"line": 357
 },
 "CSimpleAnim::SetParentGroup": {
 "files": [
@@ -145289,7 +145354,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 299
+"line": 430
 },
 "AnimLoadXML_Scripts": {
 "files": [
@@ -145328,7 +145393,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 316
+"line": 447
 },
 "CSimpleTranslationAnim::CSimpleTranslationAnim": {
 "files": [
@@ -145380,7 +145445,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 134
+"line": 136
 },
 "CSimplePathAnim::CSimplePathAnim": {
 "files": [
@@ -145393,7 +145458,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 194
+"line": 196
 },
 "AnimLoopTypeName": {
 "files": [
@@ -145410,7 +145475,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 20
+"line": 26
 },
 "AnimLoopTypeFromName": {
 "files": [
@@ -145428,7 +145493,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 30
+"line": 36
 },
 "AnimLoopStateName": {
 "files": [
@@ -145445,7 +145510,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 42
+"line": 48
 },
 "CSimpleAnimGroup::CreateScriptMetaTable": {
 "files": [
@@ -145461,7 +145526,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 50
+"line": 56
 },
 "CSimpleAnimGroup::GetObjectType": {
 "files": [
@@ -145474,7 +145539,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 57
+"line": 63
 },
 "CSimpleAnimGroup::RegisterScriptMethods": {
 "files": [
@@ -145489,7 +145554,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 65
+"line": 71
 },
 "CSimpleAnimGroup::CSimpleAnimGroup": {
 "files": [
@@ -145502,7 +145567,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 71
+"line": 77
 },
 "CSimpleAnimGroup::~CSimpleAnimGroup": {
 "files": [
@@ -145526,7 +145591,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 75
+"line": 81
 },
 "CSimpleAnimGroup::GetScriptByName": {
 "files": [
@@ -145559,7 +145624,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 95
+"line": 101
 },
 "CSimpleAnimGroup::GetScriptMetaTable": {
 "files": [
@@ -145572,7 +145637,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 137
+"line": 143
 },
 "CSimpleAnimGroup::IsA": {
 "files": [
@@ -145592,7 +145657,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 141
+"line": 147
 },
 "CSimpleAnimGroup::GetObjectTypeName": {
 "files": [
@@ -145605,7 +145670,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 156
 },
 "CSimpleAnimGroup::GetScriptObjectParent": {
 "files": [
@@ -145618,7 +145683,160 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 154
+"line": 160
+},
+"CSimpleAnimGroup::CollectOrder": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"TSGrowableArray<CSimpleAnim *>::SetCount",
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"TSGrowableArray<CSimpleAnim *>::Add"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 164
+},
+"CSimpleAnimGroup::OrderDuration": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 176
+},
+"CSimpleAnimGroup::AdvanceOrder": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"CSimpleAnimGroup::GetMaxOrder",
+"TSGrowableArray<CSimpleAnim *>::TSGrowableArray",
+"CSimpleAnimGroup::CollectOrder",
+"CSimpleAnimGroup::OrderDuration",
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"CSimpleAnimGroup::Play",
+"FrameScript_Object::RunScript",
+"FrameScript_GetContext",
+"lua_pushnumber",
+"FrameScript_Object::RunScript",
+"lua_pushboolean",
+"FrameScript_Object::RunScript",
+"CScriptRegion::NotifyAnimEnd",
+"CSimpleAnimGroup::OrderDuration",
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"CSimpleAnimGroup::Play",
+"FrameScript_Object::RunScript",
+"FrameScript_GetContext",
+"AnimLoopStateName",
+"lua_pushstring",
+"FrameScript_Object::RunScript"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0001f",
+"0.0f",
+"1"
+],
+"branches": 19,
+"stub": false,
+"lines": 111,
+"refs": [],
+"line": 201
+},
+"CSimpleAnimGroup::OnAnimationFinished": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"CSimpleAnim::Stop",
+"FrameScript_GetContext",
+"lua_pushboolean",
+"FrameScript_Object::RunScript",
+"CScriptRegion::NotifyAnimEnd"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1"
+],
+"branches": 7,
+"stub": false,
+"lines": 39,
+"refs": [],
+"line": 314
+},
+"CSimpleAnimGroup::ShouldStopStepping": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0001f",
+"1.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 361
+},
+"CSimpleAnimGroup::OnUpdate": {
+"files": [
+"src/ui/simple/csimpleanimgroup.cpp"
+],
+"callseq": [
+"TSGrowableArray<CSimpleAnim *>::TSGrowableArray",
+"CSimpleAnimGroup::CollectOrder",
+"TSBaseArray<CSimpleAnim *>::Count",
+"TSBaseArray<CSimpleAnim *>::operator[]",
+"CSimpleAnim::OnUpdate",
+"CSimpleAnimGroup::AdvanceOrder",
+"CSimpleAnimGroup::ShouldStopStepping"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0001f",
+"0.0f",
+"1.0f"
+],
+"branches": 12,
+"stub": false,
+"lines": 60,
+"refs": [],
+"line": 384
 },
 "CSimpleAnimGroup::LoadXML": {
 "files": [
@@ -145660,25 +145878,27 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 162
+"line": 449
 },
 "CSimpleAnimGroup::Play": {
 "files": [
 "src/ui/simple/csimpleanimgroup.cpp"
 ],
 "callseq": [
-"TSBaseArray<CSimpleAnim *>::Count"
+"TSBaseArray<CSimpleAnim *>::Count",
+"CSimpleAnimGroup::OrderDuration",
+"CScriptRegion::NotifyAnimBegin"
 ],
 "strings": [],
 "consts": [
 "0",
 "0.0f"
 ],
-"branches": 2,
+"branches": 4,
 "stub": false,
-"lines": 17,
+"lines": 30,
 "refs": [],
-"line": 214
+"line": 501
 },
 "CSimpleAnimGroup::Pause": {
 "files": [
@@ -145697,7 +145917,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 232
+"line": 532
 },
 "CSimpleAnimGroup::Stop": {
 "files": [
@@ -145711,13 +145931,14 @@
 "strings": [],
 "consts": [
 "0",
-"0.0f"
+"0.0f",
+"1"
 ],
 "branches": 1,
 "stub": false,
-"lines": 12,
+"lines": 20,
 "refs": [],
-"line": 242
+"line": 542
 },
 "CSimpleAnimGroup::Finish": {
 "files": [
@@ -145730,7 +145951,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 258
+"line": 566
 },
 "CSimpleAnimGroup::IsDone": {
 "files": [
@@ -145750,7 +145971,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 264
+"line": 572
 },
 "CSimpleAnimGroup::GetMaxOrder": {
 "files": [
@@ -145769,7 +145990,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 278
+"line": 586
 },
 "CSimpleAnimGroup::GetDuration": {
 "files": [
@@ -145790,7 +146011,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 296
+"line": 604
 },
 "CSimpleAnimGroup::CreateAnimation": {
 "files": [
@@ -145834,7 +146055,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 333
+"line": 641
 },
 "CSimpleAnimGroup::AddAnimation": {
 "files": [
@@ -145854,7 +146075,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 361
+"line": 669
 },
 "CSimpleAnimGroup::RemoveAnimation": {
 "files": [
@@ -145876,7 +146097,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 375
+"line": 683
 },
 "AnimName": {
 "files": [

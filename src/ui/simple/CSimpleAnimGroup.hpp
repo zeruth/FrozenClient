@@ -58,9 +58,20 @@ class CSimpleAnimGroup : public CScriptObject {
         bool m_paused = false;
         bool m_pendingFinish = false;
 
-        // Driver state; see the note on CSimpleAnim. Stage 4 moves these.
+        // Driver state. m_currentOrder is -1 whenever the group is idle, and the group runs one
+        // order at a time: every animation of that order together, then on to the next.
         float m_elapsed = 0.0f;
         float m_progress = 0.0f;
+        float m_orderDuration = 0.0f;
+        int32_t m_currentOrder = -1;
+
+        // Set when Stop or the finish path is already unwinding, so a handler that calls back into
+        // the group cannot start a second unwind on top of the first.
+        bool m_stopping = false;
+
+        // Set when a loop boundary was crossed and the animations of the outgoing order still have
+        // a contribution applied that has to come off before the new one goes on.
+        bool m_unapplyPending = false;
 
 
         // The handler slots, all seven confirmed against the reference's own GetScriptByName
@@ -99,6 +110,31 @@ class CSimpleAnimGroup : public CScriptObject {
         void Pause();
         void Stop();
         void Finish();
+
+        // ref: FUN_0049c350
+        // The per-frame tick. Loops rather than running once: an order whose animations finish
+        // part-way through the frame hands the leftover time to the next one, so a group of short
+        // orders can complete several in a single frame.
+        void OnUpdate(float elapsedSec);
+
+        // ref: FUN_0049b470
+        // Run when every animation of the current order is finished. Steps to the next order, or
+        // loops, or ends the group.
+        void AdvanceOrder(float remaining);
+
+        // ref: FUN_0049ab60
+        // Run when one animation finishes: ends the group once no other is still going.
+        void OnAnimationFinished(CSimpleAnim* anim);
+
+        // The animations of one order, in list order.
+        void CollectOrder(int32_t order, TSGrowableArray<CSimpleAnim*>& out) const;
+
+        // The longest startDelay + duration + endDelay among one order's animations.
+        float OrderDuration(int32_t order) const;
+
+        // ref: FUN_00497920
+        // Terminates the tick's loop. Not optional -- see the definition.
+        bool ShouldStopStepping() const;
 
         bool IsDone() const;
 
