@@ -131,6 +131,36 @@ right answer in `overrides.json`.
 > address and leaves it in the denominator as unmapped. Cheap, and it converts a known-wrong link
 > into an honest gap. -- That is `"status": "unlinked"`, which already worked; see above.
 >
+> **The order matcher is positional, and adding a tag invites it to guess.** Three runs checked
+> closely on 2026-09-20, three runs wrong -- 12 links across `00497e60`-`004985a0`, 3 across
+> `00481620`-`00481720`, and 5 across `004bd9f0`-`004bdbf0`.
+>
+> It pairs frozen's definitions with the reference's addresses between two anchored functions,
+> in order, whenever `len(frozen) == len(reference)` in that interval. That equality is the whole
+> gate, and it is a coincidence rather than evidence: one unported reference function, or one
+> helper frozen invented for its own convenience, shifts every pair in the run by one.
+>
+> The failure has a trigger worth knowing. **Writing a `// ref:` tag in a sparse range creates a
+> new anchor, and the matcher immediately fills the interval beside it.** All three runs above
+> appeared in the same measurement as a tag placed next to them. So the moment to check is right
+> after tagging something in a range that has few links, and the churn line is where they show up.
+>
+> Correcting one link in a run collapses the rest of it, which is the correct behaviour -- the
+> ordering either side of a corrected pair no longer holds. Expect a small negative delta when
+> fixing one of these, and do not read it as a regression.
+>
+> **Why there is no automatic gate.** A size check was tried and rejected: comparing the reference
+> function's bytes against frozen's line count separates nothing useful, because the worst
+> mismatches are `Script_Stub_*` links, which are *correct* -- a large reference binding legitimately
+> pairs with a three-line stub. Filtering on size would throw those away and keep the positional
+> guesses. The distribution does not help either; `order` links sit close to `annotated` ones on
+> that measure.
+>
+> The 179 order links are therefore left in place and disclosed rather than deleted: three wrong
+> runs were all found next to fresh anchors, which is a biased sample and not grounds for
+> discarding the rest. The report now says which evidence kinds are positional so a reader can
+> weigh them.
+
 > **Watch the callgraph matcher around small local helpers.** Three times in two days it has
 > pointed a small reference leaf at a static or template helper written for frozen's own
 > convenience: `AnimThis` at `00497fe0` (really `CSimpleAnim::GetRegionParent`), `AnimThisOf` at

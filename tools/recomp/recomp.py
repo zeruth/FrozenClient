@@ -1270,6 +1270,14 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('| frozen functions (src/, from PDB + source) | %d, stubs %d | |' % (snapshot['frozenFunctions'], snapshot['frozenStubs']))
     L.append('')
     L.append('Match evidence: ' + ', '.join('%s %d' % kv for kv in sorted(by_how.items())) + '. Module anchors: %d assert strings.' % anchors)
+    L.append('')
+    L.append('`order` and `sticky` are POSITIONAL: neither says anything about what the function '
+             'does, only where it sits. `order` lays frozen\'s definitions onto the reference\'s '
+             'addresses between two anchors whenever the two counts happen to be equal, so one '
+             'unported function or one helper frozen invented shifts every pair in the run. It has '
+             'been checked closely three times, each time because a fresh tag put a run next to '
+             'something already read, and all three runs were wrong. Treat a link of either kind '
+             'as a question. See tools/recomp/README.md under the order matcher.')
     if prev:
         L.append('')
         L.append('Previous run: %s -- mapped %d, ported %d, stub %d, spine mapped %d.' % (prev['date'], prev['mapped'], prev['ported'], prev['stub'], prev['spineMapped']))
