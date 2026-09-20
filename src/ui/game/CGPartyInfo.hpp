@@ -54,6 +54,12 @@ class CGPartyInfo {
         // member for this purpose -- "player" and "pet" are their own tokens.
         static bool IsMemberOrPet(WOWGUID guid);
 
+        // ref: FUN_0052d310
+        // The WIDER test, and a different function in the reference: this one also matches the
+        // player and the player's own pet. IsMemberOrPet above deliberately does not -- the two
+        // exist side by side and answer differently for "player".
+        static bool IsPlayerOrMemberOrPet(WOWGUID guid);
+
         static void Clear();
 
         static void RegisterHandlers();

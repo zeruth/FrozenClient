@@ -801,7 +801,8 @@ addr	how	frozen	evidence
 00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
 00512a00	callgraph	CGGameUI::GetLockedTarget	only unmatched callee of 0060aaa0=ParseTrailingTokens
-00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f580=Script_UnitIsGhost
+00512a30	annotated	InPartyOrRaid	tag in src/ui/game/ScriptEvents.cpp
+00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f480=Script_UnitIsDead
 00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 005144c0	table	Script_IsLeftShiftKeyDown	binding "IsLeftShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 00514520	table	Script_IsRightShiftKeyDown	binding "IsRightShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
@@ -1003,6 +1004,7 @@ addr	how	frozen	evidence
 0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
 0052cf60	table	Script_GetPartyAssignment	binding "GetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052d000	table	Script_CanChangePlayerDifficulty	binding "CanChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
+0052d310	annotated	CGPartyInfo::IsPlayerOrMemberOrPet	tag in src/ui/game/CGPartyInfo.cpp
 0052d9c0	table	Script_SilenceMember	binding "SilenceMember" in s_ScriptFunctions ~ table 00acc6d0
 0052daf0	table	Script_UnSilenceMember	binding "UnSilenceMember" in s_ScriptFunctions ~ table 00acc6d0
 0052dc20	table	Script_SetLootMethod	binding "SetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
@@ -1523,7 +1525,7 @@ addr	how	frozen	evidence
 0060ef40	annotated	Script_UnitManaMax	tag in src/ui/game/ScriptEvents.cpp
 0060f100	annotated	Script_UnitPowerType	tag in src/ui/game/ScriptEvents.cpp
 0060f350	annotated	Script_UnitOnTaxi	tag in src/ui/game/ScriptEvents.cpp
-0060f3d0	table	Script_UnitIsFeignDeath	binding "UnitIsFeignDeath" in s_UnitFunctions ~ table 00ad21d8
+0060f3d0	annotated	Script_UnitIsFeignDeath	tag in src/ui/game/ScriptEvents.cpp
 0060f480	table	Script_UnitIsDead	binding "UnitIsDead" in s_UnitFunctions ~ table 00ad21d8
 0060f580	table	Script_UnitIsGhost	binding "UnitIsGhost" in s_UnitFunctions ~ table 00ad21d8
 0060f680	table	Script_UnitIsDeadOrGhost	binding "UnitIsDeadOrGhost" in s_UnitFunctions ~ table 00ad21d8

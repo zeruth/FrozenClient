@@ -12815,6 +12815,22 @@
   "refSize": 44,
   "status": "ported"
  },
+ "00512a30": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/ScriptEvents.cpp",
+   "src/ui/game/scriptevents.cpp"
+  ],
+  "frozen": "InPartyOrRaid",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 44,
+  "status": "ported"
+ },
  "00513c30": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -16063,6 +16079,22 @@
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 83,
+  "status": "ported"
+ },
+ "0052d310": {
+  "branchRatio": 0.353,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::IsPlayerOrMemberOrPet",
+  "frozenSize": 262,
+  "how": "annotated",
+  "module": "PartyFrame.cpp",
+  "refSize": 250,
   "status": "ported"
  },
  "0052d9c0": {
@@ -24257,20 +24289,20 @@
   "status": "ported"
  },
  "0060f3d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsFeignDeath",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 197,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 170,
-  "status": "stub"
+  "status": "ported"
  },
  "0060f480": {
   "branchRatio": 0.429,

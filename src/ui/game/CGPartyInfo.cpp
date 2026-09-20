@@ -97,6 +97,36 @@ bool CGPartyInfo::IsMemberOrPet(WOWGUID guid) {
     return false;
 }
 
+// ref: FUN_0052d310
+// Everyone the player's own group frames can show: the player, the player's pet, a party member,
+// or a party member's pet. Tested in that order, cheapest first, as the reference does.
+bool CGPartyInfo::IsPlayerOrMemberOrPet(WOWGUID guid) {
+    if (!guid) {
+        return false;
+    }
+
+    auto activePlayer = ClntObjMgrGetActivePlayer();
+
+    if (guid == activePlayer) {
+        return true;
+    }
+
+    auto object = activePlayer
+        ? ClntObjMgrObjectPtr(activePlayer, TYPE_UNIT, __FILE__, __LINE__)
+        : nullptr;
+
+    if (object) {
+        auto data = static_cast<CGUnit_C*>(object)->Unit();
+        auto pet = data->charm ? data->charm : data->summon;
+
+        if (pet && pet == guid) {
+            return true;
+        }
+    }
+
+    return CGPartyInfo::IsMemberOrPet(guid);
+}
+
 void CGPartyInfo::SetMember(uint32_t slot, const PARTY_MEMBER& member) {
     CGPartyInfo::m_memberInfo[slot] = member;
     CGPartyInfo::m_members[slot] = member.guid;

@@ -958,15 +958,35 @@ int32_t Script_UnitOnTaxi(lua_State* L) {
 // TODO FUN_0060f3d0 tests bit 5 of a dword at +0x124 of whatever the unit keeps at +0xd0.
 // That is not the descriptor: the same +0xd0 holds a power-type byte at +0x47, which no
 // CGUnitData offset matches. Identify that member before reading flags out of it.
-// Not ported, and the missing piece is not the flag. The flag is dynamicFlags bit 5, which frozen
-// has -- but the reference only reports feign death for a unit that is in your PARTY OR RAID
-// (FUN_00512a30, a party lookup falling through to a raid lookup). CGPartyInfo keeps its member
-// guids, CGRaidInfo keeps only a count, so raid membership cannot be answered.
-//
-// Implementing the party half alone would report false for every raid member, and a hunter
-// feigning in a raid is exactly the case this exists for -- a worse answer than none.
+// ref: FUN_00512a30
+// The party test falling through to the raid one. Note the party half here is the WIDER of the two
+// party tests -- it matches the player and the player's pet, where the one behind
+// UnitPlayerOrPetInParty does not.
+static bool InPartyOrRaid(WOWGUID guid) {
+    return CGPartyInfo::IsPlayerOrMemberOrPet(guid) || CGRaidInfo::IsMemberOrPet(guid);
+}
+
+// ref: FUN_0060f3d0
+// Feign death is dynamicFlags bit 5, but the flag alone is not the answer: the reference reports it
+// only for a unit in your group. A hostile hunter feigning is not something you are told about.
 int32_t Script_UnitIsFeignDeath(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitIsFeignDeath(\"unit\")");
+
+        return 0;
+    }
+
+    auto token = lua_tostring(L, 1);
+    auto unit = Script_GetUnitFromName(token);
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && InPartyOrRaid(unit->GetGUID()) && (data->dynamicFlags & 0x20)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsDead(lua_State* L) {
