@@ -16,6 +16,14 @@ class CGRaidInfo {
         // than the roster this class actually stores.
         static uint32_t NumMembers();
 
+        // The REAL raid, the counterpart of CGPartyInfo's real party: a battleground group list
+        // updates NumMembers above but deliberately leaves this alone, so it keeps describing the
+        // raid you actually belong to.
+        static uint32_t GetRealNumMembers();
+
+        // ref: FUN_00572530
+        static void SetRealNumMembers(uint32_t members);
+
         // ref: FUN_00573200
         // Whether a guid belongs to a raid member or to a member's pet. The player is not on the
         // roster: the packet does not list them.
@@ -32,6 +40,7 @@ class CGRaidInfo {
     private:
         // Private static variables
         static uint32_t s_numMembers;
+        static uint32_t s_realNumMembers;
         static WOWGUID s_members[MAX_RAID_MEMBERS];
         static char s_names[MAX_RAID_MEMBERS][48];
 };

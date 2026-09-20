@@ -5,11 +5,25 @@
 #include "object/client/ObjMgr.hpp"
 
 uint32_t CGRaidInfo::s_numMembers;
+uint32_t CGRaidInfo::s_realNumMembers;
 WOWGUID CGRaidInfo::s_members[MAX_RAID_MEMBERS];
 char CGRaidInfo::s_names[MAX_RAID_MEMBERS][48];
 
 uint32_t CGRaidInfo::NumMembers() {
     return CGRaidInfo::s_numMembers;
+}
+
+uint32_t CGRaidInfo::GetRealNumMembers() {
+    return CGRaidInfo::s_realNumMembers;
+}
+
+// ref: FUN_00572530
+// Clamped to a raid's size. Anything larger is not a raid count and the stored one is left as it
+// was, the same shape as the party's own clamp at five.
+void CGRaidInfo::SetRealNumMembers(uint32_t members) {
+    if (members < 41) {
+        CGRaidInfo::s_realNumMembers = members;
+    }
 }
 
 // ref: FUN_00573200

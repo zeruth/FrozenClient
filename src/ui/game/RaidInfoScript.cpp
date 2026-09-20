@@ -12,10 +12,15 @@ int32_t Script_GetNumRaidMembers(lua_State* L) {
     return 1;
 }
 
-// TODO FUN_00572b80 reads the dword directly after the one GetNumRaidMembers reads -- a
-// second, separately maintained count in the same block, not the same value.
+// ref: FUN_00572b80
+// The earlier note here was right about the shape and can now say what it is for: the dword after
+// the one GetNumRaidMembers reads is the REAL raid count, and it is separately maintained because
+// a battleground group list updates the effective count and deliberately not this one. So in a
+// battleground the two disagree, which is the whole reason both exist.
 int32_t Script_GetRealNumRaidMembers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, static_cast<double>(CGRaidInfo::GetRealNumMembers()));
+
+    return 1;
 }
 
 int32_t Script_GetRaidRosterInfo(lua_State* L) {

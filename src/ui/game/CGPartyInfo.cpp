@@ -411,6 +411,12 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     // a battleground group of strangers.
     if (!(groupType & GROUPTYPE_BATTLEGROUND)) {
         CGPartyInfo::SetRealParty(slot, leader);
+
+        // The real RAID count follows the same rule and the same formula as the effective one:
+        // the roster plus the player, and zero when this is not a raid at all.
+        auto isRaid = (groupType & GROUPTYPE_RAID) != 0;
+
+        CGRaidInfo::SetRealNumMembers((isRaid && memberCount) ? memberCount + 1 : 0);
     }
 
     CGPartyInfo::SetLeader(leader);

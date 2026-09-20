@@ -1214,9 +1214,10 @@ addr	how	frozen	evidence
 00566eb0	order	Script_Stub_GetMacroInfo	binding table name Script_Stub_GetMacroInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00567200	order	Script_Stub_GetMacroItem	binding table name Script_Stub_GetMacroItem, in definition order in src/ui/game/miscscriptstubs.cpp
 00567450	order	Script_Stub_GetMacroSpell	binding table name Script_Stub_GetMacroSpell, in definition order in src/ui/game/miscscriptstubs.cpp
+00572530	annotated	CGRaidInfo::SetRealNumMembers	tag in src/ui/game/CGRaidInfo.cpp
 00572ab0	table	Script_GetRaidTargetIndex	binding "GetRaidTargetIndex" in s_ScriptFunctions ~ table 00ace790
 00572b40	table	Script_GetNumRaidMembers	binding "GetNumRaidMembers" in s_ScriptFunctions ~ table 00ace790
-00572b80	table	Script_GetRealNumRaidMembers	binding "GetRealNumRaidMembers" in s_ScriptFunctions ~ table 00ace790
+00572b80	annotated	Script_GetRealNumRaidMembers	tag in src/ui/game/RaidInfoScript.cpp
 00572bc0	table	Script_SetRaidRosterSelection	binding "SetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c50	table	Script_GetRaidRosterSelection	binding "GetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c80	table	Script_GetReadyCheckTimeLeft	binding "GetReadyCheckTimeLeft" in s_ScriptFunctions ~ table 00ace790

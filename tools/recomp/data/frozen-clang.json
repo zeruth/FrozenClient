@@ -102106,6 +102106,7 @@
 "CGPartyInfo::SetMember",
 "CDataStore::Get",
 "CGPartyInfo::SetRealParty",
+"CGRaidInfo::SetRealNumMembers",
 "CGPartyInfo::SetLeader",
 "CGRaidInfo::SetRoster",
 "CDataStore::Get",
@@ -102130,9 +102131,9 @@
 "48",
 "60000"
 ],
-"branches": 10,
+"branches": 11,
 "stub": false,
-"lines": 138,
+"lines": 144,
 "refs": [],
 "line": 313
 },
@@ -102155,7 +102156,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 454
+"line": 460
 },
 "ReceiveSetRaidDifficulty": {
 "files": [
@@ -102176,7 +102177,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 472
+"line": 478
 },
 "CGPartyInfo::RegisterHandlers": {
 "files": [
@@ -102193,7 +102194,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 490
+"line": 496
 },
 "CGPetInfo::GetPet": {
 "files": [
@@ -102627,7 +102628,35 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 11
+"line": 12
+},
+"CGRaidInfo::GetRealNumMembers": {
+"files": [
+"src/ui/game/cgraidinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 16
+},
+"CGRaidInfo::SetRealNumMembers": {
+"files": [
+"src/ui/game/cgraidinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"41"
+],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 23
 },
 "CGRaidInfo::IsMemberOrPet": {
 "files": [
@@ -102647,7 +102676,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 16
+"line": 30
 },
 "CGRaidInfo::FindByName": {
 "files": [
@@ -102664,7 +102693,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 48
+"line": 62
 },
 "CGRaidInfo::SetRoster": {
 "files": [
@@ -102682,7 +102711,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 62
+"line": 76
 },
 "CGTabardModelFrame::Create": {
 "files": [
@@ -135790,22 +135819,18 @@
 "src/ui/game/raidinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGRaidInfo::GetRealNumMembers",
+"lua_pushnumber"
 ],
-"strings": [
-"(anonymous namespace)::Script_GetRealNumRaidMembers",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\raidinfoscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 17
+"line": 20
 },
 "Script_GetRaidRosterInfo": {
 "files": [
@@ -135827,7 +135852,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 21
+"line": 26
 },
 "Script_SetRaidRosterSelection": {
 "files": [
@@ -135849,7 +135874,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 25
+"line": 30
 },
 "Script_GetRaidRosterSelection": {
 "files": [
@@ -135871,7 +135896,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 29
+"line": 34
 },
 "Script_IsRaidLeader": {
 "files": [
@@ -135889,7 +135914,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 33
+"line": 38
 },
 "Script_IsRealRaidLeader": {
 "files": [
@@ -135911,7 +135936,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 40
+"line": 45
 },
 "Script_IsRaidOfficer": {
 "files": [
@@ -135928,7 +135953,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 44
+"line": 49
 },
 "Script_SetRaidSubgroup": {
 "files": [
@@ -135950,7 +135975,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 50
+"line": 55
 },
 "Script_SwapRaidSubgroup": {
 "files": [
@@ -135972,7 +135997,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 54
+"line": 59
 },
 "Script_ConvertToRaid": {
 "files": [
@@ -135994,7 +136019,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 58
+"line": 63
 },
 "Script_PromoteToLeader": {
 "files": [
@@ -136016,7 +136041,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 67
 },
 "Script_PromoteToAssistant": {
 "files": [
@@ -136038,7 +136063,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 66
+"line": 71
 },
 "Script_DemoteAssistant": {
 "files": [
@@ -136060,7 +136085,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 70
+"line": 75
 },
 "Script_SetRaidTarget": {
 "files": [
@@ -136082,7 +136107,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 74
+"line": 79
 },
 "Script_GetRaidTargetIndex": {
 "files": [
@@ -136104,7 +136129,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 78
+"line": 83
 },
 "Script_DoReadyCheck": {
 "files": [
@@ -136126,7 +136151,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 82
+"line": 87
 },
 "Script_ConfirmReadyCheck": {
 "files": [
@@ -136148,7 +136173,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 86
+"line": 91
 },
 "Script_GetReadyCheckTimeLeft": {
 "files": [
@@ -136170,7 +136195,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 90
+"line": 95
 },
 "Script_GetReadyCheckStatus": {
 "files": [
@@ -136187,7 +136212,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 94
+"line": 99
 },
 "RaidInfoRegisterScriptFunctions": {
 "files": [
@@ -136202,7 +136227,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 125
+"line": 130
 },
 "ActivePlayerData": {
 "files": [

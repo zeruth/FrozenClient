@@ -19360,6 +19360,22 @@
   "refSize": 160,
   "status": "ported"
  },
+ "00572530": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGRaidInfo.cpp",
+   "src/ui/game/cgraidinfo.cpp"
+  ],
+  "frozen": "CGRaidInfo::SetRealNumMembers",
+  "frozenSize": 12,
+  "how": "annotated",
+  "module": "MailInfo.cpp",
+  "refSize": 35,
+  "status": "ported"
+ },
  "00572ab0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -19393,20 +19409,20 @@
   "status": "ported"
  },
  "00572b80": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_GetRealNumRaidMembers",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 43,
+  "how": "annotated",
   "module": "MailInfo.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "00572bc0": {
   "branchRatio": 1.0,
@@ -28207,7 +28223,7 @@
   "status": "ported"
  },
  "006d8870": {
-  "branchRatio": 0.125,
+  "branchRatio": 0.138,
   "constOverlap": 0.021,
   "faithful": false,
   "fidelity": 0.325,
@@ -28216,7 +28232,7 @@
    "src/ui/game/cgpartyinfo.cpp"
   ],
   "frozen": "ReceiveGroupList",
-  "frozenSize": 1212,
+  "frozenSize": 1247,
   "how": "annotated",
   "module": "Player_C.cpp",
   "refSize": 2482,
