@@ -1175,12 +1175,119 @@ int32_t Script_UnitClassBase(lua_State* L) {
     return 2;
 }
 
-int32_t Script_UnitResistance(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// ref: FUN_004f54d0
+// Splits a resistance into what it would be without buffs and what it is now. The base is computed
+// BEFORE the total is clamped, so a resistance debuffed below zero still reports the base it came
+// from rather than a base derived from the clamped zero.
+static void UnitResistanceBreakdown(const CGUnitData* data, uint32_t index, int32_t* base,
+                                    int32_t* total, int32_t* positive, int32_t* negative) {
+    *total = data->resistance[index];
+    *positive = data->resistanceBuffModsPositive[index];
+    *negative = data->resistanceBuffModsNegative[index];
+    *base = (*total - *positive) - *negative;
+
+    if (*total < 0) {
+        *total = 0;
+    }
 }
 
+// ref: FUN_006101a0
+// base, resistance, positive, negative.
+//
+// The index is 0-based, where UnitStat below is 1-based. That asymmetry is the reference's, and it
+// is the kind of thing that silently reports armour as holy resistance if assumed away.
+//
+// The full breakdown is only available for the active player; the buff mods are not sent for anyone
+// else, so another unit reports its total as its base with no mods, which is what the reference
+// does rather than leaving them nil.
+int32_t Script_UnitResistance(lua_State* L) {
+    if (!lua_isstring(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: UnitResistance(\"unit\", resistanceIndex)");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 2)));
+
+    if (index > 6) {
+        luaL_error(L, "Invalid resistance index in UnitResistance");
+
+        return 0;
+    }
+
+    int32_t base = 0;
+    int32_t total = 0;
+    int32_t positive = 0;
+    int32_t negative = 0;
+
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data) {
+        if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            UnitResistanceBreakdown(data, index, &base, &total, &positive, &negative);
+        } else {
+            total = data->resistance[index];
+
+            if (total < 0) {
+                total = 0;
+            }
+
+            base = total;
+        }
+    }
+
+    lua_pushnumber(L, static_cast<double>(base));
+    lua_pushnumber(L, static_cast<double>(total));
+    lua_pushnumber(L, static_cast<double>(positive));
+    lua_pushnumber(L, static_cast<double>(negative));
+
+    return 4;
+}
+
+// ref: FUN_00610300
+// base, stat, positive, negative -- and the first two are NOT base-without-buffs and base-with.
+// Both read stats[index]; the second is simply the same value with negatives clamped to zero, so
+// they differ only for a stat debuffed below zero. Reading them as base-vs-current would be a
+// plausible and wrong reading of the same four numbers, which is why it is written down.
+//
+// The clamp is branchless in the reference (v & ((v < 0) - 1)); this is the same function of v.
 int32_t Script_UnitStat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: UnitStat(\"unit\", statIndex)");
+
+        return 0;
+    }
+
+    // Resolved before the index is range-checked, so a bad index on a bad unit still reports the
+    // index rather than failing earlier.
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 2))) - 1;
+
+    if (index >= 5) {
+        luaL_error(L, "Invalid stat index in UnitStat");
+
+        return 0;
+    }
+
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!data) {
+        for (int32_t i = 0; i < 4; i++) {
+            lua_pushnumber(L, 0.0);
+        }
+
+        return 4;
+    }
+
+    auto stat = data->stats[index];
+
+    lua_pushnumber(L, static_cast<double>(stat));
+    lua_pushnumber(L, static_cast<double>(stat < 0 ? 0 : stat));
+    lua_pushnumber(L, static_cast<double>(data->posStats[index]));
+    lua_pushnumber(L, static_cast<double>(data->negStats[index]));
+
+    return 4;
 }
 
 int32_t Script_UnitAttackBothHands(lua_State* L) {

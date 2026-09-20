@@ -697,6 +697,7 @@ addr	how	frozen	evidence
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f3dd0	annotated	BuildComponentArray	tag in src/component/Util.cpp
 004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
+004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
 004f8ea0	override	CGWorldFrame::OnWorldRender	
@@ -1447,6 +1448,7 @@ addr	how	frozen	evidence
 0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
 0060abf0	annotated	Script_GetTokenFromGUID	tag in src/ui/game/ScriptUtil.cpp
 0060c1c0	override	TooltipThis	
+0060c1f0	callgraph	CGObject::GetGUID	only unmatched callee of 006101a0=Script_UnitResistance
 0060c2a0	table	Script_UnitExists	binding "UnitExists" in s_UnitFunctions ~ table 00ad21d8
 0060c350	table	Script_UnitIsVisible	binding "UnitIsVisible" in s_UnitFunctions ~ table 00ad21d8
 0060c3d0	table	Script_UnitIsUnit	binding "UnitIsUnit" in s_UnitFunctions ~ table 00ad21d8
@@ -1526,8 +1528,8 @@ addr	how	frozen	evidence
 0060fd40	annotated	Script_UnitRace	tag in src/ui/game/ScriptEvents.cpp
 0060fec0	annotated	Script_UnitClass	tag in src/ui/game/ScriptEvents.cpp
 00610040	annotated	Script_UnitClassBase	tag in src/ui/game/ScriptEvents.cpp
-006101a0	table	Script_UnitResistance	binding "UnitResistance" in s_UnitFunctions ~ table 00ad21d8
-00610300	table	Script_UnitStat	binding "UnitStat" in s_UnitFunctions ~ table 00ad21d8
+006101a0	annotated	Script_UnitResistance	tag in src/ui/game/ScriptEvents.cpp
+00610300	annotated	Script_UnitStat	tag in src/ui/game/ScriptEvents.cpp
 00610450	table	Script_UnitAttackBothHands	binding "UnitAttackBothHands" in s_UnitFunctions ~ table 00ad21d8
 00610550	table	Script_UnitRangedDamage	binding "UnitRangedDamage" in s_UnitFunctions ~ table 00ad21d8
 006107d0	table	Script_UnitRangedAttack	binding "UnitRangedAttack" in s_UnitFunctions ~ table 00ad21d8

@@ -11155,6 +11155,22 @@
   "refSize": 122,
   "status": "ported"
  },
+ "004f54d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/ScriptEvents.cpp",
+   "src/ui/game/scriptevents.cpp"
+  ],
+  "frozen": "UnitResistanceBreakdown",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
  "004f5720": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -21974,7 +21990,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.176,
+  "fidelity": 0.235,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
@@ -22006,7 +22022,7 @@
   "branchRatio": 0.176,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.188,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
@@ -22070,7 +22086,7 @@
   "branchRatio": 0.091,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
@@ -23035,6 +23051,22 @@
   "refSize": 41,
   "status": "ported"
  },
+ "0060c1f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGObject.cpp",
+   "src/object/client/cgobject.cpp"
+  ],
+  "frozen": "CGObject::GetGUID",
+  "frozenSize": 8,
+  "how": "callgraph",
+  "module": "ScriptEvents.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
  "0060c2a0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -23375,7 +23407,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.7,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23391,7 +23423,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23455,7 +23487,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23950,8 +23982,8 @@
  "0060ea60": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -23966,8 +23998,8 @@
  "0060eae0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24159,7 +24191,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24300,36 +24332,36 @@
   "status": "ported"
  },
  "006101a0": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.857,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.786,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitResistance",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 410,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 337,
-  "status": "stub"
+  "status": "ported"
  },
  "00610300": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.833,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitStat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 345,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 321,
-  "status": "stub"
+  "status": "ported"
  },
  "00610450": {
   "branchRatio": 0.222,
@@ -24511,7 +24543,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24558,8 +24590,8 @@
  "006112b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24639,7 +24671,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24767,7 +24799,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.478,
+  "fidelity": 0.522,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24783,7 +24815,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.545,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
