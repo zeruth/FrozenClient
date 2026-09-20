@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:12 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 22:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2724 (+1) (10.0%) | 577.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2178 (+1) | 428.5k |
-| &nbsp;&nbsp;stub (unimplemented body) | 509 (=) | 110.4k |
+| mapped to a frozen function | 2724 (=) (10.0%) | 577.2k (10.4%) |
+| &nbsp;&nbsp;ported | 2179 (+1) | 428.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 508 (-1) | 110.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1010 (+2) (3.7%)** | **125.1k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1010 (=) (3.7%)** | **125.1k (2.3%)** |
 | unmapped | 24438 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 405 (+1) (7.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 409 (+1) (7.1%) | |
+| world spine (reachable from OnFrameRender) | 5531, mapped 405 (=) (7.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 409 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11522, stubs 767 | |
+| frozen functions (src/, from PDB + source) | 11522, stubs 766 | |
 
-Match evidence: annotated 636, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 197, sticky 13, string 310, table 1017. Module anchors: 1479 assert strings.
+Match evidence: annotated 637, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 197, sticky 13, string 310, table 1016. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:11 -- mapped 2723, ported 2177, stub 509, spine mapped 404.
+Previous run: 2026-09-19 22:12 -- mapped 2724, ported 2178, stub 509, spine mapped 405.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 578 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 577 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -38,7 +38,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acef78 (GetGossipText..) | 59 | `s_ScriptFunctions` | 48 | 0 | GetGossipText, GetGossipOptions, GetGossipAvailableQuests, GetGossipActiveQuests, SelectGossipOption, SelectGossipAvailableQuest ... |
 | 00accae8 (BNGetInfo..) | 57 | `s_ScriptFunctions` | 0 | 47 |  / stubs: BNGetInfo, BNGetFriendInfo, BNGetFriendInfoByID, BNGetNumFriendToons ... |
 | 00ad1938 (JumpOrAscendStart..) | 52 | `s_ScriptFunctions` | 47 | 0 | JumpOrAscendStart, AscendStop, DescendStop, ToggleRun, ToggleAutoRun, MoveForwardStart ... |
-| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 47 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
+| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 46 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
 | 00acd178 (GetNumBattlefields..) | 51 | `s_ScriptFunctions` | 0 | 41 |  / stubs: GetNumBattlefields, GetBattlefieldInfo, GetBattlefieldInstanceInfo, JoinBattlefield ... |
 | 00ad2ae0 (AddFontStrings..) | 69 | `CGTooltipMethods` | 0 | 41 |  / stubs: AddTexture, SetPetAction, SetShapeshift, SetPossession ... |
 | 00ace370 (CommentatorSetMode..) | 35 | `-` | 35 | 0 | CommentatorSetMode, CommentatorToggleMode, CommentatorGetMode, CommentatorSetMapAndInstanceIndex, CommentatorSetPlayerIndex, CommentatorUpdatePlayerInfo ... |
@@ -170,7 +170,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 5 | 0 | 7 |
-| ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 44 | 0 | 26 |
+| ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 43 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 19:49 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:01 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:05 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:10 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:07 | 2724 (10.0%) | 1008 (3.7%) | 511 | 405/5531 | 1792/2964 | 580 |
 | 2026-09-19 22:11 | 2723 (10.0%) | 1008 (3.7%) | 509 | 404/5531 | 1792/2964 | 578 |
 | 2026-09-19 22:12 | 2724 (10.0%) | 1010 (3.7%) | 509 | 405/5531 | 1792/2964 | 578 |
+| 2026-09-19 22:17 | 2724 (10.0%) | 1010 (3.7%) | 508 | 405/5531 | 1792/2964 | 577 |
 
 ## How to move a row
 

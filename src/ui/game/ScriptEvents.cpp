@@ -44,6 +44,24 @@ static_assert(offsetof(CGPlayerData, modHealingDonePos) == 0x1050, "CGPlayerData
 static_assert(offsetof(CGPlayerData, expertise) == 0xdbc, "CGPlayerData layout");
 static_assert(offsetof(CGPlayerData, offhandExpertise) == 0xdc0, "CGPlayerData layout");
 static_assert(offsetof(CGPlayerData, spellCritPercentage) == 0xdd0, "CGPlayerData layout");
+
+// The same guard for CGUnitData, which the unit stat bindings address the same way. These were
+// read off the struct when those bindings landed and then taken on trust; asserting them is what
+// makes the reading durable. Each array's offset is also the previous one plus its own width,
+// which is the property that identified them in the first place.
+static_assert(offsetof(CGUnitData, attackRoundBaseTime) == 0xe0, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, stats) == 0x138, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, posStats) == 0x14c, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, negStats) == 0x160, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, resistance) == 0x174, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, resistanceBuffModsPositive) == 0x190, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, resistanceBuffModsNegative) == 0x1ac, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, attackPower) == 0x1d4, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, attackPowerMods) == 0x1d8, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, attackPowerMultiplier) == 0x1dc, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, rangedAttackPower) == 0x1e0, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, rangedAttackPowerMods) == 0x1e4, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, rangedAttackPowerMultiplier) == 0x1e8, "CGUnitData layout");
 static_assert(offsetof(CGPlayerData, modTargetResistance) == 0x105c, "CGPlayerData layout");
 
 
@@ -1307,8 +1325,43 @@ int32_t Script_UnitRangedAttack(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00610a00
+// Main-hand and off-hand swing times in seconds. The stored value is milliseconds and UNSIGNED --
+// the reference converts it with the uint32-to-float fixup, not the signed one -- then scales by
+// the 0.001f at 009e1134.
+//
+// The off-hand value is PARTIAL. The reference returns it only for a player who actually has a
+// weapon in the off-hand slot, which it establishes by reading the equipment array off the object,
+// fetching that item and checking its inventory type; frozen has no equipped-item lookup, so the
+// second return is always nil here. That is the right answer for every unit without an off-hand
+// weapon, which is most of them, and wrong for a dual-wielder -- stated rather than left to look
+// complete.
 int32_t Script_UnitAttackSpeed(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitAttackSpeed(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    // No unit is 0 and nil, not two nils: the reference pushes a number for the main hand either
+    // way and only ever leaves the off-hand empty.
+    if (!data) {
+        lua_pushnumber(L, 0.0);
+        lua_pushnil(L);
+
+        return 2;
+    }
+
+    lua_pushnumber(L, static_cast<float>(data->attackRoundBaseTime[0]) * 0.001f);
+
+    // TODO the off-hand swing time is attackRoundBaseTime[1], gated on the player holding an
+    // off-hand weapon. Needs the equipped-item lookup.
+    lua_pushnil(L);
+
+    return 2;
 }
 
 // ref: FUN_00610b60

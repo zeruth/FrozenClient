@@ -24428,20 +24428,20 @@
   "status": "stub"
  },
  "00610a00": {
-  "branchRatio": 0.2,
+  "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.615,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitAttackSpeed",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 146,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 345,
-  "status": "stub"
+  "status": "ported"
  },
  "00610b60": {
   "branchRatio": 0.75,
