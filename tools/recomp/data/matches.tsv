@@ -863,7 +863,7 @@ addr	how	frozen	evidence
 005167e0	table	Script_IsSubZonePVPPOI	binding "IsSubZonePVPPOI" in s_ScriptFunctions ~ table 00ac80b0
 00516840	annotated	Script_TogglePVP	tag in src/ui/game/GameScript.cpp
 005168b0	annotated	Script_SetPVP	tag in src/ui/game/GameScript.cpp
-00516970	table	Script_SetPortraitToTexture	binding "SetPortraitToTexture" in s_ScriptFunctions ~ table 00ac80b0
+00516970	annotated	Script_SetPortraitToTexture	tag in src/ui/game/GameScript.cpp
 00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
 00516b20	annotated	Script_GetBindLocation	tag in src/ui/game/GameScript.cpp
 00516b90	annotated	Script_GetAreaSpiritHealerTime	tag in src/ui/game/GameScript.cpp

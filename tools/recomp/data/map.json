@@ -13820,20 +13820,20 @@
   "status": "ported"
  },
  "00516970": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetPortraitToTexture",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 246,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 291,
-  "status": "stub"
+  "status": "ported"
  },
  "00516aa0": {
   "branchRatio": 0.5,

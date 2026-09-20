@@ -1,6 +1,7 @@
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
+#include "ui/FrameScript_Object.hpp"
 #include "object/client/ItemLink.hpp"
 #include "ui/game/CGRaidInfo.hpp"
 #include "ui/game/CGPartyInfo.hpp"
@@ -1733,8 +1734,48 @@ int32_t Script_ConfirmBindOnUse(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00516970
+// SetPortraitToTexture(texture, path) -- point a texture region at an icon file.
+//
+// Despite the name there is no portrait machinery here. The reference hands the path to the same
+// name-keyed texture cache every other texture load goes through; I had earlier read that cache as
+// portrait-specific and it is not, which is what made this look blocked.
+//
+// The first argument is normally the texture OBJECT. It may also be the texture's global NAME as a
+// string, which frozen cannot resolve -- there is no lookup from a frame name to its object -- so
+// that form does nothing. Two FrameXML callers use it, the keyring bag icon and the mail
+// stationery icon; everything else passes the object.
 int32_t Script_SetPortraitToTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        // TODO the by-name form. The reference looks the texture up by its global frame name.
+        return 0;
+    }
+
+    lua_rawgeti(L, 1, 0);
+    auto object = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!object) {
+        luaL_error(L, "SetPortraitToTexture(): Couldn't find 'this' in texture object");
+
+        return 0;
+    }
+
+    if (!object->IsA(CSimpleTexture::GetObjectType())) {
+        luaL_error(L, "SetPortraitToTexture(): Wrong object type, expected texture");
+
+        return 0;
+    }
+
+    if (!lua_isstring(L, 2)) {
+        return 0;
+    }
+
+    static_cast<CSimpleTexture*>(object)->SetTexture(
+        lua_tostring(L, 2), 0, 0, CSimpleTexture::s_textureFilterMode, ImageMode_UI
+    );
+
+    return 0;
 }
 
 int32_t Script_GetLocale(lua_State* L) {
