@@ -1,4 +1,7 @@
 #include "ui/game/CGMinimapFrame.hpp"
+#include <common/DataStore.hpp>
+#include "client/ClientServices.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/AuraCache.hpp"
 #include "object/client/SpellBook.hpp"
@@ -124,6 +127,94 @@ bool TrackingTypeAllowed(const MINIMAP_TRACKING_TYPE& type, uint32_t classMask) 
 }
 
 } // namespace
+
+float CGMinimapFrame::s_pingX = 0.0f;
+float CGMinimapFrame::s_pingY = 0.0f;
+
+namespace {
+
+// Both the ping event and GetPingPosition report the same thing: where the ping is relative to the
+// player, scaled so that the minimap's edge is 0.5. The reference computes it in both places.
+//
+// NOT ported: when the rotateMinimap CVar is set, the reference rotates this offset by the
+// player's facing first (a Z rotation built from -DAT_00beba70). Frozen does not rotate the
+// minimap, and the CVar defaults to "0", so the unrotated answer is the one that matches today --
+// but a rotating minimap would place pings wrongly until that lands.
+bool PingOffset(float* outX, float* outY) {
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (!player) {
+        return false;
+    }
+
+    auto position = player->GetPosition();
+    auto dx = CGMinimapFrame::s_pingX - position.x;
+    auto dy = CGMinimapFrame::s_pingY - position.y;
+
+    auto scale = 1.0f / (CGMinimapFrame::GetRadius() * 2.0f);
+
+    *outX = -dy * scale;
+    *outY = dx * scale;
+
+    return true;
+}
+
+} // namespace
+
+// ref: FUN_0057eb80
+// Stores the ping and signals MINIMAP_PING with the unit that sent it. A ping from someone who is
+// neither the player nor in the group resolves to no token and is dropped -- the reference builds
+// "player", "partyN" or "raidN" by hand, which is what Script_GetTokenFromGUID does here.
+void CGMinimapFrame::SetPing(WOWGUID pinger, float x, float y) {
+    // Everything below is measured against the player, so with no player there is nothing to say.
+    if (!CGPlayer_C::GetActivePtr()) {
+        return;
+    }
+
+    CGMinimapFrame::s_pingX = x;
+    CGMinimapFrame::s_pingY = y;
+
+    auto token = Script_GetTokenFromGUID(pinger);
+
+    if (!token) {
+        return;
+    }
+
+    float offsetX = 0.0f;
+    float offsetY = 0.0f;
+
+    if (PingOffset(&offsetX, &offsetY)) {
+        FrameScript_SignalEvent(SCRIPT_MINIMAP_PING, "%s%f%f", token, offsetX, offsetY);
+    }
+}
+
+bool CGMinimapFrame::GetPingOffset(float* x, float* y) {
+    return PingOffset(x, y);
+}
+
+// MSG_MINIMAP_PING: the guid of whoever pinged, then the position as two floats. The client sends
+// the same opcode with only the two floats; the server fills in who.
+int32_t ReceiveMinimapPing(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    if (!msg) {
+        return 1;
+    }
+
+    WOWGUID pinger = 0;
+    float x = 0.0f;
+    float y = 0.0f;
+
+    msg->Get(pinger);
+    msg->Get(x);
+    msg->Get(y);
+
+    CGMinimapFrame::SetPing(pinger, x, y);
+
+    return 1;
+}
+
+void CGMinimapFrameRegisterHandlers() {
+    ClientServices::SetMessageHandler(MSG_MINIMAP_PING, &ReceiveMinimapPing, nullptr);
+}
 
 // ref: FUN_007f3b90
 // Indoors reads a table of yards directly; outdoors reads a table of chunks and converts. The

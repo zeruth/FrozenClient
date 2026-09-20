@@ -311,13 +311,22 @@ int32_t CGMinimapFrame_PingLocation(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
-// FUN_0057efe0. Not ported for the same reason: it reads back the position the ping store wrote
-// (DAT_00beba8c / DAT_00beba90) relative to the active player. With no ping store there is nothing
-// to read, and answering (0, 0) would look like a ping at the player's feet.
+// ref: FUN_0057efe0
+// Where the last ping sits relative to the player right now, in the same units the MINIMAP_PING
+// event uses. Recomputed on each call rather than stored, so it follows the player as they move.
+//
+// Two zeros with no player, which is what the reference pushes -- not nil, and not nothing.
 int32_t CGMinimapFrame_GetPingPosition(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
+    float x = 0.0f;
+    float y = 0.0f;
 
+    CGMinimapFrame::GetPingOffset(&x, &y);
+
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
+
+    return 2;
+}
 }
 
 namespace {

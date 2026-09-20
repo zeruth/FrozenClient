@@ -415,6 +415,7 @@ enum NETMESSAGE {
     CMSG_RECLAIM_CORPSE                 = 0x01D2,
     CMSG_WRAP_ITEM                      = 0x01D3,
     SMSG_LEVEL_UP_INFO                  = 0x01D4,
+    MSG_MINIMAP_PING                    = 0x01D5,
     SMSG_RESISTLOG                      = 0x01D6,
     SMSG_ENCHANTMENT_LOG                = 0x01D7,
     CMSG_SET_SKILL_CHEAT                = 0x01D8,

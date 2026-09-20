@@ -38850,6 +38850,136 @@
 "refs": [],
 "line": 376
 },
+"CGxTexFlags::CGxTexFlags": {
+"files": [
+"src/gx/texture/cgxtex.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 23
+},
+"FrameScript_EventObject::FrameScript_EventObject": {
+"files": [
+"src/ui/framescript.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 38
+},
+"CScriptRegion::PreOnAnimUpdate": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 32
+},
+"CScriptRegion::AnimActivated": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 37
+},
+"CScriptRegion::AnimDeactivated": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 38
+},
+"CScriptRegion::AddAnimTranslation": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 39
+},
+"CScriptRegion::AddAnimRotation": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 40
+},
+"CScriptRegion::AddAnimScale": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 41
+},
+"CScriptRegion::AddAnimAlpha": {
+"files": [
+"src/ui/cscriptregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 42
+},
+"CSimpleRegion::OnScreenSizeChanged": {
+"files": [
+"src/ui/simple/csimpleregion.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 26
+},
 "CGObject_C::HandleOutOfRange": {
 "files": [
 "src/object/client/cgobject_c.hpp"
@@ -38887,7 +39017,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 89
+"line": 102
 },
 "CPassenger::CPassenger": {
 "files": [
@@ -39103,19 +39233,6 @@
 "refs": [],
 "line": 42
 },
-"CGxTexFlags::CGxTexFlags": {
-"files": [
-"src/gx/texture/cgxtex.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 23
-},
 "WowClientDB::GetRecord": {
 "files": [
 "src/db/wowclientdb.hpp"
@@ -39168,19 +39285,6 @@
 "refs": [],
 "line": 26
 },
-"FrameScript_EventObject::FrameScript_EventObject": {
-"files": [
-"src/ui/framescript.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 3,
-"refs": [],
-"line": 38
-},
 "FrameFactoryNode::FrameFactoryNode": {
 "files": [
 "src/ui/framexml.hpp"
@@ -39205,7 +39309,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 84
+"line": 85
 },
 "GammaCallback": {
 "files": [
@@ -39218,7 +39322,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 89
+"line": 90
 },
 "TextureCacheSizeCallback": {
 "files": [
@@ -39231,7 +39335,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 94
+"line": 95
 },
 "TextureFilteringCallback": {
 "files": [
@@ -39254,7 +39358,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 100
+"line": 101
 },
 "UIFasterCalllback": {
 "files": [
@@ -39267,7 +39371,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 114
+"line": 115
 },
 "AsyncFileInitialize": {
 "files": [
@@ -39285,7 +39389,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 119
+"line": 120
 },
 "BaseInitializeGlobal": {
 "files": [
@@ -39300,7 +39404,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 124
+"line": 125
 },
 "ClientGameTimeTickHandler": {
 "files": [
@@ -39317,7 +39421,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 128
+"line": 129
 },
 "ClientInitializeGameTime": {
 "files": [
@@ -39337,15 +39441,16 @@
 "CastCacheRegisterHandlers",
 "QuestStatusRegisterHandlers",
 "SpellBookRegisterHandlers",
+"CGMinimapFrameRegisterHandlers",
 "ClientServices::SetMessageHandler"
 ],
 "strings": [],
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 18,
+"lines": 19,
 "refs": [],
-"line": 136
+"line": 137
 },
 "ClientIdle": {
 "files": [
@@ -39362,7 +39467,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 155
+"line": 157
 },
 "ClientPlayerModelReady": {
 "files": [
@@ -39383,7 +39488,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 164
+"line": 166
 },
 "ClientInitializeGame": {
 "files": [
@@ -39421,7 +39526,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 174
+"line": 176
 },
 "MouseSpeedCallback": {
 "files": [
@@ -39437,7 +39542,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 219
+"line": 221
 },
 "ErrorsCallback": {
 "files": [
@@ -39456,7 +39561,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 226
+"line": 228
 },
 "ShowErrorsCallback": {
 "files": [
@@ -39475,7 +39580,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 245
+"line": 247
 },
 "ErrorLevelMinCallback": {
 "files": [
@@ -39496,7 +39601,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 264
+"line": 266
 },
 "ErrorLevelMaxCallback": {
 "files": [
@@ -39517,7 +39622,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 279
+"line": 281
 },
 "ErrorFilterCallback": {
 "files": [
@@ -39530,7 +39635,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 294
+"line": 296
 },
 "ScreenshotFormatCallback": {
 "files": [
@@ -39545,7 +39650,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 302
+"line": 304
 },
 "ScreenshotQualityCallback": {
 "files": [
@@ -39561,7 +39666,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 309
+"line": 311
 },
 "ClientRegisterConsoleCommands": {
 "files": [
@@ -39665,7 +39770,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 316
+"line": 318
 },
 "ClientPostClose": {
 "files": [
@@ -39680,7 +39785,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 360
+"line": 362
 },
 "DestroyEngineCallback": {
 "files": [
@@ -39697,7 +39802,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 365
+"line": 367
 },
 "InitializeEngineCallback": {
 "files": [
@@ -39736,7 +39841,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 375
+"line": 377
 },
 "AddRunOnceFile": {
 "files": [
@@ -39756,7 +39861,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 442
+"line": 444
 },
 "CompareRunOnceFiles": {
 "files": [
@@ -39771,7 +39876,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 448
+"line": 450
 },
 "ProcessRunOnceFiles": {
 "files": [
@@ -39804,7 +39909,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 453
+"line": 455
 },
 "Sub406B70": {
 "files": [
@@ -39820,7 +39925,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 474
+"line": 476
 },
 "Sub405DD0": {
 "files": [
@@ -39840,7 +39945,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 488
+"line": 490
 },
 "LocaleChangedCallback": {
 "files": [
@@ -39853,7 +39958,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 504
+"line": 506
 },
 "InitializeGlobal": {
 "files": [
@@ -39904,7 +40009,7 @@
 "stub": false,
 "lines": 186,
 "refs": [],
-"line": 510
+"line": 512
 },
 "CommonMain": {
 "files": [
@@ -39922,7 +40027,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 697
+"line": 699
 },
 "BlizzardAssertCallback": {
 "files": [
@@ -39942,7 +40047,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 714
+"line": 716
 },
 "StormInitialize": {
 "files": [
@@ -39957,7 +40062,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 722
+"line": 724
 },
 "WowClientDestroy": {
 "files": [
@@ -39972,7 +40077,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 732
+"line": 734
 },
 "WowClientInit": {
 "files": [
@@ -40007,7 +40112,7 @@
 "stub": false,
 "lines": 90,
 "refs": [],
-"line": 740
+"line": 742
 },
 "LoadNewWorld": {
 "files": [
@@ -54728,110 +54833,6 @@
 "lines": 1,
 "refs": [],
 "line": 72
-},
-"CScriptRegion::PreOnAnimUpdate": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 32
-},
-"CScriptRegion::AnimActivated": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 37
-},
-"CScriptRegion::AnimDeactivated": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 38
-},
-"CScriptRegion::AddAnimTranslation": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 39
-},
-"CScriptRegion::AddAnimRotation": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 40
-},
-"CScriptRegion::AddAnimScale": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 41
-},
-"CScriptRegion::AddAnimAlpha": {
-"files": [
-"src/ui/cscriptregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 42
-},
-"CSimpleRegion::OnScreenSizeChanged": {
-"files": [
-"src/ui/simple/csimpleregion.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 26
 },
 "CCharacterCreation::CalcClasses": {
 "files": [
@@ -100620,7 +100621,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 58
+"line": 61
 },
 "CGMinimapFrame::GetNumTrackingSpells": {
 "files": [
@@ -100639,7 +100640,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 80
+"line": 83
 },
 "CGMinimapFrame::GetTrackingSpell": {
 "files": [
@@ -100658,7 +100659,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 92
+"line": 95
 },
 "LocalPlayerClassMask": {
 "files": [
@@ -100677,7 +100678,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 116
+"line": 119
 },
 "TrackingTypeAllowed": {
 "files": [
@@ -100690,7 +100691,101 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 122
+"line": 125
+},
+"PingOffset": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"CGPlayer_C::GetActivePtr",
+"CGUnit_C::GetPosition",
+"CGMinimapFrame::GetRadius"
+],
+"strings": [],
+"consts": [
+"1.0f",
+"2.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 143
+},
+"CGMinimapFrame::SetPing": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"CGPlayer_C::GetActivePtr",
+"Script_GetTokenFromGUID",
+"PingOffset",
+"FrameScript_SignalEvent"
+],
+"strings": [
+"%s%f%f"
+],
+"consts": [
+"0.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 22,
+"refs": [],
+"line": 168
+},
+"CGMinimapFrame::GetPingOffset": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"PingOffset"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 191
+},
+"ReceiveMinimapPing": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"CDataStore::Get",
+"CDataStore::Get",
+"CDataStore::Get",
+"CGMinimapFrame::SetPing"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 197
+},
+"CGMinimapFrameRegisterHandlers": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"ClientServices::SetMessageHandler"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 215
 },
 "CGMinimapFrame::GetRadius": {
 "files": [
@@ -100707,7 +100802,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 132
+"line": 223
 },
 "CGMinimapFrame::GetNumOtherTrackingTypes": {
 "files": [
@@ -100725,7 +100820,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 149
+"line": 240
 },
 "CGMinimapFrame::GetOtherTrackingType": {
 "files": [
@@ -100743,7 +100838,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 165
+"line": 256
 },
 "CGMinimapFrame::SetTrackingSpell": {
 "files": [
@@ -100759,7 +100854,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 186
+"line": 277
 },
 "CGMinimapFrame::RefreshTrackingSpell": {
 "files": [
@@ -100780,7 +100875,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 205
+"line": 296
 },
 "CGMinimapFrame::SetOtherTracking": {
 "files": [
@@ -100802,7 +100897,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 231
+"line": 322
 },
 "CGMinimapFrame::Create": {
 "files": [
@@ -100820,7 +100915,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 256
+"line": 347
 },
 "CGMinimapFrame::CreateScriptMetaTable": {
 "files": [
@@ -100836,7 +100931,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 262
+"line": 353
 },
 "CGMinimapFrame::GetObjectType": {
 "files": [
@@ -100849,7 +100944,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 267
+"line": 358
 },
 "CGMinimapFrame::RegisterScriptMethods": {
 "files": [
@@ -100865,7 +100960,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 275
+"line": 366
 },
 "CGMinimapFrame::GetZoomLevels": {
 "files": [
@@ -100878,7 +100973,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 281
+"line": 372
 },
 "CGMinimapFrame::GetZoom": {
 "files": [
@@ -100894,7 +100989,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 286
+"line": 377
 },
 "CGMinimapFrame::SetZoom": {
 "files": [
@@ -100910,7 +101005,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 291
+"line": 382
 },
 "CGMinimapFrame::CGMinimapFrame": {
 "files": [
@@ -100923,7 +101018,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 306
+"line": 397
 },
 "CGMinimapFrame::GetScriptMetaTable": {
 "files": [
@@ -100936,7 +101031,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 310
+"line": 401
 },
 "MinimapTexFlags": {
 "files": [
@@ -101370,22 +101465,20 @@
 "src/ui/game/cgminimapframescript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGMinimapFrame::GetPingOffset",
+"lua_pushnumber",
+"lua_pushnumber"
 ],
-"strings": [
-"(anonymous namespace)::CGMinimapFrame_GetPingPosition",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgminimapframescript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0.0f",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 317
+"line": 319
 },
 "TrackingTexturePath": {
 "files": [
@@ -101403,7 +101496,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 328
+"line": 337
 },
 "Script_GetNumTrackingTypes": {
 "files": [
@@ -101422,7 +101515,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 335
+"line": 344
 },
 "Script_GetTrackingInfo": {
 "files": [
@@ -101464,7 +101557,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 345
+"line": 354
 },
 "Script_SetTracking": {
 "files": [
@@ -101490,7 +101583,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 411
+"line": 420
 },
 "Script_GetTrackingTexture": {
 "files": [
@@ -101511,7 +101604,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 451
+"line": 460
 },
 "CGMinimapFrameScriptRegisterFunctions": {
 "files": [
@@ -101526,7 +101619,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 478
+"line": 487
 },
 "CGPartyInfo::NumMembers": {
 "files": [

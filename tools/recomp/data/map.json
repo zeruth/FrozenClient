@@ -614,7 +614,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "ClientInitializeGame",
-  "frozenSize": 577,
+  "frozenSize": 582,
   "how": "string",
   "module": "Client.cpp",
   "refSize": 789,
@@ -19785,6 +19785,22 @@
   "refSize": 122,
   "status": "ported"
  },
+ "0057eb80": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.364,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::SetPing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 493,
+  "status": "ported"
+ },
  "0057ed70": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -19802,20 +19818,20 @@
   "status": "stub"
  },
  "0057efe0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.455,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_GetPingPosition",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 85,
+  "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 390,
-  "status": "stub"
+  "status": "ported"
  },
  "0057f170": {
   "branchRatio": 0.0,

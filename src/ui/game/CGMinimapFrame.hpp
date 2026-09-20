@@ -2,6 +2,7 @@
 #define UI_GAME_C_G_MINIMAP_FRAME_HPP
 
 #include "gx/Texture.hpp"
+#include "util/guid/Types.hpp"
 #include "ui/simple/CSimpleFrame.hpp"
 
 class CSimpleTexture;
@@ -121,6 +122,19 @@ class CGMinimapFrame : public CSimpleFrame {
         static uint32_t GetZoom();
         static void SetZoom(uint32_t level);
 
+        // Where the last ping landed, in world coordinates. The reference keeps the pair
+        // adjacent and hands its address around as one point.
+        static float s_pingX;                    // ref: DAT_00beba8c
+        static float s_pingY;                    // ref: DAT_00beba90
+
+        // ref: FUN_0057eb80
+        // Record a ping and tell the UI about it. The position is world space; the event carries
+        // it as an offset from the player scaled into the minimap's own square.
+        static void SetPing(WOWGUID pinger, float x, float y);
+
+        // The ping offset the event reported, recomputed against where the player is NOW.
+        static bool GetPingOffset(float* x, float* y);
+
         // ref: FUN_007f3b90
         // The current view radius in yards, from whichever table the interior flag selects.
         static float GetRadius();
@@ -142,5 +156,7 @@ class CGMinimapFrame : public CSimpleFrame {
         // Member functions
         CGMinimapFrame(CSimpleFrame* parent);
 };
+
+void CGMinimapFrameRegisterHandlers();
 
 #endif
