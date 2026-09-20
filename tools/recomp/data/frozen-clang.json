@@ -85513,16 +85513,27 @@
 "FrameScript_SignalEvent",
 "CGObject_C::BlockIndexOf",
 "BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
 "FrameScript_SignalEvent"
 ],
-"strings": [],
+"strings": [
+"%d",
+"%s",
+"player"
+],
 "consts": [
+"0",
 "1",
 "2"
 ],
-"branches": 4,
+"branches": 6,
 "stub": false,
-"lines": 22,
+"lines": 42,
 "refs": [],
 "line": 335
 },
@@ -85557,7 +85568,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 372
+"line": 392
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85585,7 +85596,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 423
+"line": 443
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85607,7 +85618,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 466
+"line": 486
 },
 "QueryPlayerName": {
 "files": [

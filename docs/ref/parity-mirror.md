@@ -128,6 +128,8 @@ records the blocks whose value actually changed; the second pass turns those int
 | `CGPlayerData::xp`, `nextLevelXP` | `PLAYER_XP_UPDATE` | player only |
 | `CGPlayerData::coinage` | `PLAYER_MONEY` | player only |
 | `CGPlayerData::guildID`, `guildRank` (2 blocks) | `PLAYER_GUILD_UPDATE` | player only |
+| `CGPlayerData::invSlots[]` | `UNIT_INVENTORY_CHANGED` | player only |
+| `CGPlayerData::packSlots[]` | `BAG_UPDATE` (bag 0) | player only |
 
 Not signalled, and each for a stated reason:
 

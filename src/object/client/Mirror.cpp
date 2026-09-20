@@ -353,6 +353,26 @@ void SignalPlayerFieldEvents(CGPlayer_C* player, WOWGUID guid) {
     if (BlockRangeChanged(guid, player->BlockIndexOf(&data->guildID), 2)) {
         FrameScript_SignalEvent(SCRIPT_PLAYER_GUILD_UPDATE, nullptr);
     }
+
+    // Equipped slots and the backpack are both arrays of guids -- two descriptor blocks each -- so
+    // the ranges are sized from the arrays rather than written as numbers. The character panel and
+    // the paper doll redraw from the first; the bag windows from the second.
+    //
+    // The player token is hardcoded here rather than looked up: these fields only ever arrive for
+    // the active player, since nobody else's inventory is sent.
+    auto invBlocks = static_cast<uint32_t>(sizeof(data->invSlots) / sizeof(uint32_t));
+
+    if (BlockRangeChanged(guid, player->BlockIndexOf(&data->invSlots[0]), invBlocks)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_INVENTORY_CHANGED, "%s", "player");
+    }
+
+    auto packBlocks = static_cast<uint32_t>(sizeof(data->packSlots) / sizeof(uint32_t));
+
+    if (BlockRangeChanged(guid, player->BlockIndexOf(&data->packSlots[0]), packBlocks)) {
+        // Bag 0 is the backpack, which is what packSlots holds; the four equipped bags are objects
+        // of their own and report through their own containers.
+        FrameScript_SignalEvent(SCRIPT_BAG_UPDATE, "%d", 0);
+    }
 }
 
 }
