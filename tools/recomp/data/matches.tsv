@@ -1939,9 +1939,9 @@ addr	how	frozen	evidence
 00816830	string	FrameScript_Object::GetScriptByName	unique "OnEvent"
 008168d0	annotated	sub_8168D0	tag in src/ui/LuaExtraFuncs.cpp
 00816910	annotated	sub_816910	tag in src/ui/LuaExtraFuncs.cpp
-00816960	order	strtrim	binding table name strtrim, in definition order in src/ui/LuaExtraFuncs.cpp
-00816a60	order	strsplit	binding table name strsplit, in definition order in src/ui/LuaExtraFuncs.cpp
-00816b60	order	strjoin	binding table name strjoin, in definition order in src/ui/LuaExtraFuncs.cpp
+00816960	annotated	strtrim	tag in src/ui/LuaExtraFuncs.cpp
+00816a60	annotated	strsplit	tag in src/ui/LuaExtraFuncs.cpp
+00816b60	annotated	strjoin	tag in src/ui/LuaExtraFuncs.cpp
 00816c40	annotated	sub_816C40	tag in src/ui/LuaExtraFuncs.cpp
 00816d80	annotated	sub_816D80	tag in src/ui/LuaExtraFuncs.cpp
 00816da0	order	issecure	binding table name issecure, in definition order in src/ui/LuaExtraFuncs.cpp

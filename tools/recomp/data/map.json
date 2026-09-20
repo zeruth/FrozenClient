@@ -30926,49 +30926,49 @@
   "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "strtrim",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 197,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 255,
-  "status": "stub"
+  "status": "ported"
  },
  "00816a60": {
-  "branchRatio": 0.2,
+  "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.556,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "strsplit",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 239,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 252,
-  "status": "stub"
+  "status": "ported"
  },
  "00816b60": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "strjoin",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 178,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 209,
-  "status": "stub"
+  "status": "ported"
  },
  "00816c40": {
   "branchRatio": 0.286,
@@ -30987,20 +30987,20 @@
   "status": "stub"
  },
  "00816d80": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "sub_816D80",
-  "frozenSize": 75,
+  "frozenSize": 35,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 31,
-  "status": "stub"
+  "status": "ported"
  },
  "00816da0": {
   "branchRatio": 0.0,

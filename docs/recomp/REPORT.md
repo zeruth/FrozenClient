@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 20:43 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 20:50 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,19 +9,19 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
 | mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2135 (=) | 421.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 527 (=) | 113.7k |
+| &nbsp;&nbsp;ported | 2139 (+4) | 421.9k |
+| &nbsp;&nbsp;stub (unimplemented body) | 523 (-4) | 112.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **991 (=) (3.6%)** | **122.4k (2.2%)** |
 | unmapped | 24462 | 4.85M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11496, stubs 787 | |
+| frozen functions (src/, from PDB + source) | 11496, stubs 783 | |
 
-Match evidence: annotated 600, callgraph 173, callorder 133, cvar 30, handler 28, order 192, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
+Match evidence: annotated 603, callgraph 173, callorder 133, cvar 30, handler 28, order 189, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 20:39 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
+Previous run: 2026-09-19 20:43 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
@@ -193,7 +193,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 2 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 74 (40.2%) | 46.3% | 17 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 74 (40.2%) | 46.3% | 13 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 34 | 0 | 1 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 18:39 | 2698 (9.9%) | 988 (3.6%) | 521 | 393/5530 | 1791/2964 | 581 |
 | 2026-09-19 18:45 | 2698 (9.9%) | 988 (3.6%) | 520 | 393/5530 | 1791/2964 | 580 |
 | 2026-09-19 18:47 | 2699 (9.9%) | 989 (3.6%) | 519 | 393/5530 | 1791/2964 | 579 |
 | 2026-09-19 18:48 | 2699 (9.9%) | 990 (3.6%) | 518 | 393/5530 | 1791/2964 | 579 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 20:34 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:43 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
+| 2026-09-19 20:50 | 2699 (9.9%) | 991 (3.6%) | 523 | 393/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 

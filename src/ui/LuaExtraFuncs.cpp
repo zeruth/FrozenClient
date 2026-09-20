@@ -50,24 +50,129 @@ int32_t sub_816910(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00816960
+// strtrim(s [, chars]) -- chars defaults to " \t\r\n", read out of the reference at 00a16860
+// rather than assumed. Trims from both ends; a string made entirely of trim characters comes back
+// empty rather than untouched.
 int32_t strtrim(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    size_t length = 0;
+    auto text = luaL_checklstring(L, 1, &length);
+    auto chars = luaL_optlstring(L, 2, " \t\r\n", nullptr);
+
+    auto trimmed = [chars](char c) {
+        for (auto p = chars; *p; p++) {
+            if (*p == c) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    size_t first = 0;
+    while (first < length && trimmed(text[first])) {
+        first++;
+    }
+
+    size_t last = length;
+    while (last > first && trimmed(text[last - 1])) {
+        last--;
+    }
+
+    lua_pushlstring(L, text + first, last - first);
+
+    return 1;
 }
 
+// ref: FUN_00816a60
+// strsplit(delimiters, s [, limit]) -- delimiters FIRST, which is the argument order the reference
+// reads and the opposite of what the name suggests. Any character in the first argument splits.
+//
+// limit caps the number of pieces: once one short of it, the rest of the string comes back whole,
+// separators and all. Zero or absent means no cap.
 int32_t strsplit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    size_t delimLength = 0;
+    size_t length = 0;
+    auto delims = luaL_checklstring(L, 1, &delimLength);
+    auto text = luaL_checklstring(L, 2, &length);
+    auto limit = static_cast<int32_t>(luaL_optinteger(L, 3, 0));
+
+    auto isDelim = [delims, delimLength](char c) {
+        for (size_t i = 0; i < delimLength; i++) {
+            if (delims[i] == c) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    lua_settop(L, 0);
+
+    int32_t pieces = 0;
+    size_t start = 0;
+
+    for (size_t i = 0; i <= length; i++) {
+        auto atEnd = i == length;
+
+        if (limit > 0 && pieces == limit - 1 && !atEnd) {
+            continue;
+        }
+
+        if (atEnd || isDelim(text[i])) {
+            lua_pushlstring(L, text + start, i - start);
+            pieces++;
+            start = i + 1;
+        }
+    }
+
+    return pieces;
 }
 
+// ref: FUN_00816b60
+// strjoin(delimiter, ...) -- the delimiter goes between the remaining arguments, not after each,
+// so a single argument comes back unchanged.
 int32_t strjoin(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    size_t delimLength = 0;
+    auto delim = luaL_checklstring(L, 1, &delimLength);
+    auto count = lua_gettop(L);
+
+    if (count < 2) {
+        lua_pushlstring(L, "", 0);
+
+        return 1;
+    }
+
+    // Pushed in interleaved order -- value, separator, value -- and concatenated in one go. The
+    // separators cannot simply be pushed after the values: lua_concat joins the top N as they lie,
+    // so that would yield every value followed by every delimiter.
+    int32_t pushed = 0;
+
+    for (int32_t i = 2; i <= count; i++) {
+        if (i > 2) {
+            lua_pushlstring(L, delim, delimLength);
+            pushed++;
+        }
+
+        lua_pushvalue(L, i);
+        pushed++;
+    }
+
+    lua_concat(L, pushed);
+
+    return 1;
 }
 
 int32_t sub_816C40(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00816d80
+// Everything on the stack, joined with nothing between. Two lines in the reference and two here.
 int32_t sub_816D80(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_concat(L, lua_gettop(L));
+
+    return 1;
 }
 
 int32_t strlenutf8(lua_State* L) {

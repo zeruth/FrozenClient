@@ -141675,66 +141675,76 @@
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"luaL_checklstring",
+"luaL_optlstring",
+"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:62:20)::operator()",
+"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:62:20)::operator()",
+"lua_pushlstring"
 ],
 "strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"strtrim"
+" \t\r\n"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 29,
 "refs": [],
-"line": 53
+"line": 57
 },
 "strsplit": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"luaL_checklstring",
+"luaL_checklstring",
+"luaL_optinteger",
+"lua_settop",
+"strsplit::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:100:20)::operator()",
+"lua_pushlstring"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"strsplit"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2",
+"3"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 38,
 "refs": [],
-"line": 57
+"line": 93
 },
 "strjoin": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"luaL_checklstring",
+"lua_gettop",
+"lua_pushlstring",
+"lua_pushlstring",
+"lua_pushvalue",
+"lua_concat"
 ],
 "strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"strjoin"
+""
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 30,
 "refs": [],
-"line": 61
+"line": 135
 },
 "sub_816C40": {
 "files": [
@@ -141756,29 +141766,25 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 65
+"line": 166
 },
 "sub_816D80": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_gettop",
+"lua_concat"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"sub_816D80"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 69
+"line": 172
 },
 "strlenutf8": {
 "files": [
@@ -141800,7 +141806,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 73
+"line": 178
 },
 "issecure": {
 "files": [
@@ -141818,7 +141824,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 77
+"line": 182
 },
 "issecurevariable": {
 "files": [
@@ -141840,7 +141846,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 85
+"line": 190
 },
 "forceinsecure": {
 "files": [
@@ -141862,7 +141868,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 89
+"line": 194
 },
 "securecall": {
 "files": [
@@ -141896,7 +141902,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 93
+"line": 198
 },
 "hooksecurefunc": {
 "files": [
@@ -141918,7 +141924,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 126
+"line": 231
 },
 "debugload": {
 "files": [
@@ -141940,7 +141946,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 130
+"line": 235
 },
 "debuginfo": {
 "files": [
@@ -141962,7 +141968,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 134
+"line": 239
 },
 "debugprint": {
 "files": [
@@ -141984,7 +141990,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 138
+"line": 243
 },
 "debugdump": {
 "files": [
@@ -142006,7 +142012,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 142
+"line": 247
 },
 "debugbreak": {
 "files": [
@@ -142028,7 +142034,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 146
+"line": 251
 },
 "debughook": {
 "files": [
@@ -142050,7 +142056,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 255
 },
 "debugtimestamp": {
 "files": [
@@ -142072,7 +142078,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 154
+"line": 259
 },
 "debugprofilestart": {
 "files": [
@@ -142094,7 +142100,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 158
+"line": 263
 },
 "debugprofilestop": {
 "files": [
@@ -142116,7 +142122,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 162
+"line": 267
 },
 "seterrorhandler": {
 "files": [
@@ -142139,7 +142145,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 166
+"line": 271
 },
 "geterrorhandler": {
 "files": [
@@ -142161,7 +142167,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 181
+"line": 286
 },
 "SetDateField": {
 "files": [
@@ -142180,7 +142186,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 191
+"line": 296
 },
 "SetDateFlag": {
 "files": [
@@ -142199,7 +142205,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 197
+"line": 302
 },
 "GetDateField": {
 "files": [
@@ -142221,7 +142227,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 203
+"line": 308
 },
 "os_date": {
 "files": [
@@ -142302,7 +142308,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 220
+"line": 325
 },
 "os_time": {
 "files": [
@@ -142360,7 +142366,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 270
+"line": 375
 },
 "os_difftime": {
 "files": [
@@ -142388,7 +142394,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 302
+"line": 407
 },
 "debugstack": {
 "files": [
@@ -142426,7 +142432,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 313
+"line": 418
 },
 "debuglocals": {
 "files": [
@@ -142460,7 +142466,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 372
+"line": 477
 },
 "scrub": {
 "files": [
@@ -142482,7 +142488,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 413
+"line": 518
 },
 "luaM_initPool": {
 "files": [
