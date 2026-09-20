@@ -407,7 +407,12 @@ std::vector<uint16_t> s_vi;
 
 } // namespace
 
-void ParticleFxRender() {
+// The body of both entry points. `only` restricts the draw to a single model (the glue's model
+// frame) or draws every live one when null (the world). Everything the world used to read from
+// globals -- camera, view-projection, fog -- arrives as an argument so the same code can serve a
+// render that is not the world's.
+static void ParticleFxRenderImpl(CM2Model* only, const C3Vector& cameraPos, const C3Vector& cameraDir,
+                                 const C44Matrix& viewProjT, int32_t fog) {
     CGxShader* vs = nullptr;
     CGxShader* ps = nullptr;
     TerrainUiShaders(vs, ps);
@@ -416,8 +421,7 @@ void ParticleFxRender() {
         return;
     }
 
-    const C3Vector& cameraPos = CWorld::GetCameraPos();
-    const C3Vector& fwd = CWorld::GetCameraDir();
+    const C3Vector& fwd = cameraDir;
     C3Vector right = { fwd.y, -fwd.x, 0.0f };
     float rl = sqrtf(right.x * right.x + right.y * right.y);
 
@@ -449,6 +453,10 @@ void ParticleFxRender() {
 
     for (auto& entry : s_models) {
         if (entry.second.lastFrame != s_frame) {
+            continue;
+        }
+
+        if (only && entry.first != only) {
             continue;
         }
 
@@ -582,10 +590,10 @@ void ParticleFxRender() {
     GxRsSet(GxRs_DepthWrite, 0);
     GxRsSet(GxRs_Culling, 0);
     GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, TerrainFogActive() ? 1 : 0);
+    GxRsSet(GxRs_Fog, fog);
     GxRsSet(GxRs_VertexShader, vs);
     GxRsSet(GxRs_PixelShader, ps);
-    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&TerrainViewProjT()), 4);
+    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&viewProjT), 4);
 
     size_t i = 0;
 
@@ -661,6 +669,17 @@ void ParticleFxRender() {
 }
 
 // ref: FUN_00980f70
+void ParticleFxRender() {
+    ParticleFxRenderImpl(nullptr, CWorld::GetCameraPos(), CWorld::GetCameraDir(),
+                         TerrainViewProjT(), TerrainFogActive() ? 1 : 0);
+}
+
+void ParticleFxRenderModel(CM2Model* model, const C3Vector& cameraPos, const C3Vector& cameraDir,
+                           const C44Matrix& viewProjT) {
+    // No fog: the terrain's fog state belongs to the world, and a model frame draws its own scene.
+    ParticleFxRenderImpl(model, cameraPos, cameraDir, viewProjT, 0);
+}
+
 void ParticleFxSetDensity(float density) {
     s_particleDensity = 0.0f;
 

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <tempest/Vector.hpp>
+#include <tempest/Matrix.hpp>
 
 class CM2Model;
 
@@ -20,6 +21,19 @@ void ParticleFxForgetModel(CM2Model* model);
 
 // Draw all live particles (call once per frame after the models have been updated)
 void ParticleFxRender();
+
+// Draw one model's particles into whatever is currently being rendered, with an explicit camera
+// and transform instead of the world's.
+//
+// ParticleFxRender reads the world camera, the terrain's view-projection constant and the terrain
+// fog state, all of which are meaningless on the login screen -- the glue draws its model through
+// CSimpleModel with a camera of its own. The login model carries 40 emitters, so without this the
+// snow simply never ran.
+//
+// cameraDir does not need to be normalised. viewProjT is (view * nativeProjection) transposed,
+// which is the form the shared vertex program expects.
+void ParticleFxRenderModel(CM2Model* model, const C3Vector& cameraPos, const C3Vector& cameraDir,
+                           const C44Matrix& viewProjT);
 
 // Simulations of models not updated for a while are released; call once per frame
 void ParticleFxEndFrame();

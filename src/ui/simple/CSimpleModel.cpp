@@ -2,6 +2,7 @@
 #include "gx/Camera.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Draw.hpp"
+#include "world/ParticleFx.hpp"
 #include "gx/Shader.hpp"
 #include "gx/Transform.hpp"
 #include "math/Utils.hpp"
@@ -117,6 +118,36 @@ void CSimpleModel::RenderModel(void* arg) {
     if (simpleModel->m_pendingCameraIndex == -1u) {
         simpleModel->GetScene()->Animate(cameraPos);
         simpleModel->GetScene()->Draw(M2PASS_0);
+
+        // Emitter quads belong with the transparent block, which for this frame means after the
+        // opaque pass and before pass 1 -- the same place the world draws them.
+        //
+        // This is what the login screen's snow was missing. The model carries 40 emitters and the
+        // simulation was already running (OnLayerUpdate steps it), but the only code that drew
+        // particles was CGWorldFrame, and the glue never goes through it. The camera and transform
+        // come from this frame rather than the world's, which is why the render takes them.
+        //
+        // Only with a real camera: the screen-projection branch above leaves cameraPos and
+        // cameraTarg untouched, and billboarding against uninitialised stack would be worse than
+        // drawing nothing.
+        if (simpleModel->m_camera) {
+            C3Vector dir = {
+                cameraTarg.x - cameraPos.x,
+                cameraTarg.y - cameraPos.y,
+                cameraTarg.z - cameraPos.z,
+            };
+
+            C44Matrix modelView;
+            GxXformView(modelView);
+
+            C44Matrix modelProj;
+            GxXformProjNative(modelProj);
+
+            C44Matrix viewProj = modelView * modelProj;
+
+            ParticleFxRenderModel(simpleModel->m_model, cameraPos, dir, viewProj.Transpose());
+        }
+
         simpleModel->GetScene()->Draw(M2PASS_1);
     }
 
@@ -256,6 +287,14 @@ void CSimpleModel::OnLayerUpdate(float elapsedSec) {
 
     uint32_t advance = CMath::fuint(elapsedSec * 1000.f);
     this->GetScene()->AdvanceTime(advance);
+
+    // Step this model's emitters after the scene time moves, so their bone state is current. The
+    // world clamps its delta the same way, to stop a long stall from teleporting every particle.
+    if (this->m_model) {
+        float dt = elapsedSec > 0.1f ? 0.1f : elapsedSec;
+
+        ParticleFxUpdateModel(this->m_model, dt);
+    }
 }
 
 void CSimpleModel::OnModelLoaded(CM2Model* model) {
