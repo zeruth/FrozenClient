@@ -13,9 +13,9 @@ WOWGUID CGPartyInfo::m_members[4];
 // reach the player and nobody else, the party frames have nothing to draw, and UnitIsFeignDeath
 // and UnitPlayerOrPetInParty cannot be answered at all.
 //
-// The reference's party module lives around 0052bb00-0052e200 and zeroes this state in
-// FUN_0052d0e0; the roster array is DAT_00bd1948 and the pet array DAT_00bd0e68. The message
-// handler that fills them is registered outside that init, so it still has to be found.
+// The handler is SMSG_GROUP_LIST (0x7D), already in frozen's enum, implemented at FUN_006d8870.
+// docs/ref/parity-party.md has the header layout, the globals, the duplicate-packet rule, and how
+// the handler was found.
 WOWGUID CGPartyInfo::GetMember(uint32_t index) {
     if (index < 1 || index > 4) {
         return 0;
