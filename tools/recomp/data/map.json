@@ -16194,36 +16194,36 @@
   "status": "stub"
  },
  "0052dc20": {
-  "branchRatio": 0.105,
-  "constOverlap": 0.0,
+  "branchRatio": 0.474,
+  "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_SetLootMethod",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 271,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 564,
-  "status": "stub"
+  "status": "ported"
  },
  "0052de60": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.7,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_SetLootThreshold",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 168,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 213,
-  "status": "stub"
+  "status": "ported"
  },
  "0052e1b0": {
   "branchRatio": 0.118,
@@ -28142,6 +28142,22 @@
   "refSize": 115,
   "status": "ported"
  },
+ "006d46d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::SendLootSettings",
+  "frozenSize": 133,
+  "how": "annotated",
+  "module": "Player_C.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
  "006d5c30": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -28192,7 +28208,7 @@
  },
  "006d8870": {
   "branchRatio": 0.125,
-  "constOverlap": 0.0,
+  "constOverlap": 0.021,
   "faithful": false,
   "fidelity": 0.325,
   "files": [
@@ -28200,7 +28216,7 @@
    "src/ui/game/cgpartyinfo.cpp"
   ],
   "frozen": "ReceiveGroupList",
-  "frozenSize": 1070,
+  "frozenSize": 1212,
   "how": "annotated",
   "module": "Player_C.cpp",
   "refSize": 2482,

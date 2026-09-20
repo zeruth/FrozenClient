@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2753 (+2) (10.1%) | 586.6k (10.6%) |
-| &nbsp;&nbsp;ported | 2223 (+4) | 442.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 490 (-2) | 105.0k |
+| mapped to a frozen function | 2754 (+1) (10.1%) | 586.7k (10.6%) |
+| &nbsp;&nbsp;ported | 2226 (+3) | 443.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 488 (-2) | 104.2k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1031 (+3) (3.8%)** | **127.7k (2.3%)** |
-| unmapped | 24409 | 4.83M |
+| **faithful** (linked, not stub, call order >= 80%) | **1032 (+1) (3.8%)** | **127.9k (2.3%)** |
+| unmapped | 24408 | 4.83M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 165 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11576, stubs 748 | |
+| **render surface** (the modules that draw the world) | **6005, mapped 166 (+1) (2.8%)** | |
+| frozen functions (src/, from PDB + source) | 11581, stubs 746 | |
 
-Match evidence: annotated 685, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 991. Module anchors: 1479 assert strings.
+Match evidence: annotated 688, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 989. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:16 -- mapped 2751, ported 2219, stub 492, spine mapped 412.
+Previous run: 2026-09-20 01:20 -- mapped 2753, ported 2223, stub 490, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 559 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 557 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -78,13 +78,13 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf768 (ClosePetStables..) | 14 | `s_ScriptFunctions` | 11 | 0 | ClosePetStables, StablePet, UnstablePet, BuyStableSlot, GetStablePetInfo, GetNextStableSlotCost ... |
 | 00ad0568 (CloseSocketInfo..) | 12 | `s_ScriptFunctions` | 11 | 0 | CloseSocketInfo, GetSocketItemInfo, GetExistingSocketInfo, GetExistingSocketLink, GetNewSocketInfo, GetNewSocketLink ... |
 | 00a47798 (concat..) | 11 | `s_ScriptFunctions` | 10 | 0 | concat, foreach, foreachi, getn, maxn, insert ... |
-| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 10 |  / stubs: LeaveParty, SetLootMethod, SetLootThreshold, SetPartyAssignment ... |
 | 00adb8e0 (CombatLogResetFilter..) | 11 | `s_ScriptFunctions` | 10 | 0 | CombatLogResetFilter, CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime, CombatLogGetNumEntries, CombatLogSetCurrentEntry ... |
 | 00af29c0 (VoiceEnumerateOutputDevices..) | 15 | `s_ScriptFunctions` | 10 | 0 | VoiceEnumerateOutputDevices, VoiceEnumerateCaptureDevices, VoiceSelectOutputDevice, VoiceSelectCaptureDevice, VoiceGetCurrentOutputDevice, VoiceGetCurrentCaptureDevice ... |
 | 00aceec0 (ItemTextGetItem..) | 9 | `-` | 9 | 0 | ItemTextGetItem, ItemTextGetCreator, ItemTextGetMaterial, ItemTextGetPage, ItemTextGetText, ItemTextHasNextPage ... |
 | 00acf838 (GetArenaTeam..) | 13 | `s_ScriptFunctions` | 9 | 0 | GetArenaTeamRosterInfo, GetArenaTeamGdfInfo, SetArenaTeamRosterSelection, GetArenaTeamRosterSelection, SortArenaTeamRoster, SetArenaTeamRosterShowOffline ... |
 | 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions` | 9 | 0 | GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent, SetActiveTalentGroup, AddPreviewTalentPoints ... |
 | 00a475a0 (bnot..) | 8 | `-` | 8 | 0 | bnot, band, bor, bxor, lshift, rshift ... |
+| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 8 |  / stubs: LeaveParty, SetPartyAssignment, ClearPartyAssignment, GetPartyAssignment ... |
 | 00af51c8 (SpellIsTargeting..) | 11 | `s_ScriptFunctions` | 8 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
 | 00ad09b8 (GetNumSkillLines..) | 13 | `s_ScriptFunctions` | 7 | 0 | AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp, RemoveSkillUp, AcceptSkillUps ... |
 | 00a47d28 (create..) | 6 | `-` | 6 | 0 | create, resume, running, status, wrap, yield |
@@ -145,7 +145,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | OggDecompress.cpp | 1504 | 260.7k | 14 (0.9%) | 0.9% | 0 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 53 (5.4%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 4 (0.6%) | 0.6% | 0 | 0 | 294 |
-| Player_C.cpp | 736 | 148.3k | 11 (1.5%) | 5.8% | 0 | 0 | 163 |
+| Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 40 (16.3%) | 13.1% | 16 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 6 (2.7%) | 2.4% | 0 | 0 | 72 |
-| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
+| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 54 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 5 | 0 | 7 |
@@ -505,7 +505,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0062f1e0 | Tooltip.cpp | 571 | 0 | `CGTooltip_SetTradeTargetItem` [table] | Invalid trade slot in SetTradeTargetItem |
 | 0062f9e0 | Tooltip.cpp | 569 | 0 | `CGTooltip_SetInboxItem` [table] | Usage: %s:SetInboxItem(messageIndex, att |
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
-| 0052dc20 | PartyFrame.cpp | 564 | 0 | `Script_SetLootMethod` [table] | Invalid loot method, Usage: SetLootMethod("method" [,master]) |
 | 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 004b7460 | Texture.cpp | 136 | 3 | `GetDefaultTexture` [order] | .?AVCMipBitsCache@@, d:\buildserver\wow\1\work\wow-code\branc |
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
@@ -516,6 +515,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00820f40 | M2Scene.cpp? | 251 | 1 | `CM2SceneRender::DrawRibbon` [override] | Ribbon: model=%s index=%d |
 | 0062eff0 | Tooltip.cpp | 496 | 0 | `CGTooltip_SetTradePlayerItem` [table] | .\Tooltip.cpp, Invalid trade slot in SetTradePlayerItem |
 | 0054c2e0 | BattlefieldInfo.cpp | 496 | 0 | `Script_GetBattlefieldPosition` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldPosition(index) |
+| 00511240 | ChatFrame.cpp? | 483 | 0 | `Script_GetAddOnInfo` [table] | AddOn index must be in the range of 1 to, Usage: GetAddOnInfo(index or "name") |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -544,7 +544,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00515200 | `Script_GetCursorInfo` | CRITTER; MOUNT; UNKNOWN; companion |
 | 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
-| 0052dc20 | `Script_SetLootMethod` | Invalid loot method; Usage: SetLootMethod("method" [,master]); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; freeforall |
 | 00832ea0 | `CM2Model::InitializeLoaded` | "%s", %s = %g; "%s", %s = %g, %s = %g; shared->farClip; shared->fieldOfView |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
@@ -563,6 +562,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
 | 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
+| 00860f10 | `forlist` | '%s' expected; function at line %d has more than %d %s; local variables; main function has more than %d %s |
 
 ## Largest frozen functions with no reference link
 
@@ -627,7 +627,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
-| 006d8870 | `ReceiveGroupList` | 32% | 77 | 35 | 80 | 10 | 0% | 2482 |
+| 006d8870 | `ReceiveGroupList` | 32% | 77 | 36 | 80 | 10 | 2% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:20 | 2731 (10.1%) | 1017 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:27 | 2732 (10.1%) | 1017 (3.7%) | 501 | 407/5531 | 1792/2964 | 570 |
 | 2026-09-19 23:30 | 2732 (10.1%) | 1017 (3.7%) | 500 | 407/5531 | 1792/2964 | 569 |
 | 2026-09-19 23:36 | 2732 (10.1%) | 1019 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:11 | 2751 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
 | 2026-09-20 01:16 | 2751 (10.1%) | 1028 (3.8%) | 492 | 412/5531 | 1799/2964 | 561 |
 | 2026-09-20 01:20 | 2753 (10.1%) | 1031 (3.8%) | 490 | 412/5531 | 1799/2964 | 559 |
+| 2026-09-20 01:27 | 2754 (10.1%) | 1032 (3.8%) | 488 | 412/5531 | 1799/2964 | 557 |
 
 ## How to move a row
 

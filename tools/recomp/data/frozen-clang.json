@@ -101694,7 +101694,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 44
+"line": 45
 },
 "CGPartyInfo::GetMember": {
 "files": [
@@ -101711,7 +101711,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 56
+"line": 57
 },
 "CGPartyInfo::GetMemberInfo": {
 "files": [
@@ -101727,7 +101727,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 64
+"line": 65
 },
 "CGPartyInfo::GetLeader": {
 "files": [
@@ -101740,7 +101740,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 72
+"line": 73
 },
 "CGPartyInfo::IsMemberOrPet": {
 "files": [
@@ -101762,7 +101762,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 79
+"line": 80
 },
 "CGPartyInfo::IsPlayerOrMemberOrPet": {
 "files": [
@@ -101782,7 +101782,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 115
+"line": 116
 },
 "CGPartyInfo::SetMember": {
 "files": [
@@ -101797,7 +101797,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 142
+"line": 143
 },
 "CGPartyInfo::GetLootMethod": {
 "files": [
@@ -101810,7 +101810,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 147
+"line": 148
 },
 "CGPartyInfo::GetMasterLooter": {
 "files": [
@@ -101823,7 +101823,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 151
+"line": 152
 },
 "CGPartyInfo::GetLootThreshold": {
 "files": [
@@ -101836,7 +101836,49 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 155
+"line": 156
+},
+"CGPartyInfo::FindByName": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [
+"CGPartyInfo::GetMemberInfo",
+"SStrCmpI",
+"CGRaidInfo::FindByName"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 160
+},
+"CGPartyInfo::SendLootSettings": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [
+"CDataStore::CDataStore",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Put",
+"CDataStore::Finalize",
+"ClientServices::Send"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 179
 },
 "CGPartyInfo::SetLoot": {
 "files": [
@@ -101849,7 +101891,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 159
+"line": 190
 },
 "CGPartyInfo::GetDungeonDifficulty": {
 "files": [
@@ -101862,7 +101904,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 165
+"line": 196
 },
 "CGPartyInfo::GetRaidDifficulty": {
 "files": [
@@ -101875,7 +101917,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 169
+"line": 200
 },
 "CGPartyInfo::GetOwnDungeonDifficulty": {
 "files": [
@@ -101888,7 +101930,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 173
+"line": 204
 },
 "CGPartyInfo::GetOwnRaidDifficulty": {
 "files": [
@@ -101901,7 +101943,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 177
+"line": 208
 },
 "CGPartyInfo::ApplyDungeonDifficulty": {
 "files": [
@@ -101914,7 +101956,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 184
+"line": 215
 },
 "CGPartyInfo::ApplyRaidDifficulty": {
 "files": [
@@ -101927,7 +101969,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 195
+"line": 226
 },
 "CGPartyInfo::SetDifficulty": {
 "files": [
@@ -101940,7 +101982,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 208
+"line": 239
 },
 "CGPartyInfo::SetLeader": {
 "files": [
@@ -101955,7 +101997,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 216
+"line": 247
 },
 "CGPartyInfo::GetRealNumMembers": {
 "files": [
@@ -101968,7 +102010,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 226
+"line": 257
 },
 "CGPartyInfo::GetRealLeader": {
 "files": [
@@ -101981,7 +102023,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 230
+"line": 261
 },
 "CGPartyInfo::SetRealParty": {
 "files": [
@@ -101996,7 +102038,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 238
+"line": 269
 },
 "CGPartyInfo::Clear": {
 "files": [
@@ -102015,7 +102057,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 246
+"line": 277
 },
 "ReceiveGroupList": {
 "files": [
@@ -102041,6 +102083,7 @@
 "CDataStore::Get",
 "CDataStore::Get",
 "CDataStore::Get",
+"SStrCopy",
 "CGPartyInfo::SetMember",
 "CDataStore::Get",
 "CGPartyInfo::SetRealParty",
@@ -102065,13 +102108,14 @@
 "2",
 "3",
 "4",
+"48",
 "60000"
 ],
 "branches": 10,
 "stub": false,
-"lines": 134,
+"lines": 138,
 "refs": [],
-"line": 270
+"line": 301
 },
 "ReceiveSetDungeonDifficulty": {
 "files": [
@@ -102092,7 +102136,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 407
+"line": 442
 },
 "ReceiveSetRaidDifficulty": {
 "files": [
@@ -102113,7 +102157,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 425
+"line": 460
 },
 "CGPartyInfo::RegisterHandlers": {
 "files": [
@@ -102130,7 +102174,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 443
+"line": 478
 },
 "CGPetInfo::GetPet": {
 "files": [
@@ -102564,7 +102608,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 9
+"line": 11
 },
 "CGRaidInfo::IsMemberOrPet": {
 "files": [
@@ -102584,13 +102628,32 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 14
+"line": 16
+},
+"CGRaidInfo::FindByName": {
+"files": [
+"src/ui/game/cgraidinfo.cpp"
+],
+"callseq": [
+"SStrCmpI"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 48
 },
 "CGRaidInfo::SetRoster": {
 "files": [
 "src/ui/game/cgraidinfo.cpp"
 ],
-"callseq": [],
+"callseq": [
+"SStrCopy"
+],
 "strings": [],
 "consts": [
 "0",
@@ -102598,9 +102661,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 22,
+"lines": 24,
 "refs": [],
-"line": 46
+"line": 62
 },
 "CGTabardModelFrame::Create": {
 "files": [
@@ -134984,7 +135047,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 10
+"line": 13
 },
 "Script_GetRealNumPartyMembers": {
 "files": [
@@ -135002,7 +135065,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 20
+"line": 23
 },
 "Script_GetPartyMember": {
 "files": [
@@ -135030,7 +135093,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 29
+"line": 32
 },
 "Script_GetPartyLeaderIndex": {
 "files": [
@@ -135051,7 +135114,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 59
+"line": 62
 },
 "Script_IsPartyLeader": {
 "files": [
@@ -135072,7 +135135,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 81
+"line": 84
 },
 "Script_IsRealPartyLeader": {
 "files": [
@@ -135093,7 +135156,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 96
+"line": 99
 },
 "Script_LeaveParty": {
 "files": [
@@ -135115,7 +135178,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 108
+"line": 111
 },
 "Script_GetLootMethod": {
 "files": [
@@ -135150,29 +135213,72 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 121
+"line": 124
+},
+"CanSetLoot": {
+"files": [
+"src/ui/game/partyinfoscript.cpp"
+],
+"callseq": [
+"CGPartyInfo::GetMember",
+"CGRaidInfo::NumMembers",
+"CGGameUI::DisplayError",
+"CGPartyInfo::GetLeader",
+"ClntObjMgrGetActivePlayer",
+"CGGameUI::DisplayError"
+],
+"strings": [],
+"consts": [
+"0x50",
+"0x54",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 164
 },
 "Script_SetLootMethod": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CanSetLoot",
+"lua_isstring",
+"luaL_error",
+"lua_tolstring",
+"SStrCmpI",
+"luaL_error",
+"lua_isstring",
+"lua_tolstring",
+"CGGameUI::DisplayError",
+"CGPartyInfo::FindByName",
+"CGGameUI::DisplayError",
+"CGPartyInfo::GetLootThreshold",
+"CGPartyInfo::SendLootSettings"
 ],
 "strings": [
-"(anonymous namespace)::Script_SetLootMethod",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\partyinfoscript.cpp"
+"Invalid loot method",
+"Usage: SetLootMethod(\"method\" [,master])",
+"freeforall",
+"group",
+"master",
+"needbeforegreed",
+"roundrobin"
 ],
 "consts": [
-"0"
+"0",
+"0xfc",
+"1",
+"2",
+"5"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 9,
+"stub": false,
+"lines": 56,
 "refs": [],
-"line": 158
+"line": 188
 },
 "Script_GetLootThreshold": {
 "files": [
@@ -135190,29 +135296,37 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 163
+"line": 246
 },
 "Script_SetLootThreshold": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CanSetLoot",
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"luaL_error",
+"CGPartyInfo::GetMasterLooter",
+"CGPartyInfo::GetLootMethod",
+"CGPartyInfo::SendLootSettings"
 ],
 "strings": [
-"(anonymous namespace)::Script_SetLootThreshold",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\partyinfoscript.cpp"
+"SetLootThreshold(): threshold must be between %d and %d",
+"Usage: SetLooThreshold(threshold)"
 ],
 "consts": [
-"0"
+"0",
+"1",
+"2",
+"6"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 26,
 "refs": [],
-"line": 169
+"line": 258
 },
 "Script_SetPartyAssignment": {
 "files": [
@@ -135234,7 +135348,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 173
+"line": 285
 },
 "Script_ClearPartyAssignment": {
 "files": [
@@ -135256,7 +135370,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 177
+"line": 289
 },
 "Script_GetPartyAssignment": {
 "files": [
@@ -135278,7 +135392,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 181
+"line": 293
 },
 "Script_SilenceMember": {
 "files": [
@@ -135300,7 +135414,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 185
+"line": 297
 },
 "Script_UnSilenceMember": {
 "files": [
@@ -135322,7 +135436,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 189
+"line": 301
 },
 "Script_SetOptOutOfLoot": {
 "files": [
@@ -135344,7 +135458,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 193
+"line": 305
 },
 "Script_GetOptOutOfLoot": {
 "files": [
@@ -135362,7 +135476,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 197
+"line": 309
 },
 "Script_CanChangePlayerDifficulty": {
 "files": [
@@ -135380,7 +135494,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 204
+"line": 316
 },
 "Script_ChangePlayerDifficulty": {
 "files": [
@@ -135402,7 +135516,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 211
+"line": 323
 },
 "Script_IsPartyLFG": {
 "files": [
@@ -135420,7 +135534,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 215
+"line": 327
 },
 "Script_HasLFGRestrictions": {
 "files": [
@@ -135438,7 +135552,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 222
+"line": 334
 },
 "PartyInfoRegisterScriptFunctions": {
 "files": [
@@ -135453,7 +135567,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 256
+"line": 368
 },
 "DestroyText": {
 "files": [

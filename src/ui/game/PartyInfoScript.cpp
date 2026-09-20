@@ -1,4 +1,7 @@
 #include "ui/game/PartyInfoScript.hpp"
+#include <storm/String.hpp>
+#include "ui/game/CGGameUI.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/CGPartyInfo.hpp"
@@ -155,8 +158,88 @@ int32_t Script_GetLootMethod(lua_State* L) {
     return 3;
 }
 
+// Both loot setters share these two guards, and both are the reference's: you must be IN a group,
+// and you must lead it. They report through the game's own error messages rather than raising a
+// Lua error, so a UI that offers the option to a non-leader gets a red line, not a script failure.
+static bool CanSetLoot() {
+    if (!CGPartyInfo::GetMember(1) && !CGRaidInfo::NumMembers()) {
+        CGGameUI::DisplayError(0x50);
+
+        return false;
+    }
+
+    auto leader = CGPartyInfo::GetLeader();
+
+    if (!leader || leader != ClntObjMgrGetActivePlayer()) {
+        CGGameUI::DisplayError(0x54);
+
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_0052dc20
+// SetLootMethod("method" [, master]). The names are matched case-insensitively against the same
+// five GetLootMethod reports, and an unrecognised one is a Lua error rather than a silent no-op.
+//
+// Master loot names a PLAYER, not a unit token: the second argument is looked up in the roster by
+// name. Choosing master without naming anyone is the game's own error 0xfc.
 int32_t Script_SetLootMethod(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CanSetLoot()) {
+        return 0;
+    }
+
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: SetLootMethod(\"method\" [,master])");
+
+        return 0;
+    }
+
+    static const char* s_methods[] = {
+        "freeforall", "roundrobin", "master", "group", "needbeforegreed"
+    };
+
+    auto name = lua_tostring(L, 1);
+    int32_t method = -1;
+
+    for (int32_t i = 0; i < 5; i++) {
+        if (!SStrCmpI(name, s_methods[i], STORM_MAX_STR)) {
+            method = i;
+
+            break;
+        }
+    }
+
+    if (method < 0) {
+        luaL_error(L, "Invalid loot method");
+
+        return 0;
+    }
+
+    WOWGUID looter = 0;
+
+    if (method == 2) {
+        auto master = lua_isstring(L, 2) ? lua_tostring(L, 2) : nullptr;
+
+        if (!master || !*master) {
+            CGGameUI::DisplayError(0xfc);
+
+            return 0;
+        }
+
+        looter = CGPartyInfo::FindByName(master);
+
+        if (!looter) {
+            CGGameUI::DisplayError(0xfc);
+
+            return 0;
+        }
+    }
+
+    CGPartyInfo::SendLootSettings(method, looter, CGPartyInfo::GetLootThreshold());
+
+    return 0;
 }
 
 // ref: FUN_0052c2a0
@@ -166,8 +249,37 @@ int32_t Script_GetLootThreshold(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0052de60
+// Thresholds run 2 to 6 -- uncommon through artifact. Below uncommon there is nothing to roll for,
+// which is why the range does not start at 0.
+//
+// The usage string carries the reference's own typo, "SetLooThreshold". That spelling is the only
+// one in the binary; the corrected one appears nowhere, so this is the text the original prints.
 int32_t Script_SetLootThreshold(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CanSetLoot()) {
+        return 0;
+    }
+
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetLooThreshold(threshold)");
+
+        return 0;
+    }
+
+    auto threshold = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    if (threshold < 2 || threshold > 6) {
+        luaL_error(L, "SetLootThreshold(): threshold must be between %d and %d", 2, 6);
+
+        return 0;
+    }
+
+    // The whole triple goes out together, so the method and master looter are resent unchanged.
+    CGPartyInfo::SendLootSettings(
+        CGPartyInfo::GetLootMethod(), CGPartyInfo::GetMasterLooter(), threshold
+    );
+
+    return 0;
 }
 
 int32_t Script_SetPartyAssignment(lua_State* L) {

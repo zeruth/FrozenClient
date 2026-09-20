@@ -61,6 +61,11 @@ class CGPartyInfo {
         static WOWGUID GetMasterLooter();
         static uint32_t GetLootThreshold();
 
+        static WOWGUID FindByName(const char* name);
+
+        // ref: FUN_006d46d0
+        static void SendLootSettings(uint32_t method, WOWGUID looter, uint32_t threshold);
+
         // The group's difficulties, 0-based as the wire sends them. The bindings add one.
         static uint32_t GetDungeonDifficulty();
         static uint32_t GetRaidDifficulty();

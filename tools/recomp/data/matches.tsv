@@ -1011,8 +1011,8 @@ addr	how	frozen	evidence
 0052d310	annotated	CGPartyInfo::IsPlayerOrMemberOrPet	tag in src/ui/game/CGPartyInfo.cpp
 0052d9c0	table	Script_SilenceMember	binding "SilenceMember" in s_ScriptFunctions ~ table 00acc6d0
 0052daf0	table	Script_UnSilenceMember	binding "UnSilenceMember" in s_ScriptFunctions ~ table 00acc6d0
-0052dc20	table	Script_SetLootMethod	binding "SetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
-0052de60	table	Script_SetLootThreshold	binding "SetLootThreshold" in s_ScriptFunctions ~ table 00acc6d0
+0052dc20	annotated	Script_SetLootMethod	tag in src/ui/game/PartyInfoScript.cpp
+0052de60	annotated	Script_SetLootThreshold	tag in src/ui/game/PartyInfoScript.cpp
 0052e1b0	table	Script_SetPartyAssignment	binding "SetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e400	table	Script_ClearPartyAssignment	binding "ClearPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
@@ -1767,6 +1767,7 @@ addr	how	frozen	evidence
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006cef10	callgraph	WowClientDB<AreaTableRec>::GetRecord	only unmatched callee of 00516b20=Script_GetBindLocation
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
+006d46d0	annotated	CGPartyInfo::SendLootSettings	tag in src/ui/game/CGPartyInfo.cpp
 006d5c30	callgraph	Player_C_GetDisplayId	only unmatched callee of 006dc810=Player_C_GetModelName
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
 006d8750	handler	ReceiveActionButtons	SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS) on both sides

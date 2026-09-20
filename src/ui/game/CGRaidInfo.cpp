@@ -1,10 +1,12 @@
 #include "ui/game/CGRaidInfo.hpp"
+#include <storm/String.hpp>
 
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
 
 uint32_t CGRaidInfo::s_numMembers;
 WOWGUID CGRaidInfo::s_members[MAX_RAID_MEMBERS];
+char CGRaidInfo::s_names[MAX_RAID_MEMBERS][48];
 
 uint32_t CGRaidInfo::NumMembers() {
     return CGRaidInfo::s_numMembers;
@@ -43,9 +45,25 @@ bool CGRaidInfo::IsMemberOrPet(WOWGUID guid) {
     return false;
 }
 
-void CGRaidInfo::SetRoster(const WOWGUID* members, uint32_t count, bool isRaid) {
+WOWGUID CGRaidInfo::FindByName(const char* name) {
+    if (!name || !*name) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < MAX_RAID_MEMBERS; i++) {
+        if (CGRaidInfo::s_members[i] && !SStrCmpI(CGRaidInfo::s_names[i], name, STORM_MAX_STR)) {
+            return CGRaidInfo::s_members[i];
+        }
+    }
+
+    return 0;
+}
+
+void CGRaidInfo::SetRoster(const WOWGUID* members, const char* const* names, uint32_t count,
+                           bool isRaid) {
     for (uint32_t i = 0; i < MAX_RAID_MEMBERS; i++) {
         CGRaidInfo::s_members[i] = 0;
+        CGRaidInfo::s_names[i][0] = '\0';
     }
 
     if (!isRaid || !count) {
@@ -60,6 +78,7 @@ void CGRaidInfo::SetRoster(const WOWGUID* members, uint32_t count, bool isRaid) 
 
     for (uint32_t i = 0; i < stored; i++) {
         CGRaidInfo::s_members[i] = members[i];
+        SStrCopy(CGRaidInfo::s_names[i], names[i], sizeof(CGRaidInfo::s_names[i]));
     }
 
     // Plus the player, who is not on the wire.

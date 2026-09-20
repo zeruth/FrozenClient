@@ -1,4 +1,5 @@
 #include "ui/game/CGPartyInfo.hpp"
+#include <storm/String.hpp>
 #include "ui/game/CGRaidInfo.hpp"
 
 #include "client/ClientServices.hpp"
@@ -154,6 +155,36 @@ WOWGUID CGPartyInfo::GetMasterLooter() {
 
 uint32_t CGPartyInfo::GetLootThreshold() {
     return CGPartyInfo::m_lootThreshold;
+}
+
+WOWGUID CGPartyInfo::FindByName(const char* name) {
+    if (!name || !*name) {
+        return 0;
+    }
+
+    for (uint32_t slot = 1; slot <= 4; slot++) {
+        auto info = CGPartyInfo::GetMemberInfo(slot);
+
+        if (info && !SStrCmpI(info->name, name, STORM_MAX_STR)) {
+            return info->guid;
+        }
+    }
+
+    return CGRaidInfo::FindByName(name);
+}
+
+// ref: FUN_006d46d0
+// One message carries all three loot settings, so changing the threshold resends the method and
+// the master looter unchanged. There is no opcode for one of them alone.
+void CGPartyInfo::SendLootSettings(uint32_t method, WOWGUID looter, uint32_t threshold) {
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_SET_LOOT_METHOD));
+    msg.Put(method);
+    msg.Put(looter);
+    msg.Put(threshold);
+    msg.Finalize();
+
+    ClientServices::Send(&msg);
 }
 
 void CGPartyInfo::SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold) {
@@ -327,6 +358,8 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     // The same records feed the raid roster, which keeps everyone rather than the player's own
     // subgroup.
     WOWGUID raidMembers[MAX_RAID_MEMBERS] = { 0 };
+    const char* raidNames[MAX_RAID_MEMBERS] = { nullptr };
+    char raidNameStorage[MAX_RAID_MEMBERS][48] = { { 0 } };
     uint32_t raidCount = 0;
 
     for (uint32_t i = 0; i < memberCount; i++) {
@@ -345,6 +378,8 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
 
         if (raidCount < MAX_RAID_MEMBERS) {
             raidMembers[raidCount] = member.guid;
+            SStrCopy(raidNameStorage[raidCount], member.name, sizeof(raidNameStorage[raidCount]));
+            raidNames[raidCount] = raidNameStorage[raidCount];
             raidCount++;
         }
 
@@ -367,7 +402,7 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     }
 
     CGPartyInfo::SetLeader(leader);
-    CGRaidInfo::SetRoster(raidMembers, raidCount, (groupType & GROUPTYPE_RAID) != 0);
+    CGRaidInfo::SetRoster(raidMembers, raidNames, raidCount, (groupType & GROUPTYPE_RAID) != 0);
 
     // The loot block is CONDITIONAL on there being members at all -- a second conditional in this
     // packet after the LFG one. An empty group carries none of it and the reference resets the

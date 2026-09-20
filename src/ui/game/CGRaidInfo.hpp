@@ -22,12 +22,18 @@ class CGRaidInfo {
         static bool IsMemberOrPet(WOWGUID guid);
 
         // Replaces the roster from a group list. A non-raid group clears it.
-        static void SetRoster(const WOWGUID* members, uint32_t count, bool isRaid);
+        static void SetRoster(const WOWGUID* members, const char* const* names, uint32_t count,
+                              bool isRaid);
+
+        // A member by name, for the loot bindings, which name the master looter rather than
+        // pointing at a unit. Case-insensitive, as the reference compares.
+        static WOWGUID FindByName(const char* name);
 
     private:
         // Private static variables
         static uint32_t s_numMembers;
         static WOWGUID s_members[MAX_RAID_MEMBERS];
+        static char s_names[MAX_RAID_MEMBERS][48];
 };
 
 #endif
