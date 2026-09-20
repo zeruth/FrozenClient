@@ -372,6 +372,7 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     WOWGUID raidMembers[MAX_RAID_MEMBERS] = { 0 };
     const char* raidNames[MAX_RAID_MEMBERS] = { nullptr };
     char raidNameStorage[MAX_RAID_MEMBERS][48] = { { 0 } };
+    uint8_t raidFlags[MAX_RAID_MEMBERS] = { 0 };
     uint32_t raidCount = 0;
 
     for (uint32_t i = 0; i < memberCount; i++) {
@@ -392,6 +393,7 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
             raidMembers[raidCount] = member.guid;
             SStrCopy(raidNameStorage[raidCount], member.name, sizeof(raidNameStorage[raidCount]));
             raidNames[raidCount] = raidNameStorage[raidCount];
+            raidFlags[raidCount] = member.flags;
             raidCount++;
         }
 
@@ -420,7 +422,8 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     }
 
     CGPartyInfo::SetLeader(leader);
-    CGRaidInfo::SetRoster(raidMembers, raidNames, raidCount, (groupType & GROUPTYPE_RAID) != 0);
+    CGRaidInfo::SetRoster(raidMembers, raidNames, raidFlags, raidCount,
+                          (groupType & GROUPTYPE_RAID) != 0);
 
     // The loot block is CONDITIONAL on there being members at all -- a second conditional in this
     // packet after the LFG one. An empty group carries none of it and the reference resets the

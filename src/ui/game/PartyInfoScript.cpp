@@ -149,11 +149,11 @@ int32_t Script_GetLootMethod(lua_State* L) {
 
     lua_pushnumber(L, static_cast<double>(partyIndex));
 
-    // TODO the raid index. The reference walks its raid array for the looter, but frozen's raid
-    // roster has no established numbering -- the player is somewhere in it and the packet does not
-    // say where -- so reporting a position would be a guess. -1 reads as "not a raid member",
-    // which is at least the right shape.
-    lua_pushnumber(L, -1.0);
+    // The looter's raid index, now that the roster's numbering is established. Still -1 when the
+    // looter is not on it, which includes every non-raid group.
+    auto raidIndex = looter ? CGRaidInfo::IndexOf(looter) : 0;
+
+    lua_pushnumber(L, raidIndex ? static_cast<double>(raidIndex) : -1.0);
 
     return 3;
 }
@@ -301,9 +301,9 @@ int32_t Script_ClearPartyAssignment(lua_State* L) {
 // Main tank is member flag 2 and main assist is 4, out of the same flags byte the group list
 // sends per member.
 //
-// PARTIAL: in a raid the reference walks the whole roster through a separate path. Frozen stores
-// flags only for the four party slots -- which in a raid are your own subgroup -- so an assignment
-// held by someone in another subgroup is invisible here.
+// In a raid the reference walks the whole roster through a separate path (FUN_00572950) rather
+// than the four party slots, and that path is the same shape: same two flag bits, same list of
+// 1-based indices. Both are covered below.
 int32_t Script_GetPartyAssignment(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: GetPartyAssignment(\"assignment\" [,\"raidmember\"] [,exactMatch])");
@@ -344,6 +344,19 @@ int32_t Script_GetPartyAssignment(lua_State* L) {
     }
 
     int32_t found = 0;
+
+    // A raid answers over the whole roster; a party over its four slots. The reference branches
+    // the same way, on whether there is a raid at all.
+    if (CGRaidInfo::NumMembers()) {
+        for (uint32_t index = 1; index <= MAX_RAID_MEMBERS; index++) {
+            if (CGRaidInfo::GetMember(index) && (CGRaidInfo::GetMemberFlags(index) & wanted)) {
+                found++;
+                lua_pushnumber(L, static_cast<double>(index));
+            }
+        }
+
+        return found;
+    }
 
     for (uint32_t slot = 1; slot <= 4; slot++) {
         auto info = CGPartyInfo::GetMemberInfo(slot);

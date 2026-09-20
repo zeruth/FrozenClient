@@ -30,8 +30,16 @@ class CGRaidInfo {
         static bool IsMemberOrPet(WOWGUID guid);
 
         // Replaces the roster from a group list. A non-raid group clears it.
-        static void SetRoster(const WOWGUID* members, const char* const* names, uint32_t count,
-                              bool isRaid);
+        static void SetRoster(const WOWGUID* members, const char* const* names,
+                              const uint8_t* flags, uint32_t count, bool isRaid);
+
+        // The group-list flags for a raid slot, 1-based. The PLAYER's own slot always reports 0:
+        // the packet lists everyone else, so the client is never told its own assignment flags
+        // through this message.
+        static uint8_t GetMemberFlags(uint32_t index);
+
+        // A member's 1-based raid index, or 0 when the guid is not on the roster.
+        static uint32_t IndexOf(WOWGUID guid);
 
         // A member by name, for the loot bindings, which name the master looter rather than
         // pointing at a unit. Case-insensitive, as the reference compares.
@@ -47,6 +55,7 @@ class CGRaidInfo {
         static uint32_t s_realNumMembers;
         static WOWGUID s_members[MAX_RAID_MEMBERS];
         static char s_names[MAX_RAID_MEMBERS][48];
+        static uint8_t s_flags[MAX_RAID_MEMBERS];
 };
 
 #endif

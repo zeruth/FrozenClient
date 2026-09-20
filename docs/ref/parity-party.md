@@ -118,6 +118,9 @@ immediately past them — so the player lands at the end. That is also what make
 The roster itself is an array of 40 **pointers** at `DAT_00beb568`, with the effective count at
 `DAT_00beb608` and the real count at `DAT_00beb60c` immediately after it.
 
-`raid1`-`raid40` and `raidpet1`-`raidpet40` resolve on that order now. Still open: `GetLootMethod`'s
-raid index and `GetPartyAssignment` in a raid, both of which want per-member flags on the raid
-roster rather than only on the four party slots.
+`raid1`-`raid40` and `raidpet1`-`raidpet40` resolve on that order, and so do `GetLootMethod`'s raid
+index and `GetPartyAssignment` in a raid — the roster keeps each member's flags byte as well.
+
+One gap remains in that data, and it is the packet's rather than the port's: the player's own slot
+always reports flags of 0, because the group list describes everyone **except** the player. Whether
+you personally are main tank does not arrive through this message.
