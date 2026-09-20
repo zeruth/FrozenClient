@@ -29,6 +29,7 @@ CVar* CWorldParam::cvar_occlusion;
 CVar* CWorldParam::cvar_particleDensity;
 CVar* CWorldParam::cvar_projectedTextures;
 CVar* CWorldParam::cvar_shadowLevel;
+CVar* CWorldParam::cvar_poiShiftComplete;
 CVar* CWorldParam::cvar_skyCloudLOD;
 CVar* CWorldParam::cvar_showFootprints;
 CVar* CWorldParam::cvar_violenceLevel;
@@ -330,6 +331,22 @@ void CWorldParam::Initialize() {
         "0.7",
         &CWorldParam::HorizonNearClipScaleCallback,
         GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    // Category DEBUG, no help text, no callback, and a default of "0.6" -- a fraction rather than
+    // the flag most cvars here carry. It controls how far a point of interest is allowed to shift
+    // on the minimap before it is treated as having arrived. Frozen draws no points of interest
+    // yet, so nothing reads it.
+    CWorldParam::cvar_poiShiftComplete = CVar::Register(
+        "POIShiftComplete",
+        "",
+        0x0,
+        "0.6",
+        nullptr,
+        DEBUG,
         false,
         nullptr,
         false

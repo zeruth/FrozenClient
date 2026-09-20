@@ -975,6 +975,21 @@ void SI2::RegisterUserCVars() {
         SOUND
     );
 
+    // Help text is the empty string in the reference, not absent -- most of the Sound_ block is
+    // written that way and only a few carry a description.
+    //
+    // DIVERGENCE in the default. The reference gates it on a capability query returning 2 or more
+    // and falls back to "0" below that. Frozen does not have that query, and every machine that
+    // would run this clears the bar, so "1" is what a real client ends up with.
+    CVar::Register(
+        "Sound_EnableDSPEffects",
+        "",
+        0x0,
+        "1",
+        nullptr,
+        SOUND
+    );
+
     CVar::Register(
         "Sound_EnablePetSounds",
         "Enables pet sounds",

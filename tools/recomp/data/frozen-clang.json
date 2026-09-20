@@ -38887,7 +38887,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 32
+"line": 36
 },
 "CScriptRegion::AnimActivated": {
 "files": [
@@ -38900,7 +38900,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 37
+"line": 41
 },
 "CScriptRegion::AnimDeactivated": {
 "files": [
@@ -38913,7 +38913,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 38
+"line": 42
 },
 "CScriptRegion::AddAnimTranslation": {
 "files": [
@@ -38926,7 +38926,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 39
+"line": 43
 },
 "CScriptRegion::AddAnimRotation": {
 "files": [
@@ -38939,7 +38939,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 40
+"line": 44
 },
 "CScriptRegion::AddAnimScale": {
 "files": [
@@ -38952,7 +38952,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 41
+"line": 45
 },
 "CScriptRegion::AddAnimAlpha": {
 "files": [
@@ -38965,7 +38965,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 42
+"line": 46
 },
 "CSimpleRegion::OnScreenSizeChanged": {
 "files": [
@@ -39681,6 +39681,7 @@
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
+"CVar::Register",
 "OsGuiGetMouseSpeed",
 "SStrPrintf",
 "CVar::Register",
@@ -39729,6 +39730,7 @@
 "Saved whether uses authenticator",
 "Set the format of screenshots",
 "Set the quality of screenshots (1 - 10)",
+"Sets which core(s) WoW may execute on - changes require restart to take effect",
 "Show expansion movie on startup",
 "Show movie on startup",
 "Show movie subtitles",
@@ -39750,6 +39752,7 @@
 "mouseSpeed",
 "movie",
 "movieSubtitle",
+"processAffinityMask",
 "readContest",
 "readEULA",
 "readScanning",
@@ -39763,13 +39766,14 @@
 "0",
 "0x0",
 "0x1",
+"0x2",
 "0x40",
 "1",
 "32"
 ],
 "branches": 1,
 "stub": false,
-"lines": 43,
+"lines": 58,
 "refs": [],
 "line": 320
 },
@@ -39786,7 +39790,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 364
+"line": 379
 },
 "DestroyEngineCallback": {
 "files": [
@@ -39803,7 +39807,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 369
+"line": 384
 },
 "InitializeEngineCallback": {
 "files": [
@@ -39842,7 +39846,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 379
+"line": 394
 },
 "AddRunOnceFile": {
 "files": [
@@ -39862,7 +39866,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 446
+"line": 461
 },
 "CompareRunOnceFiles": {
 "files": [
@@ -39877,7 +39881,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 452
+"line": 467
 },
 "ProcessRunOnceFiles": {
 "files": [
@@ -39910,7 +39914,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 457
+"line": 472
 },
 "Sub406B70": {
 "files": [
@@ -39926,7 +39930,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 478
+"line": 493
 },
 "Sub405DD0": {
 "files": [
@@ -39946,7 +39950,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 492
+"line": 507
 },
 "LocaleChangedCallback": {
 "files": [
@@ -39959,7 +39963,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 508
+"line": 523
 },
 "InitializeGlobal": {
 "files": [
@@ -40010,7 +40014,7 @@
 "stub": false,
 "lines": 186,
 "refs": [],
-"line": 514
+"line": 529
 },
 "CommonMain": {
 "files": [
@@ -40028,7 +40032,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 701
+"line": 716
 },
 "BlizzardAssertCallback": {
 "files": [
@@ -40048,7 +40052,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 718
+"line": 733
 },
 "StormInitialize": {
 "files": [
@@ -40063,7 +40067,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 726
+"line": 741
 },
 "WowClientDestroy": {
 "files": [
@@ -40078,7 +40082,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 736
+"line": 751
 },
 "WowClientInit": {
 "files": [
@@ -40089,6 +40093,8 @@
 "ClientRegisterConsoleCommands",
 "ClientDBInitialize",
 "LoadingScreenInitialize",
+"CVar::Register",
+"CVar::Register",
 "FrameScript_Initialize",
 "SI2::Init",
 "FrameXML_RegisterDefault",
@@ -40104,16 +40110,22 @@
 "EventRegister"
 ],
 "strings": [
-"login"
+"0",
+"Whether or not script profiling is enabled",
+"Whether taint logging is enabled",
+"login",
+"scriptProfile",
+"taintLog"
 ],
 "consts": [
-"0"
+"0",
+"0x0"
 ],
-"branches": 0,
+"branches": 1,
 "stub": false,
-"lines": 90,
+"lines": 119,
 "refs": [],
-"line": 744
+"line": 759
 },
 "LoadNewWorld": {
 "files": [
@@ -89524,6 +89536,7 @@
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
+"CVar::Register",
 "CVar::Register"
 ],
 "strings": [
@@ -89576,7 +89589,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 202,
+"lines": 217,
 "refs": [],
 "line": 816
 },
@@ -89595,7 +89608,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1019
+"line": 1034
 },
 "SI2::StartCreditsMusic": {
 "files": [
@@ -89621,7 +89634,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1028
+"line": 1043
 },
 "SI2::StartGlueMusic": {
 "files": [
@@ -89651,7 +89664,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1049
+"line": 1064
 },
 "SI2::StopCreditsMusic": {
 "files": [
@@ -89671,7 +89684,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1104
+"line": 1119
 },
 "SI2::StopGlueMusic": {
 "files": [
@@ -89692,7 +89705,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1109
+"line": 1124
 },
 "SI2::StopOrFadeOut": {
 "files": [
@@ -89710,7 +89723,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1121
+"line": 1136
 },
 "Script_PlaySound": {
 "files": [
@@ -173721,7 +173734,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 46
+"line": 47
 },
 "CWorldParam::BaseMipCallback": {
 "files": [
@@ -173734,7 +173747,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 54
+"line": 55
 },
 "CWorldParam::BSPCacheCallback": {
 "files": [
@@ -173747,7 +173760,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 59
+"line": 60
 },
 "CWorldParam::EnvironmentDetailCallback": {
 "files": [
@@ -173767,7 +173780,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 65
+"line": 66
 },
 "CWorldParam::ExtShadowQualityCallback": {
 "files": [
@@ -173780,7 +173793,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 77
+"line": 78
 },
 "CWorldParam::FarClipCallback": {
 "files": [
@@ -173796,7 +173809,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 82
+"line": 83
 },
 "CWorldParam::FarClipOverrideCallback": {
 "files": [
@@ -173816,7 +173829,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 89
+"line": 90
 },
 "CWorldParam::FootstepBiasCallback": {
 "files": [
@@ -173829,7 +173842,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 99
+"line": 100
 },
 "CWorldParam::GroundEffectDensityCallback": {
 "files": [
@@ -173842,7 +173855,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 104
+"line": 105
 },
 "CWorldParam::GroundEffectDistCallback": {
 "files": [
@@ -173855,7 +173868,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 109
+"line": 110
 },
 "CWorldParam::HorizonFarClipScaleCallback": {
 "files": [
@@ -173875,7 +173888,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 115
+"line": 116
 },
 "CWorldParam::HorizonNearClipScaleCallback": {
 "files": [
@@ -173895,7 +173908,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 128
+"line": 129
 },
 "CWorldParam::HwPCFCallback": {
 "files": [
@@ -173908,7 +173921,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 140
+"line": 141
 },
 "CWorldParam::SkyCloudLODCallback": {
 "files": [
@@ -173921,7 +173934,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 145
+"line": 146
 },
 "CWorldParam::ViolenceLevelCallback": {
 "files": [
@@ -173934,13 +173947,14 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 151
+"line": 152
 },
 "CWorldParam::Initialize": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
 "callseq": [
+"CVar::Register",
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
@@ -173981,6 +173995,7 @@
 "0.0",
 "0.125",
 "0.2",
+"0.6",
 "0.7",
 "1",
 "1.0",
@@ -174010,6 +174025,7 @@
 "Near clip plane distance",
 "Near clip plane scale for horizon",
 "Override old world graphic settings",
+"POIShiftComplete",
 "Projected Textures",
 "Quality of exterior shadows (0-5)",
 "Sets the violence level of the game",
@@ -174066,9 +174082,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 408,
+"lines": 424,
 "refs": [],
-"line": 157
+"line": 158
 },
 "CWorldParam::LodCallback": {
 "files": [
@@ -174081,7 +174097,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 566
+"line": 583
 },
 "CWorldParam::MapObjLightLODCallback": {
 "files": [
@@ -174101,7 +174117,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 572
+"line": 589
 },
 "CWorldParam::MapShadowsCallback": {
 "files": [
@@ -174121,7 +174137,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 587
+"line": 604
 },
 "CWorldParam::MaxLightsCallback": {
 "files": [
@@ -174142,7 +174158,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 602
+"line": 619
 },
 "CWorldParam::NearClipCallback": {
 "files": [
@@ -174158,7 +174174,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 617
+"line": 634
 },
 "CWorldParam::ObjectFadeCallback": {
 "files": [
@@ -174178,7 +174194,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 624
+"line": 641
 },
 "CWorldParam::ObjectFadeZFillCallback": {
 "files": [
@@ -174198,7 +174214,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 639
+"line": 656
 },
 "CWorldParam::OcclusionCallback": {
 "files": [
@@ -174218,7 +174234,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 654
+"line": 671
 },
 "CWorldParam::ParticleDensityCallback": {
 "files": [
@@ -174240,7 +174256,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 667
+"line": 684
 },
 "CWorldParam::ProjectedTexturesCallback": {
 "files": [
@@ -174260,7 +174276,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 682
+"line": 699
 },
 "CWorldParam::ShadowLevelCallback": {
 "files": [
@@ -174282,7 +174298,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 697
+"line": 714
 },
 "CWorldParam::ShowFootprintsCallback": {
 "files": [
@@ -174302,7 +174318,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 710
+"line": 727
 },
 "CWorldParam::SpecularCallback": {
 "files": [
@@ -174315,7 +174331,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 724
+"line": 741
 },
 "CWorldParam::TerrainAlphaBitDepthCallback": {
 "files": [
@@ -174328,7 +174344,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 729
+"line": 746
 },
 "CWorldParam::TextureCacheSizeCallback": {
 "files": [
@@ -174341,7 +174357,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 734
+"line": 751
 },
 "CWorldParam::TextureLodBiasCallback": {
 "files": [
@@ -174362,7 +174378,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 740
+"line": 757
 },
 "CWorldParam::WaterLODCallback": {
 "files": [
@@ -174382,7 +174398,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 755
+"line": 772
 },
 "CWorldParam::WorldPoolUsageCallback": {
 "files": [
@@ -174405,7 +174421,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 768
+"line": 785
 },
 "CMap::AllocEntity": {
 "files": [

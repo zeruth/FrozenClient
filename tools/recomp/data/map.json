@@ -265,7 +265,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "ClientRegisterConsoleCommands",
-  "frozenSize": 1761,
+  "frozenSize": 1817,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 1126,
@@ -10157,13 +10157,13 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.278,
+  "fidelity": 0.291,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::RegisterUserCVars",
-  "frozenSize": 1281,
+  "frozenSize": 1336,
   "how": "string",
   "module": "SoundInterface2Internal.cpp",
   "refSize": 2232,
@@ -33520,7 +33520,7 @@
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::Initialize",
-  "frozenSize": 2374,
+  "frozenSize": 2432,
   "how": "string",
   "module": "WorldParam.cpp",
   "refSize": 1354,

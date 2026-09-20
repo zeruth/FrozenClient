@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 03:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 03:58 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2944 (+3) (10.8%) | 625.1k (11.3%) |
-| &nbsp;&nbsp;ported | 2237 (+3) | 449.4k |
+| mapped to a frozen function | 2944 (=) (10.8%) | 625.1k (11.3%) |
+| &nbsp;&nbsp;ported | 2237 (=) | 449.4k |
 | &nbsp;&nbsp;stub (unimplemented body) | 663 (=) | 135.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1058 (-1) (3.9%)** | **131.2k (2.4%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1058 (=) (3.9%)** | **131.2k (2.4%)** |
 | unmapped | 24218 | 4.79M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 413 (=) (7.5%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 417 (=) (7.2%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 169 (+3) (2.8%)** | |
+| **render surface** (the modules that draw the world) | **6005, mapped 169 (=) (2.8%)** | |
 | frozen functions (src/, from PDB + source) | 11830, stubs 1725 | |
 
 Match evidence: annotated 739, callgraph 174, callorder 132, cvar 32, handler 28, order 179, override 205, sticky 13, string 310, table 1132. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 03:40 -- mapped 2941, ported 2234, stub 663, spine mapped 413.
+Previous run: 2026-09-20 03:51 -- mapped 2944, ported 2237, stub 663, spine mapped 413.
 
 ## Lua API coverage (binding tables)
 
@@ -121,9 +121,9 @@ Reference-only, by opcode (handler address): SMSG_CHECK_FOR_BOTS 006b9670, SMSG_
 
 ## CVar coverage (CVar::Register)
 
-The reference registers 426 cvars by literal name; frozen registers 421 of them. Missing ones are settings the reference client honours and this one cannot even store.
+The reference registers 426 cvars by literal name; frozen registers 426 of them. Missing ones are settings the reference client honours and this one cannot even store.
 
-Missing: POIShiftComplete, Sound_EnableDSPEffects, processAffinityMask, scriptProfile, taintLog
+Missing: 
 
 ## Coverage by reference module
 
@@ -618,7 +618,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
-| 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
+| 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
 | 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
@@ -628,7 +628,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 27% | 66 | 23 | 41 | 11 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
-| 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 33 | 4 | 0 | 0% | 1354 |
+| 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 49% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
 | 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
@@ -727,7 +727,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 01:35 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:39 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:44 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:51 | 2756 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
@@ -752,6 +751,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 03:39 | 2952 (10.9%) | 1063 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:40 | 2941 (10.8%) | 1059 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:51 | 2944 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
+| 2026-09-20 03:58 | 2944 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 
 ## How to move a row
 

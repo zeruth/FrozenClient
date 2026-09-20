@@ -34,6 +34,7 @@ class CWorldParam {
         static CVar* cvar_particleDensity;
         static CVar* cvar_projectedTextures;
         static CVar* cvar_shadowLevel;
+        static CVar* cvar_poiShiftComplete;
         static CVar* cvar_skyCloudLOD;
         static CVar* cvar_showFootprints;
         static CVar* cvar_violenceLevel;

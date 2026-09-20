@@ -325,6 +325,21 @@ void ClientRegisterConsoleCommands() {
     Client::g_accountListVar = CVar::Register("accountList", "List of wow accounts for saved Blizzard account", 0x0, "", nullptr, GAME, false, nullptr, false);
     s_accountUsesTokenCvar = CVar::Register("g_accountUsesToken", "Saved whether uses authenticator", 0x0, "0", nullptr, GAME, false, nullptr, false);
     s_movieCvar = CVar::Register("movie", "Show movie on startup", 0x0, "1", nullptr, GAME, false, nullptr, false);
+
+    // DEBUG category and flag 0x2, which is what the reference gives it -- not GAME like its
+    // neighbours here. Its own help text says a restart is needed, and frozen never reads it, so
+    // nothing acts on a change either way.
+    CVar::Register(
+        "processAffinityMask",
+        "Sets which core(s) WoW may execute on - changes require restart to take effect",
+        0x2,
+        "0",
+        nullptr,
+        DEBUG,
+        false,
+        nullptr,
+        false
+    );
     s_expansionMovieCvar = CVar::Register("expansionMovie", "Show expansion movie on startup", 0x0, "1", nullptr, GAME, false, nullptr, false);
     s_movieSubtitleCvar = CVar::Register("movieSubtitle", "Show movie subtitles", 0x0, "0", nullptr, GAME, false, nullptr, false);
     s_checkAddonVersionCvar = CVar::Register("checkAddonVersion", "Check interface addon version number", 0x0, "1", nullptr, GAME, false, nullptr, false);
@@ -752,7 +767,36 @@ void WowClientInit() {
 
     LoadingScreenInitialize();
 
-    FrameScript_Initialize(0);
+    // Both DEFAULT category and unflagged, which is how the reference registers them alongside
+    // the rest of its FrameXML setup. scriptProfile has no callback there either -- its value is
+    // read once, here, and passed into the Lua state; changing it later does nothing until the
+    // state is rebuilt. taintLog does have a callback in the reference; frozen has no taint
+    // machinery for it to switch on, so the value is stored and nothing acts on it.
+    auto scriptProfile = CVar::Register(
+        "scriptProfile",
+        "Whether or not script profiling is enabled",
+        0x0,
+        "0",
+        nullptr,
+        DEFAULT,
+        false,
+        nullptr,
+        false
+    );
+
+    CVar::Register(
+        "taintLog",
+        "Whether taint logging is enabled",
+        0x0,
+        "0",
+        nullptr,
+        DEFAULT,
+        false,
+        nullptr,
+        false
+    );
+
+    FrameScript_Initialize(scriptProfile ? scriptProfile->m_intValue : 0);
     SI2::Init(0);
 
     // TODO
