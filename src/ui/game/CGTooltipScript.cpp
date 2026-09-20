@@ -10,6 +10,7 @@
 #include "object/client/NameCache.hpp"
 #include "object/client/CGItem_C.hpp"
 #include "object/client/ItemCache.hpp"
+#include "ui/game/ContainerFrameScript.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/game/CGTooltip.hpp"
@@ -1467,8 +1468,37 @@ int32_t CGTooltip_SetTradeTargetItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0062f420
+//
+// SetBagItem(bag, slot) -> hasItem, hasCooldown, repairCost, same three as SetInventoryItem.
+//
+// The bag is 0-based and the slot 1-based, which is how FrameXML passes them and what the
+// container lookup expects.
 int32_t CGTooltip_SetBagItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:SetBagItem(bag, slot)", tooltip->GetDisplayName());
+    }
+
+    auto item = Script_GetContainerItem(L, 2, 3);
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+    if (!info) {
+        return 0;
+    }
+
+    auto data = item->Item();
+
+    TooltipSetItemInfo(tooltip, info,
+                       data ? data->durability : 0,
+                       data ? data->maxDurability : 0);
+
+    lua_pushboolean(L, 1);
+    lua_pushboolean(L, 0); // hasCooldown: item cooldowns are not tracked yet
+    lua_pushnumber(L, 0.0); // repairCost: needs the merchant frame
+
+    return 3;
 }
 
 // ref: FUN_00625e10

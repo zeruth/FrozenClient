@@ -537,3 +537,14 @@ void ContainerFrameScriptRegisterFunctions() {
         FrameScript_RegisterFunction(func.name, func.method);
     }
 }
+
+// The item in a bag slot, for callers outside this file. ContainerItem itself stays private
+// because it is one of a set of helpers that share the container-slot lookup; this is the only
+// one anything else has needed.
+CGItem_C* Script_GetContainerItem(lua_State* L, int32_t bagArg, int32_t slotArg) {
+    if (!lua_isnumber(L, bagArg) || !lua_isnumber(L, slotArg)) {
+        return nullptr;
+    }
+
+    return ContainerItem(L, bagArg, slotArg);
+}

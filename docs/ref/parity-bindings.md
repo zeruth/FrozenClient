@@ -66,6 +66,44 @@ The load is lazy, on the first query, where the reference parses during UI initi
 as a divergence at the call site: for a read-only table with no dependencies the two are
 indistinguishable, and it avoids taking a position on startup ordering that cannot be verified yet.
 
+## 3a. The reference's store, and where the defaults are NOT (2026-09-20)
+
+`DAT_00beadd8` is a pointer to the binding manager. Two fields are known:
+
+```
++0x000   the command count      (GetNumBindings pushes it)
++0x124   the current binding set (GetCurrentBindingSet pushes it)
+```
+
+It holds two intrusive Storm lists:
+
+- **commands** -- head at `+0x18`, link at `+0x10`. `FUN_0055e700(index, &out)` walks it for the
+  node whose `+0x18` equals the index and returns its `+0x14`, the name.
+- **key bindings** -- head at `+0xb8`, link at `+0xb0`. `FUN_0055e750(mode, command, n)` walks it,
+  taking each node's command for `mode` (`FUN_0055e470`) and its ordinal (`FUN_0055e4e0`), and
+  returns the node's `+0x14`, the key string, when both match.
+
+So a key binding node carries a key and, per mode, a command and an ordinal -- which is what lets
+two keys map to one command and be returned in a stable order.
+
+**Four places the default keys are not.** Each was checked, not assumed:
+
+1. Not in `Bindings.xml`. Its `<Binding>` rows carry exactly `name`, `runOnUp`, `header`, `hidden`,
+   `debug` and `platform` -- no `default`. The sixteen `default=` attributes in the file are all on
+   `<ModifiedClick>`, a different feature.
+2. Not in FrameXML. Nothing under `Interface\FrameXML` calls `SetBinding`; the only match is an
+   unrelated method on a restricted-frame handle.
+3. Not in a saved cache. The reference install here has been run many times -- it has per-character
+   `config-cache.wtf` files -- and there is **no `bindings-cache.wtf` anywhere in its WTF tree**.
+   The client had defaults without ever having written them down.
+4. Not as command-name strings in the executable. `ACTIONBUTTON1`, `MOVEFORWARD` and
+   `TOGGLEGAMEMENU` appear zero times in `WoW.exe`.
+
+Taken together those say the defaults are a table in the binary that does **not** name commands by
+string -- most likely by position in the parsed `Bindings.xml`, since that file and the executable
+ship together. The next probe is the loader that fills the key-binding list: find what writes the
+`+0xb8` head, and the table it reads from will be sitting next to it.
+
 ## 4. What is left
 
 1. **The default key set** (section 1). Everything else is blocked behind it -- without keys, the
