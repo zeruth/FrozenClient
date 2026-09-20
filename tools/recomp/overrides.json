@@ -1208,5 +1208,9 @@
     "frozen": "ItemDisplayIcon",
     "status": "diverged",
     "note": "An item object to its ItemDisplayInfo inventory icon name. DIVERGENCE in route, not in result: the reference dereferences a record pointer the object carries (object+8, then +0xc for the display id) and indexes the table at DAT_00ad3d6c, taking field +0x14. Frozen's CGItem_C holds no such pointer, so it goes entry id -> ItemCacheGet -> displayInfoID -> g_itemDisplayInfoDB and reaches the same row. The observable difference is timing: until the item cache answers for an entry frozen returns an empty name where the reference already has one."
+  },
+  "004980d0": {
+    "status": "unlinked",
+    "note": "A CSimpleScaleAnim method, not yet ported. It writes {1 - this[0xa4], 1 - this[0xa8]} into an out parameter, and that offset pair identifies the class: Scale is 0xac bytes, so 0xa4 and 0xa8 are its last two floats, scaleX and scaleY. Rotation (0xa8) and Alpha (0x9c) are too small to hold a pair there and Path is 0xb8. The value is the remaining scale a driver interpolates across, so this belongs with stage 4 rather than stage 2. Blocked rather than linked because the matcher paired it with AnimThisOf, a template helper in CSimpleAnimTypesScript.cpp, on callgraph evidence alone -- the second time a small local helper of that shape has attracted a small reference leaf. Naming the real counterpart before the driver exists would be inventing a method frozen has no use for yet."
   }
 }

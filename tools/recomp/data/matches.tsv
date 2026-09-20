@@ -297,6 +297,7 @@ addr	how	frozen	evidence
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
 00497800	annotated	CSimpleAnimGroup::GetScriptByName	tag in src/ui/simple/CSimpleAnimGroup.cpp
 00497fe0	annotated	CSimpleAnim::GetRegionParent	tag in src/ui/simple/CSimpleAnim.cpp
+0049a060	string	CSimpleAnimGroup::CreateAnimation	score 1.40 shared Alpha; Animation; Rotation
 0049a8f0	annotated	CSimpleAnimGroup::Play	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049ad80	annotated	CSimpleAnim::Play	tag in src/ui/simple/CSimpleAnim.cpp
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
@@ -484,14 +485,34 @@ addr	how	frozen	evidence
 004a56f0	table	CSimpleAnim_GetOrder	binding "GetOrder" in SimpleAnimMethods ~ table 00ac18e0
 004a5740	table	CSimpleAnim_SetSmoothing	binding "SetSmoothing" in SimpleAnimMethods ~ table 00ac18e0
 004a5810	annotated	CSimpleAnim_GetSmoothing	tag in src/ui/simple/CSimpleAnimScript.cpp
-004a5880	table	CSimpleAnim_SetParent	binding "SetParent" in SimpleAnimMethods ~ table 00ac18e0
+004a5880	annotated	CSimpleAnim_SetParent	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a5a70	table	CSimpleAnim_GetRegionParent	binding "GetRegionParent" in SimpleAnimMethods ~ table 00ac18e0
 004a5af0	table	CSimpleAnim_HasScript	binding "HasScript" in SimpleAnimMethods ~ table 00ac18e0
 004a5bb0	table	CSimpleAnim_GetScript	binding "GetScript" in SimpleAnimMethods ~ table 00ac18e0
 004a5cc0	table	CSimpleAnim_SetScript	binding "SetScript" in SimpleAnimMethods ~ table 00ac18e0
 004a5df0	table	CSimpleAnim_HookScript	binding "HookScript" in SimpleAnimMethods ~ table 00ac18e0
-004a6790	order	CScriptRegion::SetParent	binding table name SetParent, in definition order in src/ui/CScriptRegion.cpp
-004a6d20	order	CSimpleAnimGroup::GetMaxOrder	binding table name GetMaxOrder, in definition order in src/ui/simple/CSimpleAnimGroup.cpp
+004a6040	table	CSimpleTranslationAnim_SetOffset	binding "SetOffset" in SimpleTranslationAnimMethods ~ table 00ac19dc
+004a6130	table	CSimpleTranslationAnim_GetOffset	binding "GetOffset" in SimpleTranslationAnimMethods ~ table 00ac19dc
+004a61f0	annotated	CSimpleRotationAnim_SetOrigin	tag in src/ui/simple/CSimpleAnimTypesScript.cpp
+004a62c0	table	CSimpleRotationAnim_GetOrigin	binding "GetOrigin" in SimpleRotationAnimMethods ~ table 00ac19f0
+004a6340	table	CSimpleRotationAnim_SetDegrees	binding "SetDegrees" in SimpleRotationAnimMethods ~ table 00ac19f0
+004a63c0	table	CSimpleRotationAnim_GetDegrees	binding "GetDegrees" in SimpleRotationAnimMethods ~ table 00ac19f0
+004a6410	table	CSimpleRotationAnim_SetRadians	binding "SetRadians" in SimpleRotationAnimMethods ~ table 00ac19f0
+004a6490	table	CSimpleRotationAnim_GetRadians	binding "GetRadians" in SimpleRotationAnimMethods ~ table 00ac19f0
+004a6500	table	CSimpleScaleAnim_SetOrigin	binding "SetOrigin" in SimpleScaleAnimMethods ~ table 00ac1a24
+004a65d0	table	CSimpleScaleAnim_GetOrigin	binding "GetOrigin" in SimpleScaleAnimMethods ~ table 00ac1a24
+004a6650	table	CSimpleScaleAnim_SetScale	binding "SetScale" in SimpleScaleAnimMethods ~ table 00ac1a24
+004a6700	table	CSimpleScaleAnim_GetScale	binding "GetScale" in SimpleScaleAnimMethods ~ table 00ac1a24
+004a6790	annotated	CSimpleControlPoint_SetParent	tag in src/ui/simple/CSimpleAnimTypesScript.cpp
+004a6980	table	CSimpleControlPoint_SetOffset	binding "SetOffset" in SimpleControlPointMethods ~ table 00ac1a48
+004a6a70	table	CSimpleControlPoint_GetOffset	binding "GetOffset" in SimpleControlPointMethods ~ table 00ac1a48
+004a6b10	table	CSimpleControlPoint_SetOrder	binding "SetOrder" in SimpleControlPointMethods ~ table 00ac1a48
+004a6ba0	table	CSimpleControlPoint_GetOrder	binding "GetOrder" in SimpleControlPointMethods ~ table 00ac1a48
+004a6c10	annotated	CSimplePathAnim_SetCurve	tag in src/ui/simple/CSimpleAnimTypesScript.cpp
+004a6cd0	annotated	CSimplePathAnim_GetCurve	tag in src/ui/simple/CSimpleAnimTypesScript.cpp
+004a6d20	table	CSimplePathAnim_GetMaxOrder	binding "GetMaxOrder" in SimplePathAnimMethods ~ table 00ac1a74
+004a6da0	table	CSimpleAlphaAnim_SetChange	binding "SetChange" in SimpleAlphaAnimMethods ~ table 00ac1aa0
+004a6e20	table	CSimpleAlphaAnim_GetChange	binding "GetChange" in SimpleAlphaAnimMethods ~ table 00ac1aa0
 004a6ea0	annotated	CSimpleAnimGroup_Play	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a6ee0	table	CSimpleAnimGroup_Pause	binding "Pause" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a6f20	table	CSimpleAnimGroup_Stop	binding "Stop" in SimpleAnimGroupMethods ~ table 00ac1ab8
@@ -511,8 +532,10 @@ addr	how	frozen	evidence
 004a7540	table	CSimpleAnimGroup_GetScript	binding "GetScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a7650	table	CSimpleAnimGroup_SetScript	binding "SetScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a7780	table	CSimpleAnimGroup_HookScript	binding "HookScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a79d0	table	CSimplePathAnim_GetControlPoints	binding "GetControlPoints" in SimplePathAnimMethods ~ table 00ac1a74
 004a7aa0	table	CSimpleAnimGroup_IsPlaying	binding "IsPlaying" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a7b00	table	CSimpleAnimGroup_GetAnimations	binding "GetAnimations" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7bf0	annotated	CSimplePathAnim_CreateControlPoint	tag in src/ui/simple/CSimpleAnimTypesScript.cpp
 004a7e00	annotated	CSimpleAnimGroup_CreateAnimation	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
 004a8240	table	CSimpleAnimGroup_GetObjectType	binding "GetObjectType" in SimpleAnimGroupMethods ~ table 00ac1ab8

@@ -185,7 +185,19 @@ Each stage should end in a committable increment; none of it should go in blind 
    `Stop` as state transitions only. This alone converts the nil-calls into working methods: with
    no per-frame driver the animation simply never advances, which leaves the UI at its start state
    instead of aborting the script that touched it.
-2. **The subclasses** -- Translation, Rotation, Scale, Alpha -- and their four small tables.
+2. **The subclasses. DONE, unverified** -- landed 2026-09-20, all six rather than four:
+   Translation, Rotation, Scale, Alpha, Path and ControlPoint, in one `CSimpleAnimTypes` pair
+   because each is two to six accessors over two or three fields. `CreateAnimation` now dispatches
+   by type name the way `FUN_004a7e00` does, case-insensitively, with an unrecognised name falling
+   through to the base Animation as the reference does. Curve types (`NONE`, `SMOOTH`) came from
+   the table at `00a440d4`.
+
+   Three stage-1 divergences were found and fixed while doing it, all from reading error strings
+   rather than from the build: `SetSmoothing` and `SetLooping` **raise** on an unrecognised name
+   (009ed788, 009eda60) where stage 1 silently ignored it, and `SetParent` tests for **nil first**,
+   then a string, then a table -- stage 1 treated "not a table" as the nil case, which reported a
+   number as a nil parent instead of letting it reach the type error. `SetParent` also has a
+   "Couldn't find 'this' in parent object" branch stage 1 folded into the wrong-type one.
 3. **XML loading.** `CScriptRegion::LoadXML_Animations`, currently an empty TODO, plus the
    `<Animations>` / `<AnimationGroup>` node shapes. FrameXML declares most animations in XML, so
    until this lands stage 1 only serves the scripted path.

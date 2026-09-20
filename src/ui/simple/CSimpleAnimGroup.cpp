@@ -1,5 +1,6 @@
 #include "ui/simple/CSimpleAnimGroup.hpp"
 #include "ui/simple/CSimpleAnim.hpp"
+#include "ui/simple/CSimpleAnimTypes.hpp"
 #include "ui/simple/CSimpleAnimScript.hpp"
 #include "ui/CScriptRegion.hpp"
 #include "ui/FrameScript.hpp"
@@ -266,12 +267,32 @@ float CSimpleAnimGroup::GetDuration() const {
     return total;
 }
 
+// The type dispatch out of the reference's FUN_004a7e00, which allocates a different size and
+// calls a different constructor per name. Comparison is SStrCmpI there, so the names are
+// case-insensitive, and an unrecognised one falls through to the base Animation rather than
+// failing -- that fall-through is the reference's behaviour, not a shortcut here.
+#define WHOA_ANIM_BRANCH(typeName, cls)                                     \
+    if (!SStrCmpI(type, typeName, 0x7FFFFFFF)) {                            \
+        void* m = SMemAlloc(sizeof(cls), __FILE__, __LINE__, 0x0);          \
+        anim = new (m) cls(this);                                           \
+    } else
+
 CSimpleAnim* CSimpleAnimGroup::CreateAnimation(const char* type, const char* name) {
-    // Stage 2 adds the subclasses. Until then every type name lands on the base animation, which
-    // is what the reference does for an unrecognised name anyway -- the difference is that
-    // "Translation" and friends are recognised there and not here.
-    void* m = SMemAlloc(sizeof(CSimpleAnim), __FILE__, __LINE__, 0x0);
-    CSimpleAnim* anim = new (m) CSimpleAnim(this);
+    CSimpleAnim* anim = nullptr;
+
+    if (!type) {
+        type = "Animation";
+    }
+
+    WHOA_ANIM_BRANCH("Translation", CSimpleTranslationAnim)
+    WHOA_ANIM_BRANCH("Rotation", CSimpleRotationAnim)
+    WHOA_ANIM_BRANCH("Scale", CSimpleScaleAnim)
+    WHOA_ANIM_BRANCH("Path", CSimplePathAnim)
+    WHOA_ANIM_BRANCH("Alpha", CSimpleAlphaAnim)
+    {
+        void* m = SMemAlloc(sizeof(CSimpleAnim), __FILE__, __LINE__, 0x0);
+        anim = new (m) CSimpleAnim(this);
+    }
 
     if (name && *name) {
         anim->SetName(name);
@@ -281,6 +302,8 @@ CSimpleAnim* CSimpleAnimGroup::CreateAnimation(const char* type, const char* nam
 
     return anim;
 }
+
+#undef WHOA_ANIM_BRANCH
 
 void CSimpleAnimGroup::AddAnimation(CSimpleAnim* anim) {
     if (!anim) {

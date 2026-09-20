@@ -145159,6 +145159,71 @@
 "refs": [],
 "line": 198
 },
+"CSimpleTranslationAnim::CSimpleTranslationAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 48
+},
+"CSimpleRotationAnim::CSimpleRotationAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 76
+},
+"CSimpleScaleAnim::CSimpleScaleAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 103
+},
+"CSimpleAlphaAnim::CSimpleAlphaAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 128
+},
+"CSimplePathAnim::CSimplePathAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 186
+},
 "AnimLoopTypeName": {
 "files": [
 "src/ui/simple/csimpleanimgroup.cpp"
@@ -145174,7 +145239,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 17
+"line": 18
 },
 "AnimLoopTypeFromName": {
 "files": [
@@ -145192,7 +145257,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 27
+"line": 28
 },
 "AnimLoopStateName": {
 "files": [
@@ -145209,7 +145274,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 39
+"line": 40
 },
 "CSimpleAnimGroup::CreateScriptMetaTable": {
 "files": [
@@ -145225,7 +145290,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 47
+"line": 48
 },
 "CSimpleAnimGroup::GetObjectType": {
 "files": [
@@ -145238,7 +145303,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 54
+"line": 55
 },
 "CSimpleAnimGroup::RegisterScriptMethods": {
 "files": [
@@ -145253,7 +145318,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 62
+"line": 63
 },
 "CSimpleAnimGroup::CSimpleAnimGroup": {
 "files": [
@@ -145266,7 +145331,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 68
+"line": 69
 },
 "CSimpleAnimGroup::~CSimpleAnimGroup": {
 "files": [
@@ -145290,7 +145355,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 72
+"line": 73
 },
 "CSimpleAnimGroup::GetScriptByName": {
 "files": [
@@ -145323,7 +145388,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 92
+"line": 93
 },
 "CSimpleAnimGroup::GetScriptMetaTable": {
 "files": [
@@ -145336,7 +145401,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 134
+"line": 135
 },
 "CSimpleAnimGroup::IsA": {
 "files": [
@@ -145356,7 +145421,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 138
+"line": 139
 },
 "CSimpleAnimGroup::GetObjectTypeName": {
 "files": [
@@ -145369,7 +145434,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 147
+"line": 148
 },
 "CSimpleAnimGroup::GetScriptObjectParent": {
 "files": [
@@ -145382,7 +145447,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 151
+"line": 152
 },
 "CSimpleAnimGroup::Play": {
 "files": [
@@ -145400,7 +145465,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 160
+"line": 161
 },
 "CSimpleAnimGroup::Pause": {
 "files": [
@@ -145419,7 +145484,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 178
+"line": 179
 },
 "CSimpleAnimGroup::Stop": {
 "files": [
@@ -145439,7 +145504,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 188
+"line": 189
 },
 "CSimpleAnimGroup::Finish": {
 "files": [
@@ -145452,7 +145517,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 204
+"line": 205
 },
 "CSimpleAnimGroup::IsDone": {
 "files": [
@@ -145472,7 +145537,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 210
+"line": 211
 },
 "CSimpleAnimGroup::GetMaxOrder": {
 "files": [
@@ -145491,7 +145556,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 224
+"line": 225
 },
 "CSimpleAnimGroup::GetDuration": {
 "files": [
@@ -145512,29 +145577,51 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 242
+"line": 243
 },
 "CSimpleAnimGroup::CreateAnimation": {
 "files": [
 "src/ui/simple/csimpleanimgroup.cpp"
 ],
 "callseq": [
+"SStrCmpI",
+"SMemAlloc",
+"CSimpleTranslationAnim::CSimpleTranslationAnim",
+"SStrCmpI",
+"SMemAlloc",
+"CSimpleRotationAnim::CSimpleRotationAnim",
+"SStrCmpI",
+"SMemAlloc",
+"CSimpleScaleAnim::CSimpleScaleAnim",
+"SStrCmpI",
+"SMemAlloc",
+"CSimplePathAnim::CSimplePathAnim",
+"SStrCmpI",
+"SMemAlloc",
+"CSimpleAlphaAnim::CSimpleAlphaAnim",
 "SMemAlloc",
 "CSimpleAnim::CSimpleAnim",
 "CScriptObject::SetName",
 "CSimpleAnimGroup::AddAnimation"
 ],
 "strings": [
+"Alpha",
+"Animation",
+"Path",
+"Rotation",
+"Scale",
+"Translation",
 "c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleanimgroup.cpp"
 ],
 "consts": [
-"0x0"
+"0x0",
+"0x7FFFFFFF"
 ],
-"branches": 1,
+"branches": 7,
 "stub": false,
-"lines": 15,
+"lines": 25,
 "refs": [],
-"line": 269
+"line": 280
 },
 "CSimpleAnimGroup::AddAnimation": {
 "files": [
@@ -145554,7 +145641,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 285
+"line": 308
 },
 "CSimpleAnimGroup::RemoveAnimation": {
 "files": [
@@ -145576,22 +145663,24 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 299
+"line": 322
 },
 "AnimName": {
 "files": [
-"src/ui/simple/csimpleanimscript.cpp"
+"src/ui/simple/csimpleanimscript.cpp",
+"src/ui/simple/csimpleanimtypesscript.cpp"
 ],
 "callseq": [
+"CScriptObject::GetName",
 "CScriptObject::GetName"
 ],
 "strings": [
 "<unnamed>"
 ],
 "consts": [],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 5,
+"lines": 10,
 "refs": [],
 "line": 16
 },
@@ -146091,9 +146180,12 @@
 "AnimName",
 "luaL_error",
 "lua_tolstring",
-"AnimSmoothingFromName"
+"AnimSmoothingFromName",
+"AnimName",
+"luaL_error"
 ],
 "strings": [
+"%s:SetSmoothing(): Unknown smoothing type specified",
 "Usage: %s:SetSmoothing(\"smoothingType\")"
 ],
 "consts": [
@@ -146102,7 +146194,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 23,
 "refs": [],
 "line": 232
 },
@@ -146123,7 +146215,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 251
+"line": 257
 },
 "CSimpleAnim_SetParent": {
 "files": [
@@ -146131,6 +146223,9 @@
 ],
 "callseq": [
 "AnimThis",
+"lua_type",
+"AnimName",
+"luaL_error",
 "lua_isstring",
 "lua_tolstring",
 "CSimpleAnimGroup::GetObjectType",
@@ -146144,6 +146239,8 @@
 "lua_rawgeti",
 "lua_touserdata",
 "lua_settop",
+"AnimName",
+"luaL_error",
 "CSimpleAnimGroup::GetObjectType",
 "FrameScript_Object::IsA",
 "AnimName",
@@ -146152,6 +146249,7 @@
 ],
 "strings": [
 "%s:SetParent(): Cannot set a 'nil' parent for animations",
+"%s:SetParent(): Couldn't find 'this' in parent object",
 "%s:SetParent(): Couldn't find animation group named '%s'",
 "%s:SetParent(): Wrong parent object type, expected AnimationGroup"
 ],
@@ -146160,11 +146258,11 @@
 "1",
 "2"
 ],
-"branches": 4,
+"branches": 6,
 "stub": false,
-"lines": 40,
+"lines": 53,
 "refs": [],
-"line": 259
+"line": 270
 },
 "CSimpleAnim_GetRegionParent": {
 "files": [
@@ -146185,7 +146283,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 301
+"line": 325
 },
 "CSimpleAnim_HasScript": {
 "files": [
@@ -146213,7 +146311,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 316
+"line": 340
 },
 "CSimpleAnim_GetScript": {
 "files": [
@@ -146229,7 +146327,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 331
+"line": 355
 },
 "CSimpleAnim_SetScript": {
 "files": [
@@ -146245,7 +146343,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 335
+"line": 359
 },
 "CSimpleAnim_HookScript": {
 "files": [
@@ -146267,7 +146365,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 342
+"line": 366
 },
 "CSimpleAnimGroup_Play": {
 "files": [
@@ -146285,7 +146383,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 349
+"line": 373
 },
 "CSimpleAnimGroup_Pause": {
 "files": [
@@ -146303,7 +146401,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 355
+"line": 379
 },
 "CSimpleAnimGroup_Stop": {
 "files": [
@@ -146321,7 +146419,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 361
+"line": 385
 },
 "CSimpleAnimGroup_Finish": {
 "files": [
@@ -146339,7 +146437,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 367
+"line": 391
 },
 "CSimpleAnimGroup_GetProgress": {
 "files": [
@@ -146357,7 +146455,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 373
+"line": 397
 },
 "CSimpleAnimGroup_IsDone": {
 "files": [
@@ -146376,7 +146474,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 379
+"line": 403
 },
 "CSimpleAnimGroup_IsPlaying": {
 "files": [
@@ -146394,7 +146492,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 385
+"line": 409
 },
 "CSimpleAnimGroup_IsPaused": {
 "files": [
@@ -146412,7 +146510,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 393
+"line": 417
 },
 "CSimpleAnimGroup_IsPendingFinish": {
 "files": [
@@ -146430,7 +146528,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 399
+"line": 423
 },
 "CSimpleAnimGroup_GetDuration": {
 "files": [
@@ -146449,7 +146547,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 405
+"line": 429
 },
 "CSimpleAnimGroup_SetLooping": {
 "files": [
@@ -146461,9 +146559,12 @@
 "AnimName",
 "luaL_error",
 "lua_tolstring",
-"AnimLoopTypeFromName"
+"AnimLoopTypeFromName",
+"AnimName",
+"luaL_error"
 ],
 "strings": [
+"%s:SetLooping(): Unknown loop type specified",
 "Usage: %s:SetLooping(\"loopType\")"
 ],
 "consts": [
@@ -146472,9 +146573,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 17,
+"lines": 22,
 "refs": [],
-"line": 412
+"line": 436
 },
 "CSimpleAnimGroup_GetLooping": {
 "files": [
@@ -146493,7 +146594,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 431
+"line": 460
 },
 "CSimpleAnimGroup_GetLoopState": {
 "files": [
@@ -146512,7 +146613,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 438
+"line": 467
 },
 "CSimpleAnimGroup_GetMaxOrder": {
 "files": [
@@ -146531,7 +146632,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 444
+"line": 473
 },
 "CSimpleAnimGroup_SetInitialOffset": {
 "files": [
@@ -146558,7 +146659,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 450
+"line": 479
 },
 "CSimpleAnimGroup_GetInitialOffset": {
 "files": [
@@ -146577,7 +146678,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 465
+"line": 494
 },
 "CSimpleAnimGroup_GetAnimations": {
 "files": [
@@ -146603,7 +146704,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 476
+"line": 505
 },
 "CSimpleAnimGroup_CreateAnimation": {
 "files": [
@@ -146632,7 +146733,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 504
+"line": 533
 },
 "CSimpleAnimGroup_HasScript": {
 "files": [
@@ -146660,7 +146761,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 524
+"line": 553
 },
 "CSimpleAnimGroup_GetScript": {
 "files": [
@@ -146676,7 +146777,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 539
+"line": 568
 },
 "CSimpleAnimGroup_SetScript": {
 "files": [
@@ -146692,7 +146793,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 543
+"line": 572
 },
 "CSimpleAnimGroup_HookScript": {
 "files": [
@@ -146714,7 +146815,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 548
+"line": 577
 },
 "CSimpleAnimGroup_GetObjectType": {
 "files": [
@@ -146733,7 +146834,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 552
+"line": 581
 },
 "CSimpleAnimGroup_IsObjectType": {
 "files": [
@@ -146760,7 +146861,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 558
+"line": 587
 },
 "CSimpleAnimGroup_GetName": {
 "files": [
@@ -146780,7 +146881,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 572
+"line": 601
 },
 "CSimpleAnimGroup_GetParent": {
 "files": [
@@ -146800,7 +146901,1347 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 584
+"line": 613
+},
+"AnimCurveName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [
+"UNKNOWN"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 11
+},
+"AnimCurveFromName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"SStrCmpI"
+],
+"strings": [],
+"consts": [
+"0",
+"0x7FFFFFFF"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 19
+},
+"CSimpleTranslationAnim::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 64
+},
+"CSimpleTranslationAnim::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 64
+},
+"CSimpleTranslationAnim::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 64
+},
+"CSimpleTranslationAnim::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 64
+},
+"CSimpleTranslationAnim::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 64
+},
+"CSimpleRotationAnim::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 66
+},
+"CSimpleRotationAnim::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 66
+},
+"CSimpleRotationAnim::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"6"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 66
+},
+"CSimpleRotationAnim::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 66
+},
+"CSimpleRotationAnim::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 66
+},
+"CSimpleScaleAnim::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 68
+},
+"CSimpleScaleAnim::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 68
+},
+"CSimpleScaleAnim::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 68
+},
+"CSimpleScaleAnim::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 68
+},
+"CSimpleScaleAnim::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 68
+},
+"CSimpleAlphaAnim::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 70
+},
+"CSimpleAlphaAnim::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 70
+},
+"CSimpleAlphaAnim::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 70
+},
+"CSimpleAlphaAnim::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 70
+},
+"CSimpleAlphaAnim::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 70
+},
+"CSimplePathAnim::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 72
+},
+"CSimplePathAnim::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 72
+},
+"CSimplePathAnim::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"5"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 72
+},
+"CSimplePathAnim::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 72
+},
+"CSimplePathAnim::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 72
+},
+"CSimpleControlPoint::CreateScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_GetContext",
+"FrameScript_Object::CreateScriptMetaTable"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 74
+},
+"CSimpleControlPoint::GetObjectType": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 74
+},
+"CSimpleControlPoint::RegisterScriptMethods": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"FrameScript_Object::FillScriptMethodTable"
+],
+"strings": [],
+"consts": [
+"5"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 74
+},
+"CSimpleControlPoint::GetScriptMetaTable": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 74
+},
+"CSimpleControlPoint::GetObjectTypeName": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 74
+},
+"CSimpleTranslationAnim::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleTranslationAnim::GetObjectType",
+"CSimpleAnim::IsA",
+"SStrCmpI",
+"CSimpleAnim::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 91
+},
+"CSimpleRotationAnim::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleRotationAnim::GetObjectType",
+"CSimpleAnim::IsA",
+"SStrCmpI",
+"CSimpleAnim::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 92
+},
+"CSimpleScaleAnim::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleScaleAnim::GetObjectType",
+"CSimpleAnim::IsA",
+"SStrCmpI",
+"CSimpleAnim::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 93
+},
+"CSimpleAlphaAnim::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleAlphaAnim::GetObjectType",
+"CSimpleAnim::IsA",
+"SStrCmpI",
+"CSimpleAnim::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 94
+},
+"CSimplePathAnim::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimplePathAnim::GetObjectType",
+"CSimpleAnim::IsA",
+"SStrCmpI",
+"CSimpleAnim::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 95
+},
+"CSimpleControlPoint::IsA": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimpleControlPoint::GetObjectType",
+"CScriptObject::IsA",
+"SStrCmpI",
+"CScriptObject::IsA"
+],
+"strings": [],
+"consts": [
+"0x7FFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 96
+},
+"CSimpleControlPoint::CSimpleControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 102
+},
+"CSimpleControlPoint::~CSimpleControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimplePathAnim::RemoveControlPoint"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 106
+},
+"CSimpleControlPoint::GetScriptObjectParent": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 113
+},
+"CSimpleControlPoint::SetParentPath": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"CSimplePathAnim::RemoveControlPoint",
+"CSimplePathAnim::AddControlPoint"
+],
+"strings": [],
+"consts": [],
+"branches": 3,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 117
+},
+"CSimplePathAnim::~CSimplePathAnim": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleControlPoint *>::Count",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"CSimpleControlPoint::~CSimpleControlPoint",
+"SMemFree",
+"TSGrowableArray<CSimpleControlPoint *>::SetCount"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleanimtypes.cpp"
+],
+"consts": [
+"0",
+"0x0"
+],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 135
+},
+"CSimplePathAnim::GetMaxOrder": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleControlPoint *>::Count",
+"TSBaseArray<CSimpleControlPoint *>::operator[]"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 149
+},
+"CSimplePathAnim::CreateControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"CSimpleControlPoint::CSimpleControlPoint",
+"CScriptObject::SetName",
+"CSimplePathAnim::AddControlPoint"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\simple\\csimpleanimtypes.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 163
+},
+"CSimplePathAnim::AddControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleControlPoint *>::Count",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"TSGrowableArray<CSimpleControlPoint *>::Add"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 176
+},
+"CSimplePathAnim::RemoveControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypes.cpp"
+],
+"callseq": [
+"TSBaseArray<CSimpleControlPoint *>::Count",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"TSGrowableArray<CSimpleControlPoint *>::SetCount"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 190
+},
+"AnimThisOf": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 23
+},
+"CSimpleTranslationAnim_SetOffset": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetOffset(x, y)"
+],
+"consts": [
+"0",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 29
+},
+"CSimpleTranslationAnim_GetOffset": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 44
+},
+"CSimpleRotationAnim_SetOrigin": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isstring",
+"lua_isnumber",
+"lua_isnumber",
+"lua_tolstring",
+"StringToFramePoint",
+"AnimName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetOrigin(point, offsetX, offsetY)"
+],
+"consts": [
+"0",
+"2",
+"3",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 58
+},
+"CSimpleRotationAnim_GetOrigin": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"FramePointToString",
+"lua_pushstring",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"3"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 77
+},
+"CSimpleRotationAnim_SetDegrees": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetDegrees(degrees)"
+],
+"consts": [
+"0",
+"0.017453292519943295f",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 87
+},
+"CSimpleRotationAnim_GetDegrees": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1",
+"57.29577951308232"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 101
+},
+"CSimpleRotationAnim_SetRadians": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetRadians(radians)"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 107
+},
+"CSimpleRotationAnim_GetRadians": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 121
+},
+"CSimpleScaleAnim_SetOrigin": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isstring",
+"lua_isnumber",
+"lua_isnumber",
+"lua_tolstring",
+"StringToFramePoint",
+"AnimName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetOrigin(point, offsetX, offsetY)"
+],
+"consts": [
+"0",
+"2",
+"3",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 129
+},
+"CSimpleScaleAnim_GetOrigin": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"FramePointToString",
+"lua_pushstring",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"3"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 148
+},
+"CSimpleScaleAnim_SetScale": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetScale(x, y)"
+],
+"consts": [
+"0",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 160
+},
+"CSimpleScaleAnim_GetScale": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 175
+},
+"CSimpleAlphaAnim_SetChange": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetChange(change)"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 186
+},
+"CSimpleAlphaAnim_GetChange": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 200
+},
+"CSimpleControlPoint_SetParent": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_type",
+"AnimName",
+"luaL_error",
+"lua_isstring",
+"lua_tolstring",
+"CSimplePathAnim::GetObjectType",
+"CScriptObject::GetScriptObjectByName",
+"AnimName",
+"luaL_error",
+"CSimpleControlPoint::SetParentPath",
+"lua_type",
+"AnimName",
+"luaL_error",
+"lua_rawgeti",
+"lua_touserdata",
+"lua_settop",
+"AnimName",
+"luaL_error",
+"CSimplePathAnim::GetObjectType",
+"FrameScript_Object::IsA",
+"AnimName",
+"luaL_error",
+"CSimpleControlPoint::SetParentPath"
+],
+"strings": [
+"%s:SetParent(): Cannot set a 'nil' parent for control points",
+"%s:SetParent(): Couldn't find 'this' in parent object",
+"%s:SetParent(): Couldn't find Path named '%s'",
+"%s:SetParent(): Wrong parent object type, expected Path"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 6,
+"stub": false,
+"lines": 51,
+"refs": [],
+"line": 211
+},
+"CSimpleControlPoint_SetOffset": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber"
+],
+"strings": [
+"Usage: %s:SetOffset(x, y)"
+],
+"consts": [
+"0",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 263
+},
+"CSimpleControlPoint_GetOffset": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 278
+},
+"CSimpleControlPoint_SetOrder": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isnumber",
+"AnimName",
+"luaL_error",
+"lua_tointeger"
+],
+"strings": [
+"Usage: %s:SetOrder(order)"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 287
+},
+"CSimpleControlPoint_GetOrder": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 301
+},
+"CSimplePathAnim_SetCurve": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isstring",
+"AnimName",
+"luaL_error",
+"lua_tolstring",
+"AnimCurveFromName",
+"AnimName",
+"luaL_error"
+],
+"strings": [
+"%s:SetCurve(): Unknown curve type specified",
+"Usage: %s:SetCurve(\"curveType\")"
+],
+"consts": [
+"0",
+"2"
+],
+"branches": 2,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 311
+},
+"CSimplePathAnim_GetCurve": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"AnimCurveName",
+"lua_pushstring"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 334
+},
+"CSimplePathAnim_GetMaxOrder": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"CSimplePathAnim::GetMaxOrder",
+"lua_pushnumber"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 340
+},
+"CSimplePathAnim_GetControlPoints": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"TSBaseArray<CSimpleControlPoint *>::Count",
+"lua_checkstack",
+"AnimName",
+"luaL_error",
+"TSBaseArray<CSimpleControlPoint *>::operator[]",
+"CSimpleControlPoint::GetScriptMetaTable",
+"lua_rawgeti"
+],
+"strings": [
+"%s:GetControlPoints(): Stack overflow"
+],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 346
+},
+"CSimplePathAnim_CreateControlPoint": {
+"files": [
+"src/ui/simple/csimpleanimtypesscript.cpp"
+],
+"callseq": [
+"AnimThisOf",
+"lua_isstring",
+"lua_tolstring",
+"CSimplePathAnim::CreateControlPoint",
+"lua_pushnil",
+"CSimpleControlPoint::GetScriptMetaTable",
+"lua_rawgeti"
+],
+"strings": [],
+"consts": [
+"1",
+"2"
+],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 370
 },
 "CSimpleButton::CreateScriptMetaTable": {
 "files": [
@@ -168191,7 +169632,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 30
+"line": 31
 },
 "Script_GetNumFrames": {
 "files": [
@@ -168213,7 +169654,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 34
+"line": 35
 },
 "Script_EnumerateFrames": {
 "files": [
@@ -168235,7 +169676,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 38
+"line": 39
 },
 "Script_CreateFont": {
 "files": [
@@ -168257,7 +169698,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 42
+"line": 43
 },
 "Script_CreateFrame": {
 "files": [
@@ -168335,7 +169776,7 @@
 "stub": false,
 "lines": 103,
 "refs": [],
-"line": 46
+"line": 47
 },
 "Script_GetFramesRegisteredForEvent": {
 "files": [
@@ -168357,7 +169798,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 151
 },
 "Script_GetCurrentKeyBoardFocus": {
 "files": [
@@ -168379,7 +169820,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 154
+"line": 155
 },
 "RegisterSimpleFrameScriptMethods": {
 "files": [
@@ -168388,6 +169829,12 @@
 "callseq": [
 "FrameScript_RegisterFunction",
 "CSimpleAnim::CreateScriptMetaTable",
+"CSimpleTranslationAnim::CreateScriptMetaTable",
+"CSimpleRotationAnim::CreateScriptMetaTable",
+"CSimpleScaleAnim::CreateScriptMetaTable",
+"CSimpleControlPoint::CreateScriptMetaTable",
+"CSimplePathAnim::CreateScriptMetaTable",
+"CSimpleAlphaAnim::CreateScriptMetaTable",
 "CSimpleAnimGroup::CreateScriptMetaTable",
 "CSimpleFont::CreateScriptMetaTable",
 "CSimpleTexture::CreateScriptMetaTable",
@@ -168411,9 +169858,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 42,
+"lines": 40,
 "refs": [],
-"line": 168
+"line": 169
 },
 "LanguageProcess": {
 "files": [

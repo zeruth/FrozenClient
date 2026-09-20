@@ -240,9 +240,15 @@ int32_t CSimpleAnim_SetSmoothing(lua_State* L) {
 
     ANIM_SMOOTHING smoothing;
 
-    if (AnimSmoothingFromName(lua_tostring(L, 2), smoothing)) {
-        anim->m_smoothing = smoothing;
+    // An unrecognised name is an ERROR, not a silent no-op. Confirmed at 009ed788; the first pass
+    // through this file ignored it, which would have let a typo in FrameXML pass unnoticed.
+    if (!AnimSmoothingFromName(lua_tostring(L, 2), smoothing)) {
+        luaL_error(L, "%s:SetSmoothing(): Unknown smoothing type specified", AnimName(anim));
+
+        return 0;
     }
+
+    anim->m_smoothing = smoothing;
 
     return 0;
 }
@@ -254,10 +260,21 @@ int32_t CSimpleAnim_GetSmoothing(lua_State* L) {
     return 1;
 }
 
-// The reference accepts either an AnimationGroup object or the NAME of one, and refuses nil
-// outright -- an animation always belongs to a group. All three messages are its own.
+// ref: FUN_004a5880
+// Accepts an AnimationGroup object or the NAME of one, and refuses nil outright -- an animation
+// always belongs to a group. All three messages are the reference's.
+//
+// The order matters and the first pass here had it wrong: the reference tests for NIL first, then
+// for a string, then for a table. Testing "not a table" as the nil case, as this did, reported a
+// number or a boolean as a nil parent instead of letting it fall through to the type error.
 int32_t CSimpleAnim_SetParent(lua_State* L) {
     auto anim = AnimThis(L);
+
+    if (lua_type(L, 2) == LUA_TNIL) {
+        luaL_error(L, "%s:SetParent(): Cannot set a 'nil' parent for animations", AnimName(anim));
+
+        return 0;
+    }
 
     if (lua_isstring(L, 2)) {
         const char* name = lua_tostring(L, 2);
@@ -276,7 +293,8 @@ int32_t CSimpleAnim_SetParent(lua_State* L) {
     }
 
     if (lua_type(L, 2) != LUA_TTABLE) {
-        luaL_error(L, "%s:SetParent(): Cannot set a 'nil' parent for animations", AnimName(anim));
+        luaL_error(L, "%s:SetParent(): Wrong parent object type, expected AnimationGroup",
+                   AnimName(anim));
 
         return 0;
     }
@@ -285,7 +303,13 @@ int32_t CSimpleAnim_SetParent(lua_State* L) {
     auto object = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
     lua_settop(L, -2);
 
-    if (!object || !object->IsA(CSimpleAnimGroup::GetObjectType())) {
+    if (!object) {
+        luaL_error(L, "%s:SetParent(): Couldn't find 'this' in parent object", AnimName(anim));
+
+        return 0;
+    }
+
+    if (!object->IsA(CSimpleAnimGroup::GetObjectType())) {
         luaL_error(L, "%s:SetParent(): Wrong parent object type, expected AnimationGroup",
                    AnimName(anim));
 
@@ -420,9 +444,14 @@ int32_t CSimpleAnimGroup_SetLooping(lua_State* L) {
 
     ANIM_LOOPTYPE loopType;
 
-    if (AnimLoopTypeFromName(lua_tostring(L, 2), loopType)) {
-        group->m_looping = loopType;
+    // As with SetSmoothing: rejected, not ignored. Confirmed at 009eda60.
+    if (!AnimLoopTypeFromName(lua_tostring(L, 2), loopType)) {
+        luaL_error(L, "%s:SetLooping(): Unknown loop type specified", AnimName(group));
+
+        return 0;
     }
+
+    group->m_looping = loopType;
 
     return 0;
 }

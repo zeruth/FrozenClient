@@ -106,8 +106,16 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
-> **Open: there is no way to say "this link is wrong" without knowing the right answer.**
-> Noticed 2026-09-19.
+> **CLOSED: saying "this link is wrong" without knowing the right answer.** Noticed 2026-09-19,
+> answered 2026-09-20 -- the mechanism already existed and had been in use for a year of entries
+> without being recognised as the answer to this. An `overrides.json` entry with
+> `"status": "unlinked"` and no `frozen` key blocks matching on that address and leaves it in the
+> denominator as an honest gap. `00619330` had been written that way all along; `004980d0` is the
+> first entry added deliberately for this purpose, after the matcher paired a small reference leaf
+> with a local template helper on callgraph evidence alone.
+>
+> `CGUnit::Unit` on `00513c30`, the example below, can be closed the same way whenever someone
+> confirms the reading. The original note follows.
 >
 > `overrides.json` maps a reference address to a *frozen* name, so it can only correct a bad link
 > by naming the correct counterpart. That leaves a gap for the case where the automatic match is
@@ -121,7 +129,17 @@ right answer in `overrides.json`.
 >
 > What would close it: a `frozen: null` (or `status: "unknown"`) form that blocks matching on an
 > address and leaves it in the denominator as unmapped. Cheap, and it converts a known-wrong link
-> into an honest gap.
+> into an honest gap. -- That is `"status": "unlinked"`, which already worked; see above.
+>
+> **Watch the callgraph matcher around small local helpers.** Three times in two days it has
+> pointed a small reference leaf at a static or template helper written for frozen's own
+> convenience: `AnimThis` at `00497fe0` (really `CSimpleAnim::GetRegionParent`), `AnimThisOf` at
+> `004980d0` (really a `CSimpleScaleAnim` method), and `CGUnit::Unit` at `00513c30`. The shape is
+> the same each time -- a one-or-two-line frozen helper with few callees, matched to a one-or-two-
+> line reference function on call-graph position rather than on anything about what it does. Two of
+> the three were caught only because the churn line named them and they looked wrong. Check any
+> callgraph gain whose frozen side is a helper that exists for frozen's convenience rather than
+> because the reference has one.
 
 > **Operator overloads were invisible, so tags on them were silently dropped.** Closed 2026-09-19.
 >
