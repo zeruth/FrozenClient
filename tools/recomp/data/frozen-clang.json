@@ -85422,6 +85422,9 @@
 "CGObject_C::BlockIndexOf",
 "BlockRangeChanged",
 "FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
 "CGObject::GetGUID",
 "ClntObjMgrGetActivePlayer",
 "FrameScript_SignalEvent"
@@ -85431,12 +85434,13 @@
 ],
 "consts": [
 "0",
+"1",
 "2",
 "3"
 ],
-"branches": 19,
+"branches": 20,
 "stub": false,
-"lines": 100,
+"lines": 108,
 "refs": [],
 "line": 221
 },
@@ -85464,7 +85468,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 324
+"line": 332
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85497,7 +85501,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 355
+"line": 363
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85525,7 +85529,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 406
+"line": 414
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85547,7 +85551,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 449
+"line": 457
 },
 "QueryPlayerName": {
 "files": [

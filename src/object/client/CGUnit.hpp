@@ -17,6 +17,8 @@ struct CGUnitData {
     WOWGUID target;
     WOWGUID channelObject;
     int32_t channelSpell;
+    // Not padding: the packed byte field. Script_UnitPowerTypeOf reads the power type out of
+    // its top byte, and UNIT_DISPLAYPOWER is signalled when this dword moves.
     int32_t pad1;
     int32_t health;
     int32_t power[7];

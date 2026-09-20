@@ -297,6 +297,14 @@ void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
         FrameScript_SignalEvent(SCRIPT_UNIT_FACTION, "%s", token);
     }
 
+    // The packed byte field, whose top byte is the power type -- Script_UnitPowerTypeOf reads it
+    // from there. Signalled on any change to the dword rather than to that byte alone, because the
+    // change set records which block moved and not what it held before. The other bytes are race,
+    // class and gender, which do not change on a live unit, so the over-fire is theoretical.
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->pad1), 1)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_DISPLAYPOWER, "%s", token);
+    }
+
     // The three display ids sit together, and any of them changing is a model change: the base
     // display, the native one it falls back to, and the mount that replaces it. FrameXML rebuilds
     // the character portrait and the dress-up model from this, so missing one leaves a stale model
