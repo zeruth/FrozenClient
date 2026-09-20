@@ -34,7 +34,9 @@ class CWorldParam {
         static CVar* cvar_particleDensity;
         static CVar* cvar_projectedTextures;
         static CVar* cvar_shadowLevel;
+        static CVar* cvar_skyCloudLOD;
         static CVar* cvar_showFootprints;
+        static CVar* cvar_violenceLevel;
         static CVar* cvar_specular;
         static CVar* cvar_terrainAlphaBitDepth;
         static CVar* cvar_texLodBias;
@@ -67,6 +69,8 @@ class CWorldParam {
         static bool ProjectedTexturesCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool ShadowLevelCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool ShowFootprintsCallback(CVar* var, const char* oldValue, const char* value, void* arg);
+        static bool SkyCloudLODCallback(CVar* var, const char* oldValue, const char* value, void* arg);
+        static bool ViolenceLevelCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool SpecularCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool TerrainAlphaBitDepthCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool TextureCacheSizeCallback(CVar* var, const char* oldValue, const char* value, void* arg);

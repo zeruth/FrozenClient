@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 03:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 03:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2941 (-11) (10.8%) | 624.3k (11.3%) |
-| &nbsp;&nbsp;ported | 2234 (-11) | 448.7k |
+| mapped to a frozen function | 2944 (+3) (10.8%) | 625.1k (11.3%) |
+| &nbsp;&nbsp;ported | 2237 (+3) | 449.4k |
 | &nbsp;&nbsp;stub (unimplemented body) | 663 (=) | 135.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1059 (-4) (3.9%)** | **131.2k (2.4%)** |
-| unmapped | 24221 | 4.80M |
+| **faithful** (linked, not stub, call order >= 80%) | **1058 (-1) (3.9%)** | **131.2k (2.4%)** |
+| unmapped | 24218 | 4.79M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 413 (=) (7.5%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 417 (=) (7.2%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11826, stubs 1725 | |
+| **render surface** (the modules that draw the world) | **6005, mapped 169 (+3) (2.8%)** | |
+| frozen functions (src/, from PDB + source) | 11830, stubs 1725 | |
 
-Match evidence: annotated 739, callgraph 174, callorder 132, cvar 30, handler 28, order 179, override 205, sticky 13, string 309, table 1132. Module anchors: 1479 assert strings.
+Match evidence: annotated 739, callgraph 174, callorder 132, cvar 32, handler 28, order 179, override 205, sticky 13, string 310, table 1132. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 03:39 -- mapped 2952, ported 2245, stub 663, spine mapped 413.
+Previous run: 2026-09-20 03:40 -- mapped 2941, ported 2234, stub 663, spine mapped 413.
 
 ## Lua API coverage (binding tables)
 
@@ -121,9 +121,9 @@ Reference-only, by opcode (handler address): SMSG_CHECK_FOR_BOTS 006b9670, SMSG_
 
 ## CVar coverage (CVar::Register)
 
-The reference registers 426 cvars by literal name; frozen registers 417 of them. Missing ones are settings the reference client honours and this one cannot even store.
+The reference registers 426 cvars by literal name; frozen registers 421 of them. Missing ones are settings the reference client honours and this one cannot even store.
 
-Missing: POIShiftComplete, SkyCloudLOD, Sound_EnableDSPEffects, ffxSpecial, gxApi, processAffinityMask, scriptProfile, taintLog, violenceLevel
+Missing: POIShiftComplete, Sound_EnableDSPEffects, processAffinityMask, scriptProfile, taintLog
 
 ## Coverage by reference module
 
@@ -154,7 +154,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SEvt.cpp | 242 | 59.1k | 32 (13.2%) | 5.5% | 0 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 40 (16.3%) | 13.1% | 21 | 0 | 15 |
-| FFXEffects.cpp | 219 | 56.2k | 6 (2.7%) | 2.4% | 0 | 0 | 72 |
+| FFXEffects.cpp | 219 | 56.2k | 9 (4.1%) | 3.8% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 11 (4.9%) | 5.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
@@ -628,7 +628,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 27% | 66 | 23 | 41 | 11 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
-| 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
+| 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 33 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 49% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
 | 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
@@ -727,7 +727,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 01:30 | 2754 (10.1%) | 1032 (3.8%) | 487 | 412/5531 | 1799/2964 | 556 |
 | 2026-09-20 01:35 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:39 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:44 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
@@ -752,6 +751,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 03:28 | 2934 (10.8%) | 1053 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:39 | 2952 (10.9%) | 1063 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:40 | 2941 (10.8%) | 1059 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
+| 2026-09-20 03:51 | 2944 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 
 ## How to move a row
 

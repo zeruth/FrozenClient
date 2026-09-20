@@ -32,6 +32,7 @@ static CVar* s_cvGxStereoConvergence;
 static CVar* s_cvGxStereoEnabled;
 static CVar* s_cvGxStereoSeparation;
 static CVar* s_cvGxTripleBuffer;
+static CVar* s_cvGxApi;
 static CVar* s_cvGxVSync;
 static CVar* s_cvGxWidescreen;
 static CVar* s_cvGxWindow;
@@ -423,6 +424,12 @@ bool CVVideoOptionsVersionCallback(CVar*, const char*, const char*, void*) {
 }
 
 // ref: FUN_00769520
+// TODO the reference's callback tears the device down and brings it back up on the new backend.
+// Frozen has one backend, so there is nothing to switch to and the new value is simply accepted.
+bool CVGxApiCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    return true;
+}
+
 bool CVGxVSyncCallback(CVar*, const char*, const char* value, void*) {
     s_requestedFormat.vsync = SStrToInt(value);
     ConsoleWrite("set pending gxRestart", DEFAULT_COLOR);
@@ -553,7 +560,25 @@ void RegisterGxCVars() {
         false
     );
 
-    // TODO s_cvGxApi
+    // The reference picks the default from a six-name table at 00ad87e4 -- OpenGL, D3D9, D3D9Ex,
+    // D3D10, D3D11, GLL -- indexed by the platform's preferred API. Frozen has only the D3D9
+    // backend on Windows, so D3D9 is the honest default rather than a guess at the table index.
+    //
+    // DIVERGENCE: the reference's callback switches backend when this changes. Frozen stores the
+    // value and keeps rendering through D3D9, so setting it to anything else is remembered and
+    // ignored -- which is still better than the binding returning nil to the video options panel.
+    s_cvGxApi = CVar::Register(
+        "gxApi",
+        "graphics api",
+        0x1 | 0x2,
+        "D3D9",
+        &CVGxApiCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
 
     s_cvGxVSync = CVar::Register(
         "gxVSync",

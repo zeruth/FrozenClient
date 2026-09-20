@@ -2006,7 +2006,7 @@ addr	how	frozen	evidence
 00769240	annotated	CVGxColorBitsCallback	tag in src/console/Device.cpp
 007692d0	annotated	CVGxDepthBitsCallback	tag in src/console/Device.cpp
 00769360	annotated	CVGxTripleBufferCallback	tag in src/console/Device.cpp
-00769520	annotated	CVGxVSyncCallback	tag in src/console/Device.cpp
+00769520	annotated	CVGxApiCallback	tag in src/console/Device.cpp
 00769550	annotated	CVGxWindowCallback	tag in src/console/Device.cpp
 00769580	annotated	CVGxAspectCallback	tag in src/console/Device.cpp
 007695b0	annotated	CVGxMaximizeCallback	tag in src/console/Device.cpp
@@ -2131,7 +2131,10 @@ addr	how	frozen	evidence
 007e7d80	annotated	CoinTextFormat	tag in src/ui/game/GameScript.cpp
 007e7e10	annotated	CoinTextureFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
+007ea5f0	string	CGlueMgr::InitializeFFX	unique "ffxSpecial"
 007f09b0	override	SkyRender	
+007f1cd0	cvar	CWorldParam::SkyCloudLODCallback	callback of CVar::Register("SkyCloudLOD") on both sides
+007f39b0	cvar	CWorldParam::ViolenceLevelCallback	callback of CVar::Register("violenceLevel") on both sides
 007f3ae0	override	CGMinimapFrame::SetZoom	
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp

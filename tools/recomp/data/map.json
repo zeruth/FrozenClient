@@ -10576,7 +10576,7 @@
    "src/glue/cgluemgr.cpp"
   ],
   "frozen": "CGlueMgr::Resume",
-  "frozenSize": 680,
+  "frozenSize": 762,
   "how": "string",
   "module": "CGlueMgr.cpp",
   "refSize": 909,
@@ -31901,14 +31901,14 @@
  "00769520": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
   ],
-  "frozen": "CVGxVSyncCallback",
-  "frozenSize": 39,
+  "frozen": "CVGxApiCallback",
+  "frozenSize": 3,
   "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
@@ -32238,13 +32238,13 @@
   "branchRatio": 1.0,
   "constOverlap": 0.091,
   "faithful": true,
-  "fidelity": 0.929,
+  "fidelity": 0.964,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
   ],
   "frozen": "RegisterGxCVars",
-  "frozenSize": 1782,
+  "frozenSize": 1856,
   "how": "string",
   "module": "ConsoleVar.cpp",
   "refSize": 1144,
@@ -33520,7 +33520,7 @@
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::Initialize",
-  "frozenSize": 2233,
+  "frozenSize": 2374,
   "how": "string",
   "module": "WorldParam.cpp",
   "refSize": 1354,
@@ -33923,6 +33923,22 @@
   "refSize": 438,
   "status": "ported"
  },
+ "007ea5f0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.125,
+  "files": [
+   "src/glue/CGlueMgr.cpp",
+   "src/glue/cgluemgr.cpp"
+  ],
+  "frozen": "CGlueMgr::InitializeFFX",
+  "frozenSize": 0,
+  "how": "string",
+  "module": "FFXEffects.cpp",
+  "refSize": 606,
+  "status": "ported"
+ },
  "007f09b0": {
   "branchRatio": 0.714,
   "constOverlap": 0.0,
@@ -33937,6 +33953,38 @@
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
+  "status": "ported"
+ },
+ "007f1cd0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp",
+   "src/world/cworldparam.cpp"
+  ],
+  "frozen": "CWorldParam::SkyCloudLODCallback",
+  "frozenSize": 3,
+  "how": "cvar",
+  "module": "FFXEffects.cpp",
+  "refSize": 93,
+  "status": "ported"
+ },
+ "007f39b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldParam.cpp",
+   "src/world/cworldparam.cpp"
+  ],
+  "frozen": "CWorldParam::ViolenceLevelCallback",
+  "frozenSize": 3,
+  "how": "cvar",
+  "module": "FFXEffects.cpp",
+  "refSize": 96,
   "status": "ported"
  },
  "007f3ae0": {

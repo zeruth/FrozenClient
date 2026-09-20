@@ -29,7 +29,9 @@ CVar* CWorldParam::cvar_occlusion;
 CVar* CWorldParam::cvar_particleDensity;
 CVar* CWorldParam::cvar_projectedTextures;
 CVar* CWorldParam::cvar_shadowLevel;
+CVar* CWorldParam::cvar_skyCloudLOD;
 CVar* CWorldParam::cvar_showFootprints;
+CVar* CWorldParam::cvar_violenceLevel;
 CVar* CWorldParam::cvar_specular;
 CVar* CWorldParam::cvar_terrainAlphaBitDepth;
 CVar* CWorldParam::cvar_texLodBias;
@@ -137,6 +139,18 @@ bool CWorldParam::HorizonNearClipScaleCallback(CVar* var, const char* oldValue, 
 
 bool CWorldParam::HwPCFCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
     // TODO
+    return true;
+}
+
+bool CWorldParam::SkyCloudLODCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    // TODO cloud level of detail. Clouds are generated in src/world/Clouds.cpp at a fixed
+    // resolution; this is the knob that would lower it.
+    return true;
+}
+
+bool CWorldParam::ViolenceLevelCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    // TODO selects the blood texture set through UnitBloodLevels.dbc, whose record frozen already
+    // reads (src/db/rec/UnitBloodLevelsRec.cpp carries m_violencelevel[3]).
     return true;
 }
 
@@ -316,6 +330,38 @@ void CWorldParam::Initialize() {
         "0.7",
         &CWorldParam::HorizonNearClipScaleCallback,
         GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    // Registered with NO help text and no flags in the reference, unlike every other graphics
+    // cvar here. Reproduced as it is: an empty help string is what the console would show.
+    CWorldParam::cvar_skyCloudLOD = CVar::Register(
+        "SkyCloudLOD",
+        "",
+        0x0,
+        "0",
+        &CWorldParam::SkyCloudLODCallback,
+        GRAPHICS,
+        false,
+        nullptr,
+        false
+    );
+
+    // GAME rather than GRAPHICS, and flag 0x10 rather than the 0x1 the graphics settings use.
+    //
+    // DIVERGENCE in the default. The reference formats it per locale from a table at 00af4e14 --
+    // mostly 2, but 1 for two of the eight entries, which are the locales that ship censored. That
+    // table is indexed by a locale id frozen does not plumb through here, so the uncensored 2 is
+    // used and the per-locale choice is not reproduced.
+    CWorldParam::cvar_violenceLevel = CVar::Register(
+        "violenceLevel",
+        "Sets the violence level of the game",
+        0x10,
+        "2",
+        &CWorldParam::ViolenceLevelCallback,
+        GAME,
         false,
         nullptr,
         false

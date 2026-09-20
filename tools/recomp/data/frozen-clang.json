@@ -45369,7 +45369,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 51
+"line": 52
 },
 "CVGxCursorCallback": {
 "files": [
@@ -45389,7 +45389,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 81
+"line": 82
 },
 "CVGxDepthBitsCallback": {
 "files": [
@@ -45415,7 +45415,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 89
+"line": 90
 },
 "CVGxFixLagCallback": {
 "files": [
@@ -45435,7 +45435,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 119
+"line": 120
 },
 "CVGxMaximizeCallback": {
 "files": [
@@ -45455,7 +45455,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 127
+"line": 128
 },
 "CVGxRefreshCallback": {
 "files": [
@@ -45482,7 +45482,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 135
+"line": 136
 },
 "CVGxResolutionCallback": {
 "files": [
@@ -45550,7 +45550,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 163
+"line": 164
 },
 "CVGxStereoConvergenceCallback": {
 "files": [
@@ -45563,7 +45563,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 250
+"line": 251
 },
 "CVGxStereoEnabledCallback": {
 "files": [
@@ -45583,7 +45583,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 256
+"line": 257
 },
 "CVGxStereoSeparationCallback": {
 "files": [
@@ -45596,7 +45596,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 263
+"line": 264
 },
 "CVGxTripleBufferCallback": {
 "files": [
@@ -45619,7 +45619,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 269
+"line": 270
 },
 "CVGxAspectCallback": {
 "files": [
@@ -45639,7 +45639,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 285
+"line": 286
 },
 "CVGxMultisampleCallback": {
 "files": [
@@ -45662,7 +45662,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 293
+"line": 294
 },
 "CVGxMultisampleQualityCallback": {
 "files": [
@@ -45683,7 +45683,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 308
+"line": 309
 },
 "CVGxOverrideParse": {
 "files": [
@@ -45720,7 +45720,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 327
+"line": 328
 },
 "CVGxOverrideCallback": {
 "files": [
@@ -45735,7 +45735,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 388
+"line": 389
 },
 "CVGxMaxFPSCallback": {
 "files": [
@@ -45755,7 +45755,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 395
+"line": 396
 },
 "CVGxMaxFPSBkCallback": {
 "files": [
@@ -45775,7 +45775,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 408
+"line": 409
 },
 "CVVideoOptionsVersionCallback": {
 "files": [
@@ -45788,7 +45788,20 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 421
+"line": 422
+},
+"CVGxApiCallback": {
+"files": [
+"src/console/device.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 429
 },
 "CVGxVSyncCallback": {
 "files": [
@@ -45806,7 +45819,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 426
+"line": 433
 },
 "CVGxWindowCallback": {
 "files": [
@@ -45826,7 +45839,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 434
+"line": 441
 },
 "CVWindowResizeLockCallback": {
 "files": [
@@ -45842,7 +45855,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 442
+"line": 449
 },
 "RegisterGxCVars": {
 "files": [
@@ -45857,6 +45870,7 @@
 "SStrPrintf",
 "CVar::Register",
 "SStrPrintf",
+"CVar::Register",
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
@@ -45888,6 +45902,7 @@
 "30",
 "75",
 "Allow widescreen support",
+"D3D9",
 "Enable stereoscopic rendering",
 "Force fixed function rendering",
 "Set FPS limit",
@@ -45897,7 +45912,9 @@
 "constrain window aspect",
 "depth bits",
 "fixedFunction",
+"graphics api",
 "gx overrides",
+"gxApi",
 "gxAspect",
 "gxColorBits",
 "gxCursor",
@@ -45940,9 +45957,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 270,
+"lines": 288,
 "refs": [],
-"line": 448
+"line": 455
 },
 "UpdateGxCVars": {
 "files": [
@@ -45969,7 +45986,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 720
+"line": 745
 },
 "SetGxCVars": {
 "files": [
@@ -46016,7 +46033,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 740
+"line": 765
 },
 "ConsoleDeviceStereoInitialize": {
 "files": [
@@ -46041,7 +46058,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 782
+"line": 807
 },
 "ConsoleDeviceInitialize": {
 "files": [
@@ -46078,7 +46095,7 @@
 "stub": false,
 "lines": 81,
 "refs": [],
-"line": 810
+"line": 835
 },
 "ConsoleDeviceExists": {
 "files": [
@@ -46091,7 +46108,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 892
+"line": 917
 },
 "OnChar": {
 "files": [
@@ -57325,6 +57342,19 @@
 "refs": [],
 "line": 609
 },
+"FFXSpecialCallback": {
+"files": [
+"src/glue/cgluemgr.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 649
+},
 "CGlueMgr::InitializeFFX": {
 "files": [
 "src/glue/cgluemgr.cpp"
@@ -57333,19 +57363,24 @@
 "SMemAlloc",
 "EffectDeath::EffectDeath",
 "SMemAlloc",
-"EffectGlow::EffectGlow"
+"EffectGlow::EffectGlow",
+"CVar::Register"
 ],
 "strings": [
-"c:\\users\\tyler\\runicworld-client\\src\\glue\\cgluemgr.cpp"
+"0",
+"c:\\users\\tyler\\runicworld-client\\src\\glue\\cgluemgr.cpp",
+"ffxSpecial",
+"full screen test effect"
 ],
 "consts": [
+"0x1",
 "1"
 ],
 "branches": 1,
 "stub": false,
-"lines": 12,
+"lines": 31,
 "refs": [],
-"line": 647
+"line": 653
 },
 "CGlueMgr::LoginServerLogin": {
 "files": [
@@ -57380,7 +57415,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 660
+"line": 685
 },
 "CGlueMgr::NetDisconnectHandler": {
 "files": [
@@ -57421,7 +57456,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 709
+"line": 734
 },
 "CGlueMgr::OnKickReasonMsg": {
 "files": [
@@ -57441,7 +57476,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 775
+"line": 800
 },
 "CGlueMgr::PollAccountLogin": {
 "files": [
@@ -57514,7 +57549,7 @@
 "stub": false,
 "lines": 108,
 "refs": [],
-"line": 812
+"line": 837
 },
 "CGlueMgr::PollCharacterList": {
 "files": [
@@ -57551,7 +57586,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 921
+"line": 946
 },
 "CGlueMgr::PollCreateCharacter": {
 "files": [
@@ -57581,7 +57616,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 963
+"line": 988
 },
 "CGlueMgr::PollDeleteCharacter": {
 "files": [
@@ -57608,7 +57643,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 994
+"line": 1019
 },
 "CGlueMgr::PollEnterWorld": {
 "files": [
@@ -57634,7 +57669,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1022
+"line": 1047
 },
 "CGlueMgr::PollLoginServerLogin": {
 "files": [
@@ -57659,7 +57694,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 1049
+"line": 1074
 },
 "CGlueMgr::PollRealmList": {
 "files": [
@@ -57688,7 +57723,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 1111
+"line": 1136
 },
 "CGlueMgr::QuitGame": {
 "files": [
@@ -57705,7 +57740,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1146
+"line": 1171
 },
 "CGlueMgr::RealmListDialogCancelled": {
 "files": [
@@ -57724,7 +57759,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1150
+"line": 1175
 },
 "CGlueMgr::Resume": {
 "files": [
@@ -57794,7 +57829,7 @@
 "stub": false,
 "lines": 133,
 "refs": [],
-"line": 1156
+"line": 1181
 },
 "CGlueMgr::SetCurrentAccount": {
 "files": [
@@ -57810,7 +57845,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1290
+"line": 1315
 },
 "CGlueMgr::SetIdleState": {
 "files": [
@@ -57825,7 +57860,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1295
+"line": 1320
 },
 "CGlueMgr::SetLoginStateAndResult": {
 "files": [
@@ -57841,7 +57876,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1300
+"line": 1325
 },
 "CGlueMgr::SetScreen": {
 "files": [
@@ -57860,7 +57895,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1316
+"line": 1341
 },
 "CGlueMgr::Shutdown": {
 "files": [
@@ -57878,7 +57913,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1328
+"line": 1353
 },
 "CGlueMgr::StatusDialogClick": {
 "files": [
@@ -57913,7 +57948,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1340
+"line": 1365
 },
 "CGlueMgr::Sub4D8BA0": {
 "files": [
@@ -57930,7 +57965,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1401
+"line": 1426
 },
 "CGlueMgr::Suspend": {
 "files": [
@@ -57951,7 +57986,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1410
+"line": 1435
 },
 "CGlueMgr::UpdateCurrentScreen": {
 "files": [
@@ -57966,7 +58001,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1444
+"line": 1469
 },
 "ToWide": {
 "files": [
@@ -173686,7 +173721,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 44
+"line": 46
 },
 "CWorldParam::BaseMipCallback": {
 "files": [
@@ -173699,7 +173734,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 52
+"line": 54
 },
 "CWorldParam::BSPCacheCallback": {
 "files": [
@@ -173712,7 +173747,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 57
+"line": 59
 },
 "CWorldParam::EnvironmentDetailCallback": {
 "files": [
@@ -173732,7 +173767,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 63
+"line": 65
 },
 "CWorldParam::ExtShadowQualityCallback": {
 "files": [
@@ -173745,7 +173780,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 75
+"line": 77
 },
 "CWorldParam::FarClipCallback": {
 "files": [
@@ -173761,7 +173796,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 80
+"line": 82
 },
 "CWorldParam::FarClipOverrideCallback": {
 "files": [
@@ -173781,7 +173816,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 87
+"line": 89
 },
 "CWorldParam::FootstepBiasCallback": {
 "files": [
@@ -173794,7 +173829,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 97
+"line": 99
 },
 "CWorldParam::GroundEffectDensityCallback": {
 "files": [
@@ -173807,7 +173842,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 102
+"line": 104
 },
 "CWorldParam::GroundEffectDistCallback": {
 "files": [
@@ -173820,7 +173855,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 107
+"line": 109
 },
 "CWorldParam::HorizonFarClipScaleCallback": {
 "files": [
@@ -173840,7 +173875,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 113
+"line": 115
 },
 "CWorldParam::HorizonNearClipScaleCallback": {
 "files": [
@@ -173860,7 +173895,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 126
+"line": 128
 },
 "CWorldParam::HwPCFCallback": {
 "files": [
@@ -173873,7 +173908,33 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 138
+"line": 140
+},
+"CWorldParam::SkyCloudLODCallback": {
+"files": [
+"src/world/cworldparam.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 145
+},
+"CWorldParam::ViolenceLevelCallback": {
+"files": [
+"src/world/cworldparam.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 151
 },
 "CWorldParam::Initialize": {
 "files": [
@@ -173910,9 +173971,12 @@
 "CVar::Register",
 "CVar::Register",
 "CVar::Register",
+"CVar::Register",
+"CVar::Register",
 "CVar::Register"
 ],
 "strings": [
+"",
 "0",
 "0.0",
 "0.125",
@@ -173921,6 +173985,7 @@
 "1",
 "1.0",
 "16",
+"2",
 "350",
 "4",
 "4.0",
@@ -173947,6 +174012,8 @@
 "Override old world graphic settings",
 "Projected Textures",
 "Quality of exterior shadows (0-5)",
+"Sets the violence level of the game",
+"SkyCloudLOD",
 "Specularity",
 "Terrain alpha map bit depth",
 "Terrain shadow map mip level",
@@ -173988,17 +174055,20 @@
 "terrainAlphaBitDepth",
 "texLodBias",
 "toggles rendering of footprints",
+"violenceLevel",
 "waterLOD",
 "worldPoolUsage"
 ],
 "consts": [
-"0x1"
+"0x0",
+"0x1",
+"0x10"
 ],
 "branches": 0,
 "stub": false,
-"lines": 376,
+"lines": 408,
 "refs": [],
-"line": 143
+"line": 157
 },
 "CWorldParam::LodCallback": {
 "files": [
@@ -174011,7 +174081,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 520
+"line": 566
 },
 "CWorldParam::MapObjLightLODCallback": {
 "files": [
@@ -174031,7 +174101,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 526
+"line": 572
 },
 "CWorldParam::MapShadowsCallback": {
 "files": [
@@ -174051,7 +174121,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 541
+"line": 587
 },
 "CWorldParam::MaxLightsCallback": {
 "files": [
@@ -174072,7 +174142,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 556
+"line": 602
 },
 "CWorldParam::NearClipCallback": {
 "files": [
@@ -174088,7 +174158,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 571
+"line": 617
 },
 "CWorldParam::ObjectFadeCallback": {
 "files": [
@@ -174108,7 +174178,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 578
+"line": 624
 },
 "CWorldParam::ObjectFadeZFillCallback": {
 "files": [
@@ -174128,7 +174198,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 593
+"line": 639
 },
 "CWorldParam::OcclusionCallback": {
 "files": [
@@ -174148,7 +174218,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 608
+"line": 654
 },
 "CWorldParam::ParticleDensityCallback": {
 "files": [
@@ -174170,7 +174240,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 621
+"line": 667
 },
 "CWorldParam::ProjectedTexturesCallback": {
 "files": [
@@ -174190,7 +174260,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 636
+"line": 682
 },
 "CWorldParam::ShadowLevelCallback": {
 "files": [
@@ -174212,7 +174282,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 651
+"line": 697
 },
 "CWorldParam::ShowFootprintsCallback": {
 "files": [
@@ -174232,7 +174302,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 664
+"line": 710
 },
 "CWorldParam::SpecularCallback": {
 "files": [
@@ -174245,7 +174315,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 678
+"line": 724
 },
 "CWorldParam::TerrainAlphaBitDepthCallback": {
 "files": [
@@ -174258,7 +174328,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 683
+"line": 729
 },
 "CWorldParam::TextureCacheSizeCallback": {
 "files": [
@@ -174271,7 +174341,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 688
+"line": 734
 },
 "CWorldParam::TextureLodBiasCallback": {
 "files": [
@@ -174292,7 +174362,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 694
+"line": 740
 },
 "CWorldParam::WaterLODCallback": {
 "files": [
@@ -174312,7 +174382,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 709
+"line": 755
 },
 "CWorldParam::WorldPoolUsageCallback": {
 "files": [
@@ -174335,7 +174405,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 722
+"line": 768
 },
 "CMap::AllocEntity": {
 "files": [
