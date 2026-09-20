@@ -55,6 +55,15 @@ target_link_libraries(storm
         system
 )
 
+# Crash reports are written straight to the system log, because the stdout pump does not
+# outrun the exit that follows them.
+if(WHOA_SYSTEM_ANDROID)
+    target_link_libraries(storm
+        PRIVATE
+            log
+    )
+endif()
+
 if(HAS_NO_INVALID_OFFSETOF)
     target_compile_options(storm
         PUBLIC

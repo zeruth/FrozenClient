@@ -74,6 +74,13 @@ bool s_rendered = false;
 float s_savedViewport[6] = { 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
 char s_dumpPath[260] = { 0 };
 
+// A render target owns its texels -- the device writes them, nothing uploads them -- so there is
+// nothing for an upload callback to do and both targets below were created without one. GxTexCreate
+// asserts one is present anyway, and a build with assertions live takes that literally: this killed
+// the client a few seconds into the world on Android, where assertions are not compiled out.
+void ShadowTargetCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevel, void* userArg, uint32_t& stride, const void*& texels) {
+}
+
 // Allocate both targets, not just the colour one. The reference gets away with a lone R32F colour
 // target because it keeps the default depth-stencil, but D3D9 requires the depth surface to be at
 // least as large as the colour surface, and a 1024 map against a smaller window fails the bind.
@@ -93,12 +100,12 @@ bool EnsureTargets() {
 
     int32_t ok = GxTexCreate(
         GxTex_2d, SHADOW_SIZE, SHADOW_SIZE, 1, GxTex_R32F, GxTex_R32F,
-        flags, nullptr, nullptr, "ShadowCache", s_colorTex);
+        flags, nullptr, ShadowTargetCallback, "ShadowCache", s_colorTex);
 
     if (ok) {
         ok = GxTexCreate(
             GxTex_2d, SHADOW_SIZE, SHADOW_SIZE, 1, GxTex_D24X8, GxTex_D24X8,
-            flags, nullptr, nullptr, "ShadowCacheDepth", s_depthTex);
+            flags, nullptr, ShadowTargetCallback, "ShadowCacheDepth", s_depthTex);
     }
 
     if (!ok || !s_colorTex || !s_depthTex) {

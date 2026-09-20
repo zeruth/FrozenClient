@@ -7,8 +7,33 @@
 #include <Windows.h>
 #endif
 
+#if defined(WHOA_SYSTEM_ANDROID)
+#include <android/log.h>
+#endif
+
 static uint32_t s_lasterror = ERROR_SUCCESS;
 static uint32_t s_suppress;
+
+// One line of a crash report.
+//
+// The report cannot go through printf alone. On Android stdout is a pipe drained by a separate
+// thread, and the exit below does not wait for it, so an assertion message written on the way out
+// is lost in the race -- which is how a client that died on entering the world reported nothing
+// but an exit code. The system log takes its write synchronously, so the report survives.
+static void STORMCDECL ErrPrintf(const char* format, ...) {
+    char text[1024];
+
+    va_list args;
+    va_start(args, format);
+    vsnprintf(text, sizeof(text), format, args);
+    va_end(args);
+
+    fputs(text, stdout);
+
+#if defined(WHOA_SYSTEM_ANDROID)
+    __android_log_write(ANDROID_LOG_ERROR, "Frozen", text);
+#endif
+}
 
 // Leaves the process without running static destructors.
 //
@@ -24,11 +49,14 @@ static uint32_t s_suppress;
 }
 
 [[noreturn]] void STORMCDECL SErrDisplayAppFatal(const char* format, ...) {
+    char text[1024];
+
     va_list args;
     va_start(args, format);
-    vprintf(format, args);
-    printf("\n");
+    vsnprintf(text, sizeof(text), format, args);
     va_end(args);
+
+    ErrPrintf("%s\n", text);
 
     ErrExitNow(EXIT_FAILURE);
 }
@@ -36,34 +64,34 @@ static uint32_t s_suppress;
 int32_t STORMAPI SErrDisplayError(uint32_t errorcode, const char* filename, int32_t linenumber, const char* description, int32_t recoverable, uint32_t exitcode, uint32_t a7) {
     // TODO
 
-    printf("\n=========================================================\n");
+    ErrPrintf("\n=========================================================\n");
 
     if (linenumber == SERR_LINECODE_EXCEPTION) {
-        printf("Exception Raised!\n\n");
+        ErrPrintf("Exception Raised!\n\n");
 
-        printf(" App:         %s\n", "GenericBlizzardApp");
+        ErrPrintf(" App:         %s\n", "GenericBlizzardApp");
 
         if (errorcode != 0x85100000) {
-            printf(" Error Code:  0x%08X\n", errorcode);
+            ErrPrintf(" Error Code:  0x%08X\n", errorcode);
         }
 
         // TODO output time
 
-        printf(" Error:       %s\n\n", description);
+        ErrPrintf(" Error:       %s\n\n", description);
     } else {
-        printf("Assertion Failed!\n\n");
+        ErrPrintf("Assertion Failed!\n\n");
 
-        printf(" App:         %s\n", "GenericBlizzardApp");
-        printf(" File:        %s\n", filename);
-        printf(" Line:        %d\n", linenumber);
+        ErrPrintf(" App:         %s\n", "GenericBlizzardApp");
+        ErrPrintf(" File:        %s\n", filename);
+        ErrPrintf(" Line:        %d\n", linenumber);
 
         if (errorcode != 0x85100000) {
-            printf(" Error Code:  0x%08X\n", errorcode);
+            ErrPrintf(" Error Code:  0x%08X\n", errorcode);
         }
 
         // TODO output time
 
-        printf(" Assertion:   %s\n", description);
+        ErrPrintf(" Assertion:   %s\n", description);
     }
 
     if (recoverable) {
