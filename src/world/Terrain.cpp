@@ -1,5 +1,6 @@
 #include "world/Terrain.hpp"
 #include "world/TerrainShadersD3d9.hpp"
+#include "world/TerrainShadersArb.hpp"
 #include "world/CWorld.hpp"
 #include "db/Db.hpp"
 #include "world/ParticleFx.hpp"
@@ -2339,6 +2340,15 @@ void FreeTile(TerrainTile& tile) {
     tile.y = -1;
 }
 
+CGxShader* MakeRawShader(int32_t target, const unsigned char* code, uint32_t len);
+
+// ARB programs are text rather than compiled bytecode, so they arrive as a char array. The device
+// does not care which it is handed -- it reads shader->code either way -- so this only spares the
+// call sites a cast apiece.
+CGxShader* MakeArbShader(int32_t target, const char* code, uint32_t len) {
+    return MakeRawShader(target, reinterpret_cast<const unsigned char*>(code), len);
+}
+
 CGxShader* MakeRawShader(int32_t target, const unsigned char* code, uint32_t len) {
     if (!g_theGxDevicePtr || !code || !len) {
         return nullptr;
@@ -2388,7 +2398,27 @@ void EnsureShaders() {
         s_blobDecalPS = MakeRawShader(GxSh_Pixel, g_blobDecalPsD3d9, g_blobDecalPsD3d9_len);
         s_detailPS = MakeRawShader(GxSh_Pixel, g_detailPsD3d9, g_detailPsD3d9_len);
         s_useTerrainShader = (s_terrainVS && s_terrainPS);
+    } else if (api == GxApi_GLL || api == GxApi_OpenGl) {
+        // The same four programs in ARB assembly. Without these the GL backends had no terrain
+        // program at all and every chunk fell through to RenderFallback, which draws the mesh
+        // untextured -- the flat white ground Android rendered under correctly textured models.
+        s_terrainVS = MakeArbShader(GxSh_Vertex, g_terrainVsArb, sizeof(g_terrainVsArb) - 1);
+        s_terrainPS = MakeArbShader(GxSh_Pixel, g_terrainPsArb, sizeof(g_terrainPsArb) - 1);
+        s_blobDecalPS = MakeArbShader(GxSh_Pixel, g_blobDecalPsArb, sizeof(g_blobDecalPsArb) - 1);
+        s_detailPS = MakeArbShader(GxSh_Pixel, g_detailPsArb, sizeof(g_detailPsArb) - 1);
+        s_useTerrainShader = (s_terrainVS && s_terrainPS);
     }
+
+    SysMsgPrintf(
+        SYSMSG_INFO,
+        "Terrain: api %d shaders vs %s ps %s blob %s detail %s -> %s",
+        static_cast<int32_t>(api),
+        s_terrainVS ? "ok" : "MISSING",
+        s_terrainPS ? "ok" : "MISSING",
+        s_blobDecalPS ? "ok" : "MISSING",
+        s_detailPS ? "ok" : "MISSING",
+        s_useTerrainShader ? "shaded" : "fallback"
+    );
 }
 
 // Single-pass per-pixel blend (base + up to 3 overlay layers weighted by the combined alpha map)
