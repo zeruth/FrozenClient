@@ -143,8 +143,26 @@ int32_t Script_GetInventoryItemCount(lua_State* L) {
 // TODO the item cache record holds the quality frozen would push, but the reference reads it only
 // when another field of the same record is zero, and which field that is has not been established.
 // Pushing the quality unconditionally would be right most of the time and wrong silently.
+// ref: FUN_005ea040
+// Quality from the item cache, or -1 for an item with no inventory type -- the reference guards on
+// that field rather than on the quality itself, so a cached record for something unequippable
+// reports -1 instead of its real quality.
+//
+// This one answers nil on a miss where its siblings above return no values at all. That asymmetry
+// is the reference's: the failure path here pushes nil and returns 1.
 int32_t Script_GetInventoryItemQuality(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto item = InventoryItem(L, 1, 2);
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+    if (!info) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, static_cast<double>(info->inventoryType ? info->quality : -1));
+
+    return 1;
 }
 
 int32_t Script_GetInventoryItemCooldown(lua_State* L) {

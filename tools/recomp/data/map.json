@@ -22051,20 +22051,20 @@
   "status": "ported"
  },
  "005ea040": {
-  "branchRatio": 0.222,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.3,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_GetInventoryItemQuality",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 113,
+  "how": "annotated",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 292,
-  "status": "stub"
+  "status": "ported"
  },
  "005ea170": {
   "branchRatio": 0.25,

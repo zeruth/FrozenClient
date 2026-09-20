@@ -1385,7 +1385,7 @@ addr	how	frozen	evidence
 005e9bc0	annotated	Script_GetInventoryItemTexture	tag in src/ui/game/CharacterInfoScript.cpp
 005e9d80	table	Script_GetInventoryItemBroken	binding "GetInventoryItemBroken" in s_ScriptFunctions ~ table 00ad1270
 005e9e40	annotated	Script_GetInventoryItemCount	tag in src/ui/game/CharacterInfoScript.cpp
-005ea040	table	Script_GetInventoryItemQuality	binding "GetInventoryItemQuality" in s_ScriptFunctions ~ table 00ad1270
+005ea040	annotated	Script_GetInventoryItemQuality	tag in src/ui/game/CharacterInfoScript.cpp
 005ea170	annotated	Script_GetInventoryItemDurability	tag in src/ui/game/CharacterInfoScript.cpp
 005ea270	table	Script_GetInventoryItemLink	binding "GetInventoryItemLink" in s_ScriptFunctions ~ table 00ad1270
 005ea3e0	annotated	Script_GetInventoryItemID	tag in src/ui/game/CharacterInfoScript.cpp
