@@ -49,6 +49,12 @@ class CGPartyInfo {
 
         static WOWGUID GetLeader();
 
+        // The group's loot rules, as the group list sends them. The defaults are the reference's
+        // own init values -- group loot at uncommon -- which is what a player not in a group sees.
+        static uint32_t GetLootMethod();
+        static WOWGUID GetMasterLooter();
+        static uint32_t GetLootThreshold();
+
         // ref: FUN_0052c8c0
         // Whether a guid belongs to a party member or to a member's pet. The player is NOT a
         // member for this purpose -- "player" and "pet" are their own tokens.
@@ -70,11 +76,15 @@ class CGPartyInfo {
 
         static void SetMember(uint32_t slot, const PARTY_MEMBER& member);
         static void SetLeader(WOWGUID leader);
+        static void SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold);
 
         // Private static variables
         static WOWGUID m_members[];
         static PARTY_MEMBER m_memberInfo[4];
         static WOWGUID m_leader;
+        static uint32_t m_lootMethod;
+        static WOWGUID m_masterLooter;
+        static uint32_t m_lootThreshold;
 };
 
 #endif

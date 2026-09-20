@@ -993,14 +993,14 @@ addr	how	frozen	evidence
 0052c190	table	Script_GetRealNumPartyMembers	binding "GetRealNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
 0052c1d0	annotated	Script_GetPartyMember	tag in src/ui/game/PartyInfoScript.cpp
 0052c270	annotated	Script_GetPartyLeaderIndex	tag in src/ui/game/PartyInfoScript.cpp
-0052c2a0	table	Script_GetLootThreshold	binding "GetLootThreshold" in s_ScriptFunctions ~ table 00acc6d0
+0052c2a0	annotated	Script_GetLootThreshold	tag in src/ui/game/PartyInfoScript.cpp
 0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
 0052c310	table	Script_IsPartyLFG	binding "IsPartyLFG" in s_ScriptFunctions ~ table 00acc6d0
 0052c350	table	Script_HasLFGRestrictions	binding "HasLFGRestrictions" in s_ScriptFunctions ~ table 00acc6d0
 0052c8c0	annotated	CGPartyInfo::IsMemberOrPet	tag in src/ui/game/CGPartyInfo.cpp
 0052ccd0	annotated	Script_IsPartyLeader	tag in src/ui/game/PartyInfoScript.cpp
 0052cd30	table	Script_IsRealPartyLeader	binding "IsRealPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
-0052cd90	table	Script_GetLootMethod	binding "GetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
+0052cd90	annotated	Script_GetLootMethod	tag in src/ui/game/PartyInfoScript.cpp
 0052cf00	table	Script_SetOptOutOfLoot	binding "SetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
 0052cf60	table	Script_GetPartyAssignment	binding "GetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052d000	table	Script_CanChangePlayerDifficulty	binding "CanChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0

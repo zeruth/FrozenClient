@@ -15915,8 +15915,8 @@
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetLootThreshold",
-  "frozenSize": 27,
-  "how": "table",
+  "frozenSize": 43,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 34,
   "status": "ported"
@@ -16018,17 +16018,17 @@
   "status": "stub"
  },
  "0052cd90": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.312,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetLootMethod",
-  "frozenSize": 48,
-  "how": "table",
+  "frozenSize": 181,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 333,
   "status": "ported"
@@ -27992,16 +27992,16 @@
   "status": "ported"
  },
  "006d8870": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.113,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.221,
+  "fidelity": 0.26,
   "files": [
    "src/ui/game/CGPartyInfo.cpp",
    "src/ui/game/cgpartyinfo.cpp"
   ],
   "frozen": "ReceiveGroupList",
-  "frozenSize": 807,
+  "frozenSize": 921,
   "how": "annotated",
   "module": "Player_C.cpp",
   "refSize": 2482,

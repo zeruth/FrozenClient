@@ -95,11 +95,48 @@ int32_t Script_LeaveParty(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0052cd90
+// method, master looter's party index, master looter's raid index.
+//
+// The five names and their order come from the switch's own jump table, not from memory: 0 is
+// freeforall, 1 roundrobin, 2 master, 3 group, 4 needbeforegreed, and anything else is the literal
+// string "ERROR!" rather than a nil or an empty string.
+//
+// The party index is 0 when the player is the looter, 1-4 for a party member, and -1 for neither.
+// Zero is a real answer there, not "none".
 int32_t Script_GetLootMethod(lua_State* L) {
-    // TODO group loot state; a lone player is on group loot
-    lua_pushstring(L, "group");
-    lua_pushnil(L);
-    lua_pushnil(L);
+    static const char* s_methods[] = {
+        "freeforall", "roundrobin", "master", "group", "needbeforegreed"
+    };
+
+    auto method = CGPartyInfo::GetLootMethod();
+
+    lua_pushstring(L, method < 5 ? s_methods[method] : "ERROR!");
+
+    auto looter = CGPartyInfo::GetMasterLooter();
+    int32_t partyIndex = -1;
+
+    if (looter) {
+        if (looter == ClntObjMgrGetActivePlayer()) {
+            partyIndex = 0;
+        } else {
+            for (uint32_t slot = 1; slot <= 4; slot++) {
+                if (CGPartyInfo::GetMember(slot) == looter) {
+                    partyIndex = static_cast<int32_t>(slot);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    lua_pushnumber(L, static_cast<double>(partyIndex));
+
+    // TODO the raid index. The reference walks its raid array for the looter, but frozen's raid
+    // roster has no established numbering -- the player is somewhere in it and the packet does not
+    // say where -- so reporting a position would be a guess. -1 reads as "not a raid member",
+    // which is at least the right shape.
+    lua_pushnumber(L, -1.0);
 
     return 3;
 }
@@ -108,9 +145,9 @@ int32_t Script_SetLootMethod(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0052c2a0
 int32_t Script_GetLootThreshold(lua_State* L) {
-    // Uncommon
-    lua_pushnumber(L, 2.0);
+    lua_pushnumber(L, static_cast<double>(CGPartyInfo::GetLootThreshold()));
 
     return 1;
 }

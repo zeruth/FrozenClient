@@ -15,6 +15,12 @@ WOWGUID CGPartyInfo::m_members[4];
 PARTY_MEMBER CGPartyInfo::m_memberInfo[4];
 WOWGUID CGPartyInfo::m_leader;
 
+// Group loot at uncommon: the values the reference's party init starts from, and what a player who
+// is not in a group keeps seeing.
+uint32_t CGPartyInfo::m_lootMethod = 3;
+WOWGUID CGPartyInfo::m_masterLooter = 0;
+uint32_t CGPartyInfo::m_lootThreshold = 2;
+
 namespace {
 
 // The reference keeps two of these, one for the party list and one for the raid list, and drops a
@@ -130,6 +136,24 @@ bool CGPartyInfo::IsPlayerOrMemberOrPet(WOWGUID guid) {
 void CGPartyInfo::SetMember(uint32_t slot, const PARTY_MEMBER& member) {
     CGPartyInfo::m_memberInfo[slot] = member;
     CGPartyInfo::m_members[slot] = member.guid;
+}
+
+uint32_t CGPartyInfo::GetLootMethod() {
+    return CGPartyInfo::m_lootMethod;
+}
+
+WOWGUID CGPartyInfo::GetMasterLooter() {
+    return CGPartyInfo::m_masterLooter;
+}
+
+uint32_t CGPartyInfo::GetLootThreshold() {
+    return CGPartyInfo::m_lootThreshold;
+}
+
+void CGPartyInfo::SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold) {
+    CGPartyInfo::m_lootMethod = method;
+    CGPartyInfo::m_masterLooter = looter;
+    CGPartyInfo::m_lootThreshold = threshold;
 }
 
 void CGPartyInfo::SetLeader(WOWGUID leader) {
@@ -254,6 +278,25 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
 
     CGPartyInfo::SetLeader(leader);
     CGRaidInfo::SetRoster(raidMembers, raidCount, (groupType & GROUPTYPE_RAID) != 0);
+
+    // The loot block is CONDITIONAL on there being members at all -- a second conditional in this
+    // packet after the LFG one. An empty group carries none of it and the reference resets the
+    // rules to their defaults rather than leaving the last group's in place.
+    if (memberCount) {
+        uint8_t lootMethod = 0;
+        WOWGUID masterLooter = 0;
+        uint8_t lootThreshold = 0;
+
+        msg->Get(lootMethod);
+        msg->Get(masterLooter);
+        msg->Get(lootThreshold);
+
+        CGPartyInfo::SetLoot(lootMethod, masterLooter, lootThreshold);
+
+        // Then the two difficulty bytes and one more, which nothing reads yet.
+    } else {
+        CGPartyInfo::SetLoot(3, 0, 2);
+    }
 
     FrameScript_SignalEvent(SCRIPT_PARTY_MEMBERS_CHANGED, nullptr);
 

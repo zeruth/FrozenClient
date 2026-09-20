@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 00:10 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 00:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2738 (+2) (10.1%) | 583.3k (10.5%) |
-| &nbsp;&nbsp;ported | 2204 (+3) | 437.8k |
-| &nbsp;&nbsp;stub (unimplemented body) | 495 (-1) | 106.3k |
+| mapped to a frozen function | 2738 (=) (10.1%) | 583.3k (10.5%) |
+| &nbsp;&nbsp;ported | 2204 (=) | 437.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 495 (=) | 106.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1026 (+2) (3.8%)** | **127.2k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1026 (=) (3.8%)** | **127.2k (2.3%)** |
 | unmapped | 24424 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 412 (+2) (7.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (+2) (7.2%) | |
+| world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 165 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11550, stubs 753 | |
+| frozen functions (src/, from PDB + source) | 11554, stubs 753 | |
 
-Match evidence: annotated 662, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 1000. Module anchors: 1479 assert strings.
+Match evidence: annotated 664, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 200, sticky 13, string 310, table 998. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 00:07 -- mapped 2736, ported 2201, stub 496, spine mapped 410.
+Previous run: 2026-09-20 00:10 -- mapped 2738, ported 2204, stub 495, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 564 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 564 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -560,9 +560,9 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0054c8a0 | `Script_GetWorldPVPQueueStatus` | Usage: GetWorldPVPQueueStatus(index); active; confirm; error |
 | 0054bc30 | `Script_GetBattlefieldStatus` | Usage: GetBattlefieldStatus(index); active; confirm; error |
 | 00539d70 | `Script_BNGetFriendToonInfo` | Couldn't find a toon at friend index %d, online to; Couldn't find a toon at friend index %d, toon inde; Friend index %d too large, only %d friends.; Toon index %d too large, only %d toons. |
-| 0052cd90 | `Script_GetLootMethod` | ERROR!; freeforall; master; needbeforegreed |
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
 | 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
+| 0096c9e0 | `CSimpleHTML::ParseP` | .?AUCONTENTNODE@@; .?AVCSimpleTexture@@; height; width |
 
 ## Largest frozen functions with no reference link
 
@@ -627,7 +627,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
-| 006d8870 | `ReceiveGroupList` | 22% | 77 | 24 | 80 | 8 | 0% | 2482 |
+| 006d8870 | `ReceiveGroupList` | 26% | 77 | 29 | 80 | 9 | 0% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 22:11 | 2723 (10.0%) | 1008 (3.7%) | 509 | 404/5531 | 1792/2964 | 578 |
 | 2026-09-19 22:12 | 2724 (10.0%) | 1010 (3.7%) | 509 | 405/5531 | 1792/2964 | 578 |
 | 2026-09-19 22:17 | 2724 (10.0%) | 1010 (3.7%) | 508 | 405/5531 | 1792/2964 | 577 |
 | 2026-09-19 22:22 | 2725 (10.0%) | 1011 (3.7%) | 507 | 406/5531 | 1792/2964 | 576 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 00:01 | 2735 (10.1%) | 1022 (3.8%) | 497 | 409/5531 | 1792/2964 | 566 |
 | 2026-09-20 00:07 | 2736 (10.1%) | 1024 (3.8%) | 496 | 410/5531 | 1792/2964 | 565 |
 | 2026-09-20 00:10 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
+| 2026-09-20 00:17 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
 
 ## How to move a row
 
