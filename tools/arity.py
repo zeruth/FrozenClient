@@ -27,8 +27,23 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FXDIR = os.path.join(ROOT, 'build', 'framexml')
 
 
+# A binding table whose variable name ends in Methods holds WIDGET methods, called as obj:Name().
+# Everything else -- s_ScriptFunctions, s_UnitFunctions, s_SystemFunctions, s_stubs, extra_funcs --
+# holds globals, called as Name().
+#
+# Telling them apart is not cosmetic. FrameXML's "local x, y = GetCursorPosition()" calls the
+# GLOBAL, which returns two; CSimpleEditBox also registers a GetCursorPosition method returning
+# one, and matching that against the global reported a bug in correct code. Same trap for any name
+# a widget and a global share.
+TABLE_RE = re.compile(
+    r'(?:FrameScript_Method|FrameScript_Function|ScriptFunction|luaL_Reg)\s+'
+    r'([A-Za-z_][\w:]*)\s*\[[^\]]*\]\s*=\s*\{(.*?)\n\};', re.S)
+
+ENTRY_RE = re.compile(r'\{\s*"([^"]+)"\s*,\s*&?([\w:]+)\s*\}')
+
+
 def cpp_returns():
-    """Registered Lua name -> (file, function, max return count)."""
+    """Global Lua name -> (file, function, max return count). Widget methods are skipped."""
     out = {}
 
     for path in glob.glob(os.path.join(ROOT, 'src', '**', '*.cpp'), recursive=True):
@@ -37,19 +52,27 @@ def cpp_returns():
 
         bodies = dict(re.findall(r'int32_t (\w+)\(lua_State\* \w+\)\s*\{(.*?)\n\}', src, re.S))
 
-        for name, func in re.findall(r'\{\s*"([^"]+)"\s*,\s*&(\w+)\s*\}', src):
-            body = bodies.get(func)
-
-            if body is None:
+        for table, body in TABLE_RE.findall(src):
+            if table.rsplit('::', 1)[-1].lower().endswith('methods'):
                 continue
 
-            if 'WHOA_UNIMPLEMENTED' in body:
-                continue
+            for name, func in ENTRY_RE.findall(body):
+                fn = bodies.get(func.rsplit('::', 1)[-1])
 
-            counts = [int(n) for n in re.findall(r'return\s+(\d+)\s*;', body)]
+                if fn is None or 'WHOA_UNIMPLEMENTED' in fn:
+                    continue
 
-            if counts:
-                out[name] = (rel, func, max(counts))
+                counts = [int(n) for n in re.findall(r'return\s+(\d+)\s*;', fn)]
+
+                if not counts:
+                    continue
+
+                # Two globals under one name would make the answer depend on file order. Keep the
+                # more generous one so a genuine shortfall is never invented by the tie-break.
+                prev = out.get(name)
+
+                if not prev or max(counts) > prev[2]:
+                    out[name] = (rel, func, max(counts))
 
     return out
 
@@ -80,6 +103,11 @@ def framexml_arity():
             if '(' in lhs or '[' in lhs:
                 continue
 
+            # "local a, b = F(\"x\"), F(\"y\")" destructures two calls, not one call returning two.
+            # Counting the locals there invents a shortfall -- GetCVarBool was reported that way.
+            if line.count(name + '(') > 1:
+                continue
+
             names = [p.strip() for p in lhs.split(',') if p.strip()]
 
             if len(names) < 2:
@@ -96,6 +124,16 @@ def framexml_arity():
     return out
 
 
+# Shortfalls that are the reference's own behaviour, not frozen's gap. Each needs a reason, and
+# the reason has to be about the REFERENCE returning fewer values too -- "not implemented yet" is
+# not a suppression, it is the thing this tool is for.
+KNOWN = {
+    'UnitPowerType':
+        'the reference also returns 2 for an ordinary unit; the 5-value form needs a vehicle with '
+        'an alternate power display, and frozen has neither. Documented at the binding.',
+}
+
+
 def main():
     cpp = cpp_returns()
     fx = framexml_arity()
@@ -103,6 +141,9 @@ def main():
     rows = []
 
     for name, (wants, site) in fx.items():
+        if name in KNOWN and '--all' not in sys.argv:
+            continue
+
         info = cpp.get(name)
 
         if not info:
@@ -116,6 +157,8 @@ def main():
     rows.sort(reverse=True)
 
     print('%d bindings return fewer values than FrameXML destructures' % len([r for r in rows if r[0] > 0]))
+    print('(%d suppressed as the reference behaving the same way; --all to include them)'
+          % len(KNOWN))
     print()
 
     for short, name, gives, wants, path, site in rows:
