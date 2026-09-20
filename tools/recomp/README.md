@@ -175,6 +175,33 @@ right answer in `overrides.json`.
 > After a full direct `python tools/recomp/clangparse.py` run the current numbers agree with
 > per-file re-parses.
 
+> **A second stub blind spot, and 1008 registrations the report could not see.** Closed 2026-09-20.
+> Two defects that compounded, both found while checking why adding one binding moved the
+> registered count by +1 instead of leaving it flat.
+>
+> `FROZEN_TABLE_RE` matched only arrays typed `FrameScript_Method` or `FrameScript_Function`.
+> `MiscScriptStubs.cpp` declares its table as `const ScriptFunction s_stubs[]` -- 1008 entries, every
+> one handed to `FrameScript_RegisterFunction` by `MiscScriptRegisterStubs`, which `CGGameUI.cpp`
+> calls. None of them were visible. The report therefore listed those names as **missing**, meaning
+> "FrameXML calls it and gets nil", when FrameXML actually gets a callable stub that returns
+> nothing. That is a different and far less fatal bug class, and it was aimed straight at the
+> ranked queue: "Lua tables with the most missing names" is priority 4 in CLAUDE.md, and it was
+> sending cycles at names that were already registered.
+>
+> Widening the pattern exposed the second defect. Both stub scanners look for an unimplemented
+> marker in the body, and the `WHOA_LUA_STUB` macro emits none -- it prints "Function not yet
+> implemented" and returns 0 -- so the newly visible bindings arrived counted as **ported**.
+> `is_stub_name` now treats the `Script_Stub_` prefix as authoritative, which the macro is the only
+> producer of. The 28 hand-written `Script_Stub_*` functions are stubs too: each returns a fixed
+> value for a subsystem that is not ported and says so in its own comment.
+>
+> What moved, measured across the two changes: registered bindings 1801 -> 2747, of which stubs
+> 554 -> 1500; mapped 2759 -> 2835 (+76 newly linked), stub 485 -> 664, ported 2231 -> 2128. Note
+> the direction of that last one. 76 of the 179 new stubs are the newly linked bindings; the other
+> **103 were already linked and already being counted as ported while mapped to a stub body**. That
+> was a standing overstatement of `ported`, not something this change introduced, and the numbers
+> before 2026-09-20 should be read with it in mind.
+
 ## What the report says
 
 - **Totals** — functions and code bytes: linked / ported / stub / verified / unlinked, plus the

@@ -405,7 +405,7 @@ def overlay_clang(src):
         # looks for WHOA_UNIMPLEMENTED in the body and does not have that problem; clang's adds the
         # empty-body-with-TODO case the regex cannot see. Taking either is strictly better than
         # taking one.
-        e['stub'] = e['stub'] or c['stub']
+        e['stub'] = e['stub'] or c['stub'] or is_stub_name(name)
         e['exact'] = True
     return src, True
 
@@ -655,7 +655,27 @@ def load_tables():
     return tables
 
 
-FROZEN_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
+# ScriptFunction belongs here beside the two FrameScript types: MiscScriptStubs.cpp declares
+# its 1008-entry s_stubs[] with that type and registers every one of them through
+# FrameScript_RegisterFunction (CGGameUI.cpp calls MiscScriptRegisterStubs). Matching only
+# the FrameScript_* spellings hid all of them, so the report counted those names as MISSING --
+# 'FrameXML calls it and gets nil' -- when FrameXML actually gets a callable stub that returns
+# nothing. Different bug class, and it was steering the missing-names queue at names that were
+# already registered.
+def is_stub_name(name):
+    """Stubs that carry no WHOA_UNIMPLEMENTED for either scanner to find.
+
+    MiscScriptStubs.cpp generates 1008 bindings from the WHOA_LUA_STUB macro, whose body prints
+    "Function not yet implemented" and returns 0. Neither the regex scan (which sees only the macro
+    invocation, not a function body) nor clang's flag (which looks for an unimplemented marker) can
+    tell these from real ports, so widening FROZEN_TABLE_RE to find their registrations counted 76
+    of them as PORTED. The macro is the only thing in the tree that produces this prefix, so the
+    name is a reliable signal where the body is not.
+    """
+    return name.rpartition('::')[2].startswith('Script_Stub_')
+
+
+FROZEN_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function|ScriptFunction)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
 FROZEN_ENTRY_RE = re.compile(r'\{\s*"(\w+)"\s*,\s*&?([\w:]+)\s*\}')
 
 
@@ -1219,7 +1239,7 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('')
     L.append('## Lua API coverage (binding tables)')
     L.append('')
-    L.append('The reference registers %d Lua bindings across %d tables (widget methods per class, and the global function blocks). frozen registers %d of them%s; %d of those are WHOA_UNIMPLEMENTED stubs%s. A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.' % (
+    L.append('The reference registers %d Lua bindings across %d tables (widget methods per class, and the global function blocks). frozen registers %d of them%s; %d of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp)%s. A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.' % (
         lua_total, len([r for r in lua_rows]), lua_have, delta('luaHave'), lua_stubbed, delta('luaStubbed')))
     L.append('')
     L.append('| ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |')

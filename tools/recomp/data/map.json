@@ -11328,7 +11328,7 @@
   "how": "order",
   "module": "TextureCache.cpp",
   "refSize": 217,
-  "status": "ported"
+  "status": "stub"
  },
  "004fc250": {
   "branchRatio": 0.2,
@@ -11343,7 +11343,7 @@
   "how": "order",
   "module": "TextureCache.cpp",
   "refSize": 217,
-  "status": "ported"
+  "status": "stub"
  },
  "004fc5b0": {
   "branchRatio": 0.333,
@@ -11358,7 +11358,7 @@
   "how": "order",
   "module": "TextureCache.cpp",
   "refSize": 169,
-  "status": "ported"
+  "status": "stub"
  },
  "004fc760": {
   "branchRatio": 0.333,
@@ -11373,7 +11373,7 @@
   "how": "order",
   "module": "TextureCache.cpp",
   "refSize": 167,
-  "status": "ported"
+  "status": "stub"
  },
  "004fc9a0": {
   "branchRatio": 0.25,
@@ -11388,7 +11388,7 @@
   "how": "order",
   "module": "TextureCache.cpp",
   "refSize": 171,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe630": {
   "branchRatio": 0.0,
@@ -11403,7 +11403,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe810": {
   "branchRatio": 0.0,
@@ -11418,7 +11418,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe830": {
   "branchRatio": 0.0,
@@ -11433,7 +11433,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe950": {
   "branchRatio": 0.0,
@@ -11448,7 +11448,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe970": {
   "branchRatio": 0.0,
@@ -11463,7 +11463,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe990": {
   "branchRatio": 0.0,
@@ -11478,7 +11478,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe9b0": {
   "branchRatio": 0.0,
@@ -11493,7 +11493,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe9d0": {
   "branchRatio": 0.0,
@@ -11508,7 +11508,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fe9f0": {
   "branchRatio": 0.0,
@@ -11523,7 +11523,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fea10": {
   "branchRatio": 0.0,
@@ -11538,7 +11538,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fea30": {
   "branchRatio": 0.0,
@@ -11553,7 +11553,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fea50": {
   "branchRatio": 0.0,
@@ -11568,7 +11568,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fea70": {
   "branchRatio": 0.0,
@@ -11583,7 +11583,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fea90": {
   "branchRatio": 0.0,
@@ -11598,7 +11598,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004feab0": {
   "branchRatio": 0.0,
@@ -11613,7 +11613,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004fead0": {
   "branchRatio": 0.0,
@@ -11628,7 +11628,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004feee0": {
   "branchRatio": 0.286,
@@ -11659,7 +11659,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "004ffcc0": {
   "branchRatio": 0.0,
@@ -11674,7 +11674,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "00500980": {
   "branchRatio": 0.077,
@@ -11689,7 +11689,7 @@
   "how": "order",
   "module": "ChatFrame.cpp",
   "refSize": 345,
-  "status": "ported"
+  "status": "stub"
  },
  "00501140": {
   "branchRatio": 0.143,
@@ -11704,7 +11704,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 262,
-  "status": "ported"
+  "status": "stub"
  },
  "00501250": {
   "branchRatio": 0.25,
@@ -11719,7 +11719,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 151,
-  "status": "ported"
+  "status": "stub"
  },
  "005012f0": {
   "branchRatio": 0.143,
@@ -11734,7 +11734,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 262,
-  "status": "ported"
+  "status": "stub"
  },
  "00501400": {
   "branchRatio": 0.25,
@@ -11749,7 +11749,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 151,
-  "status": "ported"
+  "status": "stub"
  },
  "00504e50": {
   "branchRatio": 0.1,
@@ -11764,7 +11764,7 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 215,
-  "status": "ported"
+  "status": "stub"
  },
  "00505360": {
   "branchRatio": 0.25,
@@ -11779,7 +11779,7 @@
   "how": "order",
   "module": "ChatFrame.cpp",
   "refSize": 116,
-  "status": "ported"
+  "status": "stub"
  },
  "0050f7c0": {
   "branchRatio": 0.333,
@@ -16286,7 +16286,7 @@
   "how": "order",
   "module": "PartyFrame.cpp",
   "refSize": 342,
-  "status": "ported"
+  "status": "stub"
  },
  "0052ed60": {
   "branchRatio": 0.0,
@@ -16301,12 +16301,12 @@
   "how": "order",
   "module": "PartyFrame.cpp",
   "refSize": 28,
-  "status": "ported"
+  "status": "stub"
  },
  "005302b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -16316,7 +16316,7 @@
   "how": "string",
   "module": "PartyFrame.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "00530ec0": {
   "branchRatio": -1.0,
@@ -17346,7 +17346,7 @@
   "how": "order",
   "module": "SpellBookFrame.cpp",
   "refSize": 324,
-  "status": "ported"
+  "status": "stub"
  },
  "00540670": {
   "branchRatio": 0.154,
@@ -17505,7 +17505,7 @@
   "how": "order",
   "module": "SpellBookFrame.cpp",
   "refSize": 97,
-  "status": "ported"
+  "status": "stub"
  },
  "00544e80": {
   "branchRatio": 0.062,
@@ -17520,7 +17520,7 @@
   "how": "order",
   "module": "SpellBookFrame.cpp",
   "refSize": 306,
-  "status": "ported"
+  "status": "stub"
  },
  "005459c0": {
   "branchRatio": 0.0,
@@ -17535,12 +17535,12 @@
   "how": "order",
   "module": "SpellBookFrame.cpp",
   "refSize": 105,
-  "status": "ported"
+  "status": "stub"
  },
  "005485b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -17550,7 +17550,7 @@
   "how": "string",
   "module": "SpellBookFrame.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "00549ad0": {
   "branchRatio": 0.0,
@@ -18653,7 +18653,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 763,
-  "status": "ported"
+  "status": "stub"
  },
  "005567e0": {
   "branchRatio": 0.053,
@@ -18668,7 +18668,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 494,
-  "status": "ported"
+  "status": "stub"
  },
  "005576b0": {
   "branchRatio": 0.042,
@@ -18683,7 +18683,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 465,
-  "status": "ported"
+  "status": "stub"
  },
  "00557930": {
   "branchRatio": 0.056,
@@ -18698,7 +18698,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 361,
-  "status": "ported"
+  "status": "stub"
  },
  "00557e40": {
   "branchRatio": 0.1,
@@ -18713,7 +18713,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 289,
-  "status": "ported"
+  "status": "stub"
  },
  "00557f70": {
   "branchRatio": 0.125,
@@ -18728,7 +18728,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 236,
-  "status": "ported"
+  "status": "stub"
  },
  "00558060": {
   "branchRatio": 0.0,
@@ -18743,7 +18743,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 123,
-  "status": "ported"
+  "status": "stub"
  },
  "00559ff0": {
   "branchRatio": 1.0,
@@ -18758,7 +18758,7 @@
   "how": "order",
   "module": "LFGInfo.cpp",
   "refSize": 75,
-  "status": "ported"
+  "status": "stub"
  },
  "0055d860": {
   "branchRatio": 0.417,
@@ -19285,7 +19285,7 @@
   "how": "order",
   "module": "UIBindings.cpp",
   "refSize": 196,
-  "status": "ported"
+  "status": "stub"
  },
  "00565030": {
   "branchRatio": -1.0,
@@ -19313,7 +19313,7 @@
   "how": "order",
   "module": "UIMacros.cpp",
   "refSize": 94,
-  "status": "ported"
+  "status": "stub"
  },
  "00566eb0": {
   "branchRatio": 0.5,
@@ -19328,7 +19328,7 @@
   "how": "order",
   "module": "UIMacros.cpp",
   "refSize": 130,
-  "status": "ported"
+  "status": "stub"
  },
  "00567200": {
   "branchRatio": 0.25,
@@ -19343,7 +19343,7 @@
   "how": "order",
   "module": "UIMacros.cpp",
   "refSize": 275,
-  "status": "ported"
+  "status": "stub"
  },
  "00567450": {
   "branchRatio": 0.5,
@@ -19358,7 +19358,7 @@
   "how": "order",
   "module": "UIMacros.cpp",
   "refSize": 160,
-  "status": "ported"
+  "status": "stub"
  },
  "00572530": {
   "branchRatio": 1.0,
@@ -19699,7 +19699,7 @@
  "00575820": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -19709,7 +19709,7 @@
   "how": "string",
   "module": "RaidInfo.cpp",
   "refSize": 22,
-  "status": "ported"
+  "status": "stub"
  },
  "00578210": {
   "branchRatio": 0.5,
@@ -19762,7 +19762,7 @@
  "0057b9e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -19772,7 +19772,7 @@
   "how": "string",
   "module": "QuestTextParser.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "0057bf50": {
   "branchRatio": 0.0,
@@ -20187,7 +20187,7 @@
   "how": "order",
   "module": "MerchantFrame.cpp",
   "refSize": 320,
-  "status": "ported"
+  "status": "stub"
  },
  "00584820": {
   "branchRatio": 0.077,
@@ -20202,7 +20202,7 @@
   "how": "order",
   "module": "MerchantFrame.cpp",
   "refSize": 453,
-  "status": "ported"
+  "status": "stub"
  },
  "00584ac0": {
   "branchRatio": 1.0,
@@ -20233,7 +20233,7 @@
   "how": "order",
   "module": "MerchantFrame.cpp",
   "refSize": 608,
-  "status": "ported"
+  "status": "stub"
  },
  "00585990": {
   "branchRatio": 0.0,
@@ -20430,7 +20430,7 @@
  "00588e60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -20440,12 +20440,12 @@
   "how": "string",
   "module": "TradeFrame.cpp",
   "refSize": 38,
-  "status": "ported"
+  "status": "stub"
  },
  "0058aa60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -20455,7 +20455,7 @@
   "how": "string",
   "module": "GossipInfo.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "0058bd70": {
   "branchRatio": 0.0,
@@ -20470,7 +20470,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 27,
-  "status": "ported"
+  "status": "stub"
  },
  "0058bd90": {
   "branchRatio": 0.0,
@@ -20485,7 +20485,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 27,
-  "status": "ported"
+  "status": "stub"
  },
  "0058c990": {
   "branchRatio": 0.125,
@@ -20500,7 +20500,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 215,
-  "status": "ported"
+  "status": "stub"
  },
  "0058d620": {
   "branchRatio": 0.5,
@@ -20515,7 +20515,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 80,
-  "status": "ported"
+  "status": "stub"
  },
  "0058d670": {
   "branchRatio": 0.083,
@@ -20530,7 +20530,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 410,
-  "status": "ported"
+  "status": "stub"
  },
  "0058d810": {
   "branchRatio": 0.083,
@@ -20545,7 +20545,7 @@
   "how": "order",
   "module": "GossipInfo.cpp",
   "refSize": 353,
-  "status": "ported"
+  "status": "stub"
  },
  "0058e660": {
   "branchRatio": 0.0,
@@ -20784,7 +20784,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 27,
-  "status": "ported"
+  "status": "stub"
  },
  "00594430": {
   "branchRatio": 1.0,
@@ -20799,7 +20799,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 75,
-  "status": "ported"
+  "status": "stub"
  },
  "00594480": {
   "branchRatio": 0.333,
@@ -20814,7 +20814,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 172,
-  "status": "ported"
+  "status": "stub"
  },
  "00594530": {
   "branchRatio": 0.333,
@@ -20829,7 +20829,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 126,
-  "status": "ported"
+  "status": "stub"
  },
  "005945b0": {
   "branchRatio": 0.143,
@@ -20844,7 +20844,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 159,
-  "status": "ported"
+  "status": "stub"
  },
  "005952f0": {
   "branchRatio": 0.077,
@@ -20859,7 +20859,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 384,
-  "status": "ported"
+  "status": "stub"
  },
  "00595470": {
   "branchRatio": 0.071,
@@ -20874,7 +20874,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 361,
-  "status": "ported"
+  "status": "stub"
  },
  "00595c40": {
   "branchRatio": 0.062,
@@ -20889,7 +20889,7 @@
   "how": "order",
   "module": "TaxiMapFrame.cpp",
   "refSize": 544,
-  "status": "ported"
+  "status": "stub"
  },
  "005978e0": {
   "branchRatio": 0.667,
@@ -21006,7 +21006,7 @@
  "00598e10": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -21016,7 +21016,7 @@
   "how": "string",
   "module": "DressUpModelFrame.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "00598fa0": {
   "branchRatio": 0.5,
@@ -21181,7 +21181,7 @@
  "005a20f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -21191,7 +21191,7 @@
   "how": "string",
   "module": "StableInfo.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "005a7d10": {
   "branchRatio": 0.667,
@@ -21804,7 +21804,7 @@
  "005afd40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -21814,7 +21814,7 @@
   "how": "string",
   "module": "EquipmentManager.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "005b71e0": {
   "branchRatio": 1.0,
@@ -21835,7 +21835,7 @@
  "005b7210": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -21845,7 +21845,7 @@
   "how": "string",
   "module": "AchievementInfo.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "005b7410": {
   "branchRatio": 0.077,
@@ -21860,7 +21860,37 @@
   "how": "order",
   "module": "AchievementInfo.cpp",
   "refSize": 391,
-  "status": "ported"
+  "status": "stub"
+ },
+ "005b80e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMonthNames",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 64,
+  "status": "stub"
+ },
+ "005b8120": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetWeekdayNames",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 64,
+  "status": "stub"
  },
  "005b8160": {
   "branchRatio": 1.0,
@@ -21878,6 +21908,1116 @@
   "refSize": 129,
   "status": "ported"
  },
+ "005b81f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMinDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 174,
+  "status": "stub"
+ },
+ "005b82a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMaxDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 167,
+  "status": "stub"
+ },
+ "005b8350": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMinHistoryDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 188,
+  "status": "stub"
+ },
+ "005b8410": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMaxCreateDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 137,
+  "status": "stub"
+ },
+ "005b84d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetNumInvites",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 63,
+  "status": "stub"
+ },
+ "005b8540": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventClipboard",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 48,
+  "status": "stub"
+ },
+ "005b8570": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSortInvites",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 277,
+  "status": "stub"
+ },
+ "005b8690": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetInviteSortCriterion",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 131,
+  "status": "stub"
+ },
+ "005b8730": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetStatus",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 156,
+  "status": "stub"
+ },
+ "005b87d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetModerator",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 102,
+  "status": "stub"
+ },
+ "005b8840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventClearModerator",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 102,
+  "status": "stub"
+ },
+ "005b88b0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventIsModerator",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 45,
+  "status": "stub"
+ },
+ "005b88e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventCanModerate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 130,
+  "status": "stub"
+ },
+ "005b8970": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetTypes",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 67,
+  "status": "stub"
+ },
+ "005b89c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetRepeatOptions",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 67,
+  "status": "stub"
+ },
+ "005b8a10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventHaveSettingsChanged",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 60,
+  "status": "stub"
+ },
+ "005b8a50": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventCanEdit",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 77,
+  "status": "stub"
+ },
+ "005b8aa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetCalendarType",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 63,
+  "status": "stub"
+ },
+ "005b8ae0": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSelectInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 76,
+  "status": "stub"
+ },
+ "005b8b30": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarCanSendInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 98,
+  "status": "stub"
+ },
+ "005b8ba0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarCanAddEvent",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 98,
+  "status": "stub"
+ },
+ "005b8c10": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarIsActionPending",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 30,
+  "status": "stub"
+ },
+ "005b99f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetMonth",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 201,
+  "status": "stub"
+ },
+ "005b9ac0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetAbsMonth",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 300,
+  "status": "stub"
+ },
+ "005b9bf0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetNumDayEvents",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 164,
+  "status": "stub"
+ },
+ "005b9ca0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetDayEventSequenceInfo",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 368,
+  "status": "stub"
+ },
+ "005b9e10": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetFirstPendingInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 146,
+  "status": "stub"
+ },
+ "005b9eb0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarOpenEvent",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 197,
+  "status": "stub"
+ },
+ "005b9f80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetEventIndex",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 125,
+  "status": "stub"
+ },
+ "005ba000": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetRaidInfo",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 535,
+  "status": "stub"
+ },
+ "005ba220": {
+  "branchRatio": 0.071,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 509,
+  "status": "stub"
+ },
+ "005ba420": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetInviteResponseTime",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 370,
+  "status": "stub"
+ },
+ "005ba5b0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextSelectEvent",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 197,
+  "status": "stub"
+ },
+ "005ba680": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextGetEventIndex",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 125,
+  "status": "stub"
+ },
+ "005ba700": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteIsPending",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 239,
+  "status": "stub"
+ },
+ "005ba7f0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteModeratorStatus",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 283,
+  "status": "stub"
+ },
+ "005ba910": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteStatus",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 258,
+  "status": "stub"
+ },
+ "005baa20": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteType",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 303,
+  "status": "stub"
+ },
+ "005bab50": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteAvailable",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 425,
+  "status": "stub"
+ },
+ "005bad00": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteDecline",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 425,
+  "status": "stub"
+ },
+ "005baeb0": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventCanEdit",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 263,
+  "status": "stub"
+ },
+ "005bafc0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventGetCalendarType",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 251,
+  "status": "stub"
+ },
+ "005bb0c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventRemoveInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 100,
+  "status": "stub"
+ },
+ "005bb130": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetStatusOptions",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 223,
+  "status": "stub"
+ },
+ "005bb210": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetTitle",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 104,
+  "status": "stub"
+ },
+ "005bb280": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetDescription",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 104,
+  "status": "stub"
+ },
+ "005bb2f0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetType",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 133,
+  "status": "stub"
+ },
+ "005bb380": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetRepeatOption",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 133,
+  "status": "stub"
+ },
+ "005bb410": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetSize",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 130,
+  "status": "stub"
+ },
+ "005bb4a0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 245,
+  "status": "stub"
+ },
+ "005bb5a0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetTime",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 169,
+  "status": "stub"
+ },
+ "005bb650": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetLockoutDate",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 245,
+  "status": "stub"
+ },
+ "005bb750": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetLockoutTime",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 169,
+  "status": "stub"
+ },
+ "005bb800": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventSetTextureID",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 100,
+  "status": "stub"
+ },
+ "005bb970": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetTextures",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 390,
+  "status": "stub"
+ },
+ "005bbb00": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventGetSelectedInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "AchievementInfo.cpp",
+  "refSize": 62,
+  "status": "stub"
+ },
+ "005bcc00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarSetMonth",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 99,
+  "status": "stub"
+ },
+ "005bccb0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarMassInviteGuild",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 206,
+  "status": "stub"
+ },
+ "005bcda0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarDefaultGuildFilter",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 178,
+  "status": "stub"
+ },
+ "005bce60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarMassInviteArenaTeam",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 100,
+  "status": "stub"
+ },
+ "005bcf00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 36,
+  "status": "stub"
+ },
+ "005bcf30": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteTentative",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 264,
+  "status": "stub"
+ },
+ "005bd040": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextInviteRemove",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 235,
+  "status": "stub"
+ },
+ "005bd130": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventSignUp",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 237,
+  "status": "stub"
+ },
+ "005bd220": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventRemove",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 280,
+  "status": "stub"
+ },
+ "005bd340": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventCopy",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 280,
+  "status": "stub"
+ },
+ "005bd460": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventPaste",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 133,
+  "status": "stub"
+ },
+ "005bd4f0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventCanComplain",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 272,
+  "status": "stub"
+ },
+ "005bd600": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarContextEventComplain",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 215,
+  "status": "stub"
+ },
+ "005bd8a0": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetEventInfo",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 1253,
+  "status": "stub"
+ },
+ "005bdd90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarEventHasPendingInvite",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 68,
+  "status": "stub"
+ },
+ "005c1070": {
+  "branchRatio": 0.077,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetDayEvent",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 1029,
+  "status": "stub"
+ },
+ "005c1480": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarGetHolidayInfo",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 353,
+  "status": "stub"
+ },
+ "005c43b0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_CalendarSetAbsMonth",
+  "frozenSize": 60,
+  "how": "table",
+  "module": "Calendar.cpp",
+  "refSize": 188,
+  "status": "stub"
+ },
  "005cb330": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -21891,7 +23031,7 @@
   "how": "order",
   "module": "TalentInfo.cpp",
   "refSize": 179,
-  "status": "ported"
+  "status": "stub"
  },
  "005cb3f0": {
   "branchRatio": 0.5,
@@ -21906,7 +23046,7 @@
   "how": "order",
   "module": "TalentInfo.cpp",
   "refSize": 113,
-  "status": "ported"
+  "status": "stub"
  },
  "005cc3e0": {
   "branchRatio": 0.25,
@@ -21921,7 +23061,7 @@
   "how": "order",
   "module": "TalentInfo.cpp",
   "refSize": 143,
-  "status": "ported"
+  "status": "stub"
  },
  "005ccc90": {
   "branchRatio": 0.25,
@@ -21936,7 +23076,7 @@
   "how": "order",
   "module": "GuildInfo.cpp",
   "refSize": 254,
-  "status": "ported"
+  "status": "stub"
  },
  "005cf220": {
   "branchRatio": 0.067,
@@ -21951,12 +23091,12 @@
   "how": "order",
   "module": "PetitionInfo.cpp",
   "refSize": 550,
-  "status": "ported"
+  "status": "stub"
  },
  "005cff60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -21966,7 +23106,7 @@
   "how": "string",
   "module": "DuelInfo.cpp",
   "refSize": 35,
-  "status": "ported"
+  "status": "stub"
  },
  "005d3780": {
   "branchRatio": 0.0,
@@ -21981,7 +23121,7 @@
   "how": "order",
   "module": "PetInfo.cpp",
   "refSize": 151,
-  "status": "ported"
+  "status": "stub"
  },
  "005d54f0": {
   "branchRatio": 0.0,
@@ -21996,7 +23136,7 @@
   "how": "order",
   "module": "PetInfo.cpp",
   "refSize": 44,
-  "status": "ported"
+  "status": "stub"
  },
  "005d5580": {
   "branchRatio": 0.0,
@@ -22011,7 +23151,7 @@
   "how": "order",
   "module": "PetInfo.cpp",
   "refSize": 44,
-  "status": "ported"
+  "status": "stub"
  },
  "005d5670": {
   "branchRatio": 0.083,
@@ -22026,7 +23166,7 @@
   "how": "order",
   "module": "PetInfo.cpp",
   "refSize": 424,
-  "status": "ported"
+  "status": "stub"
  },
  "005d6f60": {
   "branchRatio": -1.0,
@@ -22181,7 +23321,7 @@
  "005da3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -22191,7 +23331,7 @@
   "how": "string",
   "module": "TradeSkillFrame.cpp",
   "refSize": 38,
-  "status": "ported"
+  "status": "stub"
  },
  "005df8a0": {
   "branchRatio": 0.5,
@@ -22206,12 +23346,12 @@
   "how": "order",
   "module": "TradeSkillFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "stub"
  },
  "005dfd20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -22221,7 +23361,7 @@
   "how": "string",
   "module": "TradeSkillFrame.cpp",
   "refSize": 38,
-  "status": "ported"
+  "status": "stub"
  },
  "005e4ed0": {
   "branchRatio": 0.111,
@@ -22236,7 +23376,7 @@
   "how": "order",
   "module": "QuestLog.cpp",
   "refSize": 212,
-  "status": "ported"
+  "status": "stub"
  },
  "005e63d0": {
   "branchRatio": 0.091,
@@ -22251,7 +23391,7 @@
   "how": "order",
   "module": "QuestLog.cpp",
   "refSize": 222,
-  "status": "ported"
+  "status": "stub"
  },
  "005e7700": {
   "branchRatio": 1.0,
@@ -22922,7 +24062,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 76,
-  "status": "ported"
+  "status": "stub"
  },
  "005f9e60": {
   "branchRatio": 0.2,
@@ -22937,7 +24077,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 166,
-  "status": "ported"
+  "status": "stub"
  },
  "005fa9b0": {
   "branchRatio": 1.0,
@@ -22968,7 +24108,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 91,
-  "status": "ported"
+  "status": "stub"
  },
  "005fb820": {
   "branchRatio": 0.2,
@@ -22983,7 +24123,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 145,
-  "status": "ported"
+  "status": "stub"
  },
  "005fb8c0": {
   "branchRatio": 0.167,
@@ -22998,7 +24138,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 167,
-  "status": "ported"
+  "status": "stub"
  },
  "005fd1d0": {
   "branchRatio": 1.0,
@@ -23189,7 +24329,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 9,
-  "status": "ported"
+  "status": "stub"
  },
  "006018b0": {
   "branchRatio": 0.0,
@@ -23204,7 +24344,7 @@
   "how": "order",
   "module": "InputControl.cpp",
   "refSize": 9,
-  "status": "ported"
+  "status": "stub"
  },
  "006081f0": {
   "branchRatio": 0.0,
@@ -28066,7 +29206,7 @@
  "006b3450": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
@@ -28076,7 +29216,7 @@
   "how": "string",
   "module": "ClientServices.cpp",
   "refSize": 38,
-  "status": "ported"
+  "status": "stub"
  },
  "006bdfc0": {
   "branchRatio": 0.25,
@@ -30754,7 +31894,7 @@
   "how": "order",
   "module": "WardenClient.cpp",
   "refSize": 170,
-  "status": "ported"
+  "status": "stub"
  },
  "007dafe0": {
   "branchRatio": 1.0,
@@ -30769,7 +31909,7 @@
   "how": "order",
   "module": "WardenClient.cpp",
   "refSize": 71,
-  "status": "ported"
+  "status": "stub"
  },
  "007dc010": {
   "branchRatio": 0.188,
@@ -30816,7 +31956,7 @@
   "how": "order",
   "module": "ComSatClient.cpp",
   "refSize": 58,
-  "status": "ported"
+  "status": "stub"
  },
  "007dcec0": {
   "branchRatio": 0.667,
