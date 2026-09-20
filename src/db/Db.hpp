@@ -37,6 +37,9 @@
 #include "db/rec/LightIntBandRec.hpp"
 #include "db/rec/LightFloatBandRec.hpp"
 #include "db/rec/CreatureSoundDataRec.hpp"
+#include "db/rec/CreatureFamilyRec.hpp"
+#include "db/rec/CreatureTypeRec.hpp"
+#include "db/rec/SpellShapeshiftFormRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
 #include "db/rec/FactionTemplateRec.hpp"
 #include "db/rec/GameTipsRec.hpp"
@@ -88,6 +91,9 @@ extern WowClientDB<GroundEffectDoodadRec> g_groundEffectDoodadDB;
 extern WowClientDB<LightIntBandRec> g_lightIntBandDB;
 extern WowClientDB<LightFloatBandRec> g_lightFloatBandDB;
 extern WowClientDB<CreatureSoundDataRec> g_creatureSoundDataDB;
+extern WowClientDB<CreatureFamilyRec> g_creatureFamilyDB;
+extern WowClientDB<CreatureTypeRec> g_creatureTypeDB;
+extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;
 extern WowClientDB<FactionTemplateRec> g_factionTemplateDB;
 extern WowClientDB<GameTipsRec> g_gameTipsDB;

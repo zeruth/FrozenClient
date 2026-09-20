@@ -573,16 +573,30 @@ int32_t Script_PlayerCanTeleport(lua_State* L) {
     return 1;
 }
 
+// The reference's own table, six entries and a null terminator, at 00ad21bc. The order is the
+// classification value's order, so this is indexed directly.
+static const char* const CLASSIFICATION_NAMES[] = {
+    "normal",
+    "elite",
+    "rareelite",
+    "worldboss",
+    "rare",
+    "trivial",
+};
+
+// ref: FUN_0060d970
 int32_t Script_UnitClassification(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitClassification(\"unit\")");
-        return 0;
+    // No usage error here, deliberately: the reference does not type-check the argument for this
+    // one. A missing or non-string unit resolves to nothing and answers "normal" like any other
+    // unresolvable token, so FrameXML can call it on an absent unit without raising.
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto classification = unit ? unit->GetClassification() : 0;
+
+    if (classification < 0 || classification >= static_cast<int32_t>(sizeof(CLASSIFICATION_NAMES) / sizeof(CLASSIFICATION_NAMES[0]))) {
+        classification = 0;
     }
 
-    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
-
-    lua_pushstring(L, "normal");
+    lua_pushstring(L, CLASSIFICATION_NAMES[classification]);
 
     return 1;
 }
@@ -2188,6 +2202,7 @@ int32_t Script_GetAttackPowerForStat(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00611780
 int32_t Script_UnitCreatureType(lua_State* L) {
     if (!lua_isstring(L, 1)) {
         luaL_error(L, "Usage: UnitCreatureType(\"unit\")");
@@ -2195,15 +2210,47 @@ int32_t Script_UnitCreatureType(lua_State* L) {
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
 
+    if (unit) {
+        auto type = unit->GetCreatureType();
+        auto rec = type ? g_creatureTypeDB.GetRecord(type) : nullptr;
+
+        if (rec) {
+            lua_pushstring(L, rec->m_name);
+
+            return 1;
+        }
+    }
+
+    // nil, not "": the tooltip and the target frame both test this for nil before adding a line.
     lua_pushnil(L);
 
     return 1;
 }
 
+// ref: FUN_00611820
 int32_t Script_UnitCreatureFamily(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitCreatureFamily(\"unit\")");
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    if (unit) {
+        auto family = unit->GetCreatureFamily();
+        auto rec = family ? g_creatureFamilyDB.GetRecord(family) : nullptr;
+
+        if (rec) {
+            lua_pushstring(L, rec->m_name);
+
+            return 1;
+        }
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetResSicknessDuration(lua_State* L) {

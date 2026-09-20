@@ -22,6 +22,7 @@ struct CachedName {
 
 std::map<WOWGUID, CachedName> s_playerNames;    // by guid (CMSG_NAME_QUERY)
 std::map<int32_t, CachedName> s_creatureNames;  // by creature entry (CMSG_QUERY_CREATURE)
+std::map<int32_t, CreatureCacheRec> s_creatureInfo;  // the rest of that same reply, by entry
 
 // Server->client packed guid: a mask byte, then one byte per set bit (low to high)
 uint64_t GetPackedGuid(CDataStore* msg) {
@@ -128,6 +129,12 @@ const char* NameCacheGetName(CGObject* object) {
     return (entry && !entry->name.empty()) ? entry->name.c_str() : nullptr;
 }
 
+const CreatureCacheRec* NameCacheGetCreatureInfo(int32_t entryID) {
+    auto it = s_creatureInfo.find(entryID);
+
+    return it == s_creatureInfo.end() ? nullptr : &it->second;
+}
+
 bool NameCacheHasName(CGObject* object) {
     CachedName* entry = Find(object, false);
     return entry && !entry->name.empty();
@@ -136,6 +143,7 @@ bool NameCacheHasName(CGObject* object) {
 void NameCacheClear() {
     s_playerNames.clear();
     s_creatureNames.clear();
+    s_creatureInfo.clear();
 }
 
 void NameCacheRegisterHandlers() {
@@ -183,8 +191,11 @@ int32_t ReceiveNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, C
     return 1;
 }
 
-// SMSG_CREATURE_QUERY_RESPONSE (0x61): u32 entry (high bit set when unknown), name x4, subname,
-// icon name, then the creature template fields the world text does not need
+// SMSG_CREATURE_QUERY_RESPONSE (0x61): u32 entry (high bit set when unknown), then the whole
+// creature template -- four names, subname, icon name, and the numeric fields.
+//
+// The tail used to be ignored. It is where a creature's type, family and classification live, so
+// three Lua bindings sat stubbed over a packet that was already arriving with the answers in it.
 int32_t ReceiveCreatureQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     uint32_t entryID = 0;
     msg->Get(entryID);
@@ -198,6 +209,60 @@ int32_t ReceiveCreatureQueryResponse(void* param, NETMESSAGE msgId, uint32_t tim
 
     char name[128] = { 0 };
     msg->GetString(name, sizeof(name));
+
+    // Names 1..3 are the other-gender and other-form spellings. They have to be read to stay in
+    // step with the stream, but the reference keeps only the first: its cached record holds three
+    // string pointers, not six.
+    char alternate[128];
+    for (int32_t i = 0; i < 3; i++) {
+        msg->GetString(alternate, sizeof(alternate));
+    }
+
+    char subName[128] = { 0 };
+    msg->GetString(subName, sizeof(subName));
+
+    char iconName[128] = { 0 };
+    msg->GetString(iconName, sizeof(iconName));
+
+    CreatureCacheRec& rec = s_creatureInfo[static_cast<int32_t>(entryID)];
+    rec.name = name;
+    rec.subName = subName;
+    rec.iconName = iconName;
+
+    uint32_t value = 0;
+    msg->Get(rec.typeFlags);
+    msg->Get(value);
+    rec.type = static_cast<int32_t>(value);
+    msg->Get(value);
+    rec.family = static_cast<int32_t>(value);
+    msg->Get(value);
+    rec.classification = static_cast<int32_t>(value);
+
+    for (int32_t i = 0; i < 2; i++) {
+        msg->Get(value);
+        rec.killCredit[i] = static_cast<int32_t>(value);
+    }
+
+    for (int32_t i = 0; i < 4; i++) {
+        msg->Get(value);
+        rec.displayID[i] = static_cast<int32_t>(value);
+    }
+
+    msg->Get(rec.healthMultiplier);
+    msg->Get(rec.powerMultiplier);
+
+    // One byte, not a dword, and everything after it is unaligned. The record sizes in the
+    // reference's own cache file are what settles that: 77 bytes of fields, which only works as
+    // 12 dwords + 1 byte + 7 dwords.
+    msg->Get(rec.racialLeader);
+
+    for (int32_t i = 0; i < 6; i++) {
+        msg->Get(value);
+        rec.questItemID[i] = static_cast<int32_t>(value);
+    }
+
+    msg->Get(value);
+    rec.movementInfoID = static_cast<int32_t>(value);
 
     CachedName& entry = s_creatureNames[static_cast<int32_t>(entryID)];
     entry.pending = false;

@@ -4,6 +4,7 @@
 #include "model/Model2.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
+#include "object/client/NameCache.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
 #include <storm/Error.hpp>
@@ -435,6 +436,59 @@ uint8_t CGUnit_C::GetShapeshiftForm() const {
     auto data = this->Unit();
 
     return data ? static_cast<uint8_t>((data->bytes2 >> 24) & 0xFF) : 0;
+}
+
+// ref: FUN_0071f300
+int32_t CGUnit_C::GetCreatureType() const {
+    // A shapeshifted unit counts as whatever the form says: a druid in Bear Form is a Beast, not
+    // a Humanoid. Forms that declare no type (Ambient, and the several stance rows) leave the
+    // answer to the creature template below -- which is why the >= 1 test is here rather than a
+    // plain null check.
+    //
+    // DIVERGENCE: the reference skips this branch entirely when a byte at CGUnit_C +0x9f4 is set,
+    // and reads the cached template instead. FUN_0071f300 is the only code in the image that
+    // touches that byte -- nothing writes it that a displacement scan can find -- so there was no
+    // behaviour to port. Frozen acts as though it is clear, which is the reference's own path for
+    // every unit whose flag was never set.
+    auto form = g_spellShapeshiftFormDB.GetRecord(this->GetShapeshiftForm());
+
+    if (form && form->m_creatureType >= 1) {
+        return form->m_creatureType;
+    }
+
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (info) {
+        return info->type;
+    }
+
+    // No creature template means a player, whose type comes from its race instead.
+    auto data = this->Unit();
+    auto race = data ? g_chrRacesDB.GetRecord(static_cast<int32_t>(data->bytes0 & 0xFF)) : nullptr;
+
+    return (race && race->m_creatureType >= 1) ? race->m_creatureType : 0;
+}
+
+// ref: FUN_007153e0
+int32_t CGUnit_C::GetCreatureFamily() const {
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    return info ? info->family : 0;
+}
+
+// ref: FUN_00718a00
+int32_t CGUnit_C::GetClassification() const {
+    auto data = this->Unit();
+
+    // A pet reports normal whatever it was tamed from, so taming an elite does not hand the player
+    // an elite pet frame. The reference gates on the descriptor's pet number for exactly this.
+    if (!data || data->petNumber != 0) {
+        return 0;
+    }
+
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    return info ? info->classification : 0;
 }
 
 uint32_t CGUnit_C::GetSequenceDuration(int32_t animID) {

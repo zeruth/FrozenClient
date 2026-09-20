@@ -86,6 +86,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // reference reads this through an accessor rather than inline, from a dozen places, which
         // is why it is one here too rather than a shift at each call site.
         uint8_t GetShapeshiftForm() const;
+
+        // Creature type ("Beast", "Undead", ...) as an index into CreatureType.dbc, or 0.
+        int32_t GetCreatureType() const;
+
+        // Hunter pet family as an index into CreatureFamily.dbc, or 0 for anything that is not a
+        // creature with one.
+        int32_t GetCreatureFamily() const;
+
+        // 0 normal, 1 elite, 2 rare elite, 3 world boss, 4 rare, 5 trivial.
+        int32_t GetClassification() const;
         void PlayEmote(uint32_t emoteID);
 
     protected:
