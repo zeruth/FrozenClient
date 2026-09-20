@@ -584,7 +584,6 @@ WHOA_LUA_STUB(GetContainerFreeSlots)
 WHOA_LUA_STUB(GetContainerItemCooldown)
 WHOA_LUA_STUB(GetContainerItemDurability)
 WHOA_LUA_STUB(GetContainerItemGems)
-WHOA_LUA_STUB(GetContainerItemInfo)
 WHOA_LUA_STUB(GetContainerItemPurchaseInfo)
 WHOA_LUA_STUB(GetContainerItemPurchaseItem)
 WHOA_LUA_STUB(GetContainerItemQuestInfo)
@@ -1706,7 +1705,6 @@ const ScriptFunction s_stubs[] = {
     { "GetContainerItemCooldown",                &Script_Stub_GetContainerItemCooldown },
     { "GetContainerItemDurability",              &Script_Stub_GetContainerItemDurability },
     { "GetContainerItemGems",                    &Script_Stub_GetContainerItemGems },
-    { "GetContainerItemInfo",                    &Script_Stub_GetContainerItemInfo },
     { "GetContainerItemPurchaseInfo",            &Script_Stub_GetContainerItemPurchaseInfo },
     { "GetContainerItemPurchaseItem",            &Script_Stub_GetContainerItemPurchaseItem },
     { "GetContainerItemQuestInfo",               &Script_Stub_GetContainerItemQuestInfo },

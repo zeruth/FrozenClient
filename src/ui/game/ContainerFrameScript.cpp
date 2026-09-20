@@ -1,6 +1,9 @@
 #include "ui/game/ContainerFrameScript.hpp"
 
 #include "object/Types.hpp"
+#include <storm/String.hpp>
+#include "object/client/ItemCache.hpp"
+#include "db/Db.hpp"
 #include "object/client/CGContainer_C.hpp"
 #include "object/client/CGItem_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -149,10 +152,69 @@ int32_t Script_GetContainerItemLink(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005d7a90
+// texture, count, locked, quality, readable, lootable, link. Seven values, and no values at all
+// for an empty slot.
+int32_t Script_GetContainerItemInfo(lua_State* L) {
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: GetContainerItemInfo(index, slot)");
+
+        return 0;
+    }
+
+    auto item = ContainerItem(L, 1, 2);
+    auto data = item ? item->Item() : nullptr;
+
+    if (!data) {
+        return 0;
+    }
+
+    auto info = ItemCacheGet(item->GetEntryID());
+    auto rec = info ? g_itemDisplayInfoDB.GetRecord(info->displayInfoID) : nullptr;
+
+    char icon[260] = { 0 };
+
+    if (rec && rec->m_inventoryIcon[0] && rec->m_inventoryIcon[0][0]) {
+        SStrPrintf(icon, sizeof(icon), "Interface\\Icons\\%s", rec->m_inventoryIcon[0]);
+    }
+
+    lua_pushstring(L, icon);
+    lua_pushnumber(L, static_cast<double>(data->stackCount));
+
+    // TODO locked. The reference reads a flag on the item OBJECT, not the descriptor -- it is set
+    // while the item is mid-move. Frozen has no drag-and-drop, so nothing would ever set it and
+    // nil is the honest answer rather than a placeholder.
+    lua_pushnil(L);
+
+    // Guarded on the INVENTORY TYPE, not the quality: a record with no inventory type reports -1
+    // rather than whatever quality it happens to hold. Same rule as GetInventoryItemQuality.
+    auto quality = (info && info->inventoryType) ? info->quality : -1;
+    lua_pushnumber(L, static_cast<double>(quality));
+
+    // Readable is flag bit 9 -- a book or a scroll with text. The reference also consults a
+    // virtual on the item first; that path is for objects frozen does not model, and the flag is
+    // what answers for ordinary items.
+    if (data->flags & 0x200) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    // TODO lootable. Another virtual, testing bit 2 of what it returns -- a container item with
+    // contents still inside. No frozen counterpart.
+    lua_pushnil(L);
+
+    auto link = ItemLinkFromObject(item);
+    lua_pushstring(L, link ? link : "");
+
+    return 7;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
     { "GetContainerItemLink",   &Script_GetContainerItemLink },
+    { "GetContainerItemInfo",   &Script_GetContainerItemInfo },
 };
 
 } // namespace

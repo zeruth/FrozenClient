@@ -22010,6 +22010,21 @@
   "refSize": 234,
   "status": "ported"
  },
+ "005d7a90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.55,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetContainerItemInfo",
+  "frozenSize": 514,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 481,
+  "status": "ported"
+ },
  "005d7c80": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
