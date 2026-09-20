@@ -1339,7 +1339,7 @@ addr	how	frozen	evidence
 005a8720	table	Script_IsStackableAction	binding "IsStackableAction" in s_ScriptFunctions ~ table 00acf9e0
 005a8790	table	Script_GetActionBarToggles	binding "GetActionBarToggles" in s_ScriptFunctions ~ table 00acf9e0
 005a8820	table	Script_IsPossessBarVisible	binding "IsPossessBarVisible" in s_ScriptFunctions ~ table 00acf9e0
-005a8bc0	table	Script_IsEquippedAction	binding "IsEquippedAction" in s_ScriptFunctions ~ table 00acf9e0
+005a8bc0	override	Script_IsEquippedAction	
 005a8f10	table	Script_GetActionInfo	binding "GetActionInfo" in s_ScriptFunctions ~ table 00acf9e0
 005a91c0	table	Script_GetActionCooldown	binding "GetActionCooldown" in s_ScriptFunctions ~ table 00acf9e0
 005a9290	table	Script_GetActionAutocast	binding "GetActionAutocast" in s_ScriptFunctions ~ table 00acf9e0

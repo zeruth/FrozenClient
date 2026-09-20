@@ -1188,5 +1188,10 @@
     "frozen": "FrameScript_SignalEvent",
     "status": "ported",
     "note": "Variadic: it forwards (eventId, format, va_args) straight to the event sink, and it carries BOTH glue events (7 and 8 from the character-list update) and game events (0x15f MINIMAP_PING from the minimap ping store). One function, not one per context. Pinned because the callgraph matcher moves this name whenever a caller edit changes a sequence. NOTE 00615020 is NOT this function: it takes an event id alone, builds an empty argument pair and calls a different sink (FUN_006143f0). Frozen expresses that as FrameScript_SignalEvent(id, nullptr), so it has no separate counterpart and 00615020 is deliberately left unlinked."
+  },
+  "005a8bc0": {
+    "frozen": "Script_IsEquippedAction",
+    "status": "diverged",
+    "note": "The two gates are faithful -- the action must be an ITEM action, and the item must have a non-zero inventory type in Item.dbc, which the reference checks before searching. The SEARCH diverges: the reference calls a general item search (FUN_00754a20) with a flag word, 0x81 or 0xa1 depending on how the item resolved, and what storage those flags admit is not identified. Frozen walks the player invSlots directly, covering worn gear and the four bags. If either flag also reaches the bank or keyring, frozen answers false where the reference answers true."
   }
 }

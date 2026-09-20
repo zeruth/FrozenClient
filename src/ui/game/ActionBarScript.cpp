@@ -1,4 +1,6 @@
 #include "ui/game/ActionBarScript.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "object/client/CGItem_C.hpp"
 #include "ui/FrameScript.hpp"
 #include "db/Db.hpp"
 #include "object/client/SpellBook.hpp"
@@ -278,10 +280,52 @@ int32_t Script_IsStackableAction(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_005a8bc0 with its worker FUN_005a88b0
+// True for an item action whose item is worn right now.
+//
+// Two gates before the search, both the reference's. The action has to be an ITEM action -- a
+// spell slot is never equipped -- and the item has to be equippable at all, which it decides from
+// Item.dbc's inventory type rather than from the cached record. An item with inventory type 0
+// equips nowhere and is rejected without looking.
+//
+// DIVERGENCE: the reference then calls a general item search with a flag word (0x81, or 0xa1 when
+// the item resolves through a second path) selecting which storage to cover. What those flags
+// admit is not identified, so this walks the player's own equipped slots directly. That covers
+// worn gear and the four bags; if either flag also reaches the bank or the keyring, this answers
+// false where the reference would answer true.
 int32_t Script_IsEquippedAction(lua_State* L) {
-    // True only for an item action whose item is currently equipped. Item actions are not resolved
-    // yet, so the honest answer is nil rather than a false that claims the item was checked.
-    lua_pushnil(L);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: IsEquippedAction(slot)");
+
+        return 0;
+    }
+
+    auto slot = ActionSlot(L, 1);
+    auto equipped = false;
+
+    if (slot >= 0 && slot < CGActionBar::NUM_ACTION_BUTTONS
+        && CGActionBar::GetActionType(slot) == CGActionBar::ACTION_BUTTON_ITEM) {
+        auto entry = static_cast<int32_t>(CGActionBar::GetActionID(slot));
+        auto rec = entry ? g_itemDB.GetRecord(entry) : nullptr;
+
+        // Inventory type 0 means the item equips nowhere, so there is nothing to search for.
+        if (rec && rec->m_inventoryType) {
+            auto player = CGPlayer_C::GetActivePtr();
+            auto data = player ? player->Player() : nullptr;
+
+            for (int32_t i = 0; data && i < NUM_INVENTORY_SLOTS && !equipped; i++) {
+                auto object = ClntObjMgrObjectPtr(data->invSlots[i], TYPE_ITEM, __FILE__, __LINE__);
+
+                equipped = object && static_cast<CGItem_C*>(object)->GetEntryID() == entry;
+            }
+        }
+    }
+
+    if (equipped) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }

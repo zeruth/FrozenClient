@@ -21338,20 +21338,20 @@
   "status": "ported"
  },
  "005a8bc0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
   ],
   "frozen": "Script_IsEquippedAction",
-  "frozenSize": 19,
-  "how": "table",
+  "frozenSize": 378,
+  "how": "override",
   "module": "ActionBarFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "diverged"
  },
  "005a8f10": {
   "branchRatio": 0.154,

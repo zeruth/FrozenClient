@@ -95269,7 +95269,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 23
+"line": 25
 },
 "ActionTexture": {
 "files": [
@@ -95287,7 +95287,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 28
+"line": 30
 },
 "ActionTypeName": {
 "files": [
@@ -95305,7 +95305,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 57
+"line": 59
 },
 "Script_GetActionInfo": {
 "files": [
@@ -95336,7 +95336,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 78
+"line": 80
 },
 "Script_GetActionTexture": {
 "files": [
@@ -95356,7 +95356,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 110
+"line": 112
 },
 "Script_GetActionCount": {
 "files": [
@@ -95380,7 +95380,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 123
+"line": 125
 },
 "Script_GetActionCooldown": {
 "files": [
@@ -95400,7 +95400,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 145
+"line": 147
 },
 "Script_GetActionAutocast": {
 "files": [
@@ -95422,7 +95422,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 155
 },
 "Script_GetActionText": {
 "files": [
@@ -95442,7 +95442,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 157
+"line": 159
 },
 "Script_HasAction": {
 "files": [
@@ -95463,7 +95463,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 176
+"line": 178
 },
 "Script_UseAction": {
 "files": [
@@ -95491,7 +95491,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 188
+"line": 190
 },
 "Script_PickupAction": {
 "files": [
@@ -95513,7 +95513,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 221
+"line": 223
 },
 "Script_PlaceAction": {
 "files": [
@@ -95535,7 +95535,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 225
+"line": 227
 },
 "Script_IsAttackAction": {
 "files": [
@@ -95553,7 +95553,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 229
+"line": 231
 },
 "Script_IsCurrentAction": {
 "files": [
@@ -95571,7 +95571,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 236
+"line": 238
 },
 "Script_IsAutoRepeatAction": {
 "files": [
@@ -95589,7 +95589,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 243
+"line": 245
 },
 "Script_IsUsableAction": {
 "files": [
@@ -95613,7 +95613,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 250
+"line": 252
 },
 "Script_IsConsumableAction": {
 "files": [
@@ -95628,7 +95628,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 271
+"line": 273
 },
 "Script_IsStackableAction": {
 "files": [
@@ -95643,24 +95643,40 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 276
+"line": 278
 },
 "Script_IsEquippedAction": {
 "files": [
 "src/ui/game/actionbarscript.cpp"
 ],
 "callseq": [
+"lua_isnumber",
+"luaL_error",
+"ActionSlot",
+"CGActionBar::GetActionType",
+"CGActionBar::GetActionID",
+"WowClientDB<ItemRec>::GetRecord",
+"CGPlayer_C::GetActivePtr",
+"CGPlayer::Player",
+"ClntObjMgrObjectPtr",
+"CGObject::GetEntryID",
+"lua_pushnumber",
 "lua_pushnil"
 ],
-"strings": [],
-"consts": [
-"1"
+"strings": [
+"Usage: IsEquippedAction(slot)",
+"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\actionbarscript.cpp"
 ],
-"branches": 0,
+"consts": [
+"0",
+"1",
+"1.0"
+],
+"branches": 7,
 "stub": false,
-"lines": 7,
+"lines": 36,
 "refs": [],
-"line": 281
+"line": 296
 },
 "Script_ActionHasRange": {
 "files": [
@@ -95678,7 +95694,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 289
+"line": 333
 },
 "Script_IsActionInRange": {
 "files": [
@@ -95695,7 +95711,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 298
+"line": 342
 },
 "Script_GetBonusBarOffset": {
 "files": [
@@ -95713,7 +95729,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 307
+"line": 351
 },
 "Script_GetMultiCastBarOffset": {
 "files": [
@@ -95731,7 +95747,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 313
+"line": 357
 },
 "Script_ChangeActionBarPage": {
 "files": [
@@ -95754,7 +95770,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 324
+"line": 368
 },
 "Script_GetActionBarPage": {
 "files": [
@@ -95772,7 +95788,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 343
+"line": 387
 },
 "Script_GetActionBarToggles": {
 "files": [
@@ -95790,7 +95806,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 358
+"line": 402
 },
 "Script_SetActionBarToggles": {
 "files": [
@@ -95810,7 +95826,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 366
+"line": 410
 },
 "Script_IsPossessBarVisible": {
 "files": [
@@ -95828,7 +95844,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 377
+"line": 421
 },
 "Script_GetMultiCastTotemSpells": {
 "files": [
@@ -95850,7 +95866,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 384
+"line": 428
 },
 "Script_SetMultiCastSpell": {
 "files": [
@@ -95872,7 +95888,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 388
+"line": 432
 },
 "ActionBarRegisterScriptFunctions": {
 "files": [
@@ -95887,7 +95903,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 425
+"line": 469
 },
 "Script_GetNumBattlefields": {
 "files": [
