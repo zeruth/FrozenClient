@@ -4,12 +4,14 @@
 #include "ui/simple/CSimpleTexture.hpp"
 #include "ui/simple/MovieDecoder.hpp"
 #include "gx/Texture.hpp"
+#include "util/CStatus.hpp"
 #include "sound/SESound.hpp"
 #include "util/SFile.hpp"
 #include <fmod.hpp>
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
 #include <storm/Memory.hpp>
+#include <cstdio>
 
 namespace {
 
@@ -102,12 +104,18 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     }
 
     if (!MovieAviOpen(path, this->m_movie)) {
+        fprintf(stderr, "Movie: could not demux %s\n", path);
+
         return false;
     }
 
     this->m_decoder = MovieDecoderCreate(this->m_movie);
 
     if (!this->m_decoder) {
+        fprintf(stderr, "Movie: no decoder for %s (codec %s, %dx%d, %u frames)\n",
+                path, MovieAviFourCC(this->m_movie.videoCodec),
+                this->m_movie.width, this->m_movie.height, this->m_movie.videoChunkCount);
+
         MovieAviClose(this->m_movie);
 
         return false;
@@ -116,6 +124,7 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     // Decode the first picture before anything is shown, so the frame never appears with a texture
     // that has no content behind it.
     if (!MovieDecoderFrame(this->m_decoder, this->m_movie, 0)) {
+        fprintf(stderr, "Movie: first frame failed to decode in %s\n", path);
         this->StopMovie();
 
         return false;
@@ -133,6 +142,7 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     }
 
     if (!this->m_surface) {
+        fprintf(stderr, "Movie: could not make the surface region for %s\n", path);
         this->StopMovie();
 
         return false;
@@ -153,6 +163,8 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     );
 
     if (!texture) {
+        fprintf(stderr, "Movie: could not create a %dx%d texture for %s\n",
+                MovieDecoderWidth(this->m_decoder), MovieDecoderHeight(this->m_decoder), path);
         this->StopMovie();
 
         return false;
@@ -162,6 +174,9 @@ bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     this->m_surface->Resize(0);
     this->m_surface->SetTextureHandle(texture);
     this->m_surface->Show();
+
+    // Kept so each decoded frame can be pushed to the device; the region owns the handle.
+    this->m_texture = texture;
 
     this->StartMovieAudio(volume);
 
@@ -400,6 +415,9 @@ void CSimpleMovieFrame::StopMovie() {
         this->m_surface->Hide();
     }
 
+    // The region owns the texture and closes it when the next is set, so this only forgets it.
+    this->m_texture = nullptr;
+
     if (this->m_decoder) {
         MovieDecoderDestroy(this->m_decoder);
         this->m_decoder = nullptr;
@@ -445,9 +463,27 @@ bool CSimpleMovieFrame::AdvanceMovie(float elapsedSec) {
         this->m_frame = next;
     }
 
-    if (this->m_surface) {
-        // The texture rereads the decoder's buffer through the callback.
-        this->m_surface->OnRegionChanged();
+    // Push the new picture to the device.
+    //
+    // A callback texture is latched ONCE, when it is created. OnRegionChanged only re-lays-out the
+    // region -- it does not ask the device for the pixels again, so every frame after the first
+    // kept showing the first. That is why the movie played its sound over a still black image:
+    // frame 0 of these cinematics IS black, and it was the only frame ever uploaded.
+    //
+    // GxTexUpdate is what re-runs the callback. Immediate, because the next thing that happens is
+    // the frame being drawn.
+    if (this->m_texture) {
+        auto texture = TextureGetTexturePtr(static_cast<HTEXTURE>(this->m_texture));
+
+        if (texture) {
+            CStatus status;
+            auto gxTex = TextureGetGxTex(texture, 0, &status);
+
+            if (gxTex) {
+                GxTexUpdate(gxTex, 0, 0, MovieDecoderWidth(this->m_decoder),
+                            MovieDecoderHeight(this->m_decoder), 1);
+            }
+        }
     }
 
     if (this->m_subtitlesEnabled) {

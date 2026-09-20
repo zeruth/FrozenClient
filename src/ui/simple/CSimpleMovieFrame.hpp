@@ -62,6 +62,10 @@ class CSimpleMovieFrame : public CSimpleFrame {
         // Which caption is on screen, or -1 for none. The reference starts this at -1 too.
         int32_t m_caption = -1;
         CSimpleTexture* m_surface = nullptr;
+
+        // The surface's texture, kept so a decoded frame can be pushed to the device each step.
+        // Not owned here -- the region closes it.
+        void* m_texture = nullptr;
         bool m_playing = false;
         float m_elapsed = 0.0f;
         uint32_t m_frame = 0xFFFFFFFF;

@@ -23,11 +23,11 @@ CSimpleMovieFrame* This(lua_State* L) {
 int32_t CSimpleMovieFrame_StartMovie(lua_State* L) {
     auto frame = This(L);
 
-    if (!lua_isstring(L, 2)) {
-        lua_pushnil(L);
-        frame->RunOnMovieFinishedScript();
-
-        return 1;
+    // The reference raises the usage error rather than answering, and takes the volume as
+    // required rather than optional (FUN_00970660).
+    if (!lua_isstring(L, 2) || !lua_isnumber(L, 3)) {
+        return luaL_error(L, "Usage: %s:StartMovie(\"filename\", volume_0_to_255)",
+                          frame->GetDisplayName());
     }
 
     // MovieFrame.lua passes "Interface\Cinematics\Logo_1024"; the reference appends .avi when
@@ -36,11 +36,17 @@ int32_t CSimpleMovieFrame_StartMovie(lua_State* L) {
     SStrPrintf(path, sizeof(path), "%s.avi", lua_tostring(L, 2));
 
     // StartMovie("file", volume_0_to_255); the reference's own usage string names that range.
-    int32_t volume = lua_isnumber(L, 3) ? static_cast<int32_t>(lua_tonumber(L, 3)) : 255;
+    int32_t volume = static_cast<int32_t>(lua_tonumber(L, 3));
 
     if (!frame->StartMovie(path, volume)) {
+        // Answer nil and STOP. Do not run OnMovieFinished here.
+        //
+        // MovieFrame_PlayMovie already handles a refused movie itself: it retries at the other
+        // resolution and then falls through to MovieFrame_PlayNextMovie. Firing the finished
+        // script from inside StartMovie meant failure re-entered PlayMovie -> StartMovie ->
+        // failure, which is a C stack overflow and a hung client, not an error message. The
+        // reference pushes 1 or nil from this binding and runs no script at all.
         lua_pushnil(L);
-        frame->RunOnMovieFinishedScript();
 
         return 1;
     }
@@ -50,11 +56,18 @@ int32_t CSimpleMovieFrame_StartMovie(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00970730
+//
+// Stops and says nothing. It must NOT run OnMovieFinished, and that is not a style choice:
+// FrameXML calls StopMovie from inside the finished handler's own chain --
+//
+//   MovieFrame_OnMovieFinished -> MovieFrame_PlayNextMovie -> self:StopMovie()
+//
+// so firing the script from here re-enters OnMovieFinished forever. That is the C stack overflow
+// the cinematics hit once a movie actually reached its end. The reference's binding is three
+// calls and none of them is a script.
 int32_t CSimpleMovieFrame_StopMovie(lua_State* L) {
-    auto frame = This(L);
-
-    frame->StopMovie();
-    frame->RunOnMovieFinishedScript();
+    This(L)->StopMovie();
 
     return 0;
 }
