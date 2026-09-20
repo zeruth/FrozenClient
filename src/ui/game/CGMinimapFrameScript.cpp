@@ -1,4 +1,5 @@
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include "object/client/AuraCache.hpp"
 #include <common/DataStore.hpp>
 #include "client/ClientServices.hpp"
 #include "ui/game/CGRaidInfo.hpp"
@@ -483,10 +484,9 @@ int32_t Script_GetTrackingInfo(lua_State* L) {
 int32_t Script_SetTracking(lua_State* L) {
     if (!lua_isnumber(L, 1)) {
         if (CGMinimapFrame::s_trackingSpell) {
-            // TODO cancel the tracking aura. Unreachable while nothing sets s_trackingSpell.
-            CGMinimapFrame::s_trackingSpell = 0;
-
-            FrameScript_SignalEvent(SCRIPT_MINIMAP_UPDATE_TRACKING, nullptr);
+            // Tracking IS an aura, so clearing it is cancelling that aura. The server dropping it
+            // is what will clear s_trackingSpell, through the same aura path that set it.
+            AuraCacheCancel(CGMinimapFrame::s_trackingSpell);
         }
 
         CGMinimapFrame::SetOtherTracking(nullptr);

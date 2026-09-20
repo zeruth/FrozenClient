@@ -46,6 +46,14 @@ const ClientAura* AuraCacheGet(WOWGUID guid, int32_t index, uint8_t requiredFlag
 
 int32_t AuraCacheCount(WOWGUID guid, uint8_t requiredFlags, uint8_t forbiddenFlags);
 
+// ref: the 0x136 branch of FUN_00802f80
+// Ask the server to remove one of the player's own auras. Only the spell id goes on the wire --
+// the server knows whose aura it is.
+//
+// A pet's aura is a different opcode carrying the pet's guid, and a totem a third; neither is
+// ported, so this is the player's own buffs only.
+void AuraCacheCancel(uint32_t spellID);
+
 void AuraCacheClear();
 
 void AuraCacheRegisterHandlers();

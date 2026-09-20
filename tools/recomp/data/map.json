@@ -19992,7 +19992,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "Script_SetTracking",
-  "frozenSize": 146,
+  "frozenSize": 135,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 368,
@@ -31092,6 +31092,22 @@
   "how": "handler",
   "module": "Spell_C.cpp",
   "refSize": 338,
+  "status": "ported"
+ },
+ "00804220": {
+  "branchRatio": 0.353,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.217,
+  "files": [
+   "src/ui/game/MiscScript.cpp",
+   "src/ui/game/miscscript.cpp"
+  ],
+  "frozen": "Script_CancelUnitBuff",
+  "frozenSize": 333,
+  "how": "annotated",
+  "module": "Spell_C.cpp",
+  "refSize": 512,
   "status": "ported"
  },
  "00809c70": {

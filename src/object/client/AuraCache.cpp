@@ -149,6 +149,20 @@ int32_t AuraCacheCount(WOWGUID guid, uint8_t required, uint8_t forbidden) {
     return count;
 }
 
+// ref: the 0x136 branch of FUN_00802f80
+void AuraCacheCancel(uint32_t spellID) {
+    if (!spellID) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_CANCEL_AURA));
+    msg.Put(spellID);
+    msg.Finalize();
+
+    ClientServices::Send(&msg);
+}
+
 void AuraCacheClear() {
     s_auras.clear();
 }

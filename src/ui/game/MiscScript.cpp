@@ -4,6 +4,8 @@
 // missing global. They move to their subsystem files as those get ported.
 
 #include "ui/game/MiscScript.hpp"
+#include "ui/game/ScriptUtil.hpp"
+#include "object/client/AuraCache.hpp"
 #include <cstdio>
 #include "ui/FrameScript.hpp"
 #include "object/client/SpellBook.hpp"
@@ -545,6 +547,59 @@ int32_t Script_GetSendMailPrice(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00804220
+// CancelUnitBuff("unit", index [, filter]) -- remove one of your own buffs.
+//
+// Only POSITIVE auras can be cancelled. That is not a safety check: the reference gates on the
+// aura's own positive flag, so a debuff is not yours to drop. It also allows a cancel when the
+// SPELL carries an attribute permitting it; that attribute bit is not identified, so a positive
+// aura is the only thing this cancels.
+//
+// The unit must be the player. The reference has a second path for a unit you are controlling --
+// a vehicle or a pet -- which sends a different opcode with that unit's guid, and which is not
+// ported.
+//
+// The name-and-rank form of the argument list is not supported either; only the index form is.
+int32_t Script_CancelUnitBuff(lua_State* L) {
+    if (!lua_isstring(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: CancelUnitBuff(\"unit\", [index] or [\"name\", \"rank\"][, \"filter\"])");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    if (!unit || unit->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return 0;
+    }
+
+    uint8_t required = 0;
+    uint8_t forbidden = 0;
+
+    if (lua_isstring(L, 3)) {
+        auto filter = lua_tostring(L, 3);
+
+        if (SStrStr(filter, "HELPFUL")) {
+            required |= AURA_FLAG_POSITIVE;
+        }
+
+        if (SStrStr(filter, "HARMFUL")) {
+            forbidden |= AURA_FLAG_POSITIVE;
+        }
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 2)) - 1;
+    auto aura = AuraCacheGet(unit->GetGUID(), index, required, forbidden);
+
+    if (!aura || !(aura->flags & AURA_FLAG_POSITIVE)) {
+        return 0;
+    }
+
+    AuraCacheCancel(static_cast<uint32_t>(aura->spellID));
+
+    return 0;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetChatWindowInfo",              &Script_GetChatWindowInfo },
     { "GetChatTypeIndex",               &Script_GetChatTypeIndex },
@@ -724,7 +779,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "CancelSell",                          &Script_ReturnNothing },
     { "CancelShapeshiftForm",                &Script_ReturnNothing },
     { "CancelSkillUps",                      &Script_ReturnNothing },
-    { "CancelUnitBuff",                      &Script_ReturnNothing },
+    { "CancelUnitBuff",                      &Script_CancelUnitBuff },
 
     // Counts for systems this client has no data for. The reference returns 0 for every one
     // of these when the underlying list is empty, which is exactly this client's state, so
