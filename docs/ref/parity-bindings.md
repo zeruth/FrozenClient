@@ -145,6 +145,19 @@ if (key && *key && !AlreadyBound(key)) {
 }
 ```
 
+`AlreadyBound` is `FUN_0055f4d0`, a generic hash lookup by name whose table arrives in ECX, so
+which table it searches cannot be read from the decompilation. The bytes settle it -- the three
+call sites in this function load ECX differently:
+
+```
+005644f4   lea ebx, [edi+0x0c] ; mov ecx, ebx      -> manager+0x0c, the command table
+0056455d   mov ecx, ebx                            -> manager+0x0c, again (the HEADER_ check)
+0056470f   lea ecx, [ebx+0x34]                     -> manager+0x40, which is SET 0
+```
+
+So the guard on `default` is "this key is not already bound **in the default set**", not a check
+against command names.
+
 **So the mechanism was the `default` attribute all along, and it writes straight into set 0.**
 There is no index-keyed table and no hidden data file; the hypothesis in 3b was wrong.
 
@@ -182,7 +195,10 @@ With the header rows and the two drops, the shipped file yields **270 entries: 2
 
 1. ~~**The default key set**~~ -- answered in section 3c. The mechanism is the `default` attribute
    on `<Binding>`, which the shipped file never uses. Implemented and inert against this data.
-2. `SetBinding` and friends, and saving to a bindings cache.
+2. ~~`SetBinding`~~ -- done. `FUN_00563520` is `SetBinding("KEY"[, "COMMAND"][, mode])`: it writes
+   through `FUN_00562ed0(3, mode, key, command)` -- set 3, the effective one -- signals
+   UPDATE_BINDINGS (0x177 = 375) on success, and returns exactly one value, nil included. Omitting
+   the command unbinds. Saving to a bindings cache is still open.
 3. The dispatch half: a key event resolving to a command and running its Lua body. The bodies are
    already parsed and kept for it.
 4. The four override setters (`SetOverrideBinding*`) and the five-set `mode` argument.

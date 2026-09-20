@@ -51,8 +51,31 @@ int32_t Script_GetBinding(lua_State* L) {
     return keys + 1;
 }
 
+// ref: FUN_00563520
+//
+// SetBinding("KEY"[, "COMMAND"][, mode]) -> 1, or nil when the command does not exist.
+//
+// Omitting the command unbinds the key. Always returns exactly one value, nil included, which is
+// what the reference does and what the key binding pane tests.
+//
+// On success the reference signals UPDATE_BINDINGS (event 0x177 = 375), which is what makes every
+// action button re-read its hotkey text -- ActionButton.lua registers for it.
 int32_t Script_SetBinding(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: SetBinding(\"KEY\"[, \"COMMAND\"][, mode])");
+    }
+
+    auto key = lua_tostring(L, 1);
+    auto command = lua_isstring(L, 2) ? lua_tostring(L, 2) : nullptr;
+
+    if (UIBindingsSetKey(key, command)) {
+        FrameScript_SignalEvent(375, nullptr);
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_SetBindingSpell(lua_State* L) {
@@ -141,8 +164,22 @@ int32_t Script_GetBindingAction(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005625f0
+// GetBindingByKey("KEY"[, mode]) -> the command bound to it. No values when nothing is.
 int32_t Script_GetBindingByKey(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: GetBindingByKey(\"action\"[, mode])");
+    }
+
+    auto command = UIBindingsGetCommandForKey(lua_tostring(L, 1));
+
+    if (!command) {
+        return 0;
+    }
+
+    lua_pushstring(L, command);
+
+    return 1;
 }
 
 int32_t Script_RunBinding(lua_State* L) {

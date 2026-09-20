@@ -203,3 +203,46 @@ const char* UIBindingsGetCommandForKey(const char* key) {
 
     return nullptr;
 }
+
+bool UIBindingsSetKey(const char* key, const char* command) {
+    EnsureLoaded();
+
+    if (!key || !*key) {
+        return false;
+    }
+
+    // A key maps to at most one command, so binding it somewhere new takes it off wherever it was.
+    // That happens even when the new command turns out not to exist, which is what makes
+    // SetBinding("KEY") with no command an unbind.
+    for (auto& existing : s_commands) {
+        for (auto& bound : existing.keys) {
+            if (!bound.empty() && !SStrCmpI(bound.c_str(), key, 0x7FFFFFFF)) {
+                bound.clear();
+            }
+        }
+    }
+
+    if (!command || !*command) {
+        return true;
+    }
+
+    for (auto& target : s_commands) {
+        if (SStrCmpI(target.name.c_str(), command, 0x7FFFFFFF)) {
+            continue;
+        }
+
+        // Two keys may name one command. A third displaces the first, which is the reference's
+        // behaviour and the reason the pane only ever offers two slots.
+        if (target.keys[0].empty()) {
+            target.keys[0] = key;
+        } else if (target.keys[1].empty()) {
+            target.keys[1] = key;
+        } else {
+            target.keys[0] = key;
+        }
+
+        return true;
+    }
+
+    return false;
+}

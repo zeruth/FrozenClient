@@ -53,4 +53,8 @@ const char* UIBindingsGetKey(const char* command, int32_t n);
 // The command a key is bound to, or null.
 const char* UIBindingsGetCommandForKey(const char* key);
 
+// Bind a key to a command, or unbind it when command is null or empty. Takes the key off whatever
+// held it first, since a key maps to at most one command. False when the command does not exist.
+bool UIBindingsSetKey(const char* key, const char* command);
+
 #endif
