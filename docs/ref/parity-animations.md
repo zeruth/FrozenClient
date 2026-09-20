@@ -215,7 +215,76 @@ Each stage should end in a committable increment; none of it should go in blind 
    arithmetic, is `CSimpleScaleAnim::GetScale`. The loader settles it -- it stores `1 - scale`, so
    that function's `{1 - x, 1 - y}` is simply how the scale reads back out. Now linked, with the
    storage difference recorded as a divergence.
-4. **The driver.** Per-frame advance, ordering, delays, smoothing curves, looping, and the
-   `OnPlay`/`OnFinished`/`OnUpdate`/`OnLoop` script handlers via `NotifyAnimBegin` (also a TODO in
-   `CScriptRegion`). This is the stage that makes anything move, and the one to verify on screen.
+4. **The driver.** Split in two after surveying it on 2026-09-20; the halves have very different
+   risk and only the second touches rendering.
+
+   **4a -- timing and callbacks.** Advance, ordering, delays, smoothing, looping, and firing
+   `OnPlay`/`OnUpdate`/`OnFinished`/`OnLoop`. Pure state plus Lua calls, no rendering. This alone
+   fixes FrameXML logic that waits on `OnFinished` to advance a sequence, which today never fires.
+
+   **4b -- application to the region.** The `AddAnim*` family and whatever consumes the
+   accumulated transform. This is render-surface work and the part that must be seen on screen.
+
+   **NOT STARTED, and deliberately so.** The application model below is recovered and solid, but
+   the group's per-frame advance function has not been located, and that function *is* the timing
+   semantics. Writing them from what the WoW API is documented to do would be exactly the guessing
+   CLAUDE.md forbids, so it is left until the function is found.
+
+### What is established (2026-09-20)
+
+**The application model.** An animation reaches its region through its group: `anim[0x28]` is the
+group, `group[0x30]` is the region. Two vtable slots on the animation drive it:
+
+| anim vtable | meaning |
+|---|---|
+| `+0x2c` | apply this animation's contribution, scaled by an amount |
+| `+0x30` | un-apply -- the shared body at `FUN_00497700` simply calls `+0x2c` with the negated amount |
+
+That pairing is why `CScriptRegion::PreOnAnimUpdate` exists and why `CSimpleFrame::OnLayerUpdate`
+calls it on the frame and every region *before* updating: each animation removes last frame's
+contribution, then adds this frame's.
+
+Confirmed bodies: `FUN_00498040` is Translation's apply -- it forms
+`{offsetX * amount, offsetY * amount}` and hands it to the region -- and `FUN_00498330` is Alpha's.
+
+**Region vtable slots**, from those two applies (`+0x44` and `+0x50`) and from
+`CSimpleAnimGroup::Play` calling `+0x30` on the region:
+
+| region vtable | method |
+|---|---|
+| `+0x28` | `PreOnAnimUpdate` |
+| `+0x2c` | `OnLayerUpdate` |
+| `+0x30` | `NotifyAnimBegin` |
+| `+0x34` | `NotifyAnimEnd` |
+| `+0x38` | `StopAnimating` |
+| `+0x3c` | `AnimActivated` |
+| `+0x40` | `AnimDeactivated` |
+| `+0x44` | `AddAnimTranslation` |
+| `+0x48` | `AddAnimRotation` |
+| `+0x4c` | `AddAnimScale` |
+| `+0x50` | `AddAnimAlpha` |
+
+Only `+0x30`, `+0x44` and `+0x50` are read directly from the binary. The rest follow from those
+three and from the fact that frozen's `CScriptRegion` already declares this exact sequence -- the
+two orderings agree at every anchor, which is good evidence but is not the same as having read
+each slot. Treat the unanchored rows as strong inference until a region vtable is dumped.
+
+**Animation vtables** (`CSimpleAnim` `009ebe64`, Translation `009ebe98`, Alpha `009ebf38`,
+`CSimpleAnimGroup` `009ebfa0`): `+0x0c` is `GetScriptByName`, `+0x20` is `LoadXML` and `+0x24` is
+`PostLoadXML` -- `CreateAnimation` calls that pair in order when copying an inherited template.
+The group's table is only eight entries and ends at `+0x1c`, so its `LoadXML` and its update are
+both non-virtual, which is why neither can be found through a vtable.
+
+**Still missing, and the one thing blocking 4a:** the group's per-frame advance. It is not in the
+group vtable, not `FUN_0049a580` (a SIMPLEANIMNODE list helper) and not `FUN_0049a700` (the
+destructor). The promising route is the region's `OnLayerUpdate` at region vtable `+0x2c`, which
+needs a CScriptRegion-derived constructor to read the table from; `CSimpleTexture::Init`
+(`00483060`) is linked but is not the constructor and assigns no vtable.
+
+**Frozen's side is already wired for 4a.** `CSimpleFrame::OnLayerUpdate` runs every frame and
+already calls `PreOnAnimUpdate` on the frame and its regions and then
+`CScriptRegion::OnLayerUpdate`, which is an empty TODO. The driver drops into that empty body; no
+new call site is needed. Nothing in frozen implements any of the `AddAnim*` virtuals yet, so 4b
+starts from nothing.
+
 5. **Path and ControlPoint**, which nothing in the default FrameXML appears to use; last.
