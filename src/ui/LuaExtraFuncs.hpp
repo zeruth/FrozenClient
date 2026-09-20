@@ -5,13 +5,13 @@
 
 struct lua_State;
 
-int32_t sub_8168D0(lua_State*);
-int32_t sub_816910(lua_State*);
+int32_t setglobal(lua_State*);
+int32_t getglobal(lua_State*);
 int32_t strtrim(lua_State*);
 int32_t strsplit(lua_State*);
 int32_t strjoin(lua_State*);
 int32_t sub_816C40(lua_State*);
-int32_t sub_816D80(lua_State*);
+int32_t strconcat(lua_State*);
 int32_t strlenutf8(lua_State*);
 int32_t issecure(lua_State*);
 int32_t issecurevariable(lua_State*);

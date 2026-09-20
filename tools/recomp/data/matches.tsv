@@ -1954,24 +1954,25 @@ addr	how	frozen	evidence
 00815f40	override	LoadXML_Texture	
 00815fa0	override	LoadXML_String	
 00816830	string	FrameScript_Object::GetScriptByName	unique "OnEvent"
-008168d0	annotated	sub_8168D0	tag in src/ui/LuaExtraFuncs.cpp
-00816910	annotated	sub_816910	tag in src/ui/LuaExtraFuncs.cpp
+008168d0	annotated	setglobal	tag in src/ui/LuaExtraFuncs.cpp
+00816910	annotated	getglobal	tag in src/ui/LuaExtraFuncs.cpp
 00816960	annotated	strtrim	tag in src/ui/LuaExtraFuncs.cpp
 00816a60	annotated	strsplit	tag in src/ui/LuaExtraFuncs.cpp
 00816b60	annotated	strjoin	tag in src/ui/LuaExtraFuncs.cpp
 00816c40	annotated	sub_816C40	tag in src/ui/LuaExtraFuncs.cpp
-00816d80	annotated	sub_816D80	tag in src/ui/LuaExtraFuncs.cpp
+00816d80	annotated	strconcat	tag in src/ui/LuaExtraFuncs.cpp
 00816da0	order	issecure	binding table name issecure, in definition order in src/ui/LuaExtraFuncs.cpp
 00816de0	order	issecurevariable	binding table name issecurevariable, in definition order in src/ui/LuaExtraFuncs.cpp
 00816f30	order	securecall	binding table name securecall, in definition order in src/ui/LuaExtraFuncs.cpp
 00817170	order	hooksecurefunc	binding table name hooksecurefunc, in definition order in src/ui/LuaExtraFuncs.cpp
 00817370	order	debugprofilestop	binding table name debugprofilestop, in definition order in src/ui/LuaExtraFuncs.cpp
-008173c0	string	seterrorhandler	unique "Usage: seterrorhandler(errfunc)"
-00817420	order	geterrorhandler	binding table name geterrorhandler, in definition order in src/ui/LuaExtraFuncs.cpp
+008173c0	annotated	seterrorhandler	tag in src/ui/LuaExtraFuncs.cpp
+00817420	annotated	geterrorhandler	tag in src/ui/LuaExtraFuncs.cpp
 00817450	order	os_date	binding table name os_date, in definition order in src/ui/LuaExtraFuncs.cpp
 00817650	string	getfield	unique "field '%s' missing in date table"
 008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
+00817bf0	annotated	scrub	tag in src/ui/LuaExtraFuncs.cpp
 00817c70	annotated	strlenutf8	tag in src/ui/LuaExtraFuncs.cpp
 00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
@@ -2068,7 +2069,7 @@ addr	how	frozen	evidence
 0084dc50	callgraph	lua_remove	only unmatched callee of 009748f0=CSimpleHTML_GetTextTypeArg
 0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819ea0=FrameScript_Execute
 0084dd70	string	lua_replace	unique "no calling environment"
-0084de50	callorder	lua_pushvalue	same slot between linked calls in 008519b0=setn, 00854340=getfunc
+0084de50	callorder	lua_pushvalue	same slot between linked calls in 0084fc00=luaL_openlib, 008519b0=setn, 00854340=getfunc
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
@@ -2094,14 +2095,14 @@ addr	how	frozen	evidence
 0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
 0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
 0084e560	callorder	lua_gettable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop, 004a15a0=CSimpleFrame_SetBackdrop
-0084e590	callorder	lua_getfield	same slot between linked calls in 0084fc00=luaL_openlib
+0084e590	callgraph	lua_getfield	only unmatched callee of 00816910=getglobal
 0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 0084e670	override	lua_rawgeti	
 0084e6e0	callorder	lua_createtable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084e7a0	order	lua_getfenv	definition order between lua_getmetatable and lua_settable in vendor/lua-5.1.3/src/lapi.c
 0084e8d0	callgraph	lua_settable	only unmatched callee of 0060a510=Script_FillLocalizedClassList
-0084e900	callorder	lua_setfield	same slot between linked calls in 0084fc00=luaL_openlib, 00851760=luaopen_math
+0084e900	callgraph	lua_setfield	only unmatched callee of 008168d0=setglobal
 0084e970	override	lua_rawset	
 0084ea00	override	lua_rawseti	
 0084ea90	callorder	lua_setmetatable	same slot between linked calls in 008542c0=luaB_setmetatable

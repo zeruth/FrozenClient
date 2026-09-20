@@ -141884,49 +141884,46 @@
 "refs": [],
 "line": 296
 },
-"sub_8168D0": {
+"setglobal": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"luaL_checklstring",
+"lua_settop",
+"lua_setfield"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"sub_8168D0"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 8,
 "refs": [],
-"line": 45
+"line": 48
 },
-"sub_816910": {
+"getglobal": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_isstring",
+"lua_pushnil",
+"lua_tolstring",
+"lua_getfield"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"sub_816910"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 49
+"line": 60
 },
 "strtrim": {
 "files": [
@@ -141935,8 +141932,8 @@
 "callseq": [
 "luaL_checklstring",
 "luaL_optlstring",
-"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:62:20)::operator()",
-"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:62:20)::operator()",
+"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:81:20)::operator()",
+"strtrim::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:81:20)::operator()",
 "lua_pushlstring"
 ],
 "strings": [
@@ -141951,7 +141948,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 57
+"line": 76
 },
 "strsplit": {
 "files": [
@@ -141962,7 +141959,7 @@
 "luaL_checklstring",
 "luaL_optinteger",
 "lua_settop",
-"strsplit::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:100:20)::operator()",
+"strsplit::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp:119:20)::operator()",
 "lua_pushlstring"
 ],
 "strings": [],
@@ -141976,7 +141973,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 93
+"line": 112
 },
 "strjoin": {
 "files": [
@@ -142002,7 +141999,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 135
+"line": 154
 },
 "sub_816C40": {
 "files": [
@@ -142034,9 +142031,9 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 176
+"line": 195
 },
-"sub_816D80": {
+"strconcat": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
@@ -142052,7 +142049,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 234
+"line": 253
 },
 "strlenutf8": {
 "files": [
@@ -142076,7 +142073,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 244
+"line": 263
 },
 "issecure": {
 "files": [
@@ -142094,7 +142091,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 258
+"line": 277
 },
 "issecurevariable": {
 "files": [
@@ -142116,7 +142113,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 266
+"line": 285
 },
 "forceinsecure": {
 "files": [
@@ -142138,7 +142135,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 270
+"line": 289
 },
 "securecall": {
 "files": [
@@ -142172,7 +142169,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 274
+"line": 293
 },
 "hooksecurefunc": {
 "files": [
@@ -142194,7 +142191,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 307
+"line": 326
 },
 "debugload": {
 "files": [
@@ -142216,7 +142213,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 311
+"line": 330
 },
 "debuginfo": {
 "files": [
@@ -142238,7 +142235,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 315
+"line": 334
 },
 "debugprint": {
 "files": [
@@ -142260,7 +142257,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 319
+"line": 338
 },
 "debugdump": {
 "files": [
@@ -142282,7 +142279,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 323
+"line": 342
 },
 "debugbreak": {
 "files": [
@@ -142304,7 +142301,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 327
+"line": 346
 },
 "debughook": {
 "files": [
@@ -142326,7 +142323,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 331
+"line": 350
 },
 "debugtimestamp": {
 "files": [
@@ -142348,7 +142345,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 335
+"line": 354
 },
 "debugprofilestart": {
 "files": [
@@ -142370,7 +142367,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 339
+"line": 358
 },
 "debugprofilestop": {
 "files": [
@@ -142392,7 +142389,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 343
+"line": 362
 },
 "seterrorhandler": {
 "files": [
@@ -142415,29 +142412,24 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 347
+"line": 367
 },
 "geterrorhandler": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_rawgeti"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"geterrorhandler"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 362
+"line": 386
 },
 "SetDateField": {
 "files": [
@@ -142456,7 +142448,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 372
+"line": 398
 },
 "SetDateFlag": {
 "files": [
@@ -142475,7 +142467,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 378
+"line": 404
 },
 "GetDateField": {
 "files": [
@@ -142497,7 +142489,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 384
+"line": 410
 },
 "os_date": {
 "files": [
@@ -142578,7 +142570,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 401
+"line": 427
 },
 "os_time": {
 "files": [
@@ -142636,7 +142628,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 451
+"line": 477
 },
 "os_difftime": {
 "files": [
@@ -142664,7 +142656,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 483
+"line": 509
 },
 "debugstack": {
 "files": [
@@ -142702,7 +142694,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 494
+"line": 520
 },
 "debuglocals": {
 "files": [
@@ -142736,29 +142728,28 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 553
+"line": 579
 },
 "scrub": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_gettop",
+"lua_checkstack",
+"lua_type",
+"lua_pushnil",
+"lua_replace"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"scrub"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 16,
 "refs": [],
-"line": 594
+"line": 624
 },
 "luaM_initPool": {
 "files": [

@@ -9,13 +9,13 @@
 #include <storm/String.hpp>
 
 luaL_Reg FrameScriptInternal::extra_funcs[31] = {
-    { "setglobal", &sub_8168D0 },
-    { "getglobal", &sub_816910 },
+    { "setglobal", &setglobal },
+    { "getglobal", &getglobal },
     { "strtrim", &strtrim },
     { "strsplit", &strsplit },
     { "strjoin", &strjoin },
     { "strreplace", &sub_816C40 },
-    { "strconcat", &sub_816D80 },
+    { "strconcat", &strconcat },
     { "strlenutf8", &strlenutf8 },
     { "issecure", &issecure },
     { "issecurevariable", &issecurevariable },
@@ -42,12 +42,31 @@ luaL_Reg FrameScriptInternal::extra_funcs[31] = {
     { nullptr, nullptr }
 };
 
-int32_t sub_8168D0(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// ref: FUN_008168d0
+// setglobal(name, value). lua_settop trims anything past the second argument, so extra arguments
+// are dropped rather than shifting which one gets stored.
+int32_t setglobal(lua_State* L) {
+    auto name = luaL_checklstring(L, 1, nullptr);
+
+    lua_settop(L, 2);
+    lua_setfield(L, LUA_GLOBALSINDEX, name);
+
+    return 0;
 }
 
-int32_t sub_816910(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+// ref: FUN_00816910
+// getglobal(name). A non-string name answers nil rather than raising, which is the opposite of
+// setglobal beside it -- the reference is asymmetric here and this follows it.
+int32_t getglobal(lua_State* L) {
+    if (!lua_isstring(L, 1)) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    lua_getfield(L, LUA_GLOBALSINDEX, lua_tostring(L, 1));
+
+    return 1;
 }
 
 // ref: FUN_00816960
@@ -231,7 +250,7 @@ int32_t sub_816C40(lua_State* L) {
 
 // ref: FUN_00816d80
 // Everything on the stack, joined with nothing between. Two lines in the reference and two here.
-int32_t sub_816D80(lua_State* L) {
+int32_t strconcat(lua_State* L) {
     lua_concat(L, lua_gettop(L));
 
     return 1;
@@ -344,6 +363,7 @@ int32_t debugprofilestop(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_008173c0
 int32_t seterrorhandler(lua_State* L) {
     if (lua_type(L, 1) != LUA_TFUNCTION) {
         luaL_error(L, "Usage: seterrorhandler(errfunc)");
@@ -359,8 +379,14 @@ int32_t seterrorhandler(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00817420
+// The counterpart of seterrorhandler above, which frozen already had. Unconditional: with no
+// handler set the ref is the unset sentinel and the registry lookup answers nil, which is what the
+// reference does rather than testing first.
 int32_t geterrorhandler(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, FrameScript::s_errorHandlerFun);
+
+    return 1;
 }
 
 // Lua 5.1 exposes these from the os library; the interface uses them as plain globals. They were
@@ -591,6 +617,23 @@ int32_t debuglocals(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00817bf0
+// Returns its arguments with everything that is not a boolean, a number or a string replaced by
+// nil -- tables, functions and userdata are what carry taint, so they do not survive. Argument
+// count and position are preserved, which is the point: callers forward the results straight on.
 int32_t scrub(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto count = lua_gettop(L);
+
+    lua_checkstack(L, 1);
+
+    for (int32_t i = 1; i <= count; i++) {
+        auto type = lua_type(L, i);
+
+        if (type != LUA_TBOOLEAN && (type < LUA_TNUMBER || type > LUA_TSTRING)) {
+            lua_pushnil(L);
+            lua_replace(L, i);
+        }
+    }
+
+    return count;
 }

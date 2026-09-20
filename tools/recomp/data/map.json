@@ -31161,36 +31161,36 @@
   "status": "ported"
  },
  "008168d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
-  "frozen": "sub_8168D0",
-  "frozenSize": 75,
+  "frozen": "setglobal",
+  "frozenSize": 71,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 49,
-  "status": "stub"
+  "status": "ported"
  },
  "00816910": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
-  "frozen": "sub_816910",
-  "frozenSize": 75,
+  "frozen": "getglobal",
+  "frozenSize": 82,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 72,
-  "status": "stub"
+  "status": "ported"
  },
  "00816960": {
   "branchRatio": 0.154,
@@ -31265,7 +31265,7 @@
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
-  "frozen": "sub_816D80",
+  "frozen": "strconcat",
   "frozenSize": 35,
   "how": "annotated",
   "module": "XMLTree.cpp",
@@ -31363,26 +31363,26 @@
   ],
   "frozen": "seterrorhandler",
   "frozenSize": 100,
-  "how": "string",
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 91,
   "status": "ported"
  },
  "00817420": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "geterrorhandler",
-  "frozenSize": 75,
-  "how": "order",
+  "frozenSize": 31,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 33,
-  "status": "stub"
+  "status": "ported"
  },
  "00817450": {
   "branchRatio": 0.462,
@@ -31446,6 +31446,22 @@
   "how": "string",
   "module": "XMLTree.cpp",
   "refSize": 745,
+  "status": "ported"
+ },
+ "00817bf0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/LuaExtraFuncs.cpp",
+   "src/ui/luaextrafuncs.cpp"
+  ],
+  "frozen": "scrub",
+  "frozenSize": 127,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 115,
   "status": "ported"
  },
  "00817c70": {
@@ -33365,7 +33381,7 @@
   ],
   "frozen": "lua_getfield",
   "frozenSize": 105,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 98,
   "status": "ported"
@@ -33470,7 +33486,7 @@
   ],
   "frozen": "lua_setfield",
   "frozenSize": 109,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 101,
   "status": "ported"
