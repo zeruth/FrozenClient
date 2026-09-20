@@ -165554,7 +165554,7 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
 "line": 5
 },
@@ -165573,7 +165573,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 12,
+"lines": 11,
 "refs": [],
 "line": 9
 },
@@ -165592,9 +165592,29 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11,
+"lines": 10,
 "refs": [],
 "line": 21
+},
+"CSimpleRegion::AddAnimAlpha": {
+"files": [
+"src/ui/simple/csimpleregion.cpp"
+],
+"callseq": [
+"CImVector::CImVector",
+"CSimpleRegion::GetVertexColor",
+"CSimpleRegion::SetVertexColor"
+],
+"strings": [],
+"consts": [
+"0",
+"0xFF"
+],
+"branches": 2,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 45
 },
 "CSimpleRegion::Hide": {
 "files": [
@@ -165611,7 +165631,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 32
+"line": 62
 },
 "CSimpleRegion::HideThis": {
 "files": [
@@ -165628,9 +165648,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 12,
+"lines": 10,
 "refs": [],
-"line": 37
+"line": 67
 },
 "CSimpleRegion::IsShown": {
 "files": [
@@ -165643,9 +165663,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 48
+"line": 78
 },
 "CSimpleRegion::IsVisible": {
 "files": [
@@ -165658,9 +165678,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 52
+"line": 82
 },
 "CSimpleRegion::OnColorChanged": {
 "files": [
@@ -165678,9 +165698,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 53,
+"lines": 51,
 "refs": [],
-"line": 56
+"line": 86
 },
 "CSimpleRegion::OnRegionChanged": {
 "files": [
@@ -165693,9 +165713,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 5,
 "refs": [],
-"line": 108
+"line": 138
 },
 "CSimpleRegion::SetVertexColor": {
 "files": [
@@ -165716,7 +165736,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 114
+"line": 144
 },
 "CSimpleRegion::SetVertexGradient": {
 "files": [
@@ -165743,9 +165763,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 29,
+"lines": 33,
 "refs": [],
-"line": 150
+"line": 180
 },
 "CSimpleRegion::SetFrame": {
 "files": [
@@ -165771,9 +165791,9 @@
 ],
 "branches": 9,
 "stub": false,
-"lines": 47,
+"lines": 43,
 "refs": [],
-"line": 184
+"line": 214
 },
 "CSimpleRegion::Show": {
 "files": [
@@ -165790,7 +165810,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 228
+"line": 258
 },
 "CSimpleRegion::ShowThis": {
 "files": [
@@ -165807,9 +165827,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 5,
+"lines": 10,
 "refs": [],
-"line": 233
+"line": 263
 },
 "CSimpleRender::DrawBatch": {
 "files": [

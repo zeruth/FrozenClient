@@ -29,6 +29,36 @@ void CSimpleRegion::GetVertexColor(CImVector& color) const {
     }
 }
 
+// ref: FUN_00487ce0
+// Add a delta to the region's alpha, clamped to a byte, and write the colour back.
+//
+// CUMULATIVE, deliberately. It reads the colour that is there now rather than recomputing one from
+// the animation's progress, which is why an alpha animation has to take last frame's contribution
+// off before putting this frame's on -- see CSimpleAnim::OnUnapply. Getting that pair wrong makes
+// a region fade a little further every frame instead of breaking visibly.
+//
+// The source region is ignored, as it is in the reference: the contribution lands on whichever
+// region the animation's group points at, which is already this one.
+//
+// GetVertexColor supplies opaque white when no colour is set, matching the reference's own
+// fallback for a region whose colour count is not exactly one.
+void CSimpleRegion::AddAnimAlpha(CScriptRegion* source, int16_t delta) {
+    CImVector color;
+    this->GetVertexColor(color);
+
+    int32_t alpha = static_cast<int32_t>(color.a) + delta;
+
+    if (alpha > 0xFF) {
+        alpha = 0xFF;
+    } else if (alpha < 0) {
+        alpha = 0;
+    }
+
+    color.a = static_cast<uint8_t>(alpha);
+
+    this->SetVertexColor(color);
+}
+
 void CSimpleRegion::Hide() {
     this->m_shown = 0;
     this->HideThis();

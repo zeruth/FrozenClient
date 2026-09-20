@@ -254,7 +254,14 @@ Each stage should end in a committable increment; none of it should go in blind 
    contribution in `OnApply` and hands it to the region; `OnUnapply` takes it back off, and Scale
    overrides that because it composes multiplicatively.
 
-   **The region half is NOT started.** It is render-surface work and the part that must be seen on
+   **The region half is one quarter done.** `CSimpleRegion::AddAnimAlpha` (`FUN_00487ce0`) is
+   ported -- it was the one accumulator whose body could be read end to end and whose frozen
+   counterpart already existed, since `GetVertexColor` already returns opaque white for an unset
+   colour exactly as the reference's fallback does. Translation, rotation and scale are not:
+   `00481740` accumulates into a texture field whose frozen equivalent has not been identified, and
+   `00481770` and `004817a0` have not been read at all.
+
+   **The rest is NOT started.** It is render-surface work and the part that must be seen on
    screen. What was missing until now was the composition rule -- whether the region accumulates
    additively, multiplicatively, or by replacement. That is answered below.
 

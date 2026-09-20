@@ -2511,6 +2511,22 @@
   "refSize": 31,
   "status": "ported"
  },
+ "00487ce0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleRegion.cpp",
+   "src/ui/simple/csimpleregion.cpp"
+  ],
+  "frozen": "CSimpleRegion::AddAnimAlpha",
+  "frozenSize": 243,
+  "how": "annotated",
+  "module": "CSimpleRender.cpp",
+  "refSize": 134,
+  "status": "ported"
+ },
  "00487ed0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

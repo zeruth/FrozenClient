@@ -157,6 +157,7 @@ addr	how	frozen	evidence
 00487bf0	override	CSimpleRegion::Hide	
 00487c40	override	CSimpleRegion::Show	
 00487ca0	callgraph	CSimpleRegion::OnRegionChanged	only unmatched callee of 00481700=CSimpleTexture::SetShader
+00487ce0	annotated	CSimpleRegion::AddAnimAlpha	tag in src/ui/simple/CSimpleRegion.cpp
 00487ed0	callorder	CSimpleRegion::SetFrame	same slot between linked calls in 0096f920=CSimpleButton::SetStateTexture
 004883f0	annotated	CScriptRegion::LoadXML_Animations	tag in src/ui/CScriptRegion.cpp
 00488540	override	CScriptRegion::ProtectedFunctionsAllowed	

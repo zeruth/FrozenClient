@@ -23,6 +23,12 @@ class CSimpleRegion : public CScriptRegion {
         // Virtual member functions
         virtual ~CSimpleRegion();
         virtual void OnColorChanged(bool a2);
+
+        // ref: FUN_00487ce0
+        // An alpha animation's per-frame contribution. Lives here rather than on CScriptRegion
+        // because this is the class that owns the colour -- a texture's vtable reaches it by
+        // inheritance, which is how the reference arranges it too.
+        virtual void AddAnimAlpha(CScriptRegion* source, int16_t delta);
         virtual void OnScreenSizeChanged() {};
         virtual void Draw(CRenderBatch* batch) = 0;
 
