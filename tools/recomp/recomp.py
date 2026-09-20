@@ -1334,6 +1334,14 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
         r = refs[a]
         w = m.get(a)
         who = ('`%s` [%s]' % (w[0], w[1])) if w else ''
+
+        # An unmapped address can still have been looked at. Say so, or the queue keeps offering
+        # the same function to every cycle and each one re-derives why it cannot be linked yet.
+        if not who:
+            ov = overrides.get(a)
+
+            if ov and ov.get('note'):
+                who = 'examined -- see overrides.json'
         return '| %s | %s | %d | %d | %s | %s |' % (a, r['module'] + ('' if r['moduleSure'] else '?'), r['size'], r['callers'], who, ', '.join(s[:40] for s in r['strings'][:2]).replace('|', '\\|'))
 
     L.append('## Next to port: unmapped, on the world spine (by callers x size)')

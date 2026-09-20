@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 04:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 04:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,9 +8,9 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2962 (+1) (10.9%) | 626.9k (11.3%) |
-| &nbsp;&nbsp;ported | 2258 (-1) | 451.8k |
-| &nbsp;&nbsp;stub (unimplemented body) | 659 (+1) | 135.1k |
+| mapped to a frozen function | 2962 (=) (10.9%) | 626.9k (11.3%) |
+| &nbsp;&nbsp;ported | 2258 (=) | 451.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 659 (=) | 135.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1073 (=) (4.0%)** | **132.6k (2.4%)** |
 | unmapped | 24200 | 4.79M |
@@ -23,7 +23,7 @@ Match evidence: annotated 760, callgraph 177, callorder 131, cvar 32, handler 28
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-20 04:45 -- mapped 2961, ported 2259, stub 658, spine mapped 418.
+Previous run: 2026-09-20 04:54 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
 
 ## Lua API coverage (binding tables)
 
@@ -375,14 +375,14 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00509dd0 | ChatFrame.cpp | 4047 | 126 |  | !@#$%^&*, %d. %s |
 | 00808200 | Spell_C.cpp | 2446 | 98 |  | %s_PET, .\Spell_C.cpp |
 | 007385c0 | Unit_C.cpp | 4083 | 57 |  | .\Unit_C.cpp |
-| 0061fec0 | Tooltip.cpp | 756 | 204 |  | %sTextLeft%d, %sTextRight%d |
-| 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
+| 0061fec0 | Tooltip.cpp | 756 | 204 | examined -- see overrides.json | %sTextLeft%d, %sTextRight%d |
+| 0067ca30 | DBCache.cpp | 412 | 275 | examined -- see overrides.json | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
 | 0072a000 | Unit_C.cpp | 651 | 69 |  | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
-| 008d67d0 | fmod_systemi.cpp | 7647 | 4 |  | ..\..\src\fmod_systemi.cpp, TITLE |
+| 008d67d0 | fmod_systemi.cpp | 7647 | 4 | examined -- see overrides.json | ..\..\src\fmod_systemi.cpp, TITLE |
 | 00621070 | Tooltip.cpp | 5010 | 6 |  |  - %s, %s - %s |
 | 005fbbc0 | InputControl.cpp | 588 | 53 |  | .\InputControl.cpp |
 | 00729740 | Unit_C.cpp | 815 | 37 |  |  |
@@ -403,7 +403,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 004922f0 | CSimpleFrame.cpp | 951 | 18 |  |  |
 | 00603330 | InputControl.cpp? | 1379 | 12 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0080bc80 | Spell_C.cpp | 1723 | 9 |  | .\Spell_C.cpp |
-| 004102b2 | LoadingScreen.cpp? | 2420 | 6 |  | (null) |
+| 004102b2 | LoadingScreen.cpp? | 2420 | 6 | examined -- see overrides.json | (null) |
 | 00786e10 | SEvt.cpp? | 2403 | 6 |  |  |
 | 00859160 | lmemPool.cpp? | 5573 | 2 |  | 'for' initial value must be a number, 'for' limit must be a number |
 | 0095d110 | CDataAllocator.cpp | 156 | 106 |  | .\CDataAllocator.cpp |
@@ -426,9 +426,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00808200 | Spell_C.cpp | 2446 | 98 |  | %s_PET, .\Spell_C.cpp |
 | 007385c0 | Unit_C.cpp | 4083 | 57 |  | .\Unit_C.cpp |
 | 006918f0 | CGxDeviceD3d9Ex.cpp? | 1531 | 113 |  |  |
-| 0061fec0 | Tooltip.cpp | 756 | 204 |  | %sTextLeft%d, %sTextRight%d |
+| 0061fec0 | Tooltip.cpp | 756 | 204 | examined -- see overrides.json | %sTextLeft%d, %sTextRight%d |
 | 006238a0 | Tooltip.cpp | 6714 | 19 |  | %d-%d, %s (%d) |
-| 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
+| 0067ca30 | DBCache.cpp | 412 | 275 | examined -- see overrides.json | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
 | 00695fd0 | CGxDeviceD3d9Ex.cpp? | 24484 | 1 |  |  |
@@ -437,7 +437,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
 | 00546310 | SpellBookFrame.cpp? | 1486 | 25 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
-| 008d67d0 | fmod_systemi.cpp | 7647 | 4 |  | ..\..\src\fmod_systemi.cpp, TITLE |
+| 008d67d0 | fmod_systemi.cpp | 7647 | 4 | examined -- see overrides.json | ..\..\src\fmod_systemi.cpp, TITLE |
 | 00621070 | Tooltip.cpp | 5010 | 6 |  |  - %s, %s - %s |
 | 005fbbc0 | InputControl.cpp | 588 | 53 |  | .\InputControl.cpp |
 | 00729740 | Unit_C.cpp | 815 | 37 |  |  |
@@ -729,8 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 02:51 | 2917 (10.7%) | 1048 (3.9%) | 664 | 413/5531 | 2924/2964 | 1509 |
-| 2026-09-20 02:52 | 2916 (10.7%) | 1047 (3.9%) | 664 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:04 | 2925 (10.8%) | 1048 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:05 | 2926 (10.8%) | 1049 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:17 | 2927 (10.8%) | 1050 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
@@ -754,6 +752,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 04:39 | 2960 (10.9%) | 1072 (3.9%) | 658 | 417/5531 | 2924/2964 | 1504 |
 | 2026-09-20 04:45 | 2961 (10.9%) | 1073 (4.0%) | 658 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 04:48 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 04:54 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 04:55 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 
 ## How to move a row
 
