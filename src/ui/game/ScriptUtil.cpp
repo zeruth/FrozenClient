@@ -1,4 +1,6 @@
 #include "ui/game/ScriptUtil.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "ui/game/CGPartyInfo.hpp"
 #include "object/Client.hpp"
 #include "ui/game/CGGameUI.hpp"
 #include "object/client/NameCache.hpp"
@@ -110,7 +112,8 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
     if (playerName && !SStrCmpI(name, playerName, 0x7FFFFFFF)) {
         guid = activePlayer->GetGUID();
     } else {
-        // TODO raid%d / party%d / arena%d rosters (FUN_00512a80, FUN_00512a60, FUN_00608180)
+        // TODO raid%d / arena%d rosters (FUN_00512a80, FUN_00608180). party%d resolves now, but
+        // answers nothing until the party roster is populated -- see CGPartyInfo::GetMember.
         guid = 0;
     }
 
@@ -221,16 +224,24 @@ bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTar
     else if (!SStrCmpI(parseToken, "partypet", 8)) {
         parseToken += 8;
 
-        auto index = ParseIndex(parseToken);
-        // TODO
+        auto member = CGPartyInfo::GetMember(ParseIndex(parseToken));
+        auto object = member
+            ? ClntObjMgrObjectPtr(member, TYPE_UNIT, __FILE__, __LINE__)
+            : nullptr;
+
+        if (object) {
+            // Charm before summon, the same order the player's own "pet" token uses: a charmed
+            // creature displaces the real pet on the frame.
+            auto data = static_cast<CGUnit_C*>(object)->Unit();
+            guid = data->charm ? data->charm : data->summon;
+        }
     }
 
     // party1-4 - party member
     else if (!SStrCmpI(parseToken, "party", 5)) {
         parseToken += 5;
 
-        auto index = ParseIndex(parseToken);
-        // TODO
+        guid = CGPartyInfo::GetMember(ParseIndex(parseToken));
     }
 
     // raidpet1-40 - raid member's pet

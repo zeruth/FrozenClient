@@ -101644,6 +101644,23 @@
 "refs": [],
 "line": 550
 },
+"CGPartyInfo::GetMember": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 19
+},
 "CGPartyInfo::NumMembers": {
 "files": [
 "src/ui/game/cgpartyinfo.cpp"
@@ -101657,7 +101674,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 5
+"line": 27
 },
 "CGPetInfo::GetPet": {
 "files": [
@@ -141002,7 +141019,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 14
+"line": 16
 },
 "ParseTrailingTokens": {
 "files": [
@@ -141033,7 +141050,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 29
+"line": 31
 },
 "Script_GetUnitFromName": {
 "files": [
@@ -141051,7 +141068,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 73
+"line": 75
 },
 "Script_GetGUIDFromString": {
 "files": [
@@ -141089,9 +141106,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 53,
+"lines": 54,
 "refs": [],
-"line": 89
+"line": 91
 },
 "Script_GetTokenFromGUID": {
 "files": [
@@ -141121,7 +141138,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 144
+"line": 147
 },
 "Script_GetGUIDFromToken": {
 "files": [
@@ -141140,8 +141157,12 @@
 "CGGameUI::GetLockedTarget",
 "SStrCmpI",
 "ParseIndex",
+"CGPartyInfo::GetMember",
+"ClntObjMgrObjectPtr",
+"CGUnit::Unit",
 "SStrCmpI",
 "ParseIndex",
+"CGPartyInfo::GetMember",
 "SStrCmpI",
 "ParseIndex",
 "SStrCmpI",
@@ -141199,11 +141220,11 @@
 "8",
 "9"
 ],
-"branches": 27,
+"branches": 30,
 "stub": false,
-"lines": 175,
+"lines": 183,
 "refs": [],
-"line": 170
+"line": 173
 },
 "Script_CloseTrade": {
 "files": [
