@@ -18633,12 +18633,13 @@
   "status": "ported"
  },
  "0055d860": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.417,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.111,
   "files": [
-   "src/ui/game/CGUIBindings.cpp"
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
   ],
   "frozen": "CGUIBindings::ParseModifierFlags",
   "frozenSize": 185,
@@ -18696,12 +18697,13 @@
   "status": "ported"
  },
  "0055e180": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/ui/game/CGUIBindings.cpp"
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
   ],
   "frozen": "CGUIBindings::ParseBinding",
   "frozenSize": 236,
@@ -18775,12 +18777,13 @@
   "status": "ported"
  },
  "0055f4d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/ui/game/CGUIBindings.cpp"
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
   ],
   "frozen": "CGUIBindings::GetModifiedClick",
   "frozenSize": 206,
@@ -18790,12 +18793,13 @@
   "status": "ported"
  },
  "0055f940": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.074,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.182,
   "files": [
-   "src/ui/game/CGUIBindings.cpp"
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
   ],
   "frozen": "CGUIBindings::IsModifiedClick",
   "frozenSize": 297,
@@ -19125,12 +19129,13 @@
   "status": "stub"
  },
  "00564760": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.308,
   "files": [
-   "src/ui/game/CGUIBindings.cpp"
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
   ],
   "frozen": "CGUIBindings::LoadModifiedClicks",
   "frozenSize": 395,
@@ -23452,20 +23457,20 @@
   "status": "ported"
  },
  "0060cf20": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitIsPVPSanctuary",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 115,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 132,
-  "status": "stub"
+  "status": "ported"
  },
  "0060cfb0": {
   "branchRatio": 0.0,
@@ -24188,20 +24193,20 @@
   "status": "ported"
  },
  "0060f350": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitOnTaxi",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 147,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 126,
-  "status": "stub"
+  "status": "ported"
  },
  "0060f3d0": {
   "branchRatio": 0.5,

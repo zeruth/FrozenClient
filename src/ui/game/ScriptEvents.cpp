@@ -50,6 +50,9 @@ static_assert(offsetof(CGPlayerData, spellCritPercentage) == 0xdd0, "CGPlayerDat
 // read off the struct when those bindings landed and then taken on trust; asserting them is what
 // makes the reading durable. Each array's offset is also the previous one plus its own width,
 // which is the property that identified them in the first place.
+static_assert(offsetof(CGUnitData, flags) == 0xd4, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, dynamicFlags) == 0x124, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, pad3) == 0x1d0, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, attackRoundBaseTime) == 0xe0, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, minDamage) == 0x100, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, maxDamage) == 0x104, "CGUnitData layout");
@@ -348,8 +351,25 @@ int32_t Script_UnitIsPVP(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060cf20
+// Bit 3 of the SECOND byte of pad3, which is the unit's bytes-2 field -- the same dword that
+// carries the sheath state and shapeshift form. The reference reads it as a byte at +0x1d1, so
+// the shift is part of the field's meaning rather than an encoding detail.
+//
+// No usage check, unlike its neighbours: the reference goes straight to lua_tostring, so a
+// non-string argument simply fails to resolve and answers nil.
 int32_t Script_UnitIsPVPSanctuary(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto token = lua_tostring(L, 1);
+    auto unit = token ? Script_GetUnitFromName(token) : nullptr;
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && ((data->pad3 >> 8) & 0x8)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitIsPVPFreeForAll(lua_State* L) {
@@ -875,13 +895,37 @@ int32_t Script_UnitPowerType(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_0060f350
+// Bit 20 of the unit flags. 1 or nil, never false.
 int32_t Script_UnitOnTaxi(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitOnTaxi(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data && (data->flags & 0x00100000)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 // TODO FUN_0060f3d0 tests bit 5 of a dword at +0x124 of whatever the unit keeps at +0xd0.
 // That is not the descriptor: the same +0xd0 holds a power-type byte at +0x47, which no
 // CGUnitData offset matches. Identify that member before reading flags out of it.
+// Not ported, and the missing piece is not the flag. The flag is dynamicFlags bit 5, which frozen
+// has -- but the reference only reports feign death for a unit that is in your PARTY OR RAID
+// (FUN_00512a30, a party lookup falling through to a raid lookup). CGPartyInfo keeps its member
+// guids, CGRaidInfo keeps only a count, so raid membership cannot be answered.
+//
+// Implementing the party half alone would report false for every raid member, and a hunter
+// feigning in a raid is exactly the case this exists for -- a worse answer than none.
 int32_t Script_UnitIsFeignDeath(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
