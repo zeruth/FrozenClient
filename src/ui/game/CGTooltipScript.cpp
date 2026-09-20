@@ -1130,6 +1130,13 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
 // Not ported, and each one is a line an item can legitimately want: item level, bind and unique
 // lines, the stat block, resistances, sockets and their bonus, set bonuses, spell triggers,
 // requirements (level, skill, reputation), and the sell price.
+// The record's delay is in milliseconds; every line that shows a speed shows seconds
+// (_DAT_009e1134 in the reference).
+static const float DELAY_TO_SECONDS = 0.001f;
+
+// Item class 2. The speed and damage-per-second lines are gated on it.
+static const int32_t ITEM_CLASS_WEAPON = 2;
+
 void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability) {
     TooltipClear(tooltip);
 
@@ -1165,22 +1172,34 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
 
         TooltipSetLine(tooltip, line, false, text);
 
-        char speed[64];
-        SStrPrintf(speed, sizeof(speed), "%s %.2f",
-                   FrameScript_GetText("SPEED", -1, GENDER_NOT_APPLICABLE), info->delay / 1000.0f);
-        TooltipSetLine(tooltip, line++, true, speed);
-
-        // Damage per second across the whole band, not just the first entry the line above shows.
-        float total = 0.0f;
-
-        for (int32_t i = 0; i < ItemInfo::MAX_DAMAGES; i++) {
-            total += info->damageMin[i] + info->damageMax[i];
+        // Speed and damage-per-second are WEAPON lines, not damage lines: the reference gates both
+        // on itemClass == 2. A thrown potion or a wand-less caster offhand can carry a damage band
+        // without being a weapon, and showing it a speed would be wrong.
+        if (info->itemClass == ITEM_CLASS_WEAPON) {
+            char speed[64];
+            SStrPrintf(speed, sizeof(speed), "%s %.2f",
+                       FrameScript_GetText("SPEED", -1, GENDER_NOT_APPLICABLE),
+                       info->delay * DELAY_TO_SECONDS);
+            TooltipSetLine(tooltip, line, true, speed);
         }
 
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("DPS_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
-                   (total * 0.5f) / (info->delay / 1000.0f));
-        TooltipSetLine(tooltip, line++, false, text);
+        line++;
+
+        if (info->itemClass == ITEM_CLASS_WEAPON) {
+            // The reference accumulates (min + max) * 0.5 across every damage band and divides the
+            // total by the speed, so a weapon with a second band counts both -- not just the one
+            // the line above prints.
+            float total = 0.0f;
+
+            for (int32_t i = 0; i < ItemInfo::MAX_DAMAGES; i++) {
+                total += (info->damageMin[i] + info->damageMax[i]) * 0.5f;
+            }
+
+            SStrPrintf(text, sizeof(text),
+                       FrameScript_GetText("DPS_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
+                       total / (info->delay * DELAY_TO_SECONDS));
+            TooltipSetLine(tooltip, line++, false, text);
+        }
     }
 
     if (info->armor) {
@@ -1247,7 +1266,13 @@ int32_t CGTooltip_SetInventoryItem(lua_State* L) {
         return 0;
     }
 
-    TooltipSetItemInfo(tooltip, info, 0, 0);
+    // Durability is per-item, not per-record: an identical sword at half health shows a different
+    // line to a fresh one, so it comes off the object rather than the cache.
+    auto data = item->Item();
+
+    TooltipSetItemInfo(tooltip, info,
+                       data ? data->durability : 0,
+                       data ? data->maxDurability : 0);
 
     lua_pushboolean(L, 1);
     lua_pushboolean(L, 0); // hasCooldown: item cooldowns are not tracked yet
