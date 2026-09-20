@@ -21,6 +21,7 @@
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include "ui/game/CGUIBindings.hpp"
 #include "ui/game/MiscScript.hpp"
 #include "ui/game/MiscScriptStubs.hpp"
 #include "ui/game/CharacterInfoScript.hpp"
@@ -260,7 +261,9 @@ void CGGameUI::Initialize() {
 
     FrameXML_SetProgressCallback(nullptr, nullptr, 0);
 
-    // TODO CGUIBindings::s_bindings->Load("Interface\\FrameXML\\Bindings.xml", &md5, &status);
+    // Only the <ModifiedClick> half of Bindings.xml. The <Binding> elements need the binding
+    // manager, which is not ported, so key bindings stay unloaded and GetBinding stays a stub.
+    CGUIBindings::LoadModifiedClicks("Interface\\FrameXML\\Bindings.xml", &status);
 
     uint8_t digest2[16];
     MD5Final(digest2, &md5);

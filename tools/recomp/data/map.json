@@ -1190,6 +1190,22 @@
   "refSize": 145,
   "status": "diverged"
  },
+ "00424b10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/FrameXML.cpp",
+   "src/ui/framexml.cpp"
+  ],
+  "frozen": "FrameXML_SetProgressCallback",
+  "frozenSize": 32,
+  "how": "callorder",
+  "module": "OggDecompress.cpp",
+  "refSize": 49,
+  "status": "ported"
+ },
  "00424b50": {
   "branchRatio": 0.235,
   "constOverlap": 0.0,
@@ -15683,13 +15699,13 @@
   "branchRatio": 0.261,
   "constOverlap": 0.049,
   "faithful": false,
-  "fidelity": 0.186,
+  "fidelity": 0.22,
   "files": [
    "src/ui/game/CGGameUI.cpp",
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 875,
+  "frozenSize": 892,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 1267,
@@ -18550,6 +18566,21 @@
   "refSize": 75,
   "status": "ported"
  },
+ "0055d860": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/ui/game/CGUIBindings.cpp"
+  ],
+  "frozen": "CGUIBindings::ParseModifierFlags",
+  "frozenSize": 185,
+  "how": "annotated",
+  "module": "LFGInfo.cpp",
+  "refSize": 302,
+  "status": "ported"
+ },
  "0055dc00": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -18583,20 +18614,51 @@
   "status": "stub"
  },
  "0055dc60": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetNumModifiedClickActions",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 33,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 36,
-  "status": "stub"
+  "status": "ported"
+ },
+ "0055e180": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/CGUIBindings.cpp"
+  ],
+  "frozen": "CGUIBindings::ParseBinding",
+  "frozenSize": 236,
+  "how": "string",
+  "module": "LFGInfo.cpp",
+  "refSize": 173,
+  "status": "ported"
+ },
+ "0055e870": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/string/RCString.cpp",
+   "lib/common/common/string/rcstring.cpp"
+  ],
+  "frozen": "RCString::GetString",
+  "frozenSize": 5,
+  "how": "callgraph",
+  "module": "LFGInfo.cpp",
+  "refSize": 89,
+  "status": "ported"
  },
  "0055e8d0": {
   "branchRatio": 0.4,
@@ -18634,17 +18696,47 @@
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetModifiedClickAction",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 131,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 94,
-  "status": "stub"
+  "status": "ported"
+ },
+ "0055f4d0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/CGUIBindings.cpp"
+  ],
+  "frozen": "CGUIBindings::GetModifiedClick",
+  "frozenSize": 206,
+  "how": "callorder",
+  "module": "LFGInfo.cpp",
+  "refSize": 140,
+  "status": "ported"
+ },
+ "0055f940": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.182,
+  "files": [
+   "src/ui/game/CGUIBindings.cpp"
+  ],
+  "frozen": "CGUIBindings::IsModifiedClick",
+  "frozenSize": 297,
+  "how": "annotated",
+  "module": "LFGInfo.cpp",
+  "refSize": 392,
+  "status": "ported"
  },
  "0055fad0": {
   "branchRatio": 0.667,
@@ -18663,33 +18755,33 @@
   "status": "stub"
  },
  "0055fb90": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_SetModifiedClick",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 222,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 143,
-  "status": "stub"
+  "status": "ported"
  },
  "0055fc20": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetModifiedClick",
-  "frozenSize": 19,
-  "how": "table",
+  "frozenSize": 127,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 153,
   "status": "ported"
@@ -18697,18 +18789,18 @@
  "0055fcc0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_IsModifiedClick",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 89,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 83,
-  "status": "stub"
+  "status": "ported"
  },
  "00560560": {
   "branchRatio": 0.5,
@@ -18967,16 +19059,15 @@
   "status": "stub"
  },
  "00564760": {
-  "branchRatio": 0.286,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.154,
+  "fidelity": 0.308,
   "files": [
-   "src/ui/FrameXML.cpp",
-   "src/ui/framexml.cpp"
+   "src/ui/game/CGUIBindings.cpp"
   ],
-  "frozen": "FrameXML_LoadXML",
-  "frozenSize": 0,
+  "frozen": "CGUIBindings::LoadModifiedClicks",
+  "frozenSize": 395,
   "how": "string",
   "module": "UIBindings.cpp",
   "refSize": 320,
@@ -30491,6 +30582,22 @@
   "refSize": 368,
   "status": "ported"
  },
+ "00812530": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/FrameXML.cpp",
+   "src/ui/framexml.cpp"
+  ],
+  "frozen": "FrameXML_LoadXML",
+  "frozenSize": 204,
+  "how": "string",
+  "module": "Spell_C.cpp",
+  "refSize": 144,
+  "status": "ported"
+ },
  "00812ce0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -30575,7 +30682,7 @@
   "branchRatio": 0.686,
   "constOverlap": 0.19,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.738,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"

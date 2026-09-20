@@ -74,6 +74,7 @@ addr	how	frozen	evidence
 00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
+00424b10	callorder	FrameXML_SetProgressCallback	same slot between linked calls in 0052a980=CGGameUI::Initialize
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
@@ -515,7 +516,7 @@ addr	how	frozen	evidence
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
-004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was callgraph
+004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was sticky
 004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
 004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
 004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
@@ -1070,11 +1071,11 @@ addr	how	frozen	evidence
 0053c0b0	table	Script_ReturnZero	binding "GetNumShapeshiftForms" in s_ScriptFunctions ~ table 00accce0
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
-0053dc20	sticky	SpellIconPath	held from the previous run, where it was callgraph
+0053dc20	sticky	SpellIconPath	held from the previous run, where it was sticky
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
 0053e2c0	table	Script_ReturnNothing	binding "GetCompanionInfo" in s_ScriptFunctions ~ table 00accce0
 0053e490	order	Script_Stub_GetCompanionCooldown	binding table name Script_Stub_GetCompanionCooldown, in definition order in src/ui/game/miscscriptstubs.cpp
-00540670	sticky	SpellAtSlot	held from the previous run, where it was callgraph
+00540670	sticky	SpellAtSlot	held from the previous run, where it was sticky
 005407f0	table	Script_GetSpellName	binding "GetSpellName" in s_ScriptFunctions ~ table 00accce0
 005408e0	table	Script_GetSpellLink	binding "GetSpellLink" in s_ScriptFunctions ~ table 00accce0
 00540a30	table	Script_GetSpellInfo	binding "GetSpellInfo" in s_ScriptFunctions ~ table 00accce0
@@ -1163,16 +1164,21 @@ addr	how	frozen	evidence
 00557f70	order	Script_Stub_GetLFGCompletionRewardItem	binding table name Script_Stub_GetLFGCompletionRewardItem, in definition order in src/ui/game/miscscriptstubs.cpp
 00558060	order	Script_Stub_GetLFGRandomCooldownExpiration	binding table name Script_Stub_GetLFGRandomCooldownExpiration, in definition order in src/ui/game/miscscriptstubs.cpp
 00559ff0	order	Script_Stub_GetLastQueueStatusIndex	binding table name Script_Stub_GetLastQueueStatusIndex, in definition order in src/ui/game/miscscriptstubs.cpp
+0055d860	annotated	CGUIBindings::ParseModifierFlags	tag in src/ui/game/CGUIBindings.cpp
 0055dc00	table	Script_GetNumBindings	binding "GetNumBindings" in s_ScriptFunctions ~ table 00acde38
 0055dc30	table	Script_GetCurrentBindingSet	binding "GetCurrentBindingSet" in s_ScriptFunctions ~ table 00acde38
-0055dc60	table	Script_GetNumModifiedClickActions	binding "GetNumModifiedClickActions" in s_ScriptFunctions ~ table 00acde38
+0055dc60	annotated	Script_GetNumModifiedClickActions	tag in src/ui/game/UIBindingsScript.cpp
+0055e180	string	CGUIBindings::ParseBinding	unique "BUTTON"
+0055e870	callgraph	RCString::GetString	only unmatched callee of 0055ea70=Script_GetModifiedClickAction
 0055e8d0	table	Script_GetBinding	binding "GetBinding" in s_ScriptFunctions ~ table 00acde38
 0055e9b0	table	Script_GetBindingKey	binding "GetBindingKey" in s_ScriptFunctions ~ table 00acde38
-0055ea70	table	Script_GetModifiedClickAction	binding "GetModifiedClickAction" in s_ScriptFunctions ~ table 00acde38
+0055ea70	annotated	Script_GetModifiedClickAction	tag in src/ui/game/UIBindingsScript.cpp
+0055f4d0	callorder	CGUIBindings::GetModifiedClick	same slot between linked calls in 0055fb90=Script_SetModifiedClick
+0055f940	annotated	CGUIBindings::IsModifiedClick	tag in src/ui/game/CGUIBindings.cpp
 0055fad0	table	Script_RunBinding	binding "RunBinding" in s_ScriptFunctions ~ table 00acde38
-0055fb90	table	Script_SetModifiedClick	binding "SetModifiedClick" in s_ScriptFunctions ~ table 00acde38
-0055fc20	table	Script_GetModifiedClick	binding "GetModifiedClick" in s_ScriptFunctions ~ table 00acde38
-0055fcc0	table	Script_IsModifiedClick	binding "IsModifiedClick" in s_ScriptFunctions ~ table 00acde38
+0055fb90	annotated	Script_SetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
+0055fc20	annotated	Script_GetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
+0055fcc0	annotated	Script_IsModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 00560560	table	Script_ClearOverrideBindings	binding "ClearOverrideBindings" in s_ScriptFunctions ~ table 00acde38
 00562550	table	Script_GetBindingAction	binding "GetBindingAction" in s_ScriptFunctions ~ table 00acde38
 005625f0	table	Script_GetBindingByKey	binding "GetBindingByKey" in s_ScriptFunctions ~ table 00acde38
@@ -1189,7 +1195,7 @@ addr	how	frozen	evidence
 00564070	table	Script_LoadBindings	binding "LoadBindings" in s_ScriptFunctions ~ table 00acde38
 005640c0	table	Script_SaveBindings	binding "SaveBindings" in s_ScriptFunctions ~ table 00acde38
 00564130	table	Script_GetClickFrame	binding "GetClickFrame" in s_ScriptFunctions ~ table 00acde38
-00564760	string	FrameXML_LoadXML	score 0.67 shared Couldn't open %s; Couldn't parse XML in %s
+00564760	string	CGUIBindings::LoadModifiedClicks	unique "ModifiedClick"
 00564e90	order	Script_Stub_GetMacroIconInfo	binding table name Script_Stub_GetMacroIconInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00565030	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete	same slot between linked calls in 007689e0=ConsoleCommandUnregister
 005666a0	order	Script_Stub_GetMacroIndexByName	binding table name Script_Stub_GetMacroIndexByName, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1815,7 +1821,7 @@ addr	how	frozen	evidence
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	
 0076e760	override	SStrCmp	
-0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
+0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0055d860=CGUIBindings::ParseModifierFlags
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
 0076eea0	annotated	SStrLenUTF8	tag in lib/squall/storm/String.cpp
@@ -1912,6 +1918,7 @@ addr	how	frozen	evidence
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides
 0080fee0	handler	ReceiveSpellStart	SetMessageHandler(SMSG_SPELL_START) on both sides
+00812530	string	FrameXML_LoadXML	score 0.67 shared Couldn't open %s; Couldn't parse XML in %s
 00812ce0	override	FrameXML_AcquireHashNode	
 00812d20	callorder	FrameXML_ReleaseHashNode	same slot between linked calls in 0048f400=CSimpleFrame::PostLoadXML_Frames
 00812fa0	string	FrameXML_CreateFrame	unique "-- Creating %s named %s"

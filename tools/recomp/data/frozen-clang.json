@@ -99495,7 +99495,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 56
+"line": 57
 },
 "CGGameUI::EnterWorld": {
 "files": [
@@ -99521,7 +99521,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 104
+"line": 105
 },
 "CGGameUI::GetCurrentObjectTrack": {
 "files": [
@@ -99534,7 +99534,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 154
 },
 "CGGameUI::CursorHasItem": {
 "files": [
@@ -99547,7 +99547,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 157
+"line": 158
 },
 "CGGameUI::GetCursorKind": {
 "files": [
@@ -99560,7 +99560,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 162
+"line": 163
 },
 "CGGameUI::GetCursorMoney": {
 "files": [
@@ -99573,7 +99573,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 166
+"line": 167
 },
 "CGGameUI::GetLockedTarget": {
 "files": [
@@ -99586,7 +99586,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 170
+"line": 171
 },
 "GameUILoadProgress": {
 "files": [
@@ -99601,7 +99601,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 174
+"line": 175
 },
 "CGGameUI::Initialize": {
 "files": [
@@ -99633,6 +99633,7 @@
 "FrameXML_FreeHashNodes",
 "FrameXML_CreateFrames",
 "FrameXML_SetProgressCallback",
+"CGUIBindings::LoadModifiedClicks",
 "MD5Final",
 "CGTooltip::GetObjectType",
 "CScriptObject::GetScriptObjectByName",
@@ -99661,9 +99662,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 105,
+"lines": 107,
 "refs": [],
-"line": 178
+"line": 179
 },
 "CGGameUI::InitializeGame": {
 "files": [
@@ -99678,7 +99679,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 284
+"line": 287
 },
 "CGGameUI::IsLoggingIn": {
 "files": [
@@ -99691,7 +99692,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 292
+"line": 295
 },
 "CGGameUI::IsInWorld": {
 "files": [
@@ -99704,7 +99705,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 296
+"line": 299
 },
 "CGGameUI::IsRaidMember": {
 "files": [
@@ -99717,7 +99718,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 300
+"line": 303
 },
 "CGGameUI::IsRaidMemberOrPet": {
 "files": [
@@ -99730,7 +99731,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 306
+"line": 309
 },
 "CGGameUI::RegisterFrameFactories": {
 "files": [
@@ -99761,7 +99762,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 312
+"line": 315
 },
 "CGGameUI::RegisterGameCVars": {
 "files": [
@@ -100461,7 +100462,7 @@
 "stub": false,
 "lines": 261,
 "refs": [],
-"line": 323
+"line": 326
 },
 "CGGameUI::DisplayError": {
 "files": [
@@ -140869,7 +140870,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 8
+"line": 9
 },
 "Script_GetBinding": {
 "files": [
@@ -140891,7 +140892,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 12
+"line": 13
 },
 "Script_SetBinding": {
 "files": [
@@ -140913,7 +140914,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 16
+"line": 17
 },
 "Script_SetBindingSpell": {
 "files": [
@@ -140935,7 +140936,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 20
+"line": 21
 },
 "Script_SetBindingItem": {
 "files": [
@@ -140957,7 +140958,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 24
+"line": 25
 },
 "Script_SetBindingMacro": {
 "files": [
@@ -140979,7 +140980,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 28
+"line": 29
 },
 "Script_SetBindingClick": {
 "files": [
@@ -141001,7 +141002,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 32
+"line": 33
 },
 "Script_SetOverrideBinding": {
 "files": [
@@ -141023,7 +141024,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 36
+"line": 37
 },
 "Script_SetOverrideBindingSpell": {
 "files": [
@@ -141045,7 +141046,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 40
+"line": 41
 },
 "Script_SetOverrideBindingItem": {
 "files": [
@@ -141067,7 +141068,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 44
+"line": 45
 },
 "Script_SetOverrideBindingMacro": {
 "files": [
@@ -141089,7 +141090,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 48
+"line": 49
 },
 "Script_SetOverrideBindingClick": {
 "files": [
@@ -141111,7 +141112,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 52
+"line": 53
 },
 "Script_ClearOverrideBindings": {
 "files": [
@@ -141133,7 +141134,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 56
+"line": 57
 },
 "Script_GetBindingKey": {
 "files": [
@@ -141148,7 +141149,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 60
+"line": 61
 },
 "Script_GetBindingAction": {
 "files": [
@@ -141170,7 +141171,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 65
+"line": 66
 },
 "Script_GetBindingByKey": {
 "files": [
@@ -141192,7 +141193,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 69
+"line": 70
 },
 "Script_RunBinding": {
 "files": [
@@ -141214,7 +141215,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 73
+"line": 74
 },
 "Script_GetCurrentBindingSet": {
 "files": [
@@ -141236,7 +141237,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 77
+"line": 78
 },
 "Script_LoadBindings": {
 "files": [
@@ -141258,7 +141259,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 81
+"line": 82
 },
 "Script_SaveBindings": {
 "files": [
@@ -141280,80 +141281,15 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 85
+"line": 86
 },
 "Script_GetNumModifiedClickActions": {
 "files": [
 "src/ui/game/uibindingsscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
-],
-"strings": [
-"(anonymous namespace)::Script_GetNumModifiedClickActions",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\uibindingsscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
-"refs": [],
-"line": 89
-},
-"Script_GetModifiedClickAction": {
-"files": [
-"src/ui/game/uibindingsscript.cpp"
-],
-"callseq": [
-"__acrt_iob_func",
-"fprintf"
-],
-"strings": [
-"(anonymous namespace)::Script_GetModifiedClickAction",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\uibindingsscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
-"refs": [],
-"line": 93
-},
-"Script_SetModifiedClick": {
-"files": [
-"src/ui/game/uibindingsscript.cpp"
-],
-"callseq": [
-"__acrt_iob_func",
-"fprintf"
-],
-"strings": [
-"(anonymous namespace)::Script_SetModifiedClick",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\uibindingsscript.cpp"
-],
-"consts": [
-"0"
-],
-"branches": 2,
-"stub": true,
-"lines": 3,
-"refs": [],
-"line": 97
-},
-"Script_GetModifiedClick": {
-"files": [
-"src/ui/game/uibindingsscript.cpp"
-],
-"callseq": [
-"lua_pushnil"
+"TSBaseArray<MODIFIED_CLICK>::Count",
+"lua_pushnumber"
 ],
 "strings": [],
 "consts": [
@@ -141363,29 +141299,111 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 101
+"line": 91
+},
+"Script_GetModifiedClickAction": {
+"files": [
+"src/ui/game/uibindingsscript.cpp"
+],
+"callseq": [
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"TSBaseArray<MODIFIED_CLICK>::Count",
+"lua_pushnil",
+"TSBaseArray<MODIFIED_CLICK>::operator[]",
+"RCString::GetString",
+"lua_pushstring"
+],
+"strings": [
+"Usage: GetModifiedClickAction(index)"
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 103
+},
+"Script_SetModifiedClick": {
+"files": [
+"src/ui/game/uibindingsscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"luaL_error",
+"lua_tolstring",
+"lua_tolstring",
+"CGUIBindings::GetModifiedClick",
+"CGUIBindings::ParseBinding",
+"RCString::Copy",
+"luaL_error"
+],
+"strings": [
+"SetModifiedClick(): Unknown action (%s) or binding (%s)",
+"Usage: SetModifiedClick(\"action\", \"binding\")"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 3,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 124
+},
+"Script_GetModifiedClick": {
+"files": [
+"src/ui/game/uibindingsscript.cpp"
+],
+"callseq": [
+"lua_isstring",
+"luaL_error",
+"lua_tolstring",
+"CGUIBindings::GetModifiedClick",
+"lua_pushnil",
+"RCString::GetString",
+"lua_pushstring"
+],
+"strings": [
+"Usage: GetModifiedClick(\"action\")"
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 154
 },
 "Script_IsModifiedClick": {
 "files": [
 "src/ui/game/uibindingsscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_tolstring",
+"CGUIBindings::IsModifiedClick",
+"CGUIBindings::AnyModifierHeld",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"(anonymous namespace)::Script_IsModifiedClick",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\uibindingsscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 17,
 "refs": [],
-"line": 107
+"line": 178
 },
 "Script_GetClickFrame": {
 "files": [
@@ -141407,7 +141425,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 111
+"line": 196
 },
 "UIBindingsRegisterScriptFunctions": {
 "files": [
@@ -141422,7 +141440,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 146
+"line": 231
 },
 "CInputControl::CInputControl": {
 "files": [
