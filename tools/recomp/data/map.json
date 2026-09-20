@@ -10614,18 +10614,18 @@
  "004e19a0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
   ],
   "frozen": "Script_GetClassesForRace",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 316,
+  "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 185,
-  "status": "stub"
+  "status": "ported"
  },
  "004e1a60": {
   "branchRatio": 1.0,

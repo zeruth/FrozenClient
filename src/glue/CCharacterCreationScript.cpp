@@ -178,8 +178,40 @@ int32_t Script_GetAvailableClasses(lua_State* L) {
     return g_chrClassesDB.GetNumRecords() * 3;
 }
 
+// ref: FUN_004e19a0
+// The same three values per class as GetAvailableClasses above, over the classes the SELECTED RACE
+// allows rather than every class in the DBC. CalcClasses fills that list.
+//
+// The third value is not the class id, which is what it looks like from the decompilation alone --
+// it is whether the account's expansion reaches the class's m_requiredExpansion, so the creation
+// screen can grey out a death knight on a vanilla account. Read out of the instruction bytes
+// (setge on m_requiredExpansion at record offset 0x2c) and then confirmed against the sibling
+// above, which already had it right.
 int32_t Script_GetClassesForRace(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    for (uint32_t i = 0; i < CCharacterCreation::s_classes.Count(); i++) {
+        auto classRec = CCharacterCreation::s_classes[i];
+
+        auto displayName = CGUnit_C::GetDisplayClassNameFromRecord(
+            classRec,
+            static_cast<UNIT_SEX>(CCharacterCreation::s_character->m_data.sexID),
+            nullptr
+        );
+
+        if (displayName) {
+            int32_t accountExpansion = ClientServices::Connection()->m_accountExpansion;
+            int32_t requiredExpansion = classRec->m_requiredExpansion;
+
+            lua_pushstring(L, displayName);
+            lua_pushstring(L, classRec->m_filename);
+            lua_pushnumber(L, accountExpansion >= requiredExpansion);
+        } else {
+            lua_pushnil(L);
+            lua_pushnil(L);
+            lua_pushnil(L);
+        }
+    }
+
+    return CCharacterCreation::s_classes.Count() * 3;
 }
 
 int32_t Script_GetHairCustomization(lua_State* L) {

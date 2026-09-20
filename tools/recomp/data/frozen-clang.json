@@ -55497,22 +55497,28 @@
 "src/glue/ccharactercreationscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"TSBaseArray<ChrClassesRec const *>::Count",
+"TSBaseArray<ChrClassesRec const *>::operator[]",
+"CGUnit_C::GetDisplayClassNameFromRecord",
+"ClientServices::Connection",
+"lua_pushstring",
+"lua_pushstring",
+"lua_pushnumber",
+"lua_pushnil",
+"lua_pushnil",
+"lua_pushnil",
+"TSBaseArray<ChrClassesRec const *>::Count"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"Script_GetClassesForRace",
-"c:\\users\\tyler\\runicworld-client\\src\\glue\\ccharactercreationscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"3"
 ],
 "branches": 2,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 26,
 "refs": [],
-"line": 181
+"line": 190
 },
 "Script_GetHairCustomization": {
 "files": [
@@ -55536,7 +55542,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 185
+"line": 217
 },
 "Script_GetFacialHairCustomization": {
 "files": [
@@ -55560,7 +55566,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 199
+"line": 231
 },
 "Script_GetSelectedRace": {
 "files": [
@@ -55577,7 +55583,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 213
+"line": 245
 },
 "Script_GetSelectedSex": {
 "files": [
@@ -55594,7 +55600,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 219
+"line": 251
 },
 "Script_GetSelectedClass": {
 "files": [
@@ -55623,7 +55629,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 225
+"line": 257
 },
 "Script_SetSelectedRace": {
 "files": [
@@ -55646,7 +55652,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 261
+"line": 293
 },
 "Script_SetSelectedSex": {
 "files": [
@@ -55669,7 +55675,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 274
+"line": 306
 },
 "Script_SetSelectedClass": {
 "files": [
@@ -55694,7 +55700,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 291
+"line": 323
 },
 "Script_UpdateCustomizationBackground": {
 "files": [
@@ -55711,7 +55717,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 306
+"line": 338
 },
 "Script_UpdateCustomizationScene": {
 "files": [
@@ -55728,7 +55734,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 312
+"line": 344
 },
 "Script_CycleCharCustomization": {
 "files": [
@@ -55754,7 +55760,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 318
+"line": 350
 },
 "Script_RandomizeCharCustomization": {
 "files": [
@@ -55771,7 +55777,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 332
+"line": 364
 },
 "Script_GetCharacterCreateFacing": {
 "files": [
@@ -55789,7 +55795,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 338
+"line": 370
 },
 "Script_SetCharacterCreateFacing": {
 "files": [
@@ -55813,7 +55819,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 344
+"line": 376
 },
 "Script_GetRandomName": {
 "files": [
@@ -55836,7 +55842,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 357
+"line": 389
 },
 "Script_CreateCharacter": {
 "files": [
@@ -55856,7 +55862,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 377
+"line": 409
 },
 "Script_CustomizeExistingCharacter": {
 "files": [
@@ -55878,7 +55884,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 385
+"line": 417
 },
 "Script_PaidChange_GetPreviousRaceIndex": {
 "files": [
@@ -55900,7 +55906,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 389
+"line": 421
 },
 "Script_PaidChange_GetCurrentRaceIndex": {
 "files": [
@@ -55922,7 +55928,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 393
+"line": 425
 },
 "Script_PaidChange_GetCurrentClassIndex": {
 "files": [
@@ -55944,7 +55950,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 397
+"line": 429
 },
 "Script_PaidChange_GetName": {
 "files": [
@@ -55966,7 +55972,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 401
+"line": 433
 },
 "Script_IsRaceClassValid": {
 "files": [
@@ -55998,7 +56004,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 405
+"line": 437
 },
 "Script_IsRaceClassRestricted": {
 "files": [
@@ -56020,7 +56026,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 432
+"line": 464
 },
 "Script_GetCreateBackgroundModel": {
 "files": [
@@ -56051,7 +56057,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 436
+"line": 468
 },
 "CharacterCreateRegisterScriptFunctions": {
 "files": [
@@ -56068,7 +56074,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 510
+"line": 542
 },
 "CCharacterSelection::ClearCharacterList": {
 "files": [

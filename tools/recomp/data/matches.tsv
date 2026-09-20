@@ -663,7 +663,7 @@ addr	how	frozen	evidence
 004e0dd0	table	Script_GetCreateBackgroundModel	binding "GetCreateBackgroundModel" in s_ScriptFunctions ~ table 00ac4228
 004e1540	callgraph	CCharacterCreation::SetSelectedSex	only unmatched callee of 004e1a60=Script_SetSelectedSex
 004e1880	table	Script_GetAvailableRaces	binding "GetAvailableRaces" in s_ScriptFunctions ~ table 00ac4228
-004e19a0	table	Script_GetClassesForRace	binding "GetClassesForRace" in s_ScriptFunctions ~ table 00ac4228
+004e19a0	annotated	Script_GetClassesForRace	tag in src/glue/CCharacterCreationScript.cpp
 004e1a60	table	Script_SetSelectedSex	binding "SetSelectedSex" in s_ScriptFunctions ~ table 00ac4228
 004e1ac0	table	Script_SetSelectedClass	binding "SetSelectedClass" in s_ScriptFunctions ~ table 00ac4228
 004e1b70	table	Script_PaidChange_GetName	binding "PaidChange_GetName" in s_ScriptFunctions ~ table 00ac4228

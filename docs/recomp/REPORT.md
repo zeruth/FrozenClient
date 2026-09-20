@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 22:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2726 (+1) (10.0%) | 577.3k (10.4%) |
-| &nbsp;&nbsp;ported | 2183 (+2) | 429.4k |
-| &nbsp;&nbsp;stub (unimplemented body) | 504 (-1) | 108.6k |
+| mapped to a frozen function | 2726 (=) (10.0%) | 577.3k (10.4%) |
+| &nbsp;&nbsp;ported | 2184 (+1) | 429.6k |
+| &nbsp;&nbsp;stub (unimplemented body) | 503 (-1) | 108.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1012 (+1) (3.7%)** | **125.2k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1013 (+1) (3.7%)** | **125.4k (2.3%)** |
 | unmapped | 24436 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 407 (+1) (7.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (+1) (7.1%) | |
+| world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11525, stubs 762 | |
+| frozen functions (src/, from PDB + source) | 11525, stubs 761 | |
 
-Match evidence: annotated 641, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1012. Module anchors: 1479 assert strings.
+Match evidence: annotated 642, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1011. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:37 -- mapped 2725, ported 2181, stub 505, spine mapped 406.
+Previous run: 2026-09-19 22:40 -- mapped 2726, ported 2183, stub 504, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 573 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 572 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -86,12 +86,12 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions` | 9 | 0 | GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent, SetActiveTalentGroup, AddPreviewTalentPoints ... |
 | 00a475a0 (bnot..) | 8 | `-` | 8 | 0 | bnot, band, bor, bxor, lshift, rshift ... |
 | 00af51c8 (SpellIsTargeting..) | 11 | `s_ScriptFunctions` | 8 | 0 | SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit, SpellTargetUnit, SpellCanTargetGlyph ... |
-| 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 7 |  / stubs: GetClassesForRace, CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex ... |
 | 00ad09b8 (GetNumSkillLines..) | 13 | `s_ScriptFunctions` | 7 | 0 | AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp, RemoveSkillUp, AcceptSkillUps ... |
 | 00a47d28 (create..) | 6 | `-` | 6 | 0 | create, resume, running, status, wrap, yield |
 | 00ac1550 (GetTitleRegion..) | 85 | `SimpleFrameMethods` | 0 | 6 |  / stubs: CreateTitleRegion, HookScript, AllowAttributeChanges, CanChangeAttribute ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 6 |  / stubs: SetPreferredInfo, SortRealms, GetSelectedCategory, IsInvalidTournamentRealmCategory ... |
+| 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 6 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
 | 00acf588 (InitializeTabardColors..) | 10 | `CGTabardModelFrameMethods` | 0 | 6 |  / stubs: InitializeTabardColors, Save, CycleVariation, GetUpperEmblemTexture ... |
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
@@ -258,7 +258,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_os_cdda.cpp | 30 | 12.4k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
 | SLock.cpp | 68 | 12.3k | 1 (1.5%) | 2.0% | 0 | 1 | 18 |
 | CGxD3d9ExTexture.cpp | 47 | 12.2k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
-| CharacterCreation.cpp | 56 | 12.2k | 22 (39.3%) | 34.4% | 5 | 0 | 3 |
+| CharacterCreation.cpp | 56 | 12.2k | 22 (39.3%) | 34.4% | 4 | 0 | 3 |
 | aSfxDsp.cpp | 48 | 12.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 20:25 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:31 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:34 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:33 | 2725 (10.0%) | 1011 (3.7%) | 506 | 406/5531 | 1792/2964 | 575 |
 | 2026-09-19 22:37 | 2725 (10.0%) | 1011 (3.7%) | 505 | 406/5531 | 1792/2964 | 574 |
 | 2026-09-19 22:40 | 2726 (10.0%) | 1012 (3.7%) | 504 | 407/5531 | 1792/2964 | 573 |
+| 2026-09-19 22:47 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
 
 ## How to move a row
 
