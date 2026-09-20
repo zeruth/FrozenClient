@@ -103,6 +103,9 @@ enum NETMESSAGE {
     CMSG_QUERY_GAME_OBJECT              = 0x005E,
     SMSG_QUERY_GAME_OBJECT_RESPONSE     = 0x005F,
     CMSG_QUERY_CREATURE                 = 0x0060,
+    // Bidirectional, hence MSG_: the client sends one to set an icon and the server sends
+    // the same opcode back, either as that single change or as the whole table.
+    MSG_RAID_TARGET_UPDATE              = 0x0321,
     SMSG_QUERY_CREATURE_RESPONSE        = 0x0061,
     CMSG_WHO                            = 0x0062,
     SMSG_WHO                            = 0x0063,

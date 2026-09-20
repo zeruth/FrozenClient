@@ -1,4 +1,5 @@
 #include "world/Weather.hpp"
+#include "ui/game/RaidTarget.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
 #include "ui/game/CGPartyInfo.hpp"
@@ -151,6 +152,7 @@ void ClientInitializeGameTime() {
     SpellBookRegisterHandlers();
     CGMinimapFrameRegisterHandlers();
     CGPartyInfo::RegisterHandlers();
+    RaidTargetRegisterHandlers();
     ClientServices::SetMessageHandler(SMSG_EMOTE, &ReceiveEmote, nullptr);
 
     // TODO initialize s_forcedChangeCallbacks

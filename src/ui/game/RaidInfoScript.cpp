@@ -1,4 +1,8 @@
 #include "ui/game/RaidInfoScript.hpp"
+#include "ui/game/RaidTarget.hpp"
+#include "ui/game/ScriptUtil.hpp"
+#include "client/ClientServices.hpp"
+#include <common/DataStore.hpp>
 #include "ui/FrameScript.hpp"
 #include "ui/game/CGRaidInfo.hpp"
 #include "util/Lua.hpp"
@@ -76,12 +80,68 @@ int32_t Script_DemoteAssistant(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00574ab0
 int32_t Script_SetRaidTarget(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: SetRaidTarget(unit, index)");
+        return 0;
+    }
+
+    WOWGUID guid = 0;
+
+    if (!Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false) || !guid) {
+        return 0;
+    }
+
+    // The interface counts icons from 1 and the table from 0, and index 0 means "clear". The
+    // reference takes the low byte before subtracting, so 256 is 0 rather than out of range.
+    uint32_t requested = static_cast<uint32_t>(lua_tonumber(L, 2));
+    uint32_t index = (requested & 0xFF) - 1;
+
+    if (index >= static_cast<uint32_t>(RAID_TARGET_COUNT)) {
+        // Clearing: find what the unit currently holds and drop that slot instead.
+        index = static_cast<uint32_t>(RaidTargetGetIndex(guid));
+        guid = 0;
+
+        if (index >= static_cast<uint32_t>(RAID_TARGET_COUNT)) {
+            return 0;
+        }
+    }
+
+    // PARTIAL PORT. The reference decides here whether it may act alone: with no raid and no
+    // party it applies the change locally and signals, and otherwise sends and waits for the
+    // server to echo. Frozen always sends -- the local path needs the group predicates that are
+    // not ported yet -- so setting a marker while solo does nothing until a server replies.
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(MSG_RAID_TARGET_UPDATE));
+    msg.Put(static_cast<uint8_t>(index));
+    msg.Put(static_cast<uint64_t>(guid));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
+// ref: FUN_00572ab0
 int32_t Script_GetRaidTargetIndex(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: GetRaidTargetIndex(unit)");
+        return 0;
+    }
+
+    WOWGUID guid = 0;
+    Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false);
+
+    auto index = RaidTargetGetIndex(guid);
+
+    // Not marked answers nil, not zero -- the table's "none" is the count itself.
+    if (index == RAID_TARGET_COUNT) {
+        lua_pushnil(L);
+    } else {
+        lua_pushnumber(L, index + 1);
+    }
+
+    return 1;
 }
 
 int32_t Script_DoReadyCheck(lua_State* L) {
