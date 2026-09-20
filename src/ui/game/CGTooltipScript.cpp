@@ -174,6 +174,157 @@ void TooltipSetLine(CGTooltip* tooltip, int32_t line, bool right, const char* te
     }
 }
 
+// The GlobalStrings key for a creature's classification, from the reference's table at 00ad2e6c.
+// Six entries indexed by classification, and only two are set: elite and rare elite both read
+// ELITE. Normal, world boss, rare and trivial add nothing -- a world boss is named by its boss
+// flag below rather than by its rank.
+const char* const CLASSIFICATION_KEYS[] = {
+    nullptr,    // normal
+    "ELITE",    // elite
+    "ELITE",    // rare elite
+    nullptr,    // world boss
+    nullptr,    // rare
+    nullptr,    // trivial
+};
+
+// ref: the level / race / class / type block of FUN_00621070 (CGTooltip::SetUnit)
+//
+// The reference fills three slots and then picks one of six GlobalStrings formats by which came
+// out non-empty. The slot names come from the format keys and do NOT mean for a creature what
+// they look like:
+//
+//   race    the race name, players only
+//   class   the class name for a player, the CREATURE TYPE for anything else
+//   type    "Player" for a player, the classification ("Elite" / "Boss") for anything else
+//
+// so a hostile elite reads "Level 12 Beast (Elite)" and a player "Level 80 Human Paladin
+// (Player)". Written from the decompilation rather than from memory of the screen; if the wording
+// looks wrong, check it against FUN_00621070 before "fixing" it here.
+void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
+    auto data = unit->Unit();
+
+    if (!data) {
+        return;
+    }
+
+    auto player = static_cast<CGUnit_C*>(
+        ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__));
+
+    bool isPlayer = unit->IsA(TYPE_PLAYER);
+    auto info = NameCacheGetCreatureInfo(unit->GetEntryID());
+
+    // The boss flag is creature type flag bit 2, and it does two things at once: it replaces the
+    // classification with "Boss" and it hides the level.
+    bool isBoss = info && (info->typeFlags & 0x4) != 0;
+
+    // A corpse takes over the class slot and drops the race.
+    bool isCorpse = data->health < 1 || (data->dynamicFlags & 0x20) != 0;
+
+    // --- level -------------------------------------------------------------------------------
+    //
+    // "??" for a boss, for a level the client does not know, and for a hostile unit ten or more
+    // levels above the player. That last one is the skull.
+    char levelText[32];
+    int32_t level = data->level;
+    bool unknown = isBoss || level < 1;
+
+    if (!unknown && player) {
+        auto playerData = player->Unit();
+
+        if (playerData && player->GetReaction(unit) < 2 && playerData->level <= level - 10) {
+            unknown = true;
+        }
+    }
+
+    if (unknown) {
+        SStrCopy(levelText, "??", sizeof(levelText));
+    } else {
+        SStrPrintf(levelText, sizeof(levelText), "%d", level);
+    }
+
+    // --- race and class ----------------------------------------------------------------------
+    const char* raceText = nullptr;
+    const char* classText = nullptr;
+
+    if (isCorpse) {
+        classText = FrameScript_GetText("CORPSE", -1, GENDER_NOT_APPLICABLE);
+    } else if (isPlayer) {
+        auto raceRec = g_chrRacesDB.GetRecord(data->bytes0 & 0xFF);
+        auto classRec = g_chrClassesDB.GetRecord((data->bytes0 >> 8) & 0xFF);
+
+        // Both or neither: the reference only fills the race slot when the class resolves too.
+        if (raceRec && classRec) {
+            raceText = raceRec->m_name;
+            classText = classRec->m_name;
+        }
+    } else if (player) {
+        // A creature names its type here, but only one the player could fight. Creature type 10 is
+        // "Not specified" and never prints.
+        //
+        // The second gate is a creature type flag frozen cannot name: the reference has a one-line
+        // accessor for bit 26 (FUN_00715df0) and uses it only here, to suppress the type. What the
+        // bit means has not been recovered -- only what it does.
+        bool suppressed = info && (info->typeFlags & 0x04000000) != 0;
+        auto type = unit->GetCreatureType();
+
+        if (type != 10 && !suppressed && unit->GetReaction(player) < 4) {
+            auto typeRec = type ? g_creatureTypeDB.GetRecord(type) : nullptr;
+
+            if (typeRec) {
+                classText = typeRec->m_name;
+            }
+        }
+    }
+
+    // --- type --------------------------------------------------------------------------------
+    const char* typeText = nullptr;
+
+    if (isPlayer) {
+        typeText = FrameScript_GetText("PLAYER", -1, GENDER_NOT_APPLICABLE);
+    } else if (isBoss) {
+        typeText = FrameScript_GetText("BOSS", -1, GENDER_NOT_APPLICABLE);
+    } else {
+        auto classification = unit->GetClassification();
+        auto count = static_cast<int32_t>(sizeof(CLASSIFICATION_KEYS) / sizeof(CLASSIFICATION_KEYS[0]));
+
+        if (classification >= 0 && classification < count && CLASSIFICATION_KEYS[classification]) {
+            typeText = FrameScript_GetText(CLASSIFICATION_KEYS[classification], -1, GENDER_NOT_APPLICABLE);
+        }
+    }
+
+    // --- pick the format ---------------------------------------------------------------------
+    //
+    // Every one of these takes the level as %s, which is why it was printed into a buffer above
+    // rather than passed as a number.
+    bool hasRace = raceText && *raceText;
+    bool hasClass = classText && *classText;
+    bool hasType = typeText && *typeText;
+
+    char text[1024];
+
+    if (hasRace && hasClass && hasType) {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE", -1, GENDER_NOT_APPLICABLE),
+                   levelText, raceText, classText, typeText);
+    } else if (hasRace && hasClass) {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL_RACE_CLASS", -1, GENDER_NOT_APPLICABLE),
+                   levelText, raceText, classText);
+    } else if (hasClass && hasType) {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL_CLASS_TYPE", -1, GENDER_NOT_APPLICABLE),
+                   levelText, classText, typeText);
+    } else if (hasClass) {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL_CLASS", -1, GENDER_NOT_APPLICABLE),
+                   levelText, classText);
+    } else if (hasType) {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL_TYPE", -1, GENDER_NOT_APPLICABLE),
+                   levelText, typeText);
+    } else {
+        SStrPrintf(text, sizeof(text), FrameScript_GetText("TOOLTIP_UNIT_LEVEL", -1, GENDER_NOT_APPLICABLE),
+                   levelText);
+    }
+
+    TooltipSetLine(tooltip, line, false, text);
+}
+
 CGTooltip* TooltipThis(lua_State* L) {
     auto type = CGTooltip::GetObjectType();
 
@@ -881,16 +1032,28 @@ int32_t CGTooltip_SetUnit(lua_State* L) {
         return 1;
     }
 
-    // Partial port. The reference passes the GUID to CGTooltip::SetUnit (FUN_00621070), which fills
-    // the name, the level and class line, the faction and guild lines and the status bars; that
-    // function has not been decompiled, so only the name line is filled here. hideStatus (argument
-    // 3) is read by the reference to suppress the health bar, which Frozen's tooltip does not have,
-    // so nothing is done with it yet.
+    // Partial port of CGTooltip::SetUnit (FUN_00621070). The name, the title and the level line
+    // are filled here, in the reference's order. Still missing from that function: the guild line,
+    // the faction line, the colourblind faction-standing line, the PvP and offline lines, and the
+    // status bars. hideStatus (argument 3) suppresses the health bar, which frozen's tooltip does
+    // not have, so nothing is done with it yet.
     TooltipClear(tooltip);
 
     tooltip->m_unitGUID = guid;
-    tooltip->m_lineCount = 1;
-    TooltipSetLine(tooltip, 1, false, TooltipUnitName(unit));
+
+    int32_t line = 1;
+    TooltipSetLine(tooltip, line, false, TooltipUnitName(unit));
+
+    // The title sits between the name and the level line -- "Innkeeper" under "Amy Davenport".
+    auto subName = unit->GetSubName();
+
+    if (subName && *subName) {
+        TooltipSetLine(tooltip, ++line, false, subName);
+    }
+
+    TooltipUnitLevelLine(tooltip, unit, ++line);
+
+    tooltip->m_lineCount = line;
 
     // UnitFrame_UpdateTooltip colours TextLeft1 by reaction right after this, and FrameXML's
     // OnTooltipSetUnit handlers add their own lines, so the layout is taken afterwards.

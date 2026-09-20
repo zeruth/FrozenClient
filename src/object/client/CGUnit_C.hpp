@@ -96,6 +96,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // 0 normal, 1 elite, 2 rare elite, 3 world boss, 4 rare, 5 trivial.
         int32_t GetClassification() const;
+
+        // The creature's title -- "Innkeeper", "Stable Master" -- or null when it has none.
+        const char* GetSubName() const;
         void PlayEmote(uint32_t emoteID);
 
     protected:

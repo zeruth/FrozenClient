@@ -438,6 +438,25 @@ uint8_t CGUnit_C::GetShapeshiftForm() const {
     return data ? static_cast<uint8_t>((data->bytes2 >> 24) & 0xFF) : 0;
 }
 
+// ref: FUN_00719950
+const char* CGUnit_C::GetSubName() const {
+    auto data = this->Unit();
+
+    // A pet has no title whatever it was tamed from, gated on the descriptor's pet number exactly
+    // as the classification is.
+    if (!data || data->petNumber != 0) {
+        return nullptr;
+    }
+
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (!info || info->subName.empty()) {
+        return nullptr;
+    }
+
+    return info->subName.c_str();
+}
+
 // ref: FUN_0071f300
 int32_t CGUnit_C::GetCreatureType() const {
     // A shapeshifted unit counts as whatever the form says: a druid in Bear Form is a Beast, not
