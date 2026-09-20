@@ -74,14 +74,16 @@ class CSimpleAnim : public CScriptObject {
         bool m_playing = false;
         bool m_paused = false;
 
-        // The handler slots. The five names are confirmed in the binary, clustered with the rest of
-        // the animation strings at 009ebd4c-009ebdc0 (OnFinished, OnStop, OnPause, OnPlay, OnLoop)
-        // plus the shared OnUpdate at 009eb4c0. The wrapper signatures below are the FrameXML
-        // convention rather than something read out of the reference.
+        // The handler slots, all six now read out of the reference's own GetScriptByName
+        // (FUN_00497500) rather than inferred from the string table. Two things came out of that
+        // which guessing had got wrong: there is an OnLoad, and the animation's OnFinished takes
+        // NO wrapper where the group's does. An animation is told it finished; only a group is
+        // told whether the finish was requested.
         //
         // Nothing FIRES these yet -- that is the driver, stage 4. They are here so SetScript,
         // GetScript and HasScript store and report a handler instead of raising "doesn't have a
         // script", which is what FrameXML would hit if the quartet were left unimplemented.
+        ScriptIx m_onLoad;
         ScriptIx m_onPlay;
         ScriptIx m_onPause;
         ScriptIx m_onStop;

@@ -79,14 +79,20 @@ CSimpleAnim::~CSimpleAnim() {
     }
 }
 
-// Modelled on the group's FUN_00497800, whose wrappers these match. The ANIMATION's own
-// GetScriptByName has not been located in the reference yet, so whether it also carries OnLoad is
-// unconfirmed; the five here are the ones an animation is documented to take.
+// ref: FUN_00497500
+// Six handlers, in this order. Read out of the reference after an earlier pass wrote this from the
+// group's version and got two things wrong: OnLoad was missing entirely, and OnFinished was given
+// the group's "requested" wrapper. It has none here -- an animation is simply told that it
+// finished, where a group is told whether the finish was asked for.
 FrameScript_Object::ScriptIx* CSimpleAnim::GetScriptByName(const char* name, ScriptData& data) {
     auto parentScript = CScriptObject::GetScriptByName(name, data);
 
     if (parentScript) {
         return parentScript;
+    }
+
+    if (!SStrCmpI(name, "OnLoad", STORM_MAX_STR)) {
+        return &this->m_onLoad;
     }
 
     if (!SStrCmpI(name, "OnPlay", STORM_MAX_STR)) {
@@ -103,7 +109,6 @@ FrameScript_Object::ScriptIx* CSimpleAnim::GetScriptByName(const char* name, Scr
     }
 
     if (!SStrCmpI(name, "OnFinished", STORM_MAX_STR)) {
-        data.wrapper = "return function(self,requested) %s end";
         return &this->m_onFinished;
     }
 

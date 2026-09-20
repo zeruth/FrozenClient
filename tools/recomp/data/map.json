@@ -4716,6 +4716,22 @@
   "refSize": 1155,
   "status": "ported"
  },
+ "00497500": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "CSimpleAnim::GetScriptByName",
+  "frozenSize": 358,
+  "how": "annotated",
+  "module": "CSimpleFont.cpp",
+  "refSize": 230,
+  "status": "ported"
+ },
  "00497800": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

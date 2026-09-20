@@ -225,10 +225,59 @@ Each stage should end in a committable increment; none of it should go in blind 
    **4b -- application to the region.** The `AddAnim*` family and whatever consumes the
    accumulated transform. This is render-surface work and the part that must be seen on screen.
 
-   **NOT STARTED, and deliberately so.** The application model below is recovered and solid, but
-   the group's per-frame advance function has not been located, and that function *is* the timing
-   semantics. Writing them from what the WoW API is documented to do would be exactly the guessing
-   CLAUDE.md forbids, so it is left until the function is found.
+   **NOT STARTED, but no longer blocked.** The advance function was found on 2026-09-20 by
+   scanning for call sites of the script runner `FUN_0081a2c0` inside the animation address range
+   and walking outwards. 4a can now be written from the reference rather than from the documented
+   API. The map is below.
+
+### The driver's functions
+
+Found by scanning `.text` for calls to `FUN_0081a2c0` -- the script runner -- between `00497000`
+and `0049d000`, which lands inside every function that fires a handler, then following callers.
+
+| address | what it is |
+|---|---|
+| `FUN_0049c350` | `CSimpleAnimGroup::OnUpdate(elapsed)` -- the per-frame tick |
+| `FUN_0049b470` | the group's order advance, run when the current order completes |
+| `FUN_0049aab0` | `CSimpleAnimGroup::Pause` |
+| `FUN_0049b0f0` | `CSimpleAnimGroup::Stop(requested)` |
+| `FUN_0049ab60` | run when one animation finishes: stops the group once every other is stopped |
+| `FUN_0049adc0` | the animation's own stop |
+| `FUN_0049a8f0` | `CSimpleAnimGroup::Play` (already ported) |
+| `FUN_0049ad80` | `CSimpleAnim::Play` (already ported) |
+
+**Group state**, all confirmed by two or more of those functions agreeing:
+
+| offset | field |
+|---|---|
+| `+0x3c` | the full animation list |
+| `+0x44` | number of orders |
+| `+0x48` | array of per-order lists |
+| `+0x88` | flags: `0x04` paused, `0x08` un-apply pending, `0x10` finished, `0x20` stopping |
+| `+0x8c` | loop type |
+| `+0x8d` | loop state; zero also means "not playing" |
+| `+0x90` | current order index, `-1` when idle |
+| `+0x94` | elapsed |
+| `+0x98` | the current order's duration |
+| `+0x9c` | progress, `elapsed / duration` capped at 1 |
+| `+0xa0` | the initial offset pair, handed to the region's `AddAnimTranslation` each tick |
+
+**Animation state:** `+0x34` play state (0 stopped, 1 playing, 2 paused), `+0x35` loop state,
+`+0x84` elapsed, `+0x88` the fraction `IsDone` tests against 1, `+0x8c` progress.
+
+**Handler slots.** Both classes start with OnLoad and step by 8:
+
+    animation  +0x3c OnLoad  +0x44 OnPlay  +0x4c OnPause  +0x54 OnStop  +0x5c OnFinished  +0x64 OnUpdate
+    group      +0x50 OnLoad  +0x58 OnPlay  +0x60 OnPause  +0x68 OnStop  +0x70 OnFinished  +0x78 OnUpdate  +0x80 OnLoop
+
+Only the group has OnLoop. Only the group's OnFinished takes `requested`; the animation's takes
+nothing. Both OnStops take `requested` and both OnUpdates take `elapsed`.
+
+**How a tick runs**, from `FUN_0049c350`: orders before the current one are re-applied at a full
+amount of 1.0 so completed steps hold; the group's initial offset is re-added; a paused group
+re-applies each current animation at its stored amount and returns; otherwise the incoming elapsed
+is clamped to `[0, _DAT_009ec218]` before being added, so one enormous frame cannot skip an
+animation.
 
 ### What is established (2026-09-20)
 
@@ -275,11 +324,14 @@ each slot. Treat the unanchored rows as strong inference until a region vtable i
 The group's table is only eight entries and ends at `+0x1c`, so its `LoadXML` and its update are
 both non-virtual, which is why neither can be found through a vtable.
 
-**Still missing, and the one thing blocking 4a:** the group's per-frame advance. It is not in the
-group vtable, not `FUN_0049a580` (a SIMPLEANIMNODE list helper) and not `FUN_0049a700` (the
-destructor). The promising route is the region's `OnLayerUpdate` at region vtable `+0x2c`, which
-needs a CScriptRegion-derived constructor to read the table from; `CSimpleTexture::Init`
-(`00483060`) is linked but is not the constructor and assigns no vtable.
+**Found since:** the advance is `FUN_0049c350`, listed above. It is not reachable through the
+group vtable, which is why looking there failed -- the group's update and its `LoadXML` are both
+non-virtual. `FUN_0049a580` is a SIMPLEANIMNODE list helper and `FUN_0049a700` the destructor.
+
+**Still open:** which region function calls `FUN_0049c350`. The region's `OnLayerUpdate` sits at
+region vtable `+0x2c` and needs a CScriptRegion-derived constructor to read the table from;
+`CSimpleTexture::Init` (`00483060`) is linked but is not the constructor and assigns no vtable.
+4a does not need it -- frozen already has its own call site -- but 4b probably will.
 
 **Frozen's side is already wired for 4a.** `CSimpleFrame::OnLayerUpdate` runs every frame and
 already calls `PreOnAnimUpdate` on the frame and its regions and then
