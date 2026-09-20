@@ -1,4 +1,5 @@
 #include "ui/game/CharacterInfoScript.hpp"
+#include "object/client/ItemLink.hpp"
 #include <cstddef>
 #include "db/Db.hpp"
 #include "ui/FrameScript.hpp"
@@ -218,8 +219,18 @@ int32_t Script_GetInventoryItemDurability(lua_State* L) {
     return 2;
 }
 
+// The hyperlink for an equipped item. No values at all for an empty slot, matching its siblings
+// above rather than pushing a nil.
 int32_t Script_GetInventoryItemLink(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto link = ItemLinkFromObject(InventoryItem(L, 1, 2));
+
+    if (!link) {
+        return 0;
+    }
+
+    lua_pushstring(L, link);
+
+    return 1;
 }
 
 // ref: FUN_005ea3e0

@@ -22280,20 +22280,20 @@
   "status": "ported"
  },
  "005ea270": {
-  "branchRatio": 0.167,
+  "branchRatio": 0.083,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.267,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_GetInventoryItemLink",
-  "frozenSize": 75,
+  "frozenSize": 66,
   "how": "table",
   "module": "PaperDollInfoFrame.cpp",
   "refSize": 364,
-  "status": "stub"
+  "status": "ported"
  },
  "005ea3e0": {
   "branchRatio": 0.091,
@@ -26128,6 +26128,36 @@
   "refSize": 204,
   "status": "ported"
  },
+ "0061e290": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/object/client/ItemLink.cpp"
+  ],
+  "frozen": "ItemLinkBuild",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Tooltip.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
+ "0061e3a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/ItemLink.cpp"
+  ],
+  "frozen": "ItemLinkFromObject",
+  "frozenSize": 521,
+  "how": "annotated",
+  "module": "Tooltip.cpp",
+  "refSize": 270,
+  "status": "ported"
+ },
  "0061eb40": {
   "branchRatio": 0.28,
   "constOverlap": 0.0,
@@ -28117,6 +28147,21 @@
   "how": "handler",
   "module": "Player_C.cpp",
   "refSize": 155,
+  "status": "ported"
+ },
+ "00706d70": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/object/client/ItemLink.cpp"
+  ],
+  "frozen": "ItemNameFromEntry",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Corpse_C.cpp",
+  "refSize": 240,
   "status": "ported"
  },
  "00715440": {

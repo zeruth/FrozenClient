@@ -106177,7 +106177,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 17
+"line": 18
 },
 "InventoryItem": {
 "files": [
@@ -106205,7 +106205,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 59
+"line": 60
 },
 "Script_GetInventoryItemsForSlot": {
 "files": [
@@ -106227,7 +106227,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 89
+"line": 90
 },
 "Script_GetInventoryItemTexture": {
 "files": [
@@ -106254,7 +106254,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 97
+"line": 98
 },
 "ItemDurability": {
 "files": [
@@ -106270,7 +106270,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 136
+"line": 137
 },
 "Script_GetInventoryItemBroken": {
 "files": [
@@ -106294,7 +106294,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 150
+"line": 151
 },
 "Script_GetInventoryItemCount": {
 "files": [
@@ -106315,7 +106315,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 164
+"line": 165
 },
 "Script_GetInventoryItemQuality": {
 "files": [
@@ -106337,7 +106337,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 185
+"line": 186
 },
 "Script_GetInventoryItemCooldown": {
 "files": [
@@ -106359,7 +106359,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 200
+"line": 201
 },
 "Script_GetInventoryItemDurability": {
 "files": [
@@ -106381,29 +106381,28 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 207
+"line": 208
 },
 "Script_GetInventoryItemLink": {
 "files": [
 "src/ui/game/characterinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"InventoryItem",
+"ItemLinkFromObject",
+"lua_pushstring"
 ],
-"strings": [
-"(anonymous namespace)::Script_GetInventoryItemLink",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\characterinfoscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 221
+"line": 224
 },
 "Script_GetInventoryItemID": {
 "files": [
@@ -106424,7 +106423,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 226
+"line": 237
 },
 "Script_GetInventoryItemGems": {
 "files": [
@@ -106446,7 +106445,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 238
+"line": 249
 },
 "Script_KeyRingButtonIDToInvSlotID": {
 "files": [
@@ -106469,7 +106468,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 246
+"line": 257
 },
 "Script_PickupInventoryItem": {
 "files": [
@@ -106491,7 +106490,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 256
+"line": 267
 },
 "Script_UseInventoryItem": {
 "files": [
@@ -106513,7 +106512,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 260
+"line": 271
 },
 "Script_SocketInventoryItem": {
 "files": [
@@ -106535,7 +106534,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 264
+"line": 275
 },
 "Script_IsInventoryItemLocked": {
 "files": [
@@ -106552,7 +106551,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 268
+"line": 279
 },
 "Script_PutItemInBag": {
 "files": [
@@ -106574,7 +106573,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 274
+"line": 285
 },
 "Script_PutItemInBackpack": {
 "files": [
@@ -106596,7 +106595,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 278
+"line": 289
 },
 "Script_PickupBagFromSlot": {
 "files": [
@@ -106618,7 +106617,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 282
+"line": 293
 },
 "Script_CursorCanGoInSlot": {
 "files": [
@@ -106636,7 +106635,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 286
+"line": 297
 },
 "Script_ShowInventorySellCursor": {
 "files": [
@@ -106658,7 +106657,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 293
+"line": 304
 },
 "Script_SetInventoryPortraitTexture": {
 "files": [
@@ -106680,7 +106679,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 297
+"line": 308
 },
 "Script_GetGuildInfo": {
 "files": [
@@ -106702,7 +106701,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 301
+"line": 312
 },
 "Script_GetInventoryAlertStatus": {
 "files": [
@@ -106720,7 +106719,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 305
+"line": 316
 },
 "Script_UpdateInventoryAlertStatus": {
 "files": [
@@ -106742,7 +106741,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 311
+"line": 322
 },
 "Script_OffhandHasWeapon": {
 "files": [
@@ -106760,7 +106759,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 315
+"line": 326
 },
 "Script_HasInspectHonorData": {
 "files": [
@@ -106782,7 +106781,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 322
+"line": 333
 },
 "Script_RequestInspectHonorData": {
 "files": [
@@ -106804,7 +106803,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 326
+"line": 337
 },
 "Script_GetInspectHonorData": {
 "files": [
@@ -106826,7 +106825,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 330
+"line": 341
 },
 "Script_GetInspectArenaTeamData": {
 "files": [
@@ -106848,7 +106847,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 334
+"line": 345
 },
 "Script_ClearInspectPlayer": {
 "files": [
@@ -106870,7 +106869,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 338
+"line": 349
 },
 "Script_GetWeaponEnchantInfo": {
 "files": [
@@ -106894,7 +106893,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 342
+"line": 353
 },
 "Script_HasWandEquipped": {
 "files": [
@@ -106912,7 +106911,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 358
+"line": 369
 },
 "CharacterInfoRegisterScriptFunctions": {
 "files": [
@@ -106927,7 +106926,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 403
+"line": 414
 },
 "Script_FrameXML_Debug": {
 "files": [

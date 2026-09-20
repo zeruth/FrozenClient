@@ -1640,6 +1640,8 @@ addr	how	frozen	evidence
 0061d9c0	table	CGTooltip_NumLines	binding "NumLines" in CGTooltipMethods ~ table 00ad2ae0
 0061da20	table	CGTooltip_IsUnit	binding "IsUnit" in CGTooltipMethods ~ table 00ad2ae0
 0061dad0	annotated	CGTooltip_GetUnit	tag in src/ui/game/CGTooltipScript.cpp
+0061e290	annotated	ItemLinkBuild	tag in src/object/client/ItemLink.cpp
+0061e3a0	annotated	ItemLinkFromObject	tag in src/object/client/ItemLink.cpp
 0061eb40	annotated	CGTooltip_SetOwner	tag in src/ui/game/CGTooltipScript.cpp
 0061ee90	annotated	CGTooltip_AppendText	tag in src/ui/game/CGTooltipScript.cpp
 0061ef10	table	CGTooltip_GetItem	binding "GetItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1765,6 +1767,7 @@ addr	how	frozen	evidence
 006e2e90	handler	InventoryChangeFailureHandler	SetMessageHandler(SMSG_INVENTORY_CHANGE_FAILURE) on both sides
 006e7840	handler	ReceiveRemovedSpell	SetMessageHandler(SMSG_UNLEARNED_SPELLS) on both sides
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
+00706d70	annotated	ItemNameFromEntry	tag in src/object/client/ItemLink.cpp
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
