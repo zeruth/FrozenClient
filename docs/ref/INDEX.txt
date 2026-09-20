@@ -142,3 +142,8 @@ three byte-identical bodies, and the matcher offered 004a7480 for CSimpleFrame w
 0049eab0 (entry 00ac15b8, inside the frame's run 00ac15b8-00ac1730; object type DAT_00b49984).
 Frame run anchors: RegisterAllEvents 00ac15e8, GetScale 00ac1628, Lower 00ac16a8,
 StopMovingOrSizing 00ac1730.
+
+parity-animations.md           write-up: the UI animation system, which frozen has none of. All eight
+                               method tables read out of the binary (00ac18e0-00ac1ab8, 81 methods with
+                               addresses), the six CSimpleAnim* classes with sizes and constructors from
+                               CreateAnimation FUN_004a7e00, and a five-stage porting plan
