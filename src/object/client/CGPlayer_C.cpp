@@ -83,6 +83,15 @@ int32_t CGPlayer_C::GetModDamageDoneNeg(uint32_t school) const {
     return this->Player()->modDamageDoneNeg[school];
 }
 
+// ref: FUN_00578290
+float CGPlayer_C::GetModDamageDonePct(uint32_t school) const {
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return 0.0f;
+    }
+
+    return this->Player()->modDamageDonePct[school];
+}
+
 uint32_t CGPlayer_C::GetMoney() const {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
         return 0;

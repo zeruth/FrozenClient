@@ -1226,6 +1226,7 @@ addr	how	frozen	evidence
 00575820	string	Script_Stub_PlayDance	score 0.50 shared PlayDance
 00578210	annotated	CGPlayer_C::GetModDamageDonePos	tag in src/object/client/CGPlayer_C.cpp
 00578250	annotated	CGPlayer_C::GetModDamageDoneNeg	tag in src/object/client/CGPlayer_C.cpp
+00578290	annotated	CGPlayer_C::GetModDamageDonePct	tag in src/object/client/CGPlayer_C.cpp
 0057b9e0	string	Script_Stub_BankButtonIDToInvSlotID	score 0.50 shared BankButtonIDToInvSlotID
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
@@ -1533,7 +1534,7 @@ addr	how	frozen	evidence
 00610450	table	Script_UnitAttackBothHands	binding "UnitAttackBothHands" in s_UnitFunctions ~ table 00ad21d8
 00610550	table	Script_UnitRangedDamage	binding "UnitRangedDamage" in s_UnitFunctions ~ table 00ad21d8
 006107d0	table	Script_UnitRangedAttack	binding "UnitRangedAttack" in s_UnitFunctions ~ table 00ad21d8
-00610860	table	Script_UnitDamage	binding "UnitDamage" in s_UnitFunctions ~ table 00ad21d8
+00610860	annotated	Script_UnitDamage	tag in src/ui/game/ScriptEvents.cpp
 00610a00	annotated	Script_UnitAttackSpeed	tag in src/ui/game/ScriptEvents.cpp
 00610b60	annotated	Script_UnitAttackPower	tag in src/ui/game/ScriptEvents.cpp
 00610ca0	annotated	Script_UnitRangedAttackPower	tag in src/ui/game/ScriptEvents.cpp

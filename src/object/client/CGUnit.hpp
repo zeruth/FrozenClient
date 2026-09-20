@@ -41,8 +41,11 @@ struct CGUnitData {
     int32_t mountDisplayID;
     float minDamage;
     float maxDamage;
-    uint32_t minOffhandDamage;
-    uint32_t maxOffhandDamage;
+
+    // Floats, like the main-hand pair above. These were uint32_t, which no caller had read yet --
+    // the reference takes all four through a float load.
+    float minOffhandDamage;
+    float maxOffhandDamage;
     int32_t pad2;
     uint32_t petNumber;
     uint32_t petNameTimestamp;

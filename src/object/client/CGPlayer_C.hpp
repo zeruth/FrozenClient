@@ -56,6 +56,10 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         int32_t GetModDamageDonePos(uint32_t school) const;
         int32_t GetModDamageDoneNeg(uint32_t school) const;
 
+        // The percentage modifier for a school, the third of the set. A float where the other two
+        // are integers.
+        float GetModDamageDonePct(uint32_t school) const;
+
         uint32_t GetMoney() const;
         uint32_t GetNextLevelXP() const;
         uint32_t GetXP() const;

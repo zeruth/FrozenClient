@@ -50,6 +50,10 @@ static_assert(offsetof(CGPlayerData, spellCritPercentage) == 0xdd0, "CGPlayerDat
 // makes the reading durable. Each array's offset is also the previous one plus its own width,
 // which is the property that identified them in the first place.
 static_assert(offsetof(CGUnitData, attackRoundBaseTime) == 0xe0, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, minDamage) == 0x100, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, maxDamage) == 0x104, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, minOffhandDamage) == 0x108, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, maxOffhandDamage) == 0x10c, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, stats) == 0x138, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, posStats) == 0x14c, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, negStats) == 0x160, "CGUnitData layout");
@@ -1313,8 +1317,54 @@ int32_t Script_UnitAttackBothHands(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00610860
+// Seven returns: the four damage bounds, then the physical damage modifiers.
+//
+// The modifiers are the same three helpers GetSpellBonusDamage uses, asked for school 0 -- physical
+// is just another school here, which is why no separate field exists for it.
+//
+// A non-player unit reports 0, 0 and 1.0 for the three: one, not zero, because the last is a
+// multiplier. Note the asymmetry the reference leaves in place -- a player who is NOT the active
+// player takes the helper path, and those helpers answer 0 for anyone but the active player, so
+// the multiplier comes back 0 rather than 1. Reproduced rather than smoothed out.
 int32_t Script_UnitDamage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitDamage(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!data) {
+        for (int32_t i = 0; i < 7; i++) {
+            lua_pushnumber(L, 0.0);
+        }
+
+        return 7;
+    }
+
+    lua_pushnumber(L, data->minDamage);
+    lua_pushnumber(L, data->maxDamage);
+    lua_pushnumber(L, data->minOffhandDamage);
+    lua_pushnumber(L, data->maxOffhandDamage);
+
+    if (!unit->IsA(TYPE_PLAYER)) {
+        lua_pushnumber(L, 0.0);
+        lua_pushnumber(L, 0.0);
+        lua_pushnumber(L, 1.0);
+
+        return 7;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(unit);
+
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDonePos(0)));
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDoneNeg(0)));
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDonePct(0)));
+
+    return 7;
 }
 
 int32_t Script_UnitRangedDamage(lua_State* L) {

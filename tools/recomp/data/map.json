@@ -19546,6 +19546,22 @@
   "refSize": 61,
   "status": "ported"
  },
+ "00578290": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetModDamageDonePct",
+  "frozenSize": 98,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "0057b9e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -24412,20 +24428,20 @@
   "status": "stub"
  },
  "00610860": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.682,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitDamage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 373,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 402,
-  "status": "stub"
+  "status": "ported"
  },
  "00610a00": {
   "branchRatio": 0.3,
