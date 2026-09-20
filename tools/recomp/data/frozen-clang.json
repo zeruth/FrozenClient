@@ -125422,27 +125422,6 @@
 "refs": [],
 "line": 580
 },
-"Script_Stub_GetContainerFreeSlots": {
-"files": [
-"src/ui/game/miscscriptstubs.cpp"
-],
-"callseq": [
-"__acrt_iob_func",
-"fprintf"
-],
-"strings": [
-"Function not yet implemented: %s (action stub)\\n",
-"GetContainerFreeSlots"
-],
-"consts": [
-"0"
-],
-"branches": 1,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 581
-},
 "Script_Stub_GetContainerItemCooldown": {
 "files": [
 "src/ui/game/miscscriptstubs.cpp"
@@ -125462,7 +125441,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 582
+"line": 581
 },
 "Script_Stub_GetContainerItemGems": {
 "files": [
@@ -125483,7 +125462,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 583
+"line": 582
 },
 "Script_Stub_GetContainerItemPurchaseInfo": {
 "files": [
@@ -125504,7 +125483,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 584
+"line": 583
 },
 "Script_Stub_GetContainerItemPurchaseItem": {
 "files": [
@@ -125525,7 +125504,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 585
+"line": 584
 },
 "Script_Stub_GetContainerItemQuestInfo": {
 "files": [
@@ -125546,7 +125525,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 586
+"line": 585
 },
 "Script_Stub_GetCorpseMapPosition": {
 "files": [
@@ -125567,7 +125546,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 587
+"line": 586
 },
 "Script_Stub_GetCurrencyListInfo": {
 "files": [
@@ -125588,7 +125567,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 588
+"line": 587
 },
 "Script_Stub_GetCurrencyListSize": {
 "files": [
@@ -125606,7 +125585,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 589
+"line": 588
 },
 "Script_Stub_GetCurrentGuildBankTab": {
 "files": [
@@ -125627,7 +125606,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 596
+"line": 595
 },
 "Script_Stub_GetCurrentMapAreaID": {
 "files": [
@@ -125648,7 +125627,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 597
+"line": 596
 },
 "Script_Stub_GetCurrentMapZone": {
 "files": [
@@ -125669,7 +125648,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 598
+"line": 597
 },
 "Script_Stub_GetDailyQuestsCompleted": {
 "files": [
@@ -125690,7 +125669,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 599
+"line": 598
 },
 "Script_Stub_GetDeathReleasePosition": {
 "files": [
@@ -125711,7 +125690,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 600
+"line": 599
 },
 "Script_Stub_GetDebugZoneMap": {
 "files": [
@@ -125732,7 +125711,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 601
+"line": 600
 },
 "Script_Stub_GetDefaultLanguage": {
 "files": [
@@ -125753,7 +125732,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 602
+"line": 601
 },
 "Script_Stub_GetEquipmentSetInfo": {
 "files": [
@@ -125774,7 +125753,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 603
+"line": 602
 },
 "Script_Stub_GetEquipmentSetInfoByName": {
 "files": [
@@ -125795,7 +125774,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 604
+"line": 603
 },
 "Script_Stub_GetEquipmentSetItemIDs": {
 "files": [
@@ -125816,7 +125795,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 605
+"line": 604
 },
 "Script_Stub_GetEquipmentSetLocations": {
 "files": [
@@ -125837,7 +125816,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 606
+"line": 605
 },
 "Script_Stub_GetExistingSocketInfo": {
 "files": [
@@ -125858,7 +125837,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 607
+"line": 606
 },
 "Script_Stub_GetExistingSocketLink": {
 "files": [
@@ -125879,7 +125858,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 608
+"line": 607
 },
 "Script_Stub_GetFactionInfo": {
 "files": [
@@ -125900,7 +125879,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 609
+"line": 608
 },
 "Script_Stub_GetFactionInfoByID": {
 "files": [
@@ -125921,7 +125900,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 610
+"line": 609
 },
 "Script_Stub_GetFirstTradeSkill": {
 "files": [
@@ -125942,7 +125921,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 611
+"line": 610
 },
 "Script_Stub_GetFriendInfo": {
 "files": [
@@ -125963,7 +125942,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 612
+"line": 611
 },
 "Script_Stub_GetGlyphLink": {
 "files": [
@@ -125984,7 +125963,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 613
+"line": 612
 },
 "Script_Stub_GetGlyphSocketInfo": {
 "files": [
@@ -126005,7 +125984,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 614
+"line": 613
 },
 "Script_Stub_GetGossipActiveQuests": {
 "files": [
@@ -126026,7 +126005,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 615
+"line": 614
 },
 "Script_Stub_GetGossipAvailableQuests": {
 "files": [
@@ -126047,7 +126026,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 616
+"line": 615
 },
 "Script_Stub_GetGossipOptions": {
 "files": [
@@ -126068,7 +126047,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 617
+"line": 616
 },
 "Script_Stub_GetGossipText": {
 "files": [
@@ -126089,7 +126068,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 618
+"line": 617
 },
 "Script_Stub_GetGreetingText": {
 "files": [
@@ -126110,7 +126089,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 619
+"line": 618
 },
 "Script_Stub_GetGroupPreviewTalentPointsSpent": {
 "files": [
@@ -126128,7 +126107,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 620
+"line": 619
 },
 "Script_Stub_GetGuildBankItemInfo": {
 "files": [
@@ -126149,7 +126128,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 627
+"line": 626
 },
 "Script_Stub_GetGuildBankItemLink": {
 "files": [
@@ -126170,7 +126149,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 628
+"line": 627
 },
 "Script_Stub_GetGuildBankMoney": {
 "files": [
@@ -126191,7 +126170,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 629
+"line": 628
 },
 "Script_Stub_GetGuildBankMoneyTransaction": {
 "files": [
@@ -126212,7 +126191,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 630
+"line": 629
 },
 "Script_Stub_GetGuildBankTabCost": {
 "files": [
@@ -126233,7 +126212,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 631
+"line": 630
 },
 "Script_Stub_GetGuildBankTabInfo": {
 "files": [
@@ -126254,7 +126233,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 632
+"line": 631
 },
 "Script_Stub_GetGuildBankTabPermissions": {
 "files": [
@@ -126275,7 +126254,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 633
+"line": 632
 },
 "Script_Stub_GetGuildBankText": {
 "files": [
@@ -126296,7 +126275,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 634
+"line": 633
 },
 "Script_Stub_GetGuildBankTransaction": {
 "files": [
@@ -126317,7 +126296,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 635
+"line": 634
 },
 "Script_Stub_GetGuildBankWithdrawLimit": {
 "files": [
@@ -126338,7 +126317,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 636
+"line": 635
 },
 "Script_Stub_GetGuildBankWithdrawMoney": {
 "files": [
@@ -126359,7 +126338,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 637
+"line": 636
 },
 "Script_Stub_GetGuildCharterCost": {
 "files": [
@@ -126380,7 +126359,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 638
+"line": 637
 },
 "Script_Stub_GetGuildEventInfo": {
 "files": [
@@ -126401,7 +126380,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 639
+"line": 638
 },
 "Script_Stub_GetGuildInfoText": {
 "files": [
@@ -126422,7 +126401,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 640
+"line": 639
 },
 "Script_Stub_GetGuildRosterInfo": {
 "files": [
@@ -126443,7 +126422,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 641
+"line": 640
 },
 "Script_Stub_GetGuildRosterLastOnline": {
 "files": [
@@ -126464,7 +126443,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 642
+"line": 641
 },
 "Script_Stub_GetGuildRosterSelection": {
 "files": [
@@ -126485,7 +126464,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 643
+"line": 642
 },
 "Script_Stub_GetGuildRosterShowOffline": {
 "files": [
@@ -126506,7 +126485,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 644
+"line": 643
 },
 "Script_Stub_GetGuildTabardFileNames": {
 "files": [
@@ -126527,7 +126506,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 645
+"line": 644
 },
 "Script_Stub_GetIgnoreName": {
 "files": [
@@ -126548,7 +126527,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 646
+"line": 645
 },
 "Script_Stub_GetInboxHeaderInfo": {
 "files": [
@@ -126569,7 +126548,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 647
+"line": 646
 },
 "Script_Stub_GetInboxInvoiceInfo": {
 "files": [
@@ -126590,7 +126569,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 648
+"line": 647
 },
 "Script_Stub_GetInboxItem": {
 "files": [
@@ -126611,7 +126590,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 649
+"line": 648
 },
 "Script_Stub_GetInboxItemLink": {
 "files": [
@@ -126632,7 +126611,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 650
+"line": 649
 },
 "Script_Stub_GetInboxNumItems": {
 "files": [
@@ -126653,7 +126632,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 651
+"line": 650
 },
 "Script_Stub_GetInboxText": {
 "files": [
@@ -126674,7 +126653,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 652
+"line": 651
 },
 "Script_Stub_GetLFDChoiceCollapseState": {
 "files": [
@@ -126695,7 +126674,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 653
+"line": 652
 },
 "Script_Stub_GetLFDChoiceEnabledState": {
 "files": [
@@ -126716,7 +126695,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 654
+"line": 653
 },
 "Script_Stub_GetLFDChoiceInfo": {
 "files": [
@@ -126737,7 +126716,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 655
+"line": 654
 },
 "Script_Stub_GetLFDChoiceLockedState": {
 "files": [
@@ -126758,7 +126737,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 656
+"line": 655
 },
 "Script_Stub_GetLFDChoiceOrder": {
 "files": [
@@ -126779,7 +126758,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 657
+"line": 656
 },
 "Script_Stub_GetLFDLockInfo": {
 "files": [
@@ -126800,7 +126779,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 658
+"line": 657
 },
 "Script_Stub_GetLFDLockPlayerCount": {
 "files": [
@@ -126818,7 +126797,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 659
+"line": 658
 },
 "Script_Stub_GetLFGBootProposal": {
 "files": [
@@ -126839,7 +126818,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 666
+"line": 665
 },
 "Script_Stub_GetLFGCompletionReward": {
 "files": [
@@ -126860,7 +126839,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 667
+"line": 666
 },
 "Script_Stub_GetLFGCompletionRewardItem": {
 "files": [
@@ -126881,7 +126860,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 668
+"line": 667
 },
 "Script_Stub_GetLFGDungeonInfo": {
 "files": [
@@ -126899,7 +126878,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 669
+"line": 668
 },
 "Script_Stub_GetLFGDungeonRewardInfo": {
 "files": [
@@ -126920,7 +126899,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 676
+"line": 675
 },
 "Script_Stub_GetLFGDungeonRewardLink": {
 "files": [
@@ -126941,7 +126920,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 677
+"line": 676
 },
 "Script_Stub_GetLFGDungeonRewards": {
 "files": [
@@ -126962,7 +126941,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 678
+"line": 677
 },
 "Script_Stub_GetLFGInfoLocal": {
 "files": [
@@ -126983,7 +126962,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 679
+"line": 678
 },
 "Script_Stub_GetLFGProposalEncounter": {
 "files": [
@@ -127004,7 +126983,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 680
+"line": 679
 },
 "Script_Stub_GetLFGProposalMember": {
 "files": [
@@ -127025,7 +127004,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 681
+"line": 680
 },
 "Script_Stub_GetLFGQueueStats": {
 "files": [
@@ -127046,7 +127025,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 682
+"line": 681
 },
 "Script_Stub_GetLFGRandomCooldownExpiration": {
 "files": [
@@ -127064,7 +127043,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 683
+"line": 682
 },
 "Script_Stub_GetLFGRandomDungeonInfo": {
 "files": [
@@ -127085,7 +127064,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 689
+"line": 688
 },
 "Script_Stub_GetLFGRoleUpdateMember": {
 "files": [
@@ -127106,7 +127085,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 690
+"line": 689
 },
 "Script_Stub_GetLFGRoleUpdateSlot": {
 "files": [
@@ -127127,7 +127106,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 691
+"line": 690
 },
 "Script_Stub_GetLFGTypes": {
 "files": [
@@ -127148,7 +127127,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 692
+"line": 691
 },
 "Script_Stub_GetLFRChoiceOrder": {
 "files": [
@@ -127169,7 +127148,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 693
+"line": 692
 },
 "Script_Stub_GetLanguageByIndex": {
 "files": [
@@ -127190,7 +127169,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 694
+"line": 693
 },
 "Script_Stub_GetLastQueueStatusIndex": {
 "files": [
@@ -127211,7 +127190,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 695
+"line": 694
 },
 "Script_Stub_GetLatestCompletedAchievements": {
 "files": [
@@ -127232,7 +127211,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 696
+"line": 695
 },
 "Script_Stub_GetLatestCompletedComparisonAchievements": {
 "files": [
@@ -127253,7 +127232,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 697
+"line": 696
 },
 "Script_Stub_GetLatestThreeSenders": {
 "files": [
@@ -127274,7 +127253,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 698
+"line": 697
 },
 "Script_Stub_GetLatestUpdatedComparisonStats": {
 "files": [
@@ -127295,7 +127274,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 699
+"line": 698
 },
 "Script_Stub_GetLatestUpdatedStats": {
 "files": [
@@ -127316,7 +127295,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 700
+"line": 699
 },
 "Script_Stub_GetLootRollItemInfo": {
 "files": [
@@ -127337,7 +127316,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 701
+"line": 700
 },
 "Script_Stub_GetLootRollItemLink": {
 "files": [
@@ -127358,7 +127337,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 702
+"line": 701
 },
 "Script_Stub_GetLootRollTimeLeft": {
 "files": [
@@ -127379,7 +127358,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 703
+"line": 702
 },
 "Script_Stub_GetLootSlotInfo": {
 "files": [
@@ -127400,7 +127379,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 704
+"line": 703
 },
 "Script_Stub_GetLootSlotLink": {
 "files": [
@@ -127421,7 +127400,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 705
+"line": 704
 },
 "Script_Stub_GetMacroBody": {
 "files": [
@@ -127442,7 +127421,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 706
+"line": 705
 },
 "Script_Stub_GetMacroIconInfo": {
 "files": [
@@ -127463,7 +127442,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 707
+"line": 706
 },
 "Script_Stub_GetMacroIndexByName": {
 "files": [
@@ -127484,7 +127463,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 708
+"line": 707
 },
 "Script_Stub_GetMacroInfo": {
 "files": [
@@ -127505,7 +127484,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 709
+"line": 708
 },
 "Script_Stub_GetMacroItem": {
 "files": [
@@ -127526,7 +127505,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 710
+"line": 709
 },
 "Script_Stub_GetMacroItemIconInfo": {
 "files": [
@@ -127547,7 +127526,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 711
+"line": 710
 },
 "Script_Stub_GetMacroSpell": {
 "files": [
@@ -127568,7 +127547,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 712
+"line": 711
 },
 "Script_Stub_GetMapContinents": {
 "files": [
@@ -127589,7 +127568,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 713
+"line": 712
 },
 "Script_Stub_GetMapDebugObjectInfo": {
 "files": [
@@ -127610,7 +127589,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 714
+"line": 713
 },
 "Script_Stub_GetMapLandmarkInfo": {
 "files": [
@@ -127631,7 +127610,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 715
+"line": 714
 },
 "Script_Stub_GetMapOverlayInfo": {
 "files": [
@@ -127652,7 +127631,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 716
+"line": 715
 },
 "Script_Stub_GetMapZones": {
 "files": [
@@ -127673,7 +127652,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 717
+"line": 716
 },
 "Script_Stub_GetMaxArenaCurrency": {
 "files": [
@@ -127694,7 +127673,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 718
+"line": 717
 },
 "Script_Stub_GetMaxDailyQuests": {
 "files": [
@@ -127712,7 +127691,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 719
+"line": 718
 },
 "Script_Stub_GetMerchantItemCostInfo": {
 "files": [
@@ -127733,7 +127712,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 726
+"line": 725
 },
 "Script_Stub_GetMerchantItemCostItem": {
 "files": [
@@ -127754,7 +127733,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 727
+"line": 726
 },
 "Script_Stub_GetMerchantItemInfo": {
 "files": [
@@ -127775,7 +127754,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 728
+"line": 727
 },
 "Script_Stub_GetMerchantItemLink": {
 "files": [
@@ -127796,7 +127775,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 729
+"line": 728
 },
 "Script_Stub_GetMerchantItemMaxStack": {
 "files": [
@@ -127817,7 +127796,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 730
+"line": 729
 },
 "Script_Stub_GetMerchantNumItems": {
 "files": [
@@ -127838,7 +127817,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 731
+"line": 730
 },
 "Script_Stub_GetMinigameState": {
 "files": [
@@ -127859,7 +127838,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 732
+"line": 731
 },
 "Script_Stub_GetMinigameType": {
 "files": [
@@ -127880,7 +127859,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 733
+"line": 732
 },
 "Script_Stub_GetMuteName": {
 "files": [
@@ -127901,7 +127880,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 734
+"line": 733
 },
 "Script_Stub_GetMuteStatus": {
 "files": [
@@ -127922,7 +127901,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 735
+"line": 734
 },
 "Script_Stub_GetNewSocketInfo": {
 "files": [
@@ -127943,7 +127922,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 736
+"line": 735
 },
 "Script_Stub_GetNewSocketLink": {
 "files": [
@@ -127964,7 +127943,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 737
+"line": 736
 },
 "Script_Stub_GetNextAchievement": {
 "files": [
@@ -127985,7 +127964,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 738
+"line": 737
 },
 "Script_Stub_GetNextCompleatedTutorial": {
 "files": [
@@ -128006,7 +127985,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 739
+"line": 738
 },
 "Script_Stub_GetNextStableSlotCost": {
 "files": [
@@ -128027,7 +128006,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 740
+"line": 739
 },
 "Script_Stub_GetObjectiveText": {
 "files": [
@@ -128048,7 +128027,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 741
+"line": 740
 },
 "Script_Stub_GetOwnerAuctionItems": {
 "files": [
@@ -128069,7 +128048,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 742
+"line": 741
 },
 "Script_Stub_GetPackageInfo": {
 "files": [
@@ -128090,7 +128069,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 743
+"line": 742
 },
 "Script_Stub_GetPartyLFGBackfillInfo": {
 "files": [
@@ -128111,7 +128090,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 744
+"line": 743
 },
 "Script_Stub_GetPetActionSlotUsable": {
 "files": [
@@ -128132,7 +128111,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 745
+"line": 744
 },
 "Script_Stub_GetPetActionsUsable": {
 "files": [
@@ -128153,7 +128132,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 746
+"line": 745
 },
 "Script_Stub_GetPetExperience": {
 "files": [
@@ -128174,7 +128153,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 747
+"line": 746
 },
 "Script_Stub_GetPetFoodTypes": {
 "files": [
@@ -128192,7 +128171,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 748
+"line": 747
 },
 "Script_Stub_GetPetHappiness": {
 "files": [
@@ -128213,7 +128192,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 755
+"line": 754
 },
 "Script_Stub_GetPetIcon": {
 "files": [
@@ -128234,7 +128213,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 756
+"line": 755
 },
 "Script_Stub_GetPetTalentTree": {
 "files": [
@@ -128255,7 +128234,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 757
+"line": 756
 },
 "Script_Stub_GetPetTimeRemaining": {
 "files": [
@@ -128276,7 +128255,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 758
+"line": 757
 },
 "Script_Stub_GetPetitionInfo": {
 "files": [
@@ -128297,7 +128276,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 759
+"line": 758
 },
 "Script_Stub_GetPetitionItemInfo": {
 "files": [
@@ -128318,7 +128297,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 760
+"line": 759
 },
 "Script_Stub_GetPetitionNameInfo": {
 "files": [
@@ -128339,7 +128318,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 761
+"line": 760
 },
 "Script_Stub_GetPlayerMapPosition": {
 "files": [
@@ -128360,7 +128339,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 762
+"line": 761
 },
 "Script_Stub_GetPrevCompleatedTutorial": {
 "files": [
@@ -128381,7 +128360,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 763
+"line": 762
 },
 "Script_Stub_GetPreviousAchievement": {
 "files": [
@@ -128402,7 +128381,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 764
+"line": 763
 },
 "Script_Stub_GetProgressText": {
 "files": [
@@ -128423,7 +128402,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 765
+"line": 764
 },
 "Script_Stub_GetQuestBackgroundMaterial": {
 "files": [
@@ -128444,7 +128423,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 766
+"line": 765
 },
 "Script_Stub_GetQuestGreenRange": {
 "files": [
@@ -128465,7 +128444,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 767
+"line": 766
 },
 "Script_Stub_GetQuestIndexForTimer": {
 "files": [
@@ -128486,7 +128465,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 768
+"line": 767
 },
 "Script_Stub_GetQuestIndexForWatch": {
 "files": [
@@ -128507,7 +128486,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 769
+"line": 768
 },
 "Script_Stub_GetQuestItemInfo": {
 "files": [
@@ -128528,7 +128507,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 770
+"line": 769
 },
 "Script_Stub_GetQuestItemLink": {
 "files": [
@@ -128549,7 +128528,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 771
+"line": 770
 },
 "Script_Stub_GetQuestLink": {
 "files": [
@@ -128570,7 +128549,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 772
+"line": 771
 },
 "Script_Stub_GetQuestLogChoiceInfo": {
 "files": [
@@ -128591,7 +128570,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 773
+"line": 772
 },
 "Script_Stub_GetQuestLogCompletionText": {
 "files": [
@@ -128612,7 +128591,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 774
+"line": 773
 },
 "Script_Stub_GetQuestLogGroupNum": {
 "files": [
@@ -128633,7 +128612,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 775
+"line": 774
 },
 "Script_Stub_GetQuestLogItemDrop": {
 "files": [
@@ -128654,7 +128633,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 776
+"line": 775
 },
 "Script_Stub_GetQuestLogItemLink": {
 "files": [
@@ -128675,7 +128654,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 777
+"line": 776
 },
 "Script_Stub_GetQuestLogLeaderBoard": {
 "files": [
@@ -128696,7 +128675,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 778
+"line": 777
 },
 "Script_Stub_GetQuestLogPushable": {
 "files": [
@@ -128717,7 +128696,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 779
+"line": 778
 },
 "Script_Stub_GetQuestLogQuestText": {
 "files": [
@@ -128738,7 +128717,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 780
+"line": 779
 },
 "Script_Stub_GetQuestLogRequiredMoney": {
 "files": [
@@ -128759,7 +128738,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 781
+"line": 780
 },
 "Script_Stub_GetQuestLogRewardArenaPoints": {
 "files": [
@@ -128780,7 +128759,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 782
+"line": 781
 },
 "Script_Stub_GetQuestLogRewardFactionInfo": {
 "files": [
@@ -128801,7 +128780,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 783
+"line": 782
 },
 "Script_Stub_GetQuestLogRewardHonor": {
 "files": [
@@ -128822,7 +128801,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 784
+"line": 783
 },
 "Script_Stub_GetQuestLogRewardInfo": {
 "files": [
@@ -128843,7 +128822,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 785
+"line": 784
 },
 "Script_Stub_GetQuestLogRewardMoney": {
 "files": [
@@ -128864,7 +128843,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 786
+"line": 785
 },
 "Script_Stub_GetQuestLogRewardSpell": {
 "files": [
@@ -128885,7 +128864,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 787
+"line": 786
 },
 "Script_Stub_GetQuestLogRewardTalents": {
 "files": [
@@ -128906,7 +128885,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 788
+"line": 787
 },
 "Script_Stub_GetQuestLogRewardTitle": {
 "files": [
@@ -128927,7 +128906,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 789
+"line": 788
 },
 "Script_Stub_GetQuestLogRewardXP": {
 "files": [
@@ -128948,7 +128927,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 790
+"line": 789
 },
 "Script_Stub_GetQuestLogSpecialItemCooldown": {
 "files": [
@@ -128969,7 +128948,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 791
+"line": 790
 },
 "Script_Stub_GetQuestLogSpecialItemInfo": {
 "files": [
@@ -128990,7 +128969,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 792
+"line": 791
 },
 "Script_Stub_GetQuestLogSpellLink": {
 "files": [
@@ -129011,7 +128990,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 793
+"line": 792
 },
 "Script_Stub_GetQuestLogTimeLeft": {
 "files": [
@@ -129032,7 +129011,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 794
+"line": 793
 },
 "Script_Stub_GetQuestLogTitle": {
 "files": [
@@ -129053,7 +129032,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 795
+"line": 794
 },
 "Script_Stub_GetQuestMoneyToGet": {
 "files": [
@@ -129074,7 +129053,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 796
+"line": 795
 },
 "Script_Stub_GetQuestPOILeaderBoard": {
 "files": [
@@ -129095,7 +129074,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 797
+"line": 796
 },
 "Script_Stub_GetQuestResetTime": {
 "files": [
@@ -129113,7 +129092,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 798
+"line": 797
 },
 "Script_Stub_GetQuestReward": {
 "files": [
@@ -129134,7 +129113,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 805
+"line": 804
 },
 "Script_Stub_GetQuestSortIndex": {
 "files": [
@@ -129155,7 +129134,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 806
+"line": 805
 },
 "Script_Stub_GetQuestSpellLink": {
 "files": [
@@ -129176,7 +129155,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 807
+"line": 806
 },
 "Script_Stub_GetQuestText": {
 "files": [
@@ -129197,7 +129176,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 808
+"line": 807
 },
 "Script_Stub_GetQuestWatchIndex": {
 "files": [
@@ -129218,7 +129197,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 809
+"line": 808
 },
 "Script_Stub_GetQuestWorldMapAreaID": {
 "files": [
@@ -129239,7 +129218,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 810
+"line": 809
 },
 "Script_Stub_GetQuestsCompleted": {
 "files": [
@@ -129260,7 +129239,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 811
+"line": 810
 },
 "Script_Stub_GetRandomDungeonBestChoice": {
 "files": [
@@ -129281,7 +129260,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 812
+"line": 811
 },
 "Script_Stub_GetRewardArenaPoints": {
 "files": [
@@ -129302,7 +129281,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 813
+"line": 812
 },
 "Script_Stub_GetRewardHonor": {
 "files": [
@@ -129323,7 +129302,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 814
+"line": 813
 },
 "Script_Stub_GetRewardMoney": {
 "files": [
@@ -129344,7 +129323,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 815
+"line": 814
 },
 "Script_Stub_GetRewardSpell": {
 "files": [
@@ -129365,7 +129344,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 816
+"line": 815
 },
 "Script_Stub_GetRewardTalents": {
 "files": [
@@ -129386,7 +129365,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 817
+"line": 816
 },
 "Script_Stub_GetRewardText": {
 "files": [
@@ -129407,7 +129386,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 818
+"line": 817
 },
 "Script_Stub_GetRewardTitle": {
 "files": [
@@ -129428,7 +129407,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 819
+"line": 818
 },
 "Script_Stub_GetRewardXP": {
 "files": [
@@ -129449,7 +129428,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 820
+"line": 819
 },
 "Script_Stub_GetRunningMacro": {
 "files": [
@@ -129470,7 +129449,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 821
+"line": 820
 },
 "Script_Stub_GetRunningMacroButton": {
 "files": [
@@ -129491,7 +129470,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 822
+"line": 821
 },
 "Script_Stub_GetSavedInstanceInfo": {
 "files": [
@@ -129512,7 +129491,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 823
+"line": 822
 },
 "Script_Stub_GetSelectedAuctionItem": {
 "files": [
@@ -129533,7 +129512,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 824
+"line": 823
 },
 "Script_Stub_GetSelectedFaction": {
 "files": [
@@ -129554,7 +129533,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 825
+"line": 824
 },
 "Script_Stub_GetSelectedFriend": {
 "files": [
@@ -129575,7 +129554,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 826
+"line": 825
 },
 "Script_Stub_GetSelectedIgnore": {
 "files": [
@@ -129596,7 +129575,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 827
+"line": 826
 },
 "Script_Stub_GetSelectedMute": {
 "files": [
@@ -129617,7 +129596,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 828
+"line": 827
 },
 "Script_Stub_GetSelectedStablePet": {
 "files": [
@@ -129638,7 +129617,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 829
+"line": 828
 },
 "Script_Stub_GetSelectedStationeryTexture": {
 "files": [
@@ -129659,7 +129638,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 830
+"line": 829
 },
 "Script_Stub_GetSendMailCOD": {
 "files": [
@@ -129680,7 +129659,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 831
+"line": 830
 },
 "Script_Stub_GetSendMailItem": {
 "files": [
@@ -129701,7 +129680,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 832
+"line": 831
 },
 "Script_Stub_GetSendMailItemLink": {
 "files": [
@@ -129722,7 +129701,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 833
+"line": 832
 },
 "Script_Stub_GetSendMailMoney": {
 "files": [
@@ -129743,7 +129722,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 834
+"line": 833
 },
 "Script_Stub_GetShapeshiftForm": {
 "files": [
@@ -129764,7 +129743,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 835
+"line": 834
 },
 "Script_Stub_GetShapeshiftFormCooldown": {
 "files": [
@@ -129785,7 +129764,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 836
+"line": 835
 },
 "Script_Stub_GetShapeshiftFormInfo": {
 "files": [
@@ -129806,7 +129785,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 837
+"line": 836
 },
 "Script_Stub_GetSocketItemBoundTradeable": {
 "files": [
@@ -129827,7 +129806,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 838
+"line": 837
 },
 "Script_Stub_GetSocketItemInfo": {
 "files": [
@@ -129848,7 +129827,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 839
+"line": 838
 },
 "Script_Stub_GetSocketItemRefundable": {
 "files": [
@@ -129869,7 +129848,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 840
+"line": 839
 },
 "Script_Stub_GetSocketTypes": {
 "files": [
@@ -129890,7 +129869,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 841
+"line": 840
 },
 "Script_Stub_GetSpellCount": {
 "files": [
@@ -129911,7 +129890,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 842
+"line": 841
 },
 "Script_Stub_GetStablePetFoodTypes": {
 "files": [
@@ -129929,7 +129908,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 843
+"line": 842
 },
 "Script_Stub_GetStablePetInfo": {
 "files": [
@@ -129950,7 +129929,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 850
+"line": 849
 },
 "Script_Stub_GetStationeryInfo": {
 "files": [
@@ -129971,7 +129950,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 851
+"line": 850
 },
 "Script_Stub_GetStatistic": {
 "files": [
@@ -129992,7 +129971,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 852
+"line": 851
 },
 "Script_Stub_GetStatisticsCategoryList": {
 "files": [
@@ -130013,7 +129992,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 853
+"line": 852
 },
 "Script_Stub_GetSuggestedGroupNum": {
 "files": [
@@ -130034,7 +130013,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 854
+"line": 853
 },
 "Script_Stub_GetTabardInfo": {
 "files": [
@@ -130055,7 +130034,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 855
+"line": 854
 },
 "Script_Stub_GetTalentInfo": {
 "files": [
@@ -130076,7 +130055,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 856
+"line": 855
 },
 "Script_Stub_GetTalentLink": {
 "files": [
@@ -130097,7 +130076,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 857
+"line": 856
 },
 "Script_Stub_GetTalentPrereqs": {
 "files": [
@@ -130118,7 +130097,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 858
+"line": 857
 },
 "Script_Stub_GetTitleText": {
 "files": [
@@ -130139,7 +130118,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 859
+"line": 858
 },
 "Script_Stub_GetTotalAchievementPoints": {
 "files": [
@@ -130160,7 +130139,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 860
+"line": 859
 },
 "Script_Stub_GetTradeSkillCooldown": {
 "files": [
@@ -130181,7 +130160,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 861
+"line": 860
 },
 "Script_Stub_GetTradeSkillDescription": {
 "files": [
@@ -130202,7 +130181,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 862
+"line": 861
 },
 "Script_Stub_GetTradeSkillIcon": {
 "files": [
@@ -130223,7 +130202,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 863
+"line": 862
 },
 "Script_Stub_GetTradeSkillInfo": {
 "files": [
@@ -130244,7 +130223,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 864
+"line": 863
 },
 "Script_Stub_GetTradeSkillInvSlotFilter": {
 "files": [
@@ -130265,7 +130244,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 865
+"line": 864
 },
 "Script_Stub_GetTradeSkillInvSlots": {
 "files": [
@@ -130286,7 +130265,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 866
+"line": 865
 },
 "Script_Stub_GetTradeSkillItemLevelFilter": {
 "files": [
@@ -130307,7 +130286,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 867
+"line": 866
 },
 "Script_Stub_GetTradeSkillItemLink": {
 "files": [
@@ -130328,7 +130307,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 868
+"line": 867
 },
 "Script_Stub_GetTradeSkillItemNameFilter": {
 "files": [
@@ -130349,7 +130328,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 869
+"line": 868
 },
 "Script_Stub_GetTradeSkillLine": {
 "files": [
@@ -130370,7 +130349,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 870
+"line": 869
 },
 "Script_Stub_GetTradeSkillListLink": {
 "files": [
@@ -130391,7 +130370,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 871
+"line": 870
 },
 "Script_Stub_GetTradeSkillNumMade": {
 "files": [
@@ -130412,7 +130391,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 872
+"line": 871
 },
 "Script_Stub_GetTradeSkillNumReagents": {
 "files": [
@@ -130433,7 +130412,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 873
+"line": 872
 },
 "Script_Stub_GetTradeSkillReagentInfo": {
 "files": [
@@ -130454,7 +130433,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 874
+"line": 873
 },
 "Script_Stub_GetTradeSkillReagentItemLink": {
 "files": [
@@ -130475,7 +130454,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 875
+"line": 874
 },
 "Script_Stub_GetTradeSkillRecipeLink": {
 "files": [
@@ -130496,7 +130475,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 876
+"line": 875
 },
 "Script_Stub_GetTradeSkillSelectionIndex": {
 "files": [
@@ -130517,7 +130496,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 877
+"line": 876
 },
 "Script_Stub_GetTradeSkillSubClassFilter": {
 "files": [
@@ -130538,7 +130517,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 878
+"line": 877
 },
 "Script_Stub_GetTradeSkillSubClasses": {
 "files": [
@@ -130559,7 +130538,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 879
+"line": 878
 },
 "Script_Stub_GetTradeSkillTools": {
 "files": [
@@ -130580,7 +130559,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 880
+"line": 879
 },
 "Script_Stub_GetTradeskillRepeatCount": {
 "files": [
@@ -130601,7 +130580,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 881
+"line": 880
 },
 "Script_Stub_GetTrainerGreetingText": {
 "files": [
@@ -130622,7 +130601,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 882
+"line": 881
 },
 "Script_Stub_GetTrainerSelectionIndex": {
 "files": [
@@ -130643,7 +130622,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 883
+"line": 882
 },
 "Script_Stub_GetTrainerServiceAbilityReq": {
 "files": [
@@ -130664,7 +130643,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 884
+"line": 883
 },
 "Script_Stub_GetTrainerServiceCost": {
 "files": [
@@ -130685,7 +130664,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 885
+"line": 884
 },
 "Script_Stub_GetTrainerServiceDescription": {
 "files": [
@@ -130706,7 +130685,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 886
+"line": 885
 },
 "Script_Stub_GetTrainerServiceIcon": {
 "files": [
@@ -130727,7 +130706,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 887
+"line": 886
 },
 "Script_Stub_GetTrainerServiceInfo": {
 "files": [
@@ -130748,7 +130727,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 888
+"line": 887
 },
 "Script_Stub_GetTrainerServiceItemLink": {
 "files": [
@@ -130769,7 +130748,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 889
+"line": 888
 },
 "Script_Stub_GetTrainerServiceLevelReq": {
 "files": [
@@ -130790,7 +130769,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 890
+"line": 889
 },
 "Script_Stub_GetTrainerServiceNumAbilityReq": {
 "files": [
@@ -130811,7 +130790,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 891
+"line": 890
 },
 "Script_Stub_GetTrainerServiceSkillLine": {
 "files": [
@@ -130832,7 +130811,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 892
+"line": 891
 },
 "Script_Stub_GetTrainerServiceSkillReq": {
 "files": [
@@ -130853,7 +130832,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 893
+"line": 892
 },
 "Script_Stub_GetTrainerServiceStepIncrease": {
 "files": [
@@ -130874,7 +130853,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 894
+"line": 893
 },
 "Script_Stub_GetTrainerServiceStepReq": {
 "files": [
@@ -130895,7 +130874,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 895
+"line": 894
 },
 "Script_Stub_GetTrainerServiceTypeFilter": {
 "files": [
@@ -130916,7 +130895,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 896
+"line": 895
 },
 "Script_Stub_GetTrainerSkillLineFilter": {
 "files": [
@@ -130937,7 +130916,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 897
+"line": 896
 },
 "Script_Stub_GetTrainerSkillLines": {
 "files": [
@@ -130958,7 +130937,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 898
+"line": 897
 },
 "Script_Stub_GetVoiceSessionMemberInfoBySessionID": {
 "files": [
@@ -130979,7 +130958,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 899
+"line": 898
 },
 "Script_Stub_GetWatchedFactionInfo": {
 "files": [
@@ -131000,7 +130979,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 900
+"line": 899
 },
 "Script_Stub_GetWhoInfo": {
 "files": [
@@ -131021,7 +131000,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 901
+"line": 900
 },
 "Script_Stub_GetWintergraspWaitTime": {
 "files": [
@@ -131042,7 +131021,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 902
+"line": 901
 },
 "Script_Stub_GetWorldStateUIInfo": {
 "files": [
@@ -131063,7 +131042,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 903
+"line": 902
 },
 "Script_Stub_GiveMasterLoot": {
 "files": [
@@ -131084,7 +131063,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 904
+"line": 903
 },
 "Script_Stub_GlyphMatchesSocket": {
 "files": [
@@ -131105,7 +131084,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 905
+"line": 904
 },
 "Script_Stub_GuildControlAddRank": {
 "files": [
@@ -131126,7 +131105,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 906
+"line": 905
 },
 "Script_Stub_GuildControlDelRank": {
 "files": [
@@ -131147,7 +131126,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 907
+"line": 906
 },
 "Script_Stub_GuildControlGetNumRanks": {
 "files": [
@@ -131165,7 +131144,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 908
+"line": 907
 },
 "Script_Stub_GuildControlGetRankFlags": {
 "files": [
@@ -131186,7 +131165,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 915
+"line": 914
 },
 "Script_Stub_GuildControlGetRankName": {
 "files": [
@@ -131207,7 +131186,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 916
+"line": 915
 },
 "Script_Stub_GuildControlSaveRank": {
 "files": [
@@ -131228,7 +131207,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 917
+"line": 916
 },
 "Script_Stub_GuildControlSetRank": {
 "files": [
@@ -131249,7 +131228,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 918
+"line": 917
 },
 "Script_Stub_GuildControlSetRankFlag": {
 "files": [
@@ -131270,7 +131249,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 919
+"line": 918
 },
 "Script_Stub_GuildRoster": {
 "files": [
@@ -131291,7 +131270,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 920
+"line": 919
 },
 "Script_Stub_GuildRosterSetOfficerNote": {
 "files": [
@@ -131312,7 +131291,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 921
+"line": 920
 },
 "Script_Stub_GuildRosterSetPublicNote": {
 "files": [
@@ -131333,7 +131312,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 922
+"line": 921
 },
 "Script_Stub_HideRepairCursor": {
 "files": [
@@ -131354,7 +131333,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 923
+"line": 922
 },
 "Script_Stub_InRepairMode": {
 "files": [
@@ -131372,7 +131351,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 924
+"line": 923
 },
 "Script_Stub_InboxItemCanDelete": {
 "files": [
@@ -131390,7 +131369,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 930
+"line": 929
 },
 "Script_Stub_IsMouselooking": {
 "files": [
@@ -131411,7 +131390,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 936
+"line": 935
 },
 "Script_Stub_ItemTextGetCreator": {
 "files": [
@@ -131432,7 +131411,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 937
+"line": 936
 },
 "Script_Stub_ItemTextGetItem": {
 "files": [
@@ -131453,7 +131432,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 938
+"line": 937
 },
 "Script_Stub_ItemTextGetMaterial": {
 "files": [
@@ -131474,7 +131453,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 939
+"line": 938
 },
 "Script_Stub_ItemTextGetPage": {
 "files": [
@@ -131495,7 +131474,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 940
+"line": 939
 },
 "Script_Stub_ItemTextGetText": {
 "files": [
@@ -131516,7 +131495,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 941
+"line": 940
 },
 "Script_Stub_ItemTextHasNextPage": {
 "files": [
@@ -131537,7 +131516,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 942
+"line": 941
 },
 "Script_Stub_ItemTextNextPage": {
 "files": [
@@ -131558,7 +131537,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 943
+"line": 942
 },
 "Script_Stub_ItemTextPrevPage": {
 "files": [
@@ -131579,7 +131558,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 944
+"line": 943
 },
 "Script_Stub_JoinChannelByName": {
 "files": [
@@ -131600,7 +131579,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 945
+"line": 944
 },
 "Script_Stub_JoinLFG": {
 "files": [
@@ -131621,7 +131600,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 946
+"line": 945
 },
 "Script_Stub_JoinPermanentChannel": {
 "files": [
@@ -131642,7 +131621,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 947
+"line": 946
 },
 "Script_Stub_JoinTemporaryChannel": {
 "files": [
@@ -131663,7 +131642,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 948
+"line": 947
 },
 "Script_Stub_LFGTeleport": {
 "files": [
@@ -131684,7 +131663,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 949
+"line": 948
 },
 "Script_Stub_LearnPreviewTalents": {
 "files": [
@@ -131705,7 +131684,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 950
+"line": 949
 },
 "Script_Stub_LearnTalent": {
 "files": [
@@ -131726,7 +131705,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 951
+"line": 950
 },
 "Script_Stub_LeaveChannelByName": {
 "files": [
@@ -131747,7 +131726,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 952
+"line": 951
 },
 "Script_Stub_LeaveLFG": {
 "files": [
@@ -131768,7 +131747,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 953
+"line": 952
 },
 "Script_Stub_ListChannelByName": {
 "files": [
@@ -131789,7 +131768,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 954
+"line": 953
 },
 "Script_Stub_ListChannels": {
 "files": [
@@ -131810,7 +131789,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 955
+"line": 954
 },
 "Script_Stub_LoggingChat": {
 "files": [
@@ -131831,7 +131810,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 956
+"line": 955
 },
 "Script_Stub_LoggingCombat": {
 "files": [
@@ -131852,7 +131831,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 957
+"line": 956
 },
 "Script_Stub_LootSlot": {
 "files": [
@@ -131873,7 +131852,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 958
+"line": 957
 },
 "Script_Stub_LootSlotIsCoin": {
 "files": [
@@ -131891,7 +131870,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 959
+"line": 958
 },
 "Script_Stub_LootSlotIsItem": {
 "files": [
@@ -131909,7 +131888,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 965
+"line": 964
 },
 "Script_Stub_MakeMinigameMove": {
 "files": [
@@ -131930,7 +131909,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 971
+"line": 970
 },
 "Script_Stub_ManageBackpackTokenFrame": {
 "files": [
@@ -131951,7 +131930,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 972
+"line": 971
 },
 "Script_Stub_MouselookStart": {
 "files": [
@@ -131972,7 +131951,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 973
+"line": 972
 },
 "Script_Stub_MouselookStop": {
 "files": [
@@ -131993,7 +131972,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 974
+"line": 973
 },
 "Script_Stub_NextView": {
 "files": [
@@ -132014,7 +131993,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 975
+"line": 974
 },
 "Script_Stub_NumTaxiNodes": {
 "files": [
@@ -132035,7 +132014,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 976
+"line": 975
 },
 "Script_Stub_OfferPetition": {
 "files": [
@@ -132056,7 +132035,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 977
+"line": 976
 },
 "Script_Stub_OpenCalendar": {
 "files": [
@@ -132077,7 +132056,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 978
+"line": 977
 },
 "Script_Stub_OpenTrainer": {
 "files": [
@@ -132098,7 +132077,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 979
+"line": 978
 },
 "Script_Stub_PartyLFGStartBackfill": {
 "files": [
@@ -132119,7 +132098,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 980
+"line": 979
 },
 "Script_Stub_PetAbandon": {
 "files": [
@@ -132140,7 +132119,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 981
+"line": 980
 },
 "Script_Stub_PetAggressiveMode": {
 "files": [
@@ -132161,7 +132140,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 982
+"line": 981
 },
 "Script_Stub_PetAttack": {
 "files": [
@@ -132182,7 +132161,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 983
+"line": 982
 },
 "Script_Stub_PetCanBeAbandoned": {
 "files": [
@@ -132200,7 +132179,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 984
+"line": 983
 },
 "Script_Stub_PetCanBeDismissed": {
 "files": [
@@ -132218,7 +132197,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 990
+"line": 989
 },
 "Script_Stub_PetCanBeRenamed": {
 "files": [
@@ -132236,7 +132215,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 996
+"line": 995
 },
 "Script_Stub_PetDefensiveMode": {
 "files": [
@@ -132257,7 +132236,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1002
+"line": 1001
 },
 "Script_Stub_PetDismiss": {
 "files": [
@@ -132278,7 +132257,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1003
+"line": 1002
 },
 "Script_Stub_PetFollow": {
 "files": [
@@ -132299,7 +132278,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1004
+"line": 1003
 },
 "Script_Stub_PetPassiveMode": {
 "files": [
@@ -132320,7 +132299,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1005
+"line": 1004
 },
 "Script_Stub_PetRename": {
 "files": [
@@ -132341,7 +132320,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1006
+"line": 1005
 },
 "Script_Stub_PetStopAttack": {
 "files": [
@@ -132362,7 +132341,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1007
+"line": 1006
 },
 "Script_Stub_PetWait": {
 "files": [
@@ -132383,7 +132362,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1008
+"line": 1007
 },
 "Script_Stub_PitchDownStart": {
 "files": [
@@ -132404,7 +132383,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1009
+"line": 1008
 },
 "Script_Stub_PitchDownStop": {
 "files": [
@@ -132425,7 +132404,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1010
+"line": 1009
 },
 "Script_Stub_PitchUpStart": {
 "files": [
@@ -132446,7 +132425,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1011
+"line": 1010
 },
 "Script_Stub_PitchUpStop": {
 "files": [
@@ -132467,7 +132446,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1012
+"line": 1011
 },
 "Script_Stub_PlaceAuctionBid": {
 "files": [
@@ -132488,7 +132467,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1013
+"line": 1012
 },
 "Script_Stub_PlaceGlyphInSocket": {
 "files": [
@@ -132509,7 +132488,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1014
+"line": 1013
 },
 "Script_Stub_PlayDance": {
 "files": [
@@ -132530,7 +132509,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1015
+"line": 1014
 },
 "Script_Stub_PositionMiniWorldMapArrowFrame": {
 "files": [
@@ -132551,7 +132530,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1016
+"line": 1015
 },
 "Script_Stub_PositionWorldMapArrowFrame": {
 "files": [
@@ -132572,7 +132551,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1017
+"line": 1016
 },
 "Script_Stub_PrevView": {
 "files": [
@@ -132593,7 +132572,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1018
+"line": 1017
 },
 "Script_Stub_ProcessMapClick": {
 "files": [
@@ -132614,7 +132593,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1019
+"line": 1018
 },
 "Script_Stub_ProcessQuestLogRewardFactions": {
 "files": [
@@ -132635,7 +132614,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1020
+"line": 1019
 },
 "Script_Stub_PurchaseSlot": {
 "files": [
@@ -132656,7 +132635,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1021
+"line": 1020
 },
 "Script_Stub_QuestChooseRewardError": {
 "files": [
@@ -132677,7 +132656,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1022
+"line": 1021
 },
 "Script_Stub_QuestFlagsPVP": {
 "files": [
@@ -132698,7 +132677,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1023
+"line": 1022
 },
 "Script_Stub_QuestGetAutoAccept": {
 "files": [
@@ -132719,7 +132698,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1024
+"line": 1023
 },
 "Script_Stub_QuestIsDaily": {
 "files": [
@@ -132740,7 +132719,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1025
+"line": 1024
 },
 "Script_Stub_QuestIsWeekly": {
 "files": [
@@ -132761,7 +132740,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1026
+"line": 1025
 },
 "Script_Stub_QuestLogPushQuest": {
 "files": [
@@ -132782,7 +132761,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1027
+"line": 1026
 },
 "Script_Stub_QuestMapUpdateAllQuests": {
 "files": [
@@ -132803,7 +132782,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1028
+"line": 1027
 },
 "Script_Stub_QuestPOIGetIconInfo": {
 "files": [
@@ -132824,7 +132803,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1029
+"line": 1028
 },
 "Script_Stub_QuestPOIGetQuestIDByIndex": {
 "files": [
@@ -132845,7 +132824,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1030
+"line": 1029
 },
 "Script_Stub_QuestPOIGetQuestIDByVisibleIndex": {
 "files": [
@@ -132866,7 +132845,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1031
+"line": 1030
 },
 "Script_Stub_QuestPOIUpdateIcons": {
 "files": [
@@ -132887,7 +132866,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1032
+"line": 1031
 },
 "Script_Stub_QuestPOIUpdateTexture": {
 "files": [
@@ -132908,7 +132887,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1033
+"line": 1032
 },
 "Script_Stub_RejectProposal": {
 "files": [
@@ -132929,7 +132908,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1034
+"line": 1033
 },
 "Script_Stub_RenameEquipmentSet": {
 "files": [
@@ -132950,7 +132929,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1035
+"line": 1034
 },
 "Script_Stub_RenamePetition": {
 "files": [
@@ -132971,7 +132950,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1036
+"line": 1035
 },
 "Script_Stub_RepairAllItems": {
 "files": [
@@ -132992,7 +132971,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1037
+"line": 1036
 },
 "Script_Stub_RespondMailLockSendItem": {
 "files": [
@@ -133013,7 +132992,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1038
+"line": 1037
 },
 "Script_Stub_ReturnInboxItem": {
 "files": [
@@ -133034,7 +133013,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1039
+"line": 1038
 },
 "Script_Stub_RollOnLoot": {
 "files": [
@@ -133055,7 +133034,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1040
+"line": 1039
 },
 "Script_Stub_RunMacro": {
 "files": [
@@ -133076,7 +133055,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1041
+"line": 1040
 },
 "Script_Stub_RunMacroText": {
 "files": [
@@ -133097,7 +133076,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1042
+"line": 1041
 },
 "Script_Stub_SaveEquipmentSet": {
 "files": [
@@ -133118,7 +133097,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1043
+"line": 1042
 },
 "Script_Stub_SaveView": {
 "files": [
@@ -133139,7 +133118,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1044
+"line": 1043
 },
 "Script_Stub_SearchLFGGetEncounterResults": {
 "files": [
@@ -133160,7 +133139,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1045
+"line": 1044
 },
 "Script_Stub_SearchLFGGetJoinedID": {
 "files": [
@@ -133181,7 +133160,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1046
+"line": 1045
 },
 "Script_Stub_SearchLFGGetNumResults": {
 "files": [
@@ -133202,7 +133181,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1047
+"line": 1046
 },
 "Script_Stub_SearchLFGGetPartyResults": {
 "files": [
@@ -133223,7 +133202,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1048
+"line": 1047
 },
 "Script_Stub_SearchLFGGetResults": {
 "files": [
@@ -133244,7 +133223,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1049
+"line": 1048
 },
 "Script_Stub_SearchLFGJoin": {
 "files": [
@@ -133265,7 +133244,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1050
+"line": 1049
 },
 "Script_Stub_SearchLFGLeave": {
 "files": [
@@ -133286,7 +133265,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1051
+"line": 1050
 },
 "Script_Stub_SearchLFGSort": {
 "files": [
@@ -133307,7 +133286,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1052
+"line": 1051
 },
 "Script_Stub_SecureCmdOptionParse": {
 "files": [
@@ -133328,7 +133307,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1053
+"line": 1052
 },
 "Script_Stub_SelectActiveQuest": {
 "files": [
@@ -133349,7 +133328,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1054
+"line": 1053
 },
 "Script_Stub_SelectAvailableQuest": {
 "files": [
@@ -133370,7 +133349,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1055
+"line": 1054
 },
 "Script_Stub_SelectGossipActiveQuest": {
 "files": [
@@ -133391,7 +133370,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1056
+"line": 1055
 },
 "Script_Stub_SelectGossipAvailableQuest": {
 "files": [
@@ -133412,7 +133391,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1057
+"line": 1056
 },
 "Script_Stub_SelectGossipOption": {
 "files": [
@@ -133433,7 +133412,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1058
+"line": 1057
 },
 "Script_Stub_SelectPackage": {
 "files": [
@@ -133454,7 +133433,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1059
+"line": 1058
 },
 "Script_Stub_SelectStationery": {
 "files": [
@@ -133475,7 +133454,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1060
+"line": 1059
 },
 "Script_Stub_SelectTradeSkill": {
 "files": [
@@ -133496,7 +133475,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1061
+"line": 1060
 },
 "Script_Stub_SelectTrainerService": {
 "files": [
@@ -133517,7 +133496,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1062
+"line": 1061
 },
 "Script_Stub_ShiftQuestWatches": {
 "files": [
@@ -133538,7 +133517,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1063
+"line": 1062
 },
 "Script_Stub_ShowBuybackSellCursor": {
 "files": [
@@ -133559,7 +133538,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1064
+"line": 1063
 },
 "Script_Stub_ShowContainerSellCursor": {
 "files": [
@@ -133580,7 +133559,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1065
+"line": 1064
 },
 "Script_Stub_ShowFriends": {
 "files": [
@@ -133601,7 +133580,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1066
+"line": 1065
 },
 "Script_Stub_ShowMerchantSellCursor": {
 "files": [
@@ -133622,7 +133601,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1067
+"line": 1066
 },
 "Script_Stub_ShowMiniWorldMapArrowFrame": {
 "files": [
@@ -133643,7 +133622,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1068
+"line": 1067
 },
 "Script_Stub_ShowQuickButton": {
 "files": [
@@ -133664,7 +133643,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1069
+"line": 1068
 },
 "Script_Stub_ShowRepairCursor": {
 "files": [
@@ -133685,7 +133664,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1070
+"line": 1069
 },
 "Script_Stub_ShowWorldMapArrowFrame": {
 "files": [
@@ -133706,7 +133685,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1071
+"line": 1070
 },
 "Script_Stub_SignPetition": {
 "files": [
@@ -133727,7 +133706,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1072
+"line": 1071
 },
 "Script_Stub_SocketContainerItem": {
 "files": [
@@ -133748,7 +133727,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1073
+"line": 1072
 },
 "Script_Stub_SpellCanTargetGlyph": {
 "files": [
@@ -133769,7 +133748,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1074
+"line": 1073
 },
 "Script_Stub_SpellCanTargetItem": {
 "files": [
@@ -133787,7 +133766,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1075
+"line": 1074
 },
 "Script_Stub_SpellCanTargetUnit": {
 "files": [
@@ -133808,7 +133787,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1081
+"line": 1080
 },
 "Script_Stub_SpellHasRange": {
 "files": [
@@ -133829,7 +133808,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1082
+"line": 1081
 },
 "Script_Stub_SpellIsTargeting": {
 "files": [
@@ -133847,7 +133826,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1083
+"line": 1082
 },
 "Script_Stub_SpellStopCasting": {
 "files": [
@@ -133868,7 +133847,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1089
+"line": 1088
 },
 "Script_Stub_SpellStopTargeting": {
 "files": [
@@ -133889,7 +133868,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1090
+"line": 1089
 },
 "Script_Stub_SpellTargetItem": {
 "files": [
@@ -133910,7 +133889,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1091
+"line": 1090
 },
 "Script_Stub_SpellTargetUnit": {
 "files": [
@@ -133931,7 +133910,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1092
+"line": 1091
 },
 "Script_Stub_SplitContainerItem": {
 "files": [
@@ -133952,7 +133931,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1093
+"line": 1092
 },
 "Script_Stub_SplitGuildBankItem": {
 "files": [
@@ -133973,7 +133952,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1094
+"line": 1093
 },
 "Script_Stub_StablePet": {
 "files": [
@@ -133994,7 +133973,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1095
+"line": 1094
 },
 "Script_Stub_StrafeLeftStart": {
 "files": [
@@ -134015,7 +133994,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1096
+"line": 1095
 },
 "Script_Stub_StrafeLeftStop": {
 "files": [
@@ -134036,7 +134015,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1097
+"line": 1096
 },
 "Script_Stub_StrafeRightStart": {
 "files": [
@@ -134057,7 +134036,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1098
+"line": 1097
 },
 "Script_Stub_StrafeRightStop": {
 "files": [
@@ -134078,7 +134057,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1099
+"line": 1098
 },
 "Script_Stub_SummonRandomCritter": {
 "files": [
@@ -134099,7 +134078,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1100
+"line": 1099
 },
 "Script_Stub_TakeInboxItem": {
 "files": [
@@ -134120,7 +134099,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1101
+"line": 1100
 },
 "Script_Stub_TakeInboxMoney": {
 "files": [
@@ -134141,7 +134120,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1102
+"line": 1101
 },
 "Script_Stub_TakeInboxTextItem": {
 "files": [
@@ -134162,7 +134141,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1103
+"line": 1102
 },
 "Script_Stub_TakeTaxiNode": {
 "files": [
@@ -134183,7 +134162,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1104
+"line": 1103
 },
 "Script_Stub_TaxiGetDestX": {
 "files": [
@@ -134204,7 +134183,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1105
+"line": 1104
 },
 "Script_Stub_TaxiGetDestY": {
 "files": [
@@ -134225,7 +134204,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1106
+"line": 1105
 },
 "Script_Stub_TaxiGetSrcX": {
 "files": [
@@ -134246,7 +134225,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1107
+"line": 1106
 },
 "Script_Stub_TaxiGetSrcY": {
 "files": [
@@ -134267,7 +134246,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1108
+"line": 1107
 },
 "Script_Stub_TaxiNodeCost": {
 "files": [
@@ -134288,7 +134267,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1109
+"line": 1108
 },
 "Script_Stub_TaxiNodeGetType": {
 "files": [
@@ -134309,7 +134288,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1110
+"line": 1109
 },
 "Script_Stub_TaxiNodeName": {
 "files": [
@@ -134330,7 +134309,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1111
+"line": 1110
 },
 "Script_Stub_TaxiNodePosition": {
 "files": [
@@ -134351,7 +134330,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1112
+"line": 1111
 },
 "Script_Stub_TaxiNodeSetCurrent": {
 "files": [
@@ -134372,7 +134351,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1113
+"line": 1112
 },
 "Script_Stub_TeleportToDebugObject": {
 "files": [
@@ -134393,7 +134372,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1114
+"line": 1113
 },
 "Script_Stub_TradeSkillOnlyShowMakeable": {
 "files": [
@@ -134414,7 +134393,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1115
+"line": 1114
 },
 "Script_Stub_TradeSkillOnlyShowSkillUps": {
 "files": [
@@ -134435,7 +134414,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1116
+"line": 1115
 },
 "Script_Stub_UnitHasLFGDeserter": {
 "files": [
@@ -134453,7 +134432,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1117
+"line": 1116
 },
 "Script_Stub_UnitHasLFGRandomCooldown": {
 "files": [
@@ -134471,7 +134450,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1123
+"line": 1122
 },
 "Script_Stub_UnitIsSilenced": {
 "files": [
@@ -134489,7 +134468,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1129
+"line": 1128
 },
 "Script_Stub_UnitIsTalking": {
 "files": [
@@ -134507,7 +134486,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1135
+"line": 1134
 },
 "Script_Stub_UnstablePet": {
 "files": [
@@ -134528,7 +134507,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1141
+"line": 1140
 },
 "Script_Stub_UpdateMapHighlight": {
 "files": [
@@ -134549,7 +134528,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1142
+"line": 1141
 },
 "Script_Stub_UpdateWorldMapArrowFrames": {
 "files": [
@@ -134570,7 +134549,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1143
+"line": 1142
 },
 "Script_Stub_VehicleAimDecrement": {
 "files": [
@@ -134591,7 +134570,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1144
+"line": 1143
 },
 "Script_Stub_VehicleAimDownStart": {
 "files": [
@@ -134612,7 +134591,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1145
+"line": 1144
 },
 "Script_Stub_VehicleAimDownStop": {
 "files": [
@@ -134633,7 +134612,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1146
+"line": 1145
 },
 "Script_Stub_VehicleAimGetAngle": {
 "files": [
@@ -134654,7 +134633,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1147
+"line": 1146
 },
 "Script_Stub_VehicleAimGetNormAngle": {
 "files": [
@@ -134675,7 +134654,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1148
+"line": 1147
 },
 "Script_Stub_VehicleAimGetNormPower": {
 "files": [
@@ -134696,7 +134675,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1149
+"line": 1148
 },
 "Script_Stub_VehicleAimIncrement": {
 "files": [
@@ -134717,7 +134696,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1150
+"line": 1149
 },
 "Script_Stub_VehicleAimRequestAngle": {
 "files": [
@@ -134738,7 +134717,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1151
+"line": 1150
 },
 "Script_Stub_VehicleAimRequestNormAngle": {
 "files": [
@@ -134759,7 +134738,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1152
+"line": 1151
 },
 "Script_Stub_VehicleAimSetNormPower": {
 "files": [
@@ -134780,7 +134759,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1153
+"line": 1152
 },
 "Script_Stub_VehicleAimUpStart": {
 "files": [
@@ -134801,7 +134780,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1154
+"line": 1153
 },
 "Script_Stub_VehicleAimUpStop": {
 "files": [
@@ -134822,7 +134801,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1155
+"line": 1154
 },
 "Script_Stub_VehicleCameraZoomIn": {
 "files": [
@@ -134843,7 +134822,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1156
+"line": 1155
 },
 "Script_Stub_VehicleCameraZoomOut": {
 "files": [
@@ -134864,7 +134843,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1157
+"line": 1156
 },
 "Script_Stub_VehicleExit": {
 "files": [
@@ -134885,7 +134864,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1158
+"line": 1157
 },
 "Script_Stub_VehicleNextSeat": {
 "files": [
@@ -134906,7 +134885,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1159
+"line": 1158
 },
 "Script_Stub_VehiclePrevSeat": {
 "files": [
@@ -134927,7 +134906,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1160
+"line": 1159
 },
 "Script_Stub_VoiceEnumerateCaptureDevices": {
 "files": [
@@ -134948,7 +134927,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1161
+"line": 1160
 },
 "Script_Stub_VoiceEnumerateOutputDevices": {
 "files": [
@@ -134969,7 +134948,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1162
+"line": 1161
 },
 "Script_Stub_VoiceGetCurrentCaptureDevice": {
 "files": [
@@ -134990,7 +134969,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1163
+"line": 1162
 },
 "Script_Stub_VoiceGetCurrentOutputDevice": {
 "files": [
@@ -135011,7 +134990,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1164
+"line": 1163
 },
 "Script_Stub_VoiceIsDisabledByClient": {
 "files": [
@@ -135029,7 +135008,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1165
+"line": 1164
 },
 "Script_Stub_VoiceSelectCaptureDevice": {
 "files": [
@@ -135050,7 +135029,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1171
+"line": 1170
 },
 "Script_Stub_VoiceSelectOutputDevice": {
 "files": [
@@ -135071,7 +135050,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1172
+"line": 1171
 },
 "Script_Stub_WithdrawGuildBankMoney": {
 "files": [
@@ -135092,7 +135071,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1173
+"line": 1172
 },
 "Script_Stub_ZoomOut": {
 "files": [
@@ -135113,7 +135092,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 1174
+"line": 1173
 },
 "MiscScriptRegisterStubs": {
 "files": [
@@ -135128,7 +135107,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2167
+"line": 2165
 },
 "Script_GetNumPartyMembers": {
 "files": [

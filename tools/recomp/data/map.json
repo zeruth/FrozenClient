@@ -22073,6 +22073,21 @@
   "refSize": 650,
   "status": "ported"
  },
+ "005d7820": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.391,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetContainerFreeSlots",
+  "frozenSize": 472,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 610,
+  "status": "ported"
+ },
  "005d7a90": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,

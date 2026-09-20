@@ -365,6 +365,66 @@ int32_t Script_GetContainerNumFreeSlots(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_005d7820
+// GetContainerFreeSlots(index [, returnTable]) -> table of the empty slot numbers.
+//
+// Returns a TABLE, not a list of values -- the sibling that returns numbers is
+// GetContainerNumFreeSlots. A caller may pass its own table in to be filled, which is what the
+// second argument is for and why this allocates only when it has to.
+//
+// The reference does NOT clear a table it was given: it writes indices from 1 upward and leaves
+// whatever was past the end. A caller reusing one table for a bag that emptied and then filled
+// sees stale entries after the new ones, and FrameXML is written knowing that.
+int32_t Script_GetContainerFreeSlots(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetContainerFreeSlots(index [, returnTable])");
+
+        return 0;
+    }
+
+    auto bag = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        lua_newtable(L);
+    } else {
+        lua_pushvalue(L, 2);
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+    int32_t next = 1;
+
+    auto record = [&](int32_t slot) {
+        lua_checkstack(L, 2);
+        lua_pushnumber(L, static_cast<double>(next));
+        lua_pushnumber(L, static_cast<double>(slot));
+        lua_settable(L, -3);
+        next++;
+    };
+
+    if (data && bag == 0) {
+        for (int32_t slot = 0; slot < BACKPACK_SLOTS; slot++) {
+            if (!data->packSlots[slot]) {
+                record(slot + 1);
+            }
+        }
+    } else if (data && bag >= 1 && bag <= NUM_BAG_SLOTS) {
+        auto bagObject = ClntObjMgrObjectPtr(
+            data->invSlots[INVSLOT_BAGFIRST + bag - 1], TYPE_CONTAINER, __FILE__, __LINE__
+        );
+
+        auto container = bagObject ? static_cast<CGContainer_C*>(bagObject)->Container() : nullptr;
+
+        for (uint32_t slot = 0; container && slot < container->numSlots; slot++) {
+            if (!container->slots[slot]) {
+                record(static_cast<int32_t>(slot) + 1);
+            }
+        }
+    }
+
+    return 1;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
@@ -374,6 +434,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerItemDurability", &Script_GetContainerItemDurability },
     { "GetBagName",             &Script_GetBagName },
     { "GetContainerNumFreeSlots", &Script_GetContainerNumFreeSlots },
+    { "GetContainerFreeSlots",  &Script_GetContainerFreeSlots },
 };
 
 } // namespace

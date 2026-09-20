@@ -578,7 +578,6 @@ WHOA_LUA_STUB(GetCompanionCooldown)
 WHOA_LUA_STUB(GetComparisonAchievementPoints)
 WHOA_LUA_STUB(GetComparisonCategoryNumAchievements)
 WHOA_LUA_STUB(GetComparisonStatistic)
-WHOA_LUA_STUB(GetContainerFreeSlots)
 WHOA_LUA_STUB(GetContainerItemCooldown)
 WHOA_LUA_STUB(GetContainerItemGems)
 WHOA_LUA_STUB(GetContainerItemPurchaseInfo)
@@ -1696,7 +1695,6 @@ const ScriptFunction s_stubs[] = {
     { "GetComparisonAchievementPoints",          &Script_Stub_GetComparisonAchievementPoints },
     { "GetComparisonCategoryNumAchievements",    &Script_Stub_GetComparisonCategoryNumAchievements },
     { "GetComparisonStatistic",                  &Script_Stub_GetComparisonStatistic },
-    { "GetContainerFreeSlots",                   &Script_Stub_GetContainerFreeSlots },
     { "GetContainerItemCooldown",                &Script_Stub_GetContainerItemCooldown },
     { "GetContainerItemGems",                    &Script_Stub_GetContainerItemGems },
     { "GetContainerItemPurchaseInfo",            &Script_Stub_GetContainerItemPurchaseInfo },

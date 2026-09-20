@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:53 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2756 (+1) (10.1%) | 587.4k (10.6%) |
-| &nbsp;&nbsp;ported | 2230 (+1) | 444.1k |
+| mapped to a frozen function | 2757 (+1) (10.2%) | 588.0k (10.6%) |
+| &nbsp;&nbsp;ported | 2231 (+1) | 444.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 486 (=) | 104.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1034 (=) (3.8%)** | **128.0k (2.3%)** |
-| unmapped | 24406 | 4.83M |
+| unmapped | 24405 | 4.83M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
 | frozen functions (src/, from PDB + source) | 11588, stubs 744 | |
 
-Match evidence: annotated 692, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 987. Module anchors: 1479 assert strings.
+Match evidence: annotated 693, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 987. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:44 -- mapped 2755, ported 2229, stub 486, spine mapped 412.
+Previous run: 2026-09-20 01:51 -- mapped 2756, ported 2230, stub 486, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 555 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1800 of them (+1); 555 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -69,10 +69,10 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acfb78 (SaveEquipmentSet..) | 17 | `s_ScriptFunctions` | 15 | 0 | SaveEquipmentSet, DeleteEquipmentSet, RenameEquipmentSet, EquipmentManagerIgnoreSlotForSave, EquipmentManagerIsSlotIgnoredForSave, EquipmentManagerClearIgnoredSlotsForSave ... |
 | 00acee28 (SetLootPortrait..) | 17 | `s_ScriptFunctions` | 14 | 0 | SetLootPortrait, GetLootSlotInfo, GetLootSlotLink, LootSlotIsItem, LootSlotIsCoin, LootSlot ... |
 | 00acfaf8 (GetGMTicket..) | 15 | `s_ScriptFunctions` | 0 | 14 |  / stubs: GetGMTicket, NewGMTicket, UpdateGMTicket, DeleteGMTicket ... |
-| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 14 | 0 | GetContainerItemCooldown, PickupContainerItem, SplitContainerItem, UseContainerItem, SocketContainerItem, ShowContainerSellCursor ... |
 | 00b2d928 (PlaySound..) | 23 | `SI2::s_ScriptFunctions` | 0 | 14 |  / stubs: PlayMusic, PlaySoundFile, StopMusic, Sound_GameSystem_RestartSoundSystem ... |
 | 00acf258 (SetTaxiMap..) | 14 | `s_ScriptFunctions` | 13 | 0 | SetTaxiMap, NumTaxiNodes, TaxiNodeName, TaxiNodePosition, TaxiNodeCost, TakeTaxiNode ... |
 | 00ad0ae8 (GetNumFactions..) | 15 | `s_ScriptFunctions` | 13 | 0 | GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex, FactionToggleAtWar, CollapseFactionHeader ... |
+| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 13 | 0 | GetContainerItemCooldown, PickupContainerItem, SplitContainerItem, UseContainerItem, SocketContainerItem, ShowContainerSellCursor ... |
 | 00acedb0 (CloseTrade..) | 14 | `s_ScriptFunctions` | 0 | 12 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
 | 00acd418 (AccountMsg_LoadHeaders..) | 11 | `-` | 11 | 0 | AccountMsg_LoadHeaders, AccountMsg_GetNumTotalMsgs, AccountMsg_GetNumUnreadMsgs, AccountMsg_GetNumUnreadUrgentMsgs, AccountMsg_GetIndexHighestPriorityUnreadMsg, AccountMsg_GetIndexNextUnreadMsg ... |
 | 00acf768 (ClosePetStables..) | 14 | `s_ScriptFunctions` | 11 | 0 | ClosePetStables, StablePet, UnstablePet, BuyStableSlot, GetStablePetInfo, GetNextStableSlotCost ... |
@@ -264,7 +264,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | UIBindings.cpp | 59 | 11.5k | 18 (30.5%) | 35.2% | 15 | 0 | 4 |
 | CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 8 (10.7%) | 11.6% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
-| ContainerFrame.cpp | 32 | 11.2k | 7 (21.9%) | 18.7% | 0 | 0 | 0 |
+| ContainerFrame.cpp | 32 | 11.2k | 8 (25.0%) | 24.0% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
 | ConsoleClient.cpp | 52 | 10.3k | 9 (17.3%) | 13.0% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:57 | 2733 (10.1%) | 1021 (3.8%) | 498 | 407/5531 | 1792/2964 | 567 |
 | 2026-09-20 00:01 | 2735 (10.1%) | 1022 (3.8%) | 497 | 409/5531 | 1792/2964 | 566 |
 | 2026-09-20 00:07 | 2736 (10.1%) | 1024 (3.8%) | 496 | 410/5531 | 1792/2964 | 565 |
 | 2026-09-20 00:10 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:39 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:44 | 2755 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:51 | 2756 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
+| 2026-09-20 01:53 | 2757 (10.2%) | 1034 (3.8%) | 486 | 412/5531 | 1800/2964 | 555 |
 
 ## How to move a row
 
