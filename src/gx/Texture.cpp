@@ -1064,6 +1064,10 @@ HTEXTURE TextureCreateSolid(const CImVector& color) {
     return textureHandle;
 }
 
+// ref: FUN_004b6610
+// Takes the texture unchecked, by design: the reference dereferences it on the first line too
+// (asyncObject, its +0x40), and both of its call sites in CSimpleTexture test for null first.
+// Do not add a null check here to paper over a caller that is missing one.
 int32_t TextureGetDimensions(CTexture* texture, uint32_t* width, uint32_t* height, int32_t force) {
     if (texture->asyncObject) {
         if (!force) {

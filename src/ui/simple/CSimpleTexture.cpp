@@ -123,10 +123,16 @@ void CSimpleTexture::Draw(CRenderBatch* batch) {
     }
 }
 
+// ref: FUN_00481850
+// The m_texture null check is not defensive padding -- the reference has it, and dropping it is
+// what crashed the client on the login screen. TextureGetDimensions dereferences its argument
+// straight away (asyncObject first), in the reference exactly as here, so the caller is where the
+// check belongs. A texture region reaches this with no texture whenever it has no size of its own
+// and no file has been set yet, which the glue screen does during layout.
 float CSimpleTexture::GetHeight() {
     float layoutHeight = CLayoutFrame::GetHeight();
 
-    if (layoutHeight != 0.0f) {
+    if (layoutHeight != 0.0f || !this->m_texture) {
         return layoutHeight;
     }
 
@@ -155,10 +161,12 @@ void CSimpleTexture::GetTexCoord(C2Vector* texCoord) {
     texCoord[3] = { this->m_texCoord[3].x, this->m_texCoord[3].y };
 }
 
+// ref: FUN_004817d0
+// Same guard as GetHeight above, and the same reason.
 float CSimpleTexture::GetWidth() {
     float layoutWidth = CLayoutFrame::GetWidth();
 
-    if (layoutWidth != 0.0f) {
+    if (layoutWidth != 0.0f || !this->m_texture) {
         return layoutWidth;
     }
 
