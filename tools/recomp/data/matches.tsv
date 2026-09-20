@@ -1614,7 +1614,6 @@ addr	how	frozen	evidence
 00614d40	table	Script_UnitAura	binding "UnitAura" in s_UnitFunctions ~ table 00ad21d8
 00614e60	table	Script_GetVehicleUIIndicator	binding "GetVehicleUIIndicator" in s_UnitFunctions ~ table 00ad21d8
 00614ef0	table	Script_GetVehicleUIIndicatorSeat	binding "GetVehicleUIIndicatorSeat" in s_UnitFunctions ~ table 00ad21d8
-00615020	override	FrameScript_SignalEvent	
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
 0061b040	override	StringToTooltipAnchor	

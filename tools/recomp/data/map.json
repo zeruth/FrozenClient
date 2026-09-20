@@ -19677,7 +19677,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/CGMinimapFrame.cpp",
    "src/ui/game/cgminimapframe.cpp"
@@ -19756,8 +19756,8 @@
  "0057ea30": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/CGMinimapFrame.cpp",
    "src/ui/game/cgminimapframe.cpp"
@@ -25706,22 +25706,6 @@
   "module": "ScriptEvents.cpp",
   "refSize": 214,
   "status": "stub"
- },
- "00615020": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/FrameScript.cpp",
-   "src/ui/framescript.cpp"
-  ],
-  "frozen": "FrameScript_SignalEvent",
-  "frozenSize": 1210,
-  "how": "override",
-  "module": "ScriptEvents.cpp",
-  "refSize": 34,
-  "status": "ported"
  },
  "0061a280": {
   "branchRatio": 0.727,
