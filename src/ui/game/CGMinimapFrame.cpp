@@ -1,4 +1,6 @@
 #include "ui/game/CGMinimapFrame.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/AuraCache.hpp"
 #include "object/client/SpellBook.hpp"
 #include "db/Db.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
@@ -152,6 +154,54 @@ const MINIMAP_TRACKING_TYPE* CGMinimapFrame::GetOtherTrackingType(uint32_t index
     }
 
     return nullptr;
+}
+
+// ref: FUN_0057ea30
+// Setting a tracking spell drops whatever table row was selected: the two halves of the tracking
+// list share one slot, and only one thing is ever tracked. SetOtherTracking signals the update in
+// that case; clearing has to signal for itself.
+void CGMinimapFrame::SetTrackingSpell(uint32_t spellID) {
+    CGMinimapFrame::s_trackingSpell = spellID;
+
+    if (spellID) {
+        CGMinimapFrame::SetOtherTracking(nullptr);
+
+        return;
+    }
+
+    FrameScript_SignalEvent(SCRIPT_MINIMAP_UPDATE_TRACKING, nullptr);
+}
+
+// The reference drives this from the aura-applied path (FUN_00727760): an aura landing on the
+// active player whose spell is in the tracking list becomes the tracked one. Frozen's auras arrive
+// as a whole list rather than one application at a time, so this recomputes from what is currently
+// on the player.
+//
+// Recomputing also covers the aura going away, which the reference handles on a separate path --
+// one place here instead of two, and the observable state is the same.
+void CGMinimapFrame::RefreshTrackingSpell() {
+    auto player = ClntObjMgrGetActivePlayer();
+    uint32_t tracking = 0;
+
+    if (player) {
+        auto count = AuraCacheCount(player, 0, 0);
+
+        for (int32_t i = 0; i < count; i++) {
+            auto aura = AuraCacheGet(player, i, 0, 0);
+
+            if (aura && CGMinimapFrame::IsTrackingSpell(static_cast<uint32_t>(aura->spellID))) {
+                tracking = static_cast<uint32_t>(aura->spellID);
+
+                break;
+            }
+        }
+    }
+
+    // Guarded so an unrelated aura change does not re-signal, and does not clear the selected
+    // table row every time a buff ticks.
+    if (tracking != CGMinimapFrame::s_trackingSpell) {
+        CGMinimapFrame::SetTrackingSpell(tracking);
+    }
 }
 
 // ref: FUN_0057e070

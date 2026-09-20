@@ -681,9 +681,11 @@ addr	how	frozen	evidence
 004e3530	table	Script_DeclineCharacter	binding "DeclineCharacter" in s_ScriptFunctions ~ table 00ac4378
 004e3620	table	Script_GetSelectBackgroundModel	binding "GetSelectBackgroundModel" in s_ScriptFunctions ~ table 00ac4378
 004e3c10	callgraph	CCharacterSelection::SetBackgroundModel	only unmatched callee of 004e44e0=Script_SetCharSelectBackground
+004e3cd0	callgraph	CCharacterSelection::ShowCharacter	only unmatched callee of 004e4580=Script_SelectCharacter
 004e44e0	table	Script_SetCharSelectBackground	binding "SetCharSelectBackground" in s_ScriptFunctions ~ table 00ac4378
 004e4580	table	Script_SelectCharacter	binding "SelectCharacter" in s_ScriptFunctions ~ table 00ac4378
 004e63a0	callorder	CNameGenerator::Generate	same slot between linked calls in 004dfca0=Script_GetRandomName
+004e6ae0	callorder	CGlueLoading::StartLoad	same slot between linked calls in 004e3cd0=CCharacterSelection::ShowCharacter
 004e6be0	annotated	CSimpleModelFFX_ResetLights	tag in src/ui/simple/CSimpleModelFFXScript.cpp
 004e6c60	annotated	CSimpleModelFFX_AddLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
 004e6d60	annotated	CSimpleModelFFX_AddCharacterLight	tag in src/ui/simple/CSimpleModelFFXScript.cpp
@@ -1237,6 +1239,7 @@ addr	how	frozen	evidence
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e280	annotated	CGMinimapFrame_SetPlayerTextureWidth	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e980	annotated	CGMinimapFrame::GetNumOtherTrackingTypes	tag in src/ui/game/CGMinimapFrame.cpp
+0057ea30	annotated	CGMinimapFrame::SetTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 0057eb00	annotated	CGMinimapFrame::GetOtherTrackingType	tag in src/ui/game/CGMinimapFrame.cpp
 0057ed70	table	CGMinimapFrame_PingLocation	binding "PingLocation" in CGMinimapFrameMethods ~ table 00acebb8
 0057efe0	table	CGMinimapFrame_GetPingPosition	binding "GetPingPosition" in CGMinimapFrameMethods ~ table 00acebb8
@@ -1611,6 +1614,7 @@ addr	how	frozen	evidence
 00614d40	table	Script_UnitAura	binding "UnitAura" in s_UnitFunctions ~ table 00ad21d8
 00614e60	table	Script_GetVehicleUIIndicator	binding "GetVehicleUIIndicator" in s_UnitFunctions ~ table 00ad21d8
 00614ef0	table	Script_GetVehicleUIIndicatorSeat	binding "GetVehicleUIIndicatorSeat" in s_UnitFunctions ~ table 00ad21d8
+00615020	override	FrameScript_SignalEvent	
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
 0061b040	override	StringToTooltipAnchor	
@@ -1998,7 +2002,7 @@ addr	how	frozen	evidence
 0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was sticky
 0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was sticky
 0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was sticky
-0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d9bd0=CGlueMgr::EnterWorld
+0081b530	override	FrameScript_SignalEvent	
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848
 0081b820	table	Script_GetCurrentKeyBoardFocus	binding "GetCurrentKeyBoardFocus" in s_ScriptFunctions ~ table 00af5848

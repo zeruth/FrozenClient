@@ -1,4 +1,6 @@
 #include "object/client/AuraCache.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "ui/game/CGMinimapFrame.hpp"
 #include "ui/game/Types.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/ScriptUtil.hpp"
@@ -159,6 +161,12 @@ void AuraCacheClear() {
 // is not -- it is a bitfield of aura *categories* for spell requirements, not the aura list -- so
 // the mirror deliberately leaves UNIT_AURA alone and it belongs here, where the auras arrive.
 static void SignalAuraChange(WOWGUID target) {
+    // Which tracking spell is active is an aura on the player, so it is recomputed here rather
+    // than tracked by the minimap on its own. Does nothing unless the answer changed.
+    if (target == ClntObjMgrGetActivePlayer()) {
+        CGMinimapFrame::RefreshTrackingSpell();
+    }
+
     auto token = Script_GetTokenFromGUID(target);
 
     if (token) {

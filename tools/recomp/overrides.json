@@ -1183,5 +1183,15 @@
     "frozen": "Script_UnitAttackSpeed",
     "status": "diverged",
     "note": "One gate is skipped. When the unit is the ACTIVE player, the reference requires FUN_006ceb00 -- which is just \"DAT_00c9eac8 != 0\" -- before reporting the off-hand time, and what sets that global is not identified. It is skipped here. The branch it guards is probably unreachable anyway: it is only reached once the off-hand item has already been confirmed to be item class 2 (weapon), and the server will not let a character equip an off-hand weapon without Dual Wield. That is an argument, not evidence, which is why this is recorded rather than treated as faithful. Everything else matches: main hand from attackRoundBaseTime[0], off-hand from [1], both unsigned milliseconds scaled by the 0.001f at 009e1134."
+  },
+  "00615020": {
+    "frozen": "FrameScript_SignalEvent",
+    "status": "ported",
+    "note": "The reference has TWO signal-event functions, one per script context; frozen has one that both sides call, so this name serves both addresses (which overrides.json allows). 00615020 is the game one -- the minimap signals MINIMAP_UPDATE_TRACKING through it as event 0xaa, which is 170. 0081b530 is the glue one -- UpdateCharacterList signals glue events 8 and 7 through it, exactly as frozen does. Pinned because the callgraph matcher kept moving the name between them whenever an edit changed a call sequence."
+  },
+  "0081b530": {
+    "frozen": "FrameScript_SignalEvent",
+    "status": "ported",
+    "note": "The reference has TWO signal-event functions, one per script context; frozen has one that both sides call, so this name serves both addresses (which overrides.json allows). 00615020 is the game one -- the minimap signals MINIMAP_UPDATE_TRACKING through it as event 0xaa, which is 170. 0081b530 is the glue one -- UpdateCharacterList signals glue events 8 and 7 through it, exactly as frozen does. Pinned because the callgraph matcher kept moving the name between them whenever an edit changed a call sequence."
   }
 }

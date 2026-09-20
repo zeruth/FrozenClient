@@ -10263,7 +10263,7 @@
   "branchRatio": 0.636,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.05,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -10583,7 +10583,7 @@
   "branchRatio": 0.625,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.2,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -10679,7 +10679,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.25,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -10899,6 +10899,22 @@
   "refSize": 135,
   "status": "ported"
  },
+ "004e3cd0": {
+  "branchRatio": 0.102,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.216,
+  "files": [
+   "src/glue/CCharacterSelection.cpp",
+   "src/glue/ccharacterselection.cpp"
+  ],
+  "frozen": "CCharacterSelection::ShowCharacter",
+  "frozenSize": 338,
+  "how": "callgraph",
+  "module": "CharacterCreation.cpp",
+  "refSize": 2058,
+  "status": "ported"
+ },
  "004e44e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -10918,8 +10934,8 @@
  "004e4580": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -10945,6 +10961,22 @@
   "how": "callorder",
   "module": "ScanDLLGlue.cpp",
   "refSize": 441,
+  "status": "ported"
+ },
+ "004e6ae0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/glue/CGlueLoading.cpp",
+   "src/glue/cglueloading.cpp"
+  ],
+  "frozen": "CGlueLoading::StartLoad",
+  "frozenSize": 69,
+  "how": "callorder",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 218,
   "status": "ported"
  },
  "004e6be0": {
@@ -19645,7 +19677,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/CGMinimapFrame.cpp",
    "src/ui/game/cgminimapframe.cpp"
@@ -19719,6 +19751,22 @@
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 157,
+  "status": "ported"
+ },
+ "0057ea30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::SetTrackingSpell",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 42,
   "status": "ported"
  },
  "0057eb00": {
@@ -25659,6 +25707,22 @@
   "refSize": 214,
   "status": "stub"
  },
+ "00615020": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_SignalEvent",
+  "frozenSize": 1210,
+  "how": "override",
+  "module": "ScriptEvents.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
  "0061a280": {
   "branchRatio": 0.727,
   "constOverlap": 0.0,
@@ -28012,7 +28076,7 @@
    "src/object/client/auracache.cpp"
   ],
   "frozen": "ReceiveAuraUpdate",
-  "frozenSize": 98,
+  "frozenSize": 113,
   "how": "handler",
   "module": "Unit_C.cpp",
   "refSize": 94,
@@ -31875,7 +31939,7 @@
   ],
   "frozen": "FrameScript_SignalEvent",
   "frozenSize": 1210,
-  "how": "callorder",
+  "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 25,
   "status": "ported"

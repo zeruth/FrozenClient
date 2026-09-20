@@ -94,6 +94,12 @@ class CGMinimapFrame : public CSimpleFrame {
         // ref: FUN_007fdf60
         static bool IsTrackingSpell(uint32_t spellID);
 
+        // ref: FUN_0057ea30
+        static void SetTrackingSpell(uint32_t spellID);
+
+        // Recomputed from the active player's auras; called when they change.
+        static void RefreshTrackingSpell();
+
         // The tracking spell currently active, 0 for none (ref: DAT_00beba68). Nothing sets it yet
         // for the same reason.
         static uint32_t s_trackingSpell;

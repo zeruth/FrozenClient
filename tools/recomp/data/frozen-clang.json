@@ -81389,7 +81389,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 18
+"line": 20
 },
 "Passes": {
 "files": [
@@ -81402,7 +81402,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 35
+"line": 37
 },
 "ReadAura": {
 "files": [
@@ -81436,7 +81436,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 50
+"line": 52
 },
 "AuraCacheGet": {
 "files": [
@@ -81458,7 +81458,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 108
+"line": 110
 },
 "AuraCacheCount": {
 "files": [
@@ -81480,7 +81480,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 132
+"line": 134
 },
 "AuraCacheClear": {
 "files": [
@@ -81495,13 +81495,15 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 152
 },
 "SignalAuraChange": {
 "files": [
 "src/object/client/auracache.cpp"
 ],
 "callseq": [
+"ClntObjMgrGetActivePlayer",
+"CGMinimapFrame::RefreshTrackingSpell",
 "Script_GetTokenFromGUID",
 "FrameScript_SignalEvent"
 ],
@@ -81509,11 +81511,11 @@
 "%s"
 ],
 "consts": [],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 7,
+"lines": 13,
 "refs": [],
-"line": 161
+"line": 163
 },
 "ReceiveAuraUpdate": {
 "files": [
@@ -81533,7 +81535,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 169
+"line": 177
 },
 "ReceiveAuraUpdateAll": {
 "files": [
@@ -81556,7 +81558,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 185
+"line": 193
 },
 "AuraCacheRegisterHandlers": {
 "files": [
@@ -81572,7 +81574,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 209
+"line": 217
 },
 "Remaining": {
 "files": [
@@ -100618,7 +100620,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 53
+"line": 55
 },
 "CGMinimapFrame::GetNumTrackingSpells": {
 "files": [
@@ -100637,7 +100639,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 75
+"line": 77
 },
 "CGMinimapFrame::GetTrackingSpell": {
 "files": [
@@ -100656,7 +100658,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 87
+"line": 89
 },
 "LocalPlayerClassMask": {
 "files": [
@@ -100675,7 +100677,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 111
+"line": 113
 },
 "TrackingTypeAllowed": {
 "files": [
@@ -100688,7 +100690,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 117
+"line": 119
 },
 "CGMinimapFrame::GetNumOtherTrackingTypes": {
 "files": [
@@ -100706,7 +100708,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 124
+"line": 126
 },
 "CGMinimapFrame::GetOtherTrackingType": {
 "files": [
@@ -100724,7 +100726,44 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 140
+"line": 142
+},
+"CGMinimapFrame::SetTrackingSpell": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"CGMinimapFrame::SetOtherTracking",
+"FrameScript_SignalEvent"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 163
+},
+"CGMinimapFrame::RefreshTrackingSpell": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [
+"ClntObjMgrGetActivePlayer",
+"AuraCacheCount",
+"AuraCacheGet",
+"CGMinimapFrame::IsTrackingSpell",
+"CGMinimapFrame::SetTrackingSpell"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 4,
+"stub": false,
+"lines": 24,
+"refs": [],
+"line": 182
 },
 "CGMinimapFrame::SetOtherTracking": {
 "files": [
@@ -100746,7 +100785,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 158
+"line": 208
 },
 "CGMinimapFrame::Create": {
 "files": [
@@ -100764,7 +100803,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 183
+"line": 233
 },
 "CGMinimapFrame::CreateScriptMetaTable": {
 "files": [
@@ -100780,7 +100819,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 189
+"line": 239
 },
 "CGMinimapFrame::GetObjectType": {
 "files": [
@@ -100793,7 +100832,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 194
+"line": 244
 },
 "CGMinimapFrame::RegisterScriptMethods": {
 "files": [
@@ -100809,7 +100848,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 202
+"line": 252
 },
 "CGMinimapFrame::GetZoomLevels": {
 "files": [
@@ -100822,7 +100861,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 208
+"line": 258
 },
 "CGMinimapFrame::GetZoom": {
 "files": [
@@ -100838,7 +100877,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 213
+"line": 263
 },
 "CGMinimapFrame::SetZoom": {
 "files": [
@@ -100854,7 +100893,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 218
+"line": 268
 },
 "CGMinimapFrame::CGMinimapFrame": {
 "files": [
@@ -100867,7 +100906,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 233
+"line": 283
 },
 "CGMinimapFrame::GetScriptMetaTable": {
 "files": [
@@ -100880,7 +100919,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 237
+"line": 287
 },
 "MinimapTexFlags": {
 "files": [
