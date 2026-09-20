@@ -146,3 +146,42 @@ const char* MinimapTranslate(const char* tilePath) {
 int32_t MinimapTranslateCount() {
     return static_cast<int32_t>(s_translate.size());
 }
+
+// The reference's own format strings, both at 00a41db8-00a41dd0 and sitting together beside the
+// minimap directory. They are not symmetric and that is not a transcription slip:
+//
+//   world tile   "%s\\map%d_%02d.blp"        -- x unpadded, y padded to two
+//   WMO piece    "%s_%03d_%02d_%02d.blp"    -- group padded to three, then two and two
+//
+// KNOWN GAP, measured rather than suspected. Every coordinate in the shipped .trs is written with
+// two digits, so an unpadded x below ten cannot match. Ten entries are affected: nine Kalimdor
+// tiles and one in WailingCavernsInstance, all with x in 0..9. The other 165 zero-padded-x entries
+// are in the "development" test map, which ships but is not reachable in play.
+//
+// Kept as the reference has it rather than "fixed" by padding x. Those ten tiles are the far
+// western edge of Kalimdor, which is open ocean, so the reference almost certainly never noticed.
+// If a hole ever shows up at the left edge of that map, this comment is the reason.
+static const char* WORLD_TILE_FORMAT = "%s\\map%d_%02d.blp";
+static const char* WMO_TEXTURE_FORMAT = "%s_%03d_%02d_%02d.blp";
+
+const char* MinimapWorldTile(const char* mapName, int32_t x, int32_t y) {
+    if (!mapName || !*mapName) {
+        return nullptr;
+    }
+
+    char path[260];
+    SStrPrintf(path, sizeof(path), WORLD_TILE_FORMAT, mapName, x, y);
+
+    return MinimapTranslate(path);
+}
+
+const char* MinimapWmoTexture(const char* wmoName, int32_t group, int32_t x, int32_t y) {
+    if (!wmoName || !*wmoName) {
+        return nullptr;
+    }
+
+    char path[260];
+    SStrPrintf(path, sizeof(path), WMO_TEXTURE_FORMAT, wmoName, group, x, y);
+
+    return MinimapTranslate(path);
+}

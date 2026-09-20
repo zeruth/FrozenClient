@@ -175285,6 +175285,42 @@
 "refs": [],
 "line": 146
 },
+"MinimapWorldTile": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"SStrPrintf",
+"MinimapTranslate"
+],
+"strings": [],
+"consts": [
+"260"
+],
+"branches": 1,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 167
+},
+"MinimapWmoTexture": {
+"files": [
+"src/world/minimap.cpp"
+],
+"callseq": [
+"SStrPrintf",
+"MinimapTranslate"
+],
+"strings": [],
+"consts": [
+"260"
+],
+"branches": 1,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 178
+},
 "IconTexture": {
 "files": [
 "src/world/overheadicons.cpp"

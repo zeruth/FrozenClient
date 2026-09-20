@@ -30,4 +30,16 @@ const char* MinimapTranslate(const char* tilePath);
 // How many entries the table holds. Zero before a successful load.
 int32_t MinimapTranslateCount();
 
+// The stored name for one world map tile, or null when the table has no entry for it.
+//
+// Builds "<map>\\map<x>_<y>.blp" and translates it. The two coordinates are NOT formatted the same
+// way -- see the definition, which also records the ten shipped tiles this cannot reach.
+const char* MinimapWorldTile(const char* mapName, int32_t x, int32_t y);
+
+// The stored name for one piece of a building's interior minimap, or null.
+//
+// Builds "<name>_<group>_<x>_<y>.blp". Two thirds of the table is this shape rather than world
+// tiles: buildings and dungeons carry their own minimap imagery, keyed by the WMO's own path.
+const char* MinimapWmoTexture(const char* wmoName, int32_t group, int32_t x, int32_t y);
+
 #endif
