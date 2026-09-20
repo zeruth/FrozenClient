@@ -38144,6 +38144,8 @@
 "printf",
 "printf",
 "SFile::SetBasePath",
+"OsChangeDirectory",
+"printf",
 "CVar::Register",
 "ClientOpenArchives",
 "SFile::FirstArchive",
@@ -38192,12 +38194,13 @@
 "_",
 "cannot create state: not enough memory",
 "could not create %s\n",
+"could not enter %s\n",
 "could not open %s\n",
-"could not open the client archives under %s\n",
 "enUS",
 "extract",
 "list",
 "locale",
+"no client archives under %s -- expected a Data directory holding the MPQs\n",
 "no input files given",
 "not enough memory for state",
 "rb",
@@ -38216,9 +38219,9 @@
 "4096",
 "5"
 ],
-"branches": 25,
+"branches": 26,
 "stub": false,
-"lines": 146,
+"lines": 157,
 "refs": [],
 "line": 14
 },
@@ -171758,7 +171761,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 16
+"line": 17
 },
 "OsMakeDirectory": {
 "files": [
@@ -171773,7 +171776,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 26
+"line": 27
 },
 "OsCreateDirectory": {
 "files": [
@@ -171792,7 +171795,25 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 34
+"line": 35
+},
+"OsChangeDirectory": {
+"files": [
+"src/util/filesystem.cpp"
+],
+"callseq": [
+"OsLocalizePath",
+"SetCurrentDirectoryA"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 52
 },
 "OsDirectoryExists": {
 "files": [
@@ -171810,7 +171831,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 51
+"line": 63
 },
 "OsFileExists": {
 "files": [
@@ -171828,7 +171849,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 64
+"line": 76
 },
 "OsFileMatch": {
 "files": [
@@ -171848,7 +171869,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 78
+"line": 90
 },
 "OsFileEnumerate": {
 "files": [
@@ -171877,7 +171898,7 @@
 "stub": false,
 "lines": 93,
 "refs": [],
-"line": 126
+"line": 138
 },
 "OsBuildFontFilePath": {
 "files": [
@@ -171895,7 +171916,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 220
+"line": 232
 },
 "OsPathFindExtensionWithDot": {
 "files": [
@@ -171913,7 +171934,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 224
+"line": 236
 },
 "CHashKeyGUID::CHashKeyGUID": {
 "files": [
@@ -175212,7 +175233,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 57
+"line": 67
 },
 "MinimapUnloadTranslate": {
 "files": [
@@ -175227,7 +175248,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 121
+"line": 131
 },
 "MinimapTranslate": {
 "files": [
@@ -175247,7 +175268,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 126
+"line": 136
 },
 "MinimapTranslateCount": {
 "files": [
@@ -175262,7 +175283,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 136
+"line": 146
 },
 "IconTexture": {
 "files": [

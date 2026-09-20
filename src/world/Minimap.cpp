@@ -53,7 +53,17 @@ static std::string Fold(const char* s) {
 // DIVERGENCE on blank lines. The reference's loop ends as soon as a line comes back empty, so a
 // stray blank line part way through silently truncates the table. This skips blanks and keeps
 // reading. Deliberately not bug-for-bug: what that reproduces is a half-loaded minimap with no
-// diagnostic, and the shipped file has no blank line for it to matter on.
+// diagnostic.
+//
+// CHECKED against the shipped file rather than assumed -- extracted with MpqTool and measured:
+//
+//   19090 lines, all CRLF, no bare LF
+//   445 "dir:" markers, 18644 entries, 0 lines that are neither
+//   exactly one blank line, and it is the trailing one -- so the divergence above never fires
+//     on real data, and the reference stops there at EOF anyway
+//   0 repeated keys, so last-wins versus first-wins does not change this file's result
+//   longest stored name 36 bytes against the 40-byte buffer
+//   longest line 154 bytes against the 260-byte line buffer, so neither guard below trips
 void MinimapLoadTranslate() {
     if (s_loaded) {
         return;

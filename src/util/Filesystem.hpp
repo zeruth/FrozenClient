@@ -21,6 +21,13 @@ typedef int32_t (*OSFILEENUMCALLBACK)(const OSFILEENTRY* entry, void* param);
 
 void OsCreateDirectory(const char*, int32_t);
 
+// Make path the working directory. Nonzero on success.
+//
+// Needed because parts of the client resolve data paths relative to where the process is running,
+// not against SFile's base path -- ClientOpenArchives looks for "Data" that way. A tool that wants
+// to read the client's archives has to move there first.
+int32_t OsChangeDirectory(const char* path);
+
 int32_t OsDirectoryExists(const char* path);
 
 int32_t OsFileExists(const char* path);

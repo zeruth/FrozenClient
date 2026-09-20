@@ -15,6 +15,7 @@
 #define STORMLIB_NO_AUTO_LINK
 #define SErrGetLastError StormLib_SErrGetLastError
 #define SErrSetLastError StormLib_SErrSetLastError
+#include "util/Filesystem.hpp"
 #include <StormLib.h>
 #undef SErrGetLastError
 #undef SErrSetLastError
@@ -27,13 +28,24 @@ int main(int argc, char** argv) {
 
     SFile::SetBasePath(argv[1]);
 
+    // ClientOpenArchives looks for "Data" RELATIVE to the working directory, not under the base
+    // path it was just given, so without this the tool only worked when run from inside the client
+    // directory -- and reported "could not open the client archives under <the path you passed>",
+    // which points away from the actual cause. Change directory rather than teach the archive
+    // opener a second path: every other consumer of it is the client itself, already running there.
+    if (!OsChangeDirectory(argv[1])) {
+        printf("could not enter %s\n", argv[1]);
+        return 1;
+    }
+
     // The archive loader reads the locale from its cvar
     CVar::Register("locale", "", 0, "enUS", nullptr, DEFAULT);
 
     ClientOpenArchives();
 
     if (!SFile::FirstArchive()) {
-        printf("could not open the client archives under %s\n", argv[1]);
+        printf("no client archives under %s -- expected a Data directory holding the MPQs\n",
+               argv[1]);
         return 1;
     }
 

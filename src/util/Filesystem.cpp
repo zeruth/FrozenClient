@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #endif
 
 // Converts to the separator the platform accepts everywhere
@@ -46,6 +47,17 @@ void OsCreateDirectory(const char* pathName, int32_t recursive) {
     }
 
     OsMakeDirectory(path);
+}
+
+int32_t OsChangeDirectory(const char* pathName) {
+    char path[STORM_MAX_PATH];
+    OsLocalizePath(path, pathName, sizeof(path));
+
+#if defined(WHOA_SYSTEM_WIN)
+    return SetCurrentDirectoryA(path) != 0;
+#else
+    return chdir(path) == 0;
+#endif
 }
 
 int32_t OsDirectoryExists(const char* pathName) {
