@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 21:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 21:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2719 (+1) (10.0%) | 576.9k (10.4%) |
-| &nbsp;&nbsp;ported | 2168 (+4) | 426.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 514 (-3) | 112.0k |
+| mapped to a frozen function | 2722 (+3) (10.0%) | 577.1k (10.4%) |
+| &nbsp;&nbsp;ported | 2171 (+3) | 426.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 514 (=) | 112.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1001 (+2) (3.7%)** | **123.6k (2.2%)** |
-| unmapped | 24442 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 401 (=) (7.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 405 (=) (7.0%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1003 (+2) (3.7%)** | **124.0k (2.2%)** |
+| unmapped | 24439 | 4.84M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 404 (+3) (7.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 408 (+3) (7.0%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
 | frozen functions (src/, from PDB + source) | 11521, stubs 772 | |
 
-Match evidence: annotated 626, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 195, sticky 13, string 310, table 1022. Module anchors: 1479 assert strings.
+Match evidence: annotated 630, callgraph 173, callorder 133, cvar 30, handler 28, order 188, override 195, sticky 13, string 310, table 1022. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 21:44 -- mapped 2718, ported 2164, stub 517, spine mapped 401.
+Previous run: 2026-09-19 21:48 -- mapped 2719, ported 2168, stub 514, spine mapped 401.
 
 ## Lua API coverage (binding tables)
 
@@ -185,7 +185,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameObject_C.cpp | 285 | 38.0k | 3 (1.1%) | 1.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 71 (29.2%) | 29.4% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 74 (30.5%) | 29.8% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 132 (54.5%) | 60.2% | 8 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 12 (5.6%) | 11.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 4 (2.2%) | 1.7% | 0 | 0 | 0 |
@@ -635,7 +635,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 13% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
-| 0062dae0 | `CGTooltip_SetHyperlink` | 12% | 66 | 23 | 41 | 11 | 0% | 1382 |
+| 0062dae0 | `CGTooltip_SetHyperlink` | 27% | 66 | 23 | 41 | 11 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 31 | 4 | 0 | 0% | 1354 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
@@ -648,7 +648,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00497070 | `CSimpleFont::LoadXML` | 92% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
-| 00813ee0 | `FrameXML_ProcessFile` | 74% | 42 | 46 | 35 | 24 | 19% | 1104 |
+| 00813ee0 | `FrameXML_ProcessFile` | 79% | 42 | 46 | 35 | 24 | 19% | 1104 |
 | 0040a270 | `Paint` | 52% | 27 | 35 | 19 | 12 | 0% | 1055 |
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 19% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 004debc0 | `Script_GetRealmInfo` | 62% | 53 | 55 | 24 | 17 | 6% | 990 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 19:15 | 2699 (9.9%) | 994 (3.7%) | 520 | 393/5530 | 1791/2964 | 583 |
 | 2026-09-19 19:19 | 2699 (9.9%) | 995 (3.7%) | 519 | 393/5530 | 1791/2964 | 582 |
 | 2026-09-19 19:22 | 2699 (9.9%) | 998 (3.7%) | 529 | 393/5530 | 1791/2964 | 592 |
 | 2026-09-19 19:26 | 2699 (9.9%) | 998 (3.7%) | 536 | 393/5530 | 1791/2964 | 597 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 21:35 | 2716 (10.0%) | 997 (3.7%) | 518 | 399/5530 | 1792/2964 | 584 |
 | 2026-09-19 21:44 | 2718 (10.0%) | 999 (3.7%) | 517 | 401/5530 | 1792/2964 | 583 |
 | 2026-09-19 21:48 | 2719 (10.0%) | 1001 (3.7%) | 514 | 401/5530 | 1792/2964 | 583 |
+| 2026-09-19 21:54 | 2722 (10.0%) | 1003 (3.7%) | 514 | 404/5530 | 1792/2964 | 583 |
 
 ## How to move a row
 

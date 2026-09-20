@@ -1836,7 +1836,10 @@ addr	how	frozen	evidence
 0076f190	annotated	ParseIndex	tag in src/ui/game/ScriptUtil.cpp
 0076f1e0	callgraph	SStrTokenize	only unmatched callee of 007696d0=CVGxOverrideParse
 0076f640	override	SStrHash	
-0076f770	callgraph	SStrStr	only unmatched callee of 008151a0=StringToFontFlags
+0076f6c0	annotated	SStrUpper	tag in lib/squall/storm/String.cpp
+0076f6e0	annotated	SStrLower	tag in lib/squall/storm/String.cpp
+0076f700	annotated	SStrStr	tag in lib/squall/storm/String.cpp
+0076f770	annotated	SStrStrI	tag in lib/squall/storm/String.cpp
 0076f9e0	override	SStrDupA	
 0076fb80	override	SStrToFloat	
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
@@ -1990,7 +1993,7 @@ addr	how	frozen	evidence
 0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was sticky
 0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was sticky
 0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was sticky
-0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d8a30=CGlueMgr::LoginServerLogin, 004d9bd0=CGlueMgr::EnterWorld
+0081b530	callorder	FrameScript_SignalEvent	same slot between linked calls in 004d80c0=CGlueMgr::DisplayLoginStatus, 004d9bd0=CGlueMgr::EnterWorld
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848
 0081b820	table	Script_GetCurrentKeyBoardFocus	binding "GetCurrentKeyBoardFocus" in s_ScriptFunctions ~ table 00af5848

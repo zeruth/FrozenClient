@@ -435,7 +435,7 @@
   "branchRatio": 0.182,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.062,
+  "fidelity": 0.125,
   "files": [
    "src/client/Archive.cpp",
    "src/client/archive.cpp"
@@ -26303,7 +26303,7 @@
   "branchRatio": 0.268,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.121,
+  "fidelity": 0.273,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -29270,11 +29270,45 @@
   "refSize": 118,
   "status": "ported"
  },
- "0076f770": {
+ "0076f6c0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "frozen": "SStrUpper",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
+ "0076f6e0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "frozen": "SStrLower",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
+ "0076f700": {
   "branchRatio": 0.7,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/String.cpp",
    "lib/squall/storm/string.cpp",
@@ -29282,7 +29316,24 @@
   ],
   "frozen": "SStrStr",
   "frozenSize": 380,
-  "how": "callgraph",
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "0076f770": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "frozen": "SStrStrI",
+  "frozenSize": 191,
+  "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 98,
   "status": "ported"
@@ -30732,7 +30783,7 @@
   "branchRatio": 0.686,
   "constOverlap": 0.19,
   "faithful": false,
-  "fidelity": 0.738,
+  "fidelity": 0.786,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -30971,8 +31022,8 @@
  "008151a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/ui/Util.cpp",
    "src/ui/util.cpp"
@@ -31243,8 +31294,8 @@
  "00816c40": {
   "branchRatio": 0.857,
   "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
@@ -31577,7 +31628,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 0.929,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"

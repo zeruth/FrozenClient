@@ -521,6 +521,7 @@ size_t STORMAPI SStrLenUTF8(const char* string) {
     return length;
 }
 
+// ref: FUN_0076f6e0
 void STORMAPI SStrLower(char* string) {
     while (*string) {
         *string = static_cast<char>(tolower(*string));
@@ -610,6 +611,10 @@ char* STORMAPI SStrStr(char* string, const char* search) {
     return nullptr;
 }
 
+// ref: FUN_0076f700
+// Case-sensitive, and that is the whole difference from SStrStrI below: the reference's search
+// loop calls strncmp here and strnicmp there. Worth stating because the two are otherwise
+// byte-identical, and the callgraph matcher had this name on the wrong one of the pair.
 const char* STORMAPI SStrStr(const char* string, const char* search) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(string);
@@ -642,6 +647,7 @@ char* STORMAPI SStrStrI(char* string, const char* search) {
     return nullptr;
 }
 
+// ref: FUN_0076f770
 const char* STORMAPI SStrStrI(const char* string, const char* search) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(string);
@@ -878,6 +884,8 @@ uint32_t STORMAPI SStrToUnsigned(const char* string) {
     return result;
 }
 
+// ref: FUN_0076f6c0
+// The reference hands this straight to the CRT's strupr; open-coded here, same result.
 void STORMAPI SStrUpper(char* string) {
     while (*string) {
         *string = static_cast<char>(toupper(*string));
