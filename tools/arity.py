@@ -92,6 +92,11 @@ def framexml_arity():
         base = os.path.basename(path)
 
         for lineno, line in enumerate(text.splitlines(), 1):
+            # A commented-out destructure is not a caller. GetXPExhaustion was reported off
+            # MainMenuBar.lua:313, which is "--exhaustionCurrXP, exhaustionMaxXP = ...".
+            if line.lstrip().startswith('--'):
+                continue
+
             m = pattern.search(line)
 
             if not m:
@@ -164,6 +169,12 @@ def main():
     print('%d bindings return fewer values than FrameXML destructures' % len([r for r in rows if r[0] > 0]))
     print('(%d suppressed as the reference behaving the same way; --all to include them)'
           % len(KNOWN))
+    print()
+    print('A shortfall is only a BUG if the missing values matter. Where the binding returns nil')
+    print('for what it does answer -- Script_ReturnNil and friends -- the caller gets nil for the')
+    print('rest too, and nil is usually the right "nothing here". The ones that bite are a large')
+    print('gap, meaning the binding is simply unimplemented, or a returned 0 sitting in a slot the')
+    print('caller tests, because 0 is truthy in Lua.')
     print()
 
     for short, name, gives, wants, path, site in rows:
