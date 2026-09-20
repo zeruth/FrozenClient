@@ -748,17 +748,31 @@ int32_t CGTooltip_AddTexture(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_006204e0
+//
+// SetText RESETS the tooltip to one line. The reference is three calls -- clear (FUN_0061c620,
+// the same clear every filler starts with, ported as TooltipClear), add one line, then show --
+// and the clear is the whole point of it.
+//
+// This used to rewrite line 1 and keep the old line count, which reads as correct and is not:
+// the stale lines stay on screen and the next AddLine appends after them. Hovering the same
+// thing twice showed its text twice, three times on the third hover, because FrameXML's usual
+// shape is SetText followed by AddLine. Seen in game before it was traced back here.
 int32_t CGTooltip_SetText(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
-        return 0;
+        return luaL_error(L, "Usage: %s:SetText(\"text\" [, color])", tooltip->GetDisplayName());
     }
 
-    // SetText replaces the tooltip with a single line rather than appending one.
+    TooltipClear(tooltip);
+
+    tooltip->m_lineCount = 1;
     TooltipSetLine(tooltip, 1, false, lua_tostring(L, 2));
-    tooltip->m_lineCount = tooltip->m_lineCount > 1 ? tooltip->m_lineCount : 1;
-    TooltipResizeToFit(tooltip);
+
+    // The reference tail-calls its show here, which is why FrameXML never calls GameTooltip:Show()
+    // after SetText either.
+    TooltipShow(tooltip);
 
     return 0;
 }
