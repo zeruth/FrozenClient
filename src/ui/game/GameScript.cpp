@@ -219,36 +219,7 @@ int32_t Script_SetConsoleKey(lua_State* L) {
 }
 
 int32_t Script_Screenshot(lua_State* L) {
-    // Screenshots/WoWScrnShot_MMDDYY_HHMMSS.tga, the name the reference writes. The interface calls
-    // this from a binding, and FrameXML has no way to name the file, so the name is made here.
-    if (!OsDirectoryExists("Screenshots")) {
-        OsCreateDirectory("Screenshots", 0);
-    }
-
-    time_t now = time(nullptr);
-    struct tm parts;
-
-    #if defined(WHOA_SYSTEM_WIN)
-        localtime_s(&parts, &now);
-    #else
-        localtime_r(&now, &parts);
-    #endif
-
-    char path[260];
-
-    SStrPrintf(path, sizeof(path), "Screenshots\\WoWScrnShot_%02d%02d%02d_%02d%02d%02d.tga",
-               parts.tm_mon + 1, parts.tm_mday, parts.tm_year % 100,
-               parts.tm_hour, parts.tm_min, parts.tm_sec);
-
-    // Hand the name to the layer code and let it capture just before the frame is presented. The
-    // interface is still drawing at this point, so grabbing the back buffer here would catch a
-    // half-composed frame.
-    SStrCopy(Screen::s_capturePath, path, sizeof(Screen::s_capturePath));
-    Screen::s_captureScreen = 1;
-
-    // Index 171 from g_scriptEvents. The capture has not happened yet, so this reports that one was
-    // requested; there is no path by which the layer code can report back a failure today.
-    FrameScript_SignalEvent(171, nullptr);
+    ScreenshotRequest();
 
     return 0;
 }

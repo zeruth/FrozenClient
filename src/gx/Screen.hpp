@@ -30,6 +30,13 @@ class CSRgn {
         HSRGN m_handle;
 };
 
+// Ask for a screenshot on the next present. Names the file the way the reference does --
+// Screenshots/WoWScrnShot_MMDDYY_HHMMSS.tga -- and signals SCREENSHOT_SUCCEEDED.
+//
+// Shared because the reference binds Screenshot in BOTH its glue and game tables, and a player on
+// the login screen can take one just as well as a player in the world.
+void ScreenshotRequest();
+
 namespace Screen {
     extern int32_t s_captureScreen;
     extern char s_capturePath[260];
