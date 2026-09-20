@@ -24396,20 +24396,20 @@
   "status": "stub"
  },
  "00610550": {
-  "branchRatio": 0.143,
+  "branchRatio": 0.357,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.636,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitRangedDamage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 373,
+  "how": "override",
   "module": "ScriptEvents.cpp",
   "refSize": 625,
-  "status": "stub"
+  "status": "diverged"
  },
  "006107d0": {
   "branchRatio": 1.0,

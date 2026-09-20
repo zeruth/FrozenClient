@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 22:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2725 (+1) (10.0%) | 577.3k (10.4%) |
-| &nbsp;&nbsp;ported | 2181 (+2) | 429.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 507 (-1) | 109.7k |
+| mapped to a frozen function | 2725 (=) (10.0%) | 577.3k (10.4%) |
+| &nbsp;&nbsp;ported | 2181 (=) | 429.3k |
+| &nbsp;&nbsp;stub (unimplemented body) | 506 (-1) | 109.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1011 (+1) (3.7%)** | **125.2k (2.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1011 (=) (3.7%)** | **125.2k (2.3%)** |
 | unmapped | 24437 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 406 (+1) (7.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 410 (+1) (7.1%) | |
+| world spine (reachable from OnFrameRender) | 5531, mapped 406 (=) (7.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 410 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11523, stubs 765 | |
+| frozen functions (src/, from PDB + source) | 11523, stubs 764 | |
 
-Match evidence: annotated 639, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 197, sticky 13, string 310, table 1015. Module anchors: 1479 assert strings.
+Match evidence: annotated 639, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 198, sticky 13, string 310, table 1014. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:17 -- mapped 2724, ported 2179, stub 508, spine mapped 405.
+Previous run: 2026-09-19 22:22 -- mapped 2725, ported 2181, stub 507, spine mapped 406.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 576 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 575 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -38,7 +38,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acef78 (GetGossipText..) | 59 | `s_ScriptFunctions` | 48 | 0 | GetGossipText, GetGossipOptions, GetGossipAvailableQuests, GetGossipActiveQuests, SelectGossipOption, SelectGossipAvailableQuest ... |
 | 00accae8 (BNGetInfo..) | 57 | `s_ScriptFunctions` | 0 | 47 |  / stubs: BNGetInfo, BNGetFriendInfo, BNGetFriendInfoByID, BNGetNumFriendToons ... |
 | 00ad1938 (JumpOrAscendStart..) | 52 | `s_ScriptFunctions` | 47 | 0 | JumpOrAscendStart, AscendStop, DescendStop, ToggleRun, ToggleAutoRun, MoveForwardStart ... |
-| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 45 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
+| 00ad21d8 (UnitExists..) | 169 | `s_UnitFunctions` | 0 | 44 |  / stubs: UnitPlayerOrPetInParty, UnitPlayerOrPetInRaid, UnitIsPVPSanctuary, UnitOnTaxi ... |
 | 00acd178 (GetNumBattlefields..) | 51 | `s_ScriptFunctions` | 0 | 41 |  / stubs: GetNumBattlefields, GetBattlefieldInfo, GetBattlefieldInstanceInfo, JoinBattlefield ... |
 | 00ad2ae0 (AddFontStrings..) | 69 | `CGTooltipMethods` | 0 | 41 |  / stubs: AddTexture, SetPetAction, SetShapeshift, SetPossession ... |
 | 00ace370 (CommentatorSetMode..) | 35 | `-` | 35 | 0 | CommentatorSetMode, CommentatorToggleMode, CommentatorGetMode, CommentatorSetMapAndInstanceIndex, CommentatorSetPlayerIndex, CommentatorUpdatePlayerInfo ... |
@@ -170,7 +170,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 5 | 0 | 7 |
-| ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 42 | 0 | 26 |
+| ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 41 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 10 (5.4%) | 5.0% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
@@ -496,7 +496,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00599890 | DressUpModelFrame.cpp? | 646 | 0 | `CGTabardModelFrame_GetUpperEmblemTexture` [table] | %s:GetUpperEmblemTexture(): Couldn't fin, %s:GetUpperEmblemTexture(): Wrong object |
 | 0054da10 | BattlefieldInfo.cpp | 641 | 0 | `Script_AcceptBattlefieldPort` [table] | Usage: AcceptBattlefieldPort(index, acce, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062eae0 | Tooltip.cpp | 640 | 0 | `CGTooltip_SetTradeSkillItem` [table] | Invalid trade skill item in SetTradeSkil |
-| 00610550 | ScriptEvents.cpp | 625 | 0 | `Script_UnitRangedDamage` [table] | Usage: UnitRangedDamage("unit") |
 | 0057ed70 | MinimapFrame.cpp | 622 | 0 | `CGMinimapFrame_PingLocation` [table] | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062fcf0 | Tooltip.cpp | 621 | 0 | `CGTooltip_SetAuctionItem` [table] | Usage: %s:SetAuctionItem("type", index), bidder |
 | 00516c60 | GameUI.cpp | 616 | 0 | `Script_GetItemInfo` [table] | %s%s%s, Usage: GetItemInfo(itemID\|"name"\|"itemli |
@@ -517,6 +516,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0054de00 | BattlefieldInfo.cpp | 519 | 0 | `Script_SortBattlefieldScoreData` [table] | Usgae: SortBattlefieldScoreData("type"), class |
 | 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
 | 00535180 | PartyFrame.cpp? | 510 | 0 | `Script_BNGetFriendInviteInfo` [table] | BNUI: Invite Info Account name: %s %s, BNUI: Invite Info ID: %u |
+| 00820f40 | M2Scene.cpp? | 251 | 1 | `CM2SceneRender::DrawRibbon` [override] | Ribbon: model=%s index=%d |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 20:05 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:10 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:14 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:19 | 2699 (9.9%) | 1002 (3.7%) | 527 | 393/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:12 | 2724 (10.0%) | 1010 (3.7%) | 509 | 405/5531 | 1792/2964 | 578 |
 | 2026-09-19 22:17 | 2724 (10.0%) | 1010 (3.7%) | 508 | 405/5531 | 1792/2964 | 577 |
 | 2026-09-19 22:22 | 2725 (10.0%) | 1011 (3.7%) | 507 | 406/5531 | 1792/2964 | 576 |
+| 2026-09-19 22:26 | 2725 (10.0%) | 1011 (3.7%) | 506 | 406/5531 | 1792/2964 | 575 |
 
 ## How to move a row
 

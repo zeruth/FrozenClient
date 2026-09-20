@@ -54,6 +54,9 @@ static_assert(offsetof(CGUnitData, minDamage) == 0x100, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, maxDamage) == 0x104, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, minOffhandDamage) == 0x108, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, maxOffhandDamage) == 0x10c, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, rangedAttackTime) == 0xe8, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, minRangedDamage) == 0x1ec, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, maxRangedDamage) == 0x1f0, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, stats) == 0x138, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, posStats) == 0x14c, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, negStats) == 0x160, "CGUnitData layout");
@@ -1367,8 +1370,59 @@ int32_t Script_UnitDamage(lua_State* L) {
     return 7;
 }
 
+// ref: FUN_00610550
+// Six returns: ranged swing time in seconds, the two damage bounds, then the same three damage
+// modifiers UnitDamage reports.
+//
+// DIVERGED, deliberately, in the school those three modifiers are read for. The reference does not
+// use physical: it finds the equipped ranged weapon, looks its item record up in the cache, walks
+// that record's damage entries for the first with positive damage, and takes THAT entry's school.
+// Frozen has neither the equipped-weapon lookup nor damage fields on ItemInfo, so this asks for
+// school 0.
+//
+// That is the right school for any ranged weapon dealing physical damage, which is nearly all of
+// them, and wrong for one that deals elemental damage. It is a narrower guess than returning the
+// non-player defaults would be -- those would report a multiplier of 1.0 for a player whose
+// modifiers are real -- but it is still a guess, so it is recorded in overrides.json rather than
+// left to look exact.
 int32_t Script_UnitRangedDamage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitRangedDamage(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!data) {
+        for (int32_t i = 0; i < 6; i++) {
+            lua_pushnumber(L, 0.0);
+        }
+
+        return 6;
+    }
+
+    // Milliseconds, unsigned, scaled to seconds -- the same conversion as UnitAttackSpeed.
+    lua_pushnumber(L, static_cast<float>(data->rangedAttackTime) * 0.001f);
+    lua_pushnumber(L, data->minRangedDamage);
+    lua_pushnumber(L, data->maxRangedDamage);
+
+    if (!unit->IsA(TYPE_PLAYER)) {
+        lua_pushnumber(L, 0.0);
+        lua_pushnumber(L, 0.0);
+        lua_pushnumber(L, 1.0);
+
+        return 6;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(unit);
+
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDonePos(0)));
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDoneNeg(0)));
+    lua_pushnumber(L, static_cast<double>(player->GetModDamageDonePct(0)));
+
+    return 6;
 }
 
 int32_t Script_UnitRangedAttack(lua_State* L) {
