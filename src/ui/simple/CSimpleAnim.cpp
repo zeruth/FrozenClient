@@ -8,6 +8,7 @@
 #include "util/Lua.hpp"
 #include <common/XML.hpp>
 #include <storm/String.hpp>
+#include <cmath>
 #include <cstdint>
 
 int32_t CSimpleAnim::s_metatable;
@@ -47,6 +48,38 @@ bool AnimSmoothingFromName(const char* name, ANIM_SMOOTHING& smoothing) {
     }
 
     return false;
+}
+
+// ref: FUN_00497ba0
+// The smoothing curve. The reference keeps a 12-byte object holding an ease-in and an ease-out
+// WEIGHT, each clamped to [0, 1], and branches on whether each is within 0.001 of zero. Frozen
+// keeps the enum, and SetSmoothing maps the enum to exactly the pairs below, so branching on the
+// enum reaches the same four cases.
+//
+// Constants read from the binary rather than assumed: pi/2 at 009e8d88, pi at 009e8d34, and the
+// 1.0 / -1.0 / 0.5 the three branches scale by.
+//
+// OUT_IN shares the (1, 1) pair with IN_OUT and therefore evaluates identically. That is the same
+// reason GetSmoothing can never answer "OUT_IN" -- one quirk, visible two ways.
+float AnimSmoothingApply(ANIM_SMOOTHING smoothing, float t) {
+    switch (smoothing) {
+        case ANIM_SMOOTHING_IN:
+            return 1.0f - cosf(t * 1.5707963705062866f);
+
+        case ANIM_SMOOTHING_OUT:
+            // The reference writes this as -cos((t + 1) * pi/2), which is sin(t * pi/2). Kept in
+            // its own shape so the constants match the ones in the binary.
+            return -cosf((t + 1.0f) * 1.5707963705062866f);
+
+        case ANIM_SMOOTHING_IN_OUT:
+        case ANIM_SMOOTHING_OUT_IN:
+            return 0.5f - cosf(t * 3.1415927410125732f) * 0.5f;
+
+        default:
+            // NONE. The reference does not even allocate a curve for it, so the amount passes
+            // through untouched.
+            return t;
+    }
 }
 
 void CSimpleAnim::CreateScriptMetaTable() {
@@ -258,11 +291,7 @@ float CSimpleAnim::Advance(float step) {
         ? 1.0f - this->m_progress
         : this->m_progress;
 
-    // TODO the smoothing curve. The reference holds a curve object and calls a virtual on it here;
-    // frozen holds the enum instead and has nowhere to evaluate it yet, so NONE is what every
-    // animation effectively gets. Wrong for IN / OUT / IN_OUT, and the shape of the fix is a
-    // function of m_smoothing applied to amount right here.
-    this->m_appliedAmount = amount;
+    this->m_appliedAmount = AnimSmoothingApply(this->m_smoothing, amount);
 
     return consumedUpTo - previous;
 }

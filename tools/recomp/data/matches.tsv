@@ -298,6 +298,7 @@ addr	how	frozen	evidence
 00497500	annotated	CSimpleAnim::GetScriptByName	tag in src/ui/simple/CSimpleAnim.cpp
 00497800	annotated	CSimpleAnimGroup::GetScriptByName	tag in src/ui/simple/CSimpleAnimGroup.cpp
 00497920	annotated	CSimpleAnimGroup::ShouldStopStepping	tag in src/ui/simple/CSimpleAnimGroup.cpp
+00497ba0	annotated	AnimSmoothingApply	tag in src/ui/simple/CSimpleAnim.cpp
 00497c30	annotated	AnimLoadXML_Scripts	tag in src/ui/simple/CSimpleAnim.cpp
 00497fe0	annotated	CSimpleAnim::GetRegionParent	tag in src/ui/simple/CSimpleAnim.cpp
 004980d0	override	CSimpleScaleAnim::GetScale	

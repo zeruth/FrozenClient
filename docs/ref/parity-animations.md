@@ -229,10 +229,24 @@ Each stage should end in a committable increment; none of it should go in blind 
    every pass, consumes nothing, and comes straight back round -- a hang, not a glitch. The
    reference's first test in `FUN_00497920` is exactly that case.
 
-   **Still open in 4a:** the smoothing curve. The reference holds a curve object and calls a
-   virtual on it inside `Advance`; frozen holds the enum and has nowhere to evaluate it, so every
-   animation currently behaves as NONE. Wrong for IN, OUT and IN_OUT, and the fix is a function of
-   `m_smoothing` applied at the one marked line.
+   **Smoothing curve: done** -- `AnimSmoothingApply`, ported from `FUN_00497ba0`. The reference
+   keeps a 12-byte object (`.\CSimpleAnim.cpp` line 0x30d, vtable `009ebd44`: slot 0 sets the
+   weights, slot 1 evaluates) holding an ease-in and an ease-out weight clamped to [0, 1], and
+   branches on whether each is within 0.001 of zero. `SetSmoothing` maps the enum to exactly those
+   pairs, so frozen branching on the enum reaches the same four cases without the object.
+
+   The curves are the sine-ease family, with every constant read from the binary:
+
+   | smoothing | weights | curve |
+   |---|---|---|
+   | NONE | (0, 0) | `t` -- the reference allocates no curve at all |
+   | IN | (1, 0) | `1 - cos(t * pi/2)` |
+   | OUT | (0, 1) | `-cos((t + 1) * pi/2)`, which is `sin(t * pi/2)` |
+   | IN_OUT | (1, 1) | `0.5 - cos(t * pi) * 0.5` |
+   | OUT_IN | (1, 1) | identical to IN_OUT |
+
+   OUT_IN sharing IN_OUT's pair is the same quirk that stops `GetSmoothing` ever answering
+   "OUT_IN": one cause, visible two ways.
 
    **4b -- application to the region.** The `AddAnim*` family and whatever consumes the
    accumulated transform. This is render-surface work and the part that must be seen on screen.

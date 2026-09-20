@@ -26,6 +26,10 @@ enum ANIM_SMOOTHING {
 };
 
 const char* AnimSmoothingName(ANIM_SMOOTHING smoothing);
+
+// ref: FUN_00497ba0
+// Map a linear 0..1 through the smoothing curve. See the definition for why OUT_IN is IN_OUT.
+float AnimSmoothingApply(ANIM_SMOOTHING smoothing, float t);
 bool AnimSmoothingFromName(const char* name, ANIM_SMOOTHING& smoothing);
 
 class CSimpleAnim : public CScriptObject {

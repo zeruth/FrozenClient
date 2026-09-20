@@ -144907,7 +144907,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 142
+"line": 146
 },
 "AnimSmoothingName": {
 "files": [
@@ -144924,7 +144924,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 25
+"line": 26
 },
 "AnimSmoothingFromName": {
 "files": [
@@ -144942,7 +144942,29 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 40
+"line": 41
+},
+"AnimSmoothingApply": {
+"files": [
+"src/ui/simple/csimpleanim.cpp"
+],
+"callseq": [
+"cosf",
+"cosf",
+"cosf"
+],
+"strings": [],
+"consts": [
+"0.5f",
+"1.0f",
+"1.5707963705062866f",
+"3.1415927410125732f"
+],
+"branches": 4,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 64
 },
 "CSimpleAnim::CreateScriptMetaTable": {
 "files": [
@@ -144958,7 +144980,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 52
+"line": 85
 },
 "CSimpleAnim::GetObjectType": {
 "files": [
@@ -144971,7 +144993,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 59
+"line": 92
 },
 "CSimpleAnim::RegisterScriptMethods": {
 "files": [
@@ -144986,7 +145008,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 67
+"line": 100
 },
 "CSimpleAnim::CSimpleAnim": {
 "files": [
@@ -144999,7 +145021,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 71
+"line": 104
 },
 "CSimpleAnim::~CSimpleAnim": {
 "files": [
@@ -145014,7 +145036,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 75
+"line": 108
 },
 "CSimpleAnim::GetScriptByName": {
 "files": [
@@ -145044,7 +145066,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 87
+"line": 120
 },
 "CSimpleAnim::GetScriptMetaTable": {
 "files": [
@@ -145057,7 +145079,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 123
+"line": 156
 },
 "CSimpleAnim::IsA": {
 "files": [
@@ -145077,7 +145099,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 127
+"line": 160
 },
 "CSimpleAnim::GetObjectTypeName": {
 "files": [
@@ -145090,7 +145112,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 136
+"line": 169
 },
 "CSimpleAnim::GetScriptObjectParent": {
 "files": [
@@ -145103,7 +145125,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 140
+"line": 173
 },
 "CSimpleAnim::Play": {
 "files": [
@@ -145118,7 +145140,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 147
+"line": 180
 },
 "CSimpleAnim::Pause": {
 "files": [
@@ -145131,7 +145153,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 160
+"line": 193
 },
 "CSimpleAnim::Stop": {
 "files": [
@@ -145148,7 +145170,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 166
+"line": 199
 },
 "CSimpleAnim::Finish": {
 "files": [
@@ -145163,13 +145185,15 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 186
+"line": 219
 },
 "CSimpleAnim::Advance": {
 "files": [
 "src/ui/simple/csimpleanim.cpp"
 ],
-"callseq": [],
+"callseq": [
+"AnimSmoothingApply"
+],
 "strings": [],
 "consts": [
 "0.0f",
@@ -145178,9 +145202,9 @@
 ],
 "branches": 10,
 "stub": false,
-"lines": 63,
+"lines": 59,
 "refs": [],
-"line": 206
+"line": 239
 },
 "CSimpleAnim::OnUpdate": {
 "files": [
@@ -145207,7 +145231,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 273
+"line": 302
 },
 "CSimpleAnim::IsDone": {
 "files": [
@@ -145222,7 +145246,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 318
+"line": 347
 },
 "CSimpleAnim::IsDelaying": {
 "files": [
@@ -145235,7 +145259,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 322
+"line": 351
 },
 "CSimpleAnim::IsStopped": {
 "files": [
@@ -145248,7 +145272,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 326
+"line": 355
 },
 "CSimpleAnim::GetRegionParent": {
 "files": [
@@ -145261,7 +145285,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 335
+"line": 364
 },
 "AnimXmlOffset": {
 "files": [
@@ -145280,7 +145304,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 343
+"line": 372
 },
 "CSimpleAnim::LoadXML": {
 "files": [
@@ -145338,7 +145362,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 357
+"line": 386
 },
 "CSimpleAnim::SetParentGroup": {
 "files": [
@@ -145354,7 +145378,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 430
+"line": 459
 },
 "AnimLoadXML_Scripts": {
 "files": [
@@ -145393,7 +145417,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 447
+"line": 476
 },
 "CSimpleTranslationAnim::CSimpleTranslationAnim": {
 "files": [

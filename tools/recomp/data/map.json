@@ -4764,6 +4764,22 @@
   "refSize": 79,
   "status": "ported"
  },
+ "00497ba0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "AnimSmoothingApply",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleFont.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
  "00497c30": {
   "branchRatio": 0.5,
   "constOverlap": 0.067,
@@ -4854,7 +4870,7 @@
    "src/ui/simple/csimpleanim.cpp"
   ],
   "frozen": "CSimpleAnim::OnUpdate",
-  "frozenSize": 506,
+  "frozenSize": 601,
   "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 180,
