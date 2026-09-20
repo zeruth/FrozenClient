@@ -110,6 +110,24 @@ void CSimpleFontString::ClearString() {
     this->Resize(0);
 }
 
+// ref: FUN_00482720
+// A font string has no quad to transform, so it moves its text block instead. Round-tripped
+// through DDC rather than touching the CGxString's NDC position directly: the animation's offset
+// is in DDC, and mixing the two spaces would make the text drift by a factor of the viewport.
+void CSimpleFontString::AddAnimTranslation(CScriptRegion* source, const C2Vector& offset) {
+    if (!this->m_string) {
+        return;
+    }
+
+    C3Vector position;
+    TextBlockGetStringPos(this->m_string, position);
+
+    position.x += offset.x;
+    position.y += offset.y;
+
+    TextBlockSetStringPos(this->m_string, position);
+}
+
 void CSimpleFontString::Draw(CRenderBatch* batch) {
     if (this->m_font && this->m_text && *this->m_text) {
         batch->QueueFontString(this);

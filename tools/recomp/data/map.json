@@ -2160,6 +2160,22 @@
   "refSize": 66,
   "status": "ported"
  },
+ "00482720": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleFontString.cpp",
+   "src/ui/simple/csimplefontstring.cpp"
+  ],
+  "frozen": "CSimpleFontString::AddAnimTranslation",
+  "frozenSize": 116,
+  "how": "annotated",
+  "module": "CSimpleRender.cpp",
+  "refSize": 68,
+  "status": "ported"
+ },
  "00482aa0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -9960,6 +9976,38 @@
   "how": "callgraph",
   "module": "Profile.cpp",
   "refSize": 26,
+  "status": "ported"
+ },
+ "004bdbf0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/font/TextBlock.cpp",
+   "src/gx/font/textblock.cpp"
+  ],
+  "frozen": "TextBlockSetStringPos",
+  "frozenSize": 73,
+  "how": "annotated",
+  "module": "Profile.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "004bdc50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/TextBlock.cpp",
+   "src/gx/font/textblock.cpp"
+  ],
+  "frozen": "TextBlockGetStringPos",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "Profile.cpp",
+  "refSize": 78,
   "status": "ported"
  },
  "004be9c0": {
@@ -31084,6 +31132,22 @@
   "module": "ClientServices.cpp",
   "refSize": 38,
   "status": "stub"
+ },
+ "006bd550": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/GxuFont.cpp",
+   "src/gx/font/gxufont.cpp"
+  ],
+  "frozen": "GxuFontGetStringPosition",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "CheckExecutableSignature.cpp",
+  "refSize": 70,
+  "status": "ported"
  },
  "006bdfc0": {
   "branchRatio": 0.25,

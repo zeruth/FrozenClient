@@ -48,6 +48,12 @@ void TextBlockGetTextExtent(HTEXTFONT, const char*, uint32_t, float, float*, flo
 
 float TextBlockGetWrappedTextHeight(HTEXTFONT, const char*, float, float, const C2Vector&, float, float, uint32_t);
 
+// ref: FUN_004bdc50
+// The block's position in DDC, which is the space its setter takes and the space everything in the
+// UI layer measures in. The CGxString underneath holds NDC, so this converts on the way out
+// exactly as TextBlockSetStringPos converts on the way in -- the pair round-trips.
+void TextBlockGetStringPos(HTEXTBLOCK stringHandle, C3Vector& pos);
+
 void TextBlockSetStringPos(HTEXTBLOCK stringHandle, const C3Vector& pos);
 
 void TextBlockUpdateColor(HTEXTBLOCK, const CImVector&);

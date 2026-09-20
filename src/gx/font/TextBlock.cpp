@@ -1,4 +1,5 @@
 #include "gx/font/TextBlock.hpp"
+#include "gx/font/CGxString.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/font/GxuFont.hpp"
 #include <storm/Error.hpp>
@@ -301,6 +302,21 @@ float TextBlockGetWrappedTextHeight(HTEXTFONT fontHandle, const char* text, floa
     return NDCToDDCHeight(height);
 }
 
+// ref: FUN_004bdc50
+void TextBlockGetStringPos(HTEXTBLOCK stringHandle, C3Vector& pos) {
+    STORM_ASSERT(stringHandle);
+
+    C3Vector ndcPos;
+    GxuFontGetStringPosition(TextBlockGetStringPtr(stringHandle), ndcPos);
+
+    pos = { 0.0f, 0.0f, ndcPos.z };
+    NDCToDDC(ndcPos.x, ndcPos.y, &pos.x, &pos.y);
+}
+
+// ref: FUN_004bdbf0
+// Tagged after the order matcher offered this address for GetWrappedTextHeight on definition order
+// alone. The body settles it: it converts DDC to NDC and writes the string's position, which is
+// exactly this, and it is the setter half of the pair with TextBlockGetStringPos above.
 void TextBlockSetStringPos(HTEXTBLOCK stringHandle, const C3Vector& pos) {
     STORM_ASSERT(stringHandle);
 

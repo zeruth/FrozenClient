@@ -135,6 +135,7 @@ addr	how	frozen	evidence
 004818f0	callorder	CSimpleFontString::SetTextLength	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
+00482720	annotated	CSimpleFontString::AddAnimTranslation	tag in src/ui/simple/CSimpleFontString.cpp
 00482aa0	override	FrameScript_Object::GetDisplayName	
 00482d10	callgraph	CSimpleFontString::SetFont	only unmatched callee of 004a3a50=FontString_SetFont
 00483060	string	CSimpleTexture::Init	unique "Desaturate"
@@ -623,6 +624,8 @@ addr	how	frozen	evidence
 004bc410	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr	same slot between linked calls in 00768900=ConsoleCommandParse
 004bd960	sticky	CSimpleFontString::GetFontName	held from the previous run, where it was sticky
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
+004bdbf0	annotated	TextBlockSetStringPos	tag in src/gx/font/TextBlock.cpp
+004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -1955,6 +1958,7 @@ addr	how	frozen	evidence
 006b1620	annotated	ClientConnection::CreateCharacter	tag in src/net/connection/ClientConnection.cpp
 006b1a70	annotated	ClientConnection::DeleteCharacter	tag in src/net/connection/ClientConnection.cpp
 006b3450	string	Script_Stub_GetFriendInfo	score 0.50 shared GetFriendInfo
+006bd550	annotated	GxuFontGetStringPosition	tag in src/gx/font/GxuFont.cpp
 006bdfc0	callgraph	GxuFontDestroyString	only unmatched callee of 00763d80=CONSOLELINE::~CONSOLELINE
 006be2b0	string	GxuFontCreateString	unique "vertJustification < GxVJ_Last"
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280

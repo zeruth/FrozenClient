@@ -48,6 +48,13 @@ class CSimpleFontString : public CSimpleRegion, public CSimpleFontable {
         virtual void OnColorChanged(bool a2);
         virtual void OnScreenSizeChanged();
         virtual void Draw(CRenderBatch* batch);
+
+        // ref: FUN_00482720
+        // Translation is the ONLY geometry an animation can apply to a font string. Its vtable
+        // carries the shared nullsub in both the rotation and the scale slots, so a Rotation or a
+        // Scale animation targeting text does nothing -- in the reference as much as here. That is
+        // the reference's behaviour rather than a gap in this port.
+        virtual void AddAnimTranslation(CScriptRegion* source, const C2Vector& offset);
         virtual void SetWidth(float width);
         virtual void SetHeight(float height);
         virtual float GetWidth();

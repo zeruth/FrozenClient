@@ -602,6 +602,17 @@ int32_t GxuFontSetStringColor(CGxString* string, const CImVector& color) {
     return 1;
 }
 
+// ref: FUN_006bd550
+void GxuFontGetStringPosition(const CGxString* string, C3Vector& position) {
+    if (!string) {
+        position = { 0.0f, 0.0f, 0.0f };
+
+        return;
+    }
+
+    position = string->m_position;
+}
+
 void GxuFontSetStringPosition(CGxString* string, const C3Vector& position) {
     STORM_ASSERT(string);
 

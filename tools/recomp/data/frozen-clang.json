@@ -68459,6 +68459,25 @@
 "refs": [],
 "line": 597
 },
+"GxuFontGetStringPosition": {
+"files": [
+"src/gx/font/gxufont.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 606
+},
 "GxuFontSetStringPosition": {
 "files": [
 "src/gx/font/gxufont.cpp"
@@ -68472,7 +68491,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 605
+"line": 616
 },
 "GxuFontUpdate": {
 "files": [
@@ -68490,7 +68509,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 611
+"line": 622
 },
 "GxuFontWindowSizeChanged": {
 "files": [
@@ -68523,7 +68542,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 619
+"line": 630
 },
 "CalculateYOffset": {
 "files": [
@@ -68663,9 +68682,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
-"line": 9
+"line": 10
 },
 "TEXTBLOCK::~TEXTBLOCK": {
 "files": [
@@ -68678,9 +68697,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 15
+"line": 16
 },
 "ConvertStringFlags": {
 "files": [
@@ -68710,9 +68729,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 54,
+"lines": 53,
 "refs": [],
-"line": 19
+"line": 20
 },
 "TextBlockAddShadow": {
 "files": [
@@ -68728,9 +68747,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 8,
 "refs": [],
-"line": 73
+"line": 74
 },
 "TextBlockCreate": {
 "files": [
@@ -68768,9 +68787,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 55,
+"lines": 54,
 "refs": [],
-"line": 82
+"line": 83
 },
 "TextBlockGenerateFont": {
 "files": [
@@ -68800,7 +68819,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 137
+"line": 138
 },
 "TextBlockGetFontFlags": {
 "files": [
@@ -68822,7 +68841,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 184
+"line": 185
 },
 "TextBlockGetFontName": {
 "files": [
@@ -68835,9 +68854,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 5,
 "refs": [],
-"line": 205
+"line": 206
 },
 "TextBlockGetFontPtr": {
 "files": [
@@ -68848,9 +68867,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 5,
 "refs": [],
-"line": 211
+"line": 212
 },
 "TextBlockGetMaxCharsWithinWidth": {
 "files": [
@@ -68869,9 +68888,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 12,
+"lines": 17,
 "refs": [],
-"line": 217
+"line": 218
 },
 "TextBlockGetMaxCharsWithinWidthAndHeight": {
 "files": [
@@ -68891,9 +68910,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 16,
+"lines": 17,
 "refs": [],
-"line": 235
+"line": 236
 },
 "TextBlockGetStringPtr": {
 "files": [
@@ -68904,9 +68923,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
-"line": 253
+"line": 254
 },
 "TextBlockGetTextExtent": {
 "files": [
@@ -68927,9 +68946,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 16,
+"lines": 21,
 "refs": [],
-"line": 259
+"line": 260
 },
 "TextBlockGetWrappedTextHeight": {
 "files": [
@@ -68952,7 +68971,29 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 281
+"line": 282
+},
+"TextBlockGetStringPos": {
+"files": [
+"src/gx/font/textblock.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"TextBlockGetStringPtr",
+"GxuFontGetStringPosition",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"NDCToDDC"
+],
+"strings": [],
+"consts": [
+"0.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 306
 },
 "TextBlockSetStringPos": {
 "files": [
@@ -68970,9 +69011,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 5,
+"lines": 7,
 "refs": [],
-"line": 304
+"line": 320
 },
 "TextBlockUpdateColor": {
 "files": [
@@ -68986,9 +69027,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 5,
 "refs": [],
-"line": 312
+"line": 328
 },
 "CalcWrapPoint": {
 "files": [
@@ -155403,6 +155444,23 @@
 "refs": [],
 "line": 100
 },
+"CSimpleFontString::AddAnimTranslation": {
+"files": [
+"src/ui/simple/csimplefontstring.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"TextBlockGetStringPos",
+"TextBlockSetStringPos"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 117
+},
 "CSimpleFontString::Draw": {
 "files": [
 "src/ui/simple/csimplefontstring.cpp"
@@ -155417,7 +155475,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 113
+"line": 131
 },
 "CSimpleFontString::DrawEmbeddedTextures": {
 "files": [
@@ -155430,7 +155488,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 120
+"line": 138
 },
 "CSimpleFontString::IsA": {
 "files": [
@@ -155443,7 +155501,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 124
+"line": 142
 },
 "CSimpleFontString::FontObjectUpdated": {
 "files": [
@@ -155458,7 +155516,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 130
+"line": 148
 },
 "CSimpleFontString::FreeEmbeddedTextures": {
 "files": [
@@ -155471,7 +155529,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 134
+"line": 152
 },
 "CSimpleFontString::GetDisplayText": {
 "files": [
@@ -155504,7 +155562,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 138
+"line": 156
 },
 "CSimpleFontString::GetFontFlags": {
 "files": [
@@ -155521,7 +155579,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 210
+"line": 228
 },
 "CSimpleFontString::GetFontHeight": {
 "files": [
@@ -155541,7 +155599,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 218
+"line": 236
 },
 "CSimpleFontString::GetFontName": {
 "files": [
@@ -155556,7 +155614,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 230
+"line": 248
 },
 "CSimpleFontString::GetHeight": {
 "files": [
@@ -155578,7 +155636,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 236
+"line": 254
 },
 "CSimpleFontString::GetNumCharsWithinWidth": {
 "files": [
@@ -155599,7 +155657,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 246
+"line": 264
 },
 "CSimpleFontString::GetScriptMetaTable": {
 "files": [
@@ -155612,7 +155670,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 273
+"line": 291
 },
 "CSimpleFontString::GetStringHeight": {
 "files": [
@@ -155636,7 +155694,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 277
+"line": 295
 },
 "CSimpleFontString::GetStringWidth": {
 "files": [
@@ -155659,7 +155717,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 306
+"line": 324
 },
 "CSimpleFontString::GetText": {
 "files": [
@@ -155672,7 +155730,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 334
+"line": 352
 },
 "CSimpleFontString::GetTextWidth": {
 "files": [
@@ -155692,7 +155750,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 338
+"line": 356
 },
 "CSimpleFontString::GetWidth": {
 "files": [
@@ -155714,7 +155772,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 367
+"line": 385
 },
 "CSimpleFontString::LoadXML": {
 "files": [
@@ -155828,7 +155886,7 @@
 "stub": false,
 "lines": 192,
 "refs": [],
-"line": 377
+"line": 395
 },
 "CSimpleFontString::OnColorChanged": {
 "files": [
@@ -155854,7 +155912,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 570
+"line": 588
 },
 "CSimpleFontString::OnScreenSizeChanged": {
 "files": [
@@ -155872,7 +155930,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 600
+"line": 618
 },
 "CSimpleFontString::OnFrameSizeChanged": {
 "files": [
@@ -155896,7 +155954,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 606
+"line": 624
 },
 "CSimpleFontString::PostLoadXML": {
 "files": [
@@ -155920,7 +155978,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 636
+"line": 654
 },
 "CSimpleFontString::RefreshEmbeddedTextures": {
 "files": [
@@ -155933,7 +155991,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 664
+"line": 682
 },
 "CSimpleFontString::RemoveShadow": {
 "files": [
@@ -155946,7 +156004,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 668
+"line": 686
 },
 "CSimpleFontString::SetFont": {
 "files": [
@@ -155973,7 +156031,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 672
+"line": 690
 },
 "CSimpleFontString::SetHeight": {
 "files": [
@@ -155990,7 +156048,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 721
+"line": 739
 },
 "CSimpleFontString::SetIndentedWordWrap": {
 "files": [
@@ -156007,7 +156065,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 728
+"line": 746
 },
 "CSimpleFontString::SetJustificationOffset": {
 "files": [
@@ -156025,7 +156083,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 740
+"line": 758
 },
 "CSimpleFontString::SetJustifyV": {
 "files": [
@@ -156044,7 +156102,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 758
+"line": 776
 },
 "CSimpleFontString::SetJustifyH": {
 "files": [
@@ -156063,7 +156121,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 771
+"line": 789
 },
 "CSimpleFontString::SetNonSpaceWrap": {
 "files": [
@@ -156080,7 +156138,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 784
+"line": 802
 },
 "CSimpleFontString::SetShadowColor": {
 "files": [
@@ -156099,7 +156157,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 797
+"line": 815
 },
 "CSimpleFontString::SetShadowOffset": {
 "files": [
@@ -156122,7 +156180,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 808
+"line": 826
 },
 "CSimpleFontString::SetTextHeight": {
 "files": [
@@ -156144,7 +156202,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 832
+"line": 850
 },
 "CSimpleFontString::GetTextColor": {
 "files": [
@@ -156164,7 +156222,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 851
+"line": 869
 },
 "CSimpleFontString::SetSpacing": {
 "files": [
@@ -156182,7 +156240,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 862
+"line": 880
 },
 "CSimpleFontString::SetStyleFlags": {
 "files": [
@@ -156197,7 +156255,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 877
+"line": 895
 },
 "CSimpleFontString::SetText": {
 "files": [
@@ -156224,7 +156282,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 889
+"line": 907
 },
 "CSimpleFontString::SetTextLength": {
 "files": [
@@ -156237,7 +156295,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 924
+"line": 942
 },
 "CSimpleFontString::SetNonWordWrap": {
 "files": [
@@ -156254,7 +156312,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 928
+"line": 946
 },
 "CSimpleFontString::SetWidth": {
 "files": [
@@ -156271,7 +156329,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 940
+"line": 958
 },
 "CSimpleFontString::UpdateString": {
 "files": [
@@ -156309,7 +156367,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 947
+"line": 965
 },
 "CSimpleFontStringAttributes::SetColor": {
 "files": [

@@ -270,10 +270,28 @@ Each stage should end in a committable increment; none of it should go in blind 
    the quad's local up direction, normalises it, and rotates the offset by it, so a region turned
    on its side has its origin offset turn with it.
 
-   **What is left:** other region types. Only `CSimpleTexture` overrides the three geometry
-   accumulators; a font string or a frame animating its position still does nothing.
+   **Font strings translate, and that is all they ever do.** Scanning `.rdata` for every vtable
+   carrying `AddAnimAlpha` at `+0x50` finds exactly three region families, told apart by their
+   three geometry slots:
 
-   (was: one quarter done) `CSimpleRegion::AddAnimAlpha` (`FUN_00487ce0`) is
+   | `+0x44` translation | `+0x48` rotation | `+0x4c` scale | who |
+   |---|---|---|---|
+   | `00481740` | `00481770` | `004817a0` | CSimpleTexture -- all three its own |
+   | `00482720` | `0047add0` | `0047add0` | font string -- translation only |
+   | `00632050` | `0047add0` | `0047add0` | everything else -- nothing at all |
+
+   `0047add0` and `00632050` are both empty. So a Rotation or a Scale animation aimed at text does
+   nothing in the reference either; it is not a gap in this port, and `CSimpleFontString` carries
+   only the translation override to say so.
+
+   A font string has no quad, so it moves its text block instead, round-tripping through DDC --
+   `TextBlockGetStringPos` and `TextBlockSetStringPos`, both now ported, over a new
+   `GxuFontGetStringPosition`. That round trip is not optional: `CGxString::m_position` is NDC
+   while an animation's offset is DDC, and adding one to the other drifts by a factor of the
+   viewport.
+
+   **What is left:** the third family, which does nothing for any geometry -- worth confirming
+   which classes it covers before assuming a frame can be animated at all. `CSimpleRegion::AddAnimAlpha` (`FUN_00487ce0`) is
    ported -- it was the one accumulator whose body could be read end to end and whose frozen
    counterpart already existed, since `GetVertexColor` already returns opaque white for an unset
    colour exactly as the reference's fallback does. Translation, rotation and scale are not:

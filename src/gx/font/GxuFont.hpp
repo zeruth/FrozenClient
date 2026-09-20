@@ -62,6 +62,14 @@ void GxuFontRenderBatch(CGxStringBatch*);
 
 int32_t GxuFontSetStringColor(CGxString*, const CImVector&);
 
+// ref: FUN_006bd550
+// The string's NDC position, or zero when there is no string. The counterpart to the setter below,
+// and the only reader of CGxString::m_position outside the font layer.
+//
+// DIVERGENCE in argument order only: the reference takes the out parameter first, frozen puts the
+// string first to match its own setter.
+void GxuFontGetStringPosition(const CGxString* string, C3Vector& position);
+
 void GxuFontSetStringPosition(CGxString* string, const C3Vector& position);
 
 void GxuFontUpdate();
