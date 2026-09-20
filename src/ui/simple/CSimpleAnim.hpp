@@ -141,9 +141,16 @@ class CSimpleAnim : public CScriptObject {
         // One tick. Returns whether this animation is finished, and writes the time it consumed.
         bool OnUpdate(float step, float& used);
 
-        // Applied amount for this frame. Empty until stage 4b writes the region side; overridden
-        // by the subclasses there, which is why it is virtual now rather than later.
+        // Hand this frame's contribution to the region. Empty on the base animation, which has
+        // nothing to contribute; each subclass overrides it.
         virtual void OnApply(float amount) {}
+
+        // ref: FUN_00497700
+        // Take a contribution back off again. For three of the four subclasses this is just
+        // OnApply with the amount negated, which is exactly what the reference's shared body does
+        // -- CSimpleScaleAnim is the exception and overrides it, because scale composes
+        // multiplicatively and cannot be undone by negating.
+        virtual void OnUnapply(float amount) { this->OnApply(-amount); }
 
         bool IsDone() const;
         bool IsDelaying() const;

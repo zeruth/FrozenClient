@@ -195,13 +195,15 @@ int32_t CSimpleAlphaAnim_SetChange(lua_State* L) {
         return 0;
     }
 
-    anim->m_change = static_cast<float>(lua_tonumber(L, 2));
+    // Clamping and scaling both live in SetChange; the XML loader takes its own path because it
+    // reports an out-of-range value rather than clamping it.
+    anim->SetChange(static_cast<float>(lua_tonumber(L, 2)));
 
     return 0;
 }
 
 int32_t CSimpleAlphaAnim_GetChange(lua_State* L) {
-    lua_pushnumber(L, AnimThisOf<CSimpleAlphaAnim>(L)->m_change);
+    lua_pushnumber(L, AnimThisOf<CSimpleAlphaAnim>(L)->m_change * (1.0f / 255.0f));
 
     return 1;
 }

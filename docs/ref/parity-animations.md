@@ -256,6 +256,22 @@ Each stage should end in a committable increment; none of it should go in blind 
    and walking outwards. 4a can now be written from the reference rather than from the documented
    API. The map is below.
 
+### A warning about the order matcher in this address range
+
+On 2026-09-20 the recomp's `order` evidence produced twelve links across
+`00497e60`-`004985a0` in one go, all justified as "definition order between AnimSmoothingApply and
+CSimpleAnim::Advance". The heuristic takes the gap between two anchored functions and lays
+frozen's remaining definitions onto the reference's remaining addresses in source order.
+
+Two were provably wrong from functions read the same afternoon: `00497f30` is
+`CSimpleAnim::SetSmoothing`, the C++ one that builds the curve object, and `004982e0` is
+`CSimpleAlphaAnim::SetChange`. Correcting those two collapsed the other ten, because the run was a
+chain and breaking a link invalidated the ordering either side of it.
+
+Everything in the animation range is now `annotated` -- a `// ref:` tag placed after reading the
+reference function -- or one deliberate override. Treat any future `order` link in this range as a
+question rather than an answer.
+
 ### The driver's functions
 
 Found by scanning `.text` for calls to `FUN_0081a2c0` -- the script runner -- between `00497000`

@@ -1213,5 +1213,9 @@
     "frozen": "CSimpleScaleAnim::GetScale",
     "status": "diverged",
     "note": "CORRECTION of the entry added earlier the same day, which called this a driver helper returning \"the remaining scale a driver interpolates across\" and blocked it as unlinked. That reading was wrong, and what settled it was CSimpleScaleAnim::LoadXML (FUN_0049bd20): the loader validates scaleX and scaleY, clamps them to at least 0.001, and stores 1 - scale. So the object holds the COMPLEMENT, and this function -- {1 - this[0xa4], 1 - this[0xa8]} -- is simply how the scale is read back. It is the getter, not driver arithmetic. DIVERGENCE: frozen stores the scale itself, so its body is a plain copy. The two agree everywhere observable, including at construction, since the reference zeroes the pair and zero is a scale of 1."
+  },
+  "00497f30": {
+    "status": "unlinked",
+    "note": "CSimpleAnim::SetSmoothing, the C++ one, and NOT RegisterScriptMethods as the order matcher claimed. Read directly: it takes an ease-in and an ease-out weight, and if either is in (0, 1] it lazily allocates the 12-byte curve object (\".\\CSimpleAnim.cpp\" line 0x30d, vtable 009ebd44) and forwards the pair to the object's own setter. Frozen has no counterpart because it stores the smoothing ENUM and evaluates the curve from that in AnimSmoothingApply, so there is nothing to point at; blocked rather than linked. This address sits inside the run the order matcher filled between AnimSmoothingApply (00497ba0) and CSimpleAnim::Advance (004985f0) -- see the note on that block in docs/ref/parity-animations.md before trusting any link in that range."
   }
 }

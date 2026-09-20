@@ -1,10 +1,12 @@
 #include "ui/simple/CSimpleAnimTypes.hpp"
 #include "ui/simple/CSimpleAnimGroup.hpp"
 #include "ui/simple/CSimpleAnimTypesScript.hpp"
+#include "ui/CScriptRegion.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/LoadXML.hpp"
 #include "util/CStatus.hpp"
 #include <common/XML.hpp>
+#include <tempest/Vector.hpp>
 #include <storm/String.hpp>
 #include <storm/Memory.hpp>
 #include <cstdint>
@@ -224,6 +226,133 @@ void CSimplePathAnim::RemoveControlPoint(CSimpleControlPoint* point) {
     }
 }
 
+// ---------------------------------------------------------------------------- Alpha
+
+// ref: FUN_004982e0
+// Decoded from the instruction bytes: the value is compared against -1.0 and 1.0 and clamped to
+// them, then multiplied by 255 and truncated into the signed 16-bit field.
+//
+// This existing as its own method rather than sitting inline in the Lua thunk is not tidiness. The
+// recomp order matcher had claimed this address for CSimpleAnim::GetScriptObjectParent, purely
+// because it sits between two anchored functions and frozen happened to define that method at the
+// matching position. Writing the real counterpart displaces the guess.
+void CSimpleAlphaAnim::SetChange(float change) {
+    if (change < -1.0f) {
+        change = -1.0f;
+    } else if (change > 1.0f) {
+        change = 1.0f;
+    }
+
+    this->m_change = static_cast<int16_t>(change * 255.0f);
+}
+
+// ---------------------------------------------------------------------------- Apply
+
+// Every apply reaches the region the same way: through the group, never directly. An animation
+// whose group has no region contributes nothing rather than crashing, which is the reference's
+// own null check and not defensive padding.
+static CScriptRegion* AnimTargetRegion(CSimpleAnim* anim) {
+    return anim->m_group ? anim->m_group->m_region : nullptr;
+}
+
+// ref: FUN_00498040
+void CSimpleTranslationAnim::OnApply(float amount) {
+    auto region = AnimTargetRegion(this);
+
+    if (!region) {
+        return;
+    }
+
+    C2Vector offset;
+    offset.x = this->m_offsetX * amount;
+    offset.y = this->m_offsetY * amount;
+
+    region->AddAnimTranslation(region, offset);
+}
+
+// ref: FUN_00498090
+void CSimpleRotationAnim::OnApply(float amount) {
+    auto region = AnimTargetRegion(this);
+
+    if (!region) {
+        return;
+    }
+
+    C2Vector origin;
+    origin.x = this->m_originX;
+    origin.y = this->m_originY;
+
+    // Only the angle scales with the amount. The origin is a fixed anchor, so it is passed
+    // through unscaled -- scaling it would drag the pivot across the screen as the animation ran.
+    region->AddAnimRotation(region, this->m_originPoint, origin, this->m_radians * amount);
+}
+
+// ref: FUN_004980f0
+// DIVERGENCE follows from the storage choice recorded against FUN_004980d0: the reference holds
+// 1 - scale and passes (1 - scale) * amount, so what the region accumulates is the COMPLEMENT
+// scaled by progress, not the scale. Frozen holds the scale, so it forms the complement here to
+// hand the region the same number the reference does.
+void CSimpleScaleAnim::OnApply(float amount) {
+    auto region = AnimTargetRegion(this);
+
+    if (!region) {
+        return;
+    }
+
+    C2Vector origin;
+    origin.x = this->m_originX;
+    origin.y = this->m_originY;
+
+    C2Vector scale;
+    scale.x = (1.0f - this->m_scaleX) * amount;
+    scale.y = (1.0f - this->m_scaleY) * amount;
+
+    region->AddAnimScale(region, this->m_originPoint, origin, scale);
+}
+
+// ref: FUN_00498150
+// Scale is the one subclass that cannot be undone by negating, because scale composes by
+// multiplying rather than adding. The reference sends the reciprocal instead, guarding each axis
+// against a division by something indistinguishable from zero and passing 1 in that case.
+void CSimpleScaleAnim::OnUnapply(float amount) {
+    auto region = AnimTargetRegion(this);
+
+    if (!region) {
+        return;
+    }
+
+    C2Vector origin;
+    origin.x = this->m_originX;
+    origin.y = this->m_originY;
+
+    float x = (1.0f - this->m_scaleX) * amount;
+    float y = (1.0f - this->m_scaleY) * amount;
+
+    float magnitudeX = x < 0.0f ? -x : x;
+    float magnitudeY = y < 0.0f ? -y : y;
+
+    C2Vector inverse;
+    inverse.x = 1.0f - (magnitudeX >= 2.384185791015625e-07f ? 1.0f / x : 1.0f);
+    inverse.y = 1.0f - (magnitudeY >= 2.384185791015625e-07f ? 1.0f / y : 1.0f);
+
+    region->AddAnimScale(region, this->m_originPoint, origin, inverse);
+}
+
+// ref: FUN_00498330
+// No 255 here: m_change is already scaled, so the apply is the stored integer times the amount,
+// truncated. Decoded from the instruction bytes -- Ghidra lost the whole float expression feeding
+// the truncation and showed only a bare call, which would have made this look like it passed the
+// change through untouched.
+void CSimpleAlphaAnim::OnApply(float amount) {
+    auto region = AnimTargetRegion(this);
+
+    if (!region) {
+        return;
+    }
+
+    region->AddAnimAlpha(region, static_cast<int16_t>(this->m_change * amount));
+}
+
 // ---------------------------------------------------------------------------- XML
 
 // The four that take an <Origin> child share this. A missing or malformed point leaves the
@@ -338,7 +467,16 @@ void CSimpleAlphaAnim::LoadXML(const XMLNode* node, CStatus* status) {
     const char* changeAttr = node->GetAttributeByName("change");
 
     if (changeAttr && *changeAttr) {
-        this->m_change = SStrToFloat(changeAttr);
+        float value = SStrToFloat(changeAttr);
+
+        if (value < -1.0f || value > 1.0f) {
+            status->Add(STATUS_WARNING,
+                        "%s: Invalid change value: %s. Value must be between %d and %d, inclusive.",
+                        this->GetName() ? this->GetName() : "<unnamed>", changeAttr, -1, 1);
+        }
+
+        // Reported but not clamped: the reference stores whatever it was given.
+        this->m_change = static_cast<int16_t>(value * 255.0f);
     }
 }
 

@@ -47,6 +47,7 @@ class CSimpleTranslationAnim : public CSimpleAnim {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual void LoadXML(const XMLNode* node, CStatus* status);
+        virtual void OnApply(float amount);
 
         CSimpleTranslationAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 };
@@ -76,6 +77,7 @@ class CSimpleRotationAnim : public CSimpleAnim {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual void LoadXML(const XMLNode* node, CStatus* status);
+        virtual void OnApply(float amount);
 
         CSimpleRotationAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 };
@@ -104,6 +106,8 @@ class CSimpleScaleAnim : public CSimpleAnim {
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual void LoadXML(const XMLNode* node, CStatus* status);
+        virtual void OnApply(float amount);
+        virtual void OnUnapply(float amount);
 
         CSimpleScaleAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
 
@@ -122,18 +126,32 @@ class CSimpleAlphaAnim : public CSimpleAnim {
         static int32_t GetObjectType();
         static void RegisterScriptMethods(lua_State* L);
 
-        // The DELTA applied over the animation, not a target alpha: -1 fades fully out, +1 fully in.
-        // The reference's XML loader bounds it to [-1, 1] ("Value must be between %d and %d,
-        // inclusive" at 009ec1b8); SetChange from Lua does not bound it, and neither does this.
-        float m_change = 0.0f;
+        // The DELTA applied over the animation, not a target alpha: -255 fades fully out, +255
+        // fully in.
+        //
+        // Stored as the reference stores it -- a signed 16-bit value already scaled by 255 -- and
+        // NOT as the [-1, 1] float the API speaks in. The conversion sits at three edges:
+        // SetChange and the XML loader multiply by 255 on the way in, GetChange divides on the way
+        // out, and the apply passes the scaled integer straight through. Keeping a float here
+        // would round-trip differently, because the reference truncates on the way in.
+        //
+        // The two inbound paths differ on a value outside [-1, 1]: SetChange CLAMPS it, while the
+        // XML loader reports "Value must be between -1 and 1, inclusive" and then stores it anyway.
+        int16_t m_change = 0;
 
         virtual int32_t GetScriptMetaTable();
         virtual bool IsA(int32_t type);
         virtual bool IsA(const char* typeName);
         virtual const char* GetObjectTypeName();
         virtual void LoadXML(const XMLNode* node, CStatus* status);
+        virtual void OnApply(float amount);
 
         CSimpleAlphaAnim(CSimpleAnimGroup* group) : CSimpleAnim(group) {}
+
+        // ref: FUN_004982e0
+        // Clamps to [-1, 1] and scales by 255. The Lua setter is a thin wrapper over this; the XML
+        // loader deliberately is not, because it reports an out-of-range value instead of clamping.
+        void SetChange(float change);
 };
 
 // ---------------------------------------------------------------------------- ControlPoint

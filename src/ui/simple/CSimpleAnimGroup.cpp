@@ -408,6 +408,20 @@ void CSimpleAnimGroup::OnUpdate(float elapsedSec) {
 
         this->CollectOrder(this->m_currentOrder, order);
 
+        // A loop boundary was crossed last pass and the outgoing order's contribution is still
+        // applied. Take it off before the new lap puts anything on, or the two accumulate.
+        //
+        // The reference passes an argument to the un-apply that Ghidra could not recover; the
+        // animation's own last applied amount is the only value that makes the pair cancel, and
+        // that is what is passed here.
+        if (this->m_unapplyPending) {
+            for (uint32_t i = 0; i < order.Count(); i++) {
+                order[i]->OnUnapply(order[i]->m_appliedAmount);
+            }
+
+            this->m_unapplyPending = false;
+        }
+
         float consumed = 0.0f;
         bool allDone = true;
 
