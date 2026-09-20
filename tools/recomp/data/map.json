@@ -13333,7 +13333,7 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetDungeonDifficulty",
-  "frozenSize": 100,
+  "frozenSize": 105,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 121,
@@ -13349,7 +13349,7 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetRaidDifficulty",
-  "frozenSize": 73,
+  "frozenSize": 100,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 107,
@@ -15472,6 +15472,38 @@
   "module": "GameUI.cpp",
   "refSize": 205,
   "status": "stub"
+ },
+ "00525530": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::ApplyDungeonDifficulty",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 108,
+  "status": "ported"
+ },
+ "005255a0": {
+  "branchRatio": 0.133,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::ApplyRaidDifficulty",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 241,
+  "status": "ported"
  },
  "00525a30": {
   "branchRatio": 0.5,

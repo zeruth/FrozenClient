@@ -966,6 +966,8 @@ addr	how	frozen	evidence
 00523260	table	Script_SummonFriend	binding "SummonFriend" in s_ScriptFunctions ~ table 00ac80b0
 00523370	table	Script_EndRefund	binding "EndRefund" in s_ScriptFunctions ~ table 00ac80b0
 005233d0	table	Script_EndBoundTradeable	binding "EndBoundTradeable" in s_ScriptFunctions ~ table 00ac80b0
+00525530	annotated	CGPartyInfo::ApplyDungeonDifficulty	tag in src/ui/game/CGPartyInfo.cpp
+005255a0	annotated	CGPartyInfo::ApplyRaidDifficulty	tag in src/ui/game/CGPartyInfo.cpp
 00525a30	table	Script_TargetUnit	binding "TargetUnit" in s_ScriptFunctions ~ table 00ac80b0
 00525a90	table	Script_TargetNearest	binding "TargetNearest" in s_ScriptFunctions ~ table 00ac80b0
 00525ad0	table	Script_TargetNearestEnemy	binding "TargetNearestEnemy" in s_ScriptFunctions ~ table 00ac80b0

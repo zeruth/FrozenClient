@@ -22,6 +22,8 @@ WOWGUID CGPartyInfo::m_masterLooter = 0;
 uint32_t CGPartyInfo::m_lootThreshold = 2;
 uint32_t CGPartyInfo::m_dungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_raidDifficulty = 0;
+uint32_t CGPartyInfo::m_ownDungeonDifficulty = 0;
+uint32_t CGPartyInfo::m_ownRaidDifficulty = 0;
 
 namespace {
 
@@ -164,6 +166,41 @@ uint32_t CGPartyInfo::GetDungeonDifficulty() {
 
 uint32_t CGPartyInfo::GetRaidDifficulty() {
     return CGPartyInfo::m_raidDifficulty;
+}
+
+uint32_t CGPartyInfo::GetOwnDungeonDifficulty() {
+    return CGPartyInfo::m_ownDungeonDifficulty;
+}
+
+uint32_t CGPartyInfo::GetOwnRaidDifficulty() {
+    return CGPartyInfo::m_ownRaidDifficulty;
+}
+
+// ref: FUN_00525530
+// One message, two possible targets. The reference also re-announces the dungeon difficulty in
+// chat when the EFFECTIVE value changed as a result -- not ported, that needs the chat path.
+void CGPartyInfo::ApplyDungeonDifficulty(uint32_t difficulty, bool own, bool group) {
+    if (own) {
+        CGPartyInfo::m_ownDungeonDifficulty = difficulty;
+    }
+
+    if (group) {
+        CGPartyInfo::m_dungeonDifficulty = difficulty;
+    }
+}
+
+// ref: FUN_005255a0
+void CGPartyInfo::ApplyRaidDifficulty(uint32_t difficulty, bool own, bool group) {
+    if (own) {
+        CGPartyInfo::m_ownRaidDifficulty = difficulty;
+    }
+
+    if (group) {
+        // TODO the reference checks the current map's record first: a map flagged 0x100 -- the old
+        // two-difficulty raids -- takes a different path that collapses the value to a boolean
+        // instead of storing it. Frozen stores it either way.
+        CGPartyInfo::m_raidDifficulty = difficulty;
+    }
 }
 
 void CGPartyInfo::SetDifficulty(uint32_t dungeon, uint32_t raid) {
@@ -327,6 +364,46 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     return 1;
 }
 
+// MSG_SET_DUNGEON_DIFFICULTY / MSG_SET_RAID_DIFFICULTY: the value, then two flags for which of
+// the player's own and the group's settings it applies to. Three uint32s, not a byte among them.
+int32_t ReceiveSetDungeonDifficulty(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    if (!msg) {
+        return 1;
+    }
+
+    uint32_t difficulty = 0;
+    uint32_t own = 0;
+    uint32_t group = 0;
+
+    msg->Get(difficulty);
+    msg->Get(own);
+    msg->Get(group);
+
+    CGPartyInfo::ApplyDungeonDifficulty(difficulty, own != 0, group != 0);
+
+    return 1;
+}
+
+int32_t ReceiveSetRaidDifficulty(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    if (!msg) {
+        return 1;
+    }
+
+    uint32_t difficulty = 0;
+    uint32_t own = 0;
+    uint32_t group = 0;
+
+    msg->Get(difficulty);
+    msg->Get(own);
+    msg->Get(group);
+
+    CGPartyInfo::ApplyRaidDifficulty(difficulty, own != 0, group != 0);
+
+    return 1;
+}
+
 void CGPartyInfo::RegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_GROUP_LIST, &ReceiveGroupList, nullptr);
+    ClientServices::SetMessageHandler(MSG_SET_DUNGEON_DIFFICULTY, &ReceiveSetDungeonDifficulty, nullptr);
+    ClientServices::SetMessageHandler(MSG_SET_RAID_DIFFICULTY, &ReceiveSetRaidDifficulty, nullptr);
 }

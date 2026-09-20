@@ -2446,10 +2446,7 @@ int32_t Script_GetDungeonDifficulty(lua_State* L) {
     auto inParty = CGPartyInfo::GetMember(1) != 0;
     auto inRaid = CGRaidInfo::NumMembers() != 0;
 
-    // TODO the player's own difficulty, which arrives on its own messages
-    // (SMSG_CHANGE_PLAYER_DIFFICULTY_RESULT and the instance-save one the reference's party init
-    // registers). Until those land it stays at normal, which is what the hardcoded value was.
-    uint32_t ownDifficulty = 0;
+    auto ownDifficulty = CGPartyInfo::GetOwnDungeonDifficulty();
 
     auto effective = (inParty && !inRaid) ? CGPartyInfo::GetDungeonDifficulty() : ownDifficulty;
 
@@ -2468,7 +2465,7 @@ int32_t Script_SetDungeonDifficulty(lua_State* L) {
 int32_t Script_GetRaidDifficulty(lua_State* L) {
     auto inRaid = CGRaidInfo::NumMembers() != 0;
 
-    uint32_t ownDifficulty = 0;
+    auto ownDifficulty = CGPartyInfo::GetOwnRaidDifficulty();
     auto effective = inRaid ? CGPartyInfo::GetRaidDifficulty() : ownDifficulty;
 
     lua_pushnumber(L, static_cast<double>(effective + 1));

@@ -59,6 +59,17 @@ class CGPartyInfo {
         static uint32_t GetDungeonDifficulty();
         static uint32_t GetRaidDifficulty();
 
+        // The player's OWN difficulty settings, which are separate from the group's and are what
+        // apply when solo. Both are 0-based like the group's.
+        static uint32_t GetOwnDungeonDifficulty();
+        static uint32_t GetOwnRaidDifficulty();
+
+        // ref: FUN_00525530 / FUN_005255a0
+        // The message carries the value plus two flags saying which of the two settings it
+        // applies to, so one packet can change either or both.
+        static void ApplyDungeonDifficulty(uint32_t difficulty, bool own, bool group);
+        static void ApplyRaidDifficulty(uint32_t difficulty, bool own, bool group);
+
         // ref: FUN_0052c8c0
         // Whether a guid belongs to a party member or to a member's pet. The player is NOT a
         // member for this purpose -- "player" and "pet" are their own tokens.
@@ -92,6 +103,8 @@ class CGPartyInfo {
         static uint32_t m_lootThreshold;
         static uint32_t m_dungeonDifficulty;
         static uint32_t m_raidDifficulty;
+        static uint32_t m_ownDungeonDifficulty;
+        static uint32_t m_ownRaidDifficulty;
 };
 
 #endif
