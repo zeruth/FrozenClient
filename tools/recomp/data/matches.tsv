@@ -1201,7 +1201,7 @@ addr	how	frozen	evidence
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
 0053c0b0	override	Script_ReturnZero	
 0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
-0053d990	callorder	CGActionBar::GetActionID	same slot between linked calls in 005a8f10=Script_GetActionInfo
+0053d990	sticky	CGActionBar::GetActionID	held from the previous run, where it was callorder
 0053dc20	sticky	SpellIconPath	held from the previous run, where it was sticky
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
 0053de10	override	Script_Stub_GetShapeshiftForm	
@@ -1463,7 +1463,7 @@ addr	how	frozen	evidence
 005a8790	table	Script_GetActionBarToggles	binding "GetActionBarToggles" in s_ScriptFunctions ~ table 00acf9e0
 005a8820	table	Script_IsPossessBarVisible	binding "IsPossessBarVisible" in s_ScriptFunctions ~ table 00acf9e0
 005a8bc0	override	Script_IsEquippedAction	
-005a8f10	table	Script_GetActionInfo	binding "GetActionInfo" in s_ScriptFunctions ~ table 00acf9e0
+005a8f10	annotated	Script_GetActionInfo	tag in src/ui/game/ActionBarScript.cpp
 005a91c0	table	Script_GetActionCooldown	binding "GetActionCooldown" in s_ScriptFunctions ~ table 00acf9e0
 005a9290	table	Script_GetActionAutocast	binding "GetActionAutocast" in s_ScriptFunctions ~ table 00acf9e0
 005a9b30	table	Script_GetActionTexture	binding "GetActionTexture" in s_ScriptFunctions ~ table 00acf9e0
@@ -1631,7 +1631,7 @@ addr	how	frozen	evidence
 005eca80	annotated	CGCooldown_GetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
-005ef490	string	ActionTypeName	score 0.77 shared equipmentset; macro; spell
+005ef490	string	ActionTypeName	score 0.73 shared equipmentset; macro; spell
 005f7630	callorder	AddOnIsLoaded	same slot between linked calls in 00511b30=Script_IsAddOnLoaded
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp

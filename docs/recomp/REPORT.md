@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 05:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 05:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -19,11 +19,11 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | **render surface** (the modules that draw the world) | **6005, mapped 171 (=) (2.8%)** | |
 | frozen functions (src/, from PDB + source) | 11845, stubs 1720 | |
 
-Match evidence: annotated 761, callgraph 177, callorder 131, cvar 32, handler 28, order 179, override 207, sticky 12, string 310, table 1125. Module anchors: 1479 assert strings.
+Match evidence: annotated 762, callgraph 177, callorder 130, cvar 32, handler 28, order 179, override 207, sticky 13, string 310, table 1124. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-20 05:04 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
+Previous run: 2026-09-20 05:08 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
 
 ## Lua API coverage (binding tables)
 
@@ -536,8 +536,8 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00515200 | `Script_GetCursorInfo` | CRITTER; MOUNT; UNKNOWN; companion |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | Alpha; Animation; Couldn't find inherited node: %s; Recursively inherited node: %s |
 | 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
-| 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 00832ea0 | `CM2Model::InitializeLoaded` | "%s", %s = %g; "%s", %s = %g, %s = %g; shared->farClip; shared->fieldOfView |
+| 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
 | 00631000 | `CGTooltip_SetAction` | ATTACK; PET_ACTION_%s; PET_MODE_%s; UberTooltips |
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 03:17 | 2927 (10.8%) | 1050 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:24 | 2933 (10.8%) | 1052 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:25 | 2933 (10.8%) | 1052 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:28 | 2934 (10.8%) | 1053 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 04:55 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:04 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:08 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 05:13 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 
 ## How to move a row
 

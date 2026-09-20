@@ -1,4 +1,5 @@
 #include "ui/game/ActionBarScript.hpp"
+#include <storm/String.hpp>
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGItem_C.hpp"
 #include "ui/FrameScript.hpp"
@@ -77,36 +78,50 @@ const char* ActionTypeName(uint32_t type) {
     }
 }
 
+// ref: FUN_005a8f10
+// The return COUNT varies by action type, which is easy to miss and is why this used to answer
+// three for everything:
+//
+//   empty or unrecognised slot   nothing at all
+//   spell or companion           4 -- type, index, subType, spellID
+//   item, macro, equipment set   2 -- type, index
+//
+// Three nils and nothing are the same thing to a Lua destructure, so the empty case never showed;
+// the spell case was one short, and VehicleMenuBar.lua reads exactly that fourth value.
+//
+// DIVERGENCE in the SECOND value, and it is not new -- writing the fourth one just makes it
+// visible. For a spell the reference returns the spellbook INDEX there, not the spell id: it runs
+// the id through FUN_0053b4e0 with the pet flag and adds one. Frozen has no spellbook, so it
+// returns the id in that position instead. The fourth value, which genuinely is the spell id, is
+// now correct either way.
 int32_t Script_GetActionInfo(lua_State* L) {
     int32_t slot = ActionSlot(L, 1);
     uint32_t packed = CGActionBar::GetAction(slot);
 
-    if (!packed) {
-        lua_pushnil(L);
-        lua_pushnil(L);
-        lua_pushnil(L);
-
-        return 3;
-    }
-
-    const char* name = ActionTypeName(CGActionBar::GetActionType(slot));
+    const char* name = packed ? ActionTypeName(CGActionBar::GetActionType(slot)) : nullptr;
 
     if (!name) {
-        lua_pushnil(L);
-        lua_pushnil(L);
-        lua_pushnil(L);
-
-        return 3;
+        return 0;
     }
 
+    uint32_t id = CGActionBar::GetActionID(slot);
+
     lua_pushstring(L, name);
-    lua_pushnumber(L, CGActionBar::GetActionID(slot));
+    lua_pushnumber(L, id);
 
-    // subType: the reference returns the macro body id or the companion type here. Neither is
-    // resolved yet, and FrameXML only reads it for those two, so nil is the honest answer.
-    lua_pushnil(L);
+    // Only a spell carries the last two. An item, a macro or an equipment set stops here, as the
+    // reference does rather than padding with nils.
+    if (SStrCmpI(name, "spell", STORM_MAX_STR)) {
+        return 2;
+    }
 
-    return 3;
+    // subType separates a player spell from a pet one, and for a companion it is CRITTER or MOUNT.
+    // Frozen resolves neither the pet book nor companions, so every spell action reports as a
+    // player spell -- which is what an action bar with no pet on it holds.
+    lua_pushstring(L, "spell");
+    lua_pushnumber(L, id);
+
+    return 4;
 }
 
 int32_t Script_GetActionTexture(lua_State* L) {

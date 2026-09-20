@@ -95511,7 +95511,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 25
+"line": 26
 },
 "ActionTexture": {
 "files": [
@@ -95529,7 +95529,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 30
+"line": 31
 },
 "ActionTypeName": {
 "files": [
@@ -95547,7 +95547,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 59
+"line": 60
 },
 "Script_GetActionInfo": {
 "files": [
@@ -95556,29 +95556,29 @@
 "callseq": [
 "ActionSlot",
 "CGActionBar::GetAction",
-"lua_pushnil",
-"lua_pushnil",
-"lua_pushnil",
 "CGActionBar::GetActionType",
 "ActionTypeName",
-"lua_pushnil",
-"lua_pushnil",
-"lua_pushnil",
-"lua_pushstring",
 "CGActionBar::GetActionID",
+"lua_pushstring",
 "lua_pushnumber",
-"lua_pushnil"
+"SStrCmpI",
+"lua_pushstring",
+"lua_pushnumber"
 ],
-"strings": [],
+"strings": [
+"spell"
+],
 "consts": [
+"0",
 "1",
-"3"
+"2",
+"4"
 ],
-"branches": 2,
+"branches": 3,
 "stub": false,
-"lines": 31,
+"lines": 29,
 "refs": [],
-"line": 80
+"line": 97
 },
 "Script_GetActionTexture": {
 "files": [
@@ -95598,7 +95598,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 112
+"line": 127
 },
 "Script_GetActionCount": {
 "files": [
@@ -95622,7 +95622,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 125
+"line": 140
 },
 "Script_GetActionCooldown": {
 "files": [
@@ -95642,7 +95642,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 147
+"line": 162
 },
 "Script_GetActionAutocast": {
 "files": [
@@ -95664,7 +95664,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 155
+"line": 170
 },
 "Script_GetActionText": {
 "files": [
@@ -95684,7 +95684,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 159
+"line": 174
 },
 "Script_HasAction": {
 "files": [
@@ -95705,7 +95705,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 178
+"line": 193
 },
 "Script_UseAction": {
 "files": [
@@ -95733,7 +95733,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 190
+"line": 205
 },
 "Script_PickupAction": {
 "files": [
@@ -95755,7 +95755,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 223
+"line": 238
 },
 "Script_PlaceAction": {
 "files": [
@@ -95777,7 +95777,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 227
+"line": 242
 },
 "Script_IsAttackAction": {
 "files": [
@@ -95795,7 +95795,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 231
+"line": 246
 },
 "Script_IsCurrentAction": {
 "files": [
@@ -95813,7 +95813,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 238
+"line": 253
 },
 "Script_IsAutoRepeatAction": {
 "files": [
@@ -95831,7 +95831,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 245
+"line": 260
 },
 "Script_IsUsableAction": {
 "files": [
@@ -95855,7 +95855,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 252
+"line": 267
 },
 "Script_IsConsumableAction": {
 "files": [
@@ -95870,7 +95870,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 273
+"line": 288
 },
 "Script_IsStackableAction": {
 "files": [
@@ -95885,7 +95885,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 278
+"line": 293
 },
 "Script_IsEquippedAction": {
 "files": [
@@ -95918,7 +95918,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 296
+"line": 311
 },
 "Script_ActionHasRange": {
 "files": [
@@ -95936,7 +95936,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 333
+"line": 348
 },
 "Script_IsActionInRange": {
 "files": [
@@ -95953,7 +95953,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 342
+"line": 357
 },
 "Script_GetBonusBarOffset": {
 "files": [
@@ -95971,7 +95971,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 351
+"line": 366
 },
 "Script_GetMultiCastBarOffset": {
 "files": [
@@ -95989,7 +95989,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 357
+"line": 372
 },
 "Script_ChangeActionBarPage": {
 "files": [
@@ -96012,7 +96012,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 368
+"line": 383
 },
 "Script_GetActionBarPage": {
 "files": [
@@ -96030,7 +96030,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 387
+"line": 402
 },
 "Script_GetActionBarToggles": {
 "files": [
@@ -96048,7 +96048,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 402
+"line": 417
 },
 "Script_SetActionBarToggles": {
 "files": [
@@ -96068,7 +96068,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 410
+"line": 425
 },
 "Script_IsPossessBarVisible": {
 "files": [
@@ -96086,7 +96086,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 421
+"line": 436
 },
 "Script_GetMultiCastTotemSpells": {
 "files": [
@@ -96108,7 +96108,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 428
+"line": 443
 },
 "Script_SetMultiCastSpell": {
 "files": [
@@ -96130,7 +96130,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 432
+"line": 447
 },
 "ActionBarRegisterScriptFunctions": {
 "files": [
@@ -96145,7 +96145,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 469
+"line": 484
 },
 "Script_GetNumBattlefields": {
 "files": [

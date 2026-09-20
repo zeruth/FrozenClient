@@ -19183,7 +19183,7 @@
   ],
   "frozen": "CGActionBar::GetActionID",
   "frozenSize": 35,
-  "how": "callorder",
+  "how": "sticky",
   "module": "SpellBookFrame.cpp",
   "refSize": 54,
   "status": "ported"
@@ -23320,17 +23320,17 @@
   "status": "diverged"
  },
  "005a8f10": {
-  "branchRatio": 0.154,
+  "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.132,
+  "fidelity": 0.184,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
   ],
   "frozen": "Script_GetActionInfo",
-  "frozenSize": 365,
-  "how": "table",
+  "frozenSize": 461,
+  "how": "annotated",
   "module": "ActionBarFrame.cpp",
   "refSize": 683,
   "status": "ported"

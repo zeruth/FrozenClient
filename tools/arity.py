@@ -103,9 +103,14 @@ def framexml_arity():
             if '(' in lhs or '[' in lhs:
                 continue
 
-            # "local a, b = F(\"x\"), F(\"y\")" destructures two calls, not one call returning two.
-            # Counting the locals there invents a shortfall -- GetCVarBool was reported that way.
-            if line.count(name + '(') > 1:
+            # "local a, b = F(x), G(y)" destructures two calls, not one call returning two.
+            # Counting the locals against either one invents a shortfall. Seen both ways: the same
+            # function twice (GetCVarBool) and two different ones (GetScreenWidth with
+            # GetScreenHeight). So the test is on the number of CALLS to the right of the equals,
+            # not on the name.
+            rhs = line[m.end(1):]
+
+            if len(re.findall(r'[A-Za-z_]\w*\s*\(', rhs)) > 1:
                 continue
 
             names = [p.strip() for p in lhs.split(',') if p.strip()]
