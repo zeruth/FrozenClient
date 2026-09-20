@@ -3,6 +3,8 @@
 #include "util/Log.hpp"
 #include "util/CStatus.hpp"
 #include "ui/Util.hpp"
+#include "ui/FrameScript.hpp"
+#include "util/Lua.hpp"
 
 #include <common/MD5.hpp>
 #include <common/xml/XMLNode.hpp>
@@ -113,6 +115,17 @@ void EnsureLoaded() {
 
         auto body = node->GetBody();
         command.script = body ? body : "";
+
+        // Compiled once, here, exactly as the reference does it -- same wrapper, same four
+        // parameter names. A command with no body keeps -1 and runs nothing.
+        if (!command.script.empty()) {
+            command.function = FrameScript_CompileFunction(
+                command.name.c_str(),
+                "return function(keystate, pressure, angle, precision) %s end",
+                command.script.c_str(),
+                &status
+            );
+        }
 
         auto runOnUp = node->GetAttributeByName("runOnUp");
         command.runOnUp = runOnUp && StringToBOOL(runOnUp);
@@ -245,4 +258,38 @@ bool UIBindingsSetKey(const char* key, const char* command) {
     }
 
     return false;
+}
+
+// ref: FUN_0055f860
+//
+// The reference passes four arguments: the key state as a string, then pressure, angle and
+// precision. Only the first means anything without joystick input, and the other three go in as
+// zero, which is what the reference passes for a keyboard event too.
+bool UIBindingsRunCommand(const char* command, bool keyDown) {
+    auto found = UIBindingsFind(command);
+
+    if (!found || found->function == -1) {
+        return false;
+    }
+
+    // A release is swallowed unless the command asked for it. This is the whole reason runOnUp
+    // exists: without the test, every movement binding would fire twice per press.
+    if (!keyDown && !found->runOnUp) {
+        return false;
+    }
+
+    auto L = FrameScript_GetContext();
+
+    if (!L) {
+        return false;
+    }
+
+    lua_pushstring(L, keyDown ? "down" : "up");
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+    lua_pushnumber(L, 0.0);
+
+    FrameScript_Execute(found->function, nullptr, 4, nullptr, nullptr);
+
+    return true;
 }

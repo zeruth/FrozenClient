@@ -2,6 +2,7 @@
 #include "ui/game/UIBindingsScript.hpp"
 #include "ui/game/CGUIBindings.hpp"
 #include "ui/game/UIBindings.hpp"
+#include <storm/String.hpp>
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
@@ -182,8 +183,27 @@ int32_t Script_GetBindingByKey(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0055fad0
+//
+// RunBinding("COMMAND"[, "up"]) runs a binding's body without a key being pressed. FrameXML uses
+// it to fire a command from a button -- the cinematic frame runs SCREENSHOT this way.
+//
+// The second argument is compared against the literal "up"; anything else, including absent, is a
+// press. The reference only ever tests for that one string.
 int32_t Script_RunBinding(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: RunBinding(\"COMMAND\")");
+    }
+
+    bool keyDown = true;
+
+    if (lua_isstring(L, 2) && !SStrCmpI(lua_tostring(L, 2), "up", 0x7FFFFFFF)) {
+        keyDown = false;
+    }
+
+    UIBindingsRunCommand(lua_tostring(L, 1), keyDown);
+
+    return 0;
 }
 
 int32_t Script_GetCurrentBindingSet(lua_State* L) {

@@ -22,8 +22,11 @@ struct UIBindingCommand {
     // resolved at load so every command here knows its own header.
     std::string header;
 
-    // The Lua the command runs. Kept because the dispatch half will need it; nothing reads it yet.
+    // The Lua the command runs, and the compiled function built from it. The reference wraps the
+    // body once at parse time and keeps only the reference; the source is kept here too so a
+    // failed compile can be reported against something readable.
     std::string script;
+    int32_t function = -1;
 
     // The command fires on key release as well as press.
     bool runOnUp = false;
@@ -56,5 +59,9 @@ const char* UIBindingsGetCommandForKey(const char* key);
 // Bind a key to a command, or unbind it when command is null or empty. Takes the key off whatever
 // held it first, since a key maps to at most one command. False when the command does not exist.
 bool UIBindingsSetKey(const char* key, const char* command);
+
+// Run a command's Lua body, as a key press (keyDown) or release. A release does nothing unless the
+// command asked for runOnUp. False when the command is unknown or has no body.
+bool UIBindingsRunCommand(const char* command, bool keyDown);
 
 #endif

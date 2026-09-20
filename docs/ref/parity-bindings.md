@@ -199,6 +199,35 @@ With the header rows and the two drops, the shipped file yields **270 entries: 2
    through `FUN_00562ed0(3, mode, key, command)` -- set 3, the effective one -- signals
    UPDATE_BINDINGS (0x177 = 375) on success, and returns exactly one value, nil included. Omitting
    the command unbinds. Saving to a bindings cache is still open.
-3. The dispatch half: a key event resolving to a command and running its Lua body. The bodies are
-   already parsed and kept for it.
+3. The dispatch half, **partly done**. Running a command is ported (section 5); what remains is the
+   front of it -- turning a key event into a key string with its modifier prefixes, and calling the
+   dispatcher when no frame consumed the key.
 4. The four override setters (`SetOverrideBinding*`) and the five-set `mode` argument.
+
+---
+
+## 5. Running a command (2026-09-20)
+
+`FUN_0055f860(command, keyDown, pressure, ?, ?, ?, angle, precision, ?)` is the runner, and its
+node offsets confirm the parser read in section 3c exactly:
+
+```
++0x1c   the compiled Lua function   (the parser's puVar5[7])
++0x20   runOnUp                     (puVar5[8])
++0x24   pressure                    (puVar5[9])
++0x28   angle                       (puVar5[10])
+```
+
+It looks the command up by name, returns early when the event is a release and `runOnUp` is clear,
+and otherwise pushes four arguments and calls the function: the key state as a string, then
+pressure, angle and precision. The two state strings are literals at `00a0eef0` and `00a0eef4`,
+which are `"up"` and `"down"`.
+
+The body is compiled once, at parse time, with
+`FrameScript_CompileFunction(name, "return function(keystate, pressure, angle, precision) %s end", body, status)`
+-- frozen has that helper already, and it is the same one the reference uses (`FUN_008190c0`).
+
+`FUN_00563150` is the key dispatcher above it. It resolves a key to a binding node, then splits on
+the command's prefix: `"SPELL "`, `"ITEM "` and `"MACRO "` are the override forms that
+`SetBindingSpell`/`Item`/`Macro` write, and anything else is a plain command that reaches the
+runner. Only the plain form is ported.
