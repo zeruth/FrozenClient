@@ -36,6 +36,8 @@ int64_t STORMAPI SStrHash64(const char* string, uint32_t flags = 0, int64_t seed
 
 size_t STORMAPI SStrLen(const char* string);
 
+size_t STORMAPI SStrLenUTF8(const char* string);
+
 void STORMAPI SStrLower(char* string);
 
 uint32_t STORMAPI SStrPack(char* dest, const char* source, uint32_t destsize);

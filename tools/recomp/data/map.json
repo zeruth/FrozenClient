@@ -28882,6 +28882,22 @@
   "refSize": 46,
   "status": "ported"
  },
+ "0076eea0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp"
+  ],
+  "frozen": "SStrLenUTF8",
+  "frozenSize": 66,
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
  "0076ef70": {
   "branchRatio": 0.909,
   "constOverlap": 0.0,
@@ -30971,20 +30987,20 @@
   "status": "ported"
  },
  "00816c40": {
-  "branchRatio": 0.286,
-  "constOverlap": 0.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
   ],
   "frozen": "sub_816C40",
-  "frozenSize": 75,
+  "frozenSize": 478,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 319,
-  "status": "stub"
+  "status": "ported"
  },
  "00816d80": {
   "branchRatio": 1.0,
@@ -31176,6 +31192,22 @@
   "how": "string",
   "module": "XMLTree.cpp",
   "refSize": 745,
+  "status": "ported"
+ },
+ "00817c70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/LuaExtraFuncs.cpp",
+   "src/ui/luaextrafuncs.cpp"
+  ],
+  "frozen": "strlenutf8",
+  "frozenSize": 139,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 104,
   "status": "ported"
  },
  "00817d10": {
@@ -38681,6 +38713,22 @@
   "refSize": 19,
   "status": "stub"
  },
+ "00962ea0": {
+  "branchRatio": 0.154,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleEditBox.cpp",
+   "src/ui/simple/csimpleeditbox.cpp"
+  ],
+  "frozen": "CSimpleEditBox::LetterCount",
+  "frozenSize": 45,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 126,
+  "status": "ported"
+ },
  "00962f90": {
   "branchRatio": 0.767,
   "constOverlap": 0.077,
@@ -41584,7 +41632,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"

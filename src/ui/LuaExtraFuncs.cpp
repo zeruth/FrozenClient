@@ -163,8 +163,70 @@ int32_t strjoin(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00816c40
+// strreplace(s, needle, replacement [, limit]) -> newString, count
+//
+// Case-sensitive, non-overlapping, left to right. limit caps the number of replacements; zero or
+// absent means every occurrence. When nothing matched, the subject comes back as the same string
+// rather than a copy, and the count is 0.
+//
+// The 4096-byte working buffer is the reference's, and so is the silent truncation when the result
+// outgrows it -- a caller that replaces its way past 4KB gets a short string back with no error.
+// Kept because the cap is observable behaviour that FrameXML could depend on.
 int32_t sub_816C40(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    size_t length = 0;
+    size_t needleLength = 0;
+    size_t replacementLength = 0;
+    auto text = luaL_checklstring(L, 1, &length);
+    auto needle = luaL_checklstring(L, 2, &needleLength);
+    auto replacement = luaL_checklstring(L, 3, &replacementLength);
+    auto limit = static_cast<int32_t>(luaL_optinteger(L, 4, 0));
+
+    char buffer[4096];
+    auto out = buffer;
+    auto remaining = sizeof(buffer);
+    auto cursor = text;
+    int32_t count = 0;
+
+    while (limit == 0 || count < limit) {
+        auto found = SStrStr(cursor, needle);
+
+        if (!found) {
+            break;
+        }
+
+        auto head = static_cast<size_t>(found - cursor);
+        head = head < remaining ? head : remaining;
+        memcpy(out, cursor, head);
+        out += head;
+        remaining -= head;
+
+        // The reference clamps this length and then copies the unclamped one, overrunning the
+        // buffer on a result that lands within a replacement's width of 4096. Clamped properly
+        // here: a truncated result is the reference's visible behaviour, the overrun is not.
+        auto tail = replacementLength < remaining ? replacementLength : remaining;
+        memcpy(out, replacement, tail);
+        out += tail;
+        remaining -= tail;
+
+        cursor = found + needleLength;
+        count++;
+    }
+
+    if (count < 1) {
+        lua_pushlstring(L, text, length);
+    } else {
+        auto rest = static_cast<size_t>(length - (cursor - text));
+        rest = rest < remaining ? rest : remaining;
+        memcpy(out, cursor, rest);
+        out += rest;
+
+        lua_pushlstring(L, buffer, out - buffer);
+    }
+
+    lua_pushinteger(L, count);
+
+    return 2;
 }
 
 // ref: FUN_00816d80
@@ -175,8 +237,22 @@ int32_t sub_816D80(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00817c70
+// Characters rather than bytes, so an accented name measures the way a player would count it.
+// Errors on a non-string instead of coercing, which is why this takes lua_isstring rather than
+// luaL_checklstring.
 int32_t strlenutf8(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: strlenutf8(string)");
+
+        return 0;
+    }
+
+    auto text = lua_tolstring(L, 1, nullptr);
+
+    lua_pushnumber(L, static_cast<double>(SStrLenUTF8(text)));
+
+    return 1;
 }
 
 int32_t issecure(lua_State* L) {

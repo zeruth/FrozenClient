@@ -13981,6 +13981,28 @@
 "refs": [],
 "line": 491
 },
+"SStrLenUTF8": {
+"files": [
+"lib/squall/storm/string.cpp"
+],
+"callseq": [
+"NullAppFatal",
+"SErrSetLastError"
+],
+"strings": [
+"string"
+],
+"consts": [
+"0",
+"0x80",
+"0xC0"
+],
+"branches": 4,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 505
+},
 "SStrLower": {
 "files": [
 "lib/squall/storm/string.cpp"
@@ -13994,7 +14016,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 504
+"line": 524
 },
 "SStrPack": {
 "files": [
@@ -14017,7 +14039,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 511
+"line": 531
 },
 "SStrPrintf": {
 "files": [
@@ -14040,7 +14062,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 556
+"line": 576
 },
 "SStrVPrintf": {
 "files": [
@@ -14061,7 +14083,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 568
+"line": 588
 },
 "SStrStr": {
 "files": [
@@ -14088,7 +14110,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 577
+"line": 597
 },
 "SStrStrI": {
 "files": [
@@ -14115,7 +14137,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 609
+"line": 629
 },
 "SStrTokenize": {
 "files": [
@@ -14145,7 +14167,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 641
+"line": 661
 },
 "ISStrToDouble": {
 "files": [
@@ -14173,7 +14195,7 @@
 "stub": false,
 "lines": 94,
 "refs": [],
-"line": 708
+"line": 728
 },
 "SStrToDouble": {
 "files": [
@@ -14192,7 +14214,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 803
+"line": 823
 },
 "SStrToFloat": {
 "files": [
@@ -14211,7 +14233,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 811
+"line": 831
 },
 "SStrToInt": {
 "files": [
@@ -14232,7 +14254,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 819
+"line": 839
 },
 "SStrToUnsigned": {
 "files": [
@@ -14253,7 +14275,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 845
+"line": 865
 },
 "SStrUpper": {
 "files": [
@@ -14268,7 +14290,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 861
+"line": 881
 },
 "bjhash": {
 "files": [
@@ -141751,22 +141773,32 @@
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"luaL_checklstring",
+"luaL_checklstring",
+"luaL_checklstring",
+"luaL_optinteger",
+"SStrStr",
+"memcpy",
+"memcpy",
+"lua_pushlstring",
+"memcpy",
+"lua_pushlstring",
+"lua_pushinteger"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"sub_816C40"
-],
+"strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"2",
+"3",
+"4",
+"4096"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 55,
 "refs": [],
-"line": 166
+"line": 176
 },
 "sub_816D80": {
 "files": [
@@ -141784,29 +141816,31 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 172
+"line": 234
 },
 "strlenutf8": {
 "files": [
 "src/ui/luaextrafuncs.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_isstring",
+"luaL_error",
+"lua_tolstring",
+"SStrLenUTF8",
+"lua_pushnumber"
 ],
 "strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\luaextrafuncs.cpp",
-"strlenutf8"
+"Usage: strlenutf8(string)"
 ],
 "consts": [
-"0"
+"0",
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 13,
 "refs": [],
-"line": 178
+"line": 244
 },
 "issecure": {
 "files": [
@@ -141824,7 +141858,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 182
+"line": 258
 },
 "issecurevariable": {
 "files": [
@@ -141846,7 +141880,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 190
+"line": 266
 },
 "forceinsecure": {
 "files": [
@@ -141868,7 +141902,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 194
+"line": 270
 },
 "securecall": {
 "files": [
@@ -141902,7 +141936,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 198
+"line": 274
 },
 "hooksecurefunc": {
 "files": [
@@ -141924,7 +141958,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 231
+"line": 307
 },
 "debugload": {
 "files": [
@@ -141946,7 +141980,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 235
+"line": 311
 },
 "debuginfo": {
 "files": [
@@ -141968,7 +142002,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 239
+"line": 315
 },
 "debugprint": {
 "files": [
@@ -141990,7 +142024,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 243
+"line": 319
 },
 "debugdump": {
 "files": [
@@ -142012,7 +142046,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 247
+"line": 323
 },
 "debugbreak": {
 "files": [
@@ -142034,7 +142068,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 251
+"line": 327
 },
 "debughook": {
 "files": [
@@ -142056,7 +142090,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 255
+"line": 331
 },
 "debugtimestamp": {
 "files": [
@@ -142078,7 +142112,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 259
+"line": 335
 },
 "debugprofilestart": {
 "files": [
@@ -142100,7 +142134,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 263
+"line": 339
 },
 "debugprofilestop": {
 "files": [
@@ -142122,7 +142156,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 267
+"line": 343
 },
 "seterrorhandler": {
 "files": [
@@ -142145,7 +142179,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 271
+"line": 347
 },
 "geterrorhandler": {
 "files": [
@@ -142167,7 +142201,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 286
+"line": 362
 },
 "SetDateField": {
 "files": [
@@ -142186,7 +142220,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 296
+"line": 372
 },
 "SetDateFlag": {
 "files": [
@@ -142205,7 +142239,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 302
+"line": 378
 },
 "GetDateField": {
 "files": [
@@ -142227,7 +142261,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 308
+"line": 384
 },
 "os_date": {
 "files": [
@@ -142308,7 +142342,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 325
+"line": 401
 },
 "os_time": {
 "files": [
@@ -142366,7 +142400,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 375
+"line": 451
 },
 "os_difftime": {
 "files": [
@@ -142394,7 +142428,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 407
+"line": 483
 },
 "debugstack": {
 "files": [
@@ -142432,7 +142466,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 418
+"line": 494
 },
 "debuglocals": {
 "files": [
@@ -142466,7 +142500,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 477
+"line": 553
 },
 "scrub": {
 "files": [
@@ -142488,7 +142522,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 518
+"line": 594
 },
 "luaM_initPool": {
 "files": [

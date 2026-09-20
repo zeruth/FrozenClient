@@ -1812,6 +1812,7 @@ addr	how	frozen	evidence
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0061a280=CGTooltip::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
+0076eea0	annotated	SStrLenUTF8	tag in lib/squall/storm/String.cpp
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars, 008151e0=FontFlagsToString
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f070=SStrPrintf
 0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 004e81c0=TabardBackgroundFileName, 004e8210=TabardEmblemFileName
@@ -1955,6 +1956,7 @@ addr	how	frozen	evidence
 00817650	string	getfield	unique "field '%s' missing in date table"
 008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
 008178f0	string	db_errorfb	unique " in function <%s:%d>"
+00817c70	annotated	strlenutf8	tag in src/ui/LuaExtraFuncs.cpp
 00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
 00817db0	callorder	FrameScript_GetContext	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
 00817f90	callgraph	fprintf	only unmatched callee of 005302b0=Script_Stub_FlagTutorial, 005485b0=Script_Stub_GetWorldStateUIInfo, 00575820=Script_Stub_PlayDance
@@ -2441,6 +2443,7 @@ addr	how	frozen	evidence
 00962c30	annotated	CSimpleEditBox::SetAltArrowKeyMode	tag in src/ui/simple/CSimpleEditBox.cpp
 00962c50	annotated	CSimpleEditBox::GetInputLanguage	tag in src/ui/simple/CSimpleEditBox.cpp
 00962c60	annotated	CSimpleEditBox::ToggleInputLanguage	tag in src/ui/simple/CSimpleEditBox.cpp
+00962ea0	callgraph	CSimpleEditBox::LetterCount	only unmatched callee of 009766a0=CSimpleEditBox_GetNumLetters
 00962f90	callorder	CSimpleEditBox::DeleteSubstring	same slot between linked calls in 00966580=CSimpleEditBox::SetText
 00963350	callgraph	CSimpleEditBox::SetCursorPosition	only unmatched callee of 009769a0=CSimpleEditBox_SetCursorPosition
 00963390	callgraph	CSimpleEditBox::RunOnEditFocusLostScript	only unmatched callee of 009651f0=CSimpleEditBox::ClearKeyboardFocus

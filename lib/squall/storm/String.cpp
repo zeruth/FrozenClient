@@ -501,6 +501,26 @@ size_t STORMAPI SStrLen(const char* string) {
     return stringEnd - string;
 }
 
+// ref: FUN_0076eea0
+size_t STORMAPI SStrLenUTF8(const char* string) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(string);
+    STORM_VALIDATE_END;
+
+    // Counts characters, not bytes, by skipping continuation bytes -- every byte that is not
+    // 10xxxxxx starts a new character. No validation beyond that: malformed input is counted
+    // rather than rejected, which is what the reference does.
+    size_t length = 0;
+
+    for (auto p = reinterpret_cast<const uint8_t*>(string); *p; p++) {
+        if ((*p & 0xC0) != 0x80) {
+            length++;
+        }
+    }
+
+    return length;
+}
+
 void STORMAPI SStrLower(char* string) {
     while (*string) {
         *string = static_cast<char>(tolower(*string));

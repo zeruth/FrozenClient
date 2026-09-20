@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 20:50 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 21:00 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,20 +8,20 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2699 (=) (9.9%) | 573.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2139 (+4) | 421.9k |
-| &nbsp;&nbsp;stub (unimplemented body) | 523 (-4) | 112.9k |
+| mapped to a frozen function | 2702 (+3) (9.9%) | 573.5k (10.4%) |
+| &nbsp;&nbsp;ported | 2143 (+4) | 422.5k |
+| &nbsp;&nbsp;stub (unimplemented body) | 522 (-1) | 112.6k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **991 (=) (3.6%)** | **122.4k (2.2%)** |
-| unmapped | 24462 | 4.85M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 393 (=) (7.1%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 397 (=) (6.8%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **993 (+2) (3.7%)** | **122.6k (2.2%)** |
+| unmapped | 24459 | 4.85M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 394 (+1) (7.1%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 398 (+1) (6.9%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11496, stubs 783 | |
+| frozen functions (src/, from PDB + source) | 11497, stubs 781 | |
 
-Match evidence: annotated 603, callgraph 173, callorder 133, cvar 30, handler 28, order 189, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
+Match evidence: annotated 605, callgraph 174, callorder 133, cvar 30, handler 28, order 189, override 195, sticky 10, string 310, table 1028. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 20:43 -- mapped 2699, ported 2135, stub 527, spine mapped 393.
+Previous run: 2026-09-19 20:50 -- mapped 2699, ported 2139, stub 523, spine mapped 393.
 
 ## Lua API coverage (binding tables)
 
@@ -185,7 +185,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameObject_C.cpp | 285 | 38.0k | 3 (1.1%) | 1.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
-| ConsoleVar.cpp | 243 | 36.1k | 70 (28.8%) | 29.3% | 0 | 0 | 68 |
+| ConsoleVar.cpp | 243 | 36.1k | 71 (29.2%) | 29.4% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 132 (54.5%) | 60.2% | 8 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 11 (5.1%) | 9.6% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 4 (2.2%) | 1.7% | 0 | 0 | 0 |
@@ -193,7 +193,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 12 (15.4%) | 11.4% | 2 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 74 (40.2%) | 46.3% | 13 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 75 (40.8%) | 46.7% | 12 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 52 (30.8%) | 37.8% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 34 | 0 | 1 |
@@ -219,7 +219,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
-| CSimpleMovieFrame.cpp | 128 | 19.6k | 42 (32.8%) | 30.8% | 5 | 1 | 2 |
+| CSimpleMovieFrame.cpp | 128 | 19.6k | 43 (33.6%) | 31.4% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 95 | 19.5k | 2 (2.1%) | 1.5% | 0 | 0 | 29 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 0 | 0 | 2 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 18:45 | 2698 (9.9%) | 988 (3.6%) | 520 | 393/5530 | 1791/2964 | 580 |
 | 2026-09-19 18:47 | 2699 (9.9%) | 989 (3.6%) | 519 | 393/5530 | 1791/2964 | 579 |
 | 2026-09-19 18:48 | 2699 (9.9%) | 990 (3.6%) | 518 | 393/5530 | 1791/2964 | 579 |
 | 2026-09-19 18:55 | 2699 (9.9%) | 994 (3.7%) | 511 | 393/5530 | 1791/2964 | 572 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:43 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:50 | 2699 (9.9%) | 991 (3.6%) | 523 | 393/5530 | 1791/2964 | 588 |
+| 2026-09-19 21:00 | 2702 (9.9%) | 993 (3.7%) | 522 | 394/5530 | 1791/2964 | 588 |
 
 ## How to move a row
 
