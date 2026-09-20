@@ -1928,6 +1928,7 @@ addr	how	frozen	evidence
 007f3ae0	override	CGMinimapFrame::SetZoom	
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
+007f3b90	annotated	CGMinimapFrame::GetRadius	tag in src/ui/game/CGMinimapFrame.cpp
 007fdf60	annotated	CGMinimapFrame::IsTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides

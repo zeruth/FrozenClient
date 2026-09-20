@@ -264,6 +264,34 @@ sit next to `CGMinimapFrameMethods` in .rdata: FrameXML calls each one bare (`Mi
 
 ---
 
+### 2g. The zoom radius, and why four never divided into six
+
+Resolved 2026-09-19, replacing a wrong reconstruction. `CGMinimapFrame` used to carry
+`s_zoomRadius[4][2]` with a note that four radii against six zoom levels did not divide and that
+`SetZoom` should not be wired to it on the strength of the arithmetic. The shape was the problem.
+
+`FUN_007f3b90` returns the current view radius in yards, and there are **two tables of six** -- one
+per zoom level -- with the interior flag (`DAT_00d39434`, frozen's `s_indoors`) choosing between
+them, not between halves of a single entry:
+
+| | table | values |
+|---|---|---|
+| outdoors | `UNK_00a41e04`, int32 | 14, 12, 10, 8, 6, 4 -- in **chunks** |
+| indoors | `UNK_00a41e1c`, float | 150, 120, 90, 60, 40, 25 -- already **yards** |
+
+The outdoor row is scaled by `0.5 * 33.33333` (`009e2ec4` and `00a3e554`), the second being yards
+per ADT chunk. The halving is not a fudge factor: the stored number is a diameter in chunks. So
+outdoors runs 233.3 yards at level 0 down to 66.7 at level 5.
+
+The zoom level itself comes from `s_zoom[0]` outdoors and `s_zoom[1]` indoors, which frozen already
+had right.
+
+This unblocks `PingLocation` (`0057ed70`), which needs the radius to turn a click offset inside the
+minimap frame into a world position: it converts the offset out of DDC, divides by the frame's own
+width and height, and multiplies by twice this radius.
+
+---
+
 ## 3. What porting it needs that frozen does not have
 
 Ordered by how much is missing, not by draw order:

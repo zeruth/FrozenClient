@@ -100620,7 +100620,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 55
+"line": 58
 },
 "CGMinimapFrame::GetNumTrackingSpells": {
 "files": [
@@ -100639,7 +100639,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 77
+"line": 80
 },
 "CGMinimapFrame::GetTrackingSpell": {
 "files": [
@@ -100658,7 +100658,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 89
+"line": 92
 },
 "LocalPlayerClassMask": {
 "files": [
@@ -100677,7 +100677,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 113
+"line": 116
 },
 "TrackingTypeAllowed": {
 "files": [
@@ -100690,7 +100690,24 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 119
+"line": 122
+},
+"CGMinimapFrame::GetRadius": {
+"files": [
+"src/ui/game/cgminimapframe.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.5f",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 132
 },
 "CGMinimapFrame::GetNumOtherTrackingTypes": {
 "files": [
@@ -100708,7 +100725,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 126
+"line": 149
 },
 "CGMinimapFrame::GetOtherTrackingType": {
 "files": [
@@ -100726,7 +100743,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 142
+"line": 165
 },
 "CGMinimapFrame::SetTrackingSpell": {
 "files": [
@@ -100742,7 +100759,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 163
+"line": 186
 },
 "CGMinimapFrame::RefreshTrackingSpell": {
 "files": [
@@ -100763,7 +100780,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 182
+"line": 205
 },
 "CGMinimapFrame::SetOtherTracking": {
 "files": [
@@ -100785,7 +100802,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 208
+"line": 231
 },
 "CGMinimapFrame::Create": {
 "files": [
@@ -100803,7 +100820,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 233
+"line": 256
 },
 "CGMinimapFrame::CreateScriptMetaTable": {
 "files": [
@@ -100819,7 +100836,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 239
+"line": 262
 },
 "CGMinimapFrame::GetObjectType": {
 "files": [
@@ -100832,7 +100849,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 244
+"line": 267
 },
 "CGMinimapFrame::RegisterScriptMethods": {
 "files": [
@@ -100848,7 +100865,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 252
+"line": 275
 },
 "CGMinimapFrame::GetZoomLevels": {
 "files": [
@@ -100861,7 +100878,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 258
+"line": 281
 },
 "CGMinimapFrame::GetZoom": {
 "files": [
@@ -100877,7 +100894,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 263
+"line": 286
 },
 "CGMinimapFrame::SetZoom": {
 "files": [
@@ -100893,7 +100910,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 268
+"line": 291
 },
 "CGMinimapFrame::CGMinimapFrame": {
 "files": [
@@ -100906,7 +100923,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 283
+"line": 306
 },
 "CGMinimapFrame::GetScriptMetaTable": {
 "files": [
@@ -100919,7 +100936,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 287
+"line": 310
 },
 "MinimapTexFlags": {
 "files": [

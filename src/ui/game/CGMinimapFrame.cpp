@@ -11,7 +11,10 @@
 
 HTEXTURE CGMinimapFrame::s_unknownTexture;
 HTEXTURE CGMinimapFrame::s_overlayTextures[7];
-float CGMinimapFrame::s_zoomRadius[4][2];
+// ref: UNK_00a41e04 / UNK_00a41e1c
+const int32_t CGMinimapFrame::s_zoomChunksOutdoor[6] = { 14, 12, 10, 8, 6, 4 };
+const float CGMinimapFrame::s_zoomRadiusIndoor[6] = { 150.0f, 120.0f, 90.0f, 60.0f, 40.0f, 25.0f };
+const float CGMinimapFrame::s_chunkYards = 33.33333206176758f;
 int32_t CGMinimapFrame::s_metatable;
 int32_t CGMinimapFrame::s_objectType;
 
@@ -121,6 +124,26 @@ bool TrackingTypeAllowed(const MINIMAP_TRACKING_TYPE& type, uint32_t classMask) 
 }
 
 } // namespace
+
+// ref: FUN_007f3b90
+// Indoors reads a table of yards directly; outdoors reads a table of chunks and converts. The
+// reference writes the outdoor conversion as * 0.5f * 33.3333f rather than folding the two, and
+// the halving is not a fudge -- the stored number is a diameter in chunks.
+float CGMinimapFrame::GetRadius() {
+    auto level = CGMinimapFrame::s_indoors
+        ? CGMinimapFrame::s_zoom[1]
+        : CGMinimapFrame::s_zoom[0];
+
+    if (level >= CGMinimapFrame::s_zoomLevels) {
+        level = CGMinimapFrame::s_zoomLevels - 1;
+    }
+
+    if (CGMinimapFrame::s_indoors) {
+        return CGMinimapFrame::s_zoomRadiusIndoor[level];
+    }
+
+    return CGMinimapFrame::s_zoomChunksOutdoor[level] * 0.5f * CGMinimapFrame::s_chunkYards;
+}
 
 // ref: FUN_0057e980
 uint32_t CGMinimapFrame::GetNumOtherTrackingTypes() {

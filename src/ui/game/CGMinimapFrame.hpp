@@ -57,14 +57,18 @@ class CGMinimapFrame : public CSimpleFrame {
         static HTEXTURE s_unknownTexture;        // ref: DAT_00beba20
         static HTEXTURE s_overlayTextures[7];    // ref: DAT_00beba04
 
-        // Zoom radii, precomputed once in the reference's constructor (FUN_0057dca0) into
-        // DAT_00beba44..5c. Four radii, each stored beside its own half, which is what the
-        // interior flag below picks between: the full value outdoors and the half indoors. The
-        // reference derives them as NDCToDDCHeight(1.0f) * (5/3), scaled by 0.055, 0.045, 0.0375
-        // and 0.0125. TODO four radii against six zoom levels does not divide, so how a level
-        // indexes this is still unknown -- do not wire SetZoom to it on the strength of the
-        // arithmetic alone.
-        static float s_zoomRadius[4][2];         // ref: DAT_00beba44
+        // How far the minimap sees, in yards, per zoom level. Resolved 2026-09-19; the previous
+        // four-entry reconstruction was wrong in shape as well as in value.
+        //
+        // There are TWO tables of SIX -- one per zoom level, which is why four never divided --
+        // and the interior flag picks between them rather than between halves of one entry.
+        // Outdoors the table is in CHUNKS and is scaled to yards; indoors it is already in yards.
+        // Both read out of the reference's .rdata.
+        static const int32_t s_zoomChunksOutdoor[6];  // ref: UNK_00a41e04
+        static const float s_zoomRadiusIndoor[6];     // ref: UNK_00a41e1c
+
+        // Yards per ADT chunk, and the half the outdoor table is scaled by.
+        static const float s_chunkYards;
 
         // The zoom level, one per map kind: index 0 outdoors, index 1 indoors. The reference keeps
         // this pair in the minimap module too (DAT_00af4e4c and DAT_00af4e50, adjacent), selected
@@ -116,6 +120,10 @@ class CGMinimapFrame : public CSimpleFrame {
         static uint32_t GetZoomLevels();
         static uint32_t GetZoom();
         static void SetZoom(uint32_t level);
+
+        // ref: FUN_007f3b90
+        // The current view radius in yards, from whichever table the interior flag selects.
+        static float GetRadius();
         static uint32_t GetNumOtherTrackingTypes();
         static const MINIMAP_TRACKING_TYPE* GetOtherTrackingType(uint32_t index);
         static void SetOtherTracking(const MINIMAP_TRACKING_TYPE* type);
