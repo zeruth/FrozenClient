@@ -54,11 +54,33 @@
     uintptr_t absoluteOffset =
         (uintptr_t)m2Data->someM2Array + m2Data->someM2Array.offset;
     T* data = (T*)absoluteOffset;
+
+    THE DELTA IS SIGNED. The assumption above -- that an M2Array only ever
+    points inside the same structure it lives in -- holds for everything that
+    comes out of the .m2 file itself, where the delta is small and forward. It
+    does NOT hold for an external (.anim) sequence: those keyframes land in a
+    separate heap allocation, so the delta is a distance between two unrelated
+    mallocs. It is unbounded, and roughly half the time it is NEGATIVE.
+
+    That is why the offset is read back through M2ArrayDelta rather than added
+    as a plain uint32_t. Zero-extending a negative delta turns a pointer one
+    megabyte below the array into one about four gigabytes above it, which is
+    a wild read with a sane-looking count and index in front of it -- the
+    animation crash on 2026-09-20 was exactly this. M2InitKeyFrameData rejects
+    a sequence whose delta will not survive the round trip.
 */
+
+// The stored delta, widened with its sign. See the note above: for external sequence data the
+// keyframes live in a different allocation and can sit below the array.
+inline intptr_t M2ArrayDelta(uint32_t offset) {
+    return static_cast<intptr_t>(static_cast<int32_t>(offset));
+}
 
 template<class T>
 struct M2Array {
     uint32_t count;
+    // A SIGNED delta once M2Init has run, even though it is stored unsigned to keep the on-disk
+    // 8-byte layout. Always read it through M2ArrayDelta.
     uint32_t offset;
 
     T& operator[](uint32_t i);
@@ -70,13 +92,13 @@ struct M2Array {
 
 template<class T>
 T& M2Array<T>::operator[](uint32_t i) {
-    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + this->offset);
+    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + M2ArrayDelta(this->offset));
     return data[i];
 }
 
 template<class T>
 T& M2Array<T>::operator[](uint32_t i) const {
-    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + this->offset);
+    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + M2ArrayDelta(this->offset));
     return data[i];
 }
 
@@ -92,7 +114,7 @@ uint32_t M2Array<T>::Count() const {
 
 template<class T>
 T* M2Array<T>::Data() {
-    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + this->offset);
+    T* data = reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(this) + M2ArrayDelta(this->offset));
     return data;
 }
 

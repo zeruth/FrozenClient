@@ -139,9 +139,20 @@ int32_t M2InitKeyFrameData(uint8_t* base, uint32_t size, const M2Data& data, uin
 
     if (keys.count) {
         uintptr_t absoluteOffset = reinterpret_cast<uintptr_t>(base) + keys.offset;
-        uintptr_t relativeOffset = absoluteOffset - reinterpret_cast<uintptr_t>(&keys);
+        intptr_t relativeOffset = static_cast<intptr_t>(absoluteOffset)
+            - static_cast<intptr_t>(reinterpret_cast<uintptr_t>(&keys));
 
-        keys.offset = relativeOffset;
+        // Unlike every other array in the model, this one points into the .anim buffer -- a
+        // different allocation entirely -- so the delta is the gap between two mallocs. It is
+        // signed, and nothing bounds it to 32 bits. Refuse the sequence if it does not survive
+        // being stored, rather than writing a truncated offset that reads as a valid array with
+        // a wild base. Returning 0 fails the load, which leaves the bone on the sequence it was
+        // already playing.
+        if (static_cast<intptr_t>(static_cast<int32_t>(relativeOffset)) != relativeOffset) {
+            return 0;
+        }
+
+        keys.offset = static_cast<uint32_t>(static_cast<int32_t>(relativeOffset));
     } else {
         keys.offset = 0;
     }
