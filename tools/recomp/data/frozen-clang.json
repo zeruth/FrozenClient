@@ -98106,7 +98106,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 14
+"line": 16
 },
 "CGActionBar::GetAction": {
 "files": [
@@ -98121,7 +98121,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 18
+"line": 20
 },
 "CGActionBar::GetActionType": {
 "files": [
@@ -98139,7 +98139,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 26
+"line": 28
 },
 "CGActionBar::GetActionID": {
 "files": [
@@ -98156,7 +98156,26 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 30
+"line": 32
+},
+"SignalActionBarChanged": {
+"files": [
+"src/ui/game/cgactionbar.cpp"
+],
+"callseq": [
+"FrameScript_SignalEvent"
+],
+"strings": [
+"%d"
+],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 49
 },
 "ReceiveActionButtons": {
 "files": [
@@ -98165,9 +98184,11 @@
 "callseq": [
 "CDataStore::Get",
 "memset",
+"SignalActionBarChanged",
 "CDataStore::Get",
 "__acrt_iob_func",
-"fprintf"
+"fprintf",
+"SignalActionBarChanged"
 ],
 "strings": [
 "Action buttons: state %u, %d of %d slots filled\n"
@@ -98179,9 +98200,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 33,
+"lines": 37,
 "refs": [],
-"line": 41
+"line": 53
 },
 "CGBattlefieldInfo::RequestPlayerPositions": {
 "files": [

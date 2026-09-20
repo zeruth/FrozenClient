@@ -1,4 +1,6 @@
 #include "ui/game/CGActionBar.hpp"
+#include "ui/game/Types.hpp"
+#include "ui/FrameScript.hpp"
 #include "net/Types.hpp"
 #include "db/Db.hpp"
 #include "util/CStatus.hpp"
@@ -38,6 +40,16 @@ uint32_t CGActionBar::GetActionID(int32_t slot) {
 //
 // Format read from the server this client is developed against (AzerothCore
 // Player::SendActionButtons), not from memory: low 24 bits are the action, high 8 the type.
+// Every button, in one event. ActionButton.lua reads slot 0 as "update all":
+//
+//     if ( arg1 == 0 or arg1 == tonumber(self.action) ) then ActionButton_Update(self)
+//
+// so one signal rebuilds the bar rather than a hundred and forty-four. The handler filled
+// s_actions and told nobody, which is why the hotbar stayed empty however full the packet was.
+static void SignalActionBarChanged() {
+    FrameScript_SignalEvent(SCRIPT_ACTIONBAR_SLOT_CHANGED, "%d", 0);
+}
+
 int32_t ReceiveActionButtons(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     uint8_t state = 0;
 
@@ -49,6 +61,8 @@ int32_t ReceiveActionButtons(void* param, NETMESSAGE msgId, uint32_t time, CData
 
     if (state == 2) {
         memset(CGActionBar::s_actions, 0, sizeof(CGActionBar::s_actions));
+
+        SignalActionBarChanged();
 
         return 1;
     }
@@ -68,6 +82,8 @@ int32_t ReceiveActionButtons(void* param, NETMESSAGE msgId, uint32_t time, CData
 
     fprintf(stderr, "Action buttons: state %u, %d of %d slots filled\n",
             state, used, CGActionBar::NUM_ACTION_BUTTONS);
+
+    SignalActionBarChanged();
 
     return 1;
 }

@@ -27515,13 +27515,13 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/CGActionBar.cpp",
    "src/ui/game/cgactionbar.cpp"
   ],
   "frozen": "ReceiveActionButtons",
-  "frozenSize": 231,
+  "frozenSize": 271,
   "how": "handler",
   "module": "Player_C.cpp",
   "refSize": 287,
