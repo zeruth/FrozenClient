@@ -508,6 +508,7 @@ addr	how	frozen	evidence
 004bd960	sticky	CSimpleFontString::GetFontName	held from the previous run, where it was sticky
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
+004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp

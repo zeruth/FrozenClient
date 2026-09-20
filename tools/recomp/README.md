@@ -106,6 +106,32 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
+> **Operator overloads were invisible, so tags on them were silently dropped.** Closed 2026-09-19.
+>
+> `DEF_RE` cannot match an operator definition at all: in `C44Matrix operator*(a, b)` the `*` sits
+> between the name and the paren, so the name group stops at `operator` and the following `\s*\(`
+> never lines up. There was a `name.startswith('operator')` skip on top of that, which read as the
+> deliberate rule but was really belt-and-braces over a regex that never matched.
+>
+> The effect was not just "operators are unlinked". A `// ref:` tag is a human claim, and this
+> dropped the claim without saying so: `C44Matrix::operator*` was tagged as `FUN_004c1f00` -- 533
+> bytes, **91 reference callers, on the render spine** -- and the queue went on offering it as
+> unported. Anyone following the queue would decompile it, find frozen already had it, and tag it
+> again. There are 73 operator definitions across `src` and `lib`, so the same trap was waiting on
+> every one of them.
+>
+> Fixed with a second regex (`OP_DEF_RE`) rather than by widening `DEF_RE`, because `DEF_RE`
+> decides what every existing link is anchored to and a regression there would be indistinguishable
+> from a real one in the churn line. Operators are admitted **only when they carry an explicit
+> tag**: they are hopeless for automatic matching -- no strings, no distinguishing calls, frozen
+> invokes them infix so they never appear in a call sequence, and an operator's overloads share a
+> name -- so the general pool gets no noise and the churn was 0 lost, 1 gained.
+>
+> Still open, and visible on this very link: the map lists four `files` for it, because the clang
+> overlay keys by bare name and unions every `operator*` in the tree (C33Matrix's, C3Vector's).
+> The link is anchored correctly to the annotated definition; only the file list is over-broad.
+> Same root cause as the stub flag below, and the same fix would close both.
+
 > **The stub flag was unreliable, and the cause is name collision.** Closed 2026-09-19 after three
 > wrong explanations.
 >

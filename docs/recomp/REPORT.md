@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 21:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 21:35 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.41M |
-| mapped to a frozen function | 2715 (+7) (10.0%) | 576.2k (10.4%) |
-| &nbsp;&nbsp;ported | 2160 (+11) | 425.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 518 (-4) | 112.3k |
+| mapped to a frozen function | 2716 (+1) (10.0%) | 576.7k (10.4%) |
+| &nbsp;&nbsp;ported | 2161 (+1) | 426.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 518 (=) | 112.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **996 (+3) (3.7%)** | **122.9k (2.2%)** |
-| unmapped | 24446 | 4.84M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 398 (+4) (7.2%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 402 (+4) (6.9%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 162 (=) (2.7%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **997 (+1) (3.7%)** | **123.4k (2.2%)** |
+| unmapped | 24445 | 4.84M |
+| world spine (reachable from OnFrameRender) | 5530, mapped 399 (+1) (7.2%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 403 (+1) (7.0%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 163 (+1) (2.7%)** | |
 | frozen functions (src/, from PDB + source) | 11519, stubs 777 | |
 
-Match evidence: annotated 619, callgraph 172, callorder 135, cvar 30, handler 28, order 189, override 195, sticky 13, string 311, table 1023. Module anchors: 1479 assert strings.
+Match evidence: annotated 620, callgraph 172, callorder 135, cvar 30, handler 28, order 189, override 195, sticky 13, string 311, table 1023. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 21:12 -- mapped 2708, ported 2149, stub 522, spine mapped 394.
+Previous run: 2026-09-19 21:27 -- mapped 2715, ported 2160, stub 518, spine mapped 398.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 584 of those are WHOA_UNIMPLEMENTED stubs (-4). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 584 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -187,7 +187,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
 | ConsoleVar.cpp | 243 | 36.1k | 71 (29.2%) | 29.4% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 132 (54.5%) | 60.2% | 8 | 1 | 4 |
-| TextureBlob.cpp | 214 | 34.6k | 11 (5.1%) | 9.6% | 0 | 0 | 84 |
+| TextureBlob.cpp | 214 | 34.6k | 12 (5.6%) | 11.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 4 (2.2%) | 1.7% | 0 | 0 | 0 |
 | Calendar.cpp | 109 | 32.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -388,7 +388,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
-| 004c1f00 | TextureBlob.cpp? | 533 | 91 |  |  |
 | 0072a000 | Unit_C.cpp | 651 | 69 |  | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
@@ -423,6 +422,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00735f60 | Unit_C.cpp | 1750 | 8 |  | .\Unit_C.cpp |
 | 00524bf0 | GameUI.cpp | 965 | 15 |  | .\GameUI.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 004ee460 | ScanDLLGlue.cpp? | 569 | 26 |  |  |
+| 00735820 | Unit_C.cpp | 567 | 26 |  | .\Unit_C.cpp |
 
 ## Next to port: unmapped, anywhere
 
@@ -440,7 +440,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0067ca30 | DBCache.cpp | 412 | 275 |  | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
-| 004c1f00 | TextureBlob.cpp? | 533 | 91 |  |  |
 | 00695fd0 | CGxDeviceD3d9Ex.cpp? | 24484 | 1 |  |  |
 | 0072a000 | Unit_C.cpp | 651 | 69 |  | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 0093cd10 | fmod_output_dsound.cpp? | 2731 | 15 |  |  |
@@ -472,6 +471,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0053cf10 | SpellBookFrame.cpp | 646 | 34 |  | d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 007251c0 | Unit_C.cpp | 798 | 27 |  |  |
 | 006a3c40 | CGxDeviceD3d9Ex.cpp? | 873 | 24 |  |  |
+| 006a7be0 | CGxD3d9ExTexture.cpp? | 873 | 24 |  |  |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -619,7 +619,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
-| 0082f0f0 | `CM2Model::AnimateMT` | 0% | 47 | 42 | 152 | 52 | 2% | 6267 |
+| 0082f0f0 | `CM2Model::AnimateMT` | 4% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 13% | 71 | 27 | 170 | 51 | 2% | 5663 |
 | 00821a20 | `CM2Scene::Animate` | 9% | 54 | 30 | 219 | 43 | 8% | 5621 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 18:55 | 2699 (9.9%) | 994 (3.7%) | 511 | 393/5530 | 1791/2964 | 572 |
 | 2026-09-19 18:58 | 2699 (9.9%) | 995 (3.7%) | 520 | 393/5530 | 1791/2964 | 583 |
 | 2026-09-19 19:00 | 2699 (9.9%) | 994 (3.7%) | 520 | 393/5530 | 1791/2964 | 583 |
 | 2026-09-19 19:15 | 2699 (9.9%) | 994 (3.7%) | 520 | 393/5530 | 1791/2964 | 583 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 21:00 | 2702 (9.9%) | 993 (3.7%) | 522 | 394/5530 | 1791/2964 | 588 |
 | 2026-09-19 21:12 | 2708 (10.0%) | 993 (3.7%) | 522 | 394/5530 | 1792/2964 | 588 |
 | 2026-09-19 21:27 | 2715 (10.0%) | 996 (3.7%) | 518 | 398/5530 | 1792/2964 | 584 |
+| 2026-09-19 21:35 | 2716 (10.0%) | 997 (3.7%) | 518 | 399/5530 | 1792/2964 | 584 |
 
 ## How to move a row
 

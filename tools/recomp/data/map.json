@@ -8123,6 +8123,24 @@
   "refSize": 460,
   "status": "ported"
  },
+ "004c1f00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1271,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 533,
+  "status": "ported"
+ },
  "004c5a60": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -32374,7 +32392,7 @@
   "branchRatio": 0.342,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.043,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -32390,7 +32408,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.04,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.455,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"

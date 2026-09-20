@@ -255,6 +255,14 @@ def load_pdb_functions():
 
 
 DEF_RE = re.compile(r'^(?![\s#])(?:[\w:<>,\*&~]+\s+)*?\**&?([\w~]+(?:::[\w~]+)*)\s*\(([^;{}]*?)\)\s*(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?\{', re.M)
+
+# Operator definitions, which DEF_RE cannot match: in `C44Matrix operator*(a, b)` the `*` sits
+# between the name and the paren, so the name group stops at `operator` and the `\s*\(` never
+# lines up. Kept separate from DEF_RE on purpose -- see above.
+OP_DEF_RE = re.compile(
+    r'^(?![\s#])(?:[\w:<>,\*&~]+\s+)*?\**&?((?:[\w~]+::)*operator\s*'
+    r'(?:\[\]|\(\)|new\[\]|delete\[\]|new|delete|[-+*/%^&|~!=<>,]+))'
+    r'\s*\(([^;{}]*?)\)\s*(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?\{', re.M)
 STRING_RE = re.compile(r'"((?:[^"\\\n]|\\.)*)"')
 CALL_RE = re.compile(r'\b([A-Za-z_]\w*)\s*\(')
 KEYWORDS = {'if', 'for', 'while', 'switch', 'return', 'sizeof', 'static_cast', 'reinterpret_cast', 'const_cast',
@@ -278,10 +286,24 @@ def parse_sources():
     for path in paths:
         rel = os.path.relpath(path, ROOT).replace('\\', '/')
         text = io.open(path, encoding='utf-8', errors='replace').read()
-        for m in DEF_RE.finditer(text):
+        for m in sorted(list(DEF_RE.finditer(text)) + list(OP_DEF_RE.finditer(text)),
+                        key=lambda m: m.start()):
             name = m.group(1)
-            if name in KEYWORDS or name.startswith('operator'):
+            if name in KEYWORDS:
                 continue
+            if 'operator' in name:
+                # Operators are admitted only when they carry an explicit `// ref:` tag. They are
+                # hopeless for automatic matching -- no strings, no distinguishing calls, frozen
+                # invokes them infix so they never appear in anyone's call sequence, and the
+                # overloads of one operator share a name -- so letting them into the general pool
+                # would add noise and no signal. A tag is a human claim and should be honoured.
+                #
+                # They used to be skipped outright, which silently dropped those claims:
+                # C44Matrix::operator* (FUN_004c1f00, 91 reference callers, on the render spine)
+                # had been tagged and stayed unlinked, and the queue kept offering it as unported.
+                above_tag = text[max(0, text.rfind('\n\n', 0, m.start())):m.start()]
+                if not REF_TAG_RE.findall(above_tag):
+                    continue
             # body by brace matching from the opening brace
             i = m.end() - 1
             depth = 0
