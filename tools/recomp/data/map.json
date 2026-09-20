@@ -23052,17 +23052,17 @@
   "status": "ported"
  },
  "0060c1f0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/object/client/CGObject.cpp",
-   "src/object/client/cgobject.cpp"
+   "src/ui/game/ScriptUtil.cpp",
+   "src/ui/game/scriptutil.cpp"
   ],
-  "frozen": "CGObject::GetGUID",
-  "frozenSize": 8,
-  "how": "callgraph",
+  "frozen": "Script_GetUnitFromName",
+  "frozenSize": 60,
+  "how": "override",
   "module": "ScriptEvents.cpp",
   "refSize": 70,
   "status": "ported"
@@ -23487,7 +23487,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.4,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -24444,36 +24444,36 @@
   "status": "stub"
  },
  "00610b60": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitAttackPower",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 320,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 307,
-  "status": "stub"
+  "status": "ported"
  },
  "00610ca0": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitRangedAttackPower",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 320,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 307,
-  "status": "stub"
+  "status": "ported"
  },
  "00610de0": {
   "branchRatio": 0.286,

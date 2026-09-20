@@ -1168,5 +1168,10 @@
     "frozen": "Script_GetFrameCPUUsage",
     "status": "diverged",
     "note": "the three validations are ported exactly; the measurement is not. The reference reads a per-frame script profiler through a virtual frozen has no counterpart for, so this answers zero time and zero calls -- nothing was measured, and FrameXML's profiling display divides by these, so nil would break it where zero reads as no cost."
+  },
+  "0060c1f0": {
+    "frozen": "Script_GetUnitFromName",
+    "status": "ported",
+    "note": "Pinned. Resolves a unit token to a guid then asks the object manager for it with TYPEMASK_UNIT (8), and its own assert string names ScriptEvents.cpp -- which is exactly what frozen Script_GetUnitFromName does. The callgraph matcher had put CGObject::GetGUID here, then swapped it to CGUnit::Unit when a binding edit changed a call sequence; both were wrong. CGUnit::Unit is a one-line accessor with no standalone address in the reference and is left unlinked rather than parked on 00513c30, which is a three-way roster lookup."
   }
 }

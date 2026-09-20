@@ -3,6 +3,7 @@
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
+#include <cmath>
 #include "object/client/CGPlayer_C.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
@@ -1310,12 +1311,76 @@ int32_t Script_UnitAttackSpeed(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00610b60
+// Three returns: attack power and its positive and negative modifiers, each scaled.
+//
+// Two properties of the fields, both of which yield plausible wrong numbers if assumed rather than
+// read. The modifiers are a packed pair of int16 in one dword, positive low and negative high. And
+// the multiplier is a float sharing a block with integers -- the scale is that float PLUS ONE, so
+// a unit with no multiplier reports its raw values rather than zero.
+//
+// Rounding is x87 round-to-nearest in the reference; nearbyint keeps that rather than half-away.
+// Written out in each binding rather than shared, because the reference has two separate functions
+// and a common helper would put a call in frozen's sequence that is not in the reference's.
 int32_t Script_UnitAttackPower(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitAttackPower(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!data) {
+        for (int32_t i = 0; i < 3; i++) {
+            lua_pushnumber(L, 0.0);
+        }
+
+        return 3;
+    }
+
+    auto scale = data->attackPowerMultiplier + 1.0f;
+    auto positive = static_cast<int16_t>(data->attackPowerMods & 0xFFFF);
+    auto negative = static_cast<int16_t>(static_cast<uint32_t>(data->attackPowerMods) >> 16);
+
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(data->attackPower)));
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(positive)));
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(negative)));
+
+    return 3;
 }
 
+// ref: FUN_00610ca0
+// The same three values and the same packing as UnitAttackPower above, twelve bytes along in the
+// descriptor: 0x1e0, 0x1e4/0x1e6, 0x1e8.
 int32_t Script_UnitRangedAttackPower(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitRangedAttackPower(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (!data) {
+        for (int32_t i = 0; i < 3; i++) {
+            lua_pushnumber(L, 0.0);
+        }
+
+        return 3;
+    }
+
+    auto scale = data->rangedAttackPowerMultiplier + 1.0f;
+    auto positive = static_cast<int16_t>(data->rangedAttackPowerMods & 0xFFFF);
+    auto negative = static_cast<int16_t>(static_cast<uint32_t>(data->rangedAttackPowerMods) >> 16);
+
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(data->rangedAttackPower)));
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(positive)));
+    lua_pushnumber(L, nearbyintf(scale * static_cast<float>(negative)));
+
+    return 3;
 }
 
 // TODO FUN_00610de0 reads its two values through a virtual at vtable+0x140 rather than from

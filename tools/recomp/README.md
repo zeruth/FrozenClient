@@ -106,6 +106,23 @@ too -- it usually means the function is not ported at all rather than waiting to
 `data/matches.tsv` lists every link with its evidence; read it when a row looks wrong, and pin the
 right answer in `overrides.json`.
 
+> **Open: there is no way to say "this link is wrong" without knowing the right answer.**
+> Noticed 2026-09-19.
+>
+> `overrides.json` maps a reference address to a *frozen* name, so it can only correct a bad link
+> by naming the correct counterpart. That leaves a gap for the case where the automatic match is
+> demonstrably wrong and frozen has nothing to put there.
+>
+> The live example is `CGUnit::Unit`, parked by callgraph on `00513c30`. That address takes a guid
+> and tries a party lookup, then a raid lookup, then a battlefield one; `CGUnit::Unit` is a
+> one-line accessor that returns the unit descriptor. The reference inlines an accessor like that
+> everywhere, so it almost certainly has **no standalone address at all** and every link for it is
+> spurious. The link cannot be removed today without inventing a frozen name for `00513c30`.
+>
+> What would close it: a `frozen: null` (or `status: "unknown"`) form that blocks matching on an
+> address and leaves it in the denominator as unmapped. Cheap, and it converts a known-wrong link
+> into an honest gap.
+
 > **Operator overloads were invisible, so tags on them were silently dropped.** Closed 2026-09-19.
 >
 > `DEF_RE` cannot match an operator definition at all: in `C44Matrix operator*(a, b)` the `*` sits

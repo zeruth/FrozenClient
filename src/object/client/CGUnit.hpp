@@ -63,11 +63,19 @@ struct CGUnitData {
     int32_t baseHealth;
     int32_t pad3;
     int32_t attackPower;
+
+    // A PACKED PAIR, not one number: the positive modifier is the low int16 and the negative one
+    // the high int16. The reference reads them as two shorts off 0x1d8 and 0x1da.
     int32_t attackPowerMods;
-    int32_t attackPowerMultiplier;
+
+    // A float, in a block whose fields are otherwise integers. It was declared int32_t here, which
+    // would have reported the raw bit pattern as a multiplier. The scale callers want is this
+    // PLUS ONE, so zero means unscaled.
+    float attackPowerMultiplier;
+
     int32_t rangedAttackPower;
     int32_t rangedAttackPowerMods;
-    int32_t rangedAttackPowerMultiplier;
+    float rangedAttackPowerMultiplier;
     float minRangedDamage;
     float maxRangedDamage;
     int32_t powerCostModifier[7];

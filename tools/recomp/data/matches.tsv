@@ -1448,7 +1448,7 @@ addr	how	frozen	evidence
 0060aaa0	annotated	ParseTrailingTokens	tag in src/ui/game/ScriptUtil.cpp
 0060abf0	annotated	Script_GetTokenFromGUID	tag in src/ui/game/ScriptUtil.cpp
 0060c1c0	override	TooltipThis	
-0060c1f0	callgraph	CGObject::GetGUID	only unmatched callee of 006101a0=Script_UnitResistance
+0060c1f0	override	Script_GetUnitFromName	
 0060c2a0	table	Script_UnitExists	binding "UnitExists" in s_UnitFunctions ~ table 00ad21d8
 0060c350	table	Script_UnitIsVisible	binding "UnitIsVisible" in s_UnitFunctions ~ table 00ad21d8
 0060c3d0	table	Script_UnitIsUnit	binding "UnitIsUnit" in s_UnitFunctions ~ table 00ad21d8
@@ -1535,8 +1535,8 @@ addr	how	frozen	evidence
 006107d0	table	Script_UnitRangedAttack	binding "UnitRangedAttack" in s_UnitFunctions ~ table 00ad21d8
 00610860	table	Script_UnitDamage	binding "UnitDamage" in s_UnitFunctions ~ table 00ad21d8
 00610a00	table	Script_UnitAttackSpeed	binding "UnitAttackSpeed" in s_UnitFunctions ~ table 00ad21d8
-00610b60	table	Script_UnitAttackPower	binding "UnitAttackPower" in s_UnitFunctions ~ table 00ad21d8
-00610ca0	table	Script_UnitRangedAttackPower	binding "UnitRangedAttackPower" in s_UnitFunctions ~ table 00ad21d8
+00610b60	annotated	Script_UnitAttackPower	tag in src/ui/game/ScriptEvents.cpp
+00610ca0	annotated	Script_UnitRangedAttackPower	tag in src/ui/game/ScriptEvents.cpp
 00610de0	table	Script_UnitDefense	binding "UnitDefense" in s_UnitFunctions ~ table 00ad21d8
 00610ec0	table	Script_UnitArmor	binding "UnitArmor" in s_UnitFunctions ~ table 00ad21d8
 00610fb0	table	Script_UnitCharacterPoints	binding "UnitCharacterPoints" in s_UnitFunctions ~ table 00ad21d8
