@@ -33057,7 +33057,7 @@
   ],
   "frozen": "issecure",
   "frozenSize": 27,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 58,
   "status": "ported"
@@ -33073,7 +33073,7 @@
   ],
   "frozen": "issecurevariable",
   "frozenSize": 75,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 274,
   "status": "stub"
@@ -33089,7 +33089,7 @@
   ],
   "frozen": "securecall",
   "frozenSize": 226,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 287,
   "status": "ported"
@@ -33105,7 +33105,7 @@
   ],
   "frozen": "hooksecurefunc",
   "frozenSize": 75,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 467,
   "status": "stub"
@@ -33121,7 +33121,7 @@
   ],
   "frozen": "debugprofilestop",
   "frozenSize": 75,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 65,
   "status": "stub"
@@ -33170,22 +33170,24 @@
   ],
   "frozen": "os_date",
   "frozenSize": 762,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 505,
   "status": "ported"
  },
  "00817650": {
-  "branchRatio": 0.222,
-  "constOverlap": 0.0,
+  "branchRatio": 0.444,
+  "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.132,
+  "fidelity": 0.868,
   "files": [
+   "src/ui/LuaExtraFuncs.cpp",
+   "src/ui/luaextrafuncs.cpp",
    "vendor/lua-5.1.3/src/loslib.c"
   ],
-  "frozen": "getfield",
-  "frozenSize": 0,
-  "how": "string",
+  "frozen": "os_time",
+  "frozenSize": 684,
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 588,
   "status": "ported"
@@ -33202,22 +33204,23 @@
   ],
   "frozen": "os_difftime",
   "frozenSize": 104,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 76,
   "status": "ported"
  },
  "008178f0": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.095,
+  "branchRatio": 0.5,
+  "constOverlap": 0.048,
   "faithful": false,
-  "fidelity": 0.394,
+  "fidelity": 0.182,
   "files": [
-   "vendor/lua-5.1.3/src/ldblib.c"
+   "src/ui/LuaExtraFuncs.cpp",
+   "src/ui/luaextrafuncs.cpp"
   ],
-  "frozen": "db_errorfb",
-  "frozenSize": 0,
-  "how": "string",
+  "frozen": "debugstack",
+  "frozenSize": 452,
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 745,
   "status": "ported"
@@ -33390,7 +33393,7 @@
   ],
   "frozen": "debuglocals",
   "frozenSize": 386,
-  "how": "order",
+  "how": "table",
   "module": "XMLTree.cpp",
   "refSize": 309,
   "status": "ported"

@@ -201,6 +201,27 @@ right answer in `overrides.json`.
 > **103 were already linked and already being counted as ported while mapped to a stub body**. That
 > was a standing overstatement of `ported`, not something this change introduced, and the numbers
 > before 2026-09-20 should be read with it in mind.
+>
+> Two more registration paths were invisible for the same reason, found by working down the
+> remaining missing list and asking of each row whether it was really missing.
+>
+> `luaL_Reg` now joins the alternation: `FrameScriptInternal::extra_funcs` is 31 bindings that
+> `FrameScript.cpp` hands to `luaL_register(L, "_G", ...)`, and the whole string and global helper
+> block -- `setglobal`, `getglobal`, `strtrim`, `strsplit`, `strjoin`, `strreplace` -- was being
+> reported missing while it was implemented and live.
+>
+> `LUA_STDLIB` covers six reference tables that are Lua's own standard libraries rather than client
+> bindings: base, string, table, math, bit and coroutine. Frozen gets those by linking Lua and
+> calling `luaopen_*`, so the names are present with no frozen array registering them. The table is
+> keyed by address **and** the table's first name, and the `luaopen_*` symbols are read out of
+> `FrameScript.cpp` rather than assumed, so a re-export that moves the tables or a dropped
+> `luaopen_` call sends those names back to reporting missing -- the safe direction to fail in.
+>
+> Registered bindings across the three fixes: 1801 -> 2863 of 2964. What is left is 101 genuinely
+> missing names, and the shape of that remainder is now readable: **61 of them are the UI animation
+> system** (`AnimationGroup`, `Animation`, `Rotation`, `Path`, `ControlPoint`, `Scale`/`Translation`
+> across six tables at 00ac18e0-00ac1ab8), which frozen has none of; then 22 knowledge-base and 11
+> account-message bindings, and single-figure gaps on `ScrollingMessageFrame` and `ColorSelect`.
 
 ## What the report says
 

@@ -2077,17 +2077,17 @@ addr	how	frozen	evidence
 00816b60	annotated	strjoin	tag in src/ui/LuaExtraFuncs.cpp
 00816c40	annotated	sub_816C40	tag in src/ui/LuaExtraFuncs.cpp
 00816d80	annotated	strconcat	tag in src/ui/LuaExtraFuncs.cpp
-00816da0	order	issecure	binding table name issecure, in definition order in src/ui/LuaExtraFuncs.cpp
-00816de0	order	issecurevariable	binding table name issecurevariable, in definition order in src/ui/LuaExtraFuncs.cpp
-00816f30	order	securecall	binding table name securecall, in definition order in src/ui/LuaExtraFuncs.cpp
-00817170	order	hooksecurefunc	binding table name hooksecurefunc, in definition order in src/ui/LuaExtraFuncs.cpp
-00817370	order	debugprofilestop	binding table name debugprofilestop, in definition order in src/ui/LuaExtraFuncs.cpp
+00816da0	table	issecure	binding "issecure" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+00816de0	table	issecurevariable	binding "issecurevariable" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+00816f30	table	securecall	binding "securecall" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+00817170	table	hooksecurefunc	binding "hooksecurefunc" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+00817370	table	debugprofilestop	binding "debugprofilestop" in FrameScriptInternal::extra_funcs ~ table 00a443a8
 008173c0	annotated	seterrorhandler	tag in src/ui/LuaExtraFuncs.cpp
 00817420	annotated	geterrorhandler	tag in src/ui/LuaExtraFuncs.cpp
-00817450	order	os_date	binding table name os_date, in definition order in src/ui/LuaExtraFuncs.cpp
-00817650	string	getfield	unique "field '%s' missing in date table"
-008178a0	order	os_difftime	binding table name os_difftime, in definition order in src/ui/LuaExtraFuncs.cpp
-008178f0	string	db_errorfb	unique " in function <%s:%d>"
+00817450	table	os_date	binding "date" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+00817650	table	os_time	binding "time" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+008178a0	table	os_difftime	binding "difftime" in FrameScriptInternal::extra_funcs ~ table 00a443a8
+008178f0	table	debugstack	binding "debugstack" in FrameScriptInternal::extra_funcs ~ table 00a443a8
 00817bf0	annotated	scrub	tag in src/ui/LuaExtraFuncs.cpp
 00817c70	annotated	strlenutf8	tag in src/ui/LuaExtraFuncs.cpp
 00817d10	callorder	FrameScript_GetPluralIndex	same slot between linked calls in 00819d40=FrameScript_GetText
@@ -2098,7 +2098,7 @@ addr	how	frozen	evidence
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
 00819730	string	FrameScript_HandleError	unique "UNKNOWN ERROR"
 00819880	callgraph	PushTexture	only unmatched callee of 00970830=CSimpleColorSelect_GetColorWheelTexture, 009709e0=CSimpleColorSelect_GetColorWheelThumbTexture, 00970bc0=CSimpleColorSelect_GetColorValueTexture
-00819a60	order	debuglocals	binding table name debuglocals, in definition order in src/ui/LuaExtraFuncs.cpp
+00819a60	table	debuglocals	binding "debuglocals" in FrameScriptInternal::extra_funcs ~ table 00a443a8
 00819bb0	string	FrameScript_Initialize	unique "compat.lua"
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
@@ -2212,7 +2212,7 @@ addr	how	frozen	evidence
 0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
 0084e560	callorder	lua_gettable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop, 004a15a0=CSimpleFrame_SetBackdrop
 0084e590	callgraph	lua_getfield	only unmatched callee of 00816910=getglobal
-0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName
+0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName, 00816f30=securecall
 0084e670	override	lua_rawgeti	
 0084e6e0	callorder	lua_createtable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield

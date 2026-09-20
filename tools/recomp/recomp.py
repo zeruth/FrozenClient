@@ -661,7 +661,9 @@ def load_tables():
 # the FrameScript_* spellings hid all of them, so the report counted those names as MISSING --
 # 'FrameXML calls it and gets nil' -- when FrameXML actually gets a callable stub that returns
 # nothing. Different bug class, and it was steering the missing-names queue at names that were
-# already registered.
+# already registered. luaL_Reg joined them for the same reason: FrameScriptInternal::extra_funcs
+# is 31 bindings handed to luaL_register(L, "_G", ...) by FrameScript.cpp, and the whole
+# string/global helper block was being reported missing.
 def is_stub_name(name):
     """Stubs that carry no WHOA_UNIMPLEMENTED for either scanner to find.
 
@@ -675,7 +677,7 @@ def is_stub_name(name):
     return name.rpartition('::')[2].startswith('Script_Stub_')
 
 
-FROZEN_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function|ScriptFunction)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
+FROZEN_TABLE_RE = re.compile(r'(FrameScript_Method|FrameScript_Function|ScriptFunction|luaL_Reg)\s+([\w:]+)\s*\[[^\]]*\]\s*=\s*\{(.*?)\};', re.S)
 FROZEN_ENTRY_RE = re.compile(r'\{\s*"(\w+)"\s*,\s*&?([\w:]+)\s*\}')
 
 
@@ -1076,6 +1078,33 @@ def fmt_bytes(n):
     return '%.1fk' % (n / 1024.0) if n < 1024 * 1024 else '%.2fM' % (n / 1048576.0)
 
 
+# Reference data tables that are Lua's OWN standard libraries rather than client bindings. Frozen
+# gets these by linking Lua and calling luaopen_* from FrameScript.cpp, so every one of these names
+# is live at runtime even though no frozen array registers it. Counting them missing claimed ~86
+# FrameXML calls would hit "attempt to call a nil value" when none of them can.
+#
+# Keyed by address AND the table's first name: a re-export that moves these tables will stop
+# matching and the names go back to reporting missing, which is the safe direction to fail in.
+# Lua 5.1 registers the coroutine table from luaopen_base, hence the shared symbol.
+LUA_STDLIB = {
+    '00a47c80': ('base', 'assert', 'luaopen_base'),
+    '00a478e0': ('string', 'byte', 'luaopen_string'),
+    '00a47798': ('table', 'concat', 'luaopen_table'),
+    '00a47600': ('math', 'abs', 'luaopen_math'),
+    '00a475a0': ('bit', 'bnot', 'luaopen_bit'),
+    '00a47d28': ('coroutine', 'create', 'luaopen_base'),
+}
+
+
+def lua_stdlib_opened():
+    """Which luaopen_* frozen actually calls. Read rather than assumed, so dropping one shows up."""
+    try:
+        with io.open(os.path.join(ROOT, 'src', 'ui', 'FrameScript.cpp'), encoding='utf-8') as fh:
+            return set(re.findall(r'\b(luaopen_\w+)\s*\(', fh.read()))
+    except OSError:
+        return set()
+
+
 def lua_coverage(ref_tables, pairs, frozen, frozen_tables=()):
     """Per reference binding table: how many of its names frozen registers, and which are missing or
     stubbed. A name counts wherever frozen registers it: the reference splits the globals into many
@@ -1088,6 +1117,7 @@ def lua_coverage(ref_tables, pairs, frozen, frozen_tables=()):
             registered.setdefault(n, (f, wt['name']))
     rows = []
     total = have = stubbed = 0
+    opened = lua_stdlib_opened()
     for rt in ref_tables:
         if len(rt['entries']) < 4:
             continue  # not a binding table: a two-entry pair in some other structure
@@ -1097,6 +1127,13 @@ def lua_coverage(ref_tables, pairs, frozen, frozen_tables=()):
         if not wt:
             arrays = sorted(set(registered[n][1] for n in names if n in registered))
             wt = {'name': ', '.join(arrays[:2]) + (' ...' if len(arrays) > 2 else ''), 'file': ''} if arrays else None
+        std = LUA_STDLIB.get(rt['addr'])
+        if std and std[2] in opened and names[0] == std[1]:
+            # Provided by Lua itself. Not missing, and not a stub either: these are the real
+            # implementations, so they belong in neither column.
+            wnames = dict.fromkeys(names)
+            wt = {'name': 'lua ' + std[0], 'file': ''}
+
         missing = [n for n in names if n not in wnames]
         stubs = []
         for n in names:

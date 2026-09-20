@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 02:18 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 02:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -19,13 +19,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
 | frozen functions (src/, from PDB + source) | 11589, stubs 1723 | |
 
-Match evidence: annotated 693, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 204, sticky 13, string 310, table 1062. Module anchors: 1479 assert strings.
+Match evidence: annotated 693, callgraph 174, callorder 133, cvar 30, handler 28, order 180, override 204, sticky 13, string 308, table 1072. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 02:17 -- mapped 2835, ported 2128, stub 664, spine mapped 413.
+Previous run: 2026-09-20 02:20 -- mapped 2835, ported 2128, stub 664, spine mapped 413.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2747 of them (=); 1500 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2863 of them (+86); 1512 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -44,9 +44,7 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ace370 (CommentatorSetMode..) | 35 | `s_stubs` | 0 | 35 |  / stubs: CommentatorSetMode, CommentatorToggleMode, CommentatorGetMode, CommentatorSetMapAndInstanceIndex ... |
 | 00ad0e80 (CloseTradeSkill..) | 36 | `s_ScriptFunctions, s_stubs` | 0 | 34 |  / stubs: CloseTradeSkill, GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex ... |
 | 00ace610 (CloseMail..) | 38 | `s_ScriptFunctions, s_stubs` | 0 | 33 |  / stubs: CloseMail, ClearSendMail, ClickSendMailItemButton, SetSendMailMoney ... |
-| 00a443a8 (setglobal..) | 30 | `-` | 30 | 0 | setglobal, getglobal, strtrim, strsplit, strjoin, strreplace ... |
 | 00acfc70 (GetCategoryList..) | 37 | `s_ScriptFunctions, s_stubs` | 0 | 30 |  / stubs: GetCategoryList, GetStatisticsCategoryList, GetCategoryInfo, GetCategoryNumAchievements ... |
-| 00a47600 (abs..) | 27 | `-` | 27 | 0 | abs, acos, asin, atan2, atan, ceil ... |
 | 00ac18e0 (Play..) | 31 | `ScriptRegionMethods, SimpleFrameMethods` | 26 | 1 | Play, Pause, Stop, IsDone, IsPlaying, IsPaused ... / stubs: HookScript |
 | 00accf18 (GetMapContinents..) | 40 | `s_ScriptFunctions, s_stubs` | 0 | 27 |  / stubs: GetMapContinents, GetMapZones, SetMapZoom, ZoomOut ... |
 | 00ad0840 (GetNumGuildMembers..) | 43 | `s_ScriptFunctions, s_stubs` | 0 | 27 |  / stubs: GetGuildRosterInfo, GetGuildRosterLastOnline, GuildRosterSetPublicNote, GuildRosterSetOfficerNote ... |
@@ -57,14 +55,12 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ad93d8 (GetNumFriends..) | 31 | `s_ScriptFunctions, s_stubs` | 0 | 23 |  / stubs: GetFriendInfo, SetSelectedFriend, GetSelectedFriend, AddOrRemoveFriend ... |
 | 00acd488 (KBSetup_BeginLoading..) | 22 | `-` | 22 | 0 | KBSetup_BeginLoading, KBSetup_IsLoaded, KBSetup_GetLanguageCount, KBSetup_GetLanguageData, KBSetup_GetCategoryCount, KBSetup_GetCategoryData ... |
 | 00ad2060 (CameraZoomIn..) | 22 | `s_stubs` | 0 | 22 |  / stubs: CameraZoomIn, CameraZoomOut, MoveViewInStart, MoveViewInStop ... |
-| 00a47c80 (assert..) | 20 | `-` | 20 | 0 | assert, collectgarbage, error, gcinfo, getfenv, getmetatable ... |
 | 00acde38 (GetNumBindings..) | 26 | `s_ScriptFunctions` | 0 | 20 |  / stubs: GetNumBindings, GetBinding, SetBinding, SetBindingSpell ... |
 | 00ac1ab8 (Play..) | 26 | `ScriptObjectMethods` | 18 | 1 | Play, Pause, Stop, Finish, GetProgress, IsDone ... / stubs: HookScript |
 | 00ace1f0 (SecureCmdOptionParse..) | 22 | `s_ScriptFunctions, s_stubs` | 0 | 19 |  / stubs: SecureCmdOptionParse, RunMacro, RunMacroText, StopMacro ... |
 | 00accce0 (GetNumSpellTabs..) | 45 | `s_ScriptFunctions` | 0 | 18 |  / stubs: GetSpellCount, ToggleSpellAutocast, EnableSpellAutocast, DisableSpellAutocast ... |
 | 00aced00 (CloseMerchant..) | 21 | `s_ScriptFunctions, s_stubs` | 0 | 18 |  / stubs: CloseMerchant, GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemCostInfo ... |
 | 00ad1270 (GetInventorySlotInfo..) | 33 | `s_ScriptFunctions` | 0 | 18 |  / stubs: GetInventoryItemsForSlot, GetInventoryItemCooldown, GetInventoryItemGems, PickupInventoryItem ... |
-| 00a478e0 (byte..) | 15 | `-` | 15 | 0 | byte, char, dump, find, format, gfind ... |
 | 00ace790 (GetNumRaidMembers..) | 20 | `s_ScriptFunctions` | 0 | 15 |  / stubs: GetRaidRosterInfo, SetRaidRosterSelection, GetRaidRosterSelection, IsRealRaidLeader ... |
 | 00acfb78 (SaveEquipmentSet..) | 17 | `s_ScriptFunctions, s_stubs` | 0 | 15 |  / stubs: SaveEquipmentSet, DeleteEquipmentSet, RenameEquipmentSet, EquipmentManagerIgnoreSlotForSave ... |
 | 00acee28 (SetLootPortrait..) | 17 | `s_ScriptFunctions, s_stubs` | 0 | 14 |  / stubs: SetLootPortrait, GetLootSlotInfo, GetLootSlotLink, LootSlotIsItem ... |
@@ -72,22 +68,20 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2d928 (PlaySound..) | 23 | `SI2::s_ScriptFunctions` | 0 | 14 |  / stubs: PlayMusic, PlaySoundFile, StopMusic, Sound_GameSystem_RestartSoundSystem ... |
 | 00acf258 (SetTaxiMap..) | 14 | `s_ScriptFunctions, s_stubs` | 0 | 13 |  / stubs: SetTaxiMap, NumTaxiNodes, TaxiNodeName, TaxiNodePosition ... |
 | 00ad0ae8 (GetNumFactions..) | 15 | `s_ScriptFunctions, s_stubs` | 0 | 13 |  / stubs: GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex ... |
+| 00a443a8 (setglobal..) | 30 | `FrameScriptInternal::extra_funcs` | 0 | 12 |  / stubs: issecurevariable, forceinsecure, hooksecurefunc, debugload ... |
 | 00acedb0 (CloseTrade..) | 14 | `s_ScriptFunctions` | 0 | 12 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
 | 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 0 | 12 |  / stubs: GetContainerItemCooldown, PickupContainerItem, SplitContainerItem, UseContainerItem ... |
 | 00acd418 (AccountMsg_LoadHeaders..) | 11 | `-` | 11 | 0 | AccountMsg_LoadHeaders, AccountMsg_GetNumTotalMsgs, AccountMsg_GetNumUnreadMsgs, AccountMsg_GetNumUnreadUrgentMsgs, AccountMsg_GetIndexHighestPriorityUnreadMsg, AccountMsg_GetIndexNextUnreadMsg ... |
 | 00acf768 (ClosePetStables..) | 14 | `s_ScriptFunctions, s_stubs` | 0 | 11 |  / stubs: ClosePetStables, StablePet, UnstablePet, BuyStableSlot ... |
 | 00ad0568 (CloseSocketInfo..) | 12 | `s_ScriptFunctions, s_stubs` | 0 | 11 |  / stubs: CloseSocketInfo, GetSocketItemInfo, GetExistingSocketInfo, GetExistingSocketLink ... |
-| 00a47798 (concat..) | 11 | `s_ScriptFunctions` | 10 | 0 | concat, foreach, foreachi, getn, maxn, insert ... |
 | 00adb8e0 (CombatLogResetFilter..) | 11 | `s_ScriptFunctions, s_stubs` | 0 | 10 |  / stubs: CombatLogResetFilter, CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime ... |
 | 00af29c0 (VoiceEnumerateOutputDevices..) | 15 | `s_ScriptFunctions, s_stubs` | 0 | 10 |  / stubs: VoiceEnumerateOutputDevices, VoiceEnumerateCaptureDevices, VoiceSelectOutputDevice, VoiceSelectCaptureDevice ... |
 | 00aceec0 (ItemTextGetItem..) | 9 | `s_stubs` | 0 | 9 |  / stubs: ItemTextGetItem, ItemTextGetCreator, ItemTextGetMaterial, ItemTextGetPage ... |
 | 00acf838 (GetArenaTeam..) | 13 | `s_ScriptFunctions, s_stubs` | 0 | 9 |  / stubs: GetArenaTeamRosterInfo, GetArenaTeamGdfInfo, SetArenaTeamRosterSelection, GetArenaTeamRosterSelection ... |
 | 00ad05f0 (GetNumTalentTabs..) | 17 | `s_ScriptFunctions, s_stubs` | 0 | 9 |  / stubs: GetTalentInfo, GetTalentLink, GetTalentPrereqs, LearnTalent ... |
-| 00a475a0 (bnot..) | 8 | `-` | 8 | 0 | bnot, band, bor, bxor, lshift, rshift ... |
 | 00af51c8 (SpellIsTargeting..) | 11 | `s_ScriptFunctions, s_stubs` | 0 | 8 |  / stubs: SpellIsTargeting, SpellCanTargetItem, SpellTargetItem, SpellCanTargetUnit ... |
 | 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 7 |  / stubs: LeaveParty, SetPartyAssignment, ClearPartyAssignment, SilenceMember ... |
 | 00ad09b8 (GetNumSkillLines..) | 13 | `s_ScriptFunctions, s_stubs` | 0 | 7 |  / stubs: AbandonSkill, CollapseSkillHeader, ExpandSkillHeader, AddSkillUp ... |
-| 00a47d28 (create..) | 6 | `-` | 6 | 0 | create, resume, running, status, wrap, yield |
 | 00ac1550 (GetTitleRegion..) | 85 | `SimpleFrameMethods` | 0 | 6 |  / stubs: CreateTitleRegion, HookScript, AllowAttributeChanges, CanChangeAttribute ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 6 |  / stubs: SetPreferredInfo, SortRealms, GetSelectedCategory, IsInvalidTournamentRealmCategory ... |
@@ -737,8 +731,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 00:29 | 2740 (10.1%) | 1027 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
-| 2026-09-20 00:33 | 2743 (10.1%) | 1027 (3.8%) | 494 | 412/5531 | 1792/2964 | 563 |
 | 2026-09-20 00:39 | 2747 (10.1%) | 1028 (3.8%) | 494 | 412/5531 | 1795/2964 | 563 |
 | 2026-09-20 00:42 | 2748 (10.1%) | 1028 (3.8%) | 494 | 412/5531 | 1796/2964 | 563 |
 | 2026-09-20 00:46 | 2749 (10.1%) | 1027 (3.8%) | 494 | 412/5531 | 1798/2964 | 563 |
@@ -762,6 +754,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 02:16 | 2835 (10.4%) | 1034 (3.8%) | 485 | 413/5531 | 2747/2964 | 554 |
 | 2026-09-20 02:17 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2747/2964 | 1500 |
 | 2026-09-20 02:18 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2747/2964 | 1500 |
+| 2026-09-20 02:20 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2777/2964 | 1512 |
+| 2026-09-20 02:22 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2863/2964 | 1512 |
 
 ## How to move a row
 
