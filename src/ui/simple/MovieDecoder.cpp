@@ -31,7 +31,22 @@ struct MovieDecoder {
     int32_t paddedWidth = 0;
     int32_t paddedHeight = 0;
 
-    uint8_t* yuv = nullptr;
+    // TWO picture buffers, alternated.
+    //
+    // The decoder ping-pongs its own Vop structs after every frame -- the one just decoded becomes
+    // the reference and the old reference becomes the next output target:
+    //
+    //     tempVopPtr = video->prevVop;
+    //     video->prevVop = video->currVop;
+    //     video->currVop = tempVopPtr;
+    //
+    // so handing it the same buffer twice makes prevVop and currVop the same memory, and motion
+    // compensation then reads its reference out of the picture it is writing. The result is a
+    // frame that smears into blocks and gets worse the longer a run of P-frames lasts, which is
+    // exactly how it looked.
+    uint8_t* yuv[2] = { nullptr, nullptr };
+    int32_t yuvIndex = 0;
+
     uint8_t* bgra = nullptr;
 
     bool haveFrame = false;
@@ -79,7 +94,13 @@ MovieDecoder* MovieDecoderCreate(const MovieAvi& movie) {
 
     size_t luma = static_cast<size_t>(decoder->paddedWidth) * decoder->paddedHeight;
 
-    decoder->yuv = static_cast<uint8_t*>(SMemAlloc(luma + luma / 2, __FILE__, __LINE__, 0));
+    decoder->yuv[0] = static_cast<uint8_t*>(SMemAlloc(luma + luma / 2, __FILE__, __LINE__, 0));
+    decoder->yuv[1] = static_cast<uint8_t*>(SMemAlloc(luma + luma / 2, __FILE__, __LINE__, 0));
+
+    // The first P-frame is coded against a reference that no frame has written yet. Point the
+    // decoder's reference at the buffer the first decode will NOT use; PVSetReferenceYUV fills it
+    // with mid-grey rather than leaving it whatever the allocator handed over.
+    PVSetReferenceYUV(&decoder->ctrl, decoder->yuv[1]);
     decoder->bgra = static_cast<uint8_t*>(SMemAlloc(static_cast<size_t>(decoder->width) * decoder->height * 4, __FILE__, __LINE__, 0));
 
     return decoder;
@@ -94,8 +115,10 @@ void MovieDecoderDestroy(MovieDecoder* decoder) {
         PVCleanUpVideoDecoder(&decoder->ctrl);
     }
 
-    if (decoder->yuv) {
-        SMemFree(decoder->yuv, __FILE__, __LINE__, 0);
+    for (int32_t i = 0; i < 2; i++) {
+        if (decoder->yuv[i]) {
+            SMemFree(decoder->yuv[i], __FILE__, __LINE__, 0);
+        }
     }
 
     if (decoder->bgra) {
@@ -121,12 +144,26 @@ bool MovieDecoderFrame(MovieDecoder* decoder, const MovieAvi& movie, uint32_t in
     uint32_t timestamp = 0;
     uint32_t useExternal[1] = { 0 };
 
-    if (!PVDecodeVideoFrame(&decoder->ctrl, bitstream, &timestamp, bufferSize, useExternal, decoder->yuv)) {
+    if (!PVDecodeVideoFrame(&decoder->ctrl, bitstream, &timestamp, bufferSize, useExternal,
+                           decoder->yuv[decoder->yuvIndex])) {
         return false;
     }
 
+    // Hand it the other buffer next time, so the reference it keeps stays intact while the new
+    // picture is written.
+    decoder->yuvIndex ^= 1;
+
     decoder->haveFrame = true;
     decoder->lastIndex = index;
+
+    // Ask the decoder which buffer actually holds the picture rather than assuming it is the one
+    // passed in: a frame coded as "not coded" is served by copying the previous one, and the
+    // output pointer is the only thing that knows where it ended up.
+    const uint8_t* decoded = PVGetDecOutputFrame(&decoder->ctrl);
+
+    if (!decoded) {
+        return false;
+    }
 
     // YUV 4:2:0 planar to BGRA. The chroma planes are half size in both directions, and the
     // decoder's stride is the padded width, not the display width.
@@ -135,7 +172,7 @@ bool MovieDecoderFrame(MovieDecoder* decoder, const MovieAvi& movie, uint32_t in
     int32_t stride = decoder->paddedWidth;
     int32_t chromaStride = stride / 2;
 
-    const uint8_t* planeY = decoder->yuv;
+    const uint8_t* planeY = decoded;
     const uint8_t* planeU = planeY + static_cast<size_t>(stride) * decoder->paddedHeight;
     const uint8_t* planeV = planeU + (static_cast<size_t>(stride) * decoder->paddedHeight) / 4;
 
