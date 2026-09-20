@@ -208,7 +208,7 @@ void CGPlayer_C::BuildCharacterComponent() {
 
     // UNIT_FIELD_BYTES_2 low byte is the sheathe state: 0 = stowed (weapons on the back/hip),
     // 1 = melee drawn, 2 = ranged drawn. Idle units stow their weapons, like the reference.
-    int32_t sheatheState = unit->pad3 & 0xFF;
+    int32_t sheatheState = unit->bytes2 & 0xFF;
     bool sheathed = sheatheState == 0;
 
     // Apply the equipped items. Armour slots are composited onto the body; weapons and shields are

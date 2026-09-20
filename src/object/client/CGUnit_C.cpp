@@ -430,6 +430,13 @@ float CGUnit_C::GetAnimFootprint() const {
     return 0.0f;
 }
 
+// ref: FUN_0071af70
+uint8_t CGUnit_C::GetShapeshiftForm() const {
+    auto data = this->Unit();
+
+    return data ? static_cast<uint8_t>((data->bytes2 >> 24) & 0xFF) : 0;
+}
+
 uint32_t CGUnit_C::GetSequenceDuration(int32_t animID) {
     if (!this->m_model || !this->m_model->m_shared || !this->m_model->m_shared->m_m2DataLoaded || !this->m_model->m_shared->m_data) {
         return 0;

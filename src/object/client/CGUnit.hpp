@@ -81,7 +81,19 @@ struct CGUnitData {
     int32_t resistanceBuffModsNegative[7];
     int32_t baseMana;
     int32_t baseHealth;
-    int32_t pad3;
+    // UNIT_FIELD_BYTES_2, the third of the packed byte fields, sitting between the base health
+    // and the attack power exactly as the 3.3.5 field order has it.
+    //
+    // Three of the four bytes were already being read here under the old name, which is the same
+    // pattern bytes0 and bytes1 turned out to have:
+    //
+    //   byte 0  sheath state      -- read by CGObject_C and CGPlayer_C
+    //   byte 1  pvp flags         -- bit 3 read by Script_UnitIsPVP
+    //   byte 2  pet flags         -- documented layout, nothing reads it here yet
+    //   byte 3  shapeshift form   -- the reference has a one-line accessor for it (FUN_0071af70,
+    //                                ported as CGUnit_C::GetShapeshiftForm) and a dozen call sites
+    //                                reading descriptor +0x1d3 directly
+    uint32_t bytes2;
     int32_t attackPower;
 
     // A PACKED PAIR, not one number: the positive modifier is the low int16 and the negative one

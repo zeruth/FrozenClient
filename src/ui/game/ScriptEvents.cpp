@@ -55,7 +55,7 @@ static_assert(offsetof(CGPlayerData, spellCritPercentage) == 0xdd0, "CGPlayerDat
 // which is the property that identified them in the first place.
 static_assert(offsetof(CGUnitData, flags) == 0xd4, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, dynamicFlags) == 0x124, "CGUnitData layout");
-static_assert(offsetof(CGUnitData, pad3) == 0x1d0, "CGUnitData layout");
+static_assert(offsetof(CGUnitData, bytes2) == 0x1d0, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, attackRoundBaseTime) == 0xe0, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, minDamage) == 0x100, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, maxDamage) == 0x104, "CGUnitData layout");
@@ -392,7 +392,7 @@ int32_t Script_UnitIsPVP(lua_State* L) {
 }
 
 // ref: FUN_0060cf20
-// Bit 3 of the SECOND byte of pad3, which is the unit's bytes-2 field -- the same dword that
+// Bit 3 of the SECOND byte of bytes2 -- the same dword that
 // carries the sheath state and shapeshift form. The reference reads it as a byte at +0x1d1, so
 // the shift is part of the field's meaning rather than an encoding detail.
 //
@@ -403,7 +403,7 @@ int32_t Script_UnitIsPVPSanctuary(lua_State* L) {
     auto unit = token ? Script_GetUnitFromName(token) : nullptr;
     auto data = unit ? unit->Unit() : nullptr;
 
-    if (data && ((data->pad3 >> 8) & 0x8)) {
+    if (data && ((data->bytes2 >> 8) & 0x8)) {
         lua_pushnumber(L, 1.0);
     } else {
         lua_pushnil(L);

@@ -76,7 +76,7 @@ void CGObject_C::AddWorldObject() {
 
                 if (unit) {
                     static const INVENTORY_SLOTS handSlots[3] = { INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED };
-                    bool sheathed = (unit->pad3 & 0xFF) == 0;
+                    bool sheathed = (unit->bytes2 & 0xFF) == 0;
 
                     for (int32_t i = 0; i < 3; i++) {
                         int32_t entryID = unit->virtualItemSlotID[i];

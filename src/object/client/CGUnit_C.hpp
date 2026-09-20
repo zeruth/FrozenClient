@@ -80,6 +80,12 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // Duration (ms) of the model's animation with the given AnimationData id, or 0 if it has none.
         uint32_t GetSequenceDuration(int32_t animID);
+
+        // ref: FUN_0071af70
+        // The unit's current shapeshift form, byte 3 of UNIT_FIELD_BYTES_2. Zero is no form. The
+        // reference reads this through an accessor rather than inline, from a dozen places, which
+        // is why it is one here too rather than a shift at each call site.
+        uint8_t GetShapeshiftForm() const;
         void PlayEmote(uint32_t emoteID);
 
     protected:

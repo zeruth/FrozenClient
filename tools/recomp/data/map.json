@@ -31514,6 +31514,22 @@
   "refSize": 102,
   "status": "ported"
  },
+ "0071af70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetShapeshiftForm",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 26,
+  "status": "ported"
+ },
  "0071b7f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

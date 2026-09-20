@@ -1982,6 +1982,7 @@ addr	how	frozen	evidence
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
+0071af70	annotated	CGUnit_C::GetShapeshiftForm	tag in src/object/client/CGUnit_C.cpp
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"

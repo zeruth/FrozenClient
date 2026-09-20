@@ -84791,6 +84791,25 @@
 "refs": [],
 "line": 404
 },
+"CGUnit_C::GetShapeshiftForm": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CGUnit::Unit"
+],
+"strings": [],
+"consts": [
+"0",
+"0xFF",
+"24"
+],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 434
+},
 "CGUnit_C::GetSequenceDuration": {
 "files": [
 "src/object/client/cgunit_c.cpp"
@@ -84808,7 +84827,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 433
+"line": 440
 },
 "CGUnit_C::UpdateIdleAnimation": {
 "files": [
@@ -84847,7 +84866,7 @@
 "stub": false,
 "lines": 84,
 "refs": [],
-"line": 449
+"line": 456
 },
 "CGUnit_C::PlayEmote": {
 "files": [
@@ -84865,7 +84884,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 538
+"line": 545
 },
 "CGUnit_C::RefreshDataPointers": {
 "files": [
@@ -84895,7 +84914,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 557
+"line": 564
 },
 "CGUnit_C::SetStorage": {
 "files": [
@@ -84912,7 +84931,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 614
+"line": 621
 },
 "ReceiveEmote": {
 "files": [
@@ -84935,7 +84954,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 626
+"line": 633
 },
 "CMovementData_C::CMovementData_C": {
 "files": [
