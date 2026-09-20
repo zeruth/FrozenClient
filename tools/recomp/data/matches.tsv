@@ -1380,11 +1380,12 @@ addr	how	frozen	evidence
 005d54f0	order	Script_Stub_PetDefensiveMode	binding table name Script_Stub_PetDefensiveMode, in definition order in src/ui/game/miscscriptstubs.cpp
 005d5580	order	Script_Stub_PetFollow	binding table name Script_Stub_PetFollow, in definition order in src/ui/game/miscscriptstubs.cpp
 005d5670	order	Script_Stub_PetRename	binding table name Script_Stub_PetRename, in definition order in src/ui/game/miscscriptstubs.cpp
-005d7020	string	Script_Stub_ContainerIDToInventoryID	score 0.50 shared ContainerIDToInventoryID
+005d6f60	annotated	Script_ContainerIDToInventoryID	tag in src/ui/game/ContainerFrameScript.cpp
 005d74a0	annotated	Script_GetContainerNumSlots	tag in src/ui/game/ContainerFrameScript.cpp
 005d7a90	annotated	Script_GetContainerItemInfo	tag in src/ui/game/ContainerFrameScript.cpp
 005d7c80	annotated	Script_GetContainerItemLink	tag in src/ui/game/ContainerFrameScript.cpp
 005d7d00	annotated	Script_GetContainerItemID	tag in src/ui/game/ContainerFrameScript.cpp
+005d7ef0	annotated	Script_GetContainerItemDurability	tag in src/ui/game/ContainerFrameScript.cpp
 005da3a0	string	Script_Stub_CloseTradeSkill	score 0.50 shared CloseTradeSkill
 005df8a0	order	Script_Stub_ProcessQuestLogRewardFactions	binding table name Script_Stub_ProcessQuestLogRewardFactions, in definition order in src/ui/game/miscscriptstubs.cpp
 005dfd20	string	Script_Stub_GetQuestLogTitle	score 0.50 shared GetQuestLogTitle

@@ -474,7 +474,6 @@ WHOA_LUA_STUB(ComplainChat)
 WHOA_LUA_STUB(ComplainInboxItem)
 WHOA_LUA_STUB(CompleteLFGRoleCheck)
 WHOA_LUA_STUB(CompleteQuest)
-WHOA_LUA_STUB(ContainerIDToInventoryID)
 WHOA_LUA_STUB(ContainerRefundItemPurchase)
 WHOA_LUA_STUB(CreateMacro)
 WHOA_LUA_STUB(CreateMiniWorldMapArrowFrame)
@@ -582,7 +581,6 @@ WHOA_LUA_STUB(GetComparisonCategoryNumAchievements)
 WHOA_LUA_STUB(GetComparisonStatistic)
 WHOA_LUA_STUB(GetContainerFreeSlots)
 WHOA_LUA_STUB(GetContainerItemCooldown)
-WHOA_LUA_STUB(GetContainerItemDurability)
 WHOA_LUA_STUB(GetContainerItemGems)
 WHOA_LUA_STUB(GetContainerItemPurchaseInfo)
 WHOA_LUA_STUB(GetContainerItemPurchaseItem)
@@ -1606,7 +1604,6 @@ const ScriptFunction s_stubs[] = {
     { "ComplainInboxItem",                       &Script_Stub_ComplainInboxItem },
     { "CompleteLFGRoleCheck",                    &Script_Stub_CompleteLFGRoleCheck },
     { "CompleteQuest",                           &Script_Stub_CompleteQuest },
-    { "ContainerIDToInventoryID",                &Script_Stub_ContainerIDToInventoryID },
     { "ContainerRefundItemPurchase",             &Script_Stub_ContainerRefundItemPurchase },
     { "CreateMacro",                             &Script_Stub_CreateMacro },
     { "CreateMiniWorldMapArrowFrame",            &Script_Stub_CreateMiniWorldMapArrowFrame },
@@ -1703,7 +1700,6 @@ const ScriptFunction s_stubs[] = {
     { "GetComparisonStatistic",                  &Script_Stub_GetComparisonStatistic },
     { "GetContainerFreeSlots",                   &Script_Stub_GetContainerFreeSlots },
     { "GetContainerItemCooldown",                &Script_Stub_GetContainerItemCooldown },
-    { "GetContainerItemDurability",              &Script_Stub_GetContainerItemDurability },
     { "GetContainerItemGems",                    &Script_Stub_GetContainerItemGems },
     { "GetContainerItemPurchaseInfo",            &Script_Stub_GetContainerItemPurchaseInfo },
     { "GetContainerItemPurchaseItem",            &Script_Stub_GetContainerItemPurchaseItem },

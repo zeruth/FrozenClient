@@ -210,11 +210,74 @@ int32_t Script_GetContainerItemInfo(lua_State* L) {
     return 7;
 }
 
+// ref: FUN_005d6f60
+// A bag id to the inventory id its BAG SLOT occupies -- what you pass to the equipped-item
+// bindings to ask about the bag itself rather than its contents.
+//
+// Two ranges with different offsets: the four worn bags map to 20-23, and the seven bank bags to
+// 68-74. Bag 0, the backpack, is NOT valid here -- it occupies no inventory slot, so the range
+// starts at 1 and anything outside 1-11 is an error rather than a nil.
+int32_t Script_ContainerIDToInventoryID(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: ContainerIDToInventoryID(containerID)");
+
+        return 0;
+    }
+
+    auto bag = static_cast<int32_t>(lua_tonumber(L, 1));
+
+    if (bag < 1 || bag > 11) {
+        luaL_error(L, "ContainerIDToInventoryID(): invalid container ID");
+
+        return 0;
+    }
+
+    lua_pushnumber(L, static_cast<double>(bag + (bag <= 4 ? 0x13 : 0x3f)));
+
+    return 1;
+}
+
+// ref: FUN_005d7ef0
+// durability, maxDurability -- or no values for an item that cannot wear out.
+//
+// The same flag bit 3 that ItemDurability tests for equipped items: an item carrying it reports no
+// durability at all, and the reference zeroes BOTH values rather than just the current one. Since
+// the max then reads zero, such an item falls into the "no values" path on its own.
+int32_t Script_GetContainerItemDurability(lua_State* L) {
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: GetContainerItemDurability(index, slot)");
+
+        return 0;
+    }
+
+    auto item = ContainerItem(L, 1, 2);
+    auto data = item ? item->Item() : nullptr;
+
+    if (!data) {
+        return 0;
+    }
+
+    auto noDurability = (data->flags & 0x8) != 0;
+    auto maxDurability = noDurability ? 0 : data->maxDurability;
+    auto durability = noDurability ? 0 : data->durability;
+
+    if (!maxDurability) {
+        return 0;
+    }
+
+    lua_pushnumber(L, static_cast<double>(durability));
+    lua_pushnumber(L, static_cast<double>(maxDurability));
+
+    return 2;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
     { "GetContainerItemLink",   &Script_GetContainerItemLink },
     { "GetContainerItemInfo",   &Script_GetContainerItemInfo },
+    { "ContainerIDToInventoryID", &Script_ContainerIDToInventoryID },
+    { "GetContainerItemDurability", &Script_GetContainerItemDurability },
 };
 
 } // namespace
