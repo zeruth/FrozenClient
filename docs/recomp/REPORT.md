@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2751 (=) (10.1%) | 586.4k (10.6%) |
-| &nbsp;&nbsp;ported | 2219 (+1) | 442.0k |
-| &nbsp;&nbsp;stub (unimplemented body) | 492 (-1) | 105.1k |
+| mapped to a frozen function | 2753 (+2) (10.1%) | 586.6k (10.6%) |
+| &nbsp;&nbsp;ported | 2223 (+4) | 442.3k |
+| &nbsp;&nbsp;stub (unimplemented body) | 490 (-2) | 105.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1028 (+1) (3.8%)** | **127.6k (2.3%)** |
-| unmapped | 24411 | 4.83M |
+| **faithful** (linked, not stub, call order >= 80%) | **1031 (+3) (3.8%)** | **127.7k (2.3%)** |
+| unmapped | 24409 | 4.83M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 165 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11573, stubs 750 | |
+| frozen functions (src/, from PDB + source) | 11576, stubs 748 | |
 
-Match evidence: annotated 681, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 993. Module anchors: 1479 assert strings.
+Match evidence: annotated 685, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 991. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:11 -- mapped 2751, ported 2218, stub 493, spine mapped 412.
+Previous run: 2026-09-20 01:16 -- mapped 2751, ported 2219, stub 492, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 561 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1799 of them (=); 559 of those are WHOA_UNIMPLEMENTED stubs (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -73,12 +73,12 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2d928 (PlaySound..) | 23 | `SI2::s_ScriptFunctions` | 0 | 14 |  / stubs: PlayMusic, PlaySoundFile, StopMusic, Sound_GameSystem_RestartSoundSystem ... |
 | 00acf258 (SetTaxiMap..) | 14 | `s_ScriptFunctions` | 13 | 0 | SetTaxiMap, NumTaxiNodes, TaxiNodeName, TaxiNodePosition, TaxiNodeCost, TakeTaxiNode ... |
 | 00ad0ae8 (GetNumFactions..) | 15 | `s_ScriptFunctions` | 13 | 0 | GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex, FactionToggleAtWar, CollapseFactionHeader ... |
-| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 12 |  / stubs: GetRealNumPartyMembers, IsRealPartyLeader, LeaveParty, SetLootMethod ... |
 | 00acedb0 (CloseTrade..) | 14 | `s_ScriptFunctions` | 0 | 12 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
 | 00acd418 (AccountMsg_LoadHeaders..) | 11 | `-` | 11 | 0 | AccountMsg_LoadHeaders, AccountMsg_GetNumTotalMsgs, AccountMsg_GetNumUnreadMsgs, AccountMsg_GetNumUnreadUrgentMsgs, AccountMsg_GetIndexHighestPriorityUnreadMsg, AccountMsg_GetIndexNextUnreadMsg ... |
 | 00acf768 (ClosePetStables..) | 14 | `s_ScriptFunctions` | 11 | 0 | ClosePetStables, StablePet, UnstablePet, BuyStableSlot, GetStablePetInfo, GetNextStableSlotCost ... |
 | 00ad0568 (CloseSocketInfo..) | 12 | `s_ScriptFunctions` | 11 | 0 | CloseSocketInfo, GetSocketItemInfo, GetExistingSocketInfo, GetExistingSocketLink, GetNewSocketInfo, GetNewSocketLink ... |
 | 00a47798 (concat..) | 11 | `s_ScriptFunctions` | 10 | 0 | concat, foreach, foreachi, getn, maxn, insert ... |
+| 00acc6d0 (GetNumPartyMembers..) | 22 | `s_ScriptFunctions` | 0 | 10 |  / stubs: LeaveParty, SetLootMethod, SetLootThreshold, SetPartyAssignment ... |
 | 00adb8e0 (CombatLogResetFilter..) | 11 | `s_ScriptFunctions` | 10 | 0 | CombatLogResetFilter, CombatLogAddFilter, CombatLogSetRetentionTime, CombatLogGetRetentionTime, CombatLogGetNumEntries, CombatLogSetCurrentEntry ... |
 | 00af29c0 (VoiceEnumerateOutputDevices..) | 15 | `s_ScriptFunctions` | 10 | 0 | VoiceEnumerateOutputDevices, VoiceEnumerateCaptureDevices, VoiceSelectOutputDevice, VoiceSelectCaptureDevice, VoiceGetCurrentOutputDevice, VoiceGetCurrentCaptureDevice ... |
 | 00aceec0 (ItemTextGetItem..) | 9 | `-` | 9 | 0 | ItemTextGetItem, ItemTextGetCreator, ItemTextGetMaterial, ItemTextGetPage, ItemTextGetText, ItemTextHasNextPage ... |
@@ -149,7 +149,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 42 (14.8%) | 35.1% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
-| GameUI.cpp | 491 | 96.4k | 197 (40.1%) | 45.0% | 94 | 0 | 73 |
+| GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 93 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 73 (48.3%) | 29.0% | 40 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 90 (25.8%) | 14.2% | 25 | 2 | 36 |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 40 (16.3%) | 13.1% | 16 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 6 (2.7%) | 2.4% | 0 | 0 | 72 |
-| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 57 | 0 | 11 |
+| PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 5 | 0 | 7 |
@@ -627,7 +627,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
 | 00823130 | `CM2SceneRender::Draw` | 60% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
-| 006d8870 | `ReceiveGroupList` | 30% | 77 | 34 | 80 | 9 | 0% | 2482 |
+| 006d8870 | `ReceiveGroupList` | 32% | 77 | 35 | 80 | 10 | 0% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 28% | 79 | 22 | 25 | 0 | 0% | 2232 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 22% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:15 | 2732 (10.1%) | 1018 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:20 | 2731 (10.1%) | 1017 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:27 | 2732 (10.1%) | 1017 (3.7%) | 501 | 407/5531 | 1792/2964 | 570 |
 | 2026-09-19 23:30 | 2732 (10.1%) | 1017 (3.7%) | 500 | 407/5531 | 1792/2964 | 569 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:08 | 2751 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
 | 2026-09-20 01:11 | 2751 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
 | 2026-09-20 01:16 | 2751 (10.1%) | 1028 (3.8%) | 492 | 412/5531 | 1799/2964 | 561 |
+| 2026-09-20 01:20 | 2753 (10.1%) | 1031 (3.8%) | 490 | 412/5531 | 1799/2964 | 559 |
 
 ## How to move a row
 

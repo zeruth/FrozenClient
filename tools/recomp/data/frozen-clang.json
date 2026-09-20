@@ -101694,7 +101694,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 42
+"line": 44
 },
 "CGPartyInfo::GetMember": {
 "files": [
@@ -101711,7 +101711,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 54
+"line": 56
 },
 "CGPartyInfo::GetMemberInfo": {
 "files": [
@@ -101727,7 +101727,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 62
+"line": 64
 },
 "CGPartyInfo::GetLeader": {
 "files": [
@@ -101740,7 +101740,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 70
+"line": 72
 },
 "CGPartyInfo::IsMemberOrPet": {
 "files": [
@@ -101762,7 +101762,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 77
+"line": 79
 },
 "CGPartyInfo::IsPlayerOrMemberOrPet": {
 "files": [
@@ -101782,7 +101782,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 113
+"line": 115
 },
 "CGPartyInfo::SetMember": {
 "files": [
@@ -101797,7 +101797,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 140
+"line": 142
 },
 "CGPartyInfo::GetLootMethod": {
 "files": [
@@ -101810,7 +101810,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 145
+"line": 147
 },
 "CGPartyInfo::GetMasterLooter": {
 "files": [
@@ -101823,7 +101823,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 149
+"line": 151
 },
 "CGPartyInfo::GetLootThreshold": {
 "files": [
@@ -101836,7 +101836,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 155
 },
 "CGPartyInfo::SetLoot": {
 "files": [
@@ -101849,7 +101849,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 157
+"line": 159
 },
 "CGPartyInfo::GetDungeonDifficulty": {
 "files": [
@@ -101862,7 +101862,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 163
+"line": 165
 },
 "CGPartyInfo::GetRaidDifficulty": {
 "files": [
@@ -101875,7 +101875,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 167
+"line": 169
 },
 "CGPartyInfo::GetOwnDungeonDifficulty": {
 "files": [
@@ -101888,7 +101888,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 171
+"line": 173
 },
 "CGPartyInfo::GetOwnRaidDifficulty": {
 "files": [
@@ -101901,7 +101901,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 175
+"line": 177
 },
 "CGPartyInfo::ApplyDungeonDifficulty": {
 "files": [
@@ -101914,7 +101914,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 182
+"line": 184
 },
 "CGPartyInfo::ApplyRaidDifficulty": {
 "files": [
@@ -101927,7 +101927,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 193
+"line": 195
 },
 "CGPartyInfo::SetDifficulty": {
 "files": [
@@ -101940,9 +101940,24 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 206
+"line": 208
 },
 "CGPartyInfo::SetLeader": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [
+"FrameScript_SignalEvent"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 216
+},
+"CGPartyInfo::GetRealNumMembers": {
 "files": [
 "src/ui/game/cgpartyinfo.cpp"
 ],
@@ -101953,7 +101968,35 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 211
+"line": 226
+},
+"CGPartyInfo::GetRealLeader": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 230
+},
+"CGPartyInfo::SetRealParty": {
+"files": [
+"src/ui/game/cgpartyinfo.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"5"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 238
 },
 "CGPartyInfo::Clear": {
 "files": [
@@ -101972,7 +102015,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 215
+"line": 246
 },
 "ReceiveGroupList": {
 "files": [
@@ -102000,6 +102043,7 @@
 "CDataStore::Get",
 "CGPartyInfo::SetMember",
 "CDataStore::Get",
+"CGPartyInfo::SetRealParty",
 "CGPartyInfo::SetLeader",
 "CGRaidInfo::SetRoster",
 "CDataStore::Get",
@@ -102023,11 +102067,11 @@
 "4",
 "60000"
 ],
-"branches": 9,
+"branches": 10,
 "stub": false,
-"lines": 127,
+"lines": 134,
 "refs": [],
-"line": 239
+"line": 270
 },
 "ReceiveSetDungeonDifficulty": {
 "files": [
@@ -102048,7 +102092,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 369
+"line": 407
 },
 "ReceiveSetRaidDifficulty": {
 "files": [
@@ -102069,7 +102113,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 387
+"line": 425
 },
 "CGPartyInfo::RegisterHandlers": {
 "files": [
@@ -102086,7 +102130,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 405
+"line": 443
 },
 "CGPetInfo::GetPet": {
 "files": [
@@ -134947,22 +134991,18 @@
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGPartyInfo::GetRealNumMembers",
+"lua_pushnumber"
 ],
-"strings": [
-"(anonymous namespace)::Script_GetRealNumPartyMembers",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\partyinfoscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 0,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 19
+"line": 20
 },
 "Script_GetPartyMember": {
 "files": [
@@ -134990,7 +135030,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 26
+"line": 29
 },
 "Script_GetPartyLeaderIndex": {
 "files": [
@@ -135011,7 +135051,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 56
+"line": 59
 },
 "Script_IsPartyLeader": {
 "files": [
@@ -135032,29 +135072,28 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 78
+"line": 81
 },
 "Script_IsRealPartyLeader": {
 "files": [
 "src/ui/game/partyinfoscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"CGPartyInfo::GetRealLeader",
+"ClntObjMgrGetActivePlayer",
+"lua_pushnumber",
+"lua_pushnil"
 ],
-"strings": [
-"(anonymous namespace)::Script_IsRealPartyLeader",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\partyinfoscript.cpp"
-],
+"strings": [],
 "consts": [
-"0"
+"1",
+"1.0"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 1,
+"stub": false,
+"lines": 11,
 "refs": [],
-"line": 90
+"line": 96
 },
 "Script_LeaveParty": {
 "files": [
@@ -135076,7 +135115,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 94
+"line": 108
 },
 "Script_GetLootMethod": {
 "files": [
@@ -135111,7 +135150,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 107
+"line": 121
 },
 "Script_SetLootMethod": {
 "files": [
@@ -135133,7 +135172,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 144
+"line": 158
 },
 "Script_GetLootThreshold": {
 "files": [
@@ -135151,7 +135190,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 149
+"line": 163
 },
 "Script_SetLootThreshold": {
 "files": [
@@ -135173,7 +135212,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 155
+"line": 169
 },
 "Script_SetPartyAssignment": {
 "files": [
@@ -135195,7 +135234,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 159
+"line": 173
 },
 "Script_ClearPartyAssignment": {
 "files": [
@@ -135217,7 +135256,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 163
+"line": 177
 },
 "Script_GetPartyAssignment": {
 "files": [
@@ -135239,7 +135278,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 167
+"line": 181
 },
 "Script_SilenceMember": {
 "files": [
@@ -135261,7 +135300,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 171
+"line": 185
 },
 "Script_UnSilenceMember": {
 "files": [
@@ -135283,7 +135322,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 175
+"line": 189
 },
 "Script_SetOptOutOfLoot": {
 "files": [
@@ -135305,7 +135344,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 179
+"line": 193
 },
 "Script_GetOptOutOfLoot": {
 "files": [
@@ -135323,7 +135362,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 183
+"line": 197
 },
 "Script_CanChangePlayerDifficulty": {
 "files": [
@@ -135341,7 +135380,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 190
+"line": 204
 },
 "Script_ChangePlayerDifficulty": {
 "files": [
@@ -135363,7 +135402,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 197
+"line": 211
 },
 "Script_IsPartyLFG": {
 "files": [
@@ -135381,7 +135420,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 201
+"line": 215
 },
 "Script_HasLFGRestrictions": {
 "files": [
@@ -135399,7 +135438,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 208
+"line": 222
 },
 "PartyInfoRegisterScriptFunctions": {
 "files": [
@@ -135414,7 +135453,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 242
+"line": 256
 },
 "DestroyText": {
 "files": [

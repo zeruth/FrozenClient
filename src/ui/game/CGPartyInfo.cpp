@@ -24,6 +24,8 @@ uint32_t CGPartyInfo::m_dungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_raidDifficulty = 0;
 uint32_t CGPartyInfo::m_ownDungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_ownRaidDifficulty = 0;
+uint32_t CGPartyInfo::m_realMemberCount = 0;
+WOWGUID CGPartyInfo::m_realLeader = 0;
 
 namespace {
 
@@ -208,8 +210,37 @@ void CGPartyInfo::SetDifficulty(uint32_t dungeon, uint32_t raid) {
     CGPartyInfo::m_raidDifficulty = raid;
 }
 
+// ref: FUN_0052bc80
+// Signals only on an actual change. The reference recomputes the leader's party index here too;
+// GetPartyLeaderIndex derives that on demand instead, so there is nothing to keep in step.
 void CGPartyInfo::SetLeader(WOWGUID leader) {
+    if (CGPartyInfo::m_leader == leader) {
+        return;
+    }
+
     CGPartyInfo::m_leader = leader;
+
+    FrameScript_SignalEvent(SCRIPT_PARTY_LEADER_CHANGED, nullptr);
+}
+
+uint32_t CGPartyInfo::GetRealNumMembers() {
+    return CGPartyInfo::m_realMemberCount;
+}
+
+WOWGUID CGPartyInfo::GetRealLeader() {
+    return CGPartyInfo::m_realLeader;
+}
+
+// ref: FUN_0052bd60
+// The count is stored only when it fits a party -- five or more is a raid, and the real PARTY
+// count is left alone rather than being overwritten with a raid size. The leader is stored either
+// way.
+void CGPartyInfo::SetRealParty(uint32_t members, WOWGUID leader) {
+    if (members < 5) {
+        CGPartyInfo::m_realMemberCount = members;
+    }
+
+    CGPartyInfo::m_realLeader = leader;
 }
 
 void CGPartyInfo::Clear() {
@@ -327,6 +358,13 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
 
     WOWGUID leader = 0;
     msg->Get(leader);
+
+    // The REAL party is updated only by a group list that is not a battleground's. That is what
+    // lets GetRealNumPartyMembers keep answering about the party you left behind while you are in
+    // a battleground group of strangers.
+    if (!(groupType & GROUPTYPE_BATTLEGROUND)) {
+        CGPartyInfo::SetRealParty(slot, leader);
+    }
 
     CGPartyInfo::SetLeader(leader);
     CGRaidInfo::SetRoster(raidMembers, raidCount, (groupType & GROUPTYPE_RAID) != 0);

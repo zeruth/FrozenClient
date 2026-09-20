@@ -49,6 +49,12 @@ class CGPartyInfo {
 
         static WOWGUID GetLeader();
 
+        // The REAL party, as opposed to the one in force. A battleground puts you in a group of
+        // strangers; these two keep reporting the party you actually belong to, because a
+        // battleground group list deliberately does not update them.
+        static uint32_t GetRealNumMembers();
+        static WOWGUID GetRealLeader();
+
         // The group's loot rules, as the group list sends them. The defaults are the reference's
         // own init values -- group loot at uncommon -- which is what a player not in a group sees.
         static uint32_t GetLootMethod();
@@ -91,6 +97,9 @@ class CGPartyInfo {
 
         static void SetMember(uint32_t slot, const PARTY_MEMBER& member);
         static void SetLeader(WOWGUID leader);
+
+        // ref: FUN_0052bd60
+        static void SetRealParty(uint32_t members, WOWGUID leader);
         static void SetLoot(uint32_t method, WOWGUID looter, uint32_t threshold);
         static void SetDifficulty(uint32_t dungeon, uint32_t raid);
 
@@ -105,6 +114,8 @@ class CGPartyInfo {
         static uint32_t m_raidDifficulty;
         static uint32_t m_ownDungeonDifficulty;
         static uint32_t m_ownRaidDifficulty;
+        static uint32_t m_realMemberCount;
+        static WOWGUID m_realLeader;
 };
 
 #endif

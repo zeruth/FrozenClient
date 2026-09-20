@@ -15857,6 +15857,22 @@
   "refSize": 100,
   "status": "stub"
  },
+ "0052bc80": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::SetLeader",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 130,
+  "status": "ported"
+ },
  "0052bd10": {
   "branchRatio": 0.25,
   "constOverlap": -1.0,
@@ -15871,6 +15887,22 @@
   "how": "callgraph",
   "module": "GameUI.cpp",
   "refSize": 73,
+  "status": "ported"
+ },
+ "0052bd60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::SetRealParty",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0052c110": {
@@ -15890,20 +15922,20 @@
   "status": "ported"
  },
  "0052c190": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_GetRealNumPartyMembers",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 43,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "0052c1d0": {
   "branchRatio": 1.0,
@@ -16034,20 +16066,20 @@
   "status": "ported"
  },
  "0052cd30": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
   ],
   "frozen": "Script_IsRealPartyLeader",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 92,
+  "how": "annotated",
   "module": "PartyFrame.cpp",
   "refSize": 86,
-  "status": "stub"
+  "status": "ported"
  },
  "0052cd90": {
   "branchRatio": 0.312,
@@ -28159,16 +28191,16 @@
   "status": "ported"
  },
  "006d8870": {
-  "branchRatio": 0.113,
+  "branchRatio": 0.125,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.299,
+  "fidelity": 0.325,
   "files": [
    "src/ui/game/CGPartyInfo.cpp",
    "src/ui/game/cgpartyinfo.cpp"
   ],
   "frozen": "ReceiveGroupList",
-  "frozenSize": 1017,
+  "frozenSize": 1070,
   "how": "annotated",
   "module": "Player_C.cpp",
   "refSize": 2482,

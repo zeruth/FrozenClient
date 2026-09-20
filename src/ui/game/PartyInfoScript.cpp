@@ -16,8 +16,11 @@ int32_t Script_GetNumPartyMembers(lua_State* L) {
 // TODO FUN_0052c190 reads a standalone counter, not the four-guid array that
 // GetNumPartyMembers counts, so CGPartyInfo::NumMembers() is NOT the answer here. Whatever
 // maintains that counter has to be found first.
+// ref: FUN_0052c190
 int32_t Script_GetRealNumPartyMembers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, static_cast<double>(CGPartyInfo::GetRealNumMembers()));
+
+    return 1;
 }
 
 // ref: FUN_0052c1d0
@@ -87,8 +90,19 @@ int32_t Script_IsPartyLeader(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0052cd30
+// IsPartyLeader with the real leader instead of the one in force: in a battleground you can lead
+// the battleground group without leading your own party, and these two then disagree.
 int32_t Script_IsRealPartyLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto leader = CGPartyInfo::GetRealLeader();
+
+    if (leader && leader == ClntObjMgrGetActivePlayer()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_LeaveParty(lua_State* L) {
