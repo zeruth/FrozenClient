@@ -863,7 +863,7 @@ addr	how	frozen	evidence
 005167e0	table	Script_IsSubZonePVPPOI	binding "IsSubZonePVPPOI" in s_ScriptFunctions ~ table 00ac80b0
 00516840	annotated	Script_TogglePVP	tag in src/ui/game/GameScript.cpp
 005168b0	annotated	Script_SetPVP	tag in src/ui/game/GameScript.cpp
-00516970	annotated	Script_SetPortraitToTexture	tag in src/ui/game/GameScript.cpp
+00516970	override	Script_SetPortraitToTexture	
 00516aa0	table	Script_GetGMTicketCategories	binding "GetGMTicketCategories" in s_ScriptFunctions ~ table 00ac80b0
 00516b20	annotated	Script_GetBindLocation	tag in src/ui/game/GameScript.cpp
 00516b90	annotated	Script_GetAreaSpiritHealerTime	tag in src/ui/game/GameScript.cpp
@@ -1384,6 +1384,7 @@ addr	how	frozen	evidence
 005d5580	order	Script_Stub_PetFollow	binding table name Script_Stub_PetFollow, in definition order in src/ui/game/miscscriptstubs.cpp
 005d5670	order	Script_Stub_PetRename	binding table name Script_Stub_PetRename, in definition order in src/ui/game/miscscriptstubs.cpp
 005d6f60	annotated	Script_ContainerIDToInventoryID	tag in src/ui/game/ContainerFrameScript.cpp
+005d7180	override	Script_SetBagPortraitTexture	
 005d74a0	annotated	Script_GetContainerNumSlots	tag in src/ui/game/ContainerFrameScript.cpp
 005d7590	annotated	Script_GetContainerNumFreeSlots	tag in src/ui/game/ContainerFrameScript.cpp
 005d7820	annotated	Script_GetContainerFreeSlots	tag in src/ui/game/ContainerFrameScript.cpp
@@ -1781,6 +1782,7 @@ addr	how	frozen	evidence
 006e7840	handler	ReceiveRemovedSpell	SetMessageHandler(SMSG_UNLEARNED_SPELLS) on both sides
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
 00706d70	annotated	ItemNameFromEntry	tag in src/object/client/ItemLink.cpp
+0070aa00	override	ItemDisplayIcon	
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo

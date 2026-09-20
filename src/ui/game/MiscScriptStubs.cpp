@@ -159,7 +159,6 @@ WHOA_LUA_STUB(SetActiveVoiceChannelBySessionID)
 WHOA_LUA_STUB(SetArenaTeamRosterSelection)
 WHOA_LUA_STUB(SetArenaTeamRosterShowOffline)
 WHOA_LUA_STUB(SetAuctionsTabShowing)
-WHOA_LUA_STUB(SetBagPortraitTexture)
 WHOA_LUA_STUB(SetChannelOwner)
 WHOA_LUA_STUB(SetChannelPassword)
 WHOA_LUA_STUB(SetChannelWatch)
@@ -1300,7 +1299,6 @@ const ScriptFunction s_stubs[] = {
     { "SetArenaTeamRosterSelection",             &Script_Stub_SetArenaTeamRosterSelection },
     { "SetArenaTeamRosterShowOffline",           &Script_Stub_SetArenaTeamRosterShowOffline },
     { "SetAuctionsTabShowing",                   &Script_Stub_SetAuctionsTabShowing },
-    { "SetBagPortraitTexture",                   &Script_Stub_SetBagPortraitTexture },
     { "SetChannelOwner",                         &Script_Stub_SetChannelOwner },
     { "SetChannelPassword",                      &Script_Stub_SetChannelPassword },
     { "SetChannelWatch",                         &Script_Stub_SetChannelWatch },

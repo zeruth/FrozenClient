@@ -1078,7 +1078,7 @@
   },
   "00619330": {
     "status": "unlinked",
-    "note": "The portrait texture setter behind SetPortraitToTexture. Blocked on a subsystem, not a call: it looks a path up in a hashed portrait-texture cache (FUN_00617c50), and on a miss hashes the path, lazily builds the table on the DAT_00c5ce7c sentinel, and inserts a new entry into buckets at DAT_00c5ce74 with a 12-byte stride. Frozen has no portrait cache, so the binding around it is portable but its one piece of real work is not."
+    "note": "The portrait texture builder behind SetPortraitToTexture and SetBagPortraitTexture. Re-read 2026-09-20 after a previous cycle wrongly called it an ordinary texture cache: it is not. On a miss it opens \"<path>.blp\" itself through FUN_006aff10, pulls the decoded surface with FUN_006af990, swizzles the BGRA bytes, then overwrites every texel ALPHA from a ramp fetched via FUN_006176a0 (+8) -- that ramp is the circular portrait mask -- and creates a fixed 64x64 texture named \"Portrait2\" via FUN_004b9200, handing it to the region with FUN_00481520 (CSimpleTexture::SetTextureObject, stores at this+0xd4 with an addref/release pair). In front of it sits a name-keyed hash table: FUN_00617c50 looks the path up, FUN_0076f640 hashes it, and the bucket array at DAT_00c5ce74 has a 12-byte stride, built lazily on the DAT_00c5ce7c sentinel. Frozen has none of this, so the two bindings above load the path as an ordinary UI texture instead and are recorded as diverged."
   },
   "00514ba0": {
     "frozen": "Script_GetMouseButtonName",
@@ -1193,5 +1193,20 @@
     "frozen": "Script_IsEquippedAction",
     "status": "diverged",
     "note": "The two gates are faithful -- the action must be an ITEM action, and the item must have a non-zero inventory type in Item.dbc, which the reference checks before searching. The SEARCH diverges: the reference calls a general item search (FUN_00754a20) with a flag word, 0x81 or 0xa1 depending on how the item resolved, and what storage those flags admit is not identified. Frozen walks the player invSlots directly, covering worn gear and the four bags. If either flag also reaches the bank or keyring, frozen answers false where the reference answers true."
+  },
+  "00516970": {
+    "frozen": "Script_SetPortraitToTexture",
+    "status": "diverged",
+    "note": "Lua handling is ported exactly: argument 1 as a table is resolved with lua_rawgeti(L,1,0) + lua_touserdata + an IsA check against the texture type, and both error strings match the binary. Two divergences. (1) SINK: the reference passes the path to FUN_00619330, which builds a 64x64 alpha-masked portrait texture; frozen calls CSimpleTexture::SetTexture, so the right image appears without the circular mask. (2) BY-NAME FORM: when argument 1 is a string the reference resolves it to a texture through FUN_0048b5f0, a lookup from a global frame name to its object. Frozen has no such registry -- CLayoutFrame::GetLayoutFrameByName returns nullptr unconditionally -- so that form does nothing rather than raising the reference's \"Couldn't find texture named '%s'\". Two FrameXML callers use it."
+  },
+  "005d7180": {
+    "frozen": "Script_SetBagPortraitTexture",
+    "status": "diverged",
+    "note": "Structure ported from the instruction bytes rather than the decompilation, which lost both the ECX arguments. Order confirmed at 005d71a4-005d7277: resolve argument 1 as the texture (FUN_004a81b0 = FrameScript_GetObjectThis) BEFORE the lua_isnumber check on argument 2; slot-1 rejected below 0 silently and at/above 11 with \"Invalid slot in SetBagPortraitTexture\"; clear the region (SetTextureObject(0)) before the lookup; ClntObjMgrObjectPtr with mask 4 (TYPE_CONTAINER) from \".\\ContainerFrame.cpp\" line 1219; icon name via FUN_0070aa00 with the container in ECX; \"%s%s%s\" of directory, separator and name. DIVERGENCE: the sink is FUN_00619330, the portrait texture builder frozen does not have, so this loads the icon as an ordinary UI texture -- see 00619330. Slots 5-11 are the bank bags; the reference already resolves them to a null guid unless the bank is open (FUN_005d6f20 gates indices >= 4 on DAT_00beb9a0/DAT_00beb9a4), so frozen modelling no bank puts those slots on the reference's own away-from-the-bank path and is not counted as a divergence."
+  },
+  "0070aa00": {
+    "frozen": "ItemDisplayIcon",
+    "status": "diverged",
+    "note": "An item object to its ItemDisplayInfo inventory icon name. DIVERGENCE in route, not in result: the reference dereferences a record pointer the object carries (object+8, then +0xc for the display id) and indexes the table at DAT_00ad3d6c, taking field +0x14. Frozen's CGItem_C holds no such pointer, so it goes entry id -> ItemCacheGet -> displayInfoID -> g_itemDisplayInfoDB and reaches the same row. The observable difference is timing: until the item cache answers for an entry frozen returns an empty name where the reference already has one."
   }
 }

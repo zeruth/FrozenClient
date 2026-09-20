@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:59 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 02:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2757 (=) (10.2%) | 588.0k (10.6%) |
-| &nbsp;&nbsp;ported | 2232 (+1) | 444.9k |
-| &nbsp;&nbsp;stub (unimplemented body) | 485 (-1) | 103.7k |
+| mapped to a frozen function | 2759 (+2) (10.2%) | 588.3k (10.6%) |
+| &nbsp;&nbsp;ported | 2231 (-1) | 444.7k |
+| &nbsp;&nbsp;stub (unimplemented body) | 485 (=) | 103.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1034 (=) (3.8%)** | **128.0k (2.3%)** |
-| unmapped | 24405 | 4.83M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 412 (=) (7.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 416 (=) (7.2%) | |
+| unmapped | 24403 | 4.83M |
+| world spine (reachable from OnFrameRender) | 5531, mapped 413 (+1) (7.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 417 (+1) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11588, stubs 743 | |
+| frozen functions (src/, from PDB + source) | 11589, stubs 743 | |
 
-Match evidence: annotated 694, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 986. Module anchors: 1479 assert strings.
+Match evidence: annotated 693, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 204, sticky 13, string 310, table 986. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:53 -- mapped 2757, ported 2231, stub 486, spine mapped 412.
+Previous run: 2026-09-20 01:59 -- mapped 2757, ported 2232, stub 485, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1800 of them (=); 554 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1801 of them (+1); 554 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -72,8 +72,8 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00b2d928 (PlaySound..) | 23 | `SI2::s_ScriptFunctions` | 0 | 14 |  / stubs: PlayMusic, PlaySoundFile, StopMusic, Sound_GameSystem_RestartSoundSystem ... |
 | 00acf258 (SetTaxiMap..) | 14 | `s_ScriptFunctions` | 13 | 0 | SetTaxiMap, NumTaxiNodes, TaxiNodeName, TaxiNodePosition, TaxiNodeCost, TakeTaxiNode ... |
 | 00ad0ae8 (GetNumFactions..) | 15 | `s_ScriptFunctions` | 13 | 0 | GetFactionInfo, GetFactionInfoByID, GetWatchedFactionInfo, SetWatchedFactionIndex, FactionToggleAtWar, CollapseFactionHeader ... |
-| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 13 | 0 | GetContainerItemCooldown, PickupContainerItem, SplitContainerItem, UseContainerItem, SocketContainerItem, ShowContainerSellCursor ... |
 | 00acedb0 (CloseTrade..) | 14 | `s_ScriptFunctions` | 0 | 12 |  / stubs: CloseTrade, ClickTradeButton, ClickTargetTradeButton, GetTradeTargetItemInfo ... |
+| 00ad0d50 (ContainerIDToInventoryID..) | 22 | `s_ScriptFunctions` | 12 | 0 | GetContainerItemCooldown, PickupContainerItem, SplitContainerItem, UseContainerItem, SocketContainerItem, ShowContainerSellCursor ... |
 | 00acd418 (AccountMsg_LoadHeaders..) | 11 | `-` | 11 | 0 | AccountMsg_LoadHeaders, AccountMsg_GetNumTotalMsgs, AccountMsg_GetNumUnreadMsgs, AccountMsg_GetNumUnreadUrgentMsgs, AccountMsg_GetIndexHighestPriorityUnreadMsg, AccountMsg_GetIndexNextUnreadMsg ... |
 | 00acf768 (ClosePetStables..) | 14 | `s_ScriptFunctions` | 11 | 0 | ClosePetStables, StablePet, UnstablePet, BuyStableSlot, GetStablePetInfo, GetNextStableSlotCost ... |
 | 00ad0568 (CloseSocketInfo..) | 12 | `s_ScriptFunctions` | 11 | 0 | CloseSocketInfo, GetSocketItemInfo, GetExistingSocketInfo, GetExistingSocketLink, GetNewSocketInfo, GetNewSocketLink ... |
@@ -230,7 +230,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | DeclinedWords.cpp | 72 | 17.4k | 7 (9.7%) | 20.8% | 4 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 3 (4.1%) | 5.8% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 8 (9.2%) | 3.0% | 0 | 0 | 33 |
-| Item_C.cpp | 107 | 16.4k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
+| Item_C.cpp | 107 | 16.4k | 1 (0.9%) | 0.4% | 0 | 0 | 24 |
 | QuestLog.cpp | 80 | 16.4k | 10 (12.5%) | 12.9% | 5 | 0 | 2 |
 | CGxDevice.cpp | 54 | 16.2k | 5 (9.3%) | 4.0% | 0 | 0 | 9 |
 | tga.cpp | 82 | 16.2k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
@@ -264,7 +264,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | UIBindings.cpp | 59 | 11.5k | 18 (30.5%) | 35.2% | 15 | 0 | 4 |
 | CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 8 (10.7%) | 11.6% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
-| ContainerFrame.cpp | 32 | 11.2k | 8 (25.0%) | 24.0% | 0 | 0 | 0 |
+| ContainerFrame.cpp | 32 | 11.2k | 9 (28.1%) | 26.5% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 0 | 0 | 3 |
 | ConsoleClient.cpp | 52 | 10.3k | 9 (17.3%) | 13.0% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 00:07 | 2736 (10.1%) | 1024 (3.8%) | 496 | 410/5531 | 1792/2964 | 565 |
 | 2026-09-20 00:10 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
 | 2026-09-20 00:17 | 2738 (10.1%) | 1026 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
 | 2026-09-20 00:21 | 2738 (10.1%) | 1027 (3.8%) | 495 | 412/5531 | 1792/2964 | 564 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 01:51 | 2756 (10.1%) | 1034 (3.8%) | 486 | 412/5531 | 1799/2964 | 555 |
 | 2026-09-20 01:53 | 2757 (10.2%) | 1034 (3.8%) | 486 | 412/5531 | 1800/2964 | 555 |
 | 2026-09-20 01:59 | 2757 (10.2%) | 1034 (3.8%) | 485 | 412/5531 | 1800/2964 | 554 |
+| 2026-09-20 02:13 | 2759 (10.2%) | 1034 (3.8%) | 485 | 413/5531 | 1801/2964 | 554 |
 
 ## How to move a row
 

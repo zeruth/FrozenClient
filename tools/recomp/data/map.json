@@ -13830,10 +13830,10 @@
   ],
   "frozen": "Script_SetPortraitToTexture",
   "frozenSize": 246,
-  "how": "annotated",
+  "how": "override",
   "module": "GameUI.cpp",
   "refSize": 291,
-  "status": "ported"
+  "status": "diverged"
  },
  "00516aa0": {
   "branchRatio": 0.5,
@@ -22043,6 +22043,21 @@
   "refSize": 139,
   "status": "ported"
  },
+ "005d7180": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.538,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_SetBagPortraitTexture",
+  "frozenSize": 425,
+  "how": "override",
+  "module": "ContainerFrame.cpp",
+  "refSize": 283,
+  "status": "diverged"
+ },
  "005d74a0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -22092,12 +22107,12 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.55,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp"
   ],
   "frozen": "Script_GetContainerItemInfo",
-  "frozenSize": 514,
+  "frozenSize": 588,
   "how": "annotated",
   "module": "ContainerFrame.cpp",
   "refSize": 481,
@@ -28362,6 +28377,21 @@
   "module": "Corpse_C.cpp",
   "refSize": 240,
   "status": "ported"
+ },
+ "0070aa00": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "ItemDisplayIcon",
+  "frozenSize": 98,
+  "how": "override",
+  "module": "Item_C.cpp",
+  "refSize": 64,
+  "status": "diverged"
  },
  "00715440": {
   "branchRatio": 0.733,

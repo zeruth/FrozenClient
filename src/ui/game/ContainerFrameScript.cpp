@@ -10,6 +10,8 @@
 #include "object/client/ItemLink.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/FrameScript_Object.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
 
@@ -20,6 +22,28 @@ namespace {
 #define BACKPACK_SLOTS 16
 #define BANK_SLOTS 28
 #define KEYRING_SLOTS 32
+
+// The icon directory, the same constant and the same recorded divergence GameScript.cpp carries:
+// the reference reads it from row 3 of an unidentified table through FUN_00634910 rather than
+// holding a literal. Kept here as its own copy because the joining code below is inline in the
+// reference too -- FUN_005d7180 and FUN_007e7cc0 each format their own path.
+static const char* ICON_DIRECTORY = "Interface\\Icons";
+
+// ref: FUN_0070aa00
+// An item's inventory icon NAME -- no directory, no extension. Empty when the item has no display
+// record yet.
+//
+// DIVERGENCE in route, not in result. The reference reaches the display record through a pointer
+// the object itself carries (object+8, then +0xc for the display id); frozen's CGItem_C holds no
+// such pointer, so it goes entry -> item cache -> ItemDisplayInfo and lands on the same row. The
+// visible difference is timing: before the item cache answers for an entry, frozen returns empty
+// where the reference would already have the icon.
+static const char* ItemDisplayIcon(CGItem_C* item) {
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto rec = info ? g_itemDisplayInfoDB.GetRecord(info->displayInfoID) : nullptr;
+
+    return (rec && rec->m_inventoryIcon[0]) ? rec->m_inventoryIcon[0] : "";
+}
 
 // The backpack is not a container object -- it lives in the player's own inventory, straight after
 // the equipped slots and the four bag slots. The reference stores all three runs in one array and
@@ -171,12 +195,13 @@ int32_t Script_GetContainerItemInfo(lua_State* L) {
     }
 
     auto info = ItemCacheGet(item->GetEntryID());
-    auto rec = info ? g_itemDisplayInfoDB.GetRecord(info->displayInfoID) : nullptr;
+    auto iconName = ItemDisplayIcon(item);
 
     char icon[260] = { 0 };
 
-    if (rec && rec->m_inventoryIcon[0] && rec->m_inventoryIcon[0][0]) {
-        SStrPrintf(icon, sizeof(icon), "Interface\\Icons\\%s", rec->m_inventoryIcon[0]);
+    if (iconName[0]) {
+        SStrPrintf(icon, sizeof(icon), "%s%s%s", ICON_DIRECTORY,
+                   *ICON_DIRECTORY ? "\\" : "", iconName);
     }
 
     lua_pushstring(L, icon);
@@ -425,6 +450,73 @@ int32_t Script_GetContainerFreeSlots(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005d7180
+// SetBagPortraitTexture(texture, slot) -- point a texture at an equipped bag's own icon.
+//
+// Argument order in the reference is not the order the usage string suggests: the texture is
+// resolved FIRST, before the slot is even checked for being a number, and a bad texture raises out
+// of FrameScript_GetObjectThis rather than reaching the usage message.
+//
+// The texture is cleared before the bag is looked up, so a slot holding no bag leaves the region
+// blank rather than showing the previous bag's icon.
+//
+// Slots are 1-based here and 1-11 wide: 1-4 are the equipped bags, 5-11 the bank bags. The
+// reference resolves 5-11 to a null guid unless the bank is open, and frozen models no bank, so
+// those slots taking the same empty path is the reference's own away-from-the-bank behaviour
+// rather than a divergence.
+//
+// DIVERGENCE in the sink, shared with Script_SetPortraitToTexture and recorded against both in
+// overrides.json: the reference hands the path to FUN_00619330, which builds a 64x64 texture
+// ("Portrait2") from the BLP and multiplies in a circular alpha mask. Frozen has no portrait
+// texture cache, so this loads the icon as an ordinary UI texture -- right image, square edges.
+int32_t Script_SetBagPortraitTexture(lua_State* L) {
+    auto object = FrameScript_GetObjectThis(L, CSimpleTexture::GetObjectType());
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: SetBagPortraitTexture(texture, slot)");
+
+        return 0;
+    }
+
+    auto slot = static_cast<int32_t>(lua_tonumber(L, 2)) - 1;
+
+    if (slot < 0) {
+        return 0;
+    }
+
+    if (slot >= 11) {
+        luaL_error(L, "Invalid slot in SetBagPortraitTexture");
+
+        return 0;
+    }
+
+    auto texture = static_cast<CSimpleTexture*>(object);
+    texture->SetTexture(static_cast<const char*>(nullptr), 0, 0,
+                        CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+
+    auto player = CGPlayer_C::GetActivePtr();
+    auto data = player ? player->Player() : nullptr;
+
+    auto bag = (data && slot < NUM_BAG_SLOTS)
+        ? ClntObjMgrObjectPtr(data->invSlots[INVSLOT_BAGFIRST + slot], TYPE_CONTAINER,
+                              __FILE__, __LINE__)
+        : nullptr;
+
+    if (!bag) {
+        return 0;
+    }
+
+    auto iconName = ItemDisplayIcon(static_cast<CGItem_C*>(bag));
+
+    char icon[260];
+    SStrPrintf(icon, sizeof(icon), "%s%s%s", ICON_DIRECTORY,
+               *ICON_DIRECTORY ? "\\" : "", iconName);
+
+    texture->SetTexture(icon, 0, 0, CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+
+    return 0;
+}
+
 FrameScript_Method s_ScriptFunctions[] = {
     { "GetContainerNumSlots",   &Script_GetContainerNumSlots },
     { "GetContainerItemID",     &Script_GetContainerItemID },
@@ -435,6 +527,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetBagName",             &Script_GetBagName },
     { "GetContainerNumFreeSlots", &Script_GetContainerNumFreeSlots },
     { "GetContainerFreeSlots",  &Script_GetContainerFreeSlots },
+    { "SetBagPortraitTexture",  &Script_SetBagPortraitTexture },
 };
 
 } // namespace

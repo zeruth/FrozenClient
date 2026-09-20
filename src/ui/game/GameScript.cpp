@@ -1737,9 +1737,15 @@ int32_t Script_ConfirmBindOnUse(lua_State* L) {
 // ref: FUN_00516970
 // SetPortraitToTexture(texture, path) -- point a texture region at an icon file.
 //
-// Despite the name there is no portrait machinery here. The reference hands the path to the same
-// name-keyed texture cache every other texture load goes through; I had earlier read that cache as
-// portrait-specific and it is not, which is what made this look blocked.
+// CORRECTION. An earlier pass through here claimed the sink was an ordinary texture cache and that
+// nothing about it was portrait-specific. That was wrong, and this binding was committed on the
+// strength of it. FUN_00619330 opens "<path>.blp" itself, swizzles the decoded BGRA, multiplies
+// every texel's alpha by a ramp, and creates a 64x64 texture named "Portrait2" -- it is portrait
+// machinery, and the name-keyed hash table in front of it is a portrait cache.
+//
+// DIVERGENCE, recorded in overrides.json: frozen has no portrait cache, so the path is loaded as
+// an ordinary UI texture. The right image appears; the circular mask that makes it a portrait does
+// not, so it shows square. Script_SetBagPortraitTexture takes the same shortcut.
 //
 // The first argument is normally the texture OBJECT. It may also be the texture's global NAME as a
 // string, which frozen cannot resolve -- there is no lookup from a frame name to its object -- so
