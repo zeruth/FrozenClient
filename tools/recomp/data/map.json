@@ -27517,7 +27517,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitMana",
-  "frozenSize": 236,
+  "frozenSize": 231,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 507,
@@ -27533,7 +27533,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitManaMax",
-  "frozenSize": 236,
+  "frozenSize": 231,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 434,
@@ -27549,7 +27549,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitPowerType",
-  "frozenSize": 249,
+  "frozenSize": 239,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 591,
@@ -27677,7 +27677,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitSex",
-  "frozenSize": 215,
+  "frozenSize": 210,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 248,
@@ -27757,7 +27757,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitRace",
-  "frozenSize": 325,
+  "frozenSize": 327,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 380,
@@ -27773,7 +27773,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitClass",
-  "frozenSize": 334,
+  "frozenSize": 321,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 380,
@@ -27789,7 +27789,7 @@
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitClassBase",
-  "frozenSize": 292,
+  "frozenSize": 252,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 344,
@@ -28068,20 +28068,20 @@
   "status": "ported"
  },
  "00611330": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.571,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitHasRelicSlot",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 222,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 169,
-  "status": "stub"
+  "status": "ported"
  },
  "006113e0": {
   "branchRatio": 0.0,

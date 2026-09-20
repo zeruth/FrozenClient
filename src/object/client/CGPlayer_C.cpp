@@ -174,9 +174,9 @@ void CGPlayer_C::BuildCharacterComponent() {
     }
 
     ComponentData data;
-    data.raceID = unit->pad1 & 0xFF;
-    data.classID = (unit->pad1 >> 8) & 0xFF;
-    data.sexID = (unit->pad1 >> 16) & 0xFF;
+    data.raceID = unit->bytes0 & 0xFF;
+    data.classID = (unit->bytes0 >> 8) & 0xFF;
+    data.sexID = (unit->bytes0 >> 16) & 0xFF;
     data.skinColorID = this->m_player->skinID;
     data.faceID = this->m_player->faceID;
     data.hairStyleID = this->m_player->hairStyleID;

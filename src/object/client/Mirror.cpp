@@ -304,7 +304,7 @@ void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
     // from there. Signalled on any change to the dword rather than to that byte alone, because the
     // change set records which block moved and not what it held before. The other bytes are race,
     // class and gender, which do not change on a live unit, so the over-fire is theoretical.
-    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->pad1), 1)) {
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->bytes0), 1)) {
         FrameScript_SignalEvent(SCRIPT_UNIT_DISPLAYPOWER, "%s", token);
     }
 

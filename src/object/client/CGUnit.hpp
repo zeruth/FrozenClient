@@ -19,7 +19,15 @@ struct CGUnitData {
     int32_t channelSpell;
     // Not padding: the packed byte field. Script_UnitPowerTypeOf reads the power type out of
     // its top byte, and UNIT_DISPLAYPOWER is signalled when this dword moves.
-    int32_t pad1;
+    // UNIT_FIELD_BYTES_0, the companion to bytes1 further down, and unnamed here for the same
+    // reason: four bytes in one field, with CGPlayer_C already unpacking three of them. The 3.3.5
+    // field order puts it between the channel spell and health, which is exactly this slot.
+    //
+    //   byte 0  race
+    //   byte 1  class        -- what UnitHasRelicSlot looks up in ChrClasses
+    //   byte 2  gender
+    //   byte 3  power type
+    uint32_t bytes0;
     int32_t health;
     int32_t power[7];
     int32_t maxHealth;

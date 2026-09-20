@@ -427,7 +427,7 @@ int32_t Script_UnitFactionGroup(lua_State* L) {
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
     auto data = unit ? unit->Unit() : nullptr;
 
-    auto raceRec = data ? g_chrRacesDB.GetRecord(data->pad1 & 0xFF) : nullptr;
+    auto raceRec = data ? g_chrRacesDB.GetRecord(data->bytes0 & 0xFF) : nullptr;
 
     if (!raceRec) {
         lua_pushnil(L);
@@ -781,7 +781,7 @@ int32_t Script_UnitXPMax(lua_State* L) {
 
 // Race, class, gender, and power type share UNIT_FIELD_BYTES_0
 static int32_t Script_UnitPowerTypeOf(const CGUnitData* data) {
-    return (data->pad1 >> 24) & 0xFF;
+    return (data->bytes0 >> 24) & 0xFF;
 }
 
 int32_t Script_UnitHealth(lua_State* L) {
@@ -1103,7 +1103,7 @@ int32_t Script_UnitSex(lua_State* L) {
         auto data = unit ? unit->Unit() : nullptr;
 
         if (data) {
-            sex = (data->pad1 >> 16) & 0xFF;
+            sex = (data->bytes0 >> 16) & 0xFF;
         }
     }
 
@@ -1199,8 +1199,8 @@ int32_t Script_UnitRace(lua_State* L) {
         auto data = unit ? unit->Unit() : nullptr;
 
         if (data) {
-            raceRec = g_chrRacesDB.GetRecord(data->pad1 & 0xFF);
-            sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+            raceRec = g_chrRacesDB.GetRecord(data->bytes0 & 0xFF);
+            sex = static_cast<UNIT_SEX>((data->bytes0 >> 16) & 0xFF);
         }
     }
 
@@ -1239,8 +1239,8 @@ int32_t Script_UnitClass(lua_State* L) {
         auto data = unit ? unit->Unit() : nullptr;
 
         if (data) {
-            classRec = g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF);
-            sex = static_cast<UNIT_SEX>((data->pad1 >> 16) & 0xFF);
+            classRec = g_chrClassesDB.GetRecord((data->bytes0 >> 8) & 0xFF);
+            sex = static_cast<UNIT_SEX>((data->bytes0 >> 16) & 0xFF);
         }
     }
 
@@ -1263,7 +1263,7 @@ int32_t Script_UnitClass(lua_State* L) {
 // this one is the record's neutral name, where UnitClass picks the sex-appropriate display name.
 // That is the whole reason both bindings exist.
 //
-// The reference reads the class from the byte at descriptor +0x45, which is what pad1 >> 8 is here
+// The reference reads the class from the byte at descriptor +0x45, which is byte 1 of bytes0, and what the shift below picks out
 // -- the same byte the modified-click class masks test.
 int32_t Script_UnitClassBase(lua_State* L) {
     if (!lua_isstring(L, 1)) {
@@ -1283,7 +1283,7 @@ int32_t Script_UnitClassBase(lua_State* L) {
         auto data = unit ? unit->Unit() : nullptr;
 
         if (data) {
-            classRec = g_chrClassesDB.GetRecord((data->pad1 >> 8) & 0xFF);
+            classRec = g_chrClassesDB.GetRecord((data->bytes0 >> 8) & 0xFF);
         }
 
         // TODO when the token names something that is not a unit, the reference falls back to the
@@ -1905,8 +1905,40 @@ int32_t Script_UnitIsTrivial(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00611330
+// Whether the unit's class uses a relic in its ranged slot -- paladins, shamans and druids, who
+// carry a libram, totem or idol where a hunter carries a bow.
+//
+// Not a hardcoded class list: the reference reads the class out of UNIT_FIELD_BYTES_0, looks the
+// class up in ChrClasses.dbc, and tests bit 0x8 of the record's flags. Frozen's ChrClassesRec puts
+// m_flags at record offset 0x24, which is the field the reference reads, so the two agree on where
+// as well as what.
+//
+// PLAYERS only. A creature with a druid-like class id answers nil rather than true, which is the
+// reference's type gate and not an accident of how the unit was resolved.
 int32_t Script_UnitHasRelicSlot(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitHasRelicSlot(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+    auto data = (unit && unit->IsA(TYPE_PLAYER)) ? unit->Unit() : nullptr;
+
+    if (data) {
+        auto rec = g_chrClassesDB.GetRecord((data->bytes0 >> 8) & 0xFF);
+
+        if (rec && (rec->m_flags & 0x8)) {
+            lua_pushnumber(L, 1.0);
+
+            return 1;
+        }
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_SetPortraitTexture(lua_State* L) {

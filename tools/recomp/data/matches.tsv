@@ -1766,7 +1766,7 @@ addr	how	frozen	evidence
 006111b0	table	Script_UnitIsTappedByPlayer	binding "UnitIsTappedByPlayer" in s_UnitFunctions ~ table 00ad21d8
 00611230	table	Script_UnitIsTappedByAllThreatList	binding "UnitIsTappedByAllThreatList" in s_UnitFunctions ~ table 00ad21d8
 006112b0	table	Script_UnitIsTrivial	binding "UnitIsTrivial" in s_UnitFunctions ~ table 00ad21d8
-00611330	table	Script_UnitHasRelicSlot	binding "UnitHasRelicSlot" in s_UnitFunctions ~ table 00ad21d8
+00611330	annotated	Script_UnitHasRelicSlot	tag in src/ui/game/ScriptEvents.cpp
 006113e0	table	Script_SetPortraitTexture	binding "SetPortraitTexture" in s_UnitFunctions ~ table 00ad21d8
 00611600	table	Script_HasFullControl	binding "HasFullControl" in s_UnitFunctions ~ table 00ad21d8
 00611670	table	Script_GetComboPoints	binding "GetComboPoints" in s_UnitFunctions ~ table 00ad21d8
