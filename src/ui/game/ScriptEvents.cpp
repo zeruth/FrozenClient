@@ -4,6 +4,7 @@
 #include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 #include <cmath>
 #include "object/client/CGPlayer_C.hpp"
 #include <storm/String.hpp>
@@ -296,8 +297,25 @@ int32_t Script_UnitInRaid(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060cb20
+// The raid counterpart of UnitPlayerOrPetInParty, and the same shape: no usage check, and the
+// player is not on the roster because the packet does not list them.
 int32_t Script_UnitPlayerOrPetInRaid(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto token = lua_tostring(L, 1);
+
+    WOWGUID guid = 0;
+
+    if (token) {
+        Script_GetGUIDFromToken(token, guid, false);
+    }
+
+    if (CGRaidInfo::IsMemberOrPet(guid)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitPlayerControlled(lua_State* L) {

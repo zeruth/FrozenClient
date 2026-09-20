@@ -1,4 +1,5 @@
 #include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 
 #include "client/ClientServices.hpp"
 #include "object/client/ObjMgr.hpp"
@@ -144,7 +145,7 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     msg->Get(groupFlags);
     msg->Get(ownRoles);
 
-    if (groupType & 0x08) {
+    if (groupType & GROUPTYPE_LFG) {
         uint8_t lfgState = 0;
         uint32_t lfgFlags = 0;
 
@@ -161,7 +162,10 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     // A resend of a group already seen is dropped outright: same group, a counter no higher, and
     // less than a minute since the last one. Without this the roster is rebuilt -- and
     // PARTY_MEMBERS_CHANGED signalled -- on messages the reference ignores.
-    auto& seen = s_seen[(groupType & 0x01) ? 1 : 0];
+    //
+    // The two records are keyed on the BATTLEGROUND bit, not on raid: a battleground group and a
+    // normal one are tracked separately so that entering one does not make the other look stale.
+    auto& seen = s_seen[(groupType & GROUPTYPE_BATTLEGROUND) ? 1 : 0];
     auto now = OsGetAsyncTimeMs();
 
     if (group && counter && seen.group == group && seen.counter && counter <= seen.counter
@@ -183,6 +187,11 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     auto activePlayer = ClntObjMgrGetActivePlayer();
     uint32_t slot = 0;
 
+    // The same records feed the raid roster, which keeps everyone rather than the player's own
+    // subgroup.
+    WOWGUID raidMembers[MAX_RAID_MEMBERS] = { 0 };
+    uint32_t raidCount = 0;
+
     for (uint32_t i = 0; i < memberCount; i++) {
         PARTY_MEMBER member;
 
@@ -197,6 +206,11 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
 
         member.online = online != 0;
 
+        if (raidCount < MAX_RAID_MEMBERS) {
+            raidMembers[raidCount] = member.guid;
+            raidCount++;
+        }
+
         // Read every record even once the four slots are full: the cursor has to reach the leader
         // guid that follows, and the fields after it.
         if (slot < 4 && member.guid != activePlayer && member.subgroup == ownSubgroup) {
@@ -209,6 +223,7 @@ int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStor
     msg->Get(leader);
 
     CGPartyInfo::SetLeader(leader);
+    CGRaidInfo::SetRoster(raidMembers, raidCount, (groupType & GROUPTYPE_RAID) != 0);
 
     FrameScript_SignalEvent(SCRIPT_PARTY_MEMBERS_CHANGED, nullptr);
 

@@ -8,6 +8,15 @@ class CDataStore;
 
 int32_t ReceiveGroupList(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 
+// The groupType byte at the head of SMSG_GROUP_LIST. Recovered from how the handler branches on
+// it: bit 3 gates the LFG block, bit 1 selects the raid path, and bit 0 picks which of the two
+// duplicate-detection records the packet is measured against.
+enum GROUPTYPE_FLAGS {
+    GROUPTYPE_BATTLEGROUND = 0x01,
+    GROUPTYPE_RAID         = 0x02,
+    GROUPTYPE_LFG          = 0x08,
+};
+
 // One row of the group roster as SMSG_GROUP_LIST sends it.
 struct PARTY_MEMBER {
     WOWGUID guid = 0;

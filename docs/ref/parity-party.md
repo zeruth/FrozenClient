@@ -58,11 +58,19 @@ u32 memberCount
 ... memberCount member records ...
 ```
 
-`groupType & 0x01` distinguishes raid from party, and the handler keeps two separate
-last-seen records so it can drop a duplicate: if the same group guid arrives with a counter no
-higher than the last one **and** within 60 seconds, the packet is ignored outright. That dedupe is
-behaviour, not an optimisation — a port without it will rebuild the roster on messages the
-reference discards.
+`groupType` is a bitmask, recovered from how the handler branches on it:
+
+| bit | meaning | what it changes |
+|---|---|---|
+| `0x01` | battleground | which of the two duplicate-detection records the packet is measured against |
+| `0x02` | raid | whether the raid roster is filled and `GetNumRaidMembers` answers |
+| `0x08` | LFG | whether the conditional `u8 + u32` block is present in the header |
+
+The two last-seen records are keyed on the **battleground** bit, not on raid — a battleground group
+and a normal one are tracked apart so entering one does not make the other look stale. A packet is
+dropped outright when the same group guid arrives with a counter no higher than the last one **and**
+within 60 seconds. That dedupe is behaviour, not an optimisation — a port without it will rebuild
+the roster on messages the reference discards.
 
 Each member record is:
 
@@ -88,6 +96,14 @@ readers identified first: frozen's `CDataStore` getters carry no reference tags,
 Ported 2026-09-19. `CGPartyInfo` holds a `PARTY_MEMBER` per slot (guid, name, online, subgroup,
 flags, roles) plus the leader, and `ReceiveGroupList` rebuilds it.
 
-Still missing: the raid roster (`CGRaidInfo` remains a bare count, so `raid1`-`raid40` and
-`UnitIsFeignDeath` stay unanswerable), and the loot method and difficulty fields, which are read
-past rather than stored.
+The raid roster comes from the same packet and the same member records — the subgroup field is what
+separates the two views. `CGRaidInfo` keeps every member; `CGPartyInfo` keeps only those sharing the
+player's subgroup.
+
+`GetNumRaidMembers` is the roster **plus one**, because the packet does not list the player. The
+reference computes `memberCount + 1`, and answers 0 both for a non-raid group and for a raid whose
+member list is empty — the second case matters, or an empty roster would report 1.
+
+Still missing: `raid1`-`raid40` as unit tokens. Membership is answerable, but the index order is
+not: the player belongs somewhere in that numbering and the packet does not say where, so the
+tokens stay unresolved rather than guessing a position.

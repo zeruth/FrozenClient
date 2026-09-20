@@ -1214,6 +1214,7 @@ addr	how	frozen	evidence
 00572bc0	table	Script_SetRaidRosterSelection	binding "SetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c50	table	Script_GetRaidRosterSelection	binding "GetRaidRosterSelection" in s_ScriptFunctions ~ table 00ace790
 00572c80	table	Script_GetReadyCheckTimeLeft	binding "GetReadyCheckTimeLeft" in s_ScriptFunctions ~ table 00ace790
+00573200	annotated	CGRaidInfo::IsMemberOrPet	tag in src/ui/game/CGRaidInfo.cpp
 00573690	table	Script_GetRaidRosterInfo	binding "GetRaidRosterInfo" in s_ScriptFunctions ~ table 00ace790
 00573a60	table	Script_IsRaidLeader	binding "IsRaidLeader" in s_ScriptFunctions ~ table 00ace790
 00573ab0	table	Script_IsRealRaidLeader	binding "IsRealRaidLeader" in s_ScriptFunctions ~ table 00ace790
@@ -1470,7 +1471,7 @@ addr	how	frozen	evidence
 0060c9a0	annotated	Script_UnitPlayerOrPetInParty	tag in src/ui/game/ScriptEvents.cpp
 0060ca20	table	Script_UnitInRaid	binding "UnitInRaid" in s_UnitFunctions ~ table 00ad21d8
 0060caa0	table	Script_UnitInBattleground	binding "UnitInBattleground" in s_UnitFunctions ~ table 00ad21d8
-0060cb20	table	Script_UnitPlayerOrPetInRaid	binding "UnitPlayerOrPetInRaid" in s_UnitFunctions ~ table 00ad21d8
+0060cb20	annotated	Script_UnitPlayerOrPetInRaid	tag in src/ui/game/ScriptEvents.cpp
 0060cba0	table	Script_UnitPlayerControlled	binding "UnitPlayerControlled" in s_UnitFunctions ~ table 00ad21d8
 0060cc30	table	Script_UnitIsAFK	binding "UnitIsAFK" in s_UnitFunctions ~ table 00ad21d8
 0060cd50	table	Script_UnitIsDND	binding "UnitIsDND" in s_UnitFunctions ~ table 00ad21d8
