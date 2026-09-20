@@ -28308,36 +28308,36 @@
   "status": "stub"
  },
  "00612300": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_IsIndoors",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 92,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 91,
-  "status": "stub"
+  "status": "ported"
  },
  "00612360": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_IsOutdoors",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 92,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 91,
-  "status": "stub"
+  "status": "ported"
  },
  "006123c0": {
   "branchRatio": 0.0,
@@ -31512,6 +31512,22 @@
   "how": "callgraph",
   "module": "GameObject_C.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "0071b7f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/ScriptEvents.cpp",
+   "src/ui/game/scriptevents.cpp"
+  ],
+  "frozen": "PlayerIndoorsState",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 22,
   "status": "ported"
  },
  "0071f770": {

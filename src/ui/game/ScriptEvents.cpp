@@ -7,6 +7,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include <cmath>
 #include "object/client/CGPlayer_C.hpp"
+#include "world/Terrain.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGItem_C.hpp"
@@ -2294,15 +2295,53 @@ int32_t Script_IsFlyableArea(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0071b7f0
+// The one predicate IsIndoors and IsOutdoors are built from. Both take no argument and ask about
+// the active player; with no player both answer nil, which is why this reports the player as well
+// as the verdict rather than returning a bare bool.
+static bool PlayerIndoorsState(bool& indoors) {
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (!player) {
+        return false;
+    }
+
+    indoors = TerrainPointIsIndoors(player->GetPosition());
+
+    return true;
+}
+
+// ref: FUN_00612300
+// Exact complement of IsOutdoors below -- the reference builds both from the same call and differs
+// only in which way it tests the result. Nil rather than false when the answer is no, and nil as
+// well when there is no player at all, so the two are not complements of each other at the login
+// screen: both are nil there.
 int32_t Script_IsIndoors(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    bool indoors = false;
+
+    if (PlayerIndoorsState(indoors) && indoors) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 // TODO FUN_00612360 and FUN_00612300 (IsIndoors) are one predicate and its negation, both
 // resting on a CGUnit_C method at 0071b7f0 that frozen has no counterpart for. Answering
 // from the map instead would be a guess about what the server considers indoors.
+// ref: FUN_00612360
 int32_t Script_IsOutdoors(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    bool indoors = false;
+
+    if (PlayerIndoorsState(indoors) && !indoors) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_IsOutOfBounds(lua_State* L) {

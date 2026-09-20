@@ -54,4 +54,9 @@ uint32_t TerrainAreaIDAt(const C3Vector& pos);
 
 bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient);
 
+// Is a world position inside an interior WMO room? Shares its containment test with
+// TerrainInteriorAmbientAt, and therefore shares that test's known imprecision -- see the
+// definition before relying on it for anything but a yes/no the player can shrug at.
+bool TerrainPointIsIndoors(const C3Vector& pos);
+
 #endif

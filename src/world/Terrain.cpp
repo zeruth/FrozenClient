@@ -5465,6 +5465,54 @@ uint32_t TerrainAreaIDAt(const C3Vector& pos) {
     return 0;
 }
 
+// Is a point inside an interior room?
+//
+// Same walk as TerrainInteriorAmbientAt below, minus the ambient and minus its logging, because
+// this one answers a game question rather than a lighting one and Lua can ask it at any time.
+//
+// DIVERGENCE worth knowing before trusting it. The reference does not search at all: the player
+// object carries its current area context and the answer is a field lookup. This walks every
+// loaded tile's buildings and tests containment geometrically, and the note on
+// TerrainInteriorAmbientAt records where that is known to be wrong -- an interior group's bounding
+// box can reach out over an open deck on a large single-WMO structure like Ebon Hold, so a point
+// standing outside can test as inside. The geometry test after the box narrows it but does not
+// close it.
+bool TerrainPointIsIndoors(const C3Vector& pos) {
+    for (auto& tile : s_tiles) {
+        if (!tile.loaded || !tile.wmos) {
+            continue;
+        }
+
+        for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
+            WmoInstance& w = tile.wmos[wi];
+
+            if (w.hasBounds && (pos.x < w.bboxMin.x || pos.x > w.bboxMax.x ||
+                                pos.y < w.bboxMin.y || pos.y > w.bboxMax.y ||
+                                pos.z < w.bboxMin.z || pos.z > w.bboxMax.z)) {
+                continue;
+            }
+
+            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
+                WmoGroup& grp = w.groups[gi];
+
+                if (!grp.interior || !grp.vertexCount) {
+                    continue;
+                }
+
+                if (pos.x >= grp.boundsMin.x && pos.x <= grp.boundsMax.x &&
+                    pos.y >= grp.boundsMin.y && pos.y <= grp.boundsMax.y &&
+                    pos.z >= grp.boundsMin.z && pos.z <= grp.boundsMax.z &&
+                    WmoGroupContains(grp, pos.x - w.origin.x, pos.y - w.origin.y,
+                                     pos.z - w.origin.z)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient) {
     for (auto& tile : s_tiles) {
         if (!tile.loaded || !tile.wmos) {

@@ -1781,8 +1781,8 @@ addr	how	frozen	evidence
 00611df0	table	Script_UnitCastingInfo	binding "UnitCastingInfo" in s_UnitFunctions ~ table 00ad21d8
 00612090	table	Script_UnitChannelInfo	binding "UnitChannelInfo" in s_UnitFunctions ~ table 00ad21d8
 00612260	table	Script_IsFlyableArea	binding "IsFlyableArea" in s_UnitFunctions ~ table 00ad21d8
-00612300	table	Script_IsIndoors	binding "IsIndoors" in s_UnitFunctions ~ table 00ad21d8
-00612360	table	Script_IsOutdoors	binding "IsOutdoors" in s_UnitFunctions ~ table 00ad21d8
+00612300	annotated	Script_IsIndoors	tag in src/ui/game/ScriptEvents.cpp
+00612360	annotated	Script_IsOutdoors	tag in src/ui/game/ScriptEvents.cpp
 006123c0	table	Script_IsOutOfBounds	binding "IsOutOfBounds" in s_UnitFunctions ~ table 00ad21d8
 00612430	table	Script_IsFalling	binding "IsFalling" in s_UnitFunctions ~ table 00ad21d8
 006124a0	table	Script_IsSwimming	binding "IsSwimming" in s_UnitFunctions ~ table 00ad21d8
@@ -1982,6 +1982,7 @@ addr	how	frozen	evidence
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
+0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
