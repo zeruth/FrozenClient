@@ -85271,7 +85271,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 39
+"line": 40
 },
 "GetNumDwordBlocks": {
 "files": [
@@ -85297,7 +85297,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 63
+"line": 64
 },
 "IncTypeID": {
 "files": [
@@ -85312,7 +85312,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 99
+"line": 100
 },
 "IsMaskBitSet": {
 "files": [
@@ -85328,7 +85328,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 156
+"line": 157
 },
 "MirrorBeginUpdate": {
 "files": [
@@ -85343,7 +85343,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 177
+"line": 178
 },
 "MirrorNoteChange": {
 "files": [
@@ -85358,7 +85358,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 181
+"line": 182
 },
 "UnitToken": {
 "files": [
@@ -85366,22 +85366,30 @@
 ],
 "callseq": [
 "CGObject::GetGUID",
-"ClntObjMgrGetActivePlayer",
-"CGGameUI::GetLockedTarget",
-"CGPlayer_C::GetActivePtr",
-"CGUnit::Unit"
+"Script_GetGUIDFromToken"
 ],
 "strings": [
+"focus",
+"party1",
+"party2",
+"party3",
+"party4",
+"partypet1",
+"partypet2",
+"partypet3",
+"partypet4",
 "pet",
 "player",
 "target"
 ],
-"consts": [],
-"branches": 6,
+"consts": [
+"0"
+],
+"branches": 3,
 "stub": false,
-"lines": 30,
+"lines": 23,
 "refs": [],
-"line": 191
+"line": 203
 },
 "BlockRangeChanged": {
 "files": [
@@ -85396,7 +85404,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 223
+"line": 228
 },
 "SignalUnitFieldEvents": {
 "files": [
@@ -85453,7 +85461,7 @@
 "stub": false,
 "lines": 124,
 "refs": [],
-"line": 236
+"line": 241
 },
 "SignalPlayerFieldEvents": {
 "files": [
@@ -85483,7 +85491,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 363
+"line": 368
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85516,7 +85524,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 400
+"line": 405
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85544,7 +85552,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 451
+"line": 456
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85566,7 +85574,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 494
+"line": 499
 },
 "QueryPlayerName": {
 "files": [

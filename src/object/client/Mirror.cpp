@@ -13,6 +13,7 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "ui/game/CGGameUI.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
 #include <vector>
@@ -188,31 +189,35 @@ namespace {
 // set -- pet, focus, party1-4, raid1-40 -- from rosters frozen does not keep yet, so this answers
 // for the two that the player and target frames need. A unit with no token is not skipped for being
 // unimportant; it is skipped because there is no name to hand the event.
+// The token FrameXML knows this unit by, or null when it has none.
+//
+// Asked of Script_GetGUIDFromToken rather than answered here. An earlier version of this function
+// compared against the fields it thought each token meant, and got "target" wrong -- it read the
+// target field on the player's descriptor where every binding reads CGGameUI::GetLockedTarget(),
+// which is not the same thing and would have fired events naming a unit the target frame was not
+// showing.
+//
+// So the rule lives in one place. The cost is a walk over the candidate tokens per changed unit;
+// the benefit is that this cannot drift from the resolver, and gains whatever tokens the resolver
+// gains. The list is ordered cheapest and likeliest first.
 const char* UnitToken(const CGUnit_C* unit) {
-    auto guid = unit->GetGUID();
+    static const char* const TOKENS[] = {
+        "player", "target", "pet", "focus",
+        "party1", "party2", "party3", "party4",
+        "partypet1", "partypet2", "partypet3", "partypet4",
+    };
 
-    if (guid == ClntObjMgrGetActivePlayer()) {
-        return "player";
+    auto wanted = unit->GetGUID();
+
+    if (!wanted) {
+        return nullptr;
     }
 
-    // The same way Script_GetGUIDFromToken resolves it: the UI's locked target, not the target
-    // field on the player's descriptor. They are not always the same -- the descriptor carries what
-    // the server last said, and the interface means the one it is showing -- and an event naming
-    // "target" has to mean the interface's.
-    if (guid == CGGameUI::GetLockedTarget()) {
-        return "target";
-    }
+    for (auto token : TOKENS) {
+        WOWGUID guid = 0;
 
-    auto player = CGPlayer_C::GetActivePtr();
-    auto playerData = player ? player->Unit() : nullptr;
-
-    if (playerData) {
-        // "pet" is the charmed unit if there is one, else the summoned one -- again matching the
-        // token resolver rather than inventing a second rule.
-        auto pet = playerData->charm ? playerData->charm : playerData->summon;
-
-        if (pet && guid == pet) {
-            return "pet";
+        if (Script_GetGUIDFromToken(token, guid, false) && guid == wanted) {
+            return token;
         }
     }
 

@@ -139,7 +139,7 @@ Not signalled, and each for a stated reason:
   plus three above are the ones the player and target frames read on the first frame in the world.
 
 Still narrow in one way: there is no watcher registry, so each field is a hand-written case.
-The token resolver now answers player, target and pet, and resolves each the way
-Script_GetGUIDFromToken does -- target from CGGameUI::GetLockedTarget() rather than from the
-player descriptor's target field, which is what it used to read and which is not the same
-thing.
+Tokens are not hand-written any more -- the mirror asks Script_GetGUIDFromToken for each
+candidate in turn and takes the first whose guid matches, so it cannot drift from what the
+bindings resolve and gains whatever tokens that resolver gains. Candidates tried: player,
+target, pet, focus, party1-4, partypet1-4.
