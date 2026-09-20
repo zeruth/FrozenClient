@@ -440,7 +440,16 @@ int32_t os_date(lua_State* L) {
 
     struct tm parts;
 
-    if (utc ? gmtime_s(&parts, &when) : localtime_s(&parts, &when)) {
+    // The _s forms are MSVC's; the _r forms are everyone else's, and they report the other way
+    // round -- _s returns non-zero on failure, _r returns null. Without this the Android build did
+    // not compile at all.
+#if defined(WHOA_SYSTEM_WIN)
+    bool broken = (utc ? gmtime_s(&parts, &when) : localtime_s(&parts, &when)) != 0;
+#else
+    bool broken = (utc ? gmtime_r(&when, &parts) : localtime_r(&when, &parts)) == nullptr;
+#endif
+
+    if (broken) {
         lua_pushnil(L);
 
         return 1;

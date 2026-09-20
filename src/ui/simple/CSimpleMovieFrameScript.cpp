@@ -35,7 +35,10 @@ int32_t CSimpleMovieFrame_StartMovie(lua_State* L) {
     char path[512];
     SStrPrintf(path, sizeof(path), "%s.avi", lua_tostring(L, 2));
 
-    if (!frame->StartMovie(path)) {
+    // StartMovie("file", volume_0_to_255); the reference's own usage string names that range.
+    int32_t volume = lua_isnumber(L, 3) ? static_cast<int32_t>(lua_tonumber(L, 3)) : 255;
+
+    if (!frame->StartMovie(path, volume)) {
         lua_pushnil(L);
         frame->RunOnMovieFinishedScript();
 

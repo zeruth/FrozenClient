@@ -4,6 +4,8 @@
 #include "ui/simple/CSimpleTexture.hpp"
 #include "ui/simple/MovieDecoder.hpp"
 #include "gx/Texture.hpp"
+#include "sound/SESound.hpp"
+#include <fmod.hpp>
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
 #include <storm/Memory.hpp>
@@ -91,7 +93,7 @@ void CSimpleMovieFrame::RunOnMovieFinishedScript() {
     }
 }
 
-bool CSimpleMovieFrame::StartMovie(const char* path) {
+bool CSimpleMovieFrame::StartMovie(const char* path, int32_t volume) {
     this->StopMovie();
 
     if (!path || !*path) {
@@ -160,12 +162,77 @@ bool CSimpleMovieFrame::StartMovie(const char* path) {
     this->m_surface->SetTextureHandle(texture);
     this->m_surface->Show();
 
+    this->StartMovieAudio(volume);
+
     this->m_playing = true;
 
     return true;
 }
 
+// The soundtrack, played straight from the buffer the demuxer already separated.
+//
+// FMOD decodes MP3 itself, so the audio needs nothing vendored and nothing platform specific --
+// wherever the sound backend runs, this runs. A movie with no audio track, or a client whose sound
+// failed to start, simply plays silent: the video is not held up for it.
+void CSimpleMovieFrame::StartMovieAudio(int32_t volume) {
+    if (!this->m_movie.audioData || !this->m_movie.audioSize) {
+        return;
+    }
+
+    auto system = SESound::s_pGameSystem;
+
+    if (!SESound::IsInitialized() || !system) {
+        return;
+    }
+
+    FMOD_CREATESOUNDEXINFO info = {};
+    info.cbsize = sizeof(info);
+    info.length = this->m_movie.audioSize;
+
+    FMOD::Sound* sound = nullptr;
+
+    // OPENMEMORY rather than a stream: the bytes are already resident, and a stream would read
+    // from a buffer this frame owns and could outlive.
+    FMOD_MODE mode = FMOD_OPENMEMORY | FMOD_CREATESAMPLE | FMOD_LOOP_OFF | FMOD_2D;
+
+    if (system->createSound(reinterpret_cast<const char*>(this->m_movie.audioData), mode, &info, &sound) != FMOD_OK) {
+        return;
+    }
+
+    FMOD::Channel* channel = nullptr;
+
+    if (system->playSound(sound, nullptr, false, &channel) != FMOD_OK) {
+        sound->release();
+
+        return;
+    }
+
+    if (channel) {
+        // The interface counts volume 0..255; FMOD wants 0..1.
+        float level = static_cast<float>(volume) / 255.0f;
+
+        channel->setVolume(level < 0.0f ? 0.0f : (level > 1.0f ? 1.0f : level));
+    }
+
+    this->m_sound = sound;
+    this->m_channel = channel;
+}
+
+void CSimpleMovieFrame::StopMovieAudio() {
+    if (this->m_channel) {
+        static_cast<FMOD::Channel*>(this->m_channel)->stop();
+        this->m_channel = nullptr;
+    }
+
+    if (this->m_sound) {
+        static_cast<FMOD::Sound*>(this->m_sound)->release();
+        this->m_sound = nullptr;
+    }
+}
+
 void CSimpleMovieFrame::StopMovie() {
+    this->StopMovieAudio();
+
     this->m_playing = false;
     this->m_elapsed = 0.0f;
     this->m_frame = 0xFFFFFFFF;

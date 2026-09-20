@@ -39,6 +39,12 @@ class CSimpleMovieFrame : public CSimpleFrame {
         // Playback
         MovieAvi m_movie;
         MovieDecoder* m_decoder = nullptr;
+
+        // The soundtrack. The AVI's audio stream is a bare MP3 elementary stream, which FMOD
+        // decodes itself -- so this needs no decoder of its own, and works on every platform the
+        // sound backend already covers.
+        void* m_sound = nullptr;
+        void* m_channel = nullptr;
         CSimpleTexture* m_surface = nullptr;
         bool m_playing = false;
         float m_elapsed = 0.0f;
@@ -55,7 +61,9 @@ class CSimpleMovieFrame : public CSimpleFrame {
 
         // Open and begin. False when the file is missing, is not an AVI, or carries a codec this
         // client cannot decode -- the caller reports failure to Lua in every one of those cases.
-        bool StartMovie(const char* path);
+        //
+        // volume is 0..255, the range the reference's usage string names.
+        bool StartMovie(const char* path, int32_t volume);
 
         // Stop and release. Does not run OnMovieFinished; the caller decides whether this was the
         // movie ending or the player skipping it.
@@ -66,6 +74,10 @@ class CSimpleMovieFrame : public CSimpleFrame {
         bool AdvanceMovie(float elapsedSec);
 
         virtual void OnLayerUpdate(float elapsedSec);
+
+    private:
+        void StartMovieAudio(int32_t volume);
+        void StopMovieAudio();
 };
 
 #endif
