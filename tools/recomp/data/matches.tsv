@@ -1761,7 +1761,7 @@ addr	how	frozen	evidence
 00610ca0	annotated	Script_UnitRangedAttackPower	tag in src/ui/game/ScriptEvents.cpp
 00610de0	table	Script_UnitDefense	binding "UnitDefense" in s_UnitFunctions ~ table 00ad21d8
 00610ec0	annotated	Script_UnitArmor	tag in src/ui/game/ScriptEvents.cpp
-00610fb0	table	Script_UnitCharacterPoints	binding "UnitCharacterPoints" in s_UnitFunctions ~ table 00ad21d8
+00610fb0	annotated	Script_UnitCharacterPoints	tag in src/ui/game/ScriptEvents.cpp
 006110a0	order	Script_UnitAuraFiltered	definition order between Script_UnitCharacterPoints and Script_UnitIsTapped in src/ui/game/ScriptEvents.cpp
 00611130	table	Script_UnitIsTapped	binding "UnitIsTapped" in s_UnitFunctions ~ table 00ad21d8
 006111b0	table	Script_UnitIsTappedByPlayer	binding "UnitIsTappedByPlayer" in s_UnitFunctions ~ table 00ad21d8

@@ -1735,13 +1735,29 @@ int32_t Script_UnitArmor(lua_State* L) {
     return 5;
 }
 
+// ref: FUN_00610fb0
+// TWO values, not one, and always two whatever the argument: the reference reads a pair of
+// consecutive ints off the player object and pushes both, falling back to a zero each for a unit
+// that is not the active player and for no unit at all. ChatFrame.lua takes them as "cp1, cp2".
+//
+// The pair is per talent group -- 3.3.5 gives a player two specs, and each carries its own
+// unspent count. Frozen has no talents, so both are zero, which is exactly what the reference
+// pushes down its own non-player path.
+//
+// Returning one value here was found by tools/arity.py after it stopped matching widget methods
+// against globals. The talent frame does arithmetic on the first the moment it opens, which is why
+// an earlier pass made this return something rather than nothing; it just stopped one short.
 int32_t Script_UnitCharacterPoints(lua_State* L) {
-    // Unspent talent points. The talent frame does arithmetic on this the moment it opens, so a
-    // stub that returned nothing errored there. Talents are not ported, so the player has none
-    // unspent.
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitCharacterPoints(\"unit\")");
+
+        return 0;
+    }
+
+    lua_pushnumber(L, 0.0);
     lua_pushnumber(L, 0.0);
 
-    return 1;
+    return 2;
 }
 
 int32_t Script_UnitAura(lua_State* L);

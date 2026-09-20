@@ -27987,17 +27987,17 @@
   "status": "ported"
  },
  "00610fb0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.571,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitCharacterPoints",
-  "frozenSize": 22,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 226,
   "status": "ported"
