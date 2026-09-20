@@ -1514,8 +1514,34 @@ int32_t Script_GetSpellCritChance(lua_State* L) {
 // TODO FUN_0060e310 takes the same 1-based school as GetSpellCritChance but does not read a
 // field directly: it combines two helpers at 00578210 and 00578250, neither identified.
 // The school bounds check and the usage string are the same as the crit one above.
+// ref: FUN_0060e310
+// Spell power for one school: the positive and negative modifiers added together. The reference
+// adds them rather than subtracting, so the field named Neg is expected to arrive already signed;
+// this reproduces that rather than second-guessing the sign.
+//
+// The range is checked before the player is resolved, so a bad school errors even with no player,
+// and the 1-based school is tested as unsigned -- school 0 wraps and takes the usage error instead
+// of reading in front of the array. Same shape as GetSpellCritChance.
 int32_t Script_GetSpellBonusDamage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto school = static_cast<uint32_t>(lua_tonumber(L, 1)) - 1;
+
+    if (school >= 7) {
+        return luaL_error(L, "Usage: GetSpellBonusDamage(school)");
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (!player) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    auto bonus = player->GetModDamageDonePos(school) + player->GetModDamageDoneNeg(school);
+
+    lua_pushnumber(L, static_cast<double>(bonus));
+
+    return 1;
 }
 
 // ref: FUN_0060e3b0

@@ -65,6 +65,24 @@ CGPlayer_C::~CGPlayer_C() {
     // TODO
 }
 
+// ref: FUN_00578210
+int32_t CGPlayer_C::GetModDamageDonePos(uint32_t school) const {
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return 0;
+    }
+
+    return this->Player()->modDamageDonePos[school];
+}
+
+// ref: FUN_00578250
+int32_t CGPlayer_C::GetModDamageDoneNeg(uint32_t school) const {
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return 0;
+    }
+
+    return this->Player()->modDamageDoneNeg[school];
+}
+
 uint32_t CGPlayer_C::GetMoney() const {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
         return 0;

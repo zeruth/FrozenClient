@@ -14,35 +14,33 @@ sheet shows a zero instead of going blank.
 | `GetCritChance` | `FUN_0060e0d0` | `critPercentage` | `0xdc4` |
 | `GetRangedCritChance` | `FUN_0060e230` | `rangedCritPercentage` | `0xdc8` |
 | `GetSpellBonusHealing` | `FUN_0060e3b0` | `modHealingDonePos` | `0x1050` |
+| `GetSpellPenetration` | `FUN_0060e470` | `modTargetResistance` (negated) | `0x105c` |
+| `GetSpellCritChance` | `FUN_0060e290` | `spellCritPercentage[school - 1]` | `0xdd0` |
+| `GetExpertisePercent` | `FUN_00612cb0` | `expertise`, `offhandExpertise`, each x 0.25 | `0xdbc`, `0xdc0` |
+| `GetSpellBonusDamage` | `FUN_0060e310` | `modDamageDonePos + modDamageDoneNeg`, by school | `0xffc`, `0x1018` |
 
 All six offsets are `static_assert`ed in `ScriptEvents.cpp`, so a struct that drifts fails the build
 rather than quietly reporting one stat as another.
 
-## Recovered but not yet landed
+## How spell bonus damage is read
 
-Decompiled 2026-09-19 and then held back: implementing them cost 14 unrelated callgraph links, and
-the cycle was reverted under the report gate. See `tools/recomp/README.md` under **callgraph** for
-the mechanism. The facts below are the expensive part and are recorded so the re-land needs no
-further Ghidra.
+`GetSpellBonusDamage` does not read a field directly. It calls two `CGPlayer_C` methods, both
+identified 2026-09-19 and now ported beside it:
 
-**`GetSpellPenetration` (`FUN_0060e470`)** — `modTargetResistance` at `0x105c`, **negated on the way
-out**. Penetration is held as a negative modifier to the target's resistance and reported as a
-positive number; forwarding the field unchanged would show every value with the wrong sign.
+| method | reference | field |
+|---|---|---|
+| `GetModDamageDonePos` | `FUN_00578210` | descriptor `0xffc + school * 4` |
+| `GetModDamageDoneNeg` | `FUN_00578250` | descriptor `0x1018 + school * 4` |
 
-**`GetSpellCritChance` (`FUN_0060e290`)** — `spellCritPercentage[school - 1]` at `0xdd0`, a
-seven-entry array. School arrives 1-based and the reference tests the converted index **as
-unsigned**, so school 0 and anything negative wrap past the end and take the usage error
-`Usage: GetSpellCritChance(school)` rather than reading in front of the array.
+The two offsets are `0x1c` apart, which is exactly seven `int32_t`, and that is what identified
+them: `modDamageDonePos[7]` then `modDamageDoneNeg[7]`, matching frozen's struct already.
 
-**`GetExpertisePercent` (`FUN_00612cb0`)** — two returns, `expertise` at `0xdbc` and
-`offhandExpertise` at `0xdc0`, each scaled by the float **0.25** at `00a1f6f4` (four points of
-expertise to one percent). Both are pushed even with no player, as zeros, so the sheet keeps two
-return values.
+Both refuse for anyone but the active player -- the reference compares the object's GUID against
+the active player's and returns 0 on a mismatch -- because these fields are only ever sent for
+them. And the binding **adds** the two, so the half named Neg is expected to arrive already
+signed; that is reproduced rather than second-guessed.
 
 ## Decompiled and blocked
-
-**`GetSpellBonusDamage` (`FUN_0060e310`)** — same 1-based school and usage string as the crit one,
-but it does not read a field: it combines two unidentified helpers at `00578210` and `00578250`.
 
 **`GetPetSpellBonusDamage` (`FUN_0060e410`)** — reads `+0x1264`, which no named field in frozen's
 struct has been shown to sit at, and gets none of the neighbouring-offset corroboration that made

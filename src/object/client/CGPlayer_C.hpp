@@ -48,6 +48,14 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
 
         // Public member functions
         CGPlayer_C(uint32_t time, CClientObjCreate& objCreate);
+        // The two halves of a school's spell power. Both refuse for anyone but the active
+        // player, because these descriptor fields are only ever sent for them -- reading another
+        // unit's copy would report whatever was last left there.
+        //
+        // school is 0-based here; the Lua side is 1-based and converts.
+        int32_t GetModDamageDonePos(uint32_t school) const;
+        int32_t GetModDamageDoneNeg(uint32_t school) const;
+
         uint32_t GetMoney() const;
         uint32_t GetNextLevelXP() const;
         uint32_t GetXP() const;

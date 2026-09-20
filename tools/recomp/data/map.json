@@ -19498,6 +19498,38 @@
   "refSize": 22,
   "status": "ported"
  },
+ "00578210": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetModDamageDonePos",
+  "frozenSize": 95,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "00578250": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetModDamageDoneNeg",
+  "frozenSize": 95,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "0057b9e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -23775,17 +23807,17 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetSpellBonusDamage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 162,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 152,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e3b0": {
   "branchRatio": 1.0,
