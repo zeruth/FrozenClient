@@ -297,6 +297,22 @@ void SignalUnitFieldEvents(CGUnit_C* unit, WOWGUID guid) {
         FrameScript_SignalEvent(SCRIPT_UNIT_FACTION, "%s", token);
     }
 
+    // Unit flags. The interface sees one event name for both of these; the client keeps two ids
+    // and so does this, so a handler that cares which field moved can still tell.
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->flags), 1)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_FLAGS, "%s", token);
+    }
+
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->flags2), 1)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_FLAGS2, "%s", token);
+    }
+
+    // Separate from the two above and separately eventful: this is the field that carries lootable,
+    // tapped and tracked, which the unit frame and the world nameplates both read.
+    if (BlockRangeChanged(guid, unit->BlockIndexOf(&data->dynamicFlags), 1)) {
+        FrameScript_SignalEvent(SCRIPT_UNIT_DYNAMIC_FLAGS, "%s", token);
+    }
+
     // The packed byte field, whose top byte is the power type -- Script_UnitPowerTypeOf reads it
     // from there. Signalled on any change to the dword rather than to that byte alone, because the
     // change set records which block moved and not what it held before. The other bytes are race,
@@ -343,6 +359,12 @@ void SignalPlayerFieldEvents(CGPlayer_C* player, WOWGUID guid) {
 
     if (BlockRangeChanged(guid, player->BlockIndexOf(&data->coinage), 1)) {
         FrameScript_SignalEvent(SCRIPT_PLAYER_MONEY, nullptr);
+    }
+
+    // Guild id and rank are adjacent, and either moving is a guild change -- joining sets both,
+    // a promotion moves only the rank.
+    if (BlockRangeChanged(guid, player->BlockIndexOf(&data->guildID), 2)) {
+        FrameScript_SignalEvent(SCRIPT_PLAYER_GUILD_UPDATE, nullptr);
     }
 }
 

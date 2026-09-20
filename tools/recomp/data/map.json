@@ -8562,7 +8562,7 @@
    "src/object/client/mirror.cpp"
   ],
   "frozen": "CallMirrorHandlers",
-  "frozenSize": 918,
+  "frozenSize": 667,
   "how": "override",
   "module": "ObjectMgrClient.cpp",
   "refSize": 458,

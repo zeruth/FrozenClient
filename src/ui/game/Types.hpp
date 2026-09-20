@@ -11,10 +11,16 @@ enum SCRIPTEVENT {
     SCRIPT_UNIT_MAXMANA = 27,
     SCRIPT_UNIT_LEVEL = 48,
     SCRIPT_UNIT_FACTION = 49,
+    // Two ids, both spelled UNIT_FLAGS in the event table: the interface sees one name and the
+    // client distinguishes which field moved. Kept apart here for the same reason.
+    SCRIPT_UNIT_FLAGS = 53,
+    SCRIPT_UNIT_FLAGS2 = 54,
+    SCRIPT_UNIT_DYNAMIC_FLAGS = 73,
     SCRIPT_UNIT_MODEL_CHANGED = 146,
     SCRIPT_PLAYER_XP_UPDATE = 151,
     SCRIPT_PLAYER_TARGET_CHANGED = 157,
     SCRIPT_PLAYER_MONEY = 163,
+    SCRIPT_PLAYER_GUILD_UPDATE = 336,
     // TODO
     SCRIPT_ACTIONBAR_PAGE_CHANGED = 175,
     SCRIPT_ACTIONBAR_SLOT_CHANGED = 176,

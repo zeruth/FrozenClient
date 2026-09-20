@@ -119,11 +119,15 @@ records the blocks whose value actually changed; the second pass turns those int
 | `CGUnitData::maxPower[0..6]` | `UNIT_MAXMANA` | player, target |
 | `CGUnitData::level` | `UNIT_LEVEL` | player, target |
 | `CGUnitData::factionTemplate` | `UNIT_FACTION` | player, target |
+| `CGUnitData::flags` | `UNIT_FLAGS` (id 53) | player, target |
+| `CGUnitData::flags2` | `UNIT_FLAGS` (id 54 -- same name, second id) | player, target |
+| `CGUnitData::dynamicFlags` | `UNIT_DYNAMIC_FLAGS` | player, target |
 | `CGUnitData::pad1` -- the packed byte field | `UNIT_DISPLAYPOWER` | player, target |
 | `CGUnitData::displayID`, `nativeDisplayID`, `mountDisplayID` (3 blocks) | `UNIT_MODEL_CHANGED` | player, target |
 | `CGUnitData::target` (2 blocks) | `UNIT_TARGET`, and `PLAYER_TARGET_CHANGED` for the player | player, target |
 | `CGPlayerData::xp`, `nextLevelXP` | `PLAYER_XP_UPDATE` | player only |
 | `CGPlayerData::coinage` | `PLAYER_MONEY` | player only |
+| `CGPlayerData::guildID`, `guildRank` (2 blocks) | `PLAYER_GUILD_UPDATE` | player only |
 
 Not signalled, and each for a stated reason:
 

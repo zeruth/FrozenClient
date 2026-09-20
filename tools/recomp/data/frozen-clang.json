@@ -85425,6 +85425,15 @@
 "CGObject_C::BlockIndexOf",
 "BlockRangeChanged",
 "FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
+"FrameScript_SignalEvent",
 "CGObject::GetGUID",
 "ClntObjMgrGetActivePlayer",
 "FrameScript_SignalEvent"
@@ -85438,9 +85447,9 @@
 "2",
 "3"
 ],
-"branches": 20,
+"branches": 23,
 "stub": false,
-"lines": 108,
+"lines": 124,
 "refs": [],
 "line": 221
 },
@@ -85458,17 +85467,21 @@
 "FrameScript_SignalEvent",
 "CGObject_C::BlockIndexOf",
 "BlockRangeChanged",
+"FrameScript_SignalEvent",
+"CGObject_C::BlockIndexOf",
+"BlockRangeChanged",
 "FrameScript_SignalEvent"
 ],
 "strings": [],
 "consts": [
-"1"
+"1",
+"2"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 16,
+"lines": 22,
 "refs": [],
-"line": 332
+"line": 348
 },
 "CallMirrorHandlers": {
 "files": [
@@ -85501,7 +85514,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 363
+"line": 385
 },
 "FillInPartialObjectData": {
 "files": [
@@ -85529,7 +85542,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 414
+"line": 436
 },
 "SkipPartialObjectUpdate": {
 "files": [
@@ -85551,7 +85564,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 457
+"line": 479
 },
 "QueryPlayerName": {
 "files": [
