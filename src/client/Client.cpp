@@ -1,6 +1,7 @@
 #include "world/Weather.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
+#include "ui/game/CGPartyInfo.hpp"
 #include "object/client/AuraCache.hpp"
 #include "object/client/CastCache.hpp"
 #include "object/client/QuestStatusCache.hpp"
@@ -149,6 +150,7 @@ void ClientInitializeGameTime() {
     QuestStatusRegisterHandlers();
     SpellBookRegisterHandlers();
     CGMinimapFrameRegisterHandlers();
+    CGPartyInfo::RegisterHandlers();
     ClientServices::SetMessageHandler(SMSG_EMOTE, &ReceiveEmote, nullptr);
 
     // TODO initialize s_forcedChangeCallbacks

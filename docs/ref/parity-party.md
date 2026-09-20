@@ -64,12 +64,30 @@ higher than the last one **and** within 60 seconds, the packet is ignored outrig
 behaviour, not an optimisation — a port without it will rebuild the roster on messages the
 reference discards.
 
-The member record layout is not transcribed here yet. The handler interleaves parsing with saving
-the previous roster for comparison, so the read sequence has to be separated from the copy loop
-before it can be trusted.
+Each member record is:
 
-## What porting it needs
+```
+cstring name        // into a 48-byte buffer
+u64     guid
+u8      online
+u8      subgroup
+u8      flags
+u8      roles
+```
 
-`CGPartyInfo` currently holds four guids and nothing else. The reference keeps a name, subgroup,
-online flag, class and roles per member, which the party frames need. Growing that structure is the
-first step, not the packet parse.
+followed, after the last member, by `u64 leaderGuid` and then the loot method, looter guid, loot
+threshold and the two difficulty bytes.
+
+Reading the sequence out of the handler needed the copy loop separated from the parse, and the
+readers identified first: frozen's `CDataStore` getters carry no reference tags, so
+`FUN_0047b340`/`b3c0`/`b400`/`b440`/`b480` were pinned by how many bytes each advances the cursor
+(1, 4, 8, 4, and a bounded string). That also confirmed the minimap ping's format after the fact.
+
+## Status
+
+Ported 2026-09-19. `CGPartyInfo` holds a `PARTY_MEMBER` per slot (guid, name, online, subgroup,
+flags, roles) plus the leader, and `ReceiveGroupList` rebuilds it.
+
+Still missing: the raid roster (`CGRaidInfo` remains a bare count, so `raid1`-`raid40` and
+`UnitIsFeignDeath` stay unanswerable), and the loot method and difficulty fields, which are read
+past rather than stored.

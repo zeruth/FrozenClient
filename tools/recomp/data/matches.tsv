@@ -1752,6 +1752,7 @@ addr	how	frozen	evidence
 006d5c30	callgraph	Player_C_GetDisplayId	only unmatched callee of 006dc810=Player_C_GetModelName
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
 006d8750	handler	ReceiveActionButtons	SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS) on both sides
+006d8870	annotated	ReceiveGroupList	tag in src/ui/game/CGPartyInfo.cpp
 006dc810	string	Player_C_GetModelName	unique "Error, unknown displayInfo %d specified for player race %d s"
 006df050	handler	ReceiveInitialSpells	SetMessageHandler(SMSG_SEND_KNOWN_SPELLS) on both sides
 006e2e90	handler	InventoryChangeFailureHandler	SetMessageHandler(SMSG_INVENTORY_CHANGE_FAILURE) on both sides
