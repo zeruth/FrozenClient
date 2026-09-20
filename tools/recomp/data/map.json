@@ -15819,7 +15819,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 892,
+  "frozenSize": 897,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 1267,
@@ -21978,6 +21978,66 @@
   "how": "order",
   "module": "PetInfo.cpp",
   "refSize": 424,
+  "status": "ported"
+ },
+ "005d7020": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_ContainerIDToInventoryID",
+  "frozenSize": 60,
+  "how": "string",
+  "module": "PetInfo.cpp",
+  "refSize": 38,
+  "status": "ported"
+ },
+ "005d74a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetContainerNumSlots",
+  "frozenSize": 257,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 234,
+  "status": "ported"
+ },
+ "005d7c80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetContainerItemLink",
+  "frozenSize": 117,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "005d7d00": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/ContainerFrameScript.cpp"
+  ],
+  "frozen": "Script_GetContainerItemID",
+  "frozenSize": 123,
+  "how": "annotated",
+  "module": "ContainerFrame.cpp",
+  "refSize": 132,
   "status": "ported"
  },
  "005da3a0": {

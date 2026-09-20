@@ -584,13 +584,10 @@ WHOA_LUA_STUB(GetContainerFreeSlots)
 WHOA_LUA_STUB(GetContainerItemCooldown)
 WHOA_LUA_STUB(GetContainerItemDurability)
 WHOA_LUA_STUB(GetContainerItemGems)
-WHOA_LUA_STUB(GetContainerItemID)
 WHOA_LUA_STUB(GetContainerItemInfo)
-WHOA_LUA_STUB(GetContainerItemLink)
 WHOA_LUA_STUB(GetContainerItemPurchaseInfo)
 WHOA_LUA_STUB(GetContainerItemPurchaseItem)
 WHOA_LUA_STUB(GetContainerItemQuestInfo)
-WHOA_LUA_STUB(GetContainerNumSlots)
 WHOA_LUA_STUB(GetCorpseMapPosition)
 WHOA_LUA_STUB(GetCurrencyListInfo)
 int32_t Script_Stub_GetCurrencyListSize(lua_State* L) {
@@ -1709,13 +1706,10 @@ const ScriptFunction s_stubs[] = {
     { "GetContainerItemCooldown",                &Script_Stub_GetContainerItemCooldown },
     { "GetContainerItemDurability",              &Script_Stub_GetContainerItemDurability },
     { "GetContainerItemGems",                    &Script_Stub_GetContainerItemGems },
-    { "GetContainerItemID",                      &Script_Stub_GetContainerItemID },
     { "GetContainerItemInfo",                    &Script_Stub_GetContainerItemInfo },
-    { "GetContainerItemLink",                    &Script_Stub_GetContainerItemLink },
     { "GetContainerItemPurchaseInfo",            &Script_Stub_GetContainerItemPurchaseInfo },
     { "GetContainerItemPurchaseItem",            &Script_Stub_GetContainerItemPurchaseItem },
     { "GetContainerItemQuestInfo",               &Script_Stub_GetContainerItemQuestInfo },
-    { "GetContainerNumSlots",                    &Script_Stub_GetContainerNumSlots },
     { "GetCorpseMapPosition",                    &Script_Stub_GetCorpseMapPosition },
     { "GetCurrencyListInfo",                     &Script_Stub_GetCurrencyListInfo },
     { "GetCurrencyListSize",                     &Script_Stub_GetCurrencyListSize },

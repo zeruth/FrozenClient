@@ -21,6 +21,7 @@
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
+#include "ui/game/ContainerFrameScript.hpp"
 #include "ui/game/CGUIBindings.hpp"
 #include "ui/game/MiscScript.hpp"
 #include "ui/game/MiscScriptStubs.hpp"
@@ -68,6 +69,7 @@ void LoadScriptFunctions() {
     GameScriptRegisterFunctions();
     MiscScriptRegisterFunctions();
     CGMinimapFrameScriptRegisterFunctions();
+    ContainerFrameScriptRegisterFunctions();
     MiscScriptRegisterStubs();
     UIBindingsRegisterScriptFunctions();
 
