@@ -19239,13 +19239,13 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.091,
+  "fidelity": 0.0,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
   ],
   "frozen": "Script_ReturnNothing",
-  "frozenSize": 135,
+  "frozenSize": 3,
   "how": "table",
   "module": "SpellBookFrame.cpp",
   "refSize": 464,

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 04:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 05:04 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5531, mapped 418 (=) (7.6%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 422 (=) (7.3%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 171 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11844, stubs 1720 | |
+| frozen functions (src/, from PDB + source) | 11845, stubs 1720 | |
 
 Match evidence: annotated 760, callgraph 177, callorder 131, cvar 32, handler 28, order 179, override 207, sticky 12, string 310, table 1126. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-20 04:54 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
+Previous run: 2026-09-20 04:55 -- mapped 2962, ported 2258, stub 659, spine mapped 418.
 
 ## Lua API coverage (binding tables)
 
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 03:04 | 2925 (10.8%) | 1048 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:05 | 2926 (10.8%) | 1049 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:17 | 2927 (10.8%) | 1050 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 03:24 | 2933 (10.8%) | 1052 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 04:48 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 04:54 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 04:55 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
+| 2026-09-20 05:04 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 
 ## How to move a row
 

@@ -114590,6 +114590,21 @@
 "files": [
 "src/ui/game/miscscript.cpp"
 ],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 169
+},
+"Script_ReturnEmptyArenaTeam": {
+"files": [
+"src/ui/game/miscscript.cpp"
+],
 "callseq": [
 "lua_pushnil",
 "lua_pushnumber",
@@ -114610,9 +114625,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 20,
+"lines": 15,
 "refs": [],
-"line": 161
+"line": 184
 },
 "Script_GetPetActionInfo": {
 "files": [
@@ -114627,7 +114642,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 187
+"line": 205
 },
 "Script_ReturnZero": {
 "files": [
@@ -114645,7 +114660,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 191
+"line": 209
 },
 "Script_ReturnOne": {
 "files": [
@@ -114663,7 +114678,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 197
+"line": 215
 },
 "Script_ReturnNil": {
 "files": [
@@ -114680,7 +114695,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 203
+"line": 221
 },
 "Script_ReturnEmptyString": {
 "files": [
@@ -114699,7 +114714,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 209
+"line": 227
 },
 "Script_ReturnTwo": {
 "files": [
@@ -114717,7 +114732,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 215
+"line": 233
 },
 "Script_ReturnThreeZeros": {
 "files": [
@@ -114737,7 +114752,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 221
+"line": 239
 },
 "Script_ReturnTwoZeros": {
 "files": [
@@ -114756,7 +114771,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 229
+"line": 247
 },
 "Script_GetSpellTabInfo": {
 "files": [
@@ -114787,7 +114802,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 252
+"line": 270
 },
 "Script_GetNumSpellTabs": {
 "files": [
@@ -114805,7 +114820,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 288
+"line": 306
 },
 "SpellAtSlot": {
 "files": [
@@ -114825,7 +114840,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 296
+"line": 314
 },
 "SpellIconPath": {
 "files": [
@@ -114840,7 +114855,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 306
+"line": 324
 },
 "Script_GetSpellName": {
 "files": [
@@ -114863,7 +114878,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 317
+"line": 335
 },
 "Script_GetSpellTexture": {
 "files": [
@@ -114883,7 +114898,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 340
+"line": 358
 },
 "Script_GetSpellInfo": {
 "files": [
@@ -114924,7 +114939,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 355
+"line": 373
 },
 "Script_GetSpellCooldown": {
 "files": [
@@ -114945,7 +114960,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 406
+"line": 424
 },
 "Script_GetSpellAutocast": {
 "files": [
@@ -114963,7 +114978,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 415
+"line": 433
 },
 "Script_IsPassiveSpell": {
 "files": [
@@ -114989,7 +115004,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 424
+"line": 442
 },
 "Script_CastSpell": {
 "files": [
@@ -115015,7 +115030,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 442
+"line": 460
 },
 "Script_GetSpellLink": {
 "files": [
@@ -115038,7 +115053,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 470
+"line": 488
 },
 "Script_UpdateSpells": {
 "files": [
@@ -115056,7 +115071,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 489
+"line": 507
 },
 "Script_GetKnownSlotFromHighestRankSlot": {
 "files": [
@@ -115077,7 +115092,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 496
+"line": 514
 },
 "Script_CombatLog_Object_IsA": {
 "files": [
@@ -115100,7 +115115,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 510
+"line": 528
 },
 "Script_GetRepairAllCost": {
 "files": [
@@ -115120,7 +115135,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 519
+"line": 537
 },
 "Script_CalendarGetDate": {
 "files": [
@@ -115145,7 +115160,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 526
+"line": 544
 },
 "Script_GetSendMailPrice": {
 "files": [
@@ -115163,7 +115178,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 544
+"line": 562
 },
 "Script_CancelUnitBuff": {
 "files": [
@@ -115201,7 +115216,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 563
+"line": 581
 },
 "MiscScriptRegisterFunctions": {
 "files": [
@@ -115216,7 +115231,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 854
+"line": 872
 },
 "Script_Stub_AcceptDuel": {
 "files": [

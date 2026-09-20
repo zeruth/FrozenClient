@@ -158,12 +158,30 @@ int32_t Script_GetTalentTabInfo(lua_State* L) {
     return 5;
 }
 
+// Returns nothing, which is what the name says and what thirty of the bindings below actually
+// want. Every local a caller destructures comes back nil, and nil is falsy, so FrameXML's usual
+// "if name then" reads the answer as absent.
+//
+// This is the safe default for an unimplemented binding, and the reason is recorded a few lines
+// down on GetPetActionInfo: sharing a returner that pushes a 0 in a slot the caller tests made ten
+// pet buttons start their autocast shine every frame, because 0 is TRUTHY in Lua. A zero is a
+// value; nothing is nothing.
 int32_t Script_ReturnNothing(lua_State* L) {
-    // 11 values, typed from what the caller destructures them into:
-    //   teamName, teamSize, teamRating, teamPlayed, teamWins, seasonTeamPlayed, seasonTeamWins, playerPlayed, seasonPlayerPlayed, teamRank, personalRating
-    // The data behind this is not available yet, so each position takes the neutral
-    // value for its type -- 0 where the caller does arithmetic, false where it
-    // branches, nil where it expects a name or a texture and already handles absence.
+    return 0;
+}
+
+// Eleven values shaped for GetArenaTeam specifically, and used by nothing else -- it was called
+// Script_ReturnNothing until 2026-09-20, which is how thirty unrelated bindings came to return an
+// empty arena team. GetSkillLineInfo was among them, handing the skill frame eleven arena values
+// where it destructures thirteen skill ones.
+//
+//   teamName, teamSize, teamRating, teamPlayed, teamWins, seasonTeamPlayed, seasonTeamWins,
+//   playerPlayed, seasonPlayerPlayed, teamRank, personalRating
+//
+// The data behind this is not available yet, so each position takes the neutral value for its
+// type -- 0 where the caller does arithmetic, nil where it expects a name and already handles
+// absence.
+int32_t Script_ReturnEmptyArenaTeam(lua_State* L) {
     lua_pushnil(L);
     lua_pushnumber(L, 0.0);
     lua_pushnumber(L, 0.0);
@@ -625,7 +643,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     { "GetPetActionInfo",               &Script_GetPetActionInfo },
     { "GetNumWorldStateUI",             &Script_ReturnZero },
     { "GetCompanionInfo",               &Script_ReturnNothing },
-    { "GetArenaTeam",                   &Script_ReturnNothing },
+    { "GetArenaTeam",                   &Script_ReturnEmptyArenaTeam },
     { "CreateWorldMapArrowFrame",       &Script_ReturnNothing },
     { "GetMasterLootCandidate",         &Script_ReturnNil },
     { "GetSelectedDisplayChannel",      &Script_ReturnZero },
