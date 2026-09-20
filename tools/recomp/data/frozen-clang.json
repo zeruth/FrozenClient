@@ -55336,7 +55336,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 18
+"line": 19
 },
 "Script_SetCharCustomizeBackground": {
 "files": [
@@ -55359,7 +55359,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 34
+"line": 35
 },
 "Script_ResetCharCustomize": {
 "files": [
@@ -55376,7 +55376,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 48
+"line": 49
 },
 "Script_GetNameForRace": {
 "files": [
@@ -55398,7 +55398,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 54
+"line": 55
 },
 "Script_GetFactionForRace": {
 "files": [
@@ -55435,7 +55435,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 73
+"line": 74
 },
 "Script_GetAvailableRaces": {
 "files": [
@@ -55462,7 +55462,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 127
+"line": 128
 },
 "Script_GetAvailableClasses": {
 "files": [
@@ -55490,7 +55490,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 154
+"line": 155
 },
 "Script_GetClassesForRace": {
 "files": [
@@ -55518,7 +55518,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 190
+"line": 191
 },
 "Script_GetHairCustomization": {
 "files": [
@@ -55542,7 +55542,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 217
+"line": 218
 },
 "Script_GetFacialHairCustomization": {
 "files": [
@@ -55566,7 +55566,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 231
+"line": 232
 },
 "Script_GetSelectedRace": {
 "files": [
@@ -55583,7 +55583,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 245
+"line": 246
 },
 "Script_GetSelectedSex": {
 "files": [
@@ -55600,7 +55600,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 251
+"line": 252
 },
 "Script_GetSelectedClass": {
 "files": [
@@ -55629,7 +55629,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 257
+"line": 258
 },
 "Script_SetSelectedRace": {
 "files": [
@@ -55652,7 +55652,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 293
+"line": 294
 },
 "Script_SetSelectedSex": {
 "files": [
@@ -55675,7 +55675,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 306
+"line": 307
 },
 "Script_SetSelectedClass": {
 "files": [
@@ -55700,7 +55700,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 323
+"line": 324
 },
 "Script_UpdateCustomizationBackground": {
 "files": [
@@ -55717,7 +55717,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 338
+"line": 339
 },
 "Script_UpdateCustomizationScene": {
 "files": [
@@ -55734,7 +55734,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 344
+"line": 345
 },
 "Script_CycleCharCustomization": {
 "files": [
@@ -55760,7 +55760,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 350
+"line": 351
 },
 "Script_RandomizeCharCustomization": {
 "files": [
@@ -55777,7 +55777,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 364
+"line": 365
 },
 "Script_GetCharacterCreateFacing": {
 "files": [
@@ -55795,7 +55795,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 370
+"line": 371
 },
 "Script_SetCharacterCreateFacing": {
 "files": [
@@ -55819,7 +55819,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 376
+"line": 377
 },
 "Script_GetRandomName": {
 "files": [
@@ -55842,7 +55842,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 389
+"line": 390
 },
 "Script_CreateCharacter": {
 "files": [
@@ -55862,7 +55862,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 409
+"line": 410
 },
 "Script_CustomizeExistingCharacter": {
 "files": [
@@ -55884,7 +55884,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 417
+"line": 418
 },
 "Script_PaidChange_GetPreviousRaceIndex": {
 "files": [
@@ -55906,7 +55906,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 421
+"line": 422
 },
 "Script_PaidChange_GetCurrentRaceIndex": {
 "files": [
@@ -55928,7 +55928,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 425
+"line": 426
 },
 "Script_PaidChange_GetCurrentClassIndex": {
 "files": [
@@ -55950,7 +55950,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 429
+"line": 430
 },
 "Script_PaidChange_GetName": {
 "files": [
@@ -55972,7 +55972,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 433
+"line": 434
 },
 "Script_IsRaceClassValid": {
 "files": [
@@ -56004,29 +56004,45 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 437
+"line": 438
 },
 "Script_IsRaceClassRestricted": {
 "files": [
 "src/glue/ccharactercreationscript.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"lua_isnumber",
+"lua_isnumber",
+"luaL_error",
+"lua_tonumber",
+"lua_tonumber",
+"luaL_error",
+"lua_pushnumber"
 ],
 "strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"Script_IsRaceClassRestricted",
-"c:\\users\\tyler\\runicworld-client\\src\\glue\\ccharactercreationscript.cpp"
+"Script_IsRaceClassRestricted: unsupported race ID(%d)",
+"Usage: Script_IsRaceClassRestricted(raceID, classID)"
 ],
 "consts": [
-"0"
+"0",
+"0x1f",
+"1",
+"10",
+"11",
+"1u",
+"2",
+"3",
+"4",
+"5",
+"6",
+"7",
+"8"
 ],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 12,
+"stub": false,
+"lines": 36,
 "refs": [],
-"line": 464
+"line": 478
 },
 "Script_GetCreateBackgroundModel": {
 "files": [
@@ -56057,7 +56073,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 468
+"line": 515
 },
 "CharacterCreateRegisterScriptFunctions": {
 "files": [
@@ -56074,7 +56090,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 542
+"line": 589
 },
 "CCharacterSelection::ClearCharacterList": {
 "files": [

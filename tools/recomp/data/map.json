@@ -10180,20 +10180,20 @@
   "status": "ported"
  },
  "004dfa70": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.714,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
   ],
   "frozen": "Script_IsRaceClassRestricted",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 340,
+  "how": "annotated",
   "module": "RealmList.cpp",
   "refSize": 496,
-  "status": "stub"
+  "status": "ported"
  },
  "004dfca0": {
   "branchRatio": 0.5,

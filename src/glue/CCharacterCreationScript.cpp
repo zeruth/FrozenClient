@@ -1,4 +1,5 @@
 #include "glue/CCharacterCreationScript.hpp"
+#include "glue/CCharacterSelection.hpp"
 #include "client/ClientServices.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
@@ -461,8 +462,54 @@ int32_t Script_IsRaceClassValid(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004dfa70
+// Whether a class is closed off for a race on this realm. The first argument is a RACE id -- the
+// reference's own error text says so -- and each race carries its own bitmask of restricted
+// classes, tested by class id as a bit position.
+//
+// The ten masks are the values CCharacterSelection::UpdateCharacterList already copies off the
+// realm connection; nothing had read them. The mapping from race id to mask was settled three
+// ways rather than assumed: the reference's masks are ten consecutive dwords at 00b6b208..00b6b22c
+// in exactly the order the connection declares its fields; the switch's race ids line up
+// one-for-one with that order; and UpdateCharacterList assigns three of them from consecutive
+// connection offsets (0x2f00/0x2f04/0x2f08), which pins Tauren, Undead and Blood Elf on their own.
+//
+// Race 9 is absent from the switch, as it is from the playable races.
 int32_t Script_IsRaceClassRestricted(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: Script_IsRaceClassRestricted(raceID, classID)");
+
+        return 0;
+    }
+
+    auto raceID = static_cast<int32_t>(lua_tonumber(L, 1));
+    auto classID = static_cast<uint8_t>(static_cast<int32_t>(lua_tonumber(L, 2)));
+
+    uint32_t restricted = 0;
+
+    switch (raceID) {
+        case 1:  restricted = CCharacterSelection::s_restrictHuman;    break;
+        case 2:  restricted = CCharacterSelection::s_restrictOrc;      break;
+        case 3:  restricted = CCharacterSelection::s_restrictDwarf;    break;
+        case 4:  restricted = CCharacterSelection::s_restrictNightElf; break;
+        case 5:  restricted = CCharacterSelection::s_restrictUndead;   break;
+        case 6:  restricted = CCharacterSelection::s_restrictTauren;   break;
+        case 7:  restricted = CCharacterSelection::s_restrictGnome;    break;
+        case 8:  restricted = CCharacterSelection::s_restrictTroll;    break;
+        case 10: restricted = CCharacterSelection::s_restrictBloodElf; break;
+        case 11: restricted = CCharacterSelection::s_restrictDraenei;  break;
+
+        default:
+            luaL_error(L, "Script_IsRaceClassRestricted: unsupported race ID(%d)", raceID);
+
+            return 0;
+    }
+
+    // The shift is masked to 5 bits by the reference, so a class id of 32 tests bit 0 rather than
+    // being undefined. Kept, because it is the difference between a wrong answer and a crash.
+    lua_pushnumber(L, (restricted & (1u << (classID & 0x1f))) ? 1 : 0);
+
+    return 1;
 }
 
 int32_t Script_GetCreateBackgroundModel(lua_State* L) {

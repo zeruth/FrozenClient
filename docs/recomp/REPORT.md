@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-19 22:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-19 22:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,23 +9,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
 | mapped to a frozen function | 2726 (=) (10.0%) | 577.3k (10.4%) |
-| &nbsp;&nbsp;ported | 2184 (=) | 429.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 503 (=) | 108.4k |
+| &nbsp;&nbsp;ported | 2185 (+1) | 430.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 502 (-1) | 108.0k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1013 (=) (3.7%)** | **125.4k (2.3%)** |
 | unmapped | 24436 | 4.84M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 407 (=) (7.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 411 (=) (7.1%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 163 (=) (2.7%)** | |
-| frozen functions (src/, from PDB + source) | 11525, stubs 761 | |
+| frozen functions (src/, from PDB + source) | 11525, stubs 760 | |
 
-Match evidence: annotated 642, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1011. Module anchors: 1479 assert strings.
+Match evidence: annotated 643, callgraph 172, callorder 133, cvar 30, handler 28, order 188, override 199, sticky 13, string 310, table 1010. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-19 22:47 -- mapped 2726, ported 2184, stub 503, spine mapped 407.
+Previous run: 2026-09-19 22:52 -- mapped 2726, ported 2184, stub 503, spine mapped 407.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 572 of those are WHOA_UNIMPLEMENTED stubs (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 1792 of them (=); 571 of those are WHOA_UNIMPLEMENTED stubs (-1). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -91,13 +91,13 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ac1550 (GetTitleRegion..) | 85 | `SimpleFrameMethods` | 0 | 6 |  / stubs: CreateTitleRegion, HookScript, AllowAttributeChanges, CanChangeAttribute ... |
 | 00ac19f0 (SetOrigin..) | 6 | `-` | 6 | 0 | SetOrigin, GetOrigin, SetDegrees, GetDegrees, SetRadians, GetRadians |
 | 00ac4190 (RequestRealmList..) | 14 | `s_ScriptFunctions` | 0 | 6 |  / stubs: SetPreferredInfo, SortRealms, GetSelectedCategory, IsInvalidTournamentRealmCategory ... |
-| 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 6 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
 | 00acf588 (InitializeTabardColors..) | 10 | `CGTabardModelFrameMethods` | 0 | 6 |  / stubs: InitializeTabardColors, Save, CycleVariation, GetUpperEmblemTexture ... |
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton, TurnInPetition, TurnInArenaPetition |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `-` | 6 | 0 | GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused, SetCurrencyBackpack, GetBackpackCurrencyInfo |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions` | 6 | 0 | ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition, OfferPetition, RenamePetition |
 | 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 5 |  / stubs: IsProtected, CanChangeProtectedState, CreateAnimationGroup, GetAnimationGroups ... |
 | 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
+| 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 5 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions` | 5 | 0 | GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle, BarberShopReset |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions` | 5 | 0 | FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial, GetPrevCompleatedTutorial |
 | 00acf5fc (CloseGuildRegistrar..) | 5 | `-` | 5 | 0 | CloseGuildRegistrar, GetGuildCharterCost, BuyGuildCharter, TurnInGuildCharter, GetTabardInfo |
@@ -290,7 +290,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_oggvorbis.cpp | 31 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | CalendarEvent.cpp | 40 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ChatBubbleFrame.cpp | 55 | 7.6k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
-| RealmList.cpp | 46 | 7.5k | 26 (56.5%) | 54.0% | 3 | 0 | 0 |
+| RealmList.cpp | 46 | 7.5k | 26 (56.5%) | 54.0% | 2 | 0 | 0 |
 | fmod_sample_openal.cpp | 19 | 7.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetitionVendor.cpp | 38 | 6.9k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | Vehicle_C.cpp | 43 | 6.8k | 0 (0.0%) | 0.0% | 0 | 0 | 19 |
@@ -738,7 +738,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 20:34 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:39 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:43 | 2699 (9.9%) | 991 (3.6%) | 527 | 393/5530 | 1791/2964 | 588 |
 | 2026-09-19 20:50 | 2699 (9.9%) | 991 (3.6%) | 523 | 393/5530 | 1791/2964 | 588 |
@@ -763,6 +762,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-19 22:40 | 2726 (10.0%) | 1012 (3.7%) | 504 | 407/5531 | 1792/2964 | 573 |
 | 2026-09-19 22:47 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
 | 2026-09-19 22:52 | 2726 (10.0%) | 1013 (3.7%) | 503 | 407/5531 | 1792/2964 | 572 |
+| 2026-09-19 22:55 | 2726 (10.0%) | 1013 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 
 ## How to move a row
 

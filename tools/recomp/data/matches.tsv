@@ -636,7 +636,7 @@ addr	how	frozen	evidence
 004df420	table	Script_SortRealms	binding "SortRealms" in s_ScriptFunctions ~ table 00ac4190
 004df4f0	table	Script_GetSelectedCategory	binding "GetSelectedCategory" in s_ScriptFunctions ~ table 00ac4190
 004df580	callorder	CRealmList::Initialize	same slot between linked calls in 004db9f0=CGlueMgr::Initialize
-004dfa70	table	Script_IsRaceClassRestricted	binding "IsRaceClassRestricted" in s_ScriptFunctions ~ table 00ac4228
+004dfa70	annotated	Script_IsRaceClassRestricted	tag in src/glue/CCharacterCreationScript.cpp
 004dfca0	table	Script_GetRandomName	binding "GetRandomName" in s_ScriptFunctions ~ table 00ac4228
 004dffe0	callgraph	CCharacterCreation::IsRaceClassValid	only unmatched callee of 004e0d00=Script_IsRaceClassValid
 004e0040	callgraph	CCharacterCreation::SetCharCustomizeModel	only unmatched callee of 004e0620=Script_SetCharCustomizeBackground
@@ -2080,7 +2080,7 @@ addr	how	frozen	evidence
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004e33a0=Script_DeleteCharacter
+0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004dfa70=Script_IsRaceClassRestricted
 0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
