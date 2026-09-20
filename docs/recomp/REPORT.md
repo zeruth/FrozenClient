@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 01:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 01:11 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,8 +8,8 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2751 (+1) (10.1%) | 586.4k (10.6%) |
-| &nbsp;&nbsp;ported | 2218 (+1) | 441.7k |
+| mapped to a frozen function | 2751 (=) (10.1%) | 586.4k (10.6%) |
+| &nbsp;&nbsp;ported | 2218 (=) | 441.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 493 (=) | 105.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1027 (=) (3.8%)** | **127.3k (2.3%)** |
@@ -21,7 +21,7 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 Match evidence: annotated 680, callgraph 174, callorder 133, cvar 30, handler 28, order 188, override 201, sticky 13, string 310, table 994. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 01:00 -- mapped 2750, ported 2217, stub 493, spine mapped 412.
+Previous run: 2026-09-20 01:08 -- mapped 2751, ported 2218, stub 493, spine mapped 412.
 
 ## Lua API coverage (binding tables)
 
@@ -737,7 +737,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-19 23:10 | 2728 (10.0%) | 1013 (3.7%) | 502 | 406/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:11 | 2731 (10.1%) | 1017 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:15 | 2732 (10.1%) | 1018 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
 | 2026-09-19 23:20 | 2731 (10.1%) | 1017 (3.7%) | 502 | 407/5531 | 1792/2964 | 571 |
@@ -762,6 +761,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 00:57 | 2749 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1798/2964 | 562 |
 | 2026-09-20 01:00 | 2750 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
 | 2026-09-20 01:08 | 2751 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
+| 2026-09-20 01:11 | 2751 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1799/2964 | 562 |
 
 ## How to move a row
 

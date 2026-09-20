@@ -333,7 +333,7 @@
   "0065c290": {
     "frozen": "WowClientDB<ChrClassesRec>::GetRecord",
     "status": "ported",
-    "note": "Pinned: the callgraph matcher drifts between template instantiations of GetRecord. This one reads min at this-8, max at this-0xc and the array at this+8, and those land exactly on the ChrClasses globals 00ad3414/00ad3410/00ad3424 that UnitClassBase (00610040) inlines. It had been on 0072aab0, which does object-type checks and is not a DB lookup at all."
+    "note": "WowClientDB<T>::GetRecord, and T is arbitrary: the body is identical for every record type -- bounds-check then index -- so the linker folded all instantiations into ONE function. It has 266 callers and is reached for ChrClasses, SpellIcon and everything else; GetShapeshiftFormInfo uses it for a spell icon and UnitClassBase for a class row. The name here picks one instantiation because the map needs a frozen symbol, not because the address belongs to ChrClasses.\n\nCORRECTION to the original note: I claimed it was identified as the ChrClasses instantiation because its min, max and array offsets (this-8, this-0xc, this+8) land on 00ad3414/3410/3424. Those offsets are relative to a \"this\" the CALLER supplies, so they describe the WowClientDB struct shape, not which instance. The shape was right and the identification was not.\n\nPinned regardless, because the callgraph matcher drifts it between instantiations whenever an edit changes a frozen call sequence -- which is exactly what a folded function invites."
   },
   "006f6020": {
     "status": "excluded",
