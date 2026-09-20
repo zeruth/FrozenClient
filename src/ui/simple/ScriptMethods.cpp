@@ -9,6 +9,8 @@
 #include "ui/simple/CSimpleCheckbox.hpp"
 #include "ui/simple/CSimpleEditBox.hpp"
 #include "ui/simple/CSimpleFont.hpp"
+#include "ui/simple/CSimpleAnimGroup.hpp"
+#include "ui/simple/CSimpleAnim.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
 #include "ui/simple/CSimpleFrame.hpp"
 #include "ui/simple/CSimpleHTML.hpp"
@@ -168,15 +170,16 @@ void RegisterSimpleFrameScriptMethods() {
         FrameScript_RegisterFunction(func.name, func.method);
     }
 
-    // TODO
-    // CSimpleAnim::CreateScriptMetaTable();
+    CSimpleAnim::CreateScriptMetaTable();
+
+    // TODO stage 2 in docs/ref/parity-animations.md -- the subclasses and their four small tables.
     // CSimpleTranslationAnim::CreateScriptMetaTable();
     // CSimpleRotationAnim::CreateScriptMetaTable();
     // CSimpleScaleAnim::CreateScriptMetaTable();
     // CSimpleControlPoint::CreateScriptMetaTable();
     // CSimplePathAnim::CreateScriptMetaTable();
     // CSimpleAlphaAnim::CreateScriptMetaTable();
-    // CSimpleAnimGroup::CreateScriptMetaTable();
+    CSimpleAnimGroup::CreateScriptMetaTable();
 
     CSimpleFont::CreateScriptMetaTable();
     CSimpleTexture::CreateScriptMetaTable();

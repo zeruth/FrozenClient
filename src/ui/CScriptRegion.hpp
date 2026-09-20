@@ -3,6 +3,7 @@
 
 #include "ui/CLayoutFrame.hpp"
 #include "ui/CScriptObject.hpp"
+#include <storm/array/TSGrowableArray.hpp>
 
 class C2Vector;
 class CSimpleAnimGroup;
@@ -22,6 +23,9 @@ class CScriptRegion : public CScriptObject, public CLayoutFrame {
 
         // Member variables
         CSimpleFrame* m_parent = nullptr; // TODO verify type
+
+        // Owned: the region destroys its groups, and each group destroys its animations.
+        TSGrowableArray<CSimpleAnimGroup*> m_animGroups;
 
         // Virtual member functions
         virtual bool IsA(int32_t type);

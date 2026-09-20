@@ -2541,7 +2541,7 @@
   "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 181,
-  "status": "ported"
+  "status": "stub"
  },
  "00488540": {
   "branchRatio": 0.0,
@@ -4716,6 +4716,70 @@
   "refSize": 1155,
   "status": "ported"
  },
+ "00497800": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::GetScriptByName",
+  "frozenSize": 429,
+  "how": "annotated",
+  "module": "CSimpleFont.cpp",
+  "refSize": 275,
+  "status": "ported"
+ },
+ "00497fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "CSimpleAnim::GetRegionParent",
+  "frozenSize": 15,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
+ "0049a8f0": {
+  "branchRatio": 0.074,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::Play",
+  "frozenSize": 37,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 443,
+  "status": "ported"
+ },
+ "0049ad80": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "CSimpleAnim::Play",
+  "frozenSize": 55,
+  "how": "annotated",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
  "0049c830": {
   "branchRatio": 0.727,
   "constOverlap": 0.0,
@@ -5085,20 +5149,20 @@
   "status": "ported"
  },
  "0049e070": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
   ],
   "frozen": "CScriptRegion_StopAnimating",
-  "frozenSize": 75,
+  "frozenSize": 41,
   "how": "table",
   "module": "CSimpleAnim.cpp",
   "refSize": 57,
-  "status": "stub"
+  "status": "ported"
  },
  "0049e0b0": {
   "branchRatio": 0.0,
@@ -5133,36 +5197,36 @@
   "status": "verified"
  },
  "0049e260": {
-  "branchRatio": 0.154,
+  "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.8,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
   ],
   "frozen": "CScriptRegion_GetAnimationGroups",
-  "frozenSize": 75,
+  "frozenSize": 339,
   "how": "table",
   "module": "CSimpleAnim.cpp",
   "refSize": 237,
-  "status": "stub"
+  "status": "ported"
  },
  "0049e350": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.278,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
   ],
   "frozen": "CScriptRegion_CreateAnimationGroup",
-  "frozenSize": 75,
+  "frozenSize": 253,
   "how": "table",
   "module": "CScriptRegionScript.cpp",
   "refSize": 431,
-  "status": "stub"
+  "status": "ported"
  },
  "0049e5b0": {
   "branchRatio": 0.667,
@@ -7276,20 +7340,884 @@
   "refSize": 79,
   "status": "ported"
  },
+ "004a4f40": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_Play",
+  "frozenSize": 40,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "004a4f80": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_Pause",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "004a4fc0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_Stop",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
+ "004a5000": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnim.cpp",
+   "src/ui/simple/csimpleanim.cpp"
+  ],
+  "frozen": "CSimpleAnim::IsDone",
+  "frozenSize": 16,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 88,
+  "status": "ported"
+ },
+ "004a5060": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_IsPlaying",
+  "frozenSize": 81,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a50b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_IsPaused",
+  "frozenSize": 47,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a5100": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_IsStopped",
+  "frozenSize": 54,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
+ "004a5150": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_IsDelaying",
+  "frozenSize": 54,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "004a51a0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetStartDelay",
+  "frozenSize": 137,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "004a5220": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetStartDelay",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004a5260": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetEndDelay",
+  "frozenSize": 137,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "004a52e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetEndDelay",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004a5320": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetDuration",
+  "frozenSize": 137,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "004a53a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetDuration",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004a53e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetSmoothProgress",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a5430": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetSmoothProgress",
+  "frozenSize": 137,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 125,
+  "status": "ported"
+ },
+ "004a54b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetProgress",
+  "frozenSize": 51,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a5500": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetProgressWithDelay",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a5550": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetMaxFramerate",
+  "frozenSize": 137,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 125,
+  "status": "ported"
+ },
+ "004a55d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetMaxFramerate",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004a5610": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetElapsed",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a5660": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetOrder",
+  "frozenSize": 130,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
+ "004a56f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetOrder",
+  "frozenSize": 57,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 65,
+  "status": "ported"
+ },
+ "004a5740": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetSmoothing",
+  "frozenSize": 152,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
+ "004a5810": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetSmoothing",
+  "frozenSize": 54,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "004a5880": {
+  "branchRatio": 0.267,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.455,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetParent",
+  "frozenSize": 392,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 496,
+  "status": "ported"
+ },
+ "004a5a70": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetRegionParent",
+  "frozenSize": 110,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 117,
+  "status": "ported"
+ },
+ "004a5af0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_HasScript",
+  "frozenSize": 176,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "004a5bb0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_GetScript",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 270,
+  "status": "ported"
+ },
+ "004a5cc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_SetScript",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 295,
+  "status": "ported"
+ },
+ "004a5df0": {
+  "branchRatio": 0.118,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnim_HookScript",
+  "frozenSize": 75,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 552,
+  "status": "stub"
+ },
+ "004a6790": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/CScriptRegion.cpp",
+   "src/ui/cscriptregion.cpp"
+  ],
+  "frozen": "CScriptRegion::SetParent",
+  "frozenSize": 8,
+  "how": "order",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 493,
+  "status": "ported"
+ },
+ "004a6d20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::GetMaxOrder",
+  "frozenSize": 94,
+  "how": "order",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 85,
+  "status": "ported"
+ },
+ "004a6ea0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_Play",
+  "frozenSize": 40,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "004a6ee0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_Pause",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "004a6f20": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_Stop",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
  "004a6f60": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/net/connection/ClientConnection.cpp",
-   "src/net/connection/clientconnection.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "ClientConnection::AccountLogin_Finish",
-  "frozenSize": 81,
-  "how": "order",
+  "frozen": "CSimpleAnimGroup_Finish",
+  "frozenSize": 40,
+  "how": "table",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 55,
+  "status": "ported"
+ },
+ "004a6fa0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetProgress",
+  "frozenSize": 51,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "004a6ff0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_IsDone",
+  "frozenSize": 54,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "004a7040": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_IsPaused",
+  "frozenSize": 47,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "004a7090": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_IsPendingFinish",
+  "frozenSize": 47,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
+ "004a70e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetDuration",
+  "frozenSize": 58,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004a7130": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_SetLooping",
+  "frozenSize": 152,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 188,
+  "status": "ported"
+ },
+ "004a71f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetLooping",
+  "frozenSize": 54,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "004a7240": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetLoopState",
+  "frozenSize": 54,
+  "how": "annotated",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "004a7290": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetMaxOrder",
+  "frozenSize": 59,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 85,
+  "status": "ported"
+ },
+ "004a72f0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.455,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_SetInitialOffset",
+  "frozenSize": 179,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 225,
+  "status": "ported"
+ },
+ "004a73e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetInitialOffset",
+  "frozenSize": 79,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 152,
+  "status": "ported"
+ },
+ "004a7480": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_HasScript",
+  "frozenSize": 176,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "004a7540": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetScript",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 270,
+  "status": "ported"
+ },
+ "004a7650": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_SetScript",
+  "frozenSize": 40,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 295,
+  "status": "ported"
+ },
+ "004a7780": {
+  "branchRatio": 0.118,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_HookScript",
+  "frozenSize": 75,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 552,
+  "status": "stub"
+ },
+ "004a7aa0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_IsPlaying",
+  "frozenSize": 81,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 95,
+  "status": "ported"
+ },
+ "004a7b00": {
+  "branchRatio": 0.154,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_GetAnimations",
+  "frozenSize": 304,
+  "how": "table",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 226,
+  "status": "ported"
+ },
+ "004a7e00": {
+  "branchRatio": 0.107,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.289,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup_CreateAnimation",
+  "frozenSize": 197,
+  "how": "annotated",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 910,
   "status": "ported"
  },
  "004a81b0": {
@@ -7314,10 +8242,10 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/CScriptObjectScript.cpp",
-   "src/ui/cscriptobjectscript.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CScriptObject_GetObjectType",
+  "frozen": "CSimpleAnimGroup_GetObjectType",
   "frozenSize": 55,
   "how": "table",
   "module": "CSimpleAnimScript.cpp",
@@ -7325,16 +8253,16 @@
   "status": "ported"
  },
  "004a8290": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
-   "src/ui/CScriptObjectScript.cpp",
-   "src/ui/cscriptobjectscript.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CScriptObject_IsObjectType",
-  "frozenSize": 170,
+  "frozen": "CSimpleAnimGroup_IsObjectType",
+  "frozenSize": 166,
   "how": "table",
   "module": "CSimpleAnimScript.cpp",
   "refSize": 170,
@@ -7346,27 +8274,27 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/CScriptObjectScript.cpp",
-   "src/ui/cscriptobjectscript.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CScriptObject_GetName",
-  "frozenSize": 84,
+  "frozen": "CSimpleAnimGroup_GetName",
+  "frozenSize": 76,
   "how": "table",
   "module": "CSimpleAnimScript.cpp",
   "refSize": 96,
   "status": "ported"
  },
  "004a83a0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
-   "src/ui/CScriptObjectScript.cpp",
-   "src/ui/cscriptobjectscript.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CScriptObject_GetParent",
-  "frozenSize": 118,
+  "frozen": "CSimpleAnimGroup_GetParent",
+  "frozenSize": 103,
   "how": "table",
   "module": "CSimpleAnimScript.cpp",
   "refSize": 119,
@@ -23169,12 +24097,13 @@
   "status": "stub"
  },
  "005d6f60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_ContainerIDToInventoryID",
   "frozenSize": 138,
@@ -23184,12 +24113,13 @@
   "status": "ported"
  },
  "005d7180": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.25,
   "faithful": false,
   "fidelity": 0.538,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_SetBagPortraitTexture",
   "frozenSize": 425,
@@ -23199,12 +24129,13 @@
   "status": "diverged"
  },
  "005d74a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.143,
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerNumSlots",
   "frozenSize": 257,
@@ -23214,12 +24145,13 @@
   "status": "ported"
  },
  "005d7590": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.36,
+  "constOverlap": 0.067,
   "faithful": false,
   "fidelity": 0.438,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerNumFreeSlots",
   "frozenSize": 441,
@@ -23229,12 +24161,13 @@
   "status": "ported"
  },
  "005d7820": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.455,
+  "constOverlap": 0.067,
   "faithful": false,
-  "fidelity": 0.391,
+  "fidelity": 0.217,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerFreeSlots",
   "frozenSize": 472,
@@ -23244,12 +24177,13 @@
   "status": "ported"
  },
  "005d7a90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.727,
+  "constOverlap": 0.062,
   "faithful": false,
   "fidelity": 0.6,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerItemInfo",
   "frozenSize": 588,
@@ -23259,12 +24193,13 @@
   "status": "ported"
  },
  "005d7c80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.571,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerItemLink",
   "frozenSize": 117,
@@ -23274,12 +24209,13 @@
   "status": "ported"
  },
  "005d7d00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerItemID",
   "frozenSize": 123,
@@ -23289,12 +24225,13 @@
   "status": "ported"
  },
  "005d7ef0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.571,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetContainerItemDurability",
   "frozenSize": 194,
@@ -23304,12 +24241,13 @@
   "status": "ported"
  },
  "005d8c70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.5,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "Script_GetBagName",
   "frozenSize": 311,
@@ -27467,12 +28405,13 @@
   "status": "ported"
  },
  "0061e290": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/object/client/ItemLink.cpp"
+   "src/object/client/ItemLink.cpp",
+   "src/object/client/itemlink.cpp"
   ],
   "frozen": "ItemLinkBuild",
   "frozenSize": 333,
@@ -27482,12 +28421,13 @@
   "status": "ported"
  },
  "0061e3a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/object/client/ItemLink.cpp"
+   "src/object/client/ItemLink.cpp",
+   "src/object/client/itemlink.cpp"
   ],
   "frozen": "ItemLinkFromObject",
   "frozenSize": 521,
@@ -29504,12 +30444,13 @@
   "status": "ported"
  },
  "00706d70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.083,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.25,
   "files": [
-   "src/object/client/ItemLink.cpp"
+   "src/object/client/ItemLink.cpp",
+   "src/object/client/itemlink.cpp"
   ],
   "frozen": "ItemNameFromEntry",
   "frozenSize": 102,
@@ -29519,12 +30460,13 @@
   "status": "ported"
  },
  "0070aa00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/ContainerFrameScript.cpp"
+   "src/ui/game/ContainerFrameScript.cpp",
+   "src/ui/game/containerframescript.cpp"
   ],
   "frozen": "ItemDisplayIcon",
   "frozenSize": 98,

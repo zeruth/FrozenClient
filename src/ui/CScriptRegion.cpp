@@ -1,4 +1,5 @@
 #include "ui/CScriptRegion.hpp"
+#include "ui/simple/CSimpleAnimGroup.hpp"
 #include "ui/CScriptObject.hpp"
 #include "ui/CScriptRegionScript.hpp"
 #include "ui/simple/CSimpleTop.hpp"
@@ -95,12 +96,15 @@ void CScriptRegion::LoadXML(const XMLNode* node, CStatus* status) {
     this->LoadXML_Animations(node, status);
 }
 
+// TODO stage 3 in docs/ref/parity-animations.md. FrameXML declares most of its animations in XML
+// rather than building them from Lua, so until this reads <Animations> the classes below only
+// serve the scripted path.
 void CScriptRegion::LoadXML_Animations(const XMLNode* node, CStatus* status) {
     // TODO
 }
 
 void CScriptRegion::NotifyAnimBegin(CSimpleAnimGroup* animGroup) {
-    // TODO
+    // TODO stage 4: this is how a region learns it must start being updated every frame.
 }
 
 void CScriptRegion::NotifyAnimEnd(CSimpleAnimGroup* animGroup) {

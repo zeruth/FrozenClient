@@ -171,7 +171,15 @@ Ported order matters here, so it is written out:
 
 Each stage should end in a committable increment; none of it should go in blind as one batch.
 
-1. **Skeleton and state.** `CSimpleAnimation` and `CSimpleAnimGroup` with the fields the accessors
+1. **Skeleton and state. DONE, unverified** -- landed 2026-09-20. `CSimpleAnim` and
+   `CSimpleAnimGroup` with both method tables in the reference's order, the handler slots, and the
+   region's `CreateAnimationGroup` / `GetAnimationGroups` / `StopAnimating`. Both tables now report
+   0 missing; only `HookScript` is stubbed in each, for want of a chaining helper frozen has
+   nowhere. Two corrections came out of measuring it: the group's `GetScriptByName` is
+   `FUN_00497800`, which carries an **OnLoad** handler the string scan alone had missed and sets no
+   wrapper for OnLoad/OnPlay/OnPause; and `FUN_00497fe0` is `CSimpleAnim::GetRegionParent`, which
+   the matcher had first paired with a local helper on callgraph evidence alone.
+   Original scope: `CSimpleAnimation` and `CSimpleAnimGroup` with the fields the accessors
    read, the two widget type ids, `CreateAnimationGroup` / `CreateAnimation`, and the pure
    accessors (durations, delays, order, smoothing, looping, the `Is*` predicates). `Play`, `Pause`,
    `Stop` as state transitions only. This alone converts the nil-calls into working methods: with

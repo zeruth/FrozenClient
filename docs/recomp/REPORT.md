@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 02:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-20 02:44 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2835 (=) (10.4%) | 603.9k (10.9%) |
-| &nbsp;&nbsp;ported | 2128 (=) | 428.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 664 (=) | 135.3k |
+| mapped to a frozen function | 2893 (=) (10.7%) | 613.0k (11.1%) |
+| &nbsp;&nbsp;ported | 2186 (=) | 437.1k |
+| &nbsp;&nbsp;stub (unimplemented body) | 664 (=) | 135.8k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1020 (=) (3.8%)** | **127.5k (2.3%)** |
-| unmapped | 24327 | 4.82M |
+| **faithful** (linked, not stub, call order >= 80%) | **1047 (=) (3.9%)** | **129.8k (2.3%)** |
+| unmapped | 24269 | 4.81M |
 | world spine (reachable from OnFrameRender) | 5531, mapped 413 (=) (7.5%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 417 (=) (7.2%) | |
 | **render surface** (the modules that draw the world) | **6005, mapped 166 (=) (2.8%)** | |
-| frozen functions (src/, from PDB + source) | 11589, stubs 1723 | |
+| frozen functions (src/, from PDB + source) | 11705, stubs 1727 | |
 
-Match evidence: annotated 693, callgraph 174, callorder 133, cvar 30, handler 28, order 180, override 204, sticky 13, string 308, table 1072. Module anchors: 1479 assert strings.
+Match evidence: annotated 708, callgraph 174, callorder 133, cvar 30, handler 28, order 181, override 204, sticky 13, string 308, table 1114. Module anchors: 1479 assert strings.
 
-Previous run: 2026-09-20 02:20 -- mapped 2835, ported 2128, stub 664, spine mapped 413.
+Previous run: 2026-09-20 02:42 -- mapped 2893, ported 2186, stub 664, spine mapped 413.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2863 of them (+86); 1512 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2910 of them (=); 1509 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -45,7 +45,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00ad0e80 (CloseTradeSkill..) | 36 | `s_ScriptFunctions, s_stubs` | 0 | 34 |  / stubs: CloseTradeSkill, GetTradeSkillInfo, SelectTradeSkill, GetTradeSkillSelectionIndex ... |
 | 00ace610 (CloseMail..) | 38 | `s_ScriptFunctions, s_stubs` | 0 | 33 |  / stubs: CloseMail, ClearSendMail, ClickSendMailItemButton, SetSendMailMoney ... |
 | 00acfc70 (GetCategoryList..) | 37 | `s_ScriptFunctions, s_stubs` | 0 | 30 |  / stubs: GetCategoryList, GetStatisticsCategoryList, GetCategoryInfo, GetCategoryNumAchievements ... |
-| 00ac18e0 (Play..) | 31 | `ScriptRegionMethods, SimpleFrameMethods` | 26 | 1 | Play, Pause, Stop, IsDone, IsPlaying, IsPaused ... / stubs: HookScript |
 | 00accf18 (GetMapContinents..) | 40 | `s_ScriptFunctions, s_stubs` | 0 | 27 |  / stubs: GetMapContinents, GetMapZones, SetMapZoom, ZoomOut ... |
 | 00ad0840 (GetNumGuildMembers..) | 43 | `s_ScriptFunctions, s_stubs` | 0 | 27 |  / stubs: GetGuildRosterInfo, GetGuildRosterLastOnline, GuildRosterSetPublicNote, GuildRosterSetOfficerNote ... |
 | 00acf3e8 (OpenTrainer..) | 28 | `s_ScriptFunctions, s_stubs` | 0 | 25 |  / stubs: OpenTrainer, CloseTrainer, GetTrainerServiceInfo, SelectTrainerService ... |
@@ -56,7 +55,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acd488 (KBSetup_BeginLoading..) | 22 | `-` | 22 | 0 | KBSetup_BeginLoading, KBSetup_IsLoaded, KBSetup_GetLanguageCount, KBSetup_GetLanguageData, KBSetup_GetCategoryCount, KBSetup_GetCategoryData ... |
 | 00ad2060 (CameraZoomIn..) | 22 | `s_stubs` | 0 | 22 |  / stubs: CameraZoomIn, CameraZoomOut, MoveViewInStart, MoveViewInStop ... |
 | 00acde38 (GetNumBindings..) | 26 | `s_ScriptFunctions` | 0 | 20 |  / stubs: GetNumBindings, GetBinding, SetBinding, SetBindingSpell ... |
-| 00ac1ab8 (Play..) | 26 | `ScriptObjectMethods` | 18 | 1 | Play, Pause, Stop, Finish, GetProgress, IsDone ... / stubs: HookScript |
 | 00ace1f0 (SecureCmdOptionParse..) | 22 | `s_ScriptFunctions, s_stubs` | 0 | 19 |  / stubs: SecureCmdOptionParse, RunMacro, RunMacroText, StopMacro ... |
 | 00accce0 (GetNumSpellTabs..) | 45 | `s_ScriptFunctions` | 0 | 18 |  / stubs: GetSpellCount, ToggleSpellAutocast, EnableSpellAutocast, DisableSpellAutocast ... |
 | 00aced00 (CloseMerchant..) | 21 | `s_ScriptFunctions, s_stubs` | 0 | 18 |  / stubs: CloseMerchant, GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemCostInfo ... |
@@ -89,8 +87,6 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acf7f0 (ClosePetitionVendor..) | 8 | `s_ScriptFunctions, s_stubs` | 0 | 6 |  / stubs: ClosePetitionVendor, GetPetitionItemInfo, BuyPetition, ClickPetitionButton ... |
 | 00acfc34 (GetCurrencyListSize..) | 6 | `s_stubs` | 0 | 6 |  / stubs: GetCurrencyListSize, GetCurrencyListInfo, ExpandCurrencyList, SetCurrencyUnused ... |
 | 00ad0a60 (ClosePetition..) | 8 | `s_ScriptFunctions, s_stubs` | 0 | 6 |  / stubs: ClosePetition, GetPetitionInfo, GetPetitionNameInfo, SignPetition ... |
-| 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 5 |  / stubs: IsProtected, CanChangeProtectedState, CreateAnimationGroup, GetAnimationGroups ... |
-| 00ac1a74 (SetCurve..) | 5 | `-` | 5 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint, GetMaxOrder |
 | 00ac4228 (SetCharCustomizeFrame..) | 32 | `s_ScriptFunctions` | 0 | 5 |  / stubs: CustomizeExistingCharacter, PaidChange_GetPreviousRaceIndex, PaidChange_GetCurrentRaceIndex, PaidChange_GetCurrentClassIndex ... |
 | 00acc790 (GetBarberShopStyleInfo..) | 9 | `s_ScriptFunctions, s_stubs` | 0 | 5 |  / stubs: GetBarberShopStyleInfo, SetNextBarberShopStyle, GetBarberShopTotalCost, ApplyBarberShopStyle ... |
 | 00acc868 (CanResetTutorials..) | 8 | `s_ScriptFunctions, s_stubs` | 0 | 5 |  / stubs: FlagTutorial, ClearTutorials, ResetTutorials, GetNextCompleatedTutorial ... |
@@ -99,19 +95,23 @@ The reference registers 2964 Lua bindings across 100 tables (widget methods per 
 | 00acff54 (GetNumGlyphSockets..) | 6 | `s_ScriptFunctions, s_stubs` | 0 | 5 |  / stubs: GetGlyphSocketInfo, GlyphMatchesSocket, PlaceGlyphInSocket, RemoveGlyphFromSocket ... |
 | 00af5848 (GetText..) | 7 | `s_ScriptFunctions` | 0 | 5 |  / stubs: GetNumFrames, EnumerateFrames, CreateFont, GetFramesRegisteredForEvent ... |
 | 00b2cee0 (SetFontObject..) | 48 | `SimpleScrollingMessageFrameMethods` | 5 | 0 | GetMessageInfo, RemoveMessagesByAccessID, SetScrollOffset, UpdateColorByID, GetCurrentLine |
-| 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods` | 4 | 0 | SetOffset, GetOffset, SetOrder, GetOrder |
+| 00ac1a74 (SetCurve..) | 5 | `SimpleAnimGroupMethods` | 4 | 0 | SetCurve, GetCurve, GetControlPoints, CreateControlPoint |
 | 00aceb7c (BankButtonIDToInvSlotID..) | 5 | `s_ScriptFunctions, s_stubs` | 0 | 4 |  / stubs: BankButtonIDToInvSlotID, GetBankSlotCost, PurchaseSlot, CloseBankFrame |
 | 00acf180 (SetFillTexture..) | 14 | `CGQuestPOIFrameMethods` | 0 | 4 |  / stubs: SetFillTexture, SetBorderTexture, DrawQuestBlob, UpdateMouseOverTooltip |
 | 00b2cb10 (SetModel..) | 24 | `SimpleModelMethods` | 0 | 4 |  / stubs: SetLight, GetModelScale, ReplaceIconTexture, SetGlow |
 | 00ac465c (ResetLights..) | 4 | `SimpleModelFFXMethods` | 0 | 3 |  / stubs: AddLight, AddCharacterLight, AddPetLight |
 | 00acf514 (SetUnit..) | 4 | `CGCharacterModelBaseMethods` | 0 | 3 |  / stubs: SetUnit, SetCreature, RefreshUnit |
+| 00ac1480 (IsProtected..) | 25 | `ScriptRegionMethods` | 0 | 2 |  / stubs: IsProtected, CanChangeProtectedState |
 | 00ac1a24 (SetOrigin..) | 4 | `SimpleFrameMethods` | 2 | 0 | SetOrigin, GetOrigin |
+| 00ac1a48 (SetParent..) | 5 | `ScriptRegionMethods, SimpleAnimMethods` | 2 | 0 | SetOffset, GetOffset |
 | 00ac4378 (SetCharSelectModelFrame..) | 13 | `s_ScriptFunctions` | 0 | 2 |  / stubs: RenameCharacter, DeclineCharacter |
 | 00b2cd50 (GetColorWheelTexture..) | 12 | `SimpleColorSelectMethods` | 2 | 0 | SetColorWheelThumbTexture, SetColorValueThumbTexture |
 | 00b2cdb8 (GetOrientation..) | 12 | `SimpleStatusBarMethods` | 0 | 2 |  / stubs: SetOrientation, SetStatusBarTexture |
 | 00b2ce20 (GetThumbTexture..) | 13 | `SimpleSliderMethods` | 0 | 2 |  / stubs: SetThumbTexture, SetOrientation |
 | 00b2d3e4 (SetChecked..) | 6 | `SimpleCheckboxMethods` | 0 | 2 |  / stubs: SetCheckedTexture, SetDisabledCheckedTexture |
 | 00ac1028 (IsObjectType..) | 29 | `SimpleTextureMethods` | 0 | 1 |  / stubs: SetGradient |
+| 00ac18e0 (Play..) | 31 | `SimpleAnimMethods` | 0 | 1 |  / stubs: HookScript |
+| 00ac1ab8 (Play..) | 26 | `SimpleAnimGroupMethods` | 0 | 1 |  / stubs: HookScript |
 | 00ad13a4 (SetCooldown..) | 5 | `CGCooldownMethods` | 0 | 1 |  / stubs: SetCooldown |
 | 00ad2184 (GetTime..) | 7 | `s_SystemFunctions` | 0 | 1 |  / stubs: ConsoleExec |
 | 00b2d210 (SetFontObject..) | 58 | `SimpleEditBoxMethods` | 0 | 1 |  / stubs: ClearFocus |
@@ -160,7 +160,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SpellBookFrame.cpp | 246 | 57.0k | 40 (16.3%) | 13.1% | 21 | 0 | 15 |
 | FFXEffects.cpp | 219 | 56.2k | 6 (2.7%) | 2.4% | 0 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
-| CSimpleAnimScript.cpp | 223 | 51.5k | 9 (4.0%) | 2.6% | 0 | 0 | 8 |
+| CSimpleAnimScript.cpp | 223 | 51.5k | 10 (4.5%) | 4.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 13 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 35 | 0 | 26 |
@@ -179,7 +179,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 0 (0.0%) | 0.0% | 0 | 0 | 85 |
 | ConsoleVar.cpp | 243 | 36.1k | 74 (30.5%) | 29.8% | 0 | 0 | 68 |
-| CSimpleFrameScript.cpp | 242 | 35.7k | 132 (54.5%) | 60.2% | 8 | 1 | 4 |
+| CSimpleFrameScript.cpp | 242 | 35.7k | 185 (76.4%) | 81.0% | 10 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 12 (5.6%) | 11.1% | 0 | 0 | 84 |
 | AchievementInfo.cpp | 179 | 33.7k | 62 (34.6%) | 32.0% | 60 | 0 | 0 |
 | Calendar.cpp | 109 | 32.4k | 18 (16.5%) | 16.3% | 18 | 0 | 0 |
@@ -194,13 +194,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 204 | 27.4k | 105 (51.5%) | 56.2% | 1 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 4 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 34 (20.5%) | 32.8% | 1 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 34 (20.5%) | 32.8% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 26 (18.1%) | 25.8% | 1 | 0 | 36 |
 | GossipInfo.cpp | 174 | 25.4k | 21 (12.1%) | 9.7% | 11 | 0 | 5 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 15 (10.8%) | 17.3% | 3 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 12 | 0 | 8 |
-| CSimpleAnim.cpp | 141 | 24.4k | 27 (19.1%) | 26.2% | 4 | 2 | 7 |
+| CSimpleAnim.cpp | 141 | 24.4k | 30 (21.3%) | 28.3% | 2 | 2 | 7 |
 | TalentInfo.cpp | 141 | 24.1k | 3 (2.1%) | 1.8% | 3 | 0 | 1 |
 | MovementShared.cpp | 85 | 23.5k | 1 (1.2%) | 1.1% | 0 | 0 | 42 |
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -334,7 +334,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_string.cpp | 18 | 3.9k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
 | fmod_output.cpp | 20 | 3.9k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | SoundInterface2VoiceChat.cpp | 44 | 3.9k | 0 (0.0%) | 0.0% | 0 | 0 | 13 |
-| CSimpleFont.cpp | 25 | 3.8k | 2 (8.0%) | 35.5% | 0 | 0 | 1 |
+| CSimpleFont.cpp | 25 | 3.8k | 3 (12.0%) | 42.5% | 0 | 0 | 1 |
 | TumorManager.cpp | 44 | 3.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CGxDeviceD3d.cpp | 15 | 3.8k | 1 (6.7%) | 5.1% | 0 | 0 | 0 |
 | fmod_output_software.cpp | 14 | 3.7k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -504,12 +504,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0062f9e0 | Tooltip.cpp | 569 | 0 | `CGTooltip_SetInboxItem` [table] | Usage: %s:SetInboxItem(messageIndex, att |
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
 | 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
+| 004a5df0 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnim_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
+| 004a7780 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnimGroup_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 005cf220 | PetitionInfo.cpp | 550 | 0 | `Script_Stub_OfferPetition` [order] | .\PetitionInfo.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 004b7460 | Texture.cpp | 136 | 3 | `GetDefaultTexture` [order] | .?AVCMipBitsCache@@, d:\buildserver\wow\1\work\wow-code\branc |
 | 00595c40 | TaxiMapFrame.cpp? | 544 | 0 | `Script_Stub_GetTrainerServiceStepIncrease` [order] | INCREASE_POTENTIAL, Usage: GetTrainerServiceStepIncrease(ind |
 | 005ba000 | AchievementInfo.cpp? | 535 | 0 | `Script_Stub_CalendarGetRaidInfo` [table] | Usage: CalendarGetRaidInfo([-1,0,1], mon |
-| 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
-| 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -549,6 +549,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
+| 004a7e00 | `CSimpleAnimGroup_CreateAnimation` | %s:CreateAnimation(): Couldn't find inherited node; %s:CreateAnimation(): Recursively inherited node "; Alpha; Rotation |
 | 0081f330 | `CM2SceneRender::CM2SceneRender` | Particle; Particle_Unlit; Projected_ModAdd; Projected_ModMod |
 | 005b8690 | `Script_Stub_CalendarEventGetInviteSortCriterion` | class; level; notes; party |
 | 0055d860 | `CGUIBindings::ParseModifierFlags` | LCTRL; LSHIFT; RCTRL; RSHIFT |
@@ -556,7 +557,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 0054bc30 | `Script_GetBattlefieldStatus` | Usage: GetBattlefieldStatus(index); active; confirm; error |
 | 00539d70 | `Script_BNGetFriendToonInfo` | Couldn't find a toon at friend index %d, online to; Couldn't find a toon at friend index %d, toon inde; Friend index %d too large, only %d friends.; Toon index %d too large, only %d toons. |
 | 0052a980 | `CGGameUI::Initialize` | UIParent; Whether or not script profiling is enabled; Whether taint logging is enabled; scriptProfile |
-| 004b81d0 | `CBLPFile::Open` | Error loading texure file "%s": unsupported image ; TextureLoadImage() blocking load: %s.\n; dataFormat; height |
 
 ## Largest frozen functions with no reference link
 
@@ -650,7 +650,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00967290 | `CSimpleEditBox::LoadXML` | 81% | 36 | 42 | 42 | 20 | 0% | 989 |
 | 00853c50 | `str_format` | 67% | 30 | 25 | 23 | 18 | 3% | 969 |
 | 008ce200 | `FindPatchPrefix_SC2_ArchiveName` | 0% | 42 | 5 | 11 | 10 | 2% | 951 |
-| 004da5f0 | `CGlueMgr::Resume` | 13% | 47 | 37 | 15 | 5 | 8% | 909 |
+| 004a7e00 | `CSimpleAnimGroup_CreateAnimation` | 29% | 38 | 9 | 28 | 3 | 0% | 910 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -731,8 +731,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 00:39 | 2747 (10.1%) | 1028 (3.8%) | 494 | 412/5531 | 1795/2964 | 563 |
-| 2026-09-20 00:42 | 2748 (10.1%) | 1028 (3.8%) | 494 | 412/5531 | 1796/2964 | 563 |
 | 2026-09-20 00:46 | 2749 (10.1%) | 1027 (3.8%) | 494 | 412/5531 | 1798/2964 | 563 |
 | 2026-09-20 00:52 | 2749 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1798/2964 | 562 |
 | 2026-09-20 00:57 | 2749 (10.1%) | 1027 (3.8%) | 493 | 412/5531 | 1798/2964 | 562 |
@@ -756,6 +754,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 02:18 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2747/2964 | 1500 |
 | 2026-09-20 02:20 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2777/2964 | 1512 |
 | 2026-09-20 02:22 | 2835 (10.4%) | 1020 (3.8%) | 664 | 413/5531 | 2863/2964 | 1512 |
+| 2026-09-20 02:42 | 2893 (10.7%) | 1047 (3.9%) | 664 | 413/5531 | 2910/2964 | 1509 |
+| 2026-09-20 02:44 | 2893 (10.7%) | 1047 (3.9%) | 664 | 413/5531 | 2910/2964 | 1509 |
 
 ## How to move a row
 

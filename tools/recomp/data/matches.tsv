@@ -295,6 +295,10 @@ addr	how	frozen	evidence
 004963c0	override	CSimpleFontStringAttributes::SetJustifyV	
 00496f70	callorder	CSimpleFont::GetFont	same slot between linked calls in 004a2240=CSimpleFrame_CreateFontString, 00977340=CSimpleButton_SetNormalFontObject, 009774c0=CSimpleButton_SetDisabledFontObject
 00497070	string	CSimpleFont::LoadXML	unique "Couldn't find inherited font: %s"
+00497800	annotated	CSimpleAnimGroup::GetScriptByName	tag in src/ui/simple/CSimpleAnimGroup.cpp
+00497fe0	annotated	CSimpleAnim::GetRegionParent	tag in src/ui/simple/CSimpleAnim.cpp
+0049a8f0	annotated	CSimpleAnimGroup::Play	tag in src/ui/simple/CSimpleAnimGroup.cpp
+0049ad80	annotated	CSimpleAnim::Play	tag in src/ui/simple/CSimpleAnim.cpp
 0049c830	callgraph	CFramePoint::GetRelativeRect	only unmatched callee of 0049c900=CFramePoint::X, 0049c9a0=CFramePoint::Y
 0049c900	callgraph	CFramePoint::X	only unmatched callee of 00488db0=CLayoutFrame::Sub488DB0
 0049c9a0	callgraph	CFramePoint::Y	only unmatched callee of 00488e40=CLayoutFrame::Sub488E40
@@ -455,12 +459,66 @@ addr	how	frozen	evidence
 004a4ab0	annotated	CSimpleFont_SetJustifyH	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4b00	annotated	CSimpleFont_SetJustifyV	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4b50	annotated	CSimpleFont_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontScript.cpp
-004a6f60	order	ClientConnection::AccountLogin_Finish	binding table name AccountLogin_Finish, in definition order in src/net/connection/ClientConnection.cpp
+004a4f40	annotated	CSimpleAnim_Play	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a4f80	table	CSimpleAnim_Pause	binding "Pause" in SimpleAnimMethods ~ table 00ac18e0
+004a4fc0	table	CSimpleAnim_Stop	binding "Stop" in SimpleAnimMethods ~ table 00ac18e0
+004a5000	annotated	CSimpleAnim::IsDone	tag in src/ui/simple/CSimpleAnim.cpp
+004a5060	table	CSimpleAnim_IsPlaying	binding "IsPlaying" in SimpleAnimMethods ~ table 00ac18e0
+004a50b0	table	CSimpleAnim_IsPaused	binding "IsPaused" in SimpleAnimMethods ~ table 00ac18e0
+004a5100	table	CSimpleAnim_IsStopped	binding "IsStopped" in SimpleAnimMethods ~ table 00ac18e0
+004a5150	table	CSimpleAnim_IsDelaying	binding "IsDelaying" in SimpleAnimMethods ~ table 00ac18e0
+004a51a0	table	CSimpleAnim_SetStartDelay	binding "SetStartDelay" in SimpleAnimMethods ~ table 00ac18e0
+004a5220	table	CSimpleAnim_GetStartDelay	binding "GetStartDelay" in SimpleAnimMethods ~ table 00ac18e0
+004a5260	table	CSimpleAnim_SetEndDelay	binding "SetEndDelay" in SimpleAnimMethods ~ table 00ac18e0
+004a52e0	table	CSimpleAnim_GetEndDelay	binding "GetEndDelay" in SimpleAnimMethods ~ table 00ac18e0
+004a5320	annotated	CSimpleAnim_SetDuration	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a53a0	table	CSimpleAnim_GetDuration	binding "GetDuration" in SimpleAnimMethods ~ table 00ac18e0
+004a53e0	table	CSimpleAnim_GetSmoothProgress	binding "GetSmoothProgress" in SimpleAnimMethods ~ table 00ac18e0
+004a5430	table	CSimpleAnim_SetSmoothProgress	binding "SetSmoothProgress" in SimpleAnimMethods ~ table 00ac18e0
+004a54b0	annotated	CSimpleAnim_GetProgress	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a5500	table	CSimpleAnim_GetProgressWithDelay	binding "GetProgressWithDelay" in SimpleAnimMethods ~ table 00ac18e0
+004a5550	table	CSimpleAnim_SetMaxFramerate	binding "SetMaxFramerate" in SimpleAnimMethods ~ table 00ac18e0
+004a55d0	table	CSimpleAnim_GetMaxFramerate	binding "GetMaxFramerate" in SimpleAnimMethods ~ table 00ac18e0
+004a5610	table	CSimpleAnim_GetElapsed	binding "GetElapsed" in SimpleAnimMethods ~ table 00ac18e0
+004a5660	annotated	CSimpleAnim_SetOrder	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a56f0	table	CSimpleAnim_GetOrder	binding "GetOrder" in SimpleAnimMethods ~ table 00ac18e0
+004a5740	table	CSimpleAnim_SetSmoothing	binding "SetSmoothing" in SimpleAnimMethods ~ table 00ac18e0
+004a5810	annotated	CSimpleAnim_GetSmoothing	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a5880	table	CSimpleAnim_SetParent	binding "SetParent" in SimpleAnimMethods ~ table 00ac18e0
+004a5a70	table	CSimpleAnim_GetRegionParent	binding "GetRegionParent" in SimpleAnimMethods ~ table 00ac18e0
+004a5af0	table	CSimpleAnim_HasScript	binding "HasScript" in SimpleAnimMethods ~ table 00ac18e0
+004a5bb0	table	CSimpleAnim_GetScript	binding "GetScript" in SimpleAnimMethods ~ table 00ac18e0
+004a5cc0	table	CSimpleAnim_SetScript	binding "SetScript" in SimpleAnimMethods ~ table 00ac18e0
+004a5df0	table	CSimpleAnim_HookScript	binding "HookScript" in SimpleAnimMethods ~ table 00ac18e0
+004a6790	order	CScriptRegion::SetParent	binding table name SetParent, in definition order in src/ui/CScriptRegion.cpp
+004a6d20	order	CSimpleAnimGroup::GetMaxOrder	binding table name GetMaxOrder, in definition order in src/ui/simple/CSimpleAnimGroup.cpp
+004a6ea0	annotated	CSimpleAnimGroup_Play	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a6ee0	table	CSimpleAnimGroup_Pause	binding "Pause" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a6f20	table	CSimpleAnimGroup_Stop	binding "Stop" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a6f60	table	CSimpleAnimGroup_Finish	binding "Finish" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a6fa0	table	CSimpleAnimGroup_GetProgress	binding "GetProgress" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a6ff0	table	CSimpleAnimGroup_IsDone	binding "IsDone" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7040	table	CSimpleAnimGroup_IsPaused	binding "IsPaused" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7090	table	CSimpleAnimGroup_IsPendingFinish	binding "IsPendingFinish" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a70e0	table	CSimpleAnimGroup_GetDuration	binding "GetDuration" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7130	annotated	CSimpleAnimGroup_SetLooping	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a71f0	annotated	CSimpleAnimGroup_GetLooping	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a7240	annotated	CSimpleAnimGroup_GetLoopState	tag in src/ui/simple/CSimpleAnimScript.cpp
+004a7290	table	CSimpleAnimGroup_GetMaxOrder	binding "GetMaxOrder" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a72f0	table	CSimpleAnimGroup_SetInitialOffset	binding "SetInitialOffset" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a73e0	table	CSimpleAnimGroup_GetInitialOffset	binding "GetInitialOffset" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7480	table	CSimpleAnimGroup_HasScript	binding "HasScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7540	table	CSimpleAnimGroup_GetScript	binding "GetScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7650	table	CSimpleAnimGroup_SetScript	binding "SetScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7780	table	CSimpleAnimGroup_HookScript	binding "HookScript" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7aa0	table	CSimpleAnimGroup_IsPlaying	binding "IsPlaying" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7b00	table	CSimpleAnimGroup_GetAnimations	binding "GetAnimations" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a7e00	annotated	CSimpleAnimGroup_CreateAnimation	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a81b0	string	FrameScript_GetObjectThis	unique "Attempt to find 'this' in non-framescript object"
-004a8240	table	CScriptObject_GetObjectType	binding "GetObjectType" in ScriptObjectMethods ~ table 00ac1ab8
-004a8290	table	CScriptObject_IsObjectType	binding "IsObjectType" in ScriptObjectMethods ~ table 00ac1ab8
-004a8340	table	CScriptObject_GetName	binding "GetName" in ScriptObjectMethods ~ table 00ac1ab8
-004a83a0	table	CScriptObject_GetParent	binding "GetParent" in ScriptObjectMethods ~ table 00ac1ab8
+004a8240	table	CSimpleAnimGroup_GetObjectType	binding "GetObjectType" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a8290	table	CSimpleAnimGroup_IsObjectType	binding "IsObjectType" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a8340	table	CSimpleAnimGroup_GetName	binding "GetName" in SimpleAnimGroupMethods ~ table 00ac1ab8
+004a83a0	table	CSimpleAnimGroup_GetParent	binding "GetParent" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	Script_Screenshot	unique "Screenshots"
@@ -1934,7 +1992,7 @@ addr	how	frozen	evidence
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	
 0076e760	override	SStrCmp	
-0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 0055d860=CGUIBindings::ParseModifierFlags
+0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 00497800=CSimpleAnimGroup::GetScriptByName
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 0076b3b0=ConsoleCommandHistoryAdd
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
 0076eea0	annotated	SStrLenUTF8	tag in lib/squall/storm/String.cpp
@@ -2201,8 +2259,8 @@ addr	how	frozen	evidence
 0084e210	callorder	lua_topointer	same slot between linked calls in 00854a20=luaB_tostring
 0084e280	override	lua_pushnil	
 0084e2a0	override	lua_pushnumber	
-0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage
-0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring, 00853340=push_onecapture
+0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage, 00816c40=sub_816C40, 00853340=push_onecapture
+0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization, 00510e00=Script_GetRealmName
 0084e3a0	override	lua_pushvfstring	
 0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger

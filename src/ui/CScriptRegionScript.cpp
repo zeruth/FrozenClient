@@ -2,6 +2,8 @@
 #include "gx/Coordinate.hpp"
 #include "ui/CFramePoint.hpp"
 #include "ui/CScriptRegion.hpp"
+#include <storm/Memory.hpp>
+#include "ui/simple/CSimpleAnimGroup.hpp"
 #include "ui/FrameScript_Object.hpp"
 #include "ui/Util.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
@@ -638,16 +640,66 @@ int32_t CScriptRegion_ClearAllPoints(lua_State* L) {
     return 0;
 }
 
+// Region:CreateAnimationGroup([name [, inheritsFrom]]).
+//
+// TODO the inheritsFrom argument, for the same reason CreateAnimation ignores its own: resolving
+// an XML template node needs LoadXML_Animations, which is stage 3 in
+// docs/ref/parity-animations.md. The reference raises "Couldn't find inherited node" or
+// "Recursively inherited node" there; frozen ignores the argument rather than half-honouring it.
 int32_t CScriptRegion_CreateAnimationGroup(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto region = static_cast<CScriptRegion*>(
+        FrameScript_GetObjectThis(L, CScriptRegion::GetObjectType())
+    );
+
+    const char* name = lua_isstring(L, 2) ? lua_tostring(L, 2) : nullptr;
+
+    void* m = SMemAlloc(sizeof(CSimpleAnimGroup), __FILE__, __LINE__, 0x0);
+    auto group = new (m) CSimpleAnimGroup(region);
+
+    if (name && *name) {
+        group->SetName(name);
+    }
+
+    region->m_animGroups.Add(1, &group);
+
+    group->GetScriptMetaTable();
+    lua_rawgeti(L, LUA_REGISTRYINDEX, group->lua_objectRef);
+
+    return 1;
 }
 
+// Every group as separate return values. The stack guard and its message are the reference's.
 int32_t CScriptRegion_GetAnimationGroups(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto region = static_cast<CScriptRegion*>(
+        FrameScript_GetObjectThis(L, CScriptRegion::GetObjectType())
+    );
+
+    uint32_t count = region->m_animGroups.Count();
+
+    if (!lua_checkstack(L, static_cast<int32_t>(count))) {
+        const char* name = region->GetName();
+
+        luaL_error(L, "%s:GetAnimationGroups(): Stack overflow", name ? name : "<unnamed>");
+
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        CSimpleAnimGroup* group = region->m_animGroups[i];
+
+        group->GetScriptMetaTable();
+        lua_rawgeti(L, LUA_REGISTRYINDEX, group->lua_objectRef);
+    }
+
+    return static_cast<int32_t>(count);
 }
 
 int32_t CScriptRegion_StopAnimating(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    static_cast<CScriptRegion*>(
+        FrameScript_GetObjectThis(L, CScriptRegion::GetObjectType())
+    )->StopAnimating();
+
+    return 0;
 }
 
 // ref: FUN_0049e0b0
