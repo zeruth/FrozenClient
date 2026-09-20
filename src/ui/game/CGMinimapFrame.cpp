@@ -363,6 +363,11 @@ int32_t CGMinimapFrame::GetObjectType() {
     return CGMinimapFrame::s_objectType;
 }
 
+bool CGMinimapFrame::IsA(int32_t type) {
+    return type == CGMinimapFrame::GetObjectType()
+        || CSimpleFrame::IsA(type);
+}
+
 void CGMinimapFrame::RegisterScriptMethods(lua_State* L) {
     CSimpleFrame::RegisterScriptMethods(L);
     FrameScript_Object::FillScriptMethodTable(L, CGMinimapFrameMethods, NUM_CG_MINIMAP_FRAME_SCRIPT_METHODS);

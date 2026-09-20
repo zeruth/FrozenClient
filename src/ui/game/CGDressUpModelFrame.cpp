@@ -23,6 +23,12 @@ int32_t CGDressUpModelFrame::GetObjectType() {
     return CGDressUpModelFrame::s_objectType;
 }
 
+bool CGDressUpModelFrame::IsA(int32_t type) {
+    return type == CGDressUpModelFrame::GetObjectType()
+        || type == CGCharacterModelBase::GetObjectType()
+        || CGCharacterModelBase::IsA(type);
+}
+
 void CGDressUpModelFrame::RegisterScriptMethods(lua_State* L) {
     CGCharacterModelBase::RegisterScriptMethods(L);
     FrameScript_Object::FillScriptMethodTable(L, CGDressUpModelFrameMethods, NUM_CG_DRESS_UP_MODEL_FRAME_SCRIPT_METHODS);

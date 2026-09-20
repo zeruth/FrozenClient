@@ -23,6 +23,11 @@ int32_t CGCharacterModelBase::GetObjectType() {
     return CGCharacterModelBase::s_objectType;
 }
 
+bool CGCharacterModelBase::IsA(int32_t type) {
+    return type == CGCharacterModelBase::GetObjectType()
+        || CSimpleModel::IsA(type);
+}
+
 void CGCharacterModelBase::RegisterScriptMethods(lua_State* L) {
     CSimpleModel::RegisterScriptMethods(L);
     FrameScript_Object::FillScriptMethodTable(L, CGCharacterModelBaseMethods, NUM_CG_CHARACTER_MODEL_BASE_SCRIPT_METHODS);

@@ -23,6 +23,11 @@ int32_t CGQuestPOIFrame::GetObjectType() {
     return CGQuestPOIFrame::s_objectType;
 }
 
+bool CGQuestPOIFrame::IsA(int32_t type) {
+    return type == CGQuestPOIFrame::GetObjectType()
+        || CSimpleFrame::IsA(type);
+}
+
 void CGQuestPOIFrame::RegisterScriptMethods(lua_State* L) {
     CSimpleFrame::RegisterScriptMethods(L);
     FrameScript_Object::FillScriptMethodTable(L, CGQuestPOIFrameMethods, NUM_CG_QUEST_POI_FRAME_SCRIPT_METHODS);

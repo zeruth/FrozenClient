@@ -23,6 +23,11 @@ int32_t CGCooldown::GetObjectType() {
     return CGCooldown::s_objectType;
 }
 
+bool CGCooldown::IsA(int32_t type) {
+    return type == CGCooldown::GetObjectType()
+        || CSimpleFrame::IsA(type);
+}
+
 void CGCooldown::RegisterScriptMethods(lua_State* L) {
     CSimpleFrame::RegisterScriptMethods(L);
     FrameScript_Object::FillScriptMethodTable(L, CGCooldownMethods, NUM_CG_COOLDOWN_SCRIPT_METHODS);

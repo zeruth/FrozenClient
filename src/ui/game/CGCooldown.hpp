@@ -13,6 +13,11 @@ class CGCooldown : public CSimpleFrame {
         static CSimpleFrame* Create(CSimpleFrame* parent);
         static void CreateScriptMetaTable();
         static int32_t GetObjectType();
+
+        // Without this the frame answers only to its base's types, and every one of its own
+        // script methods fails the This() check with "Wrong object type for member function" --
+        // the methods are registered and reachable, the object just denies being what it is.
+        virtual bool IsA(int32_t type);
         static void RegisterScriptMethods(lua_State* L);
 
         // Member variables
