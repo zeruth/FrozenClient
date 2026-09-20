@@ -1160,6 +1160,23 @@ static const char* const STAT_NAME_KEYS[] = {
 static const int32_t STAT_NAME_KEY_COUNT =
     static_cast<int32_t>(sizeof(STAT_NAME_KEYS) / sizeof(STAT_NAME_KEYS[0]));
 
+// Inventory type 16. A cloak's subclass row reads "Cloth", which would say the wrong thing beside
+// the slot, so the reference leaves the right half of the type line empty for one.
+static const int32_t INVENTORY_TYPE_CLOAK = 16;
+
+// ItemSubClass has no id column -- a row is the (class, subclass) pair -- so this scans its 119.
+static const ItemSubClassRec* ItemSubClassRecord(int32_t itemClass, int32_t subClass) {
+    for (int32_t i = 0; i < g_itemSubClassDB.GetNumRecords(); i++) {
+        auto rec = g_itemSubClassDB.GetRecordByIndex(i);
+
+        if (rec && rec->m_classID == itemClass && rec->m_subClassID == subClass) {
+            return rec;
+        }
+    }
+
+    return nullptr;
+}
+
 // Item classes the tooltip gates lines on. The speed and damage-per-second lines want a weapon;
 // the item level line wants any of the four below.
 static const int32_t ITEM_CLASS_WEAPON = 2;
@@ -1184,6 +1201,43 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
 
     SStrPrintf(text, sizeof(text), "|cff%06x%s|r", s_qualityColors[quality], info->name.c_str());
     TooltipSetLine(tooltip, line++, false, text);
+
+    // The equip slot on the left, the item's subtype on the right -- "Chest" / "Plate".
+    //
+    // The right half is the ItemSubClass row's display name, and the reference suppresses it in
+    // two cases: a cloak (inventory type 16), whose subclass would read "Cloth" and mislead, and
+    // any subclass whose flags carry bit 0. Both tests are the reference's.
+    //
+    // Not ported: class 6 (projectile) takes a different left half entirely, out of an ammo-slot
+    // table rather than the equip locations, so a quiver's arrows would name the wrong thing here.
+    {
+        const char* slotKey = (info->inventoryType > 0 && info->inventoryType < EQUIP_LOCATION_COUNT)
+            ? s_equipLocations[info->inventoryType]
+            : nullptr;
+
+        const char* left = (slotKey && *slotKey && info->itemClass != ITEM_CLASS_PROJECTILE)
+            ? FrameScript_GetText(slotKey, -1, GENDER_NOT_APPLICABLE)
+            : nullptr;
+
+        auto subClass = ItemSubClassRecord(info->itemClass, info->subClass);
+
+        const char* right = nullptr;
+
+        if (subClass && info->inventoryType != INVENTORY_TYPE_CLOAK && !(subClass->m_flags & 1)
+            && subClass->m_displayName && *subClass->m_displayName) {
+            right = subClass->m_displayName;
+        }
+
+        if ((left && *left) || right) {
+            TooltipSetLine(tooltip, line, false, left ? left : "");
+
+            if (right) {
+                TooltipSetLine(tooltip, line, true, right);
+            }
+
+            line++;
+        }
+    }
 
     // The damage band. delay is in milliseconds and the speed shown is seconds to one decimal.
     if (info->delay > 0 && (info->damageMin[0] > 0.0f || info->damageMax[0] > 0.0f)) {

@@ -14,6 +14,7 @@
 #include "world/Terrain.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
+#include "ui/game/ScriptUtil.hpp"
 #include "console/CVar.hpp"
 #include <common/Time.hpp>
 #include "console/Console.hpp"
@@ -1965,19 +1966,6 @@ int32_t Script_GetItemQualityColor(lua_State* L) {
     return 4;
 }
 
-// ref: PTR_DAT_00ac7fd8
-// Equip locations as FrameXML names them, indexed by the record's inventory type. Read out of the
-// reference's table: index 0 is deliberately empty, for an item that equips nowhere.
-static const char* s_equipLocations[] = {
-    "",
-    "INVTYPE_HEAD", "INVTYPE_NECK", "INVTYPE_SHOULDER", "INVTYPE_BODY", "INVTYPE_CHEST",
-    "INVTYPE_WAIST", "INVTYPE_LEGS", "INVTYPE_FEET", "INVTYPE_WRIST", "INVTYPE_HAND",
-    "INVTYPE_FINGER", "INVTYPE_TRINKET", "INVTYPE_WEAPON", "INVTYPE_SHIELD", "INVTYPE_RANGED",
-    "INVTYPE_CLOAK", "INVTYPE_2HWEAPON", "INVTYPE_BAG", "INVTYPE_TABARD", "INVTYPE_ROBE",
-    "INVTYPE_WEAPONMAINHAND", "INVTYPE_WEAPONOFFHAND", "INVTYPE_HOLDABLE", "INVTYPE_AMMO",
-    "INVTYPE_THROWN", "INVTYPE_RANGEDRIGHT", "INVTYPE_QUIVER", "INVTYPE_RELIC",
-};
-
 // The entry id out of an item link, or 0. The reference has its own link parser; this reads the
 // one field it needs.
 static int32_t ItemEntryFromLink(const char* text) {
@@ -2068,9 +2056,7 @@ int32_t Script_GetItemInfo(lua_State* L) {
     lua_pushnumber(L, static_cast<double>(info->stackable));
 
     auto inventoryType = info->inventoryType;
-    auto locations = static_cast<int32_t>(sizeof(s_equipLocations) / sizeof(s_equipLocations[0]));
-
-    lua_pushstring(L, (inventoryType >= 0 && inventoryType < locations)
+    lua_pushstring(L, (inventoryType >= 0 && inventoryType < EQUIP_LOCATION_COUNT)
         ? s_equipLocations[inventoryType]
         : "");
 

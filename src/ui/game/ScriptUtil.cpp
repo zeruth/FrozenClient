@@ -392,3 +392,23 @@ CGItem_C* Script_GetInventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg
 
     return object ? static_cast<CGItem_C*>(object) : nullptr;
 }
+
+// ref: PTR_DAT_00ac7fd8
+// Equip locations as FrameXML names them, indexed by the record's inventory type. Read out of the
+// reference's table: index 0 is deliberately empty, for an item that equips nowhere.
+//
+// Lives here rather than beside its first caller because two now share it: GetItemInfo pushes the
+// key straight to Lua, and the item tooltip resolves it through GetText for the left half of its
+// type line.
+const char* s_equipLocations[] = {
+    "",
+    "INVTYPE_HEAD", "INVTYPE_NECK", "INVTYPE_SHOULDER", "INVTYPE_BODY", "INVTYPE_CHEST",
+    "INVTYPE_WAIST", "INVTYPE_LEGS", "INVTYPE_FEET", "INVTYPE_WRIST", "INVTYPE_HAND",
+    "INVTYPE_FINGER", "INVTYPE_TRINKET", "INVTYPE_WEAPON", "INVTYPE_SHIELD", "INVTYPE_RANGED",
+    "INVTYPE_CLOAK", "INVTYPE_2HWEAPON", "INVTYPE_BAG", "INVTYPE_TABARD", "INVTYPE_ROBE",
+    "INVTYPE_WEAPONMAINHAND", "INVTYPE_WEAPONOFFHAND", "INVTYPE_HOLDABLE", "INVTYPE_AMMO",
+    "INVTYPE_THROWN", "INVTYPE_RANGEDRIGHT", "INVTYPE_QUIVER", "INVTYPE_RELIC",
+};
+
+extern const int32_t EQUIP_LOCATION_COUNT =
+    static_cast<int32_t>(sizeof(s_equipLocations) / sizeof(s_equipLocations[0]));

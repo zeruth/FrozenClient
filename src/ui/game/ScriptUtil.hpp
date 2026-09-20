@@ -17,6 +17,12 @@ CGUnit_C* Script_GetUnitFromName(const char* name);
 // Only the player's own inventory resolves: another unit's slots are never sent.
 CGItem_C* Script_GetInventoryItem(lua_State* L, int32_t unitArg, int32_t slotArg);
 
+// Equip locations as FrameXML names them, indexed by an item record's inventory type, and the
+// count so callers can range-check. Read out of the reference's PTR_DAT_00ac7fd8; index 0 is
+// deliberately empty, for an item that equips nowhere. Defined in GameScript.cpp.
+extern const char* s_equipLocations[];
+extern const int32_t EQUIP_LOCATION_COUNT;
+
 bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid);
 
 bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTarget);
