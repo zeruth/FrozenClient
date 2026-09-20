@@ -1309,14 +1309,23 @@ int32_t Script_UnitClassBase(lua_State* L) {
 // Splits a resistance into what it would be without buffs and what it is now. The base is computed
 // BEFORE the total is clamped, so a resistance debuffed below zero still reports the base it came
 // from rather than a base derived from the clamped zero.
+//
+// FIVE outputs, not four. An earlier pass here wrote it with four, which was enough for
+// UnitResistance and wrong as a port: the reference also fills an "effective" value, clamped
+// together with the total and equal to it at every point in this function. UnitArmor is what
+// needs it -- it returns effective and total as separate values even though nothing here makes
+// them differ.
 static void UnitResistanceBreakdown(const CGUnitData* data, uint32_t index, int32_t* base,
-                                    int32_t* total, int32_t* positive, int32_t* negative) {
-    *total = data->resistance[index];
+                                    int32_t* total, int32_t* effective, int32_t* positive,
+                                    int32_t* negative) {
+    *effective = data->resistance[index];
+    *total = *effective;
     *positive = data->resistanceBuffModsPositive[index];
     *negative = data->resistanceBuffModsNegative[index];
     *base = (*total - *positive) - *negative;
 
     if (*total < 0) {
+        *effective = 0;
         *total = 0;
     }
 }
@@ -1355,7 +1364,8 @@ int32_t Script_UnitResistance(lua_State* L) {
 
     if (data) {
         if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
-            UnitResistanceBreakdown(data, index, &base, &total, &positive, &negative);
+            int32_t effective = 0;
+            UnitResistanceBreakdown(data, index, &base, &total, &effective, &positive, &negative);
         } else {
             total = data->resistance[index];
 
@@ -1681,8 +1691,47 @@ int32_t Script_UnitDefense(lua_State* L) {
 
 // TODO FUN_00610ec0 returns five values built by FUN_006337a0 and FUN_004f54d0, neither
 // identified. Only the first is the armour itself.
+// ref: FUN_00610ec0
+// base, effective, armor, positive, negative -- five values, and the middle two are the same
+// number. The reference keeps them apart because the API does; nothing in the breakdown makes
+// them diverge.
+//
+// Armour is resistance index 0. The reference does not write that literal: it reads the index from
+// a global through FUN_006337a0, and that global is -1 in the image, so it is set at runtime and
+// cannot be read out statically. Index 0 is not a guess from the API though -- it is the same
+// indexing Script_UnitResistance above already depends on.
+//
+// Unlike UnitResistance this does NOT gate the breakdown on the unit being the active player. The
+// reference calls it for any unit, and for anyone else the buff mods simply arrive as zero because
+// the server does not send them, so the answer degrades to armour with no mods on its own.
 int32_t Script_UnitArmor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: UnitArmor(\"unit\")");
+
+        return 0;
+    }
+
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
+
+    int32_t base = 0;
+    int32_t total = 0;
+    int32_t effective = 0;
+    int32_t positive = 0;
+    int32_t negative = 0;
+
+    auto data = unit ? unit->Unit() : nullptr;
+
+    if (data) {
+        UnitResistanceBreakdown(data, 0, &base, &total, &effective, &positive, &negative);
+    }
+
+    lua_pushnumber(L, static_cast<double>(base));
+    lua_pushnumber(L, static_cast<double>(effective));
+    lua_pushnumber(L, static_cast<double>(total));
+    lua_pushnumber(L, static_cast<double>(positive));
+    lua_pushnumber(L, static_cast<double>(negative));
+
+    return 5;
 }
 
 int32_t Script_UnitCharacterPoints(lua_State* L) {

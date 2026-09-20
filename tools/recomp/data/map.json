@@ -27956,20 +27956,20 @@
   "status": "stub"
  },
  "00610ec0": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.909,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitArmor",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 271,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 230,
-  "status": "stub"
+  "status": "ported"
  },
  "00610fb0": {
   "branchRatio": 0.0,
