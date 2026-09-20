@@ -1341,13 +1341,6 @@ void CGlueMgr::SetLoginStateAndResult(LOGIN_STATE state, LOGIN_RESULT result, co
 void CGlueMgr::SetScreen(const char* screen) {
     FrameScript_SignalEvent(0, "%s", screen);
 
-#if defined(WHOA_SYSTEM_ANDROID)
-    // Development convenience while the device has no text input: the login screen's OnShow has
-    // run by now, so fill in the test account after it cleared the fields
-    if (!SStrCmpI(screen, "login", STORM_MAX_STR)) {
-        FrameScript_Execute("AccountLoginAccountEdit:SetText(\"TEST\"); AccountLoginPasswordEdit:SetText(\"TEST\")", "DevLogin", nullptr);
-    }
-#endif
 }
 
 void CGlueMgr::Shutdown() {
@@ -1470,6 +1463,27 @@ void CGlueMgr::UpdateCurrentScreen(const char* screen) {
     // TODO
 
     SStrCopy(CGlueMgr::m_currentScreen, screen, sizeof(CGlueMgr::m_currentScreen));
+
+#if defined(WHOA_SYSTEM_ANDROID)
+    // Development convenience while the device has no text input: fill the test account in after
+    // AccountLogin_OnShow has cleared the fields. The account name would come back on its own from
+    // the accountName cvar, but the password never can -- GlueXML clears that box on every show
+    // and the reference stores no password anywhere, so putting one there is a deliberate
+    // divergence and is Android-only.
+    //
+    // This hangs off UpdateCurrentScreen rather than SetScreen because SetScreen is only the C++
+    // path. GlueXML's own SetGlueScreen shows the frame itself and reports the change through
+    // SetCurrentScreen, so a transition Lua drove -- which is every one after the intro movie,
+    // since MovieFrame_OnHide calls SetGlueScreen("login") -- never reached the old hook. That is
+    // exactly what stopped the fields being filled once the cinematics began playing at startup.
+    if (!SStrCmpI(screen, "login", STORM_MAX_STR)) {
+        static const char* fill =
+            "if AccountLoginAccountEdit then AccountLoginAccountEdit:SetText(\"TEST\") end "
+            "if AccountLoginPasswordEdit then AccountLoginPasswordEdit:SetText(\"TEST\") end";
+
+        FrameScript_Execute(fill, "DevLogin", nullptr);
+    }
+#endif
 
     // TODO
 }
