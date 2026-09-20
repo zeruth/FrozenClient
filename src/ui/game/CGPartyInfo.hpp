@@ -40,6 +40,11 @@ class CGPartyInfo {
 
         static WOWGUID GetLeader();
 
+        // ref: FUN_0052c8c0
+        // Whether a guid belongs to a party member or to a member's pet. The player is NOT a
+        // member for this purpose -- "player" and "pet" are their own tokens.
+        static bool IsMemberOrPet(WOWGUID guid);
+
         static void Clear();
 
         static void RegisterHandlers();

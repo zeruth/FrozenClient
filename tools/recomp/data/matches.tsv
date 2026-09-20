@@ -987,6 +987,7 @@ addr	how	frozen	evidence
 0052a980	string	CGGameUI::Initialize	unique "Interface\FrameXML\Bindings.xml"
 0052b470	table	Script_RegisterForSave	binding "RegisterForSave" in s_ScriptFunctions ~ table 00ac80b0
 0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
+0052bd10	callgraph	CGPartyInfo::GetMember	only unmatched callee of 0052c8c0=CGPartyInfo::IsMemberOrPet
 0052c110	table	Script_GetNumPartyMembers	binding "GetNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
 0052c190	table	Script_GetRealNumPartyMembers	binding "GetRealNumPartyMembers" in s_ScriptFunctions ~ table 00acc6d0
 0052c1d0	annotated	Script_GetPartyMember	tag in src/ui/game/PartyInfoScript.cpp
@@ -995,6 +996,7 @@ addr	how	frozen	evidence
 0052c2d0	table	Script_GetOptOutOfLoot	binding "GetOptOutOfLoot" in s_ScriptFunctions ~ table 00acc6d0
 0052c310	table	Script_IsPartyLFG	binding "IsPartyLFG" in s_ScriptFunctions ~ table 00acc6d0
 0052c350	table	Script_HasLFGRestrictions	binding "HasLFGRestrictions" in s_ScriptFunctions ~ table 00acc6d0
+0052c8c0	annotated	CGPartyInfo::IsMemberOrPet	tag in src/ui/game/CGPartyInfo.cpp
 0052ccd0	annotated	Script_IsPartyLeader	tag in src/ui/game/PartyInfoScript.cpp
 0052cd30	table	Script_IsRealPartyLeader	binding "IsRealPartyLeader" in s_ScriptFunctions ~ table 00acc6d0
 0052cd90	table	Script_GetLootMethod	binding "GetLootMethod" in s_ScriptFunctions ~ table 00acc6d0
@@ -1465,7 +1467,7 @@ addr	how	frozen	evidence
 0060c810	table	Script_UnitGroupRolesAssigned	binding "UnitGroupRolesAssigned" in s_UnitFunctions ~ table 00ad21d8
 0060c8a0	table	Script_UnitIsRaidOfficer	binding "UnitIsRaidOfficer" in s_UnitFunctions ~ table 00ad21d8
 0060c920	table	Script_UnitInParty	binding "UnitInParty" in s_UnitFunctions ~ table 00ad21d8
-0060c9a0	table	Script_UnitPlayerOrPetInParty	binding "UnitPlayerOrPetInParty" in s_UnitFunctions ~ table 00ad21d8
+0060c9a0	annotated	Script_UnitPlayerOrPetInParty	tag in src/ui/game/ScriptEvents.cpp
 0060ca20	table	Script_UnitInRaid	binding "UnitInRaid" in s_UnitFunctions ~ table 00ad21d8
 0060caa0	table	Script_UnitInBattleground	binding "UnitInBattleground" in s_UnitFunctions ~ table 00ad21d8
 0060cb20	table	Script_UnitPlayerOrPetInRaid	binding "UnitPlayerOrPetInRaid" in s_UnitFunctions ~ table 00ad21d8

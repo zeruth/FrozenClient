@@ -3,6 +3,7 @@
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
+#include "ui/game/CGPartyInfo.hpp"
 #include <cmath>
 #include "object/client/CGPlayer_C.hpp"
 #include <storm/String.hpp>
@@ -253,8 +254,28 @@ int32_t Script_UnitInParty(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060c9a0
+// Whether the named unit is in your party, counting party members' pets. It does NOT count you or
+// your own pet -- the name is about what KIND of unit qualifies, not about including the player.
+//
+// No usage check: the reference reads the argument straight through lua_tostring, so a non-string
+// resolves to nothing and answers nil.
 int32_t Script_UnitPlayerOrPetInParty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto token = lua_tostring(L, 1);
+
+    WOWGUID guid = 0;
+
+    if (token) {
+        Script_GetGUIDFromToken(token, guid, false);
+    }
+
+    if (CGPartyInfo::IsMemberOrPet(guid)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_UnitInRaid(lua_State* L) {

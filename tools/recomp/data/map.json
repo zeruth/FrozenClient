@@ -15809,6 +15809,22 @@
   "refSize": 100,
   "status": "stub"
  },
+ "0052bd10": {
+  "branchRatio": 0.25,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::GetMember",
+  "frozenSize": 24,
+  "how": "callgraph",
+  "module": "GameUI.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "0052c110": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -15935,6 +15951,22 @@
   "how": "table",
   "module": "GameUI.cpp",
   "refSize": 28,
+  "status": "ported"
+ },
+ "0052c8c0": {
+  "branchRatio": 0.538,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::IsMemberOrPet",
+  "frozenSize": 157,
+  "how": "annotated",
+  "module": "PartyFrame.cpp",
+  "refSize": 224,
   "status": "ported"
  },
  "0052ccd0": {
@@ -19794,7 +19826,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.545,
   "files": [
    "src/ui/game/CGMinimapFrame.cpp",
    "src/ui/game/cgminimapframe.cpp"
@@ -23331,18 +23363,18 @@
  "0060c9a0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_UnitPlayerOrPetInParty",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 107,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "0060ca20": {
   "branchRatio": 0.333,

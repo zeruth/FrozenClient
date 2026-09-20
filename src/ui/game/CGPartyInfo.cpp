@@ -2,6 +2,7 @@
 
 #include "client/ClientServices.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "object/client/CGUnit_C.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
 
@@ -57,6 +58,42 @@ const PARTY_MEMBER* CGPartyInfo::GetMemberInfo(uint32_t index) {
 
 WOWGUID CGPartyInfo::GetLeader() {
     return CGPartyInfo::m_leader;
+}
+
+// ref: FUN_0052c8c0
+// A null guid is not a member, which matters: an unresolved unit token leaves the guid at zero and
+// empty roster slots are zero too, so without this every failed lookup would match slot 4.
+bool CGPartyInfo::IsMemberOrPet(WOWGUID guid) {
+    if (!guid) {
+        return false;
+    }
+
+    for (uint32_t slot = 1; slot <= 4; slot++) {
+        auto member = CGPartyInfo::GetMember(slot);
+
+        if (!member) {
+            continue;
+        }
+
+        if (member == guid) {
+            return true;
+        }
+
+        // The member's pet. The reference keeps a parallel pet-guid array; frozen reads it off the
+        // member's object the same way the partypet tokens do, charm before summon.
+        auto object = ClntObjMgrObjectPtr(member, TYPE_UNIT, __FILE__, __LINE__);
+
+        if (object) {
+            auto data = static_cast<CGUnit_C*>(object)->Unit();
+            auto pet = data->charm ? data->charm : data->summon;
+
+            if (pet && pet == guid) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void CGPartyInfo::SetMember(uint32_t slot, const PARTY_MEMBER& member) {
