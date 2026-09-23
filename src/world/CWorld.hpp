@@ -81,7 +81,7 @@ class CWorld {
         static const C3Vector& GetOutdoorAmbient();
         static const C3Vector& GetOutdoorDiffuse();
         static const C3Vector& GetOutdoorDirection();
-        static const C3Vector& GetSkyColor(int32_t index); // 0 = horizon .. 4 = zenith
+        static const C3Vector& GetSkyColor(int32_t index); // 0 = zenith .. 4 = horizon, 5 = fog band
         static const char* GetSkyboxPath();                // sky model for the current light, or null
         static float GetDayProgress();                     // 0..1 fraction of the day, for the skybox
         static const C3Vector& GetFogColor();
@@ -144,7 +144,7 @@ class CWorld {
 
 
         static float s_cloudDensity;
-        static C3Vector s_skyColors[5];
+        static C3Vector s_skyColors[6];
         static C3Vector s_fogColor;
         static float s_fogStart;
         static float s_fogEnd;

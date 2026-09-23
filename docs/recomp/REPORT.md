@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 11:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 12:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -568,7 +568,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `ParticleFxRenderImpl` | world | 7268 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
-| `CWorld::UpdateOutdoorLight` | world | 4843 | src/world/CWorld.cpp |
+| `CWorld::UpdateOutdoorLight` | world | 4909 | src/world/CWorld.cpp |
 | `std::_Matcher3<wchar_t,std::regex_traits<wchar_t>,wchar_t const *,void>::_Match_pat` | glue | 4820 |  |
 | `SHA1_Transform` | lib/common | 4679 | lib/common/common/SHA1.cpp |
 | `ParseLegacyLiquid` | world | 4522 | src/world/Terrain.cpp |
@@ -752,7 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 11:38 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:43 | 3063 (11.3%) | 1143 (4.2%) | 646 | 489/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:47 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:47 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
+| 2026-09-23 12:08 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 

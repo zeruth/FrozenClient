@@ -343,9 +343,9 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
 
 ## Task list (ordered)
 
-**Status checked against the source on 2026-09-23** and written into each entry. Three of six
-are done, one is half done, and task 3 is the one to be careful about: a sky dome exists and
-looks finished, but it is not the reference's geometry.
+**Status checked against the source on 2026-09-23** and written into each entry. Five of six are
+now done, none of them seen on screen. Only task 6, the dome's azimuthal colour variation,
+remains, and it needs `FUN_007f0530`'s band arguments re-dumped from disassembly first.
 
 1. **Port the sun direction.** --- **DONE** (unverified on screen): computed per frame in `CWorld::UpdateOutdoorLight`. `src/world/CWorld.cpp`: replace the constant `s_outdoorDirection` with
    a per-frame computation in `CWorld::UpdateOutdoorLight` porting `FUN_007eea90` @ 0x007eea90:
@@ -357,12 +357,12 @@ looks finished, but it is not the reference's geometry.
    (`LightingCallback`, the terrain ndotl bake at `Terrain.cpp:843`, the WMO bake at
    `Terrain.cpp:1475`) then tracks it - but note both bakes run at load time, so either they must be
    re-baked when the direction moves or the N.L must move into the shader for the wobble to show.
-2. **Fix the sky band mapping and the fog formulas.** --- **HALF DONE**: the fog formulas match, but `s_skyColors` is still 5 entries from the wrong bands in the wrong order. `src/world/CWorld.cpp`: make the sky stack six
+2. **Fix the sky band mapping and the fog formulas.** --- **DONE** (unverified on screen): the fog formulas already matched; the sky stack is now 6 entries from bands 2..7 top-to-horizon. `src/world/CWorld.cpp`: make the sky stack six
    entries, `sky[0..5] = LightIntBand bands 2,3,4,5,6,7` ordered top-to-horizon (today it is five
    entries from bands 6,5,4,3,2 in the opposite order); set
    `s_fogEnd = min(s_farClip, InterpFloatBand(P,0,t))` and `s_fogStart = s_fogEnd * scalar`. Widen
    `s_skyColors` / `CWorld::GetSkyColor` accordingly and fix `SkyRender`'s clear-colour call site.
-3. **Rebuild the dome to the reference geometry.** --- **NOT DONE, and easy to believe otherwise**: a dome did land, but `SKY_RINGS` is 12 on a hand-tuned zenith table, not the reference's 7. Its own comment says the table is uncertain and was chosen because it reads well in game. `BuildSkyDome` / `SkyRender`
+3. **Rebuild the dome to the reference geometry.** --- **DONE** (unverified on screen): 7 rings on the zenith table read out of WoW.exe at 0x00a41a90, 24 segments, per-ring band colour with the bottom two rings on the fog band. frozen still emits duplicated pole vertices and a triangle list where the reference collapses the poles and uses a 300-index strip; same surface. The azimuthal variation (task 6) is still not ported. `BuildSkyDome` / `SkyRender`
    (`src/world/Terrain.cpp:4452`), porting `FUN_007f2470` + `FUN_007f0530`: 24 segments, 7 rings at
    zenith angles `{0, .17, .20, .23, .24, .25, 1.0} * pi`, 122 vertices, one 300-index triangle strip,
    per-vertex colour = the ring's band colour (rings 5 and 6 both take the fog colour). Replace the

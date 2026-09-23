@@ -41,8 +41,10 @@ C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
 C3Vector CWorld::s_outdoorDirection = { -0.402096f, -0.301572f, 0.864504f };
 bool CWorld::s_cameraUnderLiquid = false;
 C3Vector CWorld::s_cameraDir = { 1.0f, 0.0f, 0.0f };
-C3Vector CWorld::s_skyColors[5] = {
-    { 0.5f, 0.6f, 0.8f }, { 0.45f, 0.55f, 0.78f }, { 0.4f, 0.5f, 0.75f }, { 0.3f, 0.42f, 0.7f }, { 0.2f, 0.35f, 0.65f }
+// Zenith first, horizon last, then the fog band -- the order the dome's rings read them in.
+C3Vector CWorld::s_skyColors[6] = {
+    { 0.2f, 0.35f, 0.65f }, { 0.3f, 0.42f, 0.7f }, { 0.4f, 0.5f, 0.75f },
+    { 0.45f, 0.55f, 0.78f }, { 0.5f, 0.6f, 0.8f }, { 0.5f, 0.5f, 0.5f }
 };
 int32_t CWorld::s_outdoorParamsID = 0;
 C3Vector CWorld::s_fogColor = { 0.5f, 0.5f, 0.5f };
@@ -162,7 +164,7 @@ float InterpFloatBand(int32_t P, int32_t band, int32_t t) {
 struct LightColors {
     C3Vector ambient;
     C3Vector diffuse;
-    C3Vector sky[5];
+    C3Vector sky[6];
     C3Vector fog;
     C3Vector bodyTint; // LightIntBand band 9: the sun/moon disc tint
     C3Vector sunColor;   // band 8: the reference keeps this at DayNight slot 2
@@ -181,11 +183,16 @@ struct LightColors {
 void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     InterpBandColor(P, 0, t, out.diffuse);
     InterpBandColor(P, 1, t, out.ambient);
-    InterpBandColor(P, 6, t, out.sky[0]);
-    InterpBandColor(P, 5, t, out.sky[1]);
+    // Top-to-horizon, which is the order the dome's rings consume them: the reference's sky
+    // stack is DNInfo[3..8] = LightIntBand bands 2..7, and band 7 is the fog colour, which is why
+    // the dome's bottom two rings and the distance fog converge on the same RGB with no blending.
+    // This used to be five entries from bands 6,5,4,3,2 in the opposite order.
+    InterpBandColor(P, 2, t, out.sky[0]);
+    InterpBandColor(P, 3, t, out.sky[1]);
     InterpBandColor(P, 4, t, out.sky[2]);
-    InterpBandColor(P, 3, t, out.sky[3]);
-    InterpBandColor(P, 2, t, out.sky[4]);
+    InterpBandColor(P, 5, t, out.sky[3]);
+    InterpBandColor(P, 6, t, out.sky[4]);
+    InterpBandColor(P, 7, t, out.sky[5]);
     InterpBandColor(P, 7, t, out.fog);
     InterpBandColor(P, 9, t, out.bodyTint);
 
@@ -426,7 +433,7 @@ void CWorld::UpdateOutdoorLight() {
     CWorld::s_outdoorDiffuse = result.diffuse;
     CWorld::s_outdoorAmbient = result.ambient;
 
-    for (int32_t k = 0; k < 5; k++) {
+    for (int32_t k = 0; k < 6; k++) {
         CWorld::s_skyColors[k] = result.sky[k];
     }
 
@@ -545,8 +552,8 @@ float CWorld::GetFogEnd() {
 const C3Vector& CWorld::GetSkyColor(int32_t index) {
     if (index < 0) {
         index = 0;
-    } else if (index > 4) {
-        index = 4;
+    } else if (index > 5) {
+        index = 5;
     }
 
     return CWorld::s_skyColors[index];

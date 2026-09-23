@@ -663,12 +663,20 @@ void AlphaTexCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uin
 // concentrated overhead but carrying it down to the horizon and blending into the fog colour there
 // matches both the band naming ("bands 2..6 top to horizon, fog below") and how the sky reads in
 // game. See docs/ref/parity-sky.md section 2.
-const int32_t SKY_RINGS = 12;
+// The reference's dome, read out of the binary rather than tuned: FUN_007f2470 builds 24 segments
+// and 7 rings whose zenith angles are the table at 0x00a41a90 times pi, and the azimuth step at
+// 0x00a41cec is exactly 1/24. Both were checked against WoW.exe directly (2026-09-23), as was the
+// vertex count the colour writer implies: 1 + 5*24 + 1 = 122.
+//
+// Note how little of the sphere the gradient occupies. Every band sits between the zenith and 45
+// degrees elevation; from there down it is one flat sheet of the fog band, which is why the dome
+// meets the fogged terrain horizon with no seam and no blending -- they are the same colour.
+// frozen previously spread 12 rings evenly and lerped a z gradient across them, which put the
+// gradient far too low and made the horizon band far too thin.
+const int32_t SKY_RINGS = 6;
 const int32_t SKY_SEGS = 24;
 const float SKY_RING_ZENITH[SKY_RINGS + 1] = {
-    0.0f, 0.085f, 0.17f, 0.20f, 0.23f, 0.25f,   // the top cap, where the bands vary
-    0.30f, 0.35f, 0.40f, 0.45f, 0.50f,          // down to the horizon, blending toward fog
-    0.75f, 1.0f                                 // below the horizon: fog
+    0.0f, 0.17f, 0.20f, 0.23f, 0.24f, 0.25f, 1.0f
 };
 const int32_t SKY_VERTS = (SKY_RINGS + 1) * (SKY_SEGS + 1);
 const float SKY_RADIUS = 150.0f; // inside the minimum far clip (183) so the dome is never clipped
@@ -6047,35 +6055,18 @@ void SkyRender() {
         s_skyWhite = TextureCreate(SKY_WHITE_DIM, SKY_WHITE_DIM, GxTex_Argb8888, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 1, 1, 0, 0, 0, 1), s_skyWhitePixels, SkyWhiteCallback, __FILE__, 0);
     }
 
-    // One colour per ring by altitude. The five sky bands span zenith to 45 degrees, where the
-    // gradient actually lives; from there to the horizon the horizon band blends into the fog
-    // colour so the dome meets the fogged terrain without a seam; below the horizon it is fog.
-    // GetSkyColor(0) is the horizon band and (4) the zenith band.
+    // One band per ring, straight across -- no gradient maths. Ring i takes sky band i, and the
+    // bottom two rings both take band 7, which is the fog colour. That flat assignment IS the
+    // reference's shading (FUN_007f0530 writes 1 zenith colour, then 4 rings of 24 from successive
+    // bands, then 24 + 1 of the fog band).
+    //
+    // Not ported: the reference also varies the four middle rings per segment by stepping a band
+    // parameter with the camera yaw, so the dome rotates slightly with the view. The per-vertex
+    // band pointers did not survive decompilation; see parity-sky.md task 6.
     C3Vector ringColor[SKY_RINGS + 1];
-    const C3Vector& fog = CWorld::GetFogColor();
 
     for (int32_t ring = 0; ring <= SKY_RINGS; ring++) {
-        float zenith = SKY_RING_ZENITH[ring]; // turns of pi
-
-        if (zenith <= 0.25f) {
-            float f = (zenith / 0.25f) * 4.0f; // 0 at the zenith .. 4 at 45 degrees
-            int32_t i0 = static_cast<int32_t>(f);
-
-            if (i0 > 3) {
-                i0 = 3;
-            }
-
-            float fr = f - i0;
-            const C3Vector& c0 = CWorld::GetSkyColor(4 - i0);
-            const C3Vector& c1 = CWorld::GetSkyColor(3 - i0);
-            ringColor[ring] = { c0.x + (c1.x - c0.x) * fr, c0.y + (c1.y - c0.y) * fr, c0.z + (c1.z - c0.z) * fr };
-        } else if (zenith < 0.5f) {
-            float fr = (zenith - 0.25f) / 0.25f; // 45 degrees .. horizon
-            const C3Vector& h = CWorld::GetSkyColor(0);
-            ringColor[ring] = { h.x + (fog.x - h.x) * fr, h.y + (fog.y - h.y) * fr, h.z + (fog.z - h.z) * fr };
-        } else {
-            ringColor[ring] = fog;
-        }
+        ringColor[ring] = CWorld::GetSkyColor(ring < 5 ? ring : 5);
     }
 
     int32_t v = 0;
