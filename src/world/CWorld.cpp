@@ -248,6 +248,14 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     // `base + 0x110 + type * 8`, where base is FUN_007ecef0's return, 0x00d38b00. The DayNight
     // slots begin at +0xd4, so +0x10c is slot 14 and type 1 lands on slots 16 and 17. Ocean is
     // type 0 on bands 14 and 15; river is type 1 on 16 and 17.
+    // With this loop frozen reads every one of LightIntBand's eighteen bands -- 0 through 11
+    // individually above, 12 through 17 here -- and all six of LightFloatBand's below.
+    //
+    // Audited against the reference 2026-09-23, once InterpBandColor was identified as
+    // FUN_007ebf30: its twenty call sites reach bands 0 through 6, 8 through 10, and 12, 13, 14
+    // and 16, which is a SUBSET of what is read here. So there is no band the reference consumes
+    // and frozen ignores, and no missing visual feature hiding behind an unread band. Recorded as
+    // a negative result because the question is a natural one to ask twice.
     for (int32_t b = 0; b < 6; b++) {
         InterpBandColor(P, 12 + b, t, out.extraBands[b]);
     }
