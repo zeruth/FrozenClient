@@ -128,6 +128,46 @@ void BoundsFromPoints(CAaBox& out, const C3Vector* points, uint32_t n) {
     out.t = mx;
 }
 
+namespace {
+
+// The corner of the box that maximises n.p, taken per component: the reference indexes a two
+// entry table with the sign bit of each normal component, so a positive component reads the box
+// maximum and a negative one the minimum.
+float MaxCornerDot(const C4Plane& plane, const CAaBox& box) {
+    const float* t = &box.t.x;
+    const float* b = &box.b.x;
+
+    float x = (plane.n.x >= 0.0f ? t : b)[0];
+    float y = (plane.n.y >= 0.0f ? t : b)[1];
+    float z = (plane.n.z >= 0.0f ? t : b)[2];
+
+    return plane.n.x * x + plane.n.y * y + plane.n.z * z + plane.d;
+}
+
+} // namespace
+
+// ref: FUN_009839e0
+uint32_t AaBoxVsPlanes6(const C4Plane* planes, const CAaBox& box) {
+    for (uint32_t i = 0; i < 6; i++) {
+        if (MaxCornerDot(planes[i], box) < -0.019444443f) {
+            return 0;
+        }
+    }
+
+    return 3;
+}
+
+// ref: FUN_00983a60
+uint32_t AaBoxBehindPlanes6(const C4Plane* planes, const CAaBox& box) {
+    for (uint32_t i = 0; i < 6; i++) {
+        if (MaxCornerDot(planes[i], box) > 0.019444443f) {
+            return 0;
+        }
+    }
+
+    return 3;
+}
+
 // ref: FUN_009829b0
 uint32_t DominantAxis(const C3Vector& v) {
     if (fabsf(v.x) <= fabsf(v.y)) {

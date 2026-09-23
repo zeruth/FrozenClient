@@ -21,4 +21,13 @@ void BoundsFromPoints(CAaBox& out, const C3Vector* points, uint32_t n);
 // Index (0, 1, 2) of the component with the largest magnitude; ties go to the later axis.
 uint32_t DominantAxis(const C3Vector& v);
 
+// A box against a six-plane hull, both returning 3 (accept) or 0 (reject). Each plane is tested
+// against the box corner that maximises n.p + d, so one dot product decides the whole box.
+//
+// AaBoxVsPlanes6 rejects as soon as one plane has the entire box behind it: the frustum test the
+// map and terrain culling use. AaBoxBehindPlanes6 is the opposite question, rejecting unless the
+// box is behind every plane. Both carry the reference's 0.0194 slack.
+uint32_t AaBoxVsPlanes6(const C4Plane* planes, const CAaBox& box);
+uint32_t AaBoxBehindPlanes6(const C4Plane* planes, const CAaBox& box);
+
 #endif

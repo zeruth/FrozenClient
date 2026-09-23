@@ -47964,6 +47964,38 @@
   "refSize": 537,
   "status": "ported"
  },
+ "009839e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxVsPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "00983a60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxBehindPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
  "00983d70": {
   "branchRatio": 1.0,
   "constOverlap": 0.091,

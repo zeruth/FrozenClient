@@ -3025,6 +3025,8 @@ addr	how	frozen	evidence
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
+009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp

@@ -303,6 +303,10 @@ struct M2Particle {
     M2Track<uint8_t> visibilityTrack;
 };
 
+// The reference walks the particle definitions with a stride of 0x1dc (CM2Model's emitter
+// animation, FUN_0082d2f0), so this layout is wrong the moment it stops measuring 476 bytes.
+static_assert(sizeof(M2Particle) == 0x1dc, "M2Particle must match the reference's 476-byte stride");
+
 struct M2Ribbon {
     uint32_t ribbonId;
     uint16_t boneIndex;
