@@ -2235,9 +2235,22 @@ void CGxDeviceD3d::IStateSyncXforms() {
         this->m_xforms[GxXform_View].m_dirty = 0;
     }
 
-    // TODO world
-
-    // TODO tex
+    // Both remaining blocks are FIXED-FUNCTION only, and both are inert here today. Triaged
+    // 2026-09-23 rather than ported, because porting either would be dead code.
+    //
+    // World: D3DTS_WORLD affects nothing while a vertex shader is bound, and the only thing in
+    // frozen that touches GxXform_World is CM2SceneRender, which sets it to identity and pushes
+    // and pops it around the M2 render. The reference does this at 0x006a48b2, calling 0x006a5a30
+    // when its dirty byte at +0x18cc is set.
+    //
+    // Tex: the reference loops from 0x006a48c2 over m_caps.m_numTmus -- at CGxDevice + 0x214 --
+    // sending a texture transform per stage. Nothing in frozen ever sets GxXform_Tex0 through
+    // Tex7 to anything but the identity the push/pop leaves, so the loop would send identities.
+    // That is also why tools/deaddata.py reports CGxCaps::m_numTmus as written and never read:
+    // this loop is its only consumer.
+    //
+    // Both become worth porting the day something animates texture coordinates through the Gx
+    // transform stack, or the day the fixed-function path is used for anything.
 }
 
 void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
