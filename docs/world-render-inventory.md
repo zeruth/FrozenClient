@@ -4587,7 +4587,7 @@ gives a short list of states frozen sets that never reach the device:
 
 | state | set from | consequence |
 |---|---|---|
-| `GxRs_ColorWrite` | `CM2SceneRender::SetupMaterial` | **wired up here** |
+| `GxRs_ColorWrite` | `CM2SceneRender::SetupMaterial` | **wired up here**, and exercised as of the depth prepass below |
 | `GxRs_Lighting` | 16 places | none: the world always binds a vertex shader, and fixed-function lighting is bypassed |
 | `GxRs_MatDiffuse`, `GxRs_MatEmissive`, `GxRs_MatSpecularExp` | `CShaderEffect`, `CM2SceneRender` | same reason -- these are fixed-function material state |
 | `GxRs_ClipPlaneMask` | `CM2SceneRender` | frozen stores no clip planes either; see the state-sync entry above |
@@ -4603,9 +4603,9 @@ against D3D's R, G, B, A. That matches the BGRA byte order used for colours else
 codebase. The reference also gates the whole thing on `GxMasterEnable_ColorWrite`, the same pairing
 frozen's depth-write and culling cases already use.
 
-**It is inert today, and that is worth knowing.** `SetupMaterial` only asks for colour writes off
-when the element carries flag `0x1`, and frozen's element gather in `CM2Scene` sets `0x2` and
-`0x4` and never `0x1`. Reading what that flag does in `SetupMaterial` -- alpha-key blending with
+**It was inert when written, and is not any more.** `SetupMaterial` only asks for colour writes off
+when the element carries flag `0x1`, and frozen's element gather set `0x2` and `0x4` and never
+`0x1` -- until the depth prepass landed later the same day, which is what emits it. Reading what that flag does in `SetupMaterial` -- alpha-key blending with
 colour writes off -- makes it a **depth prepass for alpha-tested geometry** such as hair and
 foliage. So frozen does not do that prepass at all, and the missing piece is the gather condition,
 not this plumbing. The plumbing is now correct for when it lands.
@@ -4640,12 +4640,24 @@ The duplicate is emitted only when four conditions hold, all tested at `0x008224
 `0x00821f10`. The two float constants nearby are `0.99999` at `0x00a45528` (alpha counts as opaque)
 and `0.0001` at `0x009e8cd0` (the earlier cull that drops a batch whose alpha has gone to nothing).
 
-**Not ported, and the reason is specific rather than general.** The mechanism and conditions 3 and 4
-are solid -- they read only fields whose frozen equivalents are known. Conditions 1 and 2 test
-`+0x4`, `+0x10` and `+0x104` on two objects whose layouts have **not** been mapped onto frozen's
-members. Getting them wrong does not fail safe: too permissive and every model draws twice, which
-costs fill rate and can z-fight; too strict and nothing changes. Map those three offsets first, then
-port it and look at hair and foliage on screen in the same change.
+**Ported the same day, once two things it depended on were understood.** The four conditions above
+turned out to be already transcribed in `CM2Scene::Animate` -- the gate was the reference's,
+condition for condition, with an empty body. Tracing them out of the disassembly confirmed the
+transcription rather than replacing it: `m_cache->m_flags` bit 0 with `model->m_flags` bit 0 and
+`model->m_flag40` for the first, the batch's `0x4` flag with `CM2Scene::uint104` for the second, and
+the pass split on `blendMode > 1 || alpha >= 0.99999` for the third.
 
-The draw side is ready as of today: `GxRs_ColorWrite` now reaches D3D, so the moment the gather
-emits flag `0x1` the prepass will behave.
+The last open question was which sort list the duplicate joins, and the answer was in the same
+function. The reference seeds its two water-side flags from the model lighting's `0x20` and `0x40`
+bits, and only refines them against `m_currentLighting->m_liquidPlane` when **both** are set -- the
+"liquid plane stuff" `Animate` still marks TODO. `CM2Lighting::Initialize` sets `0x20` and nothing
+sets `0x40`, so the pair is `(true, false)` for every model, and frozen's main registration thirty
+lines above the gate already implements the same four-way split on the same two flags. The prepass
+now mirrors that block rather than guessing at it.
+
+It is safe by construction: the gate already excludes materials carrying the depth-write-disable
+bit, so the shaded element that follows writes the same depth either way, and the prepass writes no
+colour. The cost is one extra draw per eligible batch.
+
+**Built, not seen running.** Watch hair and foliage. A frame-rate cost on crowded scenes is expected
+and is not a defect; a visual change would be.
