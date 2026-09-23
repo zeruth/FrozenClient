@@ -5198,8 +5198,29 @@ void BuildWmoShadowGrid(WmoGroup& grp) {
         return;
     }
 
-    float spanX = grp.boundsMax.x - grp.boundsMin.x;
-    float spanY = grp.boundsMax.y - grp.boundsMin.y;
+    // Anchor the grid on the vertices it is about to bin, not on grp.bounds.
+    //
+    // bounds stayed in world space when the group's vertices were rebased onto the instance
+    // origin, so anchoring on it mixed frames by that origin -- thousands of yards for most
+    // buildings. Both the binning and the lookup use local coordinates, so they agreed with each
+    // other and the results stayed correct; every cell index simply came out far negative and
+    // clamped to the corner. The whole group landed in one cell and every lookup read it, which
+    // is the exhaustive per-caster scan this grid exists to avoid.
+    float minX = grp.positions[0].x;
+    float minY = grp.positions[0].y;
+    float maxX = minX;
+    float maxY = minY;
+
+    for (uint32_t v = 1; v < grp.vertexCount; v++) {
+        const C3Vector& p = grp.positions[v];
+        minX = p.x < minX ? p.x : minX;
+        minY = p.y < minY ? p.y : minY;
+        maxX = p.x > maxX ? p.x : maxX;
+        maxY = p.y > maxY ? p.y : maxY;
+    }
+
+    float spanX = maxX - minX;
+    float spanY = maxY - minY;
 
     if (spanX <= 0.0f || spanY <= 0.0f) {
         return;
@@ -5211,8 +5232,8 @@ void BuildWmoShadowGrid(WmoGroup& grp) {
     const int32_t MAX_CELLS = 128;
 
     grp.shadowCellSize = CELL;
-    grp.shadowGridMinX = grp.boundsMin.x;
-    grp.shadowGridMinY = grp.boundsMin.y;
+    grp.shadowGridMinX = minX;
+    grp.shadowGridMinY = minY;
     grp.shadowCellsX = static_cast<int32_t>(spanX / CELL) + 1;
     grp.shadowCellsY = static_cast<int32_t>(spanY / CELL) + 1;
 
