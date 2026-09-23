@@ -68021,7 +68021,7 @@
 ],
 "branches": 48,
 "stub": false,
-"lines": 351,
+"lines": 359,
 "refs": [],
 "line": 300
 },
@@ -68029,14 +68029,30 @@
 "files": [
 "src/gx/font/cgxfont.cpp"
 ],
-"callseq": [],
+"callseq": [
+"memset"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0x0000",
+"0x7000",
+"0x8",
+"0xF000",
+"0xFFFF",
+"1",
+"2",
+"256",
+"3",
+"4",
+"7",
+"9216"
+],
+"branches": 24,
+"stub": false,
+"lines": 101,
 "refs": [],
-"line": 664
+"line": 685
 },
 "TEXTURECACHE::UpdateDirty": {
 "files": [
@@ -68056,7 +68072,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 668
+"line": 787
 },
 "TEXTURECACHE::WriteGlyphToTexture": {
 "files": [
@@ -68073,7 +68089,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 678
+"line": 797
 },
 "CGxFont::~CGxFont": {
 "files": [
@@ -68088,7 +68104,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 689
+"line": 808
 },
 "CGxFont::CheckStringGlyphs": {
 "files": [
@@ -68107,7 +68123,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 693
+"line": 812
 },
 "CGxFont::Clear": {
 "files": [
@@ -68123,7 +68139,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 714
+"line": 833
 },
 "CGxFont::ClearGlyphs": {
 "files": [
@@ -68144,7 +68160,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 724
+"line": 843
 },
 "CGxFont::ComputeStep": {
 "files": [
@@ -68175,7 +68191,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 744
+"line": 863
 },
 "CGxFont::ComputeStepFixedWidth": {
 "files": [
@@ -68190,7 +68206,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 787
+"line": 906
 },
 "CGxFont::GetGlyphBearing": {
 "files": [
@@ -68209,7 +68225,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 796
+"line": 915
 },
 "CGxFont::GetGlyphData": {
 "files": [
@@ -68231,7 +68247,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 805
+"line": 924
 },
 "CGxFont::GetName": {
 "files": [
@@ -68246,7 +68262,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 828
+"line": 947
 },
 "CGxFont::GetPixelSize": {
 "files": [
@@ -68259,7 +68275,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 834
+"line": 953
 },
 "CGxFont::Initialize": {
 "files": [
@@ -68283,7 +68299,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 838
+"line": 957
 },
 "CGxFont::NewCodeDesc": {
 "files": [
@@ -68318,7 +68334,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 856
+"line": 975
 },
 "CGxFont::RegisterEvictNotice": {
 "files": [
@@ -68331,7 +68347,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 929
+"line": 1048
 },
 "CGxFont::UpdateDimensions": {
 "files": [
@@ -68360,7 +68376,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 933
+"line": 1052
 },
 "TEXTLINETEXTURE::NewTextLineTexture": {
 "files": [

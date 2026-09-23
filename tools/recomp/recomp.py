@@ -823,6 +823,14 @@ def match(refs, frozen, overrides, tables):
     evidence = {}
 
     unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
+    # Hand claims an `unlinked` override refused. The veto stays authoritative -- an `unlinked`
+    # entry is a deliberate judgement that no frozen counterpart exists -- but it must not swallow
+    # the contradiction. On 2026-09-23 a stale "not ported yet" note on 006c8e70 vetoed the
+    # `// ref:` tag on a finished port of TEXTURECACHE::PasteGlyphOutlinedMonochrome, and the port
+    # was invisible to every metric with nothing printed anywhere. Two hand claims disagreeing is
+    # exactly the thing this tool should say out loud. NAMED hand_vetoed, not vetoed: the order
+    # matcher below already keeps a local bool by that name, and it silently clobbered this list.
+    hand_vetoed = []
 
     HAND = ('override', 'annotated')
 
@@ -835,7 +843,10 @@ def match(refs, frozen, overrides, tables):
         if addr in m or addr not in refs or name not in frozen or (name in used and how not in HAND):
             return False
         if addr in unlinked:
-            return False  # judged to have no frozen counterpart; automatic evidence does not reopen it
+            # judged to have no frozen counterpart; automatic evidence does not reopen it
+            if how in HAND:
+                hand_vetoed.append((addr, name, how))
+            return False
         if refs[addr]['excluded'] and how not in HAND:
             return False  # CRT, nullsub, third-party: automatic evidence never makes it a port
         m[addr] = (name, how)
@@ -1105,6 +1116,12 @@ def match(refs, frozen, overrides, tables):
         if kept:
             print('  kept %d inferred link%s the matchers no longer derive (sticky)'
                   % (kept, '' if kept == 1 else 's'))
+
+    if hand_vetoed:
+        print('  %d hand claim%s refused by an `unlinked` override -- one of the two is stale:'
+              % (len(hand_vetoed), '' if len(hand_vetoed) == 1 else 's'))
+        for addr, name, how in sorted(set(hand_vetoed)):
+            print('    ! %s  %-52s %s vs overrides.json `unlinked`' % (addr, name, how))
 
     with io.open(MATCHES_TSV, 'w', encoding='utf-8', newline='\n') as out:
         out.write('addr\thow\tfrozen\tevidence\n')
