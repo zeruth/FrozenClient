@@ -185,8 +185,32 @@ flat-shaded band of fog colour running down to the nadir.
 **Azimuthal variation.** `FUN_007f0530` does not paint each ring one flat colour: for the four middle
 rings it walks the 24 segments stepping a band parameter by `-1/24` starting from
 `DayNight[0x3c] * (1/2pi) + 0.25` (the camera yaw) and evaluates a band per vertex, so the dome colour
-rotates with the camera / sun azimuth. The exact per-vertex band pointers are passed in registers and
-did not survive decompilation - *uncertain*, and not needed for a first-cut port.
+rotates with the camera / sun azimuth.
+
+**2026-09-23: the band pointers were recovered from disassembly**, which the note here previously
+said had not survived. Both are 6-key `(time, value)` bands read by `FUN_007ed3b0` (ESI = key count,
+EDI = table), and every constant below was read straight out of `WoW.exe`:
+
+* Yaw scale `0x00a41ca8` = **0.159155** (= 1/2pi) and offset `0x00a41b00` = **0.25**, so the segment
+  parameter is `wrap01(yaw/(2pi) + 0.25 + seg * (-1/segCount))`. The `-1/segCount` comes from
+  `fdivrs 0x9e2ef4` (-1.0) over the ring's segment count at `[esi+0x24]`.
+* **Strength band, `0x00af4b7c`**, evaluated once per frame at the day parameter
+  (`0x00d38b04 * 0x00d38c28`):
+  `(0.125, 0), (0.270833, 1), (0.291667, 0), (0.854167, 0), (0.895833, 1), (0.999306, 0)`.
+  Those times are ~03:00, 06:30, 07:00, 20:30, 21:30, 23:59 -- it peaks at dawn and at dusk and is
+  zero through the middle of the day and the middle of the night. So the whole effect only appears
+  around sunrise and sunset.
+* **Profile band, `0x00af4bac`**, evaluated per segment at the parameter above:
+  `(0.125, 1.0), (0.375, 0.0), (0.5, -0.5), (0.625, -0.7), (0.75, -0.5), (0.875, 0.0)`.
+  Positive on one side of the dome and negative on the opposite side -- brighten toward the sun's
+  azimuth, darken away from it.
+
+**Still to pin down before porting**: how the two combine into the vertex colour. The sign of the
+profile selects between two paths at `0x007f06af`; the negative path blends a ring colour
+(`0x00d38be0 + ringIndex*4`) through `FUN_007ed2d0` by `strength * profile`, then conditionally
+applies `LerpColor` (`FUN_006acc50`) with a colour and alpha at `0x00d38b50`/`0x00d38b51`; the
+positive path at `0x007f070b` scales the strength by 255 and takes a different route. Read those two
+branches before writing any of it -- the constants above are solid, the combination is not yet.
 
 ### frozen gaps
 
@@ -379,7 +403,7 @@ remains, and it needs `FUN_007f0530`'s band arguments re-dumped from disassembly
    and 22:10 else the moon. **No longer blocked** - the celestial-body positions and every glare
    constant are in `parity-sky-bodies.md`, which also supersedes the cloud task (4) with the
    procedural texture generator.
-6. **Dome azimuthal colour variation** --- **not started.** (lowest value, highest uncertainty): `FUN_007f0530` varies the
+6. **Dome azimuthal colour variation** --- **not started, but no longer blocked**: the constants and both bands were recovered from disassembly on 2026-09-23 (see section 2). What is left is reading the two branches at `0x007f06af` to see how strength and profile combine into the vertex colour. (lowest value, highest uncertainty): `FUN_007f0530` varies the
    middle rings' colour per segment using the camera yaw. Only worth doing after 1-5, and only after
    re-dumping `FUN_007f0530`'s band arguments from disassembly rather than decompilation.
 
