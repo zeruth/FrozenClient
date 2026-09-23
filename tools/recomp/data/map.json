@@ -34654,10 +34654,10 @@
   ],
   "frozen": "CMapEntity::FloorLight",
   "frozenSize": 396,
-  "how": "annotated",
+  "how": "override",
   "module": "Map.cpp",
   "refSize": 360,
-  "status": "ported"
+  "status": "faithful"
  },
  "007af780": {
   "branchRatio": 0.5,

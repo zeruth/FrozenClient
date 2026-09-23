@@ -1442,6 +1442,15 @@
     "status": "diverged",
     "note": "CMapObjGroup::RecordHits. Sits at 9% call-order recall permanently, and that is understood rather than unfinished, so it is marked diverged to keep it out of the --fix queue. Everything the reference does that frozen does not is a DEBUG DRAWER gated on CWorld enable 0x200000: with that bit set it draws every visited face in 0x7fff0000 and every hit face in 0x7f00ff00 as triangles through FUN_007a4c10, which is where the three operator* calls, FUN_00983940 and the two FUN_007a4c10 calls in the diff come from -- one group per colour. AllocHitRecord, the hit-record fill, the index and face pool carve-outs with their 0xc000 and 0x4000 caps, and the 0x1 overflow flag are all ported and agree. If the debug drawer is ever wanted, it needs FUN_007a4c10 and the enable bit, and this status should go back to ported."
   },
+  "007a0d60": {
+    "frozen": "CMapEntity::FloorLight",
+    "status": "faithful",
+    "note": "CMapEntity::FloorLight. STATUS faithful BY HAND: it sits at 50% call-order recall and the missing calls are all decomposition, checked one by one on 2026-09-23. The reference's two operator* calls transform the probe into the map object's own space; frozen does that in the caller (TerrainWmoFloorLightAt in Terrain.cpp) and takes an already-local position, so the transform happens once either way. FUN_007ecef0 is the DayNight block accessor returning 0x00d38b00; frozen reads the same two columns through CWorld::GetOutdoorDiffuse and GetOutdoorAmbient. FUN_007aeb40 is a guarded wrapper that dispatches to CMapObjGroup::SampleColorAtFace (FUN_007c7fe0); frozen fuses that into CMapObj::GroupFloorColor (FUN_007af780, fidelity 1.0), which calls SampleColorAtFace itself. Its three guards are all present across frozen's decomposition: the group-array test becomes a null check, the loaded test at +0x198 bit 0 becomes the caller's stronger `vertexCount && m_bspNodes && m_colors`, and the flags test `+0x30 & 0x48` -- Exterior | ExteriorLit, i.e. do not take MOCV floor light on an open-air group -- is in GroupFloorColor verbatim. The genuine divergence in this area is in the caller, not here, and is documented there: frozen has no entity -> MapObjDef -> group parent graph, so it brute-forces every loaded instance whose box holds the probe."
+  },
+  "007aeb40": {
+    "status": "unlinked",
+    "note": "A guarded wrapper, not a function frozen has separately: `if (!this->[0x1e0]) return 0; group = this->[0x1f8 + i*4]; if (!(group->[0x198] & 1)) return 0; if (group->[0x30] & 0x48) return 0; return CMapObjGroup::SampleColorAtFace(...)`. frozen fuses it into CMapObj::GroupFloorColor (FUN_007af780), which performs the same 0x48 test and calls SampleColorAtFace itself, so there is no separate counterpart to tag and claiming one would be false. Left unlinked deliberately. If frozen ever splits the find-face and sample-face steps the way the reference does, this is the address for the wrapper. Analysed 2026-09-23 while explaining FloorLight's 50% recall."
+  },
   "006a3870": {
     "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
     "status": "ported",

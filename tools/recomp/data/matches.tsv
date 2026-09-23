@@ -2176,7 +2176,7 @@ addr	how	frozen	evidence
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
-007a0d60	annotated	CMapEntity::FloorLight	tag in src/world/map/CMapEntity.cpp
+007a0d60	override	CMapEntity::FloorLight	
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
