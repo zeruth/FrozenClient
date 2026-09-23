@@ -46,7 +46,7 @@
   },
   "005eeb70": {
     "status": "excluded",
-    "note": "nullsub: 1-byte ret, used as a no-op log callback"
+    "note": "one-byte ret with 1692 callers and no callees: a compiled-out hook (profiler or trace scope end) folded to a nullsub. Was linked as TextureLodBiasSet by the callgraph matcher, which cost every caller a skipped call. 2026-09-23"
   },
   "008b7da0": {
     "status": "excluded",
@@ -1246,5 +1246,9 @@
     "frozen": "CMapObjGroupDualSegmentQuery::CachedLeaf",
     "status": "diverged",
     "note": "same as 007c6d50 for the dual (collision + render) segment query; the port returns false. 2026-09-23"
+  },
+  "00842da0": {
+    "status": "excluded",
+    "note": "third-party PCRE match(): opcode interpreter (byte < 0x51), returns PCRE_ERROR_MATCHLIMIT (-8) when the match_call_count passes match_limit and PCRE_ERROR_UNKNOWN_OPCODE (-5); 73 self-recursions. The module anchor (M2Shared.cpp) is the nearest assert string, not its origin. 2026-09-23"
   }
 }

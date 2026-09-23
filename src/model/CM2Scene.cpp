@@ -667,6 +667,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     // TODO sort additive particles
 }
 
+// ref: FUN_0081f8f0
 CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
     if (!file) {
         return nullptr;

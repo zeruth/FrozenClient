@@ -1051,6 +1051,7 @@ void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool a3) {
     // TODO
 }
 
+// ref: FUN_00827560
 void CM2Model::DetachAllChildrenById(uint32_t id) {
     // Hang on to attachNext in case model is freed during detach
     CM2Model* attachNext = nullptr;
@@ -1065,6 +1066,7 @@ void CM2Model::DetachAllChildrenById(uint32_t id) {
     }
 }
 
+// ref: FUN_008274f0
 void CM2Model::DetachFromParent() {
     if (this->m_attachPrev) {
         *this->m_attachPrev = this->m_attachNext;
@@ -1449,6 +1451,7 @@ void CM2Model::GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2Se
     info.radius = sequence.bounds.radius;
 }
 
+// ref: FUN_008273d0
 bool CM2Model::HasAttachment(uint32_t id) {
     if (!this->m_loaded) {
         this->WaitForLoad("HasAttachment");
@@ -1829,6 +1832,7 @@ int32_t CM2Model::IsBatchDoodadCompatible(M2Batch* batch) {
     return 0;
 }
 
+// ref: FUN_00824fc0
 int32_t CM2Model::IsDrawable(int32_t a2, int32_t a3) {
     if (!this->m_loaded && a2) {
         this->WaitForLoad(nullptr);
@@ -2412,6 +2416,7 @@ void CM2Model::SetBoneSequenceDeferred(uint16_t a2, M2Data* data, uint16_t boneI
     playback->flags = (a8 ? 1 : 0) | (a9 ? 2 : 0) | (a10 ? 4 : 0);
 }
 
+// ref: FUN_0082c7c0
 void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible) {
     // Waiting for load
 

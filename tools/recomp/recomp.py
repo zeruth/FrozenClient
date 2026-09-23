@@ -822,6 +822,8 @@ def match(refs, frozen, overrides, tables):
             return False
         if addr in unlinked:
             return False  # judged to have no frozen counterpart; automatic evidence does not reopen it
+        if refs[addr]['excluded'] and how not in HAND:
+            return False  # CRT, nullsub, third-party: automatic evidence never makes it a port
         m[addr] = (name, how)
         used.add(name)
         evidence[addr] = why
@@ -909,6 +911,10 @@ def match(refs, frozen, overrides, tables):
             # the links the first reading already found and lets the second add to them.
             cand = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
             rc = cand if len(cand) == 1 else [c for c in cand if not refs[c]['excluded']]
+            # an excluded reference (CRT, nullsub, third-party) is never a port target, even when
+            # it is the only unmatched callee: binding it made _memset a DBC lookup and the
+            # one-byte hook at 005eeb70 TextureLodBiasSet, and every caller then lost fidelity
+            rc = [c for c in rc if not refs[c]['excluded']]
             wc_all = [c for c in frozen[name]['callees'] if c not in used and c in frozen]
             # template instantiations (TSBaseArray<X>::operator[]) are usually inlined in the
             # reference, so they must not block a vote; they can still be the vote when alone
