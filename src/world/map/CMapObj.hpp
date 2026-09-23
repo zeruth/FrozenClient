@@ -1,8 +1,11 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_HPP
 #define WORLD_MAP_C_MAP_OBJ_HPP
 
+#include <tempest/Segment.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
+
+class CMapObjGroup;
 
 // MOMT: one material of a WMO (64 bytes). The group queries only read texture1, to tell a
 // textured face from an untextured one.
@@ -31,6 +34,9 @@ class CMapObj {
         SMOMaterial* m_materials = nullptr;   // +0x160: MOMT
         uint32_t m_materialCount = 0;
         CImVector m_ambientColor;             // +0x1a0: MOHD ambColor
+
+        // Member functions
+        bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
 };
 
 #endif

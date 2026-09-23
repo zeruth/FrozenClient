@@ -800,10 +800,18 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
     // world position is the translation column of its placement matrix.
     if (model) {
         C3Vector pos = { model->matrixB4.d0, model->matrixB4.d1, model->matrixB4.d2 };
-        C3Vector interior;
+        CImVector diffuse;
+        CImVector ambient;
 
-        if (TerrainInteriorAmbientAt(pos, interior)) {
-            lighting->AddAmbient(interior);
+        // The reference's floor probe (CMapEntity::FloorLight): the MOCV under the model, split
+        // into a diffuse and an ambient. The reference function that turns those two colours into
+        // the model's lights has not been identified yet, so the diffuse is applied along the
+        // outdoor sun direction here; the ambient is exact.
+        if (TerrainWmoFloorLightAt(pos, &diffuse, &ambient)) {
+            C3Vector amb = { ambient.r * (1.0f / 255.0f), ambient.g * (1.0f / 255.0f), ambient.b * (1.0f / 255.0f) };
+            C3Vector dif = { diffuse.r * (1.0f / 255.0f), diffuse.g * (1.0f / 255.0f), diffuse.b * (1.0f / 255.0f) };
+            lighting->AddAmbient(amb);
+            lighting->AddDiffuse(dif, CWorld::s_outdoorDirection);
             return;
         }
     }

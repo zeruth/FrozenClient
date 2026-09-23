@@ -633,6 +633,7 @@ addr	how	frozen	evidence
 004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
@@ -1958,6 +1959,7 @@ addr	how	frozen	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006b0970	callgraph	ClientServices::IsConnected	only unmatched callee of 004dda50=Script_IsConnectedToServer
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin
 006b0b50	annotated	ClientServices::Send	tag in src/client/ClientServices.cpp
@@ -2154,7 +2156,10 @@ addr	how	frozen	evidence
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
+007a0d60	annotated	CMapEntity::FloorLight	tag in src/world/map/CMapEntity.cpp
+007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
+007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
 007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
@@ -3000,9 +3005,13 @@ addr	how	frozen	evidence
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
+009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
+00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
+00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
+009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928

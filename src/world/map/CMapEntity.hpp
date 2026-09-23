@@ -4,8 +4,15 @@
 #include "world/map/CMapStaticEntity.hpp"
 #include <tempest/Vector.hpp>
 
+class CMapObj;
+class CMapObjGroup;
+
 class CMapEntity : public CMapStaticEntity {
     public:
+        // Static functions
+        static void SplitFloorLight(const CImVector& color, CImVector* diffuse, uint8_t diffuseMax, CImVector* ambient, uint8_t ambientMax);
+        static bool FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGroup* group, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha);
+
         // Member variables
         void* m_handler = nullptr;
         void* m_handlerParam = nullptr;

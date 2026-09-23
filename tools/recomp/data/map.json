@@ -10113,6 +10113,7 @@
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
@@ -10121,6 +10122,25 @@
   "module": "TextureBlob.cpp",
   "refSize": 533,
   "status": "ported"
+ },
+ "004c21b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1271,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 93,
+  "status": "excluded"
  },
  "004c5a60": {
   "branchRatio": 1.0,
@@ -31131,6 +31151,22 @@
   "refSize": 1299,
   "status": "ported"
  },
+ "006acc50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "LerpColor",
+  "frozenSize": 149,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 134,
+  "status": "ported"
+ },
  "006b0970": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -34237,7 +34273,7 @@
    "lib/typhoon/tempest/segment/c3segment.cpp"
   ],
   "frozen": "C3Segment::C3Segment",
-  "frozenSize": 0,
+  "frozenSize": 48,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 67,
@@ -34253,7 +34289,7 @@
    "lib/typhoon/tempest/segment/c3segment.cpp"
   ],
   "frozen": "C3Segment::Lerp",
-  "frozenSize": 0,
+  "frozenSize": 83,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 56,
@@ -34291,6 +34327,38 @@
   "refSize": 2068,
   "status": "ported"
  },
+ "007a0d60": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.094,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapEntity.cpp",
+   "src/world/map/cmapentity.cpp"
+  ],
+  "frozen": "CMapEntity::FloorLight",
+  "frozenSize": 396,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 360,
+  "status": "ported"
+ },
+ "007af780": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupFloorColor",
+  "frozenSize": 301,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 200,
+  "status": "ported"
+ },
  "007bfce0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -34305,6 +34373,22 @@
   "how": "string",
   "module": "MapLoad.cpp",
   "refSize": 339,
+  "status": "ported"
+ },
+ "007c1ad0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapEntity.cpp",
+   "src/world/map/cmapentity.cpp"
+  ],
+  "frozen": "CMapEntity::SplitFloorLight",
+  "frozenSize": 476,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 362,
   "status": "ported"
  },
  "007c6600": {
@@ -34477,7 +34561,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroupSegmentQuery::Init",
-  "frozenSize": 0,
+  "frozenSize": 356,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 277,
@@ -34493,7 +34577,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::RecordHits",
-  "frozenSize": 0,
+  "frozenSize": 615,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 1062,
@@ -34509,7 +34593,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SampleColorAtFace",
-  "frozenSize": 0,
+  "frozenSize": 1131,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 882,
@@ -34573,7 +34657,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SegmentQueryNode",
-  "frozenSize": 0,
+  "frozenSize": 1017,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 699,
@@ -34621,7 +34705,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::QuerySegment",
-  "frozenSize": 0,
+  "frozenSize": 277,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 189,
@@ -36768,7 +36852,7 @@
   "branchRatio": 0.196,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.093,
+  "fidelity": 0.222,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -37088,7 +37172,7 @@
   "branchRatio": 0.342,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.043,
+  "fidelity": 0.085,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -37120,7 +37204,7 @@
   "branchRatio": 0.706,
   "constOverlap": 0.031,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.167,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -47545,10 +47629,26 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "DominantAxis",
-  "frozenSize": 0,
+  "frozenSize": 60,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 61,
+  "status": "ported"
+ },
+ "009829f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "MinAxis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 67,
   "status": "ported"
  },
  "00983490": {
@@ -47561,7 +47661,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "IntersectRayTriangle",
-  "frozenSize": 0,
+  "frozenSize": 702,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 537,
@@ -47597,6 +47697,54 @@
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 829,
+  "status": "ported"
+ },
+ "00984f60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "RgbToHsv",
+  "frozenSize": 283,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
+ "00985030": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "HsvToRgb",
+  "frozenSize": 440,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 334,
+  "status": "ported"
+ },
+ "009851a0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "PackColor",
+  "frozenSize": 107,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 91,
   "status": "ported"
  },
  "009858b0": {

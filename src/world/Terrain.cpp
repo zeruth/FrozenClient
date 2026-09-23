@@ -6,6 +6,7 @@
 #include "world/ParticleFx.hpp"
 #include "world/Clouds.hpp"
 #include "world/CWorldParam.hpp"
+#include "world/map/CMapEntity.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "console/CVar.hpp"
@@ -5632,7 +5633,13 @@ bool TerrainPointIsIndoors(const C3Vector& pos) {
     return false;
 }
 
-bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient) {
+// The light for a unit standing on a WMO floor, by the reference's mechanism: a probe from one
+// yard above its feet to twelve below, through the interior groups' BSP, sampling the MOCV at the
+// floor face it lands on (CMapEntity::FloorLight, FUN_007a0d60). The reference reaches the
+// entity's MapObjDef and group through its parent links; without that graph every loaded instance
+// whose box holds the probe is tried, and within it every interior group whose box holds it, first
+// hit wins. Exterior groups never answer, so a unit out on a deck is lit by the sky again.
+bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient) {
     for (auto& tile : s_tiles) {
         if (!tile.loaded || !tile.wmos) {
             continue;
@@ -5641,52 +5648,32 @@ bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient) {
         for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
             WmoInstance& w = tile.wmos[wi];
 
-            // Skip a whole building the unit is nowhere near before scanning its rooms.
             if (w.hasBounds && (pos.x < w.bboxMin.x || pos.x > w.bboxMax.x ||
                                 pos.y < w.bboxMin.y || pos.y > w.bboxMax.y ||
-                                pos.z < w.bboxMin.z || pos.z > w.bboxMax.z)) {
+                                pos.z + 1.0f < w.bboxMin.z || pos.z - 12.0f > w.bboxMax.z)) {
                 continue;
             }
+
+            C3Vector local = { pos.x - w.origin.x, pos.y - w.origin.y, pos.z - w.origin.z };
 
             for (uint32_t gi = 0; gi < w.groupCount; gi++) {
                 WmoGroup& grp = w.groups[gi];
 
-                if (!grp.interior || !grp.vertexCount) {
+                // A group without a BSP or vertex colours cannot answer the probe
+                if (!grp.vertexCount || !grp.objGroup.m_bspNodes || !grp.objGroup.m_colors) {
                     continue;
                 }
 
-                // The box is only a prefilter now; the geometry test below decides.
-                if (pos.x >= grp.boundsMin.x && pos.x <= grp.boundsMax.x &&
-                    pos.y >= grp.boundsMin.y && pos.y <= grp.boundsMax.y &&
-                    pos.z >= grp.boundsMin.z && pos.z <= grp.boundsMax.z &&
-                    WmoGroupContains(grp, pos.x - w.origin.x, pos.y - w.origin.y,
-                                     pos.z - w.origin.z)) {
-                    // Light the unit by the specific room it stands in, not the whole building's
-                    // average, so a hall's blue or purple cast reaches the characters in it.
-                    //
-                    // NOTE this is an axis-aligned box test against the group bounds, which is a
-                    // strictly larger volume than the room. For a big structure -- Ebon Hold is one
-                    // WMO -- an interior hall's box can reach out over an open deck, and anything
-                    // standing there is then lit flat by interior ambient with no diffuse at all,
-                    // while the terrain under its feet still takes the outdoor path. That is a
-                    // candidate explanation for models not picking up the sky colour; the reference
-                    // resolves containment through the group BSP and portals, not the bounds.
-                    //
-                    // Logged a handful of times rather than fixed on a hunch: the next run says
-                    // whether this branch is being taken at all, and where.
-                    static int32_t s_reported = 0;
+                if (pos.x < grp.boundsMin.x || pos.x > grp.boundsMax.x ||
+                    pos.y < grp.boundsMin.y || pos.y > grp.boundsMax.y ||
+                    pos.z + 1.0f < grp.boundsMin.z || pos.z - 12.0f > grp.boundsMax.z) {
+                    continue;
+                }
 
-                    if (s_reported < 6) {
-                        s_reported++;
-                        fprintf(stderr,
-                                "InteriorAmbient: pos(%.1f %.1f %.1f) group %u ambient(%.2f %.2f %.2f) "
-                                "groupBox z[%.1f %.1f] portals %u\n",
-                                pos.x, pos.y, pos.z, gi,
-                                grp.groupAmbient.x, grp.groupAmbient.y, grp.groupAmbient.z,
-                                grp.boundsMin.z, grp.boundsMax.z, w.portalCount);
-                    }
+                uint32_t flags = 0;
+                uint8_t alpha = 0;
 
-                    outAmbient = grp.groupAmbient;
+                if (CMapEntity::FloorLight(local, &w.mapObj, &grp.objGroup, diffuse, ambient, &flags, &alpha)) {
                     return true;
                 }
             }
