@@ -1437,15 +1437,20 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
         out.textureCount = nMaterials;
 
         for (uint32_t i = 0; i < nMaterials; i++) {
-            uint32_t matFlags = *reinterpret_cast<const uint32_t*>(momt + i * 64 + 0x00);
             uint32_t texOfs = *reinterpret_cast<const uint32_t*>(momt + i * 64 + 0x0C);
             const char* texName = motx + texOfs;
             CStatus status;
-            // F_CLAMP_S (0x40) / F_CLAMP_T (0x80) clamp the texture instead of wrapping, which the
-            // reference uses for decals, windows and bordered textures to stop the edge tiling.
-            uint32_t wrapU = (matFlags & 0x40) ? GxTex_Clamp : GxTex_Wrap;
-            uint32_t wrapV = (matFlags & 0x80) ? GxTex_Clamp : GxTex_Wrap;
-            out.textures[i] = TextureCreate(texName, CGxTexFlags(GxTex_LinearMipLinear, wrapU, wrapV, 0, 0, 0, 1), &status, 0);
+
+            // WRAP on both axes, always. This used to derive clamping from MOMT flags 0x40 and
+            // 0x80, with a comment asserting the reference clamps decals, windows and bordered
+            // textures. **It does not**, checked 2026-09-23. Every WMO material texture in the
+            // reference is loaded through one helper, FUN_007d9990, which takes a filename and
+            // nothing else and builds its flags as CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap,
+            // GxTex_Wrap, 0, 0, 0, 1). Its caller FUN_007d7710 is unmistakably the MOMT loop: it
+            // indexes 64-byte materials and reads texture1 at +0x0C and texture2 at +0x18, which
+            // is the layout read just above. All five call sites reach the same hardcoded flags,
+            // so there is no path on which the reference clamps one of these.
+            out.textures[i] = TextureCreate(texName, CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), &status, 0);
         }
     }
 

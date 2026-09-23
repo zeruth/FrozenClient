@@ -1646,5 +1646,13 @@
   "00780640": {
     "status": "unlinked",
     "note": "one instruction: returns the address of the block at 0x00cd8f5c. CGWorldFrame::OnWorldRender calls it twice. An accessor for a global render-state block; frozen has no counterpart to link."
+  },
+  "007d9990": {
+    "status": "unlinked",
+    "note": "the ONE texture loader every WMO material texture goes through, five callers. It takes a filename and nothing else, builds CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), calls TextureCreate, and logs \"Failed to load texture: %s\" on failure. Because the flags are hardcoded here, there is no path on which the reference clamps a WMO texture -- which is how frozen's invented clamp-from-MOMT-flags was caught on 2026-09-23. frozen loads these inline in its WMO loader, so there is no discrete counterpart to link."
+  },
+  "007d7710": {
+    "status": "unlinked",
+    "note": "the MOMT material texture loader: indexes 64-byte materials at this+0x160, reads the texture1 name offset at +0x0C and texture2 at +0x18 against the MOTX block at this+0x124, substitutes a default name when the first is empty, switches on the blend mode at +0x4 through a seven-entry jump table, and stores the two handles at +0x38 and +0x3c. Both loads go through 007d9990. It is the function that proves the material layout frozen reads is right and that its wrap flags were not. frozen has no discrete counterpart -- this work is inline in its WMO loader."
   }
 }
