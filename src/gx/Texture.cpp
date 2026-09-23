@@ -17,7 +17,10 @@
 #define MIPPED_IMG_ALIGN 16
 
 namespace Texture {
-    int32_t s_createBlpAsync; // Invented name
+    // Invented name. Never assigned, so it is zero and CreateBlpAsync -- a stub -- is unreachable.
+    // Do not set it without porting that function: its call site has no fallback. See the note
+    // there.
+    int32_t s_createBlpAsync;
     MipBits* s_mipBits;
     int32_t s_mipBitsValid;
     TSHashTable<CTexture, HASHKEY_TEXTUREFILE> s_textureCache;
@@ -795,6 +798,16 @@ int32_t FindSubstitution(const char* a1, char* a2) {
     return 0;
 }
 
+// **A stub with a trap attached, and the trap is one flag away.** Its only call site chooses
+// between this and CreateBlpSync on Texture::s_createBlpAsync, with no fallback: when that flag is
+// set and this returns nullptr, the texture is simply not created. s_createBlpAsync is declared and
+// never assigned, so it is zero and every BLP currently takes the synchronous path. Setting it --
+// which is what porting the reference's own initialisation would do -- stops every BLP texture in
+// the client from loading, silently.
+//
+// The reference (FUN_004b8a50) opens the file, allocates a CTexture, checks SFile::IsStreamingMode,
+// allocates an async read object and queues the read. Port it and set the flag in the same change,
+// or leave both alone.
 CTexture* CreateBlpAsync(char* fileExt, char* fileName, int32_t createFlags, CGxTexFlags texFlags) {
     // TODO
 
@@ -887,6 +900,12 @@ HTEXTURE CreateBlpTexture(char* fileExt, char* fileName, int32_t createFlags, CG
     return handle;
 }
 
+// Every TGA texture request yields nothing. Unlike the BLP pair above there is no synchronous
+// alternative to fall back to, so this one is a live gap rather than a dormant trap -- it just
+// happens to be narrow, because the game's art is BLP and TGA turns up only in a few places.
+//
+// The reference (FUN_004b95b0) reads the file through 006aaf40/006aafb0, allocates a CTexture,
+// calls TextureAllocGxTex, and falls back to TextureCreateSolid when the upload fails.
 HTEXTURE CreateTgaTexture(const char* fileName, const char* fileExt, int32_t a3, CGxTexFlags texFlags, CStatus* status) {
     // TODO
 
