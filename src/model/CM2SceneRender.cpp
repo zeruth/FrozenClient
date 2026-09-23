@@ -347,6 +347,34 @@ void CM2SceneRender::SetBatchVertices(int32_t a2) {
     }
 }
 
+// Its 56% call-order recall is one missing block, not scatter: the reference ends this function by
+// setting a USER CLIP PLANE, and frozen does not. Written down 2026-09-23 with the whole chain, so
+// the next attempt starts at the top of it rather than the bottom.
+//
+// The reference, from 0x0081fd5e:
+//
+//     if (m_curElement->flags & 0x2) {            // M2UseClipPlanes
+//         C4Plane p = m_curLighting->m_liquidPlane;
+//         if (<device +0x1b4> && <global 0xd43020>)  // a transform step, not decoded
+//             ...
+//         if (m_curPass == 2)                     // negate all four components
+//             p = -p;
+//         GxDevice->ClipPlaneSet(0, &p);
+//         if (<device +0xf58>) GxRsSet(GxRs_ClipPlaneMask, 1);
+//     } else {
+//         if (<device +0xf58>) GxRsSet(GxRs_ClipPlaneMask, 0);   // 0x0081fe4d
+//     }
+//
+// Four pieces, and only two exist. CGxDevice::ClipPlaneSet and IStateSyncClipPlanes landed
+// 2026-09-23, and GxRs_ClipPlaneMask reaches D3DRS_CLIPPLANEENABLE as of the same day. This block
+// is the third.
+//
+// The fourth is the reason not to write this block yet: CM2Lighting::m_liquidPlane is DECLARED AND
+// NEVER WRITTEN. The liquid-plane work that would fill it is a TODO in CM2Scene::Animate -- see the
+// note there about CM2Lighting flag 0x40 never being set -- so porting this would clip every
+// flagged element against a plane of all zeros. Start at Animate.
+//
+// Also unidentified: the device fields at +0x1b4 and +0xf58 that gate the transform and the mask.
 void CM2SceneRender::SetupLighting() {
     if (this->m_curMaterial->flags & 0x1) {
         this->m_curShaded = 0;

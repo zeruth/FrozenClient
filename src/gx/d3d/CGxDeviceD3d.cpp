@@ -1381,6 +1381,36 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         break;
     }
 
+    case GxRs_ClipPlaneMask: {
+        // Which of the six user clip planes are on, as a bit per plane, straight into
+        // D3DRS_CLIPPLANEENABLE (0x98). The reference caches the last value at +0x3e84 and skips
+        // the call when it has not changed, which is reproduced here.
+        //
+        // This state was accepted and dropped before now, like GxRs_Multisample was. It is the
+        // last of three missing pieces rather than the first: the planes themselves and their sync
+        // landed on 2026-09-23 (CGxDevice::ClipPlaneSet, IStateSyncClipPlanes), but nothing yet
+        // RAISES this mask, and the thing that should is CM2SceneRender::SetupLighting. Its block
+        // is at 0x0081fd5e in the reference -- gated on the current element's flags & 0x2
+        // (M2UseClipPlanes), it copies m_curLighting->m_liquidPlane, negates all four components
+        // when m_curPass is 2, calls ClipPlaneSet(0, plane), and then sets this mask to 1 (or to 0
+        // down the else path at 0x0081fe4d).
+        //
+        // That block is NOT ported, and porting it alone would achieve nothing: CM2Lighting's
+        // m_liquidPlane is never written, because the liquid-plane work in CM2Scene::Animate is
+        // still a TODO -- see the note there about flag 0x40 never being set. So the chain is
+        // liquid plane -> SetupLighting -> this state -> the planes, and only the last piece and
+        // this one exist. This case is safe in isolation because the mask defaults to 0 and
+        // nothing raises it.
+        auto clipPlaneMask = static_cast<uint32_t>(state->m_value);
+
+        if (this->m_d3dClipPlaneEnable != clipPlaneMask) {
+            this->m_d3dDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, clipPlaneMask);
+            this->m_d3dClipPlaneEnable = clipPlaneMask;
+        }
+
+        break;
+    }
+
     case GxRs_Multisample: {
         // The reference's case for this reads the state and sends a plain boolean:
         //   `xorl %ecx,%ecx; cmpl %ecx,(%edi); setne %cl; push %ecx; push $0xa1` at 0x006a5126.

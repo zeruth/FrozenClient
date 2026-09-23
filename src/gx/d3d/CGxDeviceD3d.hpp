@@ -252,6 +252,10 @@ class CGxDeviceD3d : public CGxDevice {
     uint32_t m_d3dDiffuseMaterialSource = 0;
     uint32_t m_d3dSpecularMaterialSource = 0;
     uint32_t m_d3dEmissiveMaterialSource = 0;
+    // The hardware side of D3DRS_CLIPPLANEENABLE, at +0x3e84 in the reference. Zero to start,
+    // which agrees with D3D's own default, so unlike the material sources above there is no
+    // first-sync gap here.
+    uint32_t m_d3dClipPlaneEnable = 0;
 
     // Virtual member functions
     virtual void ITexMarkAsUpdated(CGxTex* texId);
