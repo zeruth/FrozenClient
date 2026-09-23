@@ -2376,6 +2376,7 @@ addr	how	frozen	evidence
 008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
+00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
 00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
@@ -2388,6 +2389,7 @@ addr	how	frozen	evidence
 00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
+00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831e20	override	CM2Model::CancelAllDeferredSequences	
 00831ec0	override	CM2Model::CancelDeferredSequences	
@@ -2396,13 +2398,15 @@ addr	how	frozen	evidence
 00832ab0	override	CM2Model::SetBoneSequence	
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
+00834900	annotated	CM2Lighting::Initialize	tag in src/model/CM2Lighting.cpp
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
 00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
 00834f60	annotated	CM2Lighting::AddLight	tag in src/model/CM2Lighting.cpp
 008350a0	override	CM2Lighting::CameraSpace	
 00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
 008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp
-00835640	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
+00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp

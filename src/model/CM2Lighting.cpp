@@ -154,6 +154,14 @@ void CM2Lighting::CameraSpace() {
     }
 }
 
+// `memset(this, 0, 0xd4)`, then the scene at +0x0, `|= 0x20` into the flags at +0x14, and the
+// four dwords of the sphere at +0x4. Statement for statement.
+//
+// 0xd4 is 212, and that is a check on this class's whole layout rather than just this
+// function: frozen's CM2Lighting comes to exactly 212 bytes only WITH the m_lightDistance[4]
+// added on 2026-09-23 for AddLight. Without it the struct would be 196, and the reference's
+// own memset says 212.
+// ref: FUN_00834900
 void CM2Lighting::Initialize(CM2Scene* scene, const CAaSphere& a3) {
     memset(this, 0, sizeof(CM2Lighting));
 

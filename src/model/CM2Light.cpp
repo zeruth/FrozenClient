@@ -58,6 +58,10 @@ void CM2Light::Link() {
     }
 }
 
+// Writes the argument to +0x24, which is m_dir under the layout recovered for this class,
+// then squares and sums it, compares against the constant at 0x009ea27c and normalises.
+// Confirms m_dir's offset independently of the CM2Light layout work two cycles ago.
+// ref: FUN_00834ae0
 void CM2Light::SetDirection(const C3Vector& dir) {
     this->m_dir = dir;
 
@@ -66,7 +70,6 @@ void CM2Light::SetDirection(const C3Vector& dir) {
     }
 }
 
-// ref: FUN_00835640
 // Moves the light and re-files it, because a point light's grid cell is derived from where it is.
 // The reference inlines the unlink and then calls Link; the two here do the same thing.
 //
@@ -84,6 +87,7 @@ void CM2Light::SetPosition(const C3Vector& pos) {
     this->Link();
 }
 
+// ref: FUN_00835640
 void CM2Light::SetLightType(M2LIGHTTYPE lightType) {
     if (this->m_type == lightType) {
         return;

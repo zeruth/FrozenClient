@@ -922,6 +922,11 @@ void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const 
     this->m_animCounter = this->m_scene->uint14;
 }
 
+// Identified from its calls rather than its position: it reaches CM2Light::SetPosition
+// (0x00835690), SetDirection (0x00834ae0) and SetVisible (0x008356f0), which is this
+// function's light loop and nothing else in the class. Its entry test, `[+0x10] & 1`, is
+// m_loaded.
+// ref: FUN_00828a00
 void CM2Model::AnimateST() {
     if (!this->m_loaded) {
         return;
@@ -2909,6 +2914,11 @@ void CM2Model::SetupBoneSequence(uint16_t sequenceIndex, M2SequenceFallback fall
     boneSequence->float18 = v13;
 }
 
+// Identified beyond doubt from its call list: CM2Lighting::Initialize (0x00834900),
+// CM2Scene::SelectLights (0x0081e400), the lighting callback through a pointer,
+// CM2Lighting::SetupSunlight (0x00835280), CM2Lighting::CameraSpace (0x008350a0) -- and
+// then itself, which is the recursion into m_attachList below.
+// ref: FUN_00831af0
 void CM2Model::SetupLighting() {
     if (!this->m_attachParent || this->m_attachParent->m_flags & 0x1) {
         this->Animate();
