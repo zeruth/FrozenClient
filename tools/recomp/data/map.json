@@ -9806,6 +9806,22 @@
   "refSize": 57,
   "status": "ported"
  },
+ "004c1360": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/common/common/DataMgr.cpp",
+   "lib/common/common/datamgr.cpp"
+  ],
+  "frozen": "DataMgrSetFloat",
+  "frozenSize": 102,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "004c1930": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37418,7 +37434,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.211,
+  "fidelity": 0.254,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"

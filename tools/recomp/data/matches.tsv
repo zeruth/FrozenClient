@@ -613,6 +613,7 @@ addr	how	frozen	evidence
 004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
 004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b90	annotated	C44Matrix::Scale	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
