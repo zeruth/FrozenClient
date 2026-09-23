@@ -306,6 +306,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IShaderCreateVertex(CGxShader* shader);
     void IStateSetD3dDefaults();
     void IStateSync();
+    void IStateSyncClipPlanes();
     void IStateSyncEnables();
     void IStateSyncIndexPtr();
     void IStateSyncLights();

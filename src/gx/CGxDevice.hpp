@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <storm/Hash.hpp>
 #include <tempest/Box.hpp>
+#include <tempest/Plane.hpp>
 #include <tempest/Rect.hpp>
 
 class CGxBatch;
@@ -128,6 +129,13 @@ class CGxDevice {
         CGxBuf* m_streamBufs[GxPoolTargets_Last] = {};
         CGxVertexAttrib m_primVertexFormatAttrib[GxVertexBufferFormats_Last];
         CGxBuf* m_primVertexFormatBuf[GxVertexBufferFormats_Last] = {};
+        // Six user clip planes and a per-plane dirty mask, at +0x24d4 and +0x24d0 in the
+        // reference, which memsets 0x60 bytes over the array -- 6 * sizeof(C4Plane) -- and zeroes
+        // the mask at device create. Nothing in frozen sets a plane yet, so the mask stays 0 and
+        // the sync below returns immediately; that is the correct resting state rather than a
+        // stub, and the moment something calls ClipPlaneSet it works.
+        C4Plane m_clipPlanes[6] = {};
+        uint32_t m_clipPlaneDirty = 0;
         uint32_t m_primVertexMask = 0;
         uint32_t m_primVertexDirty = 0;
         EGxVertexBufferFormat m_primVertexFormat = GxVertexBufferFormats_Last;
@@ -202,6 +210,7 @@ class CGxDevice {
         int32_t MasterEnable(EGxMasterEnables);
         CGxPool* PoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, const char*);
         void PrimIndexPtr(CGxBuf*);
+        void ClipPlaneSet(uint32_t, const C4Plane*);
         void PrimVertexFormat(CGxBuf*, CGxVertexAttrib*, uint32_t);
         void PrimVertexMask(uint32_t);
         void PrimVertexPtr(CGxBuf*, EGxVertexBufferFormat);

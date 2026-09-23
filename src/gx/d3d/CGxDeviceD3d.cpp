@@ -1863,8 +1863,9 @@ void CGxDeviceD3d::IStateSync() {
     }
 
     this->IStateSyncEnables();
+    this->IStateSyncClipPlanes();
 
-    // TODO
+    // TODO -- 0x006a38d0 goes here, the scissor-rect sync, still unported
 
     this->IStateSyncVertexPtrs();
     this->IStateSyncIndexPtr();
@@ -1918,6 +1919,32 @@ void CGxDeviceD3d::IStateSyncEnables() {
     }
 
     this->m_hwMasterEnables = this->m_appMasterEnables;
+}
+
+// Pushes the six user clip planes that changed since the last sync. The reference walks the mask
+// bit by bit rather than testing plane against plane, because CGxDevice::ClipPlaneSet has already
+// done the comparison and recorded the answer.
+//
+// SetClipPlane is vtable offset 0xdc, and 0xdc / 4 = 55, which is its index on IDirect3DDevice9 --
+// the same arithmetic that identified SetRenderState at 0xe4.
+//
+// This costs nothing today and is not a stub while it does: nothing in frozen calls ClipPlaneSet
+// yet, so the mask is zero and the first test returns. GxRs_ClipPlaneMask is a separate thing --
+// it enables planes, and travels the ordinary render-state path as Ds_ClipPlaneEnable -- so the
+// two halves can land independently.
+// ref: FUN_006a3870
+void CGxDeviceD3d::IStateSyncClipPlanes() {
+    if (!this->m_clipPlaneDirty) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < 6; i++) {
+        if (this->m_clipPlaneDirty & (1 << i)) {
+            this->m_d3dDevice->SetClipPlane(i, reinterpret_cast<const float*>(&this->m_clipPlanes[i]));
+        }
+    }
+
+    this->m_clipPlaneDirty = 0;
 }
 
 void CGxDeviceD3d::IStateSyncIndexPtr() {

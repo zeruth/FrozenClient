@@ -945,6 +945,30 @@ void CGxDevice::PrimIndexPtr(CGxBuf* buf) {
     }
 }
 
+// Stores one user clip plane and marks it dirty only when it actually changed, which is the
+// whole point: the sync in the D3D backend walks the dirty mask, so an unchanged plane costs
+// nothing.
+//
+// The reference compares all four components with the fcom/fnstsw/testb $0x44 idiom. With mask
+// 0x44 the tested bits are C3 (equal) and C2 (unordered), and `jp` is taken only when BOTH are
+// clear -- an ordered, not-equal compare -- which is the branch into the store. The last of the
+// four inverts to `jnp` to fall out when every component matched. Spelled here as a plain
+// inequality, which is the same thing for ordered values and does not silently invert if a NaN
+// ever reaches it.
+// ref: FUN_00684440
+void CGxDevice::ClipPlaneSet(uint32_t index, const C4Plane* plane) {
+    C4Plane* dst = &this->m_clipPlanes[index];
+
+    if (plane->n.x != dst->n.x || plane->n.y != dst->n.y || plane->n.z != dst->n.z || plane->d != dst->d) {
+        this->m_clipPlaneDirty |= 1 << index;
+
+        dst->n.x = plane->n.x;
+        dst->n.y = plane->n.y;
+        dst->n.z = plane->n.z;
+        dst->d = plane->d;
+    }
+}
+
 void CGxDevice::PrimVertexFormat(CGxBuf* buf, CGxVertexAttrib* attribs, uint32_t count) {
     for (int32_t i = 0; i < count; i++) {
         int32_t attrib = attribs->attrib;

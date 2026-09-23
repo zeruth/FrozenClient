@@ -30846,6 +30846,22 @@
   "refSize": 135,
   "status": "ported"
  },
+ "00684440": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ClipPlaneSet",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
  "00684850": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -31164,6 +31180,22 @@
   "refSize": 94,
   "status": "ported"
  },
+ "006a3870": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
  "006a39e0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -31264,13 +31296,13 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.8,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 820,
+  "frozenSize": 1035,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,
