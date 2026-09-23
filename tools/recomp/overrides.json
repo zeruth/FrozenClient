@@ -1432,6 +1432,11 @@
     "status": "ported",
     "note": "first call in IStateSync, and its shape confirms it: it reads a dirty register range from two globals (0xc5ffe8 / 0xc5ffec), bails when the range is empty, and otherwise shifts the start left by 4 -- sixteen bytes per shader constant register -- before pushing it through the device."
   },
+  "006a99e0": {
+    "frozen": "CGxDeviceD3d::IXformSetViewport",
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IXformSetViewport, found by running --diff on IStateSync: every other callee matched in order and this showed as the one unlinked `- 006a99e0`. Identified from four agreeing facts: it calls DeviceCurWindow (00682d70); it reads six consecutive floats at +0xf70..+0xf84, which is m_viewport as {x.l, x.h, y.l, y.h, z.l, z.h}, and forms x.l * maxX + 0.5 and (1.0 - y.h) * maxY + 0.5 as its first two terms; it calls vtable 0xbc and 0xbc / 4 = 47 = SetViewport; and it ends by storing 0 to +0xf6c, which is intF6C, the flag IStateSync tests before calling it. STATUS faithful BY HAND, because the branch-shape check misjudges this one. The reference has four branches and frozen has one, but two of the four are not control flow at all: they reload X and Y as signed 32-bit and add 4294967296.0 (2^32, the constant at 0x009e23ac) when negative, which is only the x87 idiom for converting a DWORD to floating point. X and Y are DWORDs in frozen, so the C++ conversions do that implicitly and reproducing the branches would be copying codegen. The remaining pair is the `a != 0 || b != 0` test, which frozen has. Call order is 100%. The real behaviour behind that test landed with this verdict: rendering into a texture removes the y-flip, so Y is recomputed as maxY * y.l, truncated with no +0.5 unlike the rounded Y above. It carries the same deliberate divergence as IStateSyncScissorRect -- the reference tests m_textureTarget's m_apiSpecific fields and frozen tests m_texture, because frozen never stores a surface in m_apiSpecific. BUILT, NOT SEEN RUNNING, and this one is visible: it changes the viewport for every render-to-texture pass, which is the shadow map and the FFX glow."
+  },
   "006a3870": {
     "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
     "status": "ported",
@@ -1463,8 +1468,9 @@
     "note": "Sets the scissor rect: raises the dirty flag at +0x2534 and copies four floats from the argument into +0x2538..+0x2544, which 006a38d0 later scales by the window size and clamps into a RECT. Only two callers in the binary. This entry said unlinked because frozen had no scissor state; that state landed 2026-09-23 as CGxDevice::m_scissorRect and m_scissorDirty, so there is a counterpart now. Note it marks dirty UNCONDITIONALLY -- no compare first, unlike ClipPlaneSet -- so setting the same rect every frame re-sends it. Reproduced rather than improved. Nothing in frozen calls it yet."
   },
   "00682d70": {
-    "status": "unlinked",
-    "note": "returns the object whose fields at +0x8 and +0xc are the current render target's height and width: the scissor sync (006a38d0) multiplies its normalised rect by them and clamps the result to them. Identified by use, not by a symbol."
+    "frozen": "CGxDevice::DeviceCurWindow",
+    "status": "ported",
+    "note": "The whole function is `leal 0x174(%ecx), %eax; retl`. This entry used to say only that it returns the object whose +0x8 and +0xc are a height and a width, identified by use rather than by a symbol; it is CGxDevice::DeviceCurWindow, and the name comes from behaviour, not position. The reference's viewport setter calls it at 0x006a521d and then computes (1.0 - viewport.y.h) * result[+0x8], which is IXformSetViewport's own (1.0 - gxViewport.y.h) * windowRect.maxY; CRect is {minY, minX, maxY, maxX}, so +0x8 is maxY and +0xc is maxX, which is also why the scissor sync scales horizontal edges by one and vertical by the other. 15 callers, so this lifts the measured fidelity of each one that gets ported. Its neighbour FUN_00682d80 returns &this->[0x164], one CRect earlier, and by elimination is DeviceDefWindow -- frozen declares m_defWindowRect immediately before m_curWindowRect. Left unlinked on purpose: that is adjacency rather than proof."
   },
   "006a43a0": {
     "status": "unlinked",

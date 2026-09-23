@@ -30788,6 +30788,22 @@
   "refSize": 51,
   "status": "ported"
  },
+ "00682d70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::DeviceCurWindow",
+  "frozenSize": 5,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
  "00682e50": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -31215,8 +31231,8 @@
  "006a38d0": {
   "branchRatio": 0.857,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -31328,7 +31344,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.9,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -31339,6 +31355,22 @@
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,
   "status": "ported"
+ },
+ "006a99e0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IXformSetViewport",
+  "frozenSize": 325,
+  "how": "override",
+  "module": "CGxD3d9ExTexture.cpp",
+  "refSize": 341,
+  "status": "faithful"
  },
  "006a9fe0": {
   "branchRatio": 1.0,

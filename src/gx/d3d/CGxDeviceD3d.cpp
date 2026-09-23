@@ -2723,6 +2723,16 @@ void CGxDeviceD3d::IXformSetProjection(const C44Matrix& matrix) {
     memcpy(&this->m_projNative, &projNative, sizeof(this->m_projNative));
 }
 
+// The last call IStateSync makes that was not linked, found by running --diff on it: every other
+// callee matched in order and this one showed as `- 006a99e0`.
+//
+// Identified from four things that agree. It calls DeviceCurWindow; it reads six consecutive floats
+// at +0xf70..+0xf84, which is m_viewport as {x.l, x.h, y.l, y.h, z.l, z.h}, and the first two terms
+// it forms are x.l * maxX + 0.5 and (1.0 - y.h) * maxY + 0.5 -- the X and Y below, constant
+// included; it calls vtable 0xbc, and 0xbc / 4 = 47 = SetViewport; and it ends by storing 0 to
+// +0xf6c, which is intF6C, the same flag this function clears and IStateSync tests before calling
+// it.
+// ref: FUN_006a99e0
 void CGxDeviceD3d::IXformSetViewport() {
     const auto& gxViewport = this->m_viewport;
     auto windowRect = this->DeviceCurWindow();
@@ -2732,15 +2742,30 @@ void CGxDeviceD3d::IXformSetViewport() {
     d3dViewport.X = (gxViewport.x.l * windowRect.maxX) + 0.5;
     d3dViewport.Y = ((1.0 - gxViewport.y.h) * windowRect.maxY) + 0.5;
 
-    // TODO account for negative X value
-
+    // A `// TODO account for negative X value` used to stand here. It is already accounted for.
+    // The reference reloads X and Y as SIGNED 32-bit and adds 4294967296.0 -- 2^32, the constant at
+    // 0x009e23ac -- when the value is negative, which is nothing but the x87 idiom a compiler emits
+    // to convert a DWORD to floating point. X and Y are DWORDs here, so the conversions below do
+    // exactly that on their own. Two of the reference's four branches are that idiom and should not
+    // be reproduced as branches.
     d3dViewport.Width = (gxViewport.x.h * windowRect.maxX) - d3dViewport.X + 0.5;
     d3dViewport.Height = ((1.0 - gxViewport.y.l) * windowRect.maxY) - d3dViewport.Y + 0.5;
 
     d3dViewport.MinZ = gxViewport.z.l;
     d3dViewport.MaxZ = gxViewport.z.h;
 
-    // TODO conditionally adjust Y value
+    // The other two branches are real, and this is them: rendering into a texture removes the
+    // y-flip, so Y is recomputed from the LOW edge instead of one minus the high edge. Note it
+    // truncates with no +0.5, unlike the rounded Y above -- the reference sets the control word to
+    // truncate and stores the result straight back.
+    //
+    // Same divergence as IStateSyncScissorRect, for the same reason and with the same fix pending:
+    // the reference tests m_textureTarget's m_apiSpecific fields (+0x2918 and +0x2924 against a
+    // base of +0x2910), but frozen never stores a surface there, so m_texture is what actually
+    // tracks the binding here. See the note on IStateSyncScissorRect.
+    if (this->m_textureTarget[GxBuffers_Color].m_texture || this->m_textureTarget[GxBuffers_Depth].m_texture) {
+        d3dViewport.Y = windowRect.maxY * gxViewport.y.l;
+    }
 
     this->m_d3dDevice->SetViewport(&d3dViewport);
 

@@ -542,6 +542,17 @@ void CGxDevice::DeviceCreateStreamBufs() {
     this->m_streamBufs[GxPoolTarget_Index] = this->BufCreate(this->m_indexPool, 0, 0, 0);
 }
 
+// `leal 0x174(%ecx), %eax; retl` -- the whole function. Identified behaviourally rather than by
+// position: the reference's viewport setter calls it at 0x006a521d and then computes
+// `(1.0 - viewport.y.h) * result[+0x8]`, which is IXformSetViewport's own
+// `(1.0 - gxViewport.y.h) * windowRect.maxY`, and CRect is {minY, minX, maxY, maxX} so +0x8 is
+// maxY. 15 callers, so linking it lifts the measured fidelity of every one of them that gets
+// ported.
+//
+// Its neighbour FUN_00682d80 returns &this->[0x164], one CRect earlier, which by elimination is
+// DeviceDefWindow -- frozen declares m_defWindowRect immediately before m_curWindowRect. Left
+// untagged: that is adjacency, not proof, and a tag is a claim.
+// ref: FUN_00682d70
 const CRect& CGxDevice::DeviceCurWindow() {
     return this->m_curWindowRect;
 }

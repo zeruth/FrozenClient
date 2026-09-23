@@ -1936,6 +1936,7 @@ addr	how	frozen	evidence
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
+00682d70	override	CGxDevice::DeviceCurWindow	
 00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
 00682e70	override	CGxDevice::ScissorSet	
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -1971,6 +1972,7 @@ addr	how	frozen	evidence
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
 006a5940	override	CGxDeviceD3d::IStateSync	
+006a99e0	override	CGxDeviceD3d::IXformSetViewport	
 006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006b0970	callgraph	ClientServices::IsConnected	only unmatched callee of 004dda50=Script_IsConnectedToServer
