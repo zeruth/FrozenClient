@@ -223,8 +223,18 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     //
     // So: 14 = ocean shallow, 15 = ocean deep, 16 = river shallow, 17 = river deep -- the OPPOSITE
     // of what the colour values alone suggested. frozen's liquid rendering has never had any of them.
-    // This rests on the documented LightParams column order; if that is ever shown wrong, the two
-    // pairs swap back.
+    //
+    // **Confirmed from disassembly on 2026-09-23**, which retires the caveat this comment used to
+    // carry about resting on the documented column order. FUN_008a2bf0 is a texture callback that
+    // builds a 64x8 gradient strip, and the liquid type arrives as its userArg, not as the command
+    // code. It reads the four alphas unconditionally into two two-byte arrays, in the order
+    // 0x148, 0x140 and then 0x14c, 0x144, and indexes BOTH arrays by that type -- so type 0 takes
+    // (0x148, 0x14c) and type 1 takes (0x140, 0x144), exactly as reasoned above.
+    //
+    // The colours settle it independently. It reads the pair at `base + 0x10c + type * 8` and
+    // `base + 0x110 + type * 8`, where base is FUN_007ecef0's return, 0x00d38b00. The DayNight
+    // slots begin at +0xd4, so +0x10c is slot 14 and type 1 lands on slots 16 and 17. Ocean is
+    // type 0 on bands 14 and 15; river is type 1 on 16 and 17.
     for (int32_t b = 0; b < 6; b++) {
         InterpBandColor(P, 12 + b, t, out.extraBands[b]);
     }
