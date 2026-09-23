@@ -2391,6 +2391,7 @@ addr	how	frozen	evidence
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
 0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
 0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
+0083de90	annotated	SequenceBufferFree	tag in src/model/CM2Shared.cpp
 0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector
 0084d420	callorder	luaO_rawequalObj	same slot between linked calls in 0085bd70=findindex, 0085c470=luaH_get
 0084d480	callgraph	luaO_str2d	only unmatched callee of 00856e50=luaV_tonumber

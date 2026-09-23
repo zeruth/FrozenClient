@@ -1634,6 +1634,14 @@ int32_t CM2Model::Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, u
     this->m_shared = shared;
     this->m_shared->AddRef();
 
+    // **A reference taken and thrown away.** This raises a4's refcount and stores the pointer
+    // nowhere, so nothing can ever release it and that model would never be freed. The reference
+    // keeps it at CM2Model+0x30 and its destructor opens by releasing it, destroying it in place
+    // and returning it to the model pool when the count reaches zero (FUN_00832640 at 0x0083264e).
+    //
+    // Dormant rather than live: the one caller in frozen, CM2Scene::CreateModel, passes nullptr.
+    // It stops being dormant the moment anything passes a real model, so give this a member and
+    // release it in ~CM2Model in the same change.
     if (a4) {
         a4->AddRef();
     }

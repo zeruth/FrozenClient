@@ -38048,7 +38048,7 @@
   "branchRatio": 0.583,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.615,
+  "fidelity": 0.692,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -38074,6 +38074,22 @@
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 50,
+  "status": "ported"
+ },
+ "0083de90": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "SequenceBufferFree",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0084d3f0": {

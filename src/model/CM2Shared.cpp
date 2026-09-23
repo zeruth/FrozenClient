@@ -69,9 +69,13 @@ void M2AnimFileName(const char* modelPath, uint32_t sequenceId, uint32_t variati
     SStrPrintf(out + len, static_cast<uint32_t>(outSize - len), "%04d-%02d.anim", sequenceId, variationIndex);
 }
 
-// ref: FUN_0083de50 / FUN_0083de90
 // The .anim buffer is 16-byte aligned: 16 spare bytes, the pad size kept in the byte before the
 // data so the free can recover the allocation.
+//
+// This tag used to name BOTH 0083de50 and 0083de90, which was wrong: 0083de90 is the matching FREE
+// and it is tagged on SequenceBufferFree below. Caught 2026-09-23 by a fidelity diff on
+// CM2Model::~CM2Model, which showed the reference calling 0083de90 twice in a destructor.
+// ref: FUN_0083de50
 void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line) {
     auto raw = static_cast<uint8_t*>(SMemAlloc(size + 16, file, line, 0));
 
@@ -85,6 +89,9 @@ void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line) {
     return raw + pad;
 }
 
+// The reference also bails when the recovered base comes out as null, which cannot happen for a
+// pointer this allocator returned; frozen leaves that check out.
+// ref: FUN_0083de90
 void SequenceBufferFree(void* buffer) {
     if (!buffer) {
         return;
