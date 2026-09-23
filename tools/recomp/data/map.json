@@ -813,20 +813,17 @@
   "status": "ported"
  },
  "00408490": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/gx/CGxDevice.cpp",
-   "src/gx/cgxdevice.cpp"
-  ],
-  "frozen": "CGxDevice::RsPush",
-  "frozenSize": 60,
-  "how": "callgraph",
+  "files": [],
+  "frozen": "TSGrowableArray<unsigned __int64>::Reserve",
+  "frozenSize": 381,
+  "how": "override",
   "module": "Client.cpp",
   "refSize": 135,
-  "status": "ported"
+  "status": "diverged"
  },
  "00408520": {
   "branchRatio": 0.5,
@@ -30775,6 +30772,32 @@
   "refSize": 51,
   "status": "ported"
  },
+ "006838b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<CGxPushedRenderState>::Reserve",
+  "frozenSize": 307,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 173,
+  "status": "ported"
+ },
+ "00683960": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<enum EGxRenderState>::Reserve",
+  "frozenSize": 381,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "00684850": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -30875,7 +30898,7 @@
   "branchRatio": 0.214,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"

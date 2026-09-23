@@ -1288,5 +1288,24 @@
   "007ed790": {
     "status": "unlinked",
     "note": "scales a packed colour's HSV VALUE by a float: unpack to RGB floats (x 1/255), FUN_00984f60 (RgbToHsv), value *= scale, FUN_00985030 (HsvToRgb), FUN_009851a0 (PackColor). FUN_007f0530 calls it for the dome's zenith vertex with a scale of 1.0, so it is currently an identity there; frozen has all three leaf helpers in lib/typhoon/tempest/ColorConvert.cpp but not the composite."
+  },
+  "00408490": {
+    "frozen": "TSGrowableArray<unsigned __int64>::Reserve",
+    "status": "diverged",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (,%eax,4)` here, so 4-byte elements -- the render-state MARK STACK at CGxDevice+0x14, which frozen calls m_stackOffsets. **This address was previously linked to CGxDevice::RsPush, and that was wrong.** The body is SMemReAlloc(data, count*4, ...), store to +8, copy min(count, old) elements: a growable-array Reserve, with nothing render-state about it. It has only four callers in the whole binary, two of which use it on CGxDevice+0x14. The bad link held RsPop's call-order recall at 0% and made RsPop look as if it called RsPush. Diverged because frozen is 64-bit: its m_stackOffsets is TSGrowableArray<size_t>, 8 bytes per element against the reference's 4. The reference's real RsPush is still unidentified and may well be inlined -- it is two lines, and no small function near RsPop matches it."
+  },
+  "00683960": {
+    "frozen": "TSGrowableArray<enum EGxRenderState>::Reserve",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (,%eax,4)`, 4-byte elements, and RsPop calls it while appending to the array at CGxDevice+0x2c -- the dirty-state id list, frozen's m_dirtyStates. A separate instantiation from 00408490, which the compiler did not fold."
+  },
+  "006838b0": {
+    "frozen": "TSGrowableArray<CGxPushedRenderState>::Reserve",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (%edi,%edi,2)` then a scale of 8, so 0x18-byte elements -- the pushed-state array at CGxDevice+0x8, frozen's m_pushedStates. CGxPushedRenderState is 24 bytes in both."
+  },
+  "00590830": {
+    "status": "excluded",
+    "note": "the same folded power-of-two normaliser as 005d0040, differing only in its cap (0xa against 0x40): clamp the argument down to the largest power of two, floor at 1. Callers use it as `if (growQuantum == 0) growQuantum = f(count)` before rounding a Reserve up. The callgraph matcher proposed CGxStateBom::operator= for it on 2026-09-23, as a knock-on from correcting the three Reserve links around it; disassembling it shows fourteen instructions that touch no state object at all. Excluded rather than linked, for the same reason 005d0040 is: a compiler-folded template helper with no distinct counterpart in frozen."
   }
 }

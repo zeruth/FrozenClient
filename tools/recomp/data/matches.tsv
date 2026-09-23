@@ -50,7 +50,7 @@ addr	how	frozen	evidence
 00407e30	annotated	LoadingScreenSetTip	tag in src/gx/LoadingScreen.cpp
 00407f40	annotated	C44Matrix::Identity	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
-00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
+00408490	override	TSGrowableArray<unsigned __int64>::Reserve	
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
@@ -1935,6 +1935,8 @@ addr	how	frozen	evidence
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
+006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
+00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	

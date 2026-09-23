@@ -1064,6 +1064,22 @@ void CGxDevice::RsSetAlphaRef() {
 }
 
 // ref: FUN_00685fb0
+// The reference (FUN_00685fb0) makes exactly these calls in exactly this order -- call-order
+// fidelity is 1.0 -- but the recomp report still does not count it faithful, and the reason is
+// structural rather than a defect. Its branch ratio is 0.214, because the reference inlines the
+// same growable-array shrink three times:
+//
+//     if (growQuantum == 0) growQuantum = PowerOfTwoFloor(n);   // 00590830 / 005d0040
+//     if (n % growQuantum)  n += growQuantum - n % growQuantum;
+//     array.Reserve(n);
+//
+// once per array, where frozen writes SetCount and lets TSGrowableArray do it. Same calls, a third
+// of the branches. Do not "fix" this by unrolling it here.
+//
+// The three Reserve helpers the reference calls are told apart only by their index scaling
+// (4-byte, 4-byte and 0x18-byte elements); one of them, 00408490, was linked to CGxDevice::RsPush
+// until 2026-09-23, which held this function's measured recall at 0% and made it look as though
+// RsPop called RsPush. See overrides.json.
 void CGxDevice::RsPop() {
     auto topOfStack = this->m_stackOffsets[this->m_stackOffsets.Count() - 1];
 
