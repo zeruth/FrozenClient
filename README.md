@@ -41,15 +41,15 @@ been watched doing it at runtime.
 
 Guessing an implementation from what the screen looks like is how most of the graphics bugs in this
 codebase got in, so accuracy is measured rather than asserted. `tools/recomp/` links the original's
-27,162 functions to Frozen's and writes `docs/recomp/REPORT.md`. The numbers below are from the
+27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`. The numbers below are from the
 2026-09-23 run.
 
 Three measures, deliberately never rolled into one, because each is a stronger claim than the last:
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **2,999 / 27,162** &nbsp;·&nbsp; ~11% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,092** &nbsp;·&nbsp; ~4% of the client, ~36% of what is linked |
+| **Linked** | an original function has a known counterpart here | **3,058 / 27,161** &nbsp;·&nbsp; ~11% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,131** &nbsp;·&nbsp; ~4% of the client, ~37% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
@@ -58,8 +58,8 @@ By surface, roughly:
 |---|---|
 | Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
-| Functions reachable from the world render entry point | 427 / 5,531 &nbsp;·&nbsp; ~8% |
-| The render surface: the map, model, entity, texture and device modules that draw the world | 178 / 6,005 &nbsp;·&nbsp; **~3%** |
+| Functions reachable from the world render entry point | 477 / 5,530 &nbsp;·&nbsp; ~9% |
+| The render surface: the map, model, entity, texture and device modules that draw the world | 226 / 6,004 &nbsp;·&nbsp; **~4%** |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
 
 A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
