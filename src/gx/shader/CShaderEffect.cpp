@@ -88,6 +88,7 @@ void CShaderEffect::SetEmissive(const C4Vector& emissive) {
     GxRsSet(GxRs_MatEmissive, PackMaterialColor(emissive).value);
 }
 
+// ref: FUN_00873390
 void CShaderEffect::SetFogEnabled(int32_t fogEnabled) {
     if (fogEnabled && GxMasterEnable(GxMasterEnable_Fog)) {
         if (CShaderEffect::s_enableShaders && !GxCaps().int138) {
@@ -105,6 +106,7 @@ void CShaderEffect::SetFogEnabled(int32_t fogEnabled) {
     }
 }
 
+// ref: FUN_00873210
 void CShaderEffect::SetFogParams(float fogStart, float fogEnd, float fogRate, const CImVector& fogColor) {
     if (CShaderEffect::s_enableShaders) {
         CShaderEffect::s_fogColorAlphaRef.x = fogColor.r / 255.0f;
@@ -129,6 +131,7 @@ void CShaderEffect::SetFogParams(float fogStart, float fogEnd, float fogRate, co
     GxRsSet(GxRs_FogColor, fogColor.value);
 }
 
+// ref: FUN_00873ca0
 void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled, const C3Vector* a3) {
     CShaderEffect::s_lightEnabled = lightEnabled;
 

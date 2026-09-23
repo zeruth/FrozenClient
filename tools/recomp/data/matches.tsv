@@ -2656,10 +2656,13 @@ addr	how	frozen	evidence
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
+00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
 00873900	annotated	CShaderEffect::SetDiffuse	tag in src/gx/shader/CShaderEffect.cpp
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp
+00873ca0	annotated	CShaderEffect::SetLocalLighting	tag in src/gx/shader/CShaderEffect.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound

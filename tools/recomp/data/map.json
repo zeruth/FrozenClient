@@ -36826,7 +36826,7 @@
   "branchRatio": 0.625,
   "constOverlap": 0.026,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.556,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -42061,6 +42061,38 @@
   "refSize": 197,
   "status": "ported"
  },
+ "00873210": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetFogParams",
+  "frozenSize": 304,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 379,
+  "status": "ported"
+ },
+ "00873390": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetFogEnabled",
+  "frozenSize": 217,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 226,
+  "status": "ported"
+ },
  "00873480": {
   "branchRatio": 0.2,
   "constOverlap": 0.0,
@@ -42123,6 +42155,22 @@
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 122,
+  "status": "ported"
+ },
+ "00873ca0": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.174,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetLocalLighting",
+  "frozenSize": 391,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 562,
   "status": "ported"
  },
  "00875d30": {
