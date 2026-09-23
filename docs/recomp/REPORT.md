@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 14:32 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 14:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3081 (+2) (11.3%) | 685.9k (12.4%) |
-| &nbsp;&nbsp;ported | 2362 (+2) | 507.9k |
+| mapped to a frozen function | 3082 (+1) (11.3%) | 687.9k (12.5%) |
+| &nbsp;&nbsp;ported | 2363 (+1) | 509.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 667 (=) | 134.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1178 (+2) (4.3%)** | **152.3k (2.8%)** |
-| unmapped | 24079 | 4.72M |
+| **faithful** (linked, not stub, call order >= 80%) | **1178 (=) (4.3%)** | **152.3k (2.8%)** |
+| unmapped | 24078 | 4.72M |
 | world spine (reachable from OnFrameRender) | 5529, mapped 492 (=) (8.9%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 502 (=) (8.7%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 234 (=) (5.1%)** | |
 | frozen functions (src/, from PDB + source) | 12210, stubs 1714 | |
 
-Match evidence: annotated 878, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 240, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 878, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 241, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 14:27 -- mapped 3079, ported 2360, stub 667, spine mapped 492.
+Previous run: 2026-09-23 14:35 -- mapped 3081, ported 2362, stub 667, spine mapped 492.
 
 ## Lua API coverage (binding tables)
 
@@ -174,7 +174,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | framing.c | 125 | 38.8k | 34 (27.2%) | 52.4% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 21 (8.9%) | 8.4% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 4 (1.4%) | 1.1% | 0 | 0 | 59 |
-| GxuFontMiscClasses.cpp | 156 | 37.5k | 4 (2.6%) | 1.6% | 0 | 0 | 86 |
+| GxuFontMiscClasses.cpp | 156 | 37.5k | 5 (3.2%) | 7.0% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 23 (17.8%) | 22.9% | 0 | 0 | 85 |
 | ConsoleVar.cpp | 243 | 36.1k | 73 (30.0%) | 29.8% | 0 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 10 | 1 | 4 |
@@ -600,7 +600,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `FreeTile` | world | 2372 | src/world/Terrain.cpp |
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
-| `TEXTURECACHE::PasteGlyphOutlinedAA` | gx | 2309 | src/gx/font/CGxFont.cpp |
+| `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -622,6 +622,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
+| 006c9420 | `TEXTURECACHE::PasteGlyphOutlinedAA` | 75% | 4 | 3 | 71 | 48 | 14% | 2098 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 60% | 45 | 26 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
 | 004c6a40 | `SI2::PlaySoundKit` | 11% | 48 | 28 | 74 | 24 | 17% | 1787 |
@@ -647,7 +648,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 79% | 42 | 46 | 35 | 24 | 19% | 1104 |
 | 007c7ae0 | `CMapObjGroup::RecordHits` | 9% | 11 | 1 | 18 | 8 | 5% | 1062 |
-| 0040a270 | `Paint` | 52% | 27 | 35 | 19 | 12 | 0% | 1055 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 12:53 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
-| 2026-09-23 12:59 | 3077 (11.3%) | 1171 (4.3%) | 650 | 496/5529 | 2924/2964 | 1491 |
 | 2026-09-23 12:59 | 3078 (11.3%) | 1172 (4.3%) | 650 | 497/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:01 | 3078 (11.3%) | 1172 (4.3%) | 650 | 497/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:07 | 3091 (11.4%) | 1178 (4.3%) | 650 | 498/5529 | 2924/2964 | 1491 |
@@ -753,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 14:26 | 3079 (11.3%) | 1176 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:27 | 3079 (11.3%) | 1176 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:32 | 3081 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:35 | 3081 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:37 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 

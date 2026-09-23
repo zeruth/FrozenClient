@@ -31771,6 +31771,22 @@
   "refSize": 231,
   "status": "ported"
  },
+ "006c9420": {
+  "branchRatio": 0.676,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphOutlinedAA",
+  "frozenSize": 2309,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 2098,
+  "status": "ported"
+ },
  "006c9c70": {
   "branchRatio": 0.556,
   "constOverlap": 0.125,

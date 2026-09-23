@@ -1594,7 +1594,12 @@
     "note": "the plain monochrome glyph paste, the same function as 006c9c70 with one line changed: it reads bit `7 - (x & 7)` of `src[x >> 3]` and turns it into 0xFFFF or 0x0000 through negb/sbb. frozen's body was empty until 2026-09-23, so any FrameXML font declaring MONOCHROME drew blank glyphs."
   },
   "006c9420": {
+    "frozen": "TEXTURECACHE::PasteGlyphOutlinedAA",
+    "status": "ported",
+    "note": "The four glyph pastes were told apart by their dispatcher, inlined at 0x006c9fce: it tests face->flags bit 0 (FONT_OUTLINE) and then bit 1 (FONT_MONOCHROME), giving 006c8e70 outlined+mono, 006c9420 outlined+AA, 006c9330 plain mono and 006c9c70 plain AA. Confirmed against frozen's body rather than by position alone: both allocate TWO 0x4800-byte scratch planes and memset each, which is frozen's `uint16_t v45[9216]` and `v46[9216]`, one for coverage and one for the outline mask."
+  },
+  "006c8e70": {
     "status": "unlinked",
-    "note": "the outlined anti-aliased glyph paste, judging by its byte-per-pixel source reads and several hundred bytes of dilation bookkeeping. frozen has PasteGlyphOutlinedAA implemented, so this is linkable, but the pairing was not confirmed and the outlined MONOCHROME sibling -- still a stub in frozen -- is one of FUN_006c9d90 or FUN_006c9f50 rather than this."
+    "note": "The four glyph pastes were told apart by their dispatcher, inlined at 0x006c9fce: it tests face->flags bit 0 (FONT_OUTLINE) and then bit 1 (FONT_MONOCHROME), giving 006c8e70 outlined+mono, 006c9420 outlined+AA, 006c9330 plain mono and 006c9c70 plain AA. **frozen's PasteGlyphOutlinedMonochrome is an empty body and this is reachable** -- a FrameXML font declaring both OUTLINE and MONOCHROME draws blank glyphs. Not ported yet, and it is NOT the outlined AA with one line changed the way the plain pair was: it allocates ONE 0x4800 scratch plane where 006c9420 allocates two, because for a 1-bit source the coverage and the outline mask are the same plane. Its unpack step is the familiar `(src[x >> 3] >> (7 - (x & 7))) & 1` widened with movsbw; the remaining ~1100 bytes are the dilation. A separate transcription, not a derivation."
   }
 }

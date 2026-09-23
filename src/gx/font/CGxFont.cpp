@@ -650,11 +650,17 @@ LABEL_95:
 }
 
 // Still empty, and reachable the same way its non-outlined sibling was: a FrameXML font declaring
-// both OUTLINE and MONOCHROME draws blank glyphs. Not ported here because the outlined variants are
-// a different shape from the plain ones -- the reference's outlined AA paste (FUN_006c9420) runs to
-// several hundred bytes of dilation with its own row bookkeeping, and the monochrome one will
-// mirror that rather than the twenty lines above. It is one of FUN_006c9d90 or FUN_006c9f50; the
-// plain pastes are FUN_006c9330 (mono) and FUN_006c9c70 (AA).
+// both OUTLINE and MONOCHROME draws blank glyphs. **It is FUN_006c8e70**, named by the dispatcher
+// inlined at 0x006c9fce, which tests FONT_OUTLINE then FONT_MONOCHROME to pick one of the four.
+//
+// It is NOT PasteGlyphOutlinedAA with one line changed, the way the plain monochrome paste was a
+// one-line change from the plain AA one. It allocates ONE 0x4800-byte scratch plane where the
+// outlined AA allocates two, because for a 1-bit source the coverage and the outline mask are the
+// same plane, and the dilation that follows reads it for both. So this is its own transcription of
+// about 1100 bytes, not a derivation from the function below.
+//
+// Its unpack step is already familiar: `(src[x >> 3] >> (7 - (x & 7))) & 1`, widened with movsbw
+// into the scratch plane, offset by two texels when the face carries flag 0x8.
 void TEXTURECACHE::PasteGlyphOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
     // TODO
 }
