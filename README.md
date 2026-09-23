@@ -48,8 +48,8 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **3,058 / 27,161** &nbsp;·&nbsp; ~11% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,131** &nbsp;·&nbsp; ~4% of the client, ~37% of what is linked |
+| **Linked** | an original function has a known counterpart here | **3,070 / 27,161** &nbsp;·&nbsp; ~11% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,138** &nbsp;·&nbsp; ~4% of the client, ~37% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
@@ -58,8 +58,8 @@ By surface, roughly:
 |---|---|
 | Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
-| Functions reachable from the world render entry point | 477 / 5,530 &nbsp;·&nbsp; ~9% |
-| The render surface: the map, model, entity, texture and device modules that draw the world | 226 / 6,004 &nbsp;·&nbsp; **~4%** |
+| Functions reachable from the world render entry point | 488 / 5,530 &nbsp;·&nbsp; ~9% |
+| The render surface: the map, model, entity, texture and device modules that draw the world | 227 / 6,004 &nbsp;·&nbsp; **~4%** |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
 
 A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
