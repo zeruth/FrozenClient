@@ -1250,5 +1250,10 @@
   "00842da0": {
     "status": "excluded",
     "note": "third-party PCRE match(): opcode interpreter (byte < 0x51), returns PCRE_ERROR_MATCHLIMIT (-8) when the match_call_count passes match_limit and PCRE_ERROR_UNKNOWN_OPCODE (-5); 73 self-recursions. The module anchor (M2Shared.cpp) is the nearest assert string, not its origin. 2026-09-23"
+  },
+  "0057c2a0": {
+    "frozen": "C44Matrix::Identity",
+    "status": "ported",
+    "note": "the second COMDAT copy of the 4x4 identity; FUN_00407f40 is the other and carries the source tag. Same body, same constants. 2026-09-23"
   }
 }

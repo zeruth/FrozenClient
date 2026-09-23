@@ -1867,6 +1867,7 @@ int32_t CM2Model::IsDrawable(int32_t a2, int32_t a3) {
     return 1;
 }
 
+// ref: FUN_00824f00
 int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
     if (this->m_flags & 0x20) {
         if (this->m_loaded) {
@@ -1877,7 +1878,12 @@ int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
             this->WaitForLoad(nullptr);
         }
 
-        return this->m_loaded && this->m_shared->m_m2DataLoaded && this->m_shared->m_skinProfileLoaded;
+        // Either this model finished loading while we waited, or the shared data it needs is
+        // already there. The reference ORs the two, and sign-extends the shared test, so this
+        // returns -1 as readily as 1; every caller only asks whether it is non-zero.
+        int32_t sharedReady = this->m_shared->m_m2DataLoaded && this->m_shared->m_skinProfileLoaded ? -1 : 0;
+
+        return sharedReady | static_cast<int32_t>(this->m_loaded);
     }
 
     if (!this->m_loaded && a2) {
@@ -1888,13 +1894,19 @@ int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
         return 0;
     }
 
-    if (!attachments || this->m_flag100) {
-        return 1;
+    // Every attached model has to be loaded too before this one counts as ready. The answer is
+    // cached in the 0x100 flag, so the walk happens once.
+    if (attachments && !this->m_flag100) {
+        for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+            if (!child->IsLoaded(a2, 1)) {
+                return 0;
+            }
+        }
+
+        this->m_flag100 = 1;
     }
 
-    // TODO
-
-    return 0;
+    return 1;
 }
 
 void CM2Model::LinkToCallbackListTail() {

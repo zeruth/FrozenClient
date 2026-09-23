@@ -48,6 +48,7 @@ addr	how	frozen	evidence
 00407b00	annotated	RegisterEvents	tag in src/gx/LoadingScreen.cpp
 00407bd0	annotated	UnregisterEvents	tag in src/gx/LoadingScreen.cpp
 00407e30	annotated	LoadingScreenSetTip	tag in src/gx/LoadingScreen.cpp
+00407f40	annotated	C44Matrix::Identity	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
 00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
@@ -1385,6 +1386,7 @@ addr	how	frozen	evidence
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057c2a0	override	C44Matrix::Identity	
 0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
 0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp

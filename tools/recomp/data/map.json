@@ -780,6 +780,22 @@
   "refSize": 13,
   "status": "ported"
  },
+ "00407f40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Identity",
+  "frozenSize": 54,
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
  "00408070": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -22100,6 +22116,22 @@
   "refSize": 97,
   "status": "ported"
  },
+ "0057c2a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Identity",
+  "frozenSize": 54,
+  "how": "override",
+  "module": "QuestTextParser.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
  "0057c340": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -37047,16 +37079,16 @@
   "status": "ported"
  },
  "00824f00": {
-  "branchRatio": 0.545,
+  "branchRatio": 0.818,
   "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::IsLoaded",
-  "frozenSize": 142,
+  "frozenSize": 222,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 177,
@@ -37088,7 +37120,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UpdateLoaded",
-  "frozenSize": 0,
+  "frozenSize": 242,
   "how": "callorder",
   "module": "M2Scene.cpp",
   "refSize": 63,
@@ -37466,7 +37498,7 @@
   "branchRatio": 0.706,
   "constOverlap": 0.031,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -37584,7 +37616,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3244,
+  "frozenSize": 3168,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
