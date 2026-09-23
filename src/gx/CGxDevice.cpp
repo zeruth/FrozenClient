@@ -969,6 +969,19 @@ void CGxDevice::ClipPlaneSet(uint32_t index, const C4Plane* plane) {
     }
 }
 
+// Stores the scissor rectangle in normalised coordinates and marks it dirty. Unlike ClipPlaneSet
+// this does NOT compare first -- the reference marks dirty unconditionally -- so a caller setting
+// the same rectangle every frame re-sends it. Reproduced rather than improved.
+// ref: FUN_00682e70
+void CGxDevice::ScissorSet(const CRect* rect) {
+    this->m_scissorDirty = 1;
+
+    this->m_scissorRect.minY = rect->minY;
+    this->m_scissorRect.minX = rect->minX;
+    this->m_scissorRect.maxY = rect->maxY;
+    this->m_scissorRect.maxX = rect->maxX;
+}
+
 void CGxDevice::PrimVertexFormat(CGxBuf* buf, CGxVertexAttrib* attribs, uint32_t count) {
     for (int32_t i = 0; i < count; i++) {
         int32_t attrib = attribs->attrib;

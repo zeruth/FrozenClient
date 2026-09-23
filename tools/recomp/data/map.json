@@ -30804,6 +30804,22 @@
   "refSize": 22,
   "status": "ported"
  },
+ "00682e70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ScissorSet",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
  "006830b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -31196,6 +31212,22 @@
   "refSize": 83,
   "status": "ported"
  },
+ "006a38d0": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncScissorRect",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 258,
+  "status": "ported"
+ },
  "006a39e0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -31296,13 +31328,13 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.8,
+  "fidelity": 0.9,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 1035,
+  "frozenSize": 1323,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,

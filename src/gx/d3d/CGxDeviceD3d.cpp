@@ -1864,8 +1864,7 @@ void CGxDeviceD3d::IStateSync() {
 
     this->IStateSyncEnables();
     this->IStateSyncClipPlanes();
-
-    // TODO -- 0x006a38d0 goes here, the scissor-rect sync, still unported
+    this->IStateSyncScissorRect();
 
     this->IStateSyncVertexPtrs();
     this->IStateSyncIndexPtr();
@@ -1945,6 +1944,69 @@ void CGxDeviceD3d::IStateSyncClipPlanes() {
     }
 
     this->m_clipPlaneDirty = 0;
+}
+
+// Turns the normalised scissor rectangle into pixels and sends it. SetScissorRect is vtable
+// 0x12c and 0x12c / 4 = 75, its IDirect3DDevice9 method index.
+//
+// Horizontal edges scale by the current window's maxX and vertical by its maxY -- the reference
+// reaches both through FUN_00682d70, which is `return &this->[0x174]`, i.e. DeviceCurWindow. The
+// left and top edges take +0.5 (the constant at 0x009e2ec4, read out of .rdata) and the right and
+// bottom edges +1.0, which is the usual rounding for a half-open rectangle.
+//
+// Vertical orientation flips depending on where the frame is going. With neither render target
+// bound the frame is the back buffer and y is measured from the bottom, so top comes from maxY
+// and bottom from minY, each subtracted from 1.0; with a colour or depth target bound they are
+// used directly. The reference spells that test as `+0x2918 != 0 || +0x2924 != 0`, and
+// 0x2924 - 0x2918 is 12, exactly sizeof(TextureTarget), so those are entries 0 and 1 of
+// m_textureTarget -- colour and depth. IXformSetViewport already flips y the same way.
+//
+// The dirty flag starts at 1 with an all-zero rectangle, because device create sets it from a
+// register holding 1 (0x00688e64 loads it, and the same register initialises intF6C). So the
+// first sync really does send an empty rectangle. That is harmless and it is what the reference
+// does: D3DRS_SCISSORTESTENABLE follows GxRs_ScissorTest, which defaults to 0, so nothing is
+// clipped until something turns the test on -- and whatever turns it on sets a rectangle first.
+// ref: FUN_006a38d0
+void CGxDeviceD3d::IStateSyncScissorRect() {
+    if (!this->m_scissorDirty) {
+        return;
+    }
+
+    const CRect& window = this->DeviceCurWindow();
+    const CRect& scissor = this->m_scissorRect;
+
+    RECT rect;
+
+    rect.left = static_cast<LONG>(scissor.minX * window.maxX + 0.5f);
+    rect.right = static_cast<LONG>(scissor.maxX * window.maxX + 1.0f);
+
+    if (this->m_textureTarget[GxBuffers_Color].m_texture || this->m_textureTarget[GxBuffers_Depth].m_texture) {
+        rect.top = static_cast<LONG>(0.5f + scissor.minY * window.maxY);
+        rect.bottom = static_cast<LONG>(1.0f + scissor.maxY * window.maxY);
+    } else {
+        rect.top = static_cast<LONG>(0.5f + (1.0f - scissor.maxY) * window.maxY);
+        rect.bottom = static_cast<LONG>(1.0f + (1.0f - scissor.minY) * window.maxY);
+    }
+
+    if (rect.left < 0) {
+        rect.left = 0;
+    }
+
+    if (rect.top < 0) {
+        rect.top = 0;
+    }
+
+    if (rect.right > static_cast<LONG>(window.maxX)) {
+        rect.right = static_cast<LONG>(window.maxX);
+    }
+
+    if (rect.bottom > static_cast<LONG>(window.maxY)) {
+        rect.bottom = static_cast<LONG>(window.maxY);
+    }
+
+    this->m_d3dDevice->SetScissorRect(&rect);
+
+    this->m_scissorDirty = 0;
 }
 
 void CGxDeviceD3d::IStateSyncIndexPtr() {

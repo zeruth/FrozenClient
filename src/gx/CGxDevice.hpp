@@ -136,6 +136,11 @@ class CGxDevice {
         // stub, and the moment something calls ClipPlaneSet it works.
         C4Plane m_clipPlanes[6] = {};
         uint32_t m_clipPlaneDirty = 0;
+        // The scissor rectangle in NORMALISED coordinates, at +0x2538..+0x2544, with its dirty
+        // flag at +0x2534. Device create zeroes the rect and sets the flag to 1, so the first
+        // sync sends an empty rectangle; see IStateSyncScissorRect for why that is harmless.
+        CRect m_scissorRect;
+        int32_t m_scissorDirty = 1;
         uint32_t m_primVertexMask = 0;
         uint32_t m_primVertexDirty = 0;
         EGxVertexBufferFormat m_primVertexFormat = GxVertexBufferFormats_Last;
@@ -211,6 +216,7 @@ class CGxDevice {
         CGxPool* PoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, const char*);
         void PrimIndexPtr(CGxBuf*);
         void ClipPlaneSet(uint32_t, const C4Plane*);
+        void ScissorSet(const CRect*);
         void PrimVertexFormat(CGxBuf*, CGxVertexAttrib*, uint32_t);
         void PrimVertexMask(uint32_t);
         void PrimVertexPtr(CGxBuf*, EGxVertexBufferFormat);

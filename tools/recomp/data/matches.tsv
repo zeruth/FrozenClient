@@ -1937,6 +1937,7 @@ addr	how	frozen	evidence
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
+00682e70	override	CGxDevice::ScissorSet	
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
 00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
@@ -1962,6 +1963,7 @@ addr	how	frozen	evidence
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
+006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
 006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
 006a43d0	override	CGxDeviceD3d::IStateSyncLights	
 006a4700	override	CGxDeviceD3d::IStateSyncMaterial	

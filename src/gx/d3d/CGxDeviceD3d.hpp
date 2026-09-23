@@ -307,6 +307,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IStateSetD3dDefaults();
     void IStateSync();
     void IStateSyncClipPlanes();
+    void IStateSyncScissorRect();
     void IStateSyncEnables();
     void IStateSyncIndexPtr();
     void IStateSyncLights();
