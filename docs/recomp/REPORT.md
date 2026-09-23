@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 19:12 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 19:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 891, callgraph 180, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 19:09 -- mapped 3110, ported 2365, stub 690, spine mapped 514.
+Previous run: 2026-09-23 19:13 -- mapped 3110, ported 2365, stub 690, spine mapped 514.
 
 ## Lua API coverage (binding tables)
 
@@ -729,9 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 17:32 | 3095 (11.4%) | 1187 (4.4%) | 688 | 500/5529 | 2924/2964 | 1493 |
-| 2026-09-23 17:37 | 3096 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
-| 2026-09-23 17:42 | 3097 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
 | 2026-09-23 17:48 | 3097 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
 | 2026-09-23 17:49 | 3097 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
 | 2026-09-23 17:49 | 3097 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
@@ -754,6 +751,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 19:08 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:09 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:12 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
+| 2026-09-23 19:13 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
+| 2026-09-23 19:13 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
+| 2026-09-23 19:15 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

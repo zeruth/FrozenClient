@@ -903,7 +903,7 @@
   "00821a20": {
     "frozen": "CM2Scene::Animate",
     "status": "ported",
-    "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port 52"
+    "note": "Name recovered in docs/world-render-inventory.md; frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port's 52. Its 31% call-order recall is container plumbing rather than missing render behaviour, checked 2026-09-23 so it is not chased again as a rendering gap. FUN_00480fd0 alone accounts for six of the unmatched calls and reappears later: it is a TSGrowableArray<T>::Reserve instantiation -- grow when count + 1 exceeds capacity, falling back to the power-of-two clamp at 0x005d0040 when the growth field is zero. frozen reaches the same code through m_elements.New() and array54[k].New(), which the compiler inlines, so the call never appears on its side and never can. Tagging it needs the instantiation's element type, and this family has been mislinked before -- 0x00408490 was once tagged as CGxDevice::RsPush and is a Reserve -- so it is left alone deliberately. The genuinely unidentified callees are FUN_0081bfa0, FUN_00828a00, FUN_00831af0, FUN_0081cdc0 and FUN_00824550, all with five callers or fewer."
   },
   "00823130": {
     "frozen": "CM2SceneRender::Draw",
