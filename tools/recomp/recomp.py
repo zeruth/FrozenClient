@@ -1036,6 +1036,21 @@ def match(refs, frozen, overrides, tables):
             lo, hi = bisect.bisect_right(ref_order, a0), bisect.bisect_left(ref_order, a1)
             R = ['%08x' % a for a in ref_order[lo:hi] if '%08x' % a not in m]
             if W and len(W) == len(R):
+                # veto: this matcher's only evidence is that two runs have the same length, so a
+                # single impossible pair falsifies the whole alignment rather than just itself.
+                # A pair is impossible when the frozen function has NO BODY: an empty body cannot
+                # corroborate a positional guess with anything -- not a call, not a constant, not a
+                # size -- so such a link is unfalsifiable noise, and it drags the reference function
+                # out of the unlinked queue where someone would otherwise identify it properly.
+                #
+                # This was written after the second bad run in Texture.cpp (2026-09-23). Adding two
+                # correct anchors there made this matcher emit 18 links in one window, 7 of them
+                # onto empty bodies; the three that were checked were all wrong, including a
+                # reference allocator named 'GxTexDestroy' and a reference teardown named
+                # 'GetDefaultTexture'. Vetoing the window, not just the pair, is deliberate: the
+                # alignment is one hypothesis, and those 7 refute it.
+                if any(frozen[name]['stub'] for name in W if name in frozen):
+                    continue
                 # veto: a binding table naming any address in the interval must agree with the
                 # frozen function it would pair with; frozen's aggregate script files do not always
                 # follow one reference translation unit, and this is where that shows
