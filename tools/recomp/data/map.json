@@ -36838,6 +36838,22 @@
   "refSize": 452,
   "status": "ported"
  },
+ "0081f700": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetBatchVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 252,
+  "status": "ported"
+ },
  "0081f8f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -36890,7 +36906,7 @@
   "branchRatio": 0.562,
   "constOverlap": 0.047,
   "faithful": false,
-  "fidelity": 0.231,
+  "fidelity": 0.462,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -42091,6 +42107,38 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 197,
+  "status": "ported"
+ },
+ "00872f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetCurrent",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 196,
+  "status": "ported"
+ },
+ "00873060": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetShaders",
+  "frozenSize": 188,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 251,
   "status": "ported"
  },
  "00873210": {

@@ -306,6 +306,7 @@ void CM2SceneRender::DrawRibbon() {
     // TODO
 }
 
+// ref: FUN_0081f700
 void CM2SceneRender::SetBatchVertices(int32_t a2) {
     if (CShaderEffect::s_enableShaders) {
         if (this->m_curType != this->m_prevType || this->m_curShared != this->m_prevShared) {

@@ -182,6 +182,7 @@ void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled
     }
 }
 
+// ref: FUN_00873060
 void CShaderEffect::SetShaders(uint32_t vertexPermute, uint32_t pixelPermute) {
     int32_t useAlphaRef = 1;
 
@@ -275,6 +276,7 @@ void CShaderEffect::InitEffect(const char* vsName, const char* psName) {
     }
 }
 
+// ref: FUN_00872f90
 void CShaderEffect::SetCurrent() {
     CShaderEffect::s_curEffect = this;
 

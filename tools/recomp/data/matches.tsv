@@ -2313,6 +2313,7 @@ addr	how	frozen	evidence
 0081f1d0	annotated	CM2Scene::ComputeElementShaders	tag in src/model/CM2Scene.cpp
 0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
 0081f450	override	CM2SceneRender::SetupTextures	
+0081f700	annotated	CM2SceneRender::SetBatchVertices	tag in src/model/CM2SceneRender.cpp
 0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
 0081fb10	override	CM2SceneRender::SetupLighting	
 0081fe90	override	CM2SceneRender::SetupMaterial	
@@ -2658,6 +2659,8 @@ addr	how	frozen	evidence
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
+00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp
 00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
 00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
