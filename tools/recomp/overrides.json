@@ -1638,5 +1638,13 @@
     "frozen": "CM2Model::CancelAllDeferredSequences",
     "status": "ported",
     "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. The destructor's FIRST real act. It is CancelDeferredSequences (00831ec0) with the predicate narrowed to the model alone, and it has the same two branches: mark with flag 8 while CM2Shared::SequenceLoadedCallback is walking the lists (m_flag10), unlink and free otherwise. frozen had no counterpart and its destructor never did this, which left a use-after-free -- the parked record keeps a raw CM2Model* that the callback dereferences. Named by behaviour; the original name is unknown."
+  },
+  "00780620": {
+    "status": "unlinked",
+    "note": "the cached camera-liquid state, six callers: writes the surface height from 0x00cd8790 through an optional float out-parameter and returns the liquid id at 0x00cd8794. docs/world-render-inventory.md already named it and that claim was checked against the body on 2026-09-23 rather than taken on trust -- it is right. The outdoor light update uses the returned id to index the Light.dbc tables at 0x00ad4070..0x00ad4084, which is how the camera being submerged selects the underwater LightParams. frozen's nearest thing is TerrainCameraLiquidKind, but that returns a LiquidType KIND rather than this id and takes no height out-parameter, so it is not the same function."
+  },
+  "00780640": {
+    "status": "unlinked",
+    "note": "one instruction: returns the address of the block at 0x00cd8f5c. CGWorldFrame::OnWorldRender calls it twice. An accessor for a global render-state block; frozen has no counterpart to link."
   }
 }
