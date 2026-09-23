@@ -33,6 +33,31 @@ ROOT = os.path.normpath(ROOT)
 # A qualified definition whose line ends in the opening brace.
 DEF = re.compile(r'^[A-Za-z_][\w:<>,*&\s]*?\b([A-Za-z_]\w*)::([~A-Za-z_]\w*)\s*\([^;]*\)\s*(?:const\s*)?\{\s*$')
 
+# The same, for a FREE function. Until 2026-09-23 only the qualified form above was matched, so
+# every stubbed free function was invisible to this tool and to tools/audit-ported.py, which shares
+# it -- CreateBlpAsync and CreateTgaTexture among them, both `// TODO; return nullptr;` with live
+# call sites in the texture path.
+#
+# The leading `[\s*&]` before the name is what keeps control flow out: `if (`, `while (`, `for (`
+# and `switch (` have no identifier between that separator and the parenthesis, so none of them
+# match. Declarations are excluded by the required trailing brace.
+FREE_DEF = re.compile(r'^[A-Za-z_][\w:<>,*&\s]*?[\s*&]([A-Za-z_]\w*)\s*\([^;]*\)\s*(?:const\s*)?\{\s*$')
+
+
+def match_definition(line):
+    """(qualifier, name) for a definition line, or None. qualifier is '' for a free function."""
+    m = DEF.match(line)
+
+    if m:
+        return m.group(1), m.group(2)
+
+    m = FREE_DEF.match(line)
+
+    if m:
+        return '', m.group(1)
+
+    return None
+
 # A body of nothing, comments, or a bare return counts as empty.
 BARE_RETURN = re.compile(r'^return\s*[-\w:.]*\s*;$')
 
@@ -110,10 +135,12 @@ def main():
             continue
 
         for i, line in enumerate(lines):
-            m = DEF.match(line)
+            m = match_definition(line)
 
             if m and body_is_empty(lines, i):
-                stubs.setdefault('%s::%s' % (m.group(1), m.group(2)), []).append((path, i + 1))
+                qualifier, name = m
+                key = '%s::%s' % (qualifier, name) if qualifier else name
+                stubs.setdefault(key, []).append((path, i + 1))
 
     calls = collections.Counter()
     for path in files:
@@ -123,7 +150,7 @@ def main():
             continue
 
         for key in stubs:
-            fn = key.split('::')[1]
+            fn = key.rpartition('::')[2]
 
             if fn.startswith('~'):
                 continue
@@ -133,7 +160,7 @@ def main():
 
     rows = []
     for key, defs in stubs.items():
-        fn = key.split('::')[1]
+        fn = key.rpartition('::')[2]
 
         if fn.startswith('~') or fn.startswith('operator'):
             continue

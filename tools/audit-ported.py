@@ -48,7 +48,8 @@ spec.loader.exec_module(livestubs)
 def empty_definitions():
     """Qualified definitions in src/ and lib/ with no real body, as name -> (kind, file).
 
-    kind is 'empty' (nothing but comments) or 'return' (comments and one bare return).
+    kind is 'empty' (nothing but comments) or 'return' (comments and one bare return). Free
+    functions are keyed by their bare name, class methods by Class::method.
     """
     found = {}
 
@@ -66,7 +67,7 @@ def empty_definitions():
                     continue
 
                 for i, line in enumerate(lines):
-                    m = livestubs.DEF.match(line.strip())
+                    m = livestubs.match_definition(line.strip())
 
                     if not m:
                         continue
@@ -74,8 +75,9 @@ def empty_definitions():
                     kind = livestubs.body_kind(lines, i)
 
                     if kind:
-                        found['%s::%s' % (m.group(1), m.group(2))] = (
-                            kind, os.path.relpath(path, ROOT))
+                        qualifier, name = m
+                        key = '%s::%s' % (qualifier, name) if qualifier else name
+                        found[key] = (kind, os.path.relpath(path, ROOT))
 
     return found
 

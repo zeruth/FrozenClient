@@ -9612,7 +9612,7 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 388,
-  "status": "ported"
+  "status": "stub"
  },
  "004b8be0": {
   "branchRatio": 1.0,
@@ -9692,7 +9692,7 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 427,
-  "status": "ported"
+  "status": "stub"
  },
  "004b9760": {
   "branchRatio": 0.857,

@@ -932,8 +932,8 @@
   },
   "004b95b0": {
     "frozen": "CreateTgaTexture",
-    "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status)"
+    "status": "stub",
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status) -- the TGA load path: reads the file through 006aaf40/006aafb0, allocates a CTexture, calls TextureAllocGxTex, and falls back to TextureCreateSolid on failure. frozen's body is `// TODO; return nullptr;`, so any TGA texture request yields nothing. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
   },
   "004b8be0": {
     "frozen": "CreateBlpTexture",
@@ -1032,8 +1032,8 @@
   },
   "004b8a50": {
     "frozen": "CreateBlpAsync",
-    "status": "ported",
-    "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left"
+    "status": "stub",
+    "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left -- the asynchronous BLP load path: opens the file, allocates a CTexture, checks streaming mode, allocates an async read object and queues it. frozen's body is `// TODO; return nullptr;`, so TextureCreate falls back to the synchronous path for every BLP. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
   },
   "004fa5f0": {
     "frozen": "CGWorldFrame::OnWorldUpdate",
