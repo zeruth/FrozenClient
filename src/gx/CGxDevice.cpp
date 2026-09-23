@@ -667,14 +667,15 @@ void CGxDevice::IRsInit() {
     this->m_appRenderStates[GxRs_ColorWrite].m_value        = 15;
     this->m_appRenderStates[GxRs_Culling].m_value           = 1;
     this->m_appRenderStates[GxRs_ClipPlaneMask].m_value     = 0;
-    // UNVERIFIED against the reference, and it matters as of 2026-09-23, when GxRs_Multisample
-    // stopped being inert: no backend handled it before, so this default never reached the
-    // device. The reference brackets the world render in GxRsPush / GxRsSet(0x13, 1) /
-    // GxRsPop, which reads as though its own default were 0 -- otherwise that set would be
-    // redundant -- but its IRsInit does not write the defaults as immediate stores at the
-    // array offset, so this was not settled by grepping. If it is 0 there, frozen antialiases
-    // the UI as well as the world, which a run would show. The world-render bracket is
-    // faithful either way; only this line is in question.
+    // Confirmed against the reference's own IRsInit at 0x00686208, which writes these defaults
+    // through the array pointer at +0x28f4 with a 24-byte stride: 0x1c8 / 24 = 19 = this state,
+    // and it takes the register holding 1. So the reference defaults it to 1 as well, and its
+    // GxRsSet(0x13, 1) inside the world-render push is defensive rather than a change. frozen does
+    // not antialias the UI by mistake.
+    //
+    // Four of its neighbours in the same run decode consistently and confirm the stride:
+    // 0x180 / 24 = 16 = ColorWrite takes 0xf, 0x198 = 17 = Culling takes 1, 0x1b0 = 18 =
+    // ClipPlaneMask takes 0 and 0x1e0 = 20 = ScissorTest takes 0 -- all matching the lines here.
     this->m_appRenderStates[GxRs_Multisample].m_value       = 1;
     this->m_appRenderStates[GxRs_ScissorTest].m_value       = 0;
 
