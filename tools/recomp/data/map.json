@@ -48859,6 +48859,22 @@
   "refSize": 50,
   "status": "ported"
  },
+ "00982970": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "UnpackColor",
+  "frozenSize": 67,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "009829b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

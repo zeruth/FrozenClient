@@ -1,6 +1,7 @@
 #include "model/CM2Lighting.hpp"
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include <tempest/ColorConvert.hpp>
 #include "world/Terrain.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
@@ -879,8 +880,10 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
         // the model's lights has not been identified yet, so the diffuse is applied along the
         // outdoor sun direction here; the ambient is exact.
         if (TerrainWmoFloorLightAt(pos, &diffuse, &ambient)) {
-            C3Vector amb = { ambient.r * (1.0f / 255.0f), ambient.g * (1.0f / 255.0f), ambient.b * (1.0f / 255.0f) };
-            C3Vector dif = { diffuse.r * (1.0f / 255.0f), diffuse.g * (1.0f / 255.0f), diffuse.b * (1.0f / 255.0f) };
+            C3Vector amb;
+            C3Vector dif;
+            UnpackColor(amb, ambient);
+            UnpackColor(dif, diffuse);
             lighting->AddAmbient(amb);
             lighting->AddDiffuse(dif, CWorld::s_outdoorDirection);
             return;

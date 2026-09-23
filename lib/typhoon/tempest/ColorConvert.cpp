@@ -110,6 +110,19 @@ void PackColor(CImVector& out, const C3Vector& rgb) {
     out.b = static_cast<uint8_t>(static_cast<int32_t>(nearbyintf(rgb.z * 255.0f)));
 }
 
+// The sibling of PackColor above, and in the reference they sit in the same neighbourhood --
+// 0x00982970 against PackColor's 0x009851a0. It reads the bytes at +2, +1 and +0, which is r, g
+// and b of a CImVector, and scales each by the 1/255 at 0x00a45564.
+//
+// Note it does NOT round, where PackColor does: the reference converts each byte with fild and
+// multiplies, with no nearbyint anywhere. Going this direction there is nothing to round to.
+// ref: FUN_00982970
+void UnpackColor(C3Vector& out, const CImVector& color) {
+    out.x = color.r * (1.0f / 255.0f);
+    out.y = color.g * (1.0f / 255.0f);
+    out.z = color.b * (1.0f / 255.0f);
+}
+
 // ref: FUN_006acc50
 void LerpColor(CImVector& color, uint32_t alpha, const CImVector& target) {
     if (alpha == 0xFF) {

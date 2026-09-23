@@ -3081,6 +3081,7 @@ addr	how	frozen	evidence
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
+00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp

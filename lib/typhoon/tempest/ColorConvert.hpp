@@ -16,6 +16,9 @@ void HsvToRgb(const C3Vector& hsv, C3Vector& rgb);
 // rgb floats to a packed colour with alpha 255.
 void PackColor(CImVector& out, const C3Vector& rgb);
 
+// A packed colour's r, g, b back to 0..1 floats. The inverse of PackColor, minus its rounding.
+void UnpackColor(C3Vector& out, const CImVector& color);
+
 // Move a colour's r, g, b toward target's by alpha/256 (alpha 255 copies them); a is untouched.
 void LerpColor(CImVector& color, uint32_t alpha, const CImVector& target);
 
