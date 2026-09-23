@@ -292,6 +292,9 @@ void CM2SceneRender::DrawBatch() {
     }
 }
 
+// The other half of the doodad-batch trap. This draws type 2 elements, and nothing produces them
+// today because CM2Model::IsBatchDoodadCompatible returns 0 -- see the note there. If that changes
+// while this is still empty, the merged batches stop drawing with nothing in the log.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
     // TODO
 }

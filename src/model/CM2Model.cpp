@@ -1966,6 +1966,15 @@ int32_t CM2Model::InitializeLoaded() {
     return 1;
 }
 
+// Returns 0, which is the safe answer rather than a placeholder: it means "this batch cannot be
+// merged into a doodad batch", so CM2Scene::Animate gives every element type 0 and the doodad path
+// is uniformly off. That agrees with the rest of frozen -- the M2BatchDoodads CVar reaches
+// CM2Cache::m_flags bit 0x20 and nothing reads it.
+//
+// **Implementing this alone breaks rendering.** A non-zero answer makes Animate emit type 2
+// elements, and type 2 dispatches to CM2SceneRender::DrawBatchDoodad, which is an empty body. Those
+// batches would then silently not draw. Port the two together, and wire M2BatchDoodads to gate them
+// in the same change.
 int32_t CM2Model::IsBatchDoodadCompatible(M2Batch* batch) {
     // TODO
 
