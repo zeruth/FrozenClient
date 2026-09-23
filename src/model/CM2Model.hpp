@@ -197,6 +197,7 @@ class CM2Model {
         void AnimateTextureTransformsMT();
         void AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5);
         void AttachToScene(CM2Scene* scene);
+        void CancelAllDeferredSequences();
         void CancelDeferredSequences(uint32_t boneIndex, bool a3);
         void DetachAllChildrenById(uint32_t id);
         void DetachFromParent();

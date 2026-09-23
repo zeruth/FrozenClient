@@ -1613,5 +1613,30 @@
   "00873ff0": {
     "status": "unlinked",
     "note": "a 24-byte global accessor with 15 callers: returns table[0x00b1d554 + i*4] where i is 0 when the flag at 0x00b1d51c is set and [0x00d43154] otherwise, i.e. \"the current shader effect, unless an override is active\". CM2Scene::ComputeElementShaders calls it and CGxDevice::Caps and nothing else, which is why that function measures 0% call-order recall against frozen's: frozen computes the permutation inline from the material, the lighting and the skin section rather than reading a global. A decomposition difference, not missing behaviour -- checked 2026-09-23 before concluding the 0% meant a defect."
+  },
+  "0083dc90": {
+    "frozen": "CM2Shared::Release",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Decrements the refcount at +0x0 and, at zero, relinks the shared into its cache's free list. The destructor calls it with m_shared in ECX."
+  },
+  "00823d90": {
+    "frozen": "CM2Model::DetachFromScene",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Unlinks from the scene list at +0x8 / +0xc -- frozen's m_scenePrev and m_sceneNext -- then branches on bit 0 of the flag word at +0x10, which is m_loaded."
+  },
+  "00824d30": {
+    "frozen": "CM2Model::FreeExternalResources",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Opens with `if (!(this->+0x10 & 1)) return;`, which is frozen's `if (!m_loaded) return;`, and is the first of the pair inside the m_shared branch."
+  },
+  "0082c1c0": {
+    "frozen": "CM2Model::FreeInternalResources",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Opens by bailing when +0x94 is null, which is frozen's m_internalResources, and is the second of the pair."
+  },
+  "00831e20": {
+    "frozen": "CM2Model::CancelAllDeferredSequences",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. The destructor's FIRST real act. It is CancelDeferredSequences (00831ec0) with the predicate narrowed to the model alone, and it has the same two branches: mark with flag 8 while CM2Shared::SequenceLoadedCallback is walking the lists (m_flag10), unlink and free otherwise. frozen had no counterpart and its destructor never did this, which left a use-after-free -- the parked record keeps a raw CM2Model* that the callback dereferences. Named by behaviour; the original name is unknown."
   }
 }

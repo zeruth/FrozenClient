@@ -2339,8 +2339,10 @@ addr	how	frozen	evidence
 008230d0	override	CM2SceneRender::DrawCallback	
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
+00823d90	override	CM2Model::DetachFromScene	
 00823ed0	sticky	CM2Model::WaitForLoad	held from the previous run, where it was sticky
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
+00824d30	override	CM2Model::FreeExternalResources	
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
 00824fc0	annotated	CM2Model::IsDrawable	tag in src/model/CM2Model.cpp
@@ -2361,6 +2363,7 @@ addr	how	frozen	evidence
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
+0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
 0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
@@ -2371,6 +2374,7 @@ addr	how	frozen	evidence
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
+00831e20	override	CM2Model::CancelAllDeferredSequences	
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00832640	override	CM2Model::~CM2Model	
 00832840	override	CM2Model::UnsetBoneSequence	
@@ -2390,6 +2394,7 @@ addr	how	frozen	evidence
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
 0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
+0083dc90	override	CM2Shared::Release	
 0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
 0083de90	annotated	SequenceBufferFree	tag in src/model/CM2Shared.cpp
 0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector

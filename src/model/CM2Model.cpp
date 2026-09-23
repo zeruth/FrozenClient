@@ -147,6 +147,11 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
 CM2Model::~CM2Model() {
     // TODO
 
+    // Any bone-sequence request still parked in CM2Shared's load list holds a raw pointer to this
+    // model, and the callback that applies them dereferences it. The reference retires them here,
+    // before anything else is torn down (FUN_00832640 calls FUN_00831e20 at 0x00832676).
+    this->CancelAllDeferredSequences();
+
     // Unlink from lists
 
     this->UnlinkFromCallbackList();
@@ -1164,6 +1169,45 @@ void CM2Model::AttachToScene(CM2Scene* scene) {
 // bit 8 and the callback drops them as it passes -- which it already does. Outside the walk they
 // are unlinked and freed here. The reference's removal helper captures the next pointer before
 // freeing, so this does too.
+// Drop every one of this model's parked bone-sequence requests, whatever bone or slot they are
+// for. CancelDeferredSequences below is the same walk with a narrower predicate; this one matches
+// on the model alone, because the model is going away.
+//
+// **Without this, destroying a model with a deferred request pending is a use-after-free.** The
+// record keeps a raw CM2Model* and CM2Shared::SequenceLoadedCallback calls
+// playback->model->ApplySequencePlayBack() on it when the .anim data lands. frozen already
+// implemented the consumer half of the protocol -- the callback drops records carrying flag 8 --
+// and this is the producer that was missing, so nothing ever set the flag for a dying model.
+//
+// The same two branches as CancelDeferredSequences, and for the same reason: while
+// SequenceLoadedCallback is walking these lists it raises m_flag10, and records may then only be
+// marked, not unlinked.
+// ref: FUN_00831e20
+void CM2Model::CancelAllDeferredSequences() {
+    if (!this->m_shared) {
+        return;
+    }
+
+    auto shared = this->m_shared;
+
+    for (auto load = shared->m_sequenceLoads.Head(); load; load = shared->m_sequenceLoads.Next(load)) {
+        for (auto playback = load->playbacks.Head(); playback;) {
+            auto next = load->playbacks.Next(playback);
+
+            if (playback->model == this) {
+                if (shared->m_flag10) {
+                    playback->flags |= 8;
+                } else {
+                    load->playbacks.UnlinkNode(playback);
+                    STORM_FREE(playback);
+                }
+            }
+
+            playback = next;
+        }
+    }
+}
+
 // ref: FUN_00831ec0
 void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool primary) {
     auto shared = this->m_shared;

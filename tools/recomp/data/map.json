@@ -37056,7 +37056,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.167,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -37244,6 +37244,22 @@
   "refSize": 157,
   "status": "ported"
  },
+ "00823d90": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DetachFromScene",
+  "frozenSize": 48,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 172,
+  "status": "ported"
+ },
  "00823ed0": {
   "branchRatio": 1.0,
   "constOverlap": 0.333,
@@ -37274,6 +37290,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 118,
+  "status": "ported"
+ },
+ "00824d30": {
+  "branchRatio": 0.211,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FreeExternalResources",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 376,
   "status": "ported"
  },
  "00824ed0": {
@@ -37596,6 +37628,22 @@
   "refSize": 250,
   "status": "ported"
  },
+ "0082c1c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FreeInternalResources",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 256,
+  "status": "ported"
+ },
  "0082c7c0": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -37756,6 +37804,22 @@
   "refSize": 487,
   "status": "ported"
  },
+ "00831e20": {
+  "branchRatio": 0.263,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CancelAllDeferredSequences",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
  "00831ec0": {
   "branchRatio": 0.217,
   "constOverlap": 0.0,
@@ -37776,13 +37840,13 @@
   "branchRatio": 0.042,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.357,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 629,
+  "frozenSize": 848,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,
@@ -38058,6 +38122,22 @@
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 637,
+  "status": "ported"
+ },
+ "0083dc90": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::Release",
+  "frozenSize": 50,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 88,
   "status": "ported"
  },
  "0083de50": {
