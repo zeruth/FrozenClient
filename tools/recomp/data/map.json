@@ -13131,13 +13131,13 @@
   "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.19,
+  "fidelity": 0.224,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 2258,
+  "frozenSize": 2279,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -30786,6 +30786,22 @@
   "how": "callorder",
   "module": "DBCache.cpp",
   "refSize": 51,
+  "status": "ported"
+ },
+ "00682d50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::RenderTargetGet",
+  "frozenSize": 19,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 25,
   "status": "ported"
  },
  "00682d70": {

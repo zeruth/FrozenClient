@@ -214,6 +214,18 @@ void CGWorldFrame::OnWorldRender() {
     GxXformViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
     GxXformSetViewport(this->m_viewport.minX, this->m_viewport.maxX, this->m_viewport.minY, this->m_viewport.maxY, 0.0f, 1.0f);
 
+    // The reference brackets the whole world render in a render-state push and turns multisampling
+    // on inside it: `calll 0x409670` (GxRsPush) then `push $0x1; push $0x13; calll 0x408bf0`
+    // (GxRsSet) at 0x004f8f2a, with the matching GxRsPop in its post stage. 0x13 is 19, which is
+    // GxRs_Multisample, so the world is drawn antialiased and the UI is not.
+    //
+    // docs/world-render-inventory.md carried this as "missing (GxRsSet 0x13)" on the viewport row,
+    // together with a note that frozen had no push/pop around the world render. Both halves land
+    // here; the state itself only reached the device once IRsSendToHw learned to send it, which is
+    // in the same change.
+    GxRsPush();
+    GxRsSet(GxRs_Multisample, 1);
+
     // TODO terrain, map objects, sky, and lighting; for now the scene is cleared and the models
     // in the world drawn
 
@@ -507,6 +519,8 @@ void CGWorldFrame::OnWorldRender() {
             GxRsSet(GxRs_Fog, 0);
         }
     }
+
+    GxRsPop();
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 }

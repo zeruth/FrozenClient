@@ -1374,6 +1374,25 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         break;
     }
 
+    case GxRs_Multisample: {
+        // The reference's case for this reads the state and sends a plain boolean:
+        //   `xorl %ecx,%ecx; cmpl %ecx,(%edi); setne %cl; push %ecx; push $0xa1` at 0x006a5126.
+        // 0xa1 is D3DRS_MULTISAMPLEANTIALIAS.
+        //
+        // frozen accepted this state and dropped it: nothing in any backend handled GxRs_Multisample,
+        // so CGxDevice's default of 1 never reached the device and the world render's own
+        // GxRsSet(GxRs_Multisample, 1) would have been a no-op too. docs/world-render-inventory.md
+        // recorded that gap as "missing (GxRsSet 0x13)" on the viewport/state-push row; 0x13 is 19,
+        // which is this state.
+        //
+        // It only does anything when the device was created with a multisample type, so on a client
+        // with gxMultisample at 1 this changes nothing.
+        auto multisampleEnable = static_cast<uint32_t>(state->m_value) != 0;
+        this->m_d3dDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, multisampleEnable);
+
+        break;
+    }
+
     case GxRs_PolygonOffset: {
         // Depth bias for coplanar decals. The reference sets one state, negated, and only when the
         // device reports the capability; it never touches D3DRS_SLOPESCALEDEPTHBIAS. Used only by

@@ -667,6 +667,14 @@ void CGxDevice::IRsInit() {
     this->m_appRenderStates[GxRs_ColorWrite].m_value        = 15;
     this->m_appRenderStates[GxRs_Culling].m_value           = 1;
     this->m_appRenderStates[GxRs_ClipPlaneMask].m_value     = 0;
+    // UNVERIFIED against the reference, and it matters as of 2026-09-23, when GxRs_Multisample
+    // stopped being inert: no backend handled it before, so this default never reached the
+    // device. The reference brackets the world render in GxRsPush / GxRsSet(0x13, 1) /
+    // GxRsPop, which reads as though its own default were 0 -- otherwise that set would be
+    // redundant -- but its IRsInit does not write the defaults as immediate stores at the
+    // array offset, so this was not settled by grepping. If it is 0 there, frozen antialiases
+    // the UI as well as the world, which a run would show. The world-render bracket is
+    // faithful either way; only this line is in question.
     this->m_appRenderStates[GxRs_Multisample].m_value       = 1;
     this->m_appRenderStates[GxRs_ScissorTest].m_value       = 0;
 
@@ -1042,6 +1050,17 @@ CGxPool* CGxDevice::PoolCreate(EGxPoolTarget target, EGxPoolUsage usage, uint32_
     return pool;
 }
 
+// `leal 0xa44(%eax,%eax,2), %eax; movl (%ecx,%eax,4), %ecx; movl %ecx, (%edx)` -- the index is
+// scaled by three and then by four, so the stride is twelve and the base is 0xa44 * 4 = 0x2910.
+// That is m_textureTarget, and the field read is its first, m_texture. `retl $0x8` matches the two
+// stack arguments.
+//
+// This is the third independent confirmation of that layout, and the cleanest: IStateSyncScissorRect
+// and IXformSetViewport both test +0x2918 and +0x2924, which are m_apiSpecific of entries 0 and 1
+// against this base, and device create zeroes exactly the six dwords from +0x2910 to +0x2924. The
+// divergence recorded on those two -- frozen tests m_texture because it never stores a surface in
+// m_apiSpecific -- rests on this.
+// ref: FUN_00682d50
 void CGxDevice::RenderTargetGet(EGxBuffer buffer, CGxTex*& gxTex) {
     gxTex = this->m_textureTarget[buffer].m_texture;
 }
