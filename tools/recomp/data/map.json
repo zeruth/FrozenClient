@@ -34312,10 +34312,10 @@
   ],
   "frozen": "CMapObjGroupSegmentQuery::TestFace",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "override",
   "module": "MapChunk.cpp",
   "refSize": 288,
-  "status": "ported"
+  "status": "diverged"
  },
  "007c6d50": {
   "branchRatio": 0.0,
@@ -34423,7 +34423,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroupSegmentQuery::Init",
-  "frozenSize": 356,
+  "frozenSize": 366,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 277,
@@ -34462,7 +34462,7 @@
   "status": "ported"
  },
  "007c9a00": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.75,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -34471,14 +34471,14 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SegmentQueryLeaf",
-  "frozenSize": 0,
+  "frozenSize": 491,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 83,
   "status": "ported"
  },
  "007c9a60": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.667,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -34494,7 +34494,7 @@
   "status": "ported"
  },
  "007c9ab0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.75,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -34519,7 +34519,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SegmentQueryNode",
-  "frozenSize": 1017,
+  "frozenSize": 710,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 699,
@@ -34558,7 +34558,7 @@
   "status": "ported"
  },
  "007cb0c0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.111,
   "faithful": true,
   "fidelity": 0.8,
@@ -34567,14 +34567,14 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::QuerySegment",
-  "frozenSize": 277,
+  "frozenSize": 324,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 189,
   "status": "ported"
  },
  "007cb180": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.667,
   "constOverlap": 0.048,
   "faithful": true,
   "fidelity": 0.8,
@@ -34590,7 +34590,7 @@
   "status": "ported"
  },
  "007cb260": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -34606,7 +34606,7 @@
   "status": "ported"
  },
  "007cb2f0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.133,
   "faithful": false,
   "fidelity": 0.75,
@@ -36469,7 +36469,7 @@
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 14,
-  "status": "ported"
+  "status": "stub"
  },
  "0081c060": {
   "branchRatio": 1.0,

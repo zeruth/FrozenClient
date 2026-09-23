@@ -65,10 +65,11 @@ struct CMapObjGroupSegmentQuery {
     float invLength;              // 1 / |segment|
     float bestDist;               // nearest hit so far along ray.dir; starts at maxT * |segment|
     const SMOMaterial* materials; // MOMT, for the textured / untextured face test
+    uint32_t materialCount;       // so the lookup can be bounds-checked; see TestFace
     uint32_t unk15;               // the reference copies a global (DAT_00cf08f8) here; unread by the ported callees
     uint16_t skipFlags;           // faces with any of these MOPY flags are ignored; always includes F_COLLIDE_HIT
 
-    void Init(SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices, const C3Segment& segment, float* t, uint16_t skipFlags, const SMOMaterial* materials);
+    void Init(SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices, const C3Segment& segment, float* t, uint16_t skipFlags, const SMOMaterial* materials, uint32_t materialCount);
     bool CachedLeaf(CMapObjGroup* group, const CAaBspNode* node);
     void TestFace(uint16_t face);
 };

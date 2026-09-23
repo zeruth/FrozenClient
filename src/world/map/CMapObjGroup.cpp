@@ -120,7 +120,7 @@ void CMapObjGroup::FreeQueryData() {
 }
 
 // ref: FUN_007c78e0
-void CMapObjGroupSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices, const C3Segment& segment, float* t, uint16_t skipFlags, const SMOMaterial* materials) {
+void CMapObjGroupSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices, const C3Segment& segment, float* t, uint16_t skipFlags, const SMOMaterial* materials, uint32_t materialCount) {
     this->polys = polys;
     this->vertices = vertices;
     this->indices = indices;
@@ -131,6 +131,7 @@ void CMapObjGroupSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices, co
     this->ray.origin = { 0.0f, 0.0f, 0.0f };
     this->ray.dir = { 0.0f, 0.0f, 0.0f };
     this->materials = materials;
+    this->materialCount = materialCount;
     this->skipFlags = skipFlags | SMOPoly::F_COLLIDE_HIT;
     // The reference copies the global DAT_00cf08f8 here; nothing ported reads it
     this->unk15 = 0;
@@ -169,11 +170,22 @@ void CMapObjGroupSegmentQuery::TestFace(uint16_t face) {
         return;
     }
 
-    // Query flag 0x200 skips untextured faces, 0x100 textured ones
+    // Query flag 0x200 skips untextured faces, 0x100 textured ones.
+    //
+    // Diverges from the reference by checking the material table first. The reference indexes it
+    // unconditionally, which is safe there but not here: frozen only fills the table when the WMO
+    // carries a MOMT chunk big enough to parse, so a malformed or absent one leaves it null and
+    // the read would fault. A face with no resolvable material counts as untextured, which is
+    // what material 0xFF already means.
     uint8_t material = this->polys[face].material;
     uint16_t kind;
 
-    if (material == 0xFF || this->materials[material].texture1 == 0) {
+    bool textured = material != 0xFF
+        && this->materials
+        && material < this->materialCount
+        && this->materials[material].texture1 != 0;
+
+    if (!textured) {
         kind = mask & 0x200;
     } else {
         kind = mask & 0x100;
@@ -305,7 +317,20 @@ void CMapObjGroup::SegmentQueryLeaf(CMapObjGroupSegmentQuery& query, const CAaBs
     uint32_t faceStart = node->faceStart;
     const uint16_t* faceRefs = this->m_bspFaceRefs;
 
-    for (uint32_t i = 0; i < node->nFaces; i++) {
+    // MOBN carries the range; clamp it to what MOBR actually holds. The reference trusts the
+    // file, which is fine for archive data it shipped, but a short or damaged MOBR would walk off
+    // the end here.
+    uint32_t count = node->nFaces;
+
+    if (faceStart >= this->m_bspFaceRefCount) {
+        return;
+    }
+
+    if (faceStart + count > this->m_bspFaceRefCount) {
+        count = this->m_bspFaceRefCount - faceStart;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
         query.TestFace(faceRefs[faceStart + i]);
     }
 }
@@ -543,7 +568,20 @@ void CMapObjGroup::DualQueryLeaf(CMapObjGroupDualSegmentQuery& query, const CAaB
     uint32_t faceStart = node->faceStart;
     const uint16_t* faceRefs = this->m_bspFaceRefs;
 
-    for (uint32_t i = 0; i < node->nFaces; i++) {
+    // MOBN carries the range; clamp it to what MOBR actually holds. The reference trusts the
+    // file, which is fine for archive data it shipped, but a short or damaged MOBR would walk off
+    // the end here.
+    uint32_t count = node->nFaces;
+
+    if (faceStart >= this->m_bspFaceRefCount) {
+        return;
+    }
+
+    if (faceStart + count > this->m_bspFaceRefCount) {
+        count = this->m_bspFaceRefCount - faceStart;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
         query.TestFace(faceRefs[faceStart + i]);
     }
 }
@@ -624,7 +662,20 @@ void CMapObjGroup::BoxQueryLeaf(CMapObjGroupBoxQuery& query, const CAaBspNode* n
     uint32_t faceStart = node->faceStart;
     const uint16_t* faceRefs = this->m_bspFaceRefs;
 
-    for (uint32_t i = 0; i < node->nFaces; i++) {
+    // MOBN carries the range; clamp it to what MOBR actually holds. The reference trusts the
+    // file, which is fine for archive data it shipped, but a short or damaged MOBR would walk off
+    // the end here.
+    uint32_t count = node->nFaces;
+
+    if (faceStart >= this->m_bspFaceRefCount) {
+        return;
+    }
+
+    if (faceStart + count > this->m_bspFaceRefCount) {
+        count = this->m_bspFaceRefCount - faceStart;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
         query.TestFace(faceRefs[faceStart + i]);
     }
 }
@@ -699,10 +750,17 @@ void CMapObjGroup::RecordHits(const C44Matrix* placement, void* object, uint32_t
 
 // ref: FUN_007cb0c0
 bool CMapObjGroup::QuerySegment(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, void* unused, const C44Matrix* placement, void* object) {
+    // A group with no BSP has nothing to walk. The reference always has one; frozen only builds
+    // it when MOPY, MOBN and MOBR all parsed, so entering with a null tree is possible here and
+    // would fault on the root node.
+    if (!this->m_bspNodes || !this->m_bspNodeCount) {
+        return false;
+    }
+
     uint32_t recordsBefore = CMapObjGroup::s_hitRecordCount;
 
     CMapObjGroupSegmentQuery query;
-    query.Init(this->m_polys, this->m_vertices, this->m_indices, segment, t, skipFlags, this->m_mapObj->m_materials);
+    query.Init(this->m_polys, this->m_vertices, this->m_indices, segment, t, skipFlags, this->m_mapObj->m_materials, this->m_mapObj->m_materialCount);
 
     this->SegmentQueryNode(query, 0, segment, this->m_bounds);
     this->RecordHits(placement, object, 0);
@@ -720,8 +778,15 @@ bool CMapObjGroup::QuerySegment(const C3Segment& segment, float* t, uint32_t que
 
 // ref: FUN_007cb2f0
 bool CMapObjGroup::QuerySegmentFace(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, uint32_t* outFace) {
+    // A group with no BSP has nothing to walk. The reference always has one; frozen only builds
+    // it when MOPY, MOBN and MOBR all parsed, so entering with a null tree is possible here and
+    // would fault on the root node.
+    if (!this->m_bspNodes || !this->m_bspNodeCount) {
+        return false;
+    }
+
     CMapObjGroupSegmentQuery query;
-    query.Init(this->m_polys, this->m_vertices, this->m_indices, segment, t, skipFlags, this->m_mapObj->m_materials);
+    query.Init(this->m_polys, this->m_vertices, this->m_indices, segment, t, skipFlags, this->m_mapObj->m_materials, this->m_mapObj->m_materialCount);
 
     this->SegmentQueryNode(query, 0, segment, this->m_bounds);
 
@@ -742,6 +807,13 @@ bool CMapObjGroup::QuerySegmentFace(const C3Segment& segment, float* t, uint32_t
 
 // ref: FUN_007cb260
 bool CMapObjGroup::QuerySegmentDual(const C3Segment& segment, float* collisionT, int32_t* collisionFace, float* renderT, int32_t* renderFace) {
+    // A group with no BSP has nothing to walk. The reference always has one; frozen only builds
+    // it when MOPY, MOBN and MOBR all parsed, so entering with a null tree is possible here and
+    // would fault on the root node.
+    if (!this->m_bspNodes || !this->m_bspNodeCount) {
+        return false;
+    }
+
     CMapObjGroupDualSegmentQuery query;
     query.Init(this->m_polys, this->m_vertices, this->m_indices, segment, *collisionT, *renderT);
 
@@ -756,6 +828,13 @@ bool CMapObjGroup::QuerySegmentDual(const C3Segment& segment, float* collisionT,
 
 // ref: FUN_007cb180
 bool CMapObjGroup::QueryBox(const C4Plane* hull, const C3Vector* corners, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object) {
+    // A group with no BSP has nothing to walk. The reference always has one; frozen only builds
+    // it when MOPY, MOBN and MOBR all parsed, so entering with a null tree is possible here and
+    // would fault on the root node.
+    if (!this->m_bspNodes || !this->m_bspNodeCount) {
+        return false;
+    }
+
     uint32_t recordsBefore = CMapObjGroup::s_hitRecordCount;
 
     if (queryFlags & 0xF0) {
