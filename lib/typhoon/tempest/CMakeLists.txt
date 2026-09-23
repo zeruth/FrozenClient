@@ -5,6 +5,7 @@ file(GLOB TEMPEST_SOURCES
     "quaternion/*.cpp"
     "random/*.cpp"
     "rect/*.cpp"
+    "segment/*.cpp"
     "vector/*.cpp"
 )
 

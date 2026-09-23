@@ -1309,6 +1309,8 @@ addr	how	frozen	evidence
 0055dc60	annotated	Script_GetNumModifiedClickActions	tag in src/ui/game/UIBindingsScript.cpp
 0055dd10	annotated	UIBindingsKeyName	tag in src/ui/game/UIBindings.cpp
 0055e180	string	CGUIBindings::ParseBinding	unique "BUTTON"
+0055e700	callgraph	UIBindingsGetByIndex	only unmatched callee of 0055e8d0=Script_GetBinding
+0055e750	callgraph	UIBindingsGetKey	only unmatched callee of 0055e9b0=Script_GetBindingKey
 0055e870	callgraph	RCString::GetString	only unmatched callee of 0055ea70=Script_GetModifiedClickAction
 0055e8d0	annotated	Script_GetBinding	tag in src/ui/game/UIBindingsScript.cpp
 0055e9b0	annotated	Script_GetBindingKey	tag in src/ui/game/UIBindingsScript.cpp
@@ -1321,9 +1323,11 @@ addr	how	frozen	evidence
 0055fc20	annotated	Script_GetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 0055fcc0	annotated	Script_IsModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 00560560	table	Script_ClearOverrideBindings	binding "ClearOverrideBindings" in s_ScriptFunctions ~ table 00acde38
+00562490	callgraph	UIBindingsGetCommandForKey	only unmatched callee of 00562550=Script_GetBindingAction
 00562550	annotated	Script_GetBindingAction	tag in src/ui/game/UIBindingsScript.cpp
 005625f0	annotated	Script_GetBindingByKey	tag in src/ui/game/UIBindingsScript.cpp
 00562dd0	string	CGUIBindings::LoadModifiedClicks	unique "action"
+00562ed0	callgraph	UIBindingsSetKey	only unmatched callee of 00563520=Script_SetBinding
 00563520	annotated	Script_SetBinding	tag in src/ui/game/UIBindingsScript.cpp
 005635e0	table	Script_SetBindingSpell	binding "SetBindingSpell" in s_ScriptFunctions ~ table 00acde38
 00563700	table	Script_SetBindingItem	binding "SetBindingItem" in s_ScriptFunctions ~ table 00acde38
@@ -2146,9 +2150,34 @@ addr	how	frozen	evidence
 0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
 0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
+0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
+0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
+007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
+007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
+007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
+007c6c30	annotated	CMapObjGroupSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
+007c6d50	override	CMapObjGroupSegmentQuery::CachedLeaf	
+007c71e0	annotated	TriangleOutsideHull	tag in src/world/map/CMapObjGroup.cpp
+007c7610	annotated	CMapObjGroup::QueryEnd	tag in src/world/map/CMapObjGroup.cpp
+007c7660	annotated	CMapObjGroupBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
+007c7710	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
+007c77d0	annotated	CMapObjGroupDualSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
+007c78e0	annotated	CMapObjGroupSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
+007c7ae0	annotated	CMapObjGroup::RecordHits	tag in src/world/map/CMapObjGroup.cpp
+007c7fe0	annotated	CMapObjGroup::SampleColorAtFace	tag in src/world/map/CMapObjGroup.cpp
+007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007c9ab0	annotated	CMapObjGroup::DualQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007ca180	annotated	CMapObjGroup::SegmentQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007ca440	annotated	CMapObjGroup::BoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007ca600	annotated	CMapObjGroup::DualQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007cb0c0	annotated	CMapObjGroup::QuerySegment	tag in src/world/map/CMapObjGroup.cpp
+007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
+007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
+007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
 007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
 007dc010	override	StringToMouseButton	
@@ -2970,6 +2999,10 @@ addr	how	frozen	evidence
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
+009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
+00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
+00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928

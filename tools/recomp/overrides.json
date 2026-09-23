@@ -1236,5 +1236,15 @@
     "frozen": "Script_ReturnZero",
     "status": "diverged",
     "note": "GetNumShapeshiftForms. The reference returns the count of entries on the server-sent shapeshift bar (DAT_00be8e28) and nothing else -- the whole body is that global pushed as a number. Frozen registers the shared zero-returner instead, which is correct in the only sense available to it: with no bar received the count really is zero, and FrameXML builds no form buttons. It becomes a real port the moment the bar arrives; see 0053de10 for what that needs."
+  },
+  "007c6d50": {
+    "frozen": "CMapObjGroupSegmentQuery::CachedLeaf",
+    "status": "diverged",
+    "note": "BSP leaf via CMap node cache (FUN_0079b1f0) when bspcache is on; the cache is not ported, so the port returns false and the leaf takes the uncached loop in CMapObjGroup::SegmentQueryLeaf. Same hits, no outcode prefilter. 2026-09-23"
+  },
+  "007c6790": {
+    "frozen": "CMapObjGroupDualSegmentQuery::CachedLeaf",
+    "status": "diverged",
+    "note": "same as 007c6d50 for the dual (collision + render) segment query; the port returns false. 2026-09-23"
   }
 }

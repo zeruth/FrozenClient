@@ -15906,7 +15906,7 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetItemInfo",
-  "frozenSize": 597,
+  "frozenSize": 742,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 616,
@@ -20789,12 +20789,13 @@
   "status": "ported"
  },
  "0055d990": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.455,
+  "constOverlap": 0.5,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/UIBindings.cpp"
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
   ],
   "frozen": "UIBindingsModifierPrefix",
   "frozenSize": 0,
@@ -20804,20 +20805,20 @@
   "status": "ported"
  },
  "0055dc00": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetNumBindings",
-  "frozenSize": 75,
+  "frozenSize": 41,
   "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 35,
-  "status": "stub"
+  "status": "ported"
  },
  "0055dc30": {
   "branchRatio": 0.0,
@@ -20852,12 +20853,13 @@
   "status": "ported"
  },
  "0055dd10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.382,
+  "constOverlap": 0.214,
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/game/UIBindings.cpp"
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
   ],
   "frozen": "UIBindingsKeyName",
   "frozenSize": 0,
@@ -20882,6 +20884,38 @@
   "refSize": 173,
   "status": "ported"
  },
+ "0055e700": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetByIndex",
+  "frozenSize": 93,
+  "how": "callgraph",
+  "module": "LFGInfo.cpp",
+  "refSize": 72,
+  "status": "ported"
+ },
+ "0055e750": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetKey",
+  "frozenSize": 171,
+  "how": "callgraph",
+  "module": "LFGInfo.cpp",
+  "refSize": 142,
+  "status": "ported"
+ },
  "0055e870": {
   "branchRatio": 0.143,
   "constOverlap": 0.0,
@@ -20899,32 +20933,32 @@
   "status": "ported"
  },
  "0055e8d0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBinding",
-  "frozenSize": 75,
+  "frozenSize": 190,
   "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 224,
-  "status": "stub"
+  "status": "ported"
  },
  "0055e9b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingKey",
-  "frozenSize": 3,
+  "frozenSize": 142,
   "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 183,
@@ -20963,15 +20997,16 @@
   "status": "ported"
  },
  "0055f860": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
   "fidelity": 0.857,
   "files": [
-   "src/ui/game/UIBindings.cpp"
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
   ],
   "frozen": "UIBindingsRunCommand",
-  "frozenSize": 0,
+  "frozenSize": 236,
   "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 213,
@@ -20995,19 +21030,19 @@
  },
  "0055fad0": {
   "branchRatio": 0.667,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_RunBinding",
-  "frozenSize": 75,
+  "frozenSize": 149,
   "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 177,
-  "status": "stub"
+  "status": "ported"
  },
  "0055fb90": {
   "branchRatio": 0.75,
@@ -21073,37 +21108,53 @@
   "refSize": 140,
   "status": "stub"
  },
+ "00562490": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.444,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetCommandForKey",
+  "frozenSize": 174,
+  "how": "callgraph",
+  "module": "UIBindings.cpp",
+  "refSize": 191,
+  "status": "ported"
+ },
  "00562550": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingAction",
-  "frozenSize": 75,
+  "frozenSize": 97,
   "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 160,
-  "status": "stub"
+  "status": "ported"
  },
  "005625f0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.444,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingByKey",
-  "frozenSize": 75,
+  "frozenSize": 97,
   "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 171,
-  "status": "stub"
+  "status": "ported"
  },
  "00562dd0": {
   "branchRatio": 0.857,
@@ -21121,21 +21172,37 @@
   "refSize": 250,
   "status": "ported"
  },
- "00563520": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+ "00562ed0": {
+  "branchRatio": 0.409,
+  "constOverlap": 0.053,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.458,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsSetKey",
+  "frozenSize": 339,
+  "how": "callgraph",
+  "module": "UIBindings.cpp",
+  "refSize": 626,
+  "status": "ported"
+ },
+ "00563520": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 0.636,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_SetBinding",
-  "frozenSize": 75,
+  "frozenSize": 179,
   "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 191,
-  "status": "stub"
+  "status": "ported"
  },
  "005635e0": {
   "branchRatio": 0.4,
@@ -21330,15 +21397,16 @@
   "status": "stub"
  },
  "00564760": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.167,
   "faithful": false,
   "fidelity": 0.308,
   "files": [
-   "src/ui/game/UIBindings.cpp"
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
   ],
   "frozen": "EnsureLoaded",
-  "frozenSize": 0,
+  "frozenSize": 3223,
   "how": "string",
   "module": "UIBindings.cpp",
   "refSize": 320,
@@ -25199,15 +25267,16 @@
   "status": "stub"
  },
  "005cde20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.042,
   "faithful": false,
   "fidelity": 0.206,
   "files": [
-   "src/ui/game/MiscScript.cpp"
+   "src/ui/game/MiscScript.cpp",
+   "src/ui/game/miscscript.cpp"
   ],
   "frozen": "Script_GetSkillLineInfo",
-  "frozenSize": 0,
+  "frozenSize": 139,
   "how": "annotated",
   "module": "GuildInfo.cpp",
   "refSize": 1173,
@@ -30092,51 +30161,52 @@
   "status": "stub"
  },
  "006277f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.046,
+  "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.228,
+  "fidelity": 0.224,
   "files": [
-   "src/ui/game/CGTooltipScript.cpp"
+   "src/ui/game/CGTooltipScript.cpp",
+   "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "TooltipSetItemInfo",
-  "frozenSize": 0,
+  "frozenSize": 3893,
   "how": "string",
   "module": "Tooltip.cpp",
   "refSize": 24814,
   "status": "ported"
  },
  "0062dae0": {
-  "branchRatio": 0.268,
+  "branchRatio": 0.293,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.303,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetHyperlink",
-  "frozenSize": 556,
+  "frozenSize": 610,
   "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 1382,
   "status": "ported"
  },
  "0062e050": {
-  "branchRatio": 0.065,
+  "branchRatio": 0.194,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.205,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetInventoryItem",
-  "frozenSize": 75,
+  "frozenSize": 298,
   "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 1226,
-  "status": "stub"
+  "status": "ported"
  },
  "0062e520": {
   "branchRatio": 0.286,
@@ -30283,20 +30353,20 @@
   "status": "stub"
  },
  "0062f420": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.28,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetBagItem",
-  "frozenSize": 75,
+  "frozenSize": 288,
   "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 800,
-  "status": "stub"
+  "status": "ported"
  },
  "0062f740": {
   "branchRatio": 0.286,
@@ -30644,7 +30714,7 @@
    "src/object/client/itemcache.cpp"
   ],
   "frozen": "ReceiveItemQueryResponse",
-  "frozenSize": 849,
+  "frozenSize": 3164,
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 26,
@@ -34157,6 +34227,38 @@
   "refSize": 1354,
   "status": "ported"
  },
+ "0078f480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/segment/C3Segment.cpp",
+   "lib/typhoon/tempest/segment/c3segment.cpp"
+  ],
+  "frozen": "C3Segment::C3Segment",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "0078f4d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/segment/C3Segment.cpp",
+   "lib/typhoon/tempest/segment/c3segment.cpp"
+  ],
+  "frozen": "C3Segment::Lerp",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
  "0078f570": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -34203,6 +34305,374 @@
   "how": "string",
   "module": "MapLoad.cpp",
   "refSize": 339,
+  "status": "ported"
+ },
+ "007c6600": {
+  "branchRatio": 0.917,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 258,
+  "status": "ported"
+ },
+ "007c6710": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::Results",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 123,
+  "status": "ported"
+ },
+ "007c6790": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::CachedLeaf",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 1170,
+  "status": "diverged"
+ },
+ "007c6c30": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.214,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 288,
+  "status": "ported"
+ },
+ "007c6d50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::CachedLeaf",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 1166,
+  "status": "diverged"
+ },
+ "007c71e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "TriangleOutsideHull",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
+ "007c7610": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryEnd",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 65,
+  "status": "ported"
+ },
+ "007c7660": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupBoxQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 171,
+  "status": "ported"
+ },
+ "007c7710": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.375,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::AllocHitRecord",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "007c77d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::Init",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
+ "007c78e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::Init",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 277,
+  "status": "ported"
+ },
+ "007c7ae0": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.051,
+  "faithful": false,
+  "fidelity": 0.091,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::RecordHits",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 1062,
+  "status": "ported"
+ },
+ "007c7fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.095,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SampleColorAtFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 882,
+  "status": "ported"
+ },
+ "007c9a00": {
+  "branchRatio": 0.667,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SegmentQueryLeaf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "007c9a60": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::BoxQueryLeaf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "007c9ab0": {
+  "branchRatio": 0.667,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::DualQueryLeaf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "007ca180": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SegmentQueryNode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 699,
+  "status": "ported"
+ },
+ "007ca440": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::BoxQueryNode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 434,
+  "status": "ported"
+ },
+ "007ca600": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::DualQueryNode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 699,
+  "status": "ported"
+ },
+ "007cb0c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegment",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 189,
+  "status": "ported"
+ },
+ "007cb180": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.048,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 215,
+  "status": "ported"
+ },
+ "007cb260": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegmentDual",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 133,
+  "status": "ported"
+ },
+ "007cb2f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.133,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegmentFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 187,
   "status": "ported"
  },
  "007dac40": {
@@ -41994,30 +42464,32 @@
   "status": "ported"
  },
  "008b02e0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/db/rec/ItemClassRec.cpp"
+   "src/db/rec/ItemClassRec.cpp",
+   "src/db/rec/itemclassrec.cpp"
   ],
   "frozen": "ItemClassRec::GetFilename",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
   "status": "ported"
  },
  "008b12d0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/db/rec/ItemSubClassRec.cpp"
+   "src/db/rec/ItemSubClassRec.cpp",
+   "src/db/rec/itemsubclassrec.cpp"
   ],
   "frozen": "ItemSubClassRec::GetFilename",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -47061,6 +47533,70 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 50,
+  "status": "ported"
+ },
+ "009829b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DominantAxis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "00983490": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "IntersectRayTriangle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 537,
+  "status": "ported"
+ },
+ "00983d70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "ClassifyPointPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 241,
+  "status": "ported"
+ },
+ "00984930": {
+  "branchRatio": 0.229,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "BoundsFromPoints",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 829,
   "status": "ported"
  },
  "009858b0": {

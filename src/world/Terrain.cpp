@@ -6,6 +6,8 @@
 #include "world/ParticleFx.hpp"
 #include "world/Clouds.hpp"
 #include "world/CWorldParam.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "console/CVar.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/CM2Model.hpp"
@@ -249,6 +251,13 @@ struct WmoGroup {
     uint16_t portalCount = 0;
     uint32_t visFrame = 0;
     int32_t visDepth = 0x7FFFFFFF; // shallowest portal depth this group was reached at this frame
+
+    // The group as the reference's CMapObjGroup queries see it: MOPY, the MOBN/MOBR tree, the raw
+    // MOCV, and pointers at `positions` / `indices` above. Queries run in the same instance-local
+    // space as `positions` (world minus WmoInstance::origin, rotation applied), where the
+    // reference keeps WMO-local vertices and transforms the query through the placement instead.
+    CImVector* mocv = nullptr;
+    CMapObjGroup objGroup;
 };
 
 // A WMO portal polygon (MOPT) in world space: a vertex range into WmoInstance::portalVerts plus
@@ -313,6 +322,9 @@ struct WmoInstance {
     // Average interior (MOCV) brightness; interior doodads are lit by this constant value so they
     // match the torch-lit walls and do not cycle with the outdoor day/night like exterior props.
     C3Vector interiorAmbient = { 0.35f, 0.35f, 0.35f };
+
+    // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour
+    CMapObj mapObj;
 };
 
 // Distance from the map's NW corner to its centre (32 tiles), used to convert the corner-relative
@@ -1331,10 +1343,24 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 out.interiorAmbient.y = ag / 255.0f;
                 out.interiorAmbient.z = ab / 255.0f;
             }
+
+            out.mapObj.m_mohdFlags = mohdFlags;
+            out.mapObj.m_ambientColor.b = ab;
+            out.mapObj.m_ambientColor.g = ag;
+            out.mapObj.m_ambientColor.r = ar;
+            out.mapObj.m_ambientColor.a = body[31];
         } else if (tag == FourCC("MOTX")) {
             motx = reinterpret_cast<const char*>(body);
         } else if (tag == FourCC("MOMT")) {
             momt = body;
+
+            // The group queries read the materials through CMapObj, so keep a copy that outlives
+            // the root file buffer
+            if (sz >= sizeof(SMOMaterial)) {
+                out.mapObj.m_materialCount = sz / sizeof(SMOMaterial);
+                out.mapObj.m_materials = static_cast<SMOMaterial*>(SMemAlloc(out.mapObj.m_materialCount * sizeof(SMOMaterial), __FILE__, __LINE__, 0));
+                memcpy(out.mapObj.m_materials, body, out.mapObj.m_materialCount * sizeof(SMOMaterial));
+            }
         } else if (tag == FourCC("MODN")) {
             modn = reinterpret_cast<const char*>(body);
         } else if (tag == FourCC("MODD")) {
@@ -1532,8 +1558,15 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
             const uint8_t* moba = nullptr;
             uint32_t mobaCount = 0;
             const CImVector* mocv = nullptr; // baked per-vertex colours for interior groups
+            uint32_t mocvCount = 0;
             const uint8_t* mliq = nullptr;   // group liquid (header + vertex grid + tile flags)
             uint32_t mliqSize = 0;
+            const SMOPoly* mopy = nullptr;   // per-face flags + material
+            uint32_t mopyCount = 0;
+            const CAaBspNode* mobn = nullptr; // the face BSP
+            uint32_t mobnCount = 0;
+            const uint16_t* mobr = nullptr;  // the BSP leaves' face lists
+            uint32_t mobrCount = 0;
 
             while (so + 8 <= subSize) {
                 uint32_t sz;
@@ -1545,8 +1578,11 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 else if (tag == FourCC("MOTV")) { motv = reinterpret_cast<const float*>(body); }
                 else if (tag == FourCC("MOVI")) { movi = reinterpret_cast<const uint16_t*>(body); moviCount = sz / 2; }
                 else if (tag == FourCC("MOBA")) { moba = body; mobaCount = sz / 24; }
-                else if (tag == FourCC("MOCV")) { mocv = reinterpret_cast<const CImVector*>(body); }
+                else if (tag == FourCC("MOCV")) { mocv = reinterpret_cast<const CImVector*>(body); mocvCount = sz / 4; }
                 else if (tag == FourCC("MLIQ")) { mliq = body; mliqSize = sz; }
+                else if (tag == FourCC("MOPY")) { mopy = reinterpret_cast<const SMOPoly*>(body); mopyCount = sz / 2; }
+                else if (tag == FourCC("MOBN")) { mobn = reinterpret_cast<const CAaBspNode*>(body); mobnCount = sz / 16; }
+                else if (tag == FourCC("MOBR")) { mobr = reinterpret_cast<const uint16_t*>(body); mobrCount = sz / 2; }
 
                 so += 8 + sz;
             }
@@ -1716,6 +1752,44 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
 
                 for (uint32_t j = 0; j < moviCount; j++) {
                     grp.indices[j] = movi[j];
+                }
+
+                // The reference-form group data the CMapObjGroup queries walk. Faces are MOVI
+                // triples; MOPY has one record per face, MOBR indexes faces, MOBN indexes MOBR.
+                {
+                    CMapObjGroup& og = grp.objGroup;
+                    uint32_t faceCount = moviCount / 3;
+
+                    og.m_flags = mogpFlags;
+                    og.m_indices = grp.indices;
+                    og.m_vertices = grp.positions;
+                    og.m_vertexCount = movtCount;
+                    og.m_faceCount = faceCount;
+                    og.m_mapObj = &out.mapObj;
+
+                    // Instance-local bounds, to match the vertex space the queries run in
+                    og.m_bounds.b = { grp.boundsMin.x - out.origin.x, grp.boundsMin.y - out.origin.y, grp.boundsMin.z - out.origin.z };
+                    og.m_bounds.t = { grp.boundsMax.x - out.origin.x, grp.boundsMax.y - out.origin.y, grp.boundsMax.z - out.origin.z };
+
+                    if (mopy && mopyCount >= faceCount && faceCount) {
+                        og.m_polys = static_cast<SMOPoly*>(SMemAlloc(faceCount * sizeof(SMOPoly), __FILE__, __LINE__, 0));
+                        memcpy(og.m_polys, mopy, faceCount * sizeof(SMOPoly));
+                    }
+
+                    if (og.m_polys && mobn && mobnCount && mobr && mobrCount) {
+                        og.m_bspNodes = static_cast<CAaBspNode*>(SMemAlloc(mobnCount * sizeof(CAaBspNode), __FILE__, __LINE__, 0));
+                        memcpy(og.m_bspNodes, mobn, mobnCount * sizeof(CAaBspNode));
+                        og.m_bspNodeCount = mobnCount;
+                        og.m_bspFaceRefs = static_cast<uint16_t*>(SMemAlloc(mobrCount * sizeof(uint16_t), __FILE__, __LINE__, 0));
+                        memcpy(og.m_bspFaceRefs, mobr, mobrCount * sizeof(uint16_t));
+                        og.m_bspFaceRefCount = mobrCount;
+                    }
+
+                    if (mocv && mocvCount >= movtCount) {
+                        grp.mocv = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, 0));
+                        memcpy(grp.mocv, mocv, movtCount * sizeof(CImVector));
+                        og.m_colors = grp.mocv;
+                    }
                 }
 
                 if (mobaCount) {
@@ -2274,6 +2348,14 @@ void FreeTile(TerrainTile& tile) {
                 if (grp.ndotl) SMemFree(grp.ndotl, __FILE__, __LINE__, 0);
                 if (grp.ao) SMemFree(grp.ao, __FILE__, __LINE__, 0);
                 if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
+                if (grp.mocv) SMemFree(grp.mocv, __FILE__, __LINE__, 0);
+                grp.objGroup.FreeQueryData();
+            }
+
+            if (w.mapObj.m_materials) {
+                SMemFree(w.mapObj.m_materials, __FILE__, __LINE__, 0);
+                w.mapObj.m_materials = nullptr;
+                w.mapObj.m_materialCount = 0;
             }
 
             for (uint32_t t = 0; t < w.textureCount; t++) {
