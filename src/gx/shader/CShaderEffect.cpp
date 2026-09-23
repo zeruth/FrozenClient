@@ -66,8 +66,13 @@ void CShaderEffect::ComputeLocalLights(LocalLights* localLights, uint32_t localL
         C44Matrix view;
 
         if (a4) {
-            // The reference builds an identity here and multiplies it by the view matrix, which is
-            // the view matrix; taken directly.
+            // The reference builds an identity in a local and then OVERWRITES it with the device's
+            // view matrix -- 0x00407f80, which the call site made look like a multiply, turns out
+            // to be C44Matrix's compiler-generated copy assignment: sixteen floats from the
+            // argument into `this` and nothing else. So the identity is dead and the matrix used
+            // is simply the view matrix, which is what this takes. Corrected 2026-09-23; the
+            // earlier note here called it a multiply, which would have been the same answer by
+            // luck rather than by reading it.
             GxXformView(view);
         }
 

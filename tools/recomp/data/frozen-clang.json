@@ -73064,7 +73064,7 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 70,
+"lines": 75,
 "refs": [],
 "line": 61
 },
@@ -73085,7 +73085,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 132
+"line": 137
 },
 "CShaderEffect::SetAlphaRef": {
 "files": [
@@ -73105,7 +73105,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 141
+"line": 146
 },
 "PackMaterialColor": {
 "files": [
@@ -73129,7 +73129,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 156
+"line": 161
 },
 "CShaderEffect::SetDiffuse": {
 "files": [
@@ -73149,7 +73149,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 174
+"line": 179
 },
 "CShaderEffect::SetEmissive": {
 "files": [
@@ -73169,7 +73169,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 184
+"line": 189
 },
 "CShaderEffect::SetFogEnabled": {
 "files": [
@@ -73196,7 +73196,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 194
+"line": 199
 },
 "CShaderEffect::SetFogParams": {
 "files": [
@@ -73221,7 +73221,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 212
+"line": 217
 },
 "CShaderEffect::SetLocalLighting": {
 "files": [
@@ -73259,7 +73259,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 237
+"line": 242
 },
 "CShaderEffect::SetShaders": {
 "files": [
@@ -73284,7 +73284,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 288
+"line": 293
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -73302,7 +73302,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 311
+"line": 316
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -73322,7 +73322,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 327
+"line": 332
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -73342,7 +73342,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 343
+"line": 348
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -73362,7 +73362,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 358
+"line": 363
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -73387,7 +73387,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 369
+"line": 374
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -73400,7 +73400,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 385
+"line": 390
 },
 "CShaderEffectManager::CreateEffect": {
 "files": [
