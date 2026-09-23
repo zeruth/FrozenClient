@@ -859,7 +859,23 @@ def match(refs, frozen, overrides, tables):
         if o.get('frozen'):
             bind(addr, o['frozen'], 'override')
 
+    # One frozen name carrying several tags is usually fine -- overloads collapse to a single key
+    # here, and two same-named free functions in different files do too. It is NOT fine when the
+    # reference functions are wildly different sizes, because then at most one of them can really
+    # be this code. That is what a DISPLACED tag looks like: a commented port inserted directly
+    # above an already-tagged function strands the older tag on the newer one, which is how
+    # 0x00835640 came to be linked to CM2Light::SetPosition instead of SetLightType, and how
+    # CSimpleEditBox::AddHistoryLine came to claim a 71-byte function and a 142-byte one.
     for name, w in sorted(frozen.items()):
+        # Operators are exempt: recomp keys by name, so every overload of operator* collapses to
+        # one entry, and those really are different functions of very different sizes.
+        sizes = [refs[a]['size'] for a in sorted(w['refs']) if a in refs and refs[a]['size']]
+        if 'operator' not in name and len(sizes) > 1 and max(sizes) > 2 * min(sizes):
+            print('  ! %s carries %d tags whose reference bodies differ by more than 2x: %s'
+                  % (name, len(sizes), ', '.join('%s (%d bytes)' % (a, refs[a]['size'])
+                                                 for a in sorted(w['refs']) if a in refs)))
+            print('    at most one can be right -- check for a tag stranded by an inserted function')
+
         for addr in sorted(w['refs']):
             bind(addr, name, 'annotated', 'tag in ' + (w['files'][0] if w['files'] else '?'))
 

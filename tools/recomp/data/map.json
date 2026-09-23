@@ -45248,13 +45248,13 @@
   "files": [],
   "frozen": "TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
   "frozenSize": 145,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CSimpleEditBox.cpp",
   "refSize": 87,
   "status": "ported"
  },
  "00966fd0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -45262,9 +45262,9 @@
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
-  "frozen": "CSimpleEditBox::AddHistoryLine",
-  "frozenSize": 166,
-  "how": "annotated",
+  "frozen": "CSimpleEditBox::SetHistoryLines",
+  "frozenSize": 337,
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 71,
   "status": "ported"
@@ -45273,7 +45273,7 @@
   "branchRatio": 0.476,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.806,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -47951,7 +47951,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"

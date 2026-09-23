@@ -1137,7 +1137,11 @@ void CSimpleEditBox::SetCursorPosition(int32_t position) {
     this->UpdateVisibleCursor();
 }
 
-// ref: FUN_00966fd0
+// Carried a second tag, FUN_00966fd0, until 2026-09-23. That one is wrong and is dropped: it is
+// 71 bytes with two branches and a single call, while this body has one early return and three
+// Storm calls -- SMemReAlloc, SStrLen, SStrCopy -- which is 0x00964690 exactly, at 142 bytes with
+// one branch and three calls. The neighbour settles it too: ClearHistory below is tagged
+// 0x00964720, and 0x00964690 + 142 lands there.
 // ref: FUN_00964690
 void CSimpleEditBox::AddHistoryLine(const char* text, const char* source) {
     // A history of no lines keeps nothing, and the index below would divide by zero.

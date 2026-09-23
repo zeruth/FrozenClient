@@ -155556,7 +155556,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 1142
+"line": 1146
 },
 "CSimpleEditBox::ClearHistory": {
 "files": [
@@ -155577,7 +155577,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1162
+"line": 1166
 },
 "CSimpleEditBox::SetHistoryLines": {
 "files": [
@@ -155601,7 +155601,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1178
+"line": 1182
 },
 "CSimpleEditBox::GetInputLanguage": {
 "files": [
@@ -155621,7 +155621,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1213
+"line": 1217
 },
 "CSimpleEditBox::ToggleInputLanguage": {
 "files": [
@@ -155634,7 +155634,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 1226
+"line": 1230
 },
 "CSimpleEditBox::SetTextInsets": {
 "files": [
@@ -155649,7 +155649,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1233
+"line": 1237
 },
 "CSimpleEditBox::GetTextInsets": {
 "files": [
@@ -155664,7 +155664,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1244
+"line": 1248
 },
 "CSimpleEditBox::SetAutoFocus": {
 "files": [
@@ -155679,7 +155679,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1254
+"line": 1258
 },
 "CSimpleEditBox::SetCountInvisibleLetters": {
 "files": [
@@ -155694,7 +155694,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1259
+"line": 1263
 },
 "CSimpleEditBox::SetNumeric": {
 "files": [
@@ -155709,7 +155709,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1264
+"line": 1268
 },
 "CSimpleEditBox::SetPassword": {
 "files": [
@@ -155724,7 +155724,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1269
+"line": 1273
 },
 "CSimpleEditBox::SetAltArrowKeyMode": {
 "files": [
@@ -155739,7 +155739,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1274
+"line": 1278
 },
 "CSimpleEditBox::LetterCount": {
 "files": [
@@ -155756,7 +155756,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1281
+"line": 1285
 },
 "CSimpleEditBox::SetMultiLine": {
 "files": [
@@ -155783,7 +155783,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1294
+"line": 1298
 },
 "CSimpleEditBox::SetText": {
 "files": [
@@ -155805,7 +155805,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1324
+"line": 1328
 },
 "CSimpleEditBox::StartHighlight": {
 "files": [
@@ -155818,7 +155818,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1339
+"line": 1343
 },
 "CSimpleEditBox::UpdateDirtyBits": {
 "files": [
@@ -155841,7 +155841,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1344
+"line": 1348
 },
 "CSimpleEditBox::UpdateSizes": {
 "files": [
@@ -155875,7 +155875,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 1373
+"line": 1377
 },
 "CSimpleEditBox::UpdateTextInfo": {
 "files": [
@@ -155896,7 +155896,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1423
+"line": 1427
 },
 "CSimpleEditBox::UpdateVisibleCursor": {
 "files": [
@@ -155951,7 +155951,7 @@
 "stub": false,
 "lines": 133,
 "refs": [],
-"line": 1451
+"line": 1455
 },
 "CSimpleEditBox::UpdateVisibleHighlight": {
 "files": [
@@ -155964,7 +155964,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1585
+"line": 1589
 },
 "CSimpleEditBox::UpdateVisibleText": {
 "files": [
@@ -156001,7 +156001,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 1589
+"line": 1593
 },
 "CSimpleEditBox_SetFontObject": {
 "files": [

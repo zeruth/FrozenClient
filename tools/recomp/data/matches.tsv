@@ -2855,8 +2855,8 @@ addr	how	frozen	evidence
 00965960	callgraph	CSimpleEditBox::Insert	only unmatched callee of 00975e10=CSimpleEditBox_Insert
 00965f20	annotated	CSimpleEditBox::SetMultiLine	tag in src/ui/simple/CSimpleEditBox.cpp
 00966580	callgraph	CSimpleEditBox::SetText	only unmatched callee of 00975e80=CSimpleEditBox_SetText, 00975f80=CSimpleEditBox_SetNumber
-00966b10	callgraph	TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]	only unmatched callee of 00966fd0=CSimpleEditBox::AddHistoryLine
-00966fd0	annotated	CSimpleEditBox::AddHistoryLine	tag in src/ui/simple/CSimpleEditBox.cpp
+00966b10	sticky	TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]	held from the previous run, where it was sticky
+00966fd0	callgraph	CSimpleEditBox::SetHistoryLines	only unmatched callee of 00976770=CSimpleEditBox_SetHistoryLines
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
