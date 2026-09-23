@@ -226,7 +226,12 @@ does. What is wrong:
 
 ## 3. Ordered task list to reach parity
 
-### T1 - Kill the z-fighting: identical vertex transform + `DepthFunc = EQUAL`
+**Status checked against the source on 2026-09-23** and written into each heading below.
+Four of the ten are done (T1, T2, T6, T8), none of them seen on screen. The doc's own
+re-check section further down already said T1 and T2 were fixed, but this list did not, which
+is the same drift the render inventory had. Keep the headings current when a task lands.
+
+### T1 - Kill the z-fighting: identical vertex transform + `DepthFunc = EQUAL` --- **DONE** (unverified on screen)
 *Change*: `BlobShadowsBegin`/`BlobShadowDraw`, `src/world/Terrain.cpp`.
 *Ports*: `FUN_007e4480` (the render-state block).
 *Prereq*: none.
@@ -249,14 +254,14 @@ choice is correct there - keep a per-path selection.
 *Do not* add polygon offset here: the reference does not, and depth bias on a coplanar re-draw
 re-introduces peter-panning at grazing angles.
 
-### T2 - Correct blend / colour / fog
+### T2 - Correct blend / colour / fog --- **DONE** (unverified on screen)
 *Change*: `BlobShadowsBegin`, `src/world/Terrain.cpp`. *Ports*: `FUN_007e4480`. *Prereq*: T1.
 `GxRs_BlendingMode = GxBlend_Mod`; vertex colour white with alpha = the model shadow opacity;
 `GxRs_Fog = 0`; `GxRs_FogColor = 0xffffffff`; `GxRs_Lighting = 0`. Under Mod the decal PS must output
 white outside the blob footprint (multiply by 1 = no change), which the clamped ShadowBlob sampler
 already gives.
 
-### T3 - Oriented, animation-driven footprint
+### T3 - Oriented, animation-driven footprint --- **not started**: the caster radius comes from the cull extent and the blob stays axis-aligned
 *Change*: `BlobShadowDraw` signature + its caller in `CGWorldFrame::OnWorldRender`.
 *Ports*: `FUN_0082ced0` (animated box), the corner transform + AABB in `FUN_007e4480`.
 *Prereq*: T1, P5.
@@ -265,26 +270,26 @@ build the quad from `(+-hx, +-hy, 0)` rotated by the model 3x3, and derive the Z
 `halfHeight` scaled by the two tunables. Frozen already reads `M2Bounds` in `CGWorldFrame.cpp:216`; the
 per-sequence bounds table is the part that is missing.
 
-### T4 - Restore `ShadowInit`
+### T4 - Restore `ShadowInit` --- **not started**: still commented out at `src/client/Client.cpp:834`
 *Change*: `src/client/Client.cpp:679`, plus a `ShadowInit` in the Shadow module.
 *Ports*: `FUN_007e4a40`. *Prereq*: none (independent of T1-T3).
 Create `Textures\ShadowBlob.blp` up front, generate the two 64x8 ramps (`FUN_007e36e0` / `FUN_007e3820`
 are complete and directly portable), register CVar `shadowLOD` and look up `extShadowQuality`, and gate
 `BlobShadowsBegin` on `shadowLOD == 1 && extShadowQuality < 1` (`FUN_007e49e0`).
 
-### T5 - Stage-1 distance fade
+### T5 - Stage-1 distance fade --- **not started**, but decoded: the ramps are a fade along the projection axis (see the 2026-09-16 section below)
 *Change*: the decal pixel shader + `BlobShadowsBegin`. *Ports*: the stage-1 setup in `FUN_007e3e80`,
 the second texture matrix in `FUN_007e2d60`. *Prereq*: T1, T4 (the ramps).
 Bind the `ShadowMod` ramp to `GxRs_Texture1` and sample it with a fade coordinate computed in the PS
 from the projector Z range. Do **not** try to use `GxRs_TexGen1`/`GxXform_Tex1` - see P2.
 
-### T6 - Doodads cast shadows
+### T6 - Doodads cast shadows --- **DONE** (unverified on screen): `CGWorldFrame` calls both blob draws from the doodad walk
 *Change*: the caster loop in `CGWorldFrame::OnWorldRender`. *Ports*: the entity walk in `FUN_00793980`.
 *Prereq*: T3.
 Drop the `IsA(TYPE_UNIT)` filter; iterate every visible model-bearing scene entity and use the
 non-unit path (animated box) for doodads, the unit path (floor-clamped box) for units.
 
-### T7 - Generic receiver gather + CPU up-facing cull
+### T7 - Generic receiver gather + CPU up-facing cull --- **not started** as a refactor: `BlobShadowDraw` still walks `s_tiles` itself, and T8 was done alongside it rather than through it
 *Change*: new `ShadowReceiverGather` helper; `BlobShadowDraw` consumes a batch list instead of walking
 `s_tiles` directly. *Ports*: `FUN_007e35f0` -> `FUN_007a6af0`, `FUN_007e32f0` (the XY cross-product cull
 and the un-indexing into a dynamic VB). *Prereq*: T1, P6.
@@ -296,19 +301,19 @@ Caveat: an un-indexed re-draw keeps T1(a) bit-identity only because the *positio
 Once WMO receivers are added, their base pass must also share the decal pass vertex transform, or
 those surfaces will z-fight again. Budget a per-receiver-class decal shader.
 
-### T8 - Shadows on WMO floors
+### T8 - Shadows on WMO floors --- **DONE** (unverified on screen) via `BlobShadowDrawWmo`, without the T7 gather
 *Change*: add a WMO group producer to the T7 gather; `src/world/Terrain.cpp` (`RenderWmos` owns the
 group geometry). *Ports*: the world-geometry half of `FUN_007a6af0`. *Prereq*: T7, and a WMO base pass
 that shares the decal pass vertex transform.
 
-### T9 - Shadows on models (`DrawBatchProj`)
+### T9 - Shadows on models (`DrawBatchProj`) --- **not started**: the stub is also unreachable behind its own gate, see the note at the dispatch in `CM2SceneRender::Draw`
 *Change*: `CM2SceneRender::DrawBatchProj`, `src/model/CM2SceneRender.cpp:262`; add the M2-receiver
 producer to T7. *Ports*: `FUN_00829aa0` (+ `FUN_007a2aa0` for the max-10 receiver list).
 *Prereq*: T7. `FUN_00829aa0` is short and complete in `win-decomp-shadow-blob3.txt`: walk the model
 batches, skip `+0xc != 0` and flag `0x20`, issue one triangles draw per batch with the projector states
 already bound.
 
-### T10 - Map shadow map
+### T10 - Map shadow map --- **not started**
 *Change*: new `MapShadow` module + `CShadowCache`; hook at `CMap::Render` steps 5 and 7.
 *Ports*: `FUN_007bb670`, `FUN_007bb570`, `FUN_007bb3e0`, `FUN_00874010`, `FUN_00875c10`, `FUN_00875f80`,
 `FUN_008750b0`; shaders `ShadowMapRenderSL`, `Terrain2_pcf`/`Terrain3_pcf`.
