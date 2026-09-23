@@ -1941,6 +1941,8 @@ addr	how	frozen	evidence
 00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
 00682e70	override	CGxDevice::ScissorSet	
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
+00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
 00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
@@ -2372,6 +2374,7 @@ addr	how	frozen	evidence
 008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
+00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
@@ -2401,6 +2404,7 @@ addr	how	frozen	evidence
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
+008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836980	override	CM2Shared::SubstituteSimpleShaders	
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"

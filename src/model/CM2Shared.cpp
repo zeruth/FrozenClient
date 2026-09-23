@@ -904,6 +904,13 @@ uint32_t CM2Shared::Release() {
     return 0;
 }
 
+// Matched field for field rather than by position, which is worth recording because the two
+// SetIndices functions sit next to each other in DrawBatch and are easy to swap. The reference
+// skips the creation when +0x178 is already non-null (m_indexPool); computes the pool size as
+// `[[0x170] + 0xc] * [0x190]` doubled, which is skinProfile->indices.Count() * uint190 * 2; and
+// passes five arguments to GxPoolCreate with the ext pointer from +0x140. Every one of those
+// lands on the code below.
+// ref: FUN_008360a0
 int32_t CM2Shared::SetIndices() {
     if (!this->m_indexPool) {
         this->m_indexPool = GxPoolCreate(

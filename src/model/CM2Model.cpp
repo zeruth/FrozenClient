@@ -2739,6 +2739,13 @@ void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible)
     }
 }
 
+// Identified from DrawBatch's call order: the reference runs 0x00683560, 0x00683580, 0x00828f90,
+// 0x008360a0 and then SetBatchVertices, and frozen runs GxShaderConstantsLock, Unlock,
+// m_curModel->SetIndices, m_curShared->SetIndices and then SetBatchVertices. The other three of
+// those are pinned independently, and this is the remaining one -- a thiscall on the model,
+// reaching through +0x2d0. Still a stub here, so the tag is a claim about identity, not about
+// behaviour.
+// ref: FUN_00828f90
 void CM2Model::SetIndices() {
     // Unreachable today, so this is dead rather than broken: CM2SceneRender::DrawBatch only calls
     // it for an element with flag 0x4, which CM2Scene sets from model->ptr2D0, which nothing ever

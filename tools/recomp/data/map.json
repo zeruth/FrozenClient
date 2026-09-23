@@ -30868,6 +30868,38 @@
   "refSize": 73,
   "status": "ported"
  },
+ "00683560": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Shader.cpp",
+   "src/gx/shader.cpp"
+  ],
+  "frozen": "GxShaderConstantsLock",
+  "frozenSize": 14,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 23,
+  "status": "ported"
+ },
+ "00683580": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Shader.cpp",
+   "src/gx/shader.cpp"
+  ],
+  "frozen": "GxShaderConstantsUnlock",
+  "frozenSize": 20,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
  "006838b0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -37263,8 +37295,8 @@
  "008203b0": {
   "branchRatio": 0.562,
   "constOverlap": 0.047,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -37772,6 +37804,22 @@
   "refSize": 420,
   "status": "ported"
  },
+ "00828f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetIndices",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 464,
+  "status": "stub"
+ },
  "0082bd60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38234,6 +38282,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 89,
+  "status": "ported"
+ },
+ "008360a0": {
+  "branchRatio": 0.529,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SetIndices",
+  "frozenSize": 635,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 525,
   "status": "ported"
  },
  "00836600": {
