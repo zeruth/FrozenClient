@@ -77133,7 +77133,7 @@
 ],
 "branches": 43,
 "stub": false,
-"lines": 312,
+"lines": 322,
 "refs": [],
 "line": 385
 },
@@ -77158,7 +77158,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 699
+"line": 709
 },
 "CM2Scene::Draw": {
 "files": [
@@ -77180,7 +77180,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 726
+"line": 736
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -77216,7 +77216,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 746
+"line": 756
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -77231,7 +77231,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 801
+"line": 811
 },
 "CM2SceneRender::Draw": {
 "files": [

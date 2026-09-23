@@ -2317,6 +2317,9 @@ addr	how	frozen	evidence
 0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
+0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
+0081eea0	override	CM2Scene::SortOpaque	
+0081ef30	override	CM2Scene::SortTransparent	
 0081f1d0	annotated	CM2Scene::ComputeElementShaders	tag in src/model/CM2Scene.cpp
 0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
 0081f450	override	CM2SceneRender::SetupTextures	

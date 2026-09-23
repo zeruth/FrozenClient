@@ -670,12 +670,22 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             // Copy through the array rather than through a saved pointer: New() can reallocate, and
             // the reference re-reads the base for exactly that reason.
             //
-            // **Still to trace before writing it:** which sort list the duplicate joins. <a> and
-            // <b> are two mutually exclusive locals the reference derives at 0x00821dc2 from
-            // `this->+0x140 == 0`, but only when `!(m_cache->m_flags & 2)` and two earlier flags
-            // hold; otherwise they keep values computed further up, before 0x00821d9b. frozen does
-            // not model +0x140. Do NOT guess this: registering the prepass in the wrong list can
-            // put it after the shaded pass, which is worse than not having it.
+            // **The blocker is the liquid-plane split, and it is already flagged above.** <a> and
+            // <b> are the two mutually exclusive water-side flags. The reference builds them at
+            // 0x00821d18 by taking the signed distance of the model's centre from a plane held at
+            // `+0xc4..+0xd0` and comparing it against the model's scaled bounding radius: <a> means
+            // the model sits entirely on the negative side, and the companion test means it is not
+            // entirely on the positive side. When the model straddles, `!(m_cache->m_flags & 2)`
+            // and a field at scene+0x140 pick which side wins. That is the same
+            // "liquid plane stuff" this function already marks TODO further up, and frozen models
+            // neither the plane nor +0x140.
+            //
+            // Registering the duplicate in the SAME list as its original is not a safe stand-in.
+            // The comparators do not break ties on this flag -- SortOpaqueGeoBatches (00081ead0)
+            // compares type, then materialLayer, then shaders, and a verbatim duplicate matches on
+            // every one of them -- so the heap sort would be free to draw the prepass after the
+            // element it is supposed to precede. The reference relies on the two ending up in
+            // different lists. Port the liquid split first.
             if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
                 // TODO
             }
