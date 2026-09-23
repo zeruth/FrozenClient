@@ -77516,7 +77516,7 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 131,
+"lines": 150,
 "refs": [],
 "line": 74
 },
@@ -77563,7 +77563,7 @@
 "stub": false,
 "lines": 88,
 "refs": [],
-"line": 206
+"line": 225
 },
 "CM2SceneRender::DrawBatchDoodad": {
 "files": [
@@ -77576,7 +77576,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 298
+"line": 317
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -77589,7 +77589,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 302
+"line": 321
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -77602,7 +77602,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 306
+"line": 325
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
@@ -77617,7 +77617,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 310
+"line": 329
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -77630,7 +77630,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 315
+"line": 334
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -77647,7 +77647,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 320
+"line": 339
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -77687,7 +77687,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 331
+"line": 350
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -77742,7 +77742,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 409
+"line": 428
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -77778,7 +77778,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 523
+"line": 542
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

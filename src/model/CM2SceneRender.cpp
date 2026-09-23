@@ -183,7 +183,26 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             this->m_prevType = this->m_curType;
             this->m_prevModel = this->m_curModel;
             this->m_prevShared = this->m_curShared;
-            this->m_curLighting = this->m_prevLighting; // TODO investigate (maybe bug?)
+            // Yes, this one is backwards, and yes it is faithful. Settled 2026-09-23.
+            //
+            // Every other line in this block copies cur into prev. The reference does the
+            // same nine times and then, for the lighting pair alone, copies the other way:
+            // its ten adjacent-field copies at 0x00823ad3..0x00823b0f are all low -> high
+            // except 0x00823ae5, which is `+0x74 -> +0x70`.
+            //
+            // Which of those two is `cur` is what settles it, and CM2SceneRender::SetupLighting
+            // answers it: at 0x0081fb3e it loads +0x70 and hands it to SetLocalLighting, so
+            // +0x70 is the live one and the copy really is cur = prev.
+            //
+            // It is inert either way. Nothing in the reference or here ever assigns
+            // m_prevLighting, so it stays null, this nulls m_curLighting at the end of each
+            // element, and the next element reassigns it before anything reads it. The visible
+            // consequence is only that SetupLighting's `m_curLighting != m_prevLighting` test
+            // always fires, so it redoes its work every batch -- in the reference too.
+            //
+            // Do not "fix" this into prev = cur. That would be a divergence, and it would
+            // silently change how often the lighting path runs.
+            this->m_curLighting = this->m_prevLighting;
             this->m_prevShaded = this->m_curShaded;
             this->m_prevFogMode = this->m_curFogMode;
             this->m_prevBatch = this->m_curBatch;
