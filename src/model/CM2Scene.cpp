@@ -21,6 +21,7 @@ void CM2Scene::AnimateThread(void* arg) {
     // TODO
 }
 
+// ref: FUN_0081f1d0
 void CM2Scene::ComputeElementShaders(M2Element* element) {
     auto model = element->model;
     auto batch = element->batch;

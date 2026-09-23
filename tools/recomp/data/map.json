@@ -36743,6 +36743,22 @@
   "refSize": 73,
   "status": "ported"
  },
+ "0081f1d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::ComputeElementShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 343,
+  "status": "ported"
+ },
  "0081f330": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -36906,7 +36922,7 @@
   "branchRatio": 0.196,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.241,
+  "fidelity": 0.259,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
