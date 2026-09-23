@@ -1392,5 +1392,65 @@
   "004b7aa0": {
     "status": "unlinked",
     "note": "the order matcher proposed `UpdateBlpTextureAsync` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "006a5940": {
+    "frozen": "CGxDeviceD3d::IStateSync",
+    "status": "ported",
+    "note": "Found 2026-09-23 by searching the text dump for `0x738(%e..)` -- app render state 77 (GxRs_VertexShader) at a 0x18 stride from the array pointer at CGxDevice+0x28f4, which is the test frozen's IStateSync makes. Exactly two functions in the binary do it, 006a5940 and 006a9860, one per D3D device class. This is the plain D3D9 one, and it matches frozen call for call as far as frozen goes: IShaderConstantsFlush, IRsSync(0), then Lights/Material/Xforms behind the vertex-shader-is-null gate. After that the reference calls FOUR more helpers (006a3810, 006a3870, 006a38d0, 006a5700) where frozen has the single empty IStateSyncEnables, and it inlines the vertex- and index-pointer sync that frozen keeps as separate functions."
+  },
+  "006a9860": {
+    "status": "unlinked",
+    "note": "Found 2026-09-23 by searching the text dump for `0x738(%e..)` -- app render state 77 (GxRs_VertexShader) at a 0x18 stride from the array pointer at CGxDevice+0x28f4, which is the test frozen's IStateSync makes. Exactly two functions in the binary do it, 006a5940 and 006a9860, one per D3D device class. This is the D3D9Ex variant: identical to 006a5940 except that the four device-specific helpers differ (006a8340/006a8670/006a87c0 for Lights, Material and Xforms, and 006a9620 for the last one). frozen's CGxDeviceD3d9Ex does not override IStateSync, so it has no counterpart to link to."
+  },
+  "00685b50": {
+    "frozen": "CGxDevice::IRsSync",
+    "status": "ported",
+    "note": "body matches frozen's line for line: `if (force) IRsForceUpdate()`, then walk the dirty-state list backwards from the count at +0x28 and the array at +0x2c, index the app render states through the pointer at +0x28f4 at a 0x18 stride (`leal (%edi,%edi,2)` then a scale of 8), send each to hardware only when it is both dirty and actually different, and clear the list. Called as IRsSync(0) from both IStateSync variants."
+  },
+  "00685a70": {
+    "frozen": "CGxDevice::IRsForceUpdate",
+    "status": "ported",
+    "note": "the void overload: IRsSync (00685b50) calls it with ECX = this and no stack argument when its force parameter is non-zero, which is exactly where frozen calls IRsForceUpdate()."
+  },
+  "006a43d0": {
+    "frozen": "CGxDeviceD3d::IStateSyncLights",
+    "status": "stub",
+    "note": "gates on app render state 0x108 / 0x18 = 11 = GxRs_Lighting, which names it independently of its position in IStateSync. **frozen's body is empty.** It only runs when no vertex shader is bound, so it is not a gap for the world render, which always binds one -- see docs/world-render-inventory.md."
+  },
+  "006a4700": {
+    "frozen": "CGxDeviceD3d::IStateSyncMaterial",
+    "status": "stub",
+    "note": "second of the three calls inside IStateSync's vertex-shader-is-null gate, in the order frozen makes them, and it shares the `+0x28a8 & 0x10` gate with IStateSyncLights. Reads app render state 0x7f8 / 0x18 = 85. **frozen's body is empty**, and like Lights it only runs on the fixed-function path."
+  },
+  "006a4850": {
+    "frozen": "CGxDeviceD3d::IStateSyncXforms",
+    "status": "ported",
+    "note": "third of the three, and its shape confirms it on its own: a dirty byte at +0x19e4 guards one virtual call through the D3D device at vtable offset 0xb0 with a transform index and the matrix at +0xfc8, then clears the byte. That is SetTransform."
+  },
+  "006a9fe0": {
+    "frozen": "CGxDeviceD3d::IShaderConstantsFlush",
+    "status": "ported",
+    "note": "first call in IStateSync, and its shape confirms it: it reads a dirty register range from two globals (0xc5ffe8 / 0xc5ffec), bails when the range is empty, and otherwise shifts the start left by 4 -- sixteen bytes per shader constant register -- before pushing it through the device."
+  },
+  "006a3810": {
+    "status": "unlinked",
+    "note": "first of the four helpers IStateSync calls where frozen has the single empty CGxDeviceD3d::IStateSyncEnables. Compares +0x2758 against +0x275c and, when they differ, calls 006830b0 with both plus (0, 0, 8) and a stack slot. Shared between the D3D9 and D3D9Ex variants, so it lives in their common base. Not named here: frozen has one function where the reference has four, and guessing which is which is how wrong tags get written."
+  },
+  "006a3870": {
+    "status": "unlinked",
+    "note": "second of the four (see 006a3810). Walks the set bits of a mask at +0x24d0 and makes one virtual call per set bit through the device at +0x397c, indexing a per-slot array at +0x24d4 -- a per-texture-unit sync. Shared between both D3D device variants."
+  },
+  "006a38d0": {
+    "status": "unlinked",
+    "note": "third of the four (see 006a3810). Guarded by +0x2534, reads floats at +0x253c and +0x2544, multiplies one by a field of what 006a43d0-style code treats as the device, and calls the math helper 0088b9c0. Shared between both D3D device variants."
+  },
+  "006a5700": {
+    "status": "unlinked",
+    "note": "fourth of the four (see 006a3810), and the only one of them that differs between the two D3D device classes -- the D3D9Ex variant calls 006a9620 in its place."
+  },
+  "006859e0": {
+    "frozen": "CGxDevice::IRsForceUpdate",
+    "status": "ported",
+    "note": "the EGxRenderState overload, the sibling of 00685a70. It takes a stack argument where 00685a70 takes none, grows the dirty-state array at +0x24 to count+1 and appends that one state, where 00685a70 loops over all of them. The callgraph matcher had this address under the same name until 00685a70 was pinned by hand on 2026-09-23; both are real, and one frozen name legitimately serves both because C++ overloads collapse to a single key here."
   }
 }

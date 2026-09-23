@@ -1942,7 +1942,9 @@ addr	how	frozen	evidence
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	
-006859e0	callgraph	CGxDevice::IRsForceUpdate	only unmatched callee of 00685d40=CGxDevice::TexSetWrap
+006859e0	override	CGxDevice::IRsForceUpdate	
+00685a70	override	CGxDevice::IRsForceUpdate	
+00685b50	override	CGxDevice::IRsSync	
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
@@ -1955,6 +1957,11 @@ addr	how	frozen	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006a43d0	override	CGxDeviceD3d::IStateSyncLights	
+006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
+006a4850	override	CGxDeviceD3d::IStateSyncXforms	
+006a5940	override	CGxDeviceD3d::IStateSync	
+006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006b0970	callgraph	ClientServices::IsConnected	only unmatched callee of 004dda50=Script_IsConnectedToServer
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin

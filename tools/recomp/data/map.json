@@ -30889,9 +30889,41 @@
   ],
   "frozen": "CGxDevice::IRsForceUpdate",
   "frozenSize": 315,
-  "how": "callgraph",
+  "how": "override",
   "module": "DBCache.cpp",
   "refSize": 133,
+  "status": "ported"
+ },
+ "00685a70": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsForceUpdate",
+  "frozenSize": 315,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 217,
+  "status": "ported"
+ },
+ "00685b50": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsSync",
+  "frozenSize": 310,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 174,
   "status": "ported"
  },
  "00685d40": {
@@ -31082,6 +31114,86 @@
   "how": "string",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 1299,
+  "status": "ported"
+ },
+ "006a43d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncLights",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 799,
+  "status": "stub"
+ },
+ "006a4700": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncMaterial",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 326,
+  "status": "stub"
+ },
+ "006a4850": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncXforms",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 174,
+  "status": "ported"
+ },
+ "006a5940": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSync",
+  "frozenSize": 471,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "006a9fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IShaderConstantsFlush",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxD3d9ExTexture.cpp",
+  "refSize": 141,
   "status": "ported"
  },
  "006acc50": {

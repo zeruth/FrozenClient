@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 12:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 12:59 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3071 (=) (11.3%) | 680.9k (12.3%) |
-| &nbsp;&nbsp;ported | 2372 (=) | 506.8k |
-| &nbsp;&nbsp;stub (unimplemented body) | 648 (=) | 130.3k |
+| mapped to a frozen function | 3078 (+1) (11.3%) | 682.8k (12.4%) |
+| &nbsp;&nbsp;ported | 2377 (+1) | 507.7k |
+| &nbsp;&nbsp;stub (unimplemented body) | 650 (=) | 131.4k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1170 (=) (4.3%)** | **150.5k (2.7%)** |
-| unmapped | 24089 | 4.72M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 497 (=) (9.0%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 507 (=) (8.7%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 219 (=) (4.8%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **1172 (+1) (4.3%)** | **150.8k (2.7%)** |
+| unmapped | 24082 | 4.72M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 497 (+1) (9.0%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 507 (+1) (8.7%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 224 (=) (4.9%)** | |
 | frozen functions (src/, from PDB + source) | 12208, stubs 1718 | |
 
-Match evidence: annotated 873, callgraph 181, callorder 128, cvar 32, handler 29, order 162, override 220, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 873, callgraph 180, callorder 128, cvar 32, handler 29, order 162, override 228, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 12:49 -- mapped 3071, ported 2372, stub 648, spine mapped 497.
+Previous run: 2026-09-23 12:59 -- mapped 3077, ported 2376, stub 650, spine mapped 496.
 
 ## Lua API coverage (binding tables)
 
@@ -140,7 +140,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
 | M2Scene.cpp | 283 | 101.1k | 60 (21.2%) | 39.0% | 6 | 0 | 210 |
-| CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
+| CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 9 (3.8%) | 7.1% | 2 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 75 (49.7%) | 62.9% | 38 | 1 | 16 |
@@ -172,7 +172,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureCache.cpp | 252 | 38.9k | 16 (6.3%) | 12.2% | 5 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 3 | 0 | 23 |
 | framing.c | 125 | 38.8k | 34 (27.2%) | 52.4% | 0 | 0 | 39 |
-| DBCache.cpp | 236 | 38.8k | 17 (7.2%) | 7.2% | 0 | 0 | 83 |
+| DBCache.cpp | 236 | 38.8k | 19 (8.1%) | 8.2% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 4 (1.4%) | 1.1% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 2 (1.3%) | 0.4% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 23 (17.8%) | 22.9% | 0 | 0 | 85 |
@@ -248,7 +248,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | GuildBankFrame.cpp | 71 | 12.4k | 9 (12.7%) | 8.8% | 1 | 0 | 13 |
 | fmod_os_cdda.cpp | 30 | 12.4k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
 | SLock.cpp | 68 | 12.3k | 1 (1.5%) | 2.0% | 0 | 1 | 18 |
-| CGxD3d9ExTexture.cpp | 47 | 12.2k | 0 (0.0%) | 0.0% | 0 | 0 | 5 |
+| CGxD3d9ExTexture.cpp | 47 | 12.2k | 1 (2.1%) | 1.1% | 0 | 0 | 5 |
 | CharacterCreation.cpp | 56 | 12.2k | 23 (41.1%) | 50.8% | 4 | 0 | 3 |
 | aSfxDsp.cpp | 48 | 12.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
@@ -469,6 +469,7 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---|---:|---:|---|---|
 | 00820ae0 | M2Scene.cpp? | 1109 | 1 | `CM2SceneRender::DrawBatchDoodad` [override] | BatchDoodad: model=%s index=%d |
 | 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
+| 006a43d0 | CGxDeviceD3d9Ex.cpp? | 799 | 1 | `CGxDeviceD3d::IStateSyncLights` [override] |  |
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
 | 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [table] | BACKSPACE, DECIMAL |
 | 005bd8a0 | Calendar.cpp | 1253 | 0 | `Script_Stub_CalendarGetEventInfo` [table] |  |
@@ -484,6 +485,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00599b20 | DressUpModelFrame.cpp? | 677 | 0 | `CGTabardModelFrame_GetLowerEmblemTexture` [table] | %s:GetLowerEmblemTexture(): Couldn't fin, %s:GetLowerEmblemTexture(): Wrong object |
 | 0054be90 | BattlefieldInfo.cpp | 656 | 0 | `Script_GetBattlefieldScore` [table] | Usage: GetBattlefieldScore(index) |
 | 005879d0 | TradeFrame.cpp | 656 | 0 | `Script_ClickTradeButton` [table] | .\TradeFrame.cpp, Usage: ClickTradeButton(index) |
+| 006a4700 | CGxDeviceD3d9Ex.cpp? | 326 | 1 | `CGxDeviceD3d::IStateSyncMaterial` [override] |  |
 | 00599890 | DressUpModelFrame.cpp? | 646 | 0 | `CGTabardModelFrame_GetUpperEmblemTexture` [table] | %s:GetUpperEmblemTexture(): Couldn't fin, %s:GetUpperEmblemTexture(): Wrong object |
 | 0054da10 | BattlefieldInfo.cpp | 641 | 0 | `Script_AcceptBattlefieldPort` [table] | Usage: AcceptBattlefieldPort(index, acce, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 0062eae0 | Tooltip.cpp | 640 | 0 | `CGTooltip_SetTradeSkillItem` [table] | Invalid trade skill item in SetTradeSkil |
@@ -505,8 +507,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 005ba000 | AchievementInfo.cpp? | 535 | 0 | `Script_Stub_CalendarGetRaidInfo` [table] | Usage: CalendarGetRaidInfo([-1,0,1], mon |
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
 | 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
-| 0054de00 | BattlefieldInfo.cpp | 519 | 0 | `Script_SortBattlefieldScoreData` [table] | Usgae: SortBattlefieldScoreData("type"), class |
-| 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -728,11 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 11:04 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:10 | 3062 (11.3%) | 1142 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:13 | 3062 (11.3%) | 1143 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:26 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:30 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:31 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:34 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:38 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
@@ -753,6 +748,11 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 12:48 | 3089 (11.4%) | 1170 (4.3%) | 650 | 507/5529 | 2924/2964 | 1491 |
 | 2026-09-23 12:49 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
 | 2026-09-23 12:51 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
+| 2026-09-23 12:52 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
+| 2026-09-23 12:53 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
+| 2026-09-23 12:53 | 3071 (11.3%) | 1170 (4.3%) | 648 | 497/5529 | 2924/2964 | 1491 |
+| 2026-09-23 12:59 | 3077 (11.3%) | 1171 (4.3%) | 650 | 496/5529 | 2924/2964 | 1491 |
+| 2026-09-23 12:59 | 3078 (11.3%) | 1172 (4.3%) | 650 | 497/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 

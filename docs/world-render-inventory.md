@@ -4478,3 +4478,42 @@ accordingly. Mismatches: **29 -> 16**. The remaining 16 have real bodies and nee
 
 **Net: 1952 stubbed, from 2031.** More usefully, the count that can actually break something is now
 close to zero, and the next sweep is a tool run rather than a reading session.
+
+### 2026-09-23 - the D3D device's state sync, and which of its empty bodies actually matter
+
+`tools/livestubs.py` reports 52 empty-bodied functions with live call sites, and three of them sit
+in the D3D backend right under every draw: `CGxDeviceD3d::IStateSyncEnables`, `IStateSyncLights`
+and `IStateSyncMaterial`. That reads like a serious hole. Two of the three are not.
+
+`CGxDeviceD3d::IStateSync` calls Lights, Material and Xforms **only when no vertex shader is
+bound**. Terrain, map objects, detail doodads, blob shadows, models and the sky all bind one, so
+on the world render that whole branch never executes and the two empty bodies cost nothing. The
+render states themselves reach D3D through `CGxDevice::IRsSync`, which is fully implemented and
+walks the dirty list into `IRsSendToHw`.
+
+`IStateSyncEnables` is the one that runs unconditionally, and it is worse than a stub: it is one
+empty function standing where the reference calls **four** helpers.
+
+The reference side was found by searching the text dump for `0x738(%e..)` — app render state 77
+(`GxRs_VertexShader`) at a 0x18 stride from the state-array pointer at `CGxDevice+0x28f4`, which is
+the exact test frozen's `IStateSync` makes. Only two functions in the binary do it, one per D3D
+device class:
+
+| reference | what it is | how it was confirmed |
+|---|---|---|
+| `006a5940` | `CGxDeviceD3d::IStateSync` | the whole structure, call for call |
+| `006a9860` | the D3D9Ex variant | identical but for four device-specific helpers |
+| `006a9fe0` | `IShaderConstantsFlush` | flushes a dirty register range, `shl 4` = 16 bytes per constant register |
+| `00685b50` | `CGxDevice::IRsSync` | matches frozen line for line |
+| `00685a70` / `006859e0` | `IRsForceUpdate`, the two overloads | one takes no argument and loops; the other takes a state and appends it |
+| `006a43d0` | `IStateSyncLights` | gates on app state `0x108 / 0x18` = 11 = `GxRs_Lighting` |
+| `006a4700` | `IStateSyncMaterial` | position, plus the `+0x28a8 & 0x10` gate it shares with Lights |
+| `006a4850` | `IStateSyncXforms` | a dirty byte guards one `SetTransform` through the device vtable |
+
+The four that `IStateSyncEnables` stands for are **deliberately left unnamed**: `006a3810`
+compares two adjacent fields and calls one helper when they differ; `006a3870` walks the set bits
+of a mask and makes one virtual call per bit, indexing a per-slot array, so it is a per-texture-unit
+sync; `006a38d0` is guarded by a flag and does float work through a math helper; `006a5700` is the
+only one of the four that differs between the two device classes. Mapping one frozen function onto
+four reference ones by guesswork is how wrong tags get written, so they are recorded as unlinked
+with those observations and left for a cycle that can read them properly.
