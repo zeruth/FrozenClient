@@ -4661,3 +4661,39 @@ colour. The cost is one extra draw per eligible batch.
 
 **Built, not seen running.** Watch hair and foliage. A frame-rate cost on crowded scenes is expected
 and is not a defect; a visual change would be.
+
+### 2026-09-23 - what the reference's WMO material loader does that frozen's does not
+
+`MapObjRead.cpp` shows 37 reference functions and none linked, and frozen has real WMO code, so it
+looked like a module full of missable counterparts. It is not: frozen loads materials inline, so
+there are no discrete functions to pair. Reading the reference's version was worth it anyway.
+
+`FUN_007d7710` is the MOMT material texture loader. It indexes 64-byte materials at `this+0x160`
+and reads the texture1 name offset at `+0x0C` and texture2 at `+0x18` against the MOTX block at
+`this+0x124` — the same layout frozen reads — then stores two handles at `+0x38` and `+0x3c`. Every
+load goes through `FUN_007d9990`, which takes a filename and nothing else.
+
+Three things came out of it:
+
+1. **Wrapping was invented in frozen and is now fixed.** `FUN_007d9990` hardcodes
+   `CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1)`. frozen had been
+   clamping when MOMT flags `0x40` / `0x80` were set, under a comment claiming the reference does
+   that for decals and windows. All five call sites reach the same hardcoded flags, so no such path
+   exists.
+
+2. **An empty texture name is handled, differently but equivalently.** The reference substitutes
+   `createcrappygreentexture.blp`; frozen attempts the empty name, fails, and falls back to
+   `TextureCreateSolid(CRAPPY_GREEN)`. Same green result. Worth knowing that frozen's route goes
+   through the solid-colour cache, which never hits, so each such material allocates another 8x8
+   texture — see the note on that cache in `src/gx/Texture.cpp`.
+
+3. **A specular companion texture is not loaded at all.** The other caller of `FUN_007d9990`
+   (`0x007d6a30`) takes the material's texture name, truncates it at the dot and appends `_s.blp`
+   (the string at `0x00a40540`), loads that, and stores it at `+0x4` of its own structure. It is
+   gated on bit 0 of a flag word being clear. frozen has no `_s` texture for WMO materials and no
+   specular term on buildings at all, which is consistent with the `specular` CVar being one of the
+   twelve that reach nothing. **Not ported, not sized** — recorded here because it is concrete and
+   nothing else in this file mentions it.
+
+Texture2 has its own gate: when the global at `0x00d43020` is zero the second name is blanked, so
+whatever that global is, it switches multi-texture WMO materials off wholesale.
