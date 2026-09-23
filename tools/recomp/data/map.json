@@ -34894,10 +34894,10 @@
   ],
   "frozen": "CMapObjGroup::RecordHits",
   "frozenSize": 615,
-  "how": "annotated",
+  "how": "override",
   "module": "MapChunk.cpp",
   "refSize": 1062,
-  "status": "ported"
+  "status": "diverged"
  },
  "007c7fe0": {
   "branchRatio": 1.0,

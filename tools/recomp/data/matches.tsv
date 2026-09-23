@@ -2191,7 +2191,7 @@ addr	how	frozen	evidence
 007c7710	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007c77d0	annotated	CMapObjGroupDualSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
 007c78e0	annotated	CMapObjGroupSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
-007c7ae0	annotated	CMapObjGroup::RecordHits	tag in src/world/map/CMapObjGroup.cpp
+007c7ae0	override	CMapObjGroup::RecordHits	
 007c7fe0	annotated	CMapObjGroup::SampleColorAtFace	tag in src/world/map/CMapObjGroup.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp

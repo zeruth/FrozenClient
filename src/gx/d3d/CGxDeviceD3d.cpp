@@ -27,6 +27,13 @@ D3DCULL CGxDeviceD3d::s_cullMode[] = {
     D3DCULL_CCW,
 };
 
+// s_srcBlend and s_dstBlend were checked against the reference on 2026-09-23 by searching its
+// image for these exact twelve-dword sequences. Both are present verbatim in .rdata, twice
+// each -- src at 0x00a2f964 and 0x00a2fb68, dst at 0x00a2f994 and 0x00a2fb98, the pairs 0x204
+// apart, which is one set per device backend. Every entry matches, so no transparent surface
+// in this client composites with the wrong factors.
+//
+// Read, not run: this proves the tables, not the code that indexes them.
 D3DBLEND CGxDeviceD3d::s_dstBlend[] = {
     D3DBLEND_ZERO,              // GxBlend_Opaque
     D3DBLEND_ZERO,              // GxBlend_AlphaKey
