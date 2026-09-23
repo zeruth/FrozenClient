@@ -286,11 +286,17 @@ seen running — treat them as suspect until a run confirms them.
    away from the light. Earlier hunts failed because DayNight `+0x30` is the **camera forward**
    vector, not the sun. **(built, unverified)** — direction, the seven-ring dome with the fog
    colour on its bottom two rings, and the corrected fog formulas
-   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have all landed. **This list was
-   stale too**: clouds (`src/world/Clouds.cpp`) and the sun and moon discs (`SkyBodiesRender`)
-   both landed on 2026-09-15, as the Known blockers section below already said — the two
-   sections contradicted each other. Genuinely still open: the sun and moon glare, the sky
-   highlight, and the translucent dome layers. See `docs/ref/parity-sky.md`.
+   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have landed. **Audited against
+   the source 2026-09-23, and this list was wrong in both directions.** Already done: clouds
+   (`src/world/Clouds.cpp`), the sun and moon discs, and the glare (`DrawGlare`, called for
+   both bodies from `SkyBodiesRender` with `sunGlare.blp` / `moonGlare.blp`) — the Known
+   blockers section below already said the first two, so the file contradicted itself.
+   Overstated, though: the dome that landed is **not** the reference's seven-ring geometry.
+   `SKY_RINGS` is 12 with a hand-tuned zenith table whose own comment says it is uncertain and
+   was chosen because it reads well in game. Genuinely still open: that dome geometry, the
+   six-entry sky band mapping (`s_skyColors` is still 5 and takes the wrong bands; only the
+   fog half of that task landed), the sky highlight, and the dome's azimuthal colour
+   variation. See `docs/ref/parity-sky.md`.
 3. **Vertex positions are absolute world coordinates.** The deepest parity break behind the depth
    problems: streams bake absolute world coordinates (up to ±17066) and cancel the camera
    translation inside the per-vertex `dp4`, leaving millimetres of view-dependent depth error. The

@@ -343,7 +343,11 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
 
 ## Task list (ordered)
 
-1. **Port the sun direction.** `src/world/CWorld.cpp`: replace the constant `s_outdoorDirection` with
+**Status checked against the source on 2026-09-23** and written into each entry. Three of six
+are done, one is half done, and task 3 is the one to be careful about: a sky dome exists and
+looks finished, but it is not the reference's geometry.
+
+1. **Port the sun direction.** --- **DONE** (unverified on screen): computed per frame in `CWorld::UpdateOutdoorLight`. `src/world/CWorld.cpp`: replace the constant `s_outdoorDirection` with
    a per-frame computation in `CWorld::UpdateOutdoorLight` porting `FUN_007eea90` @ 0x007eea90:
    `theta = wrap-lerp over {(0, 2.2165682), (0.25, 1.9198622), (0.5, 2.2165682), (0.75, 1.9198622)}`
    at `GetDayProgress()`, `phi = 3.9269910`, then
@@ -353,21 +357,21 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
    (`LightingCallback`, the terrain ndotl bake at `Terrain.cpp:843`, the WMO bake at
    `Terrain.cpp:1475`) then tracks it - but note both bakes run at load time, so either they must be
    re-baked when the direction moves or the N.L must move into the shader for the wobble to show.
-2. **Fix the sky band mapping and the fog formulas.** `src/world/CWorld.cpp`: make the sky stack six
+2. **Fix the sky band mapping and the fog formulas.** --- **HALF DONE**: the fog formulas match, but `s_skyColors` is still 5 entries from the wrong bands in the wrong order. `src/world/CWorld.cpp`: make the sky stack six
    entries, `sky[0..5] = LightIntBand bands 2,3,4,5,6,7` ordered top-to-horizon (today it is five
    entries from bands 6,5,4,3,2 in the opposite order); set
    `s_fogEnd = min(s_farClip, InterpFloatBand(P,0,t))` and `s_fogStart = s_fogEnd * scalar`. Widen
    `s_skyColors` / `CWorld::GetSkyColor` accordingly and fix `SkyRender`'s clear-colour call site.
-3. **Rebuild the dome to the reference geometry.** `BuildSkyDome` / `SkyRender`
+3. **Rebuild the dome to the reference geometry.** --- **NOT DONE, and easy to believe otherwise**: a dome did land, but `SKY_RINGS` is 12 on a hand-tuned zenith table, not the reference's 7. Its own comment says the table is uncertain and was chosen because it reads well in game. `BuildSkyDome` / `SkyRender`
    (`src/world/Terrain.cpp:4452`), porting `FUN_007f2470` + `FUN_007f0530`: 24 segments, 7 rings at
    zenith angles `{0, .17, .20, .23, .24, .25, 1.0} * pi`, 122 vertices, one 300-index triangle strip,
    per-vertex colour = the ring's band colour (rings 5 and 6 both take the fog colour). Replace the
    `z / SKY_RADIUS` gradient with a straight per-ring colour assignment.
-4. **Clouds.** New mesh + draw in `src/world/Terrain.cpp` porting `FUN_007f20e0` / `FUN_009acd40`:
+4. **Clouds.** --- **DONE** (unverified on screen): `src/world/Clouds.cpp`. New mesh + draw in `src/world/Terrain.cpp` porting `FUN_007f20e0` / `FUN_009acd40`:
    12 rings x 16 segments at `{0,.025,.05,.075,.1,.125,.15,.175,.205,.23,.245,.25} * pi`, per-ring
    alpha `{255 x9, 128, 0, 0}`, planar UVs `r = ring/11 * 0.5`, 374-index strip, alpha blend, fog off,
    tint from the DNInfo cloud bands. Draw between the dome and the skybox M2 in `SkyRender`.
-5. **Sun/moon glare post pass.** New `SkyGlareRender()` in `src/world/Terrain.cpp`, called last in
+5. **Sun/moon glare post pass.** --- **DONE** (unverified on screen): `DrawGlare` is called for both bodies from `SkyBodiesRender`. New `SkyGlareRender()` in `src/world/Terrain.cpp`, called last in
    `CGWorldFrame::OnWorldRender` (reference draw-order step 14), porting `FUN_007f0870` ->
    `FUN_007ef6e0` + `FUN_009ac400`: one additive screen-facing quad per body, size and alpha from
    `dot(CWorld::GetCameraDir(), normalize(bodyPos - cameraPos))` remapped through the cone threshold,
@@ -375,7 +379,7 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
    and 22:10 else the moon. **No longer blocked** - the celestial-body positions and every glare
    constant are in `parity-sky-bodies.md`, which also supersedes the cloud task (4) with the
    procedural texture generator.
-6. **Dome azimuthal colour variation** (lowest value, highest uncertainty): `FUN_007f0530` varies the
+6. **Dome azimuthal colour variation** --- **not started.** (lowest value, highest uncertainty): `FUN_007f0530` varies the
    middle rings' colour per segment using the camera yaw. Only worth doing after 1-5, and only after
    re-dumping `FUN_007f0530`'s band arguments from disassembly rather than decompilation.
 
