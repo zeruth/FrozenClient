@@ -4609,3 +4609,43 @@ when the element carries flag `0x1`, and frozen's element gather in `CM2Scene` s
 colour writes off -- makes it a **depth prepass for alpha-tested geometry** such as hair and
 foliage. So frozen does not do that prepass at all, and the missing piece is the gather condition,
 not this plumbing. The plumbing is now correct for when it lands.
+
+### 2026-09-23 - the alpha-tested depth prepass, and exactly how the reference emits it
+
+Following the colour-write finding upstream: `SetupMaterial` asks for colour writes off only when
+the element carries flag `0x1`, and frozen's gather never sets it. The reference does, and the
+mechanism is simple once located. Inside `CM2Scene::Animate` (`FUN_00821a20`) at `0x0082257f`:
+
+```
+grow the element array by one
+copy the element just emitted into the new slot   (rep movsl x 0x11 -- elements are 0x44 bytes)
+new->flags |= 1                                    (flags live at element+0x8)
+```
+
+So the prepass element is a **verbatim duplicate of the element before it**, distinguished only by
+that bit. Nothing else about it differs, which is why `SetupMaterial` alone decides what it means:
+alpha-key blending with colour writes off, i.e. lay depth for alpha-tested geometry such as hair
+and foliage before the pass that shades it.
+
+The duplicate is emitted only when four conditions hold, all tested at `0x008224f7`:
+
+| # | test in the reference | reading |
+|---|---|---|
+| 1 | `local_14` | `(params->+0x4 & 1) && !(model->+0x4 & 1) && (model->+0x10 & 0x40)` |
+| 2 | `!local_30` | NOT (`batch->flags & 0x4` **and** `params->+0x104 != 0`) |
+| 3 | `local_34 >= 1` | the element landed in pass 1, where pass is `(material->blendingMode > 1) \|\| (alpha >= 0.99999)` |
+| 4 | `!(material->flags & 0x10)` | the material writes depth (`0x10` is the M2 depth-write-disable bit) |
+
+`local_5c`, which condition 4 reads, is `&m_data->materials[batch->materialIndex]`, established at
+`0x00821f10`. The two float constants nearby are `0.99999` at `0x00a45528` (alpha counts as opaque)
+and `0.0001` at `0x009e8cd0` (the earlier cull that drops a batch whose alpha has gone to nothing).
+
+**Not ported, and the reason is specific rather than general.** The mechanism and conditions 3 and 4
+are solid -- they read only fields whose frozen equivalents are known. Conditions 1 and 2 test
+`+0x4`, `+0x10` and `+0x104` on two objects whose layouts have **not** been mapped onto frozen's
+members. Getting them wrong does not fail safe: too permissive and every model draws twice, which
+costs fill rate and can z-fight; too strict and nothing changes. Map those three offsets first, then
+port it and look at hair and foliage on screen in the same change.
+
+The draw side is ready as of today: `GxRs_ColorWrite` now reaches D3D, so the moment the gather
+emits flag `0x1` the prepass will behave.
