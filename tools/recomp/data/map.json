@@ -12615,6 +12615,22 @@
   "refSize": 100,
   "status": "stub"
  },
+ "004e2790": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetPosition",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CharacterCreation.cpp",
+  "refSize": 46,
+  "status": "ported"
+ },
  "004e2e70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38054,7 +38070,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetupLighting",
-  "frozenSize": 266,
+  "frozenSize": 273,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 176,
@@ -38204,6 +38220,38 @@
   "refSize": 62,
   "status": "ported"
  },
+ "00834940": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetFog",
+  "frozenSize": 148,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "00834990": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetFog",
+  "frozenSize": 148,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 75,
+  "status": "ported"
+ },
  "00834a40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38218,6 +38266,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 103,
+  "status": "ported"
+ },
+ "00834ab0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::Unlink",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 36,
   "status": "ported"
  },
  "00834ae0": {

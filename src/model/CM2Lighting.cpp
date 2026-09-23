@@ -170,6 +170,17 @@ void CM2Lighting::Initialize(CM2Scene* scene, const CAaSphere& a3) {
     this->sphere4 = a3;
 }
 
+// Stores fogStart at +0xa8, fogEnd at +0xac, the scale at +0xb0, 1.0 as the density at +0xb4 and
+// the colour at +0xb8, and returns with `retl $0xc` for its three stack arguments. Those offsets
+// are the ones this class's layout was reconstructed with, so they check it a second time.
+//
+// One detail NOT taken from the mnemonic: the scale's sign. llvm-objdump renders the subtraction
+// as `fsubp %st, %st(1)`, and AT&T's fsub/fsubr rendering is famously ambiguous about which
+// operand is which, so reading it either way is a coin flip. The consumer settles it instead --
+// CM2SceneRender::SetupLighting disables fog when m_fogScale <= 0, and fogEnd is greater than
+// fogStart, so the scale has to be 1 / (fogEnd - fogStart) for fog to work at all. frozen already
+// had it that way.
+// ref: FUN_00834940
 void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd) {
     this->m_fogStart = fogStart;
     this->m_fogEnd = fogEnd;
@@ -178,6 +189,10 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd)
     this->m_fogColor = fogColor;
 }
 
+// The four-argument overload, at 0x00834990: the same stores as the three-argument one above
+// but taking the density from the fourth argument instead of 1.0, and returning with
+// `retl $0x10`. The two sit next to each other in the reference as they do here.
+// ref: FUN_00834990
 void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd, float fogDensity) {
     this->m_fogStart = fogStart;
     this->m_fogEnd = fogEnd;

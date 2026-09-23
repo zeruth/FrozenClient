@@ -117,6 +117,10 @@ void CM2Light::SetVisible(int32_t visible) {
     }
 }
 
+// The ordinary intrusive removal, statement for statement, and it confirms the two link fields at
+// +0x64 and +0x68 that the hash-grid work depends on: it writes m_lightNext through m_lightPrev,
+// repoints the successor's prev at this node's prev, and clears both.
+// ref: FUN_00834ab0
 void CM2Light::Unlink() {
     if (this->m_lightPrev) {
         *this->m_lightPrev = this->m_lightNext;

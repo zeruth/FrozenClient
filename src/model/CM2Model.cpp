@@ -1609,7 +1609,23 @@ HCAMERA CM2Model::GetCameraByIndex(uint32_t index) {
     return this->m_cameras[index].m_camera;
 }
 
+// The reference calls Animate() first, and frozen did not. Added 2026-09-23 with the tag: without
+// it this returns whatever matrixF4 held when the model last animated, which for a model that has
+// not animated yet this frame is the previous frame's position.
+//
+// It is inert at the only call site today -- SetupLighting runs after CM2Scene::Animate's loop, so
+// the model is already current and Animate() early-outs on the frame counter -- but the point of
+// the call is that GetPosition is self-sufficient for any future caller, which is how the
+// reference wrote it.
+//
+// The offsets line up exactly: the reference transforms the vector at model + 0x124 by the scene's
+// m_viewInv at scene + 0xc4, and frozen's matrixF4 sits at 0xF4, so matrixF4.d0 is 0xF4 + 0x30 =
+// 0x124. It writes through a caller-supplied out pointer and returns it; returning by value here
+// is the same thing.
+// ref: FUN_004e2790
 C3Vector CM2Model::GetPosition() {
+    this->Animate();
+
     return reinterpret_cast<C3Vector&>(this->matrixF4.d0) * this->m_scene->m_viewInv;
 }
 

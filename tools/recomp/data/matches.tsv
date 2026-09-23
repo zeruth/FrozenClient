@@ -788,6 +788,7 @@ addr	how	frozen	evidence
 004e20b0	callgraph	CCharacterCreation::SetSelectedRace	only unmatched callee of 004e2470=Script_SetSelectedRace
 004e2470	table	Script_SetSelectedRace	binding "SetSelectedRace" in s_ScriptFunctions ~ table 00ac4228
 004e2500	table	Script_CustomizeExistingCharacter	binding "CustomizeExistingCharacter" in s_ScriptFunctions ~ table 00ac4228
+004e2790	annotated	CM2Model::GetPosition	tag in src/model/CM2Model.cpp
 004e2e70	callgraph	CCharacterSelection::SetFacing	only unmatched callee of 004e3030=Script_SetCharacterSelectFacing
 004e2f60	table	Script_SetCharSelectModelFrame	binding "SetCharSelectModelFrame" in s_ScriptFunctions ~ table 00ac4378
 004e3000	table	Script_GetCharacterSelectFacing	binding "GetCharacterSelectFacing" in s_ScriptFunctions ~ table 00ac4378
@@ -2399,7 +2400,10 @@ addr	how	frozen	evidence
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
 00834900	annotated	CM2Lighting::Initialize	tag in src/model/CM2Lighting.cpp
+00834940	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
+00834990	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+00834ab0	annotated	CM2Light::Unlink	tag in src/model/CM2Light.cpp
 00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
 00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
 00834f60	annotated	CM2Lighting::AddLight	tag in src/model/CM2Lighting.cpp
