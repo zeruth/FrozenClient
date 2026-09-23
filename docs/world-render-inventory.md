@@ -4560,12 +4560,18 @@ The density one is a real behavioural difference, not just a structural one:
 |---|---|---|
 | accepted range | 16 to 256 | any, divided by 16 and clamped to [0, 1] |
 | what 16 means | the minimum | the maximum |
-| what it controls | how many doodads are **placed** (raises a scatter-rebuild flag) | what fraction of the built scatter is **drawn** |
+| what it controls | the **size of a global pool** of doodad instances | what fraction of the built scatter is **drawn** |
 
 Both agree exactly at the default of 16, which is why nothing looked wrong. Move the slider up and
-the reference adds doodads while frozen does nothing. Closing it means moving density into
-`BuildDetailDoodads` and rebuilding the scatter when it changes, which is visible and wants a run in
-the same cycle.
+the reference can hold more doodads while frozen does nothing.
+
+**Corrected the same day.** The row above first said density controls how many doodads are *placed*,
+which was a guess. Following the rebuild flag its setter raises (`0x00d1c4c0`) to its consumer at
+`0x007b2a86` gives the real mechanism: `density << 6` clamped to `0x1000`, which is a **global pool
+size** -- 1024 instances at the default and 4096 at the cap -- that then sizes several derived
+buffers. frozen has no such pool; it pre-builds a per-chunk scatter and draws a fraction. That is an
+architectural difference, so closing it is a rewrite of the detail-doodad system rather than an
+edit, and it is not worth starting until the system is being ported properly.
 
 `groundEffectDist` is narrower: the reference clamps to `[0, 140]` on the way in and caches the
 square; frozen reads the raw CVar and squares it per frame. Defaults match at 70.0.

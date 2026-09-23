@@ -4155,8 +4155,15 @@ void DetailDoodadRender() {
     // (FUN_00780710) that raises a scatter-rebuild flag, so density controls how many doodads are
     // PLACED, with 16 as the minimum. Here it is a draw fraction with 16 as the maximum. The two
     // agree exactly at the default of 16; above it the reference adds doodads and this does
-    // nothing. Closing it means moving density into BuildDetailDoodads and rebuilding when it
-    // changes -- a visible change, so it wants a run in the same cycle.
+    // nothing.
+    //
+    // A first reading of this guessed that density sets a per-chunk placement count. It does not.
+    // The rebuild flag its setter raises is consumed at 0x007b2a86, and what happens there is
+    // `density << 6` clamped to 0x1000: a GLOBAL POOL SIZE of doodad instances, 1024 at the default
+    // 16 and 4096 at the cap, which then sizes several derived buffers. So density bounds how many
+    // detail doodads can be resident at once, not how many any one chunk scatters. frozen has no
+    // such pool at all -- it pre-builds a per-chunk scatter and draws a fraction of it -- so this
+    // is an architectural difference and closing it is a rewrite of the system, not an edit.
     //
     // groundEffectDist is closer: the reference clamps it to [0, 140] on the way in and caches its
     // square (FUN_00780730); this reads the raw CVar and squares it per frame. Defaults match.
