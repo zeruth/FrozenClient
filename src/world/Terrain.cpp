@@ -4147,8 +4147,19 @@ void DetailDoodadRender() {
 
     float dist = CWorldParam::cvar_groundEffectDist ? CWorldParam::cvar_groundEffectDist->GetFloat() : 70.0f;
 
-    // groundEffectDensity (0..16, default 16) scales how much of each chunk's scatter is drawn.
-    // It was registered and then ignored, so the slider did nothing.
+    // groundEffectDensity scales how much of each chunk's scatter is drawn. It was registered and
+    // then ignored, so the slider did nothing until this read was added.
+    //
+    // **This is not what the reference does with it, and the difference only shows above the
+    // default.** Its callback (FUN_0078dab0) accepts 16 to 256 and hands the value to a setter
+    // (FUN_00780710) that raises a scatter-rebuild flag, so density controls how many doodads are
+    // PLACED, with 16 as the minimum. Here it is a draw fraction with 16 as the maximum. The two
+    // agree exactly at the default of 16; above it the reference adds doodads and this does
+    // nothing. Closing it means moving density into BuildDetailDoodads and rebuilding when it
+    // changes -- a visible change, so it wants a run in the same cycle.
+    //
+    // groundEffectDist is closer: the reference clamps it to [0, 140] on the way in and caches its
+    // square (FUN_00780730); this reads the raw CVar and squares it per frame. Defaults match.
     float density = 1.0f;
 
     if (CWorldParam::cvar_groundEffectDensity) {

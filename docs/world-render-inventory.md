@@ -4535,3 +4535,41 @@ a GL path that calls `glClipPlane`, but the D3D backend handles neither the mask
 nothing stores them. The scissor setter `00682e70` has **two callers in the whole binary**, so it
 is a minor feature on the reference side too. Adding either means adding the state and its public
 setter, not just the sync function.
+
+### 2026-09-23 - the graphics CVars: ten do nothing, and one does the wrong thing
+
+`tools/audit-ported.py`, widened to check the whole map rather than only the overrides, found that
+every one of the twelve `CWorldParam` graphics CVar callbacks is an empty body counted as ported.
+Checking what frozen does with each CVar afterwards splits them cleanly, and the split is more
+interesting than the count:
+
+**Ten are read nowhere at all.** `extShadowQuality`, `specular`, `baseMip`, `textureCacheSize`,
+`footstepBias`, `violenceLevel`, `skyCloudLOD`, `terrainAlphaBitDepth`, `hwPCF` and `bspcache`
+appear in `CWorldParam.cpp` twice each, once as the static and once in the registration, and
+nowhere else. The settings exist in the console and change nothing. That is the gap
+`docs/ref/parity-shadows.md` lists as item 10, and it is wider than shadows.
+
+**Two take effect, but not the way the reference makes them.** `DetailDoodadRender` reads
+`groundEffectDist` and `groundEffectDensity` directly every frame, so those sliders work. The
+reference does not poll them: its callbacks validate the value, store it in engine state, and raise
+a rebuild flag.
+
+The density one is a real behavioural difference, not just a structural one:
+
+| | reference | frozen |
+|---|---|---|
+| accepted range | 16 to 256 | any, divided by 16 and clamped to [0, 1] |
+| what 16 means | the minimum | the maximum |
+| what it controls | how many doodads are **placed** (raises a scatter-rebuild flag) | what fraction of the built scatter is **drawn** |
+
+Both agree exactly at the default of 16, which is why nothing looked wrong. Move the slider up and
+the reference adds doodads while frozen does nothing. Closing it means moving density into
+`BuildDetailDoodads` and rebuilding the scatter when it changes, which is visible and wants a run in
+the same cycle.
+
+`groundEffectDist` is narrower: the reference clamps to `[0, 140]` on the way in and caches the
+square; frozen reads the raw CVar and squares it per frame. Defaults match at 70.0.
+
+**Worth carrying forward:** "the callback is empty" and "the setting does nothing" are not the same
+claim. Nine of these were committed under the second before the CVar reads were checked, and two of
+those nine were wrong.
