@@ -36846,7 +36846,7 @@
   "status": "ported"
  },
  "0081c0d0": {
-  "branchRatio": 0.231,
+  "branchRatio": 0.385,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.125,
@@ -36855,7 +36855,7 @@
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::Initialize",
-  "frozenSize": 65,
+  "frozenSize": 83,
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 441,

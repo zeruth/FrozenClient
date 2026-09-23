@@ -74736,12 +74736,14 @@
 ],
 "strings": [],
 "consts": [
+"0x1",
+"0x2",
 "0x8",
 "1"
 ],
-"branches": 3,
+"branches": 5,
 "stub": false,
-"lines": 21,
+"lines": 51,
 "refs": [],
 "line": 70
 },
@@ -74756,7 +74758,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 92
+"line": 122
 },
 "CM2Cache::WaitThread": {
 "files": [
@@ -74769,7 +74771,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 96
+"line": 126
 },
 "CM2Light::CM2Light": {
 "files": [

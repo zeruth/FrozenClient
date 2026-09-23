@@ -76,11 +76,41 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
 
     // TODO
 
+    // M2RegisterCVars packs the model CVars into this word and every one of them arrives here.
+    // Only 0x8 was being propagated, so the rest were registered, defaulted on, and dropped --
+    // the same shape as the CWorldParam graphics CVars audited on 2026-09-23.
+    //
+    // 0x1 is `M2UseZFill`, "z-fill transparent objects", and it gates the alpha-tested depth
+    // prepass in CM2Scene::Animate. Without this the prepass is built and never runs.
+    //
+    // 0x2 is `M2UseClipPlanes`, "use clip planes for sorting transparent objects", which is the
+    // liquid-plane split. That is still inert: the refinement it enables sits behind a TODO in
+    // Animate and nothing sets CM2Lighting's 0x40 bit, so propagating it changes nothing today.
+    // It is propagated anyway so the two arrive together when that lands.
+    //
+    // **Diverged, deliberately.** The reference gates 0x1 on a CGxCaps field at +0xf4 and 0x2 on
+    // +0xf8 with a value at +0xb4 (FUN_0081c0d0, around 0x0081c1b3). frozen's CGxCaps stops well
+    // short of those offsets -- its own int130/int134/int138 sit where the reference has 0xa0 --
+    // so the fields do not exist to test. Both are hardware capability checks that a D3D9 device
+    // running frozen's shader path will pass, and `M2UseZFill 0` turns the prepass off at runtime
+    // if a run disagrees.
+    if (flags & 0x1) {
+        this->m_flags |= 0x1;
+    }
+
+    if (flags & 0x2) {
+        this->m_flags |= 0x2;
+    }
+
     if (flags & 0x8) {
         if (GxCaps().m_shaderTargets[GxSh_Vertex] > GxShVS_none && GxCaps().m_shaderTargets[GxSh_Pixel] > GxShPS_none) {
             this->m_flags |= 0x8;
         }
     }
+
+    // Still dropped, and each is its own port: 0x4 (M2UseThreads, gated on a processor count),
+    // 0x20 (M2BatchDoodads), 0x80 (M2BatchParticles) and 0x100 (M2ForceAdditiveParticleSort),
+    // which the reference propagates unmasked as `flags & 0x1a0`.
 
     // TODO
 
