@@ -5,6 +5,7 @@
 #include "gx/Shader.hpp"
 #include "gx/Transform.hpp"
 #include "model/CM2Lighting.hpp"
+#include <tempest/Math.hpp>
 #include <algorithm>
 #include <cstring>
 
@@ -34,6 +35,7 @@ void CShaderEffect::InitShaderSystem(int32_t enableShaders, int32_t usePcf) {
     CShaderEffect::s_useAlphaRef = GxCaps().int130;
 }
 
+// ref: FUN_00873ba0
 void CShaderEffect::SetAlphaRef(float alphaRef) {
     CShaderEffect::s_fogColorAlphaRef.w = alphaRef;
 
@@ -44,23 +46,46 @@ void CShaderEffect::SetAlphaRef(float alphaRef) {
     }
 }
 
+namespace {
+
+// The fixed-function form of a material colour: each component clamped to 0..1 and rounded to a
+// byte, packed the way CImVector stores them. The reference writes this straight into the render
+// state, which is why the clamp lives here rather than in the caller.
+CImVector PackMaterialColor(const C4Vector& color) {
+    float r = color.x < 0.0f ? 0.0f : (color.x >= 1.0f ? 1.0f : color.x);
+    float g = color.y < 0.0f ? 0.0f : (color.y >= 1.0f ? 1.0f : color.y);
+    float b = color.z < 0.0f ? 0.0f : (color.z >= 1.0f ? 1.0f : color.z);
+    float a = color.w < 0.0f ? 0.0f : (color.w >= 1.0f ? 1.0f : color.w);
+
+    CImVector out;
+    out.r = static_cast<uint8_t>(CMath::fuint_n(r * 255.0f));
+    out.g = static_cast<uint8_t>(CMath::fuint_n(g * 255.0f));
+    out.b = static_cast<uint8_t>(CMath::fuint_n(b * 255.0f));
+    out.a = static_cast<uint8_t>(CMath::fuint_n(a * 255.0f));
+
+    return out;
+}
+
+} // namespace
+
+// ref: FUN_00873900
 void CShaderEffect::SetDiffuse(const C4Vector& diffuse) {
     if (CShaderEffect::s_enableShaders) {
         GxShaderConstantsSet(GxSh_Vertex, 28, reinterpret_cast<const float*>(&diffuse), 1);
         return;
     }
 
-    // TODO
-    // - non-shader code path
+    GxRsSet(GxRs_MatDiffuse, PackMaterialColor(diffuse).value);
 }
 
+// ref: FUN_00873a50
 void CShaderEffect::SetEmissive(const C4Vector& emissive) {
     if (CShaderEffect::s_enableShaders) {
         GxShaderConstantsSet(GxSh_Vertex, 29, reinterpret_cast<const float*>(&emissive), 1);
         return;
     }
 
-    // TODO non-shader code path
+    GxRsSet(GxRs_MatEmissive, PackMaterialColor(emissive).value);
 }
 
 void CShaderEffect::SetFogEnabled(int32_t fogEnabled) {

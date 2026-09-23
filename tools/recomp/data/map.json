@@ -10078,6 +10078,22 @@
   "refSize": 460,
   "status": "ported"
  },
+ "004bf540": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator!=",
+  "frozenSize": 43,
+  "how": "annotated",
+  "module": "Profile.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
  "004c1b30": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -36826,7 +36842,7 @@
   "branchRatio": 0.341,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.077,
+  "fidelity": 0.615,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -42059,6 +42075,54 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 206,
+  "status": "ported"
+ },
+ "00873900": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetDiffuse",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 331,
+  "status": "ported"
+ },
+ "00873a50": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetEmissive",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 331,
+  "status": "ported"
+ },
+ "00873ba0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetAlphaRef",
+  "frozenSize": 67,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 122,
   "status": "ported"
  },
  "00875d30": {
