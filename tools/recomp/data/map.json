@@ -36833,7 +36833,7 @@
   ],
   "frozen": "CM2Model::WaitForLoad",
   "frozenSize": 70,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "M2Scene.cpp",
   "refSize": 58,
   "status": "ported"
@@ -37286,11 +37286,27 @@
   "refSize": 451,
   "status": "ported"
  },
+ "00831410": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.048,
+  "faithful": false,
+  "fidelity": 0.625,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetAttachmentWorldTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 306,
+  "status": "ported"
+ },
  "00831630": {
   "branchRatio": 0.706,
   "constOverlap": 0.031,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"

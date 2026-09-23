@@ -1309,6 +1309,7 @@ void CM2Model::FreeInternalResources() {
     STORM_FREE(this->m_internalResources);
 }
 
+// ref: FUN_00831410
 C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     if (!this->m_loaded) {
         this->WaitForLoad("GetAttachmentWorldTransform");
