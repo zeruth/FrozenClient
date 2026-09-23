@@ -628,6 +628,14 @@ LABEL_94:
         break;
     }
 
+    // The write-out below was checked against the reference on 2026-09-23 and is faithful. Its
+    // three planes map one to one onto the reference's three scratch buffers -- v46 is the mask at
+    // -0x481c, v45 the coverage at -0x901c, v44 the lit level at -0xd81c -- and it branches in the
+    // same order. The coverage scale is `imull $0xff` then `sarl $0xc` there, which is this
+    // expression exactly, and the nested shift-or assembles the same ARGB4444 word:
+    // (lit << 12) | (a << 8) | (a << 4) | a. The reference reads the coverage plane a byte at a
+    // time where this reads the uint16, which is equivalent because the unpack never writes above
+    // 255.
 LABEL_95:
     v40 = 0;
 
