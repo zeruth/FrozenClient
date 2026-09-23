@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-20 11:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 09:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,26 +8,26 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27162 | 5.41M |
-| mapped to a frozen function | 2988 (+25) (11.0%) | 635.0k (11.5%) |
-| &nbsp;&nbsp;ported | 2290 (+31) | 461.0k |
-| &nbsp;&nbsp;stub (unimplemented body) | 653 (-6) | 133.9k |
+| mapped to a frozen function | 2995 (-2) (11.0%) | 661.3k (11.9%) |
+| &nbsp;&nbsp;ported | 2297 (-2) | 487.3k |
+| &nbsp;&nbsp;stub (unimplemented body) | 653 (=) | 133.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1087 (+14) (4.0%)** | **133.1k (2.4%)** |
-| unmapped | 24174 | 4.79M |
-| world spine (reachable from OnFrameRender) | 5531, mapped 428 (+10) (7.7%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 432 (+10) (7.4%) | |
-| **render surface** (the modules that draw the world) | **6005, mapped 178 (+6) (3.0%)** | |
-| frozen functions (src/, from PDB + source) | 12094, stubs 1716 | |
+| **faithful** (linked, not stub, call order >= 80%) | **1091 (+31) (4.0%)** | **133.5k (2.4%)** |
+| unmapped | 24167 | 4.76M |
+| world spine (reachable from OnFrameRender) | 5531, mapped 427 (-2) (7.7%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5799, mapped 431 (-2) (7.4%) | |
+| **render surface** (the modules that draw the world) | **6005, mapped 178 (=) (3.0%)** | |
+| frozen functions (src/, from PDB + source) | 12127, stubs 1716 | |
 
-Match evidence: annotated 785, callgraph 180, callorder 131, cvar 32, handler 29, order 180, override 207, sticky 14, string 315, table 1115. Module anchors: 1479 assert strings.
+Match evidence: annotated 797, callgraph 186, callorder 126, cvar 32, handler 29, order 179, override 208, sticky 12, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-20 05:36 -- mapped 2963, ported 2259, stub 659, spine mapped 418.
+Previous run: 2026-09-23 09:18 -- mapped 2997, ported 2299, stub 653, spine mapped 429.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1499 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (-5). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1499 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -135,7 +135,7 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1262 | 274.2k | 4 (0.3%) | 0.2% | 0 | 0 | 82 |
 | OggDecompress.cpp | 1504 | 260.7k | 14 (0.9%) | 0.9% | 0 | 0 | 476 |
-| ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 56 (5.7%) | 0.2% | 0 | 0 | 107 |
+| ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 57 (5.8%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 9 (1.3%) | 0.7% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
@@ -143,7 +143,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
-| Tooltip.cpp | 151 | 86.0k | 74 (49.0%) | 34.7% | 40 | 1 | 16 |
+| Tooltip.cpp | 151 | 86.0k | 75 (49.7%) | 62.9% | 40 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 90 (25.8%) | 14.2% | 50 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 86 (25.1%) | 33.9% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 1 (0.4%) | 2.6% | 0 | 0 | 143 |
@@ -160,7 +160,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 11 (4.9%) | 5.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.5% | 0 | 0 | 68 |
-| LFGInfo.cpp | 229 | 47.7k | 24 (10.5%) | 10.7% | 13 | 0 | 7 |
+| LFGInfo.cpp | 229 | 47.7k | 27 (11.8%) | 12.5% | 13 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 168 (74.7%) | 72.1% | 29 | 0 | 26 |
 | CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 1 (0.5%) | 0.1% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 11 (6.0%) | 5.5% | 3 | 0 | 41 |
@@ -190,7 +190,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 33 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 111 (54.4%) | 59.6% | 1 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 110 (53.9%) | 58.1% | 1 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 4 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 36 (21.7%) | 33.5% | 1 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
@@ -253,7 +253,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | aSfxDsp.cpp | 48 | 12.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EvtSched.cpp | 73 | 12.1k | 2 (2.7%) | 6.9% | 0 | 0 | 33 |
 | SoundInterface2ZoneSounds.cpp | 68 | 11.6k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
-| UIBindings.cpp | 59 | 11.5k | 18 (30.5%) | 35.2% | 16 | 0 | 4 |
+| UIBindings.cpp | 59 | 11.5k | 19 (32.2%) | 37.3% | 16 | 0 | 4 |
 | CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 8 (10.7%) | 11.6% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 9 (28.1%) | 26.5% | 0 | 0 | 0 |
@@ -274,12 +274,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | DanceStudio.cpp | 53 | 8.6k | 0 (0.0%) | 0.0% | 0 | 0 | 24 |
 | DuelInfo.cpp | 49 | 8.4k | 1 (2.0%) | 0.4% | 1 | 0 | 4 |
 | AccountData.cpp | 47 | 8.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| GuildInfo.cpp | 35 | 8.3k | 1 (2.9%) | 3.0% | 1 | 0 | 1 |
+| GuildInfo.cpp | 35 | 8.3k | 2 (5.7%) | 16.8% | 1 | 0 | 1 |
 | MerchantFrame.cpp | 41 | 8.3k | 10 (24.4%) | 32.0% | 6 | 0 | 4 |
 | fmod_pluginfactory.cpp | 38 | 8.3k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
 | MapObjRead.cpp | 37 | 8.1k | 0 (0.0%) | 0.0% | 0 | 0 | 11 |
 | fmod_codec_oggvorbis.cpp | 31 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
-| CalendarEvent.cpp | 40 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
+| CalendarEvent.cpp | 40 | 7.9k | 1 (2.5%) | 3.4% | 0 | 0 | 0 |
 | ChatBubbleFrame.cpp | 55 | 7.6k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
 | RealmList.cpp | 46 | 7.5k | 26 (56.5%) | 54.0% | 2 | 0 | 0 |
 | fmod_sample_openal.cpp | 19 | 7.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -420,8 +420,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | addr | module | size | callers | frozen | strings |
 |---|---|---:|---:|---|---|
 | 00842da0 | M2Shared.cpp? | 17797 | 70 |  |  |
-| 006277f0 | Tooltip.cpp | 24814 | 42 |  | 			<setspelldesc_%d>, 			<setspelldesc_%d></setspelldesc_%d>
- |
 | 00509dd0 | ChatFrame.cpp | 4047 | 126 |  | !@#$%^&*, %d. %s |
 | 00808200 | Spell_C.cpp | 2446 | 98 |  | %s_PET, .\Spell_C.cpp |
 | 007385c0 | Unit_C.cpp | 4083 | 57 |  | .\Unit_C.cpp |
@@ -463,6 +461,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 006a3c40 | CGxDeviceD3d9Ex.cpp? | 873 | 24 |  |  |
 | 006a7be0 | CGxD3d9ExTexture.cpp? | 873 | 24 |  |  |
 | 0093e470 | fmod_sample_software.cpp? | 5405 | 3 |  |  |
+| 0041d770 | OggDecompress.cpp | 199 | 103 |  |  |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -474,12 +473,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
 | 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [table] | BACKSPACE, DECIMAL |
 | 005bd8a0 | Calendar.cpp | 1253 | 0 | `Script_Stub_CalendarGetEventInfo` [table] |  |
-| 0062e050 | Tooltip.cpp | 1226 | 0 | `CGTooltip_SetInventoryItem` [table] | Invalid inventory slot in SetInventoryIt, Usage: %s:SetInventoryItem(unit, slot [, |
+| 0062e050 | Tooltip.cpp | 1226 | 0 | `CGTooltip_SetInventoryItem` [annotated] | Invalid inventory slot in SetInventoryIt, Usage: %s:SetInventoryItem(unit, slot [, |
 | 005104a0 | ChatFrame.cpp? | 1143 | 0 | `Script_SetCursor` [table] | ATTACK_CURSOR, ATTACK_ERROR_CURSOR |
 | 005c1070 | Calendar.cpp | 1029 | 0 | `Script_Stub_CalendarGetDayEvent` [table] | Usage: CalendarGetDayEvent([-1.0.1], mon |
 | 00573690 | RaidInfo.cpp | 975 | 0 | `Script_GetRaidRosterInfo` [table] | .\RaidInfo.cpp, MAINASSIST |
 | 00515200 | GameUI.cpp | 808 | 0 | `Script_GetCursorInfo` [table] | .\GameUI.cpp, CRITTER |
-| 0062f420 | Tooltip.cpp | 800 | 0 | `CGTooltip_SetBagItem` [table] | .\Tooltip.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
+| 0062f420 | Tooltip.cpp | 800 | 0 | `CGTooltip_SetBagItem` [annotated] | .\Tooltip.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 008214e0 | M2Scene.cpp? | 391 | 1 | `CM2SceneRender::DrawParticle` [override] | Particle: model=%s |
 | 005564d0 | LFGInfo.cpp | 763 | 0 | `Script_Stub_GetLFDChoiceCollapseState` [order] | Usage: GetLFDChoiceCollapseState([table] |
 | 0051cdb0 | GameUI.cpp | 754 | 0 | `Script_EquipItemByName` [table] | EquipItemByName(): Invalid inventory dst, d:\BuildServer\WoW\1\work\WoW-code\branc |
@@ -515,6 +514,7 @@ A reference function that formats, asserts or looks up a string its port does no
 
 | addr | frozen | missing |
 |---|---|---|
+| 006277f0 | `TooltipSetItemInfo` | 			<setspelldesc_%d>; 			<setspelldesc_%d></setspelldesc_%d>\n; 			<spelldesc_%d>;  (%s) |
 | 00877aa0 | `FMOD_ErrorString` | A CDDA read error occurred. ; A HTTP error occurred. This is a catch-all for HTT; A HTTP server error occurred. ; A Win32 COM related error occured. COM failed to i |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
 | 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
@@ -550,11 +550,10 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
+| 0052a980 | `WowClientInit` | Cannot create WOWClient log file "%s"!; GameTooltip; Interface\FrameXML\Bindings.xml; Interface\FrameXML\FrameXML.toc |
 | 004a7e00 | `CSimpleAnimGroup_CreateAnimation` | %s:CreateAnimation(): Couldn't find inherited node; %s:CreateAnimation(): Recursively inherited node "; Alpha; Rotation |
 | 0081f330 | `CM2SceneRender::CM2SceneRender` | Particle; Particle_Unlit; Projected_ModAdd; Projected_ModMod |
 | 005b8690 | `Script_Stub_CalendarEventGetInviteSortCriterion` | class; level; notes; party |
-| 0055d860 | `CGUIBindings::ParseModifierFlags` | LCTRL; LSHIFT; RCTRL; RSHIFT |
-| 0054c8a0 | `Script_GetWorldPVPQueueStatus` | Usage: GetWorldPVPQueueStatus(index); active; confirm; error |
 
 ## Largest frozen functions with no reference link
 
@@ -609,6 +608,7 @@ The port exists but does not make the calls the reference makes, in the order it
 
 | addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
+| 006277f0 | `TooltipSetItemInfo` | 23% | 604 | 58 | 797 | ? | ? | 24814 |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 4% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
@@ -632,14 +632,15 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0062dae0 | `CGTooltip_SetHyperlink` | 27% | 66 | 23 | 41 | 11 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
-| 0049a060 | `CSimpleAnimGroup::LoadXML` | 49% | 57 | 19 | 40 | 8 | 4% | 1310 |
+| 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 8% | 13 | 16 | 41 | 14 | 4% | 1306 |
 | 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
-| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
-| 0052a980 | `CGGameUI::Initialize` | 22% | 59 | 31 | 23 | 6 | 5% | 1267 |
+| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
+| 0052a980 | `WowClientInit` | 14% | 59 | 23 | 23 | 2 | 0% | 1267 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 70% | 10 | 11 | 10 | 9 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
 | 0096fed0 | `CSimpleButton::LoadXML` | 72% | 46 | 49 | 34 | 23 | 0% | 1174 |
+| 005cde20 | `Script_GetSkillLineInfo` | 21% | 63 | 13 | 23 | ? | ? | 1173 |
 | 00497070 | `CSimpleFont::LoadXML` | 92% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
@@ -647,8 +648,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0040a270 | `Paint` | 52% | 27 | 35 | 19 | 12 | 0% | 1055 |
 | 004f8ea0 | `CGWorldFrame::OnWorldRender` | 19% | 59 | 81 | 14 | 34 | 0% | 1016 |
 | 004debc0 | `Script_GetRealmInfo` | 62% | 53 | 55 | 24 | 17 | 6% | 990 |
-| 00967290 | `CSimpleEditBox::LoadXML` | 81% | 36 | 42 | 42 | 20 | 0% | 989 |
-| 00853c50 | `str_format` | 67% | 30 | 25 | 23 | 18 | 3% | 969 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -729,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 03:51 | 2944 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
-| 2026-09-20 03:58 | 2944 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 04:03 | 2945 (10.8%) | 1058 (3.9%) | 663 | 413/5531 | 2924/2964 | 1509 |
 | 2026-09-20 04:08 | 2956 (10.9%) | 1065 (3.9%) | 663 | 415/5531 | 2924/2964 | 1509 |
 | 2026-09-20 04:09 | 2955 (10.9%) | 1067 (3.9%) | 663 | 415/5531 | 2924/2964 | 1509 |
@@ -754,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-20 05:32 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:36 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 11:07 | 2988 (11.0%) | 1087 (4.0%) | 653 | 428/5531 | 2924/2964 | 1499 |
+| 2026-09-23 09:18 | 2997 (11.0%) | 1060 (3.9%) | 653 | 429/5531 | 2924/2964 | 1499 |
+| 2026-09-23 09:20 | 2995 (11.0%) | 1091 (4.0%) | 653 | 427/5531 | 2924/2964 | 1499 |
 
 ## How to move a row
 

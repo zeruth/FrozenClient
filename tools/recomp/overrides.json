@@ -1,4 +1,9 @@
 {
+  "0084df20": {
+    "frozen": "lua_isnumber",
+    "status": "ported",
+    "note": "lapi.c lua_isnumber: callees index2adr + luaV_tonumber, 1195 callers; pinned 2026-09-23 after the callgraph matcher re-paired it with fprintf and 31 Script_ ports lost fidelity"
+  },
   "_": "Hand-confirmed reference -> frozen links. Keys are reference addresses; frozen is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no frozen name). recomp.py trusts this file over every automatic match. One frozen name may serve several addresses (overload sets, COMDAT copies).",
   "004fb080": {
     "frozen": "CGWorldFrame::OnFrameRender",

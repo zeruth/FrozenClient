@@ -1,6 +1,8 @@
 #ifndef UI_GAME_UI_BINDINGS_HPP
 #define UI_GAME_UI_BINDINGS_HPP
 
+#include "event/Types.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -63,5 +65,13 @@ bool UIBindingsSetKey(const char* key, const char* command);
 // Run a command's Lua body, as a key press (keyDown) or release. A release does nothing unless the
 // command asked for runOnUp. False when the command is unknown or has no body.
 bool UIBindingsRunCommand(const char* command, bool keyDown);
+
+// The binding name for a key code ("F1", "NUMPAD3", "A"). Some names are literals and some are
+// built, so a caller supplies the buffer and uses the returned pointer, which may or may not be it.
+const char* UIBindingsKeyName(int32_t key, char* buffer, size_t bufferBytes);
+
+// The modifier prefix for a key string ("ALT-CTRL-"), in the reference's order. The mask bits are
+// 0x01/0x02 shift, 0x04/0x08 control, 0x10/0x20 alt, left and right.
+void UIBindingsModifierPrefix(uint32_t modifiers, char* buffer, size_t bufferBytes);
 
 #endif

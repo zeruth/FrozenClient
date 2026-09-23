@@ -28,7 +28,7 @@ addr	how	frozen	evidence
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
 00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
-004033c0	callorder	CGTooltip::GetObjectType	same slot between linked calls in 0052a980=CGGameUI::Initialize
+004033c0	sticky	CGTooltip::GetObjectType	held from the previous run, where it was sticky
 00403760	callgraph	TSGrowableArray<char *>::Reserve	only unmatched callee of 00405a10=AddPatchArchive
 00403880	override	CDataStore::~CDataStore	
 004038f0	annotated	CGPlayer_C::GetActivePtr	tag in src/object/client/CGPlayer_C.cpp
@@ -74,7 +74,7 @@ addr	how	frozen	evidence
 00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
-00424b10	callorder	FrameXML_SetProgressCallback	same slot between linked calls in 0052a980=CGGameUI::Initialize
+00424b10	sticky	FrameXML_SetProgressCallback	held from the previous run, where it was sticky
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
@@ -106,7 +106,7 @@ addr	how	frozen	evidence
 0047b400	override	CDataStore::Get	
 0047b440	override	CDataStore::Get	
 0047b480	override	CDataStore::GetString	
-0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
+0047be50	sticky	SUniSPutUTF8	held from the previous run, where it was sticky
 0047bf30	override	HandleClose	
 0047bf50	override	HandleCreate	
 0047bf90	override	CoordinateSetAspectRatio	
@@ -160,7 +160,7 @@ addr	how	frozen	evidence
 00487250	callorder	CSimpleFontString::SetNonSpaceWrap	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004872a0	override	CSimpleFontString::SetIndentedWordWrap	
 004873e0	string	CSimpleFontString::LoadXML	unique "FontString %s: Unable to load font file %s"
-00487a10	callorder	CSimpleRegion::SetVertexColor	same slot between linked calls in 0048c1c0=CSimpleTexture_SetVertexColor, 0048cf30=CSimpleFontString_SetVertexColor
+00487a10	callgraph	CSimpleRegion::SetVertexColor	only unmatched callee of 004a25f0=CBackdropGenerator::SetVertexColor, 004a2630=CBackdropGenerator::SetBorderVertexColor
 00487ab0	annotated	CSimpleFontString::GetTextColor	tag in src/ui/simple/CSimpleFontString.cpp
 00487b00	callgraph	CSimpleRegion::SetVertexGradient	only unmatched callee of 0048c310=CSimpleTexture_SetGradientAlpha
 00487bf0	override	CSimpleRegion::Hide	
@@ -182,7 +182,7 @@ addr	how	frozen	evidence
 00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
-004898b0	sticky	CLayoutFrame::ResizePending	held from the previous run, where it was sticky
+004898b0	callgraph	CLayoutFrame::ResizePending	only unmatched callee of 004d8860=CGlueMgr::HandleDisplaySizeChanged
 00489de0	override	CLayoutFrame::Resize	
 0048a130	annotated	CSimpleFrame::SetClampedToScreen	tag in src/ui/simple/CSimpleFrame.cpp
 0048a260	annotated	CLayoutFrame::SetPoint	tag in src/ui/CLayoutFrame.cpp
@@ -268,15 +268,14 @@ addr	how	frozen	evidence
 0048e580	annotated	CSimpleFontString_SetWordWrap	tag in src/ui/simple/CSimpleFontStringScript.cpp
 0048e600	table	CSimpleFontString_GetIndentedWordWrap	binding "GetIndentedWordWrap" in SimpleFontStringMethods ~ table 00ac1118
 0048e680	string	CSimpleFrame::GetScriptByName	unique "OnAttributeChanged"
-0048e970	callorder	CSimpleFrame::SetFrameFlag	same slot between linked calls in 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
+0048e970	callgraph	CSimpleFrame::SetFrameFlag	only unmatched callee of 0049fbb0=CSimpleFrame_SetToplevel, 004a0800=CSimpleFrame_SetMovable, 004a08c0=CSimpleFrame_SetDontSavePosition
 0048e9a0	override	CSimpleFrame::Raise	
-0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was sticky
+0048ea10	callgraph	CSimpleFrame::SetFrameAlpha	only unmatched callee of 0049f9e0=CSimpleFrame_SetAlpha
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
-0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
-0048f580	sticky	CSimpleFrame::SetFrameScale	held from the previous run, where it was sticky
+0048f580	callgraph	CSimpleFrame::SetFrameScale	only unmatched callee of 0049f820=CSimpleFrame_SetScale, 0054ed80=Script_SetupFullscreenScale
 0048f5d0	annotated	CSimpleFrame::SetDepth	tag in src/ui/simple/CSimpleFrame.cpp
 0048f620	override	CSimpleFrame::Hide	
 0048f660	override	CSimpleFrame::Show	
@@ -454,8 +453,8 @@ addr	how	frozen	evidence
 004a2240	table	CSimpleFrame_CreateFontString	binding "CreateFontString" in SimpleFrameMethods ~ table 00ac1550
 004a2490	table	CSimpleFrame_GetNumChildren	binding "GetNumChildren" in SimpleFrameMethods ~ table 00ac1550
 004a2510	table	CSimpleFrame_GetChildren	binding "GetChildren" in SimpleFrameMethods ~ table 00ac1550
-004a25f0	callorder	CBackdropGenerator::SetVertexColor	same slot between linked calls in 004a1a80=CSimpleFrame_SetBackdropColor
-004a2630	callorder	CBackdropGenerator::SetBorderVertexColor	same slot between linked calls in 004a1bd0=CSimpleFrame_SetBackdropBorderColor
+004a25f0	callgraph	CBackdropGenerator::SetVertexColor	only unmatched callee of 004a1a80=CSimpleFrame_SetBackdropColor
+004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
 004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
@@ -1113,7 +1112,7 @@ addr	how	frozen	evidence
 00526530	handler	ReceiveWeather	SetMessageHandler(SMSG_WEATHER) on both sides
 00527f00	table	Script_InteractUnit	binding "InteractUnit" in s_ScriptFunctions ~ table 00ac80b0
 00528920	table	Script_LoadAddOn	binding "LoadAddOn" in s_ScriptFunctions ~ table 00ac80b0
-0052a980	string	CGGameUI::Initialize	unique "Interface\FrameXML\Bindings.xml"
+0052a980	string	WowClientInit	unique "Whether or not script profiling is enabled"
 0052b470	table	Script_RegisterForSave	binding "RegisterForSave" in s_ScriptFunctions ~ table 00ac80b0
 0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
 0052bc80	annotated	CGPartyInfo::SetLeader	tag in src/ui/game/CGPartyInfo.cpp
@@ -1304,24 +1303,28 @@ addr	how	frozen	evidence
 00558060	order	Script_Stub_GetLFGRandomCooldownExpiration	binding table name Script_Stub_GetLFGRandomCooldownExpiration, in definition order in src/ui/game/miscscriptstubs.cpp
 00559ff0	order	Script_Stub_GetLastQueueStatusIndex	binding table name Script_Stub_GetLastQueueStatusIndex, in definition order in src/ui/game/miscscriptstubs.cpp
 0055d860	annotated	CGUIBindings::ParseModifierFlags	tag in src/ui/game/CGUIBindings.cpp
-0055dc00	table	Script_GetNumBindings	binding "GetNumBindings" in s_ScriptFunctions ~ table 00acde38
+0055d990	annotated	UIBindingsModifierPrefix	tag in src/ui/game/UIBindings.cpp
+0055dc00	annotated	Script_GetNumBindings	tag in src/ui/game/UIBindingsScript.cpp
 0055dc30	table	Script_GetCurrentBindingSet	binding "GetCurrentBindingSet" in s_ScriptFunctions ~ table 00acde38
 0055dc60	annotated	Script_GetNumModifiedClickActions	tag in src/ui/game/UIBindingsScript.cpp
+0055dd10	annotated	UIBindingsKeyName	tag in src/ui/game/UIBindings.cpp
 0055e180	string	CGUIBindings::ParseBinding	unique "BUTTON"
 0055e870	callgraph	RCString::GetString	only unmatched callee of 0055ea70=Script_GetModifiedClickAction
-0055e8d0	table	Script_GetBinding	binding "GetBinding" in s_ScriptFunctions ~ table 00acde38
-0055e9b0	table	Script_GetBindingKey	binding "GetBindingKey" in s_ScriptFunctions ~ table 00acde38
+0055e8d0	annotated	Script_GetBinding	tag in src/ui/game/UIBindingsScript.cpp
+0055e9b0	annotated	Script_GetBindingKey	tag in src/ui/game/UIBindingsScript.cpp
 0055ea70	annotated	Script_GetModifiedClickAction	tag in src/ui/game/UIBindingsScript.cpp
 0055f4d0	callorder	CGUIBindings::GetModifiedClick	same slot between linked calls in 0055fb90=Script_SetModifiedClick
+0055f860	annotated	UIBindingsRunCommand	tag in src/ui/game/UIBindings.cpp
 0055f940	annotated	CGUIBindings::IsModifiedClick	tag in src/ui/game/CGUIBindings.cpp
-0055fad0	table	Script_RunBinding	binding "RunBinding" in s_ScriptFunctions ~ table 00acde38
+0055fad0	annotated	Script_RunBinding	tag in src/ui/game/UIBindingsScript.cpp
 0055fb90	annotated	Script_SetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 0055fc20	annotated	Script_GetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 0055fcc0	annotated	Script_IsModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 00560560	table	Script_ClearOverrideBindings	binding "ClearOverrideBindings" in s_ScriptFunctions ~ table 00acde38
-00562550	table	Script_GetBindingAction	binding "GetBindingAction" in s_ScriptFunctions ~ table 00acde38
-005625f0	table	Script_GetBindingByKey	binding "GetBindingByKey" in s_ScriptFunctions ~ table 00acde38
-00563520	table	Script_SetBinding	binding "SetBinding" in s_ScriptFunctions ~ table 00acde38
+00562550	annotated	Script_GetBindingAction	tag in src/ui/game/UIBindingsScript.cpp
+005625f0	annotated	Script_GetBindingByKey	tag in src/ui/game/UIBindingsScript.cpp
+00562dd0	string	CGUIBindings::LoadModifiedClicks	unique "action"
+00563520	annotated	Script_SetBinding	tag in src/ui/game/UIBindingsScript.cpp
 005635e0	table	Script_SetBindingSpell	binding "SetBindingSpell" in s_ScriptFunctions ~ table 00acde38
 00563700	table	Script_SetBindingItem	binding "SetBindingItem" in s_ScriptFunctions ~ table 00acde38
 00563820	table	Script_SetBindingMacro	binding "SetBindingMacro" in s_ScriptFunctions ~ table 00acde38
@@ -1334,7 +1337,7 @@ addr	how	frozen	evidence
 00564070	table	Script_LoadBindings	binding "LoadBindings" in s_ScriptFunctions ~ table 00acde38
 005640c0	table	Script_SaveBindings	binding "SaveBindings" in s_ScriptFunctions ~ table 00acde38
 00564130	table	Script_GetClickFrame	binding "GetClickFrame" in s_ScriptFunctions ~ table 00acde38
-00564760	string	CGUIBindings::LoadModifiedClicks	unique "ModifiedClick"
+00564760	string	EnsureLoaded	unique "Binding"
 00564e90	order	Script_Stub_GetMacroIconInfo	binding table name Script_Stub_GetMacroIconInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00565030	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete	same slot between linked calls in 007689e0=ConsoleCommandUnregister
 005666a0	order	Script_Stub_GetMacroIndexByName	binding table name Script_Stub_GetMacroIndexByName, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1583,6 +1586,7 @@ addr	how	frozen	evidence
 005cb3f0	order	Script_Stub_GuildControlDelRank	binding table name Script_Stub_GuildControlDelRank, in definition order in src/ui/game/miscscriptstubs.cpp
 005cc3e0	order	Script_Stub_GuildControlGetRankFlags	binding table name Script_Stub_GuildControlGetRankFlags, in definition order in src/ui/game/miscscriptstubs.cpp
 005ccc90	order	Script_Stub_GuildControlGetRankName	binding table name Script_Stub_GuildControlGetRankName, in definition order in src/ui/game/miscscriptstubs.cpp
+005cde20	annotated	Script_GetSkillLineInfo	tag in src/ui/game/MiscScript.cpp
 005cf220	order	Script_Stub_OfferPetition	binding table name Script_Stub_OfferPetition, in definition order in src/ui/game/miscscriptstubs.cpp
 005cff60	string	Script_Stub_GetFactionInfo	score 0.50 shared GetFactionInfo
 005d3780	order	Script_Stub_PetCanBeAbandoned	binding table name Script_Stub_PetCanBeAbandoned, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1642,6 +1646,7 @@ addr	how	frozen	evidence
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
 005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
 005ef490	string	ActionTypeName	score 0.73 shared equipmentset; macro; spell
+005f4910	string	CGGameUI::Initialize	score 0.50 shared Interface\FrameXML\FrameXML.toc
 005f7630	callorder	AddOnIsLoaded	same slot between linked calls in 00511b30=Script_IsAddOnLoaded
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
@@ -1888,8 +1893,9 @@ addr	how	frozen	evidence
 00626440	table	CGTooltip_SetQuestLogRewardSpell	binding "SetQuestLogRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 006264d0	table	CGTooltip_SetEquipmentSet	binding "SetEquipmentSet" in CGTooltipMethods ~ table 00ad2ae0
 00626560	table	CGTooltip_SetFrameStack	binding "SetFrameStack" in CGTooltipMethods ~ table 00ad2ae0
-0062dae0	annotated	CGTooltip_SetHyperlink	tag in src/ui/game/CGTooltipScript.cpp
-0062e050	table	CGTooltip_SetInventoryItem	binding "SetInventoryItem" in CGTooltipMethods ~ table 00ad2ae0
+006277f0	string	TooltipSetItemInfo	unique "%s %.2f"
+0062dae0	table	CGTooltip_SetHyperlink	binding "SetHyperlink" in CGTooltipMethods ~ table 00ad2ae0
+0062e050	annotated	CGTooltip_SetInventoryItem	tag in src/ui/game/CGTooltipScript.cpp
 0062e520	table	CGTooltip_SetLootItem	binding "SetLootItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e670	table	CGTooltip_SetQuestItem	binding "SetQuestItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e790	table	CGTooltip_SetQuestLogItem	binding "SetQuestLogItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1899,7 +1905,7 @@ addr	how	frozen	evidence
 0062ee70	table	CGTooltip_SetMerchantCostItem	binding "SetMerchantCostItem" in CGTooltipMethods ~ table 00ad2ae0
 0062eff0	table	CGTooltip_SetTradePlayerItem	binding "SetTradePlayerItem" in CGTooltipMethods ~ table 00ad2ae0
 0062f1e0	table	CGTooltip_SetTradeTargetItem	binding "SetTradeTargetItem" in CGTooltipMethods ~ table 00ad2ae0
-0062f420	table	CGTooltip_SetBagItem	binding "SetBagItem" in CGTooltipMethods ~ table 00ad2ae0
+0062f420	annotated	CGTooltip_SetBagItem	tag in src/ui/game/CGTooltipScript.cpp
 0062f740	table	CGTooltip_SetTalent	binding "SetTalent" in CGTooltipMethods ~ table 00ad2ae0
 0062f8b0	table	CGTooltip_SetSendMailItem	binding "SetSendMailItem" in CGTooltipMethods ~ table 00ad2ae0
 0062f9e0	table	CGTooltip_SetInboxItem	binding "SetInboxItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1980,7 +1986,7 @@ addr	how	frozen	evidence
 006cef10	callgraph	WowClientDB<AreaTableRec>::GetRecord	only unmatched callee of 00516b20=Script_GetBindLocation
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
 006d46d0	annotated	CGPartyInfo::SendLootSettings	tag in src/ui/game/CGPartyInfo.cpp
-006d5c30	callgraph	Player_C_GetDisplayId	only unmatched callee of 006dc810=Player_C_GetModelName
+006d5c30	sticky	Player_C_GetDisplayId	held from the previous run, where it was sticky
 006d7f10	handler	ReceiveQuestgiverStatus	SetMessageHandler(SMSG_QUESTGIVER_STATUS) on both sides
 006d8750	handler	ReceiveActionButtons	SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS) on both sides
 006d8870	annotated	ReceiveGroupList	tag in src/ui/game/CGPartyInfo.cpp
@@ -2094,7 +2100,7 @@ addr	how	frozen	evidence
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
-007729b0	sticky	printf	held from the previous run, where it was callgraph
+007729b0	sticky	printf	held from the previous run, where it was sticky
 00772a80	override	SErrDisplayError	
 00772aa0	override	SErrDisplayAppFatal	
 00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
@@ -2191,7 +2197,7 @@ addr	how	frozen	evidence
 008146f0	callorder	XMLNode::GetChildByName	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 004932c0=CSimpleFrame::LoadXML, 0096b920=CSimpleScrollFrame::LoadXML
 00814730	callorder	XMLNode::GetAttributeByName	same slot between linked calls in 00485f40=CSimpleTexture::LoadXML, 004873e0=CSimpleFontString::LoadXML, 0048f400=CSimpleFrame::PostLoadXML_Frames
 00814e40	override	StringToFrameStrata	
-00814e90	callorder	FrameStrataToString	same slot between linked calls in 0049e830=CSimpleFrame_GetFrameStrata
+00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
 00814f60	callorder	StringToDrawLayer	same slot between linked calls in 004a2010=CSimpleFrame_CreateTexture, 004a2240=CSimpleFrame_CreateFontString
 00814fb0	annotated	DrawLayerToString	tag in src/ui/Util.cpp
@@ -2208,7 +2214,7 @@ addr	how	frozen	evidence
 00815600	string	LoadXML_Value	unique "AbsValue"
 00815740	string	LoadXML_Dimensions	unique "AbsDimension"
 00815910	string	LoadXML_Insets	unique "AbsInset"
-00815c30	callorder	LoadXML_Color	same slot between linked calls in 00815df0=LoadXML_Gradient
+00815c30	callorder	LoadXML_Color	same slot between linked calls in 004a2780=CBackdropGenerator::LoadXML, 00815df0=LoadXML_Gradient
 00815df0	string	LoadXML_Gradient	unique "MaxColor"
 00815eb0	string	LoadXML_AnimOrigin	unique "Invalid origin point %s in element %s"
 00815f40	override	LoadXML_Texture	
@@ -2241,15 +2247,15 @@ addr	how	frozen	evidence
 00818070	string	FrameScript_Sprintf	score 0.75 shared invalid format (width or precision too l; invalid option in `format'
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
 00819730	string	FrameScript_HandleError	unique "UNKNOWN ERROR"
-00819880	callgraph	PushTexture	only unmatched callee of 00970830=CSimpleColorSelect_GetColorWheelTexture, 009709e0=CSimpleColorSelect_GetColorWheelThumbTexture, 00970bc0=CSimpleColorSelect_GetColorValueTexture
+00819880	callgraph	FrameScript_Object::RegisterScriptObject	only unmatched callee of 0049e5b0=CSimpleFrame_GetTitleRegion, 004a1f10=CSimpleFrame_GetRegions, 004a2510=CSimpleFrame_GetChildren
 00819a60	table	debuglocals	binding "debuglocals" in FrameScriptInternal::extra_funcs ~ table 00a443a8
 00819bb0	string	FrameScript_Initialize	unique "compat.lua"
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was sticky
-0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was sticky
-0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was sticky
+0081b330	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0049f160=CSimpleFrame_IsEventRegistered
+0081b380	callgraph	FrameScript_Object::RegisterScriptEvent	only unmatched callee of 0049efe0=CSimpleFrame_RegisterEvent
+0081b410	callgraph	FrameScript_Object::UnregisterScriptEvent	only unmatched callee of 0049f060=CSimpleFrame_UnregisterEvent
 0081b530	override	FrameScript_SignalEvent	
 0081b720	table	Script_GetText	binding "GetText" in s_ScriptFunctions ~ table 00af5848
 0081b7b0	table	Script_CreateFont	binding "CreateFont" in s_ScriptFunctions ~ table 00af5848
@@ -2327,14 +2333,14 @@ addr	how	frozen	evidence
 0084dbd0	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 009764e0=CSimpleEditBox_SetMaxBytes, 009765d0=CSimpleEditBox_SetMaxLetters
 0084dbf0	override	lua_settop	
 0084dc50	callgraph	lua_remove	only unmatched callee of 009748f0=CSimpleHTML_GetTextTypeArg
-0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819ea0=FrameScript_Execute
+0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819880=FrameScript_Object::RegisterScriptObject, 00819ea0=FrameScript_Execute
 0084dd70	string	lua_replace	unique "no calling environment"
 0084de50	callorder	lua_pushvalue	same slot between linked calls in 0084fc00=luaL_openlib, 008519b0=setn, 00854340=getfunc
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004dfa70=Script_IsRaceClassRestricted
-0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
+0084df20	override	lua_isnumber	
+0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc0c0=Script_PlayGlueAmbience
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
 0084e0b0	callorder	lua_toboolean	same slot between linked calls in 0058e800=CGQuestPOIFrame_EnableSmoothing, 0058e850=CGQuestPOIFrame_EnableMerging, 00815500=StringToBOOL
@@ -2347,16 +2353,16 @@ addr	how	frozen	evidence
 0084e2a0	override	lua_pushnumber	
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage, 00816c40=sub_816C40, 00853340=push_onecapture
 0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
-0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization, 00510e00=Script_GetRealmName
+0084e350	callgraph	lua_pushstring	only unmatched callee of 004e06f0=Script_GetFactionForRace, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
 0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
 0084e4d0	override	lua_pushboolean	
-0084e500	order	lua_pushlightuserdata	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
-0084e530	order	lua_pushthread	definition order between lua_pushboolean and lua_gettable in vendor/lua-5.1.3/src/lapi.c
+0084e500	callorder	lua_pushlightuserdata	same slot between linked calls in 00819880=FrameScript_Object::RegisterScriptObject
+0084e530	order	lua_pushthread	definition order between lua_pushlightuserdata and lua_gettable in vendor/lua-5.1.3/src/lapi.c
 0084e560	callorder	lua_gettable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop, 004a15a0=CSimpleFrame_SetBackdrop
 0084e590	callgraph	lua_getfield	only unmatched callee of 00816910=getglobal
-0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName, 00816f30=securecall
+0084e600	callorder	lua_rawget	same slot between linked calls in 0048b5f0=CScriptObject::GetScriptObjectByName, 00816f30=securecall, 00819880=FrameScript_Object::RegisterScriptObject
 0084e670	override	lua_rawgeti	
 0084e6e0	callorder	lua_createtable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
@@ -2388,7 +2394,7 @@ addr	how	frozen	evidence
 0084f5c0	callorder	luaL_pushresult	same slot between linked calls in 008529a0=str_dump
 0084f610	callorder	luaL_addvalue	same slot between linked calls in 00853780=add_s
 0084f6a0	callorder	luaL_buffinit	same slot between linked calls in 00851c30=tconcat
-0084f6c0	callorder	luaL_ref	same slot between linked calls in 00819bb0=FrameScript_Initialize
+0084f6c0	callorder	luaL_ref	same slot between linked calls in 00819880=FrameScript_Object::RegisterScriptObject, 00819bb0=FrameScript_Initialize
 0084f8b0	string	luaL_argerror	unique "bad argument #%d (%s)"
 0084f960	callorder	luaL_checktype	same slot between linked calls in 008519b0=setn, 00851c30=tconcat, 008529a0=str_dump
 0084f9c0	string	luaL_checkany	unique "value expected"
@@ -2616,9 +2622,8 @@ addr	how	frozen	evidence
 0087c710	string	SESound::Init	unique " - FMOD Memory Init"
 0087ebc0	override	SEDiskSound::SEDiskSound	
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
-008889b0	callgraph	FrameScript_Object::RegisterScriptObject	only unmatched callee of 00516bf0=Script_GetMouseFocus
-0088b9c0	callgraph	ActivePlayerData	only unmatched callee of 0060e290=Script_GetSpellCritChance
-0088be0d	callgraph	CVar::GetString	only unmatched callee of 004dd610=Script_GetMovieResolution
+0088b9c0	callgraph	CSimpleFrame::GetObjectType	only unmatched callee of 0049e9d0=CSimpleFrame_SetFrameLevel, 0049fb00=CSimpleFrame_SetID
+0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
@@ -2648,6 +2653,8 @@ addr	how	frozen	evidence
 008afeb0	string	GroundEffectDoodadRec::GetFilename	unique "DBFilesClient\GroundEffectDoodad.dbc"
 008afec0	string	GroundEffectTextureRec::GetFilename	unique "DBFilesClient\GroundEffectTexture.dbc"
 008b02c0	string	ItemRec::GetFilename	unique "DBFilesClient\Item.dbc"
+008b02e0	string	ItemClassRec::GetFilename	unique "DBFilesClient\ItemClass.dbc"
+008b12d0	string	ItemSubClassRec::GetFilename	unique "DBFilesClient\ItemSubClass.dbc"
 008b1940	string	ItemVisualsRec::GetFilename	unique "DBFilesClient\ItemVisuals.dbc"
 008b2710	string	LiquidTypeRec::GetFilename	unique "DBFilesClient\LiquidType.dbc"
 008b2b10	string	LoadingScreensRec::GetFilename	unique "DBFilesClient\LoadingScreens.dbc"
