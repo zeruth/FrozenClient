@@ -11813,9 +11813,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 6,
 "refs": [],
-"line": 7
+"line": 12
 },
 "operator new[]": {
 "files": [
@@ -11835,9 +11835,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 8,
+"lines": 6,
 "refs": [],
-"line": 15
+"line": 20
 },
 "operator delete": {
 "files": [
@@ -11859,7 +11859,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 23
+"line": 28
 },
 "operator delete[]": {
 "files": [
@@ -11881,7 +11881,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 35
+"line": 48
 },
 "SMemAlloc": {
 "files": [
@@ -11897,9 +11897,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 20,
+"lines": 18,
 "refs": [],
-"line": 47
+"line": 60
 },
 "SMemCmp": {
 "files": [
@@ -11912,9 +11912,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 66
+"line": 79
 },
 "SMemCopy": {
 "files": [
@@ -11927,9 +11927,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 3,
 "refs": [],
-"line": 70
+"line": 83
 },
 "SMemFill": {
 "files": [
@@ -11942,9 +11942,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 74
+"line": 87
 },
 "SMemFree": {
 "files": [
@@ -11957,9 +11957,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 2,
+"lines": 5,
 "refs": [],
-"line": 78
+"line": 91
 },
 "SMemMove": {
 "files": [
@@ -11972,9 +11972,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 84
+"line": 97
 },
 "SMemReAlloc": {
 "files": [
@@ -11993,9 +11993,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 29,
+"lines": 31,
 "refs": [],
-"line": 88
+"line": 101
 },
 "SMemZero": {
 "files": [
@@ -12008,9 +12008,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 3,
+"lines": 6,
 "refs": [],
-"line": 120
+"line": 133
 },
 "CSBasePriority::Relink": {
 "files": [

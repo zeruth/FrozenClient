@@ -1,4 +1,6 @@
 addr	how	frozen	evidence
+00401010	annotated	operator new	tag in lib/squall/storm/Memory.cpp
+00401030	annotated	operator delete[]	tag in lib/squall/storm/Memory.cpp
 00401050	callorder	CDataStore::CDataStore	same slot between linked calls in 00516610=Script_RandomRoll
 00401070	annotated	CDataStore::FetchWrite	tag in lib/common/common/datastore/CDataStore.cpp
 00401200	annotated	ComparePatchArchives	tag in src/client/Archive.cpp
@@ -2087,7 +2089,7 @@ addr	how	frozen	evidence
 0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
 0076dd20	override	NameNeedsDeclension	
 0076e540	override	SMemAlloc	
-0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete, 007644b0=ReserveLine
+0076e5a0	callgraph	SMemFree	only unmatched callee of 00401030=operator delete[], 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	

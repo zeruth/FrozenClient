@@ -1,4 +1,36 @@
 {
+ "00401010": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Memory.cpp",
+   "lib/squall/storm/memory.cpp"
+  ],
+  "frozen": "operator new",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "?",
+  "refSize": 23,
+  "status": "ported"
+ },
+ "00401030": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Memory.cpp",
+   "lib/squall/storm/memory.cpp"
+  ],
+  "frozen": "operator delete[]",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "?",
+  "refSize": 27,
+  "status": "ported"
+ },
  "00401050": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
