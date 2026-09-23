@@ -2930,8 +2930,130 @@ void CM2Model::UnoptimizeVisibleGeometry() {
     // TODO
 }
 
+// ref: FUN_00832840
+// Stop whatever a bone is playing. a4 picks which slot: the primary sequence, or the secondary
+// one alone. a3 asks for the stop to be blended rather than instant, which the model's 0x800 flag
+// can veto. SetBoneSequence routes here when handed sequence id -1, and the character component
+// calls it directly to clear the face and hair bones.
 void CM2Model::UnsetBoneSequence(uint32_t boneId, int32_t a3, int32_t a4) {
-    // TODO
+    // Waiting for load
+
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 6;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+        modelCall->args[1] = a3;
+        modelCall->args[2] = a4;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    if (this->m_flag800) {
+        a3 = 0;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // Resolve the bone id to an index
+
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count() || boneIndex == 0) {
+        return;
+    }
+
+    if (data->bones[boneIndex].parentIndex == 0xFFFF) {
+        return;
+    }
+
+    if (!this->Sub8269C0(boneId, boneIndex)) {
+        return;
+    }
+
+    this->CancelDeferredSequences(boneIndex, a4 != 0);
+
+    auto& modelBone = this->m_bones[boneIndex];
+
+    // Secondary slot only: clear it and leave the primary alone.
+    if (!a4) {
+        modelBone.secondarySequence.uint8 = 0xFFFF;
+        modelBone.secondarySequence.float14 = 0.0f;
+        modelBone.secondarySequence.uintC = 0;
+        modelBone.secondarySequence.float18 = 0.0f;
+        modelBone.secondarySequence.uint10 = 0;
+        modelBone.secondarySequence.uint1C = 0;
+
+        return;
+    }
+
+    // Unlink this bone from the model's animating-bone list
+
+    if (modelBone.dword98) {
+        *modelBone.dword98 = modelBone.word96;
+    }
+
+    if (modelBone.word96 != 0xFFFF) {
+        this->m_bones[modelBone.word96].dword98 = modelBone.dword98;
+    }
+
+    modelBone.dword98 = nullptr;
+    modelBone.word96 = 0xFFFF;
+
+    if (!a3) {
+        modelBone.secondarySequence.uint8 = 0xFFFF;
+    } else {
+        // Blended stop: the sequence being stopped is promoted into the secondary slot and faded
+        // out over 150ms. If a previous fade is still more than half way through, it wins and the
+        // promotion is skipped, so a fast stream of stops cannot keep restarting the blend.
+        bool promote = true;
+
+        if (modelBone.secondarySequence.uint8 != 0xFFFF) {
+            float t = static_cast<float>(static_cast<int32_t>(modelBone.uint9C) - static_cast<int32_t>(this->m_scene->m_time)) * modelBone.floatA0;
+            float weight = 0.0f;
+
+            if (t >= 0.0f && t <= 1.0f) {
+                weight = (3.0f - (t + t)) * t * t;
+            } else if (t > 1.0f) {
+                weight = 1.0f;
+            }
+
+            weight = weight * modelBone.floatA4;
+
+            if (weight > 0.5f) {
+                promote = false;
+            }
+        }
+
+        if (promote) {
+            modelBone.secondarySequence = modelBone.sequence;
+            modelBone.floatA0 = 1.0f / 150.0f;
+            modelBone.uint9C = this->m_scene->m_time + 150;
+            modelBone.floatA4 = 1.0f;
+        }
+    }
+
+    modelBone.sequence.float14 = 0.0f;
+    modelBone.sequence.uint8 = 0xFFFF;
+    modelBone.sequence.float18 = 0.0f;
+    modelBone.uint90 = 0xFFFFFFFF;
+    modelBone.uint94 = 0;
+    modelBone.sequence.uintC = 0;
+    modelBone.sequence.uint10 = 0;
+    modelBone.sequence.uint1C = 0;
 }
 
 void CM2Model::UpdateLoaded() {
