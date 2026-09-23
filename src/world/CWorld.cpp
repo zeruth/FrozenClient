@@ -76,6 +76,11 @@ namespace {
 // Band times are half-minutes, so a full day is 1440 x 2.
 const int32_t DAY_HALF_MINUTES = 2880;
 
+// Identified 2026-09-23 from the index arithmetic, which leaves no room for doubt: the
+// reference computes `band + n * 18 - 0x11` where n is the light param read through a
+// pointer, and (P - 1) * 18 + band + 1 expands to exactly P * 18 + band - 17. The table it
+// indexes is the global at 0x00af49bc, and the stride of 18 is the LightIntBand band count.
+// ref: FUN_007ebf30
 void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
     auto rec = g_lightIntBandDB.GetRecord((P - 1) * 18 + band + 1);
 
@@ -128,6 +133,10 @@ void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
 
 // Interpolate a LightFloatBand scalar (band 0 = fog end, band 1 = fog start scalar) at time t.
 // A LightParams owns 6 consecutive float-band rows; row IDs are 1-based.
+// The float sibling of InterpBandColor above, and identified the same way: the reference
+// computes `band + n * 6 - 0x5` against the table at 0x00af49e0, and (P - 1) * 6 + band + 1
+// is P * 6 + band - 5. Six is the LightFloatBand band count, against LightIntBand's 18.
+// ref: FUN_007ebf90
 float InterpFloatBand(int32_t P, int32_t band, int32_t t) {
     auto rec = g_lightFloatBandDB.GetRecord((P - 1) * 6 + band + 1);
 

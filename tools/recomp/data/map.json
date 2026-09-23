@@ -35488,11 +35488,43 @@
   "refSize": 606,
   "status": "ported"
  },
+ "007ebf30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "InterpBandColor",
+  "frozenSize": 679,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 92,
+  "status": "faithful"
+ },
+ "007ebf90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "InterpFloatBand",
+  "frozenSize": 361,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 93,
+  "status": "faithful"
+ },
  "007ebff0": {
   "branchRatio": 0.25,
   "constOverlap": 0.1,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"

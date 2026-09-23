@@ -1532,6 +1532,16 @@
     "status": "excluded",
     "note": "__EH_prolog3_catch -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
   },
+  "007ebf30": {
+    "frozen": "InterpBandColor",
+    "status": "faithful",
+    "note": "InterpBandColor. STATUS faithful BY HAND: it scores 0.00 on call order and that is entirely decomposition. The reference builds a band object on the stack (0x008b7da0), fills it from the LightIntBand table at 0x00af49bc (0x007eb210) and evaluates it at a time; frozen looks the record up and interpolates inline, so none of those four calls appears on its side and none ever can. The identification itself is arithmetic rather than position: the reference computes `band + n * 18 - 0x11` where n is the light param read through a pointer, and frozen's (P - 1) * 18 + band + 1 expands to exactly P * 18 + band - 17. The stride is the LightIntBand band count. The interpolation was checked against the reference at runtime once already -- the wrap past the last key was measured at 18:12 and corrected, and the comment in CWorld.cpp records the colours on both sides -- which is better evidence for this one than a call sequence would be."
+  },
+  "007ebf90": {
+    "frozen": "InterpFloatBand",
+    "status": "faithful",
+    "note": "InterpFloatBand. STATUS faithful BY HAND: it scores 0.00 on call order and that is entirely decomposition. The reference builds a band object on the stack (0x008b7da0), fills it from the LightFloatBand table at 0x00af49e0 (0x007eb210) and evaluates it at a time; frozen looks the record up and interpolates inline, so none of those four calls appears on its side and none ever can. The identification itself is arithmetic rather than position: the reference computes `band + n * 6 - 0x5` where n is the light param read through a pointer, and frozen's (P - 1) * 6 + band + 1 expands to exactly P * 6 + band - 5. The stride is the LightFloatBand band count. The interpolation was checked against the reference at runtime once already -- the wrap past the last key was measured at 18:12 and corrected, and the comment in CWorld.cpp records the colours on both sides -- which is better evidence for this one than a call sequence would be."
+  },
   "006a3870": {
     "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
     "status": "ported",
