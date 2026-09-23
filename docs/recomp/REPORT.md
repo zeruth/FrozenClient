@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 15:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 15:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 879, callgraph 179, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 15:37 -- mapped 3088, ported 2367, stub 669, spine mapped 498.
+Previous run: 2026-09-23 15:40 -- mapped 3088, ported 2367, stub 669, spine mapped 498.
 
 ## Lua API coverage (binding tables)
 
@@ -568,7 +568,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `ParticleFxRenderImpl` | world | 7268 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
-| `CWorld::UpdateOutdoorLight` | world | 4972 | src/world/CWorld.cpp |
 | `std::_Matcher3<wchar_t,std::regex_traits<wchar_t>,wchar_t const *,void>::_Match_pat` | glue | 4820 |  |
 | `SHA1_Transform` | lib/common | 4679 | lib/common/common/SHA1.cpp |
 | `ParseLegacyLiquid` | world | 4522 | src/world/Terrain.cpp |
@@ -577,6 +576,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `T1_Decoder_Parse_Charstrings` | lib/freetype-2.0 | 4304 | vendor/freetype-2.0.9/src/psaux/t1decode.c |
 | `ParseChunk` | world | 4052 | src/world/Terrain.cpp |
 | `doContent` | lib/expat-2.0 | 3900 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
+| `CWorld::UpdateOutdoorLight` | world | 3841 | src/world/CWorld.cpp |
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
 | `LoadTile` | world | 3560 | src/world/Terrain.cpp |
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 14:48 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:51 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:51 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:52 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
@@ -753,6 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 15:35 | 3088 (11.4%) | 1179 (4.3%) | 669 | 498/5529 | 2924/2964 | 1491 |
 | 2026-09-23 15:37 | 3088 (11.4%) | 1179 (4.3%) | 669 | 498/5529 | 2924/2964 | 1491 |
 | 2026-09-23 15:40 | 3088 (11.4%) | 1179 (4.3%) | 669 | 498/5529 | 2924/2964 | 1491 |
+| 2026-09-23 15:41 | 3088 (11.4%) | 1179 (4.3%) | 669 | 498/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 

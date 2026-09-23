@@ -146,6 +146,9 @@ class CWorld {
 
         static float s_cloudDensity;
         static float s_skyHighlight;
+        // waterShallow, waterDeep, oceanShallow, oceanDeep -- LightParams columns 5..8, blended
+        // between lights the same way every other light value is.
+        static float s_liquidAlpha[4];
         static C3Vector s_skyColors[6];
         static C3Vector s_fogColor;
         static float s_fogStart;

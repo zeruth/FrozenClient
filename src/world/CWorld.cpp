@@ -63,6 +63,7 @@ C3Vector CWorld::s_cloudColor2 = { 1.0f, 1.0f, 1.0f };
 C3Vector CWorld::s_lightBands12to17[6] = {};
 float CWorld::s_cloudDensity = 0.5f;
 float CWorld::s_skyHighlight = 0.0f;
+float CWorld::s_liquidAlpha[4] = { 0.75f, 1.0f, 0.75f, 1.0f };
 float CWorld::s_fogStart = 0.0f;
 float CWorld::s_fogEnd = 0.0f;
 
@@ -183,6 +184,8 @@ struct LightColors {
     // from the DBC integer with fildl at 0x007ec1cd, and multiplies the highlight's strength band
     // by it -- so a zone whose row carries 0 gets no highlight at all.
     float highlightSky;
+    // LightParams columns 5..8 in that order: waterShallow, waterDeep, oceanShallow, oceanDeep.
+    float liquidAlpha[4];
 };
 
 // Interpolate every band of one LightParams at time t into a LightColors.
@@ -259,6 +262,15 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
 
     auto params = g_lightParamsDB.GetRecord(P);
     out.highlightSky = params ? static_cast<float>(params->m_highlightSky) : 0.0f;
+
+    // The reference does not read these from the DBC at the point of use. FUN_007ebff0 copies them
+    // into the light block at +0x140..+0x14c, and FUN_007f3230 then blends two blocks before the
+    // result is published -- so what the liquid gradient callback (FUN_008a2bf0) reads is a blended
+    // value, not one record's column. Reading them here puts them through frozen's own blend below.
+    out.liquidAlpha[0] = params ? params->m_waterShallowAlpha : 0.75f;
+    out.liquidAlpha[1] = params ? params->m_waterDeepAlpha : 1.0f;
+    out.liquidAlpha[2] = params ? params->m_oceanShallowAlpha : 0.75f;
+    out.liquidAlpha[3] = params ? params->m_oceanDeepAlpha : 1.0f;
 }
 
 // One Light.dbc row cached for the current map so per-frame position selection never rescans the DBC.
@@ -445,6 +457,10 @@ void CWorld::UpdateOutdoorLight() {
         result.fogStartScalar = result.fogStartScalar * iw + local.fogStartScalar * w;
         result.highlightSky = result.highlightSky * iw + local.highlightSky * w;
 
+        for (int32_t k = 0; k < 4; k++) {
+            result.liquidAlpha[k] = result.liquidAlpha[k] * iw + local.liquidAlpha[k] * w;
+        }
+
         if (w >= 0.5f) {
             CWorld::s_outdoorParamsID = bestParams;
         }
@@ -468,6 +484,10 @@ void CWorld::UpdateOutdoorLight() {
     }
     CWorld::s_cloudDensity = result.cloudDensity;
     CWorld::s_skyHighlight = result.highlightSky;
+
+    for (int32_t k = 0; k < 4; k++) {
+        CWorld::s_liquidAlpha[k] = result.liquidAlpha[k];
+    }
     CWorld::s_floatBand2 = result.floatBand2;
     CWorld::s_floatBand4 = result.floatBand4;
     CWorld::s_floatBand5 = result.floatBand5;
@@ -751,18 +771,11 @@ int32_t CWorld::GetOutdoorParamsID() {
     return CWorld::s_outdoorParamsID;
 }
 
+// Reads the BLENDED value rather than the dominant light's record, which is what the reference
+// does: the alphas live in its light block and go through the same two-block blend as every other
+// light value, so crossing a light boundary used to step here and now ramps.
 float CWorld::GetLiquidAlpha(int32_t oceanic, int32_t deep) {
-    auto lp = g_lightParamsDB.GetRecord(CWorld::s_outdoorParamsID);
-
-    if (!lp) {
-        return deep ? 1.0f : 0.75f;
-    }
-
-    if (oceanic) {
-        return deep ? lp->m_oceanDeepAlpha : lp->m_oceanShallowAlpha;
-    }
-
-    return deep ? lp->m_waterDeepAlpha : lp->m_waterShallowAlpha;
+    return CWorld::s_liquidAlpha[(oceanic ? 2 : 0) + (deep ? 1 : 0)];
 }
 
 const C3Vector& CWorld::GetLiquidShallow(int32_t oceanic) {

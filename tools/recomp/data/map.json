@@ -35297,7 +35297,7 @@
   "status": "ported"
  },
  "007ebff0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.1,
   "faithful": false,
   "fidelity": 0.0,
@@ -35306,7 +35306,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "ComputeLightColors",
-  "frozenSize": 539,
+  "frozenSize": 634,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 558,
