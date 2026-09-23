@@ -2083,8 +2083,33 @@ int32_t CM2Model::InitializeLoaded() {
 // elements, and type 2 dispatches to CM2SceneRender::DrawBatchDoodad, which is an empty body. Those
 // batches would then silently not draw. Port the two together, and wire M2BatchDoodads to gate them
 // in the same change.
+// Identified 2026-09-23 as FUN_00824550, from CM2Scene::Animate's call order -- frozen calls it
+// from the element gather at exactly that position, it is a thiscall on a model taking one pointer,
+// and two of its reads settle it: `testb $0x10, (%eax)` on the argument is batch->flags & 0x10, and
+// `[[esi+0x2c] + 0x150] + 0x2c` compared against 1 is m_shared->m_data->bones.count, the same
+// expression DrawBatch uses. Its first call is to 0x0081c0b0, already mapped as M2GetCacheFlags,
+// and it tests bit 0x20 of the result -- which is the M2BatchDoodads flag this comment predicted
+// before the function was found.
+//
+// The body, so that whoever ports it does not have to redo this:
+//
+//     flags = M2GetCacheFlags();
+//     if (!(flags & 0x20))                     return 0;   // M2BatchDoodads off
+//     if (!(this->[0x10] & 0x10))              return 0;   // a model flag, not yet mapped here
+//     if (m_shared->m_data->bones.count <= 1
+//         && (flags & 0x40))                   return 0;
+//     if (!(batch->flags & 0x10))              return 0;
+//     other = this->[0x2a8];                               // the shared-animation source pointer
+//     if (other && other->[0xa4])              return 0;
+//     return 1;
+//
+// Two of those fields (+0x10 and +0x2a8/+0xa4) still need mapping onto frozen's CM2Model, so this
+// is a specification rather than a port.
+//
+// **Still not implemented, deliberately, and the reason below has not changed.**
+// ref: FUN_00824550
 int32_t CM2Model::IsBatchDoodadCompatible(M2Batch* batch) {
-    // TODO
+    // TODO -- see the decoded body above, and read the warning above that before enabling it
 
     return 0;
 }

@@ -37005,6 +37005,22 @@
   "refSize": 221,
   "status": "stub"
  },
+ "0081bfa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::BeginThread",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 36,
+  "status": "stub"
+ },
  "0081bfd0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37376,7 +37392,7 @@
   "branchRatio": 0.205,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.308,
+  "fidelity": 0.327,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -37467,6 +37483,22 @@
   "module": "M2Scene.cpp",
   "refSize": 58,
   "status": "ported"
+ },
+ "00824550": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::IsBatchDoodadCompatible",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 84,
+  "status": "stub"
  },
  "00824980": {
   "branchRatio": 1.0,

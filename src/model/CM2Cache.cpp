@@ -20,8 +20,18 @@ CM2Cache CM2Cache::s_cache;
 // CM2Cache::Initialize therefore refuses to propagate the M2UseThreads CVar into flag 0x4, and
 // says so at the spot where the propagation would be added. Port this and WaitThread together,
 // and re-enable the bit in the same change.
+// Identified 2026-09-23 as FUN_0081bfa0, from CM2Scene::Animate's call order -- frozen calls it at
+// exactly that position. The reference stores its two arguments at +0x1014 and +0x1018 and then
+// signals a thread object at +0x1008, and it returns with `retl $0x8`, so it takes the two stack
+// arguments this signature has: the callback and its context. frozen's own call site passes
+// CM2Scene::AnimateThread and the scene, which is the same shape.
+//
+// **Still not implemented, deliberately.** The warning above has not changed: this and WaitThread
+// have to land together, with the M2UseThreads bit re-enabled in the same change, or every second
+// model freezes mid-pose.
+// ref: FUN_0081bfa0
 void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
-    // TODO
+    // TODO -- with WaitThread, and not before; see above
 }
 
 CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {

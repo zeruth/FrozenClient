@@ -2324,6 +2324,7 @@ addr	how	frozen	evidence
 0081bab0	table	Script_GetNumFrames	binding "GetNumFrames" in s_ScriptFunctions ~ table 00af5848
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	table	Script_GetFramesRegisteredForEvent	binding "GetFramesRegisteredForEvent" in s_ScriptFunctions ~ table 00af5848
+0081bfa0	annotated	CM2Cache::BeginThread	tag in src/model/CM2Cache.cpp
 0081bfd0	callorder	CM2Cache::WaitThread	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
@@ -2353,6 +2354,7 @@ addr	how	frozen	evidence
 00823cb0	override	CM2Scene::Draw	
 00823d90	override	CM2Model::DetachFromScene	
 00823ed0	sticky	CM2Model::WaitForLoad	held from the previous run, where it was sticky
+00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
 00824d30	override	CM2Model::FreeExternalResources	
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
