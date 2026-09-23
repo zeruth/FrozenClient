@@ -271,17 +271,26 @@ seen running — treat them as suspect until a run confirms them.
    cap; `D3DRS_DEPTHBIAS`/`D3DRS_SLOPESCALEDEPTHBIAS` are never set). The GL backend does drive
    `glPolygonOffset`, so this is a D3D-side gap worth closing on its own merits.
    **(built, unverified)** — the blob pass now binds `s_terrainVS` + `g_blobDecalPsD3d9` with
-   identical vertex streams and an EQUAL test. Still open: `GxBlend_Mod` with the `ShadowAdd`/
-   `ShadowMod` ramps from `ShadowInit`, animation-bbox footprints, doodad casters, and WMO/M2
-   receivers. See `docs/ref/parity-shadows.md`.
+   identical vertex streams and an EQUAL test. **This list was audited 2026-09-23 and three of
+   its five items were already done**: WMO floor receivers (`BlobShadowDrawWmo`), doodad casters
+   (`CGWorldFrame.cpp` calls both draws from the doodad walk), and the `ShadowAdd`/`ShadowMod`
+   ramps, which were decoded on 2026-09-16 and turn out to be a separate stage-1 fade along the
+   projection axis rather than anything to do with the strength term. Genuinely still open: M2
+   receivers (`DrawBatchProj` is a stub, and unreachable behind its own gate — see the note at
+   the dispatch in `CM2SceneRender::Draw`), animation-bbox footprints (the caster radius comes
+   from the cull extent, not the animated bounds), and where the reference's shadow strength
+   actually comes from, which is still unread. See `docs/ref/parity-shadows.md`.
 2. **Sky and atmosphere — the sun direction is solved.** It is *not* a real arc and *not* from
    Light.dbc: `FUN_007eea90` holds the azimuth at a constant 225 degrees and wobbles the zenith
    angle between 127 and 110 degrees twice a day from a four-key band, storing a vector that points
    away from the light. Earlier hunts failed because DayNight `+0x30` is the **camera forward**
    vector, not the sun. **(built, unverified)** — direction, the seven-ring dome with the fog
    colour on its bottom two rings, and the corrected fog formulas
-   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have all landed. Still open:
-   clouds, the sun and moon discs, the sky highlight. See `docs/ref/parity-sky.md`.
+   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have all landed. **This list was
+   stale too**: clouds (`src/world/Clouds.cpp`) and the sun and moon discs (`SkyBodiesRender`)
+   both landed on 2026-09-15, as the Known blockers section below already said — the two
+   sections contradicted each other. Genuinely still open: the sun and moon glare, the sky
+   highlight, and the translucent dome layers. See `docs/ref/parity-sky.md`.
 3. **Vertex positions are absolute world coordinates.** The deepest parity break behind the depth
    problems: streams bake absolute world coordinates (up to ±17066) and cancel the camera
    translation inside the per-vertex `dp4`, leaving millimetres of view-dependent depth error. The
