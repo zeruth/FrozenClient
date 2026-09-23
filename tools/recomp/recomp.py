@@ -521,8 +521,16 @@ def ref_seq(refs, m, addr):
     for c in refs[addr]['calls']:
         if c in m:
             out.append(m[c][0])
-        elif c in refs and refs[c]['named'] and refs[c]['excluded']:
-            out.append(crt_token(refs[c]['name']) or c)
+        elif c in refs and refs[c]['excluded']:
+            # An excluded callee is not part of the port -- CRT, a compiler helper, third-party
+            # code, or a hook the release build compiled out. When it has a name we can translate
+            # (memset, memcpy), keep it: frozen makes the same call and the two match. When it has
+            # none, DROP it rather than emitting the raw address, which nothing on the frozen side
+            # can ever match. Emitting it charged every caller for correctly not calling it --
+            # 005eeb70 alone, a one-byte compiled-out hook, is called by 1692 reference functions.
+            token = crt_token(refs[c]['name']) if refs[c]['named'] else None
+            if token:
+                out.append(token)
         else:
             out.append(c)
     return out

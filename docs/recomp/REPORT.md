@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 11:43 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 11:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.39M |
-| mapped to a frozen function | 3063 (+1) (11.3%) | 678.7k (12.3%) |
-| &nbsp;&nbsp;ported | 2369 (+1) | 506.0k |
+| mapped to a frozen function | 3063 (=) (11.3%) | 678.7k (12.3%) |
+| &nbsp;&nbsp;ported | 2369 (=) | 506.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 646 (=) | 130.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1143 (=) (4.2%)** | **144.0k (2.6%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1167 (=) (4.3%)** | **149.8k (2.7%)** |
 | unmapped | 24098 | 4.73M |
-| world spine (reachable from OnFrameRender) | 5530, mapped 489 (+1) (8.8%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 499 (+1) (8.6%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 214 (+1) (4.7%)** | |
+| world spine (reachable from OnFrameRender) | 5530, mapped 489 (=) (8.8%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 499 (=) (8.6%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 214 (=) (4.7%)** | |
 | frozen functions (src/, from PDB + source) | 12206, stubs 1714 | |
 
 Match evidence: annotated 870, callgraph 183, callorder 129, cvar 32, handler 29, order 162, override 213, sticky 19, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 11:38 -- mapped 3062, ported 2368, stub 646, spine mapped 488.
+Previous run: 2026-09-23 11:47 -- mapped 3063, ported 2369, stub 646, spine mapped 489.
 
 ## Lua API coverage (binding tables)
 
@@ -608,35 +608,34 @@ The port exists but does not make the calls the reference makes, in the order it
 
 | addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| 006277f0 | `TooltipSetItemInfo` | 22% | 604 | 54 | 797 | 37 | 4% | 24814 |
+| 006277f0 | `TooltipSetItemInfo` | 23% | 604 | 54 | 797 | 37 | 4% | 24814 |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
-| 0082f0f0 | `CM2Model::AnimateMT` | 15% | 47 | 42 | 152 | 52 | 2% | 6267 |
+| 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00832ea0 | `CM2Model::InitializeLoaded` | 25% | 71 | 27 | 170 | 51 | 2% | 5663 |
-| 00821a20 | `CM2Scene::Animate` | 30% | 54 | 30 | 219 | 43 | 8% | 5621 |
-| 00857ca0 | `luaV_execute` | 50% | 50 | 48 | 163 | 115 | 2% | 5138 |
+| 00832ea0 | `CM2Model::InitializeLoaded` | 26% | 71 | 27 | 170 | 51 | 2% | 5663 |
+| 00821a20 | `CM2Scene::Animate` | 31% | 54 | 30 | 219 | 43 | 8% | 5621 |
+| 00857ca0 | `luaV_execute` | 51% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 19% | 137 | 33 | 172 | 19 | 2% | 5010 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
 | 004dab40 | `CGlueMgr::PollAccountLogin` | 17% | 148 | 29 | 90 | 15 | 10% | 3696 |
-| 00823130 | `CM2SceneRender::Draw` | 68% | 25 | 28 | 39 | 12 | 0% | 2909 |
+| 00823130 | `CM2SceneRender::Draw` | 81% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
-| 0079e7c0 | `CMap::MapMemInitialize` | 58% | 45 | 26 | 21 | 0 | 16% | 2068 |
-| 004e3cd0 | `CCharacterSelection::ShowCharacter` | 32% | 37 | 7 | 49 | 5 | 0% | 2058 |
-| 004c6a40 | `SI2::PlaySoundKit` | 10% | 48 | 28 | 74 | 24 | 17% | 1787 |
+| 0079e7c0 | `CMap::MapMemInitialize` | 60% | 45 | 26 | 21 | 0 | 16% | 2068 |
+| 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
+| 004c6a40 | `SI2::PlaySoundKit` | 11% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 00405dd0 | `Sub405DD0` | 20% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 13% | 52 | 32 | 27 | 7 | 0% | 1493 |
+| 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 14% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
-| 0062dae0 | `CGTooltip_SetHyperlink` | 30% | 66 | 26 | 41 | 12 | 0% | 1382 |
+| 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 49% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0081fe90 | `CM2SceneRender::SetupMaterial` | 62% | 13 | 16 | 41 | 14 | 4% | 1306 |
-| 0087ee60 | `SESound::LoadDiskSound` | 79% | 29 | 33 | 35 | 19 | 0% | 1303 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
-| 0052a980 | `WowClientInit` | 15% | 59 | 23 | 23 | 2 | 0% | 1267 |
+| 0052a980 | `WowClientInit` | 16% | 59 | 23 | 23 | 2 | 0% | 1267 |
 | 0062e050 | `CGTooltip_SetInventoryItem` | 21% | 39 | 14 | 31 | 6 | 0% | 1226 |
 | 004f1a20 | `CCharacterComponent::Initialize` | 40% | 10 | 11 | 10 | 9 | 29% | 1189 |
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
@@ -648,6 +647,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00813ee0 | `FrameXML_ProcessFile` | 79% | 42 | 46 | 35 | 24 | 19% | 1104 |
 | 007c7ae0 | `CMapObjGroup::RecordHits` | 9% | 11 | 1 | 18 | 8 | 5% | 1062 |
 | 0040a270 | `Paint` | 52% | 27 | 35 | 19 | 12 | 0% | 1055 |
+| 0082e140 | `CM2Model::AnimateMTSimple` | 75% | 6 | 9 | 33 | 14 | 0% | 1032 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 10:06 | 3044 (11.2%) | 1125 (4.1%) | 646 | 463/5530 | 2924/2964 | 1491 |
-| 2026-09-23 10:07 | 3044 (11.2%) | 1124 (4.1%) | 646 | 463/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:13 | 3058 (11.3%) | 1131 (4.2%) | 646 | 477/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:16 | 3059 (11.3%) | 1131 (4.2%) | 646 | 478/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:23 | 3061 (11.3%) | 1133 (4.2%) | 646 | 479/5530 | 2924/2964 | 1491 |
@@ -753,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 11:34 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:38 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:43 | 3063 (11.3%) | 1143 (4.2%) | 646 | 489/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:47 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:47 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 
