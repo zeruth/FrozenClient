@@ -236,7 +236,7 @@ The goal is 100% parity with the reference world render. The method is:
 
 ### Shader assets
 
-The terrain and decal shaders are compiled D3D9 bytecode embedded in
+The terrain and decal shaders currently in use are compiled D3D9 bytecode embedded in
 `src/world/TerrainShadersD3d9.hpp`. **The HLSL sources live in `src/world/shaders/`** — keep them
 there and regenerate when changing a shader (the original terrain HLSL was lost, and the header had
 to be disassembled with `fxc -dumpbin` to recover its interface):
@@ -245,6 +245,14 @@ to be disassembled with `fxc -dumpbin` to recover its interface):
 FXC="/c/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/fxc.exe"
 MSYS_NO_PATHCONV=1 "$FXC" -nologo -T ps_2_0 -E main -Fo out.cso src/world/shaders/blob_decal_ps.hlsl
 ```
+
+**The original compiled terrain shaders are not lost — they ship in the archives.** The HLSL
+source is gone, but `shaders\Vertex\vs_2_0\Terrain.bls` and `shaders\Pixel\ps_2_0\Terrain0.bls`
+and friends extract straight out of `patch.MPQ`, and `CGxDevice::IShaderLoad` already reads that
+format and walks the same profile fallback the reference does. `CMap::MapMemInitialize` shows
+exactly which names and permutation counts to ask for. Using them means porting the terrain
+constant setup and permutation selection too, so it is a port rather than a swap — see
+`docs/ref/parity-map-memory.md` before starting, and verify it on screen in the same change.
 
 `terrain_vs` emits `oPos` from constants c0-c3, `oT0` = layer UV, `oT1` = `position.xy * 0.2`, and
 `oD0` = the baked vertex colour. Any pass that needs to be coplanar with terrain must use this
