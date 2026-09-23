@@ -60,7 +60,7 @@ By surface, roughly:
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
 | Functions reachable from the world render entry point | 505 / 5,529 &nbsp;·&nbsp; ~9% |
 | The render surface: the map, model, entity, texture and device modules that draw the world | 247 / 4,589 &nbsp;·&nbsp; **~5%** |
-| Empty functions the render path still has call sites for | **47** &nbsp;·&nbsp; an upper bound, not a defect count |
+| Empty functions the render path still has call sites for | **46** &nbsp;·&nbsp; an upper bound, not a defect count |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
 
 The last row is the one that moves week to week. Linked and faithful count functions that exist; it counts functions that **do not** and are called anyway. A few of those are worse than missing: a caller that changes its own control flow assuming the stub succeeded will do something wrong rather than nothing. Three such traps have been found and disarmed before anything switched them on: enabling the model cache's threading flag would have frozen on every second model, letting merged batches through would have stopped them drawing, and assigning the async-BLP hook would have stopped every BLP loading. Each was harmless only because a flag upstream was still off.
