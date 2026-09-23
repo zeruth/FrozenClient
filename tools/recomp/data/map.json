@@ -31755,6 +31755,38 @@
   "refSize": 81,
   "status": "ported"
  },
+ "006c9330": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedMonochrome",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 231,
+  "status": "ported"
+ },
+ "006c9c70": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedAA",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 208,
+  "status": "ported"
+ },
  "006ca050": {
   "branchRatio": 0.0,
   "constOverlap": 0.5,

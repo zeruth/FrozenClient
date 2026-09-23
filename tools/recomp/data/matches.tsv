@@ -1997,6 +1997,8 @@ addr	how	frozen	evidence
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
+006c9330	override	TEXTURECACHE::PasteGlyphNonOutlinedMonochrome	
+006c9c70	override	TEXTURECACHE::PasteGlyphNonOutlinedAA	
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006cef10	callgraph	WowClientDB<AreaTableRec>::GetRecord	only unmatched callee of 00516b20=Script_GetBindLocation
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides

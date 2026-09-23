@@ -1582,5 +1582,19 @@
     "frozen": "CM2Scene::SortOpaqueGeoBatches",
     "status": "ported",
     "note": "the type-0 arm of SortOpaque's jump table (0x0081ef18). Its body matches frozen's: check element->type == 0, then compare batch->materialLayer, then walk to the shaders through model->m_shared->m_data. Identified 2026-09-23. **It does not tiebreak on element flag 0x1**, which is what settles how the depth prepass is ordered -- see the note at the prepass gate in CM2Scene.cpp."
+  },
+  "006c9c70": {
+    "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedAA",
+    "status": "ported",
+    "note": "the plain anti-aliased glyph paste: `movb (%eax,%ebx), %ch` then `orl $0xfff` then a 16-bit store, i.e. (coverage << 8) | 0xFFF into an ARGB4444 cache texel, with 0x200-byte row steps and memset padding above and below. Identified 2026-09-23 by searching for that 0xFFF texel constant. Confirms frozen's version: frozen masks the coverage with 0xF0 first, which the reference does not, but the `| 0xFFF` makes the two identical."
+  },
+  "006c9330": {
+    "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedMonochrome",
+    "status": "ported",
+    "note": "the plain monochrome glyph paste, the same function as 006c9c70 with one line changed: it reads bit `7 - (x & 7)` of `src[x >> 3]` and turns it into 0xFFFF or 0x0000 through negb/sbb. frozen's body was empty until 2026-09-23, so any FrameXML font declaring MONOCHROME drew blank glyphs."
+  },
+  "006c9420": {
+    "status": "unlinked",
+    "note": "the outlined anti-aliased glyph paste, judging by its byte-per-pixel source reads and several hundred bytes of dilation bookkeeping. frozen has PasteGlyphOutlinedAA implemented, so this is linkable, but the pairing was not confirmed and the outlined MONOCHROME sibling -- still a stub in frozen -- is one of FUN_006c9d90 or FUN_006c9f50 rather than this."
   }
 }

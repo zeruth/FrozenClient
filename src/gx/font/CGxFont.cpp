@@ -256,8 +256,45 @@ void TEXTURECACHE::PasteGlyphNonOutlinedAA(const GLYPHBITMAPDATA& glyphData, uin
     }
 }
 
+// Monochrome glyphs come out of FreeType one BIT per pixel, most significant bit leftmost, so the
+// only difference from the anti-aliased path above is how a source pixel becomes a texel: a set bit
+// is opaque white and a clear bit is nothing. The reference spells that with negb/sbb to turn the
+// bit into a 0 or -1 mask and writes 0xFFFF or 0x0000; this writes the same two values.
+//
+// It was an empty body, and it is reachable: CSimpleFont and CSimpleFontString both set
+// FONT_MONOCHROME from the MONOCHROME flag a FrameXML font can declare, so any font that did
+// declared it drew blank glyphs. The padding rows above and below the glyph, the 256-texel row
+// stride and the odd second half of the bottom-padding guard are all the same as the AA version,
+// because in the reference they are the same code.
+// ref: FUN_006c9330
 void TEXTURECACHE::PasteGlyphNonOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
-    // TODO
+    auto src = reinterpret_cast<uint8_t*>(data.m_data);
+    auto pitch = data.m_glyphPitch;
+    auto dstCellStride = data.m_glyphCellWidth * 2;
+
+    for (int32_t y = 0; y < data.m_yStart; y++) {
+        memset(dst, 0, dstCellStride);
+        dst += 256;
+    }
+
+    for (int32_t y = 0; y < data.m_glyphHeight; y++) {
+        for (int32_t x = 0; x < data.m_glyphWidth; x++) {
+            dst[x] = (src[x >> 3] >> (7 - (x & 7))) & 1 ? 0xFFFF : 0x0000;
+        }
+
+        src += pitch;
+        dst += 256;
+    }
+
+    auto glyphHeight = data.m_glyphHeight;
+    auto yStart = data.m_yStart;
+
+    if (this->m_theFace->m_cellHeight - glyphHeight - yStart > 0 && this->m_theFace->m_cellHeight - glyphHeight != yStart) {
+        for (int32_t y = 0; y < this->m_theFace->m_cellHeight - glyphHeight - yStart; y++) {
+            memset(dst, 0, dstCellStride);
+            dst += 256;
+        }
+    }
 }
 
 void TEXTURECACHE::PasteGlyphOutlinedAA(const GLYPHBITMAPDATA& glyphData, uint16_t* dst) {
@@ -612,6 +649,12 @@ LABEL_95:
     }
 }
 
+// Still empty, and reachable the same way its non-outlined sibling was: a FrameXML font declaring
+// both OUTLINE and MONOCHROME draws blank glyphs. Not ported here because the outlined variants are
+// a different shape from the plain ones -- the reference's outlined AA paste (FUN_006c9420) runs to
+// several hundred bytes of dilation with its own row bookkeeping, and the monochrome one will
+// mirror that rather than the twenty lines above. It is one of FUN_006c9d90 or FUN_006c9f50; the
+// plain pastes are FUN_006c9330 (mono) and FUN_006c9c70 (AA).
 void TEXTURECACHE::PasteGlyphOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
     // TODO
 }
