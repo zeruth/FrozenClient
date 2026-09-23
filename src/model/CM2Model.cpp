@@ -170,6 +170,19 @@ CM2Model::~CM2Model() {
         this->m_shared = nullptr;
     }
 
+    // Let go of every model attached to this one. Each child holds a counted reference taken when
+    // it was attached, so without this they are never released and never destroyed, and each is
+    // left with m_attachParent pointing at freed memory.
+    //
+    // DetachFromParent already does the whole of what the reference does to each child here
+    // (FUN_00832640 at 0x0083274c): unlink it, clear m_flag40000, null its parent and attach id,
+    // and Release it -- which destroys it in place when the count reaches zero, recursing into its
+    // own children exactly as the reference recurses. It unlinks before releasing, so the head has
+    // already advanced by the time the child can be freed, and this loop terminates.
+    while (this->m_attachList) {
+        this->m_attachList->DetachFromParent();
+    }
+
     // TODO
 
     this->UnlinkFromAttachList();

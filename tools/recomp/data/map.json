@@ -37837,16 +37837,16 @@
   "status": "ported"
  },
  "00832640": {
-  "branchRatio": 0.042,
+  "branchRatio": 0.083,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.357,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 848,
+  "frozenSize": 880,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,
