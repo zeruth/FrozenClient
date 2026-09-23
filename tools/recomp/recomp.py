@@ -508,12 +508,32 @@ def lcs_len(a, b):
 CRT_NAME_RE = re.compile(r'^(?:FID_conflict_)?_{1,2}([A-Za-z]\w*)$')
 
 
+# Helpers the COMPILER emits, which no port can ever call because they never appear in source: the
+# stack probes, the SEH and EH prologues, the security cookie check, the C++ throw helper, and the
+# 64-bit arithmetic that x86 has no instruction for. A frozen build emits its own set under its own
+# names, so tokenising these would charge every caller for not making a call it cannot make -- the
+# same mistake excluding 005eeb70 fixed, one level down.
+IMPLICIT_CRT = (
+    'alloca_probe', 'chkstk', 'seh_prolog', 'seh_epilog', 'eh_prolog', 'eh_epilog',
+    'security_check_cookie', 'security_init_cookie', 'purecall', 'cxxthrowexception',
+    'allmul', 'alldiv', 'allrem', 'allshl', 'allshr', 'aullshr', 'aulldiv', 'aullrem',
+    'aulldvrm', 'alldvrm',
+)
+
+
 def crt_token(name):
     """CRT calls the compiler kept as calls on both sides (malloc, memset, sscanf, _msize) are
     named `_malloc` by Ghidra and `?malloc` in an unresolved frozen sequence; both become crt:malloc
-    so the two sequences can align on them."""
+    so the two sequences can align on them.
+
+    Returns None for a compiler-emitted helper, so ref_seq drops it instead."""
     m = CRT_NAME_RE.match(name)
-    return 'crt:' + m.group(1).lower() if m else None
+    if not m:
+        return None
+    base = m.group(1).lower().split('@')[0]
+    if base in IMPLICIT_CRT:
+        return None
+    return 'crt:' + base
 
 
 def ref_seq(refs, m, addr):

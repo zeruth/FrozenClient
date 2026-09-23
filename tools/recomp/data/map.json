@@ -3942,7 +3942,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.2,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp",
    "src/ui/simple/csimplefontstringscript.cpp"
@@ -12859,7 +12859,7 @@
   "branchRatio": 0.81,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 0.889,
   "files": [
    "src/glue/CNameGenerator.cpp",
    "src/glue/cnamegenerator.cpp"
@@ -29787,7 +29787,7 @@
   "branchRatio": 0.11,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.194,
+  "fidelity": 0.195,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -30043,7 +30043,7 @@
   "branchRatio": 0.046,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.232,
+  "fidelity": 0.233,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -31408,7 +31408,7 @@
   "branchRatio": 0.833,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.6,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -31935,7 +31935,7 @@
   "branchRatio": 0.381,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 1.0,
   "files": [
    "src/gx/font/CGxFont.cpp",
    "src/gx/font/cgxfont.cpp"
@@ -31966,8 +31966,8 @@
  "006c9420": {
   "branchRatio": 0.676,
   "constOverlap": 0.143,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/font/CGxFont.cpp",
    "src/gx/font/cgxfont.cpp"
@@ -32108,7 +32108,7 @@
   "branchRatio": 0.138,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.338,
+  "fidelity": 0.342,
   "files": [
    "src/ui/game/CGPartyInfo.cpp",
    "src/ui/game/cgpartyinfo.cpp"
@@ -33403,8 +33403,8 @@
  "0076dc20": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/object/client/AuraCache.cpp",
    "src/object/client/CastCache.cpp",
@@ -36404,7 +36404,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.071,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 0.909,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
@@ -36772,7 +36772,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.267,
+  "fidelity": 0.286,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
@@ -48478,8 +48478,8 @@
  "009779b0": {
   "branchRatio": 0.0,
   "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"

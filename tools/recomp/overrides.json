@@ -1460,6 +1460,78 @@
     "status": "unlinked",
     "note": "The world lighting callback: CM2Model::SetupLighting invokes it through +0x2ac at 0x00831b70 as (model, lighting, arg), and five sites in the object code store this address into that field. frozen fills the same slot from CGObject_C with CWorld::LightingCallback, but that body is an admitted stand-in -- fog plus a WMO floor probe plus a fixed sun -- and does not do what this does, so it is left UNLINKED rather than tagged. Claiming identity would report a bad port where there is really an absent one. What this does, so a port has a start: indexes the global at 0x00ac436c into 0x198-byte records at 0x00b6b240 (count at 0x00b6b23c) and requires bit 0x2000 of that record +0x170; takes a position from FUN_004e2790 and calls CM2Lighting::Initialize with a sphere centred there of radius zero, re-initialising lighting that SetupLighting already initialised and SelectLights already filled -- understand that before porting, because taken literally it discards the scene lights; then builds temporary CM2Lights (ctor, SetLightType, SetDirection, SetVisible) and calls CM2Lighting::AddLight twice. Every one of those is already ported and tagged, so the machinery exists and only the driver is missing. Still unidentified: FUN_004e2790, FUN_0065c290, FUN_007ebf30, FUN_00982970, FUN_00834ab0, FUN_004e2730, FUN_00834940."
   },
+  "0040bb50": {
+    "status": "excluded",
+    "note": "__alloca_probe -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040ca10": {
+    "status": "excluded",
+    "note": "__alloca_probe_16 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040ca26": {
+    "status": "excluded",
+    "note": "__alloca_probe_8 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040baa5": {
+    "status": "excluded",
+    "note": "__purecall -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e368": {
+    "status": "excluded",
+    "note": "__SEH_prolog4 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e3ad": {
+    "status": "excluded",
+    "note": "__SEH_epilog4 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e566": {
+    "status": "excluded",
+    "note": "___security_init_cookie -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "004111c6": {
+    "status": "excluded",
+    "note": "__security_check_cookie -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414db0": {
+    "status": "excluded",
+    "note": "__aullshr -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414f50": {
+    "status": "excluded",
+    "note": "__allmul -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414f90": {
+    "status": "excluded",
+    "note": "__aulldvrm -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088b010": {
+    "status": "excluded",
+    "note": "__CxxThrowException@8 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088b6c0": {
+    "status": "excluded",
+    "note": "__allshl -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088bd30": {
+    "status": "excluded",
+    "note": "__aullrem -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088be30": {
+    "status": "excluded",
+    "note": "__aulldiv -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088d3f0": {
+    "status": "excluded",
+    "note": "__allshr -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00894d36": {
+    "status": "excluded",
+    "note": "__EH_prolog3 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00894d69": {
+    "status": "excluded",
+    "note": "__EH_prolog3_catch -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
   "006a3870": {
     "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
     "status": "ported",
