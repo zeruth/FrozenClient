@@ -69,6 +69,7 @@ addr	how	frozen	evidence
 004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
+00422130	override	SFile::IsStreamingMode	
 00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
@@ -116,7 +117,7 @@ addr	how	frozen	evidence
 0047c060	annotated	DDCToNDCHeight	tag in src/gx/Coordinate.cpp
 0047c070	override	NDCToDDCWidth	
 0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
-0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0047c360	sticky	CStatus::Add	held from the previous run, where it was sticky
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
@@ -587,10 +588,11 @@ addr	how	frozen	evidence
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
-004b64e0	callgraph	TextureGetTexturePtr	only unmatched callee of 004b6610=TextureGetDimensions
+004b6550	annotated	AsyncTextureWait	tag in src/gx/Texture.cpp
 004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
+004b6c50	annotated	TextureIncreasePriority	tag in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
 004b6fa0	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "

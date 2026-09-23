@@ -73279,10 +73279,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 54
+"line": 71
 },
 "CalcLevelCount": {
 "files": [
@@ -73296,9 +73296,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 31,
+"lines": 32,
 "refs": [],
-"line": 58
+"line": 75
 },
 "CalcLevelOffset": {
 "files": [
@@ -73313,9 +73313,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 8,
+"lines": 9,
 "refs": [],
-"line": 91
+"line": 108
 },
 "CalcLevelSize": {
 "files": [
@@ -73340,9 +73340,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 40,
+"lines": 41,
 "refs": [],
-"line": 101
+"line": 118
 },
 "FillInSolidTexture": {
 "files": [
@@ -73368,9 +73368,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 44,
+"lines": 34,
 "refs": [],
-"line": 143
+"line": 160
 },
 "GetBitDepth": {
 "files": [
@@ -73393,9 +73393,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 15,
+"lines": 22,
 "refs": [],
-"line": 178
+"line": 195
 },
 "GxCalcTexelStrideInBytes": {
 "files": [
@@ -73416,9 +73416,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 46,
+"lines": 42,
 "refs": [],
-"line": 201
+"line": 218
 },
 "GxTexCreate": {
 "files": [
@@ -73438,7 +73438,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 244
+"line": 261
 },
 "GxTexDestroy": {
 "files": [
@@ -73451,9 +73451,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 293
+"line": 310
 },
 "GxTexParameters": {
 "files": [
@@ -73463,10 +73463,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 2,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 297
+"line": 314
 },
 "GxTexReusable": {
 "files": [
@@ -73477,9 +73477,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 2,
+"lines": 5,
 "refs": [],
-"line": 301
+"line": 318
 },
 "GxTexSetWrap": {
 "files": [
@@ -73492,9 +73492,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 3,
 "refs": [],
-"line": 307
+"line": 324
 },
 "ReloadMips": {
 "files": [
@@ -73507,9 +73507,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 5,
 "refs": [],
-"line": 311
+"line": 328
 },
 "TextureFreeGxTex": {
 "files": [
@@ -73525,9 +73525,9 @@
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 6,
+"lines": 14,
 "refs": [],
-"line": 317
+"line": 334
 },
 "TextureAllocGxTex": {
 "files": [
@@ -73550,9 +73550,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 40,
+"lines": 39,
 "refs": [],
-"line": 332
+"line": 349
 },
 "TextureAllocMippedImg": {
 "files": [
@@ -73573,7 +73573,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 372
+"line": 389
 },
 "GxTexUpdate": {
 "files": [
@@ -73589,7 +73589,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 383
+"line": 400
 },
 "GxuUpdateSingleColorTexture": {
 "files": [
@@ -73604,9 +73604,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 28,
+"lines": 26,
 "refs": [],
-"line": 392
+"line": 409
 },
 "GetDefaultTexture": {
 "files": [
@@ -73616,10 +73616,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 419
+"line": 436
 },
 "GetTextureFormats": {
 "files": [
@@ -73638,9 +73638,9 @@
 ],
 "branches": 15,
 "stub": false,
-"lines": 82,
+"lines": 85,
 "refs": [],
-"line": 423
+"line": 440
 },
 "MippedImgAllocA": {
 "files": [
@@ -73661,9 +73661,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 27,
+"lines": 24,
 "refs": [],
-"line": 509
+"line": 526
 },
 "MippedImgCalcSize": {
 "files": [
@@ -73679,7 +73679,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 534
+"line": 551
 },
 "MippedImgSet": {
 "files": [
@@ -73697,9 +73697,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 20,
+"lines": 13,
 "refs": [],
-"line": 544
+"line": 561
 },
 "RequestImageDimensions": {
 "files": [
@@ -73716,9 +73716,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 15,
+"lines": 26,
 "refs": [],
-"line": 560
+"line": 577
 },
 "UpdateBlpTextureAsync": {
 "files": [
@@ -73735,9 +73735,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 45,
+"lines": 37,
 "refs": [],
-"line": 587
+"line": 604
 },
 "PumpBlpTextureAsync": {
 "files": [
@@ -73779,9 +73779,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 156,
+"lines": 149,
 "refs": [],
-"line": 625
+"line": 642
 },
 "FindSubstitution": {
 "files": [
@@ -73794,9 +73794,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 5,
 "refs": [],
-"line": 775
+"line": 792
 },
 "CreateBlpAsync": {
 "files": [
@@ -73809,7 +73809,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 781
+"line": 798
 },
 "CreateBlpSync": {
 "files": [
@@ -73843,9 +73843,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 48,
+"lines": 57,
 "refs": [],
-"line": 787
+"line": 804
 },
 "CreateBlpTexture": {
 "files": [
@@ -73870,9 +73870,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 30,
+"lines": 27,
 "refs": [],
-"line": 845
+"line": 862
 },
 "CreateTgaTexture": {
 "files": [
@@ -73885,7 +73885,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 873
+"line": 890
 },
 "TextureCacheGetTexture": {
 "files": [
@@ -73900,9 +73900,9 @@
 "consts": [],
 "branches": 3,
 "stub": false,
-"lines": 23,
+"lines": 25,
 "refs": [],
-"line": 879
+"line": 896
 },
 "TextureCacheNewTexture": {
 "files": [
@@ -73916,9 +73916,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 4,
+"lines": 9,
 "refs": [],
-"line": 906
+"line": 923
 },
 "TextureCalcMipCount": {
 "files": [
@@ -73933,9 +73933,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 15,
+"lines": 19,
 "refs": [],
-"line": 917
+"line": 934
 },
 "TextureCreate": {
 "files": [
@@ -73984,9 +73984,9 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 103,
+"lines": 109,
 "refs": [],
-"line": 938
+"line": 955
 },
 "TextureCreateSolid": {
 "files": [
@@ -74008,9 +74008,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 10,
+"lines": 16,
 "refs": [],
-"line": 1050
+"line": 1067
 },
 "TextureGetDimensions": {
 "files": [
@@ -74029,13 +74029,15 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1071
+"line": 1088
 },
 "TextureGetGxTex": {
 "files": [
 "src/gx/texture.cpp"
 ],
 "callseq": [
+"NullAppFatal",
+"SErrSetLastError",
 "TextureIncreasePriority",
 "AsyncTextureWait",
 "CStatus::Add",
@@ -74044,17 +74046,19 @@
 "CStatus::Add",
 "TextureGetGxTex"
 ],
-"strings": [],
+"strings": [
+"texture"
+],
 "consts": [
 "0x4",
 "1",
 "2"
 ],
-"branches": 9,
+"branches": 11,
 "stub": false,
-"lines": 38,
+"lines": 55,
 "refs": [],
-"line": 1095
+"line": 1113
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -74065,9 +74069,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 3,
 "refs": [],
-"line": 1146
+"line": 1170
 },
 "TextureIncreasePriority": {
 "files": [
@@ -74077,10 +74081,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": false,
-"lines": 1,
+"stub": true,
+"lines": 3,
 "refs": [],
-"line": 1150
+"line": 1191
 },
 "TextureInitialize": {
 "files": [
@@ -74100,9 +74104,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 1,
+"lines": 7,
 "refs": [],
-"line": 1154
+"line": 1195
 },
 "TextureIsSame": {
 "files": [
@@ -74122,9 +74126,9 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 1,
+"lines": 17,
 "refs": [],
-"line": 1162
+"line": 1203
 },
 "CGxTexFlags::operator==": {
 "files": [

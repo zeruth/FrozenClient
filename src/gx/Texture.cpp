@@ -51,6 +51,23 @@ int32_t s_pixelFormatToMipBitsCache[NUM_PIXEL_FORMATS] = {
 
 static CImVector CRAPPY_GREEN = { 0x00, 0xFF, 0x00, 0xFF };
 
+// Waits for a texture's pending async read to land. **Still a stub**, and it has live callers:
+// TextureGetGxTex calls it on every blocking fetch (a2 == 1), so today that fetch never actually
+// waits and simply returns whatever gxTex happens to be there, usually null.
+//
+// The reference (FUN_004b6550, ESI = the texture) is only seven instructions:
+//
+//     CAsyncObject* a = texture->asyncObject;   // +0x40
+//     if (!a) return;
+//     if (a->field_4 == 0) FUN_004b64e0(1);     // EDI = a: unlink its node at a+0x28 and
+//                                               //   SMemFree a+0x8 -- release a finished request
+//     AsyncFileReadWait(a);                     // 004ba060, which frozen has
+//
+// Not ported here deliberately. frozen already has AsyncFileReadWait, but FUN_004b64e0 frees the
+// request out from under the list it is linked into, and getting the order or the guard wrong in
+// a blocking path is a hang or a use-after-free rather than a wrong pixel. It needs the async
+// texture queue read properly first; see docs/ref/parity-texture-async.md.
+// ref: FUN_004b6550
 void AsyncTextureWait(CTexture* texture) {
     // TODO
 }
@@ -1092,8 +1109,15 @@ int32_t TextureGetDimensions(HTEXTURE textureHandle, uint32_t* width, uint32_t* 
     return TextureGetDimensions(TextureGetTexturePtr(textureHandle), width, height, force);
 }
 
+// ref: FUN_004b6cb0
 CGxTex* TextureGetGxTex(CTexture* texture, int32_t a2, CStatus* status) {
-    STORM_ASSERT(texture);
+    // The reference validates rather than asserts: it names the parameter, sets last error to
+    // ERROR_INVALID_PARAMETER (0x57) and returns null, so a caller handed a null texture draws
+    // nothing instead of dying. STORM_ASSERT compiles out entirely in Release, which left the
+    // null case falling straight through into `texture->flags`.
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(texture);
+    STORM_VALIDATE_END;
 
     if (texture->flags & 0x4) {
         if (texture->asyncObject) {
@@ -1147,6 +1171,23 @@ CTexture* TextureGetTexturePtr(HTEXTURE handle) {
     return reinterpret_cast<CTexture*>(handle);
 }
 
+// Promotes a texture's pending async read to the front of the queue. **Still a stub**, with live
+// callers: TextureGetGxTex calls it on every non-blocking fetch, which is what should make a
+// texture that is being drawn load before one that is not.
+//
+// The reference (FUN_004b6c50) is:
+//
+//     if (!FUN_00422130()) return;              // async/streaming enabled at all?
+//     CAsyncObject* a = texture->asyncObject;   // +0x40
+//     if (a->field_4 == 0) { FUN_007b5020(0xac337c, a); return; }   // already done
+//     FUN_004b9950();                                               // take the queue lock
+//     if (!a->byte_21 && !a->byte_22 && !a->byte_23) FUN_004bac20(a);  // requeue at priority
+//     FUN_004b9970();                                               // release the lock (tail jmp)
+//
+// Not ported here deliberately: the requeue and the three priority bytes are the async texture
+// queue's internals, and frozen's queue is not yet known to have the same shape. See
+// docs/ref/parity-texture-async.md.
+// ref: FUN_004b6c50
 void TextureIncreasePriority(CTexture* texture) {
     // TODO
 }
