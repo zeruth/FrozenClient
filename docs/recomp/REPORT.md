@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 10:45 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 10:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -16,14 +16,14 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | unmapped | 24100 | 4.73M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 487 (=) (8.8%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 497 (=) (8.6%) | |
-| **render surface** (the modules that draw the world) | **6004, mapped 212 (=) (3.5%)** | |
+| **render surface** (the modules that draw the world) | **4589, mapped 212 (=) (4.6%)** | |
 | frozen functions (src/, from PDB + source) | 12206, stubs 1709 | |
 
 Match evidence: annotated 869, callgraph 184, callorder 129, cvar 32, handler 29, order 162, override 212, sticky 18, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 10:44 -- mapped 3061, ported 2368, stub 646, spine mapped 487.
+Previous run: 2026-09-23 10:45 -- mapped 3061, ported 2368, stub 646, spine mapped 487.
 
 ## Lua API coverage (binding tables)
 
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 05:08 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:13 | 2962 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:26 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:27 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
@@ -753,6 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 10:41 | 3077 (11.3%) | 1139 (4.2%) | 646 | 495/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:44 | 3061 (11.3%) | 1141 (4.2%) | 646 | 487/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:45 | 3061 (11.3%) | 1141 (4.2%) | 646 | 487/5530 | 2924/2964 | 1491 |
+| 2026-09-23 10:49 | 3061 (11.3%) | 1141 (4.2%) | 646 | 487/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 

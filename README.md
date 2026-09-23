@@ -59,8 +59,23 @@ By surface, roughly:
 | Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
 | Functions reachable from the world render entry point | 487 / 5,530 &nbsp;·&nbsp; ~9% |
-| The render surface: the map, model, entity, texture and device modules that draw the world | 212 / 6,004 &nbsp;·&nbsp; **~4%** |
+| The render surface: the map, model, entity, texture and device modules that draw the world | 212 / 4,589 &nbsp;·&nbsp; **~5%** |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
+
+Inside that render surface, the split is lopsided, and it is the honest picture of what is left:
+
+| area | modules | ported |
+|---|---|---|
+| Models and their scene | `M2Scene`, `M2Shared`, `CharacterModelBase` | ~21% |
+| The map's own geometry | `MapChunk`, `MapLoad`, `MapArea`, `MapObjRead` | ~13% |
+| Textures | `Texture`, `TextureBlob`, `TextureCache` | ~10% |
+| Entities in the world | `Unit_C`, `Player_C`, `GameObject_C`, `ObjectEffect` | ~2% |
+| The map and its streaming | `Map`, `MapMem`, `MapChunkLiquid`, `DetailDoodad` | ~1% |
+| The graphics device | `CGxDevice`, `CGxDeviceD3d9Ex`, the GL and D3D texture paths | ~3% |
+
+The model side is furthest along because the scene render was ported first; the map and the
+entities behind it are the thin part, and that is where the terrain renderer is still standing in
+for the original rather than reproducing it.
 
 A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
 returns nothing, which is why the two are counted apart. So: the interface has the broadest

@@ -170,7 +170,13 @@ RENDER_MODULES = {
     # entities and their models
     'M2Scene.cpp', 'M2Shared.cpp', 'M2Model.cpp', 'ModelBlob.cpp', 'CharacterModelBase.cpp',
     'Unit_C.cpp', 'Player_C.cpp', 'GameObject_C.cpp', 'UnitMissileTrajectory_C.cpp',
-    'MovementShared.cpp', 'CreepTendril.cpp', 'ObjectEffect.cpp',
+    'MovementShared.cpp', 'ObjectEffect.cpp',
+    # CreepTendril.cpp is deliberately NOT here. Its anchor collects 1415 functions averaging 41
+    # bytes, a quarter of what the render surface used to count, and only 2 of them are reachable
+    # from the render entry point -- every real module here runs 20-76%. The address range it
+    # covers carries ".\TumorManager.cpp" strings, so the anchor is the nearest assert string
+    # before a long run of unrelated code rather than its origin. Counting it made the render
+    # surface look a third larger than it is.
     # textures, effects and the device
     'Texture.cpp', 'TextureCache.cpp', 'TextureBlob.cpp', 'FFXEffects.cpp', 'ShaderEffectManager.cpp',
     'CGxDevice.cpp', 'CGxDeviceD3d9Ex.cpp', 'CGxD3d9ExTexture.cpp', 'CGxDeviceOpenGl.cpp',
