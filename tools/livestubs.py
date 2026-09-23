@@ -30,6 +30,27 @@ import sys
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')
 ROOT = os.path.normpath(ROOT)
 
+# Backends this platform does not compile. src/gx/CMakeLists.txt builds d3d/ and win/ under
+# WHOA_SYSTEM_WIN, gll/ under WHOA_SYSTEM_MAC and gles/ under WHOA_SYSTEM_ANDROID, so on Windows a
+# stub in gll/ or gles/ is not a hole in the render path -- it is not in the binary. Counting them
+# put fourteen rows in the census that no frame could ever reach, GLDevice::Draw and the three
+# CGxDeviceGLL::IStateSync* among them.
+#
+# They still matter for the Android port, so they are reported separately rather than dropped.
+OTHER_PLATFORM = (
+    os.path.join('gx', 'gll'),
+    os.path.join('gx', 'gles'),
+    os.path.join('gx', 'mac'),
+    os.path.join('app', 'android'),
+    os.path.join('app', 'linux'),
+)
+
+
+def other_platform(path):
+    rel = os.path.relpath(path, ROOT)
+    return any(rel.startswith(d + os.sep) or (os.sep + d + os.sep) in (os.sep + rel)
+               for d in OTHER_PLATFORM)
+
 # A qualified definition whose line ends in the opening brace.
 DEF = re.compile(r'^[A-Za-z_][\w:<>,*&\s]*?\b([A-Za-z_]\w*)::([~A-Za-z_]\w*)\s*\([^;]*\)\s*(?:const\s*)?\{\s*$')
 
@@ -186,12 +207,25 @@ def main():
     if not show_all:
         rows = [r for r in rows if any(p in r[2] for p in ('/model/', '/world/', '/gx/'))]
 
+    # Split off the backends this platform does not build, rather than dropping them: they are
+    # real work for the Android port, but they are not holes in the frame this client draws.
+    elsewhere = [r for r in rows if other_platform(os.path.join(ROOT, '..', r[2]))]
+    rows = [r for r in rows if r not in elsewhere]
+
     print('%d empty-bodied functions still have call sites%s'
           % (len(rows), '' if show_all else ' in the render path'))
     print()
 
     for live, key, rel, line in rows:
         print('  %3d calls  %-52s %s:%d' % (live, key, rel, line))
+
+    if elsewhere:
+        print()
+        print('  plus %d in backends this platform does not compile (gll/gles/mac/android/linux),'
+              % len(elsewhere))
+        print('  which cannot be reached by a frame here; they belong to the Android port:')
+        for live, key, rel, line in elsewhere:
+            print('    %3d calls  %-50s %s:%d' % (live, key, rel, line))
 
 
 def io_read(path):
