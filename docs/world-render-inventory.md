@@ -4510,10 +4510,28 @@ device class:
 | `006a4700` | `IStateSyncMaterial` | position, plus the `+0x28a8 & 0x10` gate it shares with Lights |
 | `006a4850` | `IStateSyncXforms` | a dirty byte guards one `SetTransform` through the device vtable |
 
-The four that `IStateSyncEnables` stands for are **deliberately left unnamed**: `006a3810`
-compares two adjacent fields and calls one helper when they differ; `006a3870` walks the set bits
-of a mask and makes one virtual call per bit, indexing a per-slot array, so it is a per-texture-unit
-sync; `006a38d0` is guarded by a flag and does float work through a math helper; `006a5700` is the
-only one of the four that differs between the two device classes. Mapping one frozen function onto
-four reference ones by guesswork is how wrong tags get written, so they are recorded as unlinked
-with those observations and left for a cycle that can read them properly.
+**All four were read the next cycle**, and the picture is better than it looked. They are not four
+mystery functions: one of them is `IStateSyncEnables` under its own correct name, one is a function
+frozen already implements, and two are features frozen does not have at all.
+
+| reference | what it is | frozen |
+|---|---|---|
+| `006a3810` | `IStateSyncEnables` | **ported 2026-09-23** |
+| `006a3870` | the clip-plane sync | no state for it |
+| `006a38d0` | the scissor-rect sync | no state for it |
+| `006a5700` | `IStateSyncVertexPtrs` | already implemented |
+
+The two adjacent fields `006a3810` compares turned out to be `m_appMasterEnables` and
+`m_hwMasterEnables`, at the same offsets frozen uses, so `IStateSyncEnables` was the right name all
+along -- "enables" means the master enables, not D3D's enable render states. It sends exactly one of
+the nine to the device, and that is not an omission: `MasterEnableSet` routes Lighting, Fog,
+DepthTest, DepthWrite, ColorWrite and Culling through `IRsForceUpdate`, so they travel the ordinary
+render-state path. `GxMasterEnable_PolygonFill` has no `GxRs` of its own, so it is the only one left
+to send directly, as `SetRenderState(D3DRS_FILLMODE, solid or wireframe)`.
+
+Clip planes and the scissor rect are real gaps but small ones. The reference keeps six 16-byte
+planes behind a dirty mask and pushes them with `SetClipPlane`; frozen has `GxRs_ClipPlaneMask` and
+a GL path that calls `glClipPlane`, but the D3D backend handles neither the mask nor the planes and
+nothing stores them. The scissor setter `00682e70` has **two callers in the whole binary**, so it
+is a minor feature on the reference side too. Adding either means adding the state and its public
+setter, not just the sync function.

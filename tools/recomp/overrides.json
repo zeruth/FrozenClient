@@ -1432,25 +1432,47 @@
     "status": "ported",
     "note": "first call in IStateSync, and its shape confirms it: it reads a dirty register range from two globals (0xc5ffe8 / 0xc5ffec), bails when the range is empty, and otherwise shifts the start left by 4 -- sixteen bytes per shader constant register -- before pushing it through the device."
   },
-  "006a3810": {
-    "status": "unlinked",
-    "note": "first of the four helpers IStateSync calls where frozen has the single empty CGxDeviceD3d::IStateSyncEnables. Compares +0x2758 against +0x275c and, when they differ, calls 006830b0 with both plus (0, 0, 8) and a stack slot. Shared between the D3D9 and D3D9Ex variants, so it lives in their common base. Not named here: frozen has one function where the reference has four, and guessing which is which is how wrong tags get written."
-  },
   "006a3870": {
     "status": "unlinked",
-    "note": "second of the four (see 006a3810). Walks the set bits of a mask at +0x24d0 and makes one virtual call per set bit through the device at +0x397c, indexing a per-slot array at +0x24d4 -- a per-texture-unit sync. Shared between both D3D device variants."
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0xdc / 4 = 55 = SetClipPlane, and the loop runs six times over 16-byte entries at +0x24d4 guarded by a dirty mask at +0x24d0 -- six clip planes of four floats each, which is D3D9's full complement. So this is the clip-plane sync. frozen has GxRs_ClipPlaneMask (18) and the GL backend drives glClipPlane, but the D3D backend handles neither the mask nor the planes, and nothing stores them, so there is no counterpart to link. Adding one means adding the state and its public setter, not just this function."
   },
   "006a38d0": {
     "status": "unlinked",
-    "note": "third of the four (see 006a3810). Guarded by +0x2534, reads floats at +0x253c and +0x2544, multiplies one by a field of what 006a43d0-style code treats as the device, and calls the math helper 0088b9c0. Shared between both D3D device variants."
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0x12c / 4 = 75 = SetScissorRect, and the four ints it builds on the stack are a RECT, each clamped against the render target's dimensions. So this is the scissor sync, matching the name frozen already uses in its GL backend (CGxDeviceGLL::IStateSyncScissorRect). The reference's scissor setter, 00682e70, has only two callers in the whole binary, so this is a small feature there too. frozen stores no scissor rect at all, so there is nothing to link to yet."
   },
   "006a5700": {
-    "status": "unlinked",
-    "note": "fourth of the four (see 006a3810), and the only one of them that differs between the two D3D device classes -- the D3D9Ex variant calls 006a9620 in its place."
+    "frozen": "CGxDeviceD3d::IStateSyncVertexPtrs",
+    "status": "ported",
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0x15c / 4 = 87 = SetVertexDeclaration. It indexes a declaration array at +0x3ae0 by the primitive vertex format at +0x28b0, bounds-checked against 0xe, caches the last one at +0x3b5c, then calls 006a39e0 with stream 0. frozen's IStateSyncVertexPtrs does the same thing field for field."
   },
   "006859e0": {
     "frozen": "CGxDevice::IRsForceUpdate",
     "status": "ported",
     "note": "the EGxRenderState overload, the sibling of 00685a70. It takes a stack argument where 00685a70 takes none, grows the dirty-state array at +0x24 to count+1 and appends that one state, where 00685a70 loops over all of them. The callgraph matcher had this address under the same name until 00685a70 was pinned by hand on 2026-09-23; both are real, and one frozen name legitimately serves both because C++ overloads collapse to a single key here."
+  },
+  "006a39e0": {
+    "frozen": "CGxDeviceD3d::ISetVertexBuffer",
+    "status": "ported",
+    "note": "called by IStateSyncVertexPtrs (006a5700) as (stream 0, buffer, offset, stride), which is frozen's ISetVertexBuffer signature exactly."
+  },
+  "00682e70": {
+    "status": "unlinked",
+    "note": "sets the scissor rect: raises the dirty flag at +0x2534 and copies four floats from the argument into +0x2538..+0x2544, which 006a38d0 later scales by the render target size and clamps into a RECT. Only two callers in the binary. frozen has no scissor state, so there is no counterpart."
+  },
+  "00682d70": {
+    "status": "unlinked",
+    "note": "returns the object whose fields at +0x8 and +0xc are the current render target's height and width: the scissor sync (006a38d0) multiplies its normalised rect by them and clamps the result to them. Identified by use, not by a symbol."
+  },
+  "006a43a0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CGxDeviceD3d::IStateSyncIndexPtr for this on 2026-09-23; it is not that. It takes a stack argument (`retl $0x4`) where frozen's IStateSyncIndexPtr takes none, and it calls 004c1930 and 004c2f90 rather than the device's SetIndices. Reading it is what falsified the whole seven-link window the matcher emitted here."
+  },
+  "006a3a60": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CGxDeviceD3d::IShaderBindPixel for this on 2026-09-23. It makes six virtual calls into the device, one of them through vtable offset 0x114 = index 69 = SetSamplerState, and then calls CGxDevice::IRsForceUpdate. That is a sampler or texture bind, not a pixel-shader bind. Part of the same rejected window as 006a43a0."
+  },
+  "0076e5d0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed SMemMove for this. The entire body is `mov eax, 1; ret 0xc` -- it returns true and pops three arguments. Whatever it is, it does not move memory. Checked 2026-09-23 while deciding whether the widened order veto was throwing away good links; it was not."
   }
 }

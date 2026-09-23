@@ -1773,7 +1773,6 @@ addr	how	frozen	evidence
 00610de0	table	Script_UnitDefense	binding "UnitDefense" in s_UnitFunctions ~ table 00ad21d8
 00610ec0	annotated	Script_UnitArmor	tag in src/ui/game/ScriptEvents.cpp
 00610fb0	annotated	Script_UnitCharacterPoints	tag in src/ui/game/ScriptEvents.cpp
-006110a0	order	Script_UnitAuraFiltered	definition order between Script_UnitCharacterPoints and Script_UnitIsTapped in src/ui/game/ScriptEvents.cpp
 00611130	table	Script_UnitIsTapped	binding "UnitIsTapped" in s_UnitFunctions ~ table 00ad21d8
 006111b0	table	Script_UnitIsTappedByPlayer	binding "UnitIsTappedByPlayer" in s_UnitFunctions ~ table 00ad21d8
 00611230	table	Script_UnitIsTappedByAllThreatList	binding "UnitIsTappedByAllThreatList" in s_UnitFunctions ~ table 00ad21d8
@@ -1937,6 +1936,7 @@ addr	how	frozen	evidence
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
+006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
 00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
@@ -1946,6 +1946,7 @@ addr	how	frozen	evidence
 00685a70	override	CGxDevice::IRsForceUpdate	
 00685b50	override	CGxDevice::IRsSync	
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
+00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
@@ -1957,9 +1958,13 @@ addr	how	frozen	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
 006a43d0	override	CGxDeviceD3d::IStateSyncLights	
 006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
 006a4850	override	CGxDeviceD3d::IStateSyncXforms	
+006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
+006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
 006a5940	override	CGxDeviceD3d::IStateSync	
 006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
@@ -2083,7 +2088,6 @@ addr	how	frozen	evidence
 0076dd20	override	NameNeedsDeclension	
 0076e540	override	SMemAlloc	
 0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete, 007644b0=ReserveLine
-0076e5d0	order	SMemMove	definition order between SMemFree and SMemReAlloc in lib/squall/storm/Memory.cpp
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	
@@ -2460,7 +2464,6 @@ addr	how	frozen	evidence
 0084f9f0	callgraph	luaL_checklstring	only unmatched callee of 00854100=luaB_tonumber
 0084fa50	callgraph	luaL_optlstring	only unmatched callee of 00510c60=Script_GetCoinText
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
-0084fb30	order	luaL_optnumber	definition order between luaL_checknumber and luaL_checkinteger in vendor/lua-5.1.3/src/lauxlib.c
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
 0084fbd0	callgraph	luaL_optinteger	only unmatched callee of 008545c0=luaB_collectgarbage
 0084fc00	callgraph	luaL_openlib	only unmatched callee of 0084fdd0=luaL_register
@@ -2543,7 +2546,6 @@ addr	how	frozen	evidence
 00853860	string	add_value	unique "invalid replacement value (a %s)"
 00853980	order	luaL_gsub	binding table name luaL_gsub, in definition order in vendor/lua-5.1.3/src/lauxlib.c
 00853c50	order	str_format	binding table name str_format, in definition order in vendor/lua-5.1.3/src/lstrlib.c
-00854070	order	createmetatable	definition order between str_format and luaopen_string in vendor/lua-5.1.3/src/lstrlib.c
 008540d0	callorder	luaopen_string	same slot between linked calls in 00819bb0=FrameScript_Initialize
 00854100	string	luaB_tonumber	unique "base out of range"
 00854210	order	luaB_error	binding table name luaB_error, in definition order in vendor/lua-5.1.3/src/lbaselib.c
@@ -2589,9 +2591,6 @@ addr	how	frozen	evidence
 00856c80	callgraph	luaS_newlstr	only unmatched callee of 0084ef90=lua_concat, 00855a20=luaD_seterrorobj
 00856e50	override	luaV_tonumber	
 00856ea0	override	luaV_tostring	
-00856f10	order	traceexec	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
-00856fa0	order	callTMres	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
-00857100	order	callTM	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
 00857250	string	luaV_gettable	unique "loop in gettable"
 008573c0	string	luaV_settable	unique "loop in settable"
 00857900	string	luaV_concat	unique "string length overflow"
@@ -2600,8 +2599,6 @@ addr	how	frozen	evidence
 0085a7d0	callgraph	reallymarkobject	only unmatched callee of 0085ba50=luaC_barrierf
 0085b660	callgraph	markmt	only unmatched callee of 0085b6a0=markroot
 0085b6a0	callgraph	markroot	only unmatched callee of 0085b9e0=luaC_fullgc
-0085b710	order	remarkupvals	definition order between markroot and singlestep in vendor/lua-5.1.3/src/lgc.c
-0085b750	order	atomic	definition order between markroot and singlestep in vendor/lua-5.1.3/src/lgc.c
 0085b850	callgraph	singlestep	only unmatched callee of 0085b950=luaC_step
 0085b950	override	luaC_step	
 0085b9e0	callgraph	luaC_fullgc	only unmatched callee of 0084ed50=lua_gc
@@ -2639,8 +2636,6 @@ addr	how	frozen	evidence
 0085ee80	string	registerlocalvar	unique "too many local variables"
 0085efb0	string	indexupvalue	unique "upvalues"
 0085faa0	string	parlist	unique "<name> or '...' expected"
-0085fbd0	order	body	definition order between parlist and funcargs in vendor/lua-5.1.3/src/lparser.c
-0085fd10	order	explist1	definition order between parlist and funcargs in vendor/lua-5.1.3/src/lparser.c
 0085fd50	string	funcargs	unique "ambiguous syntax (function call x new statement)"
 0085fe90	string	prefixexp	unique "unexpected symbol"
 0085ff00	order	primaryexp	definition order between prefixexp and simpleexp in vendor/lua-5.1.3/src/lparser.c

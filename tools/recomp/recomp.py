@@ -1049,7 +1049,15 @@ def match(refs, frozen, overrides, tables):
                 # reference allocator named 'GxTexDestroy' and a reference teardown named
                 # 'GetDefaultTexture'. Vetoing the window, not just the pair, is deliberate: the
                 # alignment is one hypothesis, and those 7 refute it.
-                if any(frozen[name]['stub'] for name in W if name in frozen):
+                #
+                # Extended 2026-09-23, same day, after a second run slipped through. An empty body
+                # is not the only way a pair can be uncorroborated: a frozen function the PDB gives
+                # NO SIZE for (inlined away, or COMDAT-folded into another) is equally unfalsifiable
+                # here, and three of the seven links in that run were of exactly that kind. Both
+                # conditions mean the same thing -- there is nothing on the frozen side to check the
+                # guess against -- so both veto the window.
+                if any(frozen[name]['stub'] or frozen[name]['size'] == 0
+                       for name in W if name in frozen):
                     continue
                 # veto: a binding table naming any address in the interval must agree with the
                 # frozen function it would pair with; frozen's aggregate script files do not always

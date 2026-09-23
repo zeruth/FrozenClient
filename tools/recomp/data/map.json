@@ -28183,22 +28183,6 @@
   "refSize": 226,
   "status": "ported"
  },
- "006110a0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
-  "files": [
-   "src/ui/game/ScriptEvents.cpp",
-   "src/ui/game/scriptevents.cpp"
-  ],
-  "frozen": "Script_UnitAuraFiltered",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "ScriptEvents.cpp",
-  "refSize": 129,
-  "status": "ported"
- },
  "00611130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -30804,6 +30788,22 @@
   "refSize": 51,
   "status": "ported"
  },
+ "006830b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "MasterEnableChanged",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "006838b0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -30940,6 +30940,22 @@
   "how": "callgraph",
   "module": "CGxDevice.cpp",
   "refSize": 127,
+  "status": "ported"
+ },
+ "00685eb0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::MasterEnableSet",
+  "frozenSize": 168,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 131,
   "status": "ported"
  },
  "00685f50": {
@@ -31116,6 +31132,38 @@
   "refSize": 1299,
   "status": "ported"
  },
+ "006a3810": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncEnables",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "006a39e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::ISetVertexBuffer",
+  "frozenSize": 122,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
  "006a43d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -31164,17 +31212,49 @@
   "refSize": 174,
   "status": "ported"
  },
+ "006a5540": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::ICreateD3dVertexDecl",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "006a5700": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncVertexPtrs",
+  "frozenSize": 950,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 557,
+  "status": "ported"
+ },
  "006a5940": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.7,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 471,
+  "frozenSize": 570,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,
@@ -33132,23 +33212,6 @@
   "how": "callgraph",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
-  "status": "ported"
- },
- "0076e5d0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/squall/storm/Memory.cpp",
-   "lib/squall/storm/memory.cpp",
-   "lib/squall/test/stormdll/stormstubs.cpp"
-  ],
-  "frozen": "SMemMove",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "ConsoleVar.cpp",
-  "refSize": 8,
   "status": "ported"
  },
  "0076e5e0": {
@@ -36263,7 +36326,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp",
@@ -39100,21 +39163,6 @@
   "refSize": 113,
   "status": "ported"
  },
- "0084fb30": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lauxlib.c"
-  ],
-  "frozen": "luaL_optnumber",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Minigame_C.cpp",
-  "refSize": 46,
-  "status": "ported"
- },
  "0084fb60": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -40347,26 +40395,11 @@
   "refSize": 969,
   "status": "ported"
  },
- "00854070": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lstrlib.c"
-  ],
-  "frozen": "createmetatable",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Minigame_C.cpp",
-  "refSize": 83,
-  "status": "ported"
- },
  "008540d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "vendor/lua-5.1.3/src/lstrlib.c"
   ],
@@ -41037,51 +41070,6 @@
   "refSize": 111,
   "status": "ported"
  },
- "00856f10": {
-  "branchRatio": 0.625,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "traceexec",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 137,
-  "status": "ported"
- },
- "00856fa0": {
-  "branchRatio": 0.077,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "callTMres",
-  "frozenSize": 173,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 352,
-  "status": "ported"
- },
- "00857100": {
-  "branchRatio": 0.077,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "callTM",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 335,
-  "status": "ported"
- },
  "00857250": {
   "branchRatio": 0.438,
   "constOverlap": 0.143,
@@ -41101,7 +41089,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -41116,7 +41104,7 @@
   "branchRatio": 0.467,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.636,
+  "fidelity": 0.545,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -41131,7 +41119,7 @@
   "branchRatio": 0.778,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.286,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -41146,7 +41134,7 @@
   "branchRatio": 0.706,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.51,
+  "fidelity": 0.469,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -41202,41 +41190,11 @@
   "refSize": 108,
   "status": "ported"
  },
- "0085b710": {
-  "branchRatio": 0.6,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lgc.c"
-  ],
-  "frozen": "remarkupvals",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 61,
-  "status": "ported"
- },
- "0085b750": {
-  "branchRatio": 0.091,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.4,
-  "files": [
-   "vendor/lua-5.1.3/src/lgc.c"
-  ],
-  "frozen": "atomic",
-  "frozenSize": 702,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 250,
-  "status": "ported"
- },
  "0085b850": {
   "branchRatio": 0.6,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.143,
   "files": [
    "vendor/lua-5.1.3/src/lgc.c"
   ],
@@ -41787,41 +41745,11 @@
   "refSize": 297,
   "status": "ported"
  },
- "0085fbd0": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.471,
-  "files": [
-   "vendor/lua-5.1.3/src/lparser.c"
-  ],
-  "frozen": "body",
-  "frozenSize": 897,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 320,
-  "status": "ported"
- },
- "0085fd10": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
-  "files": [
-   "vendor/lua-5.1.3/src/lparser.c"
-  ],
-  "frozen": "explist1",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 61,
-  "status": "ported"
- },
  "0085fd50": {
   "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.25,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],
@@ -41866,7 +41794,7 @@
   "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.2,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],
@@ -41941,7 +41869,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.393,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],

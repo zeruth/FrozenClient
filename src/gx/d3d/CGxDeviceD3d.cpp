@@ -1831,8 +1831,48 @@ void CGxDeviceD3d::IStateSync() {
     }
 }
 
+// Tests one master-enable bit for a change between the app-side and hardware-side masks and
+// reports what it is now. The two extra masks are force-off masks: a bit set in one forces that
+// enable to read as off on that side. Both call sites in the reference pass zero for them, so
+// nothing forces anything off today -- they are kept rather than dropped, because dropping them
+// would hide that the reference has the capability at all.
+//
+// The reference shares this between two device backends (00683835 in the D3D state sync below, and
+// 006921fc in another), so if the GL backends ever grow a master-enable sync this should move to
+// CGxDevice instead of being copied.
+// ref: FUN_006830b0
+static int32_t MasterEnableChanged(uint32_t appEnables, uint32_t hwEnables, uint32_t appForceOff,
+                                   uint32_t hwForceOff, EGxMasterEnables which, int32_t* nowEnabled) {
+    uint32_t bit = 1u << which;
+    int32_t now = (appEnables & ~appForceOff & bit) != 0;
+    int32_t was = (hwEnables & ~hwForceOff & bit) != 0;
+
+    *nowEnabled = now;
+
+    return now != was;
+}
+
+// Pushes the master enables to the device. Only ONE of the nine reaches D3D here, and that is not
+// an omission: MasterEnableSet routes Lighting, Fog, DepthTest, DepthWrite, ColorWrite and Culling
+// through IRsForceUpdate, so they travel the ordinary render-state path and arrive via IRsSync.
+// PolygonFill has no GxRs of its own, so it is the only one left to send directly, and the
+// reference sends it exactly here.
+//
+// This costs nothing until something asks for wireframe: both masks start at 511, so the equality
+// test returns immediately, and D3D's own default fill mode is already solid.
+// ref: FUN_006a3810
 void CGxDeviceD3d::IStateSyncEnables() {
-    // TODO
+    if (this->m_appMasterEnables == this->m_hwMasterEnables) {
+        return;
+    }
+
+    int32_t fill;
+
+    if (MasterEnableChanged(this->m_appMasterEnables, this->m_hwMasterEnables, 0, 0, GxMasterEnable_PolygonFill, &fill)) {
+        this->m_d3dDevice->SetRenderState(D3DRS_FILLMODE, fill ? D3DFILL_SOLID : D3DFILL_WIREFRAME);
+    }
+
+    this->m_hwMasterEnables = this->m_appMasterEnables;
 }
 
 void CGxDeviceD3d::IStateSyncIndexPtr() {
