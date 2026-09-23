@@ -1419,8 +1419,8 @@
   },
   "006a4700": {
     "frozen": "CGxDeviceD3d::IStateSyncMaterial",
-    "status": "stub",
-    "note": "second of the three calls inside IStateSync's vertex-shader-is-null gate, in the order frozen makes them, and it shares the `+0x28a8 & 0x10` gate with IStateSyncLights. Reads app render state 0x7f8 / 0x18 = 85. **frozen's body is empty**, and like Lights it only runs on the fixed-function path."
+    "status": "ported",
+    "note": "Second of the three calls inside IStateSync's vertex-shader-is-null gate, in the order frozen makes them, and it shares the +0x28a8 & 0x10 gate with IStateSyncLights. Ported 2026-09-23; this entry read status stub until then, and because the report counts faithful only among entries not marked stub, the finished port scored faithful in map.json while the headline number ignored it. Same staleness as the unlinked veto on 006c8e70, one status along. Despite the name it never calls SetMaterial: it drives the four *MATERIALSOURCE render states (ambient 0x93, diffuse 0x91, specular 0x92, emissive 0x94), and GxRs_ColorMaterial at 0x7f8 / 0x18 = 85 picks which single channel the vertex colour feeds -- 0 ambient and diffuse, 1 specular, 2 emissive -- with every other channel taking D3DMCS_MATERIAL. With no colour in the vertex format all four take the material. The four hardware caches at +0x3e4c..+0x3e58 are written nowhere else in the binary, so they start zeroed against two non-zero D3D defaults; that gap is the reference's and is reproduced. Only the fixed-function path reaches it. BUILT, NOT SEEN RUNNING."
   },
   "006a4850": {
     "frozen": "CGxDeviceD3d::IStateSyncXforms",

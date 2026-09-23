@@ -176,6 +176,17 @@ def walk_body(body, out):
 BAD_FILES = []
 
 
+# A body that does nothing: `{}`, or one return of a LITERAL. Deliberately the same rule as
+# tools/livestubs.py -- the two tools disagreeing about what a stub is was the whole problem.
+# A return of a NAME is left out of it, because that reads real state and is an accessor.
+COMMENT_RE = re.compile(r'/\*.*?\*/|//[^\n]*', re.S)
+SENTINEL_BODY_RE = re.compile(r'^\{\s*(?:return\s*(?:|-?\s*(?:\d[\w.]*|nullptr|NULL|true|false))\s*;\s*)?\}$')
+
+
+def body_does_nothing(src):
+    return bool(SENTINEL_BODY_RE.match(COMMENT_RE.sub(' ', src).strip()))
+
+
 def parse_file(index, path, args, text):
     tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
     errors = [d for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
@@ -222,7 +233,10 @@ def parse_file(index, path, args, text):
         ext = body.extent
         if header:
             if fpath not in header_text:
-                header_text[fpath] = io.open(fpath, encoding='utf-8', errors='replace').read()
+                # newline='' so CRLF survives: libclang's offsets are byte offsets, and text
+                # mode would collapse every \r\n and shift the slice. See parse_all below.
+                header_text[fpath] = io.open(fpath, encoding='utf-8', errors='replace',
+                                             newline='').read()
             htext = header_text[fpath]
             src = htext[ext.start.offset:ext.end.offset]
             start = c.extent.start.offset
@@ -237,11 +251,16 @@ def parse_file(index, path, args, text):
         e['strings'] |= out['strings']
         e['consts'] |= out['consts']
         e['branches'] += out['branches']
-        # Two stub idioms in this tree: the WHOA_UNIMPLEMENTED macro, and a body with no
-        # statements at all carrying a TODO. An empty body without a TODO is left alone,
+        # Two stub idioms in this tree: the WHOA_UNIMPLEMENTED macro, and a body that does
+        # nothing while carrying a TODO. A body that does nothing WITHOUT a TODO is left alone,
         # because some functions are empty on purpose to match an empty reference.
-        empty = next(body.get_children(), None) is None
-        e['stub'] = e['stub'] and ('WHOA_UNIMPLEMENTED' in src or (empty and 'TODO' in src))
+        #
+        # "Does nothing" used to mean no statements at all, which let `// TODO` followed by
+        # `return 0;` count as a port -- nineteen of them were in the map on 2026-09-23,
+        # CM2SceneRender::DrawParticle among them, and an override saying `stub` was the only
+        # thing holding the line. It now also accepts a single return of a literal, matching
+        # tools/livestubs.py exactly.
+        e['stub'] = e['stub'] and ('WHOA_UNIMPLEMENTED' in src or (body_does_nothing(src) and 'TODO' in src))
         e['lines'] += src.count('\n') + 1
     return fns
 
@@ -282,7 +301,14 @@ def main():
         if c and c.get('key') == content_key(path) and c.get('v') == CACHE_VERSION:
             fns = c['fns']
         else:
-            text = io.open(path, encoding='utf-8', errors='replace').read()
+            # newline='' is load-bearing, not tidiness. libclang hands back BYTE offsets into
+            # the file as it read it; Python's text mode turns each \r\n into one \n, so every
+            # offset past line 1 is short by one per preceding line and `src` below is a
+            # window onto the wrong part of the file. 725 of this tree's 1157 sources are
+            # CRLF, so until 2026-09-23 the stub flag for most files was decided by reading
+            # some other function's text -- CFrameStrata::FrameOccluded, a `// TODO` stub,
+            # sliced to ' l < this->topLevel; l++) {' and counted as a port.
+            text = io.open(path, encoding='utf-8', errors='replace', newline='').read()
             fns = parse_file(index, path, split_command(e['command']), text)
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],

@@ -1219,10 +1219,19 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     total = len(real)
     total_bytes = sum(r['size'] for r in real.values())
 
+    # An override's status outranks what the inventory can see, which is right -- it is a human
+    # judgement -- but it never expires. A `stub` written while a function was empty goes on
+    # excluding it from the faithful count long after the port lands, and silently, because
+    # faithful is counted only among entries not marked stub. 006a4700 sat like that on
+    # 2026-09-23 and the commit that ported it looked like it had moved nothing.
+    stale_stub = set()
+
     def status(addr):
         name, how = m[addr]
         o = overrides.get(addr, {})
         if o.get('status'):
+            if o['status'] == 'stub' and not frozen[name]['stub']:
+                stale_stub.add((addr, name))
             return o['status']
         return 'stub' if frozen[name]['stub'] else 'ported'
 
@@ -1260,6 +1269,13 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
             st = status(a)
             e['stub'] += st == 'stub'
             e['verified'] += st == 'verified'
+
+    if stale_stub:
+        print('  %d override(s) say `stub` for a frozen function that now has a body -- the port is'
+              % len(stale_stub))
+        print('  linked but cannot count as faithful until the status is corrected:')
+        for addr, name in sorted(stale_stub):
+            print('    ! %s  %s' % (addr, name))
 
     def weight(a):
         r = refs[a]

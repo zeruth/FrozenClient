@@ -93,7 +93,7 @@
   "how": "handler",
   "module": "?",
   "refSize": 261,
-  "status": "ported"
+  "status": "stub"
  },
  "00401390": {
   "branchRatio": 0.0,
@@ -109,7 +109,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 228,
-  "status": "ported"
+  "status": "stub"
  },
  "00401480": {
   "branchRatio": 0.0,
@@ -125,7 +125,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 157,
-  "status": "ported"
+  "status": "stub"
  },
  "004015e0": {
   "branchRatio": 1.0,
@@ -221,7 +221,7 @@
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 32,
-  "status": "ported"
+  "status": "stub"
  },
  "00401a30": {
   "branchRatio": 0.0,
@@ -237,7 +237,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 73,
-  "status": "ported"
+  "status": "stub"
  },
  "00401a80": {
   "branchRatio": 0.0,
@@ -253,7 +253,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "00401b20": {
   "branchRatio": 1.0,
@@ -365,7 +365,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 135,
-  "status": "ported"
+  "status": "stub"
  },
  "00402320": {
   "branchRatio": 0.0,
@@ -381,7 +381,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 149,
-  "status": "ported"
+  "status": "stub"
  },
  "004023c0": {
   "branchRatio": 0.5,
@@ -493,7 +493,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 23,
-  "status": "ported"
+  "status": "stub"
  },
  "004033c0": {
   "branchRatio": 0.0,
@@ -570,7 +570,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 538,
-  "status": "ported"
+  "status": "stub"
  },
  "00403b70": {
   "branchRatio": 0.0,
@@ -602,7 +602,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 203,
-  "status": "ported"
+  "status": "stub"
  },
  "00403de0": {
   "branchRatio": 0.5,
@@ -1175,7 +1175,7 @@
   "how": "callgraph",
   "module": "OggDecompress.cpp",
   "refSize": 9,
-  "status": "ported"
+  "status": "stub"
  },
  "00422530": {
   "branchRatio": 0.143,
@@ -4389,8 +4389,8 @@
  "0048ed30": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/ui/simple/CSimpleFrame.cpp",
    "src/ui/simple/csimpleframe.cpp"
@@ -9420,7 +9420,7 @@
   "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 103,
-  "status": "ported"
+  "status": "stub"
  },
  "004b6550": {
   "branchRatio": 0.0,
@@ -12010,7 +12010,7 @@
  "004df3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/glue/CRealmListScript.cpp",
@@ -12021,7 +12021,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 125,
-  "status": "stub"
+  "status": "ported"
  },
  "004df420": {
   "branchRatio": 0.4,
@@ -12042,7 +12042,7 @@
  "004df4f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/glue/CRealmListScript.cpp",
@@ -12053,7 +12053,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 136,
-  "status": "stub"
+  "status": "ported"
  },
  "004df580": {
   "branchRatio": 0.111,
@@ -13109,7 +13109,7 @@
   "how": "callorder",
   "module": "TextureCache.cpp",
   "refSize": 287,
-  "status": "ported"
+  "status": "stub"
  },
  "004f5960": {
   "branchRatio": 0.0,
@@ -23434,7 +23434,7 @@
   "how": "table",
   "module": "ActionBarFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "stub"
  },
  "005a8790": {
   "branchRatio": 0.333,
@@ -23594,7 +23594,7 @@
   "how": "table",
   "module": "ActionBarFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "stub"
  },
  "005a9cf0": {
   "branchRatio": 0.0,
@@ -28277,7 +28277,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 537,
-  "status": "ported"
+  "status": "stub"
  },
  "00611600": {
   "branchRatio": 0.0,
@@ -31210,7 +31210,7 @@
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 326,
-  "status": "stub"
+  "status": "ported"
  },
  "006a4850": {
   "branchRatio": 0.286,
@@ -33110,7 +33110,7 @@
   "how": "cvar",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
-  "status": "ported"
+  "status": "stub"
  },
  "00769c60": {
   "branchRatio": 1.0,
@@ -33126,7 +33126,7 @@
   "how": "cvar",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
-  "status": "ported"
+  "status": "stub"
  },
  "00769c90": {
   "branchRatio": 1.0,
@@ -33873,7 +33873,7 @@
   "how": "callorder",
   "module": "SComp.cpp",
   "refSize": 183,
-  "status": "ported"
+  "status": "stub"
  },
  "0077f490": {
   "branchRatio": 1.0,
@@ -33969,7 +33969,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 96,
-  "status": "ported"
+  "status": "stub"
  },
  "00787780": {
   "branchRatio": 0.0,
@@ -45913,7 +45913,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 197,
-  "status": "ported"
+  "status": "stub"
  },
  "00972560": {
   "branchRatio": 0.4,
