@@ -106,6 +106,7 @@ addr	how	frozen	evidence
 0047be50	sticky	SUniSPutUTF8	held from the previous run, where it was sticky
 0047bf30	override	HandleClose	
 0047bf50	override	HandleCreate	
+0047bf70	callorder	HandleDuplicate	same slot between linked calls in 00825260=CM2Model::ReplaceTexture
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	annotated	NDCToDDC	tag in src/gx/Coordinate.cpp
@@ -629,8 +630,13 @@ addr	how	frozen	evidence
 004bdbf0	annotated	TextBlockSetStringPos	tag in src/gx/font/TextBlock.cpp
 004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
+004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c1b90	annotated	C44Matrix::Scale	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
@@ -2316,11 +2322,13 @@ addr	how	frozen	evidence
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
+00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
 00824fc0	annotated	CM2Model::IsDrawable	tag in src/model/CM2Model.cpp
 00825170	callorder	CM2Model::UpdateLoaded	same slot between linked calls in 00832ea0=CM2Model::InitializeLoaded
 008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing
+00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
 00825d70	callgraph	CM2Model::UnoptimizeVisibleGeometry	only unmatched callee of 0082c7c0=CM2Model::SetGeometryVisible
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
@@ -2334,9 +2342,12 @@ addr	how	frozen	evidence
 008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
+0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
+0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
 0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
+0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
 00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
@@ -2347,6 +2358,9 @@ addr	how	frozen	evidence
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
+008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
+00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"

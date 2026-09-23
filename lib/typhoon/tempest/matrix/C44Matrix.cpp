@@ -98,6 +98,7 @@ C44Matrix::C44Matrix(const C33Matrix& m) {
     this->d3 = 1.0f;
 }
 
+// ref: FUN_004c1de0
 C44Matrix::C44Matrix(const C4Quaternion& rotation) {
     this->a3 = 0.0f;
     this->b3 = 0.0f;
@@ -238,6 +239,7 @@ C44Matrix C44Matrix::Inverse(float det) const {
     return this->Adjoint() * (1.0f / det);
 }
 
+// ref: FUN_004c33c0
 void C44Matrix::Rotate(const C4Quaternion& rotation) {
     *this = C44Matrix(rotation) * *this;
 }
@@ -278,6 +280,7 @@ const C3Vector* C44Matrix::Row3AsVec3() const {
     return reinterpret_cast<const C3Vector*>(&this->d0);
 }
 
+// ref: FUN_004c1b90
 void C44Matrix::Scale(const C3Vector& scale) {
     this->a0 *= scale.x;
     this->a1 *= scale.x;
@@ -306,6 +309,7 @@ void C44Matrix::Scale(float scale) {
     this->c2 *= scale;
 }
 
+// ref: FUN_004c1b30
 void C44Matrix::Translate(const C3Vector& move) {
     this->d0 = this->a0 * move.x + this->b0 * move.y + this->c0 * move.z + this->d0;
     this->d1 = this->a1 * move.x + this->b1 * move.y + this->c1 * move.z + this->d1;

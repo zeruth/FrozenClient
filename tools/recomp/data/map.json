@@ -1703,6 +1703,22 @@
   "refSize": 27,
   "status": "ported"
  },
+ "0047bf70": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/Handle.cpp",
+   "lib/common/common/handle.cpp"
+  ],
+  "frozen": "HandleDuplicate",
+  "frozenSize": 15,
+  "how": "callorder",
+  "module": "framing.c",
+  "refSize": 18,
+  "status": "ported"
+ },
  "0047bf90": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -10062,6 +10078,54 @@
   "refSize": 460,
   "status": "ported"
  },
+ "004c1b30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Translate",
+  "frozenSize": 141,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
+ "004c1b90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Scale",
+  "frozenSize": 215,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "004c1de0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::C44Matrix",
+  "frozenSize": 404,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
  "004c1f00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -10099,6 +10163,38 @@
   "module": "TextureBlob.cpp",
   "refSize": 93,
   "status": "excluded"
+ },
+ "004c33c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Rotate",
+  "frozenSize": 441,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "004c3600": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "C3Vector::Normalize",
+  "frozenSize": 149,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 67,
+  "status": "ported"
  },
  "004c5a60": {
   "branchRatio": 1.0,
@@ -13086,7 +13182,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -36810,7 +36906,7 @@
   "branchRatio": 0.196,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.241,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -36884,6 +36980,22 @@
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 58,
+  "status": "ported"
+ },
+ "00824980": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/M2Internal.cpp",
+   "src/model/m2internal.cpp"
+  ],
+  "frozen": "M2ModelLight::M2ModelLight",
+  "frozenSize": 90,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 118,
   "status": "ported"
  },
  "00824ed0": {
@@ -36964,6 +37076,22 @@
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 134,
+  "status": "ported"
+ },
+ "00825260": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ReplaceTexture",
+  "frozenSize": 313,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 413,
   "status": "ported"
  },
  "00825d70": {
@@ -37174,6 +37302,22 @@
   "refSize": 420,
   "status": "ported"
  },
+ "0082bd60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/M2Internal.cpp",
+   "src/model/m2internal.cpp"
+  ],
+  "frozen": "M2ModelBone::M2ModelBone",
+  "frozenSize": 188,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 250,
+  "status": "ported"
+ },
  "0082c7c0": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -37206,6 +37350,22 @@
   "refSize": 706,
   "status": "ported"
  },
+ "0082d6f0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.7,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateTextureTransformsMT",
+  "frozenSize": 656,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 531,
+  "status": "ported"
+ },
  "0082e140": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -37222,11 +37382,27 @@
   "refSize": 1032,
   "status": "stub"
  },
+ "0082e550": {
+  "branchRatio": 0.583,
+  "constOverlap": 0.038,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateAttachmentsMT",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 458,
+  "status": "ported"
+ },
  "0082f0f0": {
   "branchRatio": 0.342,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.085,
+  "fidelity": 0.149,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -37242,7 +37418,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.04,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.545,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -37370,16 +37546,64 @@
   "branchRatio": 0.3,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.127,
+  "fidelity": 0.211,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3692,
+  "frozenSize": 3244,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
+  "status": "ported"
+ },
+ "008348d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::Initialize",
+  "frozenSize": 4,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "00834a40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::CM2Light",
+  "frozenSize": 71,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
+ "00835640": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetLightType",
+  "frozenSize": 126,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 67,
   "status": "ported"
  },
  "00835a20": {

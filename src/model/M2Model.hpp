@@ -39,6 +39,8 @@ struct M2ModelBoneSeq {
 };
 
 struct M2ModelBone {
+    M2ModelBone();
+
     M2ModelTrack<C3Vector> translationTrack;
     M2ModelTrack<C4Quaternion> rotationTrack;
     M2ModelTrack<C3Vector> scaleTrack;
@@ -73,6 +75,8 @@ struct M2ModelColor {
 };
 
 struct M2ModelLight {
+    M2ModelLight();
+
     M2ModelTrack<C3Vector> ambientColorTrack;
     M2ModelTrack<float> ambientIntensityTrack;
     M2ModelTrack<C3Vector> diffuseColorTrack;

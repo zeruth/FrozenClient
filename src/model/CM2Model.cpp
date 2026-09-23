@@ -246,6 +246,7 @@ void CM2Model::Animate() {
     this->matrixF4 = this->matrixB4 * scene->m_view;
 }
 
+// ref: FUN_0082e550
 void CM2Model::AnimateAttachmentsMT() {
     // Animate attachment visibility
 
@@ -890,6 +891,7 @@ void CM2Model::AnimateST() {
     }
 }
 
+// ref: FUN_0082d6f0
 void CM2Model::AnimateTextureTransformsMT() {
     for (int32_t i = 0; i < this->m_shared->m_data->textureTransforms.Count(); i++) {
         static C3Vector center = { 0.5f, 0.5f, 0.0f };
@@ -2095,6 +2097,7 @@ uint32_t CM2Model::Release() {
     return 0;
 }
 
+// ref: FUN_00825260
 void CM2Model::ReplaceTexture(uint32_t textureId, HTEXTURE texture) {
     // Waiting for load
 

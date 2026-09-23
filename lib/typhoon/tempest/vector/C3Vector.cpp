@@ -26,8 +26,17 @@ float C3Vector::Mag() const {
     return CMath::sqrt(this->SquaredMag());
 }
 
+// ref: FUN_004c3600
 void C3Vector::Normalize() {
-    this->operator*=(1.0f / this->Mag());
+    // A vector shorter than the epsilon is left alone rather than blown up
+    float sqr = this->x * this->x + this->y * this->y + this->z * this->z;
+
+    if (0.00000023841858f < sqr) {
+        float inv = 1.0f / CMath::sqrt(sqr);
+        this->x = this->x * inv;
+        this->y = inv * this->y;
+        this->z = inv * this->z;
+    }
 }
 
 float C3Vector::SquaredMag() const {

@@ -24,6 +24,7 @@ class CM2Light {
         CM2Light* m_lightNext = nullptr;
 
         // Member functions
+        CM2Light();
         void Initialize(CM2Scene* scene);
         void Link();
         void SetDirection(const C3Vector& dir);

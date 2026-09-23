@@ -1,6 +1,11 @@
 #include "model/CM2Light.hpp"
 #include "model/CM2Scene.hpp"
 
+// ref: FUN_00834a40
+CM2Light::CM2Light() {
+}
+
+// ref: FUN_008348d0
 void CM2Light::Initialize(CM2Scene* scene) {
     this->m_scene = scene;
 
@@ -35,6 +40,7 @@ void CM2Light::SetDirection(const C3Vector& dir) {
     }
 }
 
+// ref: FUN_00835640
 void CM2Light::SetLightType(M2LIGHTTYPE lightType) {
     if (this->m_type == lightType) {
         return;
