@@ -245,6 +245,13 @@ class CGxDeviceD3d : public CGxDevice {
     uint32_t m_d3dVertexStreamOfs[8];
     uint32_t m_d3dVertexStreamStride[8];
     uint32_t m_deviceStates[DeviceStates_Last];
+    // The hardware side of the four *MATERIALSOURCE render states, at +0x3e4c..+0x3e58 in the
+    // reference and in this order there too. IStateSyncMaterial is the only thing that reads or
+    // writes them; they are zero-initialised, exactly as the reference leaves them.
+    uint32_t m_d3dAmbientMaterialSource = 0;
+    uint32_t m_d3dDiffuseMaterialSource = 0;
+    uint32_t m_d3dSpecularMaterialSource = 0;
+    uint32_t m_d3dEmissiveMaterialSource = 0;
 
     // Virtual member functions
     virtual void ITexMarkAsUpdated(CGxTex* texId);

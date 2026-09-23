@@ -66816,14 +66816,24 @@
 "files": [
 "src/gx/d3d/cgxdeviced3d.cpp"
 ],
-"callseq": [],
+"callseq": [
+"TSBaseArray<CGxAppRenderState>::operator[]",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 5,
+"stub": false,
+"lines": 40,
 "refs": [],
-"line": 1942
+"line": 1978
 },
 "CGxDeviceD3d::IStateSyncVertexPtrs": {
 "files": [
@@ -66847,7 +66857,7 @@
 "stub": false,
 "lines": 79,
 "refs": [],
-"line": 1946
+"line": 2019
 },
 "CGxDeviceD3d::IStateSyncXforms": {
 "files": [
@@ -66866,7 +66876,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 2026
+"line": 2099
 },
 "CGxDeviceD3d::ITexCreate": {
 "files": [
@@ -66898,7 +66908,7 @@
 "stub": false,
 "lines": 94,
 "refs": [],
-"line": 2042
+"line": 2115
 },
 "CGxDeviceD3d::IRenderTargetSet": {
 "files": [
@@ -66923,7 +66933,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 2141
+"line": 2214
 },
 "CGxDeviceD3d::IScreenShot": {
 "files": [
@@ -66983,7 +66993,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 2189
+"line": 2262
 },
 "CGxDeviceD3d::IRenderTargetDump": {
 "files": [
@@ -67050,7 +67060,7 @@
 "stub": false,
 "lines": 107,
 "refs": [],
-"line": 2270
+"line": 2343
 },
 "CGxDeviceD3d::ITexMarkAsUpdated": {
 "files": [
@@ -67067,7 +67077,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2378
+"line": 2451
 },
 "CGxDeviceD3d::ITexUpload": {
 "files": [
@@ -67112,7 +67122,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 2396
+"line": 2469
 },
 "CGxDeviceD3d::IXformSetProjection": {
 "files": [
@@ -67140,7 +67150,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 2515
+"line": 2588
 },
 "CGxDeviceD3d::IXformSetViewport": {
 "files": [
@@ -67162,7 +67172,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2551
+"line": 2624
 },
 "CGxDeviceD3d::PoolSizeSet": {
 "files": [
@@ -67181,7 +67191,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 2575
+"line": 2648
 },
 "CGxDeviceD3d::SceneClear": {
 "files": [
@@ -67206,7 +67216,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2606
+"line": 2679
 },
 "CGxDeviceD3d::ScenePresent": {
 "files": [
@@ -67235,7 +67245,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 2630
+"line": 2703
 },
 "CGxDeviceD3d::ShaderCreate": {
 "files": [
@@ -67254,7 +67264,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2673
+"line": 2746
 },
 "CGxDeviceD3d::StereoEnabled": {
 "files": [
@@ -67269,7 +67279,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2681
+"line": 2754
 },
 "CGxDeviceD3d::XformSetProjection": {
 "files": [
@@ -67285,7 +67295,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2686
+"line": 2759
 },
 "GxDevCreate": {
 "files": [

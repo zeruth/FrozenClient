@@ -1939,8 +1939,81 @@ void CGxDeviceD3d::IStateSyncLights() {
     // TODO
 }
 
+// Despite the name this never calls SetMaterial. It drives the four *MATERIALSOURCE render
+// states -- D3DRS_AMBIENTMATERIALSOURCE 0x93, DIFFUSE 0x91, SPECULAR 0x92, EMISSIVE 0x94 -- which
+// say, per channel, whether the fixed-function lighting equation takes that channel from the
+// material or from the vertex colour.
+//
+// GxRs_ColorMaterial picks which single channel the vertex colour feeds: 0 gives it to ambient and
+// diffuse, 1 to specular, 2 to emissive, and every channel that does not win takes D3DMCS_MATERIAL.
+// When the bound vertex format carries no colour at all the question does not arise and all four
+// take the material.
+//
+// The offsets behind this were confirmed rather than guessed, which is worth recording because the
+// reference's fields are nothing like frozen's. The state array at +0x28f4 is indexed 24 bytes to
+// the entry: the vertex-shader test in IStateSync reads +0x738, and 0x738 / 24 = 77 =
+// GxRs_VertexShader, while this function reads +0x7f8, and 0x7f8 / 24 = 85 = GxRs_ColorMaterial.
+// The mask at +0x28a8 is m_primVertexMask -- its setter at 0x00682eb0 is CGxDevice::PrimVertexMask
+// statement for statement, down to storing GxVAs_Last (0xe) into m_primVertexFormat -- so bit 0x10
+// is 1 << GxVA_Color0, and the per-attribute buffer array at +0x2870 ends exactly where the mask
+// begins.
+//
+// Two notes on what a run should show, because this replaces an empty body and so changes
+// behaviour on every fixed-function draw that has a colour stream:
+//
+// * Nothing in frozen ever sets GxRs_ColorMaterial and its default is 0, so today the live case is
+//   always "ambient and diffuse from the vertex colour". Against D3D's own defaults that moves
+//   ambient from MATERIAL to COLOR1 and specular from COLOR2 to MATERIAL; diffuse and emissive
+//   already agreed.
+// * The caches start at zero while two of D3D's defaults do not, so a first sync that computes
+//   zero sends nothing and leaves D3D on its default. That is a real gap and it is the reference's
+//   gap -- nothing else in the binary writes +0x3e4c..+0x3e58 -- so it is reproduced rather than
+//   fixed. Do not "correct" it without checking the reference again.
+//
+// Only the fixed-function path reaches this: IStateSync calls it solely when no vertex shader is
+// bound, which today means UI and 2D rather than the world.
+//
+// **Built, not seen running.**
+// ref: FUN_006a4700
 void CGxDeviceD3d::IStateSyncMaterial() {
-    // TODO
+    uint32_t ambient;
+    uint32_t diffuse;
+    uint32_t specular;
+    uint32_t emissive;
+
+    if (this->m_primVertexMask & (1 << GxVA_Color0)) {
+        uint32_t which = this->m_appRenderStates[GxRs_ColorMaterial].m_value.m_data.u[0];
+
+        ambient = which == 0;
+        diffuse = which == 0;
+        specular = which == 1;
+        emissive = which == 2;
+    } else {
+        ambient = 0;
+        diffuse = 0;
+        specular = 0;
+        emissive = 0;
+    }
+
+    if (this->m_d3dAmbientMaterialSource != ambient) {
+        this->m_d3dDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, ambient);
+        this->m_d3dAmbientMaterialSource = ambient;
+    }
+
+    if (this->m_d3dDiffuseMaterialSource != diffuse) {
+        this->m_d3dDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, diffuse);
+        this->m_d3dDiffuseMaterialSource = diffuse;
+    }
+
+    if (this->m_d3dSpecularMaterialSource != specular) {
+        this->m_d3dDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, specular);
+        this->m_d3dSpecularMaterialSource = specular;
+    }
+
+    if (this->m_d3dEmissiveMaterialSource != emissive) {
+        this->m_d3dDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, emissive);
+        this->m_d3dEmissiveMaterialSource = emissive;
+    }
 }
 
 void CGxDeviceD3d::IStateSyncVertexPtrs() {

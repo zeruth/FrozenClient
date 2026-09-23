@@ -31197,10 +31197,10 @@
   "status": "stub"
  },
  "006a4700": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -31270,7 +31270,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 570,
+  "frozenSize": 820,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,
