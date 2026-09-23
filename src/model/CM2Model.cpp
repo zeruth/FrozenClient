@@ -1443,6 +1443,27 @@ void CM2Model::FreeInternalResources() {
     //     this->m_particles = nullptr;
     // }
 
+    // The two matrix arrays are NOT part of the pooled internal-resources block: InitializeLoaded
+    // allocates each with its own SMemAlloc. Nothing freed them, so every model destroyed leaked
+    // 64 bytes per bone plus 64 per texture transform -- a few kilobytes for a character, on every
+    // unit that despawns and every model the character screen builds and throws away.
+    //
+    // Found on 2026-09-23 by following the fidelity diff on CM2Model::InitializeLoaded, where the
+    // reference calls SequenceBufferAlloc twice and frozen calls SMemAlloc. That is a second,
+    // separate divergence and it stands: the reference's allocator returns 16-byte-aligned memory
+    // for exactly these two arrays, while frozen's SMemAlloc aligns to 8. Nothing here uses SSE on
+    // them, so it is not a correctness problem, and closing it means exporting the alloc/free pair
+    // out of the anonymous namespace in CM2Shared.cpp where they currently live.
+    if (this->m_boneMatrices) {
+        SMemFree(this->m_boneMatrices, __FILE__, __LINE__, 0);
+        this->m_boneMatrices = nullptr;
+    }
+
+    if (this->m_textureMatrices) {
+        SMemFree(this->m_textureMatrices, __FILE__, __LINE__, 0);
+        this->m_textureMatrices = nullptr;
+    }
+
     STORM_FREE(this->m_internalResources);
 }
 

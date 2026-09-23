@@ -37782,7 +37782,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 544,
+  "frozenSize": 629,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,

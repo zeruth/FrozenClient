@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 14:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 14:46 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,8 +8,8 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3082 (+1) (11.3%) | 687.9k (12.5%) |
-| &nbsp;&nbsp;ported | 2363 (+1) | 509.9k |
+| mapped to a frozen function | 3082 (=) (11.3%) | 687.9k (12.5%) |
+| &nbsp;&nbsp;ported | 2363 (=) | 509.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 667 (=) | 134.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1178 (=) (4.3%)** | **152.3k (2.8%)** |
@@ -23,7 +23,7 @@ Match evidence: annotated 878, callgraph 179, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 14:35 -- mapped 3081, ported 2362, stub 667, spine mapped 492.
+Previous run: 2026-09-23 14:43 -- mapped 3082, ported 2363, stub 667, spine mapped 492.
 
 ## Lua API coverage (binding tables)
 
@@ -728,10 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 12:59 | 3078 (11.3%) | 1172 (4.3%) | 650 | 497/5529 | 2924/2964 | 1491 |
-| 2026-09-23 13:01 | 3078 (11.3%) | 1172 (4.3%) | 650 | 497/5529 | 2924/2964 | 1491 |
-| 2026-09-23 13:07 | 3091 (11.4%) | 1178 (4.3%) | 650 | 498/5529 | 2924/2964 | 1491 |
-| 2026-09-23 13:08 | 3073 (11.3%) | 1172 (4.3%) | 650 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:09 | 3073 (11.3%) | 1172 (4.3%) | 650 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:13 | 3075 (11.3%) | 1174 (4.3%) | 650 | 494/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:18 | 3074 (11.3%) | 1174 (4.3%) | 650 | 493/5529 | 2924/2964 | 1491 |
@@ -753,6 +749,10 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 14:32 | 3081 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:35 | 3081 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:37 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:42 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:43 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:43 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:46 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 
