@@ -2584,6 +2584,9 @@ void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible)
 }
 
 void CM2Model::SetIndices() {
+    // Unreachable today, so this is dead rather than broken: CM2SceneRender::DrawBatch only calls
+    // it for an element with flag 0x4, which CM2Scene sets from model->ptr2D0, which nothing ever
+    // allocates because OptimizeVisibleGeometry is itself unported. Port that first.
     // TODO
 }
 

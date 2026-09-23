@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 11:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 11:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,15 +9,15 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.39M |
 | mapped to a frozen function | 3062 (=) (11.3%) | 678.7k (12.3%) |
-| &nbsp;&nbsp;ported | 2370 (=) | 506.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 645 (=) | 130.1k |
+| &nbsp;&nbsp;ported | 2369 (-1) | 506.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 646 (+1) | 130.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1143 (=) (4.2%)** | **144.0k (2.6%)** |
 | unmapped | 24099 | 4.73M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 488 (=) (8.8%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 498 (=) (8.6%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 213 (=) (4.6%)** | |
-| frozen functions (src/, from PDB + source) | 12206, stubs 1706 | |
+| frozen functions (src/, from PDB + source) | 12206, stubs 1714 | |
 
 Match evidence: annotated 870, callgraph 183, callorder 129, cvar 32, handler 29, order 162, override 212, sticky 19, string 319, table 1107. Module anchors: 1479 assert strings.
 
@@ -184,7 +184,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 21 (26.9%) | 17.9% | 0 | 0 | 3 |
-| XMLTree.cpp | 184 | 31.1k | 77 (41.8%) | 47.4% | 9 | 0 | 31 |
+| XMLTree.cpp | 184 | 31.1k | 77 (41.8%) | 47.4% | 10 | 0 | 31 |
 | MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 53 (31.4%) | 38.0% | 0 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 33 | 0 | 1 |
@@ -752,7 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 11:04 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:10 | 3062 (11.3%) | 1142 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:13 | 3062 (11.3%) | 1143 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:13 | 3062 (11.3%) | 1143 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:26 | 3062 (11.3%) | 1143 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 

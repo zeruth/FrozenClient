@@ -60,6 +60,10 @@ CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {
 }
 
 void CM2Cache::GarbageCollect(int32_t a2) {
+    // Nothing to collect: this cache has no hash table and CM2Shared::Release destroys on the
+    // spot, so no model is ever queued. The reference pops its pending list while entries are
+    // older than 9999ms, or all of them when a2 is non-zero. Porting it means porting the cache
+    // itself -- see docs/ref/parity-model-cache.md, which has all three functions worked out.
     // TODO
 }
 

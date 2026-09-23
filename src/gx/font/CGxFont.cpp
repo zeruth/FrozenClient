@@ -736,6 +736,10 @@ float CGxFont::ComputeStep(uint32_t currentCode, uint32_t nextCode) {
 }
 
 float CGxFont::ComputeStepFixedWidth(uint32_t currentCode, uint32_t nextCode) {
+    // Three live call sites, but all three sit behind `flags & 0x10`, which only
+    // ConvertStringFlags sets and only from its own 0x800 -- and nothing passes that today. So
+    // returning 0 collapses no text in practice. It would the moment a caller asks for a
+    // fixed-width string, which is why this is worth porting before that happens.
     // TODO
     return 0.0f;
 }
