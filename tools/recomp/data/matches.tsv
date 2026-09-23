@@ -2329,6 +2329,7 @@ addr	how	frozen	evidence
 0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
+0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp
 0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
 0081eea0	override	CM2Scene::SortOpaque	
 0081ef30	override	CM2Scene::SortTransparent	
@@ -2396,7 +2397,9 @@ addr	how	frozen	evidence
 008350a0	override	CM2Lighting::CameraSpace	
 00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
 008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp
-00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
+00835640	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
+00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
+008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
 00836980	override	CM2Shared::SubstituteSimpleShaders	

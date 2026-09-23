@@ -941,7 +941,14 @@ void CM2Model::AnimateST() {
             visible = 1;
 
             if (light.lightType == M2LIGHT_1) {
-                // TODO
+                // The reference chains two transforms: the light's model-space position through
+                // its bone, which lands in camera space here as every bone matrix does, and then
+                // through m_viewInv back out to world space -- the same m_viewInv the directional
+                // branch below uses, at scene + 0xc4.
+                C3Vector bone = light.position * this->m_boneMatrices[light.boneIndex];
+                C3Vector world = bone * this->m_scene->m_viewInv;
+
+                modelLight.light.SetPosition(world);
             } else {
                 float v10 = -this->m_boneMatrices[light.boneIndex].c0;
                 float v11 = -this->m_boneMatrices[light.boneIndex].c1;
@@ -965,7 +972,9 @@ void CM2Model::AnimateST() {
 
         modelLight.light.SetVisible(visible);
 
-        // TODO modelLight.light.dword4 = this->m_scene->uint14;
+        // Stamped every frame, visible or not. CM2Scene::SelectLights compares it against the
+        // same counter and switches off any point light that has fallen behind.
+        modelLight.light.m_updateStamp = this->m_scene->uint14;
     }
 
     if (this->m_shared->m_data->cameras.Count()) {

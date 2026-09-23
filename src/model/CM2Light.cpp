@@ -9,7 +9,11 @@ CM2Light::CM2Light() {
 void CM2Light::Initialize(CM2Scene* scene) {
     this->m_scene = scene;
 
-    // TODO
+    // Deliberately one frame BEHIND, not zero. CM2Scene::SelectLights treats a light whose stamp
+    // does not match the scene's counter as abandoned and switches it off, so a light that has
+    // never been driven has to read as stale -- and with a plain zero it would read as current for
+    // as long as the counter is still zero, which it is on the first frame.
+    this->m_updateStamp = scene ? scene->uint14 - 1 : 0;
 }
 
 // ref: FUN_00834c70
@@ -32,7 +36,15 @@ void CM2Light::Link() {
     }
 
     if (this->m_type == M2LIGHT_1) {
-        // TODO -- the spatial hash grid described above
+        int32_t cell = (CM2Scene::LightGridAxis(this->m_pos.y) << 6) + CM2Scene::LightGridAxis(this->m_pos.x);
+
+        this->m_lightPrev = &this->m_scene->m_lightGrid[cell];
+        this->m_lightNext = this->m_scene->m_lightGrid[cell];
+        this->m_scene->m_lightGrid[cell] = this;
+
+        if (this->m_lightNext) {
+            this->m_lightNext->m_lightPrev = &this->m_lightNext;
+        }
     } else {
         if (!(this->m_scene->m_flags & 0x1)) {
             this->m_lightPrev = &this->m_scene->m_lightList;
@@ -55,6 +67,23 @@ void CM2Light::SetDirection(const C3Vector& dir) {
 }
 
 // ref: FUN_00835640
+// Moves the light and re-files it, because a point light's grid cell is derived from where it is.
+// The reference inlines the unlink and then calls Link; the two here do the same thing.
+//
+// The three guards are its own, and their order matters: an invisible light, a light with no scene
+// and a non-point light are all stored without touching the grid, because none of them is in it.
+// ref: FUN_00835690
+void CM2Light::SetPosition(const C3Vector& pos) {
+    this->m_pos = pos;
+
+    if (!this->m_visible || !this->m_scene || this->m_type != M2LIGHT_1) {
+        return;
+    }
+
+    this->Unlink();
+    this->Link();
+}
+
 void CM2Light::SetLightType(M2LIGHTTYPE lightType) {
     if (this->m_type == lightType) {
         return;

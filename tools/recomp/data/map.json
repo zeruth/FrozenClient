@@ -35498,7 +35498,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3659,
+  "frozenSize": 3662,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 823,
@@ -35514,7 +35514,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3659,
+  "frozenSize": 3662,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
@@ -37079,10 +37079,26 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::AdvanceTime",
-  "frozenSize": 88,
+  "frozenSize": 96,
   "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 73,
+  "status": "ported"
+ },
+ "0081e400": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SelectLights",
+  "frozenSize": 279,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 399,
   "status": "ported"
  },
  "0081ead0": {
@@ -37111,7 +37127,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortOpaque",
-  "frozenSize": 68,
+  "frozenSize": 71,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 117,
@@ -37127,7 +37143,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparent",
-  "frozenSize": 412,
+  "frozenSize": 415,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 423,
@@ -37334,7 +37350,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2571,
+  "frozenSize": 2635,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -37382,7 +37398,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Draw",
-  "frozenSize": 289,
+  "frozenSize": 301,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 157,
@@ -38032,7 +38048,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.261,
+  "fidelity": 0.246,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -38045,7 +38061,7 @@
   "status": "ported"
  },
  "008348d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -38054,7 +38070,7 @@
    "src/model/cm2light.cpp"
   ],
   "frozen": "CM2Light::Initialize",
-  "frozenSize": 4,
+  "frozenSize": 25,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 34,
@@ -38070,14 +38086,14 @@
    "src/model/cm2light.cpp"
   ],
   "frozen": "CM2Light::CM2Light",
-  "frozenSize": 76,
+  "frozenSize": 79,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 103,
   "status": "ported"
  },
  "00834c70": {
-  "branchRatio": 0.571,
+  "branchRatio": 0.714,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -38086,7 +38102,7 @@
    "src/model/cm2light.cpp"
   ],
   "frozen": "CM2Light::Link",
-  "frozenSize": 63,
+  "frozenSize": 159,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 276,
@@ -38157,7 +38173,7 @@
   "status": "stub"
  },
  "00835640": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -38165,11 +38181,43 @@
    "src/model/CM2Light.cpp",
    "src/model/cm2light.cpp"
   ],
-  "frozen": "CM2Light::SetLightType",
-  "frozenSize": 126,
+  "frozen": "CM2Light::SetPosition",
+  "frozenSize": 226,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "00835690": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetPosition",
+  "frozenSize": 226,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "008356f0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetVisible",
+  "frozenSize": 66,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 92,
   "status": "ported"
  },
  "00835a20": {

@@ -829,24 +829,74 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
 // lights; the missing half is the query against the point-light hash grid, and it is worth writing
 // down where the whole chain stands, because the pieces were ported from the wrong end.
 //
-// Local lights on a model need five things, downstream last:
+// Local lights on a model take six steps and all six are now ported, downstream last:
 //
-//   1. CM2Model's per-frame light update  -- point-light branch EMPTY (CM2Model.cpp, near the
-//      directional branch that builds a direction from the bone matrix). Nothing sets a point
-//      light's world position or colour.
-//   2. CM2Light::Link                     -- point-light branch EMPTY. Point lights never enter
-//      any list; the reference puts them in a 64 x 64 hash grid on the scene. See that function.
-//   3. CM2Scene::SelectLights             -- this TODO. Must query the grid around the model.
-//   4. CM2Lighting::AddLight              -- ported 2026-09-23, keeps the nearest four.
-//   5. CM2Lighting::CameraSpace and CShaderEffect::ComputeLocalLights -- ported 2026-09-23.
+//   1. CM2Light::Initialize        stamps a new light one frame behind, so it reads as stale.
+//   2. CM2Model's per-frame update positions each point light through its bone and m_viewInv,
+//                                  and stamps it with the scene's counter.
+//   3. CM2Light::Link              files it into the hash grid below; SetPosition re-files it.
+//   4. CM2Scene::SelectLights      this function: sweeps the cells the model's sphere covers.
+//   5. CM2Lighting::AddLight       keeps the four nearest, sorted.
+//   6. CM2Lighting::CameraSpace and CShaderEffect::ComputeLocalLights pack them into the vertex
+//                                  constants the shader reads.
 //
-// 4 and 5 are done and 1 through 3 are not, so m_lightCount is still always zero and no model is
-// lit by a local light yet. The two ported steps are correct and tested against the reference, but
-// they are downstream of three empty branches. Anyone continuing should start at 1.
+// Steps 5 and 6 landed first and sat inert for two cycles because 1 through 4 were empty branches.
+// None of it has been seen running.
+// ref: FUN_0081e400
 void CM2Scene::SelectLights(CM2Lighting* lighting) {
     for (auto light = this->m_lightList; light; light = light->m_lightNext) {
         lighting->AddLight(light);
     }
 
-    // TODO -- query the point-light hash grid; see the chain above
+    // Then the point lights, by sweeping every grid cell the model's bounding sphere touches. The
+    // bounds are computed the reference's way -- the low edge takes minus a half and the high edge
+    // plus a half BEFORE truncation, which widens the range by a cell on each side rather than
+    // rounding to the nearest.
+    const C3Vector& c = lighting->sphere4.c;
+    float r = lighting->sphere4.r;
+
+    int32_t xMin = static_cast<int32_t>((c.x - r) * 0.05f - 0.5f) & 0x3f;
+    int32_t xMax = static_cast<int32_t>((c.x + r) * 0.05f + 0.5f) & 0x3f;
+    int32_t yMin = static_cast<int32_t>((c.y - r) * 0.05f - 0.5f) & 0x3f;
+    int32_t yMax = static_cast<int32_t>((c.y + r) * 0.05f + 0.5f) & 0x3f;
+
+    // Both loops are do-while and both wrap, so a sphere straddling the fold still sweeps the
+    // cells on each side of it instead of walking the whole grid backwards.
+    int32_t x = xMin;
+
+    for (;;) {
+        int32_t y = yMin;
+
+        for (;;) {
+            CM2Light* light = this->m_lightGrid[(y << 6) + x];
+
+            while (light) {
+                // Taken before the test: switching a light off unlinks it and clears its next
+                // pointer, so reading it afterwards would walk into a cleared node.
+                CM2Light* next = light->m_lightNext;
+
+                if (!light->m_scene || light->m_updateStamp == this->uint14) {
+                    lighting->AddLight(light);
+                } else {
+                    // Nobody drove this light this frame, so it belongs to a model that stopped
+                    // animating. The reference culls it here rather than anywhere else.
+                    light->SetVisible(0);
+                }
+
+                light = next;
+            }
+
+            if (y == yMax) {
+                break;
+            }
+
+            y = (y + 1) & 0x3f;
+        }
+
+        if (x == xMax) {
+            break;
+        }
+
+        x = (x + 1) & 0x3f;
+    }
 }
