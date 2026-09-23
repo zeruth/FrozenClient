@@ -74679,7 +74679,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 15
+"line": 23
 },
 "CM2Cache::CreateShared": {
 "files": [
@@ -74711,7 +74711,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 19
+"line": 27
 },
 "CM2Cache::GarbageCollect": {
 "files": [
@@ -74724,7 +74724,7 @@
 "stub": true,
 "lines": 7,
 "refs": [],
-"line": 62
+"line": 70
 },
 "CM2Cache::Initialize": {
 "files": [
@@ -74737,15 +74737,16 @@
 "strings": [],
 "consts": [
 "0x1",
+"0x1a0",
 "0x2",
 "0x8",
 "1"
 ],
 "branches": 5,
 "stub": false,
-"lines": 51,
+"lines": 64,
 "refs": [],
-"line": 70
+"line": 78
 },
 "CM2Cache::UpdateShared": {
 "files": [
@@ -74758,7 +74759,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 122
+"line": 143
 },
 "CM2Cache::WaitThread": {
 "files": [
@@ -74771,7 +74772,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 126
+"line": 147
 },
 "CM2Light::CM2Light": {
 "files": [
@@ -77140,7 +77141,7 @@
 ],
 "branches": 45,
 "stub": false,
-"lines": 335,
+"lines": 339,
 "refs": [],
 "line": 385
 },
@@ -77165,7 +77166,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 722
+"line": 726
 },
 "CM2Scene::Draw": {
 "files": [
@@ -77187,7 +77188,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 749
+"line": 753
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -77223,7 +77224,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 769
+"line": 773
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -77238,7 +77239,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 824
+"line": 828
 },
 "CM2SceneRender::Draw": {
 "files": [

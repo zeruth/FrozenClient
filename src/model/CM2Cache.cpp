@@ -12,6 +12,14 @@
 
 CM2Cache CM2Cache::s_cache;
 
+// **A stub with a trap attached.** CM2Scene::Animate takes its multithreaded branch on cache flag
+// 0x4, and that branch interleaves: it expects the thread started here to animate the odd entries
+// of the animate list while the caller walks the even ones two at a time. With this empty, setting
+// that bit leaves every second model frozen mid-pose and logs nothing.
+//
+// CM2Cache::Initialize therefore refuses to propagate the M2UseThreads CVar into flag 0x4, and
+// says so at the spot where the propagation would be added. Port this and WaitThread together,
+// and re-enable the bit in the same change.
 void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
     // TODO
 }
@@ -108,9 +116,22 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
         }
     }
 
-    // Still dropped, and each is its own port: 0x4 (M2UseThreads, gated on a processor count),
-    // 0x20 (M2BatchDoodads), 0x80 (M2BatchParticles) and 0x100 (M2ForceAdditiveParticleSort),
-    // which the reference propagates unmasked as `flags & 0x1a0`.
+    // The reference propagates these three unmasked, as `flags & 0x1a0` (00081c211). Nothing in
+    // frozen reads them yet -- M2BatchDoodads, M2BatchParticles and M2ForceAdditiveParticleSort --
+    // so this is inert today and carried so the bits are right when something does read them.
+    this->m_flags |= flags & 0x1a0;
+
+    // **0x4 (M2UseThreads) is deliberately NOT propagated, and this is the place someone would
+    // "finish the job" and break the client.** CM2Scene::Animate's 0x4 branch does not merely
+    // start a thread: it then walks the animate list two at a time, because the thread it spawned
+    // is supposed to take the odd entries. CM2Cache::BeginThread is an empty stub, so setting this
+    // bit would leave every second model un-animated, frozen mid-pose, with nothing in the log.
+    // Port BeginThread and WaitThread first, then set this.
+    //
+    // The reference also derives 0x40 here rather than taking it from the caller: it sets it when
+    // 0x8 is clear and a capability global is clear too, i.e. "no shader support, use the
+    // single-bone fixed-function path". frozen requires shaders, so 0x8 is set and 0x40 stays
+    // clear, which is what CM2SceneRender and CM2Shared already assume when they read it.
 
     // TODO
 

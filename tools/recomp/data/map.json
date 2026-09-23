@@ -36847,7 +36847,7 @@
  },
  "0081c0d0": {
   "branchRatio": 0.385,
-  "constOverlap": 0.0,
+  "constOverlap": 0.062,
   "faithful": false,
   "fidelity": 0.125,
   "files": [
@@ -36855,7 +36855,7 @@
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::Initialize",
-  "frozenSize": 83,
+  "frozenSize": 106,
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 441,

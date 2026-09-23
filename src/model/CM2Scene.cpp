@@ -395,6 +395,10 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_view.Translate(invCameraPos);
     this->m_viewInv = this->m_view.Inverse(this->m_view.Determinant());
 
+    // This branch is unreachable today and must stay that way until CM2Cache::BeginThread is real.
+    // The interleave below is not an optimisation that degrades gracefully: with no second thread,
+    // walking two at a time simply leaves every other model un-animated. CM2Cache::Initialize
+    // refuses to propagate the M2UseThreads CVar into this bit for that reason.
     if (this->m_cache->m_flags & 0x4) {
         // In multithreaded mode, iteration over the animate list is interleaved:
         // - the current thread animates entries 0, 2, 4, ...
