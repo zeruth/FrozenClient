@@ -37040,7 +37040,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetupBoneSequence",
-  "frozenSize": 0,
+  "frozenSize": 447,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 319,
@@ -37056,23 +37056,23 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetPrimaryBoneSequence",
-  "frozenSize": 933,
+  "frozenSize": 539,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 400,
   "status": "ported"
  },
  "00826dd0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetSecondaryBoneSequence",
-  "frozenSize": 0,
+  "frozenSize": 185,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 132,
@@ -37328,7 +37328,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::ApplySequencePlayBack",
-  "frozenSize": 219,
+  "frozenSize": 244,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 113,
@@ -37408,7 +37408,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1107,
+  "frozenSize": 1114,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,

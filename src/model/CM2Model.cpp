@@ -2651,8 +2651,21 @@ void CM2Model::SetPrimaryBoneSequence(uint16_t sequenceIndex, uint16_t boneIndex
     }
 }
 
+// ref: FUN_00826dd0
+// Put a sequence straight into the bone's secondary slot and start it fading.
+//
+// Note it times the fade from the sequence's DURATION, where SetPrimaryBoneSequence uses its
+// blendtime, and it starts the weight at 0.75 rather than 1. That reads like a slip but it is
+// what the reference does: FUN_00826dd0 takes the field at +0x4 while FUN_00826c40 takes +0x1c.
 void CM2Model::SetSecondaryBoneSequence(uint16_t a2, uint16_t boneIndex, M2SequenceFallback fallback, uint32_t time, float a6) {
-    // TODO
+    auto& modelBone = this->m_bones[boneIndex];
+    auto& sequence = this->m_shared->m_data->sequences[a2];
+
+    modelBone.uint9C = this->m_scene->m_time + sequence.duration;
+    modelBone.floatA0 = sequence.duration ? 1.0f / static_cast<float>(sequence.duration) : 1.0f;
+    modelBone.floatA4 = 0.75f;
+
+    this->SetupBoneSequence(a2, fallback, time, a6, &modelBone.secondarySequence);
 }
 
 void CM2Model::SetupBoneSequence(uint16_t sequenceIndex, M2SequenceFallback fallback, uint32_t a4, float a5, M2ModelBoneSeq* boneSequence) {
@@ -2835,8 +2848,16 @@ void CM2Model::Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId) {
     fallback.uint2 = 0;
 }
 
+// ref: FUN_008269c0
+// Ask the model's sequence-finished callback whether stopping this bone is allowed, and report
+// whether the model survived the call.
+//
+// The reference only does anything when the callback pointer is set: it raises the refcount,
+// invokes the callback, releases, and returns 0 if that release destroyed the model. frozen has
+// no such callback member yet, so the whole body is skipped and 1 -- "the model is still here,
+// carry on" -- is the correct answer rather than a placeholder. It stops being correct the day
+// the callback is ported; UnsetBoneSequence is the caller that depends on it.
 int32_t CM2Model::Sub8269C0(uint32_t boneId, uint16_t boneIndex) {
-    // TODO
     return 1;
 }
 

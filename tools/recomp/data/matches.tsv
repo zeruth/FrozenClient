@@ -2325,7 +2325,7 @@ addr	how	frozen	evidence
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
 008269c0	annotated	CM2Model::Sub8269C0	tag in src/model/CM2Model.cpp
-00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence
+00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence, 00826dd0=CM2Model::SetSecondaryBoneSequence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
 00826dd0	override	CM2Model::SetSecondaryBoneSequence	
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
