@@ -632,11 +632,13 @@ addr	how	frozen	evidence
 004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b90	annotated	C44Matrix::Scale	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -1387,7 +1389,7 @@ addr	how	frozen	evidence
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057c2a0	override	C44Matrix::Identity	
-0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
+0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_Identity
 0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
@@ -2664,6 +2666,8 @@ addr	how	frozen	evidence
 00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
 00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
+00873550	annotated	CShaderEffect::SetTexMtx_Identity	tag in src/gx/shader/CShaderEffect.cpp
+00873620	annotated	CShaderEffect::SetTexMtx_SphereMap	tag in src/gx/shader/CShaderEffect.cpp
 00873900	annotated	CShaderEffect::SetDiffuse	tag in src/gx/shader/CShaderEffect.cpp
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp

@@ -10110,6 +10110,22 @@
   "refSize": 57,
   "status": "ported"
  },
+ "004c1930": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Determinant",
+  "frozenSize": 610,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 504,
+  "status": "ported"
+ },
  "004c1b30": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -10195,6 +10211,22 @@
   "module": "TextureBlob.cpp",
   "refSize": 93,
   "status": "excluded"
+ },
+ "004c2f90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Inverse",
+  "frozenSize": 96,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 45,
+  "status": "ported"
  },
  "004c33c0": {
   "branchRatio": 1.0,
@@ -36826,7 +36858,7 @@
   "branchRatio": 0.765,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -36986,7 +37018,7 @@
   "branchRatio": 0.196,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.259,
+  "fidelity": 0.296,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -37018,7 +37050,7 @@
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.68,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -42187,6 +42219,38 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 206,
+  "status": "ported"
+ },
+ "00873550": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx_Identity",
+  "frozenSize": 97,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
+ "00873620": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx_SphereMap",
+  "frozenSize": 97,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 257,
   "status": "ported"
  },
  "00873900": {
