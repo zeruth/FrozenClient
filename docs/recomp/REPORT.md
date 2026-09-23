@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 11:02 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 11:04 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -752,7 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 10:51 | 3062 (11.3%) | 1141 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:57 | 3062 (11.3%) | 1141 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 11:02 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
-| 2026-09-23 11:02 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:04 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 

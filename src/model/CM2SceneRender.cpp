@@ -135,6 +135,13 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             // TODO
             // this->m_cache->LinkToSharedUpdateList(this->m_curShared);
 
+            // Only type 0 is reachable today, and the four stubs below are dead rather than
+            // broken. CM2Scene's element gather picks the type from two tests that are themselves
+            // stubs: CM2Model::IsBatchDoodadCompatible always returns 0, so type 2 is never
+            // chosen, and CM2Scene::uint104 is never written, so the type 1 test always falls
+            // through to 0. Types 3, 4 and 5 need ribbon, particle and draw-callback elements the
+            // gather does not build. So porting any of these draws means porting its gate first,
+            // or it will never run.
             switch (this->m_curElement->type) {
                 case 0: {
                     this->DrawBatch();
