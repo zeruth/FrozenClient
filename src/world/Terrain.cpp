@@ -258,6 +258,9 @@ struct WmoGroup {
     // space as `positions` (world minus WmoInstance::origin, rotation applied), where the
     // reference keeps WMO-local vertices and transforms the query through the placement instead.
     CImVector* mocv = nullptr;
+    // The group's vertices in the model's own space, before the placement yaw. Only the BSP
+    // queries use these; everything that draws uses `positions`. See the note where it is filled.
+    C3Vector* queryVerts = nullptr;
     CMapObjGroup objGroup;
 };
 
@@ -304,6 +307,11 @@ struct WmoInstance {
     // absolute world coordinates transformed by a matrix carrying -cameraPos lose most of the
     // depth precision to cancellation. Bounds below stay in world space.
     C3Vector origin = { 0.0f, 0.0f, 0.0f };
+
+    // The placement yaw, kept so a world-space point can be brought back into the model's own
+    // space for the BSP queries (WmoGroup::queryVerts live there).
+    float yawCos = 1.0f;
+    float yawSin = 0.0f;
 
     // World-space bounding box over all groups, for whole-instance frustum culling (the reference
     // culls a WMO hierarchically before descending into its groups).
@@ -1449,6 +1457,9 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
     float cs = cosf(ry);
     float sn = sinf(ry);
 
+    out.yawCos = cs;
+    out.yawSin = sn;
+
     out.origin = worldPos;
     out.groupsExpected = nGroups;
 
@@ -1763,14 +1774,41 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
 
                     og.m_flags = mogpFlags;
                     og.m_indices = grp.indices;
-                    og.m_vertices = grp.positions;
                     og.m_vertexCount = movtCount;
                     og.m_faceCount = faceCount;
                     og.m_mapObj = &out.mapObj;
 
-                    // Instance-local bounds, to match the vertex space the queries run in
-                    og.m_bounds.b = { grp.boundsMin.x - out.origin.x, grp.boundsMin.y - out.origin.y, grp.boundsMin.z - out.origin.z };
-                    og.m_bounds.t = { grp.boundsMax.x - out.origin.x, grp.boundsMax.y - out.origin.y, grp.boundsMax.z - out.origin.z };
+                    // The queries need the vertices in the model's OWN space, untouched by the
+                    // placement, because MOBN's split planes are axis-aligned in that space and
+                    // came straight out of the file. grp.positions is no good for this: it has
+                    // already been yawed into the instance's orientation, so walking the tree with
+                    // it navigates in the wrong frame and descends into the wrong subtrees. The
+                    // triangle tests would still be self-consistent, which is what makes the bug
+                    // quiet -- the query simply finds the wrong faces, or none.
+                    //
+                    // So keep a second copy in file space, and note the queries are handed a probe
+                    // transformed the same way (see TerrainWmoFloorLightAt).
+                    grp.queryVerts = static_cast<C3Vector*>(SMemAlloc(movtCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
+
+                    for (uint32_t v = 0; v < movtCount; v++) {
+                        grp.queryVerts[v] = { movt[v * 3 + 0], movt[v * 3 + 1], movt[v * 3 + 2] };
+                    }
+
+                    og.m_vertices = grp.queryVerts;
+
+                    // ...and the bounds in that same file space.
+                    og.m_bounds.b = grp.queryVerts[0];
+                    og.m_bounds.t = grp.queryVerts[0];
+
+                    for (uint32_t v = 1; v < movtCount; v++) {
+                        const C3Vector& q = grp.queryVerts[v];
+                        og.m_bounds.b.x = q.x < og.m_bounds.b.x ? q.x : og.m_bounds.b.x;
+                        og.m_bounds.b.y = q.y < og.m_bounds.b.y ? q.y : og.m_bounds.b.y;
+                        og.m_bounds.b.z = q.z < og.m_bounds.b.z ? q.z : og.m_bounds.b.z;
+                        og.m_bounds.t.x = q.x > og.m_bounds.t.x ? q.x : og.m_bounds.t.x;
+                        og.m_bounds.t.y = q.y > og.m_bounds.t.y ? q.y : og.m_bounds.t.y;
+                        og.m_bounds.t.z = q.z > og.m_bounds.t.z ? q.z : og.m_bounds.t.z;
+                    }
 
                     if (mopy && mopyCount >= faceCount && faceCount) {
                         og.m_polys = static_cast<SMOPoly*>(SMemAlloc(faceCount * sizeof(SMOPoly), __FILE__, __LINE__, 0));
@@ -2350,6 +2388,7 @@ void FreeTile(TerrainTile& tile) {
                 if (grp.ao) SMemFree(grp.ao, __FILE__, __LINE__, 0);
                 if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
                 if (grp.mocv) SMemFree(grp.mocv, __FILE__, __LINE__, 0);
+                if (grp.queryVerts) SMemFree(grp.queryVerts, __FILE__, __LINE__, 0);
                 grp.objGroup.FreeQueryData();
             }
 
@@ -5654,7 +5693,16 @@ bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* 
                 continue;
             }
 
-            C3Vector local = { pos.x - w.origin.x, pos.y - w.origin.y, pos.z - w.origin.z };
+            // Into the model's own space: undo the placement translation, then its yaw, so the
+            // probe matches WmoGroup::queryVerts and the BSP planes that were built alongside them.
+            float dx = pos.x - w.origin.x;
+            float dy = pos.y - w.origin.y;
+
+            C3Vector local = {
+                dx * w.yawCos + dy * w.yawSin,
+                dy * w.yawCos - dx * w.yawSin,
+                pos.z - w.origin.z
+            };
 
             for (uint32_t gi = 0; gi < w.groupCount; gi++) {
                 WmoGroup& grp = w.groups[gi];
