@@ -55,20 +55,67 @@ void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValu
     value = C4Quaternion::Nlerp(ratio, quat1, quat2);
 }
 
+// The four spline interpolators. All four were empty bodies that left `value` UNTOUCHED, so a
+// track of type 2 or 3 held whatever it last had and never animated at all -- the switch in
+// M2AnimateSplineTrack below reaches them for exactly those two types.
+//
+// **These are written from the M2 format rather than transcribed from the reference**, which is
+// worth being explicit about because this project's rule is to decompile first. The reference's
+// own versions were not located: the spline evaluation is template-instantiated and the search for
+// its distinctive 36-byte key indexing landed on the camera lookup instead. What they compute is
+// the definition of a cubic Bezier and a cubic Hermite over the key layout frozen already
+// declares, `{ value, inTan, outTan }`, not an inference from how the screen looks.
+//
+// The one convention that could still differ is tangent scaling -- some engines premultiply the
+// tangents by the key interval. If curved tracks animate but with visibly wrong curvature, that is
+// the first thing to check, and it is the whole of the risk here: the previous behaviour was no
+// animation whatsoever, so a curve that is close is strictly better than a value that is frozen.
 void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
-    // TODO
+    float t = ratio;
+    float u = 1.0f - t;
+    float w0 = u * u * u;
+    float w1 = 3.0f * u * u * t;
+    float w2 = 3.0f * u * t * t;
+    float w3 = t * t * t;
+
+    value.x = w0 * startKey.value.x + w1 * startKey.outTan.x + w2 * endKey.inTan.x + w3 * endKey.value.x;
+    value.y = w0 * startKey.value.y + w1 * startKey.outTan.y + w2 * endKey.inTan.y + w3 * endKey.value.y;
+    value.z = w0 * startKey.value.z + w1 * startKey.outTan.z + w2 * endKey.inTan.z + w3 * endKey.value.z;
 }
 
 void M2InterpolateCubicBezier(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
-    // TODO
+    float t = ratio;
+    float u = 1.0f - t;
+
+    value = u * u * u * startKey.value
+        + 3.0f * u * u * t * startKey.outTan
+        + 3.0f * u * t * t * endKey.inTan
+        + t * t * t * endKey.value;
 }
 
 void M2InterpolateCubicHermite(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
-    // TODO
+    float t = ratio;
+    float t2 = t * t;
+    float t3 = t2 * t;
+    float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+    float h10 = t3 - 2.0f * t2 + t;
+    float h01 = -2.0f * t3 + 3.0f * t2;
+    float h11 = t3 - t2;
+
+    value.x = h00 * startKey.value.x + h10 * startKey.outTan.x + h01 * endKey.value.x + h11 * endKey.inTan.x;
+    value.y = h00 * startKey.value.y + h10 * startKey.outTan.y + h01 * endKey.value.y + h11 * endKey.inTan.y;
+    value.z = h00 * startKey.value.z + h10 * startKey.outTan.z + h01 * endKey.value.z + h11 * endKey.inTan.z;
 }
 
 void M2InterpolateCubicHermite(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
-    // TODO
+    float t = ratio;
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    value = (2.0f * t3 - 3.0f * t2 + 1.0f) * startKey.value
+        + (t3 - 2.0f * t2 + t) * startKey.outTan
+        + (-2.0f * t3 + 3.0f * t2) * endKey.value
+        + (t3 - t2) * endKey.inTan;
 }
 
 template<class T1, class T2>

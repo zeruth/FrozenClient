@@ -37734,7 +37734,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5293,
+  "frozenSize": 5592,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
