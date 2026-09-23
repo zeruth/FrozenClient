@@ -205,6 +205,7 @@ void CShaderEffect::SetShaders(uint32_t vertexPermute, uint32_t pixelPermute) {
     }
 }
 
+// ref: FUN_00873620
 void CShaderEffect::SetTexMtx(const C44Matrix& matrix, uint32_t tcIndex) {
     if (CShaderEffect::s_enableShaders) {
         float constants[] = {
@@ -220,7 +221,7 @@ void CShaderEffect::SetTexMtx(const C44Matrix& matrix, uint32_t tcIndex) {
     // TODO non-shader path
 }
 
-// ref: FUN_00873550
+// ref: FUN_00873480
 void CShaderEffect::SetTexMtx_Identity(uint32_t tcIndex) {
     if (CShaderEffect::s_enableShaders) {
         float constants[] = {
@@ -236,7 +237,7 @@ void CShaderEffect::SetTexMtx_Identity(uint32_t tcIndex) {
     // TODO non-shader path
 }
 
-// ref: FUN_00873620
+// ref: FUN_00873550
 void CShaderEffect::SetTexMtx_SphereMap(uint32_t tcIndex) {
     if (CShaderEffect::s_enableShaders) {
         float constants[] = {

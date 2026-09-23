@@ -591,27 +591,8 @@ addr	how	frozen	evidence
 004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
-004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6ae0	order	GxCalcTexelStrideInBytes	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6c50	order	GxTexCreate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
-004b6d90	order	GxTexDestroy	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6e40	order	GxTexParameters	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6e90	order	GxTexReusable	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6f30	order	GxTexSetWrap	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b6fa0	override	TextureCacheGetTexture	
-004b7020	order	ReloadMips	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b70a0	order	TextureFreeGxTex	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7220	order	TextureAllocMippedImg	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7300	order	GxTexUpdate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b73e0	order	GxuUpdateSingleColorTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7460	order	GetDefaultTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b74f0	order	GetTextureFormats	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7580	order	MippedImgAllocA	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b76e0	order	MippedImgCalcSize	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7770	order	MippedImgSet	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b78a0	order	RequestImageDimensions	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7aa0	order	UpdateBlpTextureAsync	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8770	override	CTexture::CTexture	
@@ -1389,7 +1370,7 @@ addr	how	frozen	evidence
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057c2a0	override	C44Matrix::Identity	
-0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_Identity
+0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_SphereMap
 0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
@@ -1946,6 +1927,7 @@ addr	how	frozen	evidence
 0067d770	override	Script_GetUnitFromName	
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
 006813b0	override	GxSceneClear	
+00681450	override	GxTexSetWrap	
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 00681890	callgraph	CGxDevice::XformSetViewport	only unmatched callee of 00681f60=GxXformSetViewport
@@ -1955,6 +1937,8 @@ addr	how	frozen	evidence
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	
+006859e0	callgraph	CGxDevice::IRsForceUpdate	only unmatched callee of 00685d40=CGxDevice::TexSetWrap
+00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
@@ -2666,8 +2650,8 @@ addr	how	frozen	evidence
 00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
 00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
-00873550	annotated	CShaderEffect::SetTexMtx_Identity	tag in src/gx/shader/CShaderEffect.cpp
-00873620	annotated	CShaderEffect::SetTexMtx_SphereMap	tag in src/gx/shader/CShaderEffect.cpp
+00873550	annotated	CShaderEffect::SetTexMtx_SphereMap	tag in src/gx/shader/CShaderEffect.cpp
+00873620	annotated	CShaderEffect::SetTexMtx	tag in src/gx/shader/CShaderEffect.cpp
 00873900	annotated	CShaderEffect::SetDiffuse	tag in src/gx/shader/CShaderEffect.cpp
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp

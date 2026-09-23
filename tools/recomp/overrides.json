@@ -1255,5 +1255,10 @@
     "frozen": "C44Matrix::Identity",
     "status": "ported",
     "note": "the second COMDAT copy of the 4x4 identity; FUN_00407f40 is the other and carries the source tag. Same body, same constants. 2026-09-23"
+  },
+  "00681450": {
+    "frozen": "GxTexSetWrap",
+    "status": "ported",
+    "note": "confirmed from the call site: CM2SceneRender::SetupTextures (FUN_0081f450) calls it as (texture, flags & 1, flags >> 1 & 1), which is GxTexSetWrap(tex, wrapU, wrapV). The order matcher had previously placed this name at 004b6f30, inside the Texture.cpp address range rather than the Gx layer; that run of 12 positional links was wrong and is gone. 2026-09-23"
   }
 }

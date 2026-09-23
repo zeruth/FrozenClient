@@ -523,10 +523,14 @@ void CM2SceneRender::SetupTextures() {
     uint32_t textureCount = this->m_curBatch->textureCount;
     int32_t v19 = 1;
 
-    // TODO
-    // - override texture count in certain cases
+    if (!CShaderEffect::s_enableShaders) {
+        // Without shaders these batches collapse to a single texture stage
+        if (this->m_curBatch->shader & 0x8000) {
+            textureCount = 1;
+        }
 
-    if (!(this->m_curBatch->shader & 0x4000) || textureCount != 1) {
+        v19 = 0;
+    } else if (!(this->m_curBatch->shader & 0x4000) || textureCount != 1) {
         v19 = 0;
     }
 
