@@ -318,9 +318,28 @@ void GxTexParameters(const CGxTex* texId, CGxTexParms& parms) {
     // TODO
 }
 
+// **Do not make this return true without porting the pool on both sides at once.** It is the
+// predicate of a texture reuse pool, and `false` is the safe answer: never reuse, always create
+// and always destroy, which is correct and merely wasteful.
+//
+// `true` is not safe today. TextureFreeGxTex reads
+//
+//     if (GxTexReusable(parms)) { /* TODO */ return; }
+//     GxTexDestroy(texId);
+//
+// so the moment this says yes, the free path returns without destroying the texture AND without
+// putting it anywhere -- every texture leaks. TextureAllocGxTex has the other half, a bucketed
+// pool keyed on width >> 5 and height >> 5 with a 512 cap, and its lookup is written; the release
+// side is the `// TODO` above.
+//
+// That is the same shape as the three traps already found in this port (M2UseThreads,
+// IsBatchDoodadCompatible, s_createBlpAsync): a stub whose caller changes its own control flow
+// assuming the stub succeeded. This one is disarmed only because the constant is `false`.
+//
+// It is also a pure performance feature -- nothing it changes is visible -- so it is a poor
+// candidate for an unverified change.
 bool GxTexReusable(CGxTexParms& parms) {
-    // TODO
-
+    // TODO -- see above before implementing
     return false;
 }
 
