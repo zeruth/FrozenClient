@@ -649,6 +649,33 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             elementIndex++;
 
+            // The alpha-tested DEPTH PREPASS. This gate is already the reference's, condition for
+            // condition (FUN_00821a20 at 0x008224f7); only the body was never written, so frozen
+            // does not lay depth for alpha-tested geometry such as hair and foliage at all.
+            //
+            // What the reference does here, read from 0x0082257f on 2026-09-23:
+            //
+            //     grow the element array by one
+            //     copy elements[elementIndex - 1] into the new slot   (0x44 bytes, rep movsl x 0x11)
+            //     newElement->flags |= 0x1
+            //     if (<a>) *array54[1].New() = elementIndex;
+            //     if (<b>) *array54[2].New() = elementIndex;
+            //     elementIndex++;
+            //
+            // So the prepass element is a verbatim duplicate distinguished only by flag 0x1.
+            // CM2SceneRender::SetupMaterial already does the rest: that flag selects alpha-key
+            // blending with colour writes off. GxRs_ColorWrite reaches D3D as of 2026-09-23, so the
+            // draw side is ready and this gather is the only thing still missing.
+            //
+            // Copy through the array rather than through a saved pointer: New() can reallocate, and
+            // the reference re-reads the base for exactly that reason.
+            //
+            // **Still to trace before writing it:** which sort list the duplicate joins. <a> and
+            // <b> are two mutually exclusive locals the reference derives at 0x00821dc2 from
+            // `this->+0x140 == 0`, but only when `!(m_cache->m_flags & 2)` and two earlier flags
+            // hold; otherwise they keep values computed further up, before 0x00821d9b. frozen does
+            // not model +0x140. Do NOT guess this: registering the prepass in the wrong list can
+            // put it after the shaded pass, which is worse than not having it.
             if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
                 // TODO
             }
