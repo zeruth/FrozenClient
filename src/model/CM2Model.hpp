@@ -137,6 +137,16 @@ class CM2Model {
         C44Matrix* m_textureMatrices = nullptr;
         C44Matrix matrixB4;
         C44Matrix matrixF4;
+
+        // This model's own tint, before anything a parent hands down: the reference keeps these at
+        // +0x178 through +0x194 and folds them into the current values every animate. Nothing
+        // writes them yet -- the setters that do are not ported -- so they stay neutral, which
+        // makes the fold an identity and leaves a parent's tint passing through untouched.
+        float m_baseAlpha = 1.0f;
+        float m_baseAlphaScale = 1.0f;
+        C3Vector m_baseDiffuse = { 1.0f, 1.0f, 1.0f };
+        C3Vector m_baseEmissive = { 0.0f, 0.0f, 0.0f };
+
         float float198 = 1.0f;
         float alpha19C = 1.0f;
         C3Vector m_currentDiffuse = { 1.0f, 1.0f, 1.0f };

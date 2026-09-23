@@ -37223,20 +37223,20 @@
   "status": "ported"
  },
  "0082e140": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.424,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMTSimple",
-  "frozenSize": 3,
+  "frozenSize": 898,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1032,
-  "status": "stub"
+  "status": "ported"
  },
  "0082e550": {
   "branchRatio": 0.583,
@@ -37248,7 +37248,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateAttachmentsMT",
-  "frozenSize": 0,
+  "frozenSize": 570,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 458,
@@ -37264,7 +37264,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5797,
+  "frozenSize": 5293,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
@@ -37280,7 +37280,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::Animate",
-  "frozenSize": 555,
+  "frozenSize": 586,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 451,

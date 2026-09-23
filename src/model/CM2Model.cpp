@@ -785,12 +785,110 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 }
 
 // ref: FUN_0082e140
-// Identified, not ported. The reference opens with the same two early-outs as AnimateMT -- the
-// loaded bit at +0x10, then m_animCounter (+0x3c) against the scene's counter (+0x14) -- and then
-// runs a shorter body of its own. TODO port the body; what it actually animates has not been read
-// out of the decompilation yet, so do not assume it mirrors AnimateMT.
+// The cut-down animate: the path a model takes when it carries the 0x1000 flag. It shares
+// AnimateMT's prologue and epilogue but skips every bone, colour, light and camera track, doing
+// only what the model needs to be placed and tinted. Note it still writes matrixF4, which is why
+// leaving this empty left anything on this path drawing with a stale transform.
 void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6) {
-    // TODO
+    if (!this->m_loaded) {
+        return;
+    }
+
+    // Already animated for this frame of the scene.
+    if (this->m_animCounter == this->m_scene->uint14) {
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // Attachment visibility, inherited from the parent exactly as AnimateMT does it
+
+    if (this->m_attachParent) {
+        this->m_flag8 = this->m_attachParent->m_flag8 && this->m_flag80;
+        this->m_flag10000 = this->m_attachParent->m_flag10000 && this->m_flag20000;
+
+        // TODO dword174, copied from the parent's own
+    }
+
+    // The tint this model passes on. Data flag 0x4 means it ignores what its parent handed down
+    // and stands on its own values; otherwise the parent's diffuse scales this model's and the
+    // parent's emissive is added on top, unless flag 0x80000 opts out of the addition.
+    if (data->flags & 0x4) {
+        this->float198 = this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * this->m_baseAlpha;
+        this->m_currentDiffuse = this->m_baseDiffuse;
+        this->m_currentEmissive = this->m_baseEmissive;
+    } else {
+        this->m_currentDiffuse = {
+            a3.x * this->m_baseDiffuse.x,
+            a3.y * this->m_baseDiffuse.y,
+            a3.z * this->m_baseDiffuse.z
+        };
+
+        this->m_currentEmissive = this->m_baseEmissive;
+
+        this->float198 = this->m_flag100000 ? this->m_baseAlpha : a5 * this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * a6 * this->m_baseAlpha;
+
+        if (!this->m_flag80000) {
+            this->m_currentEmissive.x += a4.x;
+            this->m_currentEmissive.y += a4.y;
+            this->m_currentEmissive.z += a4.z;
+        }
+    }
+
+    // Global sequences
+
+    for (int32_t i = 0; i < data->loops.Count(); i++) {
+        auto loopLength = data->loops[i].length;
+        this->m_loops[i] = loopLength ? (this->m_scene->m_time - this->uint74) % loopLength : 0;
+    }
+
+    this->matrixF4 = this->matrixB4 * *view;
+
+    this->float88 = !this->m_attachParent || this->m_attachParent->m_flags & 0x1
+        ? this->matrixF4.d2 * this->matrixF4.d2 + this->matrixF4.d1 * this->matrixF4.d1 + this->matrixF4.d0 * this->matrixF4.d0
+        : this->m_attachParent->float88;
+
+    if (this->m_time && this->m_scene->m_time) {
+        this->m_time = this->m_scene->m_time;
+    }
+
+    // TODO the sequence playback record the reference advances here (its own +0x94), which
+    // retimes the model's current sequence. frozen has no counterpart for that record yet.
+
+    for (int32_t i = 0; i < data->textureWeights.Count(); i++) {
+        auto& textureWeight = data->textureWeights[i];
+        auto& modelTextureWeight = this->m_textureWeights[i];
+
+        auto& weightTrack = textureWeight.weightTrack;
+
+        if (
+            weightTrack.sequenceTimes.Count() > 1
+            || (weightTrack.sequenceTimes.Count() == 1 && weightTrack.sequenceTimes[0].times.Count() > this->uint90)
+        ) {
+            float defaultValue = 1.0f;
+            M2AnimateTrack<fixed16, float>(
+                this,
+                this->m_bones,
+                textureWeight.weightTrack,
+                modelTextureWeight.weightTrack,
+                defaultValue
+            );
+        }
+    }
+
+    if (data->textureTransforms.Count()) {
+        this->AnimateTextureTransformsMT();
+    }
+
+    this->m_flag400 = 0;
+
+    if (this->m_attachments || this->m_attachList) {
+        this->AnimateAttachmentsMT();
+    }
+
+    this->m_animCounter = this->m_scene->uint14;
 }
 
 void CM2Model::AnimateST() {

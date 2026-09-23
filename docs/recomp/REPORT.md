@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 10:57 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 11:02 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,21 +9,21 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27161 | 5.39M |
 | mapped to a frozen function | 3062 (=) (11.3%) | 678.7k (12.3%) |
-| &nbsp;&nbsp;ported | 2369 (=) | 505.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 646 (=) | 131.1k |
+| &nbsp;&nbsp;ported | 2370 (=) | 506.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 645 (=) | 130.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **1141 (=) (4.2%)** | **143.3k (2.6%)** |
 | unmapped | 24099 | 4.73M |
 | world spine (reachable from OnFrameRender) | 5530, mapped 488 (=) (8.8%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5798, mapped 498 (=) (8.6%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 213 (=) (4.6%)** | |
-| frozen functions (src/, from PDB + source) | 12206, stubs 1709 | |
+| frozen functions (src/, from PDB + source) | 12206, stubs 1708 | |
 
 Match evidence: annotated 870, callgraph 183, callorder 129, cvar 32, handler 29, order 162, override 212, sticky 19, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 10:51 -- mapped 3062, ported 2369, stub 646, spine mapped 488.
+Previous run: 2026-09-23 11:02 -- mapped 3062, ported 2370, stub 645, spine mapped 488.
 
 ## Lua API coverage (binding tables)
 
@@ -139,7 +139,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 9 (1.3%) | 0.7% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 60 (21.2%) | 39.0% | 7 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 60 (21.2%) | 39.0% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 5 (2.1%) | 5.6% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
@@ -467,7 +467,6 @@ Module = the source file named by the reference's own assert strings near the fu
 
 | addr | module | size | callers | frozen | strings |
 |---|---|---:|---:|---|---|
-| 0082e140 | M2Scene.cpp? | 1032 | 7 | `CM2Model::AnimateMTSimple` [annotated] |  |
 | 00820ae0 | M2Scene.cpp? | 1109 | 1 | `CM2SceneRender::DrawBatchDoodad` [override] | BatchDoodad: model=%s index=%d |
 | 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
@@ -507,6 +506,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
 | 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
 | 0054de00 | BattlefieldInfo.cpp | 519 | 0 | `Script_SortBattlefieldScoreData` [table] | Usgae: SortBattlefieldScoreData("type"), class |
+| 0054c4d0 | BattlefieldInfo.cpp | 516 | 0 | `Script_GetBattlefieldVehicleInfo` [table] | .\BattlefieldInfo.cpp, Usage: GetBattlefieldVehicleInfo(index) |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-20 05:27 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
-| 2026-09-20 05:32 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 05:36 | 2963 (10.9%) | 1073 (4.0%) | 659 | 418/5531 | 2924/2964 | 1504 |
 | 2026-09-20 11:07 | 2988 (11.0%) | 1087 (4.0%) | 653 | 428/5531 | 2924/2964 | 1499 |
 | 2026-09-23 09:18 | 2997 (11.0%) | 1060 (3.9%) | 653 | 429/5531 | 2924/2964 | 1499 |
@@ -753,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 10:49 | 3061 (11.3%) | 1141 (4.2%) | 646 | 487/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:51 | 3062 (11.3%) | 1141 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
 | 2026-09-23 10:57 | 3062 (11.3%) | 1141 (4.2%) | 646 | 488/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:02 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
+| 2026-09-23 11:02 | 3062 (11.3%) | 1141 (4.2%) | 645 | 488/5530 | 2924/2964 | 1491 |
 
 ## How to move a row
 
