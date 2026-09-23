@@ -2198,6 +2198,10 @@ addr	how	frozen	evidence
 007e7e10	annotated	CoinTextureFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007ea5f0	string	CGlueMgr::InitializeFFX	unique "ffxSpecial"
+007ebff0	override	ComputeLightColors	
+007ed2d0	override	SkyLerp	
+007ed3b0	annotated	InterpBodyBand	tag in src/world/Terrain.cpp
+007f0530	override	SkyRender	
 007f09b0	override	SkyRender	
 007f1cd0	cvar	CWorldParam::SkyCloudLODCallback	callback of CVar::Register("SkyCloudLOD") on both sides
 007f39b0	cvar	CWorldParam::ViolenceLevelCallback	callback of CVar::Register("violenceLevel") on both sides

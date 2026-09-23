@@ -1265,5 +1265,28 @@
     "frozen": "CMapObjGroupSegmentQuery::TestFace",
     "status": "diverged",
     "note": "checks the MOMT table for null and bounds before indexing it. The reference indexes unconditionally, which is safe there; frozen only fills the table when the WMO carries a parseable MOMT chunk, so an absent one leaves it null and the read would fault. A face with no resolvable material is treated as untextured, which material 0xFF already means. 2026-09-23"
+  },
+  "007f0530": {
+    "frozen": "SkyRender",
+    "status": "diverged",
+    "note": "the sky dome's VERTEX COLOUR writer: 1 zenith colour from DNInfo[3], 4 azimuthally varied rings from DNInfo[4..7], then segCount + 1 of DNInfo[8] (the fog band). frozen folds it into SkyRender, which also carries the reference's separate draw at 007f09b0, so this is a stage link rather than a call-for-call one. Its contents were recovered from disassembly on 2026-09-23 and ported: the band-to-ring mapping and the sky highlight (parity-sky.md task 6). NOT the per-frame sky override blend it also does at 007f0573 and 007f07da, which reads globals frozen does not model yet."
+  },
+  "007ed2d0": {
+    "frozen": "SkyLerp",
+    "status": "diverged",
+    "note": "per-channel linear interpolation between two packed colours, alpha forced to 0xff. The reference lerps 0-255 BYTES and casts back with no clamp, so an out-of-range channel wraps; frozen keeps floats and clamps to [0, 255]. Both sky-highlight branches use extrapolating factors, and a wrapped channel would be a garish artefact rather than a faithful colour."
+  },
+  "007ebff0": {
+    "frozen": "ComputeLightColors",
+    "status": "ported",
+    "note": "fills a LightParams block from the LightIntBand / LightFloatBand rows at one time of day. Identified 2026-09-23 while tracing the sky highlight: the write at 007ec1cd is `fildl 0x4(%edi)` into struct+0x54, i.e. LightParams column 1 (highlightSky) converted to float, which is the scale the dome's highlight strength is multiplied by. frozen reads a subset of the same bands; several fields (0x5c..0x80) are still unread."
+  },
+  "007ed910": {
+    "status": "unlinked",
+    "note": "flat struct copy of a LightParams block (0x94 bytes, dwords to 0x44 then floats). It is how the interpolated block reaches the global DNInfo at 0xd38bd4, which is why field +0x54 (highlightSky) is live despite never being written by absolute address."
+  },
+  "007ed790": {
+    "status": "unlinked",
+    "note": "scales a packed colour's HSV VALUE by a float: unpack to RGB floats (x 1/255), FUN_00984f60 (RgbToHsv), value *= scale, FUN_00985030 (HsvToRgb), FUN_009851a0 (PackColor). FUN_007f0530 calls it for the dome's zenith vertex with a scale of 1.0, so it is currently an identity there; frozen has all three leaf helpers in lib/typhoon/tempest/ColorConvert.cpp but not the composite."
   }
 }

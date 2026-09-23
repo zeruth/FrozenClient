@@ -62,6 +62,7 @@ C3Vector CWorld::s_cloudColor1 = { 1.0f, 1.0f, 1.0f };
 C3Vector CWorld::s_cloudColor2 = { 1.0f, 1.0f, 1.0f };
 C3Vector CWorld::s_lightBands12to17[6] = {};
 float CWorld::s_cloudDensity = 0.5f;
+float CWorld::s_skyHighlight = 0.0f;
 float CWorld::s_fogStart = 0.0f;
 float CWorld::s_fogEnd = 0.0f;
 
@@ -177,6 +178,11 @@ struct LightColors {
     float floatBand5;    // 0x00d38c3c
     float fogEnd;
     float fogStartScalar;
+    // LightParams column 1 (highlightSky), 0 or 1. It gates the sky dome's azimuthal highlight;
+    // see SkyRender in Terrain.cpp. The reference keeps it as a FLOAT at DNInfo+0x128, converted
+    // from the DBC integer with fildl at 0x007ec1cd, and multiplies the highlight's strength band
+    // by it -- so a zone whose row carries 0 gets no highlight at all.
+    float highlightSky;
 };
 
 // Interpolate every band of one LightParams at time t into a LightColors.
@@ -240,6 +246,9 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     out.fogEnd = InterpFloatBand(P, 0, t);
     float startScalar = InterpFloatBand(P, 1, t);
     out.fogStartScalar = startScalar < -1.0f ? -1.0f : (startScalar > 1.0f ? 1.0f : startScalar);
+
+    auto params = g_lightParamsDB.GetRecord(P);
+    out.highlightSky = params ? static_cast<float>(params->m_highlightSky) : 0.0f;
 }
 
 // One Light.dbc row cached for the current map so per-frame position selection never rescans the DBC.
@@ -424,6 +433,7 @@ void CWorld::UpdateOutdoorLight() {
         result.floatBand5 = result.floatBand5 * iw + local.floatBand5 * w;
         result.fogEnd = result.fogEnd * iw + local.fogEnd * w;
         result.fogStartScalar = result.fogStartScalar * iw + local.fogStartScalar * w;
+        result.highlightSky = result.highlightSky * iw + local.highlightSky * w;
 
         if (w >= 0.5f) {
             CWorld::s_outdoorParamsID = bestParams;
@@ -447,6 +457,7 @@ void CWorld::UpdateOutdoorLight() {
         CWorld::s_lightBands12to17[b] = result.extraBands[b];
     }
     CWorld::s_cloudDensity = result.cloudDensity;
+    CWorld::s_skyHighlight = result.highlightSky;
     CWorld::s_floatBand2 = result.floatBand2;
     CWorld::s_floatBand4 = result.floatBand4;
     CWorld::s_floatBand5 = result.floatBand5;
@@ -539,6 +550,10 @@ const C3Vector& CWorld::GetOutdoorDirection() {
 
 const C3Vector& CWorld::GetFogColor() {
     return CWorld::s_fogColor;
+}
+
+float CWorld::GetSkyHighlight() {
+    return CWorld::s_skyHighlight;
 }
 
 float CWorld::GetFogStart() {

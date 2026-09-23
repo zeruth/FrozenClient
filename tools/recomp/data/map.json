@@ -35002,8 +35002,72 @@
   "refSize": 606,
   "status": "ported"
  },
+ "007ebff0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ComputeLightColors",
+  "frozenSize": 539,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 558,
+  "status": "ported"
+ },
+ "007ed2d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "SkyLerp",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 219,
+  "status": "diverged"
+ },
+ "007ed3b0": {
+  "branchRatio": 0.529,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "InterpBodyBand",
+  "frozenSize": 240,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
+ "007f0530": {
+  "branchRatio": 0.465,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "SkyRender",
+  "frozenSize": 3659,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 823,
+  "status": "diverged"
+ },
  "007f09b0": {
-  "branchRatio": 0.694,
+  "branchRatio": 0.581,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.286,
@@ -35012,7 +35076,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 2957,
+  "frozenSize": 3659,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,

@@ -5776,7 +5776,11 @@ const float SKY_BODY_RADIUS = 12.0f;
 
 struct SkyBodyKey { float time; float value; };
 
-// Wrap-around linear interpolation over (time, value) pairs, matching FUN_007ed3b0.
+// Wrap-around linear interpolation over (time, value) pairs. The reference passes the key count
+// in ESI and the table in EDI, clamps the parameter to [0, 1], and wraps the last key round to
+// the first across the end of the day. Every band in the sky bodies, the glare and the sky
+// highlight is read through it.
+// ref: FUN_007ed3b0
 float InterpBodyBand(const SkyBodyKey* keys, int32_t count, float t) {
     if (count <= 0) {
         return 0.0f;
@@ -6028,6 +6032,52 @@ void SkyBodiesRender() {
     DrawGlare(MOON_THETA, MOON1_PHI, 3, MOON_GLARE_VIS, 2.0f, t, s_glareTexture[1], right, up, fwd);
 }
 
+// ------------------------------------------------------------------------------------------------
+// The sky highlight -- the dome's azimuthal colour variation, reference FUN_007f0530.
+//
+// The four rings between the zenith and 45 degrees are not painted flat. Their colour is pushed per
+// segment by a profile band sampled at the segment's azimuth relative to the camera, so one half of
+// the dome brightens and the opposite half darkens toward the zenith colour. It is the sunrise and
+// sunset glow, and it is off for most of the day.
+//
+// Every number below was read out of WoW.exe, not inferred:
+//   * strength = StrengthBand(dayFraction) * LightParams.highlightSky. The band is at 0x00af4b7c
+//     and peaks only around 06:30 and 21:30; the scale is DNInfo+0x128, which FUN_007ebff0 fills
+//     with `fildl 0x4(%edi)` at 0x007ec1cd -- LightParams column 1, highlightSky, 0 or 1. A zone
+//     whose row carries 0 therefore gets no highlight at all, which is most of them.
+//   * the segment parameter is wrap01(yaw / (2pi) + 0.25 + seg * (-1 / segCount)). The two
+//     constants are 0.159155 at 0x00a41ca8 and 0.25 at 0x00a41b00, and the -1 is at 0x009e2ef4.
+//     yaw is atan2(forward.y, forward.x) normalised to [0, 2pi), computed at 0x007f3920 from the
+//     camera forward vector the DayNight block keeps at +0x30.
+//   * profile = ProfileBand(that parameter), the band at 0x00af4bac. It is positive across one
+//     half of the dome and negative across the other.
+//
+// The two branches, taken verbatim from 0x007f06b1 and 0x007f070b (the sign of the profile picks
+// between them, with zero going to the first):
+//
+//     local = lerp(ringColor, topRingColor, strength)
+//     profile >= 0:  out = lerp(ringColor, local, (profile - 1) * strength)
+//     profile <  0:  out = lerp(local, lerp(local, zenithColor, strength * 0.7), -profile * strength)
+//
+// One deliberate divergence. The reference lerps 0-255 bytes and casts the result back to a byte
+// with no clamp (FUN_007ed2d0), so an out-of-range channel would wrap; frozen keeps floats and
+// clamps to [0, 255]. Both branches can leave the 0..1 range because their factors extrapolate,
+// and a wrapped channel would be a garish artefact rather than a faithful colour.
+const SkyBodyKey SKY_HIGHLIGHT_STRENGTH[6] = {
+    { 0.125000f, 0.0f }, { 0.270833f, 1.0f }, { 0.291667f, 0.0f },
+    { 0.854167f, 0.0f }, { 0.895833f, 1.0f }, { 0.999306f, 0.0f },
+};
+
+const SkyBodyKey SKY_HIGHLIGHT_PROFILE[6] = {
+    { 0.125f, 1.0f }, { 0.375f, 0.0f }, { 0.500f, -0.5f },
+    { 0.625f, -0.7f }, { 0.750f, -0.5f }, { 0.875f, 0.0f },
+};
+
+// Per-channel linear interpolation, matching FUN_007ed2d0 apart from the clamp noted above.
+C3Vector SkyLerp(const C3Vector& a, const C3Vector& b, float t) {
+    return { a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t };
+}
+
 void SkyRender() {
     // The reference skips the whole sky pass while the camera is under liquid; the clear colour
     // (the underwater fog) is the backdrop instead.
@@ -6060,27 +6110,74 @@ void SkyRender() {
     // reference's shading (FUN_007f0530 writes 1 zenith colour, then 4 rings of 24 from successive
     // bands, then 24 + 1 of the fog band).
     //
-    // Not ported: the reference also varies the four middle rings per segment by stepping a band
-    // parameter with the camera yaw, so the dome rotates slightly with the view. The per-vertex
-    // band pointers did not survive decompilation; see parity-sky.md task 6.
+    // On top of that the four middle rings carry the sky highlight, which varies their colour per
+    // segment with the camera azimuth; see the block above SkyRender.
     C3Vector ringColor[SKY_RINGS + 1];
 
     for (int32_t ring = 0; ring <= SKY_RINGS; ring++) {
         ringColor[ring] = CWorld::GetSkyColor(ring < 5 ? ring : 5);
     }
 
+    float highlight = InterpBodyBand(SKY_HIGHLIGHT_STRENGTH, 6, CWorld::GetDayProgress())
+        * CWorld::GetSkyHighlight();
+
+    // The reference rebuilds this per ring; the yaw cannot change inside a frame, so it is hoisted.
+    const C3Vector& camDir = CWorld::GetCameraDir();
+    float yaw = atan2f(camDir.y, camDir.x);
+
+    if (yaw < 0.0f) {
+        yaw += 6.2831855f;
+    }
+
+    float segParam0 = yaw * 0.159155f + 0.25f;
+
+    if (segParam0 > 1.0f) {
+        segParam0 -= 1.0f;
+    }
+
+    const float segStep = -1.0f / SKY_SEGS;
+
     int32_t v = 0;
 
     for (int32_t ring = 0; ring <= SKY_RINGS; ring++) {
-        const C3Vector& c = ringColor[ring];
-        float r = c.x * 255.0f;
-        float g = c.y * 255.0f;
-        float b = c.z * 255.0f;
+        const C3Vector& base = ringColor[ring];
+
+        // Rings 1..4 are the reference's four highlighted rings: the zenith vertex above them and
+        // the two fog-band rings below are flat there too.
+        bool highlighted = highlight > 0.0f && ring >= 1 && ring <= 4;
+        C3Vector local = highlighted ? SkyLerp(base, ringColor[1], highlight) : base;
+        float p = segParam0;
 
         for (int32_t seg = 0; seg <= SKY_SEGS; seg++) {
-            s_skyCol[v].r = static_cast<uint8_t>(r > 255.0f ? 255.0f : r);
-            s_skyCol[v].g = static_cast<uint8_t>(g > 255.0f ? 255.0f : g);
-            s_skyCol[v].b = static_cast<uint8_t>(b > 255.0f ? 255.0f : b);
+            C3Vector c = base;
+
+            if (highlighted) {
+                if (p < 0.0f) {
+                    p += 1.0f;
+                }
+
+                float profile = InterpBodyBand(SKY_HIGHLIGHT_PROFILE, 6, p);
+
+                if (profile >= 0.0f) {
+                    c = SkyLerp(base, local, (profile - 1.0f) * highlight);
+                } else {
+                    C3Vector toward = SkyLerp(local, ringColor[0], highlight * 0.7f);
+                    c = SkyLerp(local, toward, -profile * highlight);
+                }
+
+                p += segStep;
+            }
+
+            float r = c.x * 255.0f;
+            float g = c.y * 255.0f;
+            float b = c.z * 255.0f;
+            r = r < 0.0f ? 0.0f : (r > 255.0f ? 255.0f : r);
+            g = g < 0.0f ? 0.0f : (g > 255.0f ? 255.0f : g);
+            b = b < 0.0f ? 0.0f : (b > 255.0f ? 255.0f : b);
+
+            s_skyCol[v].r = static_cast<uint8_t>(r);
+            s_skyCol[v].g = static_cast<uint8_t>(g);
+            s_skyCol[v].b = static_cast<uint8_t>(b);
             s_skyCol[v].a = 0xFF;
             v++;
         }

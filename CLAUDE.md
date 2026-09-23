@@ -291,12 +291,16 @@ seen running — treat them as suspect until a run confirms them.
    (`src/world/Clouds.cpp`), the sun and moon discs, and the glare (`DrawGlare`, called for
    both bodies from `SkyBodiesRender` with `sunGlare.blp` / `moonGlare.blp`) — the Known
    blockers section below already said the first two, so the file contradicted itself.
-   Overstated, though: the dome that landed is **not** the reference's seven-ring geometry.
-   `SKY_RINGS` is 12 with a hand-tuned zenith table whose own comment says it is uncertain and
-   was chosen because it reads well in game. Genuinely still open: that dome geometry, the
-   six-entry sky band mapping (`s_skyColors` is still 5 and takes the wrong bands; only the
-   fog half of that task landed), the sky highlight, and the dome's azimuthal colour
-   variation. See `docs/ref/parity-sky.md`.
+   The four items that list called genuinely open have since landed, all **built,
+   unverified**: the dome's seven-ring geometry (`SKY_RINGS` is 6 with the reference's own
+   zenith table from `0x00a41a90`, not the hand-tuned 12), the six-entry sky band mapping
+   (`s_skyColors` is 6, zenith-first, bands 2..7), and the **sky highlight** -- which turned
+   out to be the same item as "the dome's azimuthal colour variation", listed twice.
+   `FUN_007f0530` was disassembled end to end on 2026-09-23 and ported into `SkyRender`,
+   gated on `LightParams.highlightSky` as the reference gates it. Nothing in this area is
+   known to be missing now; what it needs is a **run at dawn or dusk in a zone that sets
+   `highlightSky`**, because at noon the band strength is zero and a correct port is
+   indistinguishable from no port at all. See `docs/ref/parity-sky.md`.
 3. **Vertex positions are absolute world coordinates.** The deepest parity break behind the depth
    problems: streams bake absolute world coordinates (up to ±17066) and cancel the camera
    translation inside the per-vertex `dp4`, leaving millimetres of view-dependent depth error. The

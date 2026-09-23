@@ -94,6 +94,7 @@ class CWorld {
         static const C3Vector& GetCameraPos();             // camera position of the last Update
         static const C3Vector& GetBodyTint();              // LightIntBand band 9: sun/moon disc tint
         static float GetCloudDensity();                    // LightFloatBand band 3: cloud cover
+        static float GetSkyHighlight();                    // LightParams.highlightSky: 0 or 1
         static float GetNearClip();
         static uint32_t GetTickTimeFixed();
         static uint32_t GetTickTimeMs();
@@ -144,6 +145,7 @@ class CWorld {
 
 
         static float s_cloudDensity;
+        static float s_skyHighlight;
         static C3Vector s_skyColors[6];
         static C3Vector s_fogColor;
         static float s_fogStart;
