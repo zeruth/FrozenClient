@@ -654,15 +654,19 @@ void AlphaTexCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uin
 // with depth off so terrain and objects paint over it, matching the reference's sky backdrop.
 // Sky dome rings, as zenith angles in turns of pi (0 = straight up, 0.5 = horizon, 1 = nadir).
 //
-// The recovered reference table is { 0, .17, .20, .23, .24, .25, 1.0 }: five rings inside the top
-// 45-degree cap and then a single band straight to the nadir. Colouring that literally -- the five
-// sky bands across the cap, the fog colour on the last two rings -- puts a hard edge at 45 degrees
-// wherever the fog band differs from the horizon band, which it does badly in some zones (the
-// Death Knight start reads sky 62,154,197 against fog 0,62,85 at noon) and shows up as a blue ball
-// with a dark skirt. UNCERTAIN whether the table is really zenith angles; keeping the gradient
-// concentrated overhead but carrying it down to the horizon and blending into the fog colour there
-// matches both the band naming ("bands 2..6 top to horizon, fog below") and how the sky reads in
-// game. See docs/ref/parity-sky.md section 2.
+// The paragraph that used to stand here described the dome BEFORE the table was read out of the
+// binary, flagged the zenith-angle reading as uncertain, and argued for carrying the gradient down
+// to the horizon and blending into fog. It was left in place when the reference's own table landed
+// and then contradicted the paragraph below it and the code under both. Removed 2026-09-23; the
+// uncertainty it flagged is settled.
+//
+// One thing in it was a measurement and is kept, because it predicts what a run will show. Colouring
+// the reference's table literally puts a hard edge at 45 degrees wherever the fog band differs from
+// the horizon band, and in some zones it differs badly -- the Death Knight start reads sky
+// 62,154,197 against fog 0,62,85 at noon, which will look like a blue ball with a dark skirt. That
+// is what the reference does, so it is the expected appearance rather than a defect to tune away.
+// If it looks wrong on screen, check the band mapping before changing the geometry.
+//
 // The reference's dome, read out of the binary rather than tuned: FUN_007f2470 builds 24 segments
 // and 7 rings whose zenith angles are the table at 0x00a41a90 times pi, and the azimuth step at
 // 0x00a41cec is exactly 1/24. Both were checked against WoW.exe directly (2026-09-23), as was the
