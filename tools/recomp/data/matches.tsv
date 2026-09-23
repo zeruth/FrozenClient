@@ -2391,6 +2391,8 @@ addr	how	frozen	evidence
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
+00834f60	annotated	CM2Lighting::AddLight	tag in src/model/CM2Lighting.cpp
 008350a0	override	CM2Lighting::CameraSpace	
 00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
 008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp

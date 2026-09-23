@@ -825,10 +825,28 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
     return 1;
 }
 
+// Feeds CM2Lighting with the lights that affect one model. The list walk below covers DIRECTIONAL
+// lights; the missing half is the query against the point-light hash grid, and it is worth writing
+// down where the whole chain stands, because the pieces were ported from the wrong end.
+//
+// Local lights on a model need five things, downstream last:
+//
+//   1. CM2Model's per-frame light update  -- point-light branch EMPTY (CM2Model.cpp, near the
+//      directional branch that builds a direction from the bone matrix). Nothing sets a point
+//      light's world position or colour.
+//   2. CM2Light::Link                     -- point-light branch EMPTY. Point lights never enter
+//      any list; the reference puts them in a 64 x 64 hash grid on the scene. See that function.
+//   3. CM2Scene::SelectLights             -- this TODO. Must query the grid around the model.
+//   4. CM2Lighting::AddLight              -- ported 2026-09-23, keeps the nearest four.
+//   5. CM2Lighting::CameraSpace and CShaderEffect::ComputeLocalLights -- ported 2026-09-23.
+//
+// 4 and 5 are done and 1 through 3 are not, so m_lightCount is still always zero and no model is
+// lit by a local light yet. The two ported steps are correct and tested against the reference, but
+// they are downstream of three empty branches. Anyone continuing should start at 1.
 void CM2Scene::SelectLights(CM2Lighting* lighting) {
     for (auto light = this->m_lightList; light; light = light->m_lightNext) {
         lighting->AddLight(light);
     }
 
-    // TODO
+    // TODO -- query the point-light hash grid; see the chain above
 }

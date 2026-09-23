@@ -74945,7 +74945,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 15
+"line": 29
 },
 "CM2Light::SetDirection": {
 "files": [
@@ -74964,7 +74964,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 35
+"line": 49
 },
 "CM2Light::SetLightType": {
 "files": [
@@ -74980,7 +74980,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 44
+"line": 58
 },
 "CM2Light::SetVisible": {
 "files": [
@@ -74996,7 +74996,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 57
+"line": 71
 },
 "CM2Light::Unlink": {
 "files": [
@@ -75009,7 +75009,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 73
+"line": 87
 },
 "CM2Lighting::AddAmbient": {
 "files": [
@@ -75055,19 +75055,23 @@
 "src/model/cm2lighting.cpp"
 ],
 "callseq": [
+"C3Vector::C3Vector",
 "CM2Lighting::AddAmbient",
 "CM2Lighting::AddDiffuse",
 "CM2Lighting::AddSpecular"
 ],
 "strings": [],
 "consts": [
-"1"
+"0",
+"1",
+"3",
+"4"
 ],
-"branches": 2,
+"branches": 6,
 "stub": false,
-"lines": 13,
+"lines": 42,
 "refs": [],
-"line": 48
+"line": 68
 },
 "CM2Lighting::AddSpecular": {
 "files": [
@@ -75083,7 +75087,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 111
 },
 "CM2Lighting::CameraSpace": {
 "files": [
@@ -75102,7 +75106,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 86
+"line": 135
 },
 "CM2Lighting::Initialize": {
 "files": [
@@ -75121,7 +75125,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 102
+"line": 151
 },
 "CM2Lighting::SetFog": {
 "files": [
@@ -75139,7 +75143,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 110
+"line": 159
 },
 "CM2Lighting::SetupGxLights": {
 "files": [
@@ -75152,7 +75156,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 137
+"line": 186
 },
 "CM2Lighting::SetupSunlight": {
 "files": [
@@ -75181,7 +75185,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 147
+"line": 196
 },
 "M2Array::operator[]": {
 "files": [
@@ -77412,7 +77416,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 828
+"line": 846
 },
 "CM2SceneRender::Draw": {
 "files": [

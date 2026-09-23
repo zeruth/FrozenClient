@@ -45,13 +45,62 @@ void CM2Lighting::AddDiffuse(const C3Vector& dirColor, const C3Vector& dir) {
     this->m_sunDiffuse = dirColor;
 }
 
+// The gate on the whole local-light path, and its point-light branch was empty -- so m_lightCount
+// stayed 0, CameraSpace's loop never ran and ComputeLocalLights was never called. Everything built
+// for local lights last cycle was dead until this.
+//
+// A point light is kept only if it is among the FOUR NEAREST to sphere4's centre, and the four are
+// held sorted by squared distance, nearest first. When the set is full a candidate farther than the
+// worst is dropped outright; otherwise the worst is evicted and the newcomer insertion-sorted into
+// place.
+//
+// Two comparisons decide it and both are x87 compare-and-branch, so they are worth spelling out:
+//
+//   full-set test   `fcoms 0xa0; testb $0x5, %ah; jp drop` -- mask 0x5 is C0 (less) and C2
+//                   (unordered), and jp is taken when both are clear, i.e. dist2 is NOT less than
+//                   the worst kept. So a tie is dropped: the test is `>=`.
+//   shift test      `fcoms; testb $0x41, %ah; je stop` -- mask 0x41 is C3 (equal) and C0 (less),
+//                   and je is taken when both are clear, i.e. strictly greater. So the loop keeps
+//                   shifting while dist2 <= the neighbour: the test is `<=`, not `<`.
+//
+// Getting either backwards would still compile and would still light models, just the wrong ones.
+// ref: FUN_00834f60
 void CM2Lighting::AddLight(CM2Light* light) {
     if (!light->m_visible) {
         return;
     }
 
     if (light->m_type == 1) {
-        // TODO
+        C3Vector d = {
+            light->m_pos.x - this->sphere4.c.x,
+            light->m_pos.y - this->sphere4.c.y,
+            light->m_pos.z - this->sphere4.c.z
+        };
+
+        float dist2 = d.x * d.x + d.y * d.y + d.z * d.z;
+
+        uint32_t i = this->m_lightCount;
+
+        if (i >= 4) {
+            if (dist2 >= this->m_lightDistance[3]) {
+                return;
+            }
+
+            i--;
+        }
+
+        while (i != 0 && dist2 <= this->m_lightDistance[i - 1]) {
+            this->m_lights[i] = this->m_lights[i - 1];
+            this->m_lightDistance[i] = this->m_lightDistance[i - 1];
+            i--;
+        }
+
+        this->m_lightDistance[i] = dist2;
+        this->m_lights[i] = light;
+
+        if (this->m_lightCount < 4) {
+            this->m_lightCount++;
+        }
     } else {
         this->AddAmbient(light->m_ambColor);
         this->AddDiffuse(light->m_dirColor, light->m_dir);
