@@ -1609,5 +1609,9 @@
   "00828680": {
     "status": "unlinked",
     "note": "Opens the same way as its sibling: read the sequence index from arg1+0x44, clamp it against the track's count at arg2+0xc, and index the per-sequence array at arg2+0x10 by eight bytes an entry. That is animation track evaluation, and CM2Model::AnimateMT (0082f0f0) calls both where frozen calls CM2Model::FindKey -- a different decomposition rather than a missing call, so neither is linked. One caller and a 0x48-byte frame, so it does more work. Immediately after it AnimateMT takes a branch frozen does not have: it normalises three 16-byte-spaced locals in a row (0x0082faa9), which is the three basis rows of a matrix, then scales by the length of the vector at model+0xf4..0xfc. That branch is jumped over by the path above it, so it is conditional. Worth reading when AnimateMT is ported properly -- it sits at 16% call-order recall, so frozen's version is a simplification rather than a port with holes."
+  },
+  "00873ff0": {
+    "status": "unlinked",
+    "note": "a 24-byte global accessor with 15 callers: returns table[0x00b1d554 + i*4] where i is 0 when the flag at 0x00b1d51c is set and [0x00d43154] otherwise, i.e. \"the current shader effect, unless an override is active\". CM2Scene::ComputeElementShaders calls it and CGxDevice::Caps and nothing else, which is why that function measures 0% call-order recall against frozen's: frozen computes the permutation inline from the material, the lighting and the skin section rather than reading a global. A decomposition difference, not missing behaviour -- checked 2026-09-23 before concluding the 0% meant a defect."
   }
 }

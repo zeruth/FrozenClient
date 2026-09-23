@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 14:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 14:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3083 (+1) (11.4%) | 688.0k (12.5%) |
-| &nbsp;&nbsp;ported | 2364 (+1) | 509.9k |
+| mapped to a frozen function | 3083 (=) (11.4%) | 688.0k (12.5%) |
+| &nbsp;&nbsp;ported | 2364 (=) | 509.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 667 (=) | 134.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1179 (+1) (4.3%)** | **152.3k (2.8%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1179 (=) (4.3%)** | **152.3k (2.8%)** |
 | unmapped | 24077 | 4.72M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 493 (+1) (8.9%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 503 (+1) (8.7%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 235 (+1) (5.1%)** | |
+| world spine (reachable from OnFrameRender) | 5529, mapped 493 (=) (8.9%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 503 (=) (8.7%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 235 (=) (5.1%)** | |
 | frozen functions (src/, from PDB + source) | 12210, stubs 1714 | |
 
 Match evidence: annotated 879, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 241, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 14:48 -- mapped 3082, ported 2363, stub 667, spine mapped 492.
+Previous run: 2026-09-23 14:51 -- mapped 3083, ported 2364, stub 667, spine mapped 493.
 
 ## Lua API coverage (binding tables)
 
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 13:21 | 3074 (11.3%) | 1173 (4.3%) | 653 | 493/5529 | 2924/2964 | 1491 |
-| 2026-09-23 13:25 | 3077 (11.3%) | 1174 (4.3%) | 654 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:28 | 3078 (11.3%) | 1175 (4.3%) | 654 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:35 | 3076 (11.3%) | 1175 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:40 | 3076 (11.3%) | 1175 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
@@ -753,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 14:48 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:48 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:51 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:51 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:52 | 3083 (11.4%) | 1179 (4.3%) | 667 | 493/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 
