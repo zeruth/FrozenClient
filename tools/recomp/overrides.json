@@ -1601,5 +1601,13 @@
   "006c8e70": {
     "status": "unlinked",
     "note": "The four glyph pastes were told apart by their dispatcher, inlined at 0x006c9fce: it tests face->flags bit 0 (FONT_OUTLINE) and then bit 1 (FONT_MONOCHROME), giving 006c8e70 outlined+mono, 006c9420 outlined+AA, 006c9330 plain mono and 006c9c70 plain AA. **frozen's PasteGlyphOutlinedMonochrome is an empty body and this is reachable** -- a FrameXML font declaring both OUTLINE and MONOCHROME draws blank glyphs. Not ported yet, and it is NOT the outlined AA with one line changed the way the plain pair was: it allocates ONE 0x4800 scratch plane where 006c9420 allocates two, because for a 1-bit source the coverage and the outline mask are the same plane. Its unpack step is the familiar `(src[x >> 3] >> (7 - (x & 7))) & 1` widened with movsbw; the remaining ~1100 bytes are the dilation. A separate transcription, not a derivation."
+  },
+  "0082b0a0": {
+    "status": "unlinked",
+    "note": "Opens the same way as its sibling: read the sequence index from arg1+0x44, clamp it against the track's count at arg2+0xc, and index the per-sequence array at arg2+0x10 by eight bytes an entry. That is animation track evaluation, and CM2Model::AnimateMT (0082f0f0) calls both where frozen calls CM2Model::FindKey -- a different decomposition rather than a missing call, so neither is linked. Eight callers and a 0x14-byte frame, so this is the compact evaluator, probably the scalar or vector one."
+  },
+  "00828680": {
+    "status": "unlinked",
+    "note": "Opens the same way as its sibling: read the sequence index from arg1+0x44, clamp it against the track's count at arg2+0xc, and index the per-sequence array at arg2+0x10 by eight bytes an entry. That is animation track evaluation, and CM2Model::AnimateMT (0082f0f0) calls both where frozen calls CM2Model::FindKey -- a different decomposition rather than a missing call, so neither is linked. One caller and a 0x48-byte frame, so it does more work. Immediately after it AnimateMT takes a branch frozen does not have: it normalises three 16-byte-spaced locals in a row (0x0082faa9), which is the three basis rows of a matrix, then scales by the length of the vector at model+0xf4..0xfc. That branch is jumped over by the path above it, so it is conditional. Worth reading when AnimateMT is ported properly -- it sits at 16% call-order recall, so frozen's version is a simplification rather than a port with holes."
   }
 }

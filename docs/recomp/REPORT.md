@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 14:46 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 14:47 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 878, callgraph 179, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 14:43 -- mapped 3082, ported 2363, stub 667, spine mapped 492.
+Previous run: 2026-09-23 14:46 -- mapped 3082, ported 2363, stub 667, spine mapped 492.
 
 ## Lua API coverage (binding tables)
 
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 13:09 | 3073 (11.3%) | 1172 (4.3%) | 650 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:13 | 3075 (11.3%) | 1174 (4.3%) | 650 | 494/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:18 | 3074 (11.3%) | 1174 (4.3%) | 650 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:19 | 3074 (11.3%) | 1173 (4.3%) | 653 | 493/5529 | 2924/2964 | 1491 |
@@ -753,6 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 14:43 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:43 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 14:46 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
+| 2026-09-23 14:47 | 3082 (11.3%) | 1178 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 
