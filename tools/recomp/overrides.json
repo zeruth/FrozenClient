@@ -928,7 +928,7 @@
   "004b6fa0": {
     "frozen": "TextureCacheGetTexture",
     "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): the cache probe before anything is created, (fileName, ext, flags)"
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): the cache probe before anything is created, (fileName, ext, flags) -- Status kept at \"ported\", against tools/audit-ported.py's report, because the audit keys by NAME and this name is overloaded: the filename-keyed form linked here has a real body, and it is the colour-keyed form that is a stub. Checked 2026-09-23; the reference at this address takes a filename, an extension and texture flags, which is the implemented overload. The colour-keyed gap is written up at the stubs in src/gx/Texture.cpp."
   },
   "004b95b0": {
     "frozen": "CreateTgaTexture",
@@ -943,7 +943,7 @@
   "004b9480": {
     "frozen": "TextureCacheNewTexture",
     "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags"
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags -- Status kept at \"ported\", against tools/audit-ported.py's report, because the audit keys by NAME and this name is overloaded: the filename-keyed form linked here has a real body, and it is the colour-keyed form that is a stub. Checked 2026-09-23; the reference at this address takes a filename, an extension and texture flags, which is the implemented overload. The colour-keyed gap is written up at the stubs in src/gx/Texture.cpp."
   },
   "004b9550": {
     "frozen": "TextureCreateSolid",

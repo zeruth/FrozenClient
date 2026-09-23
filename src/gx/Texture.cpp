@@ -933,6 +933,19 @@ HTEXTURE TextureCacheGetTexture(char* fileName, char* fileExt, CGxTexFlags texFl
     return nullptr;
 }
 
+// The solid-colour half of the texture cache, and it is a leak rather than a missing feature.
+// TextureCreateSolid asks this for a cached texture, gets nothing because it is a stub, builds a
+// fresh 8x8 texture, and hands it to the insert below, which is also a stub. So every request for
+// a solid colour allocates another texture that nothing will ever find again. Callers are model
+// load (one per missing model texture) and CSimpleTexture's SetColorTexture, so it grows with play
+// rather than per frame, but it only grows.
+//
+// It cannot be fixed by reusing the existing cache. That one is keyed by filename, and
+// FillInSolidTexture names EVERY solid texture "SolidTexture" -- so does the reference, verified
+// against the string at 0x009f1208 -- so all colours would collide on one entry. The reference
+// must therefore keep a second table keyed by the colour, and CTexture would need a second
+// TSHashObject base to live in it. That is a change to the type every draw touches, which is why
+// it is written down here rather than attempted blind.
 HTEXTURE TextureCacheGetTexture(const CImVector& color) {
     // TODO
 
@@ -946,6 +959,8 @@ void TextureCacheNewTexture(CTexture* texture, CGxTexFlags texFlags) {
     Texture::s_textureCache.Insert(texture, hashval, key);
 }
 
+// The other half of the solid-colour cache; see the note on the lookup above. Both are stubs, so
+// the cache neither hits nor fills.
 void TextureCacheNewTexture(CTexture* texture, const CImVector& color) {
     // TODO
 }

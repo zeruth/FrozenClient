@@ -26,6 +26,13 @@ Found on its first run, 2026-09-23:
 It reuses livestubs.py's emptiness test rather than writing a second one, so the two cannot drift
 apart.
 
+**It keys by name, so C++ overloads collide**, and that produces false positives worth recognising
+before acting on a row. If one overload is implemented and another is a stub, every reference
+address linked to that name is reported. `TextureCacheGetTexture` and `TextureCacheNewTexture` are
+the live example: their filename-keyed forms are real ports and their colour-keyed forms are stubs,
+so both names appear here while the addresses reported against them are the implemented ones. Check
+which overload a finding means before changing a status.
+
     python tools/audit-ported.py
 """
 
