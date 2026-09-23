@@ -653,14 +653,27 @@ LABEL_95:
 // both OUTLINE and MONOCHROME draws blank glyphs. **It is FUN_006c8e70**, named by the dispatcher
 // inlined at 0x006c9fce, which tests FONT_OUTLINE then FONT_MONOCHROME to pick one of the four.
 //
-// It is NOT PasteGlyphOutlinedAA with one line changed, the way the plain monochrome paste was a
-// one-line change from the plain AA one. It allocates ONE 0x4800-byte scratch plane where the
-// outlined AA allocates two, because for a 1-bit source the coverage and the outline mask are the
-// same plane, and the dilation that follows reads it for both. So this is its own transcription of
-// about 1100 bytes, not a derivation from the function below.
+// Specified here in full so this stops being re-investigated. It is NOT PasteGlyphOutlinedAA with
+// a plane removed -- it is structurally simpler, and knowing that is most of the work:
 //
-// Its unpack step is already familiar: `(src[x >> 3] >> (7 - (x & 7))) & 1`, widened with movsbw
-// into the scratch plane, offset by two texels when the face carries flag 0x8.
+// * ONE 0x4800-byte scratch plane of uint16, memset to zero, where the AA version keeps three (its
+//   v45 coverage, v46 mask and v44 lit level). The single plane holds a CLASS CODE, not coverage.
+// * Unpack: `(src[x >> 3] >> (7 - (x & 7))) & 1` widened with movsbw, so a set bit writes 1. The
+//   plane's row for yStart is `&plane[yStart * 256]`, shifted two texels right when the face
+//   carries flag 0x8, and rows step by 0x200 bytes as everywhere else in this file.
+// * Dilate: the outline passes write class 2 around the 1s and class 4 around those, the same two
+//   values the AA version derives as `2 * (i != 0) + 2`. **There is no neighbour-count
+//   anti-aliasing** -- no equivalent of the AA path's pixelsLitLevels lookup -- so the outline is
+//   hard-edged by construction. This is the ~800 bytes still to transcribe, and its bulk is
+//   per-edge special cases, not arithmetic.
+// * Write out, from 0x006c92c0, and this part is exact:
+//       class 1 -> 0xFFFF   the glyph body, opaque white
+//       class 2 -> 0x7000   the soft outline, alpha 7 of 15 over black
+//       class 4 -> 0xF000   the hard outline, opaque black
+//       anything else -> 0x0000
+//   over cellHeight rows of glyphCellWidth texels.
+//
+// What is left is the dilation alone. Everything either side of it is written down above.
 void TEXTURECACHE::PasteGlyphOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
     // TODO
 }
