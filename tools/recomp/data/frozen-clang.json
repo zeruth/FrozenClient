@@ -177316,7 +177316,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 835
+"line": 861
 },
 "CWorld::SetLoadProgressCallback": {
 "files": [
@@ -177329,7 +177329,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 870
+"line": 896
 },
 "CWorld::SetUpdateTime": {
 "files": [
@@ -177347,7 +177347,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 874
+"line": 900
 },
 "CWorld::Update": {
 "files": [
@@ -177368,7 +177368,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 888
+"line": 914
 },
 "CWorld::GetCloudDensity": {
 "files": [
@@ -177381,7 +177381,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 901
+"line": 927
 },
 "CWorld::GetBodyTint": {
 "files": [
@@ -177394,7 +177394,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 905
+"line": 931
 },
 "CWorld::GetCameraPos": {
 "files": [
@@ -177407,7 +177407,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 909
+"line": 935
 },
 "CWorld::GetCameraDir": {
 "files": [
@@ -177420,7 +177420,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 913
+"line": 939
 },
 "CWorld::SetNearClip": {
 "files": [
@@ -177433,7 +177433,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 918
+"line": 944
 },
 "CWorld::SetHorizonFarClipScale": {
 "files": [
@@ -177446,7 +177446,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 923
+"line": 949
 },
 "CWorld::SetHorizonNearClipScale": {
 "files": [
@@ -177459,7 +177459,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 928
+"line": 954
 },
 "CWorld::SetEnvironmentDetail": {
 "files": [
@@ -177476,7 +177476,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 958
+"line": 984
 },
 "TextureLodBiasSet": {
 "files": [

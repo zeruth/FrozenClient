@@ -831,6 +831,32 @@ void CWorld::SetFarClip(float farClip) {
     // TODO dword_ADEEE0 = 1;
 }
 
+// The reference's counterpart is FUN_004e3a20, identified 2026-09-23. CM2Model::SetupLighting
+// invokes the callback through +0x2ac at 0x00831b70, passing (model, lighting, arg); five sites in
+// the object code store 0x004e3a20 into that field, which is the same slot frozen fills from
+// CGObject_C.
+//
+// **This body is a stand-in and the tag is NOT applied**, because the two do materially different
+// things and claiming identity would say the port is worse than it is rather than that it is
+// absent. What the reference does, from reading it -- 485 bytes, 11 branches -- so a real port has
+// a starting point:
+//
+//   * indexes a global at 0x00ac436c into an array of 0x198-byte records at 0x00b6b240, bounds
+//     checked against the count at 0x00b6b23c, and requires bit 0x2000 of that record's +0x170.
+//   * gets a position from FUN_004e2790 on the model and calls CM2Lighting::Initialize with a
+//     sphere centred there and a radius of ZERO -- so it RE-initialises the lighting that
+//     SetupLighting already initialised and SelectLights already filled, down at least one of its
+//     paths. That re-memset is the part to understand before porting: taken literally it discards
+//     the scene lights the local-light chain now feeds in.
+//   * builds temporary CM2Lights -- constructor, SetLightType, SetDirection, SetVisible -- and
+//     hands them to CM2Lighting::AddLight twice.
+//
+// That last step is why this is worth recording now: every one of those is already ported and
+// tagged. The machinery this callback drives exists; the driver does not.
+//
+// Unidentified callees it still needs: FUN_004e2790, FUN_0065c290, FUN_007ebf30 (the DayNight
+// range), FUN_00982970, FUN_00834ab0, FUN_004e2730 and FUN_00834940.
+//
 // TODO the day/night cycle's light; until then every world model gets a fixed sun
 void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
     // Fog the model with the same data-driven distance fog the terrain and WMOs use. M2 materials
