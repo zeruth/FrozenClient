@@ -1956,10 +1956,23 @@ void CGxDeviceD3d::IStateSyncClipPlanes() {
 //
 // Vertical orientation flips depending on where the frame is going. With neither render target
 // bound the frame is the back buffer and y is measured from the bottom, so top comes from maxY
-// and bottom from minY, each subtracted from 1.0; with a colour or depth target bound they are
-// used directly. The reference spells that test as `+0x2918 != 0 || +0x2924 != 0`, and
-// 0x2924 - 0x2918 is 12, exactly sizeof(TextureTarget), so those are entries 0 and 1 of
-// m_textureTarget -- colour and depth. IXformSetViewport already flips y the same way.
+// and bottom from minY, each subtracted from 1.0; with a target bound they are used directly.
+// IXformSetViewport already flips y the same way.
+//
+// DIVERGENCE, deliberate. The reference spells that test as `+0x2918 != 0 || +0x2924 != 0`, and
+// those are NOT the m_texture fields. Device create zeroes six consecutive dwords from +0x2910 to
+// +0x2924, which is exactly TextureTarget m_textureTarget[2] at base +0x2910, so the entries are
+// {m_texture, m_plane, m_apiSpecific} at +0x2910/+0x2914/+0x2918 and +0x291c/+0x2920/+0x2924.
+// +0x2918 and +0x2924 are therefore the two m_apiSpecific fields -- the bound API surfaces -- and
+// the reference stores one there at 0x0068b929, indexing `0x2918(%edi,%eax,4)` with eax = i * 3.
+//
+// frozen tests m_texture instead, because CGxDevice::RenderTargetSet fills m_texture and m_plane
+// and never fills m_apiSpecific: IRenderTargetSet takes the surface, binds it and releases it
+// again without storing it. Testing the faithful field here would make this branch permanently
+// false and the render-to-texture case dead, which is worse than the divergence. The real fix is
+// to have IRenderTargetSet keep the surface in m_apiSpecific, and that is a lifetime change (the
+// device holds its own reference today) that wants a run behind it. Until then this reads the
+// field that actually tracks the binding.
 //
 // The dirty flag starts at 1 with an all-zero rectangle, because device create sets it from a
 // register holding 1 (0x00688e64 loads it, and the same register initialises intF6C). So the
