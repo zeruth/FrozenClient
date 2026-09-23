@@ -77102,6 +77102,11 @@
 "TSGrowableArray<unsigned int>::New",
 "TSGrowableArray<unsigned int>::New",
 "TSGrowableArray<unsigned int>::New",
+"TSGrowableArray<M2Element>::New",
+"TSBaseArray<M2Element>::operator[]",
+"M2Element::operator=",
+"TSGrowableArray<unsigned int>::New",
+"TSGrowableArray<unsigned int>::New",
 "TSBaseArray<unsigned int>::Count",
 "TSBaseArray<unsigned int>::Ptr",
 "M2HeapSort",
@@ -77131,9 +77136,9 @@
 "1.0f",
 "2"
 ],
-"branches": 43,
+"branches": 45,
 "stub": false,
-"lines": 322,
+"lines": 335,
 "refs": [],
 "line": 385
 },
@@ -77158,7 +77163,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 709
+"line": 722
 },
 "CM2Scene::Draw": {
 "files": [
@@ -77180,7 +77185,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 736
+"line": 749
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -77216,7 +77221,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 756
+"line": 769
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -77231,7 +77236,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 811
+"line": 824
 },
 "CM2SceneRender::Draw": {
 "files": [

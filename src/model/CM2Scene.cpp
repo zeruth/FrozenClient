@@ -649,9 +649,14 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             elementIndex++;
 
-            // The alpha-tested DEPTH PREPASS. This gate is already the reference's, condition for
-            // condition (FUN_00821a20 at 0x008224f7); only the body was never written, so frozen
-            // does not lay depth for alpha-tested geometry such as hair and foliage at all.
+            // The alpha-tested DEPTH PREPASS, ported from FUN_00821a20 at 0x008224f7. The gate was
+            // already the reference's, condition for condition; only the body was missing, so
+            // frozen laid no depth for alpha-tested geometry such as hair and foliage.
+            //
+            // It costs one extra draw per eligible batch and cannot darken anything: the gate
+            // already excludes materials carrying the depth-write-disable bit, so the shaded
+            // element that follows writes the same depth either way, and this pass writes no
+            // colour. **Built, not seen running.**
             //
             // What the reference does here, read from 0x0082257f on 2026-09-23:
             //
@@ -670,24 +675,32 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             // Copy through the array rather than through a saved pointer: New() can reallocate, and
             // the reference re-reads the base for exactly that reason.
             //
-            // **The blocker is the liquid-plane split, and it is already flagged above.** <a> and
-            // <b> are the two mutually exclusive water-side flags. The reference builds them at
-            // 0x00821d18 by taking the signed distance of the model's centre from a plane held at
-            // `+0xc4..+0xd0` and comparing it against the model's scaled bounding radius: <a> means
-            // the model sits entirely on the negative side, and the companion test means it is not
-            // entirely on the positive side. When the model straddles, `!(m_cache->m_flags & 2)`
-            // and a field at scene+0x140 pick which side wins. That is the same
-            // "liquid plane stuff" this function already marks TODO further up, and frozen models
-            // neither the plane nor +0x140.
-            //
-            // Registering the duplicate in the SAME list as its original is not a safe stand-in.
-            // The comparators do not break ties on this flag -- SortOpaqueGeoBatches (00081ead0)
-            // compares type, then materialLayer, then shaders, and a verbatim duplicate matches on
-            // every one of them -- so the heap sort would be free to draw the prepass after the
-            // element it is supposed to precede. The reference relies on the two ending up in
-            // different lists. Port the liquid split first.
+            // Which list the duplicate joins is the reference's water-side pair, and those default
+            // to the two lighting bits read above. The reference seeds them with v21 and v22 at
+            // 0x00821cab and only refines them -- by testing the model's bounding sphere against
+            // m_currentLighting->m_liquidPlane -- when BOTH are set, which is the
+            // "liquid plane stuff" this function still marks TODO seventy lines up. Until that
+            // lands, CM2Lighting::Initialize sets 0x20 and nothing ever sets 0x40, so the pair is
+            // (true, false) for every model and this reduces to array54[1]. That is exactly what
+            // the main registration above does for v221 == 1, so the two agree today by
+            // construction rather than by luck.
             if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
-                // TODO
+                auto prepass = this->m_elements.New();
+
+                // Through the array, not through a saved pointer: New() can reallocate, which is
+                // why the reference re-reads the base before its own copy at 0x0082258f.
+                *prepass = this->m_elements[elementIndex - 1];
+                prepass->flags |= 0x1;
+
+                if (v21) {
+                    *this->array54[1].New() = elementIndex;
+                }
+
+                if (v22) {
+                    *this->array54[2].New() = elementIndex;
+                }
+
+                elementIndex++;
             }
         }
 
