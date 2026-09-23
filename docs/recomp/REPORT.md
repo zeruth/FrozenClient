@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 13:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 13:19 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3075 (+2) (11.3%) | 682.2k (12.4%) |
-| &nbsp;&nbsp;ported | 2374 (+2) | 507.1k |
-| &nbsp;&nbsp;stub (unimplemented body) | 650 (=) | 131.4k |
+| mapped to a frozen function | 3074 (=) (11.3%) | 682.1k (12.4%) |
+| &nbsp;&nbsp;ported | 2370 (-3) | 506.9k |
+| &nbsp;&nbsp;stub (unimplemented body) | 653 (+3) | 131.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1174 (+2) (4.3%)** | **151.1k (2.7%)** |
-| unmapped | 24085 | 4.72M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 494 (+2) (8.9%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 504 (+2) (8.7%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 229 (=) (5.0%)** | |
-| frozen functions (src/, from PDB + source) | 12209, stubs 1717 | |
+| **faithful** (linked, not stub, call order >= 80%) | **1173 (-1) (4.3%)** | **151.1k (2.7%)** |
+| unmapped | 24086 | 4.72M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 493 (=) (8.9%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 503 (=) (8.7%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 228 (=) (5.0%)** | |
+| frozen functions (src/, from PDB + source) | 12209, stubs 1716 | |
 
-Match evidence: annotated 878, callgraph 181, callorder 128, cvar 32, handler 29, order 151, override 230, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 878, callgraph 180, callorder 128, cvar 32, handler 29, order 151, override 230, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 13:09 -- mapped 3073, ported 2372, stub 650, spine mapped 492.
+Previous run: 2026-09-23 13:18 -- mapped 3074, ported 2373, stub 650, spine mapped 493.
 
 ## Lua API coverage (binding tables)
 
@@ -134,12 +134,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | module | ref fns | bytes | mapped | bytes | stub | verified | spine |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1262 | 274.2k | 4 (0.3%) | 0.2% | 0 | 0 | 82 |
-| OggDecompress.cpp | 1504 | 260.7k | 15 (1.0%) | 0.9% | 0 | 0 | 476 |
+| OggDecompress.cpp | 1504 | 260.7k | 15 (1.0%) | 0.9% | 1 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 975 | 189.6k | 58 (5.9%) | 0.2% | 0 | 0 | 107 |
 | Unit_C.cpp | 705 | 182.3k | 9 (1.3%) | 0.7% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 60 (21.2%) | 39.0% | 6 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 59 (20.8%) | 38.9% | 6 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 13 (5.5%) | 7.9% | 2 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
@@ -190,9 +190,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 33 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| CScriptRegion.cpp | 204 | 27.4k | 110 (53.9%) | 58.1% | 1 | 4 | 50 |
+| CScriptRegion.cpp | 204 | 27.4k | 110 (53.9%) | 58.1% | 2 | 4 | 50 |
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 4 | 0 | 6 |
-| CSimpleRender.cpp | 166 | 26.6k | 36 (21.7%) | 33.5% | 1 | 0 | 50 |
+| CSimpleRender.cpp | 166 | 26.6k | 36 (21.7%) | 33.5% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
 | CSimpleFrame.cpp | 144 | 25.9k | 27 (18.8%) | 26.3% | 1 | 0 | 36 |
 | GossipInfo.cpp | 173 | 25.3k | 21 (12.1%) | 9.8% | 11 | 0 | 4 |
@@ -471,6 +471,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
 | 006a43d0 | CGxDeviceD3d9Ex.cpp? | 799 | 1 | `CGxDeviceD3d::IStateSyncLights` [override] |  |
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
+| 00488540 | CSimpleRender.cpp? | 42 | 33 | `CScriptRegion::ProtectedFunctionsAllowed` [override] |  |
 | 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [table] | BACKSPACE, DECIMAL |
 | 005bd8a0 | Calendar.cpp | 1253 | 0 | `Script_Stub_CalendarGetEventInfo` [table] |  |
 | 005104a0 | ChatFrame.cpp? | 1143 | 0 | `Script_SetCursor` [table] | ATTACK_CURSOR, ATTACK_ERROR_CURSOR |
@@ -506,7 +507,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00595c40 | TaxiMapFrame.cpp? | 544 | 0 | `Script_Stub_GetTrainerServiceStepIncrease` [order] | INCREASE_POTENTIAL, Usage: GetTrainerServiceStepIncrease(ind |
 | 005ba000 | AchievementInfo.cpp? | 535 | 0 | `Script_Stub_CalendarGetRaidInfo` [table] | Usage: CalendarGetRaidInfo([-1,0,1], mon |
 | 00539d70 | PartyFrame.cpp? | 530 | 0 | `Script_BNGetFriendToonInfo` [table] | Couldn't find a toon at friend index %d,, Couldn't find a toon at friend index %d, |
-| 00587eb0 | TradeFrame.cpp | 523 | 0 | `Script_GetTradePlayerItemInfo` [table] | %s%s%s, .\TradeFrame.cpp |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 12:08 | 3063 (11.3%) | 1167 (4.3%) | 646 | 489/5530 | 2924/2964 | 1491 |
-| 2026-09-23 12:29 | 3066 (11.3%) | 1168 (4.3%) | 646 | 492/5530 | 2924/2964 | 1491 |
 | 2026-09-23 12:32 | 3067 (11.3%) | 1169 (4.3%) | 646 | 493/5530 | 2924/2964 | 1491 |
 | 2026-09-23 12:35 | 3067 (11.3%) | 1169 (4.3%) | 646 | 493/5530 | 2924/2964 | 1491 |
 | 2026-09-23 12:35 | 3067 (11.3%) | 1169 (4.3%) | 646 | 493/5530 | 2924/2964 | 1491 |
@@ -753,6 +751,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 13:08 | 3073 (11.3%) | 1172 (4.3%) | 650 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:09 | 3073 (11.3%) | 1172 (4.3%) | 650 | 492/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:13 | 3075 (11.3%) | 1174 (4.3%) | 650 | 494/5529 | 2924/2964 | 1491 |
+| 2026-09-23 13:18 | 3074 (11.3%) | 1174 (4.3%) | 650 | 493/5529 | 2924/2964 | 1491 |
+| 2026-09-23 13:19 | 3074 (11.3%) | 1173 (4.3%) | 653 | 493/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 

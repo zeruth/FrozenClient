@@ -1159,7 +1159,7 @@
   "how": "override",
   "module": "OggDecompress.cpp",
   "refSize": 9,
-  "status": "ported"
+  "status": "stub"
  },
  "00422140": {
   "branchRatio": 1.0,
@@ -2752,7 +2752,7 @@
   "how": "override",
   "module": "CSimpleRender.cpp",
   "refSize": 42,
-  "status": "ported"
+  "status": "stub"
  },
  "00488670": {
   "branchRatio": 0.8,
@@ -4400,7 +4400,7 @@
   "how": "override",
   "module": "CScriptRegion.cpp",
   "refSize": 43,
-  "status": "ported"
+  "status": "stub"
  },
  "0048f1f0": {
   "branchRatio": 0.818,
@@ -37660,22 +37660,6 @@
   "refSize": 420,
   "status": "ported"
  },
- "00831bb0": {
-  "branchRatio": 0.333,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/model/CM2Model.cpp",
-   "src/model/cm2model.cpp"
-  ],
-  "frozen": "CM2Model::ApplySequencePlayBack",
-  "frozenSize": 244,
-  "how": "callgraph",
-  "module": "M2Scene.cpp",
-  "refSize": 113,
-  "status": "ported"
- },
  "00831c30": {
   "branchRatio": 0.52,
   "constOverlap": 0.091,
@@ -37693,7 +37677,7 @@
   "status": "ported"
  },
  "00831ec0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.217,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -37702,7 +37686,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::CancelDeferredSequences",
-  "frozenSize": 0,
+  "frozenSize": 285,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 246,
@@ -37734,7 +37718,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnsetBoneSequence",
-  "frozenSize": 650,
+  "frozenSize": 688,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
@@ -37750,7 +37734,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1114,
+  "frozenSize": 1164,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,
@@ -37904,7 +37888,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"

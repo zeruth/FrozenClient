@@ -16,7 +16,12 @@ struct CM2SequencePlayBack : TSLinkedNode<CM2SequencePlayBack> {
     CM2Model* model = nullptr;
     uint16_t boneIndex = 0;
     // 1 = SetBoneSequence's a7, 2 = primary (else secondary), 4 = the "no variation given" flag
-    // that lands in M2ModelBoneSeq::uintB, 8 = the model went away, drop without applying
+    // that lands in M2ModelBoneSeq::uintB, 8 = drop without applying.
+    //
+    // Bit 8 is raised from two places, not one: CM2Model::CancelDeferredSequences sets it when a
+    // request has been superseded and the record cannot be unlinked because
+    // CM2Shared::SequenceLoadedCallback is walking the list, and the teardown path sets it when the
+    // model goes away. Either way the callback unlinks and frees the record as it passes.
     uint16_t flags = 0;
     uint32_t time = 0;
     float speed = 1.0f;

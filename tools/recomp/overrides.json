@@ -605,8 +605,8 @@
   },
   "0048ed30": {
     "frozen": "CSimpleFrame::AttributeChangesAllowed",
-    "status": "ported",
-    "note": "call-order vote in its script binding (2026-09-18), lost when inlined callees were expanded into callers; binding CSimpleFrame_SetAttribute"
+    "status": "stub",
+    "note": "call-order vote in its script binding (2026-09-18), lost when inlined callees were expanded into callers; binding CSimpleFrame_SetAttribute -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. CSimpleFrame::AttributeChangesAllowed always returns true, so no attribute change is ever refused."
   },
   "0060c1c0": {
     "frozen": "TooltipThis",
@@ -620,8 +620,8 @@
   },
   "00488540": {
     "frozen": "CScriptRegion::ProtectedFunctionsAllowed",
-    "status": "ported",
-    "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block)"
+    "status": "stub",
+    "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block) -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. CScriptRegion::ProtectedFunctionsAllowed always returns true, so nothing is ever treated as protected."
   },
   "0076e720": {
     "frozen": "SStrChrR",
@@ -1310,8 +1310,8 @@
   },
   "00422130": {
     "frozen": "SFile::IsStreamingMode",
-    "status": "ported",
-    "note": "three instructions: return (uint8_t)FUN_00428000(). Identified 2026-09-23 from its call sites rather than its body, which is too small to identify on its own: all 30 of them read `if (result) <streaming-only work>`, and frozen's AsyncFileReadWait calls SFile::IsStreamingMode in the same guard position where the reference's 004ba060 calls this."
+    "status": "stub",
+    "note": "three instructions: return (uint8_t)FUN_00428000(). Identified 2026-09-23 from its call sites rather than its body, which is too small to identify on its own: all 30 of them read `if (result) <streaming-only work>`, and frozen's AsyncFileReadWait calls SFile::IsStreamingMode in the same guard position where the reference's 004ba060 calls this. -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. SFile::IsStreamingMode always returns 0, so frozen never believes it is streaming. That is not cosmetic: the reference's TextureIncreasePriority opens with `if (!IsStreamingMode()) return;`, so the whole texture priority path is gated off by this one constant. See docs/ref/parity-texture-async.md."
   },
   "004b64e0": {
     "status": "unlinked",
@@ -1474,5 +1474,9 @@
   "0076e5d0": {
     "status": "unlinked",
     "note": "the order matcher proposed SMemMove for this. The entire body is `mov eax, 1; ret 0xc` -- it returns true and pops three arguments. Whatever it is, it does not move memory. Checked 2026-09-23 while deciding whether the widened order veto was throwing away good links; it was not."
+  },
+  "00831bb0": {
+    "status": "unlinked",
+    "note": "TSList remove-and-free: unlinks the node passed on the stack from the list in ECX, SMemFrees it, and returns the node that followed it, captured before the free. CancelDeferredSequences (00831ec0) uses it to drop superseded playback records. frozen has no single counterpart -- it spells this UnlinkNode followed by STORM_FREE, with the next pointer taken first, which is what the reference does inside this helper."
   }
 }

@@ -1147,8 +1147,47 @@ void CM2Model::AttachToScene(CM2Scene* scene) {
     }
 }
 
-void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool a3) {
-    // TODO
+// Drop this model's parked bone-sequence requests for one bone, so a request that has been
+// superseded does not fire later and overwrite the sequence that replaced it. SetBoneSequence
+// calls it immediately before parking or applying a new one.
+//
+// It was an empty body with two live callers, which made the cancel a no-op: every deferred
+// request still landed when its .anim data arrived, however many times the bone had been
+// re-sequenced in the meantime.
+//
+// The `primary` argument selects which half of the records to drop, and it is compared against
+// bit 1 of the record's flags -- the bit SetBoneSequenceDeferred sets from its own a9. A primary
+// request never cancels a secondary one or the other way round.
+//
+// Two branches, because the records cannot always be unlinked. CM2Shared::SequenceLoadedCallback
+// raises m_flag10 while it walks these same lists, so during that walk the records are MARKED with
+// bit 8 and the callback drops them as it passes -- which it already does. Outside the walk they
+// are unlinked and freed here. The reference's removal helper captures the next pointer before
+// freeing, so this does too.
+// ref: FUN_00831ec0
+void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool primary) {
+    auto shared = this->m_shared;
+
+    for (auto load = shared->m_sequenceLoads.Head(); load; load = shared->m_sequenceLoads.Next(load)) {
+        for (auto playback = load->playbacks.Head(); playback;) {
+            auto next = load->playbacks.Next(playback);
+
+            bool match = playback->model == this
+                && playback->boneIndex == boneIndex
+                && ((playback->flags >> 1) & 1) == (primary ? 1 : 0);
+
+            if (match) {
+                if (shared->m_flag10) {
+                    playback->flags |= 8;
+                } else {
+                    load->playbacks.UnlinkNode(playback);
+                    STORM_FREE(playback);
+                }
+            }
+
+            playback = next;
+        }
+    }
 }
 
 // ref: FUN_00827560
