@@ -198,6 +198,28 @@ VtableFromRtti. Each headless run takes 1-3 minutes, so batch addresses.
 Raw dumps already captured live in `docs/ref/` with an `INDEX.txt`. **Read those before running
 Ghidra again** — most of the pipeline has already been walked.
 
+**Before reaching for Ghidra at all, dump the whole text section once and grep it.** It takes
+about nine seconds, against one to three minutes per headless run, and it answers the questions
+Ghidra is slowest at:
+
+```bash
+"/c/Program Files/LLVM/bin/llvm-objdump.exe" -d --no-show-raw-insn \
+    ".reference/WOTLK 3.3.5a - Windows/WoW_WOTLK_3.3.5a/WoW.exe" > "$SCRATCH/wow_text.asm"
+```
+
+Then `grep` it for an absolute address to find **every** reader and writer of a global, for
+`calll\t0x<addr>` to count a function's callers, or for `\$0x<addr>` to find the places that take
+its address (base pointers and block-op destinations, which the first two greps miss). On
+2026-09-23 this settled in minutes what the decompilation could not say at all: that a sky-dome
+multiplier which looked hard-coded to zero is really a LightParams column arriving through a flat
+struct copy, and that a documented claim about which helper drives the sky highlight was wrong.
+
+It also recovers what Ghidra drops. The decompiler loses register arguments to `__fastcall`
+helpers (`ESI`/`EDI` tables, `ECX` counts) and silently mangles x87 compare-and-branch pairs.
+Read `fcom`/`fcomp` + `fnstsw` + `testb $0x41, %ah` yourself: after the compare C3 = 0x40 means
+equal and C0 = 0x01 means st0 < st1, and `jp` on that mask is taken only when **both** are clear,
+i.e. strictly greater. Getting that backwards inverts a branch, and the code still compiles.
+
 ## Bug classes that have bitten this codebase
 
 - **`M2Array` resolves its data as (its own address + offset).** Element 0 of an *empty* array is a
