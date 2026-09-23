@@ -107,6 +107,13 @@ void CShaderEffect::ComputeLocalLights(LocalLights* localLights, uint32_t localL
             dst[16 + i * 4 + 2] = pos.z;
             dst[16 + i * 4 + 3] = 1.0f;
 
+            // These are always the constructor's 0, 0.7 and 0.03, and that is correct rather than
+            // unfinished. The M2 format carries attenuationStartTrack and attenuationEndTrack, and
+            // the reference parses them and then never uses them: the only writes to a CM2Light's
+            // +0x54, +0x58 and +0x5c anywhere in the binary are the three in its constructor at
+            // 0x00834a7c, taking 0 and the 0.7 at 0x009e2ec0 and the 0.03 at 0x009f23c8. Nothing
+            // animates them. So a local light's falloff is fixed, and wiring those tracks up would
+            // be a divergence, not a fix.
             dst[32 + i] = light->m_constantAttenuation;
             dst[36 + i] = light->m_linearAttenuation;
             dst[40 + i] = light->m_quadraticAttenuation;

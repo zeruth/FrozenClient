@@ -735,9 +735,22 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 
             float mul = modelLight.diffuseIntensityTrack.currentValue * this->float198;
 
-            modelLight.light.m_dirColor.x = modelLight.ambientColorTrack.currentValue.x * mul;
-            modelLight.light.m_dirColor.y = modelLight.ambientColorTrack.currentValue.y * mul;
-            modelLight.light.m_dirColor.z = modelLight.ambientColorTrack.currentValue.z * mul;
+            // CORRECTED 2026-09-23: these three read ambientColorTrack until now, so a light's
+            // diffuse colour was its AMBIENT colour scaled by the diffuse intensity, and the M2's
+            // diffuse colour was parsed, animated and thrown away. The evidence that it is a slip
+            // rather than the reference's behaviour: this block is guarded on diffuseColorTrack and
+            // animates it into modelLight.diffuseColorTrack immediately above, and that value is
+            // then read NOWHERE in the codebase -- it is the only animated track with no reader.
+            // The line also predates the recomp effort; it arrives in the initial commit, inherited
+            // from the upstream fork rather than transcribed from the reference.
+            //
+            // NOT confirmed against the reference: the corresponding block was not located in the
+            // disassembly, so this is reasoned from frozen's own structure. It matters as of this
+            // week, because CShaderEffect::ComputeLocalLights reads m_dirColor and local lights
+            // now reach it.
+            modelLight.light.m_dirColor.x = modelLight.diffuseColorTrack.currentValue.x * mul;
+            modelLight.light.m_dirColor.y = modelLight.diffuseColorTrack.currentValue.y * mul;
+            modelLight.light.m_dirColor.z = modelLight.diffuseColorTrack.currentValue.z * mul;
         }
     }
 
