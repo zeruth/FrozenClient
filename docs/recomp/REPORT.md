@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 13:28 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 13:35 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3078 (+1) (11.3%) | 684.5k (12.4%) |
-| &nbsp;&nbsp;ported | 2373 (+1) | 508.3k |
-| &nbsp;&nbsp;stub (unimplemented body) | 654 (=) | 132.4k |
+| mapped to a frozen function | 3076 (-2) (11.3%) | 684.4k (12.4%) |
+| &nbsp;&nbsp;ported | 2357 (-16) | 506.4k |
+| &nbsp;&nbsp;stub (unimplemented body) | 667 (+13) | 134.1k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1175 (+1) (4.3%)** | **151.4k (2.7%)** |
-| unmapped | 24082 | 4.72M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 493 (=) (8.9%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 503 (=) (8.7%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1175 (=) (4.3%)** | **151.4k (2.7%)** |
+| unmapped | 24084 | 4.72M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 492 (-1) (8.9%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 502 (-1) (8.7%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 231 (=) (5.0%)** | |
 | frozen functions (src/, from PDB + source) | 12209, stubs 1715 | |
 
-Match evidence: annotated 879, callgraph 180, callorder 128, cvar 32, handler 29, order 151, override 233, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 878, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 235, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 13:25 -- mapped 3077, ported 2372, stub 654, spine mapped 493.
+Previous run: 2026-09-23 13:28 -- mapped 3078, ported 2373, stub 654, spine mapped 493.
 
 ## Lua API coverage (binding tables)
 
@@ -144,18 +144,18 @@ Module = the source file named by the reference's own assert strings near the fu
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 75 (49.7%) | 62.9% | 38 | 1 | 16 |
-| ChatFrame.cpp | 349 | 82.2k | 90 (25.8%) | 14.2% | 50 | 2 | 36 |
+| ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 50 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 79 (23.1%) | 32.1% | 0 | 0 | 107 |
 | Map.cpp | 237 | 77.5k | 3 (1.3%) | 3.3% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| WorldParam.cpp | 187 | 64.3k | 7 (3.7%) | 3.5% | 0 | 0 | 118 |
+| WorldParam.cpp | 187 | 64.3k | 7 (3.7%) | 3.5% | 3 | 0 | 118 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 30 (10.5%) | 18.3% | 11 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 15 (3.7%) | 17.5% | 0 | 0 | 58 |
-| SEvt.cpp | 242 | 59.1k | 32 (13.2%) | 5.5% | 0 | 0 | 111 |
+| SEvt.cpp | 242 | 59.1k | 32 (13.2%) | 5.5% | 7 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 246 | 57.0k | 41 (16.7%) | 13.2% | 22 | 0 | 15 |
-| FFXEffects.cpp | 219 | 56.2k | 14 (6.4%) | 7.9% | 0 | 0 | 72 |
+| FFXEffects.cpp | 219 | 56.2k | 14 (6.4%) | 7.9% | 2 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 76 (25.0%) | 33.0% | 56 | 0 | 11 |
 | CSimpleAnimScript.cpp | 223 | 51.5k | 11 (4.9%) | 5.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 193 (54.8%) | 43.3% | 0 | 0 | 68 |
@@ -194,7 +194,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | UIMacros.cpp | 139 | 27.2k | 4 (2.9%) | 2.4% | 4 | 0 | 6 |
 | CSimpleRender.cpp | 166 | 26.6k | 36 (21.7%) | 33.5% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 106 | 26.2k | 1 (0.9%) | 2.1% | 0 | 0 | 33 |
-| CSimpleFrame.cpp | 144 | 25.9k | 27 (18.8%) | 26.3% | 1 | 0 | 36 |
+| CSimpleFrame.cpp | 144 | 25.9k | 26 (18.1%) | 26.1% | 2 | 0 | 36 |
 | GossipInfo.cpp | 173 | 25.3k | 21 (12.1%) | 9.8% | 11 | 0 | 4 |
 | SoundInterface2Internal.cpp | 139 | 25.2k | 15 (10.8%) | 17.3% | 3 | 0 | 13 |
 | PaperDollInfoFrame.cpp | 111 | 25.0k | 28 (25.2%) | 26.4% | 12 | 0 | 8 |
@@ -478,6 +478,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 005104a0 | ChatFrame.cpp? | 1143 | 0 | `Script_SetCursor` [table] | ATTACK_CURSOR, ATTACK_ERROR_CURSOR |
 | 005c1070 | Calendar.cpp | 1029 | 0 | `Script_Stub_CalendarGetDayEvent` [table] | Usage: CalendarGetDayEvent([-1.0.1], mon |
 | 00573690 | RaidInfo.cpp | 975 | 0 | `Script_GetRaidRosterInfo` [table] | .\RaidInfo.cpp, MAINASSIST |
+| 00494d20 | CSimpleFrame.cpp? | 311 | 2 | `CFrameStrata::FrameOccluded` [override] |  |
 | 00825d70 | M2Scene.cpp? | 144 | 5 | `CM2Model::UnoptimizeVisibleGeometry` [callgraph] |  |
 | 00515200 | GameUI.cpp | 808 | 0 | `Script_GetCursorInfo` [table] | .\GameUI.cpp, CRITTER |
 | 008214e0 | M2Scene.cpp? | 391 | 1 | `CM2SceneRender::DrawParticle` [override] | Particle: model=%s |
@@ -506,7 +507,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 004a7780 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnimGroup_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 005cf220 | PetitionInfo.cpp | 550 | 0 | `Script_Stub_OfferPetition` [order] | .\PetitionInfo.cpp, d:\BuildServer\WoW\1\work\WoW-code\branc |
 | 00595c40 | TaxiMapFrame.cpp? | 544 | 0 | `Script_Stub_GetTrainerServiceStepIncrease` [order] | INCREASE_POTENTIAL, Usage: GetTrainerServiceStepIncrease(ind |
-| 005ba000 | AchievementInfo.cpp? | 535 | 0 | `Script_Stub_CalendarGetRaidInfo` [table] | Usage: CalendarGetRaidInfo([-1,0,1], mon |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-23 12:35 | 3067 (11.3%) | 1169 (4.3%) | 646 | 493/5530 | 2924/2964 | 1491 |
-| 2026-09-23 12:35 | 3067 (11.3%) | 1169 (4.3%) | 646 | 493/5530 | 2924/2964 | 1491 |
 | 2026-09-23 12:39 | 3070 (11.3%) | 1169 (4.3%) | 646 | 496/5530 | 2924/2964 | 1491 |
 | 2026-09-23 12:40 | 3069 (11.3%) | 1169 (4.3%) | 646 | 495/5529 | 2924/2964 | 1491 |
 | 2026-09-23 12:40 | 3069 (11.3%) | 1169 (4.3%) | 646 | 495/5529 | 2924/2964 | 1491 |
@@ -753,6 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 13:21 | 3074 (11.3%) | 1173 (4.3%) | 653 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:25 | 3077 (11.3%) | 1174 (4.3%) | 654 | 493/5529 | 2924/2964 | 1491 |
 | 2026-09-23 13:28 | 3078 (11.3%) | 1175 (4.3%) | 654 | 493/5529 | 2924/2964 | 1491 |
+| 2026-09-23 13:35 | 3076 (11.3%) | 1175 (4.3%) | 667 | 492/5529 | 2924/2964 | 1491 |
 
 ## How to move a row
 

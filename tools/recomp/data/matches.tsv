@@ -296,13 +296,12 @@ addr	how	frozen	evidence
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
 00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
-00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
 00492e70	override	CSimpleFrame::IsA	
 00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::IsA and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 00493ad0	callgraph	CSimpleFrame::RunOnLeaveScript	only unmatched callee of 00495710=CSimpleFrame::OnLayerCursorExit
-00494d20	callorder	CFrameStrata::FrameOccluded	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
+00494d20	override	CFrameStrata::FrameOccluded	
 00495060	callorder	CSimpleTop::CompressStrata	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 004951a0	callgraph	CSimpleTop::RaiseFrame	only unmatched callee of 0048e9a0=CSimpleFrame::Raise
 00495670	callgraph	CSimpleSortedArray<FRAMEPRIORITY *>::Insert	only unmatched callee of 00495880=CSimpleTop::RegisterForEvent
@@ -919,7 +918,6 @@ addr	how	frozen	evidence
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
-00512a00	callgraph	CGGameUI::GetLockedTarget	only unmatched callee of 0060aaa0=ParseTrailingTokens
 00512a30	annotated	InPartyOrRaid	tag in src/ui/game/ScriptEvents.cpp
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f480=Script_UnitIsDead
 00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
@@ -2347,7 +2345,7 @@ addr	how	frozen	evidence
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
-008269c0	annotated	CM2Model::Sub8269C0	tag in src/model/CM2Model.cpp
+008269c0	override	CM2Model::Sub8269C0	
 00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence, 00826dd0=CM2Model::SetSecondaryBoneSequence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
 00826dd0	override	CM2Model::SetSecondaryBoneSequence	

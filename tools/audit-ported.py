@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
-"""Find overrides.json entries that claim status "ported" while the frozen function they name has
-no real body.
+"""Find reference functions the report counts as "ported" whose frozen counterpart has no real body.
 
-`linked` says a reference function has a counterpart. `status` says what that counterpart is worth.
-Nothing enforces the second: an overrides entry is hand-written, so it can say "ported" about a
-function that is a `// TODO` and a constant return, and the report will count it among the ported
-and let it compete for `faithful`. That is exactly the kind of drift this project keeps finding in
-its own documents, and it is cheap to check.
+`linked` says a reference function has a counterpart. `ported` is supposed to say that counterpart
+does the work. Nothing enforces the second. A frozen function whose body is a `// TODO`, or a
+`// TODO` and a constant return, is indistinguishable from a real port to recomp.py unless it
+carries a WHOA_UNIMPLEMENTED marker or a stub-shaped name -- so it is counted among the ported and
+allowed to compete for `faithful`.
 
-Found on 2026-09-23, on its first run:
+Two shapes of body count, and they are judged differently. A body with **no statements at all** is
+a finding whatever its size: there is no size at which doing nothing is the port. A body that is a
+**single bare return** is only a finding when the reference function is large, because a small
+reference function really is one load and a return, and `return s_something;` really is its port.
+THRESHOLD is where that stops being plausible.
 
-  00831ec0  CM2Model::CancelDeferredSequences   claimed ported, body was `// TODO` -- and it had two
-                                                live call sites, so superseded animation requests
-                                                were never actually cancelled. Ported the same day.
-  00422130  SFile::IsStreamingMode              claimed ported, returns a constant 0, which gates
-                                                off the whole texture priority path
-  00488540  CScriptRegion::ProtectedFunctionsAllowed   claimed ported, returns a constant true
-  0048ed30  CSimpleFrame::AttributeChangesAllowed      claimed ported, returns a constant true
+Found on its first run, 2026-09-23:
 
-It reuses livestubs.py's emptiness test rather than writing a second one, so the two tools cannot
-drift apart. A bare `return <constant>;` counts as empty there, which is what catches the last
-three above.
+  00831ec0  CM2Model::CancelDeferredSequences   claimed ported, body was `// TODO`, two live call
+                                                sites -- superseded animation requests were never
+                                                cancelled. Ported the same day.
+  00422130  SFile::IsStreamingMode              returns a constant 0, which gates off the entire
+                                                texture priority path
+  twelve     CWorldParam::*Callback             every graphics-quality CVar callback, all empty, so
+                                                the settings they back do nothing
+
+It reuses livestubs.py's emptiness test rather than writing a second one, so the two cannot drift
+apart.
 
     python tools/audit-ported.py
 """
@@ -32,6 +36,9 @@ import os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
+# Below this reference size, a bare `return x;` is a plausible faithful port rather than a stub.
+THRESHOLD = 32
+
 spec = importlib.util.spec_from_file_location(
     'livestubs', os.path.join(ROOT, 'tools', 'livestubs.py'))
 livestubs = importlib.util.module_from_spec(spec)
@@ -39,7 +46,10 @@ spec.loader.exec_module(livestubs)
 
 
 def empty_definitions():
-    """Every qualified definition in src/ and lib/ whose body is empty, as name -> file."""
+    """Qualified definitions in src/ and lib/ with no real body, as name -> (kind, file).
+
+    kind is 'empty' (nothing but comments) or 'return' (comments and one bare return).
+    """
     found = {}
 
     for base in (os.path.join(ROOT, 'src'), os.path.join(ROOT, 'lib')):
@@ -58,40 +68,78 @@ def empty_definitions():
                 for i, line in enumerate(lines):
                     m = livestubs.DEF.match(line.strip())
 
-                    if m and livestubs.body_is_empty(lines, i):
-                        found['%s::%s' % (m.group(1), m.group(2))] = os.path.relpath(path, ROOT)
+                    if not m:
+                        continue
+
+                    kind = livestubs.body_kind(lines, i)
+
+                    if kind:
+                        found['%s::%s' % (m.group(1), m.group(2))] = (
+                            kind, os.path.relpath(path, ROOT))
 
     return found
 
 
 def main():
     empty = empty_definitions()
-    overrides = json.load(
-        io.open(os.path.join(ROOT, 'tools', 'recomp', 'overrides.json'), encoding='utf-8'))
+    path = os.path.join(ROOT, 'tools', 'recomp', 'data', 'map.json')
 
-    hits = []
+    if not os.path.exists(path):
+        print('no map.json -- run tools/recomp/recomp.py first')
+        return 0
 
-    for addr, entry in sorted(overrides.items()):
+    world = json.load(io.open(path, encoding='utf-8'))
+
+    findings = []
+    borderline = []
+
+    for addr, entry in sorted(world.items()):
         if not isinstance(entry, dict) or entry.get('status') != 'ported':
             continue
 
         name = entry.get('frozen')
 
-        if name and name in empty:
-            hits.append((addr, name, empty[name]))
+        if not name or name not in empty:
+            continue
 
-    if not hits:
-        print('clean: every override claiming "ported" names a function with a real body')
+        kind, src = empty[name]
+        size = entry.get('refSize') or 0
+        row = (addr, name, entry.get('how', '?'), size, src, kind)
+
+        # No statements at all is never the port, at any size. A bare return might be.
+        if kind == 'empty' or size >= THRESHOLD:
+            findings.append(row)
+        else:
+            borderline.append(row)
+
+    findings.sort(key=lambda r: -r[3])
+
+    if findings:
+        print('%d reference function(s) counted as "ported" with no real body:' % len(findings))
+        print()
+
+        for addr, name, how, size, src, kind in findings:
+            print('  %s  %-46s %5d bytes  %-6s via %-9s %s'
+                  % (addr, name, size, kind, how, src))
+
+        print()
+        print('Either implement them, or record status "stub" in overrides.json so the report stops')
+        print('counting them as ported and stops letting them compete for "faithful".')
+
+    if borderline:
+        print()
+        print('%d bare returns below the %d-byte threshold (probably the real port):'
+              % (len(borderline), THRESHOLD))
+
+        for addr, name, how, size, _src, _kind in sorted(borderline, key=lambda r: -r[3]):
+            print('  %s  %-46s %5d bytes  via %s' % (addr, name, size, how))
+
+    if not findings:
+        print('clean: no reference function at or above %d bytes is counted as ported while its'
+              % THRESHOLD)
+        print('frozen counterpart has an empty body.')
         return 0
 
-    print('%d override(s) claim "ported" but name an empty body:' % len(hits))
-
-    for addr, name, path in hits:
-        print('  %s  %-52s %s' % (addr, name, path))
-
-    print()
-    print('Either implement them, or change their status to "stub" so the report stops counting')
-    print('them as ported and stops letting them compete for "faithful".')
     return 1
 
 

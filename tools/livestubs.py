@@ -37,23 +37,60 @@ DEF = re.compile(r'^[A-Za-z_][\w:<>,*&\s]*?\b([A-Za-z_]\w*)::([~A-Za-z_]\w*)\s*\
 BARE_RETURN = re.compile(r'^return\s*[-\w:.]*\s*;$')
 
 
-def body_is_empty(lines, i):
+def body_kind(lines, i):
+    """'empty' (nothing but comments), 'return' (comments and one bare return), or None.
+
+    The `*` case is why this tracks block-comment state instead of testing line prefixes. Treating
+    any line that starts with `*` as a comment continuation also swallows `*this = ...` and
+    `*out = ...`, which are ordinary statements -- that bug had `C44Matrix::Rotate`, a one-line
+    matrix multiply, reported as an empty body on 2026-09-23.
+    """
     depth = lines[i].count('{') - lines[i].count('}')
     j = i + 1
+    in_comment = False
+    saw_return = False
 
     while j < len(lines) and depth > 0:
-        line = lines[j].strip()
-        depth += lines[j].count('{') - lines[j].count('}')
+        raw = lines[j]
+        depth += raw.count('{') - raw.count('}')
 
         if depth <= 0:
             break
 
-        if line and not line.startswith(('//', '/*', '*')) and not BARE_RETURN.match(line):
-            return False
+        line = raw.strip()
+
+        if in_comment:
+            if '*/' not in line:
+                j += 1
+                continue
+
+            line = line.split('*/', 1)[1].strip()
+            in_comment = False
+
+        while line.startswith('/*'):
+            if '*/' in line[2:]:
+                line = line.split('*/', 1)[1].strip()
+            else:
+                in_comment = True
+                line = ''
+
+        if line.startswith('//'):
+            line = ''
+
+        if line:
+            if not BARE_RETURN.match(line):
+                return None
+
+            saw_return = True
 
         j += 1
 
-    return True
+    return 'return' if saw_return else 'empty'
+
+
+def body_is_empty(lines, i):
+    """A body of nothing, comments, or a bare return."""
+    return body_kind(lines, i) is not None
 
 
 def main():

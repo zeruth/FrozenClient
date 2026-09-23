@@ -4738,22 +4738,6 @@
   "refSize": 459,
   "status": "ported"
  },
- "00492e40": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/simple/CSimpleFrame.cpp",
-   "src/ui/simple/csimpleframe.cpp"
-  ],
-  "frozen": "CSimpleFrame::GetScriptMetaTable",
-  "frozenSize": 7,
-  "how": "order",
-  "module": "CSimpleFrame.cpp",
-  "refSize": 43,
-  "status": "ported"
- },
  "00492e70": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -4845,10 +4829,10 @@
   ],
   "frozen": "CFrameStrata::FrameOccluded",
   "frozenSize": 3,
-  "how": "callorder",
+  "how": "override",
   "module": "CSimpleFrame.cpp",
   "refSize": 311,
-  "status": "ported"
+  "status": "stub"
  },
  "00495060": {
   "branchRatio": 0.0,
@@ -14705,22 +14689,6 @@
   "how": "string",
   "module": "ChatFrame.cpp",
   "refSize": 250,
-  "status": "ported"
- },
- "00512a00": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/CGGameUI.cpp",
-   "src/ui/game/cggameui.cpp"
-  ],
-  "frozen": "CGGameUI::GetLockedTarget",
-  "frozenSize": 8,
-  "how": "callgraph",
-  "module": "ChatFrame.cpp",
-  "refSize": 44,
   "status": "ported"
  },
  "00512a30": {
@@ -26811,7 +26779,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34129,7 +34097,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 131,
-  "status": "ported"
+  "status": "stub"
  },
  "0078d9d0": {
   "branchRatio": 1.0,
@@ -34177,7 +34145,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 90,
-  "status": "ported"
+  "status": "stub"
  },
  "0078dab0": {
   "branchRatio": 0.0,
@@ -34193,7 +34161,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 91,
-  "status": "ported"
+  "status": "stub"
  },
  "0078db10": {
   "branchRatio": 0.0,
@@ -34209,7 +34177,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 122,
-  "status": "ported"
+  "status": "stub"
  },
  "0078db90": {
   "branchRatio": 1.0,
@@ -34289,7 +34257,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 64,
-  "status": "ported"
+  "status": "stub"
  },
  "0078dcf0": {
   "branchRatio": 1.0,
@@ -34321,7 +34289,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 111,
-  "status": "ported"
+  "status": "stub"
  },
  "0078ded0": {
   "branchRatio": 1.0,
@@ -34353,7 +34321,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 144,
-  "status": "ported"
+  "status": "stub"
  },
  "0078df90": {
   "branchRatio": 0.0,
@@ -34369,7 +34337,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 215,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e070": {
   "branchRatio": 0.0,
@@ -34385,7 +34353,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 149,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e110": {
   "branchRatio": 0.0,
@@ -34401,7 +34369,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 134,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e400": {
   "branchRatio": 0.0,
@@ -35374,7 +35342,7 @@
   "how": "cvar",
   "module": "FFXEffects.cpp",
   "refSize": 93,
-  "status": "ported"
+  "status": "stub"
  },
  "007f39b0": {
   "branchRatio": 0.0,
@@ -35390,7 +35358,7 @@
   "how": "cvar",
   "module": "FFXEffects.cpp",
   "refSize": 96,
-  "status": "ported"
+  "status": "stub"
  },
  "007f3ae0": {
   "branchRatio": 0.5,
@@ -37383,10 +37351,10 @@
   ],
   "frozen": "CM2Model::Sub8269C0",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 158,
-  "status": "ported"
+  "status": "diverged"
  },
  "00826b00": {
   "branchRatio": 0.625,

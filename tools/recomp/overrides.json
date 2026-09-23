@@ -1501,5 +1501,71 @@
   "00428000": {
     "status": "unlinked",
     "note": "two instructions: returns the byte at 0x00b38180, which SFile::IsStreamingMode (00422130) zero-extends. That byte is set to 1 unconditionally during Storm initialisation at 00461a94, so the reference runs with streaming mode ON. frozen's SFile::IsStreamingMode returns a constant 0, which is therefore a behavioural difference rather than a safe default -- see docs/ref/parity-texture-async.md."
+  },
+  "0078df90": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `bspcache`."
+  },
+  "0078e070": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `hwPCF`."
+  },
+  "0078df00": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `baseMip`."
+  },
+  "0078e110": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `textureCacheSize`."
+  },
+  "0078d940": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `footstepBias`."
+  },
+  "0078db10": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `groundEffectDist`."
+  },
+  "0078de60": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `specular`."
+  },
+  "007f39b0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `violenceLevel`."
+  },
+  "007f1cd0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `skyCloudLOD`."
+  },
+  "0078dab0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `groundEffectDensity`."
+  },
+  "0078da50": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `terrainAlphaBitDepth`."
+  },
+  "0078dcb0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `extShadowQuality`."
+  },
+  "00494d20": {
+    "frozen": "CFrameStrata::FrameOccluded",
+    "status": "stub",
+    "note": "Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py. frozen's body is a bare return; the reference is 311 bytes that clear five floats on the stack and walk frame rectangles, so it genuinely computes occlusion. The link itself looks right (the name and the shape agree); only the claim that it was ported was wrong."
+  },
+  "008269c0": {
+    "frozen": "CM2Model::Sub8269C0",
+    "status": "diverged",
+    "note": "frozen returns a constant 1 and that is the correct answer, not a placeholder. The reference only does anything when the model's sequence-finished callback pointer is set: it raises the refcount, invokes the callback, releases, and returns 0 if that release destroyed the model. frozen has no such callback member yet, so \"the model is still here, carry on\" is right. Recorded as diverged rather than stub on 2026-09-23 so tools/audit-ported.py stops reporting it; it stops being correct the day the callback is ported, and UnsetBoneSequence is the caller that depends on it."
+  },
+  "00492e40": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CSimpleFrame::GetScriptMetaTable for this; it is not that. frozen's returns a static int and takes nothing. The reference takes a stack argument, calls FUN_00492770, and then conditionally calls 0095d1b0 with three arguments. Found 2026-09-23 by tools/audit-ported.py, which flagged the pairing because a 43-byte reference function cannot be a bare return."
+  },
+  "00512a00": {
+    "status": "unlinked",
+    "note": "the callgraph matcher proposed CGGameUI::GetLockedTarget for this; it is not that. frozen's returns a reference to a static and takes nothing. The reference takes a stack argument and calls FUN_0052c680 and then FUN_005726f0, testing each result. Found the same way as 00492e40."
   }
 }
