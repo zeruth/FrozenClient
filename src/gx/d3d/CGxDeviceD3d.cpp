@@ -798,6 +798,11 @@ void CGxDeviceD3d::DsSet(EDeviceState state, uint32_t val) {
         break;
     }
 
+    case Ds_ColorWriteEnable: {
+        this->m_d3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, val);
+        break;
+    }
+
     case Ds_AlphaRef: {
         this->m_d3dDevice->SetRenderState(D3DRS_ALPHAREF, val);
         break;
@@ -1302,6 +1307,46 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         }
 
         this->DsSet(Ds_ZWriteEnable, depthWrite);
+
+        break;
+    }
+
+    // GxRs_ColorWrite reached nothing at all before this: the enum had Ds_ColorWriteEnable and
+    // neither switch had a case for it, so CM2SceneRender::SetupMaterial's request to turn colour
+    // writes OFF for an element with flag 0x1 was silently dropped and that pass wrote colour.
+    //
+    // The bit order is the part worth reading twice. Gx and D3D both use four bits, but the
+    // reference's handler remaps the middle two -- Gx 0x2 becomes D3D's BLUE and Gx 0x4 becomes
+    // D3D's GREEN -- so Gx orders them R, B, G, A against D3D's R, G, B, A. That matches the BGRA
+    // byte order this codebase uses for colours elsewhere. The only two values frozen sets today,
+    // 15 and 0, are identical under either reading, so a straight pass-through would have looked
+    // right until the first partial mask.
+    case GxRs_ColorWrite: {
+        uint32_t colorWrite = 0;
+
+        if (this->MasterEnable(GxMasterEnable_ColorWrite)) {
+            colorWrite = static_cast<uint32_t>(state->m_value);
+        }
+
+        uint32_t mask = 0;
+
+        if (colorWrite & 0x1) {
+            mask |= D3DCOLORWRITEENABLE_RED;
+        }
+
+        if (colorWrite & 0x4) {
+            mask |= D3DCOLORWRITEENABLE_GREEN;
+        }
+
+        if (colorWrite & 0x2) {
+            mask |= D3DCOLORWRITEENABLE_BLUE;
+        }
+
+        if (colorWrite & 0x8) {
+            mask |= D3DCOLORWRITEENABLE_ALPHA;
+        }
+
+        this->DsSet(Ds_ColorWriteEnable, mask);
 
         break;
     }

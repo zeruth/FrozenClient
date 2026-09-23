@@ -4573,3 +4573,33 @@ square; frozen reads the raw CVar and squares it per frame. Defaults match at 70
 **Worth carrying forward:** "the callback is empty" and "the setting does nothing" are not the same
 claim. Nine of these were committed under the second before the CVar reads were checked, and two of
 those nine were wrong.
+
+### 2026-09-23 - which render states actually reach D3D, and the one that did not
+
+Comparing the `GxRsSet` calls across `src/` against the cases `CGxDeviceD3d::IRsSendToHw` handles
+gives a short list of states frozen sets that never reach the device:
+
+| state | set from | consequence |
+|---|---|---|
+| `GxRs_ColorWrite` | `CM2SceneRender::SetupMaterial` | **wired up here** |
+| `GxRs_Lighting` | 16 places | none: the world always binds a vertex shader, and fixed-function lighting is bypassed |
+| `GxRs_MatDiffuse`, `GxRs_MatEmissive`, `GxRs_MatSpecularExp` | `CShaderEffect`, `CM2SceneRender` | same reason -- these are fixed-function material state |
+| `GxRs_ClipPlaneMask` | `CM2SceneRender` | frozen stores no clip planes either; see the state-sync entry above |
+
+`GxRs_ColorWrite` was the real one. `Ds_ColorWriteEnable` existed in the device-state enum and
+**neither** switch had a case for it, so `SetupMaterial`'s request to turn colour writes off was
+dropped twice over.
+
+**The bit order is the part that would not have survived a guess.** Gx and D3D both use four bits,
+but the reference's handler (inside the D3D `IRsSendToHw` at `0x006a5038`) remaps the middle two:
+Gx `0x2` becomes D3D's BLUE and Gx `0x4` becomes D3D's GREEN, so Gx orders them **R, B, G, A**
+against D3D's R, G, B, A. That matches the BGRA byte order used for colours elsewhere in this
+codebase. The reference also gates the whole thing on `GxMasterEnable_ColorWrite`, the same pairing
+frozen's depth-write and culling cases already use.
+
+**It is inert today, and that is worth knowing.** `SetupMaterial` only asks for colour writes off
+when the element carries flag `0x1`, and frozen's element gather in `CM2Scene` sets `0x2` and
+`0x4` and never `0x1`. Reading what that flag does in `SetupMaterial` -- alpha-key blending with
+colour writes off -- makes it a **depth prepass for alpha-tested geometry** such as hair and
+foliage. So frozen does not do that prepass at all, and the missing piece is the gather condition,
+not this plumbing. The plumbing is now correct for when it lands.
