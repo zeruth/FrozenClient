@@ -59,7 +59,17 @@ def match_definition(line):
     return None
 
 # A body of nothing, comments, or a bare return counts as empty.
-BARE_RETURN = re.compile(r'^return\s*[-\w:.]*\s*;$')
+# `return;` or a return of a bare LITERAL -- a sentinel a stub hands back so its caller keeps
+# going. Deliberately not `return <name>;`: a body that is one return of a variable, member or
+# namespace-scope value is an ACCESSOR reading real state, not a hole. The looser pattern this
+# replaces (`[-\w:.]*`, which swallowed any qualified name) reported
+# CoordinateGetAspectCompensation -- `return Coordinate::s_aspectCompensation;`, 100 call sites
+# -- as an empty body on 2026-09-23, and it was the top row of the census.
+#
+# A literal return stays flagged even though some are genuine: M2Init's scalar overloads end a
+# template recursion with a correct `return 1;`. Those are the residue this test cannot settle
+# on its own, and the list is meant to be read, not just counted.
+BARE_RETURN = re.compile(r'^return\s*(?:|-?\d[\w.]*|nullptr|NULL|true|false)\s*;$')
 
 
 def body_kind(lines, i):
