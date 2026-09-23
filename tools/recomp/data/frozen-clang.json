@@ -64593,9 +64593,9 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 113,
+"lines": 114,
 "refs": [],
-"line": 645
+"line": 666
 },
 "CGxDevice::IRsSync": {
 "files": [
@@ -64621,7 +64621,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 759
+"line": 781
 },
 "CGxDevice::IShaderLoad": {
 "files": [
@@ -64655,7 +64655,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 780
+"line": 802
 },
 "CGxDevice::ITexMarkAsUpdated": {
 "files": [
@@ -64672,7 +64672,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 867
+"line": 889
 },
 "CGxDevice::ITexWHDStartEnd": {
 "files": [
@@ -64694,7 +64694,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 882
+"line": 904
 },
 "CGxDevice::MasterEnable": {
 "files": [
@@ -64710,7 +64710,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 921
+"line": 943
 },
 "CGxDevice::MasterEnableSet": {
 "files": [
@@ -64732,7 +64732,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 926
+"line": 948
 },
 "CGxDevice::PrimIndexPtr": {
 "files": [
@@ -64748,7 +64748,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 959
+"line": 981
 },
 "CGxDevice::ClipPlaneSet": {
 "files": [
@@ -64763,7 +64763,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 978
+"line": 1000
 },
 "CGxDevice::ScissorSet": {
 "files": [
@@ -64778,7 +64778,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 995
+"line": 1017
 },
 "CGxDevice::PrimVertexFormat": {
 "files": [
@@ -64794,7 +64794,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1004
+"line": 1026
 },
 "CGxDevice::PrimVertexMask": {
 "files": [
@@ -64807,7 +64807,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1032
+"line": 1054
 },
 "CGxDevice::PrimVertexPtr": {
 "files": [
@@ -64820,7 +64820,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1038
+"line": 1060
 },
 "CGxDevice::PoolCreate": {
 "files": [
@@ -64841,7 +64841,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1044
+"line": 1066
 },
 "CGxDevice::RenderTargetGet": {
 "files": [
@@ -64854,7 +64854,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1064
+"line": 1086
 },
 "CGxDevice::RenderTargetSet": {
 "files": [
@@ -64869,7 +64869,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1068
+"line": 1090
 },
 "CGxDevice::RenderTargetDump": {
 "files": [
@@ -64884,7 +64884,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1079
+"line": 1101
 },
 "CGxDevice::ScreenShot": {
 "files": [
@@ -64899,7 +64899,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1083
+"line": 1105
 },
 "CGxDevice::RsGet": {
 "files": [
@@ -64915,7 +64915,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1087
+"line": 1109
 },
 "CGxDevice::RsSet": {
 "files": [
@@ -64940,7 +64940,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1091
+"line": 1113
 },
 "CGxDevice::RsSetAlphaRef": {
 "files": [
@@ -64956,7 +64956,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1123
+"line": 1145
 },
 "CGxDevice::RsPop": {
 "files": [
@@ -64985,7 +64985,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1151
+"line": 1173
 },
 "CGxDevice::RsPush": {
 "files": [
@@ -65001,7 +65001,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1178
+"line": 1200
 },
 "CGxDevice::ScenePresent": {
 "files": [
@@ -65016,7 +65016,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1193
+"line": 1215
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -65047,7 +65047,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1199
+"line": 1221
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -65063,7 +65063,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1223
+"line": 1245
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -65082,7 +65082,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1229
+"line": 1251
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -65103,7 +65103,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1283
+"line": 1305
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -65132,7 +65132,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1295
+"line": 1317
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -65154,7 +65154,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1363
+"line": 1385
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -65167,7 +65167,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1386
+"line": 1408
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -65187,7 +65187,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1394
+"line": 1416
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -65204,7 +65204,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1414
+"line": 1436
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -65217,7 +65217,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1428
+"line": 1450
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -65232,7 +65232,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1432
+"line": 1454
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -65247,7 +65247,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1436
+"line": 1458
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -65264,7 +65264,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1440
+"line": 1462
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -65279,7 +65279,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1451
+"line": 1473
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -65295,7 +65295,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1455
+"line": 1477
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -65310,7 +65310,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1459
+"line": 1481
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -65331,7 +65331,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1463
+"line": 1485
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -65346,7 +65346,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1473
+"line": 1495
 },
 "CGxDevice::XformView": {
 "files": [
@@ -65361,7 +65361,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1495
+"line": 1517
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -65374,7 +65374,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1499
+"line": 1521
 },
 "AdapterFormatSort": {
 "files": [

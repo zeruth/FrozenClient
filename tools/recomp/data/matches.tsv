@@ -1954,6 +1954,7 @@ addr	how	frozen	evidence
 00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
+00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 00483290=CSimpleTexture::GetImageModePixelShader

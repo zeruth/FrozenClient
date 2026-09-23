@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 17:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 17:42 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3096 (+1) (11.4%) | 691.0k (12.5%) |
-| &nbsp;&nbsp;ported | 2355 (+1) | 508.9k |
+| mapped to a frozen function | 3097 (+1) (11.4%) | 692.2k (12.5%) |
+| &nbsp;&nbsp;ported | 2356 (+1) | 510.1k |
 | &nbsp;&nbsp;stub (unimplemented body) | 688 (=) | 137.9k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1188 (+1) (4.4%)** | **153.6k (2.8%)** |
-| unmapped | 24064 | 4.71M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 501 (+1) (9.1%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 511 (+1) (8.8%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 243 (=) (5.3%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **1188 (=) (4.4%)** | **153.6k (2.8%)** |
+| unmapped | 24063 | 4.71M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 501 (=) (9.1%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 511 (=) (8.8%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 244 (+1) (5.3%)** | |
 | frozen functions (src/, from PDB + source) | 12215, stubs 1823 | |
 
-Match evidence: annotated 881, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 252, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 882, callgraph 179, callorder 127, cvar 32, handler 29, order 150, override 252, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 17:32 -- mapped 3095, ported 2354, stub 688, spine mapped 500.
+Previous run: 2026-09-23 17:37 -- mapped 3096, ported 2355, stub 688, spine mapped 501.
 
 ## Lua API coverage (binding tables)
 
@@ -225,7 +225,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | QuestTextParser.cpp | 87 | 16.5k | 9 (10.3%) | 3.3% | 1 | 0 | 33 |
 | Item_C.cpp | 107 | 16.4k | 1 (0.9%) | 0.4% | 0 | 0 | 24 |
 | QuestLog.cpp | 80 | 16.4k | 10 (12.5%) | 12.9% | 7 | 0 | 2 |
-| CGxDevice.cpp | 54 | 16.2k | 7 (13.0%) | 5.5% | 0 | 0 | 9 |
+| CGxDevice.cpp | 54 | 16.2k | 8 (14.8%) | 12.5% | 0 | 0 | 9 |
 | tga.cpp | 82 | 16.2k | 1 (1.2%) | 0.8% | 0 | 0 | 23 |
 | AuctionHouse.cpp | 49 | 16.1k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | fmod_codec_dls.cpp | 36 | 16.0k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -563,7 +563,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | frozen | lib | code bytes | file |
 |---|---|---:|---|
 | `LoadWmoInstance` | world | 10517 | src/world/Terrain.cpp |
-| `CGxDevice::IRsInit` | gx | 9227 | src/gx/CGxDevice.cpp |
 | `GetPredAdvancedBy0x1` | m4vh263dec | 8257 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CFF_Parse_CharStrings` | lib/freetype-2.0 | 7964 | vendor/freetype-2.0.9/src/cff/cffgload.c |
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
@@ -602,6 +601,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
+| `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -643,12 +643,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00479860 | `fallbackSort` | 10% | 10 | 10 | 45 | 34 | 26% | 1182 |
 | 0096fed0 | `CSimpleButton::LoadXML` | 72% | 46 | 49 | 34 | 23 | 0% | 1174 |
 | 005cde20 | `Script_GetSkillLineInfo` | 21% | 63 | 13 | 23 | 0 | 4% | 1173 |
+| 00686120 | `CGxDevice::IRsInit` | 50% | 4 | 174 | 3 | 0 | 2% | 1165 |
 | 00497070 | `CSimpleFont::LoadXML` | 92% | 36 | 49 | 50 | 23 | 0% | 1155 |
 | 00837a40 | `CM2Shared::InitializeSkinProfile` | 60% | 10 | 6 | 38 | 17 | 7% | 1137 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
 | 00813ee0 | `FrameXML_ProcessFile` | 79% | 42 | 46 | 35 | 24 | 19% | 1104 |
-| 007c7ae0 | `CMapObjGroup::RecordHits` | 9% | 11 | 1 | 18 | 8 | 5% | 1062 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 16:31 | 3089 (11.4%) | 1180 (4.3%) | 668 | 498/5529 | 2924/2964 | 1491 |
 | 2026-09-23 16:32 | 3089 (11.4%) | 1180 (4.3%) | 668 | 498/5529 | 2924/2964 | 1491 |
 | 2026-09-23 16:32 | 3089 (11.4%) | 1180 (4.3%) | 668 | 498/5529 | 2924/2964 | 1491 |
 | 2026-09-23 16:42 | 3089 (11.4%) | 1180 (4.3%) | 688 | 498/5529 | 2924/2964 | 1495 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 17:32 | 3095 (11.4%) | 1187 (4.4%) | 688 | 500/5529 | 2924/2964 | 1493 |
 | 2026-09-23 17:32 | 3095 (11.4%) | 1187 (4.4%) | 688 | 500/5529 | 2924/2964 | 1493 |
 | 2026-09-23 17:37 | 3096 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
+| 2026-09-23 17:42 | 3097 (11.4%) | 1188 (4.4%) | 688 | 501/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

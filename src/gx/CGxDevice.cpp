@@ -642,6 +642,27 @@ void CGxDevice::IRsForceUpdate(EGxRenderState which) {
     hs.filler = ~rs.m_value.filler;
 }
 
+// Audited against the reference's own IRsInit on 2026-09-23, end to end, because every draw in the
+// client starts from this table and a wrong entry here is the kind of defect that never looks like
+// a defect. **Read, not run** -- this is not a `verified` claim.
+//
+// The reference is at 0x00686120 and identifies itself: it sizes both arrays to 0x56 = 86 =
+// GxRenderStates_Last, then memsets 0x810 bytes over the app array and 0x560 over the hardware one.
+// 0x810 / 86 = 24 = sizeof(CGxAppRenderState) and 0x560 / 86 = 16 = sizeof(CGxStateBom), which is a
+// third and fourth confirmation of the two strides the D3D state-sync ports rest on. A store at
+// 0xOFF through the pointer at +0x28f4 therefore sets render state OFF / 24.
+//
+// 69 states decoded and every one agrees with the lines below, including the values worth getting
+// wrong: FogColor 0xff808080, ColorWrite 0xf, Culling 1, DepthWrite 1, DepthFunc 0, Multisample 1,
+// ScissorTest 0, every texture and shader slot null, and the Unk70..Unk76 run counting 1 through 7.
+// PointScaleAttenuation is a three-dword copy from the global at 0x00ad8bb4, which reads
+// {1.0, 0.0, 0.0} out of .data and matches s_pointScaleIdentity byte for byte.
+//
+// Sixteen states looked unset by the reference on a first pass and are not: the compiler routes
+// float defaults through a scratch slot at -0x4(%ebp) and schedules the reload BEFORE the store
+// that fills it, so a naive scan attributes the previous value. FogStart, FogEnd, PointScale,
+// PointScaleMin, PointScaleMax and the Texture8..15 slots are all set there.
+// ref: FUN_00686120
 void CGxDevice::IRsInit() {
     this->m_appRenderStates.SetCount(GxRenderStates_Last);
     this->m_hwRenderStates.SetCount(GxRenderStates_Last);

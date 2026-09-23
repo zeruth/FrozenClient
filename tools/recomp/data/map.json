@@ -31070,6 +31070,22 @@
   "refSize": 358,
   "status": "ported"
  },
+ "00686120": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsInit",
+  "frozenSize": 9227,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 1165,
+  "status": "ported"
+ },
  "006876d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
