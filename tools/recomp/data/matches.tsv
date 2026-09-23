@@ -1938,6 +1938,7 @@ addr	how	frozen	evidence
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
+00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
 00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
@@ -2376,7 +2377,10 @@ addr	how	frozen	evidence
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
+00836980	override	CM2Shared::SubstituteSimpleShaders	
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
+00837680	override	CM2Shared::SubstituteSpecializedShaders	
+00837a40	override	CM2Shared::InitializeSkinProfile	
 0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
 0083d370	annotated	CM2Shared::DestroySequenceLoad	tag in src/model/CM2Shared.cpp
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp

@@ -1113,8 +1113,20 @@ void CGxDevice::RsPush() {
     *offset = this->m_pushedStates.Count();
 }
 
+// The tail every backend's ScenePresent already calls, and it was empty. Three statements in the
+// reference, and the frame counter is the one that matters: the texture priority path reads it to
+// decide which textures have gone cold.
+//
+// Clearing intF5C here looks alarming next to CGxDeviceD3d::Draw, which bails while that flag is
+// set, but it is what the reference does and it is inert in frozen: nothing here ever sets the flag
+// to anything but zero. It stops being inert the day device-lost handling lands, and at that point
+// the reference's behaviour -- re-raise it each frame while the device is still lost -- is the
+// behaviour to match.
+// ref: FUN_00682e50
 void CGxDevice::ScenePresent() {
-    // TODO
+    this->m_frameCount++;
+    this->int2934 = 0;
+    this->intF5C = 0;
 }
 
 void CGxDevice::ShaderConstantsClear() {

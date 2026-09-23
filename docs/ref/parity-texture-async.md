@@ -90,6 +90,21 @@ expands to exactly the reference's behaviour.
 
 | reference | frozen | how it was identified |
 |---|---|---|
-| `00422130` | `SFile::IsStreamingMode` | three instructions returning a byte from `FUN_00428000`; all 30 call sites are `if (result) <streaming-only work>`, and frozen's `AsyncFileReadWait` calls `SFile::IsStreamingMode` in the same guard position that the reference's `004ba060` calls this |
+| `00422130` | `SFile::IsStreamingMode` (**a stub in frozen: returns a constant 0**) | three instructions returning a byte from `FUN_00428000`; all 30 call sites are `if (result) <streaming-only work>`, and frozen's `AsyncFileReadWait` calls `SFile::IsStreamingMode` in the same guard position that the reference's `004ba060` calls this |
 | `004b6550` | `AsyncTextureWait` | call site and body, above |
 | `004b6c50` | `TextureIncreasePriority` | call site and body, above |
+
+## 2026-09-23, later: streaming mode is ON in the reference
+
+`SFile::IsStreamingMode` is two instructions deep: it zero-extends the byte at `0x00b38180`, read
+through `FUN_00428000`. That byte is set to **1 unconditionally** during Storm initialisation, at
+`0x00461a94`. So a normal reference run has streaming mode on.
+
+That matters here because `TextureIncreasePriority` opens with `if (!IsStreamingMode()) return;`.
+frozen's `SFile::IsStreamingMode` is a `// TODO` returning a constant 0, so even once that function
+is ported it would do nothing. **Port the predicate first**, or the priority work is dead on
+arrival.
+
+It also means frozen's constant 0 is a behavioural difference rather than a conservative default.
+Its status in `overrides.json` was corrected from "ported" to "stub" the same day, by
+`tools/audit-ported.py`.

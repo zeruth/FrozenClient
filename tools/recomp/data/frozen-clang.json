@@ -64979,12 +64979,14 @@
 ],
 "callseq": [],
 "strings": [],
-"consts": [],
+"consts": [
+"0"
+],
 "branches": 0,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 5,
 "refs": [],
-"line": 1116
+"line": 1126
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -65015,7 +65017,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1120
+"line": 1132
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -65031,7 +65033,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1144
+"line": 1156
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -65050,7 +65052,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1150
+"line": 1162
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -65071,7 +65073,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1204
+"line": 1216
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -65100,7 +65102,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1216
+"line": 1228
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -65122,7 +65124,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1284
+"line": 1296
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -65135,7 +65137,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1307
+"line": 1319
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -65155,7 +65157,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1315
+"line": 1327
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -65172,7 +65174,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1335
+"line": 1347
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -65185,7 +65187,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1349
+"line": 1361
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -65200,7 +65202,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1353
+"line": 1365
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -65215,7 +65217,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1357
+"line": 1369
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -65232,7 +65234,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1361
+"line": 1373
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -65247,7 +65249,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1372
+"line": 1384
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -65263,7 +65265,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1376
+"line": 1388
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -65278,7 +65280,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1380
+"line": 1392
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -65299,7 +65301,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1384
+"line": 1396
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -65314,7 +65316,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1394
+"line": 1406
 },
 "CGxDevice::XformView": {
 "files": [
@@ -65329,7 +65331,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1416
+"line": 1428
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -65342,7 +65344,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1420
+"line": 1432
 },
 "AdapterFormatSort": {
 "files": [

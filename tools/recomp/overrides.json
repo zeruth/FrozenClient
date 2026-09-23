@@ -1478,5 +1478,28 @@
   "00831bb0": {
     "status": "unlinked",
     "note": "TSList remove-and-free: unlinks the node passed on the stack from the list in ECX, SMemFrees it, and returns the node that followed it, captured before the free. CancelDeferredSequences (00831ec0) uses it to drop superseded playback records. frozen has no single counterpart -- it spells this UnlinkNode followed by STORM_FREE, with the next pointer taken first, which is what the reference does inside this helper."
+  },
+  "00837a40": {
+    "frozen": "CM2Shared::InitializeSkinProfile",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. It opens on the skin profile at +0x170 and its index count, as frozen's does."
+  },
+  "00836980": {
+    "frozen": "CM2Shared::SubstituteSimpleShaders",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. "
+  },
+  "00837680": {
+    "frozen": "CM2Shared::SubstituteSpecializedShaders",
+    "status": "stub",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. **frozen's body is empty and it has a live call site**, so every batch this pass would have rewritten reaches GetEffect with an unsubstituted shader id and picks a different effect than the reference would. It merges adjacent batches sharing a material into one multi-texture batch and marks the pair with shader 0x8000 / 0x8001. Roughly 960 bytes of branchy state machine; the field offsets and the pair protocol are decoded in the parity doc, but it wants its own cycle and a run, not a transcription squeezed in beside other work."
+  },
+  "00682d30": {
+    "status": "unlinked",
+    "note": "one instruction: sets the per-frame request flag at CGxDevice+0x2934 to 1. Each backend's ScenePresent reads that field immediately before calling the base CGxDevice::ScenePresent (00682e50), which clears it. frozen now carries the field as int2934 but nothing sets it, so there is no counterpart to link. Identified 2026-09-23 while porting the base ScenePresent."
+  },
+  "00428000": {
+    "status": "unlinked",
+    "note": "two instructions: returns the byte at 0x00b38180, which SFile::IsStreamingMode (00422130) zero-extends. That byte is set to 1 unconditionally during Storm initialisation at 00461a94, so the reference runs with streaming mode ON. frozen's SFile::IsStreamingMode returns a constant 0, which is therefore a behavioural difference rather than a safe default -- see docs/ref/parity-texture-async.md."
   }
 }

@@ -30820,6 +30820,22 @@
   "refSize": 51,
   "status": "ported"
  },
+ "00682e50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ScenePresent",
+  "frozenSize": 21,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
  "006830b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37836,6 +37852,22 @@
   "refSize": 591,
   "status": "ported"
  },
+ "00836980": {
+  "branchRatio": 0.769,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SubstituteSimpleShaders",
+  "frozenSize": 516,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 328,
+  "status": "ported"
+ },
  "00836c90": {
   "branchRatio": 1.0,
   "constOverlap": 0.222,
@@ -37850,6 +37882,38 @@
   "how": "string",
   "module": "M2Scene.cpp",
   "refSize": 321,
+  "status": "ported"
+ },
+ "00837680": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SubstituteSpecializedShaders",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 957,
+  "status": "stub"
+ },
+ "00837a40": {
+  "branchRatio": 0.447,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::InitializeSkinProfile",
+  "frozenSize": 919,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 1137,
   "status": "ported"
  },
  "0083ca90": {

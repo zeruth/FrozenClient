@@ -103,11 +103,22 @@ class CGxDevice {
         int32_t intF5C = 0;
         int32_t m_windowVisible = 0;
         int32_t intF64 = 0;
+        // Reference offset +0xf68. Incremented once per ScenePresent and never reset, so it is the
+        // frame number. It exists here because the reference's texture code reads it: the priority
+        // bump TextureIncreasePriority reaches (FUN_004bac20 and its neighbours at 004ba6f9 /
+        // 004babbb) compares it against a per-texture stamp, which is how a texture that has not
+        // been drawn for a while loses its place. frozen's side of that is still a stub, so nothing
+        // reads this yet -- it ticks so that it is correct when something does.
+        uint32_t m_frameCount = 0;
         int32_t intF6C = 1;
         CBoundingBox m_viewport;
         C44Matrix m_projection;
         C44Matrix m_projNative;
         CGxMatrixStack m_xforms[GxXforms_Last];
+        // Reference offset +0x2934. A one-shot request flag: FUN_00682d30 sets it, each backend's
+        // ScenePresent reads it just before calling the base, and the base clears it. What the
+        // backends do with it has not been read, and nothing in frozen sets it yet.
+        int32_t int2934 = 0;
         uint32_t m_appMasterEnables = 0;
         uint32_t m_hwMasterEnables = 0;
         TSList<CGxPool, TSGetLink<CGxPool>> m_poolList;
