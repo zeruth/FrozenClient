@@ -38038,7 +38038,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3184,
+  "frozenSize": 3168,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -38070,11 +38070,59 @@
    "src/model/cm2light.cpp"
   ],
   "frozen": "CM2Light::CM2Light",
-  "frozenSize": 71,
+  "frozenSize": 76,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 103,
   "status": "ported"
+ },
+ "008350a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::CameraSpace",
+  "frozenSize": 121,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 469,
+  "status": "ported"
+ },
+ "00835280": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupSunlight",
+  "frozenSize": 455,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 323,
+  "status": "ported"
+ },
+ "008353d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupGxLights",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 502,
+  "status": "stub"
  },
  "00835640": {
   "branchRatio": 0.4,
@@ -42444,6 +42492,22 @@
   "refSize": 82,
   "status": "ported"
  },
+ "00872900": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.043,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::ComputeLocalLights",
+  "frozenSize": 411,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 453,
+  "status": "ported"
+ },
  "00872c10": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -42624,13 +42688,13 @@
   "branchRatio": 0.429,
   "constOverlap": 0.174,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.75,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::SetLocalLighting",
-  "frozenSize": 391,
+  "frozenSize": 414,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 562,

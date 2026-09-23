@@ -2391,6 +2391,9 @@ addr	how	frozen	evidence
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+008350a0	override	CM2Lighting::CameraSpace	
+00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
+008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
@@ -2680,6 +2683,7 @@ addr	how	frozen	evidence
 0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516210=Script_GetReleaseTimeRemaining, 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
+00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
 00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
 00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp

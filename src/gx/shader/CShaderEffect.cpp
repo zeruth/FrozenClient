@@ -4,6 +4,7 @@
 #include "gx/RenderState.hpp"
 #include "gx/Shader.hpp"
 #include "gx/Transform.hpp"
+#include "model/CM2Light.hpp"
 #include "model/CM2Lighting.hpp"
 #include <tempest/Math.hpp>
 #include <algorithm>
@@ -23,8 +24,102 @@ C3Vector CShaderEffect::s_sunDir;
 int32_t CShaderEffect::s_useAlphaRef;
 int32_t CShaderEffect::s_usePcfFiltering;
 
+// Packs up to four local lights into the eleven vertex constants that SetLocalLighting uploads at
+// register 17. This was an empty body on the LIVE path: SetLocalLighting calls it whenever a model
+// has local lights and then uploads s_localLights regardless, so every such model was lit by a
+// block of zeros -- no torch, brazier or spell light reached a model at all.
+//
+// The destination layout is fixed by the upload being 11 registers of four floats, and the
+// reference's own stores pin every slot (44 floats = 0xb0 bytes):
+//
+//   [ 0..15]  four lights, rgb + 1.0        -> c17..c20   colour, w is the slot-active flag
+//   [16..31]  four lights, xyz + 1.0        -> c21..c24   position in camera space
+//   [32..35]  constant attenuation per light -> c25
+//   [36..39]  linear attenuation per light   -> c26
+//   [40..43]  quadratic attenuation per light -> c27
+//
+// The colour is m_dirColor, the diffuse one. That follows from the reference reading light + 0x3c
+// together with its CM2Light layout, which the constructor at 0x00834a40 pins: it zeroes 0x0c
+// through 0x54 and then writes 0.7 to +0x58 and 0.03 to +0x5c, and those are the linear and
+// quadratic attenuation defaults, so the three attenuations are +0x54/+0x58/+0x5c and the six
+// vectors before them run m_pos, m_posCameraSpace, m_dir, m_ambColor, m_dirColor, m_specColor.
+// +0x3c is the fifth of those.
+//
+// Two ways to reach camera space, and both end there. With a4 the reference subtracts it from the
+// light's world position and transforms by the device's current VIEW matrix -- it reads
+// `device + 0x1af8` for the stack level and `+0x1b00` for the matrix, and IStateSyncXforms sends
+// that same pair as D3DTS_VIEW, which is what identifies it. Without a4 it takes the position
+// CM2Lighting::CameraSpace already transformed. frozen's only caller passes null, so the second
+// path is the live one; the first is ported anyway rather than left to rot.
+//
+// A light whose type is not 1 has its colour slot zeroed and nothing else written -- the reference
+// jumps straight to the loop increment, leaving that slot's position and attenuation stale.
+// Reproduced exactly: with w at 0 the shader ignores the slot, so the stale values cannot show.
+//
+// **Built, not seen running**, and this one changes what a lit model looks like.
+// ref: FUN_00872900
 void CShaderEffect::ComputeLocalLights(LocalLights* localLights, uint32_t localLightsCount, CM2Light** lights, const C3Vector* a4) {
-    // TODO
+    float* dst = localLights->float0;
+    uint32_t i = 0;
+
+    if (localLightsCount) {
+        C44Matrix view;
+
+        if (a4) {
+            // The reference builds an identity here and multiplies it by the view matrix, which is
+            // the view matrix; taken directly.
+            GxXformView(view);
+        }
+
+        for (; i < localLightsCount && i < 4; i++) {
+            CM2Light* light = lights[i];
+
+            if (light->m_type != 1) {
+                dst[i * 4 + 0] = 0.0f;
+                dst[i * 4 + 1] = 0.0f;
+                dst[i * 4 + 2] = 0.0f;
+                dst[i * 4 + 3] = 0.0f;
+
+                continue;
+            }
+
+            dst[i * 4 + 0] = light->m_dirColor.x;
+            dst[i * 4 + 1] = light->m_dirColor.y;
+            dst[i * 4 + 2] = light->m_dirColor.z;
+            dst[i * 4 + 3] = 1.0f;
+
+            C3Vector pos;
+
+            if (a4) {
+                C3Vector rel = {
+                    light->m_pos.x - a4->x,
+                    light->m_pos.y - a4->y,
+                    light->m_pos.z - a4->z
+                };
+
+                pos = rel * view;
+            } else {
+                pos = light->m_posCameraSpace;
+            }
+
+            dst[16 + i * 4 + 0] = pos.x;
+            dst[16 + i * 4 + 1] = pos.y;
+            dst[16 + i * 4 + 2] = pos.z;
+            dst[16 + i * 4 + 3] = 1.0f;
+
+            dst[32 + i] = light->m_constantAttenuation;
+            dst[36 + i] = light->m_linearAttenuation;
+            dst[40 + i] = light->m_quadraticAttenuation;
+        }
+    }
+
+    // Every slot the loop did not fill is switched off, colour and flag together.
+    for (; i < 4; i++) {
+        dst[i * 4 + 0] = 0.0f;
+        dst[i * 4 + 1] = 0.0f;
+        dst[i * 4 + 2] = 0.0f;
+        dst[i * 4 + 3] = 0.0f;
+    }
 }
 
 void CShaderEffect::InitShaderSystem(int32_t enableShaders, int32_t usePcf) {

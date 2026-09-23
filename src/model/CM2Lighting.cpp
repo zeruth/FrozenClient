@@ -63,8 +63,40 @@ void CM2Lighting::AddSpecular(const C3Vector& specColor) {
     this->m_sunSpecular = this->m_sunSpecular + specColor;
 }
 
+// Transforms each selected light's position into camera space, once per model per frame, so that
+// ComputeLocalLights can pack the results into shader constants without redoing the work per
+// light per draw.
+//
+// The reference walks m_lights at +0x84 for m_lightCount at +0xa4, and for each one calls
+// `operator*(out, &light->m_pos, scene + 0x84)` -- the C3Vector by C44Matrix transform at
+// FUN_004c21b0 -- then stores the result at light + 0x18. That destination is the field this port
+// had to add to CM2Light; without it there was nowhere to put the answer, which is why this and
+// ComputeLocalLights were both stubs.
+//
+// The early-out on flag 0x1 and the null-scene test are the reference's own. Nothing in frozen
+// sets 0x1, so the first never fires today; it is kept because dropping a guard is how a port
+// starts diverging quietly.
+//
+// NOT PORTED: the reference follows the loop with a second block gated on
+// `(m_flags & 0x60) == 0x60`, working on the fields at +0xc4..+0xd0 against the sun direction.
+// Nothing in frozen ever sets 0x40, so that block is unreachable here -- Initialize sets 0x20 and
+// SetupSunlight sets 0x2, and those are the only two writers. It is left out rather than guessed
+// at, and this comment is the record that it exists.
+// ref: FUN_008350a0
 void CM2Lighting::CameraSpace() {
-    // TODO
+    if (this->m_flags & 0x1) {
+        return;
+    }
+
+    if (!this->m_scene) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < this->m_lightCount; i++) {
+        CM2Light* light = this->m_lights[i];
+
+        light->m_posCameraSpace = light->m_pos * this->m_scene->m_view;
+    }
 }
 
 void CM2Lighting::Initialize(CM2Scene* scene, const CAaSphere& a3) {
@@ -91,10 +123,27 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd,
     this->m_fogColor = fogColor;
 }
 
+// FUN_008353d0, identified while locating CameraSpace: it builds a 0x64-byte light structure on
+// the stack through FUN_00683fb0, sets bit 0 of its first dword, calls SetupSunlight, copies the
+// CM2Lighting fields from +0x54 to +0x80 into it and hands it to the device through the virtual at
+// +0x118 with index 0 -- the fixed-function GxLightSet.
+//
+// Left a stub on purpose. This is the FIXED-FUNCTION sibling of the local-light path: SetLocalLighting
+// calls it only in its `else`, when shaders are off, and frozen's world draws with shaders. Porting
+// it needs the device-side light state that CGxDeviceD3d::IStateSyncLights also waits on, which is
+// recorded against FUN_006a43d0 -- CGxDevice carries no light array at all. The two belong to one
+// change, not this one.
+// ref: FUN_008353d0
 void CM2Lighting::SetupGxLights(const C3Vector* a2) {
-    // TODO
+    // TODO -- see above; needs the CGxDevice light state first
 }
 
+// Found while locating CameraSpace: the reference at 0x00835280 loads the three floats at
+// CM2Lighting + 0x78, squares and sums them, compares against the 1e-5 at 0x009ea558, and on
+// the small side writes {0, 0, -1.0} (the -1.0 being 0x009e2ef4) while on the other it calls
+// the normalize at 0x004c3600. That is this function statement for statement, and it puts
+// m_sunDir at +0x78.
+// ref: FUN_00835280
 void CM2Lighting::SetupSunlight() {
     if (this->m_flags & 0x2) {
         return;

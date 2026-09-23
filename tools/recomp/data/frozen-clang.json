@@ -73039,14 +73039,34 @@
 "files": [
 "src/gx/shader/cshadereffect.cpp"
 ],
-"callseq": [],
+"callseq": [
+"C44Matrix::C44Matrix",
+"GxXformView",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"operator*",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"16",
+"2",
+"3",
+"32",
+"36",
+"4",
+"40"
+],
+"branches": 6,
+"stub": false,
+"lines": 63,
 "refs": [],
-"line": 26
+"line": 61
 },
 "CShaderEffect::InitShaderSystem": {
 "files": [
@@ -73065,7 +73085,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 30
+"line": 125
 },
 "CShaderEffect::SetAlphaRef": {
 "files": [
@@ -73085,7 +73105,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 39
+"line": 134
 },
 "PackMaterialColor": {
 "files": [
@@ -73109,7 +73129,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 54
+"line": 149
 },
 "CShaderEffect::SetDiffuse": {
 "files": [
@@ -73129,7 +73149,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 72
+"line": 167
 },
 "CShaderEffect::SetEmissive": {
 "files": [
@@ -73149,7 +73169,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 82
+"line": 177
 },
 "CShaderEffect::SetFogEnabled": {
 "files": [
@@ -73176,7 +73196,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 92
+"line": 187
 },
 "CShaderEffect::SetFogParams": {
 "files": [
@@ -73201,7 +73221,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 110
+"line": 205
 },
 "CShaderEffect::SetLocalLighting": {
 "files": [
@@ -73239,7 +73259,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 135
+"line": 230
 },
 "CShaderEffect::SetShaders": {
 "files": [
@@ -73264,7 +73284,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 186
+"line": 281
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -73282,7 +73302,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 209
+"line": 304
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -73302,7 +73322,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 225
+"line": 320
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -73322,7 +73342,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 241
+"line": 336
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -73342,7 +73362,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 256
+"line": 351
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -73367,7 +73387,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 267
+"line": 362
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -73380,7 +73400,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 283
+"line": 378
 },
 "CShaderEffectManager::CreateEffect": {
 "files": [
@@ -75069,14 +75089,20 @@
 "files": [
 "src/model/cm2lighting.cpp"
 ],
-"callseq": [],
+"callseq": [
+"operator*",
+"C3Vector::operator="
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0x1"
+],
+"branches": 3,
+"stub": false,
+"lines": 15,
 "refs": [],
-"line": 66
+"line": 86
 },
 "CM2Lighting::Initialize": {
 "files": [
@@ -75095,7 +75121,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 70
+"line": 102
 },
 "CM2Lighting::SetFog": {
 "files": [
@@ -75113,7 +75139,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 78
+"line": 110
 },
 "CM2Lighting::SetupGxLights": {
 "files": [
@@ -75126,7 +75152,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 94
+"line": 137
 },
 "CM2Lighting::SetupSunlight": {
 "files": [
@@ -75155,7 +75181,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 98
+"line": 147
 },
 "M2Array::operator[]": {
 "files": [

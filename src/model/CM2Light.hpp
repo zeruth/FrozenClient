@@ -12,6 +12,12 @@ class CM2Light {
         CM2Scene* m_scene = nullptr;
         int32_t m_type = 1;
         C3Vector m_pos;
+        // The light's position in CAMERA space, written by CM2Lighting::CameraSpace once per model
+        // per frame and read by CShaderEffect::ComputeLocalLights. This field was missing: the
+        // reference's CM2Light carries six vectors between +0x0c and +0x53 and frozen had five, so
+        // both of those functions had to stay stubs for want of somewhere to put this. The
+        // reference keeps it at +0x18, immediately after m_pos, which is where it goes here too.
+        C3Vector m_posCameraSpace;
         C3Vector m_dir;
         C3Vector m_ambColor;
         C3Vector m_dirColor;
