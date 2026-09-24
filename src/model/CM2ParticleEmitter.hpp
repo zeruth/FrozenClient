@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <tempest/Matrix.hpp>
+#include <tempest/Random.hpp>
 #include <tempest/Vector.hpp>
 
 class CM2Model;
@@ -52,6 +53,9 @@ class CM2ParticleEmitter {
         };
 
         // Member variables. Offsets are the reference's.
+        // +0x24: this emitter's own RNG state. Every emitter draws from its own rather than a
+        // shared one, so two identical emitters side by side do not produce identical particles.
+        CRndSeed m_seed = CRndSeed(0);
         // +0x34: the 0x20-byte pool, used when m_particleKind is 0
         Particle* m_pool = nullptr;
         // +0x44: the 0x40-byte pool, used otherwise -- its particles carry a spawned model
@@ -114,6 +118,23 @@ class CM2ParticleEmitter {
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
+
+        // A launch speed for one new particle: the emitter's speed, scaled by its variation and a
+        // fresh signed draw. ref: FUN_009792d0
+        float RandomSpeed();
 };
+
+// A uniform draw in [-1, 1] from one RNG call.
+//
+// The mantissa becomes a float in [1, 2) and the SIGN BIT chooses which way it is subtracted from
+// 2.0, so one draw gives both magnitude and sign with no division. The 2.0 is the constant at
+// 0x00a4040c -- worth stating because 1.5 is the value that "looks right" there and would silently
+// halve every randomised quantity in the particle system.
+float M2ParticleRandSigned(CRndSeed& seed);
+
+// A uniform direction on the unit sphere. z is drawn flat in [-1, 1] and the azimuth flat over the
+// full turn, which is the correct sampling -- taking z from a cosine would crowd the poles.
+// ref: FUN_004c1680
+void M2ParticleRandomUnitVector(C3Vector& out, CRndSeed& seed);
 
 #endif

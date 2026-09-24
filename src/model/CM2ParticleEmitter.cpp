@@ -1,5 +1,6 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
+#include <cstring>
 
 // Flush a velocity's denormals to zero, component by component, leaving an exact zero alone.
 //
@@ -21,6 +22,42 @@ static void M2ParticleFlushDenormals(C3Vector& v) {
     if (v.z != 0.0f && fabsf(v.z) < 9.99999994e-09f) {
         v.z = 0.0f;
     }
+}
+
+// See the declaration for why the centre is 2.0 rather than the 1.5 it looks like.
+float M2ParticleRandSigned(CRndSeed& seed) {
+    uint32_t u = CRandom::uint32(seed);
+    uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
+
+    float f;
+    memcpy(&f, &bits, sizeof(f));
+
+    return (static_cast<int32_t>(u) < 0) ? (2.0f - f) : (f - 2.0f);
+}
+
+// ref: FUN_004c1680
+void M2ParticleRandomUnitVector(C3Vector& out, CRndSeed& seed) {
+    float z = M2ParticleRandSigned(seed);
+
+    uint32_t u = CRandom::uint32(seed);
+    uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
+
+    float f;
+    memcpy(&f, &bits, sizeof(f));
+
+    // The radius of the circle at height z, and an azimuth drawn flat over the full turn. The
+    // constant is the 2pi at 0x009f193c.
+    float r = sqrtf(1.0f - z * z);
+    float theta = (f - 1.0f) * 6.28318548f;
+
+    out.x = cosf(theta) * r;
+    out.y = r * sinf(theta);
+    out.z = z;
+}
+
+// ref: FUN_009792d0
+float CM2ParticleEmitter::RandomSpeed() {
+    return (M2ParticleRandSigned(this->m_seed) * this->m_variation + 1.0f) * this->m_speed;
 }
 
 // One particle, one step. Semi-implicit: the position takes the OLD velocity, and gravity

@@ -77418,7 +77418,70 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 12
+"line": 13
+},
+"M2ParticleRandSigned": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"CRandom::uint32",
+"memcpy"
+],
+"strings": [],
+"consts": [
+"0",
+"0x3F800000",
+"0x7FFFFF",
+"2.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 28
+},
+"M2ParticleRandomUnitVector": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2ParticleRandSigned",
+"CRandom::uint32",
+"memcpy",
+"sqrtf",
+"cosf",
+"sinf"
+],
+"strings": [],
+"consts": [
+"0x3F800000",
+"0x7FFFFF",
+"1.0f",
+"6.28318548f"
+],
+"branches": 0,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 39
+},
+"CM2ParticleEmitter::RandomSpeed": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2ParticleRandSigned"
+],
+"strings": [],
+"consts": [
+"1.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 59
 },
 "CM2ParticleEmitter::IntegrateParticle": {
 "files": [
@@ -77441,7 +77504,7 @@
 "stub": false,
 "lines": 70,
 "refs": [],
-"line": 36
+"line": 73
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -77459,7 +77522,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 116
+"line": 153
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
