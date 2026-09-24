@@ -51,9 +51,27 @@ class CM2Scene {
         TSGrowableArray<uint32_t> array54[3];
         C44Matrix m_view;
         C44Matrix m_viewInv;
-        uint32_t uint104 = 0;
+        // +0x104 and +0x108: the projected-decal callback and its context, NOT a number --
+        // which is what the type-1 element test below reads. Installed by
+        // SetProjectionCallback; the reference's one caller is world init at 0x781340, passing
+        // FUN_0077f500.
+        //
+        // That callback is the blob shadow supplier: it reads the float at 0x009f98d8, the 0.4
+        // shadow strength parity-shadows.md records as solved, and passes it on with the flags
+        // 0x200122 the same doc names for the ground marker. So this pointer being null is
+        // exactly why CM2SceneRender::DrawBatchProj is unreachable.
+        //
+        // Typed void* rather than guessed at: the callback takes at least five cdecl arguments
+        // (it reads 0x8, 0xc, 0x10 and 0x18 and cleans up 0x14 bytes), and the meanings are not
+        // established.
+        void* m_projectionCallback = nullptr;
+        void* m_projectionContext = nullptr;
 
         // Member functions
+
+        // Install the projected-decal callback. Until something calls this, the scene emits no
+        // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30
+        void SetProjectionCallback(void* callback, void* context);
 
         // One axis of a point light's hash-grid index. The reference scales by the 0.05 at
         // 0x00af59d4 -- one twentieth, so twenty world units to a cell -- truncates toward zero

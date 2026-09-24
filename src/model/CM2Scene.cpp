@@ -612,7 +612,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             M2Material* material = &data->materials[batch->materialIndex];
 
             auto v17 = (batch->flags & 0x4) == 0;
-            if (v17 || (v17 = this->uint104 == 0, v222 = 1, v17)) {
+            if (v17 || (v17 = this->m_projectionCallback == nullptr, v222 = 1, v17)) {
                 v222 = 0;
             }
 
@@ -896,6 +896,18 @@ void CM2Scene::AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, 
     }
 
     elementIndex++;
+}
+
+// Install the projected-decal callback.
+//
+// Two stores and nothing else, but it is the switch that decides whether this scene ever emits
+// type-1 elements -- and so whether CM2SceneRender::DrawBatchProj is reachable at all. Nothing in
+// frozen calls it yet; the reference's one caller is world init at 0x781340.
+//
+// ref: FUN_0081cc30
+void CM2Scene::SetProjectionCallback(void* callback, void* context) {
+    this->m_projectionCallback = callback;
+    this->m_projectionContext = context;
 }
 
 // ref: FUN_0081f8f0

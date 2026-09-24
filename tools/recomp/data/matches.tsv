@@ -2352,6 +2352,7 @@ addr	how	frozen	evidence
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
+0081cc30	annotated	CM2Scene::SetProjectionCallback	tag in src/model/CM2Scene.cpp
 0081cdc0	callorder	TSGrowableArray<M2Element>::New	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp
 0081ead0	override	CM2Scene::SortOpaqueGeoBatches	

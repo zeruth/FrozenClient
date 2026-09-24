@@ -39773,7 +39773,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 80
 },
 "CM2Scene::CM2Scene": {
 "files": [
@@ -39786,7 +39786,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 66
+"line": 84
 },
 "ClntObjMgr::ClntObjMgr": {
 "files": [
@@ -79055,6 +79055,19 @@
 "refs": [],
 "line": 851
 },
+"CM2Scene::SetProjectionCallback": {
+"files": [
+"src/model/cm2scene.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 908
+},
 "CM2Scene::CreateModel": {
 "files": [
 "src/model/cm2scene.cpp"
@@ -79076,7 +79089,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 902
+"line": 914
 },
 "CM2Scene::Draw": {
 "files": [
@@ -79098,7 +79111,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 929
+"line": 941
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -79134,7 +79147,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 949
+"line": 961
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -79158,7 +79171,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1031
+"line": 1043
 },
 "CM2SceneRender::Draw": {
 "files": [

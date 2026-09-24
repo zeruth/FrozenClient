@@ -134,6 +134,24 @@ diffuse colour, and calls `FUN_00829aa0` - which iterates the model render batch
 `+0xc != 0` or flag `0x20`) and issues a triangles draw per batch with the projector states still bound.
 **`FUN_00829aa0` is exactly the reference for the `CM2SceneRender::DrawBatchProj` stub.**
 
+**The OTHER route to the same draw, and the gate that keeps it shut (found 2026-09-24).** Besides
+the `CMap::Render` re-draw above, projected decals reach M2 models through the M2 element gather:
+`CM2Scene::Animate` emits a **type-1** element, and `CM2SceneRender::Draw` dispatches that to
+`DrawBatchProj`. Whether it emits one at all is decided by a single field.
+
+`CM2Scene + 0x104` is not a number -- it is a **callback pointer**, installed with its context by
+`FUN_0081cc30`. Its one caller is world init at `0x781340`, passing `FUN_0077f500`. That callback
+is unmistakably this system's: it reads the float at `0x009f98d8`, the 0.4 shadow strength this
+document already records as solved, and hands it to `FUN_007e3aa0` with the flags `0x200122` named
+under "Shared with the ground marker" below.
+
+So the full chain is: world init installs the callback -> `Animate` emits type-1 elements ->
+`DrawBatchProj` draws them with the `Projected_ModMod` / `Projected_ModAdd` effects that
+`CM2SceneRender`'s constructor looks up. Frozen now has the constructor's effects and the setter
+(`CM2Scene::SetProjectionCallback`), and the fields are named rather than `uint104`; what is still
+missing is a caller for the setter and the draw itself. That is why the branch has always looked
+dead -- it was gated on a pointer nothing ever set.
+
 **ShadowInit (FUN_007e4a40).** Creates `Textures\ShadowBlob.blp` (`FUN_004b9760`, filter 8), the two
 64x8 ramps above, registers CVar `shadowLOD` ("Unit shadow LOD", handler `FUN_007e3a20`, values 0/1 only)
 into `DAT_00af3e08`, and looks up CVar `extShadowQuality` into `DAT_00d38048`.
