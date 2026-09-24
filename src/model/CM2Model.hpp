@@ -157,6 +157,30 @@ class CM2Model {
         void (*m_lightingCallback)(CM2Model*, CM2Lighting*, void*) = nullptr;
         void* m_lightingArg = nullptr;
         M2ModelCamera* m_cameras = nullptr;
+        // The OPTIMIZED VISIBLE GEOMETRY cache, traced 2026-09-23. Nothing in frozen builds
+        // it, so it stays null and every path that reads it takes the unoptimized branch; that is
+        // the correct resting state rather than a bug, but it is why CM2Model::SetIndices and
+        // UnoptimizeVisibleGeometry are stubs.
+        //
+        // What the reference keeps behind it, read off FUN_00828f90 and FUN_00825d70:
+        //
+        //     +0x08  array of 0x30-byte group entries, each starting with a range index
+        //     +0x0c  group count
+        //     +0x10  array of 8-byte {firstBatch, lastBatch} pairs
+        //     +0x14  CGxPool*
+        //     +0x18  CGxBuf*, the compacted index buffer
+        //
+        // It is a per-model index buffer holding only the batches whose skin section is visible,
+        // rebuilt when section visibility changes. UnoptimizeVisibleGeometry frees the buffer and
+        // pool and nulls this, and its SMemFree names ".\M2Model.cpp" line 0xad6, which is how
+        // the owning module is known rather than guessed.
+        //
+        // Porting it is a multi-cycle job and should not be started piecemeal: the builders are
+        // FUN_0082be60 (855 bytes) and FUN_0082c970 (1353 bytes), the only two functions that
+        // store a non-zero value here. Do the builders first -- CM2Model::SetIndices dereferences
+        // this WITHOUT a null check, so it is only ever reached through the callers' own
+        // `if (ptr2D0)` guards (FUN_00824b70, FUN_00829e40, FUN_00832dd0), and porting the
+        // consumer alone would give frozen a function it must never call.
         void* ptr2D0 = nullptr;
         uint32_t m_memHandle;
 
