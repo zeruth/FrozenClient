@@ -79599,6 +79599,52 @@
 "refs": [],
 "line": 2673
 },
+"CM2Ribbon::CM2Ribbon": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x12u"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 15
+},
+"CM2Ribbon::SetGravity": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 23
+},
+"CM2Ribbon::SetAbove": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0u",
+"0x1u",
+"0x4",
+"0x4u"
+],
+"branches": 2,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 33
+},
 "CM2SceneRender::CM2SceneRender": {
 "files": [
 "src/model/cm2scenerender.hpp"

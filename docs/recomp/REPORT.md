@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 08:01 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 08:06 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,18 +8,18 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27156 | 5.39M |
-| mapped to a frozen function | 3228 (=) (11.9%) | 724.3k (13.1%) |
-| &nbsp;&nbsp;ported | 2485 (=) | 544.5k |
+| mapped to a frozen function | 3231 (+3) (11.9%) | 724.8k (13.1%) |
+| &nbsp;&nbsp;ported | 2488 (+3) | 545.1k |
 | &nbsp;&nbsp;stub (unimplemented body) | 689 (=) | 137.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1290 (=) (4.8%)** | **174.6k (3.2%)** |
-| unmapped | 23928 | 4.68M |
-| world spine (reachable from OnFrameRender) | 5527, mapped 610 (=) (11.0%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5795, mapped 620 (=) (10.7%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1293 (+3) (4.8%)** | **175.1k (3.2%)** |
+| unmapped | 23925 | 4.68M |
+| world spine (reachable from OnFrameRender) | 5527, mapped 613 (+3) (11.1%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5795, mapped 623 (+3) (10.8%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 292 (=) (6.4%)** | |
-| frozen functions (src/, from PDB + source) | 12358, stubs 1818 | |
+| frozen functions (src/, from PDB + source) | 12361, stubs 1818 | |
 
-Match evidence: annotated 993, callgraph 187, callorder 127, cvar 32, handler 29, order 150, override 263, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 996, callgraph 187, callorder 127, cvar 32, handler 29, order 150, override 263, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
@@ -163,7 +163,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | LFGInfo.cpp | 229 | 47.7k | 29 (12.7%) | 13.0% | 10 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.8% | 30 | 0 | 26 |
 | M2Shared.cpp | 65 | 45.9k | 10 (15.4%) | 7.7% | 1 | 0 | 19 |
-| CSimpleHyperlinkedFrame.cpp | 196 | 45.7k | 67 (34.2%) | 41.3% | 0 | 0 | 120 |
+| CSimpleHyperlinkedFrame.cpp | 196 | 45.7k | 70 (35.7%) | 42.5% | 0 | 0 | 120 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 11 (6.0%) | 5.5% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 7 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -753,7 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 07:51 | 3227 (11.9%) | 1288 (4.7%) | 689 | 609/5527 | 2924/2964 | 1493 |
 | 2026-09-24 07:55 | 3228 (11.9%) | 1289 (4.7%) | 689 | 610/5527 | 2924/2964 | 1493 |
 | 2026-09-24 08:01 | 3228 (11.9%) | 1290 (4.8%) | 689 | 610/5527 | 2924/2964 | 1493 |
-| 2026-09-24 08:01 | 3228 (11.9%) | 1290 (4.8%) | 689 | 610/5527 | 2924/2964 | 1493 |
+| 2026-09-24 08:06 | 3231 (11.9%) | 1293 (4.8%) | 689 | 613/5527 | 2924/2964 | 1493 |
 
 ## How to move a row
 
