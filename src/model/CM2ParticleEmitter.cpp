@@ -160,6 +160,26 @@ float M2ParticleRandSigned(CRndSeed& seed) {
     return (static_cast<int32_t>(u) < 0) ? (2.0f - f) : (f - 2.0f);
 }
 
+// Map a GxBlend back to the M2 blend index.
+//
+// A jump table at 0x0081ca54 over 0..10, anything outside falling to 0. It is the exact inverse of
+// M2ParticleBlendToGx below, which was read independently from a different part of the binary --
+// M2 3 goes out as GxBlend 10 and comes back as 3, M2 4 goes out as 3 and comes back as 4. The two
+// round-tripping is the best check available on that mapping short of running the client.
+//
+// ref: FUN_0081ca20
+uint32_t M2BlendIndexFromGx(uint32_t gxBlend) {
+    switch (gxBlend) {
+    case 1:  return 1;   // GxBlend_AlphaKey
+    case 2:  return 2;   // GxBlend_Alpha
+    case 3:  return 4;   // GxBlend_Add
+    case 4:  return 5;   // GxBlend_Mod
+    case 5:  return 6;   // GxBlend_Mod2x
+    case 10: return 3;   // GxBlend_NoAlphaAdd
+    default: return 0;   // GxBlend_Opaque, and everything with no M2 equivalent
+    }
+}
+
 // Map an M2Particle blend mode onto a GxBlend. See the declaration for why mode 3 matters.
 //
 // An out-of-range mode falls through with blend 0 and the flags untouched -- the reference has no

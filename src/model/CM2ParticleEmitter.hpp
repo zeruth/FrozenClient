@@ -479,6 +479,11 @@ class CM2ParticleEmitterSphere : public CM2ParticleEmitter {
         void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
 };
 
+// Map a GxBlend back to the M2 blend index. The exact inverse of M2ParticleBlendToGx below,
+// and the reason the round trip exists: an emitter stores the GxBlend, and the material key
+// DrawParticle builds wants the M2 index again. ref: FUN_0081ca20
+uint32_t M2BlendIndexFromGx(uint32_t gxBlend);
+
 // Map an M2Particle blend mode onto the GxBlend the emitter draws with, and fold the
 // accompanying bit into `flags`. From the reference's jump table at 0x008344dc.
 //
