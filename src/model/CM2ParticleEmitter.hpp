@@ -68,11 +68,24 @@ class CM2ParticleEmitter {
         Particle* m_pool = nullptr;
         // +0x44: the 0x40-byte pool, used otherwise -- its particles carry a spawned model
         Particle* m_modelPool = nullptr;
+        // +0x08: the fractional emission carry. A rate of 2.5 a second does not round to 2 or 3
+        // -- the remainder stays here and is spent on a later frame.
+        float m_emitCarry = 0.0f;
         // +0x50: how many particles are live, and +0x54 the indices of those particles into
         // whichever pool is in use. The step swap-removes from this array as particles die, which
         // is why it walks `i` forward only when one survives.
         uint32_t m_liveCount = 0;
         uint32_t* m_liveIndices = nullptr;
+        // +0x60 and the array beside it: the slots not currently in use. Spawning pops one; the
+        // step pushes one back when a particle dies. Every spawn loop in the reference stops the
+        // moment this count reaches zero, so a full emitter silently emits nothing rather than
+        // growing.
+        uint32_t m_freeCount = 0;
+        uint32_t* m_freeIndices = nullptr;
+        // +0x9c and +0xa0: emission rate and its variation, both written by the driver from the
+        // model's animated tracks.
+        float m_rate = 0.0f;
+        float m_rateVariation = 0.0f;
         // +0x6c: child emitters. FUN_0097ba30 counts a subtree by recursing through these, so an
         // emitter is a node rather than a leaf.
         uint32_t m_childCount = 0;
@@ -141,6 +154,14 @@ class CM2ParticleEmitter {
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
 
+        // Take a free slot and fill it. Does nothing when the emitter is full.
+        // ref: FUN_0097d820
+        void SpawnParticle(float dt, const C44Matrix& placement);
+
+        // Spawn whatever this frame's rate calls for. `placement` is the emitter's world transform,
+        // and this may move its translation while spawning -- see the definition. ref: FUN_0097d8c0
+        void Emit(float dt, C44Matrix& placement);
+
         // Fill one new particle of the plain pool. `placement` is the emitter's world transform.
         // ref: FUN_00979870
         void CreateParticle(Particle& particle, float dt, const C44Matrix& placement);
@@ -174,6 +195,11 @@ float M2PartTrackRatio(uint32_t& lo, uint32_t& hi, const M2Array<fixed16>& times
 
 // One 2-float part track, linearly interpolated at `t`. ref: FUN_00979480
 void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t);
+
+// How far the camera is from the emitter being updated. The reference keeps this in a global
+// (0x00dce68c) that its per-frame update writes before emission reads it, rather than passing it
+// down. Emission is the only consumer.
+extern float g_m2ParticleCameraDistance;
 
 // The terrain height query the ground-snap calls through, and its context. The reference keeps
 // both as globals (0x00dce8c8 and 0x00dce8c4) that the world installs, and every call site checks

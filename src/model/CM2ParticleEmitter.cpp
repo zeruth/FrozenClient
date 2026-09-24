@@ -1,6 +1,7 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
 #include <cstring>
+#include "world/ParticleFx.hpp"
 
 // Flush a velocity's denormals to zero, component by component, leaving an exact zero alone.
 //
@@ -23,6 +24,8 @@ static void M2ParticleFlushDenormals(C3Vector& v) {
         v.z = 0.0f;
     }
 }
+
+float g_m2ParticleCameraDistance = 0.0f;
 
 M2ParticleHeightQuery g_m2ParticleHeightQuery = nullptr;
 void* g_m2ParticleHeightQueryContext = nullptr;
@@ -257,6 +260,109 @@ void CM2ParticleEmitter::CreateParticle(Particle& p, float dt, const C44Matrix& 
     p.m_velocity.z = dir.z * speed + this->m_inheritedVelocity.z;
 
     M2ParticleFlushDenormals(p.m_velocity);
+}
+
+// ref: FUN_0097d820
+void CM2ParticleEmitter::SpawnParticle(float dt, const C44Matrix& placement) {
+    if (!this->m_freeCount || !this->m_pool || !this->m_liveIndices || !this->m_freeIndices) {
+        return;
+    }
+
+    // Pop the last free slot and make it live. The reference reaches the same two arrays through a
+    // growable-array pop and a link; the effect is this.
+    uint32_t slot = this->m_freeIndices[--this->m_freeCount];
+
+    this->m_liveIndices[this->m_liveCount++] = slot;
+
+    this->CreateParticle(this->m_pool[slot], dt, placement);
+}
+
+// Spawn whatever this frame's rate calls for.
+//
+// NOTE that this MOVES the placement matrix's translation while it works, under flag 0x2000, and
+// puts it back before returning. That is why the parameter is not const: the reference edits the
+// caller's matrix in place rather than copying it per particle.
+//
+// ref: FUN_0097d8c0
+void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
+    // Distance thinning, unless the emitter opts out. Full rate within 50 yards, falling off
+    // linearly, and never below a quarter however far away. The three constants are the 50.0 at
+    // 0x009f22ec, the 0.02 at 0x009e2efc and the 0.25 at 0x009e8ce4.
+    float density = 1.0f;
+
+    if (!(this->m_flags & 0x400000)) {
+        density = 1.0f - (g_m2ParticleCameraDistance - 50.0f) * 0.02f;
+
+        if (density < 0.25f) {
+            density = 0.25f;
+        } else if (density >= 1.0f) {
+            density = 1.0f;
+        }
+    }
+
+    float rate = ParticleFxGetDensity()
+        * (M2ParticleRandSigned(this->m_seed) * this->m_rateVariation + this->m_rate)
+        * density;
+
+    // A burst: everything at once, at age zero, and the bit clears itself so it fires once.
+    if ((this->m_flags & 0x40) && (this->m_flags & 0x2)) {
+        int32_t n = static_cast<int32_t>(nearbyintf(rate));
+
+        while (this->m_freeCount && n) {
+            this->SpawnParticle(0.0f, placement);
+            n--;
+        }
+
+        this->m_flags &= ~0x40u;
+    }
+
+    if ((this->m_flags & 0x3) != 0x3) {
+        return;
+    }
+
+    this->m_emitCarry += rate * dt;
+
+    int32_t spawned = 0;
+    int32_t n = static_cast<int32_t>(nearbyintf(this->m_emitCarry + 0.5f));
+
+    if (!(this->m_flags & 0x2000)) {
+        while (this->m_freeCount && n) {
+            this->SpawnParticle(dt, placement);
+            spawned++;
+            n--;
+        }
+    } else {
+        // Interpolated placement: lay each particle at a random point along the segment the
+        // emitter travelled this frame, so a moving emitter draws a trail instead of a cluster.
+        C3Vector cur = { placement.d0, placement.d1, placement.d2 };
+        const C3Vector& prev = this->m_prevPosition;
+
+        while (this->m_freeCount && n) {
+            uint32_t u = CRandom::uint32(this->m_seed);
+            uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
+
+            float f;
+            memcpy(&f, &bits, sizeof(f));
+
+            float along = f - 1.0f;
+
+            placement.d0 = prev.x + (cur.x - prev.x) * along;
+            placement.d1 = (cur.y - prev.y) * along + prev.y;
+            placement.d2 = (cur.z - prev.z) * along + prev.z;
+
+            this->SpawnParticle(dt, placement);
+            spawned++;
+            n--;
+        }
+
+        placement.d0 = cur.x;
+        placement.d1 = cur.y;
+        placement.d2 = cur.z;
+    }
+
+    // Only what was actually spawned comes off the carry -- a full emitter keeps its credit rather
+    // than losing it.
+    this->m_emitCarry -= static_cast<float>(spawned);
 }
 
 // One particle, one step. Semi-implicit: the position takes the OLD velocity, and gravity
