@@ -23,6 +23,7 @@ C3Vector CShaderEffect::s_sunDiffuse;
 C3Vector CShaderEffect::s_sunDir;
 int32_t CShaderEffect::s_useAlphaRef;
 int32_t CShaderEffect::s_usePcfFiltering;
+uint32_t CShaderEffect::s_shadowMode;
 
 // Packs up to four local lights into the eleven vertex constants that SetLocalLighting uploads at
 // register 17. This was an empty body on the LIVE path: SetLocalLighting calls it whenever a model
@@ -287,6 +288,49 @@ void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled
     } else {
         lighting->SetupGxLights(a3);
     }
+}
+
+// The pixel permutation for the current fog and shadow state.
+//
+// Matches CM2Scene::BuildBatchElement's `v8 + 4 * (s_usePcfFiltering + 2 * v9)` exactly,
+// including its unresolved term: the reference tests `caps[0x130] == 0 || v8` where that
+// file has `/* TODO !GxCaps().dword130 || */ v8`. frozen's CGxCaps is explicitly not
+// layout-faithful past 0xa0 -- its own int130 is a different field -- so the caps term
+// cannot be tested, and matching the existing choice keeps the two formulas identical
+// rather than inventing a third behaviour.
+//
+// ref: FUN_00872de0
+uint32_t CShaderEffect::PixelPermute() {
+    if (0.0f < CShaderEffect::s_fogColorAlphaRef.w && CShaderEffect::s_shadowMode) {
+        return CShaderEffect::s_shadowMode + (CShaderEffect::s_usePcfFiltering + 2) * 4;
+    }
+
+    return CShaderEffect::s_shadowMode + CShaderEffect::s_usePcfFiltering * 4;
+}
+
+// Pick and set both shader permutations for geometry with `boneInfluences` bones.
+//
+// The vertex half is `shaded + 2 * lightCount + 10 * (bones + 3 * shadowMode)`, which is
+// CM2Scene::BuildBatchElement's expression rearranged -- that is what identified this
+// function. Both clamps are the reference's.
+//
+// Note it does NOTHING when shaders are off: it does not fall through to SetShaders, so
+// the alpha-ref bookkeeping there is skipped too.
+//
+// ref: FUN_00873160
+void CShaderEffect::SetShadersForGeometry(uint32_t boneInfluences) {
+    if (!CShaderEffect::s_enableShaders) {
+        return;
+    }
+
+    uint32_t shadowMode = std::min(CShaderEffect::s_shadowMode, 2u);
+    uint32_t bones = std::min(boneInfluences, 2u);
+
+    uint32_t vertexPermute = CShaderEffect::s_lightEnabled
+        + CShaderEffect::s_localLightCount * 2
+        + (bones + shadowMode * 3) * 10;
+
+    CShaderEffect::SetShaders(vertexPermute, CShaderEffect::PixelPermute());
 }
 
 // Upload world * view, transposed, to the bone-0 constant slot.

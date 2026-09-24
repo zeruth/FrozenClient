@@ -2189,7 +2189,11 @@ void CM2ParticleEmitter::SubmitDraw(CGxBuf* buffer, EGxVertexBufferFormat format
     g_theGxDevicePtr->PrimIndexPtr(s_particleIndexBuf);
 
     CShaderEffect::SetTexMtx_Identity(0);
-    CShaderEffect::SetShaders(0, 0);
+
+    // Zero bone influences: a particle quad is unskinned. This used to be a hard-coded
+    // SetShaders(0, 0), which was wrong for any particle that was lit or near a local
+    // light -- the real permutation is `shaded + 2 * lightCount` in that case.
+    CShaderEffect::SetShadersForGeometry(0);
     CShaderEffect::SetWorldViewConstants();
 
     CGxBatch batch;

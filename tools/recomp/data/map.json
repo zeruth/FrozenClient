@@ -43471,6 +43471,22 @@
   "refSize": 197,
   "status": "ported"
  },
+ "00872de0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::PixelPermute",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
  "00872f90": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -43501,6 +43517,22 @@
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 251,
+  "status": "ported"
+ },
+ "00873160": {
+  "branchRatio": 0.333,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetShadersForGeometry",
+  "frozenSize": 271,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 84,
   "status": "ported"
  },
  "00873210": {
@@ -49874,7 +49906,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -50168,7 +50200,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::FillDrawBuffer",
-  "frozenSize": 1285,
+  "frozenSize": 1283,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 410,

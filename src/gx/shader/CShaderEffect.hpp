@@ -33,6 +33,12 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static C3Vector s_sunDir;
         static int32_t s_useAlphaRef;
         static int32_t s_usePcfFiltering;
+        // The reference caches FUN_00873ff0()'s result here (written once a frame by the
+        // map render at 0x7a9620) and both permutation halves read it. Nothing sets it in
+        // frozen yet, for the same reason CM2Scene::BuildBatchElement carries a
+        // `v8 = Sub873FF0()` TODO -- that function is not ported. Zero is what both places
+        // therefore use, and they stay consistent because they read the same name.
+        static uint32_t s_shadowMode;
 
         // Static functions
         static void ComputeLocalLights(LocalLights* localLights, uint32_t localLightsCount, CM2Light** lights, const C3Vector* a4);
@@ -44,6 +50,15 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static void SetFogParams(float fogStart, float fogEnd, float fogRate, const CImVector& fogColor);
         static void SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled, const C3Vector* a3);
         static void SetShaders(uint32_t vertexPermute, uint32_t pixelPermute);
+
+        // The pixel permutation for the current fog and shadow state. ref: FUN_00872de0
+        static uint32_t PixelPermute();
+
+        // Pick and set both shader permutations for geometry with `boneInfluences` bones
+        // per vertex, from the lighting state SetLocalLighting last cached. This is the
+        // same formula CM2Scene::BuildBatchElement computes per element, which is what
+        // identified it. ref: FUN_00873160
+        static void SetShadersForGeometry(uint32_t boneInfluences);
 
         // Upload world * view, transposed, to vertex constants 31 through 34 -- the slot
         // CM2SceneRender::DrawBatch fills with the first BONE matrix, in the same

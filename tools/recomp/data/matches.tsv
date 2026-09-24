@@ -2744,8 +2744,10 @@ addr	how	frozen	evidence
 00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
 00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00872de0	annotated	CShaderEffect::PixelPermute	tag in src/gx/shader/CShaderEffect.cpp
 00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
 00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp
+00873160	annotated	CShaderEffect::SetShadersForGeometry	tag in src/gx/shader/CShaderEffect.cpp
 00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
 00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
