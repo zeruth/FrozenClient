@@ -2447,6 +2447,52 @@ int32_t CM2Model::InitializeLoaded() {
                 // before the driver animates it. Guarded on the sequence actually having keys:
                 // the reference dereferences values.data with no check, which is the M2Array trap
                 // -- element 0 of an empty array is a wild pointer, not null.
+                //
+                // These are not decoration. m_lifespan and m_rate decide whether the emitter
+                // emits at all -- PrepareStep sizes the pool from
+                // `(lifespan + variation) * (rate + rateVariation)`, so at the constructor's
+                // zeroes the capacity is zero and the free list never fills. And the driver does
+                // not cover for it: it writes these only for tracks that pass
+                // M2ParticleTrackDrives, so a static track reaches the emitter only from here.
+                if (file.emissionRateTrack.sequenceKeys.Count()
+                        && file.emissionRateTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetEmissionRate(file.emissionRateTrack.sequenceKeys[0].keys[0]);
+                }
+
+                emitter->m_rateVariation = file.emissionRateVariation;
+
+                if (file.speedTrack.sequenceKeys.Count()
+                        && file.speedTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_speed = file.speedTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.variationTrack.sequenceKeys.Count()
+                        && file.variationTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_variation = file.variationTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.latitudeTrack.sequenceKeys.Count()
+                        && file.latitudeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLatitude(file.latitudeTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.longitudeTrack.sequenceKeys.Count()
+                        && file.longitudeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLongitude(file.longitudeTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.gravityTrack.sequenceKeys.Count()
+                        && file.gravityTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_gravity = file.gravityTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.lifeTrack.sequenceKeys.Count()
+                        && file.lifeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_lifespan = file.lifeTrack.sequenceKeys[0].keys[0];
+                }
+
+                emitter->m_lifespanVariation = file.lifeVariation;
+
                 if (file.widthTrack.sequenceKeys.Count()
                         && file.widthTrack.sequenceKeys[0].keys.Count()) {
                     emitter->SetWidth(file.widthTrack.sequenceKeys[0].keys[0]);

@@ -38560,7 +38560,7 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.494,
+  "branchRatio": 0.535,
   "constOverlap": 0.083,
   "faithful": false,
   "fidelity": 0.348,
@@ -38569,7 +38569,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 4386,
+  "frozenSize": 4752,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
