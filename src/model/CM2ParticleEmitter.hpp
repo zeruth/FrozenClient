@@ -170,6 +170,13 @@ class CM2ParticleEmitter {
         uint32_t m_indicesPerParticle = 0;
         // +0xac: set alongside the head/tail flags by the same setter. Born 1.0.
         float m_tailLength = 1.0f;
+        // +0x0c, +0x10 and +0x14: the atlas cell geometry SetTextureGrid derives from the grid
+        // below -- the shift for unpacking a cell index, and the cell's width and height in UV.
+        // The constructor's defaults are this function's output for a 1x1 grid, which is how the
+        // three were identified.
+        uint32_t m_cellShift = 0;
+        float m_cellWidth = 1.0f;
+        float m_cellHeight = 1.0f;
         // +0x120 and +0x124: the texture tile grid. Their PRODUCT is what decides whether texture
         // animation is possible at all -- see SetTextureAnimated.
         // Both born 1, so the product is 1 and texture animation starts off -- which is what
@@ -290,6 +297,10 @@ class CM2ParticleEmitter {
         // Choose which of the two quads each particle draws, and size a particle's geometry
         // from that. ref: FUN_00978d00
         void SetHeadTail(int32_t head, int32_t tail, float tailLength, int32_t flag20000);
+
+        // Set the texture atlas grid. Both must be non-zero powers of two; anything else is
+        // reported and nothing is stored. ref: FUN_00978c70
+        void SetTextureGrid(uint32_t rows, uint32_t cols);
 
         // Turn texture animation on, if the tile grid has more than one cell to animate over.
         // ref: FUN_00978e30

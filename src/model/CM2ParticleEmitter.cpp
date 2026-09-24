@@ -803,6 +803,38 @@ void CM2ParticleEmitter::SetHeadTail(int32_t head, int32_t tail, float tailLengt
     }
 }
 
+// Set the texture atlas grid, and derive the cell geometry from it.
+//
+// The power-of-two requirement is the reference's and it REPORTS rather than clamping: a grid that
+// fails it leaves the emitter on whatever it had, which for a fresh one is the 1x1 the constructor
+// sets. That matters because the shift below is only a valid substitute for a divide when the
+// count is a power of two.
+//
+// ref: FUN_00978c70
+void CM2ParticleEmitter::SetTextureGrid(uint32_t rows, uint32_t cols) {
+    if (!rows || !cols || (rows & (rows - 1)) || (cols & (cols - 1))) {
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter::SetTextureGrid: %ux%u is not a pair of non-zero powers "
+                     "of two; keeping the previous grid", rows, cols);
+
+        return;
+    }
+
+    this->m_textureRows = rows;
+    this->m_textureCols = cols;
+
+    uint32_t shift = 0;
+
+    for (uint32_t c = cols >> 1; c; c >>= 1) {
+        shift++;
+    }
+
+    this->m_cellShift = shift;
+
+    this->m_cellWidth = 1.0f / static_cast<float>(cols);
+    this->m_cellHeight = 1.0f / static_cast<float>(rows);
+}
+
 // Turn texture animation on.
 //
 // The guard is the point: a grid with one cell has nothing to animate over, and asking for

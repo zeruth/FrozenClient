@@ -2415,6 +2415,24 @@ int32_t CM2Model::InitializeLoaded() {
                 unsupported++;
                 break;
             }
+
+            // The emitter's construction-time setup, straight out of the file record -- the
+            // reference does this at 0x833eaf, right after the same factory switch.
+            CM2ParticleEmitter* emitter = this->m_particleEmitters[i];
+
+            if (emitter) {
+                const M2Particle& file = this->m_shared->m_data->particles[i];
+
+                if (file.flags & 0x4) {
+                    emitter->m_flags |= 0x200000;
+                }
+
+                emitter->SetTextureGrid(file.rows, file.cols);
+
+                if (file.flags & 0x10000) {
+                    emitter->SetTextureAnimated(1);
+                }
+            }
         }
 
         if (unsupported) {

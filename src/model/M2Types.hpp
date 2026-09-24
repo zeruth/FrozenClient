@@ -49,6 +49,8 @@ enum M2PASS {
 // FUN_00821670 computes an element's address as `data + (index * 17) * 4`. Frozen's struct covered
 // only thirteen of them until 2026-09-24, and the four at the end are why the particle element
 // emission could not be written down honestly: it writes three of them.
+class CM2ParticleEmitter;
+
 struct M2Element {
     int32_t type;
     CM2Model* model;
@@ -83,6 +85,14 @@ struct M2Element {
     uint32_t dword38;
     uint32_t dword3c;
     uint32_t dword40;
+
+    // DIVERGENCE, and a deliberate one. A particle element has to carry its emitter, and the
+    // reference does that by reusing `index` above -- which frozen cannot, because that slot is
+    // 32 bits and a pointer here is 64. So the emitter gets a field of its own and `index` keeps
+    // its one meaning. The cost is four bytes per element on a list rebuilt every frame; the
+    // alternative is a union whose active member depends on `type`, which is exactly the kind of
+    // thing that reads fine and goes wrong once.
+    CM2ParticleEmitter* emitter;
 };
 
 #endif
