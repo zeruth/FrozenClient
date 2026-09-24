@@ -209,6 +209,19 @@ class CM2ParticleEmitter {
         C2Vector m_scaleVariation = {};
         const M2PartTrack<uint16_t>* m_headCellTrack = nullptr;
         const M2PartTrack<uint16_t>* m_tailCellTrack = nullptr;
+        // +0xf4 through +0x117: three RGB triples, each 0..255 held as floats, that REPLACE the
+        // colour track's three keys when flag 0x10 is set -- the ParticleColor.dbc override.
+        // SampleColor indexes this with the same lo/hi the track lookup produces, which only
+        // works because the override is exactly three entries and so is the track.
+        //
+        // NOTHING SETS IT YET, so flag 0x10 is never on and SampleColor's override branch is
+        // unreachable. Its setter is FUN_0097a990, which writes this AND a ramp through a pointer
+        // at +0x11c; the getter is FUN_0097ab10, its exact inverse (verified byte for byte at
+        // 0x97ab16..0x97abd8). CM2Model::InitializeLoaded calls the setter at 0x833f94 to inherit
+        // the colours from the corresponding emitter on model30, and FUN_00825410 is a runtime
+        // setter that matches on a particle id. The field is here so the branch can be written
+        // truthfully rather than left out of the transcription.
+        C3Vector m_colorOverride[3] = {};
         // +0x8c and +0x90: how many vertices and indices ONE particle costs. Not stored
         // parameters -- SetHeadTail derives them, four vertices and six indices per quad, one
         // quad each for the head and the tail. A particle drawing both costs 8 and 12. The draw
@@ -417,6 +430,19 @@ class CM2ParticleEmitter {
         // SpawnParticle, 0x97dbc0 in the integrate wrapper); this is those four copies as one.
         Particle& ParticleAt(uint32_t slot);
 
+        // This particle's colour at normalised age `t`, as a CImVector with alpha left at 255
+        // for the caller to overwrite. ref: FUN_009795d0
+        void SampleColor(CImVector& out, float t) const;
+
+        // This particle's two spin terms: the angle it was born at, and the rate it turns.
+        // The draw combines them as `age * rate + initial`. ref: FUN_0097a130
+        void SampleSpin(const Particle& p, float& initialSpin, float& spinRate) const;
+
+        // Everything the quad writer needs about one particle's appearance, sampled at its own
+        // normalised age. ref: FUN_00979e90
+        void SampleAppearance(const Particle& p, CImVector& color, C2Vector& size,
+                              uint32_t& headCell, uint32_t& tailCell) const;
+
         // Spin one model particle's orientation by `dt`, then integrate it like a plain one.
         // ref: FUN_0097bdb0
         bool IntegrateModelParticle(ModelParticle& particle, float dt) const;
@@ -603,6 +629,15 @@ float M2PartTrackRatio(uint32_t& lo, uint32_t& hi, const M2Array<fixed16>& times
 
 // One 2-float part track, linearly interpolated at `t`. ref: FUN_00979480
 void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t);
+
+// One fixed16 part track, linearly interpolated at `t` and converted to a float.
+// ref: FUN_009794f0
+float M2PartTrackEvalAlpha(const M2PartTrack<fixed16>& track, float t);
+
+// One uint16 part track -- a texture cell index -- interpolated at `t` and rounded. Free rather
+// than a member even though every caller loads ecx first: the reference's is `retl $0x8` and
+// never reads it.  ref: FUN_00979560
+uint32_t M2PartTrackEvalCell(const M2PartTrack<uint16_t>& track, float t);
 
 // How far the camera is from the emitter being updated. The reference keeps this in a global
 // (0x00dce68c) that its per-frame update writes before emission reads it, rather than passing it

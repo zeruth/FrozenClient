@@ -132,6 +132,50 @@ void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t
     out.y = (b.y - a.y) * ratio + a.y;
 }
 
+// One fixed16 part track at `t`.
+//
+// ref: FUN_009794f0
+float M2PartTrackEvalAlpha(const M2PartTrack<fixed16>& track, float t) {
+    // The 1/32767 below is fixed16's own scale (0x009ea0b4), applied to each key BEFORE the
+    // interpolation rather than after. The two are the same up to rounding, and this is the order
+    // the reference uses.
+    if (track.values.Count() == 1) {
+        return static_cast<float>(track.values[0]);
+    }
+
+    uint32_t lo = 0;
+    uint32_t hi = 0;
+    float ratio = M2PartTrackRatio(lo, hi, track.times, track.values.Count(), t);
+
+    float a = static_cast<float>(track.values[lo]);
+    float b = static_cast<float>(track.values[hi]);
+
+    return a + (b - a) * ratio;
+}
+
+// One uint16 texture-cell track at `t`.
+//
+// The interpolation is done in INTEGER arithmetic and rounded at the end -- `fimull` on the signed
+// difference, `fiaddl` on the base (0x9795aa) -- so a track stepping 0 -> 3 crosses cell 1 and 2
+// rather than blending them, which is what a texture atlas needs.
+//
+// ref: FUN_00979560
+uint32_t M2PartTrackEvalCell(const M2PartTrack<uint16_t>& track, float t) {
+    if (track.values.Count() == 1) {
+        return track.values[0];
+    }
+
+    uint32_t lo = 0;
+    uint32_t hi = 0;
+    float ratio = M2PartTrackRatio(lo, hi, track.times, track.values.Count(), t);
+
+    int32_t a = track.values[lo];
+    int32_t b = track.values[hi];
+
+    return static_cast<uint32_t>(static_cast<int32_t>(
+        static_cast<float>(b - a) * ratio + static_cast<float>(a)));
+}
+
 // ref: FUN_00978ad0
 void M2ParticleToFixed16(fixed16& out, float value) {
     if (value >= 1.0f) {
@@ -1260,6 +1304,158 @@ void CM2ParticleEmitter::SetupVertexCursor(char* base, EGxVertexBufferFormat for
     cursor.m_texCoord =
         reinterpret_cast<float*>(base + GxVertexAttribOffset(format, GxVA_TexCoord0));
     cursor.m_texCoordStride = stride;
+}
+
+// This particle's colour at normalised age `t`.
+//
+// Alpha is left at 255; SampleAppearance overwrites it. The C3Vector keys are (r, g, b) in 0..255
+// and CImVector is {b, g, r, a}, so the .z key lands in .b -- which is why the assignments below
+// look reversed.
+//
+// ref: FUN_009795d0
+void CM2ParticleEmitter::SampleColor(CImVector& out, float t) const {
+    const M2PartTrack<C3Vector>& track = *this->m_colorTrack;
+
+    out.a = 0xFF;
+
+    // A single key is the whole track and no interpolation happens -- including no override
+    // lookup, which is a real asymmetry rather than an oversight: the reference reads the TRACK
+    // here even when flag 0x10 is set.
+    if (track.values.Count() == 1) {
+        const C3Vector& only = track.values[0];
+
+        out.r = static_cast<uint8_t>(static_cast<int32_t>(only.x));
+        out.g = static_cast<uint8_t>(static_cast<int32_t>(only.y));
+        out.b = static_cast<uint8_t>(static_cast<int32_t>(only.z));
+
+        return;
+    }
+
+    uint32_t lo = 0;
+    uint32_t hi = 0;
+    float ratio = M2PartTrackRatio(lo, hi, track.times, track.values.Count(), t);
+
+    // Flag 0x10 swaps the model's colour keys for the emitter's own override table, indexed by
+    // the SAME lo/hi the track produced -- which only works because both are three entries long.
+    //
+    // UNREACHABLE TODAY. Nothing sets m_colorOverride (see its declaration), so the flag is never
+    // on. Written out rather than left as a TODO because the branch is two lines and leaving it
+    // out would make a later reader think the override does not exist.
+    const C3Vector* keys = (this->m_flags & 0x10)
+        ? this->m_colorOverride
+        : &track.values[0];
+
+    const C3Vector& a = keys[lo];
+    const C3Vector& b = keys[hi];
+
+    out.r = static_cast<uint8_t>(static_cast<int32_t>((b.x - a.x) * ratio + a.x));
+    out.g = static_cast<uint8_t>(static_cast<int32_t>((b.y - a.y) * ratio + a.y));
+    out.b = static_cast<uint8_t>(static_cast<int32_t>((b.z - a.z) * ratio + a.z));
+}
+
+// This particle's two spin terms.
+//
+// Both are base-plus-variation draws, and each variation is skipped entirely when it is zero --
+// so an emitter with no spin variation consumes no randomness here and the RNG stream stays in
+// step with the reference's.
+//
+// ref: FUN_0097a130
+void CM2ParticleEmitter::SampleSpin(const Particle& p, float& initialSpin, float& spinRate) const {
+    // Neither term varies: answer from the parameters and do not touch the RNG at all. The
+    // reference returns before constructing the seed.
+    if (this->m_initialSpinVariation == 0.0f && this->m_spinVariation == 0.0f) {
+        initialSpin = this->m_initialSpin;
+        spinRate = this->m_spin;
+
+        return;
+    }
+
+    CRndSeed seed(p.m_randomTag);
+
+    if (this->m_initialSpinVariation == 0.0f) {
+        initialSpin = this->m_initialSpin;
+    } else {
+        initialSpin =
+            M2ParticleRandSigned(seed) * this->m_initialSpinVariation + this->m_initialSpin;
+    }
+
+    if (this->m_spinVariation == 0.0f) {
+        spinRate = this->m_spin;
+
+        return;
+    }
+
+    spinRate = M2ParticleRandSigned(seed) * this->m_spinVariation + this->m_spin;
+}
+
+// Everything the quad writer needs about one particle's appearance.
+//
+// THE ORDER OF THE RNG DRAWS BELOW IS LOAD-BEARING. One seed is built from the particle's stored
+// random tag and drawn from at most three times: once for a random texture cell, then once or
+// twice for the scale variation. SampleColor does not draw. Reordering any of it would give every
+// particle in the game a different appearance while still looking like it works.
+//
+// ref: FUN_00979e90
+void CM2ParticleEmitter::SampleAppearance(const Particle& p, CImVector& color, C2Vector& size,
+                                          uint32_t& headCell, uint32_t& tailCell) const {
+    // The same expression ParticleLifespan computes, floor included (0.001 at 0x009e1134).
+    float t = p.m_age / this->ParticleLifespan(p);
+
+    CRndSeed seed(p.m_randomTag);
+
+    this->SampleColor(color, t);
+
+    // 255.0 is 0x009e30c0. m_alpha is the model's own alpha, already clamped to 0..1 by the
+    // driver, so this is the only place the two alphas meet.
+    float alpha = M2PartTrackEvalAlpha(*this->m_alphaTrack, t) * this->m_alpha * 255.0f;
+
+    color.a = static_cast<uint8_t>(static_cast<int32_t>(alpha));
+
+    M2PartTrackEval2(size, *this->m_scaleTrack, t);
+
+    headCell = 0;
+    tailCell = 0;
+
+    if (this->m_headCellTrack->times.Count() != 0) {
+        headCell = M2PartTrackEvalCell(*this->m_headCellTrack, t);
+    } else if (this->m_flags & 0x100000) {
+        // A random cell, uniformly over the whole grid. This is a MULTIPLY-HIGH rather than a
+        // modulo -- 0x979f93 takes the 64-bit product of the draw and the cell count and keeps
+        // the top half -- which is uniform where `rand % n` would not be. Ghidra prints the shift
+        // as a bare `__aullshr()` with no operands, so it came off the disassembly.
+        uint64_t product = static_cast<uint64_t>(CRandom::uint32(seed))
+            * static_cast<uint64_t>(this->m_textureCols * this->m_textureRows);
+
+        headCell = static_cast<uint32_t>(product >> 32);
+    }
+
+    if (this->m_tailCellTrack->times.Count() != 0) {
+        tailCell = M2PartTrackEvalCell(*this->m_tailCellTrack, t);
+    }
+
+    // 0.0001 is 0x009e8cd0: a variation draw may not shrink a particle past it, and may not
+    // invert it, which a draw of -1 against a variation above 1 otherwise would.
+    if (this->m_flags & 0x800000) {
+        // NON-UNIFORM. Two independent draws, and note which feeds which: the FIRST scales Y and
+        // the SECOND scales X. Backwards from how anyone would write it, and swapping them would
+        // be invisible except that every particle in the game would be a different shape.
+        float fy = M2ParticleRandSigned(seed) * this->m_scaleVariation.y + 1.0f;
+        float fx = M2ParticleRandSigned(seed) * this->m_scaleVariation.x + 1.0f;
+
+        size.x *= fx < 0.0001f ? 0.0001f : fx;
+        size.y *= fy < 0.0001f ? 0.0001f : fy;
+
+        return;
+    }
+
+    // Uniform: one draw against the X variation scales both axes, so the particle keeps its
+    // aspect ratio.
+    float f = M2ParticleRandSigned(seed) * this->m_scaleVariation.x + 1.0f;
+
+    f = f < 0.0001f ? 0.0001f : f;
+
+    size.x *= f;
+    size.y *= f;
 }
 
 // Draw this emitter's particles.

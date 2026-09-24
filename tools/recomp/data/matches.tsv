@@ -3119,9 +3119,14 @@ addr	how	frozen	evidence
 00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
 009793b0	annotated	M2PartTrackRatio	tag in src/model/CM2ParticleEmitter.cpp
 00979480	annotated	M2PartTrackEval2	tag in src/model/CM2ParticleEmitter.cpp
+009794f0	annotated	M2PartTrackEvalAlpha	tag in src/model/CM2ParticleEmitter.cpp
+00979560	annotated	M2PartTrackEvalCell	tag in src/model/CM2ParticleEmitter.cpp
+009795d0	annotated	CM2ParticleEmitter::SampleColor	tag in src/model/CM2ParticleEmitter.cpp
 00979740	annotated	CM2ParticleEmitter::GroundSnapParticle	tag in src/model/CM2ParticleEmitter.cpp
 00979870	override	CM2ParticleEmitter::CreateParticle	
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00979e90	annotated	CM2ParticleEmitter::SampleAppearance	tag in src/model/CM2ParticleEmitter.cpp
+0097a130	annotated	CM2ParticleEmitter::SampleSpin	tag in src/model/CM2ParticleEmitter.cpp
 0097a2e0	annotated	CM2ParticleEmitter::SetupVertexCursor	tag in src/model/CM2ParticleEmitter.cpp
 0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
