@@ -4,8 +4,20 @@ frozen draws M2 particles through `src/world/ParticleFx.cpp`, which is a stand-i
 what the screen should look like rather than from the reference. This is the map of the real
 system, built by decompiling it on 2026-09-23, so the port can start from facts.
 
-**Nothing here is ported yet.** The stand-in still drives the screen; it should stay until the
-port is complete enough to swap in and verify in one step.
+**Status, 2026-09-24.** The header of this file used to say "nothing here is ported yet"; that has
+not been true for some time.
+
+* The **runtime** is ported: `src/model/CM2ParticleEmitter.*` carries `CParticleEmitter2`'s
+  construction, pool sizing, emission, the substepper, the step loop, both concrete subclasses,
+  placement and `Update`; `CM2Model` builds and configures one emitter per `M2Particle` and drives
+  it every frame from `AnimateParticleEmitter` (`FUN_008309c0`, 100% recall).
+* The **draw gate** is ported: `CM2SceneRender::DrawParticle` (`FUN_008214e0`, 91% recall).
+* The **geometry** is not. `CM2ParticleEmitter::Draw` reaches its quad builder and prints an
+  error instead. That is the whole remaining gap, and the section "The draw chain" below is its
+  specification.
+
+**The stand-in still drives the screen** and should stay until the geometry lands and a run
+confirms it. Nothing in the ported half has been seen running.
 
 ## What the reference calls it
 
@@ -29,7 +41,7 @@ The whole system lives in roughly `0x978000`-`0x984000`: 212 functions.
 
 | address | what it does |
 |---|---:|
-| `FUN_0097be80` | the simulation step, 5,350 bytes: the largest function in the system |
+| `FUN_0097be80` | **the per-particle VERTEX WRITER**, 5,350 bytes: the largest function in the system. This table called it "the simulation step" until 2026-09-24, which was wrong and would send a reader looking for the step loop in the wrong place -- the step loop is `FUN_0097dd20`. See "The draw chain" below. |
 | `FUN_0097eec0` | `CParticleEmitter2` built from an `M2Particle` definition, 1,600 bytes |
 | `FUN_0097e150` | the `CParticleEmitter2` base constructor (vtable `PTR_FUN_00aa2cc0`) |
 | `FUN_00981310` / `FUN_009813f0` / `FUN_009820f0` | the emitter subclass constructors, storing kind 1, 2 and 3 at `+0x20` |
@@ -88,17 +100,133 @@ owns a copy of most of the definition, which is what its own layout has to mirro
 The one read that does not fit is `+0x1dc`, one dword past the end of the record. Resolve it
 against the disassembly before trusting that field.
 
-## What is still unknown
+## The draw chain
 
-- The emitter's own field offsets past the copied block: the live particle list, the bounds at
-  `+0x218`, and the flags at `+0x134` are known by use, not by layout.
-- The simulation step `FUN_0097be80` has not been read.
-- How particles reach the scene's transparent sort (`CSortableParticleRecord`) and
-  `CM2SceneRender::DrawParticle` (`FUN_008214e0`, still a stub in frozen).
+Decompiled and disassembled end to end on 2026-09-24. Ghidra drops register arguments throughout
+this chain, so every receiver below was read off the disassembly rather than the decompilation.
+
+```
+CM2SceneRender::DrawParticle        FUN_008214e0   PORTED, 91%
+  CM2ParticleEmitter::Draw          FUN_0097ea60   ported
+    <the quad builder>              FUN_0097e730   NOT PORTED
+      <view basis setup>            FUN_0097a390   NOT PORTED
+      CGxDevice::BufStream          FUN_00684850   ported
+      <vertex write cursors>        FUN_0097a2e0   NOT PORTED
+      <walk the live particles>     FUN_0097e580   NOT PORTED
+        <per-particle vertices>     FUN_0097be80   NOT PORTED  <- the bulk of the work
+      <the draw call>               FUN_0097a580   NOT PORTED
+        <shared index buffer fill>  FUN_0097a260   NOT PORTED
+```
+
+### FUN_0097e730 -- the fill
+
+Receiver is the emitter; `relativeTo` and the caller's buffer come in as arguments.
+
+1. Copy the current view matrix aside (`device + 0x6c0 + device[0x6be] * 0x10`).
+2. `FUN_0097a390(relativeTo, <that matrix>)` -- the basis setup below.
+3. Resolve the emitter's texture (`+0x128`); on failure clear draw bit 0, zero `+0x1c` and return.
+4. Cap the particle count to what fits: `min(0x4000 / verticesPerParticle, liveCount)`, where
+   `verticesPerParticle` is the emitter's `+0x8c`.
+5. Pick the vertex format: `(matFlags & 0x1) ? GxVBF_PNCT : GxVBF_PCT`. In the reference this is
+   the expression `(-(matFlags & 1 != 0) & 0xfffffffc) + 8`, which is 4 when lit and 8 when not --
+   and 4 and 8 are exactly `GxVBF_PNCT` and `GxVBF_PCT` in frozen's own enum.
+6. When the caller passed no buffer, take one: `BufStream(0, GxVertexAttribOffset-derived stride,
+   stride * count)`, then lock it through the device virtual at `vtbl+0xd8`.
+7. `FUN_0097a2e0` builds the four write cursors, `C44Matrix::AffineInverse` (`FUN_004c2fc0`) is
+   taken, and `FUN_0097e580` writes the vertices.
+8. Unlock (`vtbl+0xdc`), mark the buffer, and if anything was written call `FUN_0097a580` with the
+   index count `emitter->+0x90 * emitter->+0x1c`, then restore the view.
+
+### FUN_0097a390 -- the basis, and the globals every writer reads
+
+This is where the camera-facing basis is computed once per emitter and parked in globals:
+
+| global | what it holds |
+|---|---|
+| `DAT_00b2d540 .. 0b2d548` | the **vertex normal** every particle vertex is written with -- row 2 of the matrix handed in, i.e. the camera direction |
+| `DAT_00b2d550 .. 0b2d58c` | the particle-space matrix (`local_50` built here), used by `FUN_004c21b0` to put a particle's position into view space |
+| `DAT_00b2d590 .. 0b2d5a4` | the 2x3 **billboard basis** (right and up), only filled when flag `0x4000` is set |
+| `DAT_00b2d5b4 / 0b2d5b8` | the four **corner offsets**, stride 8 |
+| `DAT_00b2d5d4 / 0b2d5d8` | the four **corner UVs**, stride 8 |
+| `emitter + 0x20c .. 0x214` | the normalised tumble axis, derived here when `0x4000` is set |
+
+It negates `emitter + 0x1c4 .. 0x1cc` (the emitter's world offset) into the translation row, and
+when flag `0x200` is set it pre-multiplies by the emitter's own placement matrix at `+0x184`
+instead of by the caller's `relativeTo`.
+
+### FUN_0097a2e0 -- the four write cursors
+
+Builds an 9-dword cursor block from the mapped buffer base and the format. Each of the first four
+entries is a pointer and each of entries 4..7 is its stride; entry 8 is the vertex counter.
+
+| cursor | attribute | written as |
+|---|---|---|
+| `[0]` / `[4]` | `GxVA_Position` (0) | three floats |
+| `[1]` / `[5]` | `GxVA_Normal` (3) | three floats, always the `DAT_00b2d540` triple |
+| `[2]` / `[6]` | `GxVA_Color0` (4) | one packed dword |
+| `[3]` / `[7]` | `GxVA_TexCoord0` (6) | two floats |
+
+**When the emitter is UNLIT the normal cursor is redirected** at a static zeroed `C3Vector`
+(`DAT_00dce8b4`) with **stride 0**, so every normal write lands harmlessly in the same scratch --
+which is correct, because the unlit format `GxVBF_PCT` has no normal to write into. Frozen's
+`GxVertexAttribOffset(format, attrib)` is `FUN_00681240` exactly; `FUN_00681230` is the format's
+vertex size.
+
+### FUN_0097e580 -- the walk
+
+Indexes the live list at `+0x54`, resolving each index into the 0x20-byte pool at `+0x34` or the
+0x40-byte pool at `+0x44` on `m_particleKind` (`+0x98`), and calls `FUN_0097be80` per particle.
+
+When flag `0x20` (sorted) is set it first computes a view depth per particle
+(`DAT_00b2d558/568/578/588` dotted with the position) through `FUN_007a0f50`, then drains the sort
+through `FUN_0097e080` instead of walking in list order.
+
+Afterwards it merges the accumulated `+0x218` bounds with the caller's box and offsets both
+corners by the emitter's world position, and finally sets `+0x1c` to
+`writtenVertices / verticesPerParticle`.
+
+### FUN_0097be80 -- the per-particle vertices
+
+The big one, and **five different quad shapes** live in it. The flag word is `+0x134`:
+
+| gate | shape |
+|---|---|
+| `0x4` clear | not a head quad; skip to the tail test |
+| `0x200000` set and the particle has velocity | **velocity-aligned**: the quad is stretched along the screen-space velocity direction, width scaled by the ratio of the two lengths |
+| spin at `+0xc8`/`+0xcc` both zero, `0x4000` clear | **plain billboard**: four corners from the corner table, in view space |
+| spin zero, `0x4000` set | **basis billboard**: corners rotated through the `DAT_00b2d590` right/up pair |
+| spin non-zero, `0x4000` clear | **spun billboard**: `FUN_006f7a60` gives sin/cos of the particle's angle and the four corners are written out longhand |
+| spin non-zero, `0x4000` set | **tumbled**: `FUN_004c5820` builds a rotation about the `+0x20c` axis per corner |
+| `0x8` set | **head-tail**: a second quad trailing along the particle's velocity, its length `min(age, +0xac)` when `0x20000` is set |
+
+Shared by every path:
+
+* **Twinkle.** When `+0x140 < 1` or `+0x148 != 0`, a 7-bit index is taken from the particle's age
+  times `+0x13c` mixed with the particle's own address (`(addr >> 5) + round(age * fps)) & 0x7f`)
+  into the random table at `DAT_00dce690`. A particle whose sample exceeds `+0x140` is **skipped
+  entirely** -- that is the on/off blink. The surviving ones scale by
+  `table[i] * +0x148 + +0x144`.
+* **Colour and alpha** come from `FUN_00979e90`, or `FUN_00979d60` when flag `0x1000000` is set.
+  The packed colour is **byte-swapped** when `FUN_00532af0()->+0x14 == 1`, which is the renderer's
+  endianness/format flag.
+* **Texture cell.** `cell & (+0x124 - 1)` gives the column and `cell >> +0xc` the row, times the
+  `+0x10` / `+0x14` reciprocals; the negative-column fixup adds `DAT_009e23ac`.
+* **Every vertex** updates the emitter's running bounds at `+0x218`/`+0x224`, writes the constant
+  normal, writes the packed colour, writes the UV, then advances all four cursors and increments
+  the counter.
+
+### FUN_0097a580 -- the draw
+
+`XformSetView(identity)`, then the shared index buffer at `DAT_00dce684` -- filled once by
+`FUN_0097a260` with the repeating quad pattern **(0, 1, 2, 3, 2, 1)** per four vertices, 0x1fff8
+shorts in all, i.e. 21,845 quads -- is bound, the stream is set, and a batch
+`{primType 3, 0, indexBuffer, 0, count - 1}` goes to the device virtual at `vtbl+0xa8`.
 
 ## Suggested order
 
-1. Port `CParticleEmitter2`'s construction and the small setters above, which are all understood,
-   with the definition copy driven by the confirmed `M2Particle` layout.
-2. Read and port `FUN_0097be80`.
-3. Only then replace `ParticleFx.cpp`, and verify it with a run in the same change.
+1. `FUN_0097a2e0` (the cursors) and `FUN_0097a390` (the basis), which are small and fully read.
+2. `FUN_0097be80`, starting with the plain billboard path -- it draws the overwhelming majority of
+   particles. **Do not fall back to the billboard for the other four shapes**; an unported shape
+   should say so, not silently draw the wrong thing.
+3. `FUN_0097e730` and `FUN_0097a580` to close the chain, then a run.
+4. Only then replace `ParticleFx.cpp`, and verify that in its own change.
