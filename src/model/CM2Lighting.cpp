@@ -1,6 +1,9 @@
 #include "model/CM2Lighting.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
+#include "gx/RenderState.hpp"
+#include <tempest/Vector.hpp>
+#include <cmath>
 #include "model/CM2Light.hpp"
 #include "model/CM2Scene.hpp"
 #include <cstring>
@@ -203,17 +206,6 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd,
     this->m_fogColor = fogColor;
 }
 
-// FUN_008353d0, identified while locating CameraSpace: it builds a 0x64-byte light structure on
-// the stack through FUN_00683fb0, sets bit 0 of its first dword, calls SetupSunlight, copies the
-// CM2Lighting fields from +0x54 to +0x80 into it and hands it to the device through the virtual at
-// +0x118 with index 0 -- the fixed-function GxLightSet.
-//
-// Left a stub on purpose. This is the FIXED-FUNCTION sibling of the local-light path: SetLocalLighting
-// calls it only in its `else`, when shaders are off, and frozen's world draws with shaders. Porting
-// it needs the device-side light state that CGxDeviceD3d::IStateSyncLights also waits on, which is
-// recorded against FUN_006a43d0 -- CGxDevice carries no light array at all. The two belong to one
-// change, not this one.
-// ref: FUN_008353d0
 // Push this lighting block into the device's four fixed-function light slots: the sun into slot 0
 // as a DIRECTIONAL light, then up to three of the point lights AddLight kept, then a disable for
 // every slot that did not get one.
@@ -241,6 +233,95 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd,
 // so a full bank returns early and leaves the remaining slots holding whatever they held. That is
 // the reference's own shape.
 //
+// One fog colour component, 0..1 float to 0..255 byte, clamping at both ends. Split out only
+// because the reference repeats it three times inline; the arithmetic is unchanged.
+uint8_t CM2Lighting::FogColorByte(float c) {
+    if (!(c > 0.0f)) {
+        return 0;
+    }
+
+    if (c >= 1.0f) {
+        return 255;
+    }
+
+    return static_cast<uint8_t>(static_cast<int32_t>(nearbyintf(c * 255.0f + 0.5f)));
+}
+
+// Drive the fixed-function fog render states from this lighting block. The reference calls it
+// immediately after SetupGxLights at every site that sets a block up, so the two belong together.
+//
+// Like SetupGxLights, this has no frozen caller yet: all five of its reference callers are
+// unlinked. Four of them (007984a0, 008a5170, 008a5c70, 008a6350) are themselves unreached. The
+// fifth is the interesting one and is worth writing down, because it is the bridge that would make
+// this whole area live.
+//
+// FUN_007d04a0 is the reference's per-terrain-chunk lighting setup, called from the three chunk
+// list draws (FUN_00793b10, FUN_00793c30, FUN_007989c0). Decompiled 2026-09-23, it: builds a 4x4
+// with the chunk origin minus a global reference point in its translation row; builds a CM2Lighting
+// ON THE STACK -- the local is 212 bytes, which is sizeof(CM2Lighting) = 0xd4, an independent
+// check on that layout; calls CM2Scene::SelectLights (FUN_0081e400) on it; fills its sun and fog
+// from the DayNight block via FUN_007b7bd0; then calls SetupGxLights with that reference point as
+// `a2` and SetupGxFog straight after.
+//
+// So the terrain, not the model path, is what drives these two in the reference, and it does it
+// per chunk. frozen cannot port FUN_007d04a0 as such: its terrain is a stand-in built on
+// TerrainChunk in src/world/Terrain.cpp rather than a port of the reference's chunk class, and it
+// already sets GxRs_FogColor/Start/End itself from CWorld::s_fog*. Wiring SetupGxFog in there
+// would be a behaviour change to a path that currently works, so it wants its own change with a
+// run rather than being folded in here.
+//
+// FUN_007b7bd0 is small and portable on its own terms and is the natural next piece: it is
+// `AddLight(outdoorLight)` where the light is the CM2Light at the map light block 0x00ce04a8+0x58,
+// then SetFog with the DayNight fog colour unpacked from the bytes at +0x8c..+0x8e (times the
+// 1/255 at 0x00a45564) and the three floats at +0x90, +0x94 and +0x98. Those first two offsets
+// are the fog start and end that docs/world-render-inventory.md already records for this block,
+// which is a second independent confirmation of it.
+//
+// m_fogScale is the switch: the reference tests its magnitude against the 2^-22 at 0x009ea27c
+// (2.384185791015625e-07, read out of the binary) and treats anything smaller as "no fog", which
+// is a float-epsilon test rather than a flag. Note it is m_fogScale that decides, not m_fogEnd or
+// m_fogDensity.
+//
+// The colour conversion is written out rather than handed to PackColor because it is NOT PackColor.
+// PackColor (FUN_009851a0) rounds and does not clamp; this one clamps at both ends -- at or below
+// zero gives 0, at or above one gives 255, and only the middle takes `c * 255 + 0.5` -- then
+// rounds that. Passing a fog colour outside 0..1 through PackColor would wrap instead of
+// saturating. The component order is the reference's too: blue is computed first, then green, then
+// red, and alpha is forced to 0xff.
+//
+// ONE GATE IS NOT PORTED, and it is a missing frozen field rather than an oversight. The reference
+// skips the FogStart and FogEnd writes when a capability flag is set: it reads the global device,
+// takes the sub-object at +0x214, and tests the dword at +0xb4. That sub-object is CGxCaps -- the
+// same accessor feeds offsets 0x130, 0x134 and 0x138, which are precisely the three fields frozen
+// already names int130, int134 and int138 for their reference offsets. But frozen's CGxCaps is not
+// layout-faithful: laid out as declared, its int130 lands at 0xa0, so the class is roughly 0x90
+// bytes short of the reference's and has no field at 0xb4 to read. The flag is read ten times
+// across the reference, so it is real and used. Until CGxCaps is filled in, this takes the branch
+// that writes the states, which is what the reference does whenever the flag is clear.
+//
+// **Built, not seen running.**
+// ref: FUN_00835750
+void CM2Lighting::SetupGxFog() {
+    // 2^-22, the reference's own constant at 0x009ea27c.
+    if (fabsf(this->m_fogScale) < 2.384185791015625e-07f) {
+        GxRsSet(GxRs_Fog, 0);
+        return;
+    }
+
+    // See the note above: the reference gates these two on a CGxCaps field frozen does not carry.
+    GxRsSet(GxRs_FogStart, this->m_fogStart);
+    GxRsSet(GxRs_FogEnd, this->m_fogEnd);
+
+    CImVector fogColor;
+    fogColor.b = CM2Lighting::FogColorByte(this->m_fogColor.z);
+    fogColor.g = CM2Lighting::FogColorByte(this->m_fogColor.y);
+    fogColor.r = CM2Lighting::FogColorByte(this->m_fogColor.x);
+    fogColor.a = 0xFF;
+
+    GxRsSet(GxRs_FogColor, static_cast<int32_t>(fogColor.value));
+    GxRsSet(GxRs_Fog, 1);
+}
+
 // **Built, not seen running -- and not reachable in this build either.** Checked immediately after
 // porting it, because the same cycle had just spent its time on a chain that turned out to be dead
 // from the top, and it would be poor form not to apply that to this. The state of it:

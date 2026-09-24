@@ -291,6 +291,8 @@ class CGxDevice {
         int32_t ScreenShot(const char* path);
         void RsGet(EGxRenderState, int32_t&);
         void RsSet(EGxRenderState, int32_t);
+        void RsSet(EGxRenderState, float);
+        void RsSet(EGxRenderState, uint32_t);
         void RsSet(EGxRenderState, void*);
         void RsSetAlphaRef(void);
         void RsPop(void);

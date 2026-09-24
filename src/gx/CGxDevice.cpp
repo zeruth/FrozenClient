@@ -584,6 +584,15 @@ int32_t CGxDevice::IDevIsWindowed() {
     return this->m_format.window;
 }
 
+// Identified 2026-09-23 field for field, which is worth recording because 641 reference functions
+// call it and a wrong tag here would poison the fidelity of all of them. The reference indexes
+// `m_appRenderStates + which * 0x18` -- 24 bytes, which is CGxAppRenderState's own size -- tests
+// the dword at +0x14 as the dirty flag, compares the dword at +0x10 against the device's +0x18,
+// and on a mismatch copies into a freshly grown entry: the state index, then four dwords from the
+// entry's start (sizeof CGxStateBom), then the +0x10 dword. That is exactly m_which, m_value and
+// m_stackDepth of CGxPushedRenderState, in that order, and exactly the two array growths below.
+// The device's +0x18 is m_stackOffsets' count.
+// ref: FUN_00685970
 void CGxDevice::IRsDirty(EGxRenderState which) {
     auto rs = &this->m_appRenderStates[which];
 
@@ -1208,6 +1217,31 @@ void CGxDevice::RsGet(EGxRenderState which, int32_t& value) {
 }
 
 void CGxDevice::RsSet(EGxRenderState which, int32_t value) {
+    if (!this->m_context) {
+        return;
+    }
+
+    if (this->m_appRenderStates[which].m_value != value) {
+        this->IRsDirty(which);
+        this->m_appRenderStates[which].m_value = value;
+    }
+}
+
+// The float-valued render states go through here rather than through the int32_t overload above:
+// CGxStateBom stores either in the same union, but comparing the bit patterns as integers is not
+// the same test as comparing them as floats, and the reference compares as floats.
+void CGxDevice::RsSet(EGxRenderState which, float value) {
+    if (!this->m_context) {
+        return;
+    }
+
+    if (this->m_appRenderStates[which].m_value != value) {
+        this->IRsDirty(which);
+        this->m_appRenderStates[which].m_value = value;
+    }
+}
+
+void CGxDevice::RsSet(EGxRenderState which, uint32_t value) {
     if (!this->m_context) {
         return;
     }

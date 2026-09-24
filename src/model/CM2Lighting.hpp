@@ -50,6 +50,8 @@ class CM2Lighting {
         void Initialize(CM2Scene* scene, const CAaSphere& a3);
         void SetFog(const C3Vector& fogColor, float fogStart, float fogEnd);
         void SetFog(const C3Vector& fogColor, float fogStart, float fogEnd, float fogDensity);
+        static uint8_t FogColorByte(float c);
+        void SetupGxFog();
         void SetupGxLights(const C3Vector* a2);
         void SetupSunlight();
 };
