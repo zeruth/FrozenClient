@@ -2423,6 +2423,11 @@ int32_t CM2Model::InitializeLoaded() {
             if (emitter) {
                 const M2Particle& file = this->m_shared->m_data->particles[i];
 
+                // 0x833bde, the first thing the reference does with a freshly built emitter:
+                // clear the emit-enable bit the constructor did not set. Emission needs
+                // (flags & 3) == 3, and the driver raises this one per frame.
+                emitter->m_flags &= ~0x1u;
+
                 // The material, from the same block at 0x833e08. The flags word is seeded
                 // with 0x7 and then two of its bits are taken from the file's flags INVERTED --
                 // the reference does it with an xor-and-xor dance that amounts to
@@ -2599,6 +2604,16 @@ int32_t CM2Model::InitializeLoaded() {
 
                 emitter->m_wind = file.windVector;
                 emitter->m_windTime = file.windTime;
+
+                // The part-tracks the emitter samples per particle, cached as pointers into the
+                // model data. None of these were being set, so the ground snap silently did
+                // nothing and the draw would have had no colour, alpha or size to work from.
+                emitter->m_colorTrack = &file.colorTrack;
+                emitter->m_alphaTrack = &file.alphaTrack;
+                emitter->m_scaleTrack = &file.scaleTrack;
+                emitter->m_scaleVariation = file.scaleVariation;
+                emitter->m_headCellTrack = &file.headCellTrack;
+                emitter->m_tailCellTrack = &file.tailCellTrack;
 
                 if (file.flags & 0x2) {
                     emitter->m_flags |= 0x20;

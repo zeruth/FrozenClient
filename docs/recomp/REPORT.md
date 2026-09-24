@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 04:31 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 04:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 964, callgraph 182, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 04:31 -- mapped 3191, ported 2441, stub 690, spine mapped 574.
+Previous run: 2026-09-24 04:36 -- mapped 3191, ported 2441, stub 690, spine mapped 574.
 
 ## Lua API coverage (binding tables)
 
@@ -613,7 +613,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00832ea0 | `CM2Model::InitializeLoaded` | 35% | 71 | 49 | 170 | 91 | 8% | 5663 |
+| 00832ea0 | `CM2Model::InitializeLoaded` | 35% | 71 | 50 | 170 | 91 | 8% | 5663 |
 | 00821a20 | `CM2Scene::Animate` | 40% | 54 | 40 | 219 | 55 | 8% | 5621 |
 | 00857ca0 | `luaV_execute` | 47% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 20% | 137 | 33 | 172 | 19 | 2% | 5010 |
@@ -729,8 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-24 02:43 | 3181 (11.7%) | 1249 (4.6%) | 690 | 565/5529 | 2924/2964 | 1493 |
-| 2026-09-24 02:50 | 3181 (11.7%) | 1249 (4.6%) | 690 | 565/5529 | 2924/2964 | 1493 |
 | 2026-09-24 02:56 | 3182 (11.7%) | 1249 (4.6%) | 690 | 566/5529 | 2924/2964 | 1493 |
 | 2026-09-24 03:00 | 3182 (11.7%) | 1249 (4.6%) | 690 | 566/5529 | 2924/2964 | 1493 |
 | 2026-09-24 03:15 | 3183 (11.7%) | 1249 (4.6%) | 690 | 567/5529 | 2924/2964 | 1493 |
@@ -754,6 +752,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 04:28 | 3191 (11.7%) | 1255 (4.6%) | 690 | 574/5529 | 2924/2964 | 1493 |
 | 2026-09-24 04:31 | 3191 (11.7%) | 1255 (4.6%) | 690 | 574/5529 | 2924/2964 | 1493 |
 | 2026-09-24 04:31 | 3191 (11.7%) | 1255 (4.6%) | 690 | 574/5529 | 2924/2964 | 1493 |
+| 2026-09-24 04:36 | 3191 (11.7%) | 1255 (4.6%) | 690 | 574/5529 | 2924/2964 | 1493 |
+| 2026-09-24 04:37 | 3191 (11.7%) | 1255 (4.6%) | 690 | 574/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

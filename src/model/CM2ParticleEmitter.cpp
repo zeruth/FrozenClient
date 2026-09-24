@@ -269,7 +269,10 @@ float CM2ParticleEmitter::ParticleLifespan(const Particle& p) const {
 
 // ref: FUN_00979740
 void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
-    if (!g_m2ParticleHeightQuery || !this->m_groundOffset) {
+    // The scale track, not a dedicated offset track -- see the field. A particle with no
+    // scale track cannot be lifted, so the snap does nothing, which is also what the reference
+    // does when the height query fails.
+    if (!g_m2ParticleHeightQuery || !this->m_scaleTrack) {
         return;
     }
 
@@ -282,7 +285,7 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
     float life = this->ParticleLifespan(p);
 
     C2Vector range;
-    M2PartTrackEval2(range, *this->m_groundOffset, p.m_age / life);
+    M2PartTrackEval2(range, *this->m_scaleTrack, p.m_age / life);
 
     // The larger of the pair, which is what the reference's two-way compare picks.
     p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;

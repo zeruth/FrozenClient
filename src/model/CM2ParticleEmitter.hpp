@@ -191,9 +191,23 @@ class CM2ParticleEmitter {
         // m_windTime. M2Particle carries these as windVector and windTime.
         C3Vector m_wind;
         float m_windTime = 0.0f;
-        // +0xe0: the ground-offset range, sampled over a particle's normalised age. Only the
-        // ground-snap reads it.
-        M2PartTrack<C2Vector>* m_groundOffset = nullptr;
+        // +0xd8 through +0xf0: pointers to five of the M2Particle's part-tracks, cached at
+        // construction, plus the scale variation pair by value.
+        //
+        // +0xe0 was called m_groundOffset until 2026-09-24, because GroundSnapParticle is the
+        // only thing that reads it and it uses it as a z offset above the terrain. It is the
+        // SCALE track. The snap samples the particle's own size at its current age and lifts it
+        // by the larger component, so a particle sits ON the ground instead of halfway through
+        // it. The behaviour was right; the name was not, and a name like that is how a later
+        // reader concludes the field is unused when the draw wants it too.
+        // const because the emitter only ever samples them -- they point into the shared model
+        // data, which no emitter owns or may modify.
+        const M2PartTrack<C3Vector>* m_colorTrack = nullptr;
+        const M2PartTrack<fixed16>* m_alphaTrack = nullptr;
+        const M2PartTrack<C2Vector>* m_scaleTrack = nullptr;
+        C2Vector m_scaleVariation = {};
+        const M2PartTrack<uint16_t>* m_headCellTrack = nullptr;
+        const M2PartTrack<uint16_t>* m_tailCellTrack = nullptr;
         // +0x8c and +0x90: how many vertices and indices ONE particle costs. Not stored
         // parameters -- SetHeadTail derives them, four vertices and six indices per quad, one
         // quad each for the head and the tail. A particle drawing both costs 8 and 12. The draw
