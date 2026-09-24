@@ -1605,6 +1605,14 @@ void CGxDevice::XformPush(EGxXform xf) {
     this->m_xforms[xf].Push();
 }
 
+// The reference indexes `device + 0x1008 + xf * 0x118`, and CGxMatrixStack is byte-for-byte
+// that block: m_level at +0, m_dirty at +4, m_mtx[4] from +8 (0x100 bytes), m_flags[4] at +0x108,
+// 0x118 in total. Top() sets m_dirty and clears F_Identity, which is the reference's
+// `movb $0x1, 0x4(%eax)` and `andl $-0x2, (%ecx)`.
+//
+// Worth having the address: several functions INLINE this rather than call it -- FUN_0081f620 is
+// one -- and the inlined form is unrecognisable until the 0x118 stride is worked out.
+// ref: FUN_0057c450
 void CGxDevice::XformSet(EGxXform xf, const C44Matrix& matrix) {
     this->m_xforms[xf].Top() = matrix;
 }

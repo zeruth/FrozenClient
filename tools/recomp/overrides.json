@@ -45,8 +45,9 @@
     "note": "CRT _ftol2 (float -> int64 with rounding)"
   },
   "005eeb70": {
+    "frozen": "",
     "status": "excluded",
-    "note": "one-byte ret with 1692 callers and no callees: a compiled-out hook (profiler or trace scope end) folded to a nullsub. Was linked as TextureLodBiasSet by the callgraph matcher, which cost every caller a skipped call. 2026-09-23"
+    "note": "a bare `retl`. Its call site in CM2SceneRender::DrawParticle passes the format string \"Particle: model=%s\", so it is a debug label compiled out of the retail build -- no behaviour to port. Read 2026-09-24"
   },
   "008b7da0": {
     "status": "excluded",

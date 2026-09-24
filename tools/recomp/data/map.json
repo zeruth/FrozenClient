@@ -22074,6 +22074,22 @@
   "refSize": 87,
   "status": "ported"
  },
+ "0057c450": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::XformSet",
+  "frozenSize": 70,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
  "0057e070": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,

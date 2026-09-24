@@ -418,12 +418,12 @@ void CM2SceneRender::DrawCallback() {
 // The caller passes `scene + 0xf4`, which is m_viewInv's translation row: the camera position.
 // The same value the particle driver hands to CM2ParticleEmitter::Update.
 //
-// SHAPE DIVERGENCE, recorded rather than silent: the reference sets the world matrix by writing
-// the device's transform-stack top directly -- the block at device+0x18c8, index at [0], dirty
-// byte at [4], matrices from +8 at 0x40 apiece, per-slot flags from +0x108 -- copying from a
-// global at 0x00af58a8 that was read out of the PE and is exactly identity. Frozen goes through
-// GxXformSet, which is the same operation through the API it already has instead of reaching into
-// the device's internals.
+// NOT a divergence, though an earlier version of this note called it one. The reference writes
+// the device's transform-stack top at device+0x18c8 directly, which looks like reaching into
+// internals -- but CGxDevice::XformSet indexes `device + 0x1008 + xf * 0x118`, and for
+// GxXform_World (8) that is exactly 0x18c8. The reference is calling XformSet INLINED, so the
+// GxXformSet line below is the faithful form rather than a convenient substitute. The identity it
+// copies is the global at 0x00af58a8, read out of the PE and confirmed exactly identity.
 //
 // ref: FUN_0081f620
 void CM2SceneRender::SetupParticleTransform(const C3Vector& cameraPosition) {
