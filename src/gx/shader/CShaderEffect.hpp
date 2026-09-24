@@ -44,6 +44,12 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static void SetFogParams(float fogStart, float fogEnd, float fogRate, const CImVector& fogColor);
         static void SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled, const C3Vector* a3);
         static void SetShaders(uint32_t vertexPermute, uint32_t pixelPermute);
+
+        // Upload world * view, transposed, to vertex constants 31 through 34 -- the slot
+        // CM2SceneRender::DrawBatch fills with the first BONE matrix, in the same
+        // transposed layout. Unskinned geometry supplies its transform there so the M2
+        // vertex program needs no separate path for it. ref: FUN_00872b00
+        static void SetWorldViewConstants();
         static void SetTexMtx(const C44Matrix& matrix, uint32_t tcIndex);
         static void SetTexMtx_Identity(uint32_t tcIndex);
         static void SetTexMtx_SphereMap(uint32_t tcIndex);

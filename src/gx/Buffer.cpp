@@ -233,6 +233,11 @@ void GxPrimIndexPtr(uint32_t indexCount, const uint16_t* indices) {
     g_theGxDevicePtr->PrimIndexPtr(buf);
 }
 
+// The FREE one, not the device member of the same name: the reference makes these same
+// three calls in this order off the descriptor table at 0x00a2da18, whose stride 0x10 and
+// field order match VertexBufDesc exactly.
+//
+// ref: FUN_00681b00
 void GxPrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     auto desc = &Buffer::s_vertexBufDesc[format];
 

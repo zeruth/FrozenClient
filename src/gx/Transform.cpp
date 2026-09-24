@@ -60,6 +60,10 @@ void GxXformView(C44Matrix& matrix) {
     g_theGxDevicePtr->XformView(matrix);
 }
 
+void GxXformWorld(C44Matrix& matrix) {
+    g_theGxDevicePtr->XformWorld(matrix);
+}
+
 void GxXformViewport(float& minX, float& maxX, float& minY, float& maxY, float& minZ, float& maxZ) {
     g_theGxDevicePtr->XformViewport(minX, maxX, minY, maxY, minZ, maxZ);
 }

@@ -987,6 +987,7 @@ void CGxDevice::MasterEnableSet(EGxMasterEnables state, int32_t enable) {
     }
 }
 
+// ref: FUN_00682f10
 void CGxDevice::PrimIndexPtr(CGxBuf* buf) {
     if (buf->unk1E || this->m_primIndexBuf != buf) {
         buf->unk1E = 0;
@@ -1655,6 +1656,13 @@ void CGxDevice::XformSetViewport(float minX, float maxX, float minY, float maxY,
 
 void CGxDevice::XformView(C44Matrix& matrix) {
     matrix = this->m_xforms[GxXform_View].m_mtx[this->m_xforms[GxXform_View].m_level];
+}
+
+// The sibling of XformView. Not a reference function of its own -- the reference reaches
+// into the stack inline wherever it wants the world matrix -- but frozen already had the
+// view accessor and having only one of the pair is how the second caller open-codes it.
+void CGxDevice::XformWorld(C44Matrix& matrix) {
+    matrix = this->m_xforms[GxXform_World].m_mtx[this->m_xforms[GxXform_World].m_level];
 }
 
 void CGxDevice::XformViewport(float& minX, float& maxX, float& minY, float& maxY, float& minZ, float& maxZ) {

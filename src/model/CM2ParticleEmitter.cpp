@@ -3,7 +3,11 @@
 #include <tempest/Math.hpp>
 #include <cstdlib>
 #include <cstring>
+#include "gx/CGxBatch.hpp"
 #include "gx/Device.hpp"
+#include "gx/Draw.hpp"
+#include "gx/Shader.hpp"
+#include "gx/shader/CShaderEffect.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Transform.hpp"
 #include "util/Log.hpp"
@@ -1274,6 +1278,38 @@ static uint32_t s_particleIndexRefs = 0;
 static CGxPool* s_particleIndexPool = nullptr;
 static CGxBuf* s_particleIndexBuf = nullptr;
 
+// Fill the shared index buffer with the repeating quad pattern.
+//
+// (0, 1, 2, 3, 2, 1) per four vertices -- two triangles wound the same way, matching the
+// corner order the quad writer emits. 0x1fff8 shorts is 21,844 quads exactly.
+//
+// The running vertex number is a SHORT and wraps past 65535 partway through. Transcribed
+// rather than widened: the draw never reaches that far, because the fill caps itself at
+// 0x4000 vertices, and widening it would be a silent change to what the buffer holds.
+//
+// ref: FUN_0097a260
+static void M2ParticleIndexBufferFill(CGxBuf* buffer) {
+    uint16_t* indices = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(buffer));
+    uint16_t* end = indices + 0x1FFF8;
+
+    uint16_t vertex = 0;
+
+    for (; indices < end; indices += 6) {
+        indices[0] = vertex;
+        indices[1] = vertex + 1;
+        indices[2] = vertex + 2;
+        indices[3] = vertex + 3;
+        indices[4] = vertex + 2;
+        indices[5] = vertex + 1;
+
+        vertex += 4;
+    }
+
+    g_theGxDevicePtr->BufUnlock(buffer, 0);
+
+    buffer->unk1C = 1;
+}
+
 // ref: FUN_00979170
 void M2ParticleIndexBufferCreate() {
     if (s_particleIndexRefs != 0) {
@@ -2112,6 +2148,61 @@ bool CM2ParticleEmitter::WriteParticleVertices(const Particle& p, VertexCursor& 
     return true;
 }
 
+// Hand one emitter's finished geometry to the device.
+//
+// The view goes to IDENTITY first and stays there for the draw: the quad writer already
+// baked the view transform into every vertex position, so applying it again would square
+// it. SetWorldViewConstants then uploads world * view -- both identity by now -- into the
+// bone-0 slot, leaving the projection as the only thing the vertex program applies.
+//
+// DIVERGED in one call, and it is the only inference in this chain. The reference calls
+// FUN_00873160(0), a permutation SELECTOR: it clamps two values to 2, computes
+// `base + flag * 2 + (arg + lit * 3) * 10` into the vertex shader array, takes the pixel
+// index from FUN_00872de0, and calls SetShaders with that pair. Porting it needs
+// FUN_00872de0 and three unidentified globals (0x00d43010, 0x00d43018, 0x00d4301c).
+// Permutation 0 is what that formula yields for a particle and what the two-permutation
+// particle effects carry, so SetShaders(0, 0) stands in. If particles ever come out under
+// the wrong shader, this line is the first place to look.
+//
+// ref: FUN_0097a580
+void CM2ParticleEmitter::SubmitDraw(CGxBuf* buffer, EGxVertexBufferFormat format,
+                                    uint16_t vertexCount, uint32_t indexCount) {
+    if (!s_particlesEnabled) {
+        return;
+    }
+
+    // The shared buffer is filled on first use and whenever the device has invalidated
+    // it -- a lost D3D device drops its contents without dropping the object.
+    if (!s_particleIndexBuf) {
+        return;
+    }
+
+    if (!s_particleIndexBuf->unk1C || !s_particleIndexBuf->unk1D) {
+        M2ParticleIndexBufferFill(s_particleIndexBuf);
+    }
+
+    GxXformSetView(C44Matrix());
+
+    GxPrimVertexPtr(buffer, format);
+    // The device member directly, which is what the reference calls here -- frozen's free
+    // GxPrimIndexPtr forwards to it and would be a frame the reference does not have.
+    g_theGxDevicePtr->PrimIndexPtr(s_particleIndexBuf);
+
+    CShaderEffect::SetTexMtx_Identity(0);
+    CShaderEffect::SetShaders(0, 0);
+    CShaderEffect::SetWorldViewConstants();
+
+    CGxBatch batch;
+
+    batch.m_primType = GxPrim_Triangles;
+    batch.m_start = 0;
+    batch.m_count = indexCount;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = vertexCount - 1;
+
+    GxDraw(&batch, 1);
+}
+
 // Build this emitter's geometry into a vertex buffer.
 //
 // ref: FUN_0097e730
@@ -2182,14 +2273,10 @@ void CM2ParticleEmitter::FillDrawBuffer(const C44Matrix* relativeTo, char* mappe
     buffer->unk1C = 1;
 
     if (this->m_drawnCount) {
-        // FUN_0097a580, the submit: bind the shared index buffer, set the vertex and index
-        // pointers, three shader-effect calls, and one indexed triangle-list draw of
-        // `m_indicesPerParticle * m_drawnCount` indices.
-        //
-        // NOT PORTED. Two of those three shader calls (FUN_00873160 and FUN_00872b00, beside the
-        // already-linked SetTexMtx_Identity) are unidentified, and inventing them would be
-        // guessing at render state on the one path where guessing has historically put the
-        // graphics bugs in. Everything above this line is real; this is the last function.
+        this->SubmitDraw(buffer, format, static_cast<uint16_t>(cursor.m_count),
+                         this->m_indicesPerParticle * this->m_drawnCount);
+
+        // The submit left the view at identity; put back what this function found.
         GxXformSetView(view);
     }
 }

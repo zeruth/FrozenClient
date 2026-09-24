@@ -309,6 +309,7 @@ class CGxDevice {
         void XformSet(EGxXform xf, const C44Matrix& matrix);
         void XformSetViewport(float, float, float, float, float, float);
         void XformView(C44Matrix&);
+        void XformWorld(C44Matrix&);
         void XformViewport(float&, float&, float&, float&, float&, float&);
 };
 

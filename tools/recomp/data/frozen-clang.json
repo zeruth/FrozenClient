@@ -38166,7 +38166,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 336
+"line": 337
 },
 "C4Quaternion::Nlerp": {
 "files": [
@@ -63813,7 +63813,7 @@
 "stub": false,
 "lines": 127,
 "refs": [],
-"line": 236
+"line": 241
 },
 "GxPrimLockVertexPtrs": {
 "files": [
@@ -63828,7 +63828,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 365
+"line": 370
 },
 "GxPrimUnlockVertexPtrs": {
 "files": [
@@ -63843,7 +63843,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 372
+"line": 377
 },
 "CGxPool::Discard": {
 "files": [
@@ -64924,7 +64924,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 990
+"line": 991
 },
 "CGxLightState::Set": {
 "files": [
@@ -64955,7 +64955,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 1021
+"line": 1022
 },
 "CGxDevice::LightSet": {
 "files": [
@@ -64973,7 +64973,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1082
+"line": 1083
 },
 "CGxDevice::LightEnable": {
 "files": [
@@ -64988,7 +64988,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1096
+"line": 1097
 },
 "CGxDevice::ClipPlaneSet": {
 "files": [
@@ -65003,7 +65003,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1106
+"line": 1107
 },
 "CGxDevice::ScissorSet": {
 "files": [
@@ -65018,7 +65018,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1123
+"line": 1124
 },
 "CGxDevice::PrimVertexFormat": {
 "files": [
@@ -65034,7 +65034,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1132
+"line": 1133
 },
 "CGxDevice::PrimVertexMask": {
 "files": [
@@ -65047,7 +65047,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1160
+"line": 1161
 },
 "CGxDevice::PrimVertexPtr": {
 "files": [
@@ -65060,7 +65060,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1166
+"line": 1167
 },
 "CGxDevice::PoolCreate": {
 "files": [
@@ -65081,7 +65081,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1172
+"line": 1173
 },
 "CGxDevice::RenderTargetGet": {
 "files": [
@@ -65094,7 +65094,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1192
+"line": 1193
 },
 "CGxDevice::RenderTargetSet": {
 "files": [
@@ -65109,7 +65109,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1196
+"line": 1197
 },
 "CGxDevice::RenderTargetDump": {
 "files": [
@@ -65124,7 +65124,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1207
+"line": 1208
 },
 "CGxDevice::ScreenShot": {
 "files": [
@@ -65139,7 +65139,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1211
+"line": 1212
 },
 "CGxDevice::RsGet": {
 "files": [
@@ -65155,7 +65155,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1215
+"line": 1216
 },
 "CGxDevice::RsSet": {
 "files": [
@@ -65190,7 +65190,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1219
+"line": 1220
 },
 "CGxDevice::RsSetAlphaRef": {
 "files": [
@@ -65206,7 +65206,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1276
+"line": 1277
 },
 "CGxDevice::RsPop": {
 "files": [
@@ -65235,7 +65235,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1304
+"line": 1305
 },
 "CGxDevice::RsPush": {
 "files": [
@@ -65251,7 +65251,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1331
+"line": 1332
 },
 "CGxDevice::ScenePresent": {
 "files": [
@@ -65266,7 +65266,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1346
+"line": 1347
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -65297,7 +65297,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1352
+"line": 1353
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -65313,7 +65313,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1376
+"line": 1377
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -65332,7 +65332,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1382
+"line": 1383
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -65353,7 +65353,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1436
+"line": 1437
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -65382,7 +65382,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1448
+"line": 1449
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -65404,7 +65404,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1516
+"line": 1517
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -65417,7 +65417,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1539
+"line": 1540
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -65437,7 +65437,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1547
+"line": 1548
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -65454,7 +65454,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1567
+"line": 1568
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -65467,7 +65467,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1581
+"line": 1582
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -65482,7 +65482,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1585
+"line": 1586
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -65497,7 +65497,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1589
+"line": 1590
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -65514,7 +65514,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1593
+"line": 1594
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -65529,7 +65529,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1604
+"line": 1605
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -65545,7 +65545,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1616
+"line": 1617
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -65560,7 +65560,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1620
+"line": 1621
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -65581,7 +65581,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1624
+"line": 1625
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -65596,7 +65596,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1634
+"line": 1635
 },
 "CGxDevice::XformView": {
 "files": [
@@ -65611,7 +65611,22 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1656
+"line": 1657
+},
+"CGxDevice::XformWorld": {
+"files": [
+"src/gx/cgxdevice.cpp"
+],
+"callseq": [
+"C44Matrix::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1664
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -65624,7 +65639,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1660
+"line": 1668
 },
 "AdapterFormatSort": {
 "files": [
@@ -73538,6 +73553,30 @@
 "refs": [],
 "line": 242
 },
+"CShaderEffect::SetWorldViewConstants": {
+"files": [
+"src/gx/shader/cshadereffect.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::C44Matrix",
+"GxXformView",
+"GxXformWorld",
+"operator*",
+"C44Matrix::Transpose",
+"GxShaderConstantsSet"
+],
+"strings": [],
+"consts": [
+"31",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 296
+},
 "CShaderEffect::SetShaders": {
 "files": [
 "src/gx/shader/cshadereffect.cpp"
@@ -73561,7 +73600,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 293
+"line": 318
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -73579,7 +73618,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 316
+"line": 341
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -73599,7 +73638,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 332
+"line": 357
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -73619,7 +73658,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 348
+"line": 373
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -73639,7 +73678,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 363
+"line": 388
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -73664,7 +73703,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 374
+"line": 399
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -73677,7 +73716,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 390
+"line": 415
 },
 "CShaderEffectManager::CreateEffect": {
 "files": [
@@ -74892,6 +74931,21 @@
 "refs": [],
 "line": 59
 },
+"GxXformWorld": {
+"files": [
+"src/gx/transform.cpp"
+],
+"callseq": [
+"CGxDevice::XformWorld"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 63
+},
 "GxXformViewport": {
 "files": [
 "src/gx/transform.cpp"
@@ -74905,7 +74959,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 63
+"line": 67
 },
 "GxXformViewProjNativeTranspose": {
 "files": [
@@ -74926,7 +74980,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 67
+"line": 71
 },
 "GxuXformCreateLookAtSgCompat": {
 "files": [
@@ -74952,7 +75006,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 77
+"line": 81
 },
 "GxuXformCreateOrtho": {
 "files": [
@@ -74969,7 +75023,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 120
+"line": 124
 },
 "GxuXformCreateOrthoDepth": {
 "files": [
@@ -74990,7 +75044,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 150
+"line": 154
 },
 "GxuXformCreateProjection_Exact": {
 "files": [
@@ -75010,7 +75064,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 178
+"line": 182
 },
 "GxuXformCreateProjection_SG": {
 "files": [
@@ -75028,7 +75082,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 210
+"line": 214
 },
 "FindDisplayDevice": {
 "files": [
@@ -77749,7 +77803,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 20
+"line": 24
 },
 "M2PartTrackFindKey": {
 "files": [
@@ -77771,7 +77825,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 40
+"line": 44
 },
 "M2PartTrackRatio": {
 "files": [
@@ -77798,7 +77852,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 80
+"line": 84
 },
 "M2PartTrackEval2": {
 "files": [
@@ -77822,7 +77876,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 120
+"line": 124
 },
 "M2PartTrackEvalAlpha": {
 "files": [
@@ -77848,7 +77902,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 142
+"line": 146
 },
 "M2PartTrackEvalCell": {
 "files": [
@@ -77871,7 +77925,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 167
+"line": 171
 },
 "M2ParticleToFixed16": {
 "files": [
@@ -77889,7 +77943,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 184
+"line": 188
 },
 "M2ParticleRandSigned": {
 "files": [
@@ -77910,7 +77964,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 201
+"line": 205
 },
 "M2BlendIndexFromGx": {
 "files": [
@@ -77932,7 +77986,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 219
+"line": 223
 },
 "M2ParticleBlendToGx": {
 "files": [
@@ -77956,7 +78010,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 235
+"line": 239
 },
 "M2ParticleRandUnit": {
 "files": [
@@ -77975,7 +78029,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 267
+"line": 271
 },
 "M2ParticleRandomUnitVector": {
 "files": [
@@ -78000,7 +78054,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 277
+"line": 281
 },
 "CM2ParticleEmitter::RandomSpeed": {
 "files": [
@@ -78017,7 +78071,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 297
+"line": 301
 },
 "CM2ParticleEmitter::ParticleLifespan": {
 "files": [
@@ -78034,7 +78088,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 311
+"line": 315
 },
 "CM2ParticleEmitter::GroundSnapParticle": {
 "files": [
@@ -78054,7 +78108,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 319
+"line": 323
 },
 "CM2ParticleEmitterSphere::CM2ParticleEmitterSphere": {
 "files": [
@@ -78069,7 +78123,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 343
+"line": 347
 },
 "CM2ParticleEmitterSphere::SetWidth": {
 "files": [
@@ -78082,7 +78136,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 348
+"line": 352
 },
 "CM2ParticleEmitterSphere::SetLength": {
 "files": [
@@ -78095,7 +78149,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 354
+"line": 358
 },
 "CM2ParticleEmitterSphere::SetLatitude": {
 "files": [
@@ -78108,7 +78162,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 364
+"line": 368
 },
 "CM2ParticleEmitterSphere::SetLongitude": {
 "files": [
@@ -78121,7 +78175,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 369
+"line": 373
 },
 "CM2ParticleEmitterSphere::CreateParticle": {
 "files": [
@@ -78160,7 +78214,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 381
+"line": 385
 },
 "CM2ParticleEmitterPlane::CM2ParticleEmitterPlane": {
 "files": [
@@ -78175,7 +78229,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 449
+"line": 453
 },
 "CM2ParticleEmitterPlane::SetWidth": {
 "files": [
@@ -78188,7 +78242,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 454
+"line": 458
 },
 "CM2ParticleEmitterPlane::SetLength": {
 "files": [
@@ -78201,7 +78255,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 459
+"line": 463
 },
 "CM2ParticleEmitterPlane::SetLatitude": {
 "files": [
@@ -78214,7 +78268,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 464
+"line": 468
 },
 "CM2ParticleEmitterPlane::SetLongitude": {
 "files": [
@@ -78227,7 +78281,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 469
+"line": 473
 },
 "CM2ParticleEmitterPlane::CreateParticle": {
 "files": [
@@ -78261,7 +78315,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 489
+"line": 493
 },
 "CM2ParticleEmitter::CM2ParticleEmitter": {
 "files": [
@@ -78282,7 +78336,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 561
+"line": 565
 },
 "CM2ParticleEmitter::SetEmissionRate": {
 "files": [
@@ -78297,7 +78351,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 570
+"line": 574
 },
 "CM2ParticleEmitter::SetWidth": {
 "files": [
@@ -78314,7 +78368,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 581
+"line": 585
 },
 "CM2ParticleEmitter::SetLength": {
 "files": [
@@ -78331,7 +78385,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 586
+"line": 590
 },
 "CM2ParticleEmitter::SetLatitude": {
 "files": [
@@ -78348,7 +78402,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 591
+"line": 595
 },
 "CM2ParticleEmitter::SetLongitude": {
 "files": [
@@ -78365,7 +78419,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 596
+"line": 600
 },
 "CM2ParticleEmitter::CreateParticle": {
 "files": [
@@ -78400,7 +78454,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 623
+"line": 627
 },
 "CM2ParticleEmitter::SpawnParticle": {
 "files": [
@@ -78424,7 +78478,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 669
+"line": 673
 },
 "CM2ParticleEmitter::Emit": {
 "files": [
@@ -78467,7 +78521,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 693
+"line": 697
 },
 "CM2ParticleEmitter::IntegrateParticle": {
 "files": [
@@ -78490,7 +78544,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 784
+"line": 788
 },
 "CM2ParticleEmitter::SetHeadTail": {
 "files": [
@@ -78513,7 +78567,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 871
+"line": 875
 },
 "CM2ParticleEmitter::~CM2ParticleEmitter": {
 "files": [
@@ -78528,7 +78582,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 914
+"line": 918
 },
 "CM2ParticleEmitter::SetTwinkleScale": {
 "files": [
@@ -78541,7 +78595,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 924
+"line": 928
 },
 "CM2ParticleEmitter::SetMaterial": {
 "files": [
@@ -78557,7 +78611,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 937
+"line": 941
 },
 "CM2ParticleEmitter::SetTextureGrid": {
 "files": [
@@ -78578,7 +78632,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 957
+"line": 961
 },
 "CM2ParticleEmitter::SetTextureAnimated": {
 "files": [
@@ -78595,7 +78649,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 988
+"line": 992
 },
 "CM2ParticleEmitter::Update": {
 "files": [
@@ -78632,7 +78686,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 999
+"line": 1003
 },
 "CM2ParticleEmitter::Place": {
 "files": [
@@ -78654,7 +78708,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1111
+"line": 1115
 },
 "CM2ParticleEmitter::RetireParticle": {
 "files": [
@@ -78676,7 +78730,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1127
+"line": 1131
 },
 "CM2ParticleEmitter::IntegrateAndSpawnChildren": {
 "files": [
@@ -78702,7 +78756,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1166
+"line": 1170
 },
 "CM2ParticleEmitter::ParticleAt": {
 "files": [
@@ -78720,7 +78774,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1226
+"line": 1230
 },
 "CM2ParticleEmitter::IntegrateModelParticle": {
 "files": [
@@ -78745,7 +78799,32 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1242
+"line": 1246
+},
+"M2ParticleIndexBufferFill": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"CGxDevice::BufLock",
+"CGxDevice::BufUnlock"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1FFF8",
+"1",
+"2",
+"3",
+"4",
+"5",
+"6"
+],
+"branches": 1,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 1291
 },
 "M2ParticleIndexBufferCreate": {
 "files": [
@@ -78768,7 +78847,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1278
+"line": 1314
 },
 "M2ParticleInitTwinkleTable": {
 "files": [
@@ -78792,7 +78871,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1323
+"line": 1359
 },
 "CM2ParticleEmitter::SetupVertexCursor": {
 "files": [
@@ -78814,7 +78893,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1382
+"line": 1418
 },
 "CM2ParticleEmitter::SetupDrawBasis": {
 "files": [
@@ -78851,7 +78930,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 1421
+"line": 1457
 },
 "CM2ParticleEmitter::SampleColor": {
 "files": [
@@ -78875,7 +78954,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1473
+"line": 1509
 },
 "CM2ParticleEmitter::SampleSpin": {
 "files": [
@@ -78894,7 +78973,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1520
+"line": 1556
 },
 "CM2ParticleEmitter::SampleAppearance": {
 "files": [
@@ -78929,7 +79008,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1556
+"line": 1592
 },
 "CM2ParticleEmitter::WriteVertex": {
 "files": [
@@ -78946,7 +79025,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1623
+"line": 1659
 },
 "CM2ParticleEmitter::CellUvBase": {
 "files": [
@@ -78963,7 +79042,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1666
+"line": 1702
 },
 "CM2ParticleEmitter::LiveParticleAt": {
 "files": [
@@ -78979,7 +79058,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1701
+"line": 1737
 },
 "CM2ParticleEmitter::WriteLiveParticles": {
 "files": [
@@ -79023,7 +79102,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 1713
+"line": 1749
 },
 "CM2ParticleEmitter::WriteParticleVertices": {
 "files": [
@@ -79096,7 +79175,34 @@
 "stub": false,
 "lines": 313,
 "refs": [],
-"line": 1801
+"line": 1837
+},
+"CM2ParticleEmitter::SubmitDraw": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2ParticleIndexBufferFill",
+"C44Matrix::C44Matrix",
+"GxXformSetView",
+"GxPrimVertexPtr",
+"CGxDevice::PrimIndexPtr",
+"CShaderEffect::SetTexMtx_Identity",
+"CShaderEffect::SetShaders",
+"CShaderEffect::SetWorldViewConstants",
+"CGxBatch::CGxBatch",
+"GxDraw"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 36,
+"refs": [],
+"line": 2168
 },
 "CM2ParticleEmitter::FillDrawBuffer": {
 "files": [
@@ -79117,6 +79223,7 @@
 "C44Matrix::AffineInverse",
 "CM2ParticleEmitter::WriteLiveParticles",
 "CGxDevice::BufUnlock",
+"CM2ParticleEmitter::SubmitDraw",
 "GxXformSetView"
 ],
 "strings": [],
@@ -79129,9 +79236,9 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 78,
+"lines": 74,
 "refs": [],
-"line": 2118
+"line": 2209
 },
 "CM2ParticleEmitter::Draw": {
 "files": [
@@ -79156,7 +79263,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 2204
+"line": 2291
 },
 "CM2ParticleEmitter::HasLiveParticles": {
 "files": [
@@ -79174,7 +79281,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 2236
+"line": 2323
 },
 "CM2ParticleEmitter::CountSpawnedModels": {
 "files": [
@@ -79193,7 +79300,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 2251
+"line": 2338
 },
 "CM2ParticleEmitter::FindSpawnedModel": {
 "files": [
@@ -79215,7 +79322,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 2270
+"line": 2357
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -79252,7 +79359,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 2297
+"line": 2384
 },
 "M2ParticleCapacityFor": {
 "files": [
@@ -79267,7 +79374,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2386
+"line": 2473
 },
 "CM2ParticleEmitter::PrepareStep": {
 "files": [
@@ -79288,7 +79395,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2403
+"line": 2490
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -79318,7 +79425,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 2430
+"line": 2517
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -79339,7 +79446,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 2471
+"line": 2558
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -79368,7 +79475,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 2504
+"line": 2591
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -79386,7 +79493,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2565
+"line": 2652
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

@@ -290,6 +290,31 @@ void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled
 }
 
 // ref: FUN_00873060
+// Upload world * view, transposed, to the bone-0 constant slot.
+//
+// ref: FUN_00872b00
+void CShaderEffect::SetWorldViewConstants() {
+    if (!CShaderEffect::s_enableShaders) {
+        return;
+    }
+
+    C44Matrix view;
+    C44Matrix world;
+
+    GxXformView(view);
+    GxXformWorld(world);
+
+    C44Matrix worldView = (world * view).Transpose();
+
+    GxShaderConstantsSet(GxSh_Vertex, 31, reinterpret_cast<const float*>(&worldView), 4);
+}
+
+// Matched on four independent facts, not a guess: render states 0x4d and 0x4e are 77 and 78
+// (GxRs_VertexShader, GxRs_PixelShader); the shader arrays sit at effect + 0x2c and + 0x194,
+// and 0x194 - 0x2c is 90 * 4, which is m_vertexShaders[90] exactly; and the alpha-ref test
+// `~(pixelPermute >> 3) & 1` is the condition below written the other way round.
+//
+// ref: FUN_00873060
 void CShaderEffect::SetShaders(uint32_t vertexPermute, uint32_t pixelPermute) {
     int32_t useAlphaRef = 1;
 

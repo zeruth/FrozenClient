@@ -26,6 +26,8 @@ void GxXformSetViewport(float, float, float, float, float, float);
 
 void GxXformView(C44Matrix&);
 
+void GxXformWorld(C44Matrix&);
+
 void GxXformViewport(float&, float&, float&, float&, float&, float&);
 
 void GxXformViewProjNativeTranspose(C44Matrix&);

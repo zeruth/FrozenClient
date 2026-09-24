@@ -9662,6 +9662,22 @@
   "refSize": 234,
   "status": "ported"
  },
+ "004b9200": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "frozen": "GxDevApi",
+  "frozenSize": 14,
+  "how": "callgraph",
+  "module": "Texture.cpp",
+  "refSize": 53,
+  "status": "ported"
+ },
  "004b9480": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -10067,6 +10083,22 @@
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 43,
+  "status": "ported"
+ },
+ "004c23d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Transpose",
+  "frozenSize": 98,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 104,
   "status": "ported"
  },
  "004c2f90": {
@@ -13215,7 +13247,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -31037,6 +31069,22 @@
   "refSize": 183,
   "status": "ported"
  },
+ "00681b00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxPrimVertexPtr",
+  "frozenSize": 1142,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 75,
+  "status": "ported"
+ },
  "00681be0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -31083,6 +31131,22 @@
   "how": "callorder",
   "module": "DBCache.cpp",
   "refSize": 51,
+  "status": "ported"
+ },
+ "00682d20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformProjNativeTranspose",
+  "frozenSize": 93,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 7,
   "status": "ported"
  },
  "00682d50": {
@@ -31147,6 +31211,22 @@
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 55,
+  "status": "ported"
+ },
+ "00682f10": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::PrimIndexPtr",
+  "frozenSize": 37,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 44,
   "status": "ported"
  },
  "00683080": {
@@ -37955,7 +38035,7 @@
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.81,
+  "fidelity": 0.857,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -38995,7 +39075,7 @@
   "branchRatio": 0.529,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -43359,11 +43439,27 @@
   "refSize": 453,
   "status": "ported"
  },
+ "00872b00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.025,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetWorldViewConstants",
+  "frozenSize": 129,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 266,
+  "status": "ported"
+ },
  "00872c10": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
@@ -49726,6 +49822,22 @@
   "refSize": 292,
   "status": "ported"
  },
+ "0097a260": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleIndexBufferFill",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
  "0097a2e0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -49756,6 +49868,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 488,
+  "status": "ported"
+ },
+ "0097a580": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SubmitDraw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 233,
   "status": "ported"
  },
  "0097ac00": {
@@ -50034,13 +50162,13 @@
   "branchRatio": 0.857,
   "constOverlap": 0.032,
   "faithful": true,
-  "fidelity": 0.875,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::FillDrawBuffer",
-  "frozenSize": 949,
+  "frozenSize": 1256,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 410,

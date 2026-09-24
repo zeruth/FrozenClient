@@ -120,33 +120,39 @@ CM2SceneRender::DrawParticle        FUN_008214e0   PORTED, 91%
             M2PartTrackEvalCell     FUN_00979560   PORTED, 100%
           SampleSpin                FUN_0097a130   PORTED, 100%
           C33Matrix::RotationAroundAxis  FUN_004c5820  PORTED
-      <the draw call>               FUN_0097a580   NOT PORTED
-        <shared index buffer fill>  FUN_0097a260   NOT PORTED
+      SubmitDraw                    FUN_0097a580   PORTED, 83%
+        M2ParticleIndexBufferFill   FUN_0097a260   PORTED, 100%
 
 M2ParticleIndexBufferCreate         FUN_00979170   PORTED   (from CM2Cache::Initialize)
 <the twinkle table fill>            inline 0x81c240  PORTED  (from CM2Cache::Initialize)
 ```
 
-**ONE FUNCTION LEFT**: the submit, `FUN_0097a580`, with the shared index buffer's fill
-`FUN_0097a260` under it. Everything above it is ported and live -- `CM2ParticleEmitter::Draw`
-reaches `FillDrawBuffer`, which builds real geometry into a real stream buffer every frame and
-then does not draw it.
+**THE CHAIN IS CLOSED.** Every function from `CM2SceneRender::DrawParticle` down to `GxDraw`
+is ported, and a particle's path from emission to the device now runs end to end. **None of it
+has been seen on screen.**
 
-What blocks the submit is three shader-effect calls, of which only one is identified:
+The two shader-effect calls that blocked the submit turned out to be:
 
-| address | what is known |
+| address | what it is |
 |---|---|
-| `FUN_00873480` | `CShaderEffect::SetTexMtx_Identity(0)` -- already linked |
-| `FUN_00873160` | 84 bytes, 8 callers, same module. Not identified. |
-| `FUN_00872b00` | 266 bytes, 5 callers, same module. Not identified. |
+| `FUN_00872b00` | `CShaderEffect::SetWorldViewConstants` -- uploads world * view, TRANSPOSED, to vertex constants 31..34, which is where `CM2SceneRender::DrawBatch` writes the first BONE matrix in the same layout. Unskinned geometry supplies its transform in the bone slot so the M2 vertex program needs no separate path. |
+| `FUN_00873060` | `CShaderEffect::SetShaders` -- frozen already had it, exactly, and it had never been linked. Four independent facts agree: render states 0x4d/0x4e are 77/78 (`GxRs_VertexShader`, `GxRs_PixelShader`); the shader arrays at effect +0x2c and +0x194 differ by 90*4, which is `m_vertexShaders[90]`; and `~(pixelPermute >> 3) & 1` is frozen's `(pixelPermute & 0x8) == 0`. |
 
-Identify those two before writing it. Inventing them means guessing at render state, which is
-where this codebase's graphics bugs have historically come from. The rest of that function is
-already understood: bind the shared index buffer (refilling it through `FUN_0097a260` when its
-`unk1C`/`unk1D` say it is stale), `GxPrimVertexPtr` (`FUN_00681b00`) and `GxPrimIndexPtr`
-(`FUN_00682f10`) -- both of which frozen already has under those names, unlinked -- then one
-indexed triangle-list `GxDraw` of `m_indicesPerParticle * m_drawnCount` indices with
-`maxIndex = vertexCount - 1`.
+`FUN_00873160` remains **the one inference in the whole chain**. It is a permutation SELECTOR --
+it clamps two values to 2, computes `base + flag * 2 + (arg + lit * 3) * 10` into the vertex
+shader array, takes the pixel index from `FUN_00872de0`, and calls `SetShaders` with that pair.
+Porting it needs `FUN_00872de0` and three unidentified globals (`0x00d43010`, `0x00d43018`,
+`0x00d4301c`). `SubmitDraw` calls `SetShaders(0, 0)` in its place. **If particles ever draw under
+the wrong shader, that line is the first place to look.**
+
+Three more that were already written in frozen and had never been linked, found by following this
+chain: `C44Matrix::Transpose` (`FUN_004c23d0`), `GxPrimVertexPtr` (`FUN_00681b00` -- the FREE one,
+whose three calls and descriptor-table layout match field for field), and `CGxDevice::PrimIndexPtr`
+(`FUN_00682f10`).
+
+What is left for particles is no longer geometry. It is the two unreachable branches -- the
+`ParticleColor.dbc` override and the `FUN_00979d60` ramp path, which both hang off the same
+unported ramp at emitter `+0x11c` -- and **a run**.
 
 Two things about this chain that cost time to establish and should not be re-derived:
 

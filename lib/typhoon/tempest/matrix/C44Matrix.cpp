@@ -333,6 +333,7 @@ void C44Matrix::Translate(const C3Vector& move) {
     this->d2 = this->a2 * move.x + this->b2 * move.y + this->c2 * move.z + this->d2;
 }
 
+// ref: FUN_004c23d0
 C44Matrix C44Matrix::Transpose() const {
     float a0 = this->a0;
     float a1 = this->a1;

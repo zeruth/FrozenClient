@@ -506,6 +506,10 @@ class CM2ParticleEmitter {
         // the bounds the writer accumulated back through `inverse`. ref: FUN_0097e580
         void WriteLiveParticles(VertexCursor& cursor, uint32_t count, const C44Matrix& inverse);
 
+        // Hand one emitter's finished geometry to the device. ref: FUN_0097a580
+        void SubmitDraw(CGxBuf* buffer, EGxVertexBufferFormat format, uint16_t vertexCount,
+                        uint32_t indexCount);
+
         // Build this emitter's geometry into a vertex buffer. `mapped` is a buffer the caller
         // already locked -- the batched path shares one across several emitters -- or null to
         // take a stream buffer of its own. ref: FUN_0097e730
