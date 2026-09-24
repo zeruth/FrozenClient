@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 06:59 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 07:06 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 989, callgraph 186, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 06:59 -- mapped 3220, ported 2471, stub 689, spine mapped 602.
+Previous run: 2026-09-24 07:03 -- mapped 3220, ported 2471, stub 689, spine mapped 602.
 
 ## Lua API coverage (binding tables)
 
@@ -733,7 +733,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
-| 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:57 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:57 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 05:03 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
@@ -753,7 +752,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 06:47 | 3212 (11.8%) | 1276 (4.7%) | 689 | 594/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:57 | 3218 (11.9%) | 1280 (4.7%) | 689 | 600/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:59 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
-| 2026-09-24 06:59 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
+| 2026-09-24 07:03 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
+| 2026-09-24 07:06 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
 
 ## How to move a row
 

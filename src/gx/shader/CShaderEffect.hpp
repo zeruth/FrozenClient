@@ -48,7 +48,7 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         // Upload world * view, transposed, to vertex constants 31 through 34 -- the slot
         // CM2SceneRender::DrawBatch fills with the first BONE matrix, in the same
         // transposed layout. Unskinned geometry supplies its transform there so the M2
-        // vertex program needs no separate path for it. ref: FUN_00872b00
+        // vertex program needs no separate path for it.
         static void SetWorldViewConstants();
         static void SetTexMtx(const C44Matrix& matrix, uint32_t tcIndex);
         static void SetTexMtx_Identity(uint32_t tcIndex);

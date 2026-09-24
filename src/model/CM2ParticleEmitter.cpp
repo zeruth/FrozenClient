@@ -2230,6 +2230,23 @@ void CM2ParticleEmitter::FillDrawBuffer(const C44Matrix* relativeTo, char* mappe
         return;
     }
 
+    // DIVERGENCE, found by review rather than by a run. SetHeadTail leaves this at ZERO when
+    // an M2Particle sets neither the head flag (0x20000) nor the tail flag (0x40000), and
+    // the divide below is a bare `divl` in the reference too -- an integer divide by zero,
+    // which faults rather than returning a wrong number. Nothing upstream filters it:
+    // Draw only checks that the live list is non-empty, and emission does not look at
+    // those flags at all.
+    //
+    // An emitter that draws neither quad has nothing to draw, so returning is the right
+    // answer and not just the safe one. The reference is relying on every M2Particle in
+    // the shipped data setting at least one of the two.
+    if (!this->m_verticesPerParticle) {
+        this->m_drawFlags &= ~0x1u;
+        this->m_drawnCount = 0;
+
+        return;
+    }
+
     // As many particles as fit in a 0x4000-vertex budget, capped by how many are actually alive.
     // The shared index buffer covers far more than this, so nothing has to grow.
     uint32_t count = 0x4000 / this->m_verticesPerParticle;

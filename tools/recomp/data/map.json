@@ -50159,7 +50159,7 @@
   "status": "ported"
  },
  "0097e730": {
-  "branchRatio": 0.857,
+  "branchRatio": 0.75,
   "constOverlap": 0.032,
   "faithful": true,
   "fidelity": 1.0,
@@ -50168,7 +50168,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::FillDrawBuffer",
-  "frozenSize": 1256,
+  "frozenSize": 1285,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 410,

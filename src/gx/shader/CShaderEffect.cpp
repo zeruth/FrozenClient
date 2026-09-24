@@ -289,7 +289,6 @@ void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled
     }
 }
 
-// ref: FUN_00873060
 // Upload world * view, transposed, to the bone-0 constant slot.
 //
 // ref: FUN_00872b00
