@@ -996,6 +996,103 @@ void CGxDevice::PrimIndexPtr(CGxBuf* buf) {
 // four inverts to `jnp` to fall out when every component matched. Spelled here as a plain
 // inequality, which is the same thing for ordered values and does not silently invert if a NaN
 // ever reaches it.
+// Copy an application light into a device slot, one field group at a time, marking each with its
+// own dirty bit so a backend can send only what moved. Every comparison is an inequality against
+// what is already stored, so setting a light to the value it already holds costs nothing.
+//
+// The position group is the odd one. It compares four things -- the three components AND the
+// derived w -- so that a light flipping between point and directional is caught even when its
+// xyz happens to be unchanged. The w it compares against is `(flags >> 1) & 1` read as a float,
+// which is the whole of how the point/directional choice crosses into the device.
+//
+// The write order below is the reference's, not a tidied one: attenuation first, then position,
+// then diffuse, then ambient, then specular. It costs nothing to keep and makes the call-order
+// check mean something.
+// ref: FUN_00684620
+void CGxLightState::Set(const CGxLight& light) {
+    if (light.m_attenuation.x != this->m_attenuation.x) {
+        this->m_dirty |= 0x20;
+        this->m_attenuation.x = light.m_attenuation.x;
+    }
+
+    if (light.m_attenuation.y != this->m_attenuation.y) {
+        this->m_dirty |= 0x40;
+        this->m_attenuation.y = light.m_attenuation.y;
+    }
+
+    if (light.m_attenuation.z != this->m_attenuation.z) {
+        this->m_dirty |= 0x80;
+        this->m_attenuation.z = light.m_attenuation.z;
+    }
+
+    float w = static_cast<float>((light.m_flags >> 1) & 0x1);
+
+    if (light.m_posOrDir.x != this->m_posOrDir.x || light.m_posOrDir.y != this->m_posOrDir.y
+            || light.m_posOrDir.z != this->m_posOrDir.z || w != this->m_posOrDir.w) {
+        this->m_dirty |= 0x2;
+        this->m_posOrDir.x = light.m_posOrDir.x;
+        this->m_posOrDir.y = light.m_posOrDir.y;
+        this->m_posOrDir.z = light.m_posOrDir.z;
+
+        if (light.m_flags & 0x2) {
+            this->m_attenuationValid |= 0xe0;
+            this->m_posOrDir.w = 1.0f;
+        } else {
+            this->m_attenuationValid &= 0xff1f;
+            this->m_posOrDir.w = 0.0f;
+        }
+    }
+
+    if (light.m_diffuse.x != this->m_diffuse.x || light.m_diffuse.y != this->m_diffuse.y
+            || light.m_diffuse.z != this->m_diffuse.z) {
+        this->m_diffuse = light.m_diffuse;
+        this->m_dirty |= 0x8;
+    }
+
+    if (light.m_ambient.x != this->m_ambient.x || light.m_ambient.y != this->m_ambient.y
+            || light.m_ambient.z != this->m_ambient.z) {
+        this->m_ambient = light.m_ambient;
+        this->m_dirty |= 0x4;
+    }
+
+    if (light.m_specular.x != this->m_specular.x || light.m_specular.y != this->m_specular.y
+            || light.m_specular.z != this->m_specular.z) {
+        this->m_specular = light.m_specular;
+        this->m_dirty |= 0x10;
+    }
+}
+
+// The public half of the above. The origin shift applies only to a POINT light with a non-zero
+// origin -- a directional light has no position to shift -- and it happens AFTER the store, on the
+// value already in the slot, so the comparison inside Set sees the unshifted position. That means
+// two calls with the same light and the same non-zero origin do not settle: the second shifts the
+// stored value again only if Set rewrote it, which it will, because the first call left the slot
+// holding position-minus-origin while the light still holds position. Both current callers pass a
+// zero origin so the branch never runs; reproduced as found rather than corrected.
+// ref: FUN_006847d0
+void CGxDevice::LightSet(uint32_t index, const CGxLight& light, const C3Vector& origin) {
+    CGxLightState& state = this->m_lights[index];
+
+    state.Set(light);
+
+    if ((light.m_flags & 0x2) && (origin.x != 0.0f || origin.y != 0.0f || origin.z != 0.0f)) {
+        state.m_dirty |= 0x2;
+        state.m_posOrDir.x -= origin.x;
+        state.m_posOrDir.y -= origin.y;
+        state.m_posOrDir.z -= origin.z;
+    }
+}
+
+// ref: FUN_00683080
+void CGxDevice::LightEnable(uint32_t index, int32_t enable) {
+    CGxLightState& state = this->m_lights[index];
+
+    if (state.m_enabled != enable) {
+        state.m_dirty |= 0x1;
+        state.m_enabled = enable;
+    }
+}
+
 // ref: FUN_00684440
 void CGxDevice::ClipPlaneSet(uint32_t index, const C4Plane* plane) {
     C4Plane* dst = &this->m_clipPlanes[index];

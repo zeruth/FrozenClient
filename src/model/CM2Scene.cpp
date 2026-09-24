@@ -825,11 +825,11 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
     return 1;
 }
 
-// Feeds CM2Lighting with the lights that affect one model. The list walk below covers DIRECTIONAL
-// lights; the missing half is the query against the point-light hash grid, and it is worth writing
-// down where the whole chain stands, because the pieces were ported from the wrong end.
+// Feeds CM2Lighting with the lights that affect one model: the list walk below covers DIRECTIONAL
+// lights and the hash-grid sweep after it covers POINT lights. It is worth writing down where the
+// whole chain stands, because the pieces were ported from the wrong end.
 //
-// Local lights on a model take six steps and all six are now ported, downstream last:
+// Local lights on a model take six steps to reach CM2Lighting, and all six are ported:
 //
 //   1. CM2Light::Initialize        stamps a new light one frame behind, so it reads as stale.
 //   2. CM2Model's per-frame update positions each point light through its bone and m_viewInv,
@@ -837,8 +837,17 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
 //   3. CM2Light::Link              files it into the hash grid below; SetPosition re-files it.
 //   4. CM2Scene::SelectLights      this function: sweeps the cells the model's sphere covers.
 //   5. CM2Lighting::AddLight       keeps the four nearest, sorted.
-//   6. CM2Lighting::CameraSpace and CShaderEffect::ComputeLocalLights pack them into the vertex
-//                                  constants the shader reads.
+//   6. CM2Lighting::CameraSpace    puts their positions in camera space.
+//
+// From there the lights leave by TWO separate doors, and both are now open:
+//
+//   shader          CShaderEffect::ComputeLocalLights packs them into eleven vertex constants
+//                   at c17 -- colour, camera-space position and the three attenuation rows.
+//   fixed function  CM2Lighting::SetupGxLights loads the device's four light slots, sun in slot
+//                   0 as a directional light and up to three point lights after it, and
+//                   CGxDeviceD3d::IStateSyncLights sends whatever changed to D3D. That door was
+//                   walled up until 2026-09-23: CGxDevice had no light state of any kind, so
+//                   SetupGxLights had nowhere to put anything and stayed a stub.
 //
 // Steps 5 and 6 landed first and sat inert for two cycles because 1 through 4 were empty branches.
 // None of it has been seen running.

@@ -37,6 +37,57 @@ struct ShaderConstants {
     uint32_t unk2;
 };
 
+// The light an application hands to CGxDevice::LightSet. 0x40 bytes in the reference, and every
+// default below is the reference's own: its constructor at FUN_00683fb0 writes (0, 0, 1) for the
+// direction, black ambient, WHITE diffuse, black specular, and the attenuation triple read out of
+// the binary at 0x009e2ec0 and 0x009f23c8 -- 0.7 and 0.03, the same pair CM2Light defaults to.
+//
+// One deliberate divergence: the reference constructor clears only bits 0 and 1 of m_flags
+// (`flags &= 0xfffffffc`) and leaves bits 2..31 holding whatever was on the stack. Nothing reads
+// those bits, and reading an indeterminate value would be undefined behaviour here, so frozen
+// zeroes the whole field.
+struct CGxLight {
+    // Bit 0 marks the light as set by the application. Bit 1 selects a positional (point) light
+    // over a directional one, and is what LightSet turns into the w below.
+    uint32_t m_flags = 0;
+    // A position for a point light, a direction for a directional one.
+    C3Vector m_posOrDir = { 0.0f, 0.0f, 1.0f };
+    C3Vector m_ambient = { 0.0f, 0.0f, 0.0f };
+    C3Vector m_diffuse = { 1.0f, 1.0f, 1.0f };
+    C3Vector m_specular = { 0.0f, 0.0f, 0.0f };
+    // Constant, linear, quadratic.
+    C3Vector m_attenuation = { 0.0f, 0.69999999f, 0.029999999f };
+};
+
+// One light as the DEVICE holds it: 0x48 bytes, four of them at +0x2548 in the reference. It is
+// not the same shape as CGxLight above -- the flags word at the front is replaced by a w on the
+// position, so everything from m_ambient onwards sits at the same offset in both and only the
+// first sixteen bytes differ. That is exactly what CGxLightState::Set relies on.
+struct CGxLightState {
+    // xyz is the position of a point light or the direction of a directional one; w is 1.0 for a
+    // point light and 0.0 for a directional one, which is the only thing IStateSyncLights consults
+    // to choose between D3DLIGHT_POINT and D3DLIGHT_DIRECTIONAL.
+    C4Vector m_posOrDir;
+    C3Vector m_ambient;
+    C3Vector m_diffuse;
+    C3Vector m_specular;
+    C3Vector m_attenuation;
+    int32_t m_enabled = 0;
+    // Which fields changed since the backend last sent this light: 0x1 enabled, 0x2 position,
+    // 0x4 ambient, 0x8 diffuse, 0x10 specular, and 0x20 / 0x40 / 0x80 for the three attenuation
+    // terms one at a time.
+    uint16_t m_dirty = 0;
+    // The reference sets 0xe0 here for a point light and clears 0xe0 for a directional one -- the
+    // same three bits that mark the attenuation terms dirty, but in a separate word that the
+    // D3D backend never reads and that no sync ever clears. Written to match; see the note on
+    // CGxDeviceD3d::IStateSyncLights for what is and is not known about it.
+    uint16_t m_attenuationValid = 0;
+
+    // Copy an application light in, marking per field what actually changed. Returns nothing: the
+    // caller already holds the entry. ref: FUN_00684620
+    void Set(const CGxLight& light);
+};
+
 class CGxDevice {
     public:
         // Structs
@@ -141,6 +192,11 @@ class CGxDevice {
         // sync sends an empty rectangle; see IStateSyncScissorRect for why that is harmless.
         CRect m_scissorRect;
         int32_t m_scissorDirty = 1;
+        // The fixed-function light bank, at +0x2548 in the reference with this same stride of
+        // 0x48. Four is not a cap frozen chose: CM2Lighting::SetupGxLights gives slot 0 to the sun
+        // and fills at most three more from CM2Lighting::m_lights, and the backend loop that sends
+        // them runs `while (i < 4)`.
+        CGxLightState m_lights[4];
         uint32_t m_primVertexMask = 0;
         uint32_t m_primVertexDirty = 0;
         EGxVertexBufferFormat m_primVertexFormat = GxVertexBufferFormats_Last;
@@ -204,6 +260,12 @@ class CGxDevice {
         const CRect& DeviceDefWindow(void);
         int32_t IDevIsWindowed();
         void IRsDirty(EGxRenderState);
+        // Turn one light slot on or off. ref: FUN_00683080
+        void LightEnable(uint32_t index, int32_t enable);
+        // Store one light into the given slot. `origin` is subtracted from a POINT light's
+        // position, which lets a caller keep positions relative to something other than the
+        // camera; a directional light ignores it, and so does a zero vector. ref: FUN_006847d0
+        void LightSet(uint32_t index, const CGxLight& light, const C3Vector& origin);
         void IRsForceUpdate(void);
         void IRsForceUpdate(EGxRenderState);
         void IRsInit(void);

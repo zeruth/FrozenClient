@@ -1635,6 +1635,41 @@ C3Vector CM2Model::GetPosition() {
 // resolved to. The caller gets that sequence's header and its authored bounding box; the box is
 // what the blob-shadow pass projects as a doodad's footprint, which is why the footprint follows
 // the animation.
+//
+// Nothing in frozen calls this, so `M2SequenceInfo::moveSpeed`, `center` and `radius` are computed
+// and discarded -- which is how tools/deaddata.py surfaced it. The port is not the problem; the
+// consumers are. Measured 2026-09-23 from the reference call graph: FUN_0082ced0 has 20 callers
+// there and NOT ONE of them is linked in frozen.
+//
+//     007385c0  4083 bytes, 57 callers   the big one; everything else here is downstream of it
+//     0082dd80   819 bytes,  7 callers   the only caller inside the M2 module itself
+//     007022d0  1931 bytes,  5 callers
+//     00604e00 / 00619580 / 0070d1e0     3 callers each
+//     007015d0 / 0071df30 / 00737ef0 / 0073c8e0        2 each
+//     00606f90 / 006f80b0 / 00702fc0 / 0073adc0 / 00756040 / 00793980   1 each
+//     0052f9b0 / 005995d0 / 0070fa70 / 0070fe10        0 (reached indirectly)
+//
+// The 0x70xxxx and 0x73xxxx cluster is unit animation state, which CLAUDE.md already records as
+// unported, so most of this list is blocked behind that rather than behind anything render-side.
+//
+// FUN_0082dd80 looked like the exception, being inside CM2Model's own address range, and it was
+// decompiled 2026-09-23 to settle that. It is not worth porting yet, and here is why, so that the
+// next cycle does not spend another Ghidra run on it. What it does: reset the model's 4x4 matrix at
+// +0xb4 to identity (the diagonal writes at 0xb4 / 0xc8 / 0xdc / 0xf0 are 20 bytes apart, which is
+// the row-major 0, 5, 10, 15), scale it, drop the position argument into the translation row at
+// +0xe4, and when its mode argument has (mode & 3) == 1 build the orientation from a direction
+// vector with two cross products. Then -- only if the animating flag +0x10 & 1 is set -- it queries
+// the current sequence state through FUN_008266b0, calls THIS function for that sequence's header,
+// and reads `info.flags & 0xe`: 2 or 4 means fade the new matrix against the copy of the old one it
+// saved before overwriting (4 inverts the factor), 8 means take it whole, anything else means skip
+// the blend. Finally it sets +0x10 |= 0x8000. So it is the animation-blended world transform.
+//
+// The reason to leave it: its own seven callers are unlinked too, exactly like this function's
+// twenty. Porting it would add a method nothing in frozen calls and move the dead end up one level
+// instead of closing it. The chain is dead from the top, not from here, and the top is unit
+// animation state. FUN_008266b0 (296 bytes, 22 callers) is the current-sequence-state query and
+// computes animation time as `(scene->time - seq->startTime) * seq->rate + seq->offset`; it is the
+// better seed of the two if this area is picked up again.
 void CM2Model::GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info) {
     if (!this->m_loaded) {
         this->WaitForLoad("GetSequenceInfo");

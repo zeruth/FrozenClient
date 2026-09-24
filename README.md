@@ -48,8 +48,8 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **3,123 / 27,160** &nbsp;·&nbsp; ~11% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,208** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
+| **Linked** | an original function has a known counterpart here | **3,126 / 27,160** &nbsp;·&nbsp; ~11% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,211** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
@@ -58,14 +58,14 @@ By surface, roughly:
 |---|---|
 | Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
-| Functions reachable from the world render entry point | 525 / 5,529 &nbsp;·&nbsp; ~9% |
+| Functions reachable from the world render entry point | 528 / 5,529 &nbsp;·&nbsp; ~9% |
 | The render surface: the map, model, entity, texture and device modules that draw the world | 264 / 4,589 &nbsp;·&nbsp; **~6%** |
-| Empty functions the render path still has call sites for | **46** &nbsp;·&nbsp; an upper bound, not a defect count |
+| Empty functions the render path still has call sites for | **44** &nbsp;·&nbsp; an upper bound, not a defect count |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
 
 The last row is the one that moves week to week. Linked and faithful count functions that exist; it counts functions that **do not** and are called anyway. A few of those are worse than missing: a caller that changes its own control flow assuming the stub succeeded will do something wrong rather than nothing. Three such traps have been found and disarmed before anything switched them on: enabling the model cache's threading flag would have frozen on every second model, letting merged batches through would have stopped them drawing, and assigning the async-BLP hook would have stopped every BLP loading. Each was harmless only because a flag upstream was still off.
 
-It is an upper bound and is meant to be read rather than totalled. `tools/livestubs.py` prints the list, and the list mixes four things: genuine live holes; stubs that are dead today because the only caller sits behind another stub (each one says so in a comment); deliberate divergences that are correct as they stand, like `StereoEnabled` returning false on a client with no stereo support; and a residue the test cannot settle on its own, such as `M2Init`'s scalar overloads, whose `return 1` correctly ends a template recursion. The number has fallen twice on 2026-09-23 with no code changed, both times because the test was counting the wrong things. 79 to 65: it treated any one-line `return <name>;` as empty, which made accessors look like holes. 65 to 47: it counted the OpenGL and GLES backends, which `src/gx/CMakeLists.txt` builds only on Mac and Android -- seventeen rows, `GLDevice::Draw` and the `CGxDeviceGLL::IStateSync*` family among them, that are not in the Windows binary at all and cannot be reached by a frame here. They are still work for the Android port, so the tool now lists them separately rather than dropping them.
+It is an upper bound and is meant to be read rather than totalled. `tools/livestubs.py` prints the list, and the list mixes four things: genuine live holes; stubs that are dead today because the only caller sits behind another stub (each one says so in a comment); deliberate divergences that are correct as they stand, like `StereoEnabled` returning false on a client with no stereo support; and a residue the test cannot settle on its own, such as `M2Init`'s scalar overloads, whose `return 1` correctly ends a template recursion. The number has fallen three times on 2026-09-23, and only the last of the three was real work: 47 to 44 is `CGxDeviceD3d::IStateSyncLights` and `CM2Lighting::SetupGxLights` actually being written, which opened the fixed-function half of the model lighting path. The first two falls changed no code at all, and happened because the test was counting the wrong things. 79 to 65: it treated any one-line `return <name>;` as empty, which made accessors look like holes. 65 to 47: it counted the OpenGL and GLES backends, which `src/gx/CMakeLists.txt` builds only on Mac and Android -- seventeen rows, `GLDevice::Draw` and the `CGxDeviceGLL::IStateSync*` family among them, that are not in the Windows binary at all and cannot be reached by a frame here. They are still work for the Android port, so the tool now lists them separately rather than dropping them.
 
 Inside that render surface, the split is lopsided, and it is the honest picture of what is left:
 

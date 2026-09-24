@@ -30868,6 +30868,22 @@
   "refSize": 55,
   "status": "ported"
  },
+ "00683080": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LightEnable",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
  "006830b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -30956,6 +30972,38 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 121,
+  "status": "ported"
+ },
+ "00684620": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.238,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxLightState::Set",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 424,
+  "status": "ported"
+ },
+ "006847d0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LightSet",
+  "frozenSize": 703,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 115,
   "status": "ported"
  },
  "00684850": {
@@ -31341,20 +31389,20 @@
   "status": "ported"
  },
  "006a43d0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.85,
+  "constOverlap": 0.029,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSyncLights",
-  "frozenSize": 0,
+  "frozenSize": 2373,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 799,
-  "status": "stub"
+  "status": "faithful"
  },
  "006a4700": {
   "branchRatio": 0.625,
@@ -31430,7 +31478,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 1323,
+  "frozenSize": 1331,
   "how": "override",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 181,
@@ -38397,20 +38445,20 @@
   "status": "ported"
  },
  "008353d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.833,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/model/CM2Lighting.cpp",
    "src/model/cm2lighting.cpp"
   ],
   "frozen": "CM2Lighting::SetupGxLights",
-  "frozenSize": 3,
+  "frozenSize": 1014,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 502,
-  "status": "stub"
+  "status": "ported"
  },
  "00835640": {
   "branchRatio": 0.4,

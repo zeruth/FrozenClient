@@ -335,7 +335,25 @@ uint32_t M2RegisterCVars() {
     return flags;
 }
 
+// Traced 2026-09-23. It is live in the sense livestubs means -- CM2Cache::CreateShared calls it
+// on every model load -- and inert in the sense that matters: it fills a CAaBox that goes nowhere.
+//
+//     CreateShared          CAaBox v28; ModelBlobQuery(path, v28.b, v28.t);
+//     CM2Shared::Load       if (a4) this->aaBox154 = *a4;
+//     aaBox154              written there and READ NOWHERE.
+//
+// So the box is all zeros today (CAaBox is two C3Vectors and those zero-initialise, so it is zeros
+// rather than garbage), and nothing looks at it either way. Porting this function alone would move
+// real numbers into a field no code reads.
+//
+// The consumer is a documented gap rather than an unknown one. docs/ref/parity-shadows.md lists
+// caster footprints as open, and CLAUDE.md records that frozen's blob-shadow caster radius comes
+// from the cull extent rather than the animated bounds -- aaBox154 is where the authored blob
+// bounds are meant to live. Three pieces, one of which exists.
+//
+// Neither CM2Cache::CreateShared nor CM2Shared::Load is linked yet, so the reference counterpart of
+// this function has not been located; finding it means identifying CreateShared first.
 int32_t ModelBlobQuery(const char* a1, C3Vector& a2, C3Vector& a3) {
-    // TODO
+    // TODO -- see above: the field this fills is read by nothing, so port the consumer first
     return 0;
 }

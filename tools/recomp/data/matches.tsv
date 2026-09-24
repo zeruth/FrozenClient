@@ -1941,12 +1941,15 @@ addr	how	frozen	evidence
 00682d70	override	CGxDevice::DeviceCurWindow	
 00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
 00682e70	override	CGxDevice::ScissorSet	
+00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
 00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
+00684620	annotated	CGxLightState::Set	tag in src/gx/CGxDevice.cpp
+006847d0	annotated	CGxDevice::LightSet	tag in src/gx/CGxDevice.cpp
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	

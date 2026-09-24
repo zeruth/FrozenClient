@@ -2093,8 +2093,149 @@ void CGxDeviceD3d::IStateSyncIndexPtr() {
     }
 }
 
+// Send the four fixed-function lights, and decide whether fixed-function lighting is on at all.
+//
+// The interesting part is the middle branch, which has nothing to do with lights. When the app
+// turns GxRs_Lighting OFF, D3D would normally be told D3DRS_LIGHTING false -- and then it takes
+// the vertex colour as the final colour and ignores the material entirely. That is wrong for
+// geometry whose vertices carry NO colour but whose material diffuse is not white -- the state
+// defaults to 0xFFFFFFFF, so `!= -1` is exactly "somebody tinted this". Such geometry would come
+// out untinted. So when both of those hold, the reference turns D3D lighting ON with every light
+// disabled and D3DRS_AMBIENT set to white, which makes the fixed-function equation collapse to
+// the material's ambient/diffuse term and reproduces the unlit colour the app meant. The
+// m_lightingEmulated flag exists only to disable the four lights once on entering that state
+// instead of every frame.
+//
+// The light loop's asymmetry is deliberate and reproduced: disabling a light clears ONLY the
+// enabled bit, leaving the rest of the dirty mask standing so the light is re-sent in full when
+// it comes back, while sending a light clears the mask entirely. A light that is enabled and
+// dirty for any other reason is re-sent without touching LightEnable.
+//
+// Range is the 10000.0 at 0x00a2f95c, read out of the binary rather than guessed. Falloff is 1.0.
+// Theta and Phi are never written, because the reference never writes them -- it has no spot
+// lights, and D3D reads neither for the two types it does use.
+//
+// **Built, not seen running.**
+// ref: FUN_006a43d0
 void CGxDeviceD3d::IStateSyncLights() {
-    // TODO
+    uint32_t index = 0;
+
+    if (this->m_appRenderStates[GxRs_Lighting].m_value.m_data.i[0] == 0) {
+        if ((this->m_primVertexMask & (1 << GxVA_Color0)) == 0
+                && this->m_appRenderStates[GxRs_MatDiffuse].m_value.m_data.i[0] != -1) {
+            if (this->m_lightingEmulated == 0) {
+                this->m_lightingEmulated = 1;
+
+                for (index = 0; index < 4; index++) {
+                    this->m_d3dDevice->LightEnable(index, FALSE);
+
+                    // The slot keeps its enabled flag; only the dirty bit moves, so that whatever
+                    // the app had asked for is re-sent the moment emulation stops.
+                    if (this->m_lights[index].m_enabled == 0) {
+                        this->m_lights[index].m_dirty &= 0xfffe;
+                    } else {
+                        this->m_lights[index].m_dirty |= 0x1;
+                    }
+                }
+            }
+
+            if (this->m_d3dLighting != 1) {
+                this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, 1);
+                this->m_d3dLighting = 1;
+            }
+
+            if (this->m_d3dAmbient != 0xffffffff) {
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+                this->m_d3dAmbient = 0xffffffff;
+            }
+        } else {
+            this->m_lightingEmulated = 0;
+
+            if (this->m_d3dLighting != 0) {
+                this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, 0);
+                this->m_d3dLighting = 0;
+            }
+
+            if (this->m_d3dAmbient != 0) {
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0);
+                this->m_d3dAmbient = 0;
+            }
+        }
+
+        return;
+    }
+
+    this->m_lightingEmulated = 0;
+
+    uint32_t lighting = this->m_appMasterEnables & 0x1;
+
+    if (this->m_d3dLighting != lighting) {
+        this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+        this->m_d3dLighting = lighting;
+    }
+
+    if (this->m_d3dAmbient != 0) {
+        this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0);
+        this->m_d3dAmbient = 0;
+    }
+
+    for (index = 0; index < 4; index++) {
+        CGxLightState& state = this->m_lights[index];
+
+        if (state.m_dirty == 0) {
+            continue;
+        }
+
+        if ((state.m_dirty & 0x1) == 0) {
+            if (state.m_enabled == 0) {
+                continue;
+            }
+        } else if (state.m_enabled == 0) {
+            state.m_dirty &= 0xfffe;
+            this->m_d3dDevice->LightEnable(index, FALSE);
+            continue;
+        } else {
+            this->m_d3dDevice->LightEnable(index, TRUE);
+        }
+
+        if (state.m_posOrDir.w == 1.0f) {
+            this->m_d3dLight.Type = D3DLIGHT_POINT;
+            this->m_d3dLight.Position.x = state.m_posOrDir.x;
+            this->m_d3dLight.Position.y = state.m_posOrDir.y;
+            this->m_d3dLight.Position.z = state.m_posOrDir.z;
+        } else {
+            this->m_d3dLight.Type = D3DLIGHT_DIRECTIONAL;
+            this->m_d3dLight.Direction.x = state.m_posOrDir.x;
+            this->m_d3dLight.Direction.y = state.m_posOrDir.y;
+            this->m_d3dLight.Direction.z = state.m_posOrDir.z;
+        }
+
+        this->m_d3dLight.Diffuse.r = state.m_diffuse.x;
+        this->m_d3dLight.Diffuse.g = state.m_diffuse.y;
+        this->m_d3dLight.Diffuse.b = state.m_diffuse.z;
+        this->m_d3dLight.Diffuse.a = 1.0f;
+
+        this->m_d3dLight.Ambient.r = state.m_ambient.x;
+        this->m_d3dLight.Ambient.g = state.m_ambient.y;
+        this->m_d3dLight.Ambient.b = state.m_ambient.z;
+        this->m_d3dLight.Ambient.a = 0.0f;
+
+        this->m_d3dLight.Specular.r = state.m_specular.x;
+        this->m_d3dLight.Specular.g = state.m_specular.y;
+        this->m_d3dLight.Specular.b = state.m_specular.z;
+        this->m_d3dLight.Specular.a = 0.0f;
+
+        this->m_d3dLight.Range = 10000.0f;
+        this->m_d3dLight.Falloff = 1.0f;
+
+        this->m_d3dLight.Attenuation0 = state.m_attenuation.x;
+        this->m_d3dLight.Attenuation1 = state.m_attenuation.y;
+        this->m_d3dLight.Attenuation2 = state.m_attenuation.z;
+
+        this->m_d3dDevice->SetLight(index, &this->m_d3dLight);
+
+        state.m_dirty = 0;
+    }
 }
 
 // Despite the name this never calls SetMaterial. It drives the four *MATERIALSOURCE render

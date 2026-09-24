@@ -1,4 +1,6 @@
 #include "model/CM2Lighting.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
 #include "model/CM2Light.hpp"
 #include "model/CM2Scene.hpp"
 #include <cstring>
@@ -212,8 +214,98 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd,
 // recorded against FUN_006a43d0 -- CGxDevice carries no light array at all. The two belong to one
 // change, not this one.
 // ref: FUN_008353d0
+// Push this lighting block into the device's four fixed-function light slots: the sun into slot 0
+// as a DIRECTIONAL light, then up to three of the point lights AddLight kept, then a disable for
+// every slot that did not get one.
+//
+// This is the far end of the local-light chain. The near end is CM2Light::Link putting a light in
+// CM2Scene's 64x64 hash grid; CM2Scene::SelectLights sweeping the cells near the model;
+// CM2Lighting::AddLight keeping the nearest four; CM2Lighting::CameraSpace transforming their
+// positions. All of that was already ported and, until this function existed, went nowhere.
+//
+// Three details worth naming, because each is a place a from-memory version would differ:
+//
+//  - Slot 0 is the sun and is always set, unconditionally, before any of this looks at the point
+//    lights. Its direction is m_sunDir and its ambient, diffuse and specular are the three sun
+//    colours; SetupSunlight runs first to normalise the direction.
+//  - The point lights contribute DIFFUSE ONLY. The reference zeroes ambient and specular once
+//    before the loop and never writes them inside it, so CM2Light::m_ambColor and m_specColor --
+//    which do exist and are filled from the model's tracks -- reach the device only through
+//    CShaderEffect's shader path, never through the fixed-function one. Reproduced, not corrected.
+//  - `a2` chooses the space. Null means the light's position is already in camera space and
+//    m_posCameraSpace is used as-is; non-null means take the WORLD position and subtract a2,
+//    making the positions relative to whatever the caller passed. Both go in as the light's
+//    position with the positional flag set, and the origin argument to LightSet is always zero.
+//
+// The slot counter is shared across both stages and checked against 4 in three separate places,
+// so a full bank returns early and leaves the remaining slots holding whatever they held. That is
+// the reference's own shape.
+//
+// **Built, not seen running.**
+// ref: FUN_008353d0
 void CM2Lighting::SetupGxLights(const C3Vector* a2) {
-    // TODO -- see above; needs the CGxDevice light state first
+    CGxLight light;
+    C3Vector origin = { 0.0f, 0.0f, 0.0f };
+
+    uint32_t slot = 1;
+
+    light.m_flags |= 0x1;
+
+    this->SetupSunlight();
+
+    light.m_posOrDir = this->m_sunDir;
+    light.m_flags &= ~0x2u;
+    light.m_ambient = this->m_sunAmbient;
+    light.m_diffuse = this->m_sunDiffuse;
+    light.m_specular = this->m_sunSpecular;
+
+    g_theGxDevicePtr->LightSet(0, light, origin);
+    g_theGxDevicePtr->LightEnable(0, 1);
+
+    // Point lights from here down: positional, and diffuse-only.
+    light.m_flags |= 0x2;
+    light.m_ambient = { 0.0f, 0.0f, 0.0f };
+    light.m_specular = { 0.0f, 0.0f, 0.0f };
+
+    // The reference walks m_lights from the END backwards, so the FURTHEST of the kept lights
+    // takes the lowest slot. AddLight sorts nearest-first, so this reverses that order. Kept
+    // because with four slots and at most four lights every one of them is sent either way, and
+    // deviating would change which light lands in which slot for no reason.
+    for (uint32_t i = this->m_lightCount; i > 0; i--) {
+        if (slot > 3) {
+            return;
+        }
+
+        CM2Light* m2Light = this->m_lights[i - 1];
+
+        if (a2 == nullptr) {
+            light.m_posOrDir = m2Light->m_posCameraSpace;
+        } else {
+            light.m_posOrDir.x = m2Light->m_pos.x - a2->x;
+            light.m_posOrDir.y = m2Light->m_pos.y - a2->y;
+            light.m_posOrDir.z = m2Light->m_pos.z - a2->z;
+        }
+
+        light.m_diffuse = m2Light->m_dirColor;
+
+        light.m_attenuation.x = m2Light->m_constantAttenuation;
+        light.m_attenuation.y = m2Light->m_linearAttenuation;
+        light.m_attenuation.z = m2Light->m_quadraticAttenuation;
+
+        g_theGxDevicePtr->LightSet(slot, light, origin);
+        g_theGxDevicePtr->LightEnable(slot, 1);
+
+        slot++;
+    }
+
+    if (slot > 3) {
+        return;
+    }
+
+    while (slot < 4) {
+        g_theGxDevicePtr->LightEnable(slot, 0);
+        slot++;
+    }
 }
 
 // Found while locating CameraSpace: the reference at 0x00835280 loads the three floats at

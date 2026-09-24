@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 19:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 20:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3123 (=) (11.5%) | 698.4k (12.7%) |
-| &nbsp;&nbsp;ported | 2374 (-2) | 513.6k |
-| &nbsp;&nbsp;stub (unimplemented body) | 692 (=) | 138.9k |
+| mapped to a frozen function | 3126 (=) (11.5%) | 698.9k (12.7%) |
+| &nbsp;&nbsp;ported | 2378 (=) | 514.7k |
+| &nbsp;&nbsp;stub (unimplemented body) | 690 (-1) | 137.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1208 (+2) (4.4%)** | **159.3k (2.9%)** |
-| unmapped | 24037 | 4.71M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 525 (=) (9.5%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 535 (=) (9.2%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1211 (+1) (4.5%)** | **160.6k (2.9%)** |
+| unmapped | 24034 | 4.71M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 528 (=) (9.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 538 (=) (9.3%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 264 (=) (5.8%)** | |
-| frozen functions (src/, from PDB + source) | 12217, stubs 1821 | |
+| frozen functions (src/, from PDB + source) | 12220, stubs 1819 | |
 
-Match evidence: annotated 901, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 257, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 904, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 257, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 19:51 -- mapped 3123, ported 2376, stub 692, spine mapped 525.
+Previous run: 2026-09-23 20:14 -- mapped 3126, ported 2378, stub 691, spine mapped 528.
 
 ## Lua API coverage (binding tables)
 
@@ -140,8 +140,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 9 (1.3%) | 0.7% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 85 (30.0%) | 46.5% | 9 | 0 | 210 |
-| CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 15 (6.3%) | 8.3% | 1 | 0 | 1 |
+| M2Scene.cpp | 283 | 101.1k | 85 (30.0%) | 46.5% | 8 | 0 | 210 |
+| CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 15 (6.3%) | 8.3% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
 | Tooltip.cpp | 151 | 86.0k | 75 (49.7%) | 62.9% | 38 | 1 | 16 |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureCache.cpp | 252 | 38.9k | 16 (6.3%) | 12.2% | 6 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 3 | 0 | 23 |
 | framing.c | 125 | 38.8k | 34 (27.2%) | 52.4% | 0 | 0 | 39 |
-| DBCache.cpp | 236 | 38.8k | 27 (11.4%) | 9.2% | 0 | 0 | 83 |
+| DBCache.cpp | 236 | 38.8k | 30 (12.7%) | 10.7% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 4 (1.4%) | 1.1% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 6 (3.8%) | 10.2% | 0 | 0 | 86 |
 | MapChunk.cpp | 129 | 37.2k | 23 (17.8%) | 22.9% | 0 | 0 | 85 |
@@ -468,12 +468,10 @@ Module = the source file named by the reference's own assert strings near the fu
 
 | addr | module | size | callers | frozen | strings |
 |---|---|---:|---:|---|---|
-| 008353d0 | M2Scene.cpp? | 502 | 7 | `CM2Lighting::SetupGxLights` [annotated] |  |
 | 00820ae0 | M2Scene.cpp? | 1109 | 1 | `CM2SceneRender::DrawBatchDoodad` [override] | BatchDoodad: model=%s index=%d |
 | 00779ae0 | SComp.cpp? | 183 | 10 | `MD5Final` [callorder] |  |
 | 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
 | 00837680 | M2Shared.cpp | 957 | 1 | `CM2Shared::SubstituteSpecializedShaders` [override] |  |
-| 006a43d0 | CGxDeviceD3d9Ex.cpp? | 799 | 1 | `CGxDeviceD3d::IStateSyncLights` [override] |  |
 | 005e95c0 | PaperDollInfoFrame.cpp | 1501 | 0 | `Script_GetInventoryItemsForSlot` [table] | .\PaperDollInfoFrame.cpp, Usage: GetInventoryItemsForSlot(slot [,  |
 | 00488540 | CSimpleRender.cpp? | 42 | 33 | `CScriptRegion::ProtectedFunctionsAllowed` [override] |  |
 | 00828f90 | M2Scene.cpp? | 464 | 2 | `CM2Model::SetIndices` [annotated] |  |
@@ -508,6 +506,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0062f1e0 | Tooltip.cpp | 571 | 0 | `CGTooltip_SetTradeTargetItem` [table] | Invalid trade slot in SetTradeTargetItem |
 | 0062f9e0 | Tooltip.cpp | 569 | 0 | `CGTooltip_SetInboxItem` [table] | Usage: %s:SetInboxItem(messageIndex, att |
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
+| 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
+| 004a5df0 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnim_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -729,8 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 18:57 | 3106 (11.4%) | 1192 (4.4%) | 689 | 510/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:04 | 3106 (11.4%) | 1192 (4.4%) | 689 | 510/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:06 | 3106 (11.4%) | 1192 (4.4%) | 689 | 510/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:08 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:09 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
@@ -754,6 +752,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 19:45 | 3121 (11.5%) | 1205 (4.4%) | 692 | 523/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:51 | 3123 (11.5%) | 1206 (4.4%) | 692 | 525/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:52 | 3123 (11.5%) | 1208 (4.4%) | 692 | 525/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:14 | 3126 (11.5%) | 1210 (4.5%) | 691 | 528/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:15 | 3126 (11.5%) | 1211 (4.5%) | 690 | 528/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

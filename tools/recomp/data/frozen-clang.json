@@ -64766,6 +64766,70 @@
 "refs": [],
 "line": 981
 },
+"CGxLightState::Set": {
+"files": [
+"src/gx/cgxdevice.cpp"
+],
+"callseq": [
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0x1",
+"0x10",
+"0x2",
+"0x20",
+"0x4",
+"0x40",
+"0x8",
+"0x80",
+"0xe0",
+"0xff1f",
+"1",
+"1.0f"
+],
+"branches": 8,
+"stub": false,
+"lines": 52,
+"refs": [],
+"line": 1012
+},
+"CGxDevice::LightSet": {
+"files": [
+"src/gx/cgxdevice.cpp"
+],
+"callseq": [
+"CGxLightState::Set"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0x2"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 1073
+},
+"CGxDevice::LightEnable": {
+"files": [
+"src/gx/cgxdevice.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x1"
+],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 1087
+},
 "CGxDevice::ClipPlaneSet": {
 "files": [
 "src/gx/cgxdevice.cpp"
@@ -64779,7 +64843,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1000
+"line": 1097
 },
 "CGxDevice::ScissorSet": {
 "files": [
@@ -64794,7 +64858,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1017
+"line": 1114
 },
 "CGxDevice::PrimVertexFormat": {
 "files": [
@@ -64810,7 +64874,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1026
+"line": 1123
 },
 "CGxDevice::PrimVertexMask": {
 "files": [
@@ -64823,7 +64887,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1054
+"line": 1151
 },
 "CGxDevice::PrimVertexPtr": {
 "files": [
@@ -64836,7 +64900,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1060
+"line": 1157
 },
 "CGxDevice::PoolCreate": {
 "files": [
@@ -64857,7 +64921,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1066
+"line": 1163
 },
 "CGxDevice::RenderTargetGet": {
 "files": [
@@ -64870,7 +64934,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1086
+"line": 1183
 },
 "CGxDevice::RenderTargetSet": {
 "files": [
@@ -64885,7 +64949,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1090
+"line": 1187
 },
 "CGxDevice::RenderTargetDump": {
 "files": [
@@ -64900,7 +64964,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1101
+"line": 1198
 },
 "CGxDevice::ScreenShot": {
 "files": [
@@ -64915,7 +64979,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1105
+"line": 1202
 },
 "CGxDevice::RsGet": {
 "files": [
@@ -64931,7 +64995,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1109
+"line": 1206
 },
 "CGxDevice::RsSet": {
 "files": [
@@ -64956,7 +65020,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1113
+"line": 1210
 },
 "CGxDevice::RsSetAlphaRef": {
 "files": [
@@ -64972,7 +65036,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1145
+"line": 1242
 },
 "CGxDevice::RsPop": {
 "files": [
@@ -65001,7 +65065,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1173
+"line": 1270
 },
 "CGxDevice::RsPush": {
 "files": [
@@ -65017,7 +65081,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1200
+"line": 1297
 },
 "CGxDevice::ScenePresent": {
 "files": [
@@ -65032,7 +65096,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1215
+"line": 1312
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -65063,7 +65127,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1221
+"line": 1318
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -65079,7 +65143,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1245
+"line": 1342
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -65098,7 +65162,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1251
+"line": 1348
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -65119,7 +65183,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1305
+"line": 1402
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -65148,7 +65212,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1317
+"line": 1414
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -65170,7 +65234,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1385
+"line": 1482
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -65183,7 +65247,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1408
+"line": 1505
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -65203,7 +65267,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1416
+"line": 1513
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -65220,7 +65284,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1436
+"line": 1533
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -65233,7 +65297,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1450
+"line": 1547
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -65248,7 +65312,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1454
+"line": 1551
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -65263,7 +65327,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1458
+"line": 1555
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -65280,7 +65344,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1462
+"line": 1559
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -65295,7 +65359,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1473
+"line": 1570
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -65311,7 +65375,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1477
+"line": 1574
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -65326,7 +65390,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1481
+"line": 1578
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -65347,7 +65411,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1485
+"line": 1582
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -65362,7 +65426,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1495
+"line": 1592
 },
 "CGxDevice::XformView": {
 "files": [
@@ -65377,7 +65441,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1517
+"line": 1614
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -65390,7 +65454,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1521
+"line": 1618
 },
 "AdapterFormatSort": {
 "files": [
@@ -66895,14 +66959,37 @@
 "files": [
 "src/gx/d3d/cgxdeviced3d.cpp"
 ],
-"callseq": [],
+"callseq": [
+"TSBaseArray<CGxAppRenderState>::operator[]",
+"TSBaseArray<CGxAppRenderState>::operator[]",
+"IDirect3DDevice9::LightEnable",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::SetRenderState",
+"IDirect3DDevice9::LightEnable",
+"IDirect3DDevice9::LightEnable",
+"IDirect3DDevice9::SetLight"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0.0f",
+"0x1",
+"0xfffe",
+"0xffffffff",
+"1",
+"1.0f",
+"10000.0f",
+"4"
+],
+"branches": 17,
+"stub": false,
+"lines": 120,
 "refs": [],
-"line": 2096
+"line": 2120
 },
 "CGxDeviceD3d::IStateSyncMaterial": {
 "files": [
@@ -66925,7 +67012,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 2136
+"line": 2277
 },
 "CGxDeviceD3d::IStateSyncVertexPtrs": {
 "files": [
@@ -66949,7 +67036,7 @@
 "stub": false,
 "lines": 79,
 "refs": [],
-"line": 2177
+"line": 2318
 },
 "CGxDeviceD3d::IStateSyncXforms": {
 "files": [
@@ -66968,7 +67055,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 2257
+"line": 2398
 },
 "CGxDeviceD3d::ITexCreate": {
 "files": [
@@ -67000,7 +67087,7 @@
 "stub": false,
 "lines": 94,
 "refs": [],
-"line": 2286
+"line": 2427
 },
 "CGxDeviceD3d::IRenderTargetSet": {
 "files": [
@@ -67025,7 +67112,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 2385
+"line": 2526
 },
 "CGxDeviceD3d::IScreenShot": {
 "files": [
@@ -67085,7 +67172,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 2433
+"line": 2574
 },
 "CGxDeviceD3d::IRenderTargetDump": {
 "files": [
@@ -67152,7 +67239,7 @@
 "stub": false,
 "lines": 107,
 "refs": [],
-"line": 2514
+"line": 2655
 },
 "CGxDeviceD3d::ITexMarkAsUpdated": {
 "files": [
@@ -67169,7 +67256,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2622
+"line": 2763
 },
 "CGxDeviceD3d::ITexUpload": {
 "files": [
@@ -67214,7 +67301,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 2640
+"line": 2781
 },
 "CGxDeviceD3d::IXformSetProjection": {
 "files": [
@@ -67242,7 +67329,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 2759
+"line": 2900
 },
 "CGxDeviceD3d::IXformSetViewport": {
 "files": [
@@ -67264,7 +67351,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2805
+"line": 2946
 },
 "CGxDeviceD3d::PoolSizeSet": {
 "files": [
@@ -67283,7 +67370,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 2844
+"line": 2985
 },
 "CGxDeviceD3d::SceneClear": {
 "files": [
@@ -67308,7 +67395,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2875
+"line": 3016
 },
 "CGxDeviceD3d::ScenePresent": {
 "files": [
@@ -67337,7 +67424,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 2899
+"line": 3040
 },
 "CGxDeviceD3d::ShaderCreate": {
 "files": [
@@ -67356,7 +67443,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2942
+"line": 3083
 },
 "CGxDeviceD3d::StereoEnabled": {
 "files": [
@@ -67371,7 +67458,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 2950
+"line": 3091
 },
 "CGxDeviceD3d::XformSetProjection": {
 "files": [
@@ -67387,7 +67474,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2955
+"line": 3096
 },
 "GxDevCreate": {
 "files": [
@@ -75083,7 +75170,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 6
+"line": 8
 },
 "CM2Lighting::AddDiffuse": {
 "files": [
@@ -75106,7 +75193,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 10
+"line": 12
 },
 "CM2Lighting::AddLight": {
 "files": [
@@ -75129,7 +75216,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 74
+"line": 76
 },
 "CM2Lighting::AddSpecular": {
 "files": [
@@ -75145,7 +75232,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 117
+"line": 119
 },
 "CM2Lighting::CameraSpace": {
 "files": [
@@ -75164,7 +75251,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 141
+"line": 143
 },
 "CM2Lighting::Initialize": {
 "files": [
@@ -75183,7 +75270,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 165
+"line": 167
 },
 "CM2Lighting::SetFog": {
 "files": [
@@ -75201,20 +75288,48 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 184
+"line": 186
 },
 "CM2Lighting::SetupGxLights": {
 "files": [
 "src/model/cm2lighting.cpp"
 ],
-"callseq": [],
+"callseq": [
+"CGxLight::CGxLight",
+"C3Vector::C3Vector",
+"CM2Lighting::SetupSunlight",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"CGxDevice::LightSet",
+"CGxDevice::LightEnable",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"CGxDevice::LightSet",
+"CGxDevice::LightEnable",
+"CGxDevice::LightEnable"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0.0f",
+"0x1",
+"0x2",
+"0x2u",
+"1",
+"3",
+"4"
+],
+"branches": 5,
+"stub": false,
+"lines": 64,
 "refs": [],
-"line": 215
+"line": 246
 },
 "CM2Lighting::SetupSunlight": {
 "files": [
@@ -75243,7 +75358,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 225
+"line": 317
 },
 "M2Array::operator[]": {
 "files": [
@@ -76202,7 +76317,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 1638
+"line": 1673
 },
 "CM2Model::HasAttachment": {
 "files": [
@@ -76225,7 +76340,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1716
+"line": 1751
 },
 "CM2Model::Initialize": {
 "files": [
@@ -76243,7 +76358,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 1728
+"line": 1763
 },
 "CM2Model::InitializeLoaded": {
 "files": [
@@ -76358,7 +76473,7 @@
 "stub": false,
 "lines": 336,
 "refs": [],
-"line": 1761
+"line": 1796
 },
 "CM2Model::IsBatchDoodadCompatible": {
 "files": [
@@ -76373,7 +76488,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 2132
+"line": 2167
 },
 "CM2Model::IsDrawable": {
 "files": [
@@ -76393,7 +76508,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 2139
+"line": 2174
 },
 "CM2Model::IsLoaded": {
 "files": [
@@ -76414,7 +76529,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 2172
+"line": 2207
 },
 "CM2Model::LinkToCallbackListTail": {
 "files": [
@@ -76427,7 +76542,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2213
+"line": 2248
 },
 "CM2Model::OptimizeVisibleGeometry": {
 "files": [
@@ -76440,7 +76555,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2220
+"line": 2255
 },
 "CM2Model::ProcessCallbacks": {
 "files": [
@@ -76469,7 +76584,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 2224
+"line": 2259
 },
 "CM2Model::SequenceFinished": {
 "files": [
@@ -76513,7 +76628,7 @@
 "stub": false,
 "lines": 83,
 "refs": [],
-"line": 2299
+"line": 2334
 },
 "CM2Model::ProcessCallbacksRecursive": {
 "files": [
@@ -76530,7 +76645,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 2383
+"line": 2418
 },
 "CM2Model::Release": {
 "files": [
@@ -76548,7 +76663,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2398
+"line": 2433
 },
 "CM2Model::ReplaceTexture": {
 "files": [
@@ -76575,7 +76690,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 2414
+"line": 2449
 },
 "CM2Model::SetAnimating": {
 "files": [
@@ -76592,7 +76707,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 2464
+"line": 2499
 },
 "CM2Model::SetBoneSequence": {
 "files": [
@@ -76647,7 +76762,7 @@
 "stub": false,
 "lines": 153,
 "refs": [],
-"line": 2496
+"line": 2531
 },
 "CM2Model::ApplySequencePlayBack": {
 "files": [
@@ -76673,7 +76788,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2653
+"line": 2688
 },
 "CM2Model::SetBoneSequenceDeferred": {
 "files": [
@@ -76705,7 +76820,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2683
+"line": 2718
 },
 "CM2Model::SetGeometryVisible": {
 "files": [
@@ -76731,7 +76846,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2736
+"line": 2771
 },
 "CM2Model::SetIndices": {
 "files": [
@@ -76744,7 +76859,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 2795
+"line": 2830
 },
 "CM2Model::SetLightingCallback": {
 "files": [
@@ -76757,7 +76872,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 2802
+"line": 2837
 },
 "CM2Model::SetLoadedCallback": {
 "files": [
@@ -76772,7 +76887,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2807
+"line": 2842
 },
 "CM2Model::SetPrimaryBoneSequence": {
 "files": [
@@ -76800,7 +76915,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 2814
+"line": 2849
 },
 "CM2Model::SetSecondaryBoneSequence": {
 "files": [
@@ -76820,7 +76935,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 2872
+"line": 2907
 },
 "CM2Model::SetupBoneSequence": {
 "files": [
@@ -76850,7 +76965,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 2883
+"line": 2918
 },
 "CM2Model::SetupLighting": {
 "files": [
@@ -76877,7 +76992,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 2938
+"line": 2973
 },
 "CM2Model::SetVisible": {
 "files": [
@@ -76893,7 +77008,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 2962
+"line": 2997
 },
 "CM2Model::SetWorldTransform": {
 "files": [
@@ -76912,7 +77027,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 2970
+"line": 3005
 },
 "CM2Model::Sub826350": {
 "files": [
@@ -76942,7 +77057,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 2981
+"line": 3016
 },
 "CM2Model::Sub8269C0": {
 "files": [
@@ -76957,7 +77072,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 3077
+"line": 3112
 },
 "CM2Model::Sub826E60": {
 "files": [
@@ -76978,7 +77093,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 3081
+"line": 3116
 },
 "CM2Model::UnlinkFromAnimateList": {
 "files": [
@@ -76991,7 +77106,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3122
+"line": 3157
 },
 "CM2Model::UnlinkFromAttachList": {
 "files": [
@@ -77004,7 +77119,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3132
+"line": 3167
 },
 "CM2Model::UnlinkFromCallbackList": {
 "files": [
@@ -77017,7 +77132,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 3142
+"line": 3177
 },
 "CM2Model::UnlinkFromDrawList": {
 "files": [
@@ -77030,7 +77145,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3157
+"line": 3192
 },
 "CM2Model::UnoptimizeVisibleGeometry": {
 "files": [
@@ -77043,7 +77158,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 3167
+"line": 3202
 },
 "CM2Model::UnsetBoneSequence": {
 "files": [
@@ -77081,7 +77196,7 @@
 "stub": false,
 "lines": 120,
 "refs": [],
-"line": 3176
+"line": 3211
 },
 "CM2Model::UpdateLoaded": {
 "files": [
@@ -77100,7 +77215,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 3297
+"line": 3332
 },
 "CM2Model::WaitForLoad": {
 "files": [
@@ -77119,7 +77234,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 3314
+"line": 3349
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
@@ -79031,7 +79146,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 338
+"line": 356
 },
 "ClientConnection::AccountLogin": {
 "files": [
@@ -176677,7 +176792,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 83,
+"lines": 91,
 "refs": [],
 "line": 202
 },
@@ -176698,7 +176813,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 303
+"line": 311
 },
 "CWorld::ComputeOutdoorLight": {
 "files": [
@@ -176729,7 +176844,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 325
+"line": 333
 },
 "CWorld::UpdateOutdoorLight": {
 "files": [
@@ -176781,7 +176896,7 @@
 "stub": false,
 "lines": 182,
 "refs": [],
-"line": 372
+"line": 380
 },
 "CWorld::SetCameraUnderLiquid": {
 "files": [
@@ -176794,7 +176909,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 555
+"line": 563
 },
 "CWorld::IsCameraUnderLiquid": {
 "files": [
@@ -176807,7 +176922,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 559
+"line": 567
 },
 "CWorld::GetSkyboxPath": {
 "files": [
@@ -176822,7 +176937,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 563
+"line": 571
 },
 "CWorld::GetDayProgress": {
 "files": [
@@ -176842,7 +176957,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 567
+"line": 575
 },
 "CWorld::GetOutdoorAmbient": {
 "files": [
@@ -176855,7 +176970,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 579
+"line": 587
 },
 "CWorld::GetOutdoorDiffuse": {
 "files": [
@@ -176868,7 +176983,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 583
+"line": 591
 },
 "CWorld::GetOutdoorDirection": {
 "files": [
@@ -176881,7 +176996,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 587
+"line": 595
 },
 "CWorld::GetFogColor": {
 "files": [
@@ -176894,7 +177009,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 591
+"line": 599
 },
 "CWorld::GetSkyHighlight": {
 "files": [
@@ -176907,7 +177022,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 595
+"line": 603
 },
 "CWorld::GetFogStart": {
 "files": [
@@ -176920,7 +177035,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 599
+"line": 607
 },
 "CWorld::GetFogEnd": {
 "files": [
@@ -176933,7 +177048,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 603
+"line": 611
 },
 "CWorld::GetSkyColor": {
 "files": [
@@ -176949,7 +177064,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 607
+"line": 615
 },
 "AdjustFarClip": {
 "files": [
@@ -176974,7 +177089,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 619
+"line": 627
 },
 "CWorld::AddObject": {
 "files": [
@@ -176995,7 +177110,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 636
+"line": 644
 },
 "CWorld::GetCurTimeMs": {
 "files": [
@@ -177008,7 +177123,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 665
+"line": 673
 },
 "CWorld::GetCurTimeSec": {
 "files": [
@@ -177021,7 +177136,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 669
+"line": 677
 },
 "CWorld::GetFarClip": {
 "files": [
@@ -177034,7 +177149,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 673
+"line": 681
 },
 "CWorld::GetHorizonFarClip": {
 "files": [
@@ -177052,7 +177167,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 685
+"line": 693
 },
 "CWorld::GetFixedPrecisionTime": {
 "files": [
@@ -177067,7 +177182,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 698
+"line": 706
 },
 "CWorld::GetGameTimeFixed": {
 "files": [
@@ -177080,7 +177195,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 702
+"line": 710
 },
 "CWorld::GetGameTimeSec": {
 "files": [
@@ -177093,7 +177208,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 706
+"line": 714
 },
 "CWorld::GetM2Scene": {
 "files": [
@@ -177106,7 +177221,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 710
+"line": 718
 },
 "CWorld::GetNearClip": {
 "files": [
@@ -177119,7 +177234,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 714
+"line": 722
 },
 "CWorld::GetTickTimeFixed": {
 "files": [
@@ -177132,7 +177247,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 718
+"line": 726
 },
 "CWorld::GetTickTimeMs": {
 "files": [
@@ -177145,7 +177260,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 722
+"line": 730
 },
 "CWorld::GetTickTimeSec": {
 "files": [
@@ -177158,7 +177273,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 726
+"line": 734
 },
 "CWorld::Initialize": {
 "files": [
@@ -177186,7 +177301,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 730
+"line": 738
 },
 "CWorld::GetOutdoorParamsID": {
 "files": [
@@ -177199,7 +177314,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 780
+"line": 788
 },
 "CWorld::GetLiquidAlpha": {
 "files": [
@@ -177216,7 +177331,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 787
+"line": 795
 },
 "CWorld::GetLiquidShallow": {
 "files": [
@@ -177232,7 +177347,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 791
+"line": 799
 },
 "CWorld::GetLiquidDeep": {
 "files": [
@@ -177248,7 +177363,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 796
+"line": 804
 },
 "CWorld::LoadMap": {
 "files": [
@@ -177271,7 +177386,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 800
+"line": 808
 },
 "CWorld::OnTick": {
 "files": [
@@ -177288,7 +177403,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 820
+"line": 828
 },
 "CWorld::SetFarClip": {
 "files": [
@@ -177305,7 +177420,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 826
+"line": 834
 },
 "CWorld::LightingCallback": {
 "files": [
@@ -177334,7 +177449,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 871
+"line": 879
 },
 "CWorld::SetLoadProgressCallback": {
 "files": [
@@ -177347,7 +177462,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 908
+"line": 916
 },
 "CWorld::SetUpdateTime": {
 "files": [
@@ -177365,7 +177480,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 912
+"line": 920
 },
 "CWorld::Update": {
 "files": [
@@ -177386,7 +177501,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 926
+"line": 934
 },
 "CWorld::GetCloudDensity": {
 "files": [
@@ -177399,7 +177514,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 939
+"line": 947
 },
 "CWorld::GetBodyTint": {
 "files": [
@@ -177412,7 +177527,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 943
+"line": 951
 },
 "CWorld::GetCameraPos": {
 "files": [
@@ -177425,7 +177540,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 947
+"line": 955
 },
 "CWorld::GetCameraDir": {
 "files": [
@@ -177438,7 +177553,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 951
+"line": 959
 },
 "CWorld::SetNearClip": {
 "files": [
@@ -177451,7 +177566,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 956
+"line": 964
 },
 "CWorld::SetHorizonFarClipScale": {
 "files": [
@@ -177464,7 +177579,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 961
+"line": 969
 },
 "CWorld::SetHorizonNearClipScale": {
 "files": [
@@ -177477,7 +177592,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 966
+"line": 974
 },
 "CWorld::SetEnvironmentDetail": {
 "files": [
@@ -177494,7 +177609,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 996
+"line": 1004
 },
 "TextureLodBiasSet": {
 "files": [
