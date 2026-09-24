@@ -49,6 +49,7 @@ C33Matrix::C33Matrix(float a0, float a1, float a2, float b0, float b1, float b2,
     this->c2 = c2;
 }
 
+// ref: FUN_004c51b0
 C33Matrix::C33Matrix(const C44Matrix& m) {
     this->a0 = m.a0;
     this->a1 = m.a1;
@@ -61,6 +62,23 @@ C33Matrix::C33Matrix(const C44Matrix& m) {
     this->c0 = m.c0;
     this->c1 = m.c1;
     this->c2 = m.c2;
+}
+
+// ref: FUN_004c5230
+C33Matrix& C33Matrix::operator*=(float a) {
+    this->a0 *= a;
+    this->a1 *= a;
+    this->a2 *= a;
+
+    this->b0 *= a;
+    this->b1 *= a;
+    this->b2 *= a;
+
+    this->c0 *= a;
+    this->c1 *= a;
+    this->c2 *= a;
+
+    return *this;
 }
 
 void C33Matrix::FromEulerAnglesZYX(float yaw, float pitch, float roll) {

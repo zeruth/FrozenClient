@@ -10088,8 +10088,8 @@
  "004c2fc0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -10131,6 +10131,38 @@
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "004c51b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::C33Matrix",
+  "frozenSize": 92,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004c5230": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::operator*=",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 80,
   "status": "ported"
  },
  "004c5a60": {
@@ -35658,7 +35690,7 @@
   "branchRatio": 0.7,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.03,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
@@ -49400,7 +49432,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 642,
+  "frozenSize": 655,
   "how": "override",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 123,
@@ -49614,6 +49646,22 @@
   "refSize": 175,
   "status": "ported"
  },
+ "0097a390": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.054,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetupDrawBasis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 488,
+  "status": "ported"
+ },
  "0097ac00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49816,7 +49864,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 642,
+  "frozenSize": 655,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 662,

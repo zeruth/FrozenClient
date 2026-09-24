@@ -1,5 +1,6 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
+#include <tempest/Math.hpp>
 #include <cstdlib>
 #include <cstring>
 #include "util/Log.hpp"
@@ -1260,6 +1261,19 @@ bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) cons
     return this->IntegrateParticle(p, dt);
 }
 
+// The draw basis, which SetupDrawBasis computes once per emitter and everything below reads.
+//
+// The reference keeps these in three globals (0x00b2d540, 0x00b2d550, 0x00b2d590) rather than
+// threading them through, and they stay globals here for the same reason: the quad writer touches
+// all three per VERTEX, and every function that reads them lives in this file.
+//
+// s_particleNormal is row 2 of the view matrix -- the camera direction -- and goes into every
+// particle vertex's normal unchanged. A particle is a flat quad facing the camera, so one normal
+// is right for all four corners of all of them.
+static C3Vector s_particleNormal = {};
+static C44Matrix s_particleSpace;
+static C33Matrix s_particleBasis;
+
 // The sink an UNLIT emitter's normal writes land in.
 //
 // The reference lazily zeroes its copy on first use, behind bit 0 of a flag word at 0x00dce8c0;
@@ -1304,6 +1318,59 @@ void CM2ParticleEmitter::SetupVertexCursor(char* base, EGxVertexBufferFormat for
     cursor.m_texCoord =
         reinterpret_cast<float*>(base + GxVertexAttribOffset(format, GxVA_TexCoord0));
     cursor.m_texCoordStride = stride;
+}
+
+// Work out the matrices the quad writer draws through.
+//
+// Ghidra cannot render this one: the matrix multiply returns its destination in eax and the
+// compiler chains three calls through partly shared argument pushes, so the decompilation shows
+// the same operator* taking four arguments in one place and two in another. The push order at
+// 0x97a390 is unambiguous and that is where this came from.
+//
+// ref: FUN_0097a390
+void CM2ParticleEmitter::SetupDrawBasis(const C44Matrix* relativeTo, const C44Matrix& view) {
+    // An identity whose translation row is MINUS the emitter's origin: it moves particle
+    // positions into a space centred on the emitter. Built inline at 0x97a399..0x97a406 as
+    // fld1/fldz stores landing exactly on a C44Matrix's diagonal.
+    C44Matrix offset;
+
+    offset.d0 = -this->m_origin.x;
+    offset.d1 = -this->m_origin.y;
+    offset.d2 = -this->m_origin.z;
+
+    if (this->m_flags & 0x200) {
+        // Emitter space: particles are stored relative to the emitter's own placement, so the
+        // placement has to be reapplied. This is the branch the whole 0x200 family exists for.
+        s_particleSpace = (this->m_placement * offset) * view;
+    } else if (relativeTo) {
+        s_particleSpace = (*relativeTo * offset) * view;
+    } else {
+        s_particleSpace = offset * view;
+    }
+
+    // Row 2 of the VIEW, not of the product: the camera direction in world terms.
+    s_particleNormal = { view.c0, view.c1, view.c2 };
+
+    if (!(this->m_flags & 0x4000)) {
+        return;
+    }
+
+    s_particleBasis = C33Matrix(s_particleSpace);
+
+    // 0x009ea27c is 2^-22, the same epsilon C3Vector::Normalize uses. Both conditions matter: a
+    // zero-scale emitter would divide by zero here and fill the basis with infinities, and
+    // nothing downstream checks.
+    if ((this->m_flags & 0x200) && 0.00000023841858f < CMath::fabs(this->m_scale)) {
+        s_particleBasis *= 1.0f / this->m_scale;
+    }
+
+    // Row 2 of the basis, normalised. Note this is read AFTER the division above, so it comes off
+    // the scaled matrix -- and the normalise then undoes the scaling exactly, which makes the
+    // division invisible to the axis. Reading it before the division would be identical; so
+    // would hoisting the normalise. Both are noise, and saying so here is cheaper than working
+    // it out twice.
+    this->m_tumbleAxis = { s_particleBasis.c0, s_particleBasis.c1, s_particleBasis.c2 };
+    this->m_tumbleAxis.Normalize();
 }
 
 // This particle's colour at normalised age `t`.

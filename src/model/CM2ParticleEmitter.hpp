@@ -307,6 +307,11 @@ class CM2ParticleEmitter {
         // +0x1c: how many particles the last draw emitted. Draw zeroes it when there is nothing
         // to draw.
         uint32_t m_drawnCount = 0;
+        // +0x20c: the axis a tumbling particle turns about -- row 2 of the billboard basis,
+        // normalised. Written by SetupDrawBasis when flag 0x4000 is set and read only by the
+        // quad writer's tumble path, so it is draw state living on the emitter rather than a
+        // property of it.
+        C3Vector m_tumbleAxis = {};
         // +0x218 and +0x224: the emitter's bounds, born INVERTED -- min at +FLT_MAX and max at
         // -FLT_MAX (0x009ea8fc and 0x00a37f1c), the usual empty-box convention so that the first
         // point absorbed sets both corners. +0x230 is the last base field; the two concrete
@@ -429,6 +434,11 @@ class CM2ParticleEmitter {
         // the two inline at every site that touches one (0x97ddc0 in Step, 0x97d844 in
         // SpawnParticle, 0x97dbc0 in the integrate wrapper); this is those four copies as one.
         Particle& ParticleAt(uint32_t slot);
+
+        // Work out the matrices the quad writer draws through, and leave them in the three
+        // file-scope globals the reference uses for the same purpose. `view` is the view matrix
+        // the caller saved off the device. ref: FUN_0097a390
+        void SetupDrawBasis(const C44Matrix* relativeTo, const C44Matrix& view);
 
         // This particle's colour at normalised age `t`, as a CImVector with alpha left at 255
         // for the caller to overwrite. ref: FUN_009795d0

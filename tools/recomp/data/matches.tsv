@@ -633,6 +633,8 @@ addr	how	frozen	evidence
 004c2fc0	annotated	C44Matrix::AffineInverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c5230	annotated	C33Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
@@ -3128,6 +3130,7 @@ addr	how	frozen	evidence
 00979e90	annotated	CM2ParticleEmitter::SampleAppearance	tag in src/model/CM2ParticleEmitter.cpp
 0097a130	annotated	CM2ParticleEmitter::SampleSpin	tag in src/model/CM2ParticleEmitter.cpp
 0097a2e0	annotated	CM2ParticleEmitter::SetupVertexCursor	tag in src/model/CM2ParticleEmitter.cpp
+0097a390	annotated	CM2ParticleEmitter::SetupDrawBasis	tag in src/model/CM2ParticleEmitter.cpp
 0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
