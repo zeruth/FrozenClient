@@ -68,6 +68,13 @@ class CM2Scene {
             {};
         void AdvanceTime(uint32_t a2);
         void Animate(const C3Vector& cameraPos);
+
+        // Register one emitter's particles as a draw element, and file it in the right pass.
+        // `elementIndex` is the running element count -- the pass lists hold indices into
+        // m_elements, so it is read AND incremented here. ref: FUN_00821930
+        void AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, float distance,
+                                float alpha, int32_t aboveLiquid, int32_t& elementIndex,
+                                uint32_t& additiveCount);
         CM2Model* CreateModel(const char* file, uint32_t a3);
         int32_t Draw(M2PASS pass);
 

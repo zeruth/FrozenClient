@@ -8,6 +8,7 @@
 #include "model/CM2Light.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2SceneRender.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Sort.hpp"
@@ -472,6 +473,10 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_elements.SetCount(0);
     int32_t elementIndex = 0;
 
+    // How many particle elements use an additive blend. The reference keeps this to size the
+    // additive sort the tail of this function still owes.
+    uint32_t additiveCount = 0;
+
     while (this->m_drawList) {
         auto model = this->m_drawList;
         this->m_drawList = model->m_drawNext;
@@ -720,12 +725,12 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             // Which list the duplicate joins is the reference's water-side pair, and those default
             // to the two lighting bits read above. The reference seeds them with v21 and v22 at
             // 0x00821cab and only refines them -- by testing the model's bounding sphere against
-            // m_currentLighting->m_liquidPlane -- when BOTH are set, which is the
-            // "liquid plane stuff" this function still marks TODO seventy lines up. Until that
-            // lands, CM2Lighting::Initialize sets 0x20 and nothing ever sets 0x40, so the pair is
-            // (true, false) for every model and this reduces to array54[1]. That is exactly what
-            // the main registration above does for v221 == 1, so the two agree today by
-            // construction rather than by luck.
+            // m_currentLighting->m_liquidPlane -- when BOTH are set. That test is no longer a
+            // TODO; it was ported 2026-09-24. It still does not fire, because
+            // CM2Lighting::Initialize sets 0x20 and nothing sets 0x40 or writes m_liquidPlane, so
+            // the pair is (true, false) for every model and this reduces to array54[1]. That is
+            // exactly what the main registration above does for v221 == 1, so the two agree today
+            // by construction rather than by luck.
             if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
                 auto prepass = this->m_elements.New();
 
@@ -746,6 +751,54 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             }
         }
 
+        // The particle elements. The reference runs this immediately after the batch loop and
+        // before the ribbons, which is where it sits here.
+        for (int32_t i = 0; i < data->particles.Count(); i++) {
+            CM2ParticleEmitter* emitter = model->m_particleEmitters
+                ? model->m_particleEmitters[i]
+                : nullptr;
+
+            // Frozen-only: null for an emitter type frozen does not build. The reference's
+            // factory always builds something, so it dereferences unconditionally.
+            if (!emitter) {
+                continue;
+            }
+
+            // Four gates, in the reference's order.
+            if (model->m_flag2000 && (emitter->m_flags & 0x200)) {
+                continue;
+            }
+
+            if (emitter->m_flags & 0x2000000) {
+                continue;
+            }
+
+            if (!model->m_particles[i].active) {
+                continue;
+            }
+
+            if (!(model->float198 > 0.0001f)) {
+                continue;
+            }
+
+            const M2Particle& file = data->particles[i];
+
+            // NOT a camera distance, whatever the element field is called: the emitter's own
+            // position in the model's space, squared. Transcribed; see the note at DrawParticle.
+            C3Vector local = file.position * model->m_boneMatrices[file.boneIndex];
+
+            float distance = local.x * local.x + local.y * local.y + local.z * local.z;
+
+            this->AddParticleElement(emitter, model, distance, model->float198, v21,
+                                     elementIndex, additiveCount);
+
+            // Each child gets its own element, with the parent's distance and alpha.
+            for (uint32_t c = 0; c < emitter->m_childCount; c++) {
+                this->AddParticleElement(emitter->m_children[c], model, distance, model->float198,
+                                         v21, elementIndex, additiveCount);
+            }
+        }
+
         // TODO
         // - ribbons
 
@@ -758,6 +811,68 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     M2HeapSort(CM2Scene::SortTransparent, this->array54[2].Ptr(), this->array54[2].Count(), this);
 
     // TODO sort additive particles
+}
+
+// Register one emitter's particles as a draw element.
+//
+// Sets exactly the fields the reference sets and no more. priorityPlane, batch, skinSection,
+// vertexPermute and the last dword are left ALONE, as they are there: the element allocator does
+// not zero, so a recycled slot keeps the previous frame's values. That is faithful and harmless
+// while DrawParticle is a stub, but it is the first thing to check when that stub is filled.
+//
+// The reference also caches emitter->[0x18] into the element's +0x24. What +0x18 holds is not
+// identified, and frozen carries the emitter pointer in the element anyway, so that cache is not
+// reproduced rather than filled with a guess.
+//
+// ref: FUN_00821930
+void CM2Scene::AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, float distance,
+                                  float alpha, int32_t aboveLiquid, int32_t& elementIndex,
+                                  uint32_t& additiveCount) {
+    // Nothing alive anywhere in the subtree means nothing to draw.
+    if (!emitter->HasLiveParticles()) {
+        return;
+    }
+
+    // Emitters carrying spawned models draw through those models, not as a particle element.
+    if (emitter->m_particleKind == 1) {
+        return;
+    }
+
+    M2Element* element = this->m_elements.New();
+
+    if (!element) {
+        return;
+    }
+
+    element->type = 4;
+    element->model = model;
+    element->flags = 0x0;
+    element->alpha = alpha;
+    element->emitter = emitter;
+    element->float10 = model->float88;
+    element->float14 = distance;
+    element->pixelPermute = 0;
+    element->dword34 = 0xFFFFFFFF;
+    element->dword38 = 0xFFFFFFFF;
+    element->dword3c = 0;
+
+    // Counted for the additive sort the tail of Animate still owes.
+    if (emitter->m_blendMode == 10 || emitter->m_blendMode == 3) {
+        additiveCount++;
+    }
+
+    // Pass 0 only for a blend that does not need sorting AND an alpha that is effectively 1
+    // (0x00a45528 is 0.99999). Everything else is transparent, and the water side picks which of
+    // the two transparent passes.
+    if (emitter->m_blendMode <= 1 && alpha >= 0.9999899864196777f) {
+        *this->array54[0].New() = elementIndex;
+    } else if (!aboveLiquid || (emitter->m_flags & 0x40000)) {
+        *this->array54[2].New() = elementIndex;
+    } else {
+        *this->array54[1].New() = elementIndex;
+    }
+
+    elementIndex++;
 }
 
 // ref: FUN_0081f8f0

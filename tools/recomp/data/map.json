@@ -37433,8 +37433,8 @@
   "faithful": false,
   "fidelity": 0.0,
   "files": [],
-  "frozen": "TSGrowableArray<M2Element>::Reserve",
-  "frozenSize": 354,
+  "frozen": "TSGrowableArray<M2Element>::New",
+  "frozenSize": 80,
   "how": "callorder",
   "module": "M2Scene.cpp",
   "refSize": 151,
@@ -37695,17 +37695,33 @@
   "refSize": 391,
   "status": "stub"
  },
+ "00821930": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::AddParticleElement",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 238,
+  "status": "ported"
+ },
  "00821a20": {
-  "branchRatio": 0.21,
+  "branchRatio": 0.247,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.346,
+  "fidelity": 0.404,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 3029,
+  "frozenSize": 3851,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -49432,7 +49448,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::HasLiveParticles",
-  "frozenSize": 0,
+  "frozenSize": 88,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 12,
