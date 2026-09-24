@@ -1017,6 +1017,44 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
     }
 }
 
+// Grow the emitter to hold `count` particles, and put every new slot on the free list.
+//
+// This is what makes an emitter usable. Reserve grows the allocation and deliberately leaves the
+// pool's count alone, so after it there is memory but no slots; the loop at the end is what turns
+// memory into slots, by pushing each new index onto the FREE list. SpawnParticle pops from that
+// list, so an emitter that has never been through here emits nothing at all -- silently, and no
+// matter how correct the simulation downstream is.
+//
+// ref: FUN_0097e480
+void CM2ParticleEmitter::SetParticleCount(uint32_t count) {
+    if (this->m_particleKind != 0) {
+        // The model pool takes the same path over its own container. Its element type is not
+        // modelled, so growing it would allocate the wrong stride.
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter::SetParticleCount: the model pool's element type is not "
+                     "modelled (FUN_0097bdb0 and FUN_0097e8d0 unported); not allocating it");
+
+        return;
+    }
+
+    uint32_t existing = this->m_pool.Count();
+
+    if (existing >= count) {
+        return;
+    }
+
+    this->Reserve(count, this->m_pool.Count(), this->m_pool.Reserved());
+
+    this->m_pool.SetCount(count);
+
+    this->m_liveIndices.Reserve(count, 0);
+    this->m_freeIndices.Reserve(count, 0);
+
+    for (uint32_t slot = existing; slot != count; slot++) {
+        this->m_freeIndices.Add(1, &slot);
+    }
+}
+
 // Make room for `capacity` particles, rounded up to a power of two.
 //
 // Its four blocks are each `if (need + m_count > m_alloc) ReallocData(need + m_count)`, which is
@@ -1030,8 +1068,10 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
 // doubling.
 //
 // ref: FUN_0097e3f0
-void CM2ParticleEmitter::Reserve(uint32_t capacity, uint32_t inUseA, uint32_t inUseB) {
-    uint32_t inUse = inUseA + inUseB;
+void CM2ParticleEmitter::Reserve(uint32_t capacity, uint32_t used, uint32_t spare) {
+    // The sole caller passes the pool's Count() and Reserved(), which sum to its m_alloc. So this
+    // compares the rounded capacity against what is already allocated, not against what is live.
+    uint32_t allocated = used + spare;
     uint32_t rounded = capacity;
 
     if (rounded & (rounded - 1)) {
@@ -1042,11 +1082,11 @@ void CM2ParticleEmitter::Reserve(uint32_t capacity, uint32_t inUseA, uint32_t in
         }
     }
 
-    if (inUse >= rounded) {
+    if (allocated >= rounded) {
         return;
     }
 
-    uint32_t need = rounded - inUse;
+    uint32_t need = rounded - allocated;
 
     if (this->m_particleKind == 0) {
         this->m_pool.Reserve(need, 0);

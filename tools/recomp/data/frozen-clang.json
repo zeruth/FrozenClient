@@ -78173,6 +78173,34 @@
 "refs": [],
 "line": 950
 },
+"CM2ParticleEmitter::SetParticleCount": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"SysMsgPrintf",
+"TSBaseArray<CM2ParticleEmitter::Particle>::Count",
+"TSGrowableArray<CM2ParticleEmitter::Particle>::Reserved",
+"TSBaseArray<CM2ParticleEmitter::Particle>::Count",
+"CM2ParticleEmitter::Reserve",
+"TSGrowableArray<CM2ParticleEmitter::Particle>::SetCount",
+"TSGrowableArray<unsigned int>::Reserve",
+"TSGrowableArray<unsigned int>::Reserve",
+"TSGrowableArray<unsigned int>::Add"
+],
+"strings": [
+"CM2ParticleEmitter::SetParticleCount: the model pool's element type is not modelled (FUN_0097bdb0 and FUN_0097e8d0 unported); not allocating it"
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 28,
+"refs": [],
+"line": 1029
+},
 "CM2ParticleEmitter::Reserve": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -78190,9 +78218,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 27,
+"lines": 29,
 "refs": [],
-"line": 1033
+"line": 1071
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78221,7 +78249,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1064
+"line": 1104
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78239,7 +78267,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1116
+"line": 1156
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

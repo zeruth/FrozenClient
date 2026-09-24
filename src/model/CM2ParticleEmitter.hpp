@@ -289,10 +289,17 @@ class CM2ParticleEmitter {
         // relative to it. ref: FUN_0097ac20
         void Place(const C44Matrix& matrix, const C3Vector& origin, const C44Matrix* relativeTo);
 
-        // Make room for `capacity` particles, rounded UP to a power of two, given `inUseA` and
-        // `inUseB` already accounted for. Grows the pool and both index arrays together, since a
-        // slot needs an entry in each. ref: FUN_0097e3f0
-        void Reserve(uint32_t capacity, uint32_t inUseA, uint32_t inUseB);
+        // Make room for `capacity` particles, rounded UP to a power of two. `used` and `spare`
+        // are the pool's count and its unused allocation, which sum to its total allocation -- so
+        // this grows only when the rounded capacity exceeds what is already allocated. Grows the
+        // pool and both index arrays together, since a slot needs an entry in each.
+        // ref: FUN_0097e3f0
+        void Reserve(uint32_t capacity, uint32_t used, uint32_t spare);
+
+        // Grow the emitter to hold `count` particles and put every new slot on the free list.
+        // Nothing downstream works until this has run: SpawnParticle pops from that list, so an
+        // emitter that has never been through here silently emits nothing. ref: FUN_0097e480
+        void SetParticleCount(uint32_t count);
 
         // Split `dt` into fixed 0.1s slices and step each, so a fast-moving emitter integrates
         // in bounded increments rather than one long jump. ref: FUN_0097acb0
