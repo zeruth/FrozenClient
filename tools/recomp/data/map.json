@@ -9989,7 +9989,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 404,
+  "frozenSize": 571,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 51,
@@ -10010,7 +10010,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1271,
+  "frozenSize": 1578,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 533,
@@ -10031,7 +10031,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1271,
+  "frozenSize": 1578,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 93,
@@ -10063,7 +10063,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::operator*=",
-  "frozenSize": 0,
+  "frozenSize": 64,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 43,
@@ -10095,7 +10095,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::AffineInverse",
-  "frozenSize": 724,
+  "frozenSize": 1140,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 212,
@@ -13226,7 +13226,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1271,
+  "frozenSize": 1578,
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 137,
@@ -37686,7 +37686,7 @@
   "branchRatio": 0.205,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.327,
+  "fidelity": 0.346,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -38131,7 +38131,7 @@
   "status": "ported"
  },
  "00828a00": {
-  "branchRatio": 0.125,
+  "branchRatio": 0.05,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -38139,8 +38139,8 @@
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "CM2Model::AnimateParticleTracks",
-  "frozenSize": 727,
+  "frozen": "M2ParticleTrackDrives",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -38288,6 +38288,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
+  "status": "ported"
+ },
+ "008309c0": {
+  "branchRatio": 0.476,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateParticleEmitter",
+  "frozenSize": 1055,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1011,
   "status": "ported"
  },
  "00830dc0": {
@@ -49163,7 +49179,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "M2ParticleFlushDenormals",
-  "frozenSize": 0,
+  "frozenSize": 89,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 104,
@@ -49195,7 +49211,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetZSource",
-  "frozenSize": 0,
+  "frozenSize": 39,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 39,
@@ -49339,7 +49355,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::IntegrateParticle",
-  "frozenSize": 0,
+  "frozenSize": 695,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 425,
@@ -49355,7 +49371,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Place",
-  "frozenSize": 0,
+  "frozenSize": 260,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 143,
@@ -49371,7 +49387,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Substep",
-  "frozenSize": 0,
+  "frozenSize": 903,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 322,
@@ -49419,7 +49435,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetEmissionRate",
-  "frozenSize": 0,
+  "frozenSize": 17,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 41,
@@ -49451,7 +49467,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SpawnParticle",
-  "frozenSize": 0,
+  "frozenSize": 205,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 109,
@@ -49467,7 +49483,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Emit",
-  "frozenSize": 0,
+  "frozenSize": 726,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 687,
@@ -49483,7 +49499,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::IntegrateAndSpawnChildren",
-  "frozenSize": 0,
+  "frozenSize": 571,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 396,
@@ -49499,7 +49515,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Step",
-  "frozenSize": 0,
+  "frozenSize": 571,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 604,
@@ -49563,7 +49579,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Update",
-  "frozenSize": 0,
+  "frozenSize": 789,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 736,
@@ -49579,7 +49595,7 @@
    "src/world/particlefx.cpp"
   ],
   "frozen": "ParticleFxGetDensity",
-  "frozenSize": 0,
+  "frozenSize": 9,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 7,

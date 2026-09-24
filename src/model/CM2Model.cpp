@@ -941,6 +941,156 @@ void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const 
 // simulation for. A model in the second set and not the first would sit on default values, and the
 // default emission rate is zero -- its fires would go out. When CM2Model::AnimateParticleEmitter
 // lands it brings the reference's own driver and coverage, and this moves back.
+// Does this track drive its emitter field this frame?
+//
+// Off the instructions at 0x830a99, because the decompilation renders it as a double dereference
+// and loses the shape. What `uint90` means is not established -- frozen named it for its offset --
+// so the comparison is transcribed rather than given an interpretation.
+static bool M2ParticleTrackDrives(const M2Track<float>& track, uint32_t uint90) {
+    uint32_t count = track.sequenceTimes.Count();
+
+    if (count > 1) {
+        return true;
+    }
+
+    if (count != 1) {
+        return false;
+    }
+
+    return uint90 < track.sequenceTimes[0].times.Count();
+}
+
+// The basis swap between bone space and the emitter's frame: a +90 degree rotation about Z.
+//
+// The reference builds this once into a static at 0x00d411e0 behind a "already initialised" bit, which
+// is why it reads as sixteen unrelated stores in the decompilation. Its -1.0 is 0x009e2ef4.
+static const C44Matrix s_particleBasis(0.0f, 1.0f, 0.0f, 0.0f,
+                                       -1.0f, 0.0f, 0.0f, 0.0f,
+                                       0.0f, 0.0f, 1.0f, 0.0f,
+                                       0.0f, 0.0f, 0.0f, 1.0f);
+
+// Push this frame's animated values into one emitter, then place and step it.
+//
+// ref: FUN_008309c0
+void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
+    if (!this->m_loaded) {
+        return;
+    }
+
+    const M2Particle& file = this->m_shared->m_data->particles[index];
+    M2ModelParticle& runtime = this->m_particles[index];
+    CM2ParticleEmitter* emitter = this->m_particleEmitters[index];
+
+    // Frozen-only. The reference dereferences this unconditionally because its factory always
+    // builds an emitter; frozen leaves a null for emitter type 3, which is unported.
+    if (!emitter) {
+        return;
+    }
+
+    if (!(file.flags & 0x8000)) {
+        // Continuous: the emitter's own enable bit follows the rate's.
+        if (runtime.rateActive) {
+            emitter->m_flags |= 0x1;
+        } else {
+            emitter->m_flags &= ~0x1u;
+        }
+    } else if (!runtime.enabled || runtime.emissionRateTrack.currentValue <= 0.0f) {
+        runtime.burstLatch = 0;
+    } else {
+        // A burst fires on the EDGE, not while held: the emitter's 0x40 is raised only on the
+        // frame the latch goes from clear to set, and Emit clears 0x40 itself once it has spent
+        // it.
+        if (!runtime.burstLatch) {
+            emitter->m_flags |= 0x40;
+        }
+
+        runtime.burstLatch = 1;
+    }
+
+    // Zero unless the rate is live, so a disabled emitter is told the rate rather than left with
+    // its last one -- and SetEmissionRate ignores non-positive values, which is what makes that
+    // "stop emitting" rather than "emit at zero".
+    emitter->SetEmissionRate(runtime.rateActive ? runtime.emissionRateTrack.currentValue : 0.0f);
+
+    // A culled emitter keeps last frame's values; a model that has never animated gets them
+    // anyway, which is what seeds an emitter on its first frame.
+    if (runtime.enabled || this->uint90 == 0) {
+        if (M2ParticleTrackDrives(file.speedTrack, this->uint90)) {
+            emitter->m_speed = runtime.speedTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.variationTrack, this->uint90)) {
+            emitter->m_variation = runtime.variationTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.latitudeTrack, this->uint90)) {
+            emitter->SetLatitude(runtime.latitudeTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.longitudeTrack, this->uint90)) {
+            emitter->SetLongitude(runtime.longitudeTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.gravityTrack, this->uint90)) {
+            emitter->m_gravity = runtime.gravityTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.lifeTrack, this->uint90)) {
+            emitter->m_lifespan = runtime.lifeTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.widthTrack, this->uint90)) {
+            emitter->SetWidth(runtime.widthTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.lengthTrack, this->uint90)) {
+            emitter->SetLength(runtime.lengthTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.zsourceTrack, this->uint90)) {
+            emitter->SetZSource(runtime.zsourceTrack.currentValue);
+        }
+
+        // Clamped in that order: the negative test first, then the ceiling.
+        float alpha = this->float198;
+
+        if (!(alpha >= 0.0f)) {
+            alpha = 0.0f;
+        } else if (alpha >= 1.0f) {
+            alpha = 1.0f;
+        }
+
+        emitter->m_alpha = alpha;
+    }
+
+    if (!runtime.active) {
+        return;
+    }
+
+    // All three matrix helpers here have the same receiver -- this local -- which the
+    // decompilation does not show; see the note at the ribbon/particle block above.
+    C44Matrix matrix = this->m_boneMatrices[file.boneIndex];
+
+    matrix.Translate(file.position);
+    matrix *= this->m_scene->m_viewInv;
+    matrix = s_particleBasis * matrix;
+
+    // The camera position is the view-inverse's translation row, which is what the reference
+    // passes as `scene + 0xf4` (0xc4 + 0x30). Not a field of its own.
+    C3Vector cameraPosition = { this->m_scene->m_viewInv.d0,
+                                this->m_scene->m_viewInv.d1,
+                                this->m_scene->m_viewInv.d2 };
+
+    // The reference passes `model + 0x174`, the matrix this model is placed relative to. Frozen
+    // has no such field, so null -- which Place treats as "store the transform as it is", correct
+    // for every model today because nothing would set it.
+    emitter->Update(dt, matrix, cameraPosition, nullptr);
+
+    // The tail animates the emitter's subtree of spawned models and propagates `model + 0x2a8`
+    // into each. Frozen has neither that field nor anything that populates the model pool, so the
+    // walk would find nothing; left out rather than written against absent state.
+}
+
 void CM2Model::AnimateParticleTracks() {
     if (!this->m_particles || !this->m_shared || !this->m_shared->m_data) {
         return;
@@ -1119,7 +1269,31 @@ void CM2Model::AnimateST() {
     // placement pass, which reads a matrix array off the global at 0x00c5df88. Emitters that do
     // not spawn models do not need it.
     //
-    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this.
+    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this. The
+    // PARTICLE half is wired below; the ribbon half still has no runtime state array.
+
+    if (this->m_particleEmitters && this->m_shared->m_data->particles.Count()) {
+        // The emitters' own delta, which nothing else in frozen computes. The subtraction is done
+        // in unsigned ticks and then fixed up, which only matters across a wrap of the
+        // millisecond clock -- but without it a wrap gives a hugely negative dt that Update's
+        // guard would swallow silently, so the branch is kept.
+        uint32_t now = this->m_scene->m_time;
+        int32_t ticks = static_cast<int32_t>(now - this->uint8c);
+
+        float dt = static_cast<float>(ticks);
+
+        if (ticks < 0) {
+            dt += 4294967296.0f;
+        }
+
+        dt *= 0.001f;
+
+        this->uint8c = now;
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            this->AnimateParticleEmitter(dt, i);
+        }
+    }
     // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not
     // ported; this is the other half of why.
 

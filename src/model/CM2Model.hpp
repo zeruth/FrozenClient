@@ -125,6 +125,10 @@ class CM2Model {
         uint32_t* m_loops = nullptr;
         uint32_t uint74 = 0;
         float float88 = 0.0f;
+        // +0x8c: the scene time this model's emitters were last stepped at. The particle block in
+        // Animate subtracts it from the scene's current time to get its own delta -- nothing else
+        // in frozen computes one.
+        uint32_t uint8c = 0;
         uint32_t uint90 = 0;
         union {
             M2ModelBone* m_bones = nullptr;
@@ -232,6 +236,10 @@ class CM2Model {
         // Animate every emitter's tracks into m_particles. Called by the particle system rather
         // than from AnimateST -- see the note at the definition.
         void AnimateParticleTracks();
+
+        // Push this frame's animated values into one emitter, then place and step it.
+        // ref: FUN_008309c0
+        void AnimateParticleEmitter(float dt, int32_t index);
         void AnimateTextureTransformsMT();
         void AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5);
         void AttachToScene(CM2Scene* scene);
