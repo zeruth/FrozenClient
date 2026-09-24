@@ -6,6 +6,9 @@
 #include "world/ParticleFx.hpp"
 #include "world/Clouds.hpp"
 #include "world/CWorldParam.hpp"
+#include "world/map/CMapEntity.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "console/CVar.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/CM2Model.hpp"
@@ -249,6 +252,16 @@ struct WmoGroup {
     uint16_t portalCount = 0;
     uint32_t visFrame = 0;
     int32_t visDepth = 0x7FFFFFFF; // shallowest portal depth this group was reached at this frame
+
+    // The group as the reference's CMapObjGroup queries see it: MOPY, the MOBN/MOBR tree, the raw
+    // MOCV, and pointers at `positions` / `indices` above. Queries run in the same instance-local
+    // space as `positions` (world minus WmoInstance::origin, rotation applied), where the
+    // reference keeps WMO-local vertices and transforms the query through the placement instead.
+    CImVector* mocv = nullptr;
+    // The group's vertices in the model's own space, before the placement yaw. Only the BSP
+    // queries use these; everything that draws uses `positions`. See the note where it is filled.
+    C3Vector* queryVerts = nullptr;
+    CMapObjGroup objGroup;
 };
 
 // A WMO portal polygon (MOPT) in world space: a vertex range into WmoInstance::portalVerts plus
@@ -295,6 +308,11 @@ struct WmoInstance {
     // depth precision to cancellation. Bounds below stay in world space.
     C3Vector origin = { 0.0f, 0.0f, 0.0f };
 
+    // The placement yaw, kept so a world-space point can be brought back into the model's own
+    // space for the BSP queries (WmoGroup::queryVerts live there).
+    float yawCos = 1.0f;
+    float yawSin = 0.0f;
+
     // World-space bounding box over all groups, for whole-instance frustum culling (the reference
     // culls a WMO hierarchically before descending into its groups).
     C3Vector bboxMin = { 0.0f, 0.0f, 0.0f };
@@ -313,6 +331,9 @@ struct WmoInstance {
     // Average interior (MOCV) brightness; interior doodads are lit by this constant value so they
     // match the torch-lit walls and do not cycle with the outdoor day/night like exterior props.
     C3Vector interiorAmbient = { 0.35f, 0.35f, 0.35f };
+
+    // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour
+    CMapObj mapObj;
 };
 
 // Distance from the map's NW corner to its centre (32 tiles), used to convert the corner-relative
@@ -633,21 +654,33 @@ void AlphaTexCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uin
 // with depth off so terrain and objects paint over it, matching the reference's sky backdrop.
 // Sky dome rings, as zenith angles in turns of pi (0 = straight up, 0.5 = horizon, 1 = nadir).
 //
-// The recovered reference table is { 0, .17, .20, .23, .24, .25, 1.0 }: five rings inside the top
-// 45-degree cap and then a single band straight to the nadir. Colouring that literally -- the five
-// sky bands across the cap, the fog colour on the last two rings -- puts a hard edge at 45 degrees
-// wherever the fog band differs from the horizon band, which it does badly in some zones (the
-// Death Knight start reads sky 62,154,197 against fog 0,62,85 at noon) and shows up as a blue ball
-// with a dark skirt. UNCERTAIN whether the table is really zenith angles; keeping the gradient
-// concentrated overhead but carrying it down to the horizon and blending into the fog colour there
-// matches both the band naming ("bands 2..6 top to horizon, fog below") and how the sky reads in
-// game. See docs/ref/parity-sky.md section 2.
-const int32_t SKY_RINGS = 12;
+// The paragraph that used to stand here described the dome BEFORE the table was read out of the
+// binary, flagged the zenith-angle reading as uncertain, and argued for carrying the gradient down
+// to the horizon and blending into fog. It was left in place when the reference's own table landed
+// and then contradicted the paragraph below it and the code under both. Removed 2026-09-23; the
+// uncertainty it flagged is settled.
+//
+// One thing in it was a measurement and is kept, because it predicts what a run will show. Colouring
+// the reference's table literally puts a hard edge at 45 degrees wherever the fog band differs from
+// the horizon band, and in some zones it differs badly -- the Death Knight start reads sky
+// 62,154,197 against fog 0,62,85 at noon, which will look like a blue ball with a dark skirt. That
+// is what the reference does, so it is the expected appearance rather than a defect to tune away.
+// If it looks wrong on screen, check the band mapping before changing the geometry.
+//
+// The reference's dome, read out of the binary rather than tuned: FUN_007f2470 builds 24 segments
+// and 7 rings whose zenith angles are the table at 0x00a41a90 times pi, and the azimuth step at
+// 0x00a41cec is exactly 1/24. Both were checked against WoW.exe directly (2026-09-23), as was the
+// vertex count the colour writer implies: 1 + 5*24 + 1 = 122.
+//
+// Note how little of the sphere the gradient occupies. Every band sits between the zenith and 45
+// degrees elevation; from there down it is one flat sheet of the fog band, which is why the dome
+// meets the fogged terrain horizon with no seam and no blending -- they are the same colour.
+// frozen previously spread 12 rings evenly and lerped a z gradient across them, which put the
+// gradient far too low and made the horizon band far too thin.
+const int32_t SKY_RINGS = 6;
 const int32_t SKY_SEGS = 24;
 const float SKY_RING_ZENITH[SKY_RINGS + 1] = {
-    0.0f, 0.085f, 0.17f, 0.20f, 0.23f, 0.25f,   // the top cap, where the bands vary
-    0.30f, 0.35f, 0.40f, 0.45f, 0.50f,          // down to the horizon, blending toward fog
-    0.75f, 1.0f                                 // below the horizon: fog
+    0.0f, 0.17f, 0.20f, 0.23f, 0.24f, 0.25f, 1.0f
 };
 const int32_t SKY_VERTS = (SKY_RINGS + 1) * (SKY_SEGS + 1);
 const float SKY_RADIUS = 150.0f; // inside the minimum far clip (183) so the dome is never clipped
@@ -1331,10 +1364,24 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 out.interiorAmbient.y = ag / 255.0f;
                 out.interiorAmbient.z = ab / 255.0f;
             }
+
+            out.mapObj.m_mohdFlags = mohdFlags;
+            out.mapObj.m_ambientColor.b = ab;
+            out.mapObj.m_ambientColor.g = ag;
+            out.mapObj.m_ambientColor.r = ar;
+            out.mapObj.m_ambientColor.a = body[31];
         } else if (tag == FourCC("MOTX")) {
             motx = reinterpret_cast<const char*>(body);
         } else if (tag == FourCC("MOMT")) {
             momt = body;
+
+            // The group queries read the materials through CMapObj, so keep a copy that outlives
+            // the root file buffer
+            if (sz >= sizeof(SMOMaterial)) {
+                out.mapObj.m_materialCount = sz / sizeof(SMOMaterial);
+                out.mapObj.m_materials = static_cast<SMOMaterial*>(SMemAlloc(out.mapObj.m_materialCount * sizeof(SMOMaterial), __FILE__, __LINE__, 0));
+                memcpy(out.mapObj.m_materials, body, out.mapObj.m_materialCount * sizeof(SMOMaterial));
+            }
         } else if (tag == FourCC("MODN")) {
             modn = reinterpret_cast<const char*>(body);
         } else if (tag == FourCC("MODD")) {
@@ -1394,15 +1441,20 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
         out.textureCount = nMaterials;
 
         for (uint32_t i = 0; i < nMaterials; i++) {
-            uint32_t matFlags = *reinterpret_cast<const uint32_t*>(momt + i * 64 + 0x00);
             uint32_t texOfs = *reinterpret_cast<const uint32_t*>(momt + i * 64 + 0x0C);
             const char* texName = motx + texOfs;
             CStatus status;
-            // F_CLAMP_S (0x40) / F_CLAMP_T (0x80) clamp the texture instead of wrapping, which the
-            // reference uses for decals, windows and bordered textures to stop the edge tiling.
-            uint32_t wrapU = (matFlags & 0x40) ? GxTex_Clamp : GxTex_Wrap;
-            uint32_t wrapV = (matFlags & 0x80) ? GxTex_Clamp : GxTex_Wrap;
-            out.textures[i] = TextureCreate(texName, CGxTexFlags(GxTex_LinearMipLinear, wrapU, wrapV, 0, 0, 0, 1), &status, 0);
+
+            // WRAP on both axes, always. This used to derive clamping from MOMT flags 0x40 and
+            // 0x80, with a comment asserting the reference clamps decals, windows and bordered
+            // textures. **It does not**, checked 2026-09-23. Every WMO material texture in the
+            // reference is loaded through one helper, FUN_007d9990, which takes a filename and
+            // nothing else and builds its flags as CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap,
+            // GxTex_Wrap, 0, 0, 0, 1). Its caller FUN_007d7710 is unmistakably the MOMT loop: it
+            // indexes 64-byte materials and reads texture1 at +0x0C and texture2 at +0x18, which
+            // is the layout read just above. All five call sites reach the same hardcoded flags,
+            // so there is no path on which the reference clamps one of these.
+            out.textures[i] = TextureCreate(texName, CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), &status, 0);
         }
     }
 
@@ -1421,6 +1473,9 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
 
     float cs = cosf(ry);
     float sn = sinf(ry);
+
+    out.yawCos = cs;
+    out.yawSin = sn;
 
     out.origin = worldPos;
     out.groupsExpected = nGroups;
@@ -1532,8 +1587,15 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
             const uint8_t* moba = nullptr;
             uint32_t mobaCount = 0;
             const CImVector* mocv = nullptr; // baked per-vertex colours for interior groups
+            uint32_t mocvCount = 0;
             const uint8_t* mliq = nullptr;   // group liquid (header + vertex grid + tile flags)
             uint32_t mliqSize = 0;
+            const SMOPoly* mopy = nullptr;   // per-face flags + material
+            uint32_t mopyCount = 0;
+            const CAaBspNode* mobn = nullptr; // the face BSP
+            uint32_t mobnCount = 0;
+            const uint16_t* mobr = nullptr;  // the BSP leaves' face lists
+            uint32_t mobrCount = 0;
 
             while (so + 8 <= subSize) {
                 uint32_t sz;
@@ -1545,8 +1607,11 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 else if (tag == FourCC("MOTV")) { motv = reinterpret_cast<const float*>(body); }
                 else if (tag == FourCC("MOVI")) { movi = reinterpret_cast<const uint16_t*>(body); moviCount = sz / 2; }
                 else if (tag == FourCC("MOBA")) { moba = body; mobaCount = sz / 24; }
-                else if (tag == FourCC("MOCV")) { mocv = reinterpret_cast<const CImVector*>(body); }
+                else if (tag == FourCC("MOCV")) { mocv = reinterpret_cast<const CImVector*>(body); mocvCount = sz / 4; }
                 else if (tag == FourCC("MLIQ")) { mliq = body; mliqSize = sz; }
+                else if (tag == FourCC("MOPY")) { mopy = reinterpret_cast<const SMOPoly*>(body); mopyCount = sz / 2; }
+                else if (tag == FourCC("MOBN")) { mobn = reinterpret_cast<const CAaBspNode*>(body); mobnCount = sz / 16; }
+                else if (tag == FourCC("MOBR")) { mobr = reinterpret_cast<const uint16_t*>(body); mobrCount = sz / 2; }
 
                 so += 8 + sz;
             }
@@ -1716,6 +1781,71 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
 
                 for (uint32_t j = 0; j < moviCount; j++) {
                     grp.indices[j] = movi[j];
+                }
+
+                // The reference-form group data the CMapObjGroup queries walk. Faces are MOVI
+                // triples; MOPY has one record per face, MOBR indexes faces, MOBN indexes MOBR.
+                {
+                    CMapObjGroup& og = grp.objGroup;
+                    uint32_t faceCount = moviCount / 3;
+
+                    og.m_flags = mogpFlags;
+                    og.m_indices = grp.indices;
+                    og.m_vertexCount = movtCount;
+                    og.m_faceCount = faceCount;
+                    og.m_mapObj = &out.mapObj;
+
+                    // The queries need the vertices in the model's OWN space, untouched by the
+                    // placement, because MOBN's split planes are axis-aligned in that space and
+                    // came straight out of the file. grp.positions is no good for this: it has
+                    // already been yawed into the instance's orientation, so walking the tree with
+                    // it navigates in the wrong frame and descends into the wrong subtrees. The
+                    // triangle tests would still be self-consistent, which is what makes the bug
+                    // quiet -- the query simply finds the wrong faces, or none.
+                    //
+                    // So keep a second copy in file space, and note the queries are handed a probe
+                    // transformed the same way (see TerrainWmoFloorLightAt).
+                    grp.queryVerts = static_cast<C3Vector*>(SMemAlloc(movtCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
+
+                    for (uint32_t v = 0; v < movtCount; v++) {
+                        grp.queryVerts[v] = { movt[v * 3 + 0], movt[v * 3 + 1], movt[v * 3 + 2] };
+                    }
+
+                    og.m_vertices = grp.queryVerts;
+
+                    // ...and the bounds in that same file space.
+                    og.m_bounds.b = grp.queryVerts[0];
+                    og.m_bounds.t = grp.queryVerts[0];
+
+                    for (uint32_t v = 1; v < movtCount; v++) {
+                        const C3Vector& q = grp.queryVerts[v];
+                        og.m_bounds.b.x = q.x < og.m_bounds.b.x ? q.x : og.m_bounds.b.x;
+                        og.m_bounds.b.y = q.y < og.m_bounds.b.y ? q.y : og.m_bounds.b.y;
+                        og.m_bounds.b.z = q.z < og.m_bounds.b.z ? q.z : og.m_bounds.b.z;
+                        og.m_bounds.t.x = q.x > og.m_bounds.t.x ? q.x : og.m_bounds.t.x;
+                        og.m_bounds.t.y = q.y > og.m_bounds.t.y ? q.y : og.m_bounds.t.y;
+                        og.m_bounds.t.z = q.z > og.m_bounds.t.z ? q.z : og.m_bounds.t.z;
+                    }
+
+                    if (mopy && mopyCount >= faceCount && faceCount) {
+                        og.m_polys = static_cast<SMOPoly*>(SMemAlloc(faceCount * sizeof(SMOPoly), __FILE__, __LINE__, 0));
+                        memcpy(og.m_polys, mopy, faceCount * sizeof(SMOPoly));
+                    }
+
+                    if (og.m_polys && mobn && mobnCount && mobr && mobrCount) {
+                        og.m_bspNodes = static_cast<CAaBspNode*>(SMemAlloc(mobnCount * sizeof(CAaBspNode), __FILE__, __LINE__, 0));
+                        memcpy(og.m_bspNodes, mobn, mobnCount * sizeof(CAaBspNode));
+                        og.m_bspNodeCount = mobnCount;
+                        og.m_bspFaceRefs = static_cast<uint16_t*>(SMemAlloc(mobrCount * sizeof(uint16_t), __FILE__, __LINE__, 0));
+                        memcpy(og.m_bspFaceRefs, mobr, mobrCount * sizeof(uint16_t));
+                        og.m_bspFaceRefCount = mobrCount;
+                    }
+
+                    if (mocv && mocvCount >= movtCount) {
+                        grp.mocv = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, 0));
+                        memcpy(grp.mocv, mocv, movtCount * sizeof(CImVector));
+                        og.m_colors = grp.mocv;
+                    }
                 }
 
                 if (mobaCount) {
@@ -2274,6 +2404,15 @@ void FreeTile(TerrainTile& tile) {
                 if (grp.ndotl) SMemFree(grp.ndotl, __FILE__, __LINE__, 0);
                 if (grp.ao) SMemFree(grp.ao, __FILE__, __LINE__, 0);
                 if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
+                if (grp.mocv) SMemFree(grp.mocv, __FILE__, __LINE__, 0);
+                if (grp.queryVerts) SMemFree(grp.queryVerts, __FILE__, __LINE__, 0);
+                grp.objGroup.FreeQueryData();
+            }
+
+            if (w.mapObj.m_materials) {
+                SMemFree(w.mapObj.m_materials, __FILE__, __LINE__, 0);
+                w.mapObj.m_materials = nullptr;
+                w.mapObj.m_materialCount = 0;
             }
 
             for (uint32_t t = 0; t < w.textureCount; t++) {
@@ -4017,8 +4156,26 @@ void DetailDoodadRender() {
 
     float dist = CWorldParam::cvar_groundEffectDist ? CWorldParam::cvar_groundEffectDist->GetFloat() : 70.0f;
 
-    // groundEffectDensity (0..16, default 16) scales how much of each chunk's scatter is drawn.
-    // It was registered and then ignored, so the slider did nothing.
+    // groundEffectDensity scales how much of each chunk's scatter is drawn. It was registered and
+    // then ignored, so the slider did nothing until this read was added.
+    //
+    // **This is not what the reference does with it, and the difference only shows above the
+    // default.** Its callback (FUN_0078dab0) accepts 16 to 256 and hands the value to a setter
+    // (FUN_00780710) that raises a scatter-rebuild flag, so density controls how many doodads are
+    // PLACED, with 16 as the minimum. Here it is a draw fraction with 16 as the maximum. The two
+    // agree exactly at the default of 16; above it the reference adds doodads and this does
+    // nothing.
+    //
+    // A first reading of this guessed that density sets a per-chunk placement count. It does not.
+    // The rebuild flag its setter raises is consumed at 0x007b2a86, and what happens there is
+    // `density << 6` clamped to 0x1000: a GLOBAL POOL SIZE of doodad instances, 1024 at the default
+    // 16 and 4096 at the cap, which then sizes several derived buffers. So density bounds how many
+    // detail doodads can be resident at once, not how many any one chunk scatters. frozen has no
+    // such pool at all -- it pre-builds a per-chunk scatter and draws a fraction of it -- so this
+    // is an architectural difference and closing it is a rewrite of the system, not an edit.
+    //
+    // groundEffectDist is closer: the reference clamps it to [0, 140] on the way in and caches its
+    // square (FUN_00780730); this reads the raw CVar and squares it per frame. Defaults match.
     float density = 1.0f;
 
     if (CWorldParam::cvar_groundEffectDensity) {
@@ -4973,6 +5130,15 @@ void BlobShadowsBegin() {
 // Note the sense: this returns how much light is REMOVED. The shader emits 1 - coverage, so the
 // multiplier that actually reaches the framebuffer at full coverage is ambient / (ambient + diffuse),
 // which is the quantity the paragraph above describes.
+// The reference's answer is now known and is NOT this: `FUN_007e4480` takes the strength as its
+// third argument, and the call site at 0x007e4a27 passes a CONSTANT 0.4 (the float at 0x009f98d8).
+// No time of day, no light ratio. Decoded 2026-09-23; see docs/ref/parity-shadows.md.
+//
+// Deliberately not swapped for 0.4 yet. What `FUN_007e4370` does with that scalar has not been
+// read, so it is not yet known whether 0.4 means the same thing as the value below -- this one is
+// the amount of light REMOVED, and blob_decal_ps.hlsl emits `1 - coverage`. Substituting a number
+// whose sense is unconfirmed, on a path that cannot be looked at right now, would be guessing at
+// the screen rather than porting. It wants the emit read first, then one change and one run.
 float BlobShadowStrength() {
     const C3Vector& ambient = CWorld::GetOutdoorAmbient();
     const C3Vector& diffuse = CWorld::GetOutdoorDiffuse();
@@ -5076,8 +5242,29 @@ void BuildWmoShadowGrid(WmoGroup& grp) {
         return;
     }
 
-    float spanX = grp.boundsMax.x - grp.boundsMin.x;
-    float spanY = grp.boundsMax.y - grp.boundsMin.y;
+    // Anchor the grid on the vertices it is about to bin, not on grp.bounds.
+    //
+    // bounds stayed in world space when the group's vertices were rebased onto the instance
+    // origin, so anchoring on it mixed frames by that origin -- thousands of yards for most
+    // buildings. Both the binning and the lookup use local coordinates, so they agreed with each
+    // other and the results stayed correct; every cell index simply came out far negative and
+    // clamped to the corner. The whole group landed in one cell and every lookup read it, which
+    // is the exhaustive per-caster scan this grid exists to avoid.
+    float minX = grp.positions[0].x;
+    float minY = grp.positions[0].y;
+    float maxX = minX;
+    float maxY = minY;
+
+    for (uint32_t v = 1; v < grp.vertexCount; v++) {
+        const C3Vector& p = grp.positions[v];
+        minX = p.x < minX ? p.x : minX;
+        minY = p.y < minY ? p.y : minY;
+        maxX = p.x > maxX ? p.x : maxX;
+        maxY = p.y > maxY ? p.y : maxY;
+    }
+
+    float spanX = maxX - minX;
+    float spanY = maxY - minY;
 
     if (spanX <= 0.0f || spanY <= 0.0f) {
         return;
@@ -5089,8 +5276,8 @@ void BuildWmoShadowGrid(WmoGroup& grp) {
     const int32_t MAX_CELLS = 128;
 
     grp.shadowCellSize = CELL;
-    grp.shadowGridMinX = grp.boundsMin.x;
-    grp.shadowGridMinY = grp.boundsMin.y;
+    grp.shadowGridMinX = minX;
+    grp.shadowGridMinY = minY;
     grp.shadowCellsX = static_cast<int32_t>(spanX / CELL) + 1;
     grp.shadowCellsY = static_cast<int32_t>(spanY / CELL) + 1;
 
@@ -5550,7 +5737,13 @@ bool TerrainPointIsIndoors(const C3Vector& pos) {
     return false;
 }
 
-bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient) {
+// The light for a unit standing on a WMO floor, by the reference's mechanism: a probe from one
+// yard above its feet to twelve below, through the interior groups' BSP, sampling the MOCV at the
+// floor face it lands on (CMapEntity::FloorLight, FUN_007a0d60). The reference reaches the
+// entity's MapObjDef and group through its parent links; without that graph every loaded instance
+// whose box holds the probe is tried, and within it every interior group whose box holds it, first
+// hit wins. Exterior groups never answer, so a unit out on a deck is lit by the sky again.
+bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient) {
     for (auto& tile : s_tiles) {
         if (!tile.loaded || !tile.wmos) {
             continue;
@@ -5559,52 +5752,41 @@ bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient) {
         for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
             WmoInstance& w = tile.wmos[wi];
 
-            // Skip a whole building the unit is nowhere near before scanning its rooms.
             if (w.hasBounds && (pos.x < w.bboxMin.x || pos.x > w.bboxMax.x ||
                                 pos.y < w.bboxMin.y || pos.y > w.bboxMax.y ||
-                                pos.z < w.bboxMin.z || pos.z > w.bboxMax.z)) {
+                                pos.z + 1.0f < w.bboxMin.z || pos.z - 12.0f > w.bboxMax.z)) {
                 continue;
             }
+
+            // Into the model's own space: undo the placement translation, then its yaw, so the
+            // probe matches WmoGroup::queryVerts and the BSP planes that were built alongside them.
+            float dx = pos.x - w.origin.x;
+            float dy = pos.y - w.origin.y;
+
+            C3Vector local = {
+                dx * w.yawCos + dy * w.yawSin,
+                dy * w.yawCos - dx * w.yawSin,
+                pos.z - w.origin.z
+            };
 
             for (uint32_t gi = 0; gi < w.groupCount; gi++) {
                 WmoGroup& grp = w.groups[gi];
 
-                if (!grp.interior || !grp.vertexCount) {
+                // A group without a BSP or vertex colours cannot answer the probe
+                if (!grp.vertexCount || !grp.objGroup.m_bspNodes || !grp.objGroup.m_colors) {
                     continue;
                 }
 
-                // The box is only a prefilter now; the geometry test below decides.
-                if (pos.x >= grp.boundsMin.x && pos.x <= grp.boundsMax.x &&
-                    pos.y >= grp.boundsMin.y && pos.y <= grp.boundsMax.y &&
-                    pos.z >= grp.boundsMin.z && pos.z <= grp.boundsMax.z &&
-                    WmoGroupContains(grp, pos.x - w.origin.x, pos.y - w.origin.y,
-                                     pos.z - w.origin.z)) {
-                    // Light the unit by the specific room it stands in, not the whole building's
-                    // average, so a hall's blue or purple cast reaches the characters in it.
-                    //
-                    // NOTE this is an axis-aligned box test against the group bounds, which is a
-                    // strictly larger volume than the room. For a big structure -- Ebon Hold is one
-                    // WMO -- an interior hall's box can reach out over an open deck, and anything
-                    // standing there is then lit flat by interior ambient with no diffuse at all,
-                    // while the terrain under its feet still takes the outdoor path. That is a
-                    // candidate explanation for models not picking up the sky colour; the reference
-                    // resolves containment through the group BSP and portals, not the bounds.
-                    //
-                    // Logged a handful of times rather than fixed on a hunch: the next run says
-                    // whether this branch is being taken at all, and where.
-                    static int32_t s_reported = 0;
+                if (pos.x < grp.boundsMin.x || pos.x > grp.boundsMax.x ||
+                    pos.y < grp.boundsMin.y || pos.y > grp.boundsMax.y ||
+                    pos.z + 1.0f < grp.boundsMin.z || pos.z - 12.0f > grp.boundsMax.z) {
+                    continue;
+                }
 
-                    if (s_reported < 6) {
-                        s_reported++;
-                        fprintf(stderr,
-                                "InteriorAmbient: pos(%.1f %.1f %.1f) group %u ambient(%.2f %.2f %.2f) "
-                                "groupBox z[%.1f %.1f] portals %u\n",
-                                pos.x, pos.y, pos.z, gi,
-                                grp.groupAmbient.x, grp.groupAmbient.y, grp.groupAmbient.z,
-                                grp.boundsMin.z, grp.boundsMax.z, w.portalCount);
-                    }
+                uint32_t flags = 0;
+                uint8_t alpha = 0;
 
-                    outAmbient = grp.groupAmbient;
+                if (CMapEntity::FloorLight(local, &w.mapObj, &grp.objGroup, diffuse, ambient, &flags, &alpha)) {
                     return true;
                 }
             }
@@ -5630,7 +5812,11 @@ const float SKY_BODY_RADIUS = 12.0f;
 
 struct SkyBodyKey { float time; float value; };
 
-// Wrap-around linear interpolation over (time, value) pairs, matching FUN_007ed3b0.
+// Wrap-around linear interpolation over (time, value) pairs. The reference passes the key count
+// in ESI and the table in EDI, clamps the parameter to [0, 1], and wraps the last key round to
+// the first across the end of the day. Every band in the sky bodies, the glare and the sky
+// highlight is read through it.
+// ref: FUN_007ed3b0
 float InterpBodyBand(const SkyBodyKey* keys, int32_t count, float t) {
     if (count <= 0) {
         return 0.0f;
@@ -5882,6 +6068,52 @@ void SkyBodiesRender() {
     DrawGlare(MOON_THETA, MOON1_PHI, 3, MOON_GLARE_VIS, 2.0f, t, s_glareTexture[1], right, up, fwd);
 }
 
+// ------------------------------------------------------------------------------------------------
+// The sky highlight -- the dome's azimuthal colour variation, reference FUN_007f0530.
+//
+// The four rings between the zenith and 45 degrees are not painted flat. Their colour is pushed per
+// segment by a profile band sampled at the segment's azimuth relative to the camera, so one half of
+// the dome brightens and the opposite half darkens toward the zenith colour. It is the sunrise and
+// sunset glow, and it is off for most of the day.
+//
+// Every number below was read out of WoW.exe, not inferred:
+//   * strength = StrengthBand(dayFraction) * LightParams.highlightSky. The band is at 0x00af4b7c
+//     and peaks only around 06:30 and 21:30; the scale is DNInfo+0x128, which FUN_007ebff0 fills
+//     with `fildl 0x4(%edi)` at 0x007ec1cd -- LightParams column 1, highlightSky, 0 or 1. A zone
+//     whose row carries 0 therefore gets no highlight at all, which is most of them.
+//   * the segment parameter is wrap01(yaw / (2pi) + 0.25 + seg * (-1 / segCount)). The two
+//     constants are 0.159155 at 0x00a41ca8 and 0.25 at 0x00a41b00, and the -1 is at 0x009e2ef4.
+//     yaw is atan2(forward.y, forward.x) normalised to [0, 2pi), computed at 0x007f3920 from the
+//     camera forward vector the DayNight block keeps at +0x30.
+//   * profile = ProfileBand(that parameter), the band at 0x00af4bac. It is positive across one
+//     half of the dome and negative across the other.
+//
+// The two branches, taken verbatim from 0x007f06b1 and 0x007f070b (the sign of the profile picks
+// between them, with zero going to the first):
+//
+//     local = lerp(ringColor, topRingColor, strength)
+//     profile >= 0:  out = lerp(ringColor, local, (profile - 1) * strength)
+//     profile <  0:  out = lerp(local, lerp(local, zenithColor, strength * 0.7), -profile * strength)
+//
+// One deliberate divergence. The reference lerps 0-255 bytes and casts the result back to a byte
+// with no clamp (FUN_007ed2d0), so an out-of-range channel would wrap; frozen keeps floats and
+// clamps to [0, 255]. Both branches can leave the 0..1 range because their factors extrapolate,
+// and a wrapped channel would be a garish artefact rather than a faithful colour.
+const SkyBodyKey SKY_HIGHLIGHT_STRENGTH[6] = {
+    { 0.125000f, 0.0f }, { 0.270833f, 1.0f }, { 0.291667f, 0.0f },
+    { 0.854167f, 0.0f }, { 0.895833f, 1.0f }, { 0.999306f, 0.0f },
+};
+
+const SkyBodyKey SKY_HIGHLIGHT_PROFILE[6] = {
+    { 0.125f, 1.0f }, { 0.375f, 0.0f }, { 0.500f, -0.5f },
+    { 0.625f, -0.7f }, { 0.750f, -0.5f }, { 0.875f, 0.0f },
+};
+
+// Per-channel linear interpolation, matching FUN_007ed2d0 apart from the clamp noted above.
+C3Vector SkyLerp(const C3Vector& a, const C3Vector& b, float t) {
+    return { a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t };
+}
+
 void SkyRender() {
     // The reference skips the whole sky pass while the camera is under liquid; the clear colour
     // (the underwater fog) is the backdrop instead.
@@ -5909,49 +6141,79 @@ void SkyRender() {
         s_skyWhite = TextureCreate(SKY_WHITE_DIM, SKY_WHITE_DIM, GxTex_Argb8888, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 1, 1, 0, 0, 0, 1), s_skyWhitePixels, SkyWhiteCallback, __FILE__, 0);
     }
 
-    // One colour per ring by altitude. The five sky bands span zenith to 45 degrees, where the
-    // gradient actually lives; from there to the horizon the horizon band blends into the fog
-    // colour so the dome meets the fogged terrain without a seam; below the horizon it is fog.
-    // GetSkyColor(0) is the horizon band and (4) the zenith band.
+    // One band per ring, straight across -- no gradient maths. Ring i takes sky band i, and the
+    // bottom two rings both take band 7, which is the fog colour. That flat assignment IS the
+    // reference's shading (FUN_007f0530 writes 1 zenith colour, then 4 rings of 24 from successive
+    // bands, then 24 + 1 of the fog band).
+    //
+    // On top of that the four middle rings carry the sky highlight, which varies their colour per
+    // segment with the camera azimuth; see the block above SkyRender.
     C3Vector ringColor[SKY_RINGS + 1];
-    const C3Vector& fog = CWorld::GetFogColor();
 
     for (int32_t ring = 0; ring <= SKY_RINGS; ring++) {
-        float zenith = SKY_RING_ZENITH[ring]; // turns of pi
-
-        if (zenith <= 0.25f) {
-            float f = (zenith / 0.25f) * 4.0f; // 0 at the zenith .. 4 at 45 degrees
-            int32_t i0 = static_cast<int32_t>(f);
-
-            if (i0 > 3) {
-                i0 = 3;
-            }
-
-            float fr = f - i0;
-            const C3Vector& c0 = CWorld::GetSkyColor(4 - i0);
-            const C3Vector& c1 = CWorld::GetSkyColor(3 - i0);
-            ringColor[ring] = { c0.x + (c1.x - c0.x) * fr, c0.y + (c1.y - c0.y) * fr, c0.z + (c1.z - c0.z) * fr };
-        } else if (zenith < 0.5f) {
-            float fr = (zenith - 0.25f) / 0.25f; // 45 degrees .. horizon
-            const C3Vector& h = CWorld::GetSkyColor(0);
-            ringColor[ring] = { h.x + (fog.x - h.x) * fr, h.y + (fog.y - h.y) * fr, h.z + (fog.z - h.z) * fr };
-        } else {
-            ringColor[ring] = fog;
-        }
+        ringColor[ring] = CWorld::GetSkyColor(ring < 5 ? ring : 5);
     }
+
+    float highlight = InterpBodyBand(SKY_HIGHLIGHT_STRENGTH, 6, CWorld::GetDayProgress())
+        * CWorld::GetSkyHighlight();
+
+    // The reference rebuilds this per ring; the yaw cannot change inside a frame, so it is hoisted.
+    const C3Vector& camDir = CWorld::GetCameraDir();
+    float yaw = atan2f(camDir.y, camDir.x);
+
+    if (yaw < 0.0f) {
+        yaw += 6.2831855f;
+    }
+
+    float segParam0 = yaw * 0.159155f + 0.25f;
+
+    if (segParam0 > 1.0f) {
+        segParam0 -= 1.0f;
+    }
+
+    const float segStep = -1.0f / SKY_SEGS;
 
     int32_t v = 0;
 
     for (int32_t ring = 0; ring <= SKY_RINGS; ring++) {
-        const C3Vector& c = ringColor[ring];
-        float r = c.x * 255.0f;
-        float g = c.y * 255.0f;
-        float b = c.z * 255.0f;
+        const C3Vector& base = ringColor[ring];
+
+        // Rings 1..4 are the reference's four highlighted rings: the zenith vertex above them and
+        // the two fog-band rings below are flat there too.
+        bool highlighted = highlight > 0.0f && ring >= 1 && ring <= 4;
+        C3Vector local = highlighted ? SkyLerp(base, ringColor[1], highlight) : base;
+        float p = segParam0;
 
         for (int32_t seg = 0; seg <= SKY_SEGS; seg++) {
-            s_skyCol[v].r = static_cast<uint8_t>(r > 255.0f ? 255.0f : r);
-            s_skyCol[v].g = static_cast<uint8_t>(g > 255.0f ? 255.0f : g);
-            s_skyCol[v].b = static_cast<uint8_t>(b > 255.0f ? 255.0f : b);
+            C3Vector c = base;
+
+            if (highlighted) {
+                if (p < 0.0f) {
+                    p += 1.0f;
+                }
+
+                float profile = InterpBodyBand(SKY_HIGHLIGHT_PROFILE, 6, p);
+
+                if (profile >= 0.0f) {
+                    c = SkyLerp(base, local, (profile - 1.0f) * highlight);
+                } else {
+                    C3Vector toward = SkyLerp(local, ringColor[0], highlight * 0.7f);
+                    c = SkyLerp(local, toward, -profile * highlight);
+                }
+
+                p += segStep;
+            }
+
+            float r = c.x * 255.0f;
+            float g = c.y * 255.0f;
+            float b = c.z * 255.0f;
+            r = r < 0.0f ? 0.0f : (r > 255.0f ? 255.0f : r);
+            g = g < 0.0f ? 0.0f : (g > 255.0f ? 255.0f : g);
+            b = b < 0.0f ? 0.0f : (b > 255.0f ? 255.0f : b);
+
+            s_skyCol[v].r = static_cast<uint8_t>(r);
+            s_skyCol[v].g = static_cast<uint8_t>(g);
+            s_skyCol[v].b = static_cast<uint8_t>(b);
             s_skyCol[v].a = 0xFF;
             v++;
         }

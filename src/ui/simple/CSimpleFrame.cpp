@@ -96,6 +96,11 @@ void CSimpleFrame::AddFrameRegion(CSimpleRegion* region, uint32_t drawlayer) {
 }
 
 int32_t CSimpleFrame::AttributeChangesAllowed() {
+    // TODO -- unconditionally true, so no attribute change is ever refused. The
+    // reference decides this; overrides.json has said status "stub" for 0048ed30 since
+    // 2026-09-23 and described the body as carrying a TODO, which it did not. Marked now
+    // so the inventory agrees with that judgement instead of reading a bare `return true`
+    // as a finished port.
     return true;
 }
 

@@ -41,29 +41,61 @@ been watched doing it at runtime.
 
 Guessing an implementation from what the screen looks like is how most of the graphics bugs in this
 codebase got in, so accuracy is measured rather than asserted. `tools/recomp/` links the original's
-27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`.
+27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`. The numbers below are from the
+2026-09-24 run.
 
 Three measures, deliberately never rolled into one, because each is a stronger claim than the last:
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **2,678 / 27,161** &nbsp;·&nbsp; ~10% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **920** &nbsp;·&nbsp; ~3% of the client, ~34% of what is linked |
+| **Linked** | an original function has a known counterpart here | **3,232 / 27,156** &nbsp;·&nbsp; ~11% |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,294** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
 
 | | covered |
 |---|---|
-| Lua bindings the original registers | 1,791 / 2,512 registered &nbsp;·&nbsp; ~71% |
-| &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,150 &nbsp;·&nbsp; **~46%** |
-| Functions reachable from the world render entry point | 392 / 5,530 &nbsp;·&nbsp; ~7% |
-| Original code, by bytes rather than function count | ~10% linked, ~2% faithful |
+| Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
+| &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
+| Functions reachable from the world render entry point | 614 / 5,527 &nbsp;·&nbsp; ~11% |
+| The render surface: the map, model, entity, texture and device modules that draw the world | 288 / 4,589 &nbsp;·&nbsp; **~6%** |
+| Empty functions the render path still has call sites for | **42** &nbsp;·&nbsp; an upper bound, not a defect count |
+| Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
+
+All 681 translation units now parse cleanly under libclang, so no row above is being computed
+from guessed call data. That was not true until 2026-09-23: 24 files failed to parse, and the fix
+moved **faithful** by 2 on its own. The cause was a quoting bug on this side rather than anything
+wrong with the code -- `-DOSCL_IMPORT_REF=""` was being passed through with its quotes, so the
+macro expanded to an empty string literal instead of to nothing, and every declaration using it
+failed. 23 of the 24 were third-party video-decoder sources and one was frozen's own.
+
+The last row is the one that moves week to week. Linked and faithful count functions that exist; it counts functions that **do not** and are called anyway. A few of those are worse than missing: a caller that changes its own control flow assuming the stub succeeded will do something wrong rather than nothing. Three such traps have been found and disarmed before anything switched them on: enabling the model cache's threading flag would have frozen on every second model, letting merged batches through would have stopped them drawing, and assigning the async-BLP hook would have stopped every BLP loading. Each was harmless only because a flag upstream was still off.
+
+It is an upper bound and is meant to be read rather than totalled. `tools/livestubs.py` prints the list, and the list mixes four things: genuine live holes; stubs that are dead today because the only caller sits behind another stub (each one says so in a comment); deliberate divergences that are correct as they stand, like `StereoEnabled` returning false on a client with no stereo support; and a residue the test cannot settle on its own, such as `M2Init`'s scalar overloads, whose `return 1` correctly ends a template recursion. The number has fallen three times on 2026-09-23, and only the last of the three was real work: 47 to 44 is `CGxDeviceD3d::IStateSyncLights` and `CM2Lighting::SetupGxLights` actually being written, which builds out the fixed-function half of the model lighting path -- though that half stays cold until a caller reaches it, since the one frozen has sits behind a shader toggle that is currently forced on. 44 to 42 is the solid-colour texture cache, whose two halves were stubs -- and that one is on a path that runs: every request for a solid colour was allocating a fresh 8x8 texture and leaking it, including one per missing model texture. The first two falls changed no code at all, and happened because the test was counting the wrong things. 79 to 65: it treated any one-line `return <name>;` as empty, which made accessors look like holes. 65 to 47: it counted the OpenGL and GLES backends, which `src/gx/CMakeLists.txt` builds only on Mac and Android -- seventeen rows, `GLDevice::Draw` and the `CGxDeviceGLL::IStateSync*` family among them, that are not in the Windows binary at all and cannot be reached by a frame here. They are still work for the Android port, so the tool now lists them separately rather than dropping them.
+
+Inside that render surface, the split is lopsided, and it is the honest picture of what is left:
+
+| area | modules | ported |
+|---|---|---|
+| Models and their scene | `M2Scene`, `M2Shared`, `CharacterModelBase` | ~21% |
+| The map's own geometry | `MapChunk`, `MapLoad`, `MapArea`, `MapObjRead` | ~13% |
+| Textures | `Texture`, `TextureBlob`, `TextureCache` | ~10% |
+| Entities in the world | `Unit_C`, `Player_C`, `GameObject_C`, `ObjectEffect` | ~2% |
+| The map and its streaming | `Map`, `MapMem`, `MapChunkLiquid`, `DetailDoodad` | ~1% |
+| The graphics device | `CGxDevice`, `CGxDeviceD3d9Ex`, the GL and D3D texture paths | ~3% |
+
+The model side is furthest along because the scene render was ported first; the map and the
+entities behind it are the thin part, and that is where the terrain renderer is still standing in
+for the original rather than reproducing it.
 
 A missing binding makes FrameXML raise "attempt to call a nil value"; a stub keeps it quiet but
 returns nothing, which is why the two are counted apart. So: the interface has the broadest
-coverage and is now a little under half filled in, the engine underneath is early, and the distance
-from "linked" to "verified" is the honest size of the work left. The report also carries
+coverage and is now about half filled in, the engine underneath is early, and the modules that
+actually draw the world are the thinnest of all: the terrain renderer works, but it was written from
+the screen rather than from the original, so almost none of it can be tagged as a port of a specific
+original function. The distance from "linked" to "verified" is the honest size of the work left.
+The report also carries
 per-module coverage, the ranked queue of what to port next, and a history row per run, so progress
 is a table rather than a feeling. A function is only ever marked verified by a trace or a scene
 comparison, never by a clean build or a plausible reading of a decompilation.
@@ -75,7 +107,8 @@ comparison, never by a clean build or a plausible reading of a decompilation.
 2. **Subsystem ports.** Chat, the spell cast pipeline, inventory and the tooltip, sound. These are
    the large functions at the top of the report's unfaithful queue and the reason several Lua tables
    are still stubs.
-3. **Lua surface.** Close the remaining 721 bindings so Blizzard's interface stops meeting `nil`.
+3. **Lua surface.** Close the last 40 missing bindings so Blizzard's interface stops meeting `nil`,
+   then fill in the 1,491 that are registered but still stubs.
 4. **Runtime verification at scale.** The call tracer and the scene comparison exist; the work is
    running them broadly enough to move the verified column, not just the linked one.
 5. **1.0.0.** Every reference function linked and faithful, the render verified against the original

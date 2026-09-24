@@ -256,8 +256,45 @@ void TEXTURECACHE::PasteGlyphNonOutlinedAA(const GLYPHBITMAPDATA& glyphData, uin
     }
 }
 
+// Monochrome glyphs come out of FreeType one BIT per pixel, most significant bit leftmost, so the
+// only difference from the anti-aliased path above is how a source pixel becomes a texel: a set bit
+// is opaque white and a clear bit is nothing. The reference spells that with negb/sbb to turn the
+// bit into a 0 or -1 mask and writes 0xFFFF or 0x0000; this writes the same two values.
+//
+// It was an empty body, and it is reachable: CSimpleFont and CSimpleFontString both set
+// FONT_MONOCHROME from the MONOCHROME flag a FrameXML font can declare, so any font that did
+// declared it drew blank glyphs. The padding rows above and below the glyph, the 256-texel row
+// stride and the odd second half of the bottom-padding guard are all the same as the AA version,
+// because in the reference they are the same code.
+// ref: FUN_006c9330
 void TEXTURECACHE::PasteGlyphNonOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
-    // TODO
+    auto src = reinterpret_cast<uint8_t*>(data.m_data);
+    auto pitch = data.m_glyphPitch;
+    auto dstCellStride = data.m_glyphCellWidth * 2;
+
+    for (int32_t y = 0; y < data.m_yStart; y++) {
+        memset(dst, 0, dstCellStride);
+        dst += 256;
+    }
+
+    for (int32_t y = 0; y < data.m_glyphHeight; y++) {
+        for (int32_t x = 0; x < data.m_glyphWidth; x++) {
+            dst[x] = (src[x >> 3] >> (7 - (x & 7))) & 1 ? 0xFFFF : 0x0000;
+        }
+
+        src += pitch;
+        dst += 256;
+    }
+
+    auto glyphHeight = data.m_glyphHeight;
+    auto yStart = data.m_yStart;
+
+    if (this->m_theFace->m_cellHeight - glyphHeight - yStart > 0 && this->m_theFace->m_cellHeight - glyphHeight != yStart) {
+        for (int32_t y = 0; y < this->m_theFace->m_cellHeight - glyphHeight - yStart; y++) {
+            memset(dst, 0, dstCellStride);
+            dst += 256;
+        }
+    }
 }
 
 void TEXTURECACHE::PasteGlyphOutlinedAA(const GLYPHBITMAPDATA& glyphData, uint16_t* dst) {
@@ -591,6 +628,14 @@ LABEL_94:
         break;
     }
 
+    // The write-out below was checked against the reference on 2026-09-23 and is faithful. Its
+    // three planes map one to one onto the reference's three scratch buffers -- v46 is the mask at
+    // -0x481c, v45 the coverage at -0x901c, v44 the lit level at -0xd81c -- and it branches in the
+    // same order. The coverage scale is `imull $0xff` then `sarl $0xc` there, which is this
+    // expression exactly, and the nested shift-or assembles the same ARGB4444 word:
+    // (lit << 12) | (a << 8) | (a << 4) | a. The reference reads the coverage plane a byte at a
+    // time where this reads the uint16, which is equivalent because the unpack never writes above
+    // 255.
 LABEL_95:
     v40 = 0;
 
@@ -612,8 +657,131 @@ LABEL_95:
     }
 }
 
+// The outlined monochrome glyph paste, FUN_006c8e70, named by the dispatcher inlined at
+// 0x006c9fce which tests FONT_OUTLINE then FONT_MONOCHROME to pick one of the four. It was an
+// empty body, so any FrameXML font declaring both flags drew nothing.
+//
+// It is NOT PasteGlyphOutlinedAA with a plane removed. That one keeps three scratch planes -- mask,
+// coverage and lit level -- and anti-aliases its outline from neighbour counts. This keeps ONE, and
+// the plane holds a CLASS CODE: 1 for the glyph body, 4 for the hard inner ring, 2 for the soft
+// outer ring. There is no anti-aliasing anywhere in it.
+//
+// Three things about the reference are worth stating, because they are what make the loop below a
+// faithful rewrite rather than a lookalike:
+//
+// * The dilation is IN PLACE, and that is safe rather than lucky. Each pass searches for one class
+//   and writes a different one -- pass 0 looks for 1 and writes 4, pass 1 looks for 4 and writes 2
+//   -- so a value written during a pass can never satisfy that same pass's test. In-place and
+//   double-buffered give identical results here.
+// * The reference unrolls the neighbourhood into fifteen boundary cases (first row, last row, first
+//   column, last column and the interior). Counting the tests in each shows they are the full
+//   eight-neighbourhood minus whatever falls outside, so the bounds-checked loop below computes the
+//   same thing with none of the unrolling.
+// * A body pixel is never overwritten: the reference guards its store with a `!= 1` test.
+//
+// **Built, not seen running.** The failure mode is confined to fonts carrying both flags, and it is
+// visual only.
+// ref: FUN_006c8e70
 void TEXTURECACHE::PasteGlyphOutlinedMonochrome(const GLYPHBITMAPDATA& data, uint16_t* dst) {
-    // TODO
+    // One plane, 256 texels per row, matching the reference's single 0x4800-byte scratch buffer.
+    uint16_t plane[9216];
+    memset(plane, 0, sizeof(plane));
+
+    auto cellHeight = static_cast<int32_t>(this->m_theFace->m_cellHeight);
+    auto cellWidth = static_cast<int32_t>(data.m_glyphCellWidth);
+    auto yStart = static_cast<int32_t>(data.m_yStart);
+
+    // FONT_OUTLINE_THICK. The reference reads face->flags & 0x8, runs a second dilation pass when
+    // it is set, and shifts the glyph one more texel right to leave room for the wider ring.
+    bool thick = (this->m_theFace->m_flags & 0x8) != 0;
+
+    // The body lands one row down and one column right of the cell origin, so the ring has
+    // somewhere to go; thick moves it one further right again.
+    int32_t originRow = yStart + 1;
+    int32_t originCol = thick ? 2 : 1;
+
+    auto src = reinterpret_cast<uint8_t*>(data.m_data);
+
+    for (int32_t y = 0; y < data.m_glyphHeight; y++) {
+        for (int32_t x = 0; x < data.m_glyphWidth; x++) {
+            if ((src[x >> 3] >> (7 - (x & 7))) & 1) {
+                int32_t row = originRow + y;
+                int32_t col = originCol + x;
+
+                if (row >= 0 && row < cellHeight && col >= 0 && col < cellWidth) {
+                    plane[row * 256 + col] = 1;
+                }
+            }
+        }
+
+        src += data.m_glyphPitch;
+    }
+
+    for (int32_t pass = 0; pass < (thick ? 2 : 1); pass++) {
+        uint16_t seek = pass == 0 ? 1 : 4;
+        uint16_t mark = pass == 0 ? 4 : 2;
+
+        // The second pass starts one row higher, which is how the outer ring reaches above the
+        // inner one. The reference decrements only when yStart is non-zero.
+        int32_t y0 = yStart;
+
+        if (pass == 1 && y0 != 0) {
+            y0--;
+        }
+
+        for (int32_t y = y0; y < cellHeight; y++) {
+            for (int32_t x = 0; x < cellWidth; x++) {
+                int32_t idx = y * 256 + x;
+
+                if (pass == 1 && plane[idx]) {
+                    continue;
+                }
+
+                bool adjacent = false;
+
+                for (int32_t dy = -1; dy <= 1 && !adjacent; dy++) {
+                    for (int32_t dx = -1; dx <= 1; dx++) {
+                        if (!dx && !dy) {
+                            continue;
+                        }
+
+                        int32_t ny = y + dy;
+                        int32_t nx = x + dx;
+
+                        if (ny < 0 || ny >= cellHeight || nx < 0 || nx >= cellWidth) {
+                            continue;
+                        }
+
+                        if (plane[ny * 256 + nx] & seek) {
+                            adjacent = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (adjacent && plane[idx] != 1) {
+                    plane[idx] = mark;
+                }
+            }
+        }
+    }
+
+    // Class to texel, exactly as the reference writes it from 0x006c92c0.
+    for (int32_t y = 0; y < cellHeight; y++) {
+        for (int32_t x = 0; x < cellWidth; x++) {
+            uint16_t cls = plane[y * 256 + x];
+
+            if (cls == 1) {
+                dst[x] = 0xFFFF;
+            } else if (cls == 2) {
+                dst[x] = 0x7000;
+            } else {
+                dst[x] = cls == 4 ? 0xF000 : 0x0000;
+            }
+        }
+
+        dst += 256;
+    }
 }
 
 void TEXTURECACHE::UpdateDirty() {
@@ -736,6 +904,10 @@ float CGxFont::ComputeStep(uint32_t currentCode, uint32_t nextCode) {
 }
 
 float CGxFont::ComputeStepFixedWidth(uint32_t currentCode, uint32_t nextCode) {
+    // Three live call sites, but all three sit behind `flags & 0x10`, which only
+    // ConvertStringFlags sets and only from its own 0x800 -- and nothing passes that today. So
+    // returning 0 collapses no text in practice. It would the moment a caller asks for a
+    // fixed-width string, which is why this is worth porting before that happens.
     // TODO
     return 0.0f;
 }

@@ -176,13 +176,19 @@ int32_t CSimpleButton_SetNormalFontObject(lua_State* L) {
     return 0;
 }
 
-// ref: FUN_004a38f0
-// Pushes a button's font object, registering it on first use. The reference shares one helper
-// across the three getters below, which is why they are one-line forwards here too.
+// Pushes a button's font object, registering it on first use. One helper serves the three
+// getters below, which is why they are one-line forwards here.
 //
-// A button with no font for that state answers with NO values, not nil -- the reference returns
-// zero from the binding rather than pushing anything, and FrameXML's button templates rely on the
+// A button with no font for that state answers with NO values, not nil: this returns zero from
+// the binding rather than pushing anything, and FrameXML's button templates rely on the
 // difference when they fall back to the parent's font.
+//
+// The FUN_004a38f0 tag that used to sit here was wrong, and the null case is how it was
+// caught. That address takes THREE arguments and on a null font pushes nil and returns 1, which
+// is FontString_GetFontObject's contract, not this one's -- this takes two and returns 0. The tag
+// now sits only there. The reference counterpart of this helper has not been located, and the
+// claim above about what the reference does on null was carried over from the bad tag, so it is
+// restated here as a statement about frozen until something confirms it.
 static int32_t ButtonFontObject(CSimpleFont* font, lua_State* L) {
     if (!font) {
         return 0;

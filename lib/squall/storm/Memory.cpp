@@ -4,6 +4,11 @@
 
 constexpr size_t ALIGNMENT = 8;
 
+// The reference emits exactly two of these operators out of line, and this is one of them. Its
+// allocation tag string is "new" at 0x009e0e14, and its body is this body: SMemAlloc(size, tag,
+// -1, 0) and nothing else. The tag is pushed from twenty places in the binary, so the compiler
+// inlined the operator nearly everywhere and this is the copy left over for the rest.
+// ref: FUN_00401010
 void* operator new(size_t bytes) {
     return SMemAlloc(bytes, "new", -1, 0x0);
 }
@@ -32,6 +37,14 @@ void operator delete(void* ptr, const std::nothrow_t&) noexcept {
     }
 }
 
+// The other operator the reference emits out of line, tag string "delete[]" at 0x009e0e18, with
+// the same null guard around the same call. That tag is pushed from 87 places.
+//
+// Worth knowing for whoever looks next: those are the ONLY two allocator tag strings in that part
+// of the reference's data. There is no "new[]" and no scalar "delete", so the reference's other
+// operators are either folded into these two or never emitted, and frozen's four remaining
+// overloads have nothing to link to.
+// ref: FUN_00401030
 void operator delete[](void* ptr) noexcept {
     if (ptr) {
         SMemFree(ptr, "delete[]", -1, 0x0);

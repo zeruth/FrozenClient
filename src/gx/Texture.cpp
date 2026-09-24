@@ -17,7 +17,10 @@
 #define MIPPED_IMG_ALIGN 16
 
 namespace Texture {
-    int32_t s_createBlpAsync; // Invented name
+    // Invented name. Never assigned, so it is zero and CreateBlpAsync -- a stub -- is unreachable.
+    // Do not set it without porting that function: its call site has no fallback. See the note
+    // there.
+    int32_t s_createBlpAsync;
     MipBits* s_mipBits;
     int32_t s_mipBitsValid;
     TSHashTable<CTexture, HASHKEY_TEXTUREFILE> s_textureCache;
@@ -51,6 +54,23 @@ int32_t s_pixelFormatToMipBitsCache[NUM_PIXEL_FORMATS] = {
 
 static CImVector CRAPPY_GREEN = { 0x00, 0xFF, 0x00, 0xFF };
 
+// Waits for a texture's pending async read to land. **Still a stub**, and it has live callers:
+// TextureGetGxTex calls it on every blocking fetch (a2 == 1), so today that fetch never actually
+// waits and simply returns whatever gxTex happens to be there, usually null.
+//
+// The reference (FUN_004b6550, ESI = the texture) is only seven instructions:
+//
+//     CAsyncObject* a = texture->asyncObject;   // +0x40
+//     if (!a) return;
+//     if (a->field_4 == 0) FUN_004b64e0(1);     // EDI = a: unlink its node at a+0x28 and
+//                                               //   SMemFree a+0x8 -- release a finished request
+//     AsyncFileReadWait(a);                     // 004ba060, which frozen has
+//
+// Not ported here deliberately. frozen already has AsyncFileReadWait, but FUN_004b64e0 frees the
+// request out from under the list it is linked into, and getting the order or the guard wrong in
+// a blocking path is a hang or a use-after-free rather than a wrong pixel. It needs the async
+// texture queue read properly first; see docs/ref/parity-texture-async.md.
+// ref: FUN_004b6550
 void AsyncTextureWait(CTexture* texture) {
     // TODO
 }
@@ -298,9 +318,28 @@ void GxTexParameters(const CGxTex* texId, CGxTexParms& parms) {
     // TODO
 }
 
+// **Do not make this return true without porting the pool on both sides at once.** It is the
+// predicate of a texture reuse pool, and `false` is the safe answer: never reuse, always create
+// and always destroy, which is correct and merely wasteful.
+//
+// `true` is not safe today. TextureFreeGxTex reads
+//
+//     if (GxTexReusable(parms)) { /* TODO */ return; }
+//     GxTexDestroy(texId);
+//
+// so the moment this says yes, the free path returns without destroying the texture AND without
+// putting it anywhere -- every texture leaks. TextureAllocGxTex has the other half, a bucketed
+// pool keyed on width >> 5 and height >> 5 with a 512 cap, and its lookup is written; the release
+// side is the `// TODO` above.
+//
+// That is the same shape as the three traps already found in this port (M2UseThreads,
+// IsBatchDoodadCompatible, s_createBlpAsync): a stub whose caller changes its own control flow
+// assuming the stub succeeded. This one is disarmed only because the constant is `false`.
+//
+// It is also a pure performance feature -- nothing it changes is visible -- so it is a poor
+// candidate for an unverified change.
 bool GxTexReusable(CGxTexParms& parms) {
-    // TODO
-
+    // TODO -- see above before implementing
     return false;
 }
 
@@ -622,6 +661,41 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
     }
 }
 
+// Report a BLP failure once, up to a cap. Every one of these ends as a CRAPPY_GREEN square on
+// screen, and until 2026-09-23 the only record was a CStatus nothing reads -- so a wrong texture
+// looked identical to a missing feature. The cap is there because a systematic failure (a format
+// the backend cannot take, say) would otherwise fill the log with the same line.
+static void ReportTextureFailure(const char* filename, const char* why) {
+    static int32_t s_reported = 0;
+
+    if (s_reported >= 24) {
+        return;
+    }
+
+    s_reported++;
+
+    SysMsgPrintf(SYSMSG_ERROR, "BLP load failed (%s): %s", why, filename ? filename : "?");
+
+    if (s_reported == 24) {
+        SysMsgPrintf(SYSMSG_ERROR, "BLP load failures: further ones not reported");
+    }
+}
+
+// The allocation failure carries the dimensions and format, because that is what distinguishes a
+// backend that cannot take the format from one that cannot take the size.
+static void ReportTextureAllocFailure(const char* filename, uint32_t w, uint32_t h, int32_t fmt) {
+    static int32_t s_reported = 0;
+
+    if (s_reported >= 24) {
+        return;
+    }
+
+    s_reported++;
+
+    SysMsgPrintf(SYSMSG_ERROR, "texture alloc failed %ux%u fmt=%d: %s",
+                 w, h, fmt, filename ? filename : "?");
+}
+
 int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
     CBLPFile image;
 
@@ -631,6 +705,8 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
             "BLP Texture failure: \"%s\" invalid file version\n",
             texture->filename
         );
+
+        ReportTextureFailure(texture->filename, "invalid file version");
 
         image.Close();
 
@@ -674,6 +750,8 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
             "BLP Texture failure: \"%s\" decompression failed.\n",
             texture->filename
         );
+
+        ReportTextureFailure(texture->filename, "decompression failed");
 
         image.Close();
 
@@ -757,6 +835,9 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
                 gxHeight
             );
 
+            ReportTextureAllocFailure(texture->filename, gxWidth, gxHeight,
+                                      static_cast<int32_t>(texture->gxTexFormat));
+
             image.Close();
 
             return 0;
@@ -778,6 +859,16 @@ int32_t FindSubstitution(const char* a1, char* a2) {
     return 0;
 }
 
+// **A stub with a trap attached, and the trap is one flag away.** Its only call site chooses
+// between this and CreateBlpSync on Texture::s_createBlpAsync, with no fallback: when that flag is
+// set and this returns nullptr, the texture is simply not created. s_createBlpAsync is declared and
+// never assigned, so it is zero and every BLP currently takes the synchronous path. Setting it --
+// which is what porting the reference's own initialisation would do -- stops every BLP texture in
+// the client from loading, silently.
+//
+// The reference (FUN_004b8a50) opens the file, allocates a CTexture, checks SFile::IsStreamingMode,
+// allocates an async read object and queues the read. Port it and set the flag in the same change,
+// or leave both alone.
 CTexture* CreateBlpAsync(char* fileExt, char* fileName, int32_t createFlags, CGxTexFlags texFlags) {
     // TODO
 
@@ -870,6 +961,12 @@ HTEXTURE CreateBlpTexture(char* fileExt, char* fileName, int32_t createFlags, CG
     return handle;
 }
 
+// Every TGA texture request yields nothing. Unlike the BLP pair above there is no synchronous
+// alternative to fall back to, so this one is a live gap rather than a dormant trap -- it just
+// happens to be narrow, because the game's art is BLP and TGA turns up only in a few places.
+//
+// The reference (FUN_004b95b0) reads the file through 006aaf40/006aafb0, allocates a CTexture,
+// calls TextureAllocGxTex, and falls back to TextureCreateSolid when the upload fails.
 HTEXTURE CreateTgaTexture(const char* fileName, const char* fileExt, int32_t a3, CGxTexFlags texFlags, CStatus* status) {
     // TODO
 
@@ -897,8 +994,38 @@ HTEXTURE TextureCacheGetTexture(char* fileName, char* fileExt, CGxTexFlags texFl
     return nullptr;
 }
 
+// The solid-colour half of the texture cache. Until 2026-09-23 both halves were stubs, so
+// TextureCreateSolid asked for a cached texture, got nothing, built a fresh 8x8 one and handed it
+// to an insert that dropped it -- every request for a solid colour leaked a texture. Callers are
+// model load (one per missing model texture) and CSimpleTexture's SetColorTexture, so it grew with
+// play rather than per frame, but it only grew.
+//
+// The note that used to sit here said this could not be fixed without a second hash table and a
+// second TSHashObject base on CTexture, on the reasoning that the existing cache is keyed by
+// filename and FillInSolidTexture names every solid texture "SolidTexture", so all colours would
+// collide. That reasoning was wrong, and the reference shows why: it uses ONE table and does not
+// put the name in play at all.
+//
+// FUN_004b7020 builds a HASHKEY_TEXTUREFILE whose filename is the EMPTY STRING -- the pointer is
+// 0x009e14ff, which is the NUL terminator of the string before it, checked in the binary -- with
+// the default texture flags, and then passes THE COLOUR ITSELF as the hash value. TSHashTable::Ptr
+// matches on `m_hashval == hashval && m_key == key`, so the constant key never separates anything
+// and the colour does all the work: two different colours can never match, and the same colour
+// always does. The insert below is the same key with the same hash value.
+//
+// So the "SolidTexture" name that FillInSolidTexture writes is for display and debugging only. It
+// is never a cache key, which is the piece the old note had back to front.
+// ref: FUN_004b7020
 HTEXTURE TextureCacheGetTexture(const CImVector& color) {
-    // TODO
+    // The default constructor is CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1), which is exactly
+    // what the reference builds here and what FillInSolidTexture gives the texture itself.
+    HASHKEY_TEXTUREFILE key = { const_cast<char*>(""), CGxTexFlags() };
+
+    auto texture = Texture::s_textureCache.Ptr(color.value, key);
+
+    if (texture) {
+        return HandleCreate(texture);
+    }
 
     return nullptr;
 }
@@ -910,8 +1037,13 @@ void TextureCacheNewTexture(CTexture* texture, CGxTexFlags texFlags) {
     Texture::s_textureCache.Insert(texture, hashval, key);
 }
 
+// The other half of the solid-colour cache; see the note on the lookup above for why the key is a
+// constant and the colour is the hash value.
+// ref: FUN_004b94e0
 void TextureCacheNewTexture(CTexture* texture, const CImVector& color) {
-    // TODO
+    HASHKEY_TEXTUREFILE key = { const_cast<char*>(""), CGxTexFlags() };
+
+    Texture::s_textureCache.Insert(texture, color.value, key);
 }
 
 uint32_t TextureCalcMipCount(uint32_t width, uint32_t height) {
@@ -1000,6 +1132,8 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
 
     // TODO
     // FileError(status, "texture", fileName);
+
+    ReportTextureFailure(fileName, "no loader accepted it");
 
     return TextureCreateSolid(CRAPPY_GREEN);
 
@@ -1092,8 +1226,15 @@ int32_t TextureGetDimensions(HTEXTURE textureHandle, uint32_t* width, uint32_t* 
     return TextureGetDimensions(TextureGetTexturePtr(textureHandle), width, height, force);
 }
 
+// ref: FUN_004b6cb0
 CGxTex* TextureGetGxTex(CTexture* texture, int32_t a2, CStatus* status) {
-    STORM_ASSERT(texture);
+    // The reference validates rather than asserts: it names the parameter, sets last error to
+    // ERROR_INVALID_PARAMETER (0x57) and returns null, so a caller handed a null texture draws
+    // nothing instead of dying. STORM_ASSERT compiles out entirely in Release, which left the
+    // null case falling straight through into `texture->flags`.
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(texture);
+    STORM_VALIDATE_END;
 
     if (texture->flags & 0x4) {
         if (texture->asyncObject) {
@@ -1147,6 +1288,23 @@ CTexture* TextureGetTexturePtr(HTEXTURE handle) {
     return reinterpret_cast<CTexture*>(handle);
 }
 
+// Promotes a texture's pending async read to the front of the queue. **Still a stub**, with live
+// callers: TextureGetGxTex calls it on every non-blocking fetch, which is what should make a
+// texture that is being drawn load before one that is not.
+//
+// The reference (FUN_004b6c50) is:
+//
+//     if (!FUN_00422130()) return;              // async/streaming enabled at all?
+//     CAsyncObject* a = texture->asyncObject;   // +0x40
+//     if (a->field_4 == 0) { FUN_007b5020(0xac337c, a); return; }   // already done
+//     FUN_004b9950();                                               // take the queue lock
+//     if (!a->byte_21 && !a->byte_22 && !a->byte_23) FUN_004bac20(a);  // requeue at priority
+//     FUN_004b9970();                                               // release the lock (tail jmp)
+//
+// Not ported here deliberately: the requeue and the three priority bytes are the async texture
+// queue's internals, and frozen's queue is not yet known to have the same shape. See
+// docs/ref/parity-texture-async.md.
+// ref: FUN_004b6c50
 void TextureIncreasePriority(CTexture* texture) {
     // TODO
 }

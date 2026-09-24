@@ -134,6 +134,24 @@ diffuse colour, and calls `FUN_00829aa0` - which iterates the model render batch
 `+0xc != 0` or flag `0x20`) and issues a triangles draw per batch with the projector states still bound.
 **`FUN_00829aa0` is exactly the reference for the `CM2SceneRender::DrawBatchProj` stub.**
 
+**The OTHER route to the same draw, and the gate that keeps it shut (found 2026-09-24).** Besides
+the `CMap::Render` re-draw above, projected decals reach M2 models through the M2 element gather:
+`CM2Scene::Animate` emits a **type-1** element, and `CM2SceneRender::Draw` dispatches that to
+`DrawBatchProj`. Whether it emits one at all is decided by a single field.
+
+`CM2Scene + 0x104` is not a number -- it is a **callback pointer**, installed with its context by
+`FUN_0081cc30`. Its one caller is world init at `0x781340`, passing `FUN_0077f500`. That callback
+is unmistakably this system's: it reads the float at `0x009f98d8`, the 0.4 shadow strength this
+document already records as solved, and hands it to `FUN_007e3aa0` with the flags `0x200122` named
+under "Shared with the ground marker" below.
+
+So the full chain is: world init installs the callback -> `Animate` emits type-1 elements ->
+`DrawBatchProj` draws them with the `Projected_ModMod` / `Projected_ModAdd` effects that
+`CM2SceneRender`'s constructor looks up. Frozen now has the constructor's effects and the setter
+(`CM2Scene::SetProjectionCallback`), and the fields are named rather than `uint104`; what is still
+missing is a caller for the setter and the draw itself. That is why the branch has always looked
+dead -- it was gated on a pointer nothing ever set.
+
 **ShadowInit (FUN_007e4a40).** Creates `Textures\ShadowBlob.blp` (`FUN_004b9760`, filter 8), the two
 64x8 ramps above, registers CVar `shadowLOD` ("Unit shadow LOD", handler `FUN_007e3a20`, values 0/1 only)
 into `DAT_00af3e08`, and looks up CVar `extShadowQuality` into `DAT_00d38048`.
@@ -226,7 +244,12 @@ does. What is wrong:
 
 ## 3. Ordered task list to reach parity
 
-### T1 - Kill the z-fighting: identical vertex transform + `DepthFunc = EQUAL`
+**Status checked against the source on 2026-09-23** and written into each heading below.
+Four of the ten are done (T1, T2, T6, T8), none of them seen on screen. The doc's own
+re-check section further down already said T1 and T2 were fixed, but this list did not, which
+is the same drift the render inventory had. Keep the headings current when a task lands.
+
+### T1 - Kill the z-fighting: identical vertex transform + `DepthFunc = EQUAL` --- **DONE** (unverified on screen)
 *Change*: `BlobShadowsBegin`/`BlobShadowDraw`, `src/world/Terrain.cpp`.
 *Ports*: `FUN_007e4480` (the render-state block).
 *Prereq*: none.
@@ -249,14 +272,14 @@ choice is correct there - keep a per-path selection.
 *Do not* add polygon offset here: the reference does not, and depth bias on a coplanar re-draw
 re-introduces peter-panning at grazing angles.
 
-### T2 - Correct blend / colour / fog
+### T2 - Correct blend / colour / fog --- **DONE** (unverified on screen)
 *Change*: `BlobShadowsBegin`, `src/world/Terrain.cpp`. *Ports*: `FUN_007e4480`. *Prereq*: T1.
 `GxRs_BlendingMode = GxBlend_Mod`; vertex colour white with alpha = the model shadow opacity;
 `GxRs_Fog = 0`; `GxRs_FogColor = 0xffffffff`; `GxRs_Lighting = 0`. Under Mod the decal PS must output
 white outside the blob footprint (multiply by 1 = no change), which the clamped ShadowBlob sampler
 already gives.
 
-### T3 - Oriented, animation-driven footprint
+### T3 - Oriented, animation-driven footprint --- **not started**: the caster radius comes from the cull extent and the blob stays axis-aligned
 *Change*: `BlobShadowDraw` signature + its caller in `CGWorldFrame::OnWorldRender`.
 *Ports*: `FUN_0082ced0` (animated box), the corner transform + AABB in `FUN_007e4480`.
 *Prereq*: T1, P5.
@@ -265,26 +288,26 @@ build the quad from `(+-hx, +-hy, 0)` rotated by the model 3x3, and derive the Z
 `halfHeight` scaled by the two tunables. Frozen already reads `M2Bounds` in `CGWorldFrame.cpp:216`; the
 per-sequence bounds table is the part that is missing.
 
-### T4 - Restore `ShadowInit`
+### T4 - Restore `ShadowInit` --- **not started**: still commented out at `src/client/Client.cpp:834`
 *Change*: `src/client/Client.cpp:679`, plus a `ShadowInit` in the Shadow module.
 *Ports*: `FUN_007e4a40`. *Prereq*: none (independent of T1-T3).
 Create `Textures\ShadowBlob.blp` up front, generate the two 64x8 ramps (`FUN_007e36e0` / `FUN_007e3820`
 are complete and directly portable), register CVar `shadowLOD` and look up `extShadowQuality`, and gate
 `BlobShadowsBegin` on `shadowLOD == 1 && extShadowQuality < 1` (`FUN_007e49e0`).
 
-### T5 - Stage-1 distance fade
+### T5 - Stage-1 distance fade --- **not started**, but decoded: the ramps are a fade along the projection axis (see the 2026-09-16 section below)
 *Change*: the decal pixel shader + `BlobShadowsBegin`. *Ports*: the stage-1 setup in `FUN_007e3e80`,
 the second texture matrix in `FUN_007e2d60`. *Prereq*: T1, T4 (the ramps).
 Bind the `ShadowMod` ramp to `GxRs_Texture1` and sample it with a fade coordinate computed in the PS
 from the projector Z range. Do **not** try to use `GxRs_TexGen1`/`GxXform_Tex1` - see P2.
 
-### T6 - Doodads cast shadows
+### T6 - Doodads cast shadows --- **DONE** (unverified on screen): `CGWorldFrame` calls both blob draws from the doodad walk
 *Change*: the caster loop in `CGWorldFrame::OnWorldRender`. *Ports*: the entity walk in `FUN_00793980`.
 *Prereq*: T3.
 Drop the `IsA(TYPE_UNIT)` filter; iterate every visible model-bearing scene entity and use the
 non-unit path (animated box) for doodads, the unit path (floor-clamped box) for units.
 
-### T7 - Generic receiver gather + CPU up-facing cull
+### T7 - Generic receiver gather + CPU up-facing cull --- **not started** as a refactor: `BlobShadowDraw` still walks `s_tiles` itself, and T8 was done alongside it rather than through it
 *Change*: new `ShadowReceiverGather` helper; `BlobShadowDraw` consumes a batch list instead of walking
 `s_tiles` directly. *Ports*: `FUN_007e35f0` -> `FUN_007a6af0`, `FUN_007e32f0` (the XY cross-product cull
 and the un-indexing into a dynamic VB). *Prereq*: T1, P6.
@@ -296,19 +319,19 @@ Caveat: an un-indexed re-draw keeps T1(a) bit-identity only because the *positio
 Once WMO receivers are added, their base pass must also share the decal pass vertex transform, or
 those surfaces will z-fight again. Budget a per-receiver-class decal shader.
 
-### T8 - Shadows on WMO floors
+### T8 - Shadows on WMO floors --- **DONE** (unverified on screen) via `BlobShadowDrawWmo`, without the T7 gather
 *Change*: add a WMO group producer to the T7 gather; `src/world/Terrain.cpp` (`RenderWmos` owns the
 group geometry). *Ports*: the world-geometry half of `FUN_007a6af0`. *Prereq*: T7, and a WMO base pass
 that shares the decal pass vertex transform.
 
-### T9 - Shadows on models (`DrawBatchProj`)
+### T9 - Shadows on models (`DrawBatchProj`) --- **not started**: the stub is also unreachable behind its own gate, see the note at the dispatch in `CM2SceneRender::Draw`
 *Change*: `CM2SceneRender::DrawBatchProj`, `src/model/CM2SceneRender.cpp:262`; add the M2-receiver
 producer to T7. *Ports*: `FUN_00829aa0` (+ `FUN_007a2aa0` for the max-10 receiver list).
 *Prereq*: T7. `FUN_00829aa0` is short and complete in `win-decomp-shadow-blob3.txt`: walk the model
 batches, skip `+0xc != 0` and flag `0x20`, issue one triangles draw per batch with the projector states
 already bound.
 
-### T10 - Map shadow map
+### T10 - Map shadow map --- **not started**
 *Change*: new `MapShadow` module + `CShadowCache`; hook at `CMap::Render` steps 5 and 7.
 *Ports*: `FUN_007bb670`, `FUN_007bb570`, `FUN_007bb3e0`, `FUN_00874010`, `FUN_00875c10`, `FUN_00875f80`,
 `FUN_008750b0`; shaders `ShadowMapRenderSL`, `Terrain2_pcf`/`Terrain3_pcf`.
@@ -485,14 +508,134 @@ item by item against the code as it stands, rather than re-quoting it:
 | 4 | fog left on | **fixed** - `GxRs_Fog, 0` |
 | 5 | no stage-1 distance ramp | **still open** - frozen binds no stage 1 at all |
 | 6 | receiver coverage is terrain only | **partly** - WMO floors covered via `BlobShadowDrawWmo` |
-| 7 | casters are units only | **still open** |
-| 8 | footprint is a fixed axis-aligned circle | **still open** |
+| 7 | casters are units only | **partly** - units and every doodad; game objects still excluded |
+| 8 | footprint is a fixed axis-aligned circle | **closed 2026-09-23** - see below |
 | 9 | no CPU up-facing cull | **partly** - `BuildWmoShadowGrid` keeps only up-facing triangles |
 | 10 | no gating CVars (`shadowLOD`, `extShadowQuality`) | **still open** |
 | 11 | `ShadowInit()` never called | still commented out at `src/client/Client.cpp:679`, but deliberately: the frozen blob path loads its own texture and does not need it |
 
-So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), caster and
-footprint fidelity (7, 8), and the quality CVars (10).
+So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), the
+remaining caster gap (7), and the quality CVars (10).
+
+Item 7, checked 2026-09-23 rather than re-quoted: "units only" is no longer true. The object
+manager walk in `CGWorldFrame` does filter on `IsA(TYPE_UNIT)`, but the doodad walk beside it goes
+through `TerrainForEachDoodad`, which covers terrain doodads AND the doodads inside every loaded
+WMO instance. So the caster set is units plus every doodad. What is still missing against the
+reference's "every scene entity with a model" is the non-unit world objects -- game objects such
+as chests and doors -- which that `IsA(TYPE_UNIT)` test excludes.
+
+### 2026-09-23 - the reference blob draw, decoded end to end
+
+`FUN_007e4480` is the reference's blob shadow draw. Its call shape was settled from the
+instructions rather than the decompiler, because Ghidra mis-recovers the convention here and
+reports one argument where there are three. At `0x007e4a27`:
+
+    flds  0x9f98d8      ; 0.4
+    pushl %ecx
+    fstps (%esp)        ; stack arg 2 = 0.4
+    pushl %esi          ; stack arg 1 = the model
+    movl  %edi, %ecx    ; ECX = the CAaBox
+    calll 0x7e4480
+
+So it is `BlobShadowDraw(const CAaBox& box, CM2Model* model, float strength)`. The box check is
+`param_1[0..5]` read as six floats, and `param_2 + 0xb4` is the model's 4x4 -- the same +0xb4
+matrix `CM2Model` keeps, which is what confirms the argument order.
+
+**The footprint is an oriented rectangle, not a circle.** This is the part frozen does not do. The
+reference takes the X and Y half-extents SEPARATELY:
+
+    halfX = (box.t.x - box.b.x) * 0.5
+    halfY = (box.t.y - box.b.y) * 0.5
+    if (|halfX| < 2^-22 || |halfY| < 2^-22) return;
+
+and builds four corners -- `(+halfX,+halfY)`, `(+halfX,-halfY)`, `(-halfX,-halfY)`,
+`(-halfX,+halfY)` -- transforming each through the model's matrix. The texture projection is scaled
+by `1/|2*halfY|` and `1/|2*halfX|` on the two axes, so a long thin caster gets a long thin shadow
+that turns with the model. frozen collapses the box to `max(ex, ey)` and draws an axis-aligned
+circle of that radius, so its footprint is too wide on the short axis and never rotates.
+
+**The projection range along Z** is asymmetric, from two constants read out of the binary:
+
+    zLow  = centreZ - (5/3) * halfZ      ; 1.6666666 at 0x00af3e14
+    zHigh = centreZ + 1.0   * halfZ      ; 1.0       at 0x00af3e18
+
+where `halfZ = (box.t.z - box.b.z) * 0.5`. It reaches further below the caster than above it.
+
+**Strength.** CLAUDE.md lists "where the reference's shadow strength actually comes from" as unread.
+It is the third argument, and at this call site it is a CONSTANT `0.4` (the float at 0x009f98d8).
+It is the only scalar the draw takes, it survives to the final emit -- `FUN_007e4370(..., param_3)`
+-- and the function early-outs on `param_3 == 0.0`. What `FUN_007e4370` does with it has not been
+read, so "the strength is 0.4" is stated as: the sole scalar, constant at the call site. That is
+already enough to say frozen's `BlobShadowStrength()`, which computes
+`diffuseLuma / (ambient + diffuse)` clamped to [0.15, 0.85] and varies with the time of day, is not
+what the reference does here.
+
+**Render states**, which double as a check on the ones frozen already set:
+
+| reference | state | frozen |
+|---|---|---|
+| `GxRsSet(6, 4)` | BlendingMode = GxBlend_Mod | matches (item 3) |
+| `GxRsSet(0xb, 0)` | Lighting off | - |
+| `GxRsSet(0xc, 0)` | Fog off | matches (item 4) |
+| `GxRsSet(0xf, 0)` | DepthWrite off | - |
+| `GxRsSet(0x15, tex)` | Texture0 = the blob texture | matches |
+
+**Where the box comes from**, from `FUN_00793980`, the scene entity walk. Every entity is gated on
+its own `flags & 0x800` -- a per-entity "casts a shadow" bit frozen has no equivalent of -- and
+then the box is sourced one of two ways:
+
+- entity WITHOUT an associated object (`ClntObjMgrObjectPtr` returns null): the box is
+  `GetSequenceInfo(0, 0).extent` -- **sequence id 0, variation 0**, not the animation currently
+  playing.
+- entity WITH one: the box comes from `FUN_0071ed80`, which copies a `CAaBox` from
+  `unit->[0x970] + 0x44` (falling back to `FUN_00717a20()` when that slot is empty) and then, when
+  `unit->[0xd0]->[0xfc] > 0`, shifts both Z components by
+  `rec[0x40] - (box.t.z - box.b.z) * 0.5` from a two-level DBC lookup keyed on `unit->[0x9c0]`.
+
+That second path matters for a correction to this file's own previous entry. The change made
+earlier on 2026-09-23 pointed `CGUnit_C::GetAnimFootprint` at `CM2Model::GetSequenceInfo` with the
+CURRENT animation id. That is a real improvement over the raw id match it replaced -- it follows
+the model's fallback chain, which the old code did not -- but it is NOT the reference's mechanism
+for units. The reference reaches units through `FUN_0071ed80` and uses `GetSequenceInfo(0, 0)` only
+for objectless scene entities such as doodads. Recorded rather than reverted, because the ported
+behaviour is defensible on its own terms and the reference path needs `unit->[0x970]` and a DBC
+lookup frozen has not mapped; but it should not be described as matching the reference.
+
+**Still not written:** the oriented rectangle, the asymmetric Z range, the constant strength, and
+the per-entity 0x800 gate. All four are specified above.
+
+### 2026-09-23 - item 8, the animated footprint
+
+Item 8 was stale in both directions, which is the usual state of this list.
+
+Already done before today: `CGUnit_C::GetAnimFootprint` sized the blob from the CURRENT sequence's
+authored box rather than a fixed circle, and `CGWorldFrame` fell back to the model's global box
+only when that came back degenerate. So "fixed axis-aligned circle" had not been true for a while.
+
+Genuinely wrong until today: that function resolved the animation by walking `m_data->sequences`
+itself and matching `m_animSeq` against `sequences[i].id`, returning 0 when nothing carried that
+id. A model frequently does NOT carry the animation it is asked for, and the reference does not
+give up there -- `CM2Model::GetSequenceInfo` (FUN_0082ced0) walks the model's fallback chain first
+and reports the box of the sequence the model would ACTUALLY play. Skipping the chain meant every
+such caster quietly fell back to the global model box and drew a footprint that did not follow the
+animation at all, which is the very thing item 8 is about.
+
+It now calls GetSequenceInfo. Two side effects worth recording:
+
+- GetSequenceInfo had no caller in frozen at all. It was ported and correct but unreached, which is
+  how `tools/deaddata.py` came to list `M2SequenceInfo::extent` as written-and-never-read. After
+  the change `extent` is gone from that report; `moveSpeed`, `center`, `sequenceId` and `playMode`
+  are still on it and still want consumers.
+- The call is guarded on `m_model->m_loaded`, because GetSequenceInfo blocks in `WaitForLoad`
+  otherwise and this runs inside the per-frame shadow pass. An unloaded model takes the model-box
+  fallback instead of stalling the frame.
+
+Variation 0 is passed deliberately rather than guessed: `CGUnit_C` tracks the animation id it
+applied but not which variation the model chose, variations of one animation are alternate takes
+with closely matching boxes, and variation 0 is the one that exists whenever the animation does.
+
+**Not seen running.** The change moves no recomp metric -- it connects two functions that were both
+already linked -- so the only evidence it is doing anything is the deaddata report and a run.
 
 **A suspected bug that turned out not to be one.** `BlobShadowStrength()` returns
 `diffuseLuma / (ambient + diffuse)` while its own comment says the correct multiplier is

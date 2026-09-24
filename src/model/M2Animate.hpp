@@ -55,24 +55,87 @@ void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValu
     value = C4Quaternion::Nlerp(ratio, quat1, quat2);
 }
 
+// The four spline interpolators. All four were empty bodies that left `value` UNTOUCHED, so a
+// track of type 2 or 3 held whatever it last had and never animated at all -- the switch in
+// M2AnimateSplineTrack below reaches them for exactly those two types.
+//
+// **These are written from the M2 format rather than transcribed from the reference**, which is
+// worth being explicit about because this project's rule is to decompile first. The reference's
+// own versions were not located: the spline evaluation is template-instantiated and the search for
+// its distinctive 36-byte key indexing landed on the camera lookup instead. What they compute is
+// the definition of a cubic Bezier and a cubic Hermite over the key layout frozen already
+// declares, `{ value, inTan, outTan }`, not an inference from how the screen looks.
+//
+// The one convention that could still differ is tangent scaling -- some engines premultiply the
+// tangents by the key interval. If curved tracks animate but with visibly wrong curvature, that is
+// the first thing to check, and it is the whole of the risk here: the previous behaviour was no
+// animation whatsoever, so a curve that is close is strictly better than a value that is frozen.
 void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
-    // TODO
+    float t = ratio;
+    float u = 1.0f - t;
+    float w0 = u * u * u;
+    float w1 = 3.0f * u * u * t;
+    float w2 = 3.0f * u * t * t;
+    float w3 = t * t * t;
+
+    value.x = w0 * startKey.value.x + w1 * startKey.outTan.x + w2 * endKey.inTan.x + w3 * endKey.value.x;
+    value.y = w0 * startKey.value.y + w1 * startKey.outTan.y + w2 * endKey.inTan.y + w3 * endKey.value.y;
+    value.z = w0 * startKey.value.z + w1 * startKey.outTan.z + w2 * endKey.inTan.z + w3 * endKey.value.z;
 }
 
 void M2InterpolateCubicBezier(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
-    // TODO
+    float t = ratio;
+    float u = 1.0f - t;
+
+    value = u * u * u * startKey.value
+        + 3.0f * u * u * t * startKey.outTan
+        + 3.0f * u * t * t * endKey.inTan
+        + t * t * t * endKey.value;
 }
 
 void M2InterpolateCubicHermite(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
-    // TODO
+    float t = ratio;
+    float t2 = t * t;
+    float t3 = t2 * t;
+    float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+    float h10 = t3 - 2.0f * t2 + t;
+    float h01 = -2.0f * t3 + 3.0f * t2;
+    float h11 = t3 - t2;
+
+    value.x = h00 * startKey.value.x + h10 * startKey.outTan.x + h01 * endKey.value.x + h11 * endKey.inTan.x;
+    value.y = h00 * startKey.value.y + h10 * startKey.outTan.y + h01 * endKey.value.y + h11 * endKey.inTan.y;
+    value.z = h00 * startKey.value.z + h10 * startKey.outTan.z + h01 * endKey.value.z + h11 * endKey.inTan.z;
 }
 
 void M2InterpolateCubicHermite(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
-    // TODO
+    float t = ratio;
+    float t2 = t * t;
+    float t3 = t2 * t;
+
+    value = (2.0f * t3 - 3.0f * t2 + 1.0f) * startKey.value
+        + (t3 - 2.0f * t2 + t) * startKey.outTan
+        + (-2.0f * t3 + 3.0f * t2) * endKey.value
+        + (t3 - t2) * endKey.inTan;
 }
 
 template<class T1, class T2>
 void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& track, M2ModelTrack<T2>& modelTrack, const T2& defaultValue) {
+    // Both of these have to be checked before anything is indexed.
+    //
+    // An M2Array resolves its data as (its own address + offset), so element 0 of an EMPTY array is
+    // a wild pointer rather than null -- indexing sequenceKeys without gating on Count() is the
+    // crash CLAUDE.md lists first among the bug classes that have bitten this codebase. And the
+    // bone is optional: a track can belong to an emitter whose boneIndex is out of range, leaving
+    // nothing to read a sequence from.
+    //
+    // Neither case arises for bones, colours, texture weights or lights, which is why this stood
+    // for so long. Both arise for particle emitters.
+    if (!modelBone || !track.sequenceKeys.Count()) {
+        modelTrack.currentValue = defaultValue;
+
+        return;
+    }
+
     auto seqIndex = modelBone->sequence.uint4 < track.sequenceKeys.Count() ? modelBone->sequence.uint4 : 0;
     auto& seqKeys = track.sequenceKeys[seqIndex];
 
@@ -111,12 +174,55 @@ void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track
         }
     }
 
-    // TODO
-    // - blend with secondary active sequence
+    // NOT BLENDED, and not by oversight. The blend at the end of M2AnimateTrack below was read
+    // from FUN_00828680 and FUN_0082b0a0, which are the NON-spline pair; a spline track's keys
+    // are M2SplineKey<T> and interpolate through `.value`, so whatever the reference does here
+    // is a different function that has not been read. Copying the shape of the other one would
+    // be guessing.
+}
+
+// Mix a track value with the one the secondary sequence produced, by the bone's blend
+// weight. A quaternion takes the SHORTEST ARC and everything else interpolates straight,
+// which is why these are two overloads and not one template: the reference slerps in
+// FUN_00828680 and lerps in FUN_0082b0a0, and using the wrong one shows on a wide blend.
+inline void M2BlendValue(C4Quaternion& value, const C4Quaternion& secondary, float weight) {
+    value = C4Quaternion::Slerp(weight, value, secondary);
+}
+
+inline void M2BlendValue(C3Vector& value, const C3Vector& secondary, float weight) {
+    value.x += (secondary.x - value.x) * weight;
+    value.y += (secondary.y - value.y) * weight;
+    value.z += (secondary.z - value.z) * weight;
+}
+
+inline void M2BlendValue(float& value, float secondary, float weight) {
+    value += (secondary - value) * weight;
+}
+
+// Anything else -- a texture slot index, a visibility byte -- does not interpolate at all,
+// so the blend cannot mean anything for it and the primary value stands.
+template<class T>
+inline void M2BlendValue(T&, const T&, float) {
 }
 
 template<class T1, class T2>
 void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& track, M2ModelTrack<T2>& modelTrack, const T2& defaultValue) {
+    // Both of these have to be checked before anything is indexed.
+    //
+    // An M2Array resolves its data as (its own address + offset), so element 0 of an EMPTY array is
+    // a wild pointer rather than null -- indexing sequenceKeys without gating on Count() is the
+    // crash CLAUDE.md lists first among the bug classes that have bitten this codebase. And the
+    // bone is optional: a track can belong to an emitter whose boneIndex is out of range, leaving
+    // nothing to read a sequence from.
+    //
+    // Neither case arises for bones, colours, texture weights or lights, which is why this stood
+    // for so long. Both arise for particle emitters.
+    if (!modelBone || !track.sequenceKeys.Count()) {
+        modelTrack.currentValue = defaultValue;
+
+        return;
+    }
+
     auto seqIndex = modelBone->sequence.uint4 < track.sequenceKeys.Count() ? modelBone->sequence.uint4 : 0;
     auto& seqKeys = track.sequenceKeys[seqIndex];
 
@@ -143,8 +249,42 @@ void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& 
         }
     }
 
-    // TODO
-    // - blend with secondary active sequence
+    // Blend with the secondary sequence.
+    //
+    // The bone's weight is how much of the sequence it is fading OUT of still applies; it counts
+    // down to zero as the blend completes, at which point this whole block is a no-op. Guarded on
+    // loopIndex -- frozen's name for the global-sequence index, the uint16 at track + 2 the
+    // reference tests against -1 -- because a global-sequence track runs off world time and the
+    // bone's sequences do not drive it.
+    if (modelBone->floatA8 == 0.0f || track.loopIndex != 0xFFFF) {
+        return;
+    }
+
+    auto secondIndex = modelBone->secondarySequence.uint4 < track.sequenceKeys.Count()
+        ? modelBone->secondarySequence.uint4
+        : 0;
+
+    auto& secondKeys = track.sequenceKeys[secondIndex];
+
+    T2 secondary = defaultValue;
+
+    if (secondKeys.keys.Count()) {
+        uint32_t nextKey;
+        float ratio;
+
+        // currentKey2 is this walk's own cursor. Sharing currentKey with the primary walk would
+        // make each fight the other's search every frame.
+        model->FindKey(&modelBone->secondarySequence, track, modelTrack.currentKey2, nextKey, ratio);
+
+        if (track.trackType == 0) {
+            M2SetValue<T1, T2>(secondKeys.keys[modelTrack.currentKey2], secondary);
+        } else {
+            M2InterpolateLinear(secondKeys.keys[modelTrack.currentKey2], secondKeys.keys[nextKey],
+                                ratio, secondary);
+        }
+    }
+
+    M2BlendValue(modelTrack.currentValue, secondary, modelBone->floatA8);
 }
 
 #endif

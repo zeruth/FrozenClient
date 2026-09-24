@@ -188,10 +188,19 @@ uint32_t GxVertexAttribOffset(EGxVertexBufferFormat format, EGxVertexAttrib attr
     return Buffer::s_vertexBufOffset[format][attrib];
 }
 
+// ref: FUN_00681230
+uint32_t GxVertexBufferFormatSize(EGxVertexBufferFormat format) {
+    return Buffer::s_vertexBufDesc[format].size;
+}
+
 CGxBuf* GxBufCreate(CGxPool* pool, uint32_t itemSize, uint32_t itemCount, uint32_t index) {
     return g_theGxDevicePtr->BufCreate(pool, itemSize, itemCount, index);
 }
 
+// The `size == 0` default and the unk1C stamp are both the reference's; it is the pair of
+// them, plus the device call between, that identifies this rather than the shape alone.
+//
+// ref: FUN_00681a20
 void GxBufData(CGxBuf* buf, const void* data, uint32_t size, uint32_t offset) {
     if (size == 0) {
         size = buf->m_itemSize * buf->m_itemCount;
@@ -228,6 +237,11 @@ void GxPrimIndexPtr(uint32_t indexCount, const uint16_t* indices) {
     g_theGxDevicePtr->PrimIndexPtr(buf);
 }
 
+// The FREE one, not the device member of the same name: the reference makes these same
+// three calls in this order off the descriptor table at 0x00a2da18, whose stride 0x10 and
+// field order match VertexBufDesc exactly.
+//
+// ref: FUN_00681b00
 void GxPrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     auto desc = &Buffer::s_vertexBufDesc[format];
 

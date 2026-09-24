@@ -27,6 +27,13 @@ D3DCULL CGxDeviceD3d::s_cullMode[] = {
     D3DCULL_CCW,
 };
 
+// s_srcBlend and s_dstBlend were checked against the reference on 2026-09-23 by searching its
+// image for these exact twelve-dword sequences. Both are present verbatim in .rdata, twice
+// each -- src at 0x00a2f964 and 0x00a2fb68, dst at 0x00a2f994 and 0x00a2fb98, the pairs 0x204
+// apart, which is one set per device backend. Every entry matches, so no transparent surface
+// in this client composites with the wrong factors.
+//
+// Read, not run: this proves the tables, not the code that indexes them.
 D3DBLEND CGxDeviceD3d::s_dstBlend[] = {
     D3DBLEND_ZERO,              // GxBlend_Opaque
     D3DBLEND_ZERO,              // GxBlend_AlphaKey
@@ -798,6 +805,11 @@ void CGxDeviceD3d::DsSet(EDeviceState state, uint32_t val) {
         break;
     }
 
+    case Ds_ColorWriteEnable: {
+        this->m_d3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, val);
+        break;
+    }
+
     case Ds_AlphaRef: {
         this->m_d3dDevice->SetRenderState(D3DRS_ALPHAREF, val);
         break;
@@ -1306,6 +1318,46 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         break;
     }
 
+    // GxRs_ColorWrite reached nothing at all before this: the enum had Ds_ColorWriteEnable and
+    // neither switch had a case for it, so CM2SceneRender::SetupMaterial's request to turn colour
+    // writes OFF for an element with flag 0x1 was silently dropped and that pass wrote colour.
+    //
+    // The bit order is the part worth reading twice. Gx and D3D both use four bits, but the
+    // reference's handler remaps the middle two -- Gx 0x2 becomes D3D's BLUE and Gx 0x4 becomes
+    // D3D's GREEN -- so Gx orders them R, B, G, A against D3D's R, G, B, A. That matches the BGRA
+    // byte order this codebase uses for colours elsewhere. The only two values frozen sets today,
+    // 15 and 0, are identical under either reading, so a straight pass-through would have looked
+    // right until the first partial mask.
+    case GxRs_ColorWrite: {
+        uint32_t colorWrite = 0;
+
+        if (this->MasterEnable(GxMasterEnable_ColorWrite)) {
+            colorWrite = static_cast<uint32_t>(state->m_value);
+        }
+
+        uint32_t mask = 0;
+
+        if (colorWrite & 0x1) {
+            mask |= D3DCOLORWRITEENABLE_RED;
+        }
+
+        if (colorWrite & 0x4) {
+            mask |= D3DCOLORWRITEENABLE_GREEN;
+        }
+
+        if (colorWrite & 0x2) {
+            mask |= D3DCOLORWRITEENABLE_BLUE;
+        }
+
+        if (colorWrite & 0x8) {
+            mask |= D3DCOLORWRITEENABLE_ALPHA;
+        }
+
+        this->DsSet(Ds_ColorWriteEnable, mask);
+
+        break;
+    }
+
     case GxRs_Culling: {
         auto cullMode = static_cast<int32_t>(state->m_value);
 
@@ -1325,6 +1377,55 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
     case GxRs_ScissorTest: {
         auto scissorTestEnable = static_cast<uint32_t>(state->m_value) != 0;
         this->m_d3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, scissorTestEnable);
+
+        break;
+    }
+
+    case GxRs_ClipPlaneMask: {
+        // Which of the six user clip planes are on, as a bit per plane, straight into
+        // D3DRS_CLIPPLANEENABLE (0x98). The reference caches the last value at +0x3e84 and skips
+        // the call when it has not changed, which is reproduced here.
+        //
+        // This state was accepted and dropped before now, like GxRs_Multisample was. It is the
+        // last of three missing pieces rather than the first: the planes themselves and their sync
+        // landed on 2026-09-23 (CGxDevice::ClipPlaneSet, IStateSyncClipPlanes), but nothing yet
+        // RAISES this mask, and the thing that should is CM2SceneRender::SetupLighting. Its block
+        // is at 0x0081fd5e in the reference -- gated on the current element's flags & 0x2
+        // (M2UseClipPlanes), it copies m_curLighting->m_liquidPlane, negates all four components
+        // when m_curPass is 2, calls ClipPlaneSet(0, plane), and then sets this mask to 1 (or to 0
+        // down the else path at 0x0081fe4d).
+        //
+        // That block is NOT ported, and porting it alone would achieve nothing: CM2Lighting's
+        // m_liquidPlane is never written, because the liquid-plane work in CM2Scene::Animate is
+        // still a TODO -- see the note there about flag 0x40 never being set. So the chain is
+        // liquid plane -> SetupLighting -> this state -> the planes, and only the last piece and
+        // this one exist. This case is safe in isolation because the mask defaults to 0 and
+        // nothing raises it.
+        auto clipPlaneMask = static_cast<uint32_t>(state->m_value);
+
+        if (this->m_d3dClipPlaneEnable != clipPlaneMask) {
+            this->m_d3dDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, clipPlaneMask);
+            this->m_d3dClipPlaneEnable = clipPlaneMask;
+        }
+
+        break;
+    }
+
+    case GxRs_Multisample: {
+        // The reference's case for this reads the state and sends a plain boolean:
+        //   `xorl %ecx,%ecx; cmpl %ecx,(%edi); setne %cl; push %ecx; push $0xa1` at 0x006a5126.
+        // 0xa1 is D3DRS_MULTISAMPLEANTIALIAS.
+        //
+        // frozen accepted this state and dropped it: nothing in any backend handled GxRs_Multisample,
+        // so CGxDevice's default of 1 never reached the device and the world render's own
+        // GxRsSet(GxRs_Multisample, 1) would have been a no-op too. docs/world-render-inventory.md
+        // recorded that gap as "missing (GxRsSet 0x13)" on the viewport/state-push row; 0x13 is 19,
+        // which is this state.
+        //
+        // It only does anything when the device was created with a multisample type, so on a client
+        // with gxMultisample at 1 this changes nothing.
+        auto multisampleEnable = static_cast<uint32_t>(state->m_value) != 0;
+        this->m_d3dDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, multisampleEnable);
 
         break;
     }
@@ -1818,8 +1919,8 @@ void CGxDeviceD3d::IStateSync() {
     }
 
     this->IStateSyncEnables();
-
-    // TODO
+    this->IStateSyncClipPlanes();
+    this->IStateSyncScissorRect();
 
     this->IStateSyncVertexPtrs();
     this->IStateSyncIndexPtr();
@@ -1831,8 +1932,150 @@ void CGxDeviceD3d::IStateSync() {
     }
 }
 
+// Tests one master-enable bit for a change between the app-side and hardware-side masks and
+// reports what it is now. The two extra masks are force-off masks: a bit set in one forces that
+// enable to read as off on that side. Both call sites in the reference pass zero for them, so
+// nothing forces anything off today -- they are kept rather than dropped, because dropping them
+// would hide that the reference has the capability at all.
+//
+// The reference shares this between two device backends (00683835 in the D3D state sync below, and
+// 006921fc in another), so if the GL backends ever grow a master-enable sync this should move to
+// CGxDevice instead of being copied.
+// ref: FUN_006830b0
+static int32_t MasterEnableChanged(uint32_t appEnables, uint32_t hwEnables, uint32_t appForceOff,
+                                   uint32_t hwForceOff, EGxMasterEnables which, int32_t* nowEnabled) {
+    uint32_t bit = 1u << which;
+    int32_t now = (appEnables & ~appForceOff & bit) != 0;
+    int32_t was = (hwEnables & ~hwForceOff & bit) != 0;
+
+    *nowEnabled = now;
+
+    return now != was;
+}
+
+// Pushes the master enables to the device. Only ONE of the nine reaches D3D here, and that is not
+// an omission: MasterEnableSet routes Lighting, Fog, DepthTest, DepthWrite, ColorWrite and Culling
+// through IRsForceUpdate, so they travel the ordinary render-state path and arrive via IRsSync.
+// PolygonFill has no GxRs of its own, so it is the only one left to send directly, and the
+// reference sends it exactly here.
+//
+// This costs nothing until something asks for wireframe: both masks start at 511, so the equality
+// test returns immediately, and D3D's own default fill mode is already solid.
+// ref: FUN_006a3810
 void CGxDeviceD3d::IStateSyncEnables() {
-    // TODO
+    if (this->m_appMasterEnables == this->m_hwMasterEnables) {
+        return;
+    }
+
+    int32_t fill;
+
+    if (MasterEnableChanged(this->m_appMasterEnables, this->m_hwMasterEnables, 0, 0, GxMasterEnable_PolygonFill, &fill)) {
+        this->m_d3dDevice->SetRenderState(D3DRS_FILLMODE, fill ? D3DFILL_SOLID : D3DFILL_WIREFRAME);
+    }
+
+    this->m_hwMasterEnables = this->m_appMasterEnables;
+}
+
+// Pushes the six user clip planes that changed since the last sync. The reference walks the mask
+// bit by bit rather than testing plane against plane, because CGxDevice::ClipPlaneSet has already
+// done the comparison and recorded the answer.
+//
+// SetClipPlane is vtable offset 0xdc, and 0xdc / 4 = 55, which is its index on IDirect3DDevice9 --
+// the same arithmetic that identified SetRenderState at 0xe4.
+//
+// This costs nothing today and is not a stub while it does: nothing in frozen calls ClipPlaneSet
+// yet, so the mask is zero and the first test returns. GxRs_ClipPlaneMask is a separate thing --
+// it enables planes, and travels the ordinary render-state path as Ds_ClipPlaneEnable -- so the
+// two halves can land independently.
+// ref: FUN_006a3870
+void CGxDeviceD3d::IStateSyncClipPlanes() {
+    if (!this->m_clipPlaneDirty) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < 6; i++) {
+        if (this->m_clipPlaneDirty & (1 << i)) {
+            this->m_d3dDevice->SetClipPlane(i, reinterpret_cast<const float*>(&this->m_clipPlanes[i]));
+        }
+    }
+
+    this->m_clipPlaneDirty = 0;
+}
+
+// Turns the normalised scissor rectangle into pixels and sends it. SetScissorRect is vtable
+// 0x12c and 0x12c / 4 = 75, its IDirect3DDevice9 method index.
+//
+// Horizontal edges scale by the current window's maxX and vertical by its maxY -- the reference
+// reaches both through FUN_00682d70, which is `return &this->[0x174]`, i.e. DeviceCurWindow. The
+// left and top edges take +0.5 (the constant at 0x009e2ec4, read out of .rdata) and the right and
+// bottom edges +1.0, which is the usual rounding for a half-open rectangle.
+//
+// Vertical orientation flips depending on where the frame is going. With neither render target
+// bound the frame is the back buffer and y is measured from the bottom, so top comes from maxY
+// and bottom from minY, each subtracted from 1.0; with a target bound they are used directly.
+// IXformSetViewport already flips y the same way.
+//
+// DIVERGENCE, deliberate. The reference spells that test as `+0x2918 != 0 || +0x2924 != 0`, and
+// those are NOT the m_texture fields. Device create zeroes six consecutive dwords from +0x2910 to
+// +0x2924, which is exactly TextureTarget m_textureTarget[2] at base +0x2910, so the entries are
+// {m_texture, m_plane, m_apiSpecific} at +0x2910/+0x2914/+0x2918 and +0x291c/+0x2920/+0x2924.
+// +0x2918 and +0x2924 are therefore the two m_apiSpecific fields -- the bound API surfaces -- and
+// the reference stores one there at 0x0068b929, indexing `0x2918(%edi,%eax,4)` with eax = i * 3.
+//
+// frozen tests m_texture instead, because CGxDevice::RenderTargetSet fills m_texture and m_plane
+// and never fills m_apiSpecific: IRenderTargetSet takes the surface, binds it and releases it
+// again without storing it. Testing the faithful field here would make this branch permanently
+// false and the render-to-texture case dead, which is worse than the divergence. The real fix is
+// to have IRenderTargetSet keep the surface in m_apiSpecific, and that is a lifetime change (the
+// device holds its own reference today) that wants a run behind it. Until then this reads the
+// field that actually tracks the binding.
+//
+// The dirty flag starts at 1 with an all-zero rectangle, because device create sets it from a
+// register holding 1 (0x00688e64 loads it, and the same register initialises intF6C). So the
+// first sync really does send an empty rectangle. That is harmless and it is what the reference
+// does: D3DRS_SCISSORTESTENABLE follows GxRs_ScissorTest, which defaults to 0, so nothing is
+// clipped until something turns the test on -- and whatever turns it on sets a rectangle first.
+// ref: FUN_006a38d0
+void CGxDeviceD3d::IStateSyncScissorRect() {
+    if (!this->m_scissorDirty) {
+        return;
+    }
+
+    const CRect& window = this->DeviceCurWindow();
+    const CRect& scissor = this->m_scissorRect;
+
+    RECT rect;
+
+    rect.left = static_cast<LONG>(scissor.minX * window.maxX + 0.5f);
+    rect.right = static_cast<LONG>(scissor.maxX * window.maxX + 1.0f);
+
+    if (this->m_textureTarget[GxBuffers_Color].m_texture || this->m_textureTarget[GxBuffers_Depth].m_texture) {
+        rect.top = static_cast<LONG>(0.5f + scissor.minY * window.maxY);
+        rect.bottom = static_cast<LONG>(1.0f + scissor.maxY * window.maxY);
+    } else {
+        rect.top = static_cast<LONG>(0.5f + (1.0f - scissor.maxY) * window.maxY);
+        rect.bottom = static_cast<LONG>(1.0f + (1.0f - scissor.minY) * window.maxY);
+    }
+
+    if (rect.left < 0) {
+        rect.left = 0;
+    }
+
+    if (rect.top < 0) {
+        rect.top = 0;
+    }
+
+    if (rect.right > static_cast<LONG>(window.maxX)) {
+        rect.right = static_cast<LONG>(window.maxX);
+    }
+
+    if (rect.bottom > static_cast<LONG>(window.maxY)) {
+        rect.bottom = static_cast<LONG>(window.maxY);
+    }
+
+    this->m_d3dDevice->SetScissorRect(&rect);
+
+    this->m_scissorDirty = 0;
 }
 
 void CGxDeviceD3d::IStateSyncIndexPtr() {
@@ -1850,12 +2093,226 @@ void CGxDeviceD3d::IStateSyncIndexPtr() {
     }
 }
 
+// Send the four fixed-function lights, and decide whether fixed-function lighting is on at all.
+//
+// The interesting part is the middle branch, which has nothing to do with lights. When the app
+// turns GxRs_Lighting OFF, D3D would normally be told D3DRS_LIGHTING false -- and then it takes
+// the vertex colour as the final colour and ignores the material entirely. That is wrong for
+// geometry whose vertices carry NO colour but whose material diffuse is not white -- the state
+// defaults to 0xFFFFFFFF, so `!= -1` is exactly "somebody tinted this". Such geometry would come
+// out untinted. So when both of those hold, the reference turns D3D lighting ON with every light
+// disabled and D3DRS_AMBIENT set to white, which makes the fixed-function equation collapse to
+// the material's ambient/diffuse term and reproduces the unlit colour the app meant. The
+// m_lightingEmulated flag exists only to disable the four lights once on entering that state
+// instead of every frame.
+//
+// The light loop's asymmetry is deliberate and reproduced: disabling a light clears ONLY the
+// enabled bit, leaving the rest of the dirty mask standing so the light is re-sent in full when
+// it comes back, while sending a light clears the mask entirely. A light that is enabled and
+// dirty for any other reason is re-sent without touching LightEnable.
+//
+// Range is the 10000.0 at 0x00a2f95c, read out of the binary rather than guessed. Falloff is 1.0.
+// Theta and Phi are never written, because the reference never writes them -- it has no spot
+// lights, and D3D reads neither for the two types it does use.
+//
+// **Built, not seen running.**
+// ref: FUN_006a43d0
 void CGxDeviceD3d::IStateSyncLights() {
-    // TODO
+    uint32_t index = 0;
+
+    if (this->m_appRenderStates[GxRs_Lighting].m_value.m_data.i[0] == 0) {
+        if ((this->m_primVertexMask & (1 << GxVA_Color0)) == 0
+                && this->m_appRenderStates[GxRs_MatDiffuse].m_value.m_data.i[0] != -1) {
+            if (this->m_lightingEmulated == 0) {
+                this->m_lightingEmulated = 1;
+
+                for (index = 0; index < 4; index++) {
+                    this->m_d3dDevice->LightEnable(index, FALSE);
+
+                    // The slot keeps its enabled flag; only the dirty bit moves, so that whatever
+                    // the app had asked for is re-sent the moment emulation stops.
+                    if (this->m_lights[index].m_enabled == 0) {
+                        this->m_lights[index].m_dirty &= 0xfffe;
+                    } else {
+                        this->m_lights[index].m_dirty |= 0x1;
+                    }
+                }
+            }
+
+            if (this->m_d3dLighting != 1) {
+                this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, 1);
+                this->m_d3dLighting = 1;
+            }
+
+            if (this->m_d3dAmbient != 0xffffffff) {
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0xffffffff);
+                this->m_d3dAmbient = 0xffffffff;
+            }
+        } else {
+            this->m_lightingEmulated = 0;
+
+            if (this->m_d3dLighting != 0) {
+                this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, 0);
+                this->m_d3dLighting = 0;
+            }
+
+            if (this->m_d3dAmbient != 0) {
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0);
+                this->m_d3dAmbient = 0;
+            }
+        }
+
+        return;
+    }
+
+    this->m_lightingEmulated = 0;
+
+    uint32_t lighting = this->m_appMasterEnables & 0x1;
+
+    if (this->m_d3dLighting != lighting) {
+        this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+        this->m_d3dLighting = lighting;
+    }
+
+    if (this->m_d3dAmbient != 0) {
+        this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, 0);
+        this->m_d3dAmbient = 0;
+    }
+
+    for (index = 0; index < 4; index++) {
+        CGxLightState& state = this->m_lights[index];
+
+        if (state.m_dirty == 0) {
+            continue;
+        }
+
+        if ((state.m_dirty & 0x1) == 0) {
+            if (state.m_enabled == 0) {
+                continue;
+            }
+        } else if (state.m_enabled == 0) {
+            state.m_dirty &= 0xfffe;
+            this->m_d3dDevice->LightEnable(index, FALSE);
+            continue;
+        } else {
+            this->m_d3dDevice->LightEnable(index, TRUE);
+        }
+
+        if (state.m_posOrDir.w == 1.0f) {
+            this->m_d3dLight.Type = D3DLIGHT_POINT;
+            this->m_d3dLight.Position.x = state.m_posOrDir.x;
+            this->m_d3dLight.Position.y = state.m_posOrDir.y;
+            this->m_d3dLight.Position.z = state.m_posOrDir.z;
+        } else {
+            this->m_d3dLight.Type = D3DLIGHT_DIRECTIONAL;
+            this->m_d3dLight.Direction.x = state.m_posOrDir.x;
+            this->m_d3dLight.Direction.y = state.m_posOrDir.y;
+            this->m_d3dLight.Direction.z = state.m_posOrDir.z;
+        }
+
+        this->m_d3dLight.Diffuse.r = state.m_diffuse.x;
+        this->m_d3dLight.Diffuse.g = state.m_diffuse.y;
+        this->m_d3dLight.Diffuse.b = state.m_diffuse.z;
+        this->m_d3dLight.Diffuse.a = 1.0f;
+
+        this->m_d3dLight.Ambient.r = state.m_ambient.x;
+        this->m_d3dLight.Ambient.g = state.m_ambient.y;
+        this->m_d3dLight.Ambient.b = state.m_ambient.z;
+        this->m_d3dLight.Ambient.a = 0.0f;
+
+        this->m_d3dLight.Specular.r = state.m_specular.x;
+        this->m_d3dLight.Specular.g = state.m_specular.y;
+        this->m_d3dLight.Specular.b = state.m_specular.z;
+        this->m_d3dLight.Specular.a = 0.0f;
+
+        this->m_d3dLight.Range = 10000.0f;
+        this->m_d3dLight.Falloff = 1.0f;
+
+        this->m_d3dLight.Attenuation0 = state.m_attenuation.x;
+        this->m_d3dLight.Attenuation1 = state.m_attenuation.y;
+        this->m_d3dLight.Attenuation2 = state.m_attenuation.z;
+
+        this->m_d3dDevice->SetLight(index, &this->m_d3dLight);
+
+        state.m_dirty = 0;
+    }
 }
 
+// Despite the name this never calls SetMaterial. It drives the four *MATERIALSOURCE render
+// states -- D3DRS_AMBIENTMATERIALSOURCE 0x93, DIFFUSE 0x91, SPECULAR 0x92, EMISSIVE 0x94 -- which
+// say, per channel, whether the fixed-function lighting equation takes that channel from the
+// material or from the vertex colour.
+//
+// GxRs_ColorMaterial picks which single channel the vertex colour feeds: 0 gives it to ambient and
+// diffuse, 1 to specular, 2 to emissive, and every channel that does not win takes D3DMCS_MATERIAL.
+// When the bound vertex format carries no colour at all the question does not arise and all four
+// take the material.
+//
+// The offsets behind this were confirmed rather than guessed, which is worth recording because the
+// reference's fields are nothing like frozen's. The state array at +0x28f4 is indexed 24 bytes to
+// the entry: the vertex-shader test in IStateSync reads +0x738, and 0x738 / 24 = 77 =
+// GxRs_VertexShader, while this function reads +0x7f8, and 0x7f8 / 24 = 85 = GxRs_ColorMaterial.
+// The mask at +0x28a8 is m_primVertexMask -- its setter at 0x00682eb0 is CGxDevice::PrimVertexMask
+// statement for statement, down to storing GxVAs_Last (0xe) into m_primVertexFormat -- so bit 0x10
+// is 1 << GxVA_Color0, and the per-attribute buffer array at +0x2870 ends exactly where the mask
+// begins.
+//
+// Two notes on what a run should show, because this replaces an empty body and so changes
+// behaviour on every fixed-function draw that has a colour stream:
+//
+// * Nothing in frozen ever sets GxRs_ColorMaterial and its default is 0, so today the live case is
+//   always "ambient and diffuse from the vertex colour". Against D3D's own defaults that moves
+//   ambient from MATERIAL to COLOR1 and specular from COLOR2 to MATERIAL; diffuse and emissive
+//   already agreed.
+// * The caches start at zero while two of D3D's defaults do not, so a first sync that computes
+//   zero sends nothing and leaves D3D on its default. That is a real gap and it is the reference's
+//   gap -- nothing else in the binary writes +0x3e4c..+0x3e58 -- so it is reproduced rather than
+//   fixed. Do not "correct" it without checking the reference again.
+//
+// Only the fixed-function path reaches this: IStateSync calls it solely when no vertex shader is
+// bound, which today means UI and 2D rather than the world.
+//
+// **Built, not seen running.**
+// ref: FUN_006a4700
 void CGxDeviceD3d::IStateSyncMaterial() {
-    // TODO
+    uint32_t ambient;
+    uint32_t diffuse;
+    uint32_t specular;
+    uint32_t emissive;
+
+    if (this->m_primVertexMask & (1 << GxVA_Color0)) {
+        uint32_t which = this->m_appRenderStates[GxRs_ColorMaterial].m_value.m_data.u[0];
+
+        ambient = which == 0;
+        diffuse = which == 0;
+        specular = which == 1;
+        emissive = which == 2;
+    } else {
+        ambient = 0;
+        diffuse = 0;
+        specular = 0;
+        emissive = 0;
+    }
+
+    if (this->m_d3dAmbientMaterialSource != ambient) {
+        this->m_d3dDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, ambient);
+        this->m_d3dAmbientMaterialSource = ambient;
+    }
+
+    if (this->m_d3dDiffuseMaterialSource != diffuse) {
+        this->m_d3dDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, diffuse);
+        this->m_d3dDiffuseMaterialSource = diffuse;
+    }
+
+    if (this->m_d3dSpecularMaterialSource != specular) {
+        this->m_d3dDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, specular);
+        this->m_d3dSpecularMaterialSource = specular;
+    }
+
+    if (this->m_d3dEmissiveMaterialSource != emissive) {
+        this->m_d3dDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, emissive);
+        this->m_d3dEmissiveMaterialSource = emissive;
+    }
 }
 
 void CGxDeviceD3d::IStateSyncVertexPtrs() {
@@ -1949,9 +2406,22 @@ void CGxDeviceD3d::IStateSyncXforms() {
         this->m_xforms[GxXform_View].m_dirty = 0;
     }
 
-    // TODO world
-
-    // TODO tex
+    // Both remaining blocks are FIXED-FUNCTION only, and both are inert here today. Triaged
+    // 2026-09-23 rather than ported, because porting either would be dead code.
+    //
+    // World: D3DTS_WORLD affects nothing while a vertex shader is bound, and the only thing in
+    // frozen that touches GxXform_World is CM2SceneRender, which sets it to identity and pushes
+    // and pops it around the M2 render. The reference does this at 0x006a48b2, calling 0x006a5a30
+    // when its dirty byte at +0x18cc is set.
+    //
+    // Tex: the reference loops from 0x006a48c2 over m_caps.m_numTmus -- at CGxDevice + 0x214 --
+    // sending a texture transform per stage. Nothing in frozen ever sets GxXform_Tex0 through
+    // Tex7 to anything but the identity the push/pop leaves, so the loop would send identities.
+    // That is also why tools/deaddata.py reports CGxCaps::m_numTmus as written and never read:
+    // this loop is its only consumer.
+    //
+    // Both become worth porting the day something animates texture coordinates through the Gx
+    // transform stack, or the day the fixed-function path is used for anything.
 }
 
 void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
@@ -2463,6 +2933,16 @@ void CGxDeviceD3d::IXformSetProjection(const C44Matrix& matrix) {
     memcpy(&this->m_projNative, &projNative, sizeof(this->m_projNative));
 }
 
+// The last call IStateSync makes that was not linked, found by running --diff on it: every other
+// callee matched in order and this one showed as `- 006a99e0`.
+//
+// Identified from four things that agree. It calls DeviceCurWindow; it reads six consecutive floats
+// at +0xf70..+0xf84, which is m_viewport as {x.l, x.h, y.l, y.h, z.l, z.h}, and the first two terms
+// it forms are x.l * maxX + 0.5 and (1.0 - y.h) * maxY + 0.5 -- the X and Y below, constant
+// included; it calls vtable 0xbc, and 0xbc / 4 = 47 = SetViewport; and it ends by storing 0 to
+// +0xf6c, which is intF6C, the same flag this function clears and IStateSync tests before calling
+// it.
+// ref: FUN_006a99e0
 void CGxDeviceD3d::IXformSetViewport() {
     const auto& gxViewport = this->m_viewport;
     auto windowRect = this->DeviceCurWindow();
@@ -2472,15 +2952,30 @@ void CGxDeviceD3d::IXformSetViewport() {
     d3dViewport.X = (gxViewport.x.l * windowRect.maxX) + 0.5;
     d3dViewport.Y = ((1.0 - gxViewport.y.h) * windowRect.maxY) + 0.5;
 
-    // TODO account for negative X value
-
+    // A `// TODO account for negative X value` used to stand here. It is already accounted for.
+    // The reference reloads X and Y as SIGNED 32-bit and adds 4294967296.0 -- 2^32, the constant at
+    // 0x009e23ac -- when the value is negative, which is nothing but the x87 idiom a compiler emits
+    // to convert a DWORD to floating point. X and Y are DWORDs here, so the conversions below do
+    // exactly that on their own. Two of the reference's four branches are that idiom and should not
+    // be reproduced as branches.
     d3dViewport.Width = (gxViewport.x.h * windowRect.maxX) - d3dViewport.X + 0.5;
     d3dViewport.Height = ((1.0 - gxViewport.y.l) * windowRect.maxY) - d3dViewport.Y + 0.5;
 
     d3dViewport.MinZ = gxViewport.z.l;
     d3dViewport.MaxZ = gxViewport.z.h;
 
-    // TODO conditionally adjust Y value
+    // The other two branches are real, and this is them: rendering into a texture removes the
+    // y-flip, so Y is recomputed from the LOW edge instead of one minus the high edge. Note it
+    // truncates with no +0.5, unlike the rounded Y above -- the reference sets the control word to
+    // truncate and stores the result straight back.
+    //
+    // Same divergence as IStateSyncScissorRect, for the same reason and with the same fix pending:
+    // the reference tests m_textureTarget's m_apiSpecific fields (+0x2918 and +0x2924 against a
+    // base of +0x2910), but frozen never stores a surface there, so m_texture is what actually
+    // tracks the binding here. See the note on IStateSyncScissorRect.
+    if (this->m_textureTarget[GxBuffers_Color].m_texture || this->m_textureTarget[GxBuffers_Depth].m_texture) {
+        d3dViewport.Y = windowRect.maxY * gxViewport.y.l;
+    }
 
     this->m_d3dDevice->SetViewport(&d3dViewport);
 

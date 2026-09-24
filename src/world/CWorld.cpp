@@ -1,6 +1,7 @@
 #include "model/CM2Lighting.hpp"
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include <tempest/ColorConvert.hpp>
 #include "world/Terrain.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
@@ -41,8 +42,10 @@ C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
 C3Vector CWorld::s_outdoorDirection = { -0.402096f, -0.301572f, 0.864504f };
 bool CWorld::s_cameraUnderLiquid = false;
 C3Vector CWorld::s_cameraDir = { 1.0f, 0.0f, 0.0f };
-C3Vector CWorld::s_skyColors[5] = {
-    { 0.5f, 0.6f, 0.8f }, { 0.45f, 0.55f, 0.78f }, { 0.4f, 0.5f, 0.75f }, { 0.3f, 0.42f, 0.7f }, { 0.2f, 0.35f, 0.65f }
+// Zenith first, horizon last, then the fog band -- the order the dome's rings read them in.
+C3Vector CWorld::s_skyColors[6] = {
+    { 0.2f, 0.35f, 0.65f }, { 0.3f, 0.42f, 0.7f }, { 0.4f, 0.5f, 0.75f },
+    { 0.45f, 0.55f, 0.78f }, { 0.5f, 0.6f, 0.8f }, { 0.5f, 0.5f, 0.5f }
 };
 int32_t CWorld::s_outdoorParamsID = 0;
 C3Vector CWorld::s_fogColor = { 0.5f, 0.5f, 0.5f };
@@ -60,6 +63,8 @@ C3Vector CWorld::s_cloudColor1 = { 1.0f, 1.0f, 1.0f };
 C3Vector CWorld::s_cloudColor2 = { 1.0f, 1.0f, 1.0f };
 C3Vector CWorld::s_lightBands12to17[6] = {};
 float CWorld::s_cloudDensity = 0.5f;
+float CWorld::s_skyHighlight = 0.0f;
+float CWorld::s_liquidAlpha[4] = { 0.75f, 1.0f, 0.75f, 1.0f };
 float CWorld::s_fogStart = 0.0f;
 float CWorld::s_fogEnd = 0.0f;
 
@@ -71,6 +76,11 @@ namespace {
 // Band times are half-minutes, so a full day is 1440 x 2.
 const int32_t DAY_HALF_MINUTES = 2880;
 
+// Identified 2026-09-23 from the index arithmetic, which leaves no room for doubt: the
+// reference computes `band + n * 18 - 0x11` where n is the light param read through a
+// pointer, and (P - 1) * 18 + band + 1 expands to exactly P * 18 + band - 17. The table it
+// indexes is the global at 0x00af49bc, and the stride of 18 is the LightIntBand band count.
+// ref: FUN_007ebf30
 void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
     auto rec = g_lightIntBandDB.GetRecord((P - 1) * 18 + band + 1);
 
@@ -123,6 +133,10 @@ void InterpBandColor(int32_t P, int32_t band, int32_t t, C3Vector& out) {
 
 // Interpolate a LightFloatBand scalar (band 0 = fog end, band 1 = fog start scalar) at time t.
 // A LightParams owns 6 consecutive float-band rows; row IDs are 1-based.
+// The float sibling of InterpBandColor above, and identified the same way: the reference
+// computes `band + n * 6 - 0x5` against the table at 0x00af49e0, and (P - 1) * 6 + band + 1
+// is P * 6 + band - 5. Six is the LightFloatBand band count, against LightIntBand's 18.
+// ref: FUN_007ebf90
 float InterpFloatBand(int32_t P, int32_t band, int32_t t) {
     auto rec = g_lightFloatBandDB.GetRecord((P - 1) * 6 + band + 1);
 
@@ -162,7 +176,7 @@ float InterpFloatBand(int32_t P, int32_t band, int32_t t) {
 struct LightColors {
     C3Vector ambient;
     C3Vector diffuse;
-    C3Vector sky[5];
+    C3Vector sky[6];
     C3Vector fog;
     C3Vector bodyTint; // LightIntBand band 9: the sun/moon disc tint
     C3Vector sunColor;   // band 8: the reference keeps this at DayNight slot 2
@@ -175,17 +189,29 @@ struct LightColors {
     float floatBand5;    // 0x00d38c3c
     float fogEnd;
     float fogStartScalar;
+    // LightParams column 1 (highlightSky), 0 or 1. It gates the sky dome's azimuthal highlight;
+    // see SkyRender in Terrain.cpp. The reference keeps it as a FLOAT at DNInfo+0x128, converted
+    // from the DBC integer with fildl at 0x007ec1cd, and multiplies the highlight's strength band
+    // by it -- so a zone whose row carries 0 gets no highlight at all.
+    float highlightSky;
+    // LightParams columns 5..8 in that order: waterShallow, waterDeep, oceanShallow, oceanDeep.
+    float liquidAlpha[4];
 };
 
 // Interpolate every band of one LightParams at time t into a LightColors.
 void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     InterpBandColor(P, 0, t, out.diffuse);
     InterpBandColor(P, 1, t, out.ambient);
-    InterpBandColor(P, 6, t, out.sky[0]);
-    InterpBandColor(P, 5, t, out.sky[1]);
+    // Top-to-horizon, which is the order the dome's rings consume them: the reference's sky
+    // stack is DNInfo[3..8] = LightIntBand bands 2..7, and band 7 is the fog colour, which is why
+    // the dome's bottom two rings and the distance fog converge on the same RGB with no blending.
+    // This used to be five entries from bands 6,5,4,3,2 in the opposite order.
+    InterpBandColor(P, 2, t, out.sky[0]);
+    InterpBandColor(P, 3, t, out.sky[1]);
     InterpBandColor(P, 4, t, out.sky[2]);
-    InterpBandColor(P, 3, t, out.sky[3]);
-    InterpBandColor(P, 2, t, out.sky[4]);
+    InterpBandColor(P, 5, t, out.sky[3]);
+    InterpBandColor(P, 6, t, out.sky[4]);
+    InterpBandColor(P, 7, t, out.sky[5]);
     InterpBandColor(P, 7, t, out.fog);
     InterpBandColor(P, 9, t, out.bodyTint);
 
@@ -210,8 +236,26 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     //
     // So: 14 = ocean shallow, 15 = ocean deep, 16 = river shallow, 17 = river deep -- the OPPOSITE
     // of what the colour values alone suggested. frozen's liquid rendering has never had any of them.
-    // This rests on the documented LightParams column order; if that is ever shown wrong, the two
-    // pairs swap back.
+    //
+    // **Confirmed from disassembly on 2026-09-23**, which retires the caveat this comment used to
+    // carry about resting on the documented column order. FUN_008a2bf0 is a texture callback that
+    // builds a 64x8 gradient strip, and the liquid type arrives as its userArg, not as the command
+    // code. It reads the four alphas unconditionally into two two-byte arrays, in the order
+    // 0x148, 0x140 and then 0x14c, 0x144, and indexes BOTH arrays by that type -- so type 0 takes
+    // (0x148, 0x14c) and type 1 takes (0x140, 0x144), exactly as reasoned above.
+    //
+    // The colours settle it independently. It reads the pair at `base + 0x10c + type * 8` and
+    // `base + 0x110 + type * 8`, where base is FUN_007ecef0's return, 0x00d38b00. The DayNight
+    // slots begin at +0xd4, so +0x10c is slot 14 and type 1 lands on slots 16 and 17. Ocean is
+    // type 0 on bands 14 and 15; river is type 1 on 16 and 17.
+    // With this loop frozen reads every one of LightIntBand's eighteen bands -- 0 through 11
+    // individually above, 12 through 17 here -- and all six of LightFloatBand's below.
+    //
+    // Audited against the reference 2026-09-23, once InterpBandColor was identified as
+    // FUN_007ebf30: its twenty call sites reach bands 0 through 6, 8 through 10, and 12, 13, 14
+    // and 16, which is a SUBSET of what is read here. So there is no band the reference consumes
+    // and frozen ignores, and no missing visual feature hiding behind an unread band. Recorded as
+    // a negative result because the question is a natural one to ask twice.
     for (int32_t b = 0; b < 6; b++) {
         InterpBandColor(P, 12 + b, t, out.extraBands[b]);
     }
@@ -233,6 +277,18 @@ void ComputeLightColors(int32_t P, int32_t t, LightColors& out) {
     out.fogEnd = InterpFloatBand(P, 0, t);
     float startScalar = InterpFloatBand(P, 1, t);
     out.fogStartScalar = startScalar < -1.0f ? -1.0f : (startScalar > 1.0f ? 1.0f : startScalar);
+
+    auto params = g_lightParamsDB.GetRecord(P);
+    out.highlightSky = params ? static_cast<float>(params->m_highlightSky) : 0.0f;
+
+    // The reference does not read these from the DBC at the point of use. FUN_007ebff0 copies them
+    // into the light block at +0x140..+0x14c, and FUN_007f3230 then blends two blocks before the
+    // result is published -- so what the liquid gradient callback (FUN_008a2bf0) reads is a blended
+    // value, not one record's column. Reading them here puts them through frozen's own blend below.
+    out.liquidAlpha[0] = params ? params->m_waterShallowAlpha : 0.75f;
+    out.liquidAlpha[1] = params ? params->m_waterDeepAlpha : 1.0f;
+    out.liquidAlpha[2] = params ? params->m_oceanShallowAlpha : 0.75f;
+    out.liquidAlpha[3] = params ? params->m_oceanDeepAlpha : 1.0f;
 }
 
 // One Light.dbc row cached for the current map so per-frame position selection never rescans the DBC.
@@ -417,6 +473,11 @@ void CWorld::UpdateOutdoorLight() {
         result.floatBand5 = result.floatBand5 * iw + local.floatBand5 * w;
         result.fogEnd = result.fogEnd * iw + local.fogEnd * w;
         result.fogStartScalar = result.fogStartScalar * iw + local.fogStartScalar * w;
+        result.highlightSky = result.highlightSky * iw + local.highlightSky * w;
+
+        for (int32_t k = 0; k < 4; k++) {
+            result.liquidAlpha[k] = result.liquidAlpha[k] * iw + local.liquidAlpha[k] * w;
+        }
 
         if (w >= 0.5f) {
             CWorld::s_outdoorParamsID = bestParams;
@@ -426,7 +487,7 @@ void CWorld::UpdateOutdoorLight() {
     CWorld::s_outdoorDiffuse = result.diffuse;
     CWorld::s_outdoorAmbient = result.ambient;
 
-    for (int32_t k = 0; k < 5; k++) {
+    for (int32_t k = 0; k < 6; k++) {
         CWorld::s_skyColors[k] = result.sky[k];
     }
 
@@ -440,6 +501,11 @@ void CWorld::UpdateOutdoorLight() {
         CWorld::s_lightBands12to17[b] = result.extraBands[b];
     }
     CWorld::s_cloudDensity = result.cloudDensity;
+    CWorld::s_skyHighlight = result.highlightSky;
+
+    for (int32_t k = 0; k < 4; k++) {
+        CWorld::s_liquidAlpha[k] = result.liquidAlpha[k];
+    }
     CWorld::s_floatBand2 = result.floatBand2;
     CWorld::s_floatBand4 = result.floatBand4;
     CWorld::s_floatBand5 = result.floatBand5;
@@ -534,6 +600,10 @@ const C3Vector& CWorld::GetFogColor() {
     return CWorld::s_fogColor;
 }
 
+float CWorld::GetSkyHighlight() {
+    return CWorld::s_skyHighlight;
+}
+
 float CWorld::GetFogStart() {
     return CWorld::s_fogStart;
 }
@@ -545,8 +615,8 @@ float CWorld::GetFogEnd() {
 const C3Vector& CWorld::GetSkyColor(int32_t index) {
     if (index < 0) {
         index = 0;
-    } else if (index > 4) {
-        index = 4;
+    } else if (index > 5) {
+        index = 5;
     }
 
     return CWorld::s_skyColors[index];
@@ -719,18 +789,11 @@ int32_t CWorld::GetOutdoorParamsID() {
     return CWorld::s_outdoorParamsID;
 }
 
+// Reads the BLENDED value rather than the dominant light's record, which is what the reference
+// does: the alphas live in its light block and go through the same two-block blend as every other
+// light value, so crossing a light boundary used to step here and now ramps.
 float CWorld::GetLiquidAlpha(int32_t oceanic, int32_t deep) {
-    auto lp = g_lightParamsDB.GetRecord(CWorld::s_outdoorParamsID);
-
-    if (!lp) {
-        return deep ? 1.0f : 0.75f;
-    }
-
-    if (oceanic) {
-        return deep ? lp->m_oceanDeepAlpha : lp->m_oceanShallowAlpha;
-    }
-
-    return deep ? lp->m_waterDeepAlpha : lp->m_waterShallowAlpha;
+    return CWorld::s_liquidAlpha[(oceanic ? 2 : 0) + (deep ? 1 : 0)];
 }
 
 const C3Vector& CWorld::GetLiquidShallow(int32_t oceanic) {
@@ -786,6 +849,32 @@ void CWorld::SetFarClip(float farClip) {
     // TODO dword_ADEEE0 = 1;
 }
 
+// The reference's counterpart is FUN_004e3a20, identified 2026-09-23. CM2Model::SetupLighting
+// invokes the callback through +0x2ac at 0x00831b70, passing (model, lighting, arg); five sites in
+// the object code store 0x004e3a20 into that field, which is the same slot frozen fills from
+// CGObject_C.
+//
+// **This body is a stand-in and the tag is NOT applied**, because the two do materially different
+// things and claiming identity would say the port is worse than it is rather than that it is
+// absent. What the reference does, from reading it -- 485 bytes, 11 branches -- so a real port has
+// a starting point:
+//
+//   * indexes a global at 0x00ac436c into an array of 0x198-byte records at 0x00b6b240, bounds
+//     checked against the count at 0x00b6b23c, and requires bit 0x2000 of that record's +0x170.
+//   * gets a position from FUN_004e2790 on the model and calls CM2Lighting::Initialize with a
+//     sphere centred there and a radius of ZERO -- so it RE-initialises the lighting that
+//     SetupLighting already initialised and SelectLights already filled, down at least one of its
+//     paths. That re-memset is the part to understand before porting: taken literally it discards
+//     the scene lights the local-light chain now feeds in.
+//   * builds temporary CM2Lights -- constructor, SetLightType, SetDirection, SetVisible -- and
+//     hands them to CM2Lighting::AddLight twice.
+//
+// That last step is why this is worth recording now: every one of those is already ported and
+// tagged. The machinery this callback drives exists; the driver does not.
+//
+// Unidentified callees it still needs: FUN_004e2790, FUN_0065c290, FUN_007ebf30 (the DayNight
+// range), FUN_00982970, FUN_00834ab0, FUN_004e2730 and FUN_00834940.
+//
 // TODO the day/night cycle's light; until then every world model gets a fixed sun
 void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
     // Fog the model with the same data-driven distance fog the terrain and WMOs use. M2 materials
@@ -800,10 +889,20 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
     // world position is the translation column of its placement matrix.
     if (model) {
         C3Vector pos = { model->matrixB4.d0, model->matrixB4.d1, model->matrixB4.d2 };
-        C3Vector interior;
+        CImVector diffuse;
+        CImVector ambient;
 
-        if (TerrainInteriorAmbientAt(pos, interior)) {
-            lighting->AddAmbient(interior);
+        // The reference's floor probe (CMapEntity::FloorLight): the MOCV under the model, split
+        // into a diffuse and an ambient. The reference function that turns those two colours into
+        // the model's lights has not been identified yet, so the diffuse is applied along the
+        // outdoor sun direction here; the ambient is exact.
+        if (TerrainWmoFloorLightAt(pos, &diffuse, &ambient)) {
+            C3Vector amb;
+            C3Vector dif;
+            UnpackColor(amb, ambient);
+            UnpackColor(dif, diffuse);
+            lighting->AddAmbient(amb);
+            lighting->AddDiffuse(dif, CWorld::s_outdoorDirection);
             return;
         }
     }

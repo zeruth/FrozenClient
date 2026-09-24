@@ -7,6 +7,7 @@
 #include "gx/Transform.hpp"
 #include "model/CM2Cache.hpp"
 #include "model/CM2Model.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Types.hpp"
 #include <tempest/Math.hpp>
@@ -128,13 +129,37 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             this->m_curBatch = nullptr;
             this->m_curSkinSection = nullptr;
             this->m_curLighting = element->model->m_currentLighting;
-            // TODO
-            // this->m_curMaterial = this->dwordB8;
+            // The reference takes the ADDRESS of its embedded block at +0xb8 (0x823a51,
+            // `leal 0xb8(%esi), %edx`), not its value as the old note here said. The batch path
+            // below overwrites this pointer with the real material out of the model data; what is
+            // left pointing here is every element type that has no material of its own.
+            //
+            // Not cosmetic: SetupMaterial dereferences m_curMaterial and DrawParticle calls
+            // SetupMaterial, so without this a particle element would read whatever the previous
+            // element left -- a real material belonging to another model.
+            this->m_curMaterial = &this->m_scratchMaterial;
             this->m_data = element->model->m_shared->m_data;
 
             // TODO
             // this->m_cache->LinkToSharedUpdateList(this->m_curShared);
 
+            // TYPE 4 IS NOW REACHABLE as of 2026-09-24: CM2Scene::AddParticleElement builds
+            // particle elements and files them in the pass lists, so DrawParticle is a live stub
+            // rather than a dead one. It returns 0, which is safe -- `i` is incremented by the
+            // loop header and the return only adds an extra skip -- so the elements are visited
+            // and nothing is drawn for them yet.
+            //
+            // The rest still holds, with type 1's gate now understood. Type 0 is the only one
+            // that draws. Type 2 needs CM2Model::IsBatchDoodadCompatible, which always returns 0.
+            //
+            // Type 1 needs TWO things: a batch with flag 0x4, and a non-null
+            // CM2Scene::m_projectionCallback -- the field previously called uint104, which is not
+            // a number but the projected-decal callback. Nothing calls
+            // CM2Scene::SetProjectionCallback yet, so it stays null and the gate stays shut; see
+            // docs/ref/parity-shadows.md for the whole chain.
+            //
+            // Types 3 and 5 need ribbon and draw-callback elements the gather does not build, so
+            // porting either of those draws still means porting its gate first.
             switch (this->m_curElement->type) {
                 case 0: {
                     this->DrawBatch();
@@ -176,7 +201,26 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             this->m_prevType = this->m_curType;
             this->m_prevModel = this->m_curModel;
             this->m_prevShared = this->m_curShared;
-            this->m_curLighting = this->m_prevLighting; // TODO investigate (maybe bug?)
+            // Yes, this one is backwards, and yes it is faithful. Settled 2026-09-23.
+            //
+            // Every other line in this block copies cur into prev. The reference does the
+            // same nine times and then, for the lighting pair alone, copies the other way:
+            // its ten adjacent-field copies at 0x00823ad3..0x00823b0f are all low -> high
+            // except 0x00823ae5, which is `+0x74 -> +0x70`.
+            //
+            // Which of those two is `cur` is what settles it, and CM2SceneRender::SetupLighting
+            // answers it: at 0x0081fb3e it loads +0x70 and hands it to SetLocalLighting, so
+            // +0x70 is the live one and the copy really is cur = prev.
+            //
+            // It is inert either way. Nothing in the reference or here ever assigns
+            // m_prevLighting, so it stays null, this nulls m_curLighting at the end of each
+            // element, and the next element reassigns it before anything reads it. The visible
+            // consequence is only that SetupLighting's `m_curLighting != m_prevLighting` test
+            // always fires, so it redoes its work every batch -- in the reference too.
+            //
+            // Do not "fix" this into prev = cur. That would be a divergence, and it would
+            // silently change how often the lighting path runs.
+            this->m_curLighting = this->m_prevLighting;
             this->m_prevShaded = this->m_curShaded;
             this->m_prevFogMode = this->m_curFogMode;
             this->m_prevBatch = this->m_curBatch;
@@ -285,6 +329,9 @@ void CM2SceneRender::DrawBatch() {
     }
 }
 
+// The other half of the doodad-batch trap. This draws type 2 elements, and nothing produces them
+// today because CM2Model::IsBatchDoodadCompatible returns 0 -- see the note there. If that changes
+// while this is still empty, the merged batches stop drawing with nothing in the log.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
     // TODO
 }
@@ -297,8 +344,262 @@ void CM2SceneRender::DrawCallback() {
     // TODO
 }
 
+// DEAD STUB, and the chain above it is what has to land first.
+//
+// This has a real caller -- element type 4 in Draw -- but CM2Scene::Animate emits only types 0, 1
+// and 2, so nothing reaches here. Porting this before the emission would give frozen a function
+// that can never run.
+//
+// The emission was mapped 2026-09-24. Two functions:
+//
+// CM2Scene::Animate's loop at 0x822be0 walks m_particleEmitters and skips an emitter when any of
+// four gates fail: the model's flag 0x2000 together with the emitter's 0x200; the emitter's
+// 0x2000000; the runtime block's `active` byte being clear; or the model's float198 at or below
+// 1e-4 (0x009e8cd0). It then transforms the M2Particle's position by the emitter's bone matrix
+// (FUN_004c21b0, C3Vector * C44Matrix), derives a camera distance, and calls the builder once for
+// the emitter and once for each of its children.
+//
+// FUN_00821930 is that builder, and 0x821977 is where the `type = 4` store actually lives:
+//
+//     if (!emitter->HasLiveParticles()) return;      // FUN_0097b9e0, ported
+//     if (emitter->m_particleKind == 1) return;      // model-carrying emitters make no element
+//     element = scene->m_elements.New();             // FUN_00821670, the container at scene+0x34
+//     element->type = 4; element->model = model; element->flags = 0;
+//     element->alpha = <the alpha passed in>;  element->float10 = model->[0x88];
+//     element->float14 = <the camera distance>;
+//     element->[0x18] = emitter;                     // the EMITTER rides in the element
+//     element->[0x24] = emitter->[0x18];
+//     element->[0x30] = 0; element->[0x34] = -1; element->[0x38] = -1; element->[0x3c] = 0;
+//     then blend-mode bookkeeping off emitter->[0xd0] into two of the scene's counters.
+//
+// The element layout blocker is gone: M2Element is 17 dwords and frozen's struct now matches, and
+// it carries the emitter in a field of its own rather than overloading `index` the way the
+// reference does (a 64-bit pointer does not fit that 32-bit slot).
+//
+// The builder's SIGNATURE is settled too -- seven dwords of arguments, which `retl $0x1c`
+// confirms:
+//
+//     AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model,
+//                        float distance, float alpha,
+//                        int32_t flag, uint32_t* elementIndex, uint32_t* counter)
+//
+// `elementIndex` is a POINTER to the scene's running element count: the pass list gets the current
+// value appended and the count is then incremented, so the lists hold element indices. `counter`
+// is bumped whenever the blend is GxBlend_Add or GxBlend_NoAlphaAdd.
+//
+// Pass routing at the tail, onto frozen's existing array54[3]:
+//     blend <= 1 and alpha >= 0.99999 (0x00a45528)      -> array54[0]
+//     else if flag == 0 or emitter->m_flags & 0x40000   -> array54[2]
+//     else                                              -> array54[1]
+//
+// The two arguments the loop computes, traced 2026-09-24:
+//
+//   ALPHA is just model->float198, stashed at 0x822c2c by the same read that gates the emitter on
+//   it being above 1e-4. Nothing more.
+//
+//   DISTANCE is NOT a camera distance, which is what the name suggests. It is the SQUARED length
+//   of `file.position * m_boneMatrices[file.boneIndex]` -- the emitter's own position in the
+//   model's space, squared, with no camera involved (0x822c70..0x822c98). Transcribe it; do not
+//   "fix" it into a camera distance.
+//
+// And the FLAG, which selects pass 1 against pass 2, is a LIQUID PLANE TEST. It reads an object at
+// model+0x2a8, which the reference points either at the model's own block at +0x1d4 or at its
+// parent's (0x828a49) -- that is frozen's m_currentLighting / m_lighting pair exactly. The fields
+// it uses land on CM2Lighting as frozen already has it: +0x14 is m_flags, and +0xc4 is
+// m_liquidPlane. So:
+//
+//     flag = lighting->m_flags & 0x20;
+//     if (flag && (lighting->m_flags & 0x40)) {
+//         centre = (data->boundsMax + data->boundsMin) * 0.5;      // data +0xa0..+0xb4
+//         radius = length(matrixF4.row0) * data->[0xb8];
+//         if (dot(m_liquidPlane, centre * matrixF4) <= -radius) flag = 0;
+//     }
+//
+// which is why the transparent block flips its order under liquid: a model entirely below the
+// water plane has its particles routed to the other pass.
+//
+// ONE FIELD REMAINS UNIDENTIFIED and it is small: the reference caches emitter->[0x18] into the
+// element's +0x24 slot. It is set by neither the constructor nor SetTextureGrid. Frozen carries
+// the emitter in the element anyway, so the cache is probably redundant here -- but that cannot be
+// asserted until the field is known, so do not silently omit it without checking.
+// Put the view into camera-relative space for a particle draw.
+//
+// Translating the view matrix by the camera position cancels the camera translation, and the world
+// matrix goes to identity -- so particle geometry is built and submitted relative to the camera
+// rather than in absolute world coordinates. That is the arrangement CLAUDE.md's third priority
+// is about, arrived at here from the reference rather than from the depth symptoms.
+//
+// The caller passes `scene + 0xf4`, which is m_viewInv's translation row: the camera position.
+// The same value the particle driver hands to CM2ParticleEmitter::Update.
+//
+// NOT a divergence, though an earlier version of this note called it one. The reference writes
+// the device's transform-stack top at device+0x18c8 directly, which looks like reaching into
+// internals -- but CGxDevice::XformSet indexes `device + 0x1008 + xf * 0x118`, and for
+// GxXform_World (8) that is exactly 0x18c8. The reference is calling XformSet INLINED, so the
+// GxXformSet line below is the faithful form rather than a convenient substitute. The identity it
+// copies is the global at 0x00af58a8, read out of the PE and confirmed exactly identity.
+//
+// ref: FUN_0081f620
+void CM2SceneRender::SetupParticleTransform(const C3Vector& cameraPosition) {
+    C44Matrix view = this->m_scene->m_view;
+
+    view.Translate(cameraPosition);
+
+    GxXformSetView(view);
+    GxXformSet(GxXform_World, C44Matrix());
+}
+
+// PORTED 2026-09-24, from the map below plus the disassembly at 0x8214e0 -- which carries three
+// register arguments the decompilation does not. NOT VERIFIED: the geometry stage inside
+// CM2ParticleEmitter::Draw is still FUN_0097e730, so this sets up a draw that emits no quads yet.
+//
+// The shape, kept because every step below is now a line of code and the map is how to check it:
+//
+//   1. Build a 16-bit material key from the EMITTER'S MATERIAL FLAGS:
+//          key = (matFlags & 0x1) ? 4 : 5
+//          if (!(matFlags & 0x2)) key |= 0x2
+//          if (!(matFlags & 0x4)) key |= 0x10
+//          key |= <FUN_0081ca20()> << 16
+//      then `m_curMaterial = &key` -- which is the field the Draw loop still marks TODO.
+//
+//      Worth noting as corroboration: those are exactly the three bits CM2Model's factory
+//      derives when it builds the emitter's material, and they were mapped from the
+//      CONSTRUCTION side. The draw side reading the same three is independent confirmation.
+//
+//   2. If `this->[0x44]->[0x4] & 0x80`, hand off to FUN_00821100 and return its value instead.
+//   3. Otherwise resolve the emitter's texture (+0x128) through FUN_004b6cb0 and bail if null.
+//   4. Set up device and shader state -- 0x685f50, 0x685970 (both through the global at
+//      0x00c5df88), 0x872f90, 0x81fb10, 0x81fe90, 0x81f620 -- then call
+//      **FUN_0097ea60, which is the EMITTER'S OWN DRAW** and where the quads are actually built.
+//   5. A virtual through the device, then 0x57c450.
+//
+// The geometry lives in CM2ParticleEmitter, not here; this is the state around it. Every helper
+// step 4 names turned out to exist already -- 0x685f50 is CGxDevice::RsSet, 0x685970 IRsDirty,
+// 0x872f90 CShaderEffect::SetCurrent, 0x81fb10 SetupLighting, 0x81fe90 SetupMaterial, 0x81f620
+// SetupParticleTransform, 0x4b6cb0 TextureGetGxTex -- so the chain that looked like a port of its
+// own was one function deep, and this is it.
+//
+// What is left between here and pixels is exactly one function: FUN_0097e730, the quad builder
+// that CM2ParticleEmitter::Draw calls.
 int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5) {
-    // TODO
+    CM2ParticleEmitter* emitter = this->m_curElement->emitter;
+
+    // The emission builds one element per emitter, but the factory is allowed to produce a null
+    // emitter for a type frozen does not have -- see CM2Model::InitializeLoaded.
+    if (!emitter) {
+        return 0;
+    }
+
+    // Particles carry no M2Material in the file, so one is built here out of the emitter's own
+    // flags and handed to SetupMaterial through the scratch member. Cross-checked against
+    // SetupMaterial, its only consumer: 0x4 is culling, 0x8 depth test, 0x10 depth write. 0x8 is
+    // never set here, so a particle always depth-tests.
+    uint32_t matFlags = emitter->m_materialFlags;
+
+    // Bit 0 of the emitter's flags is LIT and the M2 material bit is UNLIT, so this inverts. Bit
+    // 1 is fogged and bit 2 is depth-write-enabled, inverting the same way. Those are the three
+    // bits CM2Model's factory derives from the file record -- read from the construction side
+    // before this was, which makes the two readings independent of each other.
+    uint16_t flags = (matFlags & 0x1) ? 0x4 : 0x5;
+
+    if (!(matFlags & 0x2)) {
+        flags |= 0x2;
+    }
+
+    if (!(matFlags & 0x4)) {
+        flags |= 0x10;
+    }
+
+    this->m_scratchMaterial.flags = flags;
+    this->m_scratchMaterial.blendMode =
+        static_cast<uint16_t>(M2BlendIndexFromGx(emitter->m_blendMode));
+
+    // The reference points m_curMaterial at a STACK LOCAL here, which dies on return and leaves
+    // Draw's epilogue copying a dangling pointer into m_prevMaterial. The scratch member is the
+    // recorded divergence; see its declaration.
+    this->m_curMaterial = &this->m_scratchMaterial;
+
+    // Forces SetupMaterial to redo its work rather than trust a comparison against whatever the
+    // previous element left.
+    this->m_prevMaterial = nullptr;
+
+    if (this->m_cache->m_flags & 0x80) {
+        // The BATCHED path, FUN_00821100: it walks forward over the adjacent type-4 elements,
+        // merges every emitter that agrees on blend, the three material bits and the texture into
+        // one vertex buffer, and returns how many elements it swallowed -- which is why this
+        // function returns a count at all. Not ported, and the flag that selects it is off.
+        //
+        // Returning 0 is the safe shape either way: Draw increments its own index in the loop
+        // header, so a zero here just means this element drew alone. These four are the arguments
+        // that path takes and this one does not.
+        (void)a2;
+        (void)elements;
+        (void)a4;
+        (void)a5;
+
+        return 0;
+    }
+
+    CGxTex* texture = TextureGetGxTex(emitter->m_texture, 0, nullptr);
+
+    if (!texture) {
+        return 0;
+    }
+
+    // 0x8215a1. The EMITTER's material flag bit 0 chooses between the two particle effects, and
+    // the reference stashes the choice in its own incoming a5 parameter slot -- which is why the
+    // decompilation shows neither this nor the receiver of SetCurrent below.
+    CShaderEffect* effect = (matFlags & 0x1)
+        ? this->m_particleEffect
+        : this->m_particleUnlitEffect;
+
+    GxRsSet(GxRs_Texture0, texture);
+
+    // Clear texture unit 1 WITHOUT going through GxRsSet, which is what the reference does at
+    // 0x8215cf: it marks the state dirty and assigns the value directly, skipping the
+    // render-target refresh RsSet(void*) does on the way in. Transcribed rather than simplified,
+    // because RsSet would also take the null through that branch and the two are not the same
+    // call.
+    CGxDevice* device = g_theGxDevicePtr;
+
+    if (device && device->m_context) {
+        CGxAppRenderState& rs = device->m_appRenderStates[GxRs_Texture1];
+
+        if (rs.m_value != static_cast<void*>(nullptr)) {
+            device->IRsDirty(GxRs_Texture1);
+            rs.m_value = static_cast<void*>(nullptr);
+        }
+    }
+
+    // DIVERGENCE: the reference calls this unconditionally. Frozen's effects come from
+    // CShaderEffectManager::GetEffect, which returns null for an effect the shader list has not
+    // been given rather than creating one, so a null here is a supported state (see the
+    // declarations) and calling through it would fault on a machine missing the shader.
+    if (effect) {
+        effect->SetCurrent();
+    }
+
+    this->SetupLighting();
+    this->SetupMaterial();
+
+    // scene + 0xf4 is row 3 of m_viewInv -- the inverse view's translation, i.e. the camera
+    // position in world space. The reference passes a pointer straight into the matrix.
+    const C44Matrix& viewInv = this->m_scene->m_viewInv;
+    C3Vector cameraPosition = { viewInv.d0, viewInv.d1, viewInv.d2 };
+
+    this->SetupParticleTransform(cameraPosition);
+
+    // m_curModel->m_particleRelative is null unless FUN_00824460 has put this model's particles in
+    // some other space; see its declaration. The `1` is the batched bit Draw folds into
+    // m_drawFlags, and it is 1 on this, the UNbatched path, because the bit means "the caller owns
+    // the buffer" -- which is true here too.
+    emitter->Draw(this->m_curModel->m_particleRelative, nullptr, 1);
+
+    // Restore: the view and world transforms both go back to identity. SetupParticleTransform put
+    // the view into camera-relative space, and leaving it there would carry into the next element.
+    GxXformSetView(CM2SceneRender::s_identity);
+    GxXformSet(GxXform_World, CM2SceneRender::s_identity);
+
     return 0;
 }
 
@@ -306,6 +607,7 @@ void CM2SceneRender::DrawRibbon() {
     // TODO
 }
 
+// ref: FUN_0081f700
 void CM2SceneRender::SetBatchVertices(int32_t a2) {
     if (CShaderEffect::s_enableShaders) {
         if (this->m_curType != this->m_prevType || this->m_curShared != this->m_prevShared) {
@@ -317,6 +619,34 @@ void CM2SceneRender::SetBatchVertices(int32_t a2) {
     }
 }
 
+// Its 56% call-order recall is one missing block, not scatter: the reference ends this function by
+// setting a USER CLIP PLANE, and frozen does not. Written down 2026-09-23 with the whole chain, so
+// the next attempt starts at the top of it rather than the bottom.
+//
+// The reference, from 0x0081fd5e:
+//
+//     if (m_curElement->flags & 0x2) {            // M2UseClipPlanes
+//         C4Plane p = m_curLighting->m_liquidPlane;
+//         if (<device +0x1b4> && <global 0xd43020>)  // a transform step, not decoded
+//             ...
+//         if (m_curPass == 2)                     // negate all four components
+//             p = -p;
+//         GxDevice->ClipPlaneSet(0, &p);
+//         if (<device +0xf58>) GxRsSet(GxRs_ClipPlaneMask, 1);
+//     } else {
+//         if (<device +0xf58>) GxRsSet(GxRs_ClipPlaneMask, 0);   // 0x0081fe4d
+//     }
+//
+// Four pieces, and only two exist. CGxDevice::ClipPlaneSet and IStateSyncClipPlanes landed
+// 2026-09-23, and GxRs_ClipPlaneMask reaches D3DRS_CLIPPLANEENABLE as of the same day. This block
+// is the third.
+//
+// The fourth is the reason not to write this block yet: CM2Lighting::m_liquidPlane is DECLARED AND
+// NEVER WRITTEN. The liquid-plane work that would fill it is a TODO in CM2Scene::Animate -- see the
+// note there about CM2Lighting flag 0x40 never being set -- so porting this would clip every
+// flagged element against a plane of all zeros. Start at Animate.
+//
+// Also unidentified: the device fields at +0x1b4 and +0xf58 that gate the transform and the mask.
 void CM2SceneRender::SetupLighting() {
     if (this->m_curMaterial->flags & 0x1) {
         this->m_curShaded = 0;
@@ -522,10 +852,14 @@ void CM2SceneRender::SetupTextures() {
     uint32_t textureCount = this->m_curBatch->textureCount;
     int32_t v19 = 1;
 
-    // TODO
-    // - override texture count in certain cases
+    if (!CShaderEffect::s_enableShaders) {
+        // Without shaders these batches collapse to a single texture stage
+        if (this->m_curBatch->shader & 0x8000) {
+            textureCount = 1;
+        }
 
-    if (!(this->m_curBatch->shader & 0x4000) || textureCount != 1) {
+        v19 = 0;
+    } else if (!(this->m_curBatch->shader & 0x4000) || textureCount != 1) {
         v19 = 0;
     }
 

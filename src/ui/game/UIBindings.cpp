@@ -293,3 +293,110 @@ bool UIBindingsRunCommand(const char* command, bool keyDown) {
 
     return true;
 }
+
+// ref: FUN_0055dd10
+//
+// The binding name for a key code. The codes are the reference's own KEY enum and frozen's matches
+// it value for value, so this is a direct transcription rather than a mapping.
+//
+// Printable characters name themselves; the reference builds a one-character string for them.
+const char* UIBindingsKeyName(int32_t key, char* buffer, size_t bufferBytes) {
+    // 0x21..0xFF is the printable range, which names itself.
+    if (static_cast<uint32_t>(key) - 0x21 < 0xDF) {
+        SStrPrintf(buffer, bufferBytes, "%c", static_cast<char>(key));
+
+        return buffer;
+    }
+
+    if (key >= KEY_NUMPAD0 && key <= KEY_NUMPAD0 + 9) {
+        SStrPrintf(buffer, bufferBytes, "NUMPAD%d", key - KEY_NUMPAD0);
+
+        return buffer;
+    }
+
+    // Two F-key runs, both numbered off 0x2FF: F1..F12 at 0x300 and F14..F19 at 0x30D. F13 is the
+    // odd one out at 0x212, where the reference calls it PRINTSCREEN.
+    if ((key >= 0x300 && key <= 0x30B) || (key > 0x30C && key < 0x313)) {
+        SStrPrintf(buffer, bufferBytes, "F%d", key - 0x2FF);
+
+        return buffer;
+    }
+
+    switch (key) {
+    case KEY_LSHIFT:        return "LSHIFT";
+    case KEY_RSHIFT:        return "RSHIFT";
+    case 0x2:               return "LCTRL";
+    case 0x3:               return "RCTRL";
+    case 0x4:               return "LALT";
+    case 0x5:               return "RALT";
+    case -1:                return "NONE";
+    case KEY_SPACE:         return "SPACE";
+    case 0x10A:             return "NUMPADPLUS";
+    case 0x10B:             return "NUMPADMINUS";
+    case 0x10C:             return "NUMPADMULTIPLY";
+    case 0x10D:             return "NUMPADDIVIDE";
+    case 0x10E:             return "NUMPADDECIMAL";
+    case KEY_ESCAPE:        return "ESCAPE";
+    case KEY_ENTER:         return "ENTER";
+    case 0x202:             return "BACKSPACE";
+    case KEY_TAB:           return "TAB";
+    case 0x204:             return "LEFT";
+    case 0x205:             return "UP";
+    case 0x206:             return "RIGHT";
+    case 0x207:             return "DOWN";
+    case 0x208:             return "INSERT";
+    case 0x209:             return "DELETE";
+    case 0x20A:             return "HOME";
+    case 0x20B:             return "END";
+    case 0x20C:             return "PAGEUP";
+    case 0x20D:             return "PAGEDOWN";
+    case 0x20E:             return "CAPSLOCK";
+    case KEY_NUMLOCK:       return "NUMLOCK";
+    case KEY_PRINTSCREEN:   return "PRINTSCREEN";
+    case 0x30C:             return "NUMPADEQUALS";
+    default:                return "UNKNOWN";
+    }
+}
+
+// ref: FUN_0055d990
+//
+// The modifier prefixes, in the reference's order: alt, then control, then shift.
+//
+// Each group has a sided and an unsided form, and the UNSIDED name is used only when BOTH sides of
+// that modifier are set in the mask -- one side alone gives "LALT-" or "RALT-". So a caller that
+// does not care which side was pressed sets both bits.
+void UIBindingsModifierPrefix(uint32_t modifiers, char* buffer, size_t bufferBytes) {
+    struct Group {
+        uint32_t left;
+        uint32_t right;
+        const char* both;
+        const char* leftOnly;
+        const char* rightOnly;
+    };
+
+    static const Group GROUPS[] = {
+        { 0x10, 0x20, "ALT-",   "LALT-",   "RALT-"   },
+        { 0x04, 0x08, "CTRL-",  "LCTRL-",  "RCTRL-"  },
+        { 0x01, 0x02, "SHIFT-", "LSHIFT-", "RSHIFT-" },
+    };
+
+    buffer[0] = '\0';
+
+    for (auto& group : GROUPS) {
+        auto mask = modifiers & (group.left | group.right);
+
+        const char* prefix = nullptr;
+
+        if (mask == (group.left | group.right)) {
+            prefix = group.both;
+        } else if (mask == group.left) {
+            prefix = group.leftOnly;
+        } else if (mask == group.right) {
+            prefix = group.rightOnly;
+        }
+
+        if (prefix) {
+            SStrPack(buffer, prefix, bufferBytes);
+        }
+    }
+}

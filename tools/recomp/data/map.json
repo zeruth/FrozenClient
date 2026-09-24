@@ -1,4 +1,36 @@
 {
+ "00401010": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Memory.cpp",
+   "lib/squall/storm/memory.cpp"
+  ],
+  "frozen": "operator new",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "?",
+  "refSize": 23,
+  "status": "ported"
+ },
+ "00401030": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Memory.cpp",
+   "lib/squall/storm/memory.cpp"
+  ],
+  "frozen": "operator delete[]",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "?",
+  "refSize": 27,
+  "status": "ported"
+ },
  "00401050": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -61,7 +93,7 @@
   "how": "handler",
   "module": "?",
   "refSize": 261,
-  "status": "ported"
+  "status": "stub"
  },
  "00401390": {
   "branchRatio": 0.0,
@@ -77,7 +109,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 228,
-  "status": "ported"
+  "status": "stub"
  },
  "00401480": {
   "branchRatio": 0.0,
@@ -93,7 +125,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 157,
-  "status": "ported"
+  "status": "stub"
  },
  "004015e0": {
   "branchRatio": 1.0,
@@ -189,7 +221,7 @@
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 32,
-  "status": "ported"
+  "status": "stub"
  },
  "00401a30": {
   "branchRatio": 0.0,
@@ -205,7 +237,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 73,
-  "status": "ported"
+  "status": "stub"
  },
  "00401a80": {
   "branchRatio": 0.0,
@@ -221,7 +253,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 128,
-  "status": "ported"
+  "status": "stub"
  },
  "00401b20": {
   "branchRatio": 1.0,
@@ -333,7 +365,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 135,
-  "status": "ported"
+  "status": "stub"
  },
  "00402320": {
   "branchRatio": 0.0,
@@ -349,7 +381,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 149,
-  "status": "ported"
+  "status": "stub"
  },
  "004023c0": {
   "branchRatio": 0.5,
@@ -461,7 +493,7 @@
   "how": "cvar",
   "module": "Client.cpp",
   "refSize": 23,
-  "status": "ported"
+  "status": "stub"
  },
  "004033c0": {
   "branchRatio": 0.0,
@@ -474,7 +506,7 @@
   ],
   "frozen": "CGTooltip::GetObjectType",
   "frozenSize": 31,
-  "how": "callorder",
+  "how": "sticky",
   "module": "Client.cpp",
   "refSize": 17,
   "status": "ported"
@@ -538,7 +570,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 538,
-  "status": "ported"
+  "status": "stub"
  },
  "00403b70": {
   "branchRatio": 0.0,
@@ -570,7 +602,7 @@
   "how": "handler",
   "module": "Client.cpp",
   "refSize": 203,
-  "status": "ported"
+  "status": "stub"
  },
  "00403de0": {
   "branchRatio": 0.5,
@@ -608,7 +640,7 @@
   "branchRatio": 0.062,
   "constOverlap": 0.056,
   "faithful": false,
-  "fidelity": 0.196,
+  "fidelity": 0.212,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -623,8 +655,8 @@
  "00405a10": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/client/Archive.cpp",
    "src/client/archive.cpp"
@@ -656,7 +688,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.224,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -780,6 +812,22 @@
   "refSize": 13,
   "status": "ported"
  },
+ "00407f40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Identity",
+  "frozenSize": 54,
+  "how": "annotated",
+  "module": "Client.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
  "00408070": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -797,20 +845,17 @@
   "status": "ported"
  },
  "00408490": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/gx/CGxDevice.cpp",
-   "src/gx/cgxdevice.cpp"
-  ],
-  "frozen": "CGxDevice::RsPush",
-  "frozenSize": 60,
-  "how": "callgraph",
+  "files": [],
+  "frozen": "TSGrowableArray<unsigned __int64>::Reserve",
+  "frozenSize": 381,
+  "how": "override",
   "module": "Client.cpp",
   "refSize": 135,
-  "status": "ported"
+  "status": "diverged"
  },
  "00408520": {
   "branchRatio": 0.5,
@@ -838,7 +883,7 @@
    "src/gx/renderstate.cpp"
   ],
   "frozen": "GxRsSet",
-  "frozenSize": 51,
+  "frozenSize": 85,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 55,
@@ -848,7 +893,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.333,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -879,8 +924,8 @@
  "00409670": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/RenderState.cpp",
    "src/gx/renderstate.cpp"
@@ -944,7 +989,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.5,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.5,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -960,7 +1005,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.471,
+  "fidelity": 0.5,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1018,48 +1063,6 @@
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 73,
-  "status": "ported"
- },
- "0040bb50": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/ui/simple/CSimpleFontString.cpp",
-   "src/ui/simple/csimplefontstring.cpp"
-  ],
-  "frozen": "CSimpleFontString::GetObjectType",
-  "frozenSize": 31,
-  "how": "sticky",
-  "module": "LoadingScreen.cpp",
-  "refSize": 43,
-  "status": "ported"
- },
- "0040bb80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "WowClientDB<AnimationDataRec>::GetRecord",
-  "frozenSize": 29,
-  "how": "callgraph",
-  "module": "LoadingScreen.cpp",
-  "refSize": 122,
-  "status": "excluded"
- },
- "0040c0f7": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "sprintf",
-  "frozenSize": 94,
-  "how": "callgraph",
-  "module": "LoadingScreen.cpp",
-  "refSize": 123,
   "status": "ported"
  },
  "004209b0": {
@@ -1142,6 +1145,22 @@
   "refSize": 78,
   "status": "ported"
  },
+ "00422130": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/SFile.cpp",
+   "src/util/sfile.cpp"
+  ],
+  "frozen": "SFile::IsStreamingMode",
+  "frozenSize": 3,
+  "how": "override",
+  "module": "OggDecompress.cpp",
+  "refSize": 9,
+  "status": "stub"
+ },
  "00422140": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -1156,7 +1175,7 @@
   "how": "callgraph",
   "module": "OggDecompress.cpp",
   "refSize": 9,
-  "status": "ported"
+  "status": "stub"
  },
  "00422530": {
   "branchRatio": 0.143,
@@ -1201,7 +1220,7 @@
   ],
   "frozen": "FrameXML_SetProgressCallback",
   "frozenSize": 32,
-  "how": "callorder",
+  "how": "sticky",
   "module": "OggDecompress.cpp",
   "refSize": 49,
   "status": "ported"
@@ -1249,7 +1268,7 @@
   ],
   "frozen": "SFile::Open",
   "frozenSize": 16,
-  "how": "callorder",
+  "how": "sticky",
   "module": "OggDecompress.cpp",
   "refSize": 24,
   "status": "ported"
@@ -1296,7 +1315,7 @@
    "lib/typhoon/tempest/random/crandom.cpp"
   ],
   "frozen": "CRandom::uint32",
-  "frozenSize": 0,
+  "frozenSize": 221,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 182,
@@ -1708,7 +1727,7 @@
   ],
   "frozen": "SUniSPutUTF8",
   "frozenSize": 279,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "framing.c",
   "refSize": 205,
   "status": "ported"
@@ -1743,6 +1762,22 @@
   "how": "override",
   "module": "framing.c",
   "refSize": 27,
+  "status": "ported"
+ },
+ "0047bf70": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/Handle.cpp",
+   "lib/common/common/handle.cpp"
+  ],
+  "frozen": "HandleDuplicate",
+  "frozenSize": 15,
+  "how": "callgraph",
+  "module": "framing.c",
+  "refSize": 18,
   "status": "ported"
  },
  "0047bf90": {
@@ -1877,14 +1912,14 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.2,
   "files": [
    "src/util/CStatus.cpp",
    "src/util/cstatus.cpp"
   ],
   "frozen": "CStatus::Add",
   "frozenSize": 201,
-  "how": "callorder",
+  "how": "sticky",
   "module": "framing.c",
   "refSize": 264,
   "status": "ported"
@@ -1972,7 +2007,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.111,
   "files": [
    "src/event/Scheduler.cpp",
    "src/event/scheduler.cpp"
@@ -1988,7 +2023,7 @@
   "branchRatio": 0.143,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.353,
+  "fidelity": 0.438,
   "files": [
    "src/event/Scheduler.cpp",
    "src/event/scheduler.cpp"
@@ -2717,7 +2752,7 @@
   "how": "override",
   "module": "CSimpleRender.cpp",
   "refSize": 42,
-  "status": "ported"
+  "status": "stub"
  },
  "00488670": {
   "branchRatio": 0.8,
@@ -2963,7 +2998,7 @@
   "branchRatio": 0.909,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.154,
+  "fidelity": 0.182,
   "files": [
    "src/ui/CLayoutFrame.cpp",
    "src/ui/clayoutframe.cpp"
@@ -2979,7 +3014,7 @@
   "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.154,
+  "fidelity": 0.182,
   "files": [
    "src/ui/CLayoutFrame.cpp",
    "src/ui/clayoutframe.cpp"
@@ -3731,7 +3766,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleFontStringScript.cpp",
    "src/ui/simple/csimplefontstringscript.cpp"
@@ -4354,8 +4389,8 @@
  "0048ed30": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/ui/simple/CSimpleFrame.cpp",
    "src/ui/simple/csimpleframe.cpp"
@@ -4365,23 +4400,7 @@
   "how": "override",
   "module": "CScriptRegion.cpp",
   "refSize": 43,
-  "status": "ported"
- },
- "0048ee40": {
-  "branchRatio": 0.224,
-  "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "src/event/Input.cpp",
-   "src/event/input.cpp"
-  ],
-  "frozen": "KeyCodeToString",
-  "frozenSize": 944,
-  "how": "string",
-  "module": "CScriptRegion.cpp",
-  "refSize": 404,
-  "status": "ported"
+  "status": "stub"
  },
  "0048f1f0": {
   "branchRatio": 0.818,
@@ -4719,22 +4738,6 @@
   "refSize": 459,
   "status": "ported"
  },
- "00492e40": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/simple/CSimpleFrame.cpp",
-   "src/ui/simple/csimpleframe.cpp"
-  ],
-  "frozen": "CSimpleFrame::GetScriptMetaTable",
-  "frozenSize": 7,
-  "how": "order",
-  "module": "CSimpleFrame.cpp",
-  "refSize": 43,
-  "status": "ported"
- },
  "00492e70": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -4826,10 +4829,10 @@
   ],
   "frozen": "CFrameStrata::FrameOccluded",
   "frozenSize": 3,
-  "how": "callorder",
+  "how": "override",
   "module": "CSimpleFrame.cpp",
   "refSize": 311,
-  "status": "ported"
+  "status": "stub"
  },
  "00495060": {
   "branchRatio": 0.0,
@@ -4880,7 +4883,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrame.cpp",
    "src/ui/simple/csimpleframe.cpp"
@@ -5182,8 +5185,8 @@
  "004982e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimTypes.cpp",
    "src/ui/simple/csimpleanimtypes.cpp"
@@ -5198,8 +5201,8 @@
  "00498330": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimTypes.cpp",
    "src/ui/simple/csimpleanimtypes.cpp"
@@ -5423,7 +5426,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/ui/simple/CSimpleAnimTypes.cpp",
    "src/ui/simple/csimpleanimtypes.cpp"
@@ -5759,7 +5762,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.48,
+  "fidelity": 0.5,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
@@ -5999,7 +6002,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.625,
+  "fidelity": 0.714,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -6143,7 +6146,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -6335,7 +6338,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -7361,11 +7364,11 @@
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/simple/CSimpleButtonScript.cpp",
-   "src/ui/simple/csimplebuttonscript.cpp"
+   "src/ui/simple/CSimpleFontStringScript.cpp",
+   "src/ui/simple/csimplefontstringscript.cpp"
   ],
-  "frozen": "ButtonFontObject",
-  "frozenSize": 0,
+  "frozen": "FontString_GetFontObject",
+  "frozenSize": 106,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 78,
@@ -8062,14 +8065,14 @@
  "004a5000": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleAnim.cpp",
-   "src/ui/simple/csimpleanim.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CSimpleAnim::IsDone",
-  "frozenSize": 16,
+  "frozen": "CSimpleAnim_IsDone",
+  "frozenSize": 54,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 88,
@@ -9375,7 +9378,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Screen.cpp",
    "src/gx/screen.cpp"
@@ -9417,9 +9420,9 @@
   "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 103,
-  "status": "ported"
+  "status": "stub"
  },
- "004b64e0": {
+ "004b6550": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
@@ -9428,18 +9431,18 @@
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
-  "frozen": "TextureGetTexturePtr",
-  "frozenSize": 4,
-  "how": "callgraph",
+  "frozen": "AsyncTextureWait",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "Texture.cpp",
-  "refSize": 109,
-  "status": "ported"
+  "refSize": 38,
+  "status": "stub"
  },
  "004b6610": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9455,7 +9458,7 @@
   "branchRatio": 0.176,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.222,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9483,38 +9486,6 @@
   "refSize": 183,
   "status": "ported"
  },
- "004b69e0": {
-  "branchRatio": 0.615,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GetBitDepth",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 252,
-  "status": "ported"
- },
- "004b6ae0": {
-  "branchRatio": 0.053,
-  "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxCalcTexelStrideInBytes",
-  "frozenSize": 55,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 350,
-  "status": "ported"
- },
  "004b6c50": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -9524,98 +9495,34 @@
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
-  "frozen": "GxTexCreate",
-  "frozenSize": 135,
-  "how": "order",
+  "frozen": "TextureIncreasePriority",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 81,
-  "status": "ported"
+  "status": "stub"
  },
  "004b6cb0": {
-  "branchRatio": 0.6,
+  "branchRatio": 0.733,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.143,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureGetGxTex",
-  "frozenSize": 308,
+  "frozenSize": 400,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 210,
   "status": "ported"
  },
- "004b6d90": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxTexDestroy",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 163,
-  "status": "ported"
- },
- "004b6e40": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxTexParameters",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 78,
-  "status": "ported"
- },
- "004b6e90": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxTexReusable",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 149,
-  "status": "ported"
- },
- "004b6f30": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxTexSetWrap",
-  "frozenSize": 21,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 99,
-  "status": "ported"
- },
  "004b6fa0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9628,208 +9535,32 @@
   "status": "ported"
  },
  "004b7020": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
-  "frozen": "ReloadMips",
+  "frozen": "TextureCacheGetTexture",
   "frozenSize": 0,
-  "how": "order",
+  "how": "override",
   "module": "Texture.cpp",
   "refSize": 128,
-  "status": "ported"
- },
- "004b70a0": {
-  "branchRatio": 0.1,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "TextureFreeGxTex",
-  "frozenSize": 77,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 344,
-  "status": "ported"
- },
- "004b7220": {
-  "branchRatio": 0.091,
-  "constOverlap": 0.167,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "TextureAllocMippedImg",
-  "frozenSize": 314,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 212,
-  "status": "ported"
- },
- "004b7300": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxTexUpdate",
-  "frozenSize": 105,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 217,
-  "status": "ported"
- },
- "004b73e0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GxuUpdateSingleColorTexture",
-  "frozenSize": 73,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 127,
-  "status": "ported"
- },
- "004b7460": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GetDefaultTexture",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 136,
-  "status": "ported"
- },
- "004b74f0": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "GetTextureFormats",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 133,
-  "status": "ported"
- },
- "004b7580": {
-  "branchRatio": 0.071,
-  "constOverlap": 0.5,
-  "faithful": false,
-  "fidelity": 0.2,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "MippedImgAllocA",
-  "frozenSize": 231,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 343,
-  "status": "ported"
- },
- "004b76e0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "MippedImgCalcSize",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 138,
-  "status": "ported"
- },
- "004b7770": {
-  "branchRatio": 0.05,
-  "constOverlap": 0.062,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "MippedImgSet",
-  "frozenSize": 178,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 302,
-  "status": "ported"
- },
- "004b78a0": {
-  "branchRatio": 0.308,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "RequestImageDimensions",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 506,
-  "status": "ported"
- },
- "004b7aa0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/Texture.cpp",
-   "src/gx/texture.cpp"
-  ],
-  "frozen": "UpdateBlpTextureAsync",
-  "frozenSize": 119,
-  "how": "order",
-  "module": "Texture.cpp",
-  "refSize": 256,
   "status": "ported"
  },
  "004b7bd0": {
   "branchRatio": 0.857,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.214,
+  "fidelity": 0.071,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "PumpBlpTextureAsync",
-  "frozenSize": 1212,
+  "frozenSize": 1356,
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 684,
@@ -9839,7 +9570,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.167,
   "files": [
    "src/gx/blp/CBLPFile.cpp",
    "src/gx/blp/cblpfile.cpp"
@@ -9871,7 +9602,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.733,
+  "fidelity": 0.786,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9897,7 +9628,7 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 388,
-  "status": "ported"
+  "status": "stub"
  },
  "004b8be0": {
   "branchRatio": 1.0,
@@ -9925,17 +9656,33 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1623,
+  "frozenSize": 2037,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 234,
+  "status": "ported"
+ },
+ "004b9200": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "frozen": "GxDevApi",
+  "frozenSize": 14,
+  "how": "callgraph",
+  "module": "Texture.cpp",
+  "refSize": 53,
   "status": "ported"
  },
  "004b9480": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9947,17 +9694,33 @@
   "refSize": 87,
   "status": "ported"
  },
+ "004b94e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheNewTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 108,
+  "status": "ported"
+ },
  "004b9550": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreateSolid",
-  "frozenSize": 79,
+  "frozenSize": 376,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 96,
@@ -9977,19 +9740,19 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 427,
-  "status": "ported"
+  "status": "stub"
  },
  "004b9760": {
   "branchRatio": 0.857,
   "constOverlap": 0.167,
-  "faithful": false,
-  "fidelity": 0.727,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1623,
+  "frozenSize": 2037,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,
@@ -9999,7 +9762,7 @@
   "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.4,
   "files": [
    "src/async/AsyncFileRead.cpp",
    "src/async/asyncfileread.cpp"
@@ -10015,7 +9778,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.067,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/async/AsyncFile.cpp",
    "src/async/asyncfile.cpp"
@@ -10108,7 +9871,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.385,
   "files": [
    "src/gx/font/TextBlock.cpp",
    "src/gx/font/textblock.cpp"
@@ -10120,6 +9883,134 @@
   "refSize": 460,
   "status": "ported"
  },
+ "004bf540": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator!=",
+  "frozenSize": 43,
+  "how": "annotated",
+  "module": "Profile.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
+ "004c1360": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/common/common/DataMgr.cpp",
+   "lib/common/common/datamgr.cpp"
+  ],
+  "frozen": "DataMgrSetFloat",
+  "frozenSize": 102,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
+ "004c1510": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/random/CRndSeed.cpp",
+   "lib/typhoon/tempest/random/crndseed.cpp"
+  ],
+  "frozen": "CRndSeed::CRndSeed",
+  "frozenSize": 122,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
+ "004c1680": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleRandomUnitVector",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 174,
+  "status": "ported"
+ },
+ "004c1930": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Determinant",
+  "frozenSize": 610,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 504,
+  "status": "ported"
+ },
+ "004c1b30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Translate",
+  "frozenSize": 141,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
+ "004c1b90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Scale",
+  "frozenSize": 215,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "004c1de0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::C44Matrix",
+  "frozenSize": 571,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
  "004c1f00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -10129,13 +10020,229 @@
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1271,
+  "frozenSize": 1578,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 533,
+  "status": "ported"
+ },
+ "004c21b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1578,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 93,
+  "status": "excluded"
+ },
+ "004c2300": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "TransformPointInPlace",
+  "frozenSize": 195,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
+ "004c2370": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::operator*=",
+  "frozenSize": 64,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "004c23d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Transpose",
+  "frozenSize": 98,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
+ "004c2f90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Inverse",
+  "frozenSize": 96,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 45,
+  "status": "ported"
+ },
+ "004c2fc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::AffineInverse",
+  "frozenSize": 1140,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 212,
+  "status": "ported"
+ },
+ "004c33c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Rotate",
+  "frozenSize": 441,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "004c3460": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetPingOffset",
+  "frozenSize": 5,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 307,
+  "status": "ported"
+ },
+ "004c3600": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "C3Vector::Normalize",
+  "frozenSize": 149,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "004c4df0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C2Vector.cpp",
+   "lib/typhoon/tempest/vector/c2vector.cpp"
+  ],
+  "frozen": "C2Vector::operator=",
+  "frozenSize": 14,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "004c51b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::C33Matrix",
+  "frozenSize": 92,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "004c5230": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::operator*=",
+  "frozenSize": 41,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 80,
+  "status": "ported"
+ },
+ "004c5820": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::RotationAroundAxis",
+  "frozenSize": 462,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 274,
   "status": "ported"
  },
  "004c5a60": {
@@ -10238,7 +10345,7 @@
   "branchRatio": 0.324,
   "constOverlap": 0.17,
   "faithful": false,
-  "fidelity": 0.104,
+  "fidelity": 0.106,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
@@ -10603,7 +10710,7 @@
   "branchRatio": 0.727,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.077,
+  "fidelity": 0.083,
   "files": [
    "src/object/client/Mirror.cpp",
    "src/object/client/mirror.cpp"
@@ -10619,7 +10726,7 @@
   "branchRatio": 0.692,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.091,
+  "fidelity": 0.095,
   "files": [
    "src/object/client/MessageHandlers.cpp",
    "src/object/client/messagehandlers.cpp"
@@ -10667,7 +10774,7 @@
   "branchRatio": 0.625,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.333,
   "files": [
    "src/object/client/MessageHandlers.cpp",
    "src/object/client/messagehandlers.cpp"
@@ -10904,7 +11011,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.128,
+  "fidelity": 0.136,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -10936,7 +11043,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.455,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11358,7 +11465,7 @@
   "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
@@ -12019,8 +12126,8 @@
  "004deaf0": {
   "branchRatio": 0.556,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/glue/CRealmListScript.cpp",
    "src/glue/crealmlistscript.cpp"
@@ -12036,7 +12143,7 @@
   "branchRatio": 0.708,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.623,
+  "fidelity": 0.635,
   "files": [
    "src/glue/CRealmListScript.cpp",
    "src/glue/crealmlistscript.cpp"
@@ -12052,7 +12159,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.6,
   "files": [
    "src/glue/CRealmListScript.cpp",
    "src/glue/crealmlistscript.cpp"
@@ -12131,7 +12238,7 @@
  "004df3a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/glue/CRealmListScript.cpp",
@@ -12142,7 +12249,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 125,
-  "status": "stub"
+  "status": "ported"
  },
  "004df420": {
   "branchRatio": 0.4,
@@ -12163,7 +12270,7 @@
  "004df4f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/glue/CRealmListScript.cpp",
@@ -12174,7 +12281,7 @@
   "how": "table",
   "module": "CGlueMgr.cpp",
   "refSize": 136,
-  "status": "stub"
+  "status": "ported"
  },
  "004df580": {
   "branchRatio": 0.111,
@@ -12243,8 +12350,8 @@
  "004e0040": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -12467,8 +12574,8 @@
  "004e0b50": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
@@ -12736,6 +12843,22 @@
   "refSize": 100,
   "status": "stub"
  },
+ "004e2790": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetPosition",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CharacterCreation.cpp",
+  "refSize": 46,
+  "status": "ported"
+ },
  "004e2e70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -12820,7 +12943,7 @@
   "branchRatio": 0.417,
   "constOverlap": 0.267,
   "faithful": false,
-  "fidelity": 0.593,
+  "fidelity": 0.615,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -12836,7 +12959,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -12883,8 +13006,8 @@
  "004e3620": {
   "branchRatio": 0.818,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.769,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -12899,8 +13022,8 @@
  "004e3c10": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterSelection.cpp",
    "src/glue/ccharacterselection.cpp"
@@ -12916,7 +13039,7 @@
   "branchRatio": 0.102,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.216,
+  "fidelity": 0.353,
   "files": [
    "src/glue/CCharacterSelection.cpp",
    "src/glue/ccharacterselection.cpp"
@@ -12948,7 +13071,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterSelectionScript.cpp",
    "src/glue/ccharacterselectionscript.cpp"
@@ -12963,8 +13086,8 @@
  "004e63a0": {
   "branchRatio": 0.81,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.7,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/glue/CNameGenerator.cpp",
    "src/glue/cnamegenerator.cpp"
@@ -12980,7 +13103,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/glue/CGlueLoading.cpp",
    "src/glue/cglueloading.cpp"
@@ -13108,7 +13231,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -13124,7 +13247,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.75,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -13140,7 +13263,7 @@
   "branchRatio": 0.9,
   "constOverlap": 0.286,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.4,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -13200,6 +13323,27 @@
   "refSize": 122,
   "status": "ported"
  },
+ "004f4320": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1578,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 137,
+  "status": "ported"
+ },
  "004f54d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -13230,7 +13374,7 @@
   "how": "callorder",
   "module": "TextureCache.cpp",
   "refSize": 287,
-  "status": "ported"
+  "status": "stub"
  },
  "004f5960": {
   "branchRatio": 0.0,
@@ -13252,13 +13396,13 @@
   "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.186,
+  "fidelity": 0.224,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 2258,
+  "frozenSize": 2279,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -13268,7 +13412,7 @@
   "branchRatio": 0.259,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.135,
+  "fidelity": 0.137,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -13283,8 +13427,8 @@
  "004faf90": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.571,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -14094,7 +14238,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -14290,7 +14434,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.286,
   "faithful": true,
-  "fidelity": 0.875,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -14812,22 +14956,6 @@
   "refSize": 250,
   "status": "ported"
  },
- "00512a00": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/CGGameUI.cpp",
-   "src/ui/game/cggameui.cpp"
-  ],
-  "frozen": "CGGameUI::GetLockedTarget",
-  "frozenSize": 8,
-  "how": "callgraph",
-  "module": "ChatFrame.cpp",
-  "refSize": 44,
-  "status": "ported"
- },
  "00512a30": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -15026,7 +15154,7 @@
   "branchRatio": 0.121,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.171,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -15916,13 +16044,13 @@
   "branchRatio": 0.375,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.643,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetItemInfo",
-  "frozenSize": 597,
+  "frozenSize": 742,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 616,
@@ -16946,7 +17074,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.462,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -17058,7 +17186,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.19,
+  "fidelity": 0.2,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -17778,7 +17906,7 @@
   "branchRatio": 0.075,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.026,
+  "fidelity": 0.027,
   "files": [
    "src/world/Weather.cpp",
    "src/world/weather.cpp"
@@ -17823,16 +17951,16 @@
   "status": "ported"
  },
  "0052a980": {
-  "branchRatio": 0.261,
-  "constOverlap": 0.049,
+  "branchRatio": 0.087,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.22,
+  "fidelity": 0.158,
   "files": [
-   "src/ui/game/CGGameUI.cpp",
-   "src/ui/game/cggameui.cpp"
+   "src/client/Client.cpp",
+   "src/client/client.cpp"
   ],
-  "frozen": "CGGameUI::Initialize",
-  "frozenSize": 897,
+  "frozen": "WowClientInit",
+  "frozenSize": 0,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 1267,
@@ -18226,7 +18354,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/PartyInfoScript.cpp",
    "src/ui/game/partyinfoscript.cpp"
@@ -18396,7 +18524,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.182,
   "files": [
    "src/ui/game/BattlenetUI.cpp"
   ],
@@ -18456,7 +18584,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/BattlenetUI.cpp"
   ],
@@ -18831,7 +18959,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.143,
   "files": [
    "src/ui/game/BattlenetUI.cpp"
   ],
@@ -19270,7 +19398,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.2,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -19380,7 +19508,7 @@
   "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.118,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -19396,7 +19524,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -19412,7 +19540,7 @@
   "branchRatio": 0.091,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.167,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -19428,7 +19556,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.387,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -19460,7 +19588,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -19508,7 +19636,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -20416,7 +20544,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": true,
-  "fidelity": 0.857,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
@@ -20804,21 +20932,37 @@
   "refSize": 302,
   "status": "ported"
  },
- "0055dc00": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+ "0055d990": {
+  "branchRatio": 0.455,
+  "constOverlap": 0.5,
   "faithful": false,
   "fidelity": 0.0,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsModifierPrefix",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "LFGInfo.cpp",
+  "refSize": 280,
+  "status": "ported"
+ },
+ "0055dc00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetNumBindings",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 41,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 35,
-  "status": "stub"
+  "status": "ported"
  },
  "0055dc30": {
   "branchRatio": 0.0,
@@ -20852,6 +20996,22 @@
   "refSize": 36,
   "status": "ported"
  },
+ "0055dd10": {
+  "branchRatio": 0.382,
+  "constOverlap": 0.214,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsKeyName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "LFGInfo.cpp",
+  "refSize": 404,
+  "status": "ported"
+ },
  "0055e180": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -20866,6 +21026,38 @@
   "how": "string",
   "module": "LFGInfo.cpp",
   "refSize": 173,
+  "status": "ported"
+ },
+ "0055e700": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetByIndex",
+  "frozenSize": 93,
+  "how": "callgraph",
+  "module": "LFGInfo.cpp",
+  "refSize": 72,
+  "status": "ported"
+ },
+ "0055e750": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetKey",
+  "frozenSize": 171,
+  "how": "callgraph",
+  "module": "LFGInfo.cpp",
+  "refSize": 142,
   "status": "ported"
  },
  "0055e870": {
@@ -20885,33 +21077,33 @@
   "status": "ported"
  },
  "0055e8d0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBinding",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 190,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 224,
-  "status": "stub"
+  "status": "ported"
  },
  "0055e9b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingKey",
-  "frozenSize": 3,
-  "how": "table",
+  "frozenSize": 142,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 183,
   "status": "ported"
@@ -20919,8 +21111,8 @@
  "0055ea70": {
   "branchRatio": 0.5,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
@@ -20948,6 +21140,22 @@
   "refSize": 140,
   "status": "ported"
  },
+ "0055f860": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsRunCommand",
+  "frozenSize": 236,
+  "how": "annotated",
+  "module": "LFGInfo.cpp",
+  "refSize": 213,
+  "status": "ported"
+ },
  "0055f940": {
   "branchRatio": 0.074,
   "constOverlap": 0.0,
@@ -20966,19 +21174,19 @@
  },
  "0055fad0": {
   "branchRatio": 0.667,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_RunBinding",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 149,
+  "how": "annotated",
   "module": "LFGInfo.cpp",
   "refSize": 177,
-  "status": "stub"
+  "status": "ported"
  },
  "0055fb90": {
   "branchRatio": 0.75,
@@ -21044,53 +21252,101 @@
   "refSize": 140,
   "status": "stub"
  },
+ "00562490": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.444,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsGetCommandForKey",
+  "frozenSize": 174,
+  "how": "callgraph",
+  "module": "UIBindings.cpp",
+  "refSize": 191,
+  "status": "ported"
+ },
  "00562550": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingAction",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 97,
+  "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 160,
-  "status": "stub"
+  "status": "ported"
  },
  "005625f0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_GetBindingByKey",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 97,
+  "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 171,
-  "status": "stub"
+  "status": "ported"
  },
- "00563520": {
-  "branchRatio": 0.5,
+ "00562dd0": {
+  "branchRatio": 0.857,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.375,
+  "files": [
+   "src/ui/game/CGUIBindings.cpp",
+   "src/ui/game/cguibindings.cpp"
+  ],
+  "frozen": "CGUIBindings::LoadModifiedClicks",
+  "frozenSize": 395,
+  "how": "string",
+  "module": "UIBindings.cpp",
+  "refSize": 250,
+  "status": "ported"
+ },
+ "00562ed0": {
+  "branchRatio": 0.409,
+  "constOverlap": 0.053,
+  "faithful": false,
+  "fidelity": 0.458,
+  "files": [
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
+  ],
+  "frozen": "UIBindingsSetKey",
+  "frozenSize": 339,
+  "how": "callgraph",
+  "module": "UIBindings.cpp",
+  "refSize": 626,
+  "status": "ported"
+ },
+ "00563520": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 0.7,
   "files": [
    "src/ui/game/UIBindingsScript.cpp",
    "src/ui/game/uibindingsscript.cpp"
   ],
   "frozen": "Script_SetBinding",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 179,
+  "how": "annotated",
   "module": "UIBindings.cpp",
   "refSize": 191,
-  "status": "stub"
+  "status": "ported"
  },
  "005635e0": {
   "branchRatio": 0.4,
@@ -21285,16 +21541,16 @@
   "status": "stub"
  },
  "00564760": {
-  "branchRatio": 0.857,
-  "constOverlap": 0.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.167,
   "faithful": false,
   "fidelity": 0.308,
   "files": [
-   "src/ui/game/CGUIBindings.cpp",
-   "src/ui/game/cguibindings.cpp"
+   "src/ui/game/UIBindings.cpp",
+   "src/ui/game/uibindings.cpp"
   ],
-  "frozen": "CGUIBindings::LoadModifiedClicks",
-  "frozenSize": 395,
+  "frozen": "EnsureLoaded",
+  "frozenSize": 3223,
   "how": "string",
   "module": "UIBindings.cpp",
   "refSize": 320,
@@ -21898,6 +22154,38 @@
   "refSize": 97,
   "status": "ported"
  },
+ "0057c2a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Identity",
+  "frozenSize": 54,
+  "how": "override",
+  "module": "QuestTextParser.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "0057c2e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "TransformDirection",
+  "frozenSize": 134,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 84,
+  "status": "ported"
+ },
  "0057c340": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -21912,6 +22200,22 @@
   "how": "callgraph",
   "module": "QuestTextParser.cpp",
   "refSize": 87,
+  "status": "ported"
+ },
+ "0057c450": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::XformSet",
+  "frozenSize": 70,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 66,
   "status": "ported"
  },
  "0057e070": {
@@ -22062,7 +22366,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.273,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
@@ -22094,7 +22398,7 @@
   "branchRatio": 0.7,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.842,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
@@ -22110,7 +22414,7 @@
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.278,
+  "fidelity": 0.357,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
@@ -22126,7 +22430,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
@@ -23273,7 +23577,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23289,7 +23593,7 @@
   "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.333,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23305,7 +23609,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.222,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23337,7 +23641,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23369,7 +23673,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23427,7 +23731,7 @@
   "how": "table",
   "module": "ActionBarFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "stub"
  },
  "005a8790": {
   "branchRatio": 0.333,
@@ -23449,7 +23753,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.25,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23465,7 +23769,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23481,7 +23785,7 @@
   "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.184,
+  "fidelity": 0.2,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23497,7 +23801,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.429,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23529,7 +23833,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23587,7 +23891,7 @@
   "how": "table",
   "module": "ActionBarFrame.cpp",
   "refSize": 112,
-  "status": "ported"
+  "status": "stub"
  },
  "005a9cf0": {
   "branchRatio": 0.0,
@@ -23609,7 +23913,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.125,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -23673,7 +23977,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.286,
   "files": [
    "src/ui/game/ActionBarScript.cpp",
    "src/ui/game/actionbarscript.cpp"
@@ -25154,6 +25458,22 @@
   "refSize": 254,
   "status": "stub"
  },
+ "005cde20": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.206,
+  "files": [
+   "src/ui/game/MiscScript.cpp",
+   "src/ui/game/miscscript.cpp"
+  ],
+  "frozen": "Script_GetSkillLineInfo",
+  "frozenSize": 139,
+  "how": "annotated",
+  "module": "GuildInfo.cpp",
+  "refSize": 1173,
+  "status": "ported"
+ },
  "005cf220": {
   "branchRatio": 0.067,
   "constOverlap": 0.0,
@@ -25247,8 +25567,8 @@
  "005d6f60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25264,7 +25584,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.25,
   "faithful": false,
-  "fidelity": 0.538,
+  "fidelity": 0.583,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25280,7 +25600,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25296,7 +25616,7 @@
   "branchRatio": 0.36,
   "constOverlap": 0.067,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.467,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25312,7 +25632,7 @@
   "branchRatio": 0.455,
   "constOverlap": 0.067,
   "faithful": false,
-  "fidelity": 0.217,
+  "fidelity": 0.227,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25392,7 +25712,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.538,
   "files": [
    "src/ui/game/ContainerFrameScript.cpp",
    "src/ui/game/containerframescript.cpp"
@@ -25483,7 +25803,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.5,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
@@ -26055,22 +26375,6 @@
   "refSize": 221,
   "status": "stub"
  },
- "005eeb70": {
-  "branchRatio": 1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/world/CWorldParam.cpp",
-   "src/world/cworldparam.cpp"
-  ],
-  "frozen": "TextureLodBiasSet",
-  "frozenSize": 0,
-  "how": "callgraph",
-  "module": "PaperDollInfoFrame.cpp",
-  "refSize": 1,
-  "status": "excluded"
- },
  "005ef490": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -26085,6 +26389,22 @@
   "how": "string",
   "module": "UIMacroOptions.cpp",
   "refSize": 241,
+  "status": "ported"
+ },
+ "005f4910": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGGameUI.cpp",
+   "src/ui/game/cggameui.cpp"
+  ],
+  "frozen": "CGGameUI::Initialize",
+  "frozenSize": 897,
+  "how": "string",
+  "module": "CalendarEvent.cpp",
+  "refSize": 274,
   "status": "ported"
  },
  "005f7630": {
@@ -26756,7 +27076,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27459,8 +27779,8 @@
  "0060e290": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27475,8 +27795,8 @@
  "0060e310": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27681,7 +28001,7 @@
   "status": "ported"
  },
  "0060ed40": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.368,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.529,
@@ -27689,15 +28009,15 @@
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
-  "frozen": "Script_UnitMana",
-  "frozenSize": 231,
+  "frozen": "Script_UnitPower",
+  "frozenSize": 216,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 507,
   "status": "ported"
  },
  "0060ef40": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.438,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.643,
@@ -27705,8 +28025,8 @@
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
-  "frozen": "Script_UnitManaMax",
-  "frozenSize": 231,
+  "frozen": "Script_UnitPowerMax",
+  "frozenSize": 216,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 434,
@@ -27971,8 +28291,8 @@
  "006101a0": {
   "branchRatio": 0.857,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.786,
+  "faithful": true,
+  "fidelity": 0.846,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27988,7 +28308,7 @@
   "branchRatio": 0.833,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.625,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -28160,22 +28480,6 @@
   "refSize": 226,
   "status": "ported"
  },
- "006110a0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
-  "files": [
-   "src/ui/game/ScriptEvents.cpp",
-   "src/ui/game/scriptevents.cpp"
-  ],
-  "frozen": "Script_UnitAuraFiltered",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "ScriptEvents.cpp",
-  "refSize": 129,
-  "status": "ported"
- },
  "00611130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -28270,7 +28574,7 @@
   "how": "table",
   "module": "ScriptEvents.cpp",
   "refSize": 537,
-  "status": "ported"
+  "status": "stub"
  },
  "00611600": {
   "branchRatio": 0.0,
@@ -28420,7 +28724,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.125,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -28436,7 +28740,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.522,
+  "fidelity": 0.6,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -28452,7 +28756,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.632,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -28820,7 +29124,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.182,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -29108,7 +29412,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.091,
+  "fidelity": 0.1,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -29636,7 +29940,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.556,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -29764,7 +30068,7 @@
   "branchRatio": 0.11,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.19,
+  "fidelity": 0.195,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -29844,7 +30148,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.308,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -30016,37 +30320,53 @@
   "refSize": 86,
   "status": "stub"
  },
+ "006277f0": {
+  "branchRatio": 0.046,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.233,
+  "files": [
+   "src/ui/game/CGTooltipScript.cpp",
+   "src/ui/game/cgtooltipscript.cpp"
+  ],
+  "frozen": "TooltipSetItemInfo",
+  "frozenSize": 3893,
+  "how": "string",
+  "module": "Tooltip.cpp",
+  "refSize": 24814,
+  "status": "ported"
+ },
  "0062dae0": {
-  "branchRatio": 0.268,
+  "branchRatio": 0.293,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.312,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetHyperlink",
-  "frozenSize": 556,
-  "how": "annotated",
+  "frozenSize": 610,
+  "how": "table",
   "module": "Tooltip.cpp",
   "refSize": 1382,
   "status": "ported"
  },
  "0062e050": {
-  "branchRatio": 0.065,
+  "branchRatio": 0.194,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.211,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetInventoryItem",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 298,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 1226,
-  "status": "stub"
+  "status": "ported"
  },
  "0062e520": {
   "branchRatio": 0.286,
@@ -30193,20 +30513,20 @@
   "status": "stub"
  },
  "0062f420": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.304,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
   ],
   "frozen": "CGTooltip_SetBagItem",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 288,
+  "how": "annotated",
   "module": "Tooltip.cpp",
   "refSize": 800,
-  "status": "stub"
+  "status": "ported"
  },
  "0062f740": {
   "branchRatio": 0.286,
@@ -30468,7 +30788,7 @@
   "branchRatio": 0.047,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.137,
+  "fidelity": 0.14,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -30554,7 +30874,7 @@
    "src/object/client/itemcache.cpp"
   ],
   "frozen": "ReceiveItemQueryResponse",
-  "frozenSize": 849,
+  "frozenSize": 3164,
   "how": "handler",
   "module": "DBClient.cpp",
   "refSize": 26,
@@ -30593,7 +30913,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.077,
+  "fidelity": 0.1,
   "files": [
    "src/object/client/ItemCache.cpp",
    "src/object/client/itemcache.cpp"
@@ -30637,6 +30957,38 @@
   "refSize": 9,
   "status": "ported"
  },
+ "00681230": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxVertexBufferFormatSize",
+  "frozenSize": 18,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "00681240": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxVertexAttribOffset",
+  "frozenSize": 24,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "006813b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -30651,6 +31003,22 @@
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 29,
+  "status": "ported"
+ },
+ "00681450": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexSetWrap",
+  "frozenSize": 21,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 28,
   "status": "ported"
  },
  "00681770": {
@@ -30701,6 +31069,38 @@
   "refSize": 183,
   "status": "ported"
  },
+ "00681a20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxBufData",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "00681b00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxPrimVertexPtr",
+  "frozenSize": 1142,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 75,
+  "status": "ported"
+ },
  "00681be0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -30721,7 +31121,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.2,
   "files": [
    "src/gx/Transform.cpp",
    "src/gx/transform.cpp"
@@ -30749,6 +31149,240 @@
   "refSize": 51,
   "status": "ported"
  },
+ "00682d20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformProjNativeTranspose",
+  "frozenSize": 93,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
+ "00682d50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::RenderTargetGet",
+  "frozenSize": 19,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
+ "00682d70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::DeviceCurWindow",
+  "frozenSize": 5,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
+ "00682e50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ScenePresent",
+  "frozenSize": 21,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "00682e70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ScissorSet",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "00682f10": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::PrimIndexPtr",
+  "frozenSize": 37,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 44,
+  "status": "ported"
+ },
+ "00683080": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LightEnable",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "006830b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "MasterEnableChanged",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "00683560": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Shader.cpp",
+   "src/gx/shader.cpp"
+  ],
+  "frozen": "GxShaderConstantsLock",
+  "frozenSize": 14,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 23,
+  "status": "ported"
+ },
+ "00683580": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Shader.cpp",
+   "src/gx/shader.cpp"
+  ],
+  "frozen": "GxShaderConstantsUnlock",
+  "frozenSize": 20,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "006838b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<CGxPushedRenderState>::Reserve",
+  "frozenSize": 307,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 173,
+  "status": "ported"
+ },
+ "00683960": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<enum EGxRenderState>::Reserve",
+  "frozenSize": 381,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
+ "00684440": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ClipPlaneSet",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
+ "00684620": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.238,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxLightState::Set",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 424,
+  "status": "ported"
+ },
+ "006847d0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LightSet",
+  "frozenSize": 703,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 115,
+  "status": "ported"
+ },
  "00684850": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -30769,7 +31403,7 @@
   "branchRatio": 0.647,
   "constOverlap": 0.083,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.833,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -30797,8 +31431,88 @@
   "refSize": 107,
   "status": "ported"
  },
+ "006859e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsForceUpdate",
+  "frozenSize": 315,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 133,
+  "status": "ported"
+ },
+ "00685a70": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsForceUpdate",
+  "frozenSize": 315,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 217,
+  "status": "ported"
+ },
+ "00685b50": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsSync",
+  "frozenSize": 310,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 174,
+  "status": "ported"
+ },
+ "00685d40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::TexSetWrap",
+  "frozenSize": 270,
+  "how": "callgraph",
+  "module": "CGxDevice.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "00685eb0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::MasterEnableSet",
+  "frozenSize": 168,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 131,
+  "status": "ported"
+ },
  "00685f50": {
-  "branchRatio": 0.857,
+  "branchRatio": 0.545,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -30807,7 +31521,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RsSet",
-  "frozenSize": 274,
+  "frozenSize": 512,
   "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 96,
@@ -30817,7 +31531,7 @@
   "branchRatio": 0.214,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -30827,6 +31541,22 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 358,
+  "status": "ported"
+ },
+ "00686120": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IRsInit",
+  "frozenSize": 9227,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 1165,
   "status": "ported"
  },
  "006876d0": {
@@ -30969,6 +31699,214 @@
   "how": "string",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 1299,
+  "status": "ported"
+ },
+ "006a3810": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncEnables",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "006a3870": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "006a38d0": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncScissorRect",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 258,
+  "status": "ported"
+ },
+ "006a39e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::ISetVertexBuffer",
+  "frozenSize": 122,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
+ "006a43d0": {
+  "branchRatio": 0.85,
+  "constOverlap": 0.029,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncLights",
+  "frozenSize": 2373,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 799,
+  "status": "faithful"
+ },
+ "006a4700": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncMaterial",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 326,
+  "status": "ported"
+ },
+ "006a4850": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncXforms",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 174,
+  "status": "ported"
+ },
+ "006a5540": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::ICreateD3dVertexDecl",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "006a5700": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncVertexPtrs",
+  "frozenSize": 950,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 557,
+  "status": "ported"
+ },
+ "006a5940": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSync",
+  "frozenSize": 1331,
+  "how": "override",
+  "module": "CGxDeviceD3d9Ex.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "006a99e0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IXformSetViewport",
+  "frozenSize": 325,
+  "how": "override",
+  "module": "CGxD3d9ExTexture.cpp",
+  "refSize": 341,
+  "status": "faithful"
+ },
+ "006a9fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IShaderConstantsFlush",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxD3d9ExTexture.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "006acc50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "LerpColor",
+  "frozenSize": 149,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 134,
   "status": "ported"
  },
  "006b0970": {
@@ -31358,7 +32296,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/gx/font/GxuFont.cpp",
    "src/gx/font/gxufont.cpp"
@@ -31416,6 +32354,70 @@
   "how": "callgraph",
   "module": "GxuFontMiscClasses.cpp",
   "refSize": 81,
+  "status": "ported"
+ },
+ "006c8e70": {
+  "branchRatio": 0.381,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphOutlinedMonochrome",
+  "frozenSize": 801,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 1211,
+  "status": "ported"
+ },
+ "006c9330": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedMonochrome",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 231,
+  "status": "ported"
+ },
+ "006c9420": {
+  "branchRatio": 0.676,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphOutlinedAA",
+  "frozenSize": 2309,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 2098,
+  "status": "ported"
+ },
+ "006c9c70": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedAA",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 208,
   "status": "ported"
  },
  "006ca050": {
@@ -31531,7 +32533,7 @@
   "branchRatio": 0.138,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.338,
+  "fidelity": 0.342,
   "files": [
    "src/ui/game/CGPartyInfo.cpp",
    "src/ui/game/cgpartyinfo.cpp"
@@ -31547,7 +32549,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/object/client/CGPlayer_C.cpp",
    "src/object/client/cgplayer_c.cpp"
@@ -31621,6 +32623,35 @@
   "how": "handler",
   "module": "Player_C.cpp",
   "refSize": 155,
+  "status": "ported"
+ },
+ "006f7a60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/math/CMath.cpp",
+   "lib/typhoon/tempest/math/cmath.cpp"
+  ],
+  "frozen": "CMath::SinCos",
+  "frozenSize": 61,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
+ "00705a80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "WowClientDB<ChrRacesRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "sticky",
+  "module": "Corpse_C.cpp",
+  "refSize": 50,
   "status": "ported"
  },
  "00706d70": {
@@ -31719,6 +32750,22 @@
   "refSize": 102,
   "status": "ported"
  },
+ "00717a20": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetModelData",
+  "frozenSize": 108,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
  "00718a00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -31781,6 +32828,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 22,
+  "status": "ported"
+ },
+ "0071ed80": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetShadowBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 230,
   "status": "ported"
  },
  "0071f300": {
@@ -31925,6 +32988,22 @@
   "how": "callgraph",
   "module": "ConsoleClient.cpp",
   "refSize": 6,
+  "status": "ported"
+ },
+ "00763c70": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/RenderState.cpp",
+   "src/gx/renderstate.cpp"
+  ],
+  "frozen": "GxRsSet",
+  "frozenSize": 85,
+  "how": "annotated",
+  "module": "ConsoleClient.cpp",
+  "refSize": 61,
   "status": "ported"
  },
  "00763d80": {
@@ -32203,7 +33282,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/console/Initialize.cpp",
    "src/console/initialize.cpp"
@@ -32267,7 +33346,7 @@
   "branchRatio": 0.412,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.533,
+  "fidelity": 0.571,
   "files": [
    "src/console/CVar.cpp",
    "src/console/cvar.cpp"
@@ -32347,7 +33426,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.4,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -32709,7 +33788,7 @@
   "how": "cvar",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
-  "status": "ported"
+  "status": "stub"
  },
  "00769c60": {
   "branchRatio": 1.0,
@@ -32725,7 +33804,7 @@
   "how": "cvar",
   "module": "ConsoleVar.cpp",
   "refSize": 36,
-  "status": "ported"
+  "status": "stub"
  },
  "00769c90": {
   "branchRatio": 1.0,
@@ -32826,8 +33905,8 @@
  "0076dc20": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/object/client/AuraCache.cpp",
    "src/object/client/CastCache.cpp",
@@ -32893,28 +33972,11 @@
   "refSize": 36,
   "status": "ported"
  },
- "0076e5d0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "lib/squall/storm/Memory.cpp",
-   "lib/squall/storm/memory.cpp",
-   "lib/squall/test/stormdll/stormstubs.cpp"
-  ],
-  "frozen": "SMemMove",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "ConsoleVar.cpp",
-  "refSize": 8,
-  "status": "ported"
- },
  "0076e5e0": {
   "branchRatio": 0.667,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.333,
   "files": [
    "lib/squall/storm/Memory.cpp",
    "lib/squall/storm/memory.cpp",
@@ -33462,7 +34524,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.143,
   "files": [
    "lib/squall/storm/Region.cpp",
    "lib/squall/storm/region.cpp",
@@ -33489,7 +34551,7 @@
   "how": "callorder",
   "module": "SComp.cpp",
   "refSize": 183,
-  "status": "ported"
+  "status": "stub"
  },
  "0077f490": {
   "branchRatio": 1.0,
@@ -33585,7 +34647,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 96,
-  "status": "ported"
+  "status": "stub"
  },
  "00787780": {
   "branchRatio": 0.0,
@@ -33777,7 +34839,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 131,
-  "status": "ported"
+  "status": "stub"
  },
  "0078d9d0": {
   "branchRatio": 1.0,
@@ -33825,7 +34887,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 90,
-  "status": "ported"
+  "status": "stub"
  },
  "0078dab0": {
   "branchRatio": 0.0,
@@ -33841,7 +34903,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 91,
-  "status": "ported"
+  "status": "stub"
  },
  "0078db10": {
   "branchRatio": 0.0,
@@ -33857,7 +34919,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 122,
-  "status": "ported"
+  "status": "stub"
  },
  "0078db90": {
   "branchRatio": 1.0,
@@ -33937,7 +34999,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 64,
-  "status": "ported"
+  "status": "stub"
  },
  "0078dcf0": {
   "branchRatio": 1.0,
@@ -33969,7 +35031,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 111,
-  "status": "ported"
+  "status": "stub"
  },
  "0078ded0": {
   "branchRatio": 1.0,
@@ -34001,7 +35063,7 @@
   "how": "cvar",
   "module": "SEvt.cpp",
   "refSize": 144,
-  "status": "ported"
+  "status": "stub"
  },
  "0078df90": {
   "branchRatio": 0.0,
@@ -34017,7 +35079,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 215,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e070": {
   "branchRatio": 0.0,
@@ -34033,7 +35095,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 149,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e110": {
   "branchRatio": 0.0,
@@ -34049,7 +35111,7 @@
   "how": "cvar",
   "module": "WorldParam.cpp",
   "refSize": 134,
-  "status": "ported"
+  "status": "stub"
  },
  "0078e400": {
   "branchRatio": 0.0,
@@ -34065,6 +35127,38 @@
   "how": "string",
   "module": "WorldParam.cpp",
   "refSize": 1354,
+  "status": "ported"
+ },
+ "0078f480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/segment/C3Segment.cpp",
+   "lib/typhoon/tempest/segment/c3segment.cpp"
+  ],
+  "frozen": "C3Segment::C3Segment",
+  "frozenSize": 48,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "0078f4d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/segment/C3Segment.cpp",
+   "lib/typhoon/tempest/segment/c3segment.cpp"
+  ],
+  "frozen": "C3Segment::Lerp",
+  "frozenSize": 83,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 56,
   "status": "ported"
  },
  "0078f570": {
@@ -34087,7 +35181,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.159,
   "faithful": false,
-  "fidelity": 0.578,
+  "fidelity": 0.619,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -34099,11 +35193,43 @@
   "refSize": 2068,
   "status": "ported"
  },
+ "007a0d60": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.094,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapEntity.cpp",
+   "src/world/map/cmapentity.cpp"
+  ],
+  "frozen": "CMapEntity::FloorLight",
+  "frozenSize": 396,
+  "how": "override",
+  "module": "Map.cpp",
+  "refSize": 360,
+  "status": "faithful"
+ },
+ "007af780": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupFloorColor",
+  "frozenSize": 301,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 200,
+  "status": "ported"
+ },
  "007bfce0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.211,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -34113,6 +35239,390 @@
   "how": "string",
   "module": "MapLoad.cpp",
   "refSize": 339,
+  "status": "ported"
+ },
+ "007c1ad0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapEntity.cpp",
+   "src/world/map/cmapentity.cpp"
+  ],
+  "frozen": "CMapEntity::SplitFloorLight",
+  "frozenSize": 476,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 362,
+  "status": "ported"
+ },
+ "007c6600": {
+  "branchRatio": 0.917,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 258,
+  "status": "ported"
+ },
+ "007c6710": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::Results",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 123,
+  "status": "ported"
+ },
+ "007c6790": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::CachedLeaf",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 1170,
+  "status": "diverged"
+ },
+ "007c6c30": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.214,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::TestFace",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 288,
+  "status": "diverged"
+ },
+ "007c6d50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::CachedLeaf",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 1166,
+  "status": "diverged"
+ },
+ "007c71e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "TriangleOutsideHull",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
+ "007c7610": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryEnd",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 65,
+  "status": "ported"
+ },
+ "007c7660": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupBoxQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 171,
+  "status": "ported"
+ },
+ "007c7710": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.375,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::AllocHitRecord",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "007c77d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupDualSegmentQuery::Init",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
+ "007c78e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupSegmentQuery::Init",
+  "frozenSize": 366,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 277,
+  "status": "ported"
+ },
+ "007c7ae0": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.051,
+  "faithful": false,
+  "fidelity": 0.091,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::RecordHits",
+  "frozenSize": 615,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 1062,
+  "status": "diverged"
+ },
+ "007c7fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.095,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SampleColorAtFace",
+  "frozenSize": 1131,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 882,
+  "status": "ported"
+ },
+ "007c9a00": {
+  "branchRatio": 0.75,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SegmentQueryLeaf",
+  "frozenSize": 491,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "007c9a60": {
+  "branchRatio": 0.667,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::BoxQueryLeaf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "007c9ab0": {
+  "branchRatio": 0.75,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::DualQueryLeaf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "007ca180": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::SegmentQueryNode",
+  "frozenSize": 710,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 699,
+  "status": "ported"
+ },
+ "007ca440": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::BoxQueryNode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 434,
+  "status": "ported"
+ },
+ "007ca600": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.923,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::DualQueryNode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 699,
+  "status": "ported"
+ },
+ "007cb0c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegment",
+  "frozenSize": 324,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 189,
+  "status": "ported"
+ },
+ "007cb180": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.048,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 215,
+  "status": "ported"
+ },
+ "007cb260": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegmentDual",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 133,
+  "status": "ported"
+ },
+ "007cb2f0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.133,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QuerySegmentFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 187,
   "status": "ported"
  },
  "007dac40": {
@@ -34356,7 +35866,7 @@
   "branchRatio": 0.7,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.03,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
@@ -34480,17 +35990,113 @@
   "refSize": 606,
   "status": "ported"
  },
- "007f09b0": {
-  "branchRatio": 0.694,
+ "007ebf30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "InterpBandColor",
+  "frozenSize": 679,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 92,
+  "status": "faithful"
+ },
+ "007ebf90": {
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.238,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "InterpFloatBand",
+  "frozenSize": 361,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 93,
+  "status": "faithful"
+ },
+ "007ebff0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ComputeLightColors",
+  "frozenSize": 634,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 558,
+  "status": "ported"
+ },
+ "007ed2d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "SkyLerp",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 219,
+  "status": "diverged"
+ },
+ "007ed3b0": {
+  "branchRatio": 0.529,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "InterpBodyBand",
+  "frozenSize": 240,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
+ "007f0530": {
+  "branchRatio": 0.465,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/world/Terrain.cpp",
    "src/world/terrain.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 2957,
+  "frozenSize": 3662,
+  "how": "override",
+  "module": "FFXEffects.cpp",
+  "refSize": 823,
+  "status": "diverged"
+ },
+ "007f09b0": {
+  "branchRatio": 0.581,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "SkyRender",
+  "frozenSize": 3662,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
@@ -34510,7 +36116,7 @@
   "how": "cvar",
   "module": "FFXEffects.cpp",
   "refSize": 93,
-  "status": "ported"
+  "status": "stub"
  },
  "007f39b0": {
   "branchRatio": 0.0,
@@ -34526,7 +36132,7 @@
   "how": "cvar",
   "module": "FFXEffects.cpp",
   "refSize": 96,
-  "status": "ported"
+  "status": "stub"
  },
  "007f3ae0": {
   "branchRatio": 0.5,
@@ -34596,7 +36202,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.312,
+  "fidelity": 0.333,
   "files": [
    "src/world/Minimap.cpp",
    "src/world/minimap.cpp"
@@ -34628,7 +36234,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
@@ -34644,7 +36250,7 @@
   "branchRatio": 0.364,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.444,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
@@ -34660,7 +36266,7 @@
   "branchRatio": 0.353,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.217,
+  "fidelity": 0.278,
   "files": [
    "src/ui/game/MiscScript.cpp",
    "src/ui/game/miscscript.cpp"
@@ -34676,7 +36282,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.176,
+  "fidelity": 0.2,
   "files": [
    "src/object/client/CastCache.cpp",
    "src/object/client/castcache.cpp"
@@ -34772,7 +36378,7 @@
   "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.111,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -34820,7 +36426,7 @@
   "branchRatio": 0.684,
   "constOverlap": 0.12,
   "faithful": false,
-  "fidelity": 0.562,
+  "fidelity": 0.625,
   "files": [
    "src/ui/FrameXML.cpp",
    "src/ui/framexml.cpp"
@@ -35091,8 +36697,8 @@
  "00815500": {
   "branchRatio": 0.04,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/Util.cpp",
    "src/ui/util.cpp"
@@ -35332,7 +36938,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.071,
   "faithful": true,
-  "fidelity": 0.833,
+  "fidelity": 0.909,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
@@ -35476,7 +37082,7 @@
   "branchRatio": 0.462,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.8,
+  "fidelity": 0.828,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp",
@@ -35635,8 +37241,8 @@
  "00818070": {
   "branchRatio": 1.0,
   "constOverlap": 0.032,
-  "faithful": false,
-  "fidelity": 0.778,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/ui/FrameScript.cpp",
    "src/ui/framescript.cpp"
@@ -35700,7 +37306,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.286,
   "files": [
    "src/ui/LuaExtraFuncs.cpp",
    "src/ui/luaextrafuncs.cpp"
@@ -35777,16 +37383,13 @@
   "status": "ported"
  },
  "0081b330": {
-  "branchRatio": 0.167,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/ui/simple/CSimpleFrame.cpp",
-   "src/ui/simple/csimpleframe.cpp"
-  ],
-  "frozen": "CSimpleFrame::GetObjectType",
-  "frozenSize": 31,
+  "files": [],
+  "frozen": "TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr",
+  "frozenSize": 139,
   "how": "sticky",
   "module": "XMLTree.cpp",
   "refSize": 72,
@@ -35952,6 +37555,22 @@
   "refSize": 221,
   "status": "stub"
  },
+ "0081bfa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::BeginThread",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 36,
+  "status": "stub"
+ },
  "0081bfd0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -35966,7 +37585,7 @@
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 14,
-  "status": "ported"
+  "status": "stub"
  },
  "0081c060": {
   "branchRatio": 1.0,
@@ -36017,16 +37636,16 @@
   "status": "ported"
  },
  "0081c0d0": {
-  "branchRatio": 0.231,
-  "constOverlap": 0.0,
+  "branchRatio": 0.385,
+  "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.118,
+  "fidelity": 0.312,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::Initialize",
-  "frozenSize": 65,
+  "frozenSize": 116,
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 441,
@@ -36058,10 +37677,135 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::AdvanceTime",
-  "frozenSize": 88,
+  "frozenSize": 96,
   "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 73,
+  "status": "ported"
+ },
+ "0081ca20": {
+  "branchRatio": 0.167,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2BlendIndexFromGx",
+  "frozenSize": 108,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "0081cc30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SetProjectionCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
+ "0081cdc0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<M2Element>::New",
+  "frozenSize": 80,
+  "how": "callorder",
+  "module": "M2Scene.cpp",
+  "refSize": 151,
+  "status": "ported"
+ },
+ "0081e400": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SelectLights",
+  "frozenSize": 279,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 399,
+  "status": "ported"
+ },
+ "0081ead0": {
+  "branchRatio": 0.935,
+  "constOverlap": 0.05,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortOpaqueGeoBatches",
+  "frozenSize": 560,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 563,
+  "status": "ported"
+ },
+ "0081eea0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortOpaque",
+  "frozenSize": 77,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 117,
+  "status": "ported"
+ },
+ "0081ef30": {
+  "branchRatio": 0.806,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortTransparent",
+  "frozenSize": 418,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 423,
+  "status": "ported"
+ },
+ "0081f1d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::ComputeElementShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 343,
   "status": "ported"
  },
  "0081f330": {
@@ -36073,33 +37817,81 @@
    "src/model/cm2scenerender.hpp"
   ],
   "frozen": "CM2SceneRender::CM2SceneRender",
-  "frozenSize": 167,
-  "how": "callgraph",
+  "frozenSize": 287,
+  "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 281,
   "status": "ported"
  },
  "0081f450": {
-  "branchRatio": 0.765,
+  "branchRatio": 0.882,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::SetupTextures",
-  "frozenSize": 686,
+  "frozenSize": 696,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 452,
+  "status": "ported"
+ },
+ "0081f620": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetupParticleTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
+ "0081f700": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetBatchVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 252,
+  "status": "ported"
+ },
+ "0081f8f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::CreateModel",
+  "frozenSize": 161,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 127,
   "status": "ported"
  },
  "0081fb10": {
   "branchRatio": 0.625,
   "constOverlap": 0.026,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.556,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -36115,7 +37907,7 @@
   "branchRatio": 0.341,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.077,
+  "fidelity": 0.615,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -36125,13 +37917,13 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 1306,
-  "status": "ported"
+  "status": "faithful"
  },
  "008203b0": {
   "branchRatio": 0.562,
   "constOverlap": 0.047,
-  "faithful": false,
-  "fidelity": 0.231,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -36192,32 +37984,48 @@
   "status": "stub"
  },
  "008214e0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.038,
+  "faithful": true,
+  "fidelity": 0.909,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawParticle",
-  "frozenSize": 0,
+  "frozenSize": 696,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 391,
-  "status": "stub"
+  "status": "ported"
+ },
+ "00821930": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::AddParticleElement",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 238,
+  "status": "ported"
  },
  "00821a20": {
-  "branchRatio": 0.196,
+  "branchRatio": 0.251,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.093,
+  "fidelity": 0.525,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2354,
+  "frozenSize": 3850,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -36243,13 +38051,13 @@
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.857,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 748,
+  "frozenSize": 792,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
@@ -36258,17 +38066,33 @@
  "00823cb0": {
   "branchRatio": 0.667,
   "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Draw",
-  "frozenSize": 289,
+  "frozenSize": 166,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 157,
+  "status": "ported"
+ },
+ "00823d90": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DetachFromScene",
+  "frozenSize": 48,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 172,
   "status": "ported"
  },
  "00823ed0": {
@@ -36285,6 +38109,54 @@
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 58,
+  "status": "ported"
+ },
+ "00824550": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::IsBatchDoodadCompatible",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 84,
+  "status": "stub"
+ },
+ "00824980": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/M2Internal.cpp",
+   "src/model/m2internal.cpp"
+  ],
+  "frozen": "M2ModelLight::M2ModelLight",
+  "frozenSize": 69,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 118,
+  "status": "ported"
+ },
+ "00824d30": {
+  "branchRatio": 0.211,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FreeExternalResources",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 376,
   "status": "ported"
  },
  "00824ed0": {
@@ -36304,19 +38176,35 @@
   "status": "ported"
  },
  "00824f00": {
-  "branchRatio": 0.545,
+  "branchRatio": 0.818,
   "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::IsLoaded",
-  "frozenSize": 142,
+  "frozenSize": 222,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 177,
+  "status": "ported"
+ },
+ "00824fc0": {
+  "branchRatio": 0.438,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::IsDrawable",
+  "frozenSize": 204,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 234,
   "status": "ported"
  },
  "00825170": {
@@ -36329,7 +38217,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UpdateLoaded",
-  "frozenSize": 0,
+  "frozenSize": 242,
   "how": "callorder",
   "module": "M2Scene.cpp",
   "refSize": 63,
@@ -36350,6 +38238,38 @@
   "module": "M2Scene.cpp",
   "refSize": 134,
   "status": "ported"
+ },
+ "00825260": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ReplaceTexture",
+  "frozenSize": 313,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 413,
+  "status": "ported"
+ },
+ "00825d70": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::UnoptimizeVisibleGeometry",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 144,
+  "status": "stub"
  },
  "00825e00": {
   "branchRatio": 1.0,
@@ -36387,7 +38307,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.333,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -36410,10 +38330,10 @@
   ],
   "frozen": "CM2Model::Sub8269C0",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 158,
-  "status": "ported"
+  "status": "diverged"
  },
  "00826b00": {
   "branchRatio": 0.625,
@@ -36425,7 +38345,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetupBoneSequence",
-  "frozenSize": 0,
+  "frozenSize": 447,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 319,
@@ -36441,23 +38361,23 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetPrimaryBoneSequence",
-  "frozenSize": 933,
+  "frozenSize": 524,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 400,
   "status": "ported"
  },
  "00826dd0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetSecondaryBoneSequence",
-  "frozenSize": 0,
+  "frozenSize": 182,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 132,
@@ -36479,6 +38399,54 @@
   "refSize": 106,
   "status": "ported"
  },
+ "008273d0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::HasAttachment",
+  "frozenSize": 152,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 133,
+  "status": "ported"
+ },
+ "008274f0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DetachFromParent",
+  "frozenSize": 141,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
+ "00827560": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DetachAllChildrenById",
+  "frozenSize": 208,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 137,
+  "status": "ported"
+ },
  "008284d0": {
   "branchRatio": 0.72,
   "constOverlap": 0.143,
@@ -36495,6 +38463,140 @@
   "refSize": 420,
   "status": "ported"
  },
+ "00828680": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<M2CompQuat,C4Quaternion>",
+  "frozenSize": 619,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 885,
+  "status": "faithful"
+ },
+ "00828a00": {
+  "branchRatio": 0.425,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateST",
+  "frozenSize": 1283,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1415,
+  "status": "ported"
+ },
+ "00828f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetIndices",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 464,
+  "status": "stub"
+ },
+ "0082ad50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "C3Vector::operator-",
+  "frozenSize": 36,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 482,
+  "status": "ported"
+ },
+ "0082af40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<fixed16,float>",
+  "frozenSize": 566,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 345,
+  "status": "faithful"
+ },
+ "0082b0a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<C3Vector,C3Vector>",
+  "frozenSize": 737,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 450,
+  "status": "faithful"
+ },
+ "0082bd60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/M2Internal.cpp",
+   "src/model/m2internal.cpp"
+  ],
+  "frozen": "M2ModelBone::M2ModelBone",
+  "frozenSize": 157,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 250,
+  "status": "ported"
+ },
+ "0082c1c0": {
+  "branchRatio": 0.765,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FreeInternalResources",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 256,
+  "status": "ported"
+ },
+ "0082c7c0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetGeometryVisible",
+  "frozenSize": 345,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 219,
+  "status": "ported"
+ },
  "0082ced0": {
   "branchRatio": 0.571,
   "constOverlap": 0.024,
@@ -36505,65 +38607,129 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetSequenceInfo",
-  "frozenSize": 0,
+  "frozenSize": 695,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 706,
   "status": "ported"
  },
- "0082e140": {
-  "branchRatio": 0.0,
+ "0082d6f0": {
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.7,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateTextureTransformsMT",
+  "frozenSize": 667,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 531,
+  "status": "ported"
+ },
+ "0082e140": {
+  "branchRatio": 0.424,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMTSimple",
-  "frozenSize": 3,
+  "frozenSize": 898,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1032,
-  "status": "stub"
+  "status": "ported"
+ },
+ "0082e550": {
+  "branchRatio": 0.583,
+  "constOverlap": 0.038,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateAttachmentsMT",
+  "frozenSize": 570,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 458,
+  "status": "ported"
  },
  "0082f0f0": {
-  "branchRatio": 0.342,
+  "branchRatio": 0.362,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.043,
+  "fidelity": 0.159,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5797,
+  "frozenSize": 4822,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
   "status": "ported"
  },
+ "008309c0": {
+  "branchRatio": 0.548,
+  "constOverlap": 0.042,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateParticleEmitter",
+  "frozenSize": 1226,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1011,
+  "status": "ported"
+ },
  "00830dc0": {
   "branchRatio": 0.75,
   "constOverlap": 0.04,
-  "faithful": false,
-  "fidelity": 0.455,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::Animate",
-  "frozenSize": 555,
+  "frozenSize": 599,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 451,
   "status": "ported"
  },
+ "00831410": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.048,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetAttachmentWorldTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 306,
+  "status": "ported"
+ },
  "00831630": {
   "branchRatio": 0.706,
   "constOverlap": 0.031,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -36575,20 +38741,20 @@
   "refSize": 420,
   "status": "ported"
  },
- "00831bb0": {
-  "branchRatio": 0.333,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+ "00831af0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "CM2Model::ApplySequencePlayBack",
-  "frozenSize": 219,
-  "how": "callgraph",
+  "frozen": "CM2Model::SetupLighting",
+  "frozenSize": 273,
+  "how": "annotated",
   "module": "M2Scene.cpp",
-  "refSize": 113,
+  "refSize": 176,
   "status": "ported"
  },
  "00831c30": {
@@ -36607,8 +38773,24 @@
   "refSize": 487,
   "status": "ported"
  },
+ "00831e20": {
+  "branchRatio": 0.263,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CancelAllDeferredSequences",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
  "00831ec0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.217,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -36617,39 +38799,39 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::CancelDeferredSequences",
-  "frozenSize": 0,
+  "frozenSize": 285,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 246,
   "status": "ported"
  },
  "00832640": {
-  "branchRatio": 0.042,
+  "branchRatio": 0.083,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 544,
+  "frozenSize": 989,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,
   "status": "ported"
  },
  "00832840": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.765,
+  "constOverlap": 0.056,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnsetBoneSequence",
-  "frozenSize": 3,
+  "frozenSize": 529,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
@@ -36665,26 +38847,282 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1091,
+  "frozenSize": 1161,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.3,
-  "constOverlap": 0.021,
+  "branchRatio": 0.535,
+  "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.127,
+  "fidelity": 0.353,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3692,
+  "frozenSize": 4737,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
+  "status": "ported"
+ },
+ "008348d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::Initialize",
+  "frozenSize": 25,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "00834900": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::Initialize",
+  "frozenSize": 70,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
+ "00834940": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetFog",
+  "frozenSize": 148,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "00834990": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetFog",
+  "frozenSize": 148,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 75,
+  "status": "ported"
+ },
+ "00834a40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::CM2Light",
+  "frozenSize": 79,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
+ "00834ab0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::Unlink",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "00834ae0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetDirection",
+  "frozenSize": 68,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
+ "00834c70": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::Link",
+  "frozenSize": 159,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 276,
+  "status": "ported"
+ },
+ "00834f60": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::AddLight",
+  "frozenSize": 835,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 310,
+  "status": "ported"
+ },
+ "008350a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::CameraSpace",
+  "frozenSize": 121,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 469,
+  "status": "ported"
+ },
+ "00835280": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupSunlight",
+  "frozenSize": 455,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 323,
+  "status": "ported"
+ },
+ "008353d0": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupGxLights",
+  "frozenSize": 1014,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 502,
+  "status": "ported"
+ },
+ "00835640": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetLightType",
+  "frozenSize": 213,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "00835690": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetPosition",
+  "frozenSize": 226,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "008356f0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetVisible",
+  "frozenSize": 66,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "00835750": {
+  "branchRatio": 0.071,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupGxFog",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 510,
   "status": "ported"
  },
  "00835a20": {
@@ -36703,6 +39141,22 @@
   "refSize": 89,
   "status": "ported"
  },
+ "008360a0": {
+  "branchRatio": 0.529,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SetIndices",
+  "frozenSize": 635,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 525,
+  "status": "ported"
+ },
  "00836600": {
   "branchRatio": 0.71,
   "constOverlap": 0.0,
@@ -36719,6 +39173,22 @@
   "refSize": 591,
   "status": "ported"
  },
+ "00836980": {
+  "branchRatio": 0.769,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SubstituteSimpleShaders",
+  "frozenSize": 516,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 328,
+  "status": "ported"
+ },
  "00836c90": {
   "branchRatio": 1.0,
   "constOverlap": 0.222,
@@ -36733,6 +39203,38 @@
   "how": "string",
   "module": "M2Scene.cpp",
   "refSize": 321,
+  "status": "ported"
+ },
+ "00837680": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SubstituteSpecializedShaders",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 957,
+  "status": "stub"
+ },
+ "00837a40": {
+  "branchRatio": 0.447,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::InitializeSkinProfile",
+  "frozenSize": 919,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 1137,
   "status": "ported"
  },
  "0083ca90": {
@@ -36771,7 +39273,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -36803,7 +39305,7 @@
   "branchRatio": 0.583,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.692,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -36813,6 +39315,22 @@
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 637,
+  "status": "ported"
+ },
+ "0083dc90": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::Release",
+  "frozenSize": 50,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 88,
   "status": "ported"
  },
  "0083de50": {
@@ -36829,6 +39347,22 @@
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 50,
+  "status": "ported"
+ },
+ "0083de90": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "SequenceBufferFree",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0084d3f0": {
@@ -36886,7 +39420,7 @@
   ],
   "frozen": "pushstr",
   "frozenSize": 105,
-  "how": "callgraph",
+  "how": "order",
   "module": "Minigame_C.cpp",
   "refSize": 92,
   "status": "ported"
@@ -36895,7 +39429,7 @@
   "branchRatio": 0.412,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.786,
+  "fidelity": 0.714,
   "files": [
    "vendor/lua-5.1.3/src/lobject.c"
   ],
@@ -37142,7 +39676,7 @@
   ],
   "frozen": "lua_isnumber",
   "frozenSize": 48,
-  "how": "callgraph",
+  "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 53,
   "status": "ported"
@@ -38062,21 +40596,6 @@
   "refSize": 113,
   "status": "ported"
  },
- "0084fb30": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lauxlib.c"
-  ],
-  "frozen": "luaL_optnumber",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Minigame_C.cpp",
-  "refSize": 46,
-  "status": "ported"
- },
  "0084fb60": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -38530,8 +41049,8 @@
  "00851290": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lmathlib.c"
   ],
@@ -38741,7 +41260,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.583,
+  "fidelity": 0.7,
   "files": [
    "vendor/lua-5.1.3/src/lmathlib.c"
   ],
@@ -39298,7 +41817,7 @@
   "branchRatio": 0.783,
   "constOverlap": 0.031,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.536,
   "files": [
    "vendor/lua-5.1.3/src/lstrlib.c"
   ],
@@ -39309,26 +41828,11 @@
   "refSize": 969,
   "status": "ported"
  },
- "00854070": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lstrlib.c"
-  ],
-  "frozen": "createmetatable",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "Minigame_C.cpp",
-  "refSize": 83,
-  "status": "ported"
- },
  "008540d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "vendor/lua-5.1.3/src/lstrlib.c"
   ],
@@ -39987,8 +42491,8 @@
  "00856ea0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -39997,51 +42501,6 @@
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 111,
-  "status": "ported"
- },
- "00856f10": {
-  "branchRatio": 0.625,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "traceexec",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 137,
-  "status": "ported"
- },
- "00856fa0": {
-  "branchRatio": 0.077,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "callTMres",
-  "frozenSize": 173,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 352,
-  "status": "ported"
- },
- "00857100": {
-  "branchRatio": 0.077,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lvm.c"
-  ],
-  "frozen": "callTM",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 335,
   "status": "ported"
  },
  "00857250": {
@@ -40063,7 +42522,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -40078,7 +42537,7 @@
   "branchRatio": 0.467,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.636,
+  "fidelity": 0.545,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -40093,7 +42552,7 @@
   "branchRatio": 0.778,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.286,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -40108,7 +42567,7 @@
   "branchRatio": 0.706,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.469,
   "files": [
    "vendor/lua-5.1.3/src/lvm.c"
   ],
@@ -40164,41 +42623,11 @@
   "refSize": 108,
   "status": "ported"
  },
- "0085b710": {
-  "branchRatio": 0.6,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "vendor/lua-5.1.3/src/lgc.c"
-  ],
-  "frozen": "remarkupvals",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 61,
-  "status": "ported"
- },
- "0085b750": {
-  "branchRatio": 0.091,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.4,
-  "files": [
-   "vendor/lua-5.1.3/src/lgc.c"
-  ],
-  "frozen": "atomic",
-  "frozenSize": 702,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 250,
-  "status": "ported"
- },
  "0085b850": {
   "branchRatio": 0.6,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.143,
   "files": [
    "vendor/lua-5.1.3/src/lgc.c"
   ],
@@ -40749,41 +43178,11 @@
   "refSize": 297,
   "status": "ported"
  },
- "0085fbd0": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.471,
-  "files": [
-   "vendor/lua-5.1.3/src/lparser.c"
-  ],
-  "frozen": "body",
-  "frozenSize": 897,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 320,
-  "status": "ported"
- },
- "0085fd10": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
-  "files": [
-   "vendor/lua-5.1.3/src/lparser.c"
-  ],
-  "frozen": "explist1",
-  "frozenSize": 0,
-  "how": "order",
-  "module": "lmemPool.cpp",
-  "refSize": 61,
-  "status": "ported"
- },
  "0085fd50": {
   "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.25,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],
@@ -40828,7 +43227,7 @@
   "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.2,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],
@@ -40903,7 +43302,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.393,
   "files": [
    "vendor/lua-5.1.3/src/lparser.c"
   ],
@@ -41094,11 +43493,43 @@
   "refSize": 82,
   "status": "ported"
  },
+ "00872900": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.043,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::ComputeLocalLights",
+  "frozenSize": 411,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 453,
+  "status": "ported"
+ },
+ "00872b00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.025,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetWorldViewConstants",
+  "frozenSize": 129,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 266,
+  "status": "ported"
+ },
  "00872c10": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
@@ -41108,6 +43539,102 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 197,
+  "status": "ported"
+ },
+ "00872de0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::PixelPermute",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
+ "00872f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetCurrent",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 196,
+  "status": "ported"
+ },
+ "00873060": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetShaders",
+  "frozenSize": 188,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 251,
+  "status": "ported"
+ },
+ "00873160": {
+  "branchRatio": 0.333,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetShadersForGeometry",
+  "frozenSize": 271,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 84,
+  "status": "ported"
+ },
+ "00873210": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetFogParams",
+  "frozenSize": 302,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 379,
+  "status": "ported"
+ },
+ "00873390": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetFogEnabled",
+  "frozenSize": 217,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 226,
   "status": "ported"
  },
  "00873480": {
@@ -41124,6 +43651,102 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 206,
+  "status": "ported"
+ },
+ "00873550": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx_SphereMap",
+  "frozenSize": 97,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
+ "00873620": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx",
+  "frozenSize": 158,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 257,
+  "status": "ported"
+ },
+ "00873900": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetDiffuse",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 331,
+  "status": "ported"
+ },
+ "00873a50": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetEmissive",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 331,
+  "status": "ported"
+ },
+ "00873ba0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetAlphaRef",
+  "frozenSize": 67,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
+ "00873ca0": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.174,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetLocalLighting",
+  "frozenSize": 414,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 562,
   "status": "ported"
  },
  "00875d30": {
@@ -41161,7 +43784,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.095,
+  "fidelity": 0.125,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"
@@ -41385,7 +44008,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.25,
   "files": [
    "src/sound/SESoundInternal.cpp",
    "src/sound/sesoundinternal.cpp"
@@ -41400,8 +44023,8 @@
  "0087ee60": {
   "branchRatio": 0.543,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.793,
+  "faithful": true,
+  "fidelity": 0.821,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"
@@ -41428,22 +44051,6 @@
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 35,
   "status": "ported"
- },
- "0088b9c0": {
-  "branchRatio": 1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/ui/game/ScriptEvents.cpp",
-   "src/ui/game/scriptevents.cpp"
-  ],
-  "frozen": "ActivePlayerData",
-  "frozenSize": 0,
-  "how": "callgraph",
-  "module": "ComSatSoundIOSoundEngine.cpp",
-  "refSize": 28,
-  "status": "excluded"
  },
  "0088be0d": {
   "branchRatio": 1.0,
@@ -41925,6 +44532,38 @@
   "refSize": 6,
   "status": "ported"
  },
+ "008b02e0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/ItemClassRec.cpp",
+   "src/db/rec/itemclassrec.cpp"
+  ],
+  "frozen": "ItemClassRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008b12d0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/ItemSubClassRec.cpp",
+   "src/db/rec/itemsubclassrec.cpp"
+  ],
+  "frozen": "ItemSubClassRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "008b1940": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -42329,7 +44968,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.036,
+  "fidelity": 0.04,
   "files": [
    "src/ffx/EffectGlow.cpp",
    "src/ffx/effectglow.cpp"
@@ -42454,7 +45093,7 @@
   "branchRatio": 0.889,
   "constOverlap": 0.091,
   "faithful": false,
-  "fidelity": 0.188,
+  "fidelity": 0.2,
   "files": [
    "src/ui/simple/CSimpleMovieFrame.cpp",
    "src/ui/simple/csimplemovieframe.cpp"
@@ -42710,7 +45349,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.857,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
@@ -43286,7 +45925,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -43302,7 +45941,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -43382,7 +46021,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.059,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.857,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -43418,13 +46057,13 @@
   "files": [],
   "frozen": "TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]",
   "frozenSize": 145,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CSimpleEditBox.cpp",
   "refSize": 87,
   "status": "ported"
  },
  "00966fd0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -43432,9 +46071,9 @@
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
   ],
-  "frozen": "CSimpleEditBox::AddHistoryLine",
-  "frozenSize": 166,
-  "how": "annotated",
+  "frozen": "CSimpleEditBox::SetHistoryLines",
+  "frozenSize": 337,
+  "how": "callgraph",
   "module": "CSimpleEditBox.cpp",
   "refSize": 71,
   "status": "ported"
@@ -43443,7 +46082,7 @@
   "branchRatio": 0.476,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.806,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -44515,7 +47154,7 @@
   "how": "table",
   "module": "CSimpleHTML.cpp",
   "refSize": 197,
-  "status": "ported"
+  "status": "stub"
  },
  "00972560": {
   "branchRatio": 0.4,
@@ -44873,7 +47512,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.4,
   "files": [
    "src/ui/simple/CSimpleScrollingMessageFrameScript.cpp",
    "src/ui/simple/csimplescrollingmessageframescript.cpp"
@@ -45352,8 +47991,8 @@
  "00975370": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -45897,7 +48536,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -46025,7 +48664,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -46057,7 +48696,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -46120,8 +48759,8 @@
  "00976770": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -46217,7 +48856,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -46457,7 +49096,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -46489,7 +49128,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -46521,7 +49160,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -46584,8 +49223,8 @@
  "009779b0": {
   "branchRatio": 0.0,
   "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -46949,6 +49588,822 @@
   "refSize": 151,
   "status": "ported"
  },
+ "00978ad0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleToFixed16",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "00978b70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleFlushDenormals",
+  "frozenSize": 89,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
+ "00978bf0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetMaterial",
+  "frozenSize": 73,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 68,
+  "status": "ported"
+ },
+ "00978c70": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetTextureGrid",
+  "frozenSize": 162,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
+ "00978d00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetHeadTail",
+  "frozenSize": 149,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 147,
+  "status": "ported"
+ },
+ "00978da0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetZSource",
+  "frozenSize": 39,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 39,
+  "status": "ported"
+ },
+ "00978e30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetTextureAnimated",
+  "frozenSize": 44,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "00979170": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleIndexBufferCreate",
+  "frozenSize": 110,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 112,
+  "status": "ported"
+ },
+ "00979250": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.032,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+  "frozenSize": 655,
+  "how": "override",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 123,
+  "status": "diverged"
+ },
+ "009792d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::RandomSpeed",
+  "frozenSize": 100,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "00979330": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2PartTrackFindKey",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 128,
+  "status": "ported"
+ },
+ "009793b0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2PartTrackRatio",
+  "frozenSize": 428,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 196,
+  "status": "ported"
+ },
+ "00979480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2PartTrackEval2",
+  "frozenSize": 178,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 108,
+  "status": "ported"
+ },
+ "009794f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2PartTrackEvalAlpha",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "00979560": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2PartTrackEvalCell",
+  "frozenSize": 135,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 100,
+  "status": "ported"
+ },
+ "009795d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SampleColor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 357,
+  "status": "ported"
+ },
+ "00979740": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::GroundSnapParticle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 162,
+  "status": "ported"
+ },
+ "00979870": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CreateParticle",
+  "frozenSize": 906,
+  "how": "override",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 328,
+  "status": "diverged"
+ },
+ "00979bb0": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateParticle",
+  "frozenSize": 695,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 425,
+  "status": "ported"
+ },
+ "00979e90": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.087,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SampleAppearance",
+  "frozenSize": 1086,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 666,
+  "status": "ported"
+ },
+ "0097a130": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SampleSpin",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 292,
+  "status": "ported"
+ },
+ "0097a260": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleIndexBufferFill",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
+ "0097a2e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetupVertexCursor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 175,
+  "status": "ported"
+ },
+ "0097a390": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.054,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetupDrawBasis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 488,
+  "status": "ported"
+ },
+ "0097a580": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SubmitDraw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 233,
+  "status": "ported"
+ },
+ "0097ac00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetTwinkleScale",
+  "frozenSize": 26,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
+ "0097ac20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Place",
+  "frozenSize": 260,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 143,
+  "status": "ported"
+ },
+ "0097acb0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Substep",
+  "frozenSize": 1122,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 322,
+  "status": "ported"
+ },
+ "0097b9e0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::HasLiveParticles",
+  "frozenSize": 88,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 12,
+  "status": "ported"
+ },
+ "0097ba30": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CountSpawnedModels",
+  "frozenSize": 94,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "0097ba70": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::FindSpawnedModel",
+  "frozenSize": 164,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "0097bd80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetEmissionRate",
+  "frozenSize": 17,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "0097bdb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateModelParticle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 195,
+  "status": "ported"
+ },
+ "0097be80": {
+  "branchRatio": 0.215,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.9,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::WriteParticleVertices",
+  "frozenSize": 6523,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 5350,
+  "status": "ported"
+ },
+ "0097d820": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SpawnParticle",
+  "frozenSize": 205,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 109,
+  "status": "ported"
+ },
+ "0097d8c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.103,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Emit",
+  "frozenSize": 726,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 687,
+  "status": "ported"
+ },
+ "0097db80": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateAndSpawnChildren",
+  "frozenSize": 571,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 396,
+  "status": "ported"
+ },
+ "0097dd20": {
+  "branchRatio": 0.591,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Step",
+  "frozenSize": 745,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 604,
+  "status": "ported"
+ },
+ "0097e150": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+  "frozenSize": 655,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 662,
+  "status": "ported"
+ },
+ "0097e3f0": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Reserve",
+  "frozenSize": 139,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 143,
+  "status": "ported"
+ },
+ "0097e480": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetParticleCount",
+  "frozenSize": 402,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 241,
+  "status": "ported"
+ },
+ "0097e580": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.05,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::WriteLiveParticles",
+  "frozenSize": 1588,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 414,
+  "status": "ported"
+ },
+ "0097e730": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.032,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::FillDrawBuffer",
+  "frozenSize": 1283,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 410,
+  "status": "ported"
+ },
+ "0097ea60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Draw",
+  "frozenSize": 127,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 162,
+  "status": "ported"
+ },
+ "0097eb10": {
+  "branchRatio": 0.917,
+  "constOverlap": 0.121,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Update",
+  "frozenSize": 789,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 736,
+  "status": "ported"
+ },
+ "0097edf0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrepareStep",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 199,
+  "status": "ported"
+ },
+ "0097f570": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetAbove",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "0097f630": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetGravity",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "0097f640": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::IsEmpty",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
+ "00980630": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::CM2Ribbon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 476,
+  "status": "ported"
+ },
+ "00980ed0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ParticleFx.cpp",
+   "src/world/particlefx.cpp"
+  ],
+  "frozen": "ParticleFxGetDensity",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
  "00980f70": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -46965,11 +50420,395 @@
   "refSize": 50,
   "status": "ported"
  },
+ "00981310": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::CM2ParticleEmitterPlane",
+  "frozenSize": 56,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "009813b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::SetWidth",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "009813c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::SetLength",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "009813d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::SetLatitude",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "009813e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::SetLongitude",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "009813f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::CM2ParticleEmitterSphere",
+  "frozenSize": 62,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "00981490": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::SetWidth",
+  "frozenSize": 29,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
+ "009814b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::SetLength",
+  "frozenSize": 25,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
+ "009814d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::SetLongitude",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "009815c0": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.029,
+  "faithful": false,
+  "fidelity": 0.7,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::CreateParticle",
+  "frozenSize": 826,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 862,
+  "status": "ported"
+ },
+ "00981950": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.056,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::CreateParticle",
+  "frozenSize": 808,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 829,
+  "status": "ported"
+ },
+ "00982460": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4Quaternion::Slerp",
+  "frozenSize": 407,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 268,
+  "status": "ported"
+ },
+ "00982970": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "UnpackColor",
+  "frozenSize": 67,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "009829b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DominantAxis",
+  "frozenSize": 60,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "009829f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "MinAxis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "00983490": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "IntersectRayTriangle",
+  "frozenSize": 702,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 537,
+  "status": "ported"
+ },
+ "009839e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxVsPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "00983a60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxBehindPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 124,
+  "status": "ported"
+ },
+ "00983d70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "ClassifyPointPlanes6",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 241,
+  "status": "ported"
+ },
+ "00984860": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "TransformBox",
+  "frozenSize": 756,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 198,
+  "status": "ported"
+ },
+ "00984930": {
+  "branchRatio": 0.229,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "BoundsFromPoints",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 829,
+  "status": "ported"
+ },
+ "00984f60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "RgbToHsv",
+  "frozenSize": 283,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
+ "00985030": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "HsvToRgb",
+  "frozenSize": 440,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 334,
+  "status": "ported"
+ },
+ "009851a0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/ColorConvert.cpp",
+   "lib/typhoon/tempest/colorconvert.cpp"
+  ],
+  "frozen": "PackColor",
+  "frozenSize": 107,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
  "009858b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.333,
-  "faithful": false,
-  "fidelity": 0.727,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/sound/SI2Script.cpp",
    "src/sound/si2script.cpp"
@@ -47411,7 +51250,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.211,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.364,
   "files": [
    "vendor/freetype-2.0.9/src/cid/cidparse.c"
   ],

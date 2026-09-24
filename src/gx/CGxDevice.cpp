@@ -542,6 +542,17 @@ void CGxDevice::DeviceCreateStreamBufs() {
     this->m_streamBufs[GxPoolTarget_Index] = this->BufCreate(this->m_indexPool, 0, 0, 0);
 }
 
+// `leal 0x174(%ecx), %eax; retl` -- the whole function. Identified behaviourally rather than by
+// position: the reference's viewport setter calls it at 0x006a521d and then computes
+// `(1.0 - viewport.y.h) * result[+0x8]`, which is IXformSetViewport's own
+// `(1.0 - gxViewport.y.h) * windowRect.maxY`, and CRect is {minY, minX, maxY, maxX} so +0x8 is
+// maxY. 15 callers, so linking it lifts the measured fidelity of every one of them that gets
+// ported.
+//
+// Its neighbour FUN_00682d80 returns &this->[0x164], one CRect earlier, which by elimination is
+// DeviceDefWindow -- frozen declares m_defWindowRect immediately before m_curWindowRect. Left
+// untagged: that is adjacency, not proof, and a tag is a claim.
+// ref: FUN_00682d70
 const CRect& CGxDevice::DeviceCurWindow() {
     return this->m_curWindowRect;
 }
@@ -573,6 +584,15 @@ int32_t CGxDevice::IDevIsWindowed() {
     return this->m_format.window;
 }
 
+// Identified 2026-09-23 field for field, which is worth recording because 641 reference functions
+// call it and a wrong tag here would poison the fidelity of all of them. The reference indexes
+// `m_appRenderStates + which * 0x18` -- 24 bytes, which is CGxAppRenderState's own size -- tests
+// the dword at +0x14 as the dirty flag, compares the dword at +0x10 against the device's +0x18,
+// and on a mismatch copies into a freshly grown entry: the state index, then four dwords from the
+// entry's start (sizeof CGxStateBom), then the +0x10 dword. That is exactly m_which, m_value and
+// m_stackDepth of CGxPushedRenderState, in that order, and exactly the two array growths below.
+// The device's +0x18 is m_stackOffsets' count.
+// ref: FUN_00685970
 void CGxDevice::IRsDirty(EGxRenderState which) {
     auto rs = &this->m_appRenderStates[which];
 
@@ -631,6 +651,27 @@ void CGxDevice::IRsForceUpdate(EGxRenderState which) {
     hs.filler = ~rs.m_value.filler;
 }
 
+// Audited against the reference's own IRsInit on 2026-09-23, end to end, because every draw in the
+// client starts from this table and a wrong entry here is the kind of defect that never looks like
+// a defect. **Read, not run** -- this is not a `verified` claim.
+//
+// The reference is at 0x00686120 and identifies itself: it sizes both arrays to 0x56 = 86 =
+// GxRenderStates_Last, then memsets 0x810 bytes over the app array and 0x560 over the hardware one.
+// 0x810 / 86 = 24 = sizeof(CGxAppRenderState) and 0x560 / 86 = 16 = sizeof(CGxStateBom), which is a
+// third and fourth confirmation of the two strides the D3D state-sync ports rest on. A store at
+// 0xOFF through the pointer at +0x28f4 therefore sets render state OFF / 24.
+//
+// 69 states decoded and every one agrees with the lines below, including the values worth getting
+// wrong: FogColor 0xff808080, ColorWrite 0xf, Culling 1, DepthWrite 1, DepthFunc 0, Multisample 1,
+// ScissorTest 0, every texture and shader slot null, and the Unk70..Unk76 run counting 1 through 7.
+// PointScaleAttenuation is a three-dword copy from the global at 0x00ad8bb4, which reads
+// {1.0, 0.0, 0.0} out of .data and matches s_pointScaleIdentity byte for byte.
+//
+// Sixteen states looked unset by the reference on a first pass and are not: the compiler routes
+// float defaults through a scratch slot at -0x4(%ebp) and schedules the reload BEFORE the store
+// that fills it, so a naive scan attributes the previous value. FogStart, FogEnd, PointScale,
+// PointScaleMin, PointScaleMax and the Texture8..15 slots are all set there.
+// ref: FUN_00686120
 void CGxDevice::IRsInit() {
     this->m_appRenderStates.SetCount(GxRenderStates_Last);
     this->m_hwRenderStates.SetCount(GxRenderStates_Last);
@@ -656,6 +697,15 @@ void CGxDevice::IRsInit() {
     this->m_appRenderStates[GxRs_ColorWrite].m_value        = 15;
     this->m_appRenderStates[GxRs_Culling].m_value           = 1;
     this->m_appRenderStates[GxRs_ClipPlaneMask].m_value     = 0;
+    // Confirmed against the reference's own IRsInit at 0x00686208, which writes these defaults
+    // through the array pointer at +0x28f4 with a 24-byte stride: 0x1c8 / 24 = 19 = this state,
+    // and it takes the register holding 1. So the reference defaults it to 1 as well, and its
+    // GxRsSet(0x13, 1) inside the world-render push is defensive rather than a change. frozen does
+    // not antialias the UI by mistake.
+    //
+    // Four of its neighbours in the same run decode consistently and confirm the stride:
+    // 0x180 / 24 = 16 = ColorWrite takes 0xf, 0x198 = 17 = Culling takes 1, 0x1b0 = 18 =
+    // ClipPlaneMask takes 0 and 0x1e0 = 20 = ScissorTest takes 0 -- all matching the lines here.
     this->m_appRenderStates[GxRs_Multisample].m_value       = 1;
     this->m_appRenderStates[GxRs_ScissorTest].m_value       = 0;
 
@@ -903,6 +953,7 @@ int32_t CGxDevice::MasterEnable(EGxMasterEnables state) {
     return ((1 << state) & this->m_appMasterEnables) != 0;
 }
 
+// ref: FUN_00685eb0
 void CGxDevice::MasterEnableSet(EGxMasterEnables state, int32_t enable) {
     this->m_appMasterEnables = ((enable & 1) << state) | (this->m_appMasterEnables & ~(1 << state));
 
@@ -936,12 +987,147 @@ void CGxDevice::MasterEnableSet(EGxMasterEnables state, int32_t enable) {
     }
 }
 
+// ref: FUN_00682f10
 void CGxDevice::PrimIndexPtr(CGxBuf* buf) {
     if (buf->unk1E || this->m_primIndexBuf != buf) {
         buf->unk1E = 0;
         this->m_primIndexDirty = 1;
         this->m_primIndexBuf = buf;
     }
+}
+
+// Stores one user clip plane and marks it dirty only when it actually changed, which is the
+// whole point: the sync in the D3D backend walks the dirty mask, so an unchanged plane costs
+// nothing.
+//
+// The reference compares all four components with the fcom/fnstsw/testb $0x44 idiom. With mask
+// 0x44 the tested bits are C3 (equal) and C2 (unordered), and `jp` is taken only when BOTH are
+// clear -- an ordered, not-equal compare -- which is the branch into the store. The last of the
+// four inverts to `jnp` to fall out when every component matched. Spelled here as a plain
+// inequality, which is the same thing for ordered values and does not silently invert if a NaN
+// ever reaches it.
+// Copy an application light into a device slot, one field group at a time, marking each with its
+// own dirty bit so a backend can send only what moved. Every comparison is an inequality against
+// what is already stored, so setting a light to the value it already holds costs nothing.
+//
+// The position group is the odd one. It compares four things -- the three components AND the
+// derived w -- so that a light flipping between point and directional is caught even when its
+// xyz happens to be unchanged. The w it compares against is `(flags >> 1) & 1` read as a float,
+// which is the whole of how the point/directional choice crosses into the device.
+//
+// The write order below is the reference's, not a tidied one: attenuation first, then position,
+// then diffuse, then ambient, then specular. It costs nothing to keep and makes the call-order
+// check mean something.
+// ref: FUN_00684620
+void CGxLightState::Set(const CGxLight& light) {
+    if (light.m_attenuation.x != this->m_attenuation.x) {
+        this->m_dirty |= 0x20;
+        this->m_attenuation.x = light.m_attenuation.x;
+    }
+
+    if (light.m_attenuation.y != this->m_attenuation.y) {
+        this->m_dirty |= 0x40;
+        this->m_attenuation.y = light.m_attenuation.y;
+    }
+
+    if (light.m_attenuation.z != this->m_attenuation.z) {
+        this->m_dirty |= 0x80;
+        this->m_attenuation.z = light.m_attenuation.z;
+    }
+
+    float w = static_cast<float>((light.m_flags >> 1) & 0x1);
+
+    if (light.m_posOrDir.x != this->m_posOrDir.x || light.m_posOrDir.y != this->m_posOrDir.y
+            || light.m_posOrDir.z != this->m_posOrDir.z || w != this->m_posOrDir.w) {
+        this->m_dirty |= 0x2;
+        this->m_posOrDir.x = light.m_posOrDir.x;
+        this->m_posOrDir.y = light.m_posOrDir.y;
+        this->m_posOrDir.z = light.m_posOrDir.z;
+
+        if (light.m_flags & 0x2) {
+            this->m_attenuationValid |= 0xe0;
+            this->m_posOrDir.w = 1.0f;
+        } else {
+            this->m_attenuationValid &= 0xff1f;
+            this->m_posOrDir.w = 0.0f;
+        }
+    }
+
+    if (light.m_diffuse.x != this->m_diffuse.x || light.m_diffuse.y != this->m_diffuse.y
+            || light.m_diffuse.z != this->m_diffuse.z) {
+        this->m_diffuse = light.m_diffuse;
+        this->m_dirty |= 0x8;
+    }
+
+    if (light.m_ambient.x != this->m_ambient.x || light.m_ambient.y != this->m_ambient.y
+            || light.m_ambient.z != this->m_ambient.z) {
+        this->m_ambient = light.m_ambient;
+        this->m_dirty |= 0x4;
+    }
+
+    if (light.m_specular.x != this->m_specular.x || light.m_specular.y != this->m_specular.y
+            || light.m_specular.z != this->m_specular.z) {
+        this->m_specular = light.m_specular;
+        this->m_dirty |= 0x10;
+    }
+}
+
+// The public half of the above. The origin shift applies only to a POINT light with a non-zero
+// origin -- a directional light has no position to shift -- and it happens AFTER the store, on the
+// value already in the slot, so the comparison inside Set sees the unshifted position. That means
+// two calls with the same light and the same non-zero origin do not settle: the second shifts the
+// stored value again only if Set rewrote it, which it will, because the first call left the slot
+// holding position-minus-origin while the light still holds position. Both current callers pass a
+// zero origin so the branch never runs; reproduced as found rather than corrected.
+// ref: FUN_006847d0
+void CGxDevice::LightSet(uint32_t index, const CGxLight& light, const C3Vector& origin) {
+    CGxLightState& state = this->m_lights[index];
+
+    state.Set(light);
+
+    if ((light.m_flags & 0x2) && (origin.x != 0.0f || origin.y != 0.0f || origin.z != 0.0f)) {
+        state.m_dirty |= 0x2;
+        state.m_posOrDir.x -= origin.x;
+        state.m_posOrDir.y -= origin.y;
+        state.m_posOrDir.z -= origin.z;
+    }
+}
+
+// ref: FUN_00683080
+void CGxDevice::LightEnable(uint32_t index, int32_t enable) {
+    CGxLightState& state = this->m_lights[index];
+
+    if (state.m_enabled != enable) {
+        state.m_dirty |= 0x1;
+        state.m_enabled = enable;
+    }
+}
+
+// ref: FUN_00684440
+void CGxDevice::ClipPlaneSet(uint32_t index, const C4Plane* plane) {
+    C4Plane* dst = &this->m_clipPlanes[index];
+
+    if (plane->n.x != dst->n.x || plane->n.y != dst->n.y || plane->n.z != dst->n.z || plane->d != dst->d) {
+        this->m_clipPlaneDirty |= 1 << index;
+
+        dst->n.x = plane->n.x;
+        dst->n.y = plane->n.y;
+        dst->n.z = plane->n.z;
+        dst->d = plane->d;
+    }
+}
+
+// Stores the scissor rectangle in normalised coordinates and marks it dirty. Unlike ClipPlaneSet
+// this does NOT compare first -- the reference marks dirty unconditionally -- so a caller setting
+// the same rectangle every frame re-sends it. Reproduced rather than improved.
+// ref: FUN_00682e70
+void CGxDevice::ScissorSet(const CRect* rect) {
+    this->m_scissorDirty = 1;
+
+    this->m_scissorRect.minY = rect->minY;
+    this->m_scissorRect.minX = rect->minX;
+    this->m_scissorRect.maxY = rect->maxY;
+    this->m_scissorRect.maxX = rect->maxX;
 }
 
 void CGxDevice::PrimVertexFormat(CGxBuf* buf, CGxVertexAttrib* attribs, uint32_t count) {
@@ -993,6 +1179,17 @@ CGxPool* CGxDevice::PoolCreate(EGxPoolTarget target, EGxPoolUsage usage, uint32_
     return pool;
 }
 
+// `leal 0xa44(%eax,%eax,2), %eax; movl (%ecx,%eax,4), %ecx; movl %ecx, (%edx)` -- the index is
+// scaled by three and then by four, so the stride is twelve and the base is 0xa44 * 4 = 0x2910.
+// That is m_textureTarget, and the field read is its first, m_texture. `retl $0x8` matches the two
+// stack arguments.
+//
+// This is the third independent confirmation of that layout, and the cleanest: IStateSyncScissorRect
+// and IXformSetViewport both test +0x2918 and +0x2924, which are m_apiSpecific of entries 0 and 1
+// against this base, and device create zeroes exactly the six dwords from +0x2910 to +0x2924. The
+// divergence recorded on those two -- frozen tests m_texture because it never stores a surface in
+// m_apiSpecific -- rests on this.
+// ref: FUN_00682d50
 void CGxDevice::RenderTargetGet(EGxBuffer buffer, CGxTex*& gxTex) {
     gxTex = this->m_textureTarget[buffer].m_texture;
 }
@@ -1021,6 +1218,31 @@ void CGxDevice::RsGet(EGxRenderState which, int32_t& value) {
 }
 
 void CGxDevice::RsSet(EGxRenderState which, int32_t value) {
+    if (!this->m_context) {
+        return;
+    }
+
+    if (this->m_appRenderStates[which].m_value != value) {
+        this->IRsDirty(which);
+        this->m_appRenderStates[which].m_value = value;
+    }
+}
+
+// The float-valued render states go through here rather than through the int32_t overload above:
+// CGxStateBom stores either in the same union, but comparing the bit patterns as integers is not
+// the same test as comparing them as floats, and the reference compares as floats.
+void CGxDevice::RsSet(EGxRenderState which, float value) {
+    if (!this->m_context) {
+        return;
+    }
+
+    if (this->m_appRenderStates[which].m_value != value) {
+        this->IRsDirty(which);
+        this->m_appRenderStates[which].m_value = value;
+    }
+}
+
+void CGxDevice::RsSet(EGxRenderState which, uint32_t value) {
     if (!this->m_context) {
         return;
     }
@@ -1064,6 +1286,22 @@ void CGxDevice::RsSetAlphaRef() {
 }
 
 // ref: FUN_00685fb0
+// The reference (FUN_00685fb0) makes exactly these calls in exactly this order -- call-order
+// fidelity is 1.0 -- but the recomp report still does not count it faithful, and the reason is
+// structural rather than a defect. Its branch ratio is 0.214, because the reference inlines the
+// same growable-array shrink three times:
+//
+//     if (growQuantum == 0) growQuantum = PowerOfTwoFloor(n);   // 00590830 / 005d0040
+//     if (n % growQuantum)  n += growQuantum - n % growQuantum;
+//     array.Reserve(n);
+//
+// once per array, where frozen writes SetCount and lets TSGrowableArray do it. Same calls, a third
+// of the branches. Do not "fix" this by unrolling it here.
+//
+// The three Reserve helpers the reference calls are told apart only by their index scaling
+// (4-byte, 4-byte and 0x18-byte elements); one of them, 00408490, was linked to CGxDevice::RsPush
+// until 2026-09-23, which held this function's measured recall at 0% and made it look as though
+// RsPop called RsPush. See overrides.json.
 void CGxDevice::RsPop() {
     auto topOfStack = this->m_stackOffsets[this->m_stackOffsets.Count() - 1];
 
@@ -1096,8 +1334,20 @@ void CGxDevice::RsPush() {
     *offset = this->m_pushedStates.Count();
 }
 
+// The tail every backend's ScenePresent already calls, and it was empty. Three statements in the
+// reference, and the frame counter is the one that matters: the texture priority path reads it to
+// decide which textures have gone cold.
+//
+// Clearing intF5C here looks alarming next to CGxDeviceD3d::Draw, which bails while that flag is
+// set, but it is what the reference does and it is inert in frozen: nothing here ever sets the flag
+// to anything but zero. It stops being inert the day device-lost handling lands, and at that point
+// the reference's behaviour -- re-raise it each frame while the device is still lost -- is the
+// behaviour to match.
+// ref: FUN_00682e50
 void CGxDevice::ScenePresent() {
-    // TODO
+    this->m_frameCount++;
+    this->int2934 = 0;
+    this->intF5C = 0;
 }
 
 void CGxDevice::ShaderConstantsClear() {
@@ -1356,6 +1606,14 @@ void CGxDevice::XformPush(EGxXform xf) {
     this->m_xforms[xf].Push();
 }
 
+// The reference indexes `device + 0x1008 + xf * 0x118`, and CGxMatrixStack is byte-for-byte
+// that block: m_level at +0, m_dirty at +4, m_mtx[4] from +8 (0x100 bytes), m_flags[4] at +0x108,
+// 0x118 in total. Top() sets m_dirty and clears F_Identity, which is the reference's
+// `movb $0x1, 0x4(%eax)` and `andl $-0x2, (%ecx)`.
+//
+// Worth having the address: several functions INLINE this rather than call it -- FUN_0081f620 is
+// one -- and the inlined form is unrecognisable until the 0x118 stride is worked out.
+// ref: FUN_0057c450
 void CGxDevice::XformSet(EGxXform xf, const C44Matrix& matrix) {
     this->m_xforms[xf].Top() = matrix;
 }
@@ -1398,6 +1656,13 @@ void CGxDevice::XformSetViewport(float minX, float maxX, float minY, float maxY,
 
 void CGxDevice::XformView(C44Matrix& matrix) {
     matrix = this->m_xforms[GxXform_View].m_mtx[this->m_xforms[GxXform_View].m_level];
+}
+
+// The sibling of XformView. Not a reference function of its own -- the reference reaches
+// into the stack inline wherever it wants the world matrix -- but frozen already had the
+// view accessor and having only one of the pair is how the second caller open-codes it.
+void CGxDevice::XformWorld(C44Matrix& matrix) {
+    matrix = this->m_xforms[GxXform_World].m_mtx[this->m_xforms[GxXform_World].m_level];
 }
 
 void CGxDevice::XformViewport(float& minX, float& maxX, float& minY, float& maxY, float& minZ, float& maxZ) {

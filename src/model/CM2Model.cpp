@@ -1,4 +1,5 @@
 #include "model/CM2Model.hpp"
+#include "util/Log.hpp"
 #include <storm/String.hpp>
 #include <cstdio>
 #include "db/Db.hpp"
@@ -9,12 +10,14 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Animate.hpp"
 #include "model/M2Data.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Model.hpp"
 #include <common/DataMgr.hpp>
 #include <common/ObjectAlloc.hpp>
 #include <tempest/Math.hpp>
 #include <cmath>
+#include <cstring>
 #include <new>
 
 // Alignment helpers
@@ -147,6 +150,11 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
 CM2Model::~CM2Model() {
     // TODO
 
+    // Any bone-sequence request still parked in CM2Shared's load list holds a raw pointer to this
+    // model, and the callback that applies them dereferences it. The reference retires them here,
+    // before anything else is torn down (FUN_00832640 calls FUN_00831e20 at 0x00832676).
+    this->CancelAllDeferredSequences();
+
     // Unlink from lists
 
     this->UnlinkFromCallbackList();
@@ -165,6 +173,19 @@ CM2Model::~CM2Model() {
         this->m_shared = nullptr;
     }
 
+    // Let go of every model attached to this one. Each child holds a counted reference taken when
+    // it was attached, so without this they are never released and never destroyed, and each is
+    // left with m_attachParent pointing at freed memory.
+    //
+    // DetachFromParent already does the whole of what the reference does to each child here
+    // (FUN_00832640 at 0x0083274c): unlink it, clear m_flag40000, null its parent and attach id,
+    // and Release it -- which destroys it in place when the count reaches zero, recursing into its
+    // own children exactly as the reference recurses. It unlinks before releasing, so the head has
+    // already advanced by the time the child can be freed, and this loop terminates.
+    while (this->m_attachList) {
+        this->m_attachList->DetachFromParent();
+    }
+
     // TODO
 
     this->UnlinkFromAttachList();
@@ -179,6 +200,29 @@ void CM2Model::AddRef() {
     this->m_refCount++;
 }
 
+// How far a bone has blended out of its secondary sequence.
+//
+// `uint9C` is when the blend ENDS and floatA0 its reciprocal duration, so t counts DOWN
+// from 1 to 0 as the blend completes -- the weight is how much of the SECONDARY sequence
+// still applies. The curve is the classic smoothstep, `(3 - 2t) * t * t`, clamped at both
+// ends, and floatA4 is a per-bone ceiling: 0.75 for a normal sequence start, 1.0 for a
+// blended stop.
+float M2BoneBlendWeight(const M2ModelBone& modelBone, uint32_t sceneTime) {
+    float t = static_cast<float>(
+        static_cast<int32_t>(modelBone.uint9C) - static_cast<int32_t>(sceneTime))
+        * modelBone.floatA0;
+
+    float weight = 0.0f;
+
+    if (t > 1.0f) {
+        weight = 1.0f;
+    } else if (t >= 0.0f) {
+        weight = (3.0f - (t + t)) * t * t;
+    }
+
+    return weight * modelBone.floatA4;
+}
+
 // ref: FUN_00830dc0
 // Bring this model's transform and bone matrices up to date for the scene's current frame, on
 // demand rather than from the scene's animate pass. A model attached to another one cannot be
@@ -191,7 +235,12 @@ void CM2Model::Animate() {
         return;
     }
 
-    if (!this->m_attachParent) {
+    // The reference tests this POSITIVELY and recurses in the true branch, which puts
+    // Animate ahead of the two Animate*MT calls in its call order. Inverting the test
+    // reverses that for no gain, so the arms are this way round on purpose.
+    if (this->m_attachParent) {
+        this->m_attachParent->Animate();
+    } else {
         C3Vector diffuse = { 1.0f, 1.0f, 1.0f };
         C3Vector emissive = { 0.0f, 0.0f, 0.0f };
 
@@ -200,8 +249,6 @@ void CM2Model::Animate() {
         } else {
             this->AnimateMT(&this->m_scene->m_view, diffuse, emissive, 1.0f, 1.0f);
         }
-    } else {
-        this->m_attachParent->Animate();
     }
 
     auto scene = this->m_scene;
@@ -246,6 +293,7 @@ void CM2Model::Animate() {
     this->matrixF4 = this->matrixB4 * scene->m_view;
 }
 
+// ref: FUN_0082e550
 void CM2Model::AnimateAttachmentsMT() {
     // Animate attachment visibility
 
@@ -414,7 +462,25 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             modelBone.sequence.uint6 = i;
         }
 
-        // TODO
+        // How far this bone has blended from its secondary sequence into its primary one.
+        // Ported 2026-09-24; this was a bare TODO, and with it the weight stayed zero and
+        // M2AnimateTrack's blend had nothing to work from, so every animation transition
+        // snapped.
+        if (modelBone.sequence.uint8 == 0xFFFF && modelBone.secondarySequence.uint8 == 0xFFFF) {
+            // No sequence on either slot: inherit, so a whole unanimated subtree fades
+            // with whatever is driving its root rather than snapping against it.
+            if (bone.parentIndex < this->m_shared->m_data->bones.Count()) {
+                modelBone.floatA8 = this->m_bones[bone.parentIndex].floatA8;
+            } else {
+                modelBone.floatA8 = 0.0f;
+            }
+        } else if (modelBone.sequence.uint0 == modelBone.secondarySequence.uint0
+                && modelBone.sequence.uint4 == modelBone.secondarySequence.uint4) {
+            // Both slots are playing the same thing; there is nothing to blend between.
+            modelBone.floatA8 = 0.0f;
+        } else {
+            modelBone.floatA8 = M2BoneBlendWeight(modelBone, this->m_scene->m_time);
+        }
 
         uint32_t boneFlags = bone.flags | modelBone.flags;
 
@@ -426,7 +492,24 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             boneParentMatrix = &this->m_boneMatrices[bone.parentIndex];
 
             if (boneFlags & (0x1 | 0x2 | 0x4)) {
-                // TODO
+                // NOT PORTED: the ignore-parent-transform branch, 0x82f843..0x82fc2e.
+                //
+                // The bone's own world matrix is copied aside, and then bits 1 and 2 select
+                // between three variants through `boneFlags & 6`:
+                //
+                //   2  0x82faa9  normalises the copy's three rows, then combines with matrixF4
+                //   4  0x82f8ff  each row becomes the matching matrixF4 row rescaled to the
+                //                copy's row length, or left alone when that row is shorter
+                //                than 1e-5 (0x009ea558)
+                //   6  0x82f8ac  the three matrixF4 rows verbatim
+                //
+                // and bit 0 is handled separately at 0x82fb69: the translation comes from
+                // matrixF4's row 3 instead of being transformed.
+                //
+                // The twelve C3Vector::Normalize calls --diff reports missing are all in here.
+                // The gate and the selector are certain; which variant means "ignore rotation"
+                // and which "ignore scale" is NOT yet certain, and porting bone math on a
+                // reading that is only nearly right would be worse than leaving the branch out.
             }
         }
 
@@ -501,6 +584,19 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             this->m_boneMatrices[i] = *boneParentMatrix;
         }
 
+        // BOTH BILLBOARD BRANCHES BELOW ARE REASONED, NOT PORTED. They were worked out from what
+        // a glow sprite ought to look like -- the comment below still says so -- and CLAUDE.md is
+        // explicit that guessing an implementation from what the screen looks like is how the
+        // graphics bugs got in.
+        //
+        // AND THE REFERENCE'S AnimateMT DOES NO BILLBOARDING AT ALL. It tests boneFlags bits 0,
+        // 1 and 2 and nothing else: there is no test of 0x8, 0x10, 0x20 or 0x40 anywhere in the
+        // function. So this is not a port that drifted, it is reasoned code standing in a
+        // function whose reference counterpart has no such branch. WHERE the reference
+        // billboards, if it does, is not established -- find that before touching this.
+        //
+        // (An earlier note here pointed at 0x82f930..0x8302c0 and called that the reference's
+        // billboard. It is not; see the TODO above, which is what that region actually is.)
         if (boneFlags & 0x8) {
             // Spherical billboard. The bone matrix is already in view space (its parent chain roots
             // at matrixF4 = model x view), so replacing its rotation with the view axes makes the
@@ -716,9 +812,22 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 
             float mul = modelLight.diffuseIntensityTrack.currentValue * this->float198;
 
-            modelLight.light.m_dirColor.x = modelLight.ambientColorTrack.currentValue.x * mul;
-            modelLight.light.m_dirColor.y = modelLight.ambientColorTrack.currentValue.y * mul;
-            modelLight.light.m_dirColor.z = modelLight.ambientColorTrack.currentValue.z * mul;
+            // CORRECTED 2026-09-23: these three read ambientColorTrack until now, so a light's
+            // diffuse colour was its AMBIENT colour scaled by the diffuse intensity, and the M2's
+            // diffuse colour was parsed, animated and thrown away. The evidence that it is a slip
+            // rather than the reference's behaviour: this block is guarded on diffuseColorTrack and
+            // animates it into modelLight.diffuseColorTrack immediately above, and that value is
+            // then read NOWHERE in the codebase -- it is the only animated track with no reader.
+            // The line also predates the recomp effort; it arrives in the initial commit, inherited
+            // from the upstream fork rather than transcribed from the reference.
+            //
+            // NOT confirmed against the reference: the corresponding block was not located in the
+            // disassembly, so this is reasoned from frozen's own structure. It matters as of this
+            // week, because CShaderEffect::ComputeLocalLights reads m_dirColor and local lights
+            // now reach it.
+            modelLight.light.m_dirColor.x = modelLight.diffuseColorTrack.currentValue.x * mul;
+            modelLight.light.m_dirColor.y = modelLight.diffuseColorTrack.currentValue.y * mul;
+            modelLight.light.m_dirColor.z = modelLight.diffuseColorTrack.currentValue.z * mul;
         }
     }
 
@@ -784,14 +893,364 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 }
 
 // ref: FUN_0082e140
-// Identified, not ported. The reference opens with the same two early-outs as AnimateMT -- the
-// loaded bit at +0x10, then m_animCounter (+0x3c) against the scene's counter (+0x14) -- and then
-// runs a shorter body of its own. TODO port the body; what it actually animates has not been read
-// out of the decompilation yet, so do not assume it mirrors AnimateMT.
+// The cut-down animate: the path a model takes when it carries the 0x1000 flag. It shares
+// AnimateMT's prologue and epilogue but skips every bone, colour, light and camera track, doing
+// only what the model needs to be placed and tinted. Note it still writes matrixF4, which is why
+// leaving this empty left anything on this path drawing with a stale transform.
 void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6) {
-    // TODO
+    if (!this->m_loaded) {
+        return;
+    }
+
+    // Already animated for this frame of the scene.
+    if (this->m_animCounter == this->m_scene->uint14) {
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // Attachment visibility, inherited from the parent exactly as AnimateMT does it
+
+    if (this->m_attachParent) {
+        this->m_flag8 = this->m_attachParent->m_flag8 && this->m_flag80;
+        this->m_flag10000 = this->m_attachParent->m_flag10000 && this->m_flag20000;
+
+        // TODO dword174, copied from the parent's own
+    }
+
+    // The tint this model passes on. Data flag 0x4 means it ignores what its parent handed down
+    // and stands on its own values; otherwise the parent's diffuse scales this model's and the
+    // parent's emissive is added on top, unless flag 0x80000 opts out of the addition.
+    if (data->flags & 0x4) {
+        this->float198 = this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * this->m_baseAlpha;
+        this->m_currentDiffuse = this->m_baseDiffuse;
+        this->m_currentEmissive = this->m_baseEmissive;
+    } else {
+        this->m_currentDiffuse = {
+            a3.x * this->m_baseDiffuse.x,
+            a3.y * this->m_baseDiffuse.y,
+            a3.z * this->m_baseDiffuse.z
+        };
+
+        this->m_currentEmissive = this->m_baseEmissive;
+
+        this->float198 = this->m_flag100000 ? this->m_baseAlpha : a5 * this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * a6 * this->m_baseAlpha;
+
+        if (!this->m_flag80000) {
+            this->m_currentEmissive.x += a4.x;
+            this->m_currentEmissive.y += a4.y;
+            this->m_currentEmissive.z += a4.z;
+        }
+    }
+
+    // Global sequences
+
+    for (int32_t i = 0; i < data->loops.Count(); i++) {
+        auto loopLength = data->loops[i].length;
+        this->m_loops[i] = loopLength ? (this->m_scene->m_time - this->uint74) % loopLength : 0;
+    }
+
+    this->matrixF4 = this->matrixB4 * *view;
+
+    this->float88 = !this->m_attachParent || this->m_attachParent->m_flags & 0x1
+        ? this->matrixF4.d2 * this->matrixF4.d2 + this->matrixF4.d1 * this->matrixF4.d1 + this->matrixF4.d0 * this->matrixF4.d0
+        : this->m_attachParent->float88;
+
+    if (this->m_time && this->m_scene->m_time) {
+        this->m_time = this->m_scene->m_time;
+    }
+
+    // TODO the sequence playback record the reference advances here (its own +0x94), which
+    // retimes the model's current sequence. frozen has no counterpart for that record yet.
+
+    for (int32_t i = 0; i < data->textureWeights.Count(); i++) {
+        auto& textureWeight = data->textureWeights[i];
+        auto& modelTextureWeight = this->m_textureWeights[i];
+
+        auto& weightTrack = textureWeight.weightTrack;
+
+        if (
+            weightTrack.sequenceTimes.Count() > 1
+            || (weightTrack.sequenceTimes.Count() == 1 && weightTrack.sequenceTimes[0].times.Count() > this->uint90)
+        ) {
+            float defaultValue = 1.0f;
+            M2AnimateTrack<fixed16, float>(
+                this,
+                this->m_bones,
+                textureWeight.weightTrack,
+                modelTextureWeight.weightTrack,
+                defaultValue
+            );
+        }
+    }
+
+    if (data->textureTransforms.Count()) {
+        this->AnimateTextureTransformsMT();
+    }
+
+    this->m_flag400 = 0;
+
+    if (this->m_attachments || this->m_attachList) {
+        this->AnimateAttachmentsMT();
+    }
+
+    this->m_animCounter = this->m_scene->uint14;
 }
 
+// Identified from its calls rather than its position: it reaches CM2Light::SetPosition
+// (0x00835690), SetDirection (0x00834ae0) and SetVisible (0x008356f0), which is this
+// function's light loop and nothing else in the class. Its entry test, `[+0x10] & 1`, is
+// m_loaded.
+// The runtime half of every emitter, animated through the same M2AnimateTrack that drives every
+// other per-model track, against the emitter's own bone -- so a torch on a moving arm emits along
+// the arm rather than along the model.
+//
+// The reference does this inside AnimateST. Here it is called from the particle system instead, and
+// the difference is coverage rather than behaviour: CM2Scene::Animate unlinks each model from
+// m_animateList as it walks it, so AnimateST reaches only the models that re-registered through
+// SetAnimating this frame, while the particle system is driven for every model it holds a
+// simulation for. A model in the second set and not the first would sit on default values, and the
+// default emission rate is zero -- its fires would go out. When CM2Model::AnimateParticleEmitter
+// lands it brings the reference's own driver and coverage, and this moves back.
+// Does this track drive its emitter field this frame?
+//
+// Off the instructions at 0x830a99, because the decompilation renders it as a double dereference
+// and loses the shape. What `uint90` means is not established -- frozen named it for its offset --
+// so the comparison is transcribed rather than given an interpretation.
+static bool M2ParticleTrackDrives(const M2Track<float>& track, uint32_t uint90) {
+    uint32_t count = track.sequenceTimes.Count();
+
+    if (count > 1) {
+        return true;
+    }
+
+    if (count != 1) {
+        return false;
+    }
+
+    return uint90 < track.sequenceTimes[0].times.Count();
+}
+
+// The basis swap between bone space and the emitter's frame: a +90 degree rotation about Z.
+//
+// The reference builds this once into a static at 0x00d411e0 behind a "already initialised" bit, which
+// is why it reads as sixteen unrelated stores in the decompilation. Its -1.0 is 0x009e2ef4.
+static const C44Matrix s_particleBasis(0.0f, 1.0f, 0.0f, 0.0f,
+                                       -1.0f, 0.0f, 0.0f, 0.0f,
+                                       0.0f, 0.0f, 1.0f, 0.0f,
+                                       0.0f, 0.0f, 0.0f, 1.0f);
+
+// Push this frame's animated values into one emitter, then place and step it.
+//
+// ref: FUN_008309c0
+void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
+    if (!this->m_loaded) {
+        return;
+    }
+
+    const M2Particle& file = this->m_shared->m_data->particles[index];
+    M2ModelParticle& runtime = this->m_particles[index];
+    CM2ParticleEmitter* emitter = this->m_particleEmitters[index];
+
+    // Frozen-only. The reference dereferences this unconditionally because its factory always
+    // builds an emitter; frozen leaves a null for emitter type 3, which is unported.
+    if (!emitter) {
+        return;
+    }
+
+    if (!(file.flags & 0x8000)) {
+        // Continuous: the emitter's own enable bit follows the rate's.
+        if (runtime.rateActive) {
+            emitter->m_flags |= 0x1;
+        } else {
+            emitter->m_flags &= ~0x1u;
+        }
+    } else if (!runtime.enabled || runtime.emissionRateTrack.currentValue <= 0.0f) {
+        runtime.burstLatch = 0;
+    } else {
+        // A burst fires on the EDGE, not while held: the emitter's 0x40 is raised only on the
+        // frame the latch goes from clear to set, and Emit clears 0x40 itself once it has spent
+        // it.
+        if (!runtime.burstLatch) {
+            emitter->m_flags |= 0x40;
+        }
+
+        runtime.burstLatch = 1;
+    }
+
+    // Zero unless the rate is live, so a disabled emitter is told the rate rather than left with
+    // its last one -- and SetEmissionRate ignores non-positive values, which is what makes that
+    // "stop emitting" rather than "emit at zero".
+    emitter->SetEmissionRate(runtime.rateActive ? runtime.emissionRateTrack.currentValue : 0.0f);
+
+    // A culled emitter keeps last frame's values; a model that has never animated gets them
+    // anyway, which is what seeds an emitter on its first frame.
+    if (runtime.enabled || this->uint90 == 0) {
+        if (M2ParticleTrackDrives(file.speedTrack, this->uint90)) {
+            emitter->m_speed = runtime.speedTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.variationTrack, this->uint90)) {
+            emitter->m_variation = runtime.variationTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.latitudeTrack, this->uint90)) {
+            emitter->SetLatitude(runtime.latitudeTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.longitudeTrack, this->uint90)) {
+            emitter->SetLongitude(runtime.longitudeTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.gravityTrack, this->uint90)) {
+            emitter->m_gravity = runtime.gravityTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.lifeTrack, this->uint90)) {
+            emitter->m_lifespan = runtime.lifeTrack.currentValue;
+        }
+
+        if (M2ParticleTrackDrives(file.widthTrack, this->uint90)) {
+            emitter->SetWidth(runtime.widthTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.lengthTrack, this->uint90)) {
+            emitter->SetLength(runtime.lengthTrack.currentValue);
+        }
+
+        if (M2ParticleTrackDrives(file.zsourceTrack, this->uint90)) {
+            emitter->SetZSource(runtime.zsourceTrack.currentValue);
+        }
+
+        // Clamped in that order: the negative test first, then the ceiling.
+        float alpha = this->float198;
+
+        if (!(alpha >= 0.0f)) {
+            alpha = 0.0f;
+        } else if (alpha >= 1.0f) {
+            alpha = 1.0f;
+        }
+
+        emitter->m_alpha = alpha;
+    }
+
+    if (!runtime.active) {
+        return;
+    }
+
+    // FROZEN-ONLY GUARD. The reference indexes m_boneMatrices with no check, because its loader
+    // guarantees the array is there and the index is in range. Frozen's does not: the bone matrix
+    // array is allocated inside a `bones.Count()` branch, so a model with emitters and no bones
+    // leaves it null, and nothing validates boneIndex against the bone count on the way in. Both
+    // would fault here, and this runs for every model every frame now that the driver is wired.
+    // Skipping the placement leaves the emitter un-stepped for the frame, which is the same thing
+    // that happens to a culled one.
+    if (!this->m_boneMatrices
+            || file.boneIndex >= this->m_shared->m_data->bones.Count()) {
+        return;
+    }
+
+    // All three matrix helpers here have the same receiver -- this local -- which the
+    // decompilation does not show; see the note at the ribbon/particle block above.
+    C44Matrix matrix = this->m_boneMatrices[file.boneIndex];
+
+    matrix.Translate(file.position);
+    matrix *= this->m_scene->m_viewInv;
+    matrix = s_particleBasis * matrix;
+
+    // The camera position is the view-inverse's translation row, which is what the reference
+    // passes as `scene + 0xf4` (0xc4 + 0x30). Not a field of its own.
+    C3Vector cameraPosition = { this->m_scene->m_viewInv.d0,
+                                this->m_scene->m_viewInv.d1,
+                                this->m_scene->m_viewInv.d2 };
+
+    // The reference passes `model + 0x174`, the matrix this model is placed relative to. Frozen
+    // has no such field, so null -- which Place treats as "store the transform as it is", correct
+    // for every model today because nothing would set it.
+    emitter->Update(dt, matrix, cameraPosition, nullptr);
+
+    // Animate the emitter's subtree of spawned models.
+    //
+    // FindSpawnedModel CONSUMES the index as it descends, so each iteration needs a fresh copy --
+    // passing the loop variable itself would leave it wrecked.
+    //
+    // The receiver for both Animate calls is the SPAWNED model rather than the owner. Ghidra
+    // loses that; the disassembly reloads ecx from the FindSpawnedModel result at 0x830d66.
+    //
+    // This finds nothing today: nothing allocates the 0x40-byte pool, so no emitter carries
+    // models. It is here because the four functions it needs are all ported now -- the subtree
+    // walkers came with that pool's element type -- and leaving the gap would mean a silent hole
+    // the moment an allocator lands.
+    uint32_t spawned = emitter->CountSpawnedModels();
+
+    for (uint32_t j = 0; j < spawned; j++) {
+        uint32_t index = j;
+
+        CM2Model* model = emitter->FindSpawnedModel(index);
+
+        // The reference does not check; frozen does, because a count and a walk that disagree
+        // would fault here rather than skip.
+        if (!model) {
+            continue;
+        }
+
+        model->AnimateMT(&this->m_scene->m_view, this->m_currentDiffuse, this->m_currentEmissive,
+                         this->float198, this->alpha19C);
+        model->AnimateST();
+
+        // The spawned model inherits the owner's lighting rather than resolving its own.
+        model->m_currentLighting = this->m_currentLighting;
+    }
+}
+
+void CM2Model::AnimateParticleTracks() {
+    if (!this->m_particles || !this->m_shared || !this->m_shared->m_data) {
+        return;
+    }
+
+    for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+        auto& particle = this->m_shared->m_data->particles[i];
+        auto& modelParticle = this->m_particles[i];
+
+        auto bone = particle.boneIndex < this->m_shared->m_data->bones.Count()
+            ? &this->m_bones[particle.boneIndex]
+            : nullptr;
+
+        // speed and life default to 1.0, not 0.0: an emitter whose track carries no keys still
+        // emits, and a particle with no speed and no lifespan is not a particle. Both defaults are
+        // carried over from the stand-in sampler this replaces; the reference's own have not been
+        // read yet.
+        M2AnimateTrack<float, float>(this, bone, particle.speedTrack, modelParticle.speedTrack, 1.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.variationTrack, modelParticle.variationTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.latitudeTrack, modelParticle.latitudeTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.longitudeTrack, modelParticle.longitudeTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.gravityTrack, modelParticle.gravityTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.lifeTrack, modelParticle.lifeTrack, 1.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.emissionRateTrack, modelParticle.emissionRateTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.widthTrack, modelParticle.widthTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.lengthTrack, modelParticle.lengthTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.zsourceTrack, modelParticle.zsourceTrack, 0.0f);
+
+        // The gates the reference's driver latches and reads: whether the emitter ran at all, and
+        // whether it is handed the animated rate or zero.
+        modelParticle.enabled = 1;
+        modelParticle.rateActive = modelParticle.emissionRateTrack.currentValue > 0.0f ? 1 : 0;
+        modelParticle.active = this->m_flag10000 || this->m_flag20000 ? 1 : 0;
+    }
+}
+
+// The tag below spent at least two sessions on the wrong function. It sat above
+// AnimateParticleTracks -- itself probably displaced by an earlier insertion -- and moved again
+// onto M2ParticleTrackDrives when that static was added in front of it, which is when the
+// callgraph diff on CM2Scene::Animate made it visible by listing a brand-new static as one of the
+// reference's own callees.
+//
+// It belongs here: FUN_008309c0's tail calls FUN_00828a00 on each spawned model, which is
+// AnimateST's job, and AnimateST had no tag at all.
+//
+// ref: FUN_00828a00
 void CM2Model::AnimateST() {
     if (!this->m_loaded) {
         return;
@@ -824,7 +1283,14 @@ void CM2Model::AnimateST() {
             visible = 1;
 
             if (light.lightType == M2LIGHT_1) {
-                // TODO
+                // The reference chains two transforms: the light's model-space position through
+                // its bone, which lands in camera space here as every bone matrix does, and then
+                // through m_viewInv back out to world space -- the same m_viewInv the directional
+                // branch below uses, at scene + 0xc4.
+                C3Vector bone = light.position * this->m_boneMatrices[light.boneIndex];
+                C3Vector world = bone * this->m_scene->m_viewInv;
+
+                modelLight.light.SetPosition(world);
             } else {
                 float v10 = -this->m_boneMatrices[light.boneIndex].c0;
                 float v11 = -this->m_boneMatrices[light.boneIndex].c1;
@@ -848,14 +1314,112 @@ void CM2Model::AnimateST() {
 
         modelLight.light.SetVisible(visible);
 
-        // TODO modelLight.light.dword4 = this->m_scene->uint14;
+        // Stamped every frame, visible or not. CM2Scene::SelectLights compares it against the
+        // same counter and switches off any point light that has fallen behind.
+        modelLight.light.m_updateStamp = this->m_scene->uint14;
     }
 
     if (this->m_shared->m_data->cameras.Count()) {
         this->AnimateCamerasST();
     }
 
-    // TODO
+    // MISSING: the ribbon and particle emitter update. This is the single largest gap in this
+    // function -- `--diff 00828a00` scores it 46% and the whole shortfall is one contiguous block
+    // that belongs right here, between the camera update above and the draw-list link below.
+    // Decompiled 2026-09-23 so the next attempt does not start cold:
+    //
+    //   1. Delta time, which nothing else in frozen computes:
+    //          now = m_scene->time (scene + 0xc)
+    //          ticks = now - this->[0x8c]           // a per-model last-update stamp frozen lacks
+    //          dt = (float)ticks; if (ticks < 0) dt += 4294967296.0f;   // unsigned fixup
+    //          dt *= 0.001f;                        // the 1/1000 at 0x009e1134
+    //          this->[0x8c] = now
+    //      The fixup is the reference's own way of reading the subtraction as unsigned; it matters
+    //      only across a wrap, but it is one instruction and there is no reason to drop it.
+    //
+    //   2. For each of m_data->ribbons (count at data + 0x120, array at + 0x124, stride 0xb0):
+    //      take the per-model runtime state (this + 0x2b8, stride 0x50) and the emitter object
+    //      (this + 0x2bc, an array of pointers), then push the animated tracks into the emitter --
+    //      colour, alpha SCALED BY this->float198, height above, height below, texture slot. Each
+    //      push is guarded on the track actually having keys. Then copy the bone matrix
+    //      (m_boneMatrices[ribbon->boneIndex], 0x40 bytes), transform by it, transform by
+    //      m_scene->m_viewInv (scene + 0xc4), and if this->m_flags & 0x8000 advance the emitter by
+    //      dt.
+    //
+    //   3. For each of m_data->particles (count at data + 0x128): this->FUN_008309c0(dt, i).
+    //
+    // STATUS, 2026-09-24. The particle half is no longer blocked on the object graph: the emitter
+    // runtime is ported (src/model/CM2ParticleEmitter.*), m_particles at +0x2c0 and
+    // m_particleEmitters at +0x2c4 both exist, and InitializeLoaded's factory builds a plane or
+    // sphere emitter per M2Particle. What is left is FUN_008309c0 itself, and the ribbon half,
+    // which still has no runtime state array.
+    //
+    // FUN_008309c0 reads as two halves. The first pushes this frame's animated values into the
+    // emitter: the enable bits from the runtime block's bytes at +0x80/+0x84/+0x86 against file
+    // flag 0x8000, then the emission rate through vtable[10], and speed, variation, latitude,
+    // longitude, gravity, life, width, length and z source -- each through its own setter or
+    // field, and each guarded on the track having more than one key, or one key whose time is
+    // still ahead of the model's current time. Finally the model's alpha, clamped to 0..1.
+    //
+    // The second half places and steps it. Decoded in full 2026-09-24; it reads as
+    //
+    //     C44Matrix matrix = this->m_boneMatrices[file.boneIndex];
+    //     matrix.Translate(file.position);
+    //     matrix *= this->m_scene->m_viewInv;
+    //     matrix = PARTICLE_BASIS * matrix;
+    //     emitter->Update(dt, matrix, <camera position>, <relative matrix>);
+    //     <then the spawned-model subtree walk>
+    //
+    // with four things that are not apparent from the decompilation:
+    //   - PARTICLE_BASIS is the static matrix at 0x00d411e0, built once on first use. Its rows are
+    //     (0,1,0,0), (-1,0,0,0), (0,0,1,0), (0,0,0,1) -- the -1.0 is 0x009e2ef4 -- so it is a +90
+    //     degree rotation about Z, the basis swap between bone space and the emitter's frame. It
+    //     reads as noise until the constant is looked up.
+    //   - Ghidra drops ECX on the three matrix helpers (0x004c1b30 Translate, 0x004c2370 which is
+    //     operator*=, 0x00407f80 the copy). All three have the SAME receiver: the local copy of
+    //     the bone matrix. Read off the disassembly at 0x830c5a, 0x830c6c and 0x830d09.
+    //   - `scene + 0xf4` is not a field. It is 0xc4 + 0x30, the TRANSLATION ROW of m_viewInv,
+    //     which for a view-inverse is the camera position -- which is what Update's second
+    //     parameter wants.
+    //   - `model + 0x174` is a C44Matrix* the model is expressed relative to; the setter at
+    //     0x00824479 takes its AffineInverse, the same call Place makes of the same argument.
+    //     FROZEN HAS NO SUCH FIELD, so that argument has to be null until it does -- which is
+    //     correct for every model today, because nothing would set it.
+    //
+    // The subtree tail (FUN_0097ba30 counts, FUN_0097ba70 reaches the i-th spawned model) is no
+    // longer blocked: both are ported, along with the 0x40-byte model pool they read.
+    //
+    // What is still missing for the model-carrying path alone is FUN_0097e8d0, the spawned-model
+    // placement pass, which reads a matrix array off the global at 0x00c5df88. Emitters that do
+    // not spawn models do not need it.
+    //
+    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this. The
+    // PARTICLE half is wired below; the ribbon half still has no runtime state array.
+
+    if (this->m_particleEmitters && this->m_shared->m_data->particles.Count()) {
+        // The emitters' own delta, which nothing else in frozen computes. The subtraction is done
+        // in unsigned ticks and then fixed up, which only matters across a wrap of the
+        // millisecond clock -- but without it a wrap gives a hugely negative dt that Update's
+        // guard would swallow silently, so the branch is kept.
+        uint32_t now = this->m_scene->m_time;
+        int32_t ticks = static_cast<int32_t>(now - this->uint8c);
+
+        float dt = static_cast<float>(ticks);
+
+        if (ticks < 0) {
+            dt += 4294967296.0f;
+        }
+
+        dt *= 0.001f;
+
+        this->uint8c = now;
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            this->AnimateParticleEmitter(dt, i);
+        }
+    }
+    // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not
+    // ported; this is the other half of why.
 
     if (this->m_flag8) {
         this->m_drawPrev = &this->m_scene->m_drawList;
@@ -890,6 +1454,7 @@ void CM2Model::AnimateST() {
     }
 }
 
+// ref: FUN_0082d6f0
 void CM2Model::AnimateTextureTransformsMT() {
     for (int32_t i = 0; i < this->m_shared->m_data->textureTransforms.Count(); i++) {
         static C3Vector center = { 0.5f, 0.5f, 0.0f };
@@ -1047,10 +1612,89 @@ void CM2Model::AttachToScene(CM2Scene* scene) {
     }
 }
 
-void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool a3) {
-    // TODO
+// Drop this model's parked bone-sequence requests for one bone, so a request that has been
+// superseded does not fire later and overwrite the sequence that replaced it. SetBoneSequence
+// calls it immediately before parking or applying a new one.
+//
+// It was an empty body with two live callers, which made the cancel a no-op: every deferred
+// request still landed when its .anim data arrived, however many times the bone had been
+// re-sequenced in the meantime.
+//
+// The `primary` argument selects which half of the records to drop, and it is compared against
+// bit 1 of the record's flags -- the bit SetBoneSequenceDeferred sets from its own a9. A primary
+// request never cancels a secondary one or the other way round.
+//
+// Two branches, because the records cannot always be unlinked. CM2Shared::SequenceLoadedCallback
+// raises m_flag10 while it walks these same lists, so during that walk the records are MARKED with
+// bit 8 and the callback drops them as it passes -- which it already does. Outside the walk they
+// are unlinked and freed here. The reference's removal helper captures the next pointer before
+// freeing, so this does too.
+// Drop every one of this model's parked bone-sequence requests, whatever bone or slot they are
+// for. CancelDeferredSequences below is the same walk with a narrower predicate; this one matches
+// on the model alone, because the model is going away.
+//
+// **Without this, destroying a model with a deferred request pending is a use-after-free.** The
+// record keeps a raw CM2Model* and CM2Shared::SequenceLoadedCallback calls
+// playback->model->ApplySequencePlayBack() on it when the .anim data lands. frozen already
+// implemented the consumer half of the protocol -- the callback drops records carrying flag 8 --
+// and this is the producer that was missing, so nothing ever set the flag for a dying model.
+//
+// The same two branches as CancelDeferredSequences, and for the same reason: while
+// SequenceLoadedCallback is walking these lists it raises m_flag10, and records may then only be
+// marked, not unlinked.
+// ref: FUN_00831e20
+void CM2Model::CancelAllDeferredSequences() {
+    if (!this->m_shared) {
+        return;
+    }
+
+    auto shared = this->m_shared;
+
+    for (auto load = shared->m_sequenceLoads.Head(); load; load = shared->m_sequenceLoads.Next(load)) {
+        for (auto playback = load->playbacks.Head(); playback;) {
+            auto next = load->playbacks.Next(playback);
+
+            if (playback->model == this) {
+                if (shared->m_flag10) {
+                    playback->flags |= 8;
+                } else {
+                    load->playbacks.UnlinkNode(playback);
+                    STORM_FREE(playback);
+                }
+            }
+
+            playback = next;
+        }
+    }
 }
 
+// ref: FUN_00831ec0
+void CM2Model::CancelDeferredSequences(uint32_t boneIndex, bool primary) {
+    auto shared = this->m_shared;
+
+    for (auto load = shared->m_sequenceLoads.Head(); load; load = shared->m_sequenceLoads.Next(load)) {
+        for (auto playback = load->playbacks.Head(); playback;) {
+            auto next = load->playbacks.Next(playback);
+
+            bool match = playback->model == this
+                && playback->boneIndex == boneIndex
+                && ((playback->flags >> 1) & 1) == (primary ? 1 : 0);
+
+            if (match) {
+                if (shared->m_flag10) {
+                    playback->flags |= 8;
+                } else {
+                    load->playbacks.UnlinkNode(playback);
+                    STORM_FREE(playback);
+                }
+            }
+
+            playback = next;
+        }
+    }
+}
+
+// ref: FUN_00827560
 void CM2Model::DetachAllChildrenById(uint32_t id) {
     // Hang on to attachNext in case model is freed during detach
     CM2Model* attachNext = nullptr;
@@ -1065,6 +1709,7 @@ void CM2Model::DetachAllChildrenById(uint32_t id) {
     }
 }
 
+// ref: FUN_008274f0
 void CM2Model::DetachFromParent() {
     if (this->m_attachPrev) {
         *this->m_attachPrev = this->m_attachNext;
@@ -1297,14 +1942,53 @@ void CM2Model::FreeInternalResources() {
     //     this->m_ribbons = nullptr;
     // }
 
-    // TODO
-    // if (this->m_particles) {
-    //     this->m_particles = nullptr;
-    // }
+    // Every emitter owns three TSGrowableArray allocations -- the particle pool and the two index
+    // arrays -- and those live in Storm's heap, NOT in the pooled buffer this block is about to
+    // release. So they have to be destructed explicitly, the same way m_lights is above; freeing
+    // the buffer alone would leak a pool per emitter on every model destroyed, which for a busy
+    // scene is most models. The destructor is virtual, so this reaches the plane or sphere
+    // subclass's.
+    if (this->m_particleEmitters) {
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            // Null for any emitter type frozen does not build -- see the factory in
+            // InitializeLoaded.
+            if (this->m_particleEmitters[i]) {
+                this->m_particleEmitters[i]->~CM2ParticleEmitter();
+            }
+        }
+
+        this->m_particleEmitters = nullptr;
+    }
+
+    if (this->m_particles) {
+        this->m_particles = nullptr;
+    }
+
+    // The two matrix arrays are NOT part of the pooled internal-resources block: InitializeLoaded
+    // allocates each with its own SMemAlloc. Nothing freed them, so every model destroyed leaked
+    // 64 bytes per bone plus 64 per texture transform -- a few kilobytes for a character, on every
+    // unit that despawns and every model the character screen builds and throws away.
+    //
+    // Found on 2026-09-23 by following the fidelity diff on CM2Model::InitializeLoaded, where the
+    // reference calls SequenceBufferAlloc twice and frozen calls SMemAlloc. That is a second,
+    // separate divergence and it stands: the reference's allocator returns 16-byte-aligned memory
+    // for exactly these two arrays, while frozen's SMemAlloc aligns to 8. Nothing here uses SSE on
+    // them, so it is not a correctness problem, and closing it means exporting the alloc/free pair
+    // out of the anonymous namespace in CM2Shared.cpp where they currently live.
+    if (this->m_boneMatrices) {
+        SMemFree(this->m_boneMatrices, __FILE__, __LINE__, 0);
+        this->m_boneMatrices = nullptr;
+    }
+
+    if (this->m_textureMatrices) {
+        SMemFree(this->m_textureMatrices, __FILE__, __LINE__, 0);
+        this->m_textureMatrices = nullptr;
+    }
 
     STORM_FREE(this->m_internalResources);
 }
 
+// ref: FUN_00831410
 C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     if (!this->m_loaded) {
         this->WaitForLoad("GetAttachmentWorldTransform");
@@ -1362,7 +2046,23 @@ HCAMERA CM2Model::GetCameraByIndex(uint32_t index) {
     return this->m_cameras[index].m_camera;
 }
 
+// The reference calls Animate() first, and frozen did not. Added 2026-09-23 with the tag: without
+// it this returns whatever matrixF4 held when the model last animated, which for a model that has
+// not animated yet this frame is the previous frame's position.
+//
+// It is inert at the only call site today -- SetupLighting runs after CM2Scene::Animate's loop, so
+// the model is already current and Animate() early-outs on the frame counter -- but the point of
+// the call is that GetPosition is self-sufficient for any future caller, which is how the
+// reference wrote it.
+//
+// The offsets line up exactly: the reference transforms the vector at model + 0x124 by the scene's
+// m_viewInv at scene + 0xc4, and frozen's matrixF4 sits at 0xF4, so matrixF4.d0 is 0xF4 + 0x30 =
+// 0x124. It writes through a caller-supplied out pointer and returns it; returning by value here
+// is the same thing.
+// ref: FUN_004e2790
 C3Vector CM2Model::GetPosition() {
+    this->Animate();
+
     return reinterpret_cast<C3Vector&>(this->matrixF4.d0) * this->m_scene->m_viewInv;
 }
 
@@ -1372,6 +2072,41 @@ C3Vector CM2Model::GetPosition() {
 // resolved to. The caller gets that sequence's header and its authored bounding box; the box is
 // what the blob-shadow pass projects as a doodad's footprint, which is why the footprint follows
 // the animation.
+//
+// Nothing in frozen calls this, so `M2SequenceInfo::moveSpeed`, `center` and `radius` are computed
+// and discarded -- which is how tools/deaddata.py surfaced it. The port is not the problem; the
+// consumers are. Measured 2026-09-23 from the reference call graph: FUN_0082ced0 has 20 callers
+// there and NOT ONE of them is linked in frozen.
+//
+//     007385c0  4083 bytes, 57 callers   the big one; everything else here is downstream of it
+//     0082dd80   819 bytes,  7 callers   the only caller inside the M2 module itself
+//     007022d0  1931 bytes,  5 callers
+//     00604e00 / 00619580 / 0070d1e0     3 callers each
+//     007015d0 / 0071df30 / 00737ef0 / 0073c8e0        2 each
+//     00606f90 / 006f80b0 / 00702fc0 / 0073adc0 / 00756040 / 00793980   1 each
+//     0052f9b0 / 005995d0 / 0070fa70 / 0070fe10        0 (reached indirectly)
+//
+// The 0x70xxxx and 0x73xxxx cluster is unit animation state, which CLAUDE.md already records as
+// unported, so most of this list is blocked behind that rather than behind anything render-side.
+//
+// FUN_0082dd80 looked like the exception, being inside CM2Model's own address range, and it was
+// decompiled 2026-09-23 to settle that. It is not worth porting yet, and here is why, so that the
+// next cycle does not spend another Ghidra run on it. What it does: reset the model's 4x4 matrix at
+// +0xb4 to identity (the diagonal writes at 0xb4 / 0xc8 / 0xdc / 0xf0 are 20 bytes apart, which is
+// the row-major 0, 5, 10, 15), scale it, drop the position argument into the translation row at
+// +0xe4, and when its mode argument has (mode & 3) == 1 build the orientation from a direction
+// vector with two cross products. Then -- only if the animating flag +0x10 & 1 is set -- it queries
+// the current sequence state through FUN_008266b0, calls THIS function for that sequence's header,
+// and reads `info.flags & 0xe`: 2 or 4 means fade the new matrix against the copy of the old one it
+// saved before overwriting (4 inverts the factor), 8 means take it whole, anything else means skip
+// the blend. Finally it sets +0x10 |= 0x8000. So it is the animation-blended world transform.
+//
+// The reason to leave it: its own seven callers are unlinked too, exactly like this function's
+// twenty. Porting it would add a method nothing in frozen calls and move the dead end up one level
+// instead of closing it. The chain is dead from the top, not from here, and the top is unit
+// animation state. FUN_008266b0 (296 bytes, 22 callers) is the current-sequence-state query and
+// computes animation time as `(scene->time - seq->startTime) * seq->rate + seq->offset`; it is the
+// better seed of the two if this area is picked up again.
 void CM2Model::GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info) {
     if (!this->m_loaded) {
         this->WaitForLoad("GetSequenceInfo");
@@ -1449,6 +2184,7 @@ void CM2Model::GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2Se
     info.radius = sequence.bounds.radius;
 }
 
+// ref: FUN_008273d0
 bool CM2Model::HasAttachment(uint32_t id) {
     if (!this->m_loaded) {
         this->WaitForLoad("HasAttachment");
@@ -1470,6 +2206,14 @@ int32_t CM2Model::Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, u
     this->m_shared = shared;
     this->m_shared->AddRef();
 
+    // **A reference taken and thrown away.** This raises a4's refcount and stores the pointer
+    // nowhere, so nothing can ever release it and that model would never be freed. The reference
+    // keeps it at CM2Model+0x30 and its destructor opens by releasing it, destroying it in place
+    // and returning it to the model pool when the count reaches zero (FUN_00832640 at 0x0083264e).
+    //
+    // Dormant rather than live: the one caller in frozen, CM2Scene::CreateModel, passes nullptr.
+    // It stops being dormant the moment anything passes a real model, so give this a member and
+    // release it in ~CM2Model in the same change.
     if (a4) {
         a4->AddRef();
     }
@@ -1504,8 +2248,36 @@ int32_t CM2Model::InitializeLoaded() {
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelAttachment, this->m_shared->m_data->attachments.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelLight, this->m_shared->m_data->lights.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelCamera, this->m_shared->m_data->cameras.Count());
+    bufferSize += ALIGN_SIZE(bufferSize, M2ModelParticle, this->m_shared->m_data->particles.Count());
 
-    // TODO allocate space for particles and ribbons
+    // The emitter pointer array, then the emitter objects themselves. The reference carves both
+    // from this same buffer (0x833af5 and the run the factory loop walks), which is why they are
+    // sized here rather than allocated separately.
+    //
+    // The objects are a variable-size run: the reference advances by 0x244, 0x248 or 0x40c
+    // depending on the type byte. Frozen's sizes differ, so this walks the same array and sums
+    // sizeof() per type. The loop below in InitializeLoaded MUST make the same decisions in the
+    // same order -- each ALIGN_SIZE is relative to the running offset, so a disagreement here
+    // silently shifts every later array.
+    bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitter*,
+                             this->m_shared->m_data->particles.Count());
+
+    for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+        switch (this->m_shared->m_data->particles[i].emitterType) {
+        case 1:
+            bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterPlane, 1);
+            break;
+        case 2:
+            bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterSphere, 1);
+            break;
+        default:
+            // Type 3 (0x40c in the reference, constructor 0x009820f0) is a separate hierarchy and
+            // is not ported; nothing is reserved and no emitter is built.
+            break;
+        }
+    }
+
+    // TODO allocate space for ribbons
 
     auto buffer = static_cast<char*>(SMemAlloc(bufferSize, __FILE__, __LINE__, 0));
     auto start = buffer;
@@ -1654,11 +2426,45 @@ int32_t CM2Model::InitializeLoaded() {
             new (&this->m_cameras[i]) M2ModelCamera();
         }
 
+        // The `break` is the reference's, not a simplification: FUN_00832ea0 aborts the whole
+        // camera loop on the first bad one rather than skipping it, so a model whose camera 0 is
+        // degenerate ends up with NO camera handles at all. That matters more than it looks --
+        // CSimpleModel::SetCameraByIndex then stores a null m_camera, the model still draws, and
+        // everything gated on having a camera silently does not. The login screen's snow is gated
+        // that way.
+        //
+        // What was NOT the reference's: doing it silently. The reference makes these two separate
+        // assertions and prints the failing expression and its value before breaking. frozen had
+        // them merged into one condition with no message, so a model that tripped it looked
+        // exactly like a model with no cameras. BLIZZARD_ASSERT is not usable here -- it compiles
+        // to (void)0 under NDEBUG, and Release is the only build whose visuals are trustworthy --
+        // so these report through SysMsgPrintf, which is what the reference's own helper does.
         for (int32_t i = 0; i < this->m_shared->m_data->cameras.Count(); i++) {
             auto& camera = this->m_shared->m_data->cameras[i];
             auto cameraHandle = CameraCreate();
 
-            if (camera.fieldOfView <= 0.0f || camera.fieldOfView >= 3.1415927f || camera.farClip <= camera.nearClip) {
+            if (camera.fieldOfView <= 0.0f || camera.fieldOfView >= 3.1415927f) {
+                SysMsgPrintf(SYSMSG_ERROR,
+                             "M2 camera %d: \"shared->fieldOfView > 0.0f && shared->fieldOfView < PI\","
+                             " shared->fieldOfView = %g (%s)",
+                             i, camera.fieldOfView, this->m_shared->m_filePath);
+
+                // DIVERGENCE, deliberate: the reference abandons this handle. Closing it costs
+                // nothing, cannot change what is drawn -- the loop stops either way -- and leaving
+                // a leak in on an error path only makes the next leak harder to find.
+                HandleClose(cameraHandle);
+
+                break;
+            }
+
+            if (camera.farClip <= camera.nearClip) {
+                SysMsgPrintf(SYSMSG_ERROR,
+                             "M2 camera %d: \"shared->nearClip < shared->farClip\","
+                             " shared->nearClip = %g, shared->farClip = %g (%s)",
+                             i, camera.nearClip, camera.farClip, this->m_shared->m_filePath);
+
+                HandleClose(cameraHandle);
+
                 break;
             }
 
@@ -1667,6 +2473,276 @@ int32_t CM2Model::InitializeLoaded() {
             DataMgrSetFloat(cameraHandle, 2, camera.farClip);
 
             this->m_cameras[i].m_camera = cameraHandle;
+        }
+    }
+
+    // The runtime half of every emitter. The reference allocates it here, out of the same buffer
+    // and directly after the cameras, which is why the size list above has it in that position --
+    // each ALIGN_SIZE is relative to the running offset, so the two orders have to agree.
+    if (this->m_shared->m_data->particles.Count()) {
+        buffer = ALIGN_BUFFER(buffer, start, M2ModelParticle);
+        this->m_particles = reinterpret_cast<M2ModelParticle*>(buffer);
+        buffer += sizeof(M2ModelParticle) * this->m_shared->m_data->particles.Count();
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            new (&this->m_particles[i]) M2ModelParticle();
+        }
+
+        // The pointer array, zeroed, then the emitters themselves. The reference memsets the array
+        // (0x833b09) before the factory fills it, which is what leaves a null behind for any
+        // emitter that does not get built.
+        buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitter*);
+        this->m_particleEmitters = reinterpret_cast<CM2ParticleEmitter**>(buffer);
+        buffer += sizeof(CM2ParticleEmitter*) * this->m_shared->m_data->particles.Count();
+
+        memset(this->m_particleEmitters, 0,
+               sizeof(CM2ParticleEmitter*) * this->m_shared->m_data->particles.Count());
+
+        // The factory. Switches on the same type byte the reference does, and must visit the array
+        // in the same order and make the same decisions as the sizing pass above.
+        uint32_t unsupported = 0;
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            switch (this->m_shared->m_data->particles[i].emitterType) {
+            case 1:
+                buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitterPlane);
+                this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterPlane();
+                buffer += sizeof(CM2ParticleEmitterPlane);
+                break;
+            case 2:
+                buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitterSphere);
+                this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterSphere();
+                buffer += sizeof(CM2ParticleEmitterSphere);
+                break;
+            default:
+                unsupported++;
+                break;
+            }
+
+            // The emitter's construction-time setup, straight out of the file record -- the
+            // reference does this at 0x833eaf, right after the same factory switch.
+            CM2ParticleEmitter* emitter = this->m_particleEmitters[i];
+
+            if (emitter) {
+                const M2Particle& file = this->m_shared->m_data->particles[i];
+
+                // 0x833bde, the first thing the reference does with a freshly built emitter:
+                // clear the emit-enable bit the constructor did not set. Emission needs
+                // (flags & 3) == 3, and the driver raises this one per frame.
+                emitter->m_flags &= ~0x1u;
+
+                // The material, from the same block at 0x833e08. The flags word is seeded
+                // with 0x7 and then two of its bits are taken from the file's flags INVERTED --
+                // the reference does it with an xor-and-xor dance that amounts to
+                // `bit = !(file.flags & mask)`.
+                uint32_t materialFlags = 0x7;
+
+                uint32_t blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
+
+                materialFlags = (materialFlags & ~0x1u) | ((file.flags & 0x1) ? 0 : 0x1);
+                materialFlags = (materialFlags & ~0x2u) | ((file.flags & 0x8) ? 0 : 0x2);
+
+                // Through the setter the reference uses, rather than writing the fields: it
+                // also takes the texture reference, which DrawParticle needs.
+                HTEXTURE texture = this->m_shared->textures
+                    && file.textureIndex < this->m_shared->m_data->textures.Count()
+                        ? this->m_shared->textures[file.textureIndex]
+                        : nullptr;
+
+                emitter->SetMaterial(blendMode, materialFlags, texture);
+
+                // Seed the emitter from each track's FIRST value, so it has something sensible
+                // before the driver animates it. Guarded on the sequence actually having keys:
+                // the reference dereferences values.data with no check, which is the M2Array trap
+                // -- element 0 of an empty array is a wild pointer, not null.
+                //
+                // These are not decoration. m_lifespan and m_rate decide whether the emitter
+                // emits at all -- PrepareStep sizes the pool from
+                // `(lifespan + variation) * (rate + rateVariation)`, so at the constructor's
+                // zeroes the capacity is zero and the free list never fills. And the driver does
+                // not cover for it: it writes these only for tracks that pass
+                // M2ParticleTrackDrives, so a static track reaches the emitter only from here.
+                if (file.emissionRateTrack.sequenceKeys.Count()
+                        && file.emissionRateTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetEmissionRate(file.emissionRateTrack.sequenceKeys[0].keys[0]);
+                }
+
+                emitter->m_rateVariation = file.emissionRateVariation;
+
+                if (file.speedTrack.sequenceKeys.Count()
+                        && file.speedTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_speed = file.speedTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.variationTrack.sequenceKeys.Count()
+                        && file.variationTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_variation = file.variationTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.latitudeTrack.sequenceKeys.Count()
+                        && file.latitudeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLatitude(file.latitudeTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.longitudeTrack.sequenceKeys.Count()
+                        && file.longitudeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLongitude(file.longitudeTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.gravityTrack.sequenceKeys.Count()
+                        && file.gravityTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_gravity = file.gravityTrack.sequenceKeys[0].keys[0];
+                }
+
+                if (file.lifeTrack.sequenceKeys.Count()
+                        && file.lifeTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->m_lifespan = file.lifeTrack.sequenceKeys[0].keys[0];
+                }
+
+                emitter->m_lifespanVariation = file.lifeVariation;
+
+                if (file.widthTrack.sequenceKeys.Count()
+                        && file.widthTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetWidth(file.widthTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.lengthTrack.sequenceKeys.Count()
+                        && file.lengthTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLength(file.lengthTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.zsourceTrack.sequenceKeys.Count()
+                        && file.zsourceTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetZSource(file.zsourceTrack.sequenceKeys[0].keys[0]);
+                }
+
+                // Which quads each particle draws, and the tail's length.
+                emitter->SetHeadTail(file.flags & 0x20000, file.flags & 0x40000,
+                                     file.tailLength, file.flags & 0x400);
+
+                // The file flags, mapped onto the emitter's. None of these were being set, and
+                // every one is read by code ported earlier this session: 0x200 is emitter space,
+                // 0x800 is drag, 0x2000 is interpolated placement, 0x40000 is ground snap,
+                // 0x80000 is the frame-delta scaling.
+                //
+                // 0x10 is the only one that CLEARS its bit when absent; the rest only ever set.
+                if (file.flags & 0x10) {
+                    emitter->m_flags |= 0x200;
+                } else {
+                    emitter->m_flags &= ~0x200u;
+                }
+
+                if (file.flags & 0x20) {
+                    emitter->m_flags |= 0x400;
+                }
+
+                if (file.flags & 0x40) {
+                    emitter->m_flags |= 0x800;
+                }
+
+                if (file.flags & 0x800) {
+                    emitter->m_flags |= 0x2000;
+                }
+
+                if (file.flags & 0x1000) {
+                    emitter->m_flags |= 0x4000;
+                }
+
+                // Sphere emitters only -- the reference tests the type byte for 2 before these.
+                if (file.emitterType == 2) {
+                    if (file.flags & 0x80) {
+                        emitter->m_flags |= 0x1000;
+                    }
+
+                    if (file.flags & 0x100) {
+                        emitter->m_flags |= 0x8000;
+                    }
+                }
+
+                if (file.flags & 0x200) {
+                    emitter->m_flags |= 0x10000;
+                }
+
+                if (file.flags & 0x2000) {
+                    emitter->m_flags |= 0x40000;
+                }
+
+                if (file.flags & 0x4000) {
+                    emitter->m_flags |= 0x80000;
+                }
+
+                // The one that clears rather than sets: 0x8000 takes the emitter OUT of the
+                // continuous-emission pair the constructor seeds with 0x2.
+                if (file.flags & 0x8000) {
+                    emitter->m_flags &= ~0x1u;
+                }
+
+                if (file.flags & 0x80000) {
+                    emitter->m_flags |= 0x800000;
+                }
+
+                // The scalar parameters, straight out of the record. m_drag, m_wind, m_windTime
+                // and m_velocitySampleScale are read by IntegrateParticle and Update and had
+                // never been written by anything -- so drag, wind and the inherited-velocity
+                // scale have all been silently zero however carefully those were ported.
+                emitter->m_twinkleFps = file.twinkleFPS;
+                emitter->m_twinkleOnOff = file.twinkleOnOff;
+                emitter->SetTwinkleScale(file.twinkleScale);
+
+                emitter->m_velocitySampleScale = file.ivelScale;
+                emitter->m_drag = file.drag;
+
+                emitter->m_initialSpin = file.initialSpin;
+                emitter->m_initialSpinVariation = file.initialSpinVariation;
+                emitter->m_spin = file.spin;
+                emitter->m_spinVariation = file.spinVariation;
+
+                // The tumble box becomes three (min, span) pairs.
+                emitter->m_tumble[0].min = file.tumble.b.x;
+                emitter->m_tumble[0].span = file.tumble.t.x - file.tumble.b.x;
+                emitter->m_tumble[1].min = file.tumble.b.y;
+                emitter->m_tumble[1].span = file.tumble.t.y - file.tumble.b.y;
+                emitter->m_tumble[2].min = file.tumble.b.z;
+                emitter->m_tumble[2].span = file.tumble.t.z - file.tumble.b.z;
+
+                emitter->m_wind = file.windVector;
+                emitter->m_windTime = file.windTime;
+
+                // The part-tracks the emitter samples per particle, cached as pointers into the
+                // model data. None of these were being set, so the ground snap silently did
+                // nothing and the draw would have had no colour, alpha or size to work from.
+                emitter->m_colorTrack = &file.colorTrack;
+                emitter->m_alphaTrack = &file.alphaTrack;
+                emitter->m_scaleTrack = &file.scaleTrack;
+                emitter->m_scaleVariation = file.scaleVariation;
+                emitter->m_headCellTrack = &file.headCellTrack;
+                emitter->m_tailCellTrack = &file.tailCellTrack;
+
+                if (file.flags & 0x2) {
+                    emitter->m_flags |= 0x20;
+                }
+
+                if (file.flags & 0x4) {
+                    emitter->m_flags |= 0x200000;
+                }
+
+                emitter->SetTextureGrid(file.rows, file.cols);
+
+                if (file.flags & 0x10000) {
+                    emitter->SetTextureAnimated(1);
+                }
+            }
+        }
+
+        if (unsupported) {
+            // The reference dereferences m_particleEmitters[i] on the line after the factory
+            // without a null check, so in practice the type byte is always 1, 2 or 3 -- this only
+            // fires for type 3, whose class is unported. The slot stays null and every consumer
+            // has to tolerate that.
+            SysMsgPrintf(SYSMSG_ERROR,
+                         "CM2Model: %u of %d particle emitters use an emitter type frozen does "
+                         "not implement (type 3, reference constructor 0x009820f0); those slots "
+                         "are null", unsupported, this->m_shared->m_data->particles.Count());
         }
     }
 
@@ -1823,12 +2899,47 @@ int32_t CM2Model::InitializeLoaded() {
     return 1;
 }
 
+// Returns 0, which is the safe answer rather than a placeholder: it means "this batch cannot be
+// merged into a doodad batch", so CM2Scene::Animate gives every element type 0 and the doodad path
+// is uniformly off. That agrees with the rest of frozen -- the M2BatchDoodads CVar reaches
+// CM2Cache::m_flags bit 0x20 and nothing reads it.
+//
+// **Implementing this alone breaks rendering.** A non-zero answer makes Animate emit type 2
+// elements, and type 2 dispatches to CM2SceneRender::DrawBatchDoodad, which is an empty body. Those
+// batches would then silently not draw. Port the two together, and wire M2BatchDoodads to gate them
+// in the same change.
+// Identified 2026-09-23 as FUN_00824550, from CM2Scene::Animate's call order -- frozen calls it
+// from the element gather at exactly that position, it is a thiscall on a model taking one pointer,
+// and two of its reads settle it: `testb $0x10, (%eax)` on the argument is batch->flags & 0x10, and
+// `[[esi+0x2c] + 0x150] + 0x2c` compared against 1 is m_shared->m_data->bones.count, the same
+// expression DrawBatch uses. Its first call is to 0x0081c0b0, already mapped as M2GetCacheFlags,
+// and it tests bit 0x20 of the result -- which is the M2BatchDoodads flag this comment predicted
+// before the function was found.
+//
+// The body, so that whoever ports it does not have to redo this:
+//
+//     flags = M2GetCacheFlags();
+//     if (!(flags & 0x20))                     return 0;   // M2BatchDoodads off
+//     if (!(this->[0x10] & 0x10))              return 0;   // a model flag, not yet mapped here
+//     if (m_shared->m_data->bones.count <= 1
+//         && (flags & 0x40))                   return 0;
+//     if (!(batch->flags & 0x10))              return 0;
+//     other = this->[0x2a8];                               // the shared-animation source pointer
+//     if (other && other->[0xa4])              return 0;
+//     return 1;
+//
+// Two of those fields (+0x10 and +0x2a8/+0xa4) still need mapping onto frozen's CM2Model, so this
+// is a specification rather than a port.
+//
+// **Still not implemented, deliberately, and the reason below has not changed.**
+// ref: FUN_00824550
 int32_t CM2Model::IsBatchDoodadCompatible(M2Batch* batch) {
-    // TODO
+    // TODO -- see the decoded body above, and read the warning above that before enabling it
 
     return 0;
 }
 
+// ref: FUN_00824fc0
 int32_t CM2Model::IsDrawable(int32_t a2, int32_t a3) {
     if (!this->m_loaded && a2) {
         this->WaitForLoad(nullptr);
@@ -1861,6 +2972,7 @@ int32_t CM2Model::IsDrawable(int32_t a2, int32_t a3) {
     return 1;
 }
 
+// ref: FUN_00824f00
 int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
     if (this->m_flags & 0x20) {
         if (this->m_loaded) {
@@ -1871,7 +2983,12 @@ int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
             this->WaitForLoad(nullptr);
         }
 
-        return this->m_loaded && this->m_shared->m_m2DataLoaded && this->m_shared->m_skinProfileLoaded;
+        // Either this model finished loading while we waited, or the shared data it needs is
+        // already there. The reference ORs the two, and sign-extends the shared test, so this
+        // returns -1 as readily as 1; every caller only asks whether it is non-zero.
+        int32_t sharedReady = this->m_shared->m_m2DataLoaded && this->m_shared->m_skinProfileLoaded ? -1 : 0;
+
+        return sharedReady | static_cast<int32_t>(this->m_loaded);
     }
 
     if (!this->m_loaded && a2) {
@@ -1882,13 +2999,19 @@ int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
         return 0;
     }
 
-    if (!attachments || this->m_flag100) {
-        return 1;
+    // Every attached model has to be loaded too before this one counts as ready. The answer is
+    // cached in the 0x100 flag, so the walk happens once.
+    if (attachments && !this->m_flag100) {
+        for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+            if (!child->IsLoaded(a2, 1)) {
+                return 0;
+            }
+        }
+
+        this->m_flag100 = 1;
     }
 
-    // TODO
-
-    return 0;
+    return 1;
 }
 
 void CM2Model::LinkToCallbackListTail() {
@@ -2091,6 +3214,7 @@ uint32_t CM2Model::Release() {
     return 0;
 }
 
+// ref: FUN_00825260
 void CM2Model::ReplaceTexture(uint32_t textureId, HTEXTURE texture) {
     // Waiting for load
 
@@ -2412,6 +3536,7 @@ void CM2Model::SetBoneSequenceDeferred(uint16_t a2, M2Data* data, uint16_t boneI
     playback->flags = (a8 ? 1 : 0) | (a9 ? 2 : 0) | (a10 ? 4 : 0);
 }
 
+// ref: FUN_0082c7c0
 void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible) {
     // Waiting for load
 
@@ -2464,7 +3589,17 @@ void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible)
     }
 }
 
+// Identified from DrawBatch's call order: the reference runs 0x00683560, 0x00683580, 0x00828f90,
+// 0x008360a0 and then SetBatchVertices, and frozen runs GxShaderConstantsLock, Unlock,
+// m_curModel->SetIndices, m_curShared->SetIndices and then SetBatchVertices. The other three of
+// those are pinned independently, and this is the remaining one -- a thiscall on the model,
+// reaching through +0x2d0. Still a stub here, so the tag is a claim about identity, not about
+// behaviour.
+// ref: FUN_00828f90
 void CM2Model::SetIndices() {
+    // Unreachable today, so this is dead rather than broken: CM2SceneRender::DrawBatch only calls
+    // it for an element with flag 0x4, which CM2Scene sets from model->ptr2D0, which nothing ever
+    // allocates because OptimizeVisibleGeometry is itself unported. Port that first.
     // TODO
 }
 
@@ -2532,8 +3667,21 @@ void CM2Model::SetPrimaryBoneSequence(uint16_t sequenceIndex, uint16_t boneIndex
     }
 }
 
+// ref: FUN_00826dd0
+// Put a sequence straight into the bone's secondary slot and start it fading.
+//
+// Note it times the fade from the sequence's DURATION, where SetPrimaryBoneSequence uses its
+// blendtime, and it starts the weight at 0.75 rather than 1. That reads like a slip but it is
+// what the reference does: FUN_00826dd0 takes the field at +0x4 while FUN_00826c40 takes +0x1c.
 void CM2Model::SetSecondaryBoneSequence(uint16_t a2, uint16_t boneIndex, M2SequenceFallback fallback, uint32_t time, float a6) {
-    // TODO
+    auto& modelBone = this->m_bones[boneIndex];
+    auto& sequence = this->m_shared->m_data->sequences[a2];
+
+    modelBone.uint9C = this->m_scene->m_time + sequence.duration;
+    modelBone.floatA0 = sequence.duration ? 1.0f / static_cast<float>(sequence.duration) : 1.0f;
+    modelBone.floatA4 = 0.75f;
+
+    this->SetupBoneSequence(a2, fallback, time, a6, &modelBone.secondarySequence);
 }
 
 void CM2Model::SetupBoneSequence(uint16_t sequenceIndex, M2SequenceFallback fallback, uint32_t a4, float a5, M2ModelBoneSeq* boneSequence) {
@@ -2586,6 +3734,11 @@ void CM2Model::SetupBoneSequence(uint16_t sequenceIndex, M2SequenceFallback fall
     boneSequence->float18 = v13;
 }
 
+// Identified beyond doubt from its call list: CM2Lighting::Initialize (0x00834900),
+// CM2Scene::SelectLights (0x0081e400), the lighting callback through a pointer,
+// CM2Lighting::SetupSunlight (0x00835280), CM2Lighting::CameraSpace (0x008350a0) -- and
+// then itself, which is the recursion into m_attachList below.
+// ref: FUN_00831af0
 void CM2Model::SetupLighting() {
     if (!this->m_attachParent || this->m_attachParent->m_flags & 0x1) {
         this->Animate();
@@ -2716,8 +3869,16 @@ void CM2Model::Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId) {
     fallback.uint2 = 0;
 }
 
+// ref: FUN_008269c0
+// Ask the model's sequence-finished callback whether stopping this bone is allowed, and report
+// whether the model survived the call.
+//
+// The reference only does anything when the callback pointer is set: it raises the refcount,
+// invokes the callback, releases, and returns 0 if that release destroyed the model. frozen has
+// no such callback member yet, so the whole body is skipped and 1 -- "the model is still here,
+// carry on" -- is the correct answer rather than a placeholder. It stops being correct the day
+// the callback is ported; UnsetBoneSequence is the caller that depends on it.
 int32_t CM2Model::Sub8269C0(uint32_t boneId, uint16_t boneIndex) {
-    // TODO
     return 1;
 }
 
@@ -2811,8 +3972,120 @@ void CM2Model::UnoptimizeVisibleGeometry() {
     // TODO
 }
 
+// ref: FUN_00832840
+// Stop whatever a bone is playing. a4 picks which slot: the primary sequence, or the secondary
+// one alone. a3 asks for the stop to be blended rather than instant, which the model's 0x800 flag
+// can veto. SetBoneSequence routes here when handed sequence id -1, and the character component
+// calls it directly to clear the face and hair bones.
 void CM2Model::UnsetBoneSequence(uint32_t boneId, int32_t a3, int32_t a4) {
-    // TODO
+    // Waiting for load
+
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 6;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+        modelCall->args[1] = a3;
+        modelCall->args[2] = a4;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    if (this->m_flag800) {
+        a3 = 0;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // Resolve the bone id to an index
+
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count() || boneIndex == 0) {
+        return;
+    }
+
+    if (data->bones[boneIndex].parentIndex == 0xFFFF) {
+        return;
+    }
+
+    if (!this->Sub8269C0(boneId, boneIndex)) {
+        return;
+    }
+
+    this->CancelDeferredSequences(boneIndex, a4 != 0);
+
+    auto& modelBone = this->m_bones[boneIndex];
+
+    // Secondary slot only: clear it and leave the primary alone.
+    if (!a4) {
+        modelBone.secondarySequence.uint8 = 0xFFFF;
+        modelBone.secondarySequence.float14 = 0.0f;
+        modelBone.secondarySequence.uintC = 0;
+        modelBone.secondarySequence.float18 = 0.0f;
+        modelBone.secondarySequence.uint10 = 0;
+        modelBone.secondarySequence.uint1C = 0;
+
+        return;
+    }
+
+    // Unlink this bone from the model's animating-bone list
+
+    if (modelBone.dword98) {
+        *modelBone.dword98 = modelBone.word96;
+    }
+
+    if (modelBone.word96 != 0xFFFF) {
+        this->m_bones[modelBone.word96].dword98 = modelBone.dword98;
+    }
+
+    modelBone.dword98 = nullptr;
+    modelBone.word96 = 0xFFFF;
+
+    if (!a3) {
+        modelBone.secondarySequence.uint8 = 0xFFFF;
+    } else {
+        // Blended stop: the sequence being stopped is promoted into the secondary slot and faded
+        // out over 150ms. If a previous fade is still more than half way through, it wins and the
+        // promotion is skipped, so a fast stream of stops cannot keep restarting the blend.
+        bool promote = true;
+
+        // The same expression AnimateMT stores into floatA8, which is why it is one
+        // function now rather than two copies that could drift.
+        if (modelBone.secondarySequence.uint8 != 0xFFFF
+                && M2BoneBlendWeight(modelBone, this->m_scene->m_time) > 0.5f) {
+            promote = false;
+        }
+
+        if (promote) {
+            modelBone.secondarySequence = modelBone.sequence;
+            modelBone.floatA0 = 1.0f / 150.0f;
+            modelBone.uint9C = this->m_scene->m_time + 150;
+            modelBone.floatA4 = 1.0f;
+        }
+    }
+
+    modelBone.sequence.float14 = 0.0f;
+    modelBone.sequence.uint8 = 0xFFFF;
+    modelBone.sequence.float18 = 0.0f;
+    modelBone.uint90 = 0xFFFFFFFF;
+    modelBone.uint94 = 0;
+    modelBone.sequence.uintC = 0;
+    modelBone.sequence.uint10 = 0;
+    modelBone.sequence.uint1C = 0;
 }
 
 void CM2Model::UpdateLoaded() {

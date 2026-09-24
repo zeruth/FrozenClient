@@ -341,9 +341,14 @@ bool CSimpleAnim::OnUpdate(float step, float& used) {
     return false;
 }
 
-// ref: FUN_004a5000
 // The reference tests the delay-inclusive fraction against 1.0, not the plain progress, so an
 // animation still inside its end delay is not done.
+//
+// The FUN_004a5000 tag that used to sit here was wrong and is now on CSimpleAnim_IsDone,
+// which is what that address really is: 88 bytes, ZERO direct callers -- it is reached through a
+// binding table, as a Lua thunk is -- and it makes two calls, one of them into the Lua API at
+// 0084e4d0. This accessor is a single float compare that calls nothing and is called from C++.
+// The reference counterpart of this function has not been located.
 bool CSimpleAnim::IsDone() const {
     return this->m_progressWithDelay >= 1.0f;
 }

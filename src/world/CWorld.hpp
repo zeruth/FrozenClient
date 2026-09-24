@@ -81,7 +81,7 @@ class CWorld {
         static const C3Vector& GetOutdoorAmbient();
         static const C3Vector& GetOutdoorDiffuse();
         static const C3Vector& GetOutdoorDirection();
-        static const C3Vector& GetSkyColor(int32_t index); // 0 = horizon .. 4 = zenith
+        static const C3Vector& GetSkyColor(int32_t index); // 0 = zenith .. 4 = horizon, 5 = fog band
         static const char* GetSkyboxPath();                // sky model for the current light, or null
         static float GetDayProgress();                     // 0..1 fraction of the day, for the skybox
         static const C3Vector& GetFogColor();
@@ -94,6 +94,7 @@ class CWorld {
         static const C3Vector& GetCameraPos();             // camera position of the last Update
         static const C3Vector& GetBodyTint();              // LightIntBand band 9: sun/moon disc tint
         static float GetCloudDensity();                    // LightFloatBand band 3: cloud cover
+        static float GetSkyHighlight();                    // LightParams.highlightSky: 0 or 1
         static float GetNearClip();
         static uint32_t GetTickTimeFixed();
         static uint32_t GetTickTimeMs();
@@ -144,7 +145,11 @@ class CWorld {
 
 
         static float s_cloudDensity;
-        static C3Vector s_skyColors[5];
+        static float s_skyHighlight;
+        // waterShallow, waterDeep, oceanShallow, oceanDeep -- LightParams columns 5..8, blended
+        // between lights the same way every other light value is.
+        static float s_liquidAlpha[4];
+        static C3Vector s_skyColors[6];
         static C3Vector s_fogColor;
         static float s_fogStart;
         static float s_fogEnd;

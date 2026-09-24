@@ -33,8 +33,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 8  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 10  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
+#
+# NOTE this matches anywhere in a comment, not just on a line of its own. Writing the tag verbatim
+# inside explanatory prose -- "the ref: FUN_00401000 that used to be here was wrong" -- creates a
+# real tag. That happened twice on 2026-09-23, both times while removing a misattributed tag and
+# explaining the removal. Name the address without the `ref:` prefix in prose.
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
               os.path.join(ROOT, 'build', 'compile_commands.json')]
@@ -53,10 +58,41 @@ def load_compile_db():
     sys.exit('no compile_commands.json (configure a Ninja build dir with CMAKE_EXPORT_COMPILE_COMMANDS)')
 
 
+def tokenize_command(cmd):
+    """Split a command line into tokens, removing quotes wherever they appear in a token.
+
+    Not the same as splitting on quoted-or-unquoted runs. A shell strips quotes anywhere, so
+    `-DX=""` is X defined as nothing, `-DX="a b"` is X defined as `a b`, and `"c:/a b/x.h"` is one
+    path. Matching only a token that begins with a quote gets the first of those wrong, which is
+    what it did until 2026-09-23.
+    """
+    toks = []
+    cur = []
+    quoted = False
+    started = False
+
+    for ch in cmd:
+        if ch == '"':
+            quoted = not quoted
+            started = True
+        elif ch.isspace() and not quoted:
+            if started:
+                toks.append(''.join(cur))
+                cur = []
+                started = False
+        else:
+            cur.append(ch)
+            started = True
+
+    if started:
+        toks.append(''.join(cur))
+
+    return toks
+
+
 def split_command(cmd):
     """cl.exe style command line -> clang args in cl driver mode, without the output/source bits."""
-    toks = re.findall(r'"([^"]*)"|(\S+)', cmd)
-    toks = [a or b for a, b in toks]
+    toks = tokenize_command(cmd)
     args = ['--driver-mode=cl', '-fms-compatibility', '-fms-extensions', '-Wno-everything']
     skip = False
     for t in toks[1:]:
@@ -176,8 +212,55 @@ def walk_body(body, out):
 BAD_FILES = []
 
 
+# A body that does nothing: `{}`, or one return of a LITERAL. Deliberately the same rule as
+# tools/livestubs.py -- the two tools disagreeing about what a stub is was the whole problem.
+# A return of a NAME is left out of it, because that reads real state and is an accessor.
+COMMENT_RE = re.compile(r'/\*.*?\*/|//[^\n]*', re.S)
+SENTINEL_BODY_RE = re.compile(r'^\{\s*(?:return\s*(?:|-?\s*(?:\d[\w.]*|nullptr|NULL|true|false))\s*;\s*)?\}$')
+
+
+def body_does_nothing(src):
+    return bool(SENTINEL_BODY_RE.match(COMMENT_RE.sub(' ', src).strip()))
+
+
+# Set by parse_file, read by main() to build the cache key. See content_key.
+LAST_INCLUDES = []
+
+# path -> digest of its bytes, for this run only. A file cannot change while the run is in
+# progress, and without this every shared header is re-read once per TU that includes it.
+_FILE_DIGESTS = {}
+
+
+def file_digest(path):
+    d = _FILE_DIGESTS.get(path)
+
+    if d is None:
+        try:
+            d = hashlib.blake2b(io.open(path, 'rb').read(), digest_size=16).digest()
+        except OSError:
+            # A header that has gone away is itself a change; a fixed marker is enough.
+            d = b'<missing>'
+
+        _FILE_DIGESTS[path] = d
+
+    return d
+
+
 def parse_file(index, path, args, text):
     tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
+    # Project-local headers this TU pulled in, for the cache key in main(). Module-level for the
+    # same reason BAD_FILES is: parse_file's return shape is consumed in two places.
+    del LAST_INCLUDES[:]
+    _root = os.path.normcase(os.path.abspath(ROOT)) + os.sep
+    _seen = set()
+    for inc in tu.get_includes():
+        f = getattr(inc.include, 'name', None)
+        if not f:
+            continue
+        a = os.path.normcase(os.path.abspath(f))
+        if a.startswith(_root) and a not in _seen:
+            _seen.add(a)
+            LAST_INCLUDES.append(os.path.relpath(a, os.path.normcase(os.path.abspath(ROOT))).replace(chr(92), '/'))
     errors = [d for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
     if errors:
         # Kept for the summary at the end of main(). A file in here has unreliable data of every
@@ -222,7 +305,10 @@ def parse_file(index, path, args, text):
         ext = body.extent
         if header:
             if fpath not in header_text:
-                header_text[fpath] = io.open(fpath, encoding='utf-8', errors='replace').read()
+                # newline='' so CRLF survives: libclang's offsets are byte offsets, and text
+                # mode would collapse every \r\n and shift the slice. See parse_all below.
+                header_text[fpath] = io.open(fpath, encoding='utf-8', errors='replace',
+                                             newline='').read()
             htext = header_text[fpath]
             src = htext[ext.start.offset:ext.end.offset]
             start = c.extent.start.offset
@@ -237,28 +323,52 @@ def parse_file(index, path, args, text):
         e['strings'] |= out['strings']
         e['consts'] |= out['consts']
         e['branches'] += out['branches']
-        # Two stub idioms in this tree: the WHOA_UNIMPLEMENTED macro, and a body with no
-        # statements at all carrying a TODO. An empty body without a TODO is left alone,
+        # Two stub idioms in this tree: the WHOA_UNIMPLEMENTED macro, and a body that does
+        # nothing while carrying a TODO. A body that does nothing WITHOUT a TODO is left alone,
         # because some functions are empty on purpose to match an empty reference.
-        empty = next(body.get_children(), None) is None
-        e['stub'] = e['stub'] and ('WHOA_UNIMPLEMENTED' in src or (empty and 'TODO' in src))
+        #
+        # "Does nothing" used to mean no statements at all, which let `// TODO` followed by
+        # `return 0;` count as a port -- nineteen of them were in the map on 2026-09-23,
+        # CM2SceneRender::DrawParticle among them, and an override saying `stub` was the only
+        # thing holding the line. It now also accepts a single return of a literal, matching
+        # tools/livestubs.py exactly.
+        e['stub'] = e['stub'] and ('WHOA_UNIMPLEMENTED' in src or (body_does_nothing(src) and 'TODO' in src))
         e['lines'] += src.count('\n') + 1
     return fns
 
 
 
-def content_key(path):
-    """Cache key for a source file.
+def content_key(path, deps=(), command=''):
+    """Cache key for a source file and the project headers it includes.
 
     Was the mtime alone, which is wrong twice over: an mtime can repeat inside the filesystem's
     granularity during a fast write-parse-write cycle, and a checkout can hand back different
     content with a newer stamp that looks fresh but is served from cache anyway. Measured on
+    Measured on
     2026-09-19: four WHOA_UNIMPLEMENTED bindings were cached as non-stubs and stayed that way
     across runs, so they were counted ported while still stubs. Hashing the bytes costs one read
     per file and cannot go stale.
+
+    Hashing the source alone was still not enough, because a definition can live in a HEADER and a
+    `// ref:` tag certainly can. Editing a .hpp left every TU that includes it on the old cache
+    entry, so the change was invisible to the report: on 2026-09-23 a duplicate ref tag was deleted
+    from CSimpleRegion.hpp and the next three runs still counted it. `deps` is the project-local
+    include list the previous parse recorded, and folding it in means any header edit reparses
+    exactly the files that can see it.
     """
     h = hashlib.blake2b(digest_size=16)
-    h.update(io.open(path, 'rb').read())
+    h.update(file_digest(path))
+    # The arguments decide what the parse SEES -- defines, include paths, and how the command is
+    # tokenized. A cached entry produced under different arguments is stale even though every byte
+    # on disk is unchanged.
+    h.update(b'|cmd|')
+    h.update(command.encode('utf-8', 'replace'))
+
+    for d in sorted(deps):
+        h.update(b'|')
+        h.update(d.encode('utf-8'))
+        h.update(b'|')
+        h.update(file_digest(os.path.join(ROOT, d)))
 
     return h.hexdigest()
 
@@ -279,15 +389,31 @@ def main():
         if only and path not in only:
             continue
         c = cache.get(rel)
-        if c and c.get('key') == content_key(path) and c.get('v') == CACHE_VERSION:
+        if c and c.get('key') == content_key(path, c.get('deps', ()), e['command']) and c.get('v') == CACHE_VERSION:
             fns = c['fns']
+            # Replay a recorded parse failure. Without this the warning is only as complete as the
+            # last cold run, and a warm run silently reports zero broken files.
+            if c.get('bad'):
+                BAD_FILES.append((rel, c['bad'][0], c['bad'][1]))
         else:
-            text = io.open(path, encoding='utf-8', errors='replace').read()
+            # newline='' is load-bearing, not tidiness. libclang hands back BYTE offsets into
+            # the file as it read it; Python's text mode turns each \r\n into one \n, so every
+            # offset past line 1 is short by one per preceding line and `src` below is a
+            # window onto the wrong part of the file. 725 of this tree's 1157 sources are
+            # CRLF, so until 2026-09-23 the stub flag for most files was decided by reading
+            # some other function's text -- CFrameStrata::FrameOccluded, a `// TODO` stub,
+            # sliced to ' l < this->topLevel; l++) {' and counted as a port.
+            text = io.open(path, encoding='utf-8', errors='replace', newline='').read()
             fns = parse_file(index, path, split_command(e['command']), text)
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],
                        'header': v['header'], 'line': v['line']} for k, v in fns.items()}
-            cache[rel] = {'key': content_key(path), 'v': CACHE_VERSION, 'fns': fns}
+            deps = list(LAST_INCLUDES)
+            bad = None
+            if BAD_FILES and BAD_FILES[-1][0] == rel:
+                bad = [BAD_FILES[-1][1], BAD_FILES[-1][2]]
+            cache[rel] = {'key': content_key(path, deps, e['command']), 'v': CACHE_VERSION,
+                          'fns': fns, 'deps': deps, 'bad': bad}
             n += 1
         for k, v in fns.items():
             if v.get('header') and k in result:

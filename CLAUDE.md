@@ -198,6 +198,28 @@ VtableFromRtti. Each headless run takes 1-3 minutes, so batch addresses.
 Raw dumps already captured live in `docs/ref/` with an `INDEX.txt`. **Read those before running
 Ghidra again** — most of the pipeline has already been walked.
 
+**Before reaching for Ghidra at all, dump the whole text section once and grep it.** It takes
+about nine seconds, against one to three minutes per headless run, and it answers the questions
+Ghidra is slowest at:
+
+```bash
+"/c/Program Files/LLVM/bin/llvm-objdump.exe" -d --no-show-raw-insn \
+    ".reference/WOTLK 3.3.5a - Windows/WoW_WOTLK_3.3.5a/WoW.exe" > "$SCRATCH/wow_text.asm"
+```
+
+Then `grep` it for an absolute address to find **every** reader and writer of a global, for
+`calll\t0x<addr>` to count a function's callers, or for `\$0x<addr>` to find the places that take
+its address (base pointers and block-op destinations, which the first two greps miss). On
+2026-09-23 this settled in minutes what the decompilation could not say at all: that a sky-dome
+multiplier which looked hard-coded to zero is really a LightParams column arriving through a flat
+struct copy, and that a documented claim about which helper drives the sky highlight was wrong.
+
+It also recovers what Ghidra drops. The decompiler loses register arguments to `__fastcall`
+helpers (`ESI`/`EDI` tables, `ECX` counts) and silently mangles x87 compare-and-branch pairs.
+Read `fcom`/`fcomp` + `fnstsw` + `testb $0x41, %ah` yourself: after the compare C3 = 0x40 means
+equal and C0 = 0x01 means st0 < st1, and `jp` on that mask is taken only when **both** are clear,
+i.e. strictly greater. Getting that backwards inverts a branch, and the code still compiles.
+
 ## Bug classes that have bitten this codebase
 
 - **`M2Array` resolves its data as (its own address + offset).** Element 0 of an *empty* array is a
@@ -236,7 +258,7 @@ The goal is 100% parity with the reference world render. The method is:
 
 ### Shader assets
 
-The terrain and decal shaders are compiled D3D9 bytecode embedded in
+The terrain and decal shaders currently in use are compiled D3D9 bytecode embedded in
 `src/world/TerrainShadersD3d9.hpp`. **The HLSL sources live in `src/world/shaders/`** — keep them
 there and regenerate when changing a shader (the original terrain HLSL was lost, and the header had
 to be disassembled with `fxc -dumpbin` to recover its interface):
@@ -245,6 +267,14 @@ to be disassembled with `fxc -dumpbin` to recover its interface):
 FXC="/c/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/fxc.exe"
 MSYS_NO_PATHCONV=1 "$FXC" -nologo -T ps_2_0 -E main -Fo out.cso src/world/shaders/blob_decal_ps.hlsl
 ```
+
+**The original compiled terrain shaders are not lost — they ship in the archives.** The HLSL
+source is gone, but `shaders\Vertex\vs_2_0\Terrain.bls` and `shaders\Pixel\ps_2_0\Terrain0.bls`
+and friends extract straight out of `patch.MPQ`, and `CGxDevice::IShaderLoad` already reads that
+format and walks the same profile fallback the reference does. `CMap::MapMemInitialize` shows
+exactly which names and permutation counts to ask for. Using them means porting the terrain
+constant setup and permutation selection too, so it is a port rather than a swap — see
+`docs/ref/parity-map-memory.md` before starting, and verify it on screen in the same change.
 
 `terrain_vs` emits `oPos` from constants c0-c3, `oT0` = layer UV, `oT1` = `position.xy * 0.2`, and
 `oD0` = the baked vertex colour. Any pass that needs to be coplanar with terrain must use this
@@ -263,17 +293,43 @@ seen running — treat them as suspect until a run confirms them.
    cap; `D3DRS_DEPTHBIAS`/`D3DRS_SLOPESCALEDEPTHBIAS` are never set). The GL backend does drive
    `glPolygonOffset`, so this is a D3D-side gap worth closing on its own merits.
    **(built, unverified)** — the blob pass now binds `s_terrainVS` + `g_blobDecalPsD3d9` with
-   identical vertex streams and an EQUAL test. Still open: `GxBlend_Mod` with the `ShadowAdd`/
-   `ShadowMod` ramps from `ShadowInit`, animation-bbox footprints, doodad casters, and WMO/M2
-   receivers. See `docs/ref/parity-shadows.md`.
+   identical vertex streams and an EQUAL test. **This list was audited 2026-09-23 and three of
+   its five items were already done**: WMO floor receivers (`BlobShadowDrawWmo`), doodad casters
+   (`CGWorldFrame.cpp` calls both draws from the doodad walk), and the `ShadowAdd`/`ShadowMod`
+   ramps, which were decoded on 2026-09-16 and turn out to be a separate stage-1 fade along the
+   projection axis rather than anything to do with the strength term. Genuinely still open: M2
+   receivers (`DrawBatchProj` is a stub, and unreachable behind its own gate — see the note at
+   the dispatch in `CM2SceneRender::Draw`), and the FOOTPRINT SHAPE: the reference builds an
+   oriented rectangle from the box's X and Y half-extents separately and turns it with the
+   model's matrix, where frozen collapses the box to `max(ex, ey)` and draws an axis-aligned
+   circle. **Shadow strength is solved 2026-09-23** and is not a light ratio at all: it is
+   the third argument of `FUN_007e4480`, a constant 0.4 at the call site (0x009f98d8).
+   **Animation-bbox footprints closed 2026-09-23**: the
+   caster radius already came from the current sequence's authored box rather than the cull
+   extent, but it resolved that sequence by a raw id match and so missed the model's fallback
+   chain; `CGUnit_C::GetAnimFootprint` now goes through `CM2Model::GetSequenceInfo`, which is
+   what the reference uses. See `docs/ref/parity-shadows.md`.
 2. **Sky and atmosphere — the sun direction is solved.** It is *not* a real arc and *not* from
    Light.dbc: `FUN_007eea90` holds the azimuth at a constant 225 degrees and wobbles the zenith
    angle between 127 and 110 degrees twice a day from a four-key band, storing a vector that points
    away from the light. Earlier hunts failed because DayNight `+0x30` is the **camera forward**
    vector, not the sun. **(built, unverified)** — direction, the seven-ring dome with the fog
    colour on its bottom two rings, and the corrected fog formulas
-   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have all landed. Still open:
-   clouds, the sun and moon discs, the sky highlight. See `docs/ref/parity-sky.md`.
+   (`fogEnd = min(farClip, band0)`, `fogStart = fogEnd * band1`) have landed. **Audited against
+   the source 2026-09-23, and this list was wrong in both directions.** Already done: clouds
+   (`src/world/Clouds.cpp`), the sun and moon discs, and the glare (`DrawGlare`, called for
+   both bodies from `SkyBodiesRender` with `sunGlare.blp` / `moonGlare.blp`) — the Known
+   blockers section below already said the first two, so the file contradicted itself.
+   The four items that list called genuinely open have since landed, all **built,
+   unverified**: the dome's seven-ring geometry (`SKY_RINGS` is 6 with the reference's own
+   zenith table from `0x00a41a90`, not the hand-tuned 12), the six-entry sky band mapping
+   (`s_skyColors` is 6, zenith-first, bands 2..7), and the **sky highlight** -- which turned
+   out to be the same item as "the dome's azimuthal colour variation", listed twice.
+   `FUN_007f0530` was disassembled end to end on 2026-09-23 and ported into `SkyRender`,
+   gated on `LightParams.highlightSky` as the reference gates it. Nothing in this area is
+   known to be missing now; what it needs is a **run at dawn or dusk in a zone that sets
+   `highlightSky`**, because at noon the band strength is zero and a correct port is
+   indistinguishable from no port at all. See `docs/ref/parity-sky.md`.
 3. **Vertex positions are absolute world coordinates.** The deepest parity break behind the depth
    problems: streams bake absolute world coordinates (up to ±17066) and cancel the camera
    translation inside the per-vertex `dp4`, leaving millimetres of view-dependent depth error. The

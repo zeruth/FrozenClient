@@ -1,4 +1,6 @@
 addr	how	frozen	evidence
+00401010	annotated	operator new	tag in lib/squall/storm/Memory.cpp
+00401030	annotated	operator delete[]	tag in lib/squall/storm/Memory.cpp
 00401050	callorder	CDataStore::CDataStore	same slot between linked calls in 00516610=Script_RandomRoll
 00401070	annotated	CDataStore::FetchWrite	tag in lib/common/common/datastore/CDataStore.cpp
 00401200	annotated	ComparePatchArchives	tag in src/client/Archive.cpp
@@ -28,7 +30,7 @@ addr	how	frozen	evidence
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
 00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
-004033c0	callorder	CGTooltip::GetObjectType	same slot between linked calls in 0052a980=CGGameUI::Initialize
+004033c0	sticky	CGTooltip::GetObjectType	held from the previous run, where it was sticky
 00403760	callgraph	TSGrowableArray<char *>::Reserve	only unmatched callee of 00405a10=AddPatchArchive
 00403880	override	CDataStore::~CDataStore	
 004038f0	annotated	CGPlayer_C::GetActivePtr	tag in src/object/client/CGPlayer_C.cpp
@@ -48,8 +50,9 @@ addr	how	frozen	evidence
 00407b00	annotated	RegisterEvents	tag in src/gx/LoadingScreen.cpp
 00407bd0	annotated	UnregisterEvents	tag in src/gx/LoadingScreen.cpp
 00407e30	annotated	LoadingScreenSetTip	tag in src/gx/LoadingScreen.cpp
+00407f40	annotated	C44Matrix::Identity	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
-00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
+00408490	override	TSGrowableArray<unsigned __int64>::Reserve	
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
@@ -63,21 +66,19 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
-0040bb50	sticky	CSimpleFontString::GetObjectType	held from the previous run, where it was sticky
-0040bb80	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00826350=CM2Model::Sub826350
-0040c0f7	callgraph	sprintf	only unmatched callee of 00856ea0=luaV_tostring
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
+00422130	override	SFile::IsStreamingMode	
 00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
-00424b10	callorder	FrameXML_SetProgressCallback	same slot between linked calls in 0052a980=CGGameUI::Initialize
+00424b10	sticky	FrameXML_SetProgressCallback	held from the previous run, where it was sticky
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
-00424f80	callorder	SFile::Open	same slot between linked calls in 00684970=CGxDevice::IShaderLoad
+00424f80	sticky	SFile::Open	held from the previous run, where it was sticky
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
 00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
 00464580	annotated	CRandom::uint32	tag in lib/typhoon/tempest/random/CRandom.cpp
@@ -106,9 +107,10 @@ addr	how	frozen	evidence
 0047b400	override	CDataStore::Get	
 0047b440	override	CDataStore::Get	
 0047b480	override	CDataStore::GetString	
-0047be50	callgraph	SUniSPutUTF8	only unmatched callee of 0048ee40=KeyCodeToString
+0047be50	sticky	SUniSPutUTF8	held from the previous run, where it was sticky
 0047bf30	override	HandleClose	
 0047bf50	override	HandleCreate	
+0047bf70	callgraph	HandleDuplicate	only unmatched callee of 00978bf0=CM2ParticleEmitter::SetMaterial
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	annotated	NDCToDDC	tag in src/gx/Coordinate.cpp
@@ -117,7 +119,7 @@ addr	how	frozen	evidence
 0047c060	annotated	DDCToNDCHeight	tag in src/gx/Coordinate.cpp
 0047c070	override	NDCToDDCWidth	
 0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
-0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
+0047c360	sticky	CStatus::Add	held from the previous run, where it was sticky
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
@@ -273,7 +275,6 @@ addr	how	frozen	evidence
 0048ea10	sticky	CSimpleFrame::SetFrameAlpha	held from the previous run, where it was sticky
 0048eac0	annotated	CSimpleFrame::GetHitRectInsets	tag in src/ui/simple/CSimpleFrame.cpp
 0048ed30	override	CSimpleFrame::AttributeChangesAllowed	
-0048ee40	string	KeyCodeToString	score 4.74 shared BACKSPACE; CAPSLOCK; DELETE
 0048f1f0	string	CSimpleFrame::LoadXML_Layers	unique "Frame %s: Unknown child node in %s element: %s"
 0048f400	string	CSimpleFrame::PostLoadXML_Frames	unique "Frames"
 0048f580	sticky	CSimpleFrame::SetFrameScale	held from the previous run, where it was sticky
@@ -295,13 +296,12 @@ addr	how	frozen	evidence
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute
 00492c10	order	CSimpleFrame::GetBoundsRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
 00492c70	order	CSimpleFrame::GetHitRect	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
-00492e40	order	CSimpleFrame::GetScriptMetaTable	definition order between CSimpleFrame::GetAttribute and CSimpleFrame::IsA in src/ui/simple/CSimpleFrame.cpp
 00492e70	override	CSimpleFrame::IsA	
 00492f10	order	CSimpleFrame::HideThis	definition order between CSimpleFrame::IsA and CSimpleFrame::LoadXML_Attributes in src/ui/simple/CSimpleFrame.cpp
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 00493ad0	callgraph	CSimpleFrame::RunOnLeaveScript	only unmatched callee of 00495710=CSimpleFrame::OnLayerCursorExit
-00494d20	callorder	CFrameStrata::FrameOccluded	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
+00494d20	override	CFrameStrata::FrameOccluded	
 00495060	callorder	CSimpleTop::CompressStrata	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 004951a0	callgraph	CSimpleTop::RaiseFrame	only unmatched callee of 0048e9a0=CSimpleFrame::Raise
 00495670	callgraph	CSimpleSortedArray<FRAMEPRIORITY *>::Insert	only unmatched callee of 00495880=CSimpleTop::RegisterForEvent
@@ -460,7 +460,7 @@ addr	how	frozen	evidence
 004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
 004a3790	annotated	FontString_SetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
-004a38f0	annotated	ButtonFontObject	tag in src/ui/simple/CSimpleButtonScript.cpp
+004a38f0	annotated	FontString_GetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a3a50	annotated	FontString_SetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a3b60	annotated	FontString_GetFont	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a3c50	annotated	FontString_SetTextColor	tag in src/ui/simple/CSimpleFontStringScript.cpp
@@ -504,7 +504,7 @@ addr	how	frozen	evidence
 004a4f40	annotated	CSimpleAnim_Play	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a4f80	table	CSimpleAnim_Pause	binding "Pause" in SimpleAnimMethods ~ table 00ac18e0
 004a4fc0	table	CSimpleAnim_Stop	binding "Stop" in SimpleAnimMethods ~ table 00ac18e0
-004a5000	annotated	CSimpleAnim::IsDone	tag in src/ui/simple/CSimpleAnim.cpp
+004a5000	annotated	CSimpleAnim_IsDone	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a5060	table	CSimpleAnim_IsPlaying	binding "IsPlaying" in SimpleAnimMethods ~ table 00ac18e0
 004a50b0	table	CSimpleAnim_IsPaused	binding "IsPaused" in SimpleAnimMethods ~ table 00ac18e0
 004a5100	table	CSimpleAnim_IsStopped	binding "IsStopped" in SimpleAnimMethods ~ table 00ac18e0
@@ -589,31 +589,14 @@ addr	how	frozen	evidence
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
-004b64e0	callgraph	TextureGetTexturePtr	only unmatched callee of 004b6610=TextureGetDimensions
+004b6550	annotated	AsyncTextureWait	tag in src/gx/Texture.cpp
 004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
-004b69e0	order	GetBitDepth	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6ae0	order	GxCalcTexelStrideInBytes	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6c50	order	GxTexCreate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b6c50	annotated	TextureIncreasePriority	tag in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
-004b6d90	order	GxTexDestroy	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6e40	order	GxTexParameters	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6e90	order	GxTexReusable	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b6f30	order	GxTexSetWrap	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
 004b6fa0	override	TextureCacheGetTexture	
-004b7020	order	ReloadMips	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b70a0	order	TextureFreeGxTex	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7220	order	TextureAllocMippedImg	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7300	order	GxTexUpdate	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b73e0	order	GxuUpdateSingleColorTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7460	order	GetDefaultTexture	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b74f0	order	GetTextureFormats	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7580	order	MippedImgAllocA	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b76e0	order	MippedImgCalcSize	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7770	order	MippedImgSet	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b78a0	order	RequestImageDimensions	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
-004b7aa0	order	UpdateBlpTextureAsync	definition order between FillInSolidTexture and PumpBlpTextureAsync in src/gx/Texture.cpp
+004b7020	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8770	override	CTexture::CTexture	
@@ -621,7 +604,9 @@ addr	how	frozen	evidence
 004b8a50	override	CreateBlpAsync	
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
+004b9200	callgraph	GxDevApi	only unmatched callee of 004eff10=CCharacterComponent::CreateBaseTexture
 004b9480	override	TextureCacheNewTexture	
+004b94e0	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9550	override	TextureCreateSolid	
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
@@ -633,7 +618,28 @@ addr	how	frozen	evidence
 004bdbf0	annotated	TextBlockSetStringPos	tag in src/gx/font/TextBlock.cpp
 004bdc50	annotated	TextBlockGetStringPos	tag in src/gx/font/TextBlock.cpp
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
+004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
+004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097e150=CM2ParticleEmitter::CM2ParticleEmitter
+004c1680	annotated	M2ParticleRandomUnitVector	tag in src/model/CM2ParticleEmitter.cpp
+004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c1b90	annotated	C44Matrix::Scale	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2300	annotated	TransformPointInPlace	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c2370	annotated	C44Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c23d0	annotated	C44Matrix::Transpose	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2fc0	annotated	C44Matrix::AffineInverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c3460	callgraph	CGMinimapFrame::GetPingOffset	only unmatched callee of 0057efe0=CGMinimapFrame_GetPingPosition
+004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c4df0	annotated	C2Vector::operator=	tag in lib/typhoon/tempest/vector/C2Vector.cpp
+004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c5230	annotated	C33Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c5820	annotated	C33Matrix::RotationAroundAxis	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
@@ -796,6 +802,7 @@ addr	how	frozen	evidence
 004e20b0	callgraph	CCharacterCreation::SetSelectedRace	only unmatched callee of 004e2470=Script_SetSelectedRace
 004e2470	table	Script_SetSelectedRace	binding "SetSelectedRace" in s_ScriptFunctions ~ table 00ac4228
 004e2500	table	Script_CustomizeExistingCharacter	binding "CustomizeExistingCharacter" in s_ScriptFunctions ~ table 00ac4228
+004e2790	annotated	CM2Model::GetPosition	tag in src/model/CM2Model.cpp
 004e2e70	callgraph	CCharacterSelection::SetFacing	only unmatched callee of 004e3030=Script_SetCharacterSelectFacing
 004e2f60	table	Script_SetCharSelectModelFrame	binding "SetCharSelectModelFrame" in s_ScriptFunctions ~ table 00ac4378
 004e3000	table	Script_GetCharacterSelectFacing	binding "GetCharacterSelectFacing" in s_ScriptFunctions ~ table 00ac4378
@@ -825,6 +832,7 @@ addr	how	frozen	evidence
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f3dd0	annotated	BuildComponentArray	tag in src/component/Util.cpp
 004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
+004f4320	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
@@ -926,7 +934,6 @@ addr	how	frozen	evidence
 00511fe0	annotated	Script_GetThreatStatusColor	tag in src/ui/game/GameScript.cpp
 00512090	annotated	Script_ConsoleAddMessage	tag in src/ui/game/GameScript.cpp
 005125e0	string	CGxDevice::ShaderCreate	score 0.50 shared %s:%d
-00512a00	callgraph	CGGameUI::GetLockedTarget	only unmatched callee of 0060aaa0=ParseTrailingTokens
 00512a30	annotated	InPartyOrRaid	tag in src/ui/game/ScriptEvents.cpp
 00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f480=Script_UnitIsDead
 00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
@@ -1113,7 +1120,7 @@ addr	how	frozen	evidence
 00526530	handler	ReceiveWeather	SetMessageHandler(SMSG_WEATHER) on both sides
 00527f00	table	Script_InteractUnit	binding "InteractUnit" in s_ScriptFunctions ~ table 00ac80b0
 00528920	table	Script_LoadAddOn	binding "LoadAddOn" in s_ScriptFunctions ~ table 00ac80b0
-0052a980	string	CGGameUI::Initialize	unique "Interface\FrameXML\Bindings.xml"
+0052a980	string	WowClientInit	unique "Whether or not script profiling is enabled"
 0052b470	table	Script_RegisterForSave	binding "RegisterForSave" in s_ScriptFunctions ~ table 00ac80b0
 0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
 0052bc80	annotated	CGPartyInfo::SetLeader	tag in src/ui/game/CGPartyInfo.cpp
@@ -1304,24 +1311,32 @@ addr	how	frozen	evidence
 00558060	order	Script_Stub_GetLFGRandomCooldownExpiration	binding table name Script_Stub_GetLFGRandomCooldownExpiration, in definition order in src/ui/game/miscscriptstubs.cpp
 00559ff0	order	Script_Stub_GetLastQueueStatusIndex	binding table name Script_Stub_GetLastQueueStatusIndex, in definition order in src/ui/game/miscscriptstubs.cpp
 0055d860	annotated	CGUIBindings::ParseModifierFlags	tag in src/ui/game/CGUIBindings.cpp
-0055dc00	table	Script_GetNumBindings	binding "GetNumBindings" in s_ScriptFunctions ~ table 00acde38
+0055d990	annotated	UIBindingsModifierPrefix	tag in src/ui/game/UIBindings.cpp
+0055dc00	annotated	Script_GetNumBindings	tag in src/ui/game/UIBindingsScript.cpp
 0055dc30	table	Script_GetCurrentBindingSet	binding "GetCurrentBindingSet" in s_ScriptFunctions ~ table 00acde38
 0055dc60	annotated	Script_GetNumModifiedClickActions	tag in src/ui/game/UIBindingsScript.cpp
+0055dd10	annotated	UIBindingsKeyName	tag in src/ui/game/UIBindings.cpp
 0055e180	string	CGUIBindings::ParseBinding	unique "BUTTON"
+0055e700	callgraph	UIBindingsGetByIndex	only unmatched callee of 0055e8d0=Script_GetBinding
+0055e750	callgraph	UIBindingsGetKey	only unmatched callee of 0055e9b0=Script_GetBindingKey
 0055e870	callgraph	RCString::GetString	only unmatched callee of 0055ea70=Script_GetModifiedClickAction
-0055e8d0	table	Script_GetBinding	binding "GetBinding" in s_ScriptFunctions ~ table 00acde38
-0055e9b0	table	Script_GetBindingKey	binding "GetBindingKey" in s_ScriptFunctions ~ table 00acde38
+0055e8d0	annotated	Script_GetBinding	tag in src/ui/game/UIBindingsScript.cpp
+0055e9b0	annotated	Script_GetBindingKey	tag in src/ui/game/UIBindingsScript.cpp
 0055ea70	annotated	Script_GetModifiedClickAction	tag in src/ui/game/UIBindingsScript.cpp
 0055f4d0	callorder	CGUIBindings::GetModifiedClick	same slot between linked calls in 0055fb90=Script_SetModifiedClick
+0055f860	annotated	UIBindingsRunCommand	tag in src/ui/game/UIBindings.cpp
 0055f940	annotated	CGUIBindings::IsModifiedClick	tag in src/ui/game/CGUIBindings.cpp
-0055fad0	table	Script_RunBinding	binding "RunBinding" in s_ScriptFunctions ~ table 00acde38
+0055fad0	annotated	Script_RunBinding	tag in src/ui/game/UIBindingsScript.cpp
 0055fb90	annotated	Script_SetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 0055fc20	annotated	Script_GetModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 0055fcc0	annotated	Script_IsModifiedClick	tag in src/ui/game/UIBindingsScript.cpp
 00560560	table	Script_ClearOverrideBindings	binding "ClearOverrideBindings" in s_ScriptFunctions ~ table 00acde38
-00562550	table	Script_GetBindingAction	binding "GetBindingAction" in s_ScriptFunctions ~ table 00acde38
-005625f0	table	Script_GetBindingByKey	binding "GetBindingByKey" in s_ScriptFunctions ~ table 00acde38
-00563520	table	Script_SetBinding	binding "SetBinding" in s_ScriptFunctions ~ table 00acde38
+00562490	callgraph	UIBindingsGetCommandForKey	only unmatched callee of 00562550=Script_GetBindingAction
+00562550	annotated	Script_GetBindingAction	tag in src/ui/game/UIBindingsScript.cpp
+005625f0	annotated	Script_GetBindingByKey	tag in src/ui/game/UIBindingsScript.cpp
+00562dd0	string	CGUIBindings::LoadModifiedClicks	unique "action"
+00562ed0	callgraph	UIBindingsSetKey	only unmatched callee of 00563520=Script_SetBinding
+00563520	annotated	Script_SetBinding	tag in src/ui/game/UIBindingsScript.cpp
 005635e0	table	Script_SetBindingSpell	binding "SetBindingSpell" in s_ScriptFunctions ~ table 00acde38
 00563700	table	Script_SetBindingItem	binding "SetBindingItem" in s_ScriptFunctions ~ table 00acde38
 00563820	table	Script_SetBindingMacro	binding "SetBindingMacro" in s_ScriptFunctions ~ table 00acde38
@@ -1334,7 +1349,7 @@ addr	how	frozen	evidence
 00564070	table	Script_LoadBindings	binding "LoadBindings" in s_ScriptFunctions ~ table 00acde38
 005640c0	table	Script_SaveBindings	binding "SaveBindings" in s_ScriptFunctions ~ table 00acde38
 00564130	table	Script_GetClickFrame	binding "GetClickFrame" in s_ScriptFunctions ~ table 00acde38
-00564760	string	CGUIBindings::LoadModifiedClicks	unique "ModifiedClick"
+00564760	string	EnsureLoaded	unique "Binding"
 00564e90	order	Script_Stub_GetMacroIconInfo	binding table name Script_Stub_GetMacroIconInfo, in definition order in src/ui/game/miscscriptstubs.cpp
 00565030	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete	same slot between linked calls in 007689e0=ConsoleCommandUnregister
 005666a0	order	Script_Stub_GetMacroIndexByName	binding table name Script_Stub_GetMacroIndexByName, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1373,7 +1388,10 @@ addr	how	frozen	evidence
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
-0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity
+0057c2a0	override	C44Matrix::Identity	
+0057c2e0	annotated	TransformDirection	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_SphereMap
+0057c450	annotated	CGxDevice::XformSet	tag in src/gx/CGxDevice.cpp
 0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
@@ -1583,6 +1601,7 @@ addr	how	frozen	evidence
 005cb3f0	order	Script_Stub_GuildControlDelRank	binding table name Script_Stub_GuildControlDelRank, in definition order in src/ui/game/miscscriptstubs.cpp
 005cc3e0	order	Script_Stub_GuildControlGetRankFlags	binding table name Script_Stub_GuildControlGetRankFlags, in definition order in src/ui/game/miscscriptstubs.cpp
 005ccc90	order	Script_Stub_GuildControlGetRankName	binding table name Script_Stub_GuildControlGetRankName, in definition order in src/ui/game/miscscriptstubs.cpp
+005cde20	annotated	Script_GetSkillLineInfo	tag in src/ui/game/MiscScript.cpp
 005cf220	order	Script_Stub_OfferPetition	binding table name Script_Stub_OfferPetition, in definition order in src/ui/game/miscscriptstubs.cpp
 005cff60	string	Script_Stub_GetFactionInfo	score 0.50 shared GetFactionInfo
 005d3780	order	Script_Stub_PetCanBeAbandoned	binding table name Script_Stub_PetCanBeAbandoned, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -1640,8 +1659,8 @@ addr	how	frozen	evidence
 005eca30	annotated	CGCooldown_SetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
 005eca80	annotated	CGCooldown_GetDrawEdge	tag in src/ui/game/CGCooldownScript.cpp
 005ece80	table	CGCooldown_SetCooldown	binding "SetCooldown" in CGCooldownMethods ~ table 00ad13a4
-005eeb70	callgraph	TextureLodBiasSet	only unmatched callee of 0078d730=CWorldParam::TextureLodBiasCallback
 005ef490	string	ActionTypeName	score 0.73 shared equipmentset; macro; spell
+005f4910	string	CGGameUI::Initialize	score 0.50 shared Interface\FrameXML\FrameXML.toc
 005f7630	callorder	AddOnIsLoaded	same slot between linked calls in 00511b30=Script_IsAddOnLoaded
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
@@ -1742,8 +1761,8 @@ addr	how	frozen	evidence
 0060eae0	table	Script_UnitXPMax	binding "UnitXPMax" in s_UnitFunctions ~ table 00ad21d8
 0060eb60	table	Script_UnitHealth	binding "UnitHealth" in s_UnitFunctions ~ table 00ad21d8
 0060ec60	table	Script_UnitHealthMax	binding "UnitHealthMax" in s_UnitFunctions ~ table 00ad21d8
-0060ed40	annotated	Script_UnitMana	tag in src/ui/game/ScriptEvents.cpp
-0060ef40	annotated	Script_UnitManaMax	tag in src/ui/game/ScriptEvents.cpp
+0060ed40	annotated	Script_UnitPower	tag in src/ui/game/ScriptEvents.cpp
+0060ef40	annotated	Script_UnitPowerMax	tag in src/ui/game/ScriptEvents.cpp
 0060f100	annotated	Script_UnitPowerType	tag in src/ui/game/ScriptEvents.cpp
 0060f350	annotated	Script_UnitOnTaxi	tag in src/ui/game/ScriptEvents.cpp
 0060f3d0	annotated	Script_UnitIsFeignDeath	tag in src/ui/game/ScriptEvents.cpp
@@ -1772,7 +1791,6 @@ addr	how	frozen	evidence
 00610de0	table	Script_UnitDefense	binding "UnitDefense" in s_UnitFunctions ~ table 00ad21d8
 00610ec0	annotated	Script_UnitArmor	tag in src/ui/game/ScriptEvents.cpp
 00610fb0	annotated	Script_UnitCharacterPoints	tag in src/ui/game/ScriptEvents.cpp
-006110a0	order	Script_UnitAuraFiltered	definition order between Script_UnitCharacterPoints and Script_UnitIsTapped in src/ui/game/ScriptEvents.cpp
 00611130	table	Script_UnitIsTapped	binding "UnitIsTapped" in s_UnitFunctions ~ table 00ad21d8
 006111b0	table	Script_UnitIsTappedByPlayer	binding "UnitIsTappedByPlayer" in s_UnitFunctions ~ table 00ad21d8
 00611230	table	Script_UnitIsTappedByAllThreatList	binding "UnitIsTappedByAllThreatList" in s_UnitFunctions ~ table 00ad21d8
@@ -1888,8 +1906,9 @@ addr	how	frozen	evidence
 00626440	table	CGTooltip_SetQuestLogRewardSpell	binding "SetQuestLogRewardSpell" in CGTooltipMethods ~ table 00ad2ae0
 006264d0	table	CGTooltip_SetEquipmentSet	binding "SetEquipmentSet" in CGTooltipMethods ~ table 00ad2ae0
 00626560	table	CGTooltip_SetFrameStack	binding "SetFrameStack" in CGTooltipMethods ~ table 00ad2ae0
-0062dae0	annotated	CGTooltip_SetHyperlink	tag in src/ui/game/CGTooltipScript.cpp
-0062e050	table	CGTooltip_SetInventoryItem	binding "SetInventoryItem" in CGTooltipMethods ~ table 00ad2ae0
+006277f0	string	TooltipSetItemInfo	unique "%s %.2f"
+0062dae0	table	CGTooltip_SetHyperlink	binding "SetHyperlink" in CGTooltipMethods ~ table 00ad2ae0
+0062e050	annotated	CGTooltip_SetInventoryItem	tag in src/ui/game/CGTooltipScript.cpp
 0062e520	table	CGTooltip_SetLootItem	binding "SetLootItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e670	table	CGTooltip_SetQuestItem	binding "SetQuestItem" in CGTooltipMethods ~ table 00ad2ae0
 0062e790	table	CGTooltip_SetQuestLogItem	binding "SetQuestLogItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1899,7 +1918,7 @@ addr	how	frozen	evidence
 0062ee70	table	CGTooltip_SetMerchantCostItem	binding "SetMerchantCostItem" in CGTooltipMethods ~ table 00ad2ae0
 0062eff0	table	CGTooltip_SetTradePlayerItem	binding "SetTradePlayerItem" in CGTooltipMethods ~ table 00ad2ae0
 0062f1e0	table	CGTooltip_SetTradeTargetItem	binding "SetTradeTargetItem" in CGTooltipMethods ~ table 00ad2ae0
-0062f420	table	CGTooltip_SetBagItem	binding "SetBagItem" in CGTooltipMethods ~ table 00ad2ae0
+0062f420	annotated	CGTooltip_SetBagItem	tag in src/ui/game/CGTooltipScript.cpp
 0062f740	table	CGTooltip_SetTalent	binding "SetTalent" in CGTooltipMethods ~ table 00ad2ae0
 0062f8b0	table	CGTooltip_SetSendMailItem	binding "SetSendMailItem" in CGTooltipMethods ~ table 00ad2ae0
 0062f9e0	table	CGTooltip_SetInboxItem	binding "SetInboxItem" in CGTooltipMethods ~ table 00ad2ae0
@@ -1927,18 +1946,44 @@ addr	how	frozen	evidence
 0067cbd0	callgraph	GetI32	only unmatched callee of 006354d0=ReceiveItemQueryResponse
 0067d770	override	Script_GetUnitFromName	
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
+00681230	annotated	GxVertexBufferFormatSize	tag in src/gx/Buffer.cpp
+00681240	callgraph	GxVertexAttribOffset	only unmatched callee of 0097a2e0=CM2ParticleEmitter::SetupVertexCursor
 006813b0	override	GxSceneClear	
+00681450	override	GxTexSetWrap	
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 00681890	callgraph	CGxDevice::XformSetViewport	only unmatched callee of 00681f60=GxXformSetViewport
+00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
+00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
+00682d20	callgraph	GxXformProjNativeTranspose	only unmatched callee of 00872c10=CShaderEffect::UpdateProjMatrix
+00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
+00682d70	override	CGxDevice::DeviceCurWindow	
+00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
+00682e70	override	CGxDevice::ScissorSet	
+00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
+00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
+006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
+00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
+006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
+00683960	override	TSGrowableArray<enum EGxRenderState>::Reserve	
+00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
+00684620	annotated	CGxLightState::Set	tag in src/gx/CGxDevice.cpp
+006847d0	annotated	CGxDevice::LightSet	tag in src/gx/CGxDevice.cpp
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685970	override	CGxDevice::IRsDirty	
+006859e0	override	CGxDevice::IRsForceUpdate	
+00685a70	override	CGxDevice::IRsForceUpdate	
+00685b50	override	CGxDevice::IRsSync	
+00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
+00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
+00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 00483290=CSimpleTexture::GetImageModePixelShader
@@ -1948,6 +1993,19 @@ addr	how	frozen	evidence
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
+006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
+006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
+006a43d0	override	CGxDeviceD3d::IStateSyncLights	
+006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
+006a4850	override	CGxDeviceD3d::IStateSyncXforms	
+006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
+006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
+006a5940	override	CGxDeviceD3d::IStateSync	
+006a99e0	override	CGxDeviceD3d::IXformSetViewport	
+006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
+006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006b0970	callgraph	ClientServices::IsConnected	only unmatched callee of 004dda50=Script_IsConnectedToServer
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin
 006b0b50	annotated	ClientServices::Send	tag in src/client/ClientServices.cpp
@@ -1976,6 +2034,10 @@ addr	how	frozen	evidence
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
+006c8e70	override	TEXTURECACHE::PasteGlyphOutlinedMonochrome	
+006c9330	override	TEXTURECACHE::PasteGlyphNonOutlinedMonochrome	
+006c9420	override	TEXTURECACHE::PasteGlyphOutlinedAA	
+006c9c70	override	TEXTURECACHE::PasteGlyphNonOutlinedAA	
 006ca050	string	TEXTURECACHE::CreateTexture	unique "GxuFont"
 006cef10	callgraph	WowClientDB<AreaTableRec>::GetRecord	only unmatched callee of 00516b20=Script_GetBindLocation
 006cfe70	handler	ReceiveEmote	SetMessageHandler(SMSG_EMOTE) on both sides
@@ -1989,16 +2051,20 @@ addr	how	frozen	evidence
 006e2e90	handler	InventoryChangeFailureHandler	SetMessageHandler(SMSG_INVENTORY_CHANGE_FAILURE) on both sides
 006e7840	handler	ReceiveRemovedSpell	SetMessageHandler(SMSG_UNLEARNED_SPELLS) on both sides
 006e7d60	handler	ReceiveLearnedSpell	SetMessageHandler(SMSG_LEARNED_SPELL) on both sides
+006f7a60	annotated	CMath::SinCos	tag in lib/typhoon/tempest/math/CMath.cpp
+00705a80	sticky	WowClientDB<ChrRacesRec>::GetRecord	held from the previous run, where it was sticky
 00706d70	annotated	ItemNameFromEntry	tag in src/object/client/ItemLink.cpp
 0070aa00	override	ItemDisplayIcon	
 007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e3170=Script_GetCharacterInfo
+00717a20	annotated	CGUnit_C::GetModelData	tag in src/object/client/CGUnit_C.cpp
 00718a00	annotated	CGUnit_C::GetClassification	tag in src/object/client/CGUnit_C.cpp
 00719950	annotated	CGUnit_C::GetSubName	tag in src/object/client/CGUnit_C.cpp
 0071af70	annotated	CGUnit_C::GetShapeshiftForm	tag in src/object/client/CGUnit_C.cpp
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
+0071ed80	annotated	CGUnit_C::GetShadowBox	tag in src/object/client/CGUnit_C.cpp
 0071f300	annotated	CGUnit_C::GetCreatureType	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
@@ -2008,6 +2074,7 @@ addr	how	frozen	evidence
 00754c30	callorder	PlayerHasEquippedItem	same slot between linked calls in 0051c690=Script_IsEquippedItem
 00763680	annotated	GenerateNodeString	tag in src/console/Screen.cpp
 00763c60	callgraph	ConsoleAccessGetEnabled	only unmatched callee of 004dd450=Script_IsConsoleActive
+00763c70	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 00763d80	annotated	CONSOLELINE::~CONSOLELINE	tag in src/console/Screen.cpp
 007644b0	annotated	ReserveLine	tag in src/console/Screen.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
@@ -2067,8 +2134,7 @@ addr	how	frozen	evidence
 0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
 0076dd20	override	NameNeedsDeclension	
 0076e540	override	SMemAlloc	
-0076e5a0	callgraph	SMemFree	only unmatched callee of 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete, 007644b0=ReserveLine
-0076e5d0	order	SMemMove	definition order between SMemFree and SMemReAlloc in lib/squall/storm/Memory.cpp
+0076e5a0	callgraph	SMemFree	only unmatched callee of 00401030=operator delete[], 0047ae50=CDataStore::InternalDestroy, 0047cc90=operator delete
 0076e5e0	override	SMemReAlloc	
 0076e6e0	override	SStrChr	
 0076e720	override	SStrChrR	
@@ -2094,7 +2160,7 @@ addr	how	frozen	evidence
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
-007729b0	sticky	printf	held from the previous run, where it was callgraph
+007729b0	sticky	printf	held from the previous run, where it was sticky
 00772a80	override	SErrDisplayError	
 00772aa0	override	SErrDisplayAppFatal	
 00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
@@ -2140,9 +2206,37 @@ addr	how	frozen	evidence
 0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
 0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
+0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
+0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
+007a0d60	override	CMapEntity::FloorLight	
+007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
+007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
+007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
+007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
+007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
+007c6c30	override	CMapObjGroupSegmentQuery::TestFace	
+007c6d50	override	CMapObjGroupSegmentQuery::CachedLeaf	
+007c71e0	annotated	TriangleOutsideHull	tag in src/world/map/CMapObjGroup.cpp
+007c7610	annotated	CMapObjGroup::QueryEnd	tag in src/world/map/CMapObjGroup.cpp
+007c7660	annotated	CMapObjGroupBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
+007c7710	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
+007c77d0	annotated	CMapObjGroupDualSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
+007c78e0	annotated	CMapObjGroupSegmentQuery::Init	tag in src/world/map/CMapObjGroup.cpp
+007c7ae0	override	CMapObjGroup::RecordHits	
+007c7fe0	annotated	CMapObjGroup::SampleColorAtFace	tag in src/world/map/CMapObjGroup.cpp
+007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007c9ab0	annotated	CMapObjGroup::DualQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007ca180	annotated	CMapObjGroup::SegmentQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007ca440	annotated	CMapObjGroup::BoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007ca600	annotated	CMapObjGroup::DualQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007cb0c0	annotated	CMapObjGroup::QuerySegment	tag in src/world/map/CMapObjGroup.cpp
+007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
+007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
+007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
 007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
 007dc010	override	StringToMouseButton	
@@ -2166,6 +2260,12 @@ addr	how	frozen	evidence
 007e7e10	annotated	CoinTextureFormat	tag in src/ui/game/GameScript.cpp
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007ea5f0	string	CGlueMgr::InitializeFFX	unique "ffxSpecial"
+007ebf30	override	InterpBandColor	
+007ebf90	override	InterpFloatBand	
+007ebff0	override	ComputeLightColors	
+007ed2d0	override	SkyLerp	
+007ed3b0	annotated	InterpBodyBand	tag in src/world/Terrain.cpp
+007f0530	override	SkyRender	
 007f09b0	override	SkyRender	
 007f1cd0	cvar	CWorldParam::SkyCloudLODCallback	callback of CVar::Register("SkyCloudLOD") on both sides
 007f39b0	cvar	CWorldParam::ViolenceLevelCallback	callback of CVar::Register("violenceLevel") on both sides
@@ -2247,7 +2347,7 @@ addr	how	frozen	evidence
 00819d40	string	FrameScript_GetText	unique "_FEMALE"
 00819ea0	annotated	FrameScript_Execute	tag in src/ui/FrameScript.cpp
 0081a2c0	annotated	FrameScript_Object::RunScript	tag in src/ui/FrameScript_Object.cpp
-0081b330	sticky	CSimpleFrame::GetObjectType	held from the previous run, where it was sticky
+0081b330	sticky	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	held from the previous run, where it was sticky
 0081b380	sticky	FrameScript_Object::RegisterScriptEvent	held from the previous run, where it was sticky
 0081b410	sticky	FrameScript_Object::UnregisterScriptEvent	held from the previous run, where it was sticky
 0081b530	override	FrameScript_SignalEvent	
@@ -2258,6 +2358,7 @@ addr	how	frozen	evidence
 0081bab0	table	Script_GetNumFrames	binding "GetNumFrames" in s_ScriptFunctions ~ table 00af5848
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	table	Script_GetFramesRegisteredForEvent	binding "GetFramesRegisteredForEvent" in s_ScriptFunctions ~ table 00af5848
+0081bfa0	annotated	CM2Cache::BeginThread	tag in src/model/CM2Cache.cpp
 0081bfd0	callorder	CM2Cache::WaitThread	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
@@ -2265,8 +2366,19 @@ addr	how	frozen	evidence
 0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
-0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
+0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
+0081cc30	annotated	CM2Scene::SetProjectionCallback	tag in src/model/CM2Scene.cpp
+0081cdc0	callorder	TSGrowableArray<M2Element>::New	same slot between linked calls in 00821a20=CM2Scene::Animate
+0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp
+0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
+0081eea0	override	CM2Scene::SortOpaque	
+0081ef30	override	CM2Scene::SortTransparent	
+0081f1d0	annotated	CM2Scene::ComputeElementShaders	tag in src/model/CM2Scene.cpp
+0081f330	annotated	CM2SceneRender::CM2SceneRender	tag in src/model/cm2scenerender.hpp
 0081f450	override	CM2SceneRender::SetupTextures	
+0081f620	annotated	CM2SceneRender::SetupParticleTransform	tag in src/model/CM2SceneRender.cpp
+0081f700	annotated	CM2SceneRender::SetBatchVertices	tag in src/model/CM2SceneRender.cpp
+0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
 0081fb10	override	CM2SceneRender::SetupLighting	
 0081fe90	override	CM2SceneRender::SetupMaterial	
 008203b0	override	CM2SceneRender::DrawBatch	
@@ -2274,49 +2386,96 @@ addr	how	frozen	evidence
 00820ae0	override	CM2SceneRender::DrawBatchDoodad	
 00820f40	override	CM2SceneRender::DrawRibbon	
 008214e0	override	CM2SceneRender::DrawParticle	
+00821930	annotated	CM2Scene::AddParticleElement	tag in src/model/CM2Scene.cpp
 00821a20	override	CM2Scene::Animate	
 008230d0	override	CM2SceneRender::DrawCallback	
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
+00823d90	override	CM2Model::DetachFromScene	
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
+00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
+00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
+00824d30	override	CM2Model::FreeExternalResources	
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
+00824fc0	annotated	CM2Model::IsDrawable	tag in src/model/CM2Model.cpp
 00825170	callorder	CM2Model::UpdateLoaded	same slot between linked calls in 00832ea0=CM2Model::InitializeLoaded
 008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing
+00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
+00825d70	callgraph	CM2Model::UnoptimizeVisibleGeometry	only unmatched callee of 0082c7c0=CM2Model::SetGeometryVisible
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
-008269c0	annotated	CM2Model::Sub8269C0	tag in src/model/CM2Model.cpp
-00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence
+008269c0	override	CM2Model::Sub8269C0	
+00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence, 00826dd0=CM2Model::SetSecondaryBoneSequence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
 00826dd0	override	CM2Model::SetSecondaryBoneSequence	
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
+008273d0	annotated	CM2Model::HasAttachment	tag in src/model/CM2Model.cpp
+008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp
+00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
+00828680	override	M2AnimateTrack<M2CompQuat,C4Quaternion>	
+00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
+00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
+0082ad50	callgraph	C3Vector::operator-	only unmatched callee of 0082d6f0=CM2Model::AnimateTextureTransformsMT
+0082af40	override	M2AnimateTrack<fixed16,float>	
+0082b0a0	override	M2AnimateTrack<C3Vector,C3Vector>	
+0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
+0082c1c0	override	CM2Model::FreeInternalResources	
+0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
+0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
 0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
+0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
+008309c0	annotated	CM2Model::AnimateParticleEmitter	tag in src/model/CM2Model.cpp
 00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
+00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
-00831bb0	callgraph	CM2Model::ApplySequencePlayBack	only unmatched callee of 0083d840=CM2Shared::SequenceLoadedCallback
+00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
+00831e20	override	CM2Model::CancelAllDeferredSequences	
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00832640	override	CM2Model::~CM2Model	
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
+008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
+00834900	annotated	CM2Lighting::Initialize	tag in src/model/CM2Lighting.cpp
+00834940	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
+00834990	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
+00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
+00834ab0	annotated	CM2Light::Unlink	tag in src/model/CM2Light.cpp
+00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
+00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
+00834f60	annotated	CM2Lighting::AddLight	tag in src/model/CM2Lighting.cpp
+008350a0	override	CM2Lighting::CameraSpace	
+00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
+008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp
+00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
+00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
+008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
+00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
+008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
+00836980	override	CM2Shared::SubstituteSimpleShaders	
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
+00837680	override	CM2Shared::SubstituteSpecializedShaders	
+00837a40	override	CM2Shared::InitializeSkinProfile	
 0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
 0083d370	annotated	CM2Shared::DestroySequenceLoad	tag in src/model/CM2Shared.cpp
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
 0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
+0083dc90	override	CM2Shared::Release	
 0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
+0083de90	annotated	SequenceBufferFree	tag in src/model/CM2Shared.cpp
 0084d3f0	callgraph	luaO_log2	only unmatched callee of 0085c200=setnodevector
 0084d420	callorder	luaO_rawequalObj	same slot between linked calls in 0085bd70=findindex, 0085c470=luaH_get
 0084d480	callgraph	luaO_str2d	only unmatched callee of 00856e50=luaV_tonumber
-0084d520	callgraph	pushstr	only unmatched callee of 0084d580=luaO_pushvfstring
+0084d520	order	pushstr	definition order between luaO_str2d and luaO_pushvfstring in vendor/lua-5.1.3/src/lobject.c
 0084d580	callgraph	luaO_pushvfstring	only unmatched callee of 0084e3a0=lua_pushvfstring
 0084d840	callgraph	errorlimit	only unmatched callee of 0085efb0=indexupvalue
 0084d860	string	luaO_chunkid	unique "[string ""
@@ -2333,8 +2492,8 @@ addr	how	frozen	evidence
 0084deb0	override	lua_type	
 0084ded0	string	lua_typename	unique "no value"
 0084def0	callorder	lua_iscfunction	same slot between linked calls in 00854da0=luaB_cocreate
-0084df20	callgraph	lua_isnumber	only unmatched callee of 004a3f90=FontString_SetSpacing, 004deaf0=Script_GetNumRealms, 004dfa70=Script_IsRaceClassRestricted
-0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc260=Script_DefaultServerLogin
+0084df20	override	lua_isnumber	
+0084df60	callgraph	lua_isstring	only unmatched callee of 004a4930=FontString_SetJustifyH, 004a49c0=FontString_SetJustifyV, 004dc0c0=Script_PlayGlueAmbience
 0084e030	override	lua_tonumber	
 0084e070	override	lua_tointeger	
 0084e0b0	callorder	lua_toboolean	same slot between linked calls in 0058e800=CGQuestPOIFrame_EnableSmoothing, 0058e850=CGQuestPOIFrame_EnableMerging, 00815500=StringToBOOL
@@ -2347,7 +2506,7 @@ addr	how	frozen	evidence
 0084e2a0	override	lua_pushnumber	
 0084e2d0	callgraph	lua_pushinteger	only unmatched callee of 005a7fd0=Script_GetActionBarPage, 00816c40=sub_816C40, 00853340=push_onecapture
 0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring
-0084e350	callgraph	lua_pushstring	only unmatched callee of 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization, 00510e00=Script_GetRealmName
+0084e350	callgraph	lua_pushstring	only unmatched callee of 004e06f0=Script_GetFactionForRace, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
 0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
@@ -2395,7 +2554,6 @@ addr	how	frozen	evidence
 0084f9f0	callgraph	luaL_checklstring	only unmatched callee of 00854100=luaB_tonumber
 0084fa50	callgraph	luaL_optlstring	only unmatched callee of 00510c60=Script_GetCoinText
 0084fab0	callorder	luaL_checknumber	same slot between linked calls in 00818070=FrameScript_Sprintf
-0084fb30	order	luaL_optnumber	definition order between luaL_checknumber and luaL_checkinteger in vendor/lua-5.1.3/src/lauxlib.c
 0084fb60	callgraph	luaL_checkinteger	only unmatched callee of 0084fbd0=luaL_optinteger
 0084fbd0	callgraph	luaL_optinteger	only unmatched callee of 008545c0=luaB_collectgarbage
 0084fc00	callgraph	luaL_openlib	only unmatched callee of 0084fdd0=luaL_register
@@ -2478,7 +2636,6 @@ addr	how	frozen	evidence
 00853860	string	add_value	unique "invalid replacement value (a %s)"
 00853980	order	luaL_gsub	binding table name luaL_gsub, in definition order in vendor/lua-5.1.3/src/lauxlib.c
 00853c50	order	str_format	binding table name str_format, in definition order in vendor/lua-5.1.3/src/lstrlib.c
-00854070	order	createmetatable	definition order between str_format and luaopen_string in vendor/lua-5.1.3/src/lstrlib.c
 008540d0	callorder	luaopen_string	same slot between linked calls in 00819bb0=FrameScript_Initialize
 00854100	string	luaB_tonumber	unique "base out of range"
 00854210	order	luaB_error	binding table name luaB_error, in definition order in vendor/lua-5.1.3/src/lbaselib.c
@@ -2524,9 +2681,6 @@ addr	how	frozen	evidence
 00856c80	callgraph	luaS_newlstr	only unmatched callee of 0084ef90=lua_concat, 00855a20=luaD_seterrorobj
 00856e50	override	luaV_tonumber	
 00856ea0	override	luaV_tostring	
-00856f10	order	traceexec	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
-00856fa0	order	callTMres	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
-00857100	order	callTM	definition order between luaV_tostring and luaV_gettable in vendor/lua-5.1.3/src/lvm.c
 00857250	string	luaV_gettable	unique "loop in gettable"
 008573c0	string	luaV_settable	unique "loop in settable"
 00857900	string	luaV_concat	unique "string length overflow"
@@ -2535,8 +2689,6 @@ addr	how	frozen	evidence
 0085a7d0	callgraph	reallymarkobject	only unmatched callee of 0085ba50=luaC_barrierf
 0085b660	callgraph	markmt	only unmatched callee of 0085b6a0=markroot
 0085b6a0	callgraph	markroot	only unmatched callee of 0085b9e0=luaC_fullgc
-0085b710	order	remarkupvals	definition order between markroot and singlestep in vendor/lua-5.1.3/src/lgc.c
-0085b750	order	atomic	definition order between markroot and singlestep in vendor/lua-5.1.3/src/lgc.c
 0085b850	callgraph	singlestep	only unmatched callee of 0085b950=luaC_step
 0085b950	override	luaC_step	
 0085b9e0	callgraph	luaC_fullgc	only unmatched callee of 0084ed50=lua_gc
@@ -2574,8 +2726,6 @@ addr	how	frozen	evidence
 0085ee80	string	registerlocalvar	unique "too many local variables"
 0085efb0	string	indexupvalue	unique "upvalues"
 0085faa0	string	parlist	unique "<name> or '...' expected"
-0085fbd0	order	body	definition order between parlist and funcargs in vendor/lua-5.1.3/src/lparser.c
-0085fd10	order	explist1	definition order between parlist and funcargs in vendor/lua-5.1.3/src/lparser.c
 0085fd50	string	funcargs	unique "ambiguous syntax (function call x new statement)"
 0085fe90	string	prefixexp	unique "unexpected symbol"
 0085ff00	order	primaryexp	definition order between prefixexp and simpleexp in vendor/lua-5.1.3/src/lparser.c
@@ -2596,8 +2746,22 @@ addr	how	frozen	evidence
 0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516210=Script_GetReleaseTimeRemaining, 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
+00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
+00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00872de0	annotated	CShaderEffect::PixelPermute	tag in src/gx/shader/CShaderEffect.cpp
+00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
+00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp
+00873160	annotated	CShaderEffect::SetShadersForGeometry	tag in src/gx/shader/CShaderEffect.cpp
+00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
+00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
+00873550	annotated	CShaderEffect::SetTexMtx_SphereMap	tag in src/gx/shader/CShaderEffect.cpp
+00873620	annotated	CShaderEffect::SetTexMtx	tag in src/gx/shader/CShaderEffect.cpp
+00873900	annotated	CShaderEffect::SetDiffuse	tag in src/gx/shader/CShaderEffect.cpp
+00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
+00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp
+00873ca0	annotated	CShaderEffect::SetLocalLighting	tag in src/gx/shader/CShaderEffect.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -2617,7 +2781,6 @@ addr	how	frozen	evidence
 0087ebc0	override	SEDiskSound::SEDiskSound	
 0087ee60	string	SESound::LoadDiskSound	unique "%-24d%s"
 008889b0	callgraph	FrameScript_Object::RegisterScriptObject	only unmatched callee of 00516bf0=Script_GetMouseFocus
-0088b9c0	callgraph	ActivePlayerData	only unmatched callee of 0060e290=Script_GetSpellCritChance
 0088be0d	callgraph	CVar::GetString	only unmatched callee of 004dd610=Script_GetMovieResolution
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
@@ -2648,6 +2811,8 @@ addr	how	frozen	evidence
 008afeb0	string	GroundEffectDoodadRec::GetFilename	unique "DBFilesClient\GroundEffectDoodad.dbc"
 008afec0	string	GroundEffectTextureRec::GetFilename	unique "DBFilesClient\GroundEffectTexture.dbc"
 008b02c0	string	ItemRec::GetFilename	unique "DBFilesClient\Item.dbc"
+008b02e0	string	ItemClassRec::GetFilename	unique "DBFilesClient\ItemClass.dbc"
+008b12d0	string	ItemSubClassRec::GetFilename	unique "DBFilesClient\ItemSubClass.dbc"
 008b1940	string	ItemVisualsRec::GetFilename	unique "DBFilesClient\ItemVisuals.dbc"
 008b2710	string	LiquidTypeRec::GetFilename	unique "DBFilesClient\LiquidType.dbc"
 008b2b10	string	LoadingScreensRec::GetFilename	unique "DBFilesClient\LoadingScreens.dbc"
@@ -2741,8 +2906,8 @@ addr	how	frozen	evidence
 00965960	callgraph	CSimpleEditBox::Insert	only unmatched callee of 00975e10=CSimpleEditBox_Insert
 00965f20	annotated	CSimpleEditBox::SetMultiLine	tag in src/ui/simple/CSimpleEditBox.cpp
 00966580	callgraph	CSimpleEditBox::SetText	only unmatched callee of 00975e80=CSimpleEditBox_SetText, 00975f80=CSimpleEditBox_SetNumber
-00966b10	callgraph	TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]	only unmatched callee of 00966fd0=CSimpleEditBox::AddHistoryLine
-00966fd0	annotated	CSimpleEditBox::AddHistoryLine	tag in src/ui/simple/CSimpleEditBox.cpp
+00966b10	sticky	TSBaseArray<CSimpleEditBox::HISTORYLINE>::operator[]	held from the previous run, where it was sticky
+00966fd0	callgraph	CSimpleEditBox::SetHistoryLines	only unmatched callee of 00976770=CSimpleEditBox_SetHistoryLines
 00967290	string	CSimpleEditBox::LoadXML	unique "autoFocus"
 009690c0	callgraph	This	only unmatched callee of 009736f0=CSimpleScrollingMessageFrame_GetCurrentScroll
 00969300	callgraph	CSimpleMessageFrame::MessageCount	only unmatched callee of 00973640=CSimpleScrollingMessageFrame_GetNumMessages
@@ -2962,7 +3127,82 @@ addr	how	frozen	evidence
 00978360	annotated	CSimpleButton_GetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
+00978ad0	annotated	M2ParticleToFixed16	tag in src/model/CM2ParticleEmitter.cpp
+00978b70	annotated	M2ParticleFlushDenormals	tag in src/model/CM2ParticleEmitter.cpp
+00978bf0	annotated	CM2ParticleEmitter::SetMaterial	tag in src/model/CM2ParticleEmitter.cpp
+00978c70	annotated	CM2ParticleEmitter::SetTextureGrid	tag in src/model/CM2ParticleEmitter.cpp
+00978d00	annotated	CM2ParticleEmitter::SetHeadTail	tag in src/model/CM2ParticleEmitter.cpp
+00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
+00978e30	annotated	CM2ParticleEmitter::SetTextureAnimated	tag in src/model/CM2ParticleEmitter.cpp
+00979170	annotated	M2ParticleIndexBufferCreate	tag in src/model/CM2ParticleEmitter.cpp
+00979250	override	CM2ParticleEmitter::CM2ParticleEmitter	
+009792d0	annotated	CM2ParticleEmitter::RandomSpeed	tag in src/model/CM2ParticleEmitter.cpp
+00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
+009793b0	annotated	M2PartTrackRatio	tag in src/model/CM2ParticleEmitter.cpp
+00979480	annotated	M2PartTrackEval2	tag in src/model/CM2ParticleEmitter.cpp
+009794f0	annotated	M2PartTrackEvalAlpha	tag in src/model/CM2ParticleEmitter.cpp
+00979560	annotated	M2PartTrackEvalCell	tag in src/model/CM2ParticleEmitter.cpp
+009795d0	annotated	CM2ParticleEmitter::SampleColor	tag in src/model/CM2ParticleEmitter.cpp
+00979740	annotated	CM2ParticleEmitter::GroundSnapParticle	tag in src/model/CM2ParticleEmitter.cpp
+00979870	override	CM2ParticleEmitter::CreateParticle	
+00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00979e90	annotated	CM2ParticleEmitter::SampleAppearance	tag in src/model/CM2ParticleEmitter.cpp
+0097a130	annotated	CM2ParticleEmitter::SampleSpin	tag in src/model/CM2ParticleEmitter.cpp
+0097a260	annotated	M2ParticleIndexBufferFill	tag in src/model/CM2ParticleEmitter.cpp
+0097a2e0	annotated	CM2ParticleEmitter::SetupVertexCursor	tag in src/model/CM2ParticleEmitter.cpp
+0097a390	annotated	CM2ParticleEmitter::SetupDrawBasis	tag in src/model/CM2ParticleEmitter.cpp
+0097a580	annotated	CM2ParticleEmitter::SubmitDraw	tag in src/model/CM2ParticleEmitter.cpp
+0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
+0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
+0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
+0097b9e0	annotated	CM2ParticleEmitter::HasLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
+0097ba30	annotated	CM2ParticleEmitter::CountSpawnedModels	tag in src/model/CM2ParticleEmitter.cpp
+0097ba70	annotated	CM2ParticleEmitter::FindSpawnedModel	tag in src/model/CM2ParticleEmitter.cpp
+0097bd80	annotated	CM2ParticleEmitter::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
+0097bdb0	annotated	CM2ParticleEmitter::IntegrateModelParticle	tag in src/model/CM2ParticleEmitter.cpp
+0097be80	annotated	CM2ParticleEmitter::WriteParticleVertices	tag in src/model/CM2ParticleEmitter.cpp
+0097d820	annotated	CM2ParticleEmitter::SpawnParticle	tag in src/model/CM2ParticleEmitter.cpp
+0097d8c0	annotated	CM2ParticleEmitter::Emit	tag in src/model/CM2ParticleEmitter.cpp
+0097db80	annotated	CM2ParticleEmitter::IntegrateAndSpawnChildren	tag in src/model/CM2ParticleEmitter.cpp
+0097dd20	annotated	CM2ParticleEmitter::Step	tag in src/model/CM2ParticleEmitter.cpp
+0097e150	annotated	CM2ParticleEmitter::CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
+0097e3f0	annotated	CM2ParticleEmitter::Reserve	tag in src/model/CM2ParticleEmitter.cpp
+0097e480	annotated	CM2ParticleEmitter::SetParticleCount	tag in src/model/CM2ParticleEmitter.cpp
+0097e580	annotated	CM2ParticleEmitter::WriteLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
+0097e730	annotated	CM2ParticleEmitter::FillDrawBuffer	tag in src/model/CM2ParticleEmitter.cpp
+0097ea60	annotated	CM2ParticleEmitter::Draw	tag in src/model/CM2ParticleEmitter.cpp
+0097eb10	annotated	CM2ParticleEmitter::Update	tag in src/model/CM2ParticleEmitter.cpp
+0097edf0	annotated	CM2ParticleEmitter::PrepareStep	tag in src/model/CM2ParticleEmitter.cpp
+0097f570	annotated	CM2Ribbon::SetAbove	tag in src/model/CM2Ribbon.cpp
+0097f630	annotated	CM2Ribbon::SetGravity	tag in src/model/CM2Ribbon.cpp
+0097f640	annotated	CM2Ribbon::IsEmpty	tag in src/model/CM2Ribbon.cpp
+00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
+00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
+00981310	annotated	CM2ParticleEmitterPlane::CM2ParticleEmitterPlane	tag in src/model/CM2ParticleEmitter.cpp
+009813b0	annotated	CM2ParticleEmitterPlane::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
+009813c0	annotated	CM2ParticleEmitterPlane::SetLength	tag in src/model/CM2ParticleEmitter.cpp
+009813d0	annotated	CM2ParticleEmitterPlane::SetLatitude	tag in src/model/CM2ParticleEmitter.cpp
+009813e0	annotated	CM2ParticleEmitterPlane::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
+009813f0	annotated	CM2ParticleEmitterSphere::CM2ParticleEmitterSphere	tag in src/model/CM2ParticleEmitter.cpp
+00981490	annotated	CM2ParticleEmitterSphere::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
+009814b0	annotated	CM2ParticleEmitterSphere::SetLength	tag in src/model/CM2ParticleEmitter.cpp
+009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
+009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00982460	annotated	C4Quaternion::Slerp	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
+009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
+009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
+00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
+009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
+00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
+00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
+00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
+009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928

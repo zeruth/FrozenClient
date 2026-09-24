@@ -608,8 +608,12 @@ and the animation advances one 16-bit phase step per completed sheet.
   from disassembly. The structure — flat base colour, plus an ambient term scaled by the density
   byte, plus a highlight term proportional to `dot(cloudNormal, sunDirection)` clamped at 0 — is
   certain; the exact weights are not.
-* `FUN_007efae0`'s five outputs (@0x007efae0) are named by use, not by a symbol. It also drives the
-  sky highlight, so a port should reuse it for both.
+* `FUN_007efae0`'s five outputs (@0x007efae0) are named by use, not by a symbol. **Correction,
+  2026-09-23: it does NOT drive the sky highlight**, as this bullet used to claim. It has exactly
+  one caller in the binary, `0x007efecf` inside the cloud vertex builder, and the dome's colour
+  writer `FUN_007f0530` calls only four helpers -- `FUN_006acc50` (LerpColor), `FUN_007ed2d0`
+  (colour lerp), `FUN_007ed3b0` (band evaluator) and `FUN_007ed790` (HSV value scale). The
+  highlight reads its own two bands at `0x00af4b7c` and `0x00af4bac`; see parity-sky.md.
 * The precise lattice indexing of the 3D noise (which of the four `DAT_00af4a70` lookups is the
   `(x,y)`, `(x+1,y)`, `(x,y+1)`, `(x+1,y+1)` corner) is readable but was not transcribed
   instruction-by-instruction; any standard 3D value-noise arrangement over these tables will look

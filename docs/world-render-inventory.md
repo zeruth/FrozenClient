@@ -20,6 +20,19 @@ turned up a concrete defect serious enough that it is probably wrong, or unsafe,
 notes column says what. Five stages carry it: WMO portal visibility, blob shadows, liquid bucket 0
 (WMO liquid), liquid bucket 1 (WMO liquid) and the particle stand-in.
 
+**The defect lists in this file were audited on 2026-09-23 and every one of them was stale.**
+Eight concrete claims, spread across the particle, blob shadow, liquid and portal rows, described
+code that had already been fixed: a use-after-free on despawned models, the UI-shader form of the
+blob pass, a fixed-size liquid colour buffer, a transposed MLIQ axis, an MH2O bitmap read at the
+wrong stride, a leak in the legacy liquid path, a frustum that dropped its near and far planes
+past the first portal, and an unbounded portal re-walk. Each was re-read against the current
+source and struck through in place with what the code actually does now.
+
+That matters beyond tidiness: parts of two cycles went into re-investigating problems that were
+already solved, because this file is what a session plans from. **When a defect is fixed, strike
+it here in the same change.** The *suspect* marks stay on those rows regardless, because what
+they are suspect about has not changed: none of it has been seen running.
+
 Two facts found on 2026-09-14 while debugging crashes apply across several rows and are repeated in
 the notes where they matter:
 
@@ -91,7 +104,7 @@ stage that is wired up but carries a concrete defect (see Verification above).
 
 | Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
-| Viewport / state push | FUN_004f8ea0 head; `GxXformSetViewport` FUN_00681f60 | Gets the device viewport (vfunc 0x8c), `GxRsPush` FUN_00409670, `GxRsSet(0x13,1)`, sets the frame's viewport rect (with y-flip depending on `FUN_00682d50`). | ported (viewport) / missing (GxRsSet 0x13) | Verified at CGWorldFrame.cpp:152-154 and :348: `GxXformViewport` saves all six values, `GxXformSetViewport(m_viewport..., 0, 1)` sets the world's, and the saved set is restored at the end of `OnWorldRender`. No `GxRsPush`/`GxRsPop` around the whole world render (individual stages push/pop their own), and the y-flip variant (`FUN_00682d50`) is not reproduced. Note the world text is drawn *after* this restore (see the world-text row). |
+| Viewport / state push | FUN_004f8ea0 head; `GxXformSetViewport` FUN_00681f60 | Gets the device viewport (vfunc 0x8c), `GxRsPush` FUN_00409670, `GxRsSet(0x13,1)`, sets the frame's viewport rect (with y-flip depending on `FUN_00682d50`). | ported | Verified at CGWorldFrame.cpp:152-154 and :348: `GxXformViewport` saves all six values, `GxXformSetViewport(m_viewport..., 0, 1)` sets the world's, and the saved set is restored at the end of `OnWorldRender`. **Struck 2026-09-23: both gaps this row named are closed.** `OnWorldRender` now brackets the whole world render in `GxRsPush()` / `GxRsSet(GxRs_Multisample, 1)` with the matching `GxRsPop()` before the viewport restore, which is what the reference does at 0x004f8f2a (0x13 is 19, GxRs_Multisample) and pops in its post stage. That set was inert until the same change taught `CGxDeviceD3d::IRsSendToHw` to send the state as D3DRS_MULTISAMPLEANTIALIAS, which no backend had handled. `FUN_00682d50` is not a y-flip variant at all -- it is `CGxDevice::RenderTargetGet`, reading `m_textureTarget[buffer].m_texture` from base +0x2910 with a 12-byte stride, now tagged. The y-flip it was associated with lives in `IXformSetViewport` and `IStateSyncScissorRect`, both of which test the same array and both of which landed 2026-09-23. The reference defaults GxRs_Multisample to 1 as well -- its IRsInit at 0x00686208 writes 0x1c8 / 24 = 19 from the register holding 1 -- so its set inside the push is defensive and frozen does not antialias the UI by mistake. None of this has been seen running. Note the world text is drawn *after* this restore (see the world-text row). |
 | FFX begin | FUN_004f8770 (glow params from DayNight `+300`/underwater), FUN_008c1770 | Sets full-screen-effect parameters and redirects rendering to the FFX render target (`FFXEffects.cpp`: glow FUN_008bfe80, death FUN_007ea260, fog-combine/propagate-fog FUN_007ea5f0 -> FUN_007e80b0/FUN_007e81b0). | missing (deferred 2026-09-14) | `src/ffx/EffectGlow.cpp` ctor/callback are TODO. Blocked on gx: the device has no render-to-texture (only `RenderTargetGet`), so the glow needs D3D9 `SetRenderTarget`/render-target textures, the downsample+blur passes and the composite first. Sized as a multi-session gx feature, not a render-stage port. |
 | Scene clear (early) | `GxSceneClear` FUN_006813b0(3, black) | Only when the viewport rect changed (`FUN_004f5d90`). | stand-in | frozen always clears at the top of `OnWorldRender` (CGWorldFrame.cpp:171) to the fog colour when fog is active, else the horizon sky colour; there is no viewport-changed test. The reference's real clear is inside `CMap::Render` (below). |
 | Map prepare + **`CMap::Render`** | FUN_0077eff0 -> **FUN_0079a870** | See the dedicated table below. | stand-in | `TerrainRender` (Terrain.cpp:3909) + `WmoUpdateVisibility` + `RenderWmos` + `LiquidRender(0)`, all inside one function; the reference's split between prepare and render does not exist. |
@@ -116,7 +129,7 @@ stage that is wired up but carries a concrete defect (see Verification above).
 | Liquid-under-camera | `CWorldScene` FUN_00790920 -> FUN_007a0b00 (terrain liquid at camera) / FUN_007c8360 (WMO group liquid) | Writes `DAT_00cd8794` (liquid type id), sets the DayNight override-sky flag (FUN_007f1070) and underwater fog (FUN_0079b8e0/FUN_0079b360), FUN_008a2aa0. | stand-in | Verified: `TerrainUpdate` (Terrain.cpp:3766) calls `LiquidAt` (Terrain.cpp:2854) over the loaded terrain liquid layers (covering cell's highest corner = surface) and stores the kind in `s_cameraLiquidKind`; `CWorld::SetCameraUnderLiquid` switches `UpdateOutdoorLight` to the Light.dbc underwater parameter set, and `SkyRender` returns early while submerged. Caveats: the query is a linear scan of every liquid layer of all 25 resident tiles every frame (no spatial index); it runs *before* this frame's tile streaming, so it uses the previous frame's tile set; **WMO liquids are not consulted**, so a canal or interior pool never registers as submersion; `CGCamera::CheckUnderwater` (CGCamera.cpp:134) is still an empty stub, so nothing camera-side reacts. |
 | Frame begin | `GxRsPush`, `GxXformPush(World)` FUN_0057c3a0(8), frustum FUN_00984240, FUN_00782f20, FUN_007ba600 (index pool `CMap::lowDetailIndexPool`), FUN_007ae060 (MapObj begin), FUN_007b2a80 (DetailDoodad begin), FUN_007cd910/FUN_007cc810 (MapLowDetail begin; adds low-detail areas via FUN_007927e0) | Resets per-frame lists and counters. | stand-in | no equivalent; `TerrainRender` is monolithic and keeps no per-frame lists apart from the WMO `visFrame` stamp and the transient liquid/blended-batch vectors. It does `GxRsPush`/`GxRsPop` around itself but no `GxXformPush(World)`. |
 | Visibility traversal (outdoor) | FUN_0079a790(camera, 0): FUN_007cd850 (low-detail vis), FUN_00790020, FUN_00790af0, per area FUN_00799d40 / FUN_0079a160 / FUN_007935a0 / FUN_00793060 / FUN_007987a0 / FUN_00793760, FUN_00791980 | Walks the visible chunk rectangle, frustum-tests chunks / doodad defs / map-object defs and appends them to the WorldScene render lists. | stand-in | per-chunk AABB test `BoxVisible` inline inside `RenderShaded`/`RenderFallback` (so every resident chunk of all 25 tiles is visited every frame); doodads via `DoodadCullCenter`/`SphereVisible` in `TerrainRender`. `ExtractFrustum` normalises the planes, so the sphere tests are correct. No chunk rectangle, no render lists. |
-| Visibility traversal (inside WMO) | `DAT_00cd87a4 != 0`: FUN_007b3b20(&DAT_00cdb0e4) -> FUN_007a6b40(FUN_00799310) + FUN_007ad1f0(group, portalList, cameraPos, cameraTarget) (**portal walk**), FUN_007b3b20(&DAT_00cdb0d4), then FUN_0079a790(camera, 1) or FUN_00794250, FUN_00799f80 | Portal-based recursion from the camera's WMO group (`CPortalView`), then the outdoor traversal from the exterior portals. | stand-in (suspect) | Code verified present and called: `LoadWmoInstance` parses MOPV/MOPT/MOPR into world space, and `WmoUpdateVisibility` (Terrain.cpp:2422) / `WalkPortals` (Terrain.cpp:2357) run every frame from `TerrainRender` before `RenderWmos`, which does gate on `grp.visFrame != s_visFrame`. Two defects found by reading, neither visually checked: (1) **`NarrowFrustum` (Terrain.cpp:2313) copies planes 4 and 5 of its input as "the near and far planes"**, which is only true for the base 6-plane frustum - at recursion depth >= 1 the input is itself a narrowed frustum whose planes 4/5 are arbitrary portal-edge planes, so the near/far planes are dropped and two edge planes are duplicated; (2) **there is no visited set**: the comment at Terrain.cpp:2398 deliberately re-walks groups already reached this frame, with only `PORTAL_MAX_DEPTH = 8` bounding it, so a densely linked WMO (Stormwind, Ironforge) can recurse exponentially in the number of portals per group. Also, the camera's group is found by smallest containing AABB rather than the group BSP, so overlapping room boxes pick the wrong start. Unlinked interior groups and WMOs without portals keep the plain box test. |
+| Visibility traversal (inside WMO) | `DAT_00cd87a4 != 0`: FUN_007b3b20(&DAT_00cdb0e4) -> FUN_007a6b40(FUN_00799310) + FUN_007ad1f0(group, portalList, cameraPos, cameraTarget) (**portal walk**), FUN_007b3b20(&DAT_00cdb0d4), then FUN_0079a790(camera, 1) or FUN_00794250, FUN_00799f80 | Portal-based recursion from the camera's WMO group (`CPortalView`), then the outdoor traversal from the exterior portals. | stand-in (suspect) | Code verified present and called: `LoadWmoInstance` parses MOPV/MOPT/MOPR into world space, and `WmoUpdateVisibility` (Terrain.cpp:2422) / `WalkPortals` (Terrain.cpp:2357) run every frame from `TerrainRender` before `RenderWmos`, which does gate on `grp.visFrame != s_visFrame`. ~~Two defects found by reading~~ **- both stale, re-read on 2026-09-23.** (1) `NarrowFrustum` now takes the near and far planes from `s_baseFrustum` rather than from slots 4 and 5 of its input, with a comment describing exactly the bug this row named; (2) the walk keeps a `visDepth` per group and returns unless it is being re-entered from a shallower path, which is what stops the exponential re-walk in a densely linked WMO. Also, the camera's group is found by smallest containing AABB rather than the group BSP, so overlapping room boxes pick the wrong start. Unlinked interior groups and WMOs without portals keep the plain box test. |
 | Scene finish lists | FUN_0079a260 (MapObj), FUN_00793450, FUN_007cecd0 (chunk liquid) | Finalizes lists. | n/a | - |
 | **Scene clear** | `GxSceneClear` FUN_006813b0(3, colour) | colour = black if no sky, DayNight sky/fog colour (`+0xa0`) when an interior lighting override is active, underwater fog colour (`+0x8c`) when under liquid, else 0. | stand-in | `GxSceneClear(0x3, fog or GetSkyColor(0))` at frame start (Terrain.cpp:2074). |
 | Shadow map | `MapShadow` FUN_007bb670(playerPos) (light view/proj setup) ... later FUN_007bb570 (`CShadowCache` FUN_00875c10/FUN_00875f80/FUN_008750b0: render and bind the map shadow texture, `ShadowMapRenderSL`/`Terrain*_pcf` shaders) | Projected terrain/model shadow map (CVars `mapShadows`, `shadowLevel`). | missing | `ShadowInit()` and `CShadowCache::SetShadowMapGeneric*` are commented out (`src/client/Client.cpp:675`, `src/model/CM2SceneRender.cpp:101`). |
@@ -126,9 +139,9 @@ stage that is wired up but carries a concrete defect (see Verification above).
 | **Terrain chunks** | `CWorldScene` FUN_00798da0: fog + 0x570 sampler states, FUN_007cfbe0 (terrain shader constants: light block `DAT_00ce04a8+0x58`, FUN_008355d0), then FUN_00793b10 (list A, pixel shader `DAT_00d1d080`), FUN_00793c30 (list B), FUN_007989c0 (multi-layer list, per layer PS from `DAT_00d1d08d[]`, then FUN_007d40a0 pass and FUN_007cecd0). Per chunk: FUN_007d3e10 picks the chunk draw routine by shader level (`DAT_00d25098` = FUN_007d20a0 / FUN_007d2520 / FUN_007d1ad0 / FUN_007d13f0 / FFP FUN_007d0760 / FUN_007d0d70), FUN_007d0050 sets world matrix + terrain VS (FUN_0079e470, `GxRs 0x4d`), FUN_007d04a0. Shaders: `Terrain`, `Terrain0/_env`, `Terrain1`, `Terrain1w_1..4`, `Terrain2/_pcf`, `Terrain3/_pcf`, `TerrainSM` (loaded by FUN_0079e7c0). | Draws MCNK batches with alpha-map layering, baked shadow (MCSH) sampling, shadow-map PCF variants, low-detail pool. | stand-in | Verified called from `TerrainRender` (Terrain.cpp:3909). `RenderShaded` (Terrain.cpp:2114) uses the fork's own `vs_2_0/ps_2_0` bytecode from `TerrainShadersD3d9.hpp` and is created only when `m_api` is D3d9/D3d9Ex (`EnsureShaders`, Terrain.cpp:2089); every other backend silently falls back to `RenderFallback` (multi-pass via the UI shaders). MCSH and MCCV are folded into the per-vertex colour at parse time and re-baked by `RebakeChunkColors` when the light shifts. No shader-level permutations, no low-detail mesh (`CMapAreaLow` empty), no chunk sort. |
 | **WMO groups** | `CWorldScene` FUN_007964a0: for each visible `CMapObjDef` (list `DAT_00cdb088`): transform FUN_007a8320/FUN_00790440/FUN_0081e400, FUN_007a9160(matrix, cameraPos), FUN_007a8430(colour), FUN_007abf50 (`CMapObj::Render`: per group FUN_00791100 / FUN_0078fb00 frustum, FUN_007ab4c0, FUN_007a9ed0; materials chosen by FUN_007ad020 from `MapObj*`/`MapObjU*` shader table `DAT_00d1c3d4..00d1c404`), then FUN_00795f80 (second WMO pass with own viewport/fog: FUN_007ae4c0/FUN_007ae4f0/FUN_007ae1a0 + FUN_007abac0) | Opaque WMO batches, interior lighting via `CMapLight`/MOCV, `MapObjLightLOD`. | stand-in | `RenderWmos` (Terrain.cpp:2513), called from `TerrainRender`: geometry baked to world space at load, UI shader, MOCV + MOHD ambient bake, per-batch blend/alpha-key/two-sided/unfogged flags, and a second back-to-front pass for alpha-blended batches with depth writes off. It **is** portal-gated now (`grp.visFrame != s_visFrame` skips a group), so the earlier "no portal culling" note was wrong. Still missing: the `MapObj*`/`MapObjU*` shader permutations, MOLT lights, MapObjLightLOD, and the reference's separate second WMO pass with its own viewport/fog. |
 | Occluder polygons | FUN_007968d0 (prepare, FUN_00794190) + FUN_00796c10(&DAT_00cdd0e8,1) / (&DAT_00cdd0f8,0) | Only outdoors: draws screen-space polygons (NDC, z=1, vertex format 7) from the `CWorldOccluder`/`CWorldAntiOccluder` lists (CVar `occlusion`). Exact purpose *(uncertain)*. | missing | `cvar_occlusion` registered with TODO callback. |
-| Sky (in-scene) | FUN_007f31c0(0, DAT_00cd861c, 0, DayNight+0x9c) / FUN_007f31c0(1,...) then, if not under liquid, **FUN_007f09b0(&DAT_00adf570)**: viewport with far-z override, `GxRs 0x14`, FUN_00682e70, stars M2 FUN_009abd50 (`Environments\Stars\stars.mdl`, own CM2Scene passes 0/1), sun and moon discs FUN_009ac660 x3, the gradient dome FUN_009acb00, clouds FUN_009acd40 (cloud vertex data from FUN_007efd00), then LightSkybox M2s: FUN_0081c9c0(time) + FUN_007ecf20 / FUN_007f08c0 per skybox entry (`DAT_00d38b5c..00d38b70`). | Sky is drawn **after** terrain/WMO with the depth range trick, skipped underwater. | stand-in | `SkyRender()` (Terrain.cpp): procedural 12x24 dome from 5 band colours plus the `LightSkybox` M2. Since 2026-09-14 it is drawn **after** terrain/WMO through the reference's far-depth viewport (z 0.999..1.0, DAT_00adeef0/f4) with the depth test on and no depth clear, matching the reference order. Stars added 2026-09-14 (`Environments\Stars\stars.mdl`, seeked to the time of day, drawn after the dome; the dome and stars are skipped while a zone skybox is up, as the reference does). Verified this pass: `SkyRender` (Terrain.cpp:4452) is called from `OnWorldRender` **after** `TerrainRender`, sets the viewport depth range to [0.9990234375, 1.0], draws the dome with depth-test less-equal and depth writes off, then draws the stars (or the zone skybox) through their own `CM2Scene` inside the same viewport, and restores the viewport at the end. The under-liquid skip **is** implemented (early return at the top of `SkyRender`) - the old note claiming otherwise was wrong. Still missing: sun/moon glare, clouds, the translucent sky-dome layers and the sky highlight. The stars/skybox scenes are never released and their models are never re-culled. |
-| Blob shadows | `CWorldScene` FUN_00793980 (assert WorldScene.cpp:0xe35): per scene entity with a model, FUN_0082ced0 + FUN_007e49e0 -> FUN_007e4480 (`Textures\ShadowBlob.blp`, loaded by FUN_007e4a40 `ShadowInit`) | Projected blob shadow decals under units/doodads. | stand-in (suspect) | Called as claimed: `BlobShadowsBegin`/`BlobShadowDraw`/`BlobShadowsEnd` (Terrain.cpp:4260/4299/4356) run from `CGWorldFrame::OnWorldRender` (:243-274) after the sky and before the M2 passes. **The technique z-fights by construction**: `BlobShadowDraw` re-locks the *same* 145 chunk vertices and the *same* index buffer the terrain pass just drew, and draws them again with `GxRs_DepthFunc = 0` (D3DCMP_LESSEQUAL, `CGxDeviceD3d.cpp:13`) - but through the UI shader rather than the terrain shader, so the interpolated depth is not bit-identical and the decal flickers against the ground. There is no fix available in gx: **`GxRs_PolygonOffset` is handled by no backend**, so depth bias cannot be applied. This matches the user's report of problems with entity shadows. Also: units only, terrain only (no WMO floors), and every chunk whose box overlaps the footprint is redrawn in full (768 indices) per unit, so a crowd is expensive. The reference's generic projector `FUN_007e4480` and `DrawBatchProj` remain TODO. |
-| Liquid textures / WMO liquid | FUN_008a2f00 (procedural water frames `DAT_00d43b50[0x80]`, magma/ocean depth textures), FUN_00793d20 (per WMO group: `"WMO: Liquid type [%d] not found, defaulting to water!"`, builds `Liquid::CInstance` via FUN_007d4360/FUN_007d43e0/FUN_008a1b00/FUN_008a1fa0/FUN_008a28f0), then **FUN_008a2240(cameraPos, 0)** (liquid bucket 0: sort instances with `PTR_FUN_00b23f6c[0]`, call `CInstance::Render` vfunc +8 with material `Liquid::CMaterialWater/ProcWater/Magma(FFP)` - shaders `vsLiquidWater`, `psLiquidWaterNoSpec`, `psLiquidMagma`). | Opaque liquids (magma/slime) are drawn inside `CMap::Render`. | stand-in (suspect) | Called as claimed: `ParseLiquid` (Terrain.cpp:2726) and `ParseLegacyLiquid` (:3616) run from `LoadTile` (:1810/:1815), `LoadWmoLiquid` (:1009) from `LoadWmoInstance` (:1557), and `LiquidRender(0)` (:4059) from the end of `TerrainRender`; `g_liquidTypeDB` is loaded (Db.cpp:70) and drives kind + animated surface frames (`m_texture[0]`, ~20 fps). WMO surfaces are correctly gated on the owning group's `visFrame`. Three defects found by reading: (1) **buffer overrun** - `LiquidRender` hands `GxPrimLockVertexPtrs` a per-vertex colour array `s_liquidColor[81]` (Terrain.cpp:4057) sized for a terrain chunk, but a WMO MLIQ grid is `xverts * yverts` with `xverts`/`yverts` up to 256, so any WMO liquid with more than 81 vertices reads past the end of a static array; (2) the MLIQ axis mapping looks transposed - `LoadWmoLiquid` feeds `base[0] + i * UNIT_SIZE` into the slot that the group's own MOVT transform (Terrain.cpp:1414-1422) treats as the up axis, while the sampled height `h` goes into a horizontal slot; (3) `ParseLiquid` reads the MH2O exists-bitmap as a fixed 8 bytes indexed over the whole 8x8 cell grid, whereas the format stores `ceil(w*h/8)` bytes indexed over the layer's own sub-rectangle - identical only for full-coverage layers, so partial (shoreline) chunks are likely wrong. Minor: if `ParseLiquid` allocates but yields no layers, `ParseLegacyLiquid` overwrites `chunk.liquids` and leaks it. No procedural water/depth textures, no per-liquid darkening. |
+| Sky (in-scene) | FUN_007f31c0(0, DAT_00cd861c, 0, DayNight+0x9c) / FUN_007f31c0(1,...) then, if not under liquid, **FUN_007f09b0(&DAT_00adf570)**: viewport with far-z override, `GxRs 0x14`, FUN_00682e70, stars M2 FUN_009abd50 (`Environments\Stars\stars.mdl`, own CM2Scene passes 0/1), sun and moon discs FUN_009ac660 x3, the gradient dome FUN_009acb00, clouds FUN_009acd40 (cloud vertex data from FUN_007efd00), then LightSkybox M2s: FUN_0081c9c0(time) + FUN_007ecf20 / FUN_007f08c0 per skybox entry (`DAT_00d38b5c..00d38b70`). | Sky is drawn **after** terrain/WMO with the depth range trick, skipped underwater. | stand-in | `SkyRender()` (Terrain.cpp): procedural 6x24 dome built from the reference's own ring table (`0x00a41a90`) and 6 band colours, plus the `LightSkybox` M2. Since 2026-09-14 it is drawn **after** terrain/WMO through the reference's far-depth viewport (z 0.999..1.0, DAT_00adeef0/f4) with the depth test on and no depth clear, matching the reference order. Stars added 2026-09-14 (`Environments\Stars\stars.mdl`, seeked to the time of day, drawn after the dome; the dome and stars are skipped while a zone skybox is up, as the reference does). Verified this pass: `SkyRender` (Terrain.cpp:4452) is called from `OnWorldRender` **after** `TerrainRender`, sets the viewport depth range to [0.9990234375, 1.0], draws the dome with depth-test less-equal and depth writes off, then draws the stars (or the zone skybox) through their own `CM2Scene` inside the same viewport, and restores the viewport at the end. The under-liquid skip **is** implemented (early return at the top of `SkyRender`) - the old note claiming otherwise was wrong. Struck 2026-09-23: glare (`DrawGlare`) and clouds (`src/world/Clouds.cpp`) landed 2026-09-15, and the sky highlight was ported from `FUN_007f0530` on 2026-09-23 -- all three built, none seen running. Still missing: the translucent sky-dome layers, and the per-frame sky override `FUN_007f0530` applies from `0x00d38184` / `0x00d38b50`. The stars/skybox scenes are never released and their models are never re-culled. |
+| Blob shadows | `CWorldScene` FUN_00793980 (assert WorldScene.cpp:0xe35): per scene entity with a model, FUN_0082ced0 + FUN_007e49e0 -> FUN_007e4480 (`Textures\ShadowBlob.blp`, loaded by FUN_007e4a40 `ShadowInit`) | Projected blob shadow decals under units/doodads. | stand-in (suspect) | Called as claimed: `BlobShadowsBegin`/`BlobShadowDraw`/`BlobShadowsEnd` (Terrain.cpp:4260/4299/4356) run from `CGWorldFrame::OnWorldRender` (:243-274) after the sky and before the M2 passes. **This row described an older form of the pass and was stale.** The z-fighting cause it names is fixed: the pass now binds `s_terrainVS` with `s_blobDecalPS` and the same per-chunk matrix and vertex streams as the base pass, so the depth is bit-identical and the surface is selected with a depth-EQUAL test rather than hoped for. `GxRs_PolygonOffset` is still handled by no backend, but it is no longer needed here and the reference does not use it for this either. WMO floors are covered too, by `BlobShadowDrawWmo` (Terrain.cpp:5292). Still true: every chunk whose box overlaps the footprint is redrawn in full per caster. **Unverified on screen** - none of this has been seen running. Separately, the WMO receiver grid was anchored on world-space bounds while binning instance-local vertices, which clamped every triangle into one cell and quietly restored the exhaustive per-caster scan the grid exists to avoid; fixed 2026-09-23. The reference's generic projector `FUN_007e4480` and `DrawBatchProj` remain TODO. |
+| Liquid textures / WMO liquid | FUN_008a2f00 (procedural water frames `DAT_00d43b50[0x80]`, magma/ocean depth textures), FUN_00793d20 (per WMO group: `"WMO: Liquid type [%d] not found, defaulting to water!"`, builds `Liquid::CInstance` via FUN_007d4360/FUN_007d43e0/FUN_008a1b00/FUN_008a1fa0/FUN_008a28f0), then **FUN_008a2240(cameraPos, 0)** (liquid bucket 0: sort instances with `PTR_FUN_00b23f6c[0]`, call `CInstance::Render` vfunc +8 with material `Liquid::CMaterialWater/ProcWater/Magma(FFP)` - shaders `vsLiquidWater`, `psLiquidWaterNoSpec`, `psLiquidMagma`). | Opaque liquids (magma/slime) are drawn inside `CMap::Render`. | stand-in (suspect) | Called as claimed: `ParseLiquid` (Terrain.cpp:2726) and `ParseLegacyLiquid` (:3616) run from `LoadTile` (:1810/:1815), `LoadWmoLiquid` (:1009) from `LoadWmoInstance` (:1557), and `LiquidRender(0)` (:4059) from the end of `TerrainRender`; `g_liquidTypeDB` is loaded (Db.cpp:70) and drives kind + animated surface frames (`m_texture[0]`, ~20 fps). WMO surfaces are correctly gated on the owning group's `visFrame`. ~~Three defects found by reading~~ **- all four claims here were stale and are struck; each was re-read on 2026-09-23 and the code already handles it.** (1) the colour buffer is no longer a fixed `s_liquidColor[81]`: it is a `std::vector<CImVector>` grown to the layer's own `vertCount`; (2) the MLIQ axis mapping is right and carries a comment saying an earlier pass had it wrong and that both it and the vertex transform were corrected together; (3) the MH2O bitmap is indexed `j * w + i` over the layer's sub-rectangle and re-packed into the chunk's 8x8 grid, which is what the format specifies; and the leak is gone because `ParseLegacyLiquid` frees `chunk.liquids` before reallocating. No procedural water/depth textures, no per-liquid darkening. |
 | Frame end | FUN_00784a30 (World), `GxXformPop`, `GxRsPop`, FUN_006164b0, debug flag 0x200000 -> FUN_007d5610 / FUN_00793fd0 | - | n/a | - |
 
 ### Transparent block in OnWorldRender (after detail doodads)
@@ -142,8 +155,10 @@ else        { barriers (FUN_0077f980); M2 pass 1; weather (FUN_0077f030); liquid
 
 | Stage | Reference function(s) | What it does | Frozen status | Frozen location / notes |
 |---|---|---|---|---|
-| M2 pass 2 / pass 1 | `CM2Scene::Draw` FUN_00823cb0(2) / (1) -> FUN_00823130 (`CM2SceneRender::Draw`) | Transparent M2 passes; particles/ribbons are elements in these passes (`Particle_Unlit` shader from FUN_0081f330). | ported (passes 1 and 2 drawn, underwater order flip) / stand-in (suspect) (particles) / missing (ribbons) | Verified: `CM2Scene::Draw` (CM2Scene.cpp:693) draws `array54[pass]`, which `Animate` fills and heap-sorts for all three passes (CM2Scene.cpp:629-662), and `CGWorldFrame::OnWorldRender` (:324-336) draws 0, 2, 1 above liquid and **does** flip to 1, weather, liquid, 2 under liquid - the inline comment there claiming the flip is unported is stale. `DrawParticle` still returns 0 and `DrawRibbon` is empty (`src/model/CM2SceneRender.cpp:270/275`). The `src/world/ParticleFx.cpp` stand-in is real and called (`ParticleFxUpdateModel` per visible object and per terrain/WMO doodad at CGWorldFrame.cpp:300-311, `ParticleFxRender` with pass 2): it samples the emitter tracks against the bone sequence state, simulates plane/sphere emitters in world space (emitter bone animation ignored) and draws sorted camera-facing quads with the M2 blend modes. **Suspect: use-after-free.** `s_models` is a `std::map` keyed on raw `CM2Model*` and entries are only evicted after 600 unseen frames (ParticleFx.cpp:284), but `ParticleFxForgetModel` is called only from `FreeTile` for terrain and WMO doodads (Terrain.cpp:1942/2009) - never when a unit's model is destroyed, so `ParticleFxRender` (:343) dereferences `model->m_shared` on freed objects after a despawn. |
-| Liquid bucket 1 | FUN_00790a80: FUN_00781610 (fog), **FUN_008a2240(cameraPos, 1)** (transparent water, sorted), FUN_0079d5e0 (post-liquid decal list `DAT_00adfb60` with shaders `DAT_00cdffd4/d8`, uses MapChunkLiquid FUN_007cecd0 - likely ripples/splashes *(uncertain)*) | Water surfaces sorted back-to-front. | stand-in (suspect) | Verified: `LiquidRender(1)` is called from `CGWorldFrame::OnWorldRender` (:327/:333) in both camera orders; water/ocean layers are frustum-tested, sorted farthest first, alpha-blended with depth writes off and fogged. Carries the same `s_liquidColor[81]` overrun for WMO liquid grids as bucket 0 (see that row). Post-liquid decals: missing. |
+| M2 pass 2 / pass 1 | `CM2Scene::Draw` FUN_00823cb0(2) / (1) -> FUN_00823130 (`CM2SceneRender::Draw`) | Transparent M2 passes; particles/ribbons are elements in these passes (`Particle_Unlit` shader from FUN_0081f330). | ported (passes 1 and 2 drawn, underwater order flip) / stand-in (suspect) (particles) / missing (ribbons) | Verified: `CM2Scene::Draw` (CM2Scene.cpp:693) draws `array54[pass]`, which `Animate` fills and heap-sorts for all three passes (CM2Scene.cpp:629-662), and `CGWorldFrame::OnWorldRender` (:324-336) draws 0, 2, 1 above liquid and **does** flip to 1, weather, liquid, 2 under liquid - the inline comment there claiming the flip is unported is stale. **Updated 2026-09-24: the reference's own particle RUNTIME now exists.** `src/model/CM2ParticleEmitter.*` ports CParticleEmitter2 -- construction, pool sizing, emission, the substepper, the step loop, both concrete subclasses (plane and sphere), placement and the per-frame Update -- and `CM2Model` builds one emitter per `M2Particle`, configures it from the record and drives it every frame from `CM2Model::AnimateParticleEmitter` (FUN_008309c0). `CM2Scene::Animate` now emits type-4 elements, and **`DrawParticle` (`FUN_008214e0`) is ported as of 2026-09-24** at 91% call recall -- the one reference call it skips is the batched path `FUN_00821100`, which is selected by `CM2Cache::m_flags & 0x80` and is off. It builds the particle material from the emitter's flags into the render's scratch material, resolves the emitter texture, binds it to unit 0 and clears unit 1, makes the `Particle` or `Particle_Unlit` effect current on the emitter's lit bit, runs `SetupLighting` / `SetupMaterial` / `SetupParticleTransform`, calls `CM2ParticleEmitter::Draw` and restores the transforms. Three of its register arguments are invisible in the decompilation and were read off the disassembly at 0x8214e0; see the comment above the function. **THE DRAW CHAIN IS CLOSED as of 2026-09-24.** Every function from `DrawParticle` down to `GxDraw` is ported: `FillDrawBuffer` (`FUN_0097e730`, 100%) takes the device view, builds the draw basis, sizes and locks a stream buffer and points the write cursors at it; `WriteLiveParticles` (`FUN_0097e580`, 60%) walks the live list; `WriteParticleVertices` (`FUN_0097be80`, 90%) writes the quads -- six shapes, read out of the disassembly because the decompilation of its velocity branch is not trustworthy; and `SubmitDraw` (`FUN_0097a580`, 83%) hands it to the device. See `docs/ref/parity-particles.md` for the three recorded divergences, of which only one -- the shader permutation selector `FUN_00873160` -- is an inference rather than a refusal. **None of this has been seen running.** `DrawRibbon` is still empty and the ribbon runtime is still absent.
+
+**NEW DEFECT, created by closing the chain: PARTICLES NOW DRAW TWICE.** The stand-in in `src/world/ParticleFx.cpp` still runs -- `ParticleFxUpdateModel` per visible object and `ParticleFxRender` in pass 2 -- and the ported emitter now draws as well, so both simulations reach the screen. Retiring the stand-in is the next change and belongs in its own commit **with a run**, because that run is also the first evidence that the ported chain draws anything at all: turn the stand-in off and a blank screen means the port is broken, whereas doing both at once would leave the two indistinguishable. The `src/world/ParticleFx.cpp` stand-in is real and called (`ParticleFxUpdateModel` per visible object and per terrain/WMO doodad at CGWorldFrame.cpp:300-311, `ParticleFxRender` with pass 2): it samples the emitter tracks against the bone sequence state, simulates plane/sphere emitters in world space (emitter bone animation ignored) and draws sorted camera-facing quads with the M2 blend modes. ~~Suspect: use-after-free.~~ **Fixed, and this row was stale.** `s_models` is still keyed on a raw `CM2Model*`, and `ParticleFxForgetModel` is still called only from `FreeTile`, so a despawning unit still leaves a dangling key. But the render no longer dereferences one: it walks only entries whose `lastFrame` equals the current frame, which means the owner updated them this frame and they are therefore alive, and `ParticleFxEndFrame` ages the rest out by key alone without ever touching the pointer. Verified by reading 2026-09-23. |
+| Liquid bucket 1 | FUN_00790a80: FUN_00781610 (fog), **FUN_008a2240(cameraPos, 1)** (transparent water, sorted), FUN_0079d5e0 (post-liquid decal list `DAT_00adfb60` with shaders `DAT_00cdffd4/d8`, uses MapChunkLiquid FUN_007cecd0 - likely ripples/splashes *(uncertain)*) | Water surfaces sorted back-to-front. | stand-in (suspect) | Verified: `LiquidRender(1)` is called from `CGWorldFrame::OnWorldRender` (:327/:333) in both camera orders; water/ocean layers are frustum-tested, sorted farthest first, alpha-blended with depth writes off and fogged. ~~Carries the same `s_liquidColor[81]` overrun as bucket 0~~ - stale, that buffer grows to the layer's vertex count now; see that row. Post-liquid decals: missing. |
 | Weather | FUN_0077f030 -> `MapWeather` FUN_0078ca50 -> FUN_0078ae20 (+0x13c emitter), FUN_0078ba60 (+0x140), FUN_0078c3e0 (+0x144) | Rain / snow / mist particle systems (`WeatherMistGrainy`, `WeatherPacket_vtx`). | stand-in | Verified: `WeatherRender` (Terrain.cpp:3082) is called from the transparent block in both camera orders (CGWorldFrame.cpp:326/334) and draws billboard sprites with the reference's textures (RainDrop01 / SnowMist01 / WeatherMistGrainy01, or the Weather.dbc override), budget scaled by `weatherDensity`, suppressed while under liquid. It also *is* the weather update (it calls `WeatherUpdate` itself). Nothing draws until an SMSG_WEATHER arrives, and the time step comes from `CWorld::GetM2Scene()->m_time`, so weather freezes when there is no M2 scene. Not the reference's three-emitter system or its weather shaders. |
 | Barriers | FUN_0077f980 -> `CWorldScene` FUN_00794b50(cameraPos, x) | Up to 4 barrier M2 models (`DAT_00cd85f8`) via FUN_0078fbd0 + `CM2Scene` draw callback FUN_00823f10, then a two-texture `CGxVertexPCT0T1` mesh (`SContact_CBarrier`). Zone/PvP barrier effect *(uncertain)*. | missing | - |
 | Underwater overlay | FUN_0077f9d0 -> `CMap` FUN_0079ca70 (only when under liquid and flag 0x2000000) | Draws a 0xa68-vertex textured mesh (texture at `+0xfa10`) in front of the camera. | stand-in | Verified: `UnderwaterOverlayRender` (Terrain.cpp:4173) is called last in the world render (CGWorldFrame.cpp:341) and returns immediately unless `s_cameraLiquidKind >= 0`: one depth-test-off quad a yard in front of the eye, the submerged liquid's surface texture scrolled slowly, tinted by the fog colour at alpha 0x50. It finds the liquid type by scanning every loaded chunk for the first layer matching the camera's *kind*, which can pick an unrelated layer's texture. The reference's distorted grid mesh and its texture source are still not identified (no string reference names it). |
@@ -4465,3 +4480,222 @@ accordingly. Mismatches: **29 -> 16**. The remaining 16 have real bodies and nee
 
 **Net: 1952 stubbed, from 2031.** More usefully, the count that can actually break something is now
 close to zero, and the next sweep is a tool run rather than a reading session.
+
+### 2026-09-23 - the D3D device's state sync, and which of its empty bodies actually matter
+
+`tools/livestubs.py` reports 52 empty-bodied functions with live call sites, and three of them sit
+in the D3D backend right under every draw: `CGxDeviceD3d::IStateSyncEnables`, `IStateSyncLights`
+and `IStateSyncMaterial`. That reads like a serious hole. Two of the three are not.
+
+`CGxDeviceD3d::IStateSync` calls Lights, Material and Xforms **only when no vertex shader is
+bound**. Terrain, map objects, detail doodads, blob shadows, models and the sky all bind one, so
+on the world render that whole branch never executes and the two empty bodies cost nothing. The
+render states themselves reach D3D through `CGxDevice::IRsSync`, which is fully implemented and
+walks the dirty list into `IRsSendToHw`.
+
+`IStateSyncEnables` is the one that runs unconditionally, and it is worse than a stub: it is one
+empty function standing where the reference calls **four** helpers.
+
+The reference side was found by searching the text dump for `0x738(%e..)` — app render state 77
+(`GxRs_VertexShader`) at a 0x18 stride from the state-array pointer at `CGxDevice+0x28f4`, which is
+the exact test frozen's `IStateSync` makes. Only two functions in the binary do it, one per D3D
+device class:
+
+| reference | what it is | how it was confirmed |
+|---|---|---|
+| `006a5940` | `CGxDeviceD3d::IStateSync` | the whole structure, call for call |
+| `006a9860` | the D3D9Ex variant | identical but for four device-specific helpers |
+| `006a9fe0` | `IShaderConstantsFlush` | flushes a dirty register range, `shl 4` = 16 bytes per constant register |
+| `00685b50` | `CGxDevice::IRsSync` | matches frozen line for line |
+| `00685a70` / `006859e0` | `IRsForceUpdate`, the two overloads | one takes no argument and loops; the other takes a state and appends it |
+| `006a43d0` | `IStateSyncLights` | gates on app state `0x108 / 0x18` = 11 = `GxRs_Lighting` |
+| `006a4700` | `IStateSyncMaterial` | position, plus the `+0x28a8 & 0x10` gate it shares with Lights |
+| `006a4850` | `IStateSyncXforms` | a dirty byte guards one `SetTransform` through the device vtable |
+
+**All four were read the next cycle**, and the picture is better than it looked. They are not four
+mystery functions: one of them is `IStateSyncEnables` under its own correct name, one is a function
+frozen already implements, and two are features frozen does not have at all.
+
+| reference | what it is | frozen |
+|---|---|---|
+| `006a3810` | `IStateSyncEnables` | **ported 2026-09-23** |
+| `006a3870` | the clip-plane sync | no state for it |
+| `006a38d0` | the scissor-rect sync | no state for it |
+| `006a5700` | `IStateSyncVertexPtrs` | already implemented |
+
+The two adjacent fields `006a3810` compares turned out to be `m_appMasterEnables` and
+`m_hwMasterEnables`, at the same offsets frozen uses, so `IStateSyncEnables` was the right name all
+along -- "enables" means the master enables, not D3D's enable render states. It sends exactly one of
+the nine to the device, and that is not an omission: `MasterEnableSet` routes Lighting, Fog,
+DepthTest, DepthWrite, ColorWrite and Culling through `IRsForceUpdate`, so they travel the ordinary
+render-state path. `GxMasterEnable_PolygonFill` has no `GxRs` of its own, so it is the only one left
+to send directly, as `SetRenderState(D3DRS_FILLMODE, solid or wireframe)`.
+
+Clip planes and the scissor rect are real gaps but small ones. The reference keeps six 16-byte
+planes behind a dirty mask and pushes them with `SetClipPlane`; frozen has `GxRs_ClipPlaneMask` and
+a GL path that calls `glClipPlane`, but the D3D backend handles neither the mask nor the planes and
+nothing stores them. The scissor setter `00682e70` has **two callers in the whole binary**, so it
+is a minor feature on the reference side too. Adding either means adding the state and its public
+setter, not just the sync function.
+
+### 2026-09-23 - the graphics CVars: ten do nothing, and one does the wrong thing
+
+`tools/audit-ported.py`, widened to check the whole map rather than only the overrides, found that
+every one of the twelve `CWorldParam` graphics CVar callbacks is an empty body counted as ported.
+Checking what frozen does with each CVar afterwards splits them cleanly, and the split is more
+interesting than the count:
+
+**Ten are read nowhere at all.** `extShadowQuality`, `specular`, `baseMip`, `textureCacheSize`,
+`footstepBias`, `violenceLevel`, `skyCloudLOD`, `terrainAlphaBitDepth`, `hwPCF` and `bspcache`
+appear in `CWorldParam.cpp` twice each, once as the static and once in the registration, and
+nowhere else. The settings exist in the console and change nothing. That is the gap
+`docs/ref/parity-shadows.md` lists as item 10, and it is wider than shadows.
+
+**Two take effect, but not the way the reference makes them.** `DetailDoodadRender` reads
+`groundEffectDist` and `groundEffectDensity` directly every frame, so those sliders work. The
+reference does not poll them: its callbacks validate the value, store it in engine state, and raise
+a rebuild flag.
+
+The density one is a real behavioural difference, not just a structural one:
+
+| | reference | frozen |
+|---|---|---|
+| accepted range | 16 to 256 | any, divided by 16 and clamped to [0, 1] |
+| what 16 means | the minimum | the maximum |
+| what it controls | the **size of a global pool** of doodad instances | what fraction of the built scatter is **drawn** |
+
+Both agree exactly at the default of 16, which is why nothing looked wrong. Move the slider up and
+the reference can hold more doodads while frozen does nothing.
+
+**Corrected the same day.** The row above first said density controls how many doodads are *placed*,
+which was a guess. Following the rebuild flag its setter raises (`0x00d1c4c0`) to its consumer at
+`0x007b2a86` gives the real mechanism: `density << 6` clamped to `0x1000`, which is a **global pool
+size** -- 1024 instances at the default and 4096 at the cap -- that then sizes several derived
+buffers. frozen has no such pool; it pre-builds a per-chunk scatter and draws a fraction. That is an
+architectural difference, so closing it is a rewrite of the detail-doodad system rather than an
+edit, and it is not worth starting until the system is being ported properly.
+
+`groundEffectDist` is narrower: the reference clamps to `[0, 140]` on the way in and caches the
+square; frozen reads the raw CVar and squares it per frame. Defaults match at 70.0.
+
+**Worth carrying forward:** "the callback is empty" and "the setting does nothing" are not the same
+claim. Nine of these were committed under the second before the CVar reads were checked, and two of
+those nine were wrong.
+
+### 2026-09-23 - which render states actually reach D3D, and the one that did not
+
+Comparing the `GxRsSet` calls across `src/` against the cases `CGxDeviceD3d::IRsSendToHw` handles
+gives a short list of states frozen sets that never reach the device:
+
+| state | set from | consequence |
+|---|---|---|
+| `GxRs_ColorWrite` | `CM2SceneRender::SetupMaterial` | **wired up here**, and exercised as of the depth prepass below |
+| `GxRs_Lighting` | 16 places | none: the world always binds a vertex shader, and fixed-function lighting is bypassed |
+| `GxRs_MatDiffuse`, `GxRs_MatEmissive`, `GxRs_MatSpecularExp` | `CShaderEffect`, `CM2SceneRender` | same reason -- these are fixed-function material state |
+| `GxRs_ClipPlaneMask` | `CM2SceneRender` | frozen stores no clip planes either; see the state-sync entry above |
+
+`GxRs_ColorWrite` was the real one. `Ds_ColorWriteEnable` existed in the device-state enum and
+**neither** switch had a case for it, so `SetupMaterial`'s request to turn colour writes off was
+dropped twice over.
+
+**The bit order is the part that would not have survived a guess.** Gx and D3D both use four bits,
+but the reference's handler (inside the D3D `IRsSendToHw` at `0x006a5038`) remaps the middle two:
+Gx `0x2` becomes D3D's BLUE and Gx `0x4` becomes D3D's GREEN, so Gx orders them **R, B, G, A**
+against D3D's R, G, B, A. That matches the BGRA byte order used for colours elsewhere in this
+codebase. The reference also gates the whole thing on `GxMasterEnable_ColorWrite`, the same pairing
+frozen's depth-write and culling cases already use.
+
+**It was inert when written, and is not any more.** `SetupMaterial` only asks for colour writes off
+when the element carries flag `0x1`, and frozen's element gather set `0x2` and `0x4` and never
+`0x1` -- until the depth prepass landed later the same day, which is what emits it. Reading what that flag does in `SetupMaterial` -- alpha-key blending with
+colour writes off -- makes it a **depth prepass for alpha-tested geometry** such as hair and
+foliage. So frozen does not do that prepass at all, and the missing piece is the gather condition,
+not this plumbing. The plumbing is now correct for when it lands.
+
+### 2026-09-23 - the alpha-tested depth prepass, and exactly how the reference emits it
+
+Following the colour-write finding upstream: `SetupMaterial` asks for colour writes off only when
+the element carries flag `0x1`, and frozen's gather never sets it. The reference does, and the
+mechanism is simple once located. Inside `CM2Scene::Animate` (`FUN_00821a20`) at `0x0082257f`:
+
+```
+grow the element array by one
+copy the element just emitted into the new slot   (rep movsl x 0x11 -- elements are 0x44 bytes)
+new->flags |= 1                                    (flags live at element+0x8)
+```
+
+So the prepass element is a **verbatim duplicate of the element before it**, distinguished only by
+that bit. Nothing else about it differs, which is why `SetupMaterial` alone decides what it means:
+alpha-key blending with colour writes off, i.e. lay depth for alpha-tested geometry such as hair
+and foliage before the pass that shades it.
+
+The duplicate is emitted only when four conditions hold, all tested at `0x008224f7`:
+
+| # | test in the reference | reading |
+|---|---|---|
+| 1 | `local_14` | `(params->+0x4 & 1) && !(model->+0x4 & 1) && (model->+0x10 & 0x40)` |
+| 2 | `!local_30` | NOT (`batch->flags & 0x4` **and** `params->+0x104 != 0`) |
+| 3 | `local_34 >= 1` | the element landed in pass 1, where pass is `(material->blendingMode > 1) \|\| (alpha >= 0.99999)` |
+| 4 | `!(material->flags & 0x10)` | the material writes depth (`0x10` is the M2 depth-write-disable bit) |
+
+`local_5c`, which condition 4 reads, is `&m_data->materials[batch->materialIndex]`, established at
+`0x00821f10`. The two float constants nearby are `0.99999` at `0x00a45528` (alpha counts as opaque)
+and `0.0001` at `0x009e8cd0` (the earlier cull that drops a batch whose alpha has gone to nothing).
+
+**Ported the same day, once two things it depended on were understood.** The four conditions above
+turned out to be already transcribed in `CM2Scene::Animate` -- the gate was the reference's,
+condition for condition, with an empty body. Tracing them out of the disassembly confirmed the
+transcription rather than replacing it: `m_cache->m_flags` bit 0 with `model->m_flags` bit 0 and
+`model->m_flag40` for the first, the batch's `0x4` flag with `CM2Scene::uint104` for the second, and
+the pass split on `blendMode > 1 || alpha >= 0.99999` for the third.
+
+The last open question was which sort list the duplicate joins, and the answer was in the same
+function. The reference seeds its two water-side flags from the model lighting's `0x20` and `0x40`
+bits, and only refines them against `m_currentLighting->m_liquidPlane` when **both** are set -- the
+"liquid plane stuff" `Animate` still marks TODO. `CM2Lighting::Initialize` sets `0x20` and nothing
+sets `0x40`, so the pair is `(true, false)` for every model, and frozen's main registration thirty
+lines above the gate already implements the same four-way split on the same two flags. The prepass
+now mirrors that block rather than guessing at it.
+
+It is safe by construction: the gate already excludes materials carrying the depth-write-disable
+bit, so the shaded element that follows writes the same depth either way, and the prepass writes no
+colour. The cost is one extra draw per eligible batch.
+
+**Built, not seen running.** Watch hair and foliage. A frame-rate cost on crowded scenes is expected
+and is not a defect; a visual change would be.
+
+### 2026-09-23 - what the reference's WMO material loader does that frozen's does not
+
+`MapObjRead.cpp` shows 37 reference functions and none linked, and frozen has real WMO code, so it
+looked like a module full of missable counterparts. It is not: frozen loads materials inline, so
+there are no discrete functions to pair. Reading the reference's version was worth it anyway.
+
+`FUN_007d7710` is the MOMT material texture loader. It indexes 64-byte materials at `this+0x160`
+and reads the texture1 name offset at `+0x0C` and texture2 at `+0x18` against the MOTX block at
+`this+0x124` — the same layout frozen reads — then stores two handles at `+0x38` and `+0x3c`. Every
+load goes through `FUN_007d9990`, which takes a filename and nothing else.
+
+Three things came out of it:
+
+1. **Wrapping was invented in frozen and is now fixed.** `FUN_007d9990` hardcodes
+   `CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1)`. frozen had been
+   clamping when MOMT flags `0x40` / `0x80` were set, under a comment claiming the reference does
+   that for decals and windows. All five call sites reach the same hardcoded flags, so no such path
+   exists.
+
+2. **An empty texture name is handled, differently but equivalently.** The reference substitutes
+   `createcrappygreentexture.blp`; frozen attempts the empty name, fails, and falls back to
+   `TextureCreateSolid(CRAPPY_GREEN)`. Same green result. Worth knowing that frozen's route goes
+   through the solid-colour cache, which never hits, so each such material allocates another 8x8
+   texture — see the note on that cache in `src/gx/Texture.cpp`.
+
+3. **A specular companion texture is not loaded at all.** The other caller of `FUN_007d9990`
+   (`0x007d6a30`) takes the material's texture name, truncates it at the dot and appends `_s.blp`
+   (the string at `0x00a40540`), loads that, and stores it at `+0x4` of its own structure. It is
+   gated on bit 0 of a flag word being clear. frozen has no `_s` texture for WMO materials and no
+   specular term on buildings at all, which is consistent with the `specular` CVar being one of the
+   twelve that reach nothing. **Not ported, not sized** — recorded here because it is concrete and
+   nothing else in this file mentions it.
+
+Texture2 has its own gate: when the global at `0x00d43020` is zero the second name is blanked, so
+whatever that global is, it switches multi-texture WMO materials off wholesale.

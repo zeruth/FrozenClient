@@ -830,16 +830,20 @@ int32_t Script_UnitHealthMax(lua_State* L) {
 int32_t Script_UnitPower(lua_State* L);
 int32_t Script_UnitPowerMax(lua_State* L);
 
-// ref: FUN_0060ed40
 // The reference registers one function under both names, so UnitMana is UnitPower -- including its
 // usage string. It is NOT "the mana field": asking a warrior through this name answers with rage,
 // because the underlying function reads whichever power the unit actually uses.
+//
+// DIVERGENCE, and the reason this shim carries no tag: the reference has ONE function bound to two
+// table entries, while frozen has the implementation plus this forward. Only the implementation
+// can be the reference function, so the FUN_0060ed40 tag sits on Script_UnitPower below and this
+// shim is frozen's own. Tagging both made one address claim two frozen functions, which the
+// duplicate-address guard reports.
 int32_t Script_UnitMana(lua_State* L) {
     return Script_UnitPower(L);
 }
 
-// ref: FUN_0060ef40
-// One function under both names again; see Script_UnitMana.
+// The same alias pair; see Script_UnitMana. The FUN_0060ef40 tag is on Script_UnitPowerMax.
 int32_t Script_UnitManaMax(lua_State* L) {
     return Script_UnitPowerMax(L);
 }

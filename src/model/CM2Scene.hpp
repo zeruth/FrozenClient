@@ -34,6 +34,16 @@ class CM2Scene {
         uint32_t uint14 = 0;
         uint32_t m_flags = 0;
         CM2Light* m_lightList = nullptr;
+        // Point lights do not go on m_lightList. They go here, into a 64 x 64 hash grid of cells
+        // twenty world units across, indexed `(y & 0x3f) << 6 | (x & 0x3f)` so the world wraps
+        // every 1280 units. CM2Light::Link files them, CM2Light::SetPosition re-files them and
+        // CM2Scene::SelectLights sweeps the cells a model's bounding sphere covers.
+        //
+        // DIVERGENCE: the reference allocates this lazily with SMemAlloc on first use (0x4000
+        // bytes at scene + 0x24) and frozen embeds it. Same 4096 pointers either way; embedding
+        // avoids introducing an allocation with no matching free, since CM2Scene has no
+        // destructor. It costs 16K (32K on 64-bit) per scene and there is one construction site.
+        CM2Light* m_lightGrid[4096] = {};
         CM2Model* m_animateList = nullptr;
         CM2Model* m_drawList = nullptr;
         TSGrowableArray<M2Element> m_elements;
@@ -41,14 +51,48 @@ class CM2Scene {
         TSGrowableArray<uint32_t> array54[3];
         C44Matrix m_view;
         C44Matrix m_viewInv;
-        uint32_t uint104 = 0;
+        // +0x104 and +0x108: the projected-decal callback and its context, NOT a number --
+        // which is what the type-1 element test below reads. Installed by
+        // SetProjectionCallback; the reference's one caller is world init at 0x781340, passing
+        // FUN_0077f500.
+        //
+        // That callback is the blob shadow supplier: it reads the float at 0x009f98d8, the 0.4
+        // shadow strength parity-shadows.md records as solved, and passes it on with the flags
+        // 0x200122 the same doc names for the ground marker. So this pointer being null is
+        // exactly why CM2SceneRender::DrawBatchProj is unreachable.
+        //
+        // Typed void* rather than guessed at: the callback takes at least five cdecl arguments
+        // (it reads 0x8, 0xc, 0x10 and 0x18 and cleans up 0x14 bytes), and the meanings are not
+        // established.
+        void* m_projectionCallback = nullptr;
+        void* m_projectionContext = nullptr;
 
         // Member functions
+
+        // Install the projected-decal callback. Until something calls this, the scene emits no
+        // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30
+        void SetProjectionCallback(void* callback, void* context);
+
+        // One axis of a point light's hash-grid index. The reference scales by the 0.05 at
+        // 0x00af59d4 -- one twentieth, so twenty world units to a cell -- truncates toward zero
+        // and masks to six bits. A negative coordinate masks the same way on x86 and in C++, so
+        // the world wraps rather than clamping.
+        static int32_t LightGridAxis(float v) {
+            return static_cast<int32_t>(v * 0.05f) & 0x3f;
+        }
+
         CM2Scene(CM2Cache* cache)
             : m_cache(cache)
             {};
         void AdvanceTime(uint32_t a2);
         void Animate(const C3Vector& cameraPos);
+
+        // Register one emitter's particles as a draw element, and file it in the right pass.
+        // `elementIndex` is the running element count -- the pass lists hold indices into
+        // m_elements, so it is read AND incremented here. ref: FUN_00821930
+        void AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, float distance,
+                                float alpha, int32_t aboveLiquid, int32_t& elementIndex,
+                                uint32_t& additiveCount);
         CM2Model* CreateModel(const char* file, uint32_t a3);
         int32_t Draw(M2PASS pass);
 

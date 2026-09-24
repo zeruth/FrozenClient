@@ -185,8 +185,70 @@ flat-shaded band of fog colour running down to the nadir.
 **Azimuthal variation.** `FUN_007f0530` does not paint each ring one flat colour: for the four middle
 rings it walks the 24 segments stepping a band parameter by `-1/24` starting from
 `DayNight[0x3c] * (1/2pi) + 0.25` (the camera yaw) and evaluates a band per vertex, so the dome colour
-rotates with the camera / sun azimuth. The exact per-vertex band pointers are passed in registers and
-did not survive decompilation - *uncertain*, and not needed for a first-cut port.
+rotates with the camera / sun azimuth.
+
+**2026-09-23: the band pointers were recovered from disassembly**, which the note here previously
+said had not survived. Both are 6-key `(time, value)` bands read by `FUN_007ed3b0` (ESI = key count,
+EDI = table), and every constant below was read straight out of `WoW.exe`:
+
+* Yaw scale `0x00a41ca8` = **0.159155** (= 1/2pi) and offset `0x00a41b00` = **0.25**, so the segment
+  parameter is `wrap01(yaw/(2pi) + 0.25 + seg * (-1/segCount))`. The `-1/segCount` comes from
+  `fdivrs 0x9e2ef4` (-1.0) over the ring's segment count at `[esi+0x24]`.
+* **Strength band, `0x00af4b7c`**, evaluated once per frame at the day parameter `0x00d38b04`,
+  its result then multiplied by `0x00d38c28`:
+  `(0.125, 0), (0.270833, 1), (0.291667, 0), (0.854167, 0), (0.895833, 1), (0.999306, 0)`.
+  Those times are ~03:00, 06:30, 07:00, 20:30, 21:30, 23:59 -- it peaks at dawn and at dusk and is
+  zero through the middle of the day and the middle of the night. So the whole effect only appears
+  around sunrise and sunset.
+* **Profile band, `0x00af4bac`**, evaluated per segment at the parameter above:
+  `(0.125, 1.0), (0.375, 0.0), (0.5, -0.5), (0.625, -0.7), (0.75, -0.5), (0.875, 0.0)`.
+  Positive on one side of the dome and negative on the opposite side -- brighten toward the sun's
+  azimuth, darken away from it.
+
+**2026-09-23, later the same day: the combination was read too, and the effect has a name.** It is
+the **sky highlight** -- the item CLAUDE.md's priority 2 lists as still open. Ported in
+`SkyRender` (src/world/Terrain.cpp); **built, not yet seen running**.
+
+* The strength's second factor, `0x00d38c28`, is **not** a constant and is not written by any
+  absolute address in the binary, which is why it first looked dead. It is field `+0x54` of the
+  interpolated LightParams block, copied wholesale into the global DayNight block by the flat
+  struct copy `FUN_007ed910`. `FUN_007ebff0` fills it at `0x007ec1cd` with `fildl 0x4(%edi)` --
+  **LightParams column 1, `highlightSky`**, an integer 0 or 1. So the highlight is per-zone data,
+  and most zones have it off.
+* The yaw is `atan2(forward.y, forward.x)` normalised to `[0, 2pi)`, computed at `0x007f3920`
+  from the camera forward vector DayNight keeps at `+0x30` (with an `atan2(forward.z, forward.x)`
+  fallback when the horizontal length underflows).
+* The day parameter `0x00d38b04` is the `[0, 1)` day fraction: every caller multiplies it by
+  `0x00a41c40` = **2880** to index the half-minute band times, which is frozen's
+  `CWorld::GetDayProgress()`.
+
+The sign of the profile picks the branch, with **zero going to the first** (the `jp` at
+`0x007f06af` is taken only when both C0 and C3 are clear, i.e. strictly negative):
+
+```
+local = lerp(ringColor, topRingColor, strength)          # topRingColor = DNInfo[4], the ring below the zenith
+profile >= 0:  out = lerp(ringColor, local, (profile - 1) * strength)
+profile <  0:  out = lerp(local, lerp(local, zenithColor, strength * 0.7), -profile * strength)
+```
+
+Both factors carry `strength` twice over, so the effect is quadratic in it and vanishes smoothly.
+The `0.7` is `0x009e2ec0`. One computation in the negative branch is dead: it rounds
+`strength * 255 - 0.5` to an int at `-0x24(%ebp)` and never reads it back.
+
+**Divergence, deliberate:** `FUN_007ed2d0` lerps 0-255 **bytes** and casts back with no clamp, so an
+out-of-range channel wraps. Both branches extrapolate, so frozen keeps floats and clamps to
+`[0, 255]` instead; a wrapped channel would be a garish artefact rather than a faithful colour.
+Recorded in `overrides.json` as `007ed2d0` -> `SkyLerp`, status `diverged`.
+
+**This also re-confirms the band-to-ring mapping** landed earlier: the writer takes the zenith from
+`0x00d38be0` (DNInfo[3] = band 2) and five ring colours from `0x00d38be4` onward (DNInfo[4..8] =
+bands 3..7), and the highlight touches only the four rings fed by bands 3..6 -- not the zenith
+vertex above them and not the two fog-band rings below.
+
+**Not ported from `FUN_007f0530`:** the per-frame sky override it also applies, at `0x007f0573`
+(blend all six colours toward `0x00d38d44` by `(1 - 0x00d38a88) * 255`, gated on bit 0 of
+`0x00d38184`) and again per vertex through `LerpColor` with the colour and alpha at
+`0x00d38b50`/`0x00d38b51`. Those read globals frozen does not model yet.
 
 ### frozen gaps
 
@@ -343,7 +405,11 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
 
 ## Task list (ordered)
 
-1. **Port the sun direction.** `src/world/CWorld.cpp`: replace the constant `s_outdoorDirection` with
+**Status checked against the source on 2026-09-23** and written into each entry. Five of six are
+now done, none of them seen on screen. Only task 6, the dome's azimuthal colour variation,
+remains, and it needs `FUN_007f0530`'s band arguments re-dumped from disassembly first.
+
+1. **Port the sun direction.** --- **DONE** (unverified on screen): computed per frame in `CWorld::UpdateOutdoorLight`. `src/world/CWorld.cpp`: replace the constant `s_outdoorDirection` with
    a per-frame computation in `CWorld::UpdateOutdoorLight` porting `FUN_007eea90` @ 0x007eea90:
    `theta = wrap-lerp over {(0, 2.2165682), (0.25, 1.9198622), (0.5, 2.2165682), (0.75, 1.9198622)}`
    at `GetDayProgress()`, `phi = 3.9269910`, then
@@ -353,21 +419,21 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
    (`LightingCallback`, the terrain ndotl bake at `Terrain.cpp:843`, the WMO bake at
    `Terrain.cpp:1475`) then tracks it - but note both bakes run at load time, so either they must be
    re-baked when the direction moves or the N.L must move into the shader for the wobble to show.
-2. **Fix the sky band mapping and the fog formulas.** `src/world/CWorld.cpp`: make the sky stack six
+2. **Fix the sky band mapping and the fog formulas.** --- **DONE** (unverified on screen): the fog formulas already matched; the sky stack is now 6 entries from bands 2..7 top-to-horizon. `src/world/CWorld.cpp`: make the sky stack six
    entries, `sky[0..5] = LightIntBand bands 2,3,4,5,6,7` ordered top-to-horizon (today it is five
    entries from bands 6,5,4,3,2 in the opposite order); set
    `s_fogEnd = min(s_farClip, InterpFloatBand(P,0,t))` and `s_fogStart = s_fogEnd * scalar`. Widen
    `s_skyColors` / `CWorld::GetSkyColor` accordingly and fix `SkyRender`'s clear-colour call site.
-3. **Rebuild the dome to the reference geometry.** `BuildSkyDome` / `SkyRender`
+3. **Rebuild the dome to the reference geometry.** --- **DONE** (unverified on screen): 7 rings on the zenith table read out of WoW.exe at 0x00a41a90, 24 segments, per-ring band colour with the bottom two rings on the fog band. frozen still emits duplicated pole vertices and a triangle list where the reference collapses the poles and uses a 300-index strip; same surface. The azimuthal variation (task 6) is still not ported. `BuildSkyDome` / `SkyRender`
    (`src/world/Terrain.cpp:4452`), porting `FUN_007f2470` + `FUN_007f0530`: 24 segments, 7 rings at
    zenith angles `{0, .17, .20, .23, .24, .25, 1.0} * pi`, 122 vertices, one 300-index triangle strip,
    per-vertex colour = the ring's band colour (rings 5 and 6 both take the fog colour). Replace the
    `z / SKY_RADIUS` gradient with a straight per-ring colour assignment.
-4. **Clouds.** New mesh + draw in `src/world/Terrain.cpp` porting `FUN_007f20e0` / `FUN_009acd40`:
+4. **Clouds.** --- **DONE** (unverified on screen): `src/world/Clouds.cpp`. New mesh + draw in `src/world/Terrain.cpp` porting `FUN_007f20e0` / `FUN_009acd40`:
    12 rings x 16 segments at `{0,.025,.05,.075,.1,.125,.15,.175,.205,.23,.245,.25} * pi`, per-ring
    alpha `{255 x9, 128, 0, 0}`, planar UVs `r = ring/11 * 0.5`, 374-index strip, alpha blend, fog off,
    tint from the DNInfo cloud bands. Draw between the dome and the skybox M2 in `SkyRender`.
-5. **Sun/moon glare post pass.** New `SkyGlareRender()` in `src/world/Terrain.cpp`, called last in
+5. **Sun/moon glare post pass.** --- **DONE** (unverified on screen): `DrawGlare` is called for both bodies from `SkyBodiesRender`. New `SkyGlareRender()` in `src/world/Terrain.cpp`, called last in
    `CGWorldFrame::OnWorldRender` (reference draw-order step 14), porting `FUN_007f0870` ->
    `FUN_007ef6e0` + `FUN_009ac400`: one additive screen-facing quad per body, size and alpha from
    `dot(CWorld::GetCameraDir(), normalize(bodyPos - cameraPos))` remapped through the cone threshold,
@@ -375,9 +441,13 @@ fog colour. frozen already sets `GxRs_Fog, 0` in `SkyRender`, so this is correct
    and 22:10 else the moon. **No longer blocked** - the celestial-body positions and every glare
    constant are in `parity-sky-bodies.md`, which also supersedes the cloud task (4) with the
    procedural texture generator.
-6. **Dome azimuthal colour variation** (lowest value, highest uncertainty): `FUN_007f0530` varies the
-   middle rings' colour per segment using the camera yaw. Only worth doing after 1-5, and only after
-   re-dumping `FUN_007f0530`'s band arguments from disassembly rather than decompilation.
+6. **Dome azimuthal colour variation, a.k.a. the sky highlight** --- **built 2026-09-23, not yet
+   seen running.** Ported in `SkyRender` (src/world/Terrain.cpp) from a full disassembly of
+   `FUN_007f0530`: both bands, both branches, the yaw, and the `LightParams.highlightSky` gate.
+   Section 2 above carries every constant and the two formulas. It is off for zones whose
+   LightParams row has `highlightSky = 0`, and even where it is on it only shows around sunrise and
+   sunset, so **an outdoor dawn or dusk in a zone that sets the flag is what a verification run has
+   to look at** -- at noon a correct port and a missing one are identical.
 
 ## 2026-09-16 - the bright ring at the fog boundary: the sky dome was being added over terrain
 

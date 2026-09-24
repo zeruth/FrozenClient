@@ -10,6 +10,7 @@
 #include <tempest/Vector.hpp>
 
 class CAaBox;
+class CM2ParticleEmitter;
 class CM2Scene;
 class CM2Shared;
 struct M2Batch;
@@ -20,6 +21,7 @@ struct M2ModelBoneSeq;
 struct M2ModelCamera;
 struct M2ModelColor;
 struct M2ModelLight;
+struct M2ModelParticle;
 struct M2ModelTextureTransform;
 struct M2ModelTextureWeight;
 struct M2SequenceFallback;
@@ -123,6 +125,10 @@ class CM2Model {
         uint32_t* m_loops = nullptr;
         uint32_t uint74 = 0;
         float float88 = 0.0f;
+        // +0x8c: the scene time this model's emitters were last stepped at. The particle block in
+        // Animate subtracts it from the scene's current time to get its own delta -- nothing else
+        // in frozen computes one.
+        uint32_t uint8c = 0;
         uint32_t uint90 = 0;
         union {
             M2ModelBone* m_bones = nullptr;
@@ -137,6 +143,37 @@ class CM2Model {
         C44Matrix* m_textureMatrices = nullptr;
         C44Matrix matrixB4;
         C44Matrix matrixF4;
+
+        // +0x174: the space this model's PARTICLES and RIBBONS are expressed relative to, or null
+        // for world space -- which is the normal case, and why CM2ParticleEmitter::Draw takes a
+        // nullable matrix. CM2SceneRender::DrawParticle and DrawRibbon both hand it straight to
+        // the emitter's Draw.
+        //
+        // FUN_00824460 is its only setter and is not ported. It walks the attachment tree from
+        // this model down (skipping attachments whose index is 0xFFFF) and, on the null ->
+        // non-null transition ONLY, transforms the already-live particles through the new
+        // matrix's AffineInverse so they do not jump; passing null runs the same transform with
+        // the OUTGOING matrix on the way out. Porting it means porting FUN_008243e0 with it.
+        // Until then this stays null and every particle draws in world space, which is what the
+        // reference does for everything that never calls that setter.
+        C44Matrix* m_particleRelative = nullptr;
+
+        // NOT PORTED, and recorded so the gap is visible rather than silently closed: the
+        // reference has a THIRD C44Matrix at +0x134, between matrixF4 and the pointer above. The
+        // constructor identity-initialises it at 0x82c002..0x82c058 -- the 1.0 stores land on
+        // 0x134, 0x148, 0x15c and 0x170, a 0x14 stride, which is a 4x4 diagonal and nothing else.
+        // Its readers have not been traced. Frozen's layout therefore diverges here by 0x40
+        // bytes, which costs nothing because no offset in frozen is hard-coded.
+
+        // This model's own tint, before anything a parent hands down: the reference keeps these at
+        // +0x178 through +0x194 and folds them into the current values every animate. Nothing
+        // writes them yet -- the setters that do are not ported -- so they stay neutral, which
+        // makes the fold an identity and leaves a parent's tint passing through untouched.
+        float m_baseAlpha = 1.0f;
+        float m_baseAlphaScale = 1.0f;
+        C3Vector m_baseDiffuse = { 1.0f, 1.0f, 1.0f };
+        C3Vector m_baseEmissive = { 0.0f, 0.0f, 0.0f };
+
         float float198 = 1.0f;
         float alpha19C = 1.0f;
         C3Vector m_currentDiffuse = { 1.0f, 1.0f, 1.0f };
@@ -147,6 +184,39 @@ class CM2Model {
         void (*m_lightingCallback)(CM2Model*, CM2Lighting*, void*) = nullptr;
         void* m_lightingArg = nullptr;
         M2ModelCamera* m_cameras = nullptr;
+        // The animated state of every emitter, parallel to m_shared->m_data->particles. The
+        // reference keeps this at +0x2c0 and an array of emitter OBJECTS at +0x2c4; only the state
+        // is here so far -- see CM2Model::AnimateParticles.
+        M2ModelParticle* m_particles = nullptr;
+        // +0x2c4: one emitter per M2Particle, or null where the model asks for an emitter type
+        // frozen does not have. Callers MUST tolerate the null -- see the note in
+        // InitializeLoaded. The objects themselves are carved out of the same buffer as the array,
+        // so neither is owned individually.
+        CM2ParticleEmitter** m_particleEmitters = nullptr;
+        // The OPTIMIZED VISIBLE GEOMETRY cache, traced 2026-09-23. Nothing in frozen builds
+        // it, so it stays null and every path that reads it takes the unoptimized branch; that is
+        // the correct resting state rather than a bug, but it is why CM2Model::SetIndices and
+        // UnoptimizeVisibleGeometry are stubs.
+        //
+        // What the reference keeps behind it, read off FUN_00828f90 and FUN_00825d70:
+        //
+        //     +0x08  array of 0x30-byte group entries, each starting with a range index
+        //     +0x0c  group count
+        //     +0x10  array of 8-byte {firstBatch, lastBatch} pairs
+        //     +0x14  CGxPool*
+        //     +0x18  CGxBuf*, the compacted index buffer
+        //
+        // It is a per-model index buffer holding only the batches whose skin section is visible,
+        // rebuilt when section visibility changes. UnoptimizeVisibleGeometry frees the buffer and
+        // pool and nulls this, and its SMemFree names ".\M2Model.cpp" line 0xad6, which is how
+        // the owning module is known rather than guessed.
+        //
+        // Porting it is a multi-cycle job and should not be started piecemeal: the builders are
+        // FUN_0082be60 (855 bytes) and FUN_0082c970 (1353 bytes), the only two functions that
+        // store a non-zero value here. Do the builders first -- CM2Model::SetIndices dereferences
+        // this WITHOUT a null check, so it is only ever reached through the callers' own
+        // `if (ptr2D0)` guards (FUN_00824b70, FUN_00829e40, FUN_00832dd0), and porting the
+        // consumer alone would give frozen a function it must never call.
         void* ptr2D0 = nullptr;
         uint32_t m_memHandle;
 
@@ -184,9 +254,17 @@ class CM2Model {
         void AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6);
         void AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6);
         void AnimateST();
+        // Animate every emitter's tracks into m_particles. Called by the particle system rather
+        // than from AnimateST -- see the note at the definition.
+        void AnimateParticleTracks();
+
+        // Push this frame's animated values into one emitter, then place and step it.
+        // ref: FUN_008309c0
+        void AnimateParticleEmitter(float dt, int32_t index);
         void AnimateTextureTransformsMT();
         void AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5);
         void AttachToScene(CM2Scene* scene);
+        void CancelAllDeferredSequences();
         void CancelDeferredSequences(uint32_t boneIndex, bool a3);
         void DetachAllChildrenById(uint32_t id);
         void DetachFromParent();

@@ -245,6 +245,31 @@ class CGxDeviceD3d : public CGxDevice {
     uint32_t m_d3dVertexStreamOfs[8];
     uint32_t m_d3dVertexStreamStride[8];
     uint32_t m_deviceStates[DeviceStates_Last];
+    // The hardware side of the four *MATERIALSOURCE render states, at +0x3e4c..+0x3e58 in the
+    // reference and in this order there too. IStateSyncMaterial is the only thing that reads or
+    // writes them; they are zero-initialised, exactly as the reference leaves them.
+    uint32_t m_d3dAmbientMaterialSource = 0;
+    uint32_t m_d3dDiffuseMaterialSource = 0;
+    uint32_t m_d3dSpecularMaterialSource = 0;
+    uint32_t m_d3dEmissiveMaterialSource = 0;
+    // The hardware side of D3DRS_CLIPPLANEENABLE, at +0x3e84 in the reference. Zero to start,
+    // which agrees with D3D's own default, so unlike the material sources above there is no
+    // first-sync gap here.
+    uint32_t m_d3dClipPlaneEnable = 0;
+    // The hardware side of D3DRS_LIGHTING (+0x3e78) and D3DRS_AMBIENT (+0x3e5c). Both start at
+    // zero, matching D3D's own defaults for the first and not for the second -- D3DRS_AMBIENT
+    // defaults to 0 too, so there is no first-sync gap on either.
+    uint32_t m_d3dLighting = 0;
+    uint32_t m_d3dAmbient = 0;
+    // Set while IStateSyncLights is faking lit output for geometry the app asked to draw UNLIT.
+    // +0x3b2c in the reference. See the note on IStateSyncLights for what that fake is.
+    int32_t m_lightingEmulated = 0;
+    // The D3DLIGHT9 IStateSyncLights fills and sends. It is a member rather than a local because
+    // the reference's is a single file-static at 0x00c606f8 that it only ever PARTLY fills: a
+    // point light writes Position and leaves Direction holding the previous light's, and a
+    // directional light does the reverse. D3D ignores the unused one, so it does not matter, but a
+    // local would zero the other field every call and that would be a different program.
+    D3DLIGHT9 m_d3dLight = {};
 
     // Virtual member functions
     virtual void ITexMarkAsUpdated(CGxTex* texId);
@@ -299,6 +324,8 @@ class CGxDeviceD3d : public CGxDevice {
     void IShaderCreateVertex(CGxShader* shader);
     void IStateSetD3dDefaults();
     void IStateSync();
+    void IStateSyncClipPlanes();
+    void IStateSyncScissorRect();
     void IStateSyncEnables();
     void IStateSyncIndexPtr();
     void IStateSyncLights();

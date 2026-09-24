@@ -1,10 +1,12 @@
 file(GLOB TEMPEST_SOURCES
     "*.cpp"
+    "box/*.cpp"
     "math/*.cpp"
     "matrix/*.cpp"
     "quaternion/*.cpp"
     "random/*.cpp"
     "rect/*.cpp"
+    "segment/*.cpp"
     "vector/*.cpp"
 )
 

@@ -52,7 +52,10 @@ void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
 // True if pos is inside a loaded WMO interior group; fills outAmbient with that WMO's interior light.
 uint32_t TerrainAreaIDAt(const C3Vector& pos);
 
-bool TerrainInteriorAmbientAt(const C3Vector& pos, C3Vector& outAmbient);
+// The light for a unit on a WMO floor: the reference's probe through the interior groups' BSP
+// and MOCV sample (CMapEntity::FloorLight). Fills the entity's diffuse and ambient as bytes.
+class CImVector;
+bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient);
 
 // Is a world position inside an interior WMO room? Shares its containment test with
 // TerrainInteriorAmbientAt, and therefore shares that test's known imprecision -- see the

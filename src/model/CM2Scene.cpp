@@ -8,6 +8,7 @@
 #include "model/CM2Light.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2SceneRender.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Sort.hpp"
@@ -21,6 +22,7 @@ void CM2Scene::AnimateThread(void* arg) {
     // TODO
 }
 
+// ref: FUN_0081f1d0
 void CM2Scene::ComputeElementShaders(M2Element* element) {
     auto model = element->model;
     auto batch = element->batch;
@@ -394,6 +396,10 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_view.Translate(invCameraPos);
     this->m_viewInv = this->m_view.Inverse(this->m_view.Determinant());
 
+    // This branch is unreachable today and must stay that way until CM2Cache::BeginThread is real.
+    // The interleave below is not an optimisation that degrades gracefully: with no second thread,
+    // walking two at a time simply leaves every other model un-animated. CM2Cache::Initialize
+    // refuses to propagate the M2UseThreads CVar into this bit for that reason.
     if (this->m_cache->m_flags & 0x4) {
         // In multithreaded mode, iteration over the animate list is interleaved:
         // - the current thread animates entries 0, 2, 4, ...
@@ -467,6 +473,20 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_elements.SetCount(0);
     int32_t elementIndex = 0;
 
+    // How many particle elements use an additive blend. WRITE-ONLY here for now, and that is
+    // faithful rather than an oversight: the reference's builder only increments it too.
+    //
+    // What consumes it is the tail this function still marks TODO, read 2026-09-24. That tail is
+    // not a sort at all -- it walks a FOURTH element list (the container at scene+0x44, count at
+    // +0x48) and groups its entries through a 251-entry open-addressing hash table at 0x00d40da0,
+    // memset to 0xff and keyed by FUN_0081cc50 of the element. Additive blending is
+    // order-independent, so grouping by material beats sorting by depth.
+    //
+    // Frozen has no container at +0x44 and nothing fills one, so the count has nothing to size
+    // yet. Do not delete it to silence the warning -- it is the reference's own bookkeeping, and
+    // removing it would have to be put back.
+    uint32_t additiveCount = 0;
+
     while (this->m_drawList) {
         auto model = this->m_drawList;
         this->m_drawList = model->m_drawNext;
@@ -485,9 +505,47 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
         auto v21 = v19->m_flags & 0x20;
         auto v22 = v19->m_flags & 0x40;
 
+        // The liquid plane test, ported 2026-09-24 -- found from the particle emission, whose
+        // pass-selection flag is this same v21.
+        //
+        // A model whose bounding sphere sits entirely below the water surface has its transparent
+        // batches routed to the other pass. That is where the transparent block's under-liquid
+        // order flip is actually decided, and it is PER MODEL rather than per camera, which the
+        // render inventory's description from the draw side does not make obvious.
+        //
+        // Scope worth noticing: v21 feeds the routing for every transparent batch registered
+        // below, not only for particles.
+        //
+        // The reference tests only when both bits are set, and the outcome is to clear v21; v22 is
+        // left alone.
         if (v21 && v22) {
-            // TODO
-            // - liquid plane stuff
+            const CAaBox& extent = data->bounds.extent;
+
+            C3Vector centre = { (extent.t.x + extent.b.x) * 0.5f,
+                                (extent.t.y + extent.b.y) * 0.5f,
+                                (extent.t.z + extent.b.z) * 0.5f };
+
+            // The radius is the authored one SCALED by the length of the placement's first row,
+            // which is how a scaled model gets a correspondingly scaled bound. matrixF4 is the
+            // same matrix the centre is transformed by below.
+            const C44Matrix& placement = model->matrixF4;
+
+            float scale = sqrtf(placement.a0 * placement.a0
+                + placement.a1 * placement.a1
+                + placement.a2 * placement.a2);
+
+            float radius = scale * data->bounds.radius;
+
+            C3Vector world = centre * placement;
+
+            const C4Plane& plane = v19->m_liquidPlane;
+
+            float distance = plane.n.x * world.x + plane.n.y * world.y + plane.n.z * world.z
+                + plane.d;
+
+            if (distance <= -radius) {
+                v21 = 0;
+            }
         }
 
         auto skinProfile = model->m_shared->skinProfile;
@@ -554,7 +612,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             M2Material* material = &data->materials[batch->materialIndex];
 
             auto v17 = (batch->flags & 0x4) == 0;
-            if (v17 || (v17 = this->uint104 == 0, v222 = 1, v17)) {
+            if (v17 || (v17 = this->m_projectionCallback == nullptr, v222 = 1, v17)) {
                 v222 = 0;
             }
 
@@ -648,8 +706,119 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             elementIndex++;
 
+            // The alpha-tested DEPTH PREPASS, ported from FUN_00821a20 at 0x008224f7. The gate was
+            // already the reference's, condition for condition; only the body was missing, so
+            // frozen laid no depth for alpha-tested geometry such as hair and foliage.
+            //
+            // It costs one extra draw per eligible batch and cannot darken anything: the gate
+            // already excludes materials carrying the depth-write-disable bit, so the shaded
+            // element that follows writes the same depth either way, and this pass writes no
+            // colour. **Built, not seen running.**
+            //
+            // What the reference does here, read from 0x0082257f on 2026-09-23:
+            //
+            //     grow the element array by one
+            //     copy elements[elementIndex - 1] into the new slot   (0x44 bytes, rep movsl x 0x11)
+            //     newElement->flags |= 0x1
+            //     if (<a>) *array54[1].New() = elementIndex;
+            //     if (<b>) *array54[2].New() = elementIndex;
+            //     elementIndex++;
+            //
+            // So the prepass element is a verbatim duplicate distinguished only by flag 0x1.
+            // CM2SceneRender::SetupMaterial already does the rest: that flag selects alpha-key
+            // blending with colour writes off. GxRs_ColorWrite reaches D3D as of 2026-09-23, so the
+            // draw side is ready and this gather is the only thing still missing.
+            //
+            // Copy through the array rather than through a saved pointer: New() can reallocate, and
+            // the reference re-reads the base for exactly that reason.
+            //
+            // Which list the duplicate joins is the reference's water-side pair, and those default
+            // to the two lighting bits read above. The reference seeds them with v21 and v22 at
+            // 0x00821cab and only refines them -- by testing the model's bounding sphere against
+            // m_currentLighting->m_liquidPlane -- when BOTH are set. That test is no longer a
+            // TODO; it was ported 2026-09-24. It still does not fire, because
+            // CM2Lighting::Initialize sets 0x20 and nothing sets 0x40 or writes m_liquidPlane, so
+            // the pair is (true, false) for every model and this reduces to array54[1]. That is
+            // exactly what the main registration above does for v221 == 1, so the two agree today
+            // by construction rather than by luck.
             if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
-                // TODO
+                auto prepass = this->m_elements.New();
+
+                // Through the array, not through a saved pointer: New() can reallocate, which is
+                // why the reference re-reads the base before its own copy at 0x0082258f.
+                *prepass = this->m_elements[elementIndex - 1];
+                prepass->flags |= 0x1;
+
+                if (v21) {
+                    *this->array54[1].New() = elementIndex;
+                }
+
+                if (v22) {
+                    *this->array54[2].New() = elementIndex;
+                }
+
+                elementIndex++;
+            }
+        }
+
+        // The particle elements. The reference runs this immediately after the batch loop and
+        // before the ribbons, which is where it sits here.
+        for (int32_t i = 0; i < data->particles.Count(); i++) {
+            CM2ParticleEmitter* emitter = model->m_particleEmitters
+                ? model->m_particleEmitters[i]
+                : nullptr;
+
+            // Frozen-only: null for an emitter type frozen does not build. The reference's
+            // factory always builds something, so it dereferences unconditionally.
+            if (!emitter) {
+                continue;
+            }
+
+            // Four gates, in the reference's order.
+            if (model->m_flag2000 && (emitter->m_flags & 0x200)) {
+                continue;
+            }
+
+            if (emitter->m_flags & 0x2000000) {
+                continue;
+            }
+
+            if (!model->m_particles[i].active) {
+                continue;
+            }
+
+            if (!(model->float198 > 0.0001f)) {
+                continue;
+            }
+
+            const M2Particle& file = data->particles[i];
+
+            // FROZEN-ONLY GUARD, and the SECOND place this exact one has been needed -- the
+            // driver in CM2Model::AnimateParticleEmitter has the same one for the same reason.
+            // The reference indexes m_boneMatrices with no check because its loader guarantees
+            // the array and the index; frozen's allocates the array inside a `bones.Count()`
+            // branch and never validates boneIndex against the bone count. Both would fault, and
+            // this runs for every model every frame.
+            //
+            // Skipping leaves that emitter without an element for the frame, which is what the
+            // four gates above already do.
+            if (!model->m_boneMatrices || file.boneIndex >= data->bones.Count()) {
+                continue;
+            }
+
+            // NOT a camera distance, whatever the element field is called: the emitter's own
+            // position in the model's space, squared. Transcribed; see the note at DrawParticle.
+            C3Vector local = file.position * model->m_boneMatrices[file.boneIndex];
+
+            float distance = local.x * local.x + local.y * local.y + local.z * local.z;
+
+            this->AddParticleElement(emitter, model, distance, model->float198, v21,
+                                     elementIndex, additiveCount);
+
+            // Each child gets its own element, with the parent's distance and alpha.
+            for (uint32_t c = 0; c < emitter->m_childCount; c++) {
+                this->AddParticleElement(emitter->m_children[c], model, distance, model->float198,
+                                         v21, elementIndex, additiveCount);
             }
         }
 
@@ -667,6 +836,81 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     // TODO sort additive particles
 }
 
+// Register one emitter's particles as a draw element.
+//
+// Sets exactly the fields the reference sets and no more. priorityPlane, batch, skinSection,
+// vertexPermute and the last dword are left ALONE, as they are there: the element allocator does
+// not zero, so a recycled slot keeps the previous frame's values. That is faithful and harmless
+// while DrawParticle is a stub, but it is the first thing to check when that stub is filled.
+//
+// The reference also caches emitter->[0x18] into the element's +0x24. What +0x18 holds is not
+// identified, and frozen carries the emitter pointer in the element anyway, so that cache is not
+// reproduced rather than filled with a guess.
+//
+// ref: FUN_00821930
+void CM2Scene::AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, float distance,
+                                  float alpha, int32_t aboveLiquid, int32_t& elementIndex,
+                                  uint32_t& additiveCount) {
+    // Nothing alive anywhere in the subtree means nothing to draw.
+    if (!emitter->HasLiveParticles()) {
+        return;
+    }
+
+    // Emitters carrying spawned models draw through those models, not as a particle element.
+    if (emitter->m_particleKind == 1) {
+        return;
+    }
+
+    M2Element* element = this->m_elements.New();
+
+    if (!element) {
+        return;
+    }
+
+    element->type = 4;
+    element->model = model;
+    element->flags = 0x0;
+    element->alpha = alpha;
+    element->emitter = emitter;
+    element->float10 = model->float88;
+    element->float14 = distance;
+    element->pixelPermute = 0;
+    element->dword34 = 0xFFFFFFFF;
+    element->dword38 = 0xFFFFFFFF;
+    element->dword3c = 0;
+
+    // Counted for the additive sort the tail of Animate still owes.
+    if (emitter->m_blendMode == 10 || emitter->m_blendMode == 3) {
+        additiveCount++;
+    }
+
+    // Pass 0 only for a blend that does not need sorting AND an alpha that is effectively 1
+    // (0x00a45528 is 0.99999). Everything else is transparent, and the water side picks which of
+    // the two transparent passes.
+    if (emitter->m_blendMode <= 1 && alpha >= 0.9999899864196777f) {
+        *this->array54[0].New() = elementIndex;
+    } else if (!aboveLiquid || (emitter->m_flags & 0x40000)) {
+        *this->array54[2].New() = elementIndex;
+    } else {
+        *this->array54[1].New() = elementIndex;
+    }
+
+    elementIndex++;
+}
+
+// Install the projected-decal callback.
+//
+// Two stores and nothing else, but it is the switch that decides whether this scene ever emits
+// type-1 elements -- and so whether CM2SceneRender::DrawBatchProj is reachable at all. Nothing in
+// frozen calls it yet; the reference's one caller is world init at 0x781340.
+//
+// ref: FUN_0081cc30
+void CM2Scene::SetProjectionCallback(void* callback, void* context) {
+    this->m_projectionCallback = callback;
+    this->m_projectionContext = context;
+}
+
+// ref: FUN_0081f8f0
 CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
     if (!file) {
         return nullptr;
@@ -769,10 +1013,87 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
     return 1;
 }
 
+// Feeds CM2Lighting with the lights that affect one model: the list walk below covers DIRECTIONAL
+// lights and the hash-grid sweep after it covers POINT lights. It is worth writing down where the
+// whole chain stands, because the pieces were ported from the wrong end.
+//
+// Local lights on a model take six steps to reach CM2Lighting, and all six are ported:
+//
+//   1. CM2Light::Initialize        stamps a new light one frame behind, so it reads as stale.
+//   2. CM2Model's per-frame update positions each point light through its bone and m_viewInv,
+//                                  and stamps it with the scene's counter.
+//   3. CM2Light::Link              files it into the hash grid below; SetPosition re-files it.
+//   4. CM2Scene::SelectLights      this function: sweeps the cells the model's sphere covers.
+//   5. CM2Lighting::AddLight       keeps the four nearest, sorted.
+//   6. CM2Lighting::CameraSpace    puts their positions in camera space.
+//
+// From there the lights leave by TWO separate doors, and both are now open:
+//
+//   shader          CShaderEffect::ComputeLocalLights packs them into eleven vertex constants
+//                   at c17 -- colour, camera-space position and the three attenuation rows.
+//   fixed function  CM2Lighting::SetupGxLights loads the device's four light slots, sun in slot
+//                   0 as a directional light and up to three point lights after it, and
+//                   CGxDeviceD3d::IStateSyncLights sends whatever changed to D3D. That door was
+//                   walled up until 2026-09-23: CGxDevice had no light state of any kind, so
+//                   SetupGxLights had nowhere to put anything and stayed a stub.
+//
+// Steps 5 and 6 landed first and sat inert for two cycles because 1 through 4 were empty branches.
+// None of it has been seen running.
+// ref: FUN_0081e400
 void CM2Scene::SelectLights(CM2Lighting* lighting) {
     for (auto light = this->m_lightList; light; light = light->m_lightNext) {
         lighting->AddLight(light);
     }
 
-    // TODO
+    // Then the point lights, by sweeping every grid cell the model's bounding sphere touches. The
+    // bounds are computed the reference's way -- the low edge takes minus a half and the high edge
+    // plus a half BEFORE truncation, which widens the range by a cell on each side rather than
+    // rounding to the nearest.
+    const C3Vector& c = lighting->sphere4.c;
+    float r = lighting->sphere4.r;
+
+    int32_t xMin = static_cast<int32_t>((c.x - r) * 0.05f - 0.5f) & 0x3f;
+    int32_t xMax = static_cast<int32_t>((c.x + r) * 0.05f + 0.5f) & 0x3f;
+    int32_t yMin = static_cast<int32_t>((c.y - r) * 0.05f - 0.5f) & 0x3f;
+    int32_t yMax = static_cast<int32_t>((c.y + r) * 0.05f + 0.5f) & 0x3f;
+
+    // Both loops are do-while and both wrap, so a sphere straddling the fold still sweeps the
+    // cells on each side of it instead of walking the whole grid backwards.
+    int32_t x = xMin;
+
+    for (;;) {
+        int32_t y = yMin;
+
+        for (;;) {
+            CM2Light* light = this->m_lightGrid[(y << 6) + x];
+
+            while (light) {
+                // Taken before the test: switching a light off unlinks it and clears its next
+                // pointer, so reading it afterwards would walk into a cleared node.
+                CM2Light* next = light->m_lightNext;
+
+                if (!light->m_scene || light->m_updateStamp == this->uint14) {
+                    lighting->AddLight(light);
+                } else {
+                    // Nobody drove this light this frame, so it belongs to a model that stopped
+                    // animating. The reference culls it here rather than anywhere else.
+                    light->SetVisible(0);
+                }
+
+                light = next;
+            }
+
+            if (y == yMax) {
+                break;
+            }
+
+            y = (y + 1) & 0x3f;
+        }
+
+        if (x == xMax) {
+            break;
+        }
+
+        x = (x + 1) & 0x3f;
+    }
 }

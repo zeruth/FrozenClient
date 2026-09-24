@@ -2,6 +2,7 @@
 #define MODEL_C_M2_SCENE_RENDER_HPP
 
 #include "gx/Types.hpp"
+#include "gx/shader/CShaderEffectManager.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/M2Types.hpp"
 #include <cstdint>
@@ -64,17 +65,52 @@ class CM2SceneRender {
         M2SkinSection* m_prevSkinSection = nullptr;
         M2Material* m_curMaterial = nullptr;
         M2Material* m_prevMaterial = nullptr;
+        // +0xb8: a scratch material owned by the render, which m_curMaterial points at by default.
+        // Element types that have no M2Material of their own fill this in and use it -- particles
+        // are one, and DrawParticle builds exactly its two uint16s: a flags word from the
+        // emitter's material flags, and M2BlendIndexFromGx of its blend.
+        M2Material m_scratchMaterial = {};
+
+        // +0xa0 through +0xb4: the six shader effects the constructor looks up by name. The
+        // first two are what DrawParticle chooses between on the emitter's material flag bit 0 --
+        // which is `!(M2Particle.flags & 0x1)`, so a file flag of 0x1 draws unlit.
+        //
+        // The four projected ones are not for particles. DrawBatchProj is a stub and CLAUDE.md's
+        // first priority lists M2 shadow receivers as still open; those need exactly these.
+        //
+        // Null is a supported state: GetEffect is a lookup, and an effect the shader list has not
+        // been given returns null rather than being created.
+        CShaderEffect* m_particleEffect = nullptr;
+        CShaderEffect* m_particleUnlitEffect = nullptr;
+        CShaderEffect* m_projModModEffect = nullptr;
+        CShaderEffect* m_projModModUnlitEffect = nullptr;
+        CShaderEffect* m_projModAddEffect = nullptr;
+        CShaderEffect* m_projModAddUnlitEffect = nullptr;
 
         // Member functions
+        // matrix0 is identity without being written here: C44Matrix's default constructor makes
+        // it one, where the reference stores the four 1.0s itself. Every cur/prev pair below is
+        // likewise default-initialised where the reference zeroes it explicitly.
+        // ref: FUN_0081f330
         CM2SceneRender(CM2Scene* scene)
             : m_scene(scene)
             , m_cache(scene->m_cache)
+            , m_particleEffect(CShaderEffectManager::GetEffect("Particle"))
+            , m_particleUnlitEffect(CShaderEffectManager::GetEffect("Particle_Unlit"))
+            , m_projModModEffect(CShaderEffectManager::GetEffect("Projected_ModMod"))
+            , m_projModModUnlitEffect(CShaderEffectManager::GetEffect("Projected_ModMod_Unlit"))
+            , m_projModAddEffect(CShaderEffectManager::GetEffect("Projected_ModAdd"))
+            , m_projModAddUnlitEffect(CShaderEffectManager::GetEffect("Projected_ModAdd_Unlit"))
             {};
         void Draw(M2PASS pass, M2Element* elements, uint32_t* a4, uint32_t a5);
         void DrawBatch();
         void DrawBatchDoodad(M2Element* elements, uint32_t* a3);
         void DrawBatchProj();
         void DrawCallback();
+        // Put the view into camera-relative space for a particle draw, and reset the world
+        // matrix to identity. ref: FUN_0081f620
+        void SetupParticleTransform(const C3Vector& cameraPosition);
+
         int32_t DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5);
         void DrawRibbon();
         void SetBatchVertices(int32_t a2);

@@ -170,7 +170,13 @@ RENDER_MODULES = {
     # entities and their models
     'M2Scene.cpp', 'M2Shared.cpp', 'M2Model.cpp', 'ModelBlob.cpp', 'CharacterModelBase.cpp',
     'Unit_C.cpp', 'Player_C.cpp', 'GameObject_C.cpp', 'UnitMissileTrajectory_C.cpp',
-    'MovementShared.cpp', 'CreepTendril.cpp', 'ObjectEffect.cpp',
+    'MovementShared.cpp', 'ObjectEffect.cpp',
+    # CreepTendril.cpp is deliberately NOT here. Its anchor collects 1415 functions averaging 41
+    # bytes, a quarter of what the render surface used to count, and only 2 of them are reachable
+    # from the render entry point -- every real module here runs 20-76%. The address range it
+    # covers carries ".\TumorManager.cpp" strings, so the anchor is the nearest assert string
+    # before a long run of unrelated code rather than its origin. Counting it made the render
+    # surface look a third larger than it is.
     # textures, effects and the device
     'Texture.cpp', 'TextureCache.cpp', 'TextureBlob.cpp', 'FFXEffects.cpp', 'ShaderEffectManager.cpp',
     'CGxDevice.cpp', 'CGxDeviceD3d9Ex.cpp', 'CGxD3d9ExTexture.cpp', 'CGxDeviceOpenGl.cpp',
@@ -484,7 +490,11 @@ def merge_frozen(pdb, src):
         w['callees'] = set(k for k in (resolve(c) for c in w['calls']) if k)
         # ordered, unresolved names kept as '?name' so the sequence keeps its shape
         w['seq'] = [resolve(c) or '?' + c for c in w['callseq']]
-    return frozen
+    # `inlined` goes back too: match() needs it to tell a hand claim that names a function the
+    # compiler inlined away from one that names nothing at all. Those are different mistakes and
+    # want different fixes -- the first is a real reference function with no frozen counterpart
+    # function, the second is a typo or a port that was never written.
+    return frozen, inlined
 
 
 def lcs_len(a, b):
@@ -502,12 +512,32 @@ def lcs_len(a, b):
 CRT_NAME_RE = re.compile(r'^(?:FID_conflict_)?_{1,2}([A-Za-z]\w*)$')
 
 
+# Helpers the COMPILER emits, which no port can ever call because they never appear in source: the
+# stack probes, the SEH and EH prologues, the security cookie check, the C++ throw helper, and the
+# 64-bit arithmetic that x86 has no instruction for. A frozen build emits its own set under its own
+# names, so tokenising these would charge every caller for not making a call it cannot make -- the
+# same mistake excluding 005eeb70 fixed, one level down.
+IMPLICIT_CRT = (
+    'alloca_probe', 'chkstk', 'seh_prolog', 'seh_epilog', 'eh_prolog', 'eh_epilog',
+    'security_check_cookie', 'security_init_cookie', 'purecall', 'cxxthrowexception',
+    'allmul', 'alldiv', 'allrem', 'allshl', 'allshr', 'aullshr', 'aulldiv', 'aullrem',
+    'aulldvrm', 'alldvrm',
+)
+
+
 def crt_token(name):
     """CRT calls the compiler kept as calls on both sides (malloc, memset, sscanf, _msize) are
     named `_malloc` by Ghidra and `?malloc` in an unresolved frozen sequence; both become crt:malloc
-    so the two sequences can align on them."""
+    so the two sequences can align on them.
+
+    Returns None for a compiler-emitted helper, so ref_seq drops it instead."""
     m = CRT_NAME_RE.match(name)
-    return 'crt:' + m.group(1).lower() if m else None
+    if not m:
+        return None
+    base = m.group(1).lower().split('@')[0]
+    if base in IMPLICIT_CRT:
+        return None
+    return 'crt:' + base
 
 
 def ref_seq(refs, m, addr):
@@ -515,8 +545,16 @@ def ref_seq(refs, m, addr):
     for c in refs[addr]['calls']:
         if c in m:
             out.append(m[c][0])
-        elif c in refs and refs[c]['named'] and refs[c]['excluded']:
-            out.append(crt_token(refs[c]['name']) or c)
+        elif c in refs and refs[c]['excluded']:
+            # An excluded callee is not part of the port -- CRT, a compiler helper, third-party
+            # code, or a hook the release build compiled out. When it has a name we can translate
+            # (memset, memcpy), keep it: frozen makes the same call and the two match. When it has
+            # none, DROP it rather than emitting the raw address, which nothing on the frozen side
+            # can ever match. Emitting it charged every caller for correctly not calling it --
+            # 005eeb70 alone, a one-byte compiled-out hook, is called by 1692 reference functions.
+            token = crt_token(refs[c]['name']) if refs[c]['named'] else None
+            if token:
+                out.append(token)
         else:
             out.append(c)
     return out
@@ -802,13 +840,27 @@ def load_overrides():
     return json.load(io.open(OVERRIDES, encoding='utf-8'))
 
 
-def match(refs, frozen, overrides, tables):
+def match(refs, frozen, overrides, tables, inlined=None):
     """addr -> (frozen name, confidence)"""
     m = {}
     used = set()
     evidence = {}
+    inlined = inlined or {}
 
     unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
+    # Hand claims an `unlinked` override refused. The veto stays authoritative -- an `unlinked`
+    # entry is a deliberate judgement that no frozen counterpart exists -- but it must not swallow
+    # the contradiction. On 2026-09-23 a stale "not ported yet" note on 006c8e70 vetoed the
+    # `// ref:` tag on a finished port of TEXTURECACHE::PasteGlyphOutlinedMonochrome, and the port
+    # was invisible to every metric with nothing printed anywhere. Two hand claims disagreeing is
+    # exactly the thing this tool should say out loud. NAMED hand_vetoed, not vetoed: the order
+    # matcher below already keeps a local bool by that name, and it silently clobbered this list.
+    hand_vetoed = []
+    # Hand claims that named a frozen function the inventory does not carry. Before 2026-09-24
+    # these returned False and said nothing, so four overrides.json entries sat in the file for a
+    # cycle reading as established facts while binding to nothing and moving no metric. A claim
+    # that cannot be honoured is a claim that is WRONG, and the tool has to say so.
+    hand_empty = []
 
     HAND = ('override', 'annotated')
 
@@ -818,10 +870,24 @@ def match(refs, frozen, overrides, tables):
         # (TextureCreate x3, CDataStore::Put x4) and COMDAT folding leaves the reference with
         # copies. Automatic evidence may not: one guess per name, or the matchers would spray a
         # popular name across a whole neighbourhood.
+        if name not in frozen and how in HAND and addr in refs:
+            # Three different mistakes wear the same face here, so name which one it is.
+            if name in inlined:
+                why = 'inlined at every call site -- no function in frozen\'s binary to bind'
+            elif any(k.split('::')[-1] == name.split('::')[-1] for k in frozen):
+                why = 'no such instantiation; the short name exists under other qualifications'
+            else:
+                why = 'no frozen function by that name -- typo, or never written'
+            hand_empty.append((addr, name, how, why))
         if addr in m or addr not in refs or name not in frozen or (name in used and how not in HAND):
             return False
         if addr in unlinked:
-            return False  # judged to have no frozen counterpart; automatic evidence does not reopen it
+            # judged to have no frozen counterpart; automatic evidence does not reopen it
+            if how in HAND:
+                hand_vetoed.append((addr, name, how))
+            return False
+        if refs[addr]['excluded'] and how not in HAND:
+            return False  # CRT, nullsub, third-party: automatic evidence never makes it a port
         m[addr] = (name, how)
         used.add(name)
         evidence[addr] = why
@@ -832,9 +898,46 @@ def match(refs, frozen, overrides, tables):
         if o.get('frozen'):
             bind(addr, o['frozen'], 'override')
 
+    # One frozen name carrying several tags is usually fine -- overloads collapse to a single key
+    # here, and two same-named free functions in different files do too. It is NOT fine when the
+    # reference functions are wildly different sizes, because then at most one of them can really
+    # be this code. That is what a DISPLACED tag looks like: a commented port inserted directly
+    # above an already-tagged function strands the older tag on the newer one, which is how
+    # 0x00835640 came to be linked to CM2Light::SetPosition instead of SetLightType, and how
+    # CSimpleEditBox::AddHistoryLine came to claim a 71-byte function and a 142-byte one.
     for name, w in sorted(frozen.items()):
+        # Operators are exempt: recomp keys by name, so every overload of operator* collapses to
+        # one entry, and those really are different functions of very different sizes.
+        sizes = [refs[a]['size'] for a in sorted(w['refs']) if a in refs and refs[a]['size']]
+        if 'operator' not in name and len(sizes) > 1 and max(sizes) > 2 * min(sizes):
+            print('  ! %s carries %d tags whose reference bodies differ by more than 2x: %s'
+                  % (name, len(sizes), ', '.join('%s (%d bytes)' % (a, refs[a]['size'])
+                                                 for a in sorted(w['refs']) if a in refs)))
+            print('    at most one can be right -- check for a tag stranded by an inserted function')
+
         for addr in sorted(w['refs']):
             bind(addr, name, 'annotated', 'tag in ' + (w['files'][0] if w['files'] else '?'))
+
+    # The mirror of the check above: one reference ADDRESS tagged on several frozen names. That is
+    # what a comment block left behind by a port looks like -- the stale block keeps its own
+    # `// ref:` and the new one adds a second for the same address. Side by side both bind to the
+    # same function and nothing looks wrong, so this stays invisible until something is inserted
+    # between them and the older tag lands on the newcomer. CM2Lighting::FogColorByte was tagged
+    # FUN_008353d0 exactly that way, which freed the callgraph matcher to guess 008745d0 for the
+    # real SetupGxLights. Overloads are not a false positive here: recomp keys frozen by NAME, so
+    # every overload of one name is a single key and cannot appear as two.
+    addr_owners = {}
+    for name, w in frozen.items():
+        for addr in w['refs']:
+            addr_owners.setdefault(addr, set()).add(name)
+
+    for addr, names in sorted(addr_owners.items()):
+        if len(names) > 1:
+            print('  ! %s is tagged on %d different frozen functions: %s'
+                  % (addr, len(names), ', '.join(sorted(names))))
+            print('    only one can be right -- look for a stale comment block that kept its tag')
+            print('    (a tag on a DECLARATION in a .hpp can also do this: clangparse binds it to a'
+                  ' neighbouring declaration, so tag the definition in the .cpp instead)')
 
     # binding tables: frozen's FrameScript_Method/Function arrays paired with the reference's by
     # shared names, then each entry bound by name inside its pair (so CSimpleFrame's AddLine and
@@ -909,6 +1012,10 @@ def match(refs, frozen, overrides, tables):
             # the links the first reading already found and lets the second add to them.
             cand = [c for c in refs[addr]['callees'] if c not in m and c in refs and not refs[c]['thunk']]
             rc = cand if len(cand) == 1 else [c for c in cand if not refs[c]['excluded']]
+            # an excluded reference (CRT, nullsub, third-party) is never a port target, even when
+            # it is the only unmatched callee: binding it made _memset a DBC lookup and the
+            # one-byte hook at 005eeb70 TextureLodBiasSet, and every caller then lost fidelity
+            rc = [c for c in rc if not refs[c]['excluded']]
             wc_all = [c for c in frozen[name]['callees'] if c not in used and c in frozen]
             # template instantiations (TSBaseArray<X>::operator[]) are usually inlined in the
             # reference, so they must not block a vote; they can still be the vote when alone
@@ -1016,6 +1123,29 @@ def match(refs, frozen, overrides, tables):
             lo, hi = bisect.bisect_right(ref_order, a0), bisect.bisect_left(ref_order, a1)
             R = ['%08x' % a for a in ref_order[lo:hi] if '%08x' % a not in m]
             if W and len(W) == len(R):
+                # veto: this matcher's only evidence is that two runs have the same length, so a
+                # single impossible pair falsifies the whole alignment rather than just itself.
+                # A pair is impossible when the frozen function has NO BODY: an empty body cannot
+                # corroborate a positional guess with anything -- not a call, not a constant, not a
+                # size -- so such a link is unfalsifiable noise, and it drags the reference function
+                # out of the unlinked queue where someone would otherwise identify it properly.
+                #
+                # This was written after the second bad run in Texture.cpp (2026-09-23). Adding two
+                # correct anchors there made this matcher emit 18 links in one window, 7 of them
+                # onto empty bodies; the three that were checked were all wrong, including a
+                # reference allocator named 'GxTexDestroy' and a reference teardown named
+                # 'GetDefaultTexture'. Vetoing the window, not just the pair, is deliberate: the
+                # alignment is one hypothesis, and those 7 refute it.
+                #
+                # Extended 2026-09-23, same day, after a second run slipped through. An empty body
+                # is not the only way a pair can be uncorroborated: a frozen function the PDB gives
+                # NO SIZE for (inlined away, or COMDAT-folded into another) is equally unfalsifiable
+                # here, and three of the seven links in that run were of exactly that kind. Both
+                # conditions mean the same thing -- there is nothing on the frozen side to check the
+                # guess against -- so both veto the window.
+                if any(frozen[name]['stub'] or frozen[name]['size'] == 0
+                       for name in W if name in frozen):
+                    continue
                 # veto: a binding table naming any address in the interval must agree with the
                 # frozen function it would pair with; frozen's aggregate script files do not always
                 # follow one reference translation unit, and this is where that shows
@@ -1062,6 +1192,19 @@ def match(refs, frozen, overrides, tables):
         if kept:
             print('  kept %d inferred link%s the matchers no longer derive (sticky)'
                   % (kept, '' if kept == 1 else 's'))
+
+    if hand_empty:
+        print('  %d hand claim%s names a frozen function the inventory does not carry -- it binds'
+              ' nothing and moves no metric:' % (len(hand_empty), '' if len(hand_empty) == 1 else 's'))
+        for addr, name, how, why in sorted(set(hand_empty)):
+            print('    ! %s  %-52s %s' % (addr, name[:52], why))
+        print('    grep tools/recomp/data/frozen-pdb.txt for the exact name before writing one')
+
+    if hand_vetoed:
+        print('  %d hand claim%s refused by an `unlinked` override -- one of the two is stale:'
+              % (len(hand_vetoed), '' if len(hand_vetoed) == 1 else 's'))
+        for addr, name, how in sorted(set(hand_vetoed)):
+            print('    ! %s  %-52s %s vs overrides.json `unlinked`' % (addr, name, how))
 
     with io.open(MATCHES_TSV, 'w', encoding='utf-8', newline='\n') as out:
         out.write('addr\thow\tfrozen\tevidence\n')
@@ -1159,10 +1302,19 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     total = len(real)
     total_bytes = sum(r['size'] for r in real.values())
 
+    # An override's status outranks what the inventory can see, which is right -- it is a human
+    # judgement -- but it never expires. A `stub` written while a function was empty goes on
+    # excluding it from the faithful count long after the port lands, and silently, because
+    # faithful is counted only among entries not marked stub. 006a4700 sat like that on
+    # 2026-09-23 and the commit that ported it looked like it had moved nothing.
+    stale_stub = set()
+
     def status(addr):
         name, how = m[addr]
         o = overrides.get(addr, {})
         if o.get('status'):
+            if o['status'] == 'stub' and not frozen[name]['stub']:
+                stale_stub.add((addr, name))
             return o['status']
         return 'stub' if frozen[name]['stub'] else 'ported'
 
@@ -1184,8 +1336,14 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
                 faithful_bytes += real[a]['size']
         else:
             st = 'unmapped'
-        by_status[st] += 1
-        bytes_by_status[st] += real[a]['size']
+        # A hand `faithful` verdict is still a PORTED function by every definition this
+        # report uses -- linked, not a stub, has a body -- so it is bucketed as one.
+        # Giving it a bucket of its own made `ported` go DOWN when someone recorded a
+        # fact about code that had not changed, which is the opposite of what a metric
+        # is for. The status itself stays 'faithful': the faithful count, the
+        # low-fidelity listing and --fix all key off that string.
+        by_status['ported' if st == 'faithful' else st] += 1
+        bytes_by_status['ported' if st == 'faithful' else st] += real[a]['size']
 
     # per module
     mods = collections.defaultdict(lambda: {'fns': 0, 'bytes': 0, 'mapped': 0, 'mappedBytes': 0, 'stub': 0, 'verified': 0, 'spine': 0})
@@ -1200,6 +1358,13 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
             st = status(a)
             e['stub'] += st == 'stub'
             e['verified'] += st == 'verified'
+
+    if stale_stub:
+        print('  %d override(s) say `stub` for a frozen function that now has a body -- the port is'
+              % len(stale_stub))
+        print('  linked but cannot count as faithful until the status is corrected:')
+        for addr, name in sorted(stale_stub):
+            print('    ! %s  %s' % (addr, name))
 
     def weight(a):
         r = refs[a]
@@ -1773,12 +1938,12 @@ def main():
     for a, r in refs.items():
         r['excluded'] = (r['named'] and r['name'].startswith('_')) or overrides.get(a, {}).get('status') == 'excluded'
     src, exact = overlay_clang(parse_sources())
-    frozen = merge_frozen(load_pdb_functions(), src)
+    frozen, inlined = merge_frozen(load_pdb_functions(), src)
     overrides = {k.lower().zfill(8): v for k, v in load_overrides().items() if isinstance(v, dict)}
     ref_tables = load_tables()
     frozen_tables = load_frozen_tables()
     pairs = pair_tables(ref_tables, frozen_tables)
-    m = match(refs, frozen, overrides, pairs)
+    m = match(refs, frozen, overrides, pairs, inlined)
 
     # Runtime evidence from the last calltrace/tracecompare run. Matching links become verified.
     # Contradicted ones are only REPORTED: one trace of one scene cannot tell a wrong link from a

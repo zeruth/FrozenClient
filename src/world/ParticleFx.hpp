@@ -41,6 +41,10 @@ void ParticleFxEndFrame();
 // particleDensity CVar, clamped to [0, 1] (reference DAT_00b2d678).
 void ParticleFxSetDensity(float density);
 
+// The same value, read back. The reference's emission multiplies its rate by this on every emit,
+// so it has to be reachable from outside this file rather than living in a static.
+float ParticleFxGetDensity();
+
 // How far, in world yards, this model's emitters can reach beyond its origin; 0 for a model with no
 // emitters. Add it to the model's cull radius.
 //

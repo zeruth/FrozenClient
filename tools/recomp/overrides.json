@@ -1,4 +1,9 @@
 {
+  "0084df20": {
+    "frozen": "lua_isnumber",
+    "status": "ported",
+    "note": "lapi.c lua_isnumber: callees index2adr + luaV_tonumber, 1195 callers; pinned 2026-09-23 after the callgraph matcher re-paired it with fprintf and 31 Script_ ports lost fidelity"
+  },
   "_": "Hand-confirmed reference -> frozen links. Keys are reference addresses; frozen is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no frozen name). recomp.py trusts this file over every automatic match. One frozen name may serve several addresses (overload sets, COMDAT copies).",
   "004fb080": {
     "frozen": "CGWorldFrame::OnFrameRender",
@@ -40,8 +45,9 @@
     "note": "CRT _ftol2 (float -> int64 with rounding)"
   },
   "005eeb70": {
+    "frozen": "",
     "status": "excluded",
-    "note": "nullsub: 1-byte ret, used as a no-op log callback"
+    "note": "a bare `retl`. Its call site in CM2SceneRender::DrawParticle passes the format string \"Particle: model=%s\", so it is a debug label compiled out of the retail build -- no behaviour to port. Read 2026-09-24"
   },
   "008b7da0": {
     "status": "excluded",
@@ -600,8 +606,8 @@
   },
   "0048ed30": {
     "frozen": "CSimpleFrame::AttributeChangesAllowed",
-    "status": "ported",
-    "note": "call-order vote in its script binding (2026-09-18), lost when inlined callees were expanded into callers; binding CSimpleFrame_SetAttribute"
+    "status": "stub",
+    "note": "call-order vote in its script binding (2026-09-18), lost when inlined callees were expanded into callers; binding CSimpleFrame_SetAttribute -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. CSimpleFrame::AttributeChangesAllowed always returns true, so no attribute change is ever refused."
   },
   "0060c1c0": {
     "frozen": "TooltipThis",
@@ -615,8 +621,8 @@
   },
   "00488540": {
     "frozen": "CScriptRegion::ProtectedFunctionsAllowed",
-    "status": "ported",
-    "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block)"
+    "status": "stub",
+    "note": "call-order vote in CScriptRegion bindings; the later NDCToDDCWidth vote is wrong (that helper lives in framing.c at 0x47cxxx, this address is in the CScriptRegion block) -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. CScriptRegion::ProtectedFunctionsAllowed always returns true, so nothing is ever treated as protected."
   },
   "0076e720": {
     "frozen": "SStrChrR",
@@ -898,7 +904,7 @@
   "00821a20": {
     "frozen": "CM2Scene::Animate",
     "status": "ported",
-    "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port 52"
+    "note": "Name recovered in docs/world-render-inventory.md; frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port's 52. Its 31% call-order recall is container plumbing rather than missing render behaviour, checked 2026-09-23 so it is not chased again as a rendering gap. FUN_00480fd0 alone accounts for six of the unmatched calls and reappears later: it is a TSGrowableArray<T>::Reserve instantiation -- grow when count + 1 exceeds capacity, falling back to the power-of-two clamp at 0x005d0040 when the growth field is zero. frozen reaches the same code through m_elements.New() and array54[k].New(), which the compiler inlines, so the call never appears on its side and never can. Tagging it needs the instantiation's element type, and this family has been mislinked before -- 0x00408490 was once tagged as CGxDevice::RsPush and is a Reserve -- so it is left alone deliberately. The genuinely unidentified callees are FUN_0081bfa0, FUN_00828a00, FUN_00831af0, FUN_0081cdc0 and FUN_00824550, all with five callers or fewer."
   },
   "00823130": {
     "frozen": "CM2SceneRender::Draw",
@@ -920,15 +926,23 @@
     "status": "ported",
     "note": "call slot in TextureCreate (recomp --diff 004b9760): straight after the SStrCopy of the file name"
   },
+  "004b5040": {
+    "status": "unlinked",
+    "note": "NOT CGUnit_C::GetDisplayID. The callgraph matcher proposed that on 2026-09-23 because it was the only unmatched callee left of FUN_00717a20 once that was annotated as CGUnit_C::GetModelData. It is a system-message printf: FUN_00717a20 calls it as (1, 2, \"NOCREATUREDISPLAYIDFOUND|%d\", id) and (1, 0x10, \"INVALIDDISPLAYMODELRECORD|%d|%d\", a, b), and it has 40 callers. CGUnit_C::GetDisplayID is a two-line accessor that takes no format string. Deliberately NOT tagged as frozen SysMsgPrintf either, close as that is: the reference takes (int, int, format, ...) and frozen takes (SYSMSG_TYPE, format, ...) -- one fixed argument fewer -- so they are not yet known to be the same function."
+  },
+  "00715130": {
+    "status": "unlinked",
+    "note": "NOT CGUnit::Unit. Same cause: the only unmatched callee left of FUN_0071ed80 after that was annotated as CGUnit_C::GetShadowBox. Decompiled 2026-09-23: it calls FUN_007150d0 to compute a six-float box and then copies that box through BOTH of its pointer arguments, returning the second. CGUnit::Unit is a one-line accessor returning the unit data pointer. 106 bytes and 17 callers against a one-liner. Note also that GetShadowBox deliberately does not reproduce this call: in FUN_0071ed80 its result lands in a local that is never read again, so it does not affect the box that function returns, and its argument mapping is not clear enough to port on."
+  },
   "004b6fa0": {
     "frozen": "TextureCacheGetTexture",
     "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): the cache probe before anything is created, (fileName, ext, flags)"
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): the cache probe before anything is created, (fileName, ext, flags) -- Status kept at \"ported\", against tools/audit-ported.py's report, because the audit keys by NAME and this name is overloaded: the filename-keyed form linked here has a real body, and it is the colour-keyed form that is a stub. Checked 2026-09-23; the reference at this address takes a filename, an extension and texture flags, which is the implemented overload. The colour-keyed gap is written up at the stubs in src/gx/Texture.cpp."
   },
   "004b95b0": {
     "frozen": "CreateTgaTexture",
-    "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status)"
+    "status": "stub",
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status) -- the TGA load path: reads the file through 006aaf40/006aafb0, allocates a CTexture, calls TextureAllocGxTex, and falls back to TextureCreateSolid on failure. frozen's body is `// TODO; return nullptr;`, so any TGA texture request yields nothing. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
   },
   "004b8be0": {
     "frozen": "CreateBlpTexture",
@@ -938,7 +952,7 @@
   "004b9480": {
     "frozen": "TextureCacheNewTexture",
     "status": "ported",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags"
+    "note": "call slot in TextureCreate (recomp --diff 004b9760): called on the created texture with the adjusted flags -- Status kept at \"ported\", against tools/audit-ported.py's report, because the audit keys by NAME and this name is overloaded: the filename-keyed form linked here has a real body, and it is the colour-keyed form that is a stub. Checked 2026-09-23; the reference at this address takes a filename, an extension and texture flags, which is the implemented overload. The colour-keyed gap is written up at the stubs in src/gx/Texture.cpp."
   },
   "004b9550": {
     "frozen": "TextureCreateSolid",
@@ -992,8 +1006,8 @@
   },
   "008214e0": {
     "frozen": "CM2SceneRender::DrawParticle",
-    "status": "stub",
-    "note": "logs 'Particle: model=%s' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
+    "status": "ported",
+    "note": "Ported 2026-09-24 from the decompilation plus the disassembly at 0x8214e0, which carries three register arguments Ghidra drops: the shader effect chosen on the emitter's material bit 0 and stashed in the incoming a5 parameter slot (so it reads as a dead store), that effect as the receiver of CShaderEffect::SetCurrent, and the emitter as the receiver of CM2ParticleEmitter::Draw. Every callee already existed in frozen. NOT VERIFIED -- the geometry stage inside Draw is still FUN_0097e730, so this sets up a draw that emits no quads. The batched branch (FUN_00821100, selected by CM2Cache::m_flags & 0x80) is not ported and returns 0; the string this override used to be identified by belongs to FUN_005eeb70, which is a bare retl."
   },
   "008230d0": {
     "frozen": "CM2SceneRender::DrawCallback",
@@ -1012,8 +1026,8 @@
   },
   "0081fe90": {
     "frozen": "CM2SceneRender::SetupMaterial",
-    "status": "ported",
-    "note": "call order in DrawBatch, second of the three setup calls (see 0081fb10)"
+    "status": "faithful",
+    "note": "Measures 62% and the gap is the MEASUREMENT, not the port. All five missed calls are CGxDevice::IRsDirty: the reference inlined GxRsSet at each site, so it open-codes `if (value != current) { IRsDirty(); assign; }` where frozen calls GxRsSet. Calling GxRsSet is the correct source-level port -- matching the recall number would mean open-coding a render-state write five times to satisfy a metric. Everything the reference actually does is here and in order. Marked faithful so --fix stops offering it; checked 2026-09-24."
   },
   "00873480": {
     "frozen": "CShaderEffect::SetTexMtx_Identity",
@@ -1027,8 +1041,8 @@
   },
   "004b8a50": {
     "frozen": "CreateBlpAsync",
-    "status": "ported",
-    "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left"
+    "status": "stub",
+    "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left -- the asynchronous BLP load path: opens the file, allocates a CTexture, checks streaming mode, allocates an async read object and queues it. frozen's body is `// TODO; return nullptr;`, so TextureCreate falls back to the synchronous path for every BLP. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
   },
   "004fa5f0": {
     "frozen": "CGWorldFrame::OnWorldUpdate",
@@ -1231,5 +1245,593 @@
     "frozen": "Script_ReturnZero",
     "status": "diverged",
     "note": "GetNumShapeshiftForms. The reference returns the count of entries on the server-sent shapeshift bar (DAT_00be8e28) and nothing else -- the whole body is that global pushed as a number. Frozen registers the shared zero-returner instead, which is correct in the only sense available to it: with no bar received the count really is zero, and FrameXML builds no form buttons. It becomes a real port the moment the bar arrives; see 0053de10 for what that needs."
+  },
+  "007c6d50": {
+    "frozen": "CMapObjGroupSegmentQuery::CachedLeaf",
+    "status": "diverged",
+    "note": "BSP leaf via CMap node cache (FUN_0079b1f0) when bspcache is on; the cache is not ported, so the port returns false and the leaf takes the uncached loop in CMapObjGroup::SegmentQueryLeaf. Same hits, no outcode prefilter. 2026-09-23"
+  },
+  "007c6790": {
+    "frozen": "CMapObjGroupDualSegmentQuery::CachedLeaf",
+    "status": "diverged",
+    "note": "same as 007c6d50 for the dual (collision + render) segment query; the port returns false. 2026-09-23"
+  },
+  "00842da0": {
+    "status": "excluded",
+    "note": "third-party PCRE match(): opcode interpreter (byte < 0x51), returns PCRE_ERROR_MATCHLIMIT (-8) when the match_call_count passes match_limit and PCRE_ERROR_UNKNOWN_OPCODE (-5); 73 self-recursions. The module anchor (M2Shared.cpp) is the nearest assert string, not its origin. 2026-09-23"
+  },
+  "0057c2a0": {
+    "frozen": "C44Matrix::Identity",
+    "status": "ported",
+    "note": "the second COMDAT copy of the 4x4 identity; FUN_00407f40 is the other and carries the source tag. Same body, same constants. 2026-09-23"
+  },
+  "00681450": {
+    "frozen": "GxTexSetWrap",
+    "status": "ported",
+    "note": "confirmed from the call site: CM2SceneRender::SetupTextures (FUN_0081f450) calls it as (texture, flags & 1, flags >> 1 & 1), which is GxTexSetWrap(tex, wrapU, wrapV). The order matcher had previously placed this name at 004b6f30, inside the Texture.cpp address range rather than the Gx layer; that run of 12 positional links was wrong and is gone. 2026-09-23"
+  },
+  "007c6c30": {
+    "frozen": "CMapObjGroupSegmentQuery::TestFace",
+    "status": "diverged",
+    "note": "checks the MOMT table for null and bounds before indexing it. The reference indexes unconditionally, which is safe there; frozen only fills the table when the WMO carries a parseable MOMT chunk, so an absent one leaves it null and the read would fault. A face with no resolvable material is treated as untextured, which material 0xFF already means. 2026-09-23"
+  },
+  "007f0530": {
+    "frozen": "SkyRender",
+    "status": "diverged",
+    "note": "the sky dome's VERTEX COLOUR writer: 1 zenith colour from DNInfo[3], 4 azimuthally varied rings from DNInfo[4..7], then segCount + 1 of DNInfo[8] (the fog band). frozen folds it into SkyRender, which also carries the reference's separate draw at 007f09b0, so this is a stage link rather than a call-for-call one. Its contents were recovered from disassembly on 2026-09-23 and ported: the band-to-ring mapping and the sky highlight (parity-sky.md task 6). NOT the per-frame sky override blend it also does at 007f0573 and 007f07da, which reads globals frozen does not model yet."
+  },
+  "007ed2d0": {
+    "frozen": "SkyLerp",
+    "status": "diverged",
+    "note": "per-channel linear interpolation between two packed colours, alpha forced to 0xff. The reference lerps 0-255 BYTES and casts back with no clamp, so an out-of-range channel wraps; frozen keeps floats and clamps to [0, 255]. Both sky-highlight branches use extrapolating factors, and a wrapped channel would be a garish artefact rather than a faithful colour."
+  },
+  "007ebff0": {
+    "frozen": "ComputeLightColors",
+    "status": "ported",
+    "note": "fills a LightParams block from the LightIntBand / LightFloatBand rows at one time of day. Identified 2026-09-23 while tracing the sky highlight: the write at 007ec1cd is `fildl 0x4(%edi)` into struct+0x54, i.e. LightParams column 1 (highlightSky) converted to float, which is the scale the dome's highlight strength is multiplied by. frozen reads a subset of the same bands; several fields (0x5c..0x80) are still unread."
+  },
+  "007ed910": {
+    "status": "unlinked",
+    "note": "flat struct copy of a LightParams block (0x94 bytes, dwords to 0x44 then floats). It is how the interpolated block reaches the global DNInfo at 0xd38bd4, which is why field +0x54 (highlightSky) is live despite never being written by absolute address."
+  },
+  "007ed790": {
+    "status": "unlinked",
+    "note": "scales a packed colour's HSV VALUE by a float: unpack to RGB floats (x 1/255), FUN_00984f60 (RgbToHsv), value *= scale, FUN_00985030 (HsvToRgb), FUN_009851a0 (PackColor). FUN_007f0530 calls it for the dome's zenith vertex with a scale of 1.0, so it is currently an identity there; frozen has all three leaf helpers in lib/typhoon/tempest/ColorConvert.cpp but not the composite."
+  },
+  "00408490": {
+    "frozen": "TSGrowableArray<unsigned __int64>::Reserve",
+    "status": "diverged",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (,%eax,4)` here, so 4-byte elements -- the render-state MARK STACK at CGxDevice+0x14, which frozen calls m_stackOffsets. **This address was previously linked to CGxDevice::RsPush, and that was wrong.** The body is SMemReAlloc(data, count*4, ...), store to +8, copy min(count, old) elements: a growable-array Reserve, with nothing render-state about it. It has only four callers in the whole binary, two of which use it on CGxDevice+0x14. The bad link held RsPop's call-order recall at 0% and made RsPop look as if it called RsPush. Diverged because frozen is 64-bit: its m_stackOffsets is TSGrowableArray<size_t>, 8 bytes per element against the reference's 4. The reference's real RsPush is still unidentified and may well be inlined -- it is two lines, and no small function near RsPop matches it."
+  },
+  "00683960": {
+    "frozen": "TSGrowableArray<enum EGxRenderState>::Reserve",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (,%eax,4)`, 4-byte elements, and RsPop calls it while appending to the array at CGxDevice+0x2c -- the dirty-state id list, frozen's m_dirtyStates. A separate instantiation from 00408490, which the compiler did not fold."
+  },
+  "006838b0": {
+    "frozen": "TSGrowableArray<CGxPushedRenderState>::Reserve",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from disassembly, not decompilation. CGxDevice::RsPop (00685fb0) shrinks three growable arrays through the same idiom -- round the new count up to the array's grow quantum, then Reserve -- so the three helpers it calls are one Reserve per element type, told apart by the index scaling in each: `leal (%edi,%edi,2)` then a scale of 8, so 0x18-byte elements -- the pushed-state array at CGxDevice+0x8, frozen's m_pushedStates. CGxPushedRenderState is 24 bytes in both."
+  },
+  "00590830": {
+    "status": "excluded",
+    "note": "the same folded power-of-two normaliser as 005d0040, differing only in its cap (0xa against 0x40): clamp the argument down to the largest power of two, floor at 1. Callers use it as `if (growQuantum == 0) growQuantum = f(count)` before rounding a Reserve up. The callgraph matcher proposed CGxStateBom::operator= for it on 2026-09-23, as a knock-on from correcting the three Reserve links around it; disassembling it shows fourteen instructions that touch no state object at all. Excluded rather than linked, for the same reason 005d0040 is: a compiler-folded template helper with no distinct counterpart in frozen."
+  },
+  "00422130": {
+    "frozen": "SFile::IsStreamingMode",
+    "status": "stub",
+    "note": "three instructions: return (uint8_t)FUN_00428000(). Identified 2026-09-23 from its call sites rather than its body, which is too small to identify on its own: all 30 of them read `if (result) <streaming-only work>`, and frozen's AsyncFileReadWait calls SFile::IsStreamingMode in the same guard position where the reference's 004ba060 calls this. -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. SFile::IsStreamingMode always returns 0, so frozen never believes it is streaming. That is not cosmetic: the reference's TextureIncreasePriority opens with `if (!IsStreamingMode()) return;`, so the whole texture priority path is gated off by this one constant. See docs/ref/parity-texture-async.md."
+  },
+  "004b64e0": {
+    "status": "unlinked",
+    "note": "retires a finished async request: EDI = the CAsyncObject, unlinks its node at +0x28 from the list holding it (the usual Storm intrusive-list patch) and SMemFrees +0x8. AsyncTextureWait (004b6550) calls it when the request's field_4 is 0. frozen has no counterpart and AsyncTextureWait is still a stub; see docs/ref/parity-texture-async.md."
+  },
+  "004b63b0": {
+    "status": "unlinked",
+    "note": "the texture-atlas reload TextureGetGxTex calls when atlas->field_2 has bit 0 set: builds a .blp path on a 0x118-byte stack buffer from this+0x2c. frozen has no counterpart, and the branch is dead there because CTexture::atlas is a void* that nothing ever assigns. Needs CTextureAtlas, which is a system rather than a fix."
+  },
+  "004b69e0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GetBitDepth` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b6ae0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxCalcTexelStrideInBytes` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b6d90": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxTexCreate` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b6e40": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxTexDestroy` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b6e90": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxTexParameters` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b6f30": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxTexReusable` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b93b0": {
+    "status": "unlinked",
+    "note": "NOT SStrHashHT. The callgraph matcher proposed that on 2026-09-23 and it is wrong; rejected here so it does not come back. Why it was proposed: recomp keys frozen by NAME, so both TextureCacheNewTexture overloads collapse to one key, and the union of their callees includes SStrHashHT -- which the filename overload calls and the CImVector one does not. 004b93b0 was then the only unmatched callee left on the reference side. Why it is wrong: SStrHashHT is a general Storm string hash used across the whole client and would have hundreds of callers. 004b93b0 has exactly three (004b9420, 004b9480, 004b94e0), all inside the texture cache neighbourhood, and it CALLS 004b8fa0, 004b9310 and 006ded60 twice. A string hash calls nothing. What it probably is, stated as a lead rather than a claim: the shared insert those three functions funnel into, i.e. the TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::Insert instantiation. Not tagged, because frozen reaches that through a template in a header and a tag on a header declaration binds to the wrong neighbour."
+  },
+  "004b7020": {
+    "frozen": "TextureCacheGetTexture",
+    "status": "ported",
+    "note": "TextureCacheGetTexture, the CImVector overload. This entry used to say `unlinked`, and that veto was right about what it refused and wrong to survive: on 2026-09-23 the POSITIONAL order matcher proposed `ReloadMips` for this address and the veto rejected it. The address is now identified by hand and the veto was blocking the tag, which is what the hand-claim guard printed. The identification: 004b7020 builds a CGxTexFlags (two 00681be0 calls), looks the texture up through 004b6d90 and wraps the hit with 0047bf50 HandleCreate. Its one caller is 004b9550, whose shape is frozen TextureCreateSolid line for line -- probe the cache, return a hit, else SMemAlloc a 0x170-byte CTexture, construct it, FillInSolidTexture, HandleCreate, insert. And it sits immediately after 004b6fa0, the filename overload already recorded under this same name, with both functions 128 bytes: two adjacent overloads, as the source would have them. Ported 2026-09-23 together with its insert 004b94e0, which fixed a real leak -- see the note in Texture.cpp for why the earlier \"needs a second hash table\" reasoning was wrong."
+  },
+  "004b70a0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `TextureFreeGxTex` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7220": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `TextureAllocMippedImg` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7300": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxTexUpdate` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b73e0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GxuUpdateSingleColorTexture` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7460": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GetDefaultTexture` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b74f0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `GetTextureFormats` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7580": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `MippedImgAllocA` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b76e0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `MippedImgCalcSize` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7770": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `MippedImgSet` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b78a0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `RequestImageDimensions` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "004b7aa0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `UpdateBlpTextureAsync` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+  },
+  "006a5940": {
+    "frozen": "CGxDeviceD3d::IStateSync",
+    "status": "ported",
+    "note": "Found 2026-09-23 by searching the text dump for `0x738(%e..)` -- app render state 77 (GxRs_VertexShader) at a 0x18 stride from the array pointer at CGxDevice+0x28f4, which is the test frozen's IStateSync makes. Exactly two functions in the binary do it, 006a5940 and 006a9860, one per D3D device class. This is the plain D3D9 one, and it matches frozen call for call as far as frozen goes: IShaderConstantsFlush, IRsSync(0), then Lights/Material/Xforms behind the vertex-shader-is-null gate. After that the reference calls FOUR more helpers (006a3810, 006a3870, 006a38d0, 006a5700) where frozen has the single empty IStateSyncEnables, and it inlines the vertex- and index-pointer sync that frozen keeps as separate functions."
+  },
+  "006a9860": {
+    "status": "unlinked",
+    "note": "Found 2026-09-23 by searching the text dump for `0x738(%e..)` -- app render state 77 (GxRs_VertexShader) at a 0x18 stride from the array pointer at CGxDevice+0x28f4, which is the test frozen's IStateSync makes. Exactly two functions in the binary do it, 006a5940 and 006a9860, one per D3D device class. This is the D3D9Ex variant: identical to 006a5940 except that the four device-specific helpers differ (006a8340/006a8670/006a87c0 for Lights, Material and Xforms, and 006a9620 for the last one). frozen's CGxDeviceD3d9Ex does not override IStateSync, so it has no counterpart to link to."
+  },
+  "00685b50": {
+    "frozen": "CGxDevice::IRsSync",
+    "status": "ported",
+    "note": "body matches frozen's line for line: `if (force) IRsForceUpdate()`, then walk the dirty-state list backwards from the count at +0x28 and the array at +0x2c, index the app render states through the pointer at +0x28f4 at a 0x18 stride (`leal (%edi,%edi,2)` then a scale of 8), send each to hardware only when it is both dirty and actually different, and clear the list. Called as IRsSync(0) from both IStateSync variants."
+  },
+  "00685a70": {
+    "frozen": "CGxDevice::IRsForceUpdate",
+    "status": "ported",
+    "note": "the void overload: IRsSync (00685b50) calls it with ECX = this and no stack argument when its force parameter is non-zero, which is exactly where frozen calls IRsForceUpdate()."
+  },
+  "006a43d0": {
+    "frozen": "CGxDeviceD3d::IStateSyncLights",
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IStateSyncLights. PORTED 2026-09-23, replacing the entry that said this was deliberately left a stub because CGxDevice had no light state. It has one now: CGxLight, CGxLightState, CGxDevice::m_lights[4], LightSet and LightEnable all landed in the same change, along with the consumer CM2Lighting::SetupGxLights, so the chain runs end to end. CORRECTION to the old note, which is why this is spelled out rather than deleted: it said the four 0x48-byte light structs live at +0x2588. They live at +0x2548. 0x2588 is the m_enabled field INSIDE the first entry, which is what CGxDevice::LightEnable indexes (`this + 0x2548 + index * 0x48`, then +0x40), and reading the base off the wrong field is the same mistake made earlier with the texture target base. Constants read out of the binary rather than guessed: light Range is the 10000.0 at 0x00a2f95c, and the CGxLight default attenuation is the 0.7 at 0x009e2ec0 and the 0.03 at 0x009f23c8 -- the same pair CM2Light already defaulted to, which is an independent check on both layouts. D3DRS_LIGHTING is 0x89 and D3DRS_AMBIENT is 0x8b. NOT verified: nothing has been seen running. The behaviour to watch for is the emulated-lighting branch, which turns D3D lighting ON with a white ambient when the app asked for lighting OFF on geometry with no vertex colour and a non-white material diffuse."
+  },
+  "006a4700": {
+    "frozen": "CGxDeviceD3d::IStateSyncMaterial",
+    "status": "ported",
+    "note": "Second of the three calls inside IStateSync's vertex-shader-is-null gate, in the order frozen makes them, and it shares the +0x28a8 & 0x10 gate with IStateSyncLights. Ported 2026-09-23; this entry read status stub until then, and because the report counts faithful only among entries not marked stub, the finished port scored faithful in map.json while the headline number ignored it. Same staleness as the unlinked veto on 006c8e70, one status along. Despite the name it never calls SetMaterial: it drives the four *MATERIALSOURCE render states (ambient 0x93, diffuse 0x91, specular 0x92, emissive 0x94), and GxRs_ColorMaterial at 0x7f8 / 0x18 = 85 picks which single channel the vertex colour feeds -- 0 ambient and diffuse, 1 specular, 2 emissive -- with every other channel taking D3DMCS_MATERIAL. With no colour in the vertex format all four take the material. The four hardware caches at +0x3e4c..+0x3e58 are written nowhere else in the binary, so they start zeroed against two non-zero D3D defaults; that gap is the reference's and is reproduced. Only the fixed-function path reaches it. BUILT, NOT SEEN RUNNING."
+  },
+  "006a4850": {
+    "frozen": "CGxDeviceD3d::IStateSyncXforms",
+    "status": "ported",
+    "note": "third of the three, and its shape confirms it on its own: a dirty byte at +0x19e4 guards one virtual call through the D3D device at vtable offset 0xb0 with a transform index and the matrix at +0xfc8, then clears the byte. That is SetTransform."
+  },
+  "006a9fe0": {
+    "frozen": "CGxDeviceD3d::IShaderConstantsFlush",
+    "status": "ported",
+    "note": "first call in IStateSync, and its shape confirms it: it reads a dirty register range from two globals (0xc5ffe8 / 0xc5ffec), bails when the range is empty, and otherwise shifts the start left by 4 -- sixteen bytes per shader constant register -- before pushing it through the device."
+  },
+  "006a99e0": {
+    "frozen": "CGxDeviceD3d::IXformSetViewport",
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IXformSetViewport, found by running --diff on IStateSync: every other callee matched in order and this showed as the one unlinked `- 006a99e0`. Identified from four agreeing facts: it calls DeviceCurWindow (00682d70); it reads six consecutive floats at +0xf70..+0xf84, which is m_viewport as {x.l, x.h, y.l, y.h, z.l, z.h}, and forms x.l * maxX + 0.5 and (1.0 - y.h) * maxY + 0.5 as its first two terms; it calls vtable 0xbc and 0xbc / 4 = 47 = SetViewport; and it ends by storing 0 to +0xf6c, which is intF6C, the flag IStateSync tests before calling it. STATUS faithful BY HAND, because the branch-shape check misjudges this one. The reference has four branches and frozen has one, but two of the four are not control flow at all: they reload X and Y as signed 32-bit and add 4294967296.0 (2^32, the constant at 0x009e23ac) when negative, which is only the x87 idiom for converting a DWORD to floating point. X and Y are DWORDs in frozen, so the C++ conversions do that implicitly and reproducing the branches would be copying codegen. The remaining pair is the `a != 0 || b != 0` test, which frozen has. Call order is 100%. The real behaviour behind that test landed with this verdict: rendering into a texture removes the y-flip, so Y is recomputed as maxY * y.l, truncated with no +0.5 unlike the rounded Y above. It carries the same deliberate divergence as IStateSyncScissorRect -- the reference tests m_textureTarget's m_apiSpecific fields and frozen tests m_texture, because frozen never stores a surface in m_apiSpecific. BUILT, NOT SEEN RUNNING, and this one is visible: it changes the viewport for every render-to-texture pass, which is the shadow map and the FFX glow."
+  },
+  "007c7ae0": {
+    "frozen": "CMapObjGroup::RecordHits",
+    "status": "diverged",
+    "note": "CMapObjGroup::RecordHits. Sits at 9% call-order recall permanently, and that is understood rather than unfinished, so it is marked diverged to keep it out of the --fix queue. Everything the reference does that frozen does not is a DEBUG DRAWER gated on CWorld enable 0x200000: with that bit set it draws every visited face in 0x7fff0000 and every hit face in 0x7f00ff00 as triangles through FUN_007a4c10, which is where the three operator* calls, FUN_00983940 and the two FUN_007a4c10 calls in the diff come from -- one group per colour. AllocHitRecord, the hit-record fill, the index and face pool carve-outs with their 0xc000 and 0x4000 caps, and the 0x1 overflow flag are all ported and agree. If the debug drawer is ever wanted, it needs FUN_007a4c10 and the enable bit, and this status should go back to ported."
+  },
+  "007a0d60": {
+    "frozen": "CMapEntity::FloorLight",
+    "status": "faithful",
+    "note": "CMapEntity::FloorLight. STATUS faithful BY HAND: it sits at 50% call-order recall and the missing calls are all decomposition, checked one by one on 2026-09-23. The reference's two operator* calls transform the probe into the map object's own space; frozen does that in the caller (TerrainWmoFloorLightAt in Terrain.cpp) and takes an already-local position, so the transform happens once either way. FUN_007ecef0 is the DayNight block accessor returning 0x00d38b00; frozen reads the same two columns through CWorld::GetOutdoorDiffuse and GetOutdoorAmbient. FUN_007aeb40 is a guarded wrapper that dispatches to CMapObjGroup::SampleColorAtFace (FUN_007c7fe0); frozen fuses that into CMapObj::GroupFloorColor (FUN_007af780, fidelity 1.0), which calls SampleColorAtFace itself. Its three guards are all present across frozen's decomposition: the group-array test becomes a null check, the loaded test at +0x198 bit 0 becomes the caller's stronger `vertexCount && m_bspNodes && m_colors`, and the flags test `+0x30 & 0x48` -- Exterior | ExteriorLit, i.e. do not take MOCV floor light on an open-air group -- is in GroupFloorColor verbatim. The genuine divergence in this area is in the caller, not here, and is documented there: frozen has no entity -> MapObjDef -> group parent graph, so it brute-forces every loaded instance whose box holds the probe."
+  },
+  "007aeb40": {
+    "status": "unlinked",
+    "note": "A guarded wrapper, not a function frozen has separately: `if (!this->[0x1e0]) return 0; group = this->[0x1f8 + i*4]; if (!(group->[0x198] & 1)) return 0; if (group->[0x30] & 0x48) return 0; return CMapObjGroup::SampleColorAtFace(...)`. frozen fuses it into CMapObj::GroupFloorColor (FUN_007af780), which performs the same 0x48 test and calls SampleColorAtFace itself, so there is no separate counterpart to tag and claiming one would be false. Left unlinked deliberately. If frozen ever splits the find-face and sample-face steps the way the reference does, this is the address for the wrapper. Analysed 2026-09-23 while explaining FloorLight's 50% recall."
+  },
+  "008350a0": {
+    "frozen": "CM2Lighting::CameraSpace",
+    "status": "ported",
+    "note": "CM2Lighting::CameraSpace. Sits at 50% call-order recall because one block is deliberately not ported, and that block is unreachable in frozen. The loop that matters is there: for each of m_lightCount lights at +0x84 it transforms m_pos by the scene's view matrix and stores the result at light + 0x18. The omitted half is gated on `(m_flags & 0x60) == 0x60` and works on the fields at +0xc4..+0xd0 against the sun direction. Nothing in frozen sets 0x40 -- Initialize sets 0x20 and SetupSunlight sets 0x2, and they are the only writers -- so it cannot run. Left out rather than guessed at; the source comment carries the same note. Ported 2026-09-23 together with CShaderEffect::ComputeLocalLights (FUN_00872900), which consumes the field it writes. That field, a camera-space position, had to be ADDED to CM2Light: the reference carries six vectors between +0x0c and +0x53 and frozen had five, which is why both functions had been stubs."
+  },
+  "004e3a20": {
+    "status": "unlinked",
+    "note": "The world lighting callback: CM2Model::SetupLighting invokes it through +0x2ac at 0x00831b70 as (model, lighting, arg), and five sites in the object code store this address into that field. frozen fills the same slot from CGObject_C with CWorld::LightingCallback, but that body is an admitted stand-in -- fog plus a WMO floor probe plus a fixed sun -- and does not do what this does, so it is left UNLINKED rather than tagged. Claiming identity would report a bad port where there is really an absent one. What this does, so a port has a start: indexes the global at 0x00ac436c into 0x198-byte records at 0x00b6b240 (count at 0x00b6b23c) and requires bit 0x2000 of that record +0x170; takes a position from FUN_004e2790 and calls CM2Lighting::Initialize with a sphere centred there of radius zero, re-initialising lighting that SetupLighting already initialised and SelectLights already filled -- understand that before porting, because taken literally it discards the scene lights; then builds temporary CM2Lights (ctor, SetLightType, SetDirection, SetVisible) and calls CM2Lighting::AddLight twice. Every one of those is already ported and tagged, so the machinery exists and only the driver is missing. Still unidentified: FUN_004e2790, FUN_0065c290, FUN_007ebf30, FUN_00982970, FUN_00834ab0, FUN_004e2730, FUN_00834940."
+  },
+  "0040bb50": {
+    "status": "excluded",
+    "note": "__alloca_probe -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040ca10": {
+    "status": "excluded",
+    "note": "__alloca_probe_16 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040ca26": {
+    "status": "excluded",
+    "note": "__alloca_probe_8 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040baa5": {
+    "status": "excluded",
+    "note": "__purecall -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e368": {
+    "status": "excluded",
+    "note": "__SEH_prolog4 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e3ad": {
+    "status": "excluded",
+    "note": "__SEH_epilog4 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0040e566": {
+    "status": "excluded",
+    "note": "___security_init_cookie -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "004111c6": {
+    "status": "excluded",
+    "note": "__security_check_cookie -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414db0": {
+    "status": "excluded",
+    "note": "__aullshr -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414f50": {
+    "status": "excluded",
+    "note": "__allmul -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00414f90": {
+    "status": "excluded",
+    "note": "__aulldvrm -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088b010": {
+    "status": "excluded",
+    "note": "__CxxThrowException@8 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088b6c0": {
+    "status": "excluded",
+    "note": "__allshl -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088bd30": {
+    "status": "excluded",
+    "note": "__aullrem -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088be30": {
+    "status": "excluded",
+    "note": "__aulldiv -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "0088d3f0": {
+    "status": "excluded",
+    "note": "__allshr -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00894d36": {
+    "status": "excluded",
+    "note": "__EH_prolog3 -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "00894d69": {
+    "status": "excluded",
+    "note": "__EH_prolog3_catch -- emitted by the compiler, never written in source, so no port can call it. Excluded so ref_seq drops it rather than charging every caller for not making a call it cannot make."
+  },
+  "007ebf30": {
+    "frozen": "InterpBandColor",
+    "status": "faithful",
+    "note": "InterpBandColor. STATUS faithful BY HAND: it scores 0.00 on call order and that is entirely decomposition. The reference builds a band object on the stack (0x008b7da0), fills it from the LightIntBand table at 0x00af49bc (0x007eb210) and evaluates it at a time; frozen looks the record up and interpolates inline, so none of those four calls appears on its side and none ever can. The identification itself is arithmetic rather than position: the reference computes `band + n * 18 - 0x11` where n is the light param read through a pointer, and frozen's (P - 1) * 18 + band + 1 expands to exactly P * 18 + band - 17. The stride is the LightIntBand band count. The interpolation was checked against the reference at runtime once already -- the wrap past the last key was measured at 18:12 and corrected, and the comment in CWorld.cpp records the colours on both sides -- which is better evidence for this one than a call sequence would be."
+  },
+  "007ebf90": {
+    "frozen": "InterpFloatBand",
+    "status": "faithful",
+    "note": "InterpFloatBand. STATUS faithful BY HAND: it scores 0.00 on call order and that is entirely decomposition. The reference builds a band object on the stack (0x008b7da0), fills it from the LightFloatBand table at 0x00af49e0 (0x007eb210) and evaluates it at a time; frozen looks the record up and interpolates inline, so none of those four calls appears on its side and none ever can. The identification itself is arithmetic rather than position: the reference computes `band + n * 6 - 0x5` where n is the light param read through a pointer, and frozen's (P - 1) * 6 + band + 1 expands to exactly P * 6 + band - 5. The stride is the LightFloatBand band count. The interpolation was checked against the reference at runtime once already -- the wrap past the last key was measured at 18:12 and corrected, and the comment in CWorld.cpp records the colours on both sides -- which is better evidence for this one than a call sequence would be."
+  },
+  "00683fb0": {
+    "frozen": "",
+    "status": "diverged",
+    "note": "CGxLight::CGxLight. DIVERGED: frozen has no such function. The reference constructor writes the CGxLight defaults -- direction (0, 0, 1), black ambient, white diffuse, black specular and attenuation (0, 0.7, 0.03) -- and frozen expresses every one of those as a default member initializer on the struct instead, so the compiler emits them at the construction site and there is no callee to link. The values are identical and were read out of the binary (0x009e2ec0 = 0.7, 0x009f23c8 = 0.03). One real behavioural difference, recorded rather than hidden: the reference clears only bits 0 and 1 of m_flags (`flags &= 0xfffffffc`) and leaves bits 2..31 holding whatever was on the stack, while frozen zeroes the whole word. Nothing reads those bits, and reading an indeterminate value would be undefined behaviour in C++. The `frozen` field named CGxLight::CGxLight until 2026-09-24, which contradicted this note's own first sentence: the tool tried to bind it every run, failed, and said nothing. Cleared. A `diverged` entry that records the absence of a counterpart must not also claim one."
+  },
+  "006a3870": {
+    "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
+    "status": "ported",
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0xdc / 4 = 55 = SetClipPlane, and the loop runs six times over 16-byte entries at +0x24d4 guarded by a dirty mask at +0x24d0 -- six clip planes of four floats each, which is D3D9's full complement. Device create memsets 0x60 bytes over that array, and 0x60 is 6 * sizeof(C4Plane), which confirms the count independently. This entry used to say unlinked because, as its own note put it, adding a counterpart meant adding the state and its public setter rather than just this function. That is what landed on 2026-09-23: CGxDevice now carries m_clipPlanes[6] and m_clipPlaneDirty, CGxDevice::ClipPlaneSet (FUN_00684440) stores a plane and marks it dirty only on a real change, and this walks the mask. IStateSync calls it right after IStateSyncEnables, where the reference calls it. Nothing in frozen calls ClipPlaneSet yet, so the mask stays zero and this returns on its first test. That is a correct resting state, not a stub: there is no caller whose control flow assumes it did something. GxRs_ClipPlaneMask (18) is the separate half that ENABLES planes and travels the ordinary render-state path as Ds_ClipPlaneEnable. BUILT, NOT SEEN RUNNING -- though with no caller there is nothing yet to see."
+  },
+  "006a38d0": {
+    "frozen": "CGxDeviceD3d::IStateSyncScissorRect",
+    "status": "ported",
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0x12c / 4 = 75 = SetScissorRect, and the four ints it builds on the stack are a RECT clamped against the window size. Named to match the GL backend, which already had CGxDeviceGLL::IStateSyncScissorRect. Ported 2026-09-23 together with the state and setter it needed. Horizontal edges scale by DeviceCurWindow().maxX and vertical by .maxY -- the reference reaches the rect through FUN_00682d70, which is just `return &this->[0x174]`, and CRect is {minY, minX, maxY, maxX} so +0x8 is maxY and +0xc is maxX. Left and top take +0.5 (the constant at 0x009e2ec4, read out of .rdata), right and bottom +1.0. Vertical orientation flips on `+0x2918 != 0 || +0x2924 != 0`: with neither set the frame is the back buffer and top/bottom come from 1.0 - maxY and 1.0 - minY; otherwise they are used directly. IXformSetViewport flips y the same way. DIVERGENCE: those two are not the m_texture fields. Device create zeroes six consecutive dwords from +0x2910 to +0x2924, which is TextureTarget m_textureTarget[2] based at +0x2910, so +0x2918 and +0x2924 are the two m_apiSpecific fields (the reference stores one at 0x0068b929, indexing 0x2918(%edi,%eax,4) with eax = i*3). frozen tests m_texture instead, because RenderTargetSet fills m_texture and m_plane and IRenderTargetSet releases the surface without ever storing it -- testing the faithful field would make the branch permanently false and the render-to-texture case dead. Closing it properly means keeping the surface in m_apiSpecific, a lifetime change that wants a run. The dirty flag starts at 1 over an all-zero rect (device create loads 1 at 0x00688e64, the same register that initialises intF6C), so the first sync sends an empty rectangle. Harmless and faithful: D3DRS_SCISSORTESTENABLE follows GxRs_ScissorTest, which defaults to 0, so nothing clips until something enables the test and sets a rect. BUILT, NOT SEEN RUNNING."
+  },
+  "006a5700": {
+    "frozen": "CGxDeviceD3d::IStateSyncVertexPtrs",
+    "status": "ported",
+    "note": "Its identity comes from the D3D9 device vtable offset it calls through: divide by four for the IDirect3DDevice9 method index. 0x15c / 4 = 87 = SetVertexDeclaration. It indexes a declaration array at +0x3ae0 by the primitive vertex format at +0x28b0, bounds-checked against 0xe, caches the last one at +0x3b5c, then calls 006a39e0 with stream 0. frozen's IStateSyncVertexPtrs does the same thing field for field."
+  },
+  "006859e0": {
+    "frozen": "CGxDevice::IRsForceUpdate",
+    "status": "ported",
+    "note": "the EGxRenderState overload, the sibling of 00685a70. It takes a stack argument where 00685a70 takes none, grows the dirty-state array at +0x24 to count+1 and appends that one state, where 00685a70 loops over all of them. The callgraph matcher had this address under the same name until 00685a70 was pinned by hand on 2026-09-23; both are real, and one frozen name legitimately serves both because C++ overloads collapse to a single key here."
+  },
+  "006a39e0": {
+    "frozen": "CGxDeviceD3d::ISetVertexBuffer",
+    "status": "ported",
+    "note": "called by IStateSyncVertexPtrs (006a5700) as (stream 0, buffer, offset, stride), which is frozen's ISetVertexBuffer signature exactly."
+  },
+  "00682e70": {
+    "frozen": "CGxDevice::ScissorSet",
+    "status": "ported",
+    "note": "Sets the scissor rect: raises the dirty flag at +0x2534 and copies four floats from the argument into +0x2538..+0x2544, which 006a38d0 later scales by the window size and clamps into a RECT. Only two callers in the binary. This entry said unlinked because frozen had no scissor state; that state landed 2026-09-23 as CGxDevice::m_scissorRect and m_scissorDirty, so there is a counterpart now. Note it marks dirty UNCONDITIONALLY -- no compare first, unlike ClipPlaneSet -- so setting the same rect every frame re-sends it. Reproduced rather than improved. Nothing in frozen calls it yet."
+  },
+  "00682d70": {
+    "frozen": "CGxDevice::DeviceCurWindow",
+    "status": "ported",
+    "note": "The whole function is `leal 0x174(%ecx), %eax; retl`. This entry used to say only that it returns the object whose +0x8 and +0xc are a height and a width, identified by use rather than by a symbol; it is CGxDevice::DeviceCurWindow, and the name comes from behaviour, not position. The reference's viewport setter calls it at 0x006a521d and then computes (1.0 - viewport.y.h) * result[+0x8], which is IXformSetViewport's own (1.0 - gxViewport.y.h) * windowRect.maxY; CRect is {minY, minX, maxY, maxX}, so +0x8 is maxY and +0xc is maxX, which is also why the scissor sync scales horizontal edges by one and vertical by the other. 15 callers, so this lifts the measured fidelity of each one that gets ported. Its neighbour FUN_00682d80 returns &this->[0x164], one CRect earlier, and by elimination is DeviceDefWindow -- frozen declares m_defWindowRect immediately before m_curWindowRect. Left unlinked on purpose: that is adjacency rather than proof."
+  },
+  "006a43a0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CGxDeviceD3d::IStateSyncIndexPtr for this on 2026-09-23; it is not that. It takes a stack argument (`retl $0x4`) where frozen's IStateSyncIndexPtr takes none, and it calls 004c1930 and 004c2f90 rather than the device's SetIndices. Reading it is what falsified the whole seven-link window the matcher emitted here."
+  },
+  "006a3a60": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CGxDeviceD3d::IShaderBindPixel for this on 2026-09-23. It makes six virtual calls into the device, one of them through vtable offset 0x114 = index 69 = SetSamplerState, and then calls CGxDevice::IRsForceUpdate. That is a sampler or texture bind, not a pixel-shader bind. Part of the same rejected window as 006a43a0."
+  },
+  "0076e5d0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed SMemMove for this. The entire body is `mov eax, 1; ret 0xc` -- it returns true and pops three arguments. Whatever it is, it does not move memory. Checked 2026-09-23 while deciding whether the widened order veto was throwing away good links; it was not."
+  },
+  "00831bb0": {
+    "status": "unlinked",
+    "note": "TSList remove-and-free: unlinks the node passed on the stack from the list in ECX, SMemFrees it, and returns the node that followed it, captured before the free. CancelDeferredSequences (00831ec0) uses it to drop superseded playback records. frozen has no single counterpart -- it spells this UnlinkNode followed by STORM_FREE, with the next pointer taken first, which is what the reference does inside this helper."
+  },
+  "00837a40": {
+    "frozen": "CM2Shared::InitializeSkinProfile",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. It opens on the skin profile at +0x170 and its index count, as frozen's does."
+  },
+  "00836980": {
+    "frozen": "CM2Shared::SubstituteSimpleShaders",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. "
+  },
+  "00837680": {
+    "frozen": "CM2Shared::SubstituteSpecializedShaders",
+    "status": "stub",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. **frozen's body is empty and it has a live call site**, so every batch this pass would have rewritten reaches GetEffect with an unsubstituted shader id and picks a different effect than the reference would. It merges adjacent batches sharing a material into one multi-texture batch and marks the pair with shader 0x8000 / 0x8001. Roughly 960 bytes of branchy state machine; the field offsets and the pair protocol are decoded in the parity doc, but it wants its own cycle and a run, not a transcription squeezed in beside other work."
+  },
+  "00682d30": {
+    "status": "unlinked",
+    "note": "one instruction: sets the per-frame request flag at CGxDevice+0x2934 to 1. Each backend's ScenePresent reads that field immediately before calling the base CGxDevice::ScenePresent (00682e50), which clears it. frozen now carries the field as int2934 but nothing sets it, so there is no counterpart to link. Identified 2026-09-23 while porting the base ScenePresent."
+  },
+  "00428000": {
+    "status": "unlinked",
+    "note": "two instructions: returns the byte at 0x00b38180, which SFile::IsStreamingMode (00422130) zero-extends. That byte is set to 1 unconditionally during Storm initialisation at 00461a94, so the reference runs with streaming mode ON. frozen's SFile::IsStreamingMode returns a constant 0, which is therefore a behavioural difference rather than a safe default -- see docs/ref/parity-texture-async.md."
+  },
+  "0078df90": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `bspcache`."
+  },
+  "0078e070": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `hwPCF`."
+  },
+  "0078df00": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `baseMip`."
+  },
+  "0078e110": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `textureCacheSize`."
+  },
+  "0078d940": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `footstepBias`."
+  },
+  "0078db10": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `groundEffectDist`. **Correction, same day:** the note above says the settings this cluster backs change nothing. That is true of ten of the twelve and NOT of this one. frozen's DetailDoodadRender reads this CVar directly every frame, so the setting takes effect despite the empty callback. What is missing is the reference's behaviour around it. Here the difference is narrower: the reference clamps the value to [0, 140] before storing it and caches its square, where frozen reads the raw CVar and squares it per frame. Defaults match at 70.0, and frozen simply has no clamp."
+  },
+  "0078de60": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `specular`."
+  },
+  "007f39b0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `violenceLevel`."
+  },
+  "007f1cd0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `skyCloudLOD`."
+  },
+  "0078dab0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `groundEffectDensity`. **Correction, same day:** the note above says the settings this cluster backs change nothing. That is true of ten of the twelve and NOT of this one. frozen's DetailDoodadRender reads this CVar directly every frame, so the setting takes effect despite the empty callback. What is missing is the reference's behaviour around it. The reference's callback accepts 16 to 256 and hands the value to a setter that raises a scatter-REBUILD flag, so density controls how many doodads are PLACED. frozen divides by 16, clamps to [0, 1] and uses it as a draw fraction, so 16 is its maximum where the reference treats 16 as the minimum. Both agree at the default of 16, which is why nothing looked wrong; above it the reference adds doodads and frozen does nothing. Fixing it means moving density into BuildDetailDoodads and rebuilding on change, which is a visible change and wants a run. **Second correction, 2026-09-23:** the sentence above guessing that density controls how many doodads are placed per chunk was itself a guess, and reading the consumer of the rebuild flag (0x00d1c4c0, consumed at 0x007b2a86) shows the real mechanism. It is `density << 6` clamped to 0x1000 -- a GLOBAL POOL SIZE, 1024 instances at the default 16 and 4096 at the cap -- which then sizes several derived buffers. So density bounds how many detail doodads can be resident at once, not how many any chunk scatters. frozen has no such pool: it pre-builds a per-chunk scatter and draws a fraction of it. That is an architectural difference, and closing it is a rewrite of the detail-doodad system rather than an edit."
+  },
+  "0078da50": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `terrainAlphaBitDepth`."
+  },
+  "0078dcb0": {
+    "status": "stub",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `extShadowQuality`."
+  },
+  "00494d20": {
+    "frozen": "CFrameStrata::FrameOccluded",
+    "status": "stub",
+    "note": "Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py. frozen's body is a bare return; the reference is 311 bytes that clear five floats on the stack and walk frame rectangles, so it genuinely computes occlusion. The link itself looks right (the name and the shape agree); only the claim that it was ported was wrong."
+  },
+  "008269c0": {
+    "frozen": "CM2Model::Sub8269C0",
+    "status": "diverged",
+    "note": "frozen returns a constant 1 and that is the correct answer, not a placeholder. The reference only does anything when the model's sequence-finished callback pointer is set: it raises the refcount, invokes the callback, releases, and returns 0 if that release destroyed the model. frozen has no such callback member yet, so \"the model is still here, carry on\" is right. Recorded as diverged rather than stub on 2026-09-23 so tools/audit-ported.py stops reporting it; it stops being correct the day the callback is ported, and UnsetBoneSequence is the caller that depends on it."
+  },
+  "00492e40": {
+    "status": "unlinked",
+    "note": "the order matcher proposed CSimpleFrame::GetScriptMetaTable for this; it is not that. frozen's returns a static int and takes nothing. The reference takes a stack argument, calls FUN_00492770, and then conditionally calls 0095d1b0 with three arguments. Found 2026-09-23 by tools/audit-ported.py, which flagged the pairing because a 43-byte reference function cannot be a bare return."
+  },
+  "00512a00": {
+    "status": "unlinked",
+    "note": "the callgraph matcher proposed CGGameUI::GetLockedTarget for this; it is not that. frozen's returns a reference to a static and takes nothing. The reference takes a stack argument and calls FUN_0052c680 and then FUN_005726f0, testing each result. Found the same way as 00492e40."
+  },
+  "0081eea0": {
+    "frozen": "CM2Scene::SortOpaque",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site: CM2Scene::Animate (00821a20) ends with three sorts through 0083dcf0, passing 0081eea0 for the array at +0x54 and 0081ef30 for the two at +0x64 and +0x74 -- which is frozen's M2HeapSort(SortOpaque, array54[0]) followed by two M2HeapSort(SortTransparent, ...) calls, in that order. Its body confirms it independently: it indexes the element array at scene+0x3c by index * 0x44, compares element->type first, and then dispatches on type through a five-entry jump table at 0x0081ef18, exactly as frozen's does."
+  },
+  "0081ef30": {
+    "frozen": "CM2Scene::SortTransparent",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site: CM2Scene::Animate (00821a20) ends with three sorts through 0083dcf0, passing 0081eea0 for the array at +0x54 and 0081ef30 for the two at +0x64 and +0x74 -- which is frozen's M2HeapSort(SortOpaque, array54[0]) followed by two M2HeapSort(SortTransparent, ...) calls, in that order. This is the one passed for both transparent lists."
+  },
+  "0081ead0": {
+    "frozen": "CM2Scene::SortOpaqueGeoBatches",
+    "status": "ported",
+    "note": "the type-0 arm of SortOpaque's jump table (0x0081ef18). Its body matches frozen's: check element->type == 0, then compare batch->materialLayer, then walk to the shaders through model->m_shared->m_data. Identified 2026-09-23. **It does not tiebreak on element flag 0x1**, which is what settles how the depth prepass is ordered -- see the note at the prepass gate in CM2Scene.cpp."
+  },
+  "006c9c70": {
+    "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedAA",
+    "status": "ported",
+    "note": "the plain anti-aliased glyph paste: `movb (%eax,%ebx), %ch` then `orl $0xfff` then a 16-bit store, i.e. (coverage << 8) | 0xFFF into an ARGB4444 cache texel, with 0x200-byte row steps and memset padding above and below. Identified 2026-09-23 by searching for that 0xFFF texel constant. Confirms frozen's version: frozen masks the coverage with 0xF0 first, which the reference does not, but the `| 0xFFF` makes the two identical."
+  },
+  "006c9330": {
+    "frozen": "TEXTURECACHE::PasteGlyphNonOutlinedMonochrome",
+    "status": "ported",
+    "note": "the plain monochrome glyph paste, the same function as 006c9c70 with one line changed: it reads bit `7 - (x & 7)` of `src[x >> 3]` and turns it into 0xFFFF or 0x0000 through negb/sbb. frozen's body was empty until 2026-09-23, so any FrameXML font declaring MONOCHROME drew blank glyphs."
+  },
+  "006c9420": {
+    "frozen": "TEXTURECACHE::PasteGlyphOutlinedAA",
+    "status": "ported",
+    "note": "The four glyph pastes were told apart by their dispatcher, inlined at 0x006c9fce: it tests face->flags bit 0 (FONT_OUTLINE) and then bit 1 (FONT_MONOCHROME), giving 006c8e70 outlined+mono, 006c9420 outlined+AA, 006c9330 plain mono and 006c9c70 plain AA. Confirmed against frozen's body rather than by position alone: both allocate TWO 0x4800-byte scratch planes and memset each, which is frozen's `uint16_t v45[9216]` and `v46[9216]`, one for coverage and one for the outline mask."
+  },
+  "006c8e70": {
+    "frozen": "TEXTURECACHE::PasteGlyphOutlinedMonochrome",
+    "status": "ported",
+    "note": "The four glyph pastes were told apart by their dispatcher, inlined at 0x006c9fce: it tests face->flags bit 0 (FONT_OUTLINE) and then bit 1 (FONT_MONOCHROME), giving 006c8e70 outlined+mono, 006c9420 outlined+AA, 006c9330 plain mono and 006c9c70 plain AA. Ported 2026-09-23 after three cycles of declining it; this entry used to read \"unlinked, not ported yet\" and was vetoing the // ref: tag on the finished port. Structure, read from 0x006c8e70-0x006c92c0: ONE 0x4800-byte uint16 scratch plane holding a CLASS CODE (1 body, 4 hard ring, 2 soft ring) rather than the outlined AA version's three coverage/mask/lit planes -- there is no neighbour-count anti-aliasing anywhere in it. Unpack is the familiar (src[x >> 3] >> (7 - (x & 7))) & 1 widened with movsbw, landing the body at row yStart+1, column 1, or column 2 when the face carries flag 0x8 (thick). Then one dilation pass, or two when thick: pass 0 seeks class 1 and writes 4, pass 1 seeks 4 and writes 2, starting one row higher. The dilation is IN PLACE and that is safe rather than lucky -- a value written by a pass can never satisfy that same pass's own test -- and its store is guarded by != 1 so a body pixel is never overwritten. The reference unrolls the neighbourhood into fifteen boundary cases; counting the tests in each shows they are the full eight-neighbourhood minus whatever falls out of bounds, so frozen's bounds-checked loop computes the same thing. Write-out at 0x006c92c0: 1 -> 0xFFFF, 2 -> 0x7000, 4 -> 0xF000, else 0x0000, over cellHeight rows of glyphCellWidth texels. BUILT, NOT SEEN RUNNING -- it needs a FrameXML font declaring both OUTLINE and MONOCHROME."
+  },
+  "0082b0a0": {
+    "frozen": "M2AnimateTrack<C3Vector,C3Vector>",
+    "status": "faithful",
+    "note": "The C3Vector instantiation of the same template -- a 0xc key stride, linearly interpolated, same FindKey call. Read 2026-09-24 alongside 00828680. Status `faithful` is a hand verdict, NOT a measurement: the call-order score for this pair is 0% and always will be, because the clang inventory keys the template by its generic name and the instantiation reaches `frozen` only through the PDB, which carries a symbol and no body. There is nothing for the matcher to compare. Recorded so --fix stops offering a function whose number cannot move."
+  },
+  "00828680": {
+    "frozen": "M2AnimateTrack<M2CompQuat,C4Quaternion>",
+    "status": "faithful",
+    "note": "The compressed-quaternion instantiation of frozen's M2AnimateTrack template: ushort x4 keys scaled by 1/32767 minus one, and a call to FUN_008284d0, already linked as CM2Model::FindKey. Its second half -- the blend against the secondary sequence -- is not ported; the note at the end of M2AnimateTrack says why the feeder has to come first. Read 2026-09-24. No space after the comma: that is how frozen-pdb.txt spells it, and a name that is not in there binds to nothing. Status `faithful` is a hand verdict, NOT a measurement: the call-order score for this pair is 0% and always will be, because the clang inventory keys the template by its generic name and the instantiation reaches `frozen` only through the PDB, which carries a symbol and no body. There is nothing for the matcher to compare. Recorded so --fix stops offering a function whose number cannot move."
+  },
+  "00873ff0": {
+    "status": "unlinked",
+    "note": "a 24-byte global accessor with 15 callers: returns table[0x00b1d554 + i*4] where i is 0 when the flag at 0x00b1d51c is set and [0x00d43154] otherwise, i.e. \"the current shader effect, unless an override is active\". CM2Scene::ComputeElementShaders calls it and CGxDevice::Caps and nothing else, which is why that function measures 0% call-order recall against frozen's: frozen computes the permutation inline from the material, the lighting and the skin section rather than reading a global. A decomposition difference, not missing behaviour -- checked 2026-09-23 before concluding the 0% meant a defect."
+  },
+  "0083dc90": {
+    "frozen": "CM2Shared::Release",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Decrements the refcount at +0x0 and, at zero, relinks the shared into its cache's free list. The destructor calls it with m_shared in ECX."
+  },
+  "00823d90": {
+    "frozen": "CM2Model::DetachFromScene",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Unlinks from the scene list at +0x8 / +0xc -- frozen's m_scenePrev and m_sceneNext -- then branches on bit 0 of the flag word at +0x10, which is m_loaded."
+  },
+  "00824d30": {
+    "frozen": "CM2Model::FreeExternalResources",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Opens with `if (!(this->+0x10 & 1)) return;`, which is frozen's `if (!m_loaded) return;`, and is the first of the pair inside the m_shared branch."
+  },
+  "0082c1c0": {
+    "frozen": "CM2Model::FreeInternalResources",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. Opens by bailing when +0x94 is null, which is frozen's m_internalResources, and is the second of the pair."
+  },
+  "00831e20": {
+    "frozen": "CM2Model::CancelAllDeferredSequences",
+    "status": "ported",
+    "note": "Identified 2026-09-23 from CM2Model::~CM2Model (00832640), which calls these in the order frozen's destructor calls its own, and confirmed against each body rather than by position alone. The destructor's FIRST real act. It is CancelDeferredSequences (00831ec0) with the predicate narrowed to the model alone, and it has the same two branches: mark with flag 8 while CM2Shared::SequenceLoadedCallback is walking the lists (m_flag10), unlink and free otherwise. frozen had no counterpart and its destructor never did this, which left a use-after-free -- the parked record keeps a raw CM2Model* that the callback dereferences. Named by behaviour; the original name is unknown."
+  },
+  "00780620": {
+    "status": "unlinked",
+    "note": "the cached camera-liquid state, six callers: writes the surface height from 0x00cd8790 through an optional float out-parameter and returns the liquid id at 0x00cd8794. docs/world-render-inventory.md already named it and that claim was checked against the body on 2026-09-23 rather than taken on trust -- it is right. The outdoor light update uses the returned id to index the Light.dbc tables at 0x00ad4070..0x00ad4084, which is how the camera being submerged selects the underwater LightParams. frozen's nearest thing is TerrainCameraLiquidKind, but that returns a LiquidType KIND rather than this id and takes no height out-parameter, so it is not the same function."
+  },
+  "00780640": {
+    "status": "unlinked",
+    "note": "one instruction: returns the address of the block at 0x00cd8f5c. CGWorldFrame::OnWorldRender calls it twice. An accessor for a global render-state block; frozen has no counterpart to link."
+  },
+  "007d9990": {
+    "status": "unlinked",
+    "note": "the ONE texture loader every WMO material texture goes through, five callers. It takes a filename and nothing else, builds CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), calls TextureCreate, and logs \"Failed to load texture: %s\" on failure. Because the flags are hardcoded here, there is no path on which the reference clamps a WMO texture -- which is how frozen's invented clamp-from-MOMT-flags was caught on 2026-09-23. frozen loads these inline in its WMO loader, so there is no discrete counterpart to link."
+  },
+  "007d7710": {
+    "status": "unlinked",
+    "note": "the MOMT material texture loader: indexes 64-byte materials at this+0x160, reads the texture1 name offset at +0x0C and texture2 at +0x18 against the MOTX block at this+0x124, substitutes a default name when the first is empty, switches on the blend mode at +0x4 through a seven-entry jump table, and stores the two handles at +0x38 and +0x3c. Both loads go through 007d9990. It is the function that proves the material layout frozen reads is right and that its wrap flags were not. frozen has no discrete counterpart -- this work is inline in its WMO loader."
+  },
+  "008a2bf0": {
+    "status": "unlinked",
+    "note": "the liquid colour-gradient TEXTURE CALLBACK, not a liquid routine as its name might suggest: it is installed on a 64x8 two-mip texture created at 0x008a2e6c and does work only for command 1. It reads the four liquid alphas from the DayNight block at +0x140..+0x14c into two two-byte arrays -- in the order 0x148, 0x140 then 0x14c, 0x144 -- and indexes both by the liquid type, which arrives as the callback's userArg. So type 0 takes (0x148, 0x14c) and type 1 takes (0x140, 0x144). The colours come from `base + 0x10c + type * 8` and `+0x110 + type * 8` with base = 0x00d38b00, whose slots begin at +0xd4, putting type 0 on DayNight slots 14 and 15 and type 1 on 16 and 17. That confirmed frozen's band-to-liquid mapping on 2026-09-23 and retired the caveat it had been carrying. frozen has no counterpart: its liquid colours come from CWorld directly rather than through a generated gradient texture."
+  },
+  "007ecef0": {
+    "status": "unlinked",
+    "note": "two instructions: returns the address of the DayNight block at 0x00d38b00. Used to anchor the liquid colour and alpha offsets on 2026-09-23. frozen keeps that state in CWorld statics rather than one block, so there is no counterpart."
+  },
+  "00979870": {
+    "frozen": "CM2ParticleEmitter::CreateParticle",
+    "status": "diverged",
+    "note": "the ABSTRACT BASE CParticleEmitter2 vtable[2] (base vtable 0x00aa2cc0). No live emitter reaches it: FUN_0097d820 dispatches virtually through vtable[2], this function has zero direct callers in the text section, and both concrete subclasses override the slot. Both are now ported -- CM2ParticleEmitterPlane (0x009815c0, type 1) and CM2ParticleEmitterSphere (0x00981950, type 2) -- so what remains diverged is only that frozen's base is concrete where the reference's is abstract, and anything built as the bare base runs this creator. Found 2026-09-24 by scanning .rdata for the vtables; the adjacent strings name the class CParticleEmitter2 and the file ParticleSystem2.cpp"
+  },
+  "00979250": {
+    "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+    "status": "diverged",
+    "note": "the reference initialises CParticleEmitter2's parameter block at +0x98 through this helper, called from the constructor FUN_0097e150. Frozen expresses the same values as default member initialisers on the class instead, so there is no separate function to link -- same state after construction, different shape. The values it supplies that frozen previously had wrong: m_alpha 1.0, m_flags 6, m_variation 0.1, m_tailLength 1.0, texture grid 1x1. Read 2026-09-24"
+  },
+  "0097d600": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "TSGrowableArray<CM2ParticleEmitter::Particle>::SetCount -- the plain particle pool's SetCount, called from SetParticleCount's kind == 0 branch on the container at emitter+0x2c. Frozen has the code and calls it, but the compiler inlined this instantiation into its only caller, so frozen-pdb.txt carries TSGrowableArray<CM2ParticleEmitter::Particle>::Reserve and the destructor and no SetCount. There is therefore no frozen FUNCTION that is this one. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+  },
+  "0097df90": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "TSGrowableArray<CM2ParticleEmitter::ModelParticle>::SetCount -- the 0x40-byte model pool's SetCount, the same operation as 0097d600 on the other instantiation, called from SetParticleCount's kind != 0 branch. Inlined into its only caller exactly as 0097d600 is. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+  },
+  "00480fd0": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "TSGrowableArray<unsigned int>::Add -- reserve m_count+1 rounded to the chunk, take the slot at m_count, bump the count and copy one element in, returning the slot. Called on the emitter's live and free index containers (+0x4c, +0x5c) and on CM2Scene's pass lists, all uint32. Frozen has Add and calls it, but inlined: the PDB has TSGrowableArray<unsigned int>::New, ::SetCount and ::Reserve for this very instantiation and no ::Add, which is the clearest possible demonstration that the old \"templates cannot bind\" reading was wrong. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+  },
+  "00466910": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "TSFixedArray<unsigned int>::ReallocData -- it sets m_alloc and reallocates with no `count + m_count > m_alloc` guard, so it is ReallocData and NOT Reserve; the reference inlines Reserve's guard at each call site. Two separate reasons it cannot be linked, and only the first was recorded before: frozen's Reserve inlines ReallocData the other way round so no frozen function IS this one, AND the instantiation has no PDB symbol anyway. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+  },
+  "0082af40": {
+    "frozen": "M2AnimateTrack<fixed16,float>",
+    "status": "faithful",
+    "note": "The fixed16 instantiation of frozen's M2AnimateTrack template: short keys scaled by 1/32767, the same FUN_008284d0 (CM2Model::FindKey) call, and the same secondary-sequence blend as 00828680 and 0082b0a0 -- three instantiations read separately, all carrying the identical structure, which is a useful check on the blend ported 2026-09-24. `faithful` is a hand verdict and not a measurement: the call-order score is 0% and cannot move, because the clang inventory keys the template by its generic name and the instantiation reaches the matcher only through the PDB, which has a symbol and no body."
   }
 }

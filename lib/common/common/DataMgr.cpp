@@ -49,6 +49,7 @@ void DataMgrSetCoord(HDATAMGR mgr, uint32_t fieldId, const C3Vector& coord, uint
     field->Set(setTo);
 }
 
+// ref: FUN_004c1360
 void DataMgrSetFloat(HDATAMGR mgr, uint32_t fieldId, float val) {
     auto dataMgr = reinterpret_cast<CDataMgr*>(mgr);
     auto typeId = CBaseManaged::FLOAT;

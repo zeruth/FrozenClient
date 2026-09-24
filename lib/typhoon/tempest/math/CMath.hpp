@@ -15,6 +15,16 @@ class CMath {
     static const float DEG2RAD;
 
     // Static functions
+
+    // Both terms of an angle at once: SINE through the second argument and COSINE through the
+    // third, which is the order the reference uses and the order a caller will get wrong.
+    //
+    // DIVERGED. The reference computes both from a polynomial with its own range reduction
+    // (FUN_005fe800); this calls the CRT. Same contract, same callers, same results to within the
+    // last bits -- a port by a different method rather than a different function, which is why it
+    // is tagged rather than left unlinked. Out of line so it has a symbol to bind to.
+    static void SinCos(float angle, float& sine, float& cosine);
+
     static float cos(float x) {
         return std::cos(x);
     }

@@ -21,3 +21,7 @@
 
 # Client runtime logs
 Logs/
+
+# Python bytecode from the tools under tools/
+__pycache__/
+*.pyc

@@ -98,6 +98,7 @@ C44Matrix::C44Matrix(const C33Matrix& m) {
     this->d3 = 1.0f;
 }
 
+// ref: FUN_004c1de0
 C44Matrix::C44Matrix(const C4Quaternion& rotation) {
     this->a3 = 0.0f;
     this->b3 = 0.0f;
@@ -164,6 +165,20 @@ C44Matrix C44Matrix::Adjoint() const {
  *
  * @return Inverse of matrix
  */
+// Multiply in place, receiver on the LEFT.
+//
+// The reference builds the product in a temporary and copies it back rather than writing into
+// itself, which it has to: the multiply reads every element of both operands, so accumulating
+// into the destination would feed partial results back in.
+//
+// ref: FUN_004c2370
+C44Matrix& C44Matrix::operator*=(const C44Matrix& r) {
+    *this = *this * r;
+
+    return *this;
+}
+
+// ref: FUN_004c2fc0
 C44Matrix C44Matrix::AffineInverse() const {
     auto matrix = C44Matrix(C33Matrix(*this).Transpose());
     matrix.Translate(C3Vector(-this->d0, -this->d1, -this->d2));
@@ -208,10 +223,12 @@ C4Vector C44Matrix::Col3() const {
     return { this->a3, this->b3, this->c3, this->d3 };
 }
 
+// ref: FUN_004c1930
 float C44Matrix::Determinant() const {
     return (this->b1 * this->c2 * this->d3 + this->c3 * this->b2 * this->d1 + this->b3 * this->c1 * this->d2 - this->c2 * this->b3 * this->d1 - this->d3 * (this->c1 * this->b2) - this->b1 * this->c3 * this->d2) * this->a0 - (this->c2 * this->b0 * this->d3 + this->c3 * this->b2 * this->d0 + this->b3 * this->c0 * this->d2 - this->b3 * this->c2 * this->d0 - this->d3 * (this->c0 * this->b2) - this->b0 * this->c3 * this->d2) * this->a1 + (this->c1 * this->b0 * this->d3 + this->c3 * this->b1 * this->d0 + this->b3 * this->c0 * this->d1 - this->b3 * this->c1 * this->d0 - this->d3 * (this->c0 * this->b1) - this->b0 * this->c3 * this->d1) * this->a2 - (this->c1 * this->b0 * this->d2 + this->c2 * this->b1 * this->d0 + this->b2 * this->c0 * this->d1 - this->b2 * this->c1 * this->d0 - this->d2 * (this->c0 * this->b1) - this->b0 * this->c2 * this->d1) * this->a3;
 }
 
+// ref: FUN_00407f40
 void C44Matrix::Identity() {
     this->a0 = 1.0f;
     this->a1 = 0.0f;
@@ -234,10 +251,12 @@ void C44Matrix::Identity() {
     this->d3 = 1.0f;
 }
 
+// ref: FUN_004c2f90
 C44Matrix C44Matrix::Inverse(float det) const {
     return this->Adjoint() * (1.0f / det);
 }
 
+// ref: FUN_004c33c0
 void C44Matrix::Rotate(const C4Quaternion& rotation) {
     *this = C44Matrix(rotation) * *this;
 }
@@ -278,6 +297,7 @@ const C3Vector* C44Matrix::Row3AsVec3() const {
     return reinterpret_cast<const C3Vector*>(&this->d0);
 }
 
+// ref: FUN_004c1b90
 void C44Matrix::Scale(const C3Vector& scale) {
     this->a0 *= scale.x;
     this->a1 *= scale.x;
@@ -306,12 +326,14 @@ void C44Matrix::Scale(float scale) {
     this->c2 *= scale;
 }
 
+// ref: FUN_004c1b30
 void C44Matrix::Translate(const C3Vector& move) {
     this->d0 = this->a0 * move.x + this->b0 * move.y + this->c0 * move.z + this->d0;
     this->d1 = this->a1 * move.x + this->b1 * move.y + this->c1 * move.z + this->d1;
     this->d2 = this->a2 * move.x + this->b2 * move.y + this->c2 * move.z + this->d2;
 }
 
+// ref: FUN_004c23d0
 C44Matrix C44Matrix::Transpose() const {
     float a0 = this->a0;
     float a1 = this->a1;
