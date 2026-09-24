@@ -661,6 +661,41 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
     }
 }
 
+// Report a BLP failure once, up to a cap. Every one of these ends as a CRAPPY_GREEN square on
+// screen, and until 2026-09-23 the only record was a CStatus nothing reads -- so a wrong texture
+// looked identical to a missing feature. The cap is there because a systematic failure (a format
+// the backend cannot take, say) would otherwise fill the log with the same line.
+static void ReportTextureFailure(const char* filename, const char* why) {
+    static int32_t s_reported = 0;
+
+    if (s_reported >= 24) {
+        return;
+    }
+
+    s_reported++;
+
+    SysMsgPrintf(SYSMSG_ERROR, "BLP load failed (%s): %s", why, filename ? filename : "?");
+
+    if (s_reported == 24) {
+        SysMsgPrintf(SYSMSG_ERROR, "BLP load failures: further ones not reported");
+    }
+}
+
+// The allocation failure carries the dimensions and format, because that is what distinguishes a
+// backend that cannot take the format from one that cannot take the size.
+static void ReportTextureAllocFailure(const char* filename, uint32_t w, uint32_t h, int32_t fmt) {
+    static int32_t s_reported = 0;
+
+    if (s_reported >= 24) {
+        return;
+    }
+
+    s_reported++;
+
+    SysMsgPrintf(SYSMSG_ERROR, "texture alloc failed %ux%u fmt=%d: %s",
+                 w, h, fmt, filename ? filename : "?");
+}
+
 int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
     CBLPFile image;
 
@@ -670,6 +705,8 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
             "BLP Texture failure: \"%s\" invalid file version\n",
             texture->filename
         );
+
+        ReportTextureFailure(texture->filename, "invalid file version");
 
         image.Close();
 
@@ -713,6 +750,8 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
             "BLP Texture failure: \"%s\" decompression failed.\n",
             texture->filename
         );
+
+        ReportTextureFailure(texture->filename, "decompression failed");
 
         image.Close();
 
@@ -795,6 +834,9 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
                 gxWidth,
                 gxHeight
             );
+
+            ReportTextureAllocFailure(texture->filename, gxWidth, gxHeight,
+                                      static_cast<int32_t>(texture->gxTexFormat));
 
             image.Close();
 
@@ -1090,6 +1132,8 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
 
     // TODO
     // FileError(status, "texture", fileName);
+
+    ReportTextureFailure(fileName, "no loader accepted it");
 
     return TextureCreateSolid(CRAPPY_GREEN);
 

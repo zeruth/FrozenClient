@@ -65,3 +65,42 @@ The diagnostics were removed rather than left in the tree. To get them back: a o
 accessors in `ParticleFx.cpp` exposing the first quad's position, colour, alpha, texture, blend and
 corner-to-corner size. Sample around 150 frames in -- at load nothing has been emitted yet and
 every number is zero.
+
+---
+
+# Green and white on Android — it is not the textures
+
+Reported the same day: the main menu dragon is partly solid green, and in the world the terrain and
+sky are white. Both on Android; the Windows build shows neither.
+
+Green in this client has one meaning. `CRAPPY_GREEN` is `{0, 0xFF, 0, 0xFF}` and reaches the screen
+from exactly two places, both failure fallbacks: `FillInSolidTexture(CRAPPY_GREEN, texture)` when
+`PumpBlpTextureAsync` returns 0, and `TextureCreateSolid(CRAPPY_GREEN)` when no loader accepts a
+file. So "it is a failed texture" is the natural reading.
+
+It was measured instead. Every failure path that can produce green now reports through
+SysMsgPrintf:
+
+  * BLP invalid file version
+  * BLP decompression failed
+  * texture allocation failed (with dimensions and format, since that is what separates a backend
+    that cannot take the FORMAT from one that cannot take the SIZE)
+  * no loader accepted the file
+
+Run on the device, at the main menu, with the dragon visibly green: **not one of them fires.** No
+BLP fails to decode, nothing fails to allocate, no file goes unloaded.
+
+So nothing ever asks for CRAPPY_GREEN, and the green on screen is not CRAPPY_GREEN. It is not a
+texture-content problem at all.
+
+That leaves the backend. The same run reports `S3TC textures: native`, `GL_VERSION: OpenGL ES 3.2`,
+and `Terrain: api 5 shaders vs ok ps ok blob ok detail ok -> shaded`, so the shaders compile and the
+terrain picks its shaded path -- and the terrain still comes out white. White is what a shader
+outputting 1,1,1 looks like; a wrong channel is what green looks like. Both are consistent with the
+ARB-to-GLSL translation in `src/gx/gles/ArbToGlsl.cpp` producing wrong output for some programs
+while still compiling, which is the next place to look. `CGxDeviceGLES` is the only renderer Android
+builds -- `src/gx/CMakeLists.txt` gives it `gles/*.cpp` and EGL + GLESv3 -- so nothing here is
+shared with the D3D9 path that works.
+
+The reporting is kept. A texture that fails to load should not be a silent green square: until now
+the only record was a `CStatus` nothing reads.
