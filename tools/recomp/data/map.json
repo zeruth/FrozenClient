@@ -10165,6 +10165,22 @@
   "refSize": 80,
   "status": "ported"
  },
+ "004c5820": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp"
+  ],
+  "frozen": "C33Matrix::RotationAroundAxis",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 274,
+  "status": "ported"
+ },
  "004c5a60": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -37463,13 +37479,13 @@
   "branchRatio": 0.385,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.312,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::Initialize",
-  "frozenSize": 106,
+  "frozenSize": 116,
   "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 441,
@@ -49420,6 +49436,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 55,
+  "status": "ported"
+ },
+ "00979170": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleIndexBufferCreate",
+  "frozenSize": 110,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 112,
   "status": "ported"
  },
  "00979250": {

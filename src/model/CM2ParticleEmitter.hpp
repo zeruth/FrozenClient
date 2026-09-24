@@ -649,6 +649,17 @@ float M2PartTrackEvalAlpha(const M2PartTrack<fixed16>& track, float t);
 // never reads it.  ref: FUN_00979560
 uint32_t M2PartTrackEvalCell(const M2PartTrack<uint16_t>& track, float t);
 
+// Create the ONE index buffer every particle quad in the world draws through, and take a
+// reference to it. Refcounted; the matching release (FUN_009791e0) is not ported. Called from
+// CM2Cache::Initialize, which is the reference's only caller. ref: FUN_00979170
+void M2ParticleIndexBufferCreate();
+
+// Fill the particle twinkle table: 128 random floats in [0, 1), seeded from rand() so no two
+// runs and no two emitters blink alike. The reference does this inline in CM2Cache::Initialize
+// (0x81c240), which is the only place that may call it -- the table is read every frame by every
+// emitter and refilling it mid-run would make every particle in the world blink at once.
+void M2ParticleInitTwinkleTable();
+
 // How far the camera is from the emitter being updated. The reference keeps this in a global
 // (0x00dce68c) that its per-frame update writes before emission reads it, rather than passing it
 // down. Emission is the only consumer.

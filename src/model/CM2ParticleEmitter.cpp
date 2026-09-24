@@ -1261,6 +1261,73 @@ bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) cons
     return this->IntegrateParticle(p, dt);
 }
 
+// The particle system's shared index buffer, and the refcount that owns it.
+//
+// ONE buffer serves every particle quad in the world: 131,064 uint16s holding (0, 1, 2, 3, 2, 1)
+// repeated per four vertices, 21,845 quads, written once and never touched again. A particle draw
+// uploads vertices only, which is why the fill caps its count at `0x4000 / verticesPerParticle`
+// instead of growing anything.
+static uint32_t s_particleIndexRefs = 0;
+static CGxPool* s_particleIndexPool = nullptr;
+static CGxBuf* s_particleIndexBuf = nullptr;
+
+// ref: FUN_00979170
+void M2ParticleIndexBufferCreate() {
+    if (s_particleIndexRefs != 0) {
+        s_particleIndexRefs++;
+
+        return;
+    }
+
+    // DROPPED BRANCH, and the reason is that it cannot run. The reference guards this on a byte
+    // at 0x00dce890 -- set, and the refcount still rises while both pointers stay null. That byte
+    // has exactly ONE reference in the whole 5.4MB text section, the read at 0x979179; nothing
+    // writes it. Transcribing the branch would mean inventing a frozen global that is equally
+    // never written, to guard a path that equally cannot be taken.
+
+    // 0x3FFF0 bytes is 0x1FFF8 uint16s exactly. The name is the reference's own, at 0x00aa2ca8.
+    s_particleIndexPool = GxPoolCreate(
+        GxPoolTarget_Index,
+        GxPoolUsage_Static,
+        0x3FFF0,
+        GxPoolHintBit_Unk2,
+        const_cast<char*>("CParticleEmitter2_idx")
+    );
+
+    s_particleIndexBuf = GxBufCreate(s_particleIndexPool, 2, 0x1FFF8, 0);
+
+    s_particleIndexRefs++;
+}
+
+// The twinkle table: 128 random floats in [0, 1), filled once by M2ParticleInitTwinkleTable.
+//
+// The quad writer hashes a particle into this as `((address >> 5) + round(fps * age)) & 0x7f` and
+// DROPS the particle for the frame when its sample exceeds the emitter's on/off threshold. That
+// is a blink, not a fade -- a twinkling particle is absent on the frames it is off, which is why
+// the table is sampled before anything else is computed.
+//
+// The `>> 5` is load-bearing rather than arbitrary: a Particle is 0x20 bytes, so the shift
+// increments by exactly one per pool slot and the hash is "slot index plus a time term". A
+// 64-bit pointer changes only the high bits, which the mask discards.
+//
+// Zero until the init runs, and zero is a safe reading: `threshold < 0` is false for any sane
+// threshold, so an uninitialised table twinkles nothing off rather than everything.
+static float s_particleTwinkle[128] = {};
+
+// Not a reference function of its own: the reference fills the table inline inside
+// CM2Cache::Initialize (FUN_0081c0d0), at 0x81c240. Factored out here only so the table
+// can stay file-static beside the code that reads it.
+void M2ParticleInitTwinkleTable() {
+    // Two draws, the FIRST supplying the high half. One rand() would give 15 bits on Windows and
+    // the table would repeat.
+    CRndSeed seed(static_cast<uint32_t>(rand()) << 16
+                  | (static_cast<uint32_t>(rand()) & 0xFFFF));
+
+    for (uint32_t i = 0; i < 128; i++) {
+        s_particleTwinkle[i] = M2ParticleRandUnit(seed) - 1.0f;
+    }
+}
+
 // The draw basis, which SetupDrawBasis computes once per emitter and everything below reads.
 //
 // The reference keeps these in three globals (0x00b2d540, 0x00b2d550, 0x00b2d590) rather than

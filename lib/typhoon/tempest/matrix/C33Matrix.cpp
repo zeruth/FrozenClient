@@ -1,6 +1,7 @@
 #include "tempest/matrix/C33Matrix.hpp"
 #include "tempest/math/CMath.hpp"
 #include "tempest/matrix/C44Matrix.hpp"
+#include "tempest/vector/C3Vector.hpp"
 
 C33Matrix C33Matrix::RotationAroundZ(float angle) {
     float cosAngle = cos(angle);
@@ -19,6 +20,33 @@ C33Matrix C33Matrix::RotationAroundZ(float angle) {
     float c2 = 1.0f;
 
     return { a0, a1, a2, b0, b1, b2, c0, c1, c2 };
+}
+
+// ref: FUN_004c5820
+C33Matrix C33Matrix::RotationAroundAxis(float angle, const C3Vector& axis, bool normalized) {
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    // No epsilon guard, and the reference has none either: a caller passing false has promised a
+    // non-degenerate axis.
+    if (!normalized) {
+        float inv = 1.0f / CMath::sqrt(x * x + y * y + z * z);
+
+        x *= inv;
+        y *= inv;
+        z *= inv;
+    }
+
+    float c = CMath::cos(angle);
+    float s = CMath::sin(angle);
+    float k = 1.0f - c;
+
+    return {
+        x * x * k + c,      y * x * k + z * s,  z * x * k - y * s,
+        y * x * k - z * s,  y * y * k + c,      k * z * y + x * s,
+        z * x * k + y * s,  k * z * y - x * s,  c + z * z * k
+    };
 }
 
 C33Matrix::C33Matrix() {

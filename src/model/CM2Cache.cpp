@@ -1,5 +1,6 @@
 #include "model/CM2Cache.hpp"
 #include "gx/Gx.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/Model2.hpp"
 #include "util/Filesystem.hpp"
@@ -142,6 +143,16 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     // 0x8 is clear and a capability global is clear too, i.e. "no shader support, use the
     // single-bone fixed-function path". frozen requires shaders, so 0x8 is set and 0x40 stays
     // clear, which is what CM2SceneRender and CM2Shared already assume when they read it.
+
+    // One of this function's remaining TODOs, closed 2026-09-24: the particle twinkle table.
+    // The reference fills it inline here (0x81c240) and it is read every frame by every emitter,
+    // so this is the only place that may call it -- refilling it mid-run would make every
+    // particle in the world blink at once.
+    M2ParticleInitTwinkleTable();
+
+    // And the shared index buffer every particle quad draws through, which the reference creates
+    // on the next line (0x81c273). One buffer for the whole world; see its definition.
+    M2ParticleIndexBufferCreate();
 
     // TODO
 
