@@ -473,8 +473,18 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_elements.SetCount(0);
     int32_t elementIndex = 0;
 
-    // How many particle elements use an additive blend. The reference keeps this to size the
-    // additive sort the tail of this function still owes.
+    // How many particle elements use an additive blend. WRITE-ONLY here for now, and that is
+    // faithful rather than an oversight: the reference's builder only increments it too.
+    //
+    // What consumes it is the tail this function still marks TODO, read 2026-09-24. That tail is
+    // not a sort at all -- it walks a FOURTH element list (the container at scene+0x44, count at
+    // +0x48) and groups its entries through a 251-entry open-addressing hash table at 0x00d40da0,
+    // memset to 0xff and keyed by FUN_0081cc50 of the element. Additive blending is
+    // order-independent, so grouping by material beats sorting by depth.
+    //
+    // Frozen has no container at +0x44 and nothing fills one, so the count has nothing to size
+    // yet. Do not delete it to silence the warning -- it is the reference's own bookkeeping, and
+    // removing it would have to be put back.
     uint32_t additiveCount = 0;
 
     while (this->m_drawList) {

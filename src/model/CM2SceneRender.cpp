@@ -408,8 +408,36 @@ void CM2SceneRender::DrawCallback() {
 // element's +0x24 slot. It is set by neither the constructor nor SetTextureGrid. Frozen carries
 // the emitter in the element anyway, so the cache is probably redundant here -- but that cannot be
 // asserted until the field is known, so do not silently omit it without checking.
+// LIVE STUB as of 2026-09-24: the emission above now builds type-4 elements, so this is reached.
+// Returning 0 is safe -- Draw increments its index in the loop header and this return only adds an
+// extra skip -- so the elements are visited and nothing draws for them.
+//
+// Its own shape, read 2026-09-24 (it is FUN_008214e0, already linked through overrides.json):
+//
+//   1. Build a 16-bit material key from the EMITTER'S MATERIAL FLAGS:
+//          key = (matFlags & 0x1) ? 4 : 5
+//          if (!(matFlags & 0x2)) key |= 0x2
+//          if (!(matFlags & 0x4)) key |= 0x10
+//          key |= <FUN_0081ca20()> << 16
+//      then `m_curMaterial = &key` -- which is the field the Draw loop still marks TODO.
+//
+//      Worth noting as corroboration: those are exactly the three bits CM2Model's factory
+//      derives when it builds the emitter's material, and they were mapped from the
+//      CONSTRUCTION side. The draw side reading the same three is independent confirmation.
+//
+//   2. If `this->[0x44]->[0x4] & 0x80`, hand off to FUN_00821100 and return its value instead.
+//   3. Otherwise resolve the emitter's texture (+0x128) through FUN_004b6cb0 and bail if null.
+//   4. Set up device and shader state -- 0x685f50, 0x685970 (both through the global at
+//      0x00c5df88), 0x872f90, 0x81fb10, 0x81fe90, 0x81f620 -- then call
+//      **FUN_0097ea60, which is the EMITTER'S OWN DRAW** and where the quads are actually built.
+//   5. A virtual through the device, then 0x57c450.
+//
+// So the geometry lives in CM2ParticleEmitter, not here; this is the state around it. Porting it
+// means the GX-layer helpers in step 4 first, which is a chain of its own -- and FUN_0097ea60
+// would be dead until this calls it, so the two go together the way the emission and its builder
+// did.
 int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5) {
-    // TODO -- see the map above; the emission has to land before this can run.
+    // TODO -- see the map above. Reached, draws nothing.
     return 0;
 }
 
