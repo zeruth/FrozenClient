@@ -38523,6 +38523,19 @@
   "refSize": 482,
   "status": "ported"
  },
+ "0082af40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<fixed16,float>",
+  "frozenSize": 566,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 345,
+  "status": "faithful"
+ },
  "0082b0a0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,

@@ -2419,6 +2419,7 @@ addr	how	frozen	evidence
 00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
 00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
 0082ad50	callgraph	C3Vector::operator-	only unmatched callee of 0082d6f0=CM2Model::AnimateTextureTransformsMT
+0082af40	override	M2AnimateTrack<fixed16,float>	
 0082b0a0	override	M2AnimateTrack<C3Vector,C3Vector>	
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	

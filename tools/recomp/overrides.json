@@ -1828,5 +1828,10 @@
     "frozen": "",
     "status": "excluded",
     "note": "TSFixedArray<unsigned int>::ReallocData -- it sets m_alloc and reallocates with no `count + m_count > m_alloc` guard, so it is ReallocData and NOT Reserve; the reference inlines Reserve's guard at each call site. Two separate reasons it cannot be linked, and only the first was recorded before: frozen's Reserve inlines ReallocData the other way round so no frozen function IS this one, AND the instantiation has no PDB symbol anyway. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+  },
+  "0082af40": {
+    "frozen": "M2AnimateTrack<fixed16,float>",
+    "status": "faithful",
+    "note": "The fixed16 instantiation of frozen's M2AnimateTrack template: short keys scaled by 1/32767, the same FUN_008284d0 (CM2Model::FindKey) call, and the same secondary-sequence blend as 00828680 and 0082b0a0 -- three instantiations read separately, all carrying the identical structure, which is a useful check on the blend ported 2026-09-24. `faithful` is a hand verdict and not a measurement: the call-order score is 0% and cannot move, because the clang inventory keys the template by its generic name and the instantiation reaches the matcher only through the PDB, which has a symbol and no body."
   }
 }

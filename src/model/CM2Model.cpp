@@ -567,6 +567,23 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             this->m_boneMatrices[i] = *boneParentMatrix;
         }
 
+        // BOTH BILLBOARD BRANCHES BELOW ARE REASONED, NOT PORTED, and that is a defect rather
+        // than a gap. They were worked out from what a glow sprite ought to look like --
+        // the comment below still says so -- and CLAUDE.md is explicit that guessing an
+        // implementation from what the screen looks like is how the graphics bugs got in.
+        //
+        // The reference does something STRUCTURALLY DIFFERENT, at 0x82f930..0x8302c0. It
+        // does not write an axis-aligned scale matrix. For each of the three axes it takes
+        // the corresponding ROW OF matrixF4, compares the squared lengths of that row and
+        // of the bone's own row, and scales the matrixF4 row by the ratio's square root --
+        // falling back to 1.0 when the bone row is the longer of the two. A separate
+        // branch at 0x82faa9 normalises three consecutive rows through C3Vector::Normalize
+        // instead, which is where the twelve Normalize calls in the --diff come from and
+        // which this code makes none of.
+        //
+        // Replacing this means reading those ~400 lines of x87 across its four variants,
+        // not adjusting the arithmetic below until the numbers agree. Until then this runs
+        // and is approximately right, which is the most that can be claimed for it.
         if (boneFlags & 0x8) {
             // Spherical billboard. The bone matrix is already in view space (its parent chain roots
             // at matrixF4 = model x view), so replacing its rotation with the view axes makes the
