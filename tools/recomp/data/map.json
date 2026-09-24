@@ -49112,6 +49112,22 @@
   "refSize": 104,
   "status": "ported"
  },
+ "00978d00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetHeadTail",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 147,
+  "status": "ported"
+ },
  "00978da0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49126,6 +49142,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 39,
+  "status": "ported"
+ },
+ "00978e30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetTextureAnimated",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 55,
   "status": "ported"
  },
  "009792d0": {

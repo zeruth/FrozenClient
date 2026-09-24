@@ -77739,6 +77739,46 @@
 "refs": [],
 "line": 390
 },
+"CM2ParticleEmitter::SetHeadTail": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0x20000",
+"0x20000u",
+"0x4",
+"0x4u",
+"0x8",
+"0x8u",
+"4",
+"6"
+],
+"branches": 5,
+"stub": false,
+"lines": 36,
+"refs": [],
+"line": 477
+},
+"CM2ParticleEmitter::SetTextureAnimated": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x100000",
+"0x100000u",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 522
+},
 "CM2ParticleEmitter::Update": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -77773,7 +77813,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 473
+"line": 533
 },
 "CM2ParticleEmitter::Place": {
 "files": [
@@ -77795,7 +77835,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 585
+"line": 645
 },
 "CM2ParticleEmitter::RetireParticle": {
 "files": [
@@ -77808,7 +77848,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 601
+"line": 661
 },
 "CM2ParticleEmitter::IntegrateAndSpawnChildren": {
 "files": [
@@ -77836,7 +77876,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 638
+"line": 698
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -77865,7 +77905,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 704
+"line": 764
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -77894,7 +77934,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 773
+"line": 833
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -77912,7 +77952,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 825
+"line": 885
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

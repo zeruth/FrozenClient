@@ -3097,7 +3097,9 @@ addr	how	frozen	evidence
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00978ad0	annotated	M2ParticleToFixed16	tag in src/model/CM2ParticleEmitter.cpp
 00978b70	annotated	M2ParticleFlushDenormals	tag in src/model/CM2ParticleEmitter.cpp
+00978d00	annotated	CM2ParticleEmitter::SetHeadTail	tag in src/model/CM2ParticleEmitter.cpp
 00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
+00978e30	annotated	CM2ParticleEmitter::SetTextureAnimated	tag in src/model/CM2ParticleEmitter.cpp
 009792d0	annotated	CM2ParticleEmitter::RandomSpeed	tag in src/model/CM2ParticleEmitter.cpp
 00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
 009793b0	annotated	M2PartTrackRatio	tag in src/model/CM2ParticleEmitter.cpp

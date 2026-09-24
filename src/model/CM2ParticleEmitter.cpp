@@ -467,6 +467,66 @@ bool CM2ParticleEmitter::IntegrateParticle(Particle& p, float dt) const {
 // is the 0.001 at 0x009e1134, read out of the binary -- the same one the reference uses to convert
 // scene milliseconds to seconds, which is why it turns up in two unrelated places.
 //
+// Choose which of the two quads each particle draws.
+//
+// The interesting half is the tail: 0x4 and 0x8 are the head and tail quads, and the two counts
+// this derives are four vertices and six indices per quad -- one triangle pair. A particle drawing
+// both costs 8 and 12, and the draw side sizes its batch from that rather than assuming one quad.
+//
+// ref: FUN_00978d00
+void CM2ParticleEmitter::SetHeadTail(int32_t head, int32_t tail, float tailLength,
+                                     int32_t flag20000) {
+    if (head) {
+        this->m_flags |= 0x4;
+    } else {
+        this->m_flags &= ~0x4u;
+    }
+
+    if (tail) {
+        this->m_flags |= 0x8;
+    } else {
+        this->m_flags &= ~0x8u;
+    }
+
+    if (flag20000) {
+        this->m_flags |= 0x20000;
+    } else {
+        this->m_flags &= ~0x20000u;
+    }
+
+    this->m_tailLength = tailLength;
+
+    this->m_verticesPerParticle = 0;
+    this->m_indicesPerParticle = 0;
+
+    // Re-read from the flag word rather than from the arguments, so the counts stay consistent
+    // with the flags whatever else has touched them.
+    if (this->m_flags & 0x4) {
+        this->m_verticesPerParticle = 4;
+        this->m_indicesPerParticle = 6;
+    }
+
+    if (this->m_flags & 0x8) {
+        this->m_verticesPerParticle += 4;
+        this->m_indicesPerParticle += 6;
+    }
+}
+
+// Turn texture animation on.
+//
+// The guard is the point: a grid with one cell has nothing to animate over, and asking for
+// animation anyway would step a single-tile emitter around one cell forever. The reference tests
+// the PRODUCT of the two grid dimensions against 1, so a 1xN grid still animates.
+//
+// ref: FUN_00978e30
+void CM2ParticleEmitter::SetTextureAnimated(int32_t animated) {
+    if (this->m_textureCols * this->m_textureRows > 1 && animated) {
+        this->m_flags |= 0x100000;
+    } else {
+        this->m_flags &= ~0x100000u;
+    }
+}
+
 // Drive the emitter for one frame.
 //
 // ref: FUN_0097eb10

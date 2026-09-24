@@ -122,6 +122,18 @@ class CM2ParticleEmitter {
         // +0xe0: the ground-offset range, sampled over a particle's normalised age. Only the
         // ground-snap reads it.
         M2PartTrack<C2Vector>* m_groundOffset = nullptr;
+        // +0x8c and +0x90: how many vertices and indices ONE particle costs. Not stored
+        // parameters -- SetHeadTail derives them, four vertices and six indices per quad, one
+        // quad each for the head and the tail. A particle drawing both costs 8 and 12. The draw
+        // side sizes its batch from these.
+        uint32_t m_verticesPerParticle = 0;
+        uint32_t m_indicesPerParticle = 0;
+        // +0xac: set alongside the head/tail flags by the same setter.
+        float m_tailLength = 0.0f;
+        // +0x120 and +0x124: the texture tile grid. Their PRODUCT is what decides whether texture
+        // animation is possible at all -- see SetTextureAnimated.
+        uint32_t m_textureRows = 0;
+        uint32_t m_textureCols = 0;
         // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives.
         float m_alpha = 0.0f;
         // +0x14c: scales the emitter velocity the update samples every 1/30s and hands to new
@@ -174,6 +186,14 @@ class CM2ParticleEmitter {
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
+
+        // Choose which of the two quads each particle draws, and size a particle's geometry
+        // from that. ref: FUN_00978d00
+        void SetHeadTail(int32_t head, int32_t tail, float tailLength, int32_t flag20000);
+
+        // Turn texture animation on, if the tile grid has more than one cell to animate over.
+        // ref: FUN_00978e30
+        void SetTextureAnimated(int32_t animated);
 
         // Drive the emitter for one frame: measure the camera distance, place this emitter and
         // its children, derive what the particles inherit from the emitter's own motion, and
