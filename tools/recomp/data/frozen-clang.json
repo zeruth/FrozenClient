@@ -79614,6 +79614,19 @@
 "refs": [],
 "line": 15
 },
+"CM2Ribbon::IsEmpty": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 25
+},
 "CM2Ribbon::SetGravity": {
 "files": [
 "src/model/cm2ribbon.cpp"
@@ -79625,7 +79638,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 23
+"line": 30
 },
 "CM2Ribbon::SetAbove": {
 "files": [
@@ -79643,7 +79656,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 33
+"line": 40
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

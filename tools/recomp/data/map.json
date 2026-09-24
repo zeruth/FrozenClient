@@ -50356,6 +50356,22 @@
   "refSize": 16,
   "status": "ported"
  },
+ "0097f640": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::IsEmpty",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
  "00980630": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

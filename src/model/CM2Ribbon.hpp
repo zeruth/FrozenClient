@@ -39,41 +39,51 @@ class CM2Ribbon {
             uint32_t m_blend;
         };
 
+        // One segment of the trail. SIZE IS 0x18 and that is measured: the SetCount the ring
+        // goes through (FUN_00980810) strides by 0x18 and zeroes six dwords per element.
+        // WHAT IS IN IT is not known -- the per-frame update that fills it has not been read --
+        // so this is deliberately opaque rather than six invented field names.
+        struct Segment {
+            uint32_t raw[6];
+        };
+
+        // One trail vertex. Also 0x18, and the draw is the check: it asks BufStream for a 0x18
+        // stride and binds GxVBF_PCT, which is 12 + 4 + 8 = 24 bytes exactly.
+        struct Vertex {
+            C3Vector m_position;
+            CImVector m_color;
+            C2Vector m_texCoord;
+        };
+
         // Member variables. Offsets are the reference's.
+        //
+        // The three arrays below are the reference's own container shape -- {alloc, count, data,
+        // chunk}, 0x10 bytes and NO vtable. frozen's TSGrowableArray derives from a TSBaseArray
+        // that declares virtuals, so its layout is wider; that is a divergence frozen already
+        // lives with everywhere else, and nothing here depends on the byte offsets.
 
         // +0x00. Born 1, and nothing read so far changes it.
         uint32_t uint0 = 1;
-        uint32_t uint4 = 0;
-        // +0x08: how many segments the ring holds. Initialize sizes it from the edge rate and
-        // lifetime: `ceil(edgeLifetime * ceil(edgesPerSecond)) + 2`.
-        uint32_t m_segmentCapacity = 0;
-        uint32_t uintC = 0;
-        uint32_t uint10 = 0;
-        // +0x14 and +0x18: the ring's ends. The DRAW is what pins which is which -- it computes
-        // `tail < head ? head - tail : head + capacity - tail`, so the live span runs from tail
-        // forward to head and wraps. Deliberately not zero-initialised by the reference's
-        // constructor; Initialize clears both.
+        // +0x04: the segment ring. Initialize sizes it to
+        // `ceil(edgeLifetime * ceil(edgesPerSecond)) + 2`.
+        TSGrowableArray<Segment> m_segments;
+        // +0x14 and +0x18: the ring's ends, and the DRAW is what pins which is which -- it
+        // computes `tail < head ? head - tail : head + capacity - tail`, so the live span runs
+        // from tail forward to head and wraps. Equal means empty; see IsEmpty.
         uint32_t m_head = 0;
         uint32_t m_tail = 0;
         uint32_t uint1C = 0;
         uint32_t uint20 = 0;
         uint32_t uint24 = 0;
         uint32_t uint28 = 0;
-        // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's translation
-        // row, so the geometry is stored relative to it.
+        // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's
+        // translation row, so the geometry is stored relative to it.
         C3Vector m_origin = {};
-        uint32_t uint38 = 0;
-        // +0x3c and +0x40: the vertex array, on the CPU, uploaded whole each draw. The stride is
-        // 0x18, which is GxVBF_PCT exactly.
-        uint32_t m_vertexCount = 0;
-        void* m_vertices = nullptr;
-        uint32_t uint44 = 0;
-        uint32_t uint48 = 0;
-        // +0x4c and +0x50: the index array, likewise. Initialize fills it with `i % (segments * 2)`
-        // and the draw takes a triangle STRIP out of it.
-        uint32_t m_indexCount = 0;
-        uint16_t* m_indices = nullptr;
-        uint32_t uint54 = 0;
+        // +0x38: the trail geometry, built on the CPU and uploaded whole each draw.
+        TSGrowableArray<Vertex> m_vertices;
+        // +0x48: its indices. Initialize fills them with `i % (segments * 2)` and the draw takes
+        // a triangle STRIP out of them.
+        TSGrowableArray<uint16_t> m_indices;
         // +0x58: one over the edge lifetime.
         float m_invEdgeLifetime = 0.0f;
         // +0x5c and +0x60: one texture cell's size in UV, from the grid and the texture rect.
@@ -136,6 +146,10 @@ class CM2Ribbon {
 
         // Set or clear flag 0x4, and drop flag 0x1 with it when clearing.
         void SetAbove(int32_t above);
+
+        // Does this ribbon have any trail at all? CM2Scene::Animate asks before
+        // spending an element on it.
+        bool IsEmpty() const;
 };
 
 #endif

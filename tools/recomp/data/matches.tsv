@@ -3175,6 +3175,7 @@ addr	how	frozen	evidence
 0097edf0	annotated	CM2ParticleEmitter::PrepareStep	tag in src/model/CM2ParticleEmitter.cpp
 0097f570	annotated	CM2Ribbon::SetAbove	tag in src/model/CM2Ribbon.cpp
 0097f630	annotated	CM2Ribbon::SetGravity	tag in src/model/CM2Ribbon.cpp
+0097f640	annotated	CM2Ribbon::IsEmpty	tag in src/model/CM2Ribbon.cpp
 00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp

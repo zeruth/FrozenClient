@@ -19,6 +19,13 @@ CM2Ribbon::CM2Ribbon() {
     this->m_flags &= ~0x12u;
 }
 
+// Head and tail meeting means the ring is empty.
+//
+// ref: FUN_0097f640
+bool CM2Ribbon::IsEmpty() const {
+    return this->m_tail == this->m_head;
+}
+
 // ref: FUN_0097f630
 void CM2Ribbon::SetGravity(float gravity) {
     this->m_gravity = gravity;
