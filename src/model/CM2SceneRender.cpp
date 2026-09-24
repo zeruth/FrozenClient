@@ -374,14 +374,36 @@ void CM2SceneRender::DrawCallback() {
 //     else if flag == 0 or emitter->m_flags & 0x40000   -> array54[2]
 //     else                                              -> array54[1]
 //
-// TWO THINGS STILL OPEN, both small and both worth doing before writing this:
-//   - the distance and alpha the loop passes come from a chain at 0x822c70 over the bone-space
-//     position and three values derived from model->[0xac..0xb8]. Not traced yet; do not guess it,
-//     distance drives the sort.
-//   - the reference caches emitter->[0x18] into the element's +0x24 slot. What +0x18 holds is not
-//     identified -- it is not set by the constructor or by SetTextureGrid. Frozen carries the
-//     emitter itself so it may not need the cache at all, but that cannot be asserted until the
-//     field is known.
+// The two arguments the loop computes, traced 2026-09-24:
+//
+//   ALPHA is just model->float198, stashed at 0x822c2c by the same read that gates the emitter on
+//   it being above 1e-4. Nothing more.
+//
+//   DISTANCE is NOT a camera distance, which is what the name suggests. It is the SQUARED length
+//   of `file.position * m_boneMatrices[file.boneIndex]` -- the emitter's own position in the
+//   model's space, squared, with no camera involved (0x822c70..0x822c98). Transcribe it; do not
+//   "fix" it into a camera distance.
+//
+// And the FLAG, which selects pass 1 against pass 2, is a LIQUID PLANE TEST. It reads an object at
+// model+0x2a8, which the reference points either at the model's own block at +0x1d4 or at its
+// parent's (0x828a49) -- that is frozen's m_currentLighting / m_lighting pair exactly. The fields
+// it uses land on CM2Lighting as frozen already has it: +0x14 is m_flags, and +0xc4 is
+// m_liquidPlane. So:
+//
+//     flag = lighting->m_flags & 0x20;
+//     if (flag && (lighting->m_flags & 0x40)) {
+//         centre = (data->boundsMax + data->boundsMin) * 0.5;      // data +0xa0..+0xb4
+//         radius = length(matrixF4.row0) * data->[0xb8];
+//         if (dot(m_liquidPlane, centre * matrixF4) <= -radius) flag = 0;
+//     }
+//
+// which is why the transparent block flips its order under liquid: a model entirely below the
+// water plane has its particles routed to the other pass.
+//
+// ONE FIELD REMAINS UNIDENTIFIED and it is small: the reference caches emitter->[0x18] into the
+// element's +0x24 slot. It is set by neither the constructor nor SetTextureGrid. Frozen carries
+// the emitter in the element anyway, so the cache is probably redundant here -- but that cannot be
+// asserted until the field is known, so do not silently omit it without checking.
 int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5) {
     // TODO -- see the map above; the emission has to land before this can run.
     return 0;
