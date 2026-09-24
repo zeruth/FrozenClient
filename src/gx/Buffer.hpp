@@ -25,6 +25,10 @@ namespace Buffer {
 
 uint32_t GxVertexAttribOffset(EGxVertexBufferFormat, EGxVertexAttrib);
 
+// One vertex's size in bytes, for a format. The sibling of the offset lookup above: the reference
+// indexes a flat table at 0x00ad8ac0, frozen keeps the same numbers in the format descriptors.
+uint32_t GxVertexBufferFormatSize(EGxVertexBufferFormat);
+
 CGxBuf* GxBufCreate(CGxPool*, uint32_t, uint32_t, uint32_t);
 
 void GxBufData(CGxBuf* buf, const void* data, uint32_t size, uint32_t offset);

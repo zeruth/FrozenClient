@@ -63561,6 +63561,19 @@
 "refs": [],
 "line": 187
 },
+"GxVertexBufferFormatSize": {
+"files": [
+"src/gx/buffer.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 192
+},
 "GxBufCreate": {
 "files": [
 "src/gx/buffer.cpp"
@@ -63574,7 +63587,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 191
+"line": 196
 },
 "GxBufData": {
 "files": [
@@ -63592,7 +63605,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 195
+"line": 200
 },
 "GxBufLock": {
 "files": [
@@ -63607,7 +63620,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 204
+"line": 209
 },
 "GxBufUnlock": {
 "files": [
@@ -63624,7 +63637,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 208
+"line": 213
 },
 "GxPoolCreate": {
 "files": [
@@ -63639,7 +63652,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 213
+"line": 218
 },
 "GxPrimIndexPtr": {
 "files": [
@@ -63661,7 +63674,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 217
+"line": 222
 },
 "GxPrimVertexPtr": {
 "files": [
@@ -63700,7 +63713,7 @@
 "stub": false,
 "lines": 127,
 "refs": [],
-"line": 231
+"line": 236
 },
 "GxPrimLockVertexPtrs": {
 "files": [
@@ -63715,7 +63728,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 360
+"line": 365
 },
 "GxPrimUnlockVertexPtrs": {
 "files": [
@@ -63730,7 +63743,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 367
+"line": 372
 },
 "CGxPool::Discard": {
 "files": [
@@ -78583,6 +78596,28 @@
 "refs": [],
 "line": 1194
 },
+"CM2ParticleEmitter::SetupVertexCursor": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"GxVertexBufferFormatSize",
+"GxVertexAttribOffset",
+"GxVertexAttribOffset",
+"GxVertexAttribOffset",
+"GxVertexAttribOffset"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1"
+],
+"branches": 1,
+"stub": false,
+"lines": 29,
+"refs": [],
+"line": 1234
+},
 "CM2ParticleEmitter::Draw": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -78608,7 +78643,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1226
+"line": 1272
 },
 "CM2ParticleEmitter::HasLiveParticles": {
 "files": [
@@ -78626,7 +78661,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1263
+"line": 1309
 },
 "CM2ParticleEmitter::CountSpawnedModels": {
 "files": [
@@ -78645,7 +78680,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1278
+"line": 1324
 },
 "CM2ParticleEmitter::FindSpawnedModel": {
 "files": [
@@ -78667,7 +78702,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1297
+"line": 1343
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -78704,7 +78739,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 1324
+"line": 1370
 },
 "M2ParticleCapacityFor": {
 "files": [
@@ -78719,7 +78754,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1413
+"line": 1459
 },
 "CM2ParticleEmitter::PrepareStep": {
 "files": [
@@ -78740,7 +78775,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1430
+"line": 1476
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -78770,7 +78805,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1457
+"line": 1503
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -78791,7 +78826,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1498
+"line": 1544
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78820,7 +78855,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 1531
+"line": 1577
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78838,7 +78873,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1592
+"line": 1638
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

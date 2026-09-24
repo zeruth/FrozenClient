@@ -188,6 +188,11 @@ uint32_t GxVertexAttribOffset(EGxVertexBufferFormat format, EGxVertexAttrib attr
     return Buffer::s_vertexBufOffset[format][attrib];
 }
 
+// ref: FUN_00681230
+uint32_t GxVertexBufferFormatSize(EGxVertexBufferFormat format) {
+    return Buffer::s_vertexBufDesc[format].size;
+}
+
 CGxBuf* GxBufCreate(CGxPool* pool, uint32_t itemSize, uint32_t itemCount, uint32_t index) {
     return g_theGxDevicePtr->BufCreate(pool, itemSize, itemCount, index);
 }

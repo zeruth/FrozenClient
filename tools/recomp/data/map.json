@@ -30829,6 +30829,38 @@
   "refSize": 9,
   "status": "ported"
  },
+ "00681230": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxVertexBufferFormatSize",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "00681240": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxVertexAttribOffset",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "006813b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49484,6 +49516,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 425,
+  "status": "ported"
+ },
+ "0097a2e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetupVertexCursor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 175,
   "status": "ported"
  },
  "0097ac00": {

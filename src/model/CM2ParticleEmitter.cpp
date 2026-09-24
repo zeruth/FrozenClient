@@ -1216,6 +1216,52 @@ bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) cons
     return this->IntegrateParticle(p, dt);
 }
 
+// The sink an UNLIT emitter's normal writes land in.
+//
+// The reference lazily zeroes its copy on first use, behind bit 0 of a flag word at 0x00dce8c0;
+// zero-initialising at namespace scope reaches the same state without the flag. Recorded rather
+// than left silent, because "the reference had a lazy-init here" is the kind of detail a later
+// reader would otherwise have to re-derive to know nothing was missed.
+static float s_particleNormalSink[3] = { 0.0f, 0.0f, 0.0f };
+
+// Point a cursor block at a mapped vertex buffer.
+//
+// GxVertexAttribOffset IS the reference's FUN_00681240 -- `&DAT_00a2d5b0 + (attrib + format *
+// 0xe) * 4`, where 0xe is GxVAs_Last -- so the four offsets below are the reference's four,
+// computed by the same table.
+//
+// ref: FUN_0097a2e0
+void CM2ParticleEmitter::SetupVertexCursor(char* base, EGxVertexBufferFormat format,
+                                           VertexCursor& cursor) const {
+    uint32_t stride = GxVertexBufferFormatSize(format);
+
+    cursor.m_position =
+        reinterpret_cast<float*>(base + GxVertexAttribOffset(format, GxVA_Position));
+    cursor.m_positionStride = stride;
+
+    // THE ONE ASYMMETRY IN THIS FUNCTION. An unlit emitter draws through GxVBF_PCT, which has no
+    // normal, so asking the table for one would hand back an offset belonging to a different
+    // attribute and the writer would corrupt every vertex. The reference points the cursor at a
+    // shared zeroed triple with stride ZERO instead, so all of the frame's normal writes land in
+    // the same scratch and are discarded -- which is what lets one writer serve both formats.
+    if (this->m_materialFlags & 0x1) {
+        cursor.m_normal =
+            reinterpret_cast<float*>(base + GxVertexAttribOffset(format, GxVA_Normal));
+        cursor.m_normalStride = stride;
+    } else {
+        cursor.m_normal = s_particleNormalSink;
+        cursor.m_normalStride = 0;
+    }
+
+    cursor.m_color =
+        reinterpret_cast<uint32_t*>(base + GxVertexAttribOffset(format, GxVA_Color0));
+    cursor.m_colorStride = stride;
+
+    cursor.m_texCoord =
+        reinterpret_cast<float*>(base + GxVertexAttribOffset(format, GxVA_TexCoord0));
+    cursor.m_texCoordStride = stride;
+}
+
 // Draw this emitter's particles.
 //
 // The bounds reset at the top is why the constructor initialises them inverted: the quad builder

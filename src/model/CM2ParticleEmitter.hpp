@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "math/Types.hpp"
 #include "model/M2Data.hpp"
+#include "gx/Buffer.hpp"
 #include "gx/Texture.hpp"
 #include "storm/array/TSGrowableArray.hpp"
 #include <tempest/Quaternion.hpp>
@@ -419,6 +420,36 @@ class CM2ParticleEmitter {
         // Spin one model particle's orientation by `dt`, then integrate it like a plain one.
         // ref: FUN_0097bdb0
         bool IntegrateModelParticle(ModelParticle& particle, float dt) const;
+
+        // Where the quad builder writes one vertex's four attributes, and how far each moves
+        // for the next vertex. The reference keeps this as nine bare dwords on the fill's stack:
+        // four pointers, four strides, and the running count. It is a struct here because the
+        // writer advances all four in lockstep and a named field is the difference between
+        // reading that loop and decoding it.
+        struct VertexCursor {
+            // Three floats. GxVA_Position.
+            float* m_position = nullptr;
+            // Three floats. GxVA_Normal, and every particle vertex in a frame gets the SAME
+            // value -- the camera-facing normal the basis setup parks in a global.
+            float* m_normal = nullptr;
+            // One packed dword. GxVA_Color0.
+            uint32_t* m_color = nullptr;
+            // Two floats. GxVA_TexCoord0.
+            float* m_texCoord = nullptr;
+
+            uint32_t m_positionStride = 0;
+            // ZERO when the emitter is unlit -- see SetupVertexCursor.
+            uint32_t m_normalStride = 0;
+            uint32_t m_colorStride = 0;
+            uint32_t m_texCoordStride = 0;
+
+            // How many vertices have been written. The fill divides it by m_verticesPerParticle
+            // to get the drawn count.
+            uint32_t m_count = 0;
+        };
+
+        // Point a cursor block at a mapped vertex buffer. ref: FUN_0097a2e0
+        void SetupVertexCursor(char* base, EGxVertexBufferFormat format, VertexCursor& cursor) const;
 
         // Draw this emitter's particles. `relativeTo` is the matrix the owning model is placed
         // relative to, and `batched` becomes bit 0 of m_drawFlags. ref: FUN_0097ea60
