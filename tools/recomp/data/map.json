@@ -37427,6 +37427,19 @@
   "refSize": 73,
   "status": "ported"
  },
+ "0081cdc0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSGrowableArray<M2Element>::Reserve",
+  "frozenSize": 354,
+  "how": "callorder",
+  "module": "M2Scene.cpp",
+  "refSize": 151,
+  "status": "ported"
+ },
  "0081e400": {
   "branchRatio": 0.778,
   "constOverlap": 0.071,
@@ -37683,16 +37696,16 @@
   "status": "stub"
  },
  "00821a20": {
-  "branchRatio": 0.205,
+  "branchRatio": 0.21,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.288,
+  "fidelity": 0.346,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2651,
+  "frozenSize": 3029,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,

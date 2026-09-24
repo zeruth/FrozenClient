@@ -78884,6 +78884,9 @@
 "TSGrowableArray<unsigned int>::SetCount",
 "TSGrowableArray<M2Element>::SetCount",
 "CM2Model::IsDrawable",
+"C3Vector::C3Vector",
+"sqrtf",
+"operator*",
 "M2Array<M2Batch>::Count",
 "M2Array<M2Batch>::operator[]",
 "M2Array<M2Color>::Count",
@@ -78921,6 +78924,7 @@
 "0",
 "0.000099999997f",
 "0.0f",
+"0.5f",
 "0.99998999f",
 "0x0",
 "0x1",
@@ -78935,9 +78939,9 @@
 "1.0f",
 "2"
 ],
-"branches": 45,
+"branches": 46,
 "stub": false,
-"lines": 339,
+"lines": 377,
 "refs": [],
 "line": 385
 },
@@ -78962,7 +78966,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 726
+"line": 764
 },
 "CM2Scene::Draw": {
 "files": [
@@ -78984,7 +78988,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 753
+"line": 791
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -79020,7 +79024,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 773
+"line": 811
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -79044,7 +79048,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 855
+"line": 893
 },
 "CM2SceneRender::Draw": {
 "files": [
@@ -79193,7 +79197,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 360
+"line": 407
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -79206,7 +79210,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 365
+"line": 412
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -79223,7 +79227,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 370
+"line": 417
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -79263,7 +79267,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 409
+"line": 456
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -79318,7 +79322,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 487
+"line": 534
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -79354,7 +79358,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 601
+"line": 648
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

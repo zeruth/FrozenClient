@@ -490,9 +490,47 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
         auto v21 = v19->m_flags & 0x20;
         auto v22 = v19->m_flags & 0x40;
 
+        // The liquid plane test, ported 2026-09-24 -- found from the particle emission, whose
+        // pass-selection flag is this same v21.
+        //
+        // A model whose bounding sphere sits entirely below the water surface has its transparent
+        // batches routed to the other pass. That is where the transparent block's under-liquid
+        // order flip is actually decided, and it is PER MODEL rather than per camera, which the
+        // render inventory's description from the draw side does not make obvious.
+        //
+        // Scope worth noticing: v21 feeds the routing for every transparent batch registered
+        // below, not only for particles.
+        //
+        // The reference tests only when both bits are set, and the outcome is to clear v21; v22 is
+        // left alone.
         if (v21 && v22) {
-            // TODO
-            // - liquid plane stuff
+            const CAaBox& extent = data->bounds.extent;
+
+            C3Vector centre = { (extent.t.x + extent.b.x) * 0.5f,
+                                (extent.t.y + extent.b.y) * 0.5f,
+                                (extent.t.z + extent.b.z) * 0.5f };
+
+            // The radius is the authored one SCALED by the length of the placement's first row,
+            // which is how a scaled model gets a correspondingly scaled bound. matrixF4 is the
+            // same matrix the centre is transformed by below.
+            const C44Matrix& placement = model->matrixF4;
+
+            float scale = sqrtf(placement.a0 * placement.a0
+                + placement.a1 * placement.a1
+                + placement.a2 * placement.a2);
+
+            float radius = scale * data->bounds.radius;
+
+            C3Vector world = centre * placement;
+
+            const C4Plane& plane = v19->m_liquidPlane;
+
+            float distance = plane.n.x * world.x + plane.n.y * world.y + plane.n.z * world.z
+                + plane.d;
+
+            if (distance <= -radius) {
+                v21 = 0;
+            }
         }
 
         auto skinProfile = model->m_shared->skinProfile;
