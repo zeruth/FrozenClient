@@ -38560,16 +38560,16 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.042,
+  "branchRatio": 0.494,
+  "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.319,
+  "fidelity": 0.348,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3616,
+  "frozenSize": 4080,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -49320,7 +49320,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetHeadTail",
-  "frozenSize": 0,
+  "frozenSize": 149,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 147,

@@ -2443,6 +2443,90 @@ int32_t CM2Model::InitializeLoaded() {
 
                 emitter->SetMaterial(blendMode, materialFlags, texture);
 
+                // Seed the emitter from each track's FIRST value, so it has something sensible
+                // before the driver animates it. Guarded on the sequence actually having keys:
+                // the reference dereferences values.data with no check, which is the M2Array trap
+                // -- element 0 of an empty array is a wild pointer, not null.
+                if (file.widthTrack.sequenceKeys.Count()
+                        && file.widthTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetWidth(file.widthTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.lengthTrack.sequenceKeys.Count()
+                        && file.lengthTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetLength(file.lengthTrack.sequenceKeys[0].keys[0]);
+                }
+
+                if (file.zsourceTrack.sequenceKeys.Count()
+                        && file.zsourceTrack.sequenceKeys[0].keys.Count()) {
+                    emitter->SetZSource(file.zsourceTrack.sequenceKeys[0].keys[0]);
+                }
+
+                // Which quads each particle draws, and the tail's length.
+                emitter->SetHeadTail(file.flags & 0x20000, file.flags & 0x40000,
+                                     file.tailLength, file.flags & 0x400);
+
+                // The file flags, mapped onto the emitter's. None of these were being set, and
+                // every one is read by code ported earlier this session: 0x200 is emitter space,
+                // 0x800 is drag, 0x2000 is interpolated placement, 0x40000 is ground snap,
+                // 0x80000 is the frame-delta scaling.
+                //
+                // 0x10 is the only one that CLEARS its bit when absent; the rest only ever set.
+                if (file.flags & 0x10) {
+                    emitter->m_flags |= 0x200;
+                } else {
+                    emitter->m_flags &= ~0x200u;
+                }
+
+                if (file.flags & 0x20) {
+                    emitter->m_flags |= 0x400;
+                }
+
+                if (file.flags & 0x40) {
+                    emitter->m_flags |= 0x800;
+                }
+
+                if (file.flags & 0x800) {
+                    emitter->m_flags |= 0x2000;
+                }
+
+                if (file.flags & 0x1000) {
+                    emitter->m_flags |= 0x4000;
+                }
+
+                // Sphere emitters only -- the reference tests the type byte for 2 before these.
+                if (file.emitterType == 2) {
+                    if (file.flags & 0x80) {
+                        emitter->m_flags |= 0x1000;
+                    }
+
+                    if (file.flags & 0x100) {
+                        emitter->m_flags |= 0x8000;
+                    }
+                }
+
+                if (file.flags & 0x200) {
+                    emitter->m_flags |= 0x10000;
+                }
+
+                if (file.flags & 0x2000) {
+                    emitter->m_flags |= 0x40000;
+                }
+
+                if (file.flags & 0x4000) {
+                    emitter->m_flags |= 0x80000;
+                }
+
+                // The one that clears rather than sets: 0x8000 takes the emitter OUT of the
+                // continuous-emission pair the constructor seeds with 0x2.
+                if (file.flags & 0x8000) {
+                    emitter->m_flags &= ~0x1u;
+                }
+
+                if (file.flags & 0x80000) {
+                    emitter->m_flags |= 0x800000;
+                }
+
                 if (file.flags & 0x2) {
                     emitter->m_flags |= 0x20;
                 }
