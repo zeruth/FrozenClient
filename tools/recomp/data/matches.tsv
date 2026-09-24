@@ -1953,6 +1953,7 @@ addr	how	frozen	evidence
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 00681890	callgraph	CGxDevice::XformSetViewport	only unmatched callee of 00681f60=GxXformSetViewport
+00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f60	override	GxXformSetViewport	

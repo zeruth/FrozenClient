@@ -63705,7 +63705,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 200
+"line": 204
 },
 "GxBufLock": {
 "files": [
@@ -63720,7 +63720,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 209
+"line": 213
 },
 "GxBufUnlock": {
 "files": [
@@ -63737,7 +63737,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 213
+"line": 217
 },
 "GxPoolCreate": {
 "files": [
@@ -63752,7 +63752,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 218
+"line": 222
 },
 "GxPrimIndexPtr": {
 "files": [
@@ -63774,7 +63774,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 222
+"line": 226
 },
 "GxPrimVertexPtr": {
 "files": [
@@ -63813,7 +63813,7 @@
 "stub": false,
 "lines": 127,
 "refs": [],
-"line": 241
+"line": 245
 },
 "GxPrimLockVertexPtrs": {
 "files": [
@@ -63828,7 +63828,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 370
+"line": 374
 },
 "GxPrimUnlockVertexPtrs": {
 "files": [
@@ -63843,7 +63843,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 377
+"line": 381
 },
 "CGxPool::Discard": {
 "files": [

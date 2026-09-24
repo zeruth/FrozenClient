@@ -31069,6 +31069,22 @@
   "refSize": 183,
   "status": "ported"
  },
+ "00681a20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxBufData",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
  "00681b00": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

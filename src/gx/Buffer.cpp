@@ -197,6 +197,10 @@ CGxBuf* GxBufCreate(CGxPool* pool, uint32_t itemSize, uint32_t itemCount, uint32
     return g_theGxDevicePtr->BufCreate(pool, itemSize, itemCount, index);
 }
 
+// The `size == 0` default and the unk1C stamp are both the reference's; it is the pair of
+// them, plus the device call between, that identifies this rather than the shape alone.
+//
+// ref: FUN_00681a20
 void GxBufData(CGxBuf* buf, const void* data, uint32_t size, uint32_t offset) {
     if (size == 0) {
         size = buf->m_itemSize * buf->m_itemCount;
