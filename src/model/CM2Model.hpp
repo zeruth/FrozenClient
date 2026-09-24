@@ -20,6 +20,7 @@ struct M2ModelBoneSeq;
 struct M2ModelCamera;
 struct M2ModelColor;
 struct M2ModelLight;
+struct M2ModelParticle;
 struct M2ModelTextureTransform;
 struct M2ModelTextureWeight;
 struct M2SequenceFallback;
@@ -157,6 +158,10 @@ class CM2Model {
         void (*m_lightingCallback)(CM2Model*, CM2Lighting*, void*) = nullptr;
         void* m_lightingArg = nullptr;
         M2ModelCamera* m_cameras = nullptr;
+        // The animated state of every emitter, parallel to m_shared->m_data->particles. The
+        // reference keeps this at +0x2c0 and an array of emitter OBJECTS at +0x2c4; only the state
+        // is here so far -- see CM2Model::AnimateParticles.
+        M2ModelParticle* m_particles = nullptr;
         // The OPTIMIZED VISIBLE GEOMETRY cache, traced 2026-09-23. Nothing in frozen builds
         // it, so it stays null and every path that reads it takes the unoptimized branch; that is
         // the correct resting state rather than a bug, but it is why CM2Model::SetIndices and
@@ -218,6 +223,9 @@ class CM2Model {
         void AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6);
         void AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6);
         void AnimateST();
+        // Animate every emitter's tracks into m_particles. Called by the particle system rather
+        // than from AnimateST -- see the note at the definition.
+        void AnimateParticleTracks();
         void AnimateTextureTransformsMT();
         void AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5);
         void AttachToScene(CM2Scene* scene);

@@ -120,6 +120,22 @@ void M2InterpolateCubicHermite(const M2SplineKey<float>& startKey, const M2Splin
 
 template<class T1, class T2>
 void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& track, M2ModelTrack<T2>& modelTrack, const T2& defaultValue) {
+    // Both of these have to be checked before anything is indexed.
+    //
+    // An M2Array resolves its data as (its own address + offset), so element 0 of an EMPTY array is
+    // a wild pointer rather than null -- indexing sequenceKeys without gating on Count() is the
+    // crash CLAUDE.md lists first among the bug classes that have bitten this codebase. And the
+    // bone is optional: a track can belong to an emitter whose boneIndex is out of range, leaving
+    // nothing to read a sequence from.
+    //
+    // Neither case arises for bones, colours, texture weights or lights, which is why this stood
+    // for so long. Both arise for particle emitters.
+    if (!modelBone || !track.sequenceKeys.Count()) {
+        modelTrack.currentValue = defaultValue;
+
+        return;
+    }
+
     auto seqIndex = modelBone->sequence.uint4 < track.sequenceKeys.Count() ? modelBone->sequence.uint4 : 0;
     auto& seqKeys = track.sequenceKeys[seqIndex];
 
@@ -164,6 +180,22 @@ void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track
 
 template<class T1, class T2>
 void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& track, M2ModelTrack<T2>& modelTrack, const T2& defaultValue) {
+    // Both of these have to be checked before anything is indexed.
+    //
+    // An M2Array resolves its data as (its own address + offset), so element 0 of an EMPTY array is
+    // a wild pointer rather than null -- indexing sequenceKeys without gating on Count() is the
+    // crash CLAUDE.md lists first among the bug classes that have bitten this codebase. And the
+    // bone is optional: a track can belong to an emitter whose boneIndex is out of range, leaving
+    // nothing to read a sequence from.
+    //
+    // Neither case arises for bones, colours, texture weights or lights, which is why this stood
+    // for so long. Both arise for particle emitters.
+    if (!modelBone || !track.sequenceKeys.Count()) {
+        modelTrack.currentValue = defaultValue;
+
+        return;
+    }
+
     auto seqIndex = modelBone->sequence.uint4 < track.sequenceKeys.Count() ? modelBone->sequence.uint4 : 0;
     auto& seqKeys = track.sequenceKeys[seqIndex];
 

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 23:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 00:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 909, callgraph 180, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 23:20 -- mapped 3133, ported 2385, stub 690, spine mapped 535.
+Previous run: 2026-09-23 23:25 -- mapped 3133, ported 2385, stub 690, spine mapped 535.
 
 ## Lua API coverage (binding tables)
 
@@ -613,7 +613,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00832ea0 | `CM2Model::InitializeLoaded` | 26% | 71 | 27 | 170 | 51 | 2% | 5663 |
+| 00832ea0 | `CM2Model::InitializeLoaded` | 26% | 71 | 32 | 170 | 54 | 2% | 5663 |
 | 00821a20 | `CM2Scene::Animate` | 29% | 54 | 35 | 219 | 45 | 8% | 5621 |
 | 00857ca0 | `luaV_execute` | 47% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 20% | 137 | 33 | 172 | 19 | 2% | 5010 |
@@ -629,7 +629,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00405dd0 | `Sub405DD0` | 22% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 14% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 00828a00 | `CM2Model::AnimateST` | 46% | 24 | 7 | 40 | 14 | 0% | 1415 |
+| 00828a00 | `CM2Model::AnimateST` | 46% | 24 | 17 | 40 | 18 | 0% | 1415 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 21:19 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 22:53 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 23:20 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 23:25 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
+| 2026-09-24 00:05 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

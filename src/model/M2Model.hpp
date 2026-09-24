@@ -69,6 +69,39 @@ struct M2ModelCamera {
     HCAMERA m_camera = nullptr;
 };
 
+// One emitter's animated state, the runtime half of an M2Particle. 0x88 bytes in the reference:
+// ten 12-byte tracks from +0x08, then the four flags the driver latches.
+//
+// The tracks pair one-for-one with M2Particle's ten M2Track<float> members in file order, which is
+// how the reference walks them. frozen's M2ModelTrack holds the same three fields in a different
+// order and widens with 64-bit pointers, so this is structurally the reference's block rather than
+// byte-identical to it -- the same divergence every other M2Model* runtime struct here carries.
+struct M2ModelParticle {
+    M2ModelTrack<float> speedTrack;
+    M2ModelTrack<float> variationTrack;
+    M2ModelTrack<float> latitudeTrack;
+    M2ModelTrack<float> longitudeTrack;
+    M2ModelTrack<float> gravityTrack;
+    M2ModelTrack<float> lifeTrack;
+    M2ModelTrack<float> emissionRateTrack;
+    M2ModelTrack<float> widthTrack;
+    M2ModelTrack<float> lengthTrack;
+    M2ModelTrack<float> zsourceTrack;
+
+    // +0x80: the emitter ran this frame. The driver only refreshes the tracks above when this is
+    // set or the model has never animated, so a culled emitter keeps its last values.
+    uint8_t enabled = 0;
+    // +0x84: the emission rate is live. Clear means the driver hands the emitter a rate of zero
+    // rather than the animated one.
+    uint8_t rateActive = 0;
+    // +0x85: the emitter is placed and stepped this frame.
+    uint8_t active = 0;
+    // +0x86: burst latch, for emitters with M2Particle flag 0x8000. The driver raises the
+    // emitter's own 0x40 bit on the frame this goes from clear to set, so a burst fires once
+    // rather than every frame it stays enabled.
+    uint8_t burstLatch = 0;
+};
+
 struct M2ModelColor {
     M2ModelTrack<C3Vector> colorTrack;
     M2ModelTrack<float> alphaTrack;

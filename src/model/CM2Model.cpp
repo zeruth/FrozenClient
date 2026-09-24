@@ -928,6 +928,53 @@ void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const 
 // function's light loop and nothing else in the class. Its entry test, `[+0x10] & 1`, is
 // m_loaded.
 // ref: FUN_00828a00
+// The runtime half of every emitter, animated through the same M2AnimateTrack that drives every
+// other per-model track, against the emitter's own bone -- so a torch on a moving arm emits along
+// the arm rather than along the model.
+//
+// The reference does this inside AnimateST. Here it is called from the particle system instead, and
+// the difference is coverage rather than behaviour: CM2Scene::Animate unlinks each model from
+// m_animateList as it walks it, so AnimateST reaches only the models that re-registered through
+// SetAnimating this frame, while the particle system is driven for every model it holds a
+// simulation for. A model in the second set and not the first would sit on default values, and the
+// default emission rate is zero -- its fires would go out. When CM2Model::AnimateParticleEmitter
+// lands it brings the reference's own driver and coverage, and this moves back.
+void CM2Model::AnimateParticleTracks() {
+    if (!this->m_particles || !this->m_shared || !this->m_shared->m_data) {
+        return;
+    }
+
+    for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+        auto& particle = this->m_shared->m_data->particles[i];
+        auto& modelParticle = this->m_particles[i];
+
+        auto bone = particle.boneIndex < this->m_shared->m_data->bones.Count()
+            ? &this->m_bones[particle.boneIndex]
+            : nullptr;
+
+        // speed and life default to 1.0, not 0.0: an emitter whose track carries no keys still
+        // emits, and a particle with no speed and no lifespan is not a particle. Both defaults are
+        // carried over from the stand-in sampler this replaces; the reference's own have not been
+        // read yet.
+        M2AnimateTrack<float, float>(this, bone, particle.speedTrack, modelParticle.speedTrack, 1.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.variationTrack, modelParticle.variationTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.latitudeTrack, modelParticle.latitudeTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.longitudeTrack, modelParticle.longitudeTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.gravityTrack, modelParticle.gravityTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.lifeTrack, modelParticle.lifeTrack, 1.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.emissionRateTrack, modelParticle.emissionRateTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.widthTrack, modelParticle.widthTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.lengthTrack, modelParticle.lengthTrack, 0.0f);
+        M2AnimateTrack<float, float>(this, bone, particle.zsourceTrack, modelParticle.zsourceTrack, 0.0f);
+
+        // The gates the reference's driver latches and reads: whether the emitter ran at all, and
+        // whether it is handed the animated rate or zero.
+        modelParticle.enabled = 1;
+        modelParticle.rateActive = modelParticle.emissionRateTrack.currentValue > 0.0f ? 1 : 0;
+        modelParticle.active = this->m_flag10000 || this->m_flag20000 ? 1 : 0;
+    }
+}
+
 void CM2Model::AnimateST() {
     if (!this->m_loaded) {
         return;
@@ -1844,8 +1891,9 @@ int32_t CM2Model::InitializeLoaded() {
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelAttachment, this->m_shared->m_data->attachments.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelLight, this->m_shared->m_data->lights.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelCamera, this->m_shared->m_data->cameras.Count());
+    bufferSize += ALIGN_SIZE(bufferSize, M2ModelParticle, this->m_shared->m_data->particles.Count());
 
-    // TODO allocate space for particles and ribbons
+    // TODO allocate space for ribbons
 
     auto buffer = static_cast<char*>(SMemAlloc(bufferSize, __FILE__, __LINE__, 0));
     auto start = buffer;
@@ -2041,6 +2089,19 @@ int32_t CM2Model::InitializeLoaded() {
             DataMgrSetFloat(cameraHandle, 2, camera.farClip);
 
             this->m_cameras[i].m_camera = cameraHandle;
+        }
+    }
+
+    // The runtime half of every emitter. The reference allocates it here, out of the same buffer
+    // and directly after the cameras, which is why the size list above has it in that position --
+    // each ALIGN_SIZE is relative to the running offset, so the two orders have to agree.
+    if (this->m_shared->m_data->particles.Count()) {
+        buffer = ALIGN_BUFFER(buffer, start, M2ModelParticle);
+        this->m_particles = reinterpret_cast<M2ModelParticle*>(buffer);
+        buffer += sizeof(M2ModelParticle) * this->m_shared->m_data->particles.Count();
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            new (&this->m_particles[i]) M2ModelParticle();
         }
     }
 

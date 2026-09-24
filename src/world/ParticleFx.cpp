@@ -43,7 +43,6 @@ struct Particle {
 struct EmitterState {
     std::vector<Particle> particles;
     float accumulator = 0.0f;
-    M2ModelTrack<float> speed, variation, latitude, longitude, gravity, life, rate, width, length;
 };
 
 struct ModelParticles {
@@ -136,56 +135,6 @@ void Lerp(const uint16_t& a, const uint16_t& b, float f, uint16_t& out) {
     out = f < 0.5f ? a : b;
 }
 
-float TrackValue(CM2Model* model, M2ModelBone* bone, const M2Track<float>& track, M2ModelTrack<float>& state, float def) {
-    // An M2Array resolves its data as (its own address + offset), so element 0 of an EMPTY array
-    // is a wild pointer, not null: every access below has to be gated on Count() first. Emitter
-    // tracks with no sequences are common (a constant emitter stores nothing), and indexing one
-    // of those crashed the client on world entry.
-    uint32_t seqCount = track.sequenceKeys.Count();
-
-    if (!seqCount) {
-        state.currentValue = def;
-        return def;
-    }
-
-    uint32_t seqIndex = (bone && bone->sequence.uint4 < seqCount) ? bone->sequence.uint4 : 0;
-    const auto& keys = track.sequenceKeys[seqIndex].keys;
-
-    if (!keys.Count()) {
-        state.currentValue = def;
-        return def;
-    }
-
-    // Without bone state there is no sequence clock to sample against: hold the first key
-    if (!bone) {
-        state.currentValue = keys[0];
-        return state.currentValue;
-    }
-
-    // Same sampling as M2AnimateTrack (model/M2Animate.hpp), which cannot be included here
-    // because that header carries non-inline function bodies
-
-    uint32_t nextKey = 0;
-    float ratio = 0.0f;
-    model->FindKey(&bone->sequence, track, state.currentKey, nextKey, ratio);
-
-    if (state.currentKey >= keys.Count()) {
-        state.currentKey = 0;
-    }
-
-    if (nextKey >= keys.Count()) {
-        nextKey = state.currentKey;
-    }
-
-    if (track.trackType == 0) {
-        state.currentValue = keys[state.currentKey];
-    } else {
-        state.currentValue = keys[state.currentKey] + (keys[nextKey] - keys[state.currentKey]) * ratio;
-    }
-
-    return state.currentValue;
-}
-
 } // namespace
 
 void ParticleFxForgetModel(CM2Model* model) {
@@ -259,6 +208,15 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
         return;
     }
 
+    // The animated emitter state lives on the model and is allocated by CM2Model::InitializeLoaded,
+    // which needs the SKIN PROFILE as well as the model data. This function only waits for the
+    // model data, so there is a window where the emitters exist in the file and their runtime state
+    // does not. Dereferencing it there would be a crash on world entry, which is exactly the shape
+    // of bug the m_m2DataLoaded check above was added for.
+    if (!model->m_particles) {
+        return;
+    }
+
     ModelParticles& mp = s_models[model];
     mp.lastFrame = s_frame;
 
@@ -266,6 +224,9 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
         mp.emitters.clear();
         mp.emitters.resize(emitterCount);
     }
+
+    // Refresh every emitter's animated values before reading them below.
+    model->AnimateParticleTracks();
 
     const C44Matrix& M = model->matrixB4; // model -> world
     float liveExtent = 0.0f;
@@ -275,15 +236,22 @@ void ParticleFxUpdateModel(CM2Model* model, float dt) {
         EmitterState& st = mp.emitters[e];
         M2ModelBone* bone = (model->m_bones && def.boneIndex < data->bones.Count()) ? &model->m_bones[def.boneIndex] : nullptr;
 
-        float rate = TrackValue(model, bone, def.emissionRateTrack, st.rate, 0.0f);
-        float speed = TrackValue(model, bone, def.speedTrack, st.speed, 1.0f);
-        float variation = TrackValue(model, bone, def.variationTrack, st.variation, 0.0f);
-        float latitude = TrackValue(model, bone, def.latitudeTrack, st.latitude, 0.0f);
-        float longitude = TrackValue(model, bone, def.longitudeTrack, st.longitude, 0.0f);
-        float gravity = TrackValue(model, bone, def.gravityTrack, st.gravity, 0.0f);
-        float lifeSpan = TrackValue(model, bone, def.lifeTrack, st.life, 1.0f);
-        float width = TrackValue(model, bone, def.widthTrack, st.width, 0.0f);
-        float length = TrackValue(model, bone, def.lengthTrack, st.length, 0.0f);
+        // The animated values come from the MODEL now. CM2Model::AnimateST drives these ten
+        // tracks through M2AnimateTrack against the emitter's bone, which is where the reference
+        // keeps this state (a 0x88-byte block per emitter) and how it animates every other
+        // per-model track. Sampling them a second time here, with a second sampler, was the same
+        // work done twice and free to disagree.
+        const M2ModelParticle& animated = model->m_particles[e];
+
+        float rate = animated.emissionRateTrack.currentValue;
+        float speed = animated.speedTrack.currentValue;
+        float variation = animated.variationTrack.currentValue;
+        float latitude = animated.latitudeTrack.currentValue;
+        float longitude = animated.longitudeTrack.currentValue;
+        float gravity = animated.gravityTrack.currentValue;
+        float lifeSpan = animated.lifeTrack.currentValue;
+        float width = animated.widthTrack.currentValue;
+        float length = animated.lengthTrack.currentValue;
 
         // Emitter origin in world space. matrixB4 is the model's WORLD placement -- SetWorldTransform
         // writes the absolute position straight into its translation row -- so nothing needs adding

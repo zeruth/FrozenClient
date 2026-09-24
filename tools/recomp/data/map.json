@@ -32470,12 +32470,13 @@
   "status": "ported"
  },
  "0071ed80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/object/client/CGUnit_C.cpp"
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
   ],
   "frozen": "CGUnit_C::GetShadowBox",
   "frozenSize": 0,
@@ -38025,7 +38026,7 @@
   "status": "ported"
  },
  "00828a00": {
-  "branchRatio": 0.35,
+  "branchRatio": 0.45,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.458,
@@ -38345,7 +38346,7 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.3,
+  "branchRatio": 0.318,
   "constOverlap": 0.021,
   "faithful": false,
   "fidelity": 0.261,
