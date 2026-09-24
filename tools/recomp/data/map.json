@@ -37561,8 +37561,8 @@
    "src/model/cm2scenerender.hpp"
   ],
   "frozen": "CM2SceneRender::CM2SceneRender",
-  "frozenSize": 173,
-  "how": "callgraph",
+  "frozenSize": 287,
+  "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 281,
   "status": "ported"
