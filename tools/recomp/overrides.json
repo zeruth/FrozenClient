@@ -1795,5 +1795,10 @@
   "007ecef0": {
     "status": "unlinked",
     "note": "two instructions: returns the address of the DayNight block at 0x00d38b00. Used to anchor the liquid colour and alpha offsets on 2026-09-23. frozen keeps that state in CWorld statics rather than one block, so there is no counterpart."
+  },
+  "00979870": {
+    "frozen": "CM2ParticleEmitter::CreateParticle",
+    "status": "diverged",
+    "note": "the ABSTRACT BASE CParticleEmitter2 vtable[2] (base vtable 0x00aa2cc0). No live emitter reaches it: FUN_0097d820 dispatches virtually through vtable[2], this function has zero direct callers in the text section, and both concrete subclasses (vtables 0x00aa2d30 and 0x00aa2d5c) override the slot with 0x009815c0 and 0x00981950, neither chaining here. Frozen keeps the virtual dispatch and this base implementation until a subclass is ported. Found 2026-09-24 by scanning .rdata for the vtables; the adjacent strings name the class CParticleEmitter2 and the file ParticleSystem2.cpp"
   }
 }

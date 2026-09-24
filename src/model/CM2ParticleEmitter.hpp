@@ -179,9 +179,44 @@ class CM2ParticleEmitter {
         C3Vector m_frameDelta;
         C3Vector m_substepDelta;
 
+        // The reference's vtable, recovered by scanning .rdata for runs of pointers into the
+        // particle module and reading the strings beside them. The class is CParticleEmitter2 and
+        // its file is ParticleSystem2.cpp; both names come from that region.
+        //
+        // There are exactly THREE vtables in the hierarchy: an abstract base at 0x00aa2cc0 whose
+        // slots [6]..[9] are _purecall (0x0040baa5 aborts -- it is not a nullsub), and two
+        // concrete subclasses at 0x00aa2d30 and 0x00aa2d5c that override [2], [4] and those four.
+        //
+        //   [ 0] +0x00  0x0097edf0  the per-step hook Step calls
+        //   [ 1] +0x04  0x009799c0
+        //   [ 2] +0x08  CreateParticle -- base 0x00979870, overridden by BOTH subclasses
+        //   [ 3] +0x0c  0x00632050, a bare `retl $4`: the kill hook is a no-op in all three,
+        //               which is why RetireParticle has nothing to call
+        //   [ 4] +0x10  pure in the base
+        //   [ 5] +0x14  0x0097d890, the deleting destructor
+        //   [ 6] +0x18  SetWidth      \
+        //   [ 7] +0x1c  SetLength      |  pure in the base; the driver FUN_008309c0 calls all
+        //   [ 8] +0x20  SetLatitude    |  four from the model's animated tracks
+        //   [ 9] +0x24  SetLongitude  /
+        //   [10] +0x28  SetEmissionRate -- 0x0097bd80, NOT pure and not overridden
+        //
+        // Nothing here overrides [3] or [10], so those are plain members below.
+
         // Member functions
         // ref: FUN_00978da0
         void SetZSource(float zSource);
+
+        // Slot [10]. The guard is the whole function: a non-positive rate is ignored rather than
+        // stored, so a track that dips to zero leaves the last good rate in place instead of
+        // stopping the emitter. ref: FUN_0097bd80
+        void SetEmissionRate(float rate);
+
+        // Slots [6]..[9], pure virtual in the reference. Both concrete subclasses are unported,
+        // so these report rather than aborting the way _purecall does.
+        virtual void SetWidth(float width);
+        virtual void SetLength(float length);
+        virtual void SetLatitude(float latitude);
+        virtual void SetLongitude(float longitude);
 
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
@@ -236,9 +271,11 @@ class CM2ParticleEmitter {
         // and this may move its translation while spawning -- see the definition. ref: FUN_0097d8c0
         void Emit(float dt, C44Matrix& placement);
 
-        // Fill one new particle of the plain pool. `placement` is the emitter's world transform.
+        // Slot [2]. VIRTUAL in the reference -- FUN_0097d820 dispatches through vtable[2] and
+        // FUN_00979870 has no direct callers at all -- so the dispatch is kept even though frozen
+        // has only the one implementation. See the DIVERGENCE note at the definition.
         // ref: FUN_00979870
-        void CreateParticle(Particle& particle, float dt, const C44Matrix& placement);
+        virtual void CreateParticle(Particle& particle, float dt, const C44Matrix& placement);
 
         // Drop a particle onto the ground, offset by the range sampled at its age. Does nothing
         // when no height query is registered, which is also what the reference does when the query

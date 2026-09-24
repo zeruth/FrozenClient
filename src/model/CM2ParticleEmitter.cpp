@@ -222,7 +222,50 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
     p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;
 }
 
+// Slot [10].
+//
+// ref: FUN_0097bd80
+void CM2ParticleEmitter::SetEmissionRate(float rate) {
+    if (rate > 0.0f) {
+        this->m_rate = rate;
+    }
+}
+
+// Slots [6]..[9]. Pure virtual in the reference (the base vtable holds _purecall at 0x0040baa5,
+// which aborts), and implemented only by the two concrete subclasses at 0x00aa2d30 and 0x00aa2d5c
+// -- 0x00981490/0x009814b0/0x009813e0/0x009814d0 and 0x009813b0/0x009813c0/0x009813d0/0x009813e0.
+// Neither subclass is ported. Reporting is closer to the reference's intent than doing nothing:
+// reaching these means an emitter was built as the abstract base, which the reference cannot do.
+void CM2ParticleEmitter::SetWidth(float) {
+    SysMsgPrintf(SYSMSG_ERROR, "CM2ParticleEmitter::SetWidth is pure virtual in the reference; "
+                               "neither concrete emitter subclass is ported");
+}
+
+void CM2ParticleEmitter::SetLength(float) {
+    SysMsgPrintf(SYSMSG_ERROR, "CM2ParticleEmitter::SetLength is pure virtual in the reference; "
+                               "neither concrete emitter subclass is ported");
+}
+
+void CM2ParticleEmitter::SetLatitude(float) {
+    SysMsgPrintf(SYSMSG_ERROR, "CM2ParticleEmitter::SetLatitude is pure virtual in the reference; "
+                               "neither concrete emitter subclass is ported");
+}
+
+void CM2ParticleEmitter::SetLongitude(float) {
+    SysMsgPrintf(SYSMSG_ERROR, "CM2ParticleEmitter::SetLongitude is pure virtual in the reference; "
+                               "neither concrete emitter subclass is ported");
+}
+
 // Fill one new particle.
+//
+// DIVERGENCE, recorded in overrides.json under 00979870. This is the ABSTRACT BASE's creator, and
+// no live emitter in the reference runs it: FUN_0097d820 dispatches through vtable[2], the
+// function has zero direct callers, and both concrete subclasses override the slot with their own
+// implementations (0x009815c0 and 0x00981950) that do not chain to this one. Frozen keeps the
+// dispatch so the structure matches and so a ported subclass drops straight in, but until one is
+// ported every particle is created by a function the reference would never reach. The two differ
+// in more than detail -- 0x009815c0 draws its randoms inline rather than through the helpers this
+// uses -- so this is a real gap, not a rounding difference.
 //
 // The age is the part to keep: a new particle starts at `rand[0,1) * dt`, NOT at zero, so a batch
 // spawned in one step is spread across that step instead of stacked on the same instant. Without
@@ -659,9 +702,10 @@ void CM2ParticleEmitter::Place(const C44Matrix& matrix, const C3Vector& origin,
 }
 
 void CM2ParticleEmitter::RetireParticle(Particle& p, uint32_t liveIndex) {
-    // The kill hook. The reference reaches it as vtable[3]; frozen has no subclass that overrides
-    // it yet, so it is a direct call rather than a virtual -- the dispatch exists to let a derived
-    // emitter release whatever its particles carry, and the plain pool carries nothing.
+    // The kill hook, vtable[3] -- and it does nothing. Not an assumption: the slot holds
+    // 0x00632050, a bare `retl $4`, in ALL THREE of the hierarchy's vtables, the two concrete
+    // subclasses included. Nothing overrides it, so there is no behaviour here to port and no
+    // reason to make it virtual.
     (void)p;
 
     uint32_t slot = this->m_liveIndices[liveIndex];

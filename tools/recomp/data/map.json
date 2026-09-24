@@ -49251,10 +49251,10 @@
   ],
   "frozen": "CM2ParticleEmitter::CreateParticle",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "override",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 328,
-  "status": "ported"
+  "status": "diverged"
  },
  "00979bb0": {
   "branchRatio": 0.875,
@@ -49302,6 +49302,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 322,
+  "status": "ported"
+ },
+ "0097bd80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetEmissionRate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 41,
   "status": "ported"
  },
  "0097d820": {
