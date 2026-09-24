@@ -1248,6 +1248,16 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
     // earlier pass here added a defensive null check on all three arrays, which was a divergence:
     // with the containers there are no pointers to check, and an empty live list is exactly what
     // this is for.
+    // WHY THIS TERMINATES, because the loop below deliberately does not always advance `i`:
+    // every path that leaves `i` alone shrinks the live count -- RetireParticle pops it, and
+    // IntegrateAndSpawnChildren returns false only after calling RetireParticle itself. So the
+    // bound falls on exactly the iterations that do not advance. Verified against frozen's
+    // TSGrowableArray::SetCount, which assigns m_count unconditionally and therefore really does
+    // shrink; if that ever became grow-only, this loop would hang rather than misbehave.
+    //
+    // And nothing here can reallocate the pool while `p` below is a live reference into it:
+    // PrepareStep sizes the pool above the loop, and emission only pops the free list. A child's
+    // Emit touches the CHILD's containers, not this one's.
     if (this->m_liveIndices.Count()) {
         // Two branches over the same loop, and the split is the whole reason +0xa8 exists. With no
         // lifespan variation every particle shares one lifetime, so the comparison is hoisted out;
@@ -1461,6 +1471,15 @@ void CM2ParticleEmitter::Substep(float dt, int32_t fromParent) {
     this->m_substepDelta.y = this->m_frameDelta.y * perStep;
     this->m_substepDelta.z = this->m_frameDelta.z * perStep;
 
+    // HAZARD, and it is the reference's, not an artefact of this port. A negative m_lifespan
+    // makes lifeCap negative, which makes `slices` negative, which makes `full` negative -- and
+    // this counts DOWN to zero, so it would run about four billion times. The reference decrements
+    // and tests non-zero in exactly the same way (0x97add5), so a real client hangs on the same
+    // data, which is the argument that no shipped model has a negative life track.
+    //
+    // Left faithful rather than clamped: clamping would be inventing behaviour to guard against
+    // data there is no evidence exists. If a hang is ever seen inside particle stepping, look
+    // here first and at whatever wrote m_lifespan.
     for (; full != 0; full--) {
         this->Step(SLICE, fromParent);
     }

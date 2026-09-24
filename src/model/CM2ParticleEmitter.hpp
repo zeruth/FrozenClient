@@ -60,6 +60,17 @@ class CM2ParticleEmitter {
             fixed16 m_lifeVariation;
             // +0x1e: a raw random word the creator draws and stores unmodified.
             uint16_t m_randomTag;
+
+            // NOTE, a small and deliberate divergence. This struct has no default member
+            // initialisers, so TSGrowableArray::SetCount value-initialises a freshly grown slot
+            // and every field starts at zero. The reference's SetCount zeroes only +0x04..+0x18 --
+            // position and velocity -- and leaves age, lifeVariation and randomTag holding
+            // whatever the allocation gave it.
+            //
+            // It shows in exactly one field: neither concrete creator writes m_lifeVariation, so
+            // on a slot's FIRST use the reference reads allocator garbage where frozen reads 0.
+            // After that both read the previous life's value and agree. Frozen's is the better
+            // defined of the two and this is not worth "fixing" toward the reference.
         };
 
         // The 0x40-byte pool's element. Its first 0x20 bytes ARE a Particle -- the reference
