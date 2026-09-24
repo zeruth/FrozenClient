@@ -596,6 +596,7 @@ addr	how	frozen	evidence
 004b6c50	annotated	TextureIncreasePriority	tag in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
 004b6fa0	override	TextureCacheGetTexture	
+004b7020	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8770	override	CTexture::CTexture	
@@ -604,6 +605,7 @@ addr	how	frozen	evidence
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
 004b9480	override	TextureCacheNewTexture	
+004b94e0	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9550	override	TextureCreateSolid	
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	

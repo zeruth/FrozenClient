@@ -74188,13 +74188,18 @@
 "callseq": [
 "SStrHashHT",
 "TSHashTable<CTexture,HASHKEY_TEXTUREFILE>::Ptr",
+"HandleCreate",
+"CGxTexFlags::CGxTexFlags",
+"TSHashTable<CTexture,HASHKEY_TEXTUREFILE>::Ptr",
 "HandleCreate"
 ],
-"strings": [],
+"strings": [
+""
+],
 "consts": [],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 25,
+"lines": 33,
 "refs": [],
 "line": 934
 },
@@ -74204,15 +74209,19 @@
 ],
 "callseq": [
 "SStrHashHT",
+"TSHashTable<CTexture,HASHKEY_TEXTUREFILE>::Insert",
+"CGxTexFlags::CGxTexFlags",
 "TSHashTable<CTexture,HASHKEY_TEXTUREFILE>::Insert"
 ],
-"strings": [],
+"strings": [
+""
+],
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 11,
 "refs": [],
-"line": 974
+"line": 991
 },
 "TextureCalcMipCount": {
 "files": [
@@ -74229,7 +74238,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 987
+"line": 1007
 },
 "TextureCreate": {
 "files": [
@@ -74280,7 +74289,7 @@
 "stub": false,
 "lines": 109,
 "refs": [],
-"line": 1008
+"line": 1028
 },
 "TextureCreateSolid": {
 "files": [
@@ -74304,7 +74313,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1120
+"line": 1140
 },
 "TextureGetDimensions": {
 "files": [
@@ -74323,7 +74332,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1141
+"line": 1161
 },
 "TextureGetGxTex": {
 "files": [
@@ -74352,7 +74361,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1166
+"line": 1186
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -74365,7 +74374,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1223
+"line": 1243
 },
 "TextureIncreasePriority": {
 "files": [
@@ -74378,7 +74387,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1244
+"line": 1264
 },
 "TextureInitialize": {
 "files": [
@@ -74400,7 +74409,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1248
+"line": 1268
 },
 "TextureIsSame": {
 "files": [
@@ -74422,7 +74431,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1256
+"line": 1276
 },
 "CGxTexFlags::operator==": {
 "files": [

@@ -9519,10 +9519,10 @@
   "status": "ported"
  },
  "004b6fa0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9532,6 +9532,22 @@
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 124,
+  "status": "ported"
+ },
+ "004b7020": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetTexture",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 128,
   "status": "ported"
  },
  "004b7bd0": {
@@ -9640,7 +9656,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1623,
+  "frozenSize": 1922,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 234,
@@ -9650,7 +9666,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -9662,17 +9678,33 @@
   "refSize": 87,
   "status": "ported"
  },
+ "004b94e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheNewTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 108,
+  "status": "ported"
+ },
  "004b9550": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreateSolid",
-  "frozenSize": 79,
+  "frozenSize": 376,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 96,
@@ -9704,7 +9736,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1623,
+  "frozenSize": 1922,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,

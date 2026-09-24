@@ -952,21 +952,38 @@ HTEXTURE TextureCacheGetTexture(char* fileName, char* fileExt, CGxTexFlags texFl
     return nullptr;
 }
 
-// The solid-colour half of the texture cache, and it is a leak rather than a missing feature.
-// TextureCreateSolid asks this for a cached texture, gets nothing because it is a stub, builds a
-// fresh 8x8 texture, and hands it to the insert below, which is also a stub. So every request for
-// a solid colour allocates another texture that nothing will ever find again. Callers are model
-// load (one per missing model texture) and CSimpleTexture's SetColorTexture, so it grows with play
-// rather than per frame, but it only grows.
+// The solid-colour half of the texture cache. Until 2026-09-23 both halves were stubs, so
+// TextureCreateSolid asked for a cached texture, got nothing, built a fresh 8x8 one and handed it
+// to an insert that dropped it -- every request for a solid colour leaked a texture. Callers are
+// model load (one per missing model texture) and CSimpleTexture's SetColorTexture, so it grew with
+// play rather than per frame, but it only grew.
 //
-// It cannot be fixed by reusing the existing cache. That one is keyed by filename, and
-// FillInSolidTexture names EVERY solid texture "SolidTexture" -- so does the reference, verified
-// against the string at 0x009f1208 -- so all colours would collide on one entry. The reference
-// must therefore keep a second table keyed by the colour, and CTexture would need a second
-// TSHashObject base to live in it. That is a change to the type every draw touches, which is why
-// it is written down here rather than attempted blind.
+// The note that used to sit here said this could not be fixed without a second hash table and a
+// second TSHashObject base on CTexture, on the reasoning that the existing cache is keyed by
+// filename and FillInSolidTexture names every solid texture "SolidTexture", so all colours would
+// collide. That reasoning was wrong, and the reference shows why: it uses ONE table and does not
+// put the name in play at all.
+//
+// FUN_004b7020 builds a HASHKEY_TEXTUREFILE whose filename is the EMPTY STRING -- the pointer is
+// 0x009e14ff, which is the NUL terminator of the string before it, checked in the binary -- with
+// the default texture flags, and then passes THE COLOUR ITSELF as the hash value. TSHashTable::Ptr
+// matches on `m_hashval == hashval && m_key == key`, so the constant key never separates anything
+// and the colour does all the work: two different colours can never match, and the same colour
+// always does. The insert below is the same key with the same hash value.
+//
+// So the "SolidTexture" name that FillInSolidTexture writes is for display and debugging only. It
+// is never a cache key, which is the piece the old note had back to front.
+// ref: FUN_004b7020
 HTEXTURE TextureCacheGetTexture(const CImVector& color) {
-    // TODO
+    // The default constructor is CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1), which is exactly
+    // what the reference builds here and what FillInSolidTexture gives the texture itself.
+    HASHKEY_TEXTUREFILE key = { const_cast<char*>(""), CGxTexFlags() };
+
+    auto texture = Texture::s_textureCache.Ptr(color.value, key);
+
+    if (texture) {
+        return HandleCreate(texture);
+    }
 
     return nullptr;
 }
@@ -978,10 +995,13 @@ void TextureCacheNewTexture(CTexture* texture, CGxTexFlags texFlags) {
     Texture::s_textureCache.Insert(texture, hashval, key);
 }
 
-// The other half of the solid-colour cache; see the note on the lookup above. Both are stubs, so
-// the cache neither hits nor fills.
+// The other half of the solid-colour cache; see the note on the lookup above for why the key is a
+// constant and the colour is the hash value.
+// ref: FUN_004b94e0
 void TextureCacheNewTexture(CTexture* texture, const CImVector& color) {
-    // TODO
+    HASHKEY_TEXTUREFILE key = { const_cast<char*>(""), CGxTexFlags() };
+
+    Texture::s_textureCache.Insert(texture, color.value, key);
 }
 
 uint32_t TextureCalcMipCount(uint32_t width, uint32_t height) {
