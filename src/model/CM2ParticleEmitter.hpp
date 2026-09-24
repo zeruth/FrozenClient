@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "math/Types.hpp"
 #include "model/M2Data.hpp"
+#include "gx/Texture.hpp"
 #include "storm/array/TSGrowableArray.hpp"
 #include <tempest/Quaternion.hpp>
 #include <tempest/Matrix.hpp>
@@ -181,6 +182,9 @@ class CM2ParticleEmitter {
         uint32_t m_indicesPerParticle = 0;
         // +0xac: set alongside the head/tail flags by the same setter. Born 1.0.
         float m_tailLength = 1.0f;
+        // +0x128: the texture the emitter's particles draw with, held as a counted reference.
+        // DrawParticle resolves it through TextureGetGxTex and bails if it is null.
+        HTEXTURE m_texture = nullptr;
         // +0xd0 and +0xd4: the emitter's material -- the GxBlend the particles draw with, and a
         // flags word derived alongside it. The element builder's pass selection reads the blend,
         // which is why it has to be the MAPPED value and not the file's blendMode byte.
@@ -265,7 +269,11 @@ class CM2ParticleEmitter {
         // ref: FUN_0097e150
         CM2ParticleEmitter();
 
-        virtual ~CM2ParticleEmitter() = default;
+        // NOT defaulted: the emitter holds a counted reference to its texture, and the pooled
+        // buffer it lives in is freed wholesale, so nothing else would ever release it. One
+        // leaked texture reference per emitter per model is enough to keep every particle
+        // texture in the cache alive forever.
+        virtual ~CM2ParticleEmitter();
 
         // The reference's vtable, recovered by scanning .rdata for runs of pointers into the
         // particle module and reading the strings beside them. The class is CParticleEmitter2 and
@@ -313,6 +321,11 @@ class CM2ParticleEmitter {
         // Choose which of the two quads each particle draws, and size a particle's geometry
         // from that. ref: FUN_00978d00
         void SetHeadTail(int32_t head, int32_t tail, float tailLength, int32_t flag20000);
+
+        // Take the emitter's material and a counted reference to its texture. The material is
+        // a two-dword pair, blend then flags, which the reference builds as a local at its call
+        // site. ref: FUN_00978bf0
+        void SetMaterial(uint32_t blendMode, uint32_t materialFlags, HTEXTURE texture);
 
         // Set the texture atlas grid. Both must be non-zero powers of two; anything else is
         // reported and nothing is stored. ref: FUN_00978c70

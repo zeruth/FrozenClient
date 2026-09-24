@@ -855,6 +855,38 @@ void CM2ParticleEmitter::SetHeadTail(int32_t head, int32_t tail, float tailLengt
     }
 }
 
+// Release what the emitter owns.
+//
+// The TSGrowableArrays free themselves, but the texture reference does not: SetMaterial takes one
+// through HandleDuplicate, and the pooled buffer the emitter lives in is released wholesale
+// without running anything. CM2Model's teardown calls this explicitly for exactly that reason.
+CM2ParticleEmitter::~CM2ParticleEmitter() {
+    if (this->m_texture) {
+        HandleClose(this->m_texture);
+        this->m_texture = nullptr;
+    }
+}
+
+// Take the emitter's material and a counted reference to its texture.
+//
+// The release comes FIRST and unconditionally, before the new reference is taken. That order is
+// the reference's and it is the safe one either way: re-setting an emitter to the texture it
+// already holds releases and re-adds, where the other order would work too -- but only because
+// the caller happens to hold a reference of its own. Kept as written.
+//
+// ref: FUN_00978bf0
+void CM2ParticleEmitter::SetMaterial(uint32_t blendMode, uint32_t materialFlags,
+                                     HTEXTURE texture) {
+    if (this->m_texture) {
+        HandleClose(this->m_texture);
+    }
+
+    this->m_texture = HandleDuplicate(texture);
+
+    this->m_blendMode = blendMode;
+    this->m_materialFlags = materialFlags;
+}
+
 // Set the texture atlas grid, and derive the cell geometry from it.
 //
 // The power-of-two requirement is the reference's and it REPORTS rather than clamping: a grid that

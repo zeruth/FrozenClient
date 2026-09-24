@@ -2429,12 +2429,19 @@ int32_t CM2Model::InitializeLoaded() {
                 // `bit = !(file.flags & mask)`.
                 uint32_t materialFlags = 0x7;
 
-                emitter->m_blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
+                uint32_t blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
 
                 materialFlags = (materialFlags & ~0x1u) | ((file.flags & 0x1) ? 0 : 0x1);
                 materialFlags = (materialFlags & ~0x2u) | ((file.flags & 0x8) ? 0 : 0x2);
 
-                emitter->m_materialFlags = materialFlags;
+                // Through the setter the reference uses, rather than writing the fields: it
+                // also takes the texture reference, which DrawParticle needs.
+                HTEXTURE texture = this->m_shared->textures
+                    && file.textureIndex < this->m_shared->m_data->textures.Count()
+                        ? this->m_shared->textures[file.textureIndex]
+                        : nullptr;
+
+                emitter->SetMaterial(blendMode, materialFlags, texture);
 
                 if (file.flags & 0x2) {
                     emitter->m_flags |= 0x20;
