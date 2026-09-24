@@ -241,7 +241,24 @@ void CM2Lighting::SetFog(const C3Vector& fogColor, float fogStart, float fogEnd,
 // so a full bank returns early and leaves the remaining slots holding whatever they held. That is
 // the reference's own shape.
 //
-// **Built, not seen running.**
+// **Built, not seen running -- and not reachable in this build either.** Checked immediately after
+// porting it, because the same cycle had just spent its time on a chain that turned out to be dead
+// from the top, and it would be poor form not to apply that to this. The state of it:
+//
+//   - The one frozen caller is CShaderEffect::SetLocalLighting (FUN_00873ca0), which is the same
+//     function that calls it in the reference. So the wiring is right.
+//   - But it sits in that function's `else`, taken only when CShaderEffect::s_enableShaders is 0,
+//     and frozen forces that on: M2GetCacheFlags in Model2.cpp does a bare `flags |= 0x8`, and
+//     CWorld passes bit 3 straight into InitShaderSystem. So the branch never runs today and the
+//     shader path (ComputeLocalLights, eleven vertex constants at c17) is what lights models.
+//   - The reference has a SECOND consumer frozen does not: FUN_007d04a0, 326 bytes and three
+//     callers, in the terrain chunk draw setup. That one is not behind a shader toggle. It is the
+//     thing to port if this bank should carry real traffic.
+//
+// This is therefore correct code on a cold path, not a rendering change. It is worth having landed
+// anyway -- it is what a from-memory port would have got wrong later, the layout and constants are
+// now pinned by the binary, and it unblocks FUN_007d04a0 -- but nothing on screen should move
+// because of it, and if something does, that is the bug rather than the feature.
 // ref: FUN_008353d0
 void CM2Lighting::SetupGxLights(const C3Vector* a2) {
     CGxLight light;
