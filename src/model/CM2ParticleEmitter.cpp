@@ -577,7 +577,7 @@ void CM2ParticleEmitter::SpawnParticle(float dt, const C44Matrix& placement) {
 
     this->m_liveIndices.Add(1, &slot);
 
-    this->CreateParticle(this->m_pool[slot], dt, placement);
+    this->CreateParticle(this->ParticleAt(slot), dt, placement);
 }
 
 // Spawn whatever this frame's rate calls for.
@@ -999,16 +999,9 @@ bool CM2ParticleEmitter::IntegrateAndSpawnChildren(float dt, Particle& p, uint32
     if (this->m_particleKind == 0) {
         alive = this->IntegrateParticle(p, dt);
     } else {
-        // The 0x40-byte pool's integrator (FUN_0097bdb0) updates the CM2Model each of its
-        // particles carries and then delegates to the same arithmetic as the plain one. It is not
-        // ported, and nothing in frozen allocates m_modelPool, so this cannot currently be
-        // reached. Say so rather than integrating a model particle as a plain one: the pools have
-        // different strides and reading one as the other walks off the end.
-        SysMsgPrintf(SYSMSG_ERROR,
-                     "CM2ParticleEmitter: model-pool particles are not integrated yet "
-                     "(FUN_0097bdb0 unported); killing the particle instead of misreading it");
-
-        alive = false;
+        // Safe because the pool selection above handed us an element of the 0x40 pool: a
+        // ModelParticle is what is actually there.
+        alive = this->IntegrateModelParticle(static_cast<ModelParticle&>(p), dt);
     }
 
     if (!alive) {
@@ -1045,6 +1038,95 @@ bool CM2ParticleEmitter::IntegrateAndSpawnChildren(float dt, Particle& p, uint32
     }
 
     return true;
+}
+
+// The particle in `slot`, from whichever pool is in use.
+//
+// ModelParticle derives from Particle and its first 0x20 bytes are that base, so returning either
+// as a Particle& is the same identity the reference relies on when it hands a 0x40 element to the
+// plain integrator.
+// NOTE the qualification on the return type: Particle is nested in the class, and a return type
+// written at namespace scope is looked up BEFORE the qualified name brings the class into scope.
+// Parameters are fine unqualified because they come after it.
+CM2ParticleEmitter::Particle& CM2ParticleEmitter::ParticleAt(uint32_t slot) {
+    if (this->m_particleKind == 0) {
+        return this->m_pool[slot];
+    }
+
+    return this->m_modelPool[slot];
+}
+
+// Spin one model particle, then integrate it like a plain one.
+//
+// The rotation is built from the angular velocity's own magnitude: the axis is that vector
+// normalised, and the angle is `magnitude * dt`, halved for the quaternion. Folding the
+// normalise and the angle together would double the spin, so the two multiplies stay separate
+// here as they are in the reference.
+//
+// ref: FUN_0097bdb0
+bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) const {
+    float length = sqrtf(p.m_angularVelocity.x * p.m_angularVelocity.x
+        + p.m_angularVelocity.y * p.m_angularVelocity.y
+        + p.m_angularVelocity.z * p.m_angularVelocity.z);
+
+    // 0x009e8cd0. Below this the particle is not turning and the normalise would be meaningless.
+    if (0.0001f < length) {
+        float half = length * dt * 0.5f;
+
+        float s = sinf(half);
+        float c = cosf(half);
+
+        float scale = (1.0f / length) * s;
+
+        C4Quaternion delta(p.m_angularVelocity.x * scale,
+                           p.m_angularVelocity.y * scale,
+                           p.m_angularVelocity.z * scale,
+                           c);
+
+        p.m_orientation = p.m_orientation * delta;
+    }
+
+    return this->IntegrateParticle(p, dt);
+}
+
+// ref: FUN_0097ba30
+uint32_t CM2ParticleEmitter::CountSpawnedModels() const {
+    // Only an emitter on the model pool carries models of its own; the rest still have to be
+    // walked, because a plain emitter can have model-carrying children.
+    uint32_t count = this->m_particleKind == 1 ? this->m_liveIndices.Count() : 0;
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        count += this->m_children[c]->CountSpawnedModels();
+    }
+
+    return count;
+}
+
+// The `index`-th spawned model in this subtree.
+//
+// `index` is passed by reference and CONSUMED as the walk descends -- each emitter subtracts what
+// it holds before handing the remainder to its children. That is what turns a tree into a flat
+// enumeration without building a list, and it is why this cannot take the index by value.
+//
+// ref: FUN_0097ba70
+CM2Model* CM2ParticleEmitter::FindSpawnedModel(uint32_t& index) const {
+    if (this->m_particleKind == 1) {
+        if (index < this->m_liveIndices.Count()) {
+            return this->m_modelPool[this->m_liveIndices[index]].m_model;
+        }
+
+        index -= this->m_liveIndices.Count();
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        CM2Model* model = this->m_children[c]->FindSpawnedModel(index);
+
+        if (model) {
+            return model;
+        }
+    }
+
+    return nullptr;
 }
 
 // Age every live particle, then recurse into the children.
@@ -1088,7 +1170,7 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
             float life = this->m_lifespan < 0.001f ? 0.001f : this->m_lifespan;
 
             for (uint32_t i = 0; i < this->m_liveIndices.Count();) {
-                Particle& p = this->m_pool[this->m_liveIndices[i]];
+                Particle& p = this->ParticleAt(this->m_liveIndices[i]);
 
                 p.m_age += dt;
 
@@ -1102,7 +1184,7 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
             }
         } else {
             for (uint32_t i = 0; i < this->m_liveIndices.Count();) {
-                Particle& p = this->m_pool[this->m_liveIndices[i]];
+                Particle& p = this->ParticleAt(this->m_liveIndices[i]);
 
                 p.m_age += dt;
 
@@ -1134,25 +1216,24 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
 //
 // ref: FUN_0097e480
 void CM2ParticleEmitter::SetParticleCount(uint32_t count) {
-    if (this->m_particleKind != 0) {
-        // The model pool takes the same path over its own container. Its element type is not
-        // modelled, so growing it would allocate the wrong stride.
-        SysMsgPrintf(SYSMSG_ERROR,
-                     "CM2ParticleEmitter::SetParticleCount: the model pool's element type is not "
-                     "modelled (FUN_0097bdb0 and FUN_0097e8d0 unported); not allocating it");
-
-        return;
-    }
-
-    uint32_t existing = this->m_pool.Count();
+    // The reference writes the two pools as separate branches (0x97e495 and 0x97e505) that
+    // differ only in which container they touch -- same Reserve, same SetCount, same two index
+    // Reserves, same free-list fill. Written once here.
+    uint32_t existing = this->m_particleKind == 0
+        ? this->m_pool.Count()
+        : this->m_modelPool.Count();
 
     if (existing >= count) {
         return;
     }
 
-    this->Reserve(count, this->m_pool.Count(), this->m_pool.Reserved());
-
-    this->m_pool.SetCount(count);
+    if (this->m_particleKind == 0) {
+        this->Reserve(count, this->m_pool.Count(), this->m_pool.Reserved());
+        this->m_pool.SetCount(count);
+    } else {
+        this->Reserve(count, this->m_modelPool.Count(), this->m_modelPool.Reserved());
+        this->m_modelPool.SetCount(count);
+    }
 
     this->m_liveIndices.Reserve(count, 0);
     this->m_freeIndices.Reserve(count, 0);

@@ -1,5 +1,21 @@
 #include "tempest/quaternion/C4Quaternion.hpp"
 
+// The Hamilton product.
+//
+// Transcribing this from the disassembly is not safe on its own: LLVM prints the two-operand
+// reverse-subtract as `fsubrp %st, %st(1)`, and which operand is subtracted from which changes the
+// sign of every component. The four components below each match the standard product term for
+// term, which is what settles the reading -- ST(1) - ST(0).
+//
+// ref: FUN_004f4320
+C4Quaternion operator*(const C4Quaternion& a, const C4Quaternion& b) {
+    return C4Quaternion(
+        a.w * b.x + a.y * b.z + a.x * b.w - a.z * b.y,
+        a.y * b.w + a.w * b.y + a.z * b.x - a.x * b.z,
+        a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
+        a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
+}
+
 C4Quaternion C4Quaternion::Nlerp(float ratio, const C4Quaternion& q1, const C4Quaternion& q2) {
     float x = (q2.x - q1.x) * ratio + q1.x;
     float y = (q2.y - q1.y) * ratio + q1.y;

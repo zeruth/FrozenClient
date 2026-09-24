@@ -5,6 +5,7 @@
 #include "math/Types.hpp"
 #include "model/M2Data.hpp"
 #include "storm/array/TSGrowableArray.hpp"
+#include <tempest/Quaternion.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Random.hpp>
 #include <tempest/Vector.hpp>
@@ -61,6 +62,22 @@ class CM2ParticleEmitter {
             uint16_t m_randomTag;
         };
 
+        // The 0x40-byte pool's element. Its first 0x20 bytes ARE a Particle -- the reference
+        // extends the same layout rather than defining a second one, which is why the plain
+        // integrator can be delegated to unchanged -- and the rest closes it at exactly 0x40:
+        //
+        //   +0x20  orientation      a quaternion, spun each step by the velocity below
+        //   +0x30  angularVelocity  its magnitude IS the rotation rate, in radians per second
+        //   +0x3c  model            the CM2Model this particle carries
+        //
+        // FUN_0097ba70 is what pins +0x3c: it reaches a spawned model as
+        // `pool[index] * 0x40 + 0x3c`.
+        struct ModelParticle : Particle {
+            C4Quaternion m_orientation;
+            C3Vector m_angularVelocity;
+            CM2Model* m_model;
+        };
+
         // Member variables. Offsets are the reference's.
         // +0x24: this emitter's own RNG state. Every emitter draws from its own rather than a
         // shared one, so two identical emitters side by side do not produce identical particles.
@@ -78,10 +95,10 @@ class CM2ParticleEmitter {
         // this and the two index containers at +0x4c and +0x5c. The pointer earlier recorded at
         // +0x34 is this container's m_data.
         TSGrowableArray<Particle> m_pool;
-        // +0x3c: the 0x40-byte pool, used otherwise -- its particles carry a spawned model at
-        // +0x3c of each. Its element type is not Particle and is not modelled yet; nothing
-        // allocates it, and both paths that would read it report instead.
-        TSGrowableArray<Particle> m_modelPool;
+        // +0x3c: the 0x40-byte pool, used when m_particleKind is not 0. Its element carries a
+        // spawned model; see ModelParticle above. Getting this element type wrong is not a subtle
+        // error -- at 0x20 rather than 0x40 every element past the first overlaps its neighbour.
+        TSGrowableArray<ModelParticle> m_modelPool;
         // +0x20: which concrete emitter this is. The base constructor leaves it 0 and the plane
         // subclass's sets it to 1 (0x98132c), so it is a type tag rather than a state flag.
         uint32_t m_emitterType = 0;
@@ -304,6 +321,23 @@ class CM2ParticleEmitter {
         // Split `dt` into fixed 0.1s slices and step each, so a fast-moving emitter integrates
         // in bounded increments rather than one long jump. ref: FUN_0097acb0
         void Substep(float dt, int32_t fromParent);
+
+        // The particle in `slot`, from whichever pool is in use. The reference picks between
+        // the two inline at every site that touches one (0x97ddc0 in Step, 0x97d844 in
+        // SpawnParticle, 0x97dbc0 in the integrate wrapper); this is those four copies as one.
+        Particle& ParticleAt(uint32_t slot);
+
+        // Spin one model particle's orientation by `dt`, then integrate it like a plain one.
+        // ref: FUN_0097bdb0
+        bool IntegrateModelParticle(ModelParticle& particle, float dt) const;
+
+        // How many spawned models this emitter's subtree holds. Only emitters using the model
+        // pool contribute their own; every emitter recurses into its children. ref: FUN_0097ba30
+        uint32_t CountSpawnedModels() const;
+
+        // The `index`-th spawned model in this subtree, or null. `index` is consumed as the walk
+        // descends, which is how the recursion stays a flat enumeration. ref: FUN_0097ba70
+        CM2Model* FindSpawnedModel(uint32_t& index) const;
 
         // Age every live particle by `dt`, integrating or killing each, then recurse into the
         // children. `fromParent` is non-zero when a parent is driving this emitter, and suppresses

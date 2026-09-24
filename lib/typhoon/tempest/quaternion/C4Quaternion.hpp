@@ -21,4 +21,8 @@ class C4Quaternion {
         , w(w) {};
 };
 
+// The Hamilton product, `a * b`. See the definition for why the reference's disassembly had to be
+// checked against the formula rather than transcribed.
+C4Quaternion operator*(const C4Quaternion& a, const C4Quaternion& b);
+
 #endif

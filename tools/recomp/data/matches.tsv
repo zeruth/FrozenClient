@@ -824,6 +824,7 @@ addr	how	frozen	evidence
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f3dd0	annotated	BuildComponentArray	tag in src/component/Util.cpp
 004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
+004f4320	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
@@ -3111,7 +3112,10 @@ addr	how	frozen	evidence
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
+0097ba30	annotated	CM2ParticleEmitter::CountSpawnedModels	tag in src/model/CM2ParticleEmitter.cpp
+0097ba70	annotated	CM2ParticleEmitter::FindSpawnedModel	tag in src/model/CM2ParticleEmitter.cpp
 0097bd80	annotated	CM2ParticleEmitter::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
+0097bdb0	annotated	CM2ParticleEmitter::IntegrateModelParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097d820	annotated	CM2ParticleEmitter::SpawnParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097d8c0	annotated	CM2ParticleEmitter::Emit	tag in src/model/CM2ParticleEmitter.cpp
 0097db80	annotated	CM2ParticleEmitter::IntegrateAndSpawnChildren	tag in src/model/CM2ParticleEmitter.cpp

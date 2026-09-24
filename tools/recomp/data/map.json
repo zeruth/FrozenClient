@@ -10004,6 +10004,8 @@
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
    "lib/typhoon/tempest/vector/C3Vector.cpp",
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
@@ -10023,6 +10025,8 @@
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
    "lib/typhoon/tempest/vector/C3Vector.cpp",
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
@@ -13189,6 +13193,27 @@
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 122,
+  "status": "ported"
+ },
+ "004f4320": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1271,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 137,
   "status": "ported"
  },
  "004f54d0": {
@@ -49186,7 +49211,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 472,
+  "frozenSize": 479,
   "how": "override",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 123,
@@ -49336,6 +49361,38 @@
   "refSize": 322,
   "status": "ported"
  },
+ "0097ba30": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CountSpawnedModels",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "0097ba70": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::FindSpawnedModel",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
  "0097bd80": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49350,6 +49407,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 41,
+  "status": "ported"
+ },
+ "0097bdb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateModelParticle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 195,
   "status": "ported"
  },
  "0097d820": {
@@ -49388,7 +49461,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -49426,7 +49499,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 472,
+  "frozenSize": 479,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 662,
@@ -49449,10 +49522,10 @@
   "status": "ported"
  },
  "0097e480": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.1,
+  "fidelity": 0.2,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
