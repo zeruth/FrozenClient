@@ -326,8 +326,39 @@ void CM2SceneRender::DrawCallback() {
     // TODO
 }
 
+// DEAD STUB, and the chain above it is what has to land first.
+//
+// This has a real caller -- element type 4 in Draw -- but CM2Scene::Animate emits only types 0, 1
+// and 2, so nothing reaches here. Porting this before the emission would give frozen a function
+// that can never run.
+//
+// The emission was mapped 2026-09-24. Two functions:
+//
+// CM2Scene::Animate's loop at 0x822be0 walks m_particleEmitters and skips an emitter when any of
+// four gates fail: the model's flag 0x2000 together with the emitter's 0x200; the emitter's
+// 0x2000000; the runtime block's `active` byte being clear; or the model's float198 at or below
+// 1e-4 (0x009e8cd0). It then transforms the M2Particle's position by the emitter's bone matrix
+// (FUN_004c21b0, C3Vector * C44Matrix), derives a camera distance, and calls the builder once for
+// the emitter and once for each of its children.
+//
+// FUN_00821930 is that builder, and 0x821977 is where the `type = 4` store actually lives:
+//
+//     if (!emitter->HasLiveParticles()) return;      // FUN_0097b9e0, ported
+//     if (emitter->m_particleKind == 1) return;      // model-carrying emitters make no element
+//     element = scene->m_elements.New();             // FUN_00821670, the container at scene+0x34
+//     element->type = 4; element->model = model; element->flags = 0;
+//     element->alpha = <the alpha passed in>;  element->float10 = model->[0x88];
+//     element->float14 = <the camera distance>;
+//     element->[0x18] = emitter;                     // the EMITTER rides in the element
+//     element->[0x24] = emitter->[0x18];
+//     element->[0x30] = 0; element->[0x34] = -1; element->[0x38] = -1; element->[0x3c] = 0;
+//     then blend-mode bookkeeping off emitter->[0xd0] into two of the scene's counters.
+//
+// THE BLOCKER is frozen's M2Element: the reference writes +0x30 through +0x3c, past the end of
+// what frozen's struct covers even allowing for x64 widening, so the element layout has to be
+// extended before any of this can be written down honestly. Work that out first.
 int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5) {
-    // TODO
+    // TODO -- see the map above; the emission has to land before this can run.
     return 0;
 }
 

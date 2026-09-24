@@ -78389,6 +78389,24 @@
 "refs": [],
 "line": 1067
 },
+"CM2ParticleEmitter::HasLiveParticles": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"TSBaseArray<unsigned int>::Count",
+"CM2ParticleEmitter::HasLiveParticles"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 1098
+},
 "CM2ParticleEmitter::CountSpawnedModels": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -78406,7 +78424,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1093
+"line": 1113
 },
 "CM2ParticleEmitter::FindSpawnedModel": {
 "files": [
@@ -78428,7 +78446,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1112
+"line": 1132
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -78465,7 +78483,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 1139
+"line": 1159
 },
 "M2ParticleCapacityFor": {
 "files": [
@@ -78480,7 +78498,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1218
+"line": 1238
 },
 "CM2ParticleEmitter::PrepareStep": {
 "files": [
@@ -78501,7 +78519,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1235
+"line": 1255
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -78531,7 +78549,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1262
+"line": 1282
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -78552,7 +78570,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1303
+"line": 1323
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78581,7 +78599,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1336
+"line": 1356
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78599,7 +78617,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1388
+"line": 1408
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
@@ -79116,7 +79134,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 329
+"line": 360
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -79129,7 +79147,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 334
+"line": 365
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -79146,7 +79164,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 339
+"line": 370
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -79186,7 +79204,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 378
+"line": 409
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -79241,7 +79259,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 456
+"line": 487
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -79277,7 +79295,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 570
+"line": 601
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

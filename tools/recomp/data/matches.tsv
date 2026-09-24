@@ -3114,6 +3114,7 @@ addr	how	frozen	evidence
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
+0097b9e0	annotated	CM2ParticleEmitter::HasLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
 0097ba30	annotated	CM2ParticleEmitter::CountSpawnedModels	tag in src/model/CM2ParticleEmitter.cpp
 0097ba70	annotated	CM2ParticleEmitter::FindSpawnedModel	tag in src/model/CM2ParticleEmitter.cpp
 0097bd80	annotated	CM2ParticleEmitter::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp

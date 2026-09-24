@@ -336,6 +336,11 @@ class CM2ParticleEmitter {
         // ref: FUN_0097bdb0
         bool IntegrateModelParticle(ModelParticle& particle, float dt) const;
 
+        // Does this emitter's SUBTREE hold any live particle? The gate the whole draw path
+        // opens on -- CM2Scene's element builder refuses to emit an element without it.
+        // ref: FUN_0097b9e0
+        bool HasLiveParticles() const;
+
         // How many spawned models this emitter's subtree holds. Only emitters using the model
         // pool contribute their own; every emitter recurses into its children. ref: FUN_0097ba30
         uint32_t CountSpawnedModels() const;

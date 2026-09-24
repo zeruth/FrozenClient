@@ -1089,6 +1089,26 @@ bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) cons
     return this->IntegrateParticle(p, dt);
 }
 
+// Does this emitter's subtree hold any live particle?
+//
+// Short-circuits on the first one found, and does not count -- the caller only wants to know
+// whether there is anything to draw at all.
+//
+// ref: FUN_0097b9e0
+bool CM2ParticleEmitter::HasLiveParticles() const {
+    if (this->m_liveIndices.Count() != 0) {
+        return true;
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        if (this->m_children[c]->HasLiveParticles()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // ref: FUN_0097ba30
 uint32_t CM2ParticleEmitter::CountSpawnedModels() const {
     // Only an emitter on the model pool carries models of its own; the rest still have to be
