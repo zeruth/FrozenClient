@@ -10017,6 +10017,22 @@
   "refSize": 93,
   "status": "excluded"
  },
+ "004c2300": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "TransformPointInPlace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
  "004c2f90": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49046,6 +49062,22 @@
   "how": "string",
   "module": "CSimpleHTML.cpp",
   "refSize": 151,
+  "status": "ported"
+ },
+ "00978ad0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleToFixed16",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 92,
   "status": "ported"
  },
  "00978b70": {

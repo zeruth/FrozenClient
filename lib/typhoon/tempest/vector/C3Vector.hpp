@@ -39,6 +39,10 @@ C3Vector operator*(const C3Vector& l, const C33Matrix& r);
 
 C3Vector operator*(const C3Vector& l, const C44Matrix& r);
 
+// Transform a point by a matrix IN PLACE, and copy the result to `out` as well. Distinct from the
+// operator above in the reference and kept distinct here; see the definition.
+void TransformPointInPlace(C3Vector& out, C3Vector& v, const C44Matrix& m);
+
 bool operator!=(const C3Vector& l, const C3Vector& r);
 
 #endif

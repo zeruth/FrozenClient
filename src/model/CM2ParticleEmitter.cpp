@@ -24,6 +24,23 @@ static void M2ParticleFlushDenormals(C3Vector& v) {
     }
 }
 
+// ref: FUN_00978ad0
+void M2ParticleToFixed16(fixed16& out, float value) {
+    if (value >= 1.0f) {
+        out.n = 0x7FFF;
+
+        return;
+    }
+
+    if (value <= -1.0f) {
+        out.n = static_cast<int16_t>(0x8001);
+
+        return;
+    }
+
+    out.n = static_cast<int16_t>(value * 32767.0f);
+}
+
 // See the declaration for why the centre is 2.0 rather than the 1.5 it looks like.
 float M2ParticleRandSigned(CRndSeed& seed) {
     uint32_t u = CRandom::uint32(seed);

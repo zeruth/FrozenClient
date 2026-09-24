@@ -68,6 +68,25 @@ C3Vector operator*(const C3Vector& l, const C44Matrix& r) {
     return { x, y, z };
 }
 
+// The same arithmetic as operator* above, but applied IN PLACE and copied out as well, which is
+// why the reference keeps it as a separate function (0x004c2300) rather than reusing 0x004c21b0.
+// 64 call sites depend on the in-place half: they pass a vector they intend to see modified.
+//
+// Keeping both is deliberate. Folding this into operator* would mean either losing the mutation
+// that those callers rely on, or giving operator* a side effect nothing expects.
+// ref: FUN_004c2300
+void TransformPointInPlace(C3Vector& out, C3Vector& v, const C44Matrix& m) {
+    float x = v.x * m.a0 + m.b0 * v.y + m.c0 * v.z + m.d0;
+    float y = m.a1 * v.x + m.b1 * v.y + m.c1 * v.z + m.d1;
+    float z = m.a2 * v.x + m.b2 * v.y + m.c2 * v.z + m.d2;
+
+    v.x = x;
+    v.y = y;
+    v.z = z;
+
+    out = v;
+}
+
 // ref: FUN_004bf540
 bool operator!=(const C3Vector& l, const C3Vector& r) {
     return l.x != r.x || l.y != r.y || l.z != r.z;

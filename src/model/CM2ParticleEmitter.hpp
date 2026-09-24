@@ -2,6 +2,7 @@
 #define MODEL_C_M2_PARTICLE_EMITTER_HPP
 
 #include <cstdint>
+#include "math/Types.hpp"
 #include <tempest/Matrix.hpp>
 #include <tempest/Random.hpp>
 #include <tempest/Vector.hpp>
@@ -70,10 +71,17 @@ class CM2ParticleEmitter {
         uint32_t m_childCount = 0;
         // +0x98: which pool is in use. Zero means the plain 0x20-byte one.
         uint32_t m_particleKind = 0;
-        // +0xa4: particle lifespan, and +0xa8 a second mode the step branches on before it decides
-        // how to age. The driver writes the lifespan from the model's animated life track.
+        // +0xa4 and +0xa8: the base lifespan and its variation. The driver writes the base from
+        // the model's animated life track.
+        //
+        // +0xa8 was read as "a mode the step branches on", which is all the step can tell -- it
+        // tests the field against zero to pick between two aging paths. FUN_00979740 shows what it
+        // holds: it computes `m_lifespan + fixed16(particle[+0x1c]) * m_lifespanVariation`, so the
+        // zero test is not a mode at all. It means "no variation, every particle dies at the same
+        // age, take the simple path". The creator draws a signed random, saturates it into fixed16
+        // and stores it at particle +0x1c -- exactly the value that expression reads back.
         float m_lifespan = 0.0f;
-        uint32_t m_mode = 0;
+        float m_lifespanVariation = 0.0f;
         // +0xb0, +0xb4, +0xb8: written every frame by the driver from the animated tracks.
         float m_speed = 0.0f;
         float m_gravity = 0.0f;
@@ -131,6 +139,14 @@ class CM2ParticleEmitter {
 // 0x00a4040c -- worth stating because 1.5 is the value that "looks right" there and would silently
 // halve every randomised quantity in the particle system.
 float M2ParticleRandSigned(CRndSeed& seed);
+
+// Saturating float to fixed16. Anything at or beyond +/-1 clamps to the exact endpoints rather
+// than wrapping -- 0x7FFF and 0x8001, which are +1 and -1 exactly under fixed16's 1/32767 scaling.
+//
+// The negative endpoint is 0x8001 and NOT 0x8000, which is the value a naive clamp to INT16_MIN
+// would pick. 0x8000 is -32768/32767 = -1.00003, outside the range every consumer assumes.
+// ref: FUN_00978ad0
+void M2ParticleToFixed16(fixed16& out, float value);
 
 // A uniform direction on the unit sphere. z is drawn flat in [-1, 1] and the azimuth flat over the
 // full turn, which is the correct sampling -- taking z from a cosine would crowd the poles.

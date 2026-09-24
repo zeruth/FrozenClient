@@ -626,6 +626,7 @@ addr	how	frozen	evidence
 004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2300	annotated	TransformPointInPlace	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
@@ -3093,6 +3094,7 @@ addr	how	frozen	evidence
 00978360	annotated	CSimpleButton_GetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
+00978ad0	annotated	M2ParticleToFixed16	tag in src/model/CM2ParticleEmitter.cpp
 00978b70	annotated	M2ParticleFlushDenormals	tag in src/model/CM2ParticleEmitter.cpp
 00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
 009792d0	annotated	CM2ParticleEmitter::RandomSpeed	tag in src/model/CM2ParticleEmitter.cpp

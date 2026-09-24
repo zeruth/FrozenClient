@@ -38405,6 +38405,21 @@
 "refs": [],
 "line": 46
 },
+"TransformPointInPlace": {
+"files": [
+"lib/typhoon/tempest/vector/c3vector.cpp"
+],
+"callseq": [
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 78
+},
 "operator!=": {
 "files": [
 "lib/typhoon/tempest/vector/c3vector.cpp"
@@ -38416,7 +38431,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 72
+"line": 91
 },
 "CImVector::MakeARGB": {
 "files": [
@@ -77420,6 +77435,24 @@
 "refs": [],
 "line": 13
 },
+"M2ParticleToFixed16": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x7FFF",
+"0x8001",
+"1.0f",
+"32767.0f"
+],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 28
+},
 "M2ParticleRandSigned": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -77439,7 +77472,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 28
+"line": 45
 },
 "M2ParticleRandomUnitVector": {
 "files": [
@@ -77464,7 +77497,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 39
+"line": 56
 },
 "CM2ParticleEmitter::RandomSpeed": {
 "files": [
@@ -77481,7 +77514,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 59
+"line": 76
 },
 "CM2ParticleEmitter::IntegrateParticle": {
 "files": [
@@ -77504,7 +77537,7 @@
 "stub": false,
 "lines": 70,
 "refs": [],
-"line": 73
+"line": 90
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -77522,7 +77555,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 153
+"line": 170
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
