@@ -13,7 +13,13 @@
 #include "model/M2Types.hpp"
 #include "util/CStatus.hpp"
 #include "util/SFile.hpp"
+#include <cstdint>
 #include <cstring>
+
+#if !defined(WHOA_SYSTEM_WIN)
+    #include <sys/mman.h>
+    #include <unistd.h>
+#endif
 
 void CM2Shared::LoadCanceledCallback(CAsyncObject* object) {
     AsyncFileReadDestroyObject(object);
@@ -100,8 +106,90 @@ void SequenceBufferFree(void* buffer) {
     auto data = static_cast<uint8_t*>(buffer);
     uint8_t pad = data[-1];
 
+#if !defined(WHOA_SYSTEM_WIN)
+    // A pad of 0 never comes out of SequenceBufferAlloc (it is 1..16); it marks a buffer that
+    // SequenceBufferPlaceNear mapped, whose header holds the mapping's length
+    if (pad == 0) {
+        uint64_t length;
+        memcpy(&length, data - 32, sizeof(length));
+        munmap(data - 32, static_cast<size_t>(length));
+        return;
+    }
+#endif
+
     SMemFree(data - pad, "delete[]", -1, 0);
 }
+
+#if !defined(WHOA_SYSTEM_WIN)
+// Frozen only, for 64-bit builds. The keyframe arrays of an external sequence live in the model
+// data but point into the .anim buffer, through a 32-bit delta stored in the M2Array (see
+// M2Data.hpp). On a 32-bit client any two heap blocks are within reach of each other; on 64-bit
+// they are not, and Android's allocator keeps different allocation sizes in regions gigabytes
+// apart, so the .anim buffer routinely landed out of reach of the model it belongs to. The
+// sequence was then refused, or tripped the delta assertion.
+//
+// Whether a buffer can be reached from every array in the model data:
+bool SequenceBufferInReach(const void* buffer, uint32_t size, const void* modelData, uint32_t modelSize) {
+    auto bufferLo = static_cast<int64_t>(reinterpret_cast<uintptr_t>(buffer));
+    auto bufferHi = bufferLo + size;
+    auto modelLo = static_cast<int64_t>(reinterpret_cast<uintptr_t>(modelData));
+    auto modelHi = modelLo + modelSize;
+
+    // The widest deltas run from the far end of one block to the far end of the other
+    return bufferHi - modelLo <= INT32_MAX && modelHi - bufferLo <= INT32_MAX;
+}
+
+// Maps a buffer at an address near the model data, trying hints stepping outward from it. The
+// kernel takes a hint when the range is free. Returns the data pointer (16-byte aligned, pad
+// byte 0) or null when nothing in reach could be found.
+void* SequenceBufferPlaceNear(uint32_t size, const void* modelData, uint32_t modelSize) {
+    auto pageSize = static_cast<uint64_t>(sysconf(_SC_PAGESIZE));
+    uint64_t length = (static_cast<uint64_t>(size) + 32 + pageSize - 1) / pageSize * pageSize;
+    auto anchor = static_cast<int64_t>(reinterpret_cast<uintptr_t>(modelData)) & ~static_cast<int64_t>(pageSize - 1);
+
+    // Where the last placement ended: sequence buffers pack there while it stays in reach, so
+    // the hints below are not spent on addresses earlier buffers already hold
+    static int64_t s_cursor = 0;
+
+    // Then 16 MB steps out to about +-1 GB, below and above the model
+    const int64_t step = 16ll * 1024 * 1024;
+
+    for (int32_t i = 0; i <= 128; i++) {
+        int64_t hint;
+
+        if (i == 0) {
+            hint = s_cursor;
+        } else {
+            hint = anchor + (i + 1) / 2 * step * ((i & 1) ? 1 : -1);
+        }
+
+        if (hint <= 0 || !SequenceBufferInReach(reinterpret_cast<void*>(static_cast<uintptr_t>(hint)), size + 32, modelData, modelSize)) {
+            continue;
+        }
+
+        void* raw = mmap(reinterpret_cast<void*>(static_cast<uintptr_t>(hint)), static_cast<size_t>(length), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+        if (raw == MAP_FAILED) {
+            continue;
+        }
+
+        auto data = static_cast<uint8_t*>(raw) + 32;
+
+        if (!SequenceBufferInReach(data, size, modelData, modelSize)) {
+            munmap(raw, static_cast<size_t>(length));
+            continue;
+        }
+
+        memcpy(raw, &length, sizeof(length));
+        data[-1] = 0;
+        s_cursor = static_cast<int64_t>(reinterpret_cast<uintptr_t>(raw)) + static_cast<int64_t>(length);
+
+        return data;
+    }
+
+    return nullptr;
+}
+#endif
 
 } // namespace
 
@@ -135,6 +223,19 @@ CM2SequenceLoad* CM2Shared::LoadSequence(uint16_t sequenceIndex) {
 
     uint32_t size = static_cast<uint32_t>(SFile::GetFileSize(file, nullptr));
     void* buffer = SequenceBufferAlloc(size, __FILE__, __LINE__);
+
+#if !defined(WHOA_SYSTEM_WIN)
+    // Diverges from the reference on 64-bit POSIX: a heap block out of 32-bit reach of the model
+    // data is traded for one mapped near it (see SequenceBufferPlaceNear)
+    if (buffer && !SequenceBufferInReach(buffer, size, data, this->m_dataSize)) {
+        void* near = SequenceBufferPlaceNear(size, data, this->m_dataSize);
+
+        if (near) {
+            SequenceBufferFree(buffer);
+            buffer = near;
+        }
+    }
+#endif
 
     if (!buffer) {
         this->DestroySequenceLoad(load);

@@ -1833,5 +1833,10 @@
     "frozen": "M2AnimateTrack<fixed16,float>",
     "status": "faithful",
     "note": "The fixed16 instantiation of frozen's M2AnimateTrack template: short keys scaled by 1/32767, the same FUN_008284d0 (CM2Model::FindKey) call, and the same secondary-sequence blend as 00828680 and 0082b0a0 -- three instantiations read separately, all carrying the identical structure, which is a useful check on the blend ported 2026-09-24. `faithful` is a hand verdict and not a measurement: the call-order score is 0% and cannot move, because the clang inventory keys the template by its generic name and the instantiation reaches the matcher only through the PDB, which has a symbol and no body."
+  },
+  "0083da10": {
+    "frozen": "CM2Shared::LoadSequence",
+    "status": "ported",
+    "note": "Windows build is call-for-call. On 64-bit POSIX (Android) it diverges on purpose: when the .anim buffer from SequenceBufferAlloc lands out of 32-bit reach of the model data (the keyframe M2Arrays hold a 32-bit delta into it), it is swapped for one mmap'd near the model (SequenceBufferPlaceNear). Android's allocator keeps allocation sizes in regions gigabytes apart, so without this the delta overflowed and tripped the delta assertion (2026-09-24)."
   }
 }
