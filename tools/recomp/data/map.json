@@ -37712,7 +37712,7 @@
   "status": "ported"
  },
  "00821a20": {
-  "branchRatio": 0.247,
+  "branchRatio": 0.251,
   "constOverlap": 0.083,
   "faithful": false,
   "fidelity": 0.404,
@@ -37721,7 +37721,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 3851,
+  "frozenSize": 3866,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,

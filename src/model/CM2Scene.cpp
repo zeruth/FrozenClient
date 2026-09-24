@@ -793,6 +793,19 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             const M2Particle& file = data->particles[i];
 
+            // FROZEN-ONLY GUARD, and the SECOND place this exact one has been needed -- the
+            // driver in CM2Model::AnimateParticleEmitter has the same one for the same reason.
+            // The reference indexes m_boneMatrices with no check because its loader guarantees
+            // the array and the index; frozen's allocates the array inside a `bones.Count()`
+            // branch and never validates boneIndex against the bone count. Both would fault, and
+            // this runs for every model every frame.
+            //
+            // Skipping leaves that emitter without an element for the frame, which is what the
+            // four gates above already do.
+            if (!model->m_boneMatrices || file.boneIndex >= data->bones.Count()) {
+                continue;
+            }
+
             // NOT a camera distance, whatever the element field is called: the emitter's own
             // position in the model's space, squared. Transcribed; see the note at DrawParticle.
             C3Vector local = file.position * model->m_boneMatrices[file.boneIndex];

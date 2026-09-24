@@ -78911,6 +78911,7 @@
 "TSGrowableArray<unsigned int>::New",
 "M2Array<M2Particle>::Count",
 "M2Array<M2Particle>::operator[]",
+"M2Array<M2CompBone>::Count",
 "operator*",
 "CM2Scene::AddParticleElement",
 "CM2Scene::AddParticleElement",
@@ -78947,9 +78948,9 @@
 "1.0f",
 "2"
 ],
-"branches": 54,
+"branches": 55,
 "stub": false,
-"lines": 429,
+"lines": 452,
 "refs": [],
 "line": 386
 },
@@ -78981,7 +78982,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 828
+"line": 851
 },
 "CM2Scene::CreateModel": {
 "files": [
@@ -79004,7 +79005,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 879
+"line": 902
 },
 "CM2Scene::Draw": {
 "files": [
@@ -79026,7 +79027,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 906
+"line": 929
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -79062,7 +79063,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 926
+"line": 949
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -79086,7 +79087,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1008
+"line": 1031
 },
 "CM2SceneRender::Draw": {
 "files": [
@@ -79235,7 +79236,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 411
+"line": 439
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -79248,7 +79249,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 416
+"line": 444
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -79265,7 +79266,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 421
+"line": 449
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -79305,7 +79306,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 460
+"line": 488
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -79360,7 +79361,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 538
+"line": 566
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -79396,7 +79397,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 652
+"line": 680
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [
