@@ -75861,7 +75861,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 58,
+"lines": 73,
 "refs": [],
 "line": 122
 },
@@ -75878,9 +75878,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 46,
+"lines": 61,
 "refs": [],
-"line": 182
+"line": 197
 },
 "CM2Model::AllocModel": {
 "files": [

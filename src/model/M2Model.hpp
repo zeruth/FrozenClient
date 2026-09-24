@@ -15,7 +15,13 @@ class CM2Model;
 template<class T>
 struct M2ModelTrack {
     uint32_t currentKey = 0;
-    M2Track<T>* sourceTrack = nullptr;
+    // The current key for the SECONDARY sequence, which is the state the animation blend
+    // walks. This slot held an `M2Track<T>* sourceTrack` until 2026-09-24 that nothing in
+    // the tree ever wrote or read -- its declaration was the only hit. The reference uses
+    // it as a second key index in both halves of M2AnimateTrack (FUN_00828680 and
+    // FUN_0082b0a0), so the field was not merely unused: it was standing where something
+    // real belongs. Nothing advances it yet -- see the TODO at the end of M2AnimateTrack.
+    uint32_t currentKey2 = 0;
     T currentValue;
 };
 

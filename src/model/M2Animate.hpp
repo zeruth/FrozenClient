@@ -174,8 +174,23 @@ void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track
         }
     }
 
-    // TODO
-    // - blend with secondary active sequence
+    // NOT PORTED, and the reason is a missing FEEDER rather than a missing transcription.
+    //
+    // The reference blends here: when the bone carries a blend weight and the track has no
+    // global sequence, it evaluates the track a SECOND time against modelBone->secondarySequence,
+    // using modelTrack.currentKey2 as that walk's cursor, and mixes the two by the weight. For a
+    // quaternion that mix is a slerp (FUN_00982460, which frozen has no counterpart for); for a
+    // vector it is a plain lerp.
+    //
+    // SO ANIMATIONS DO NOT BLEND -- every transition snaps. Two thirds of the chain is already
+    // here: M2ModelBone::secondarySequence is actively maintained by the bone-sequence machinery,
+    // and M2ModelBone::floatA8 is the reference's +0xa8 blend weight. NOTHING WRITES floatA8.
+    // CM2Model::AnimateMT only propagates it -- at 0x82f6cd a bone with no sequence on either
+    // slot inherits its parent's, striding the model bone array by 0xac -- so the value is born
+    // somewhere in the sequence setup.
+    //
+    // Write that writer first. Porting the blend under a permanently-zero weight is the mistake
+    // this codebase has already made once and written down.
 }
 
 template<class T1, class T2>
@@ -222,8 +237,23 @@ void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& 
         }
     }
 
-    // TODO
-    // - blend with secondary active sequence
+    // NOT PORTED, and the reason is a missing FEEDER rather than a missing transcription.
+    //
+    // The reference blends here: when the bone carries a blend weight and the track has no
+    // global sequence, it evaluates the track a SECOND time against modelBone->secondarySequence,
+    // using modelTrack.currentKey2 as that walk's cursor, and mixes the two by the weight. For a
+    // quaternion that mix is a slerp (FUN_00982460, which frozen has no counterpart for); for a
+    // vector it is a plain lerp.
+    //
+    // SO ANIMATIONS DO NOT BLEND -- every transition snaps. Two thirds of the chain is already
+    // here: M2ModelBone::secondarySequence is actively maintained by the bone-sequence machinery,
+    // and M2ModelBone::floatA8 is the reference's +0xa8 blend weight. NOTHING WRITES floatA8.
+    // CM2Model::AnimateMT only propagates it -- at 0x82f6cd a bone with no sequence on either
+    // slot inherits its parent's, striding the model bone array by 0xac -- so the value is born
+    // somewhere in the sequence setup.
+    //
+    // Write that writer first. Porting the blend under a permanently-zero weight is the mistake
+    // this codebase has already made once and written down.
 }
 
 #endif

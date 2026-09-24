@@ -38025,7 +38025,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 3866,
+  "frozenSize": 3850,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -38137,7 +38137,7 @@
    "src/model/m2internal.cpp"
   ],
   "frozen": "M2ModelLight::M2ModelLight",
-  "frozenSize": 90,
+  "frozenSize": 69,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 118,
@@ -38361,7 +38361,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetPrimaryBoneSequence",
-  "frozenSize": 539,
+  "frozenSize": 524,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 400,
@@ -38377,7 +38377,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetSecondaryBoneSequence",
-  "frozenSize": 185,
+  "frozenSize": 182,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 132,
@@ -38463,6 +38463,19 @@
   "refSize": 420,
   "status": "ported"
  },
+ "00828680": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<M2CompQuat,C4Quaternion>",
+  "frozenSize": 543,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 885,
+  "status": "ported"
+ },
  "00828a00": {
   "branchRatio": 0.425,
   "constOverlap": 0.0,
@@ -38473,7 +38486,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateST",
-  "frozenSize": 1299,
+  "frozenSize": 1283,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -38495,6 +38508,34 @@
   "refSize": 464,
   "status": "stub"
  },
+ "0082ad50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "C3Vector::operator-",
+  "frozenSize": 36,
+  "how": "callgraph",
+  "module": "M2Scene.cpp",
+  "refSize": 482,
+  "status": "ported"
+ },
+ "0082b0a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<C3Vector,C3Vector>",
+  "frozenSize": 375,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 450,
+  "status": "ported"
+ },
  "0082bd60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38505,7 +38546,7 @@
    "src/model/m2internal.cpp"
   ],
   "frozen": "M2ModelBone::M2ModelBone",
-  "frozenSize": 188,
+  "frozenSize": 157,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 250,
@@ -38569,7 +38610,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateTextureTransformsMT",
-  "frozenSize": 656,
+  "frozenSize": 667,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 531,
@@ -38617,7 +38658,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5140,
+  "frozenSize": 5155,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
@@ -38633,7 +38674,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateParticleEmitter",
-  "frozenSize": 1274,
+  "frozenSize": 1226,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1011,
@@ -38777,7 +38818,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnsetBoneSequence",
-  "frozenSize": 688,
+  "frozenSize": 664,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
@@ -38793,7 +38834,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1164,
+  "frozenSize": 1161,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,
@@ -38809,7 +38850,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 4848,
+  "frozenSize": 4737,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
