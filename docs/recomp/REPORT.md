@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 01:56 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 02:02 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5529, mapped 558 (=) (10.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 568 (=) (9.8%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 273 (=) (5.9%)** | |
-| frozen functions (src/, from PDB + source) | 12275, stubs 1819 | |
+| frozen functions (src/, from PDB + source) | 12286, stubs 1819 | |
 
 Match evidence: annotated 946, callgraph 181, callorder 127, cvar 32, handler 29, order 150, override 260, sticky 22, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 01:55 -- mapped 3173, ported 2423, stub 690, spine mapped 558.
+Previous run: 2026-09-24 01:56 -- mapped 3173, ported 2423, stub 690, spine mapped 558.
 
 ## Lua API coverage (binding tables)
 
@@ -613,7 +613,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
-| 00832ea0 | `CM2Model::InitializeLoaded` | 26% | 71 | 32 | 170 | 54 | 2% | 5663 |
+| 00832ea0 | `CM2Model::InitializeLoaded` | 29% | 71 | 36 | 170 | 61 | 2% | 5663 |
 | 00821a20 | `CM2Scene::Animate` | 33% | 54 | 35 | 219 | 45 | 8% | 5621 |
 | 00857ca0 | `luaV_execute` | 47% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 20% | 137 | 33 | 172 | 19 | 2% | 5010 |
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 22:40 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 22:53 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 23:20 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 23:25 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 01:55 | 3173 (11.7%) | 1243 (4.6%) | 690 | 558/5529 | 2924/2964 | 1493 |
 | 2026-09-24 01:55 | 3173 (11.7%) | 1243 (4.6%) | 690 | 558/5529 | 2924/2964 | 1493 |
 | 2026-09-24 01:56 | 3173 (11.7%) | 1243 (4.6%) | 690 | 558/5529 | 2924/2964 | 1493 |
+| 2026-09-24 02:02 | 3173 (11.7%) | 1243 (4.6%) | 690 | 558/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

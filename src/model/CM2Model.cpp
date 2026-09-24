@@ -10,12 +10,14 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Animate.hpp"
 #include "model/M2Data.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Model.hpp"
 #include <common/DataMgr.hpp>
 #include <common/ObjectAlloc.hpp>
 #include <tempest/Math.hpp>
 #include <cmath>
+#include <cstring>
 #include <new>
 
 // Alignment helpers
@@ -1602,10 +1604,27 @@ void CM2Model::FreeInternalResources() {
     //     this->m_ribbons = nullptr;
     // }
 
-    // TODO
-    // if (this->m_particles) {
-    //     this->m_particles = nullptr;
-    // }
+    // Every emitter owns three TSGrowableArray allocations -- the particle pool and the two index
+    // arrays -- and those live in Storm's heap, NOT in the pooled buffer this block is about to
+    // release. So they have to be destructed explicitly, the same way m_lights is above; freeing
+    // the buffer alone would leak a pool per emitter on every model destroyed, which for a busy
+    // scene is most models. The destructor is virtual, so this reaches the plane or sphere
+    // subclass's.
+    if (this->m_particleEmitters) {
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            // Null for any emitter type frozen does not build -- see the factory in
+            // InitializeLoaded.
+            if (this->m_particleEmitters[i]) {
+                this->m_particleEmitters[i]->~CM2ParticleEmitter();
+            }
+        }
+
+        this->m_particleEmitters = nullptr;
+    }
+
+    if (this->m_particles) {
+        this->m_particles = nullptr;
+    }
 
     // The two matrix arrays are NOT part of the pooled internal-resources block: InitializeLoaded
     // allocates each with its own SMemAlloc. Nothing freed them, so every model destroyed leaked
@@ -1893,6 +1912,33 @@ int32_t CM2Model::InitializeLoaded() {
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelCamera, this->m_shared->m_data->cameras.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelParticle, this->m_shared->m_data->particles.Count());
 
+    // The emitter pointer array, then the emitter objects themselves. The reference carves both
+    // from this same buffer (0x833af5 and the run the factory loop walks), which is why they are
+    // sized here rather than allocated separately.
+    //
+    // The objects are a variable-size run: the reference advances by 0x244, 0x248 or 0x40c
+    // depending on the type byte. Frozen's sizes differ, so this walks the same array and sums
+    // sizeof() per type. The loop below in InitializeLoaded MUST make the same decisions in the
+    // same order -- each ALIGN_SIZE is relative to the running offset, so a disagreement here
+    // silently shifts every later array.
+    bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitter*,
+                             this->m_shared->m_data->particles.Count());
+
+    for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+        switch (this->m_shared->m_data->particles[i].emitterType) {
+        case 1:
+            bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterPlane, 1);
+            break;
+        case 2:
+            bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterSphere, 1);
+            break;
+        default:
+            // Type 3 (0x40c in the reference, constructor 0x009820f0) is a separate hierarchy and
+            // is not ported; nothing is reserved and no emitter is built.
+            break;
+        }
+    }
+
     // TODO allocate space for ribbons
 
     auto buffer = static_cast<char*>(SMemAlloc(bufferSize, __FILE__, __LINE__, 0));
@@ -2102,6 +2148,49 @@ int32_t CM2Model::InitializeLoaded() {
 
         for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
             new (&this->m_particles[i]) M2ModelParticle();
+        }
+
+        // The pointer array, zeroed, then the emitters themselves. The reference memsets the array
+        // (0x833b09) before the factory fills it, which is what leaves a null behind for any
+        // emitter that does not get built.
+        buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitter*);
+        this->m_particleEmitters = reinterpret_cast<CM2ParticleEmitter**>(buffer);
+        buffer += sizeof(CM2ParticleEmitter*) * this->m_shared->m_data->particles.Count();
+
+        memset(this->m_particleEmitters, 0,
+               sizeof(CM2ParticleEmitter*) * this->m_shared->m_data->particles.Count());
+
+        // The factory. Switches on the same type byte the reference does, and must visit the array
+        // in the same order and make the same decisions as the sizing pass above.
+        uint32_t unsupported = 0;
+
+        for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+            switch (this->m_shared->m_data->particles[i].emitterType) {
+            case 1:
+                buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitterPlane);
+                this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterPlane();
+                buffer += sizeof(CM2ParticleEmitterPlane);
+                break;
+            case 2:
+                buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitterSphere);
+                this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterSphere();
+                buffer += sizeof(CM2ParticleEmitterSphere);
+                break;
+            default:
+                unsupported++;
+                break;
+            }
+        }
+
+        if (unsupported) {
+            // The reference dereferences m_particleEmitters[i] on the line after the factory
+            // without a null check, so in practice the type byte is always 1, 2 or 3 -- this only
+            // fires for type 3, whose class is unported. The slot stays null and every consumer
+            // has to tolerate that.
+            SysMsgPrintf(SYSMSG_ERROR,
+                         "CM2Model: %u of %d particle emitters use an emitter type frozen does "
+                         "not implement (type 3, reference constructor 0x009820f0); those slots "
+                         "are null", unsupported, this->m_shared->m_data->particles.Count());
         }
     }
 

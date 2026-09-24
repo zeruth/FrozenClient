@@ -10,6 +10,7 @@
 #include <tempest/Vector.hpp>
 
 class CAaBox;
+class CM2ParticleEmitter;
 class CM2Scene;
 class CM2Shared;
 struct M2Batch;
@@ -162,6 +163,11 @@ class CM2Model {
         // reference keeps this at +0x2c0 and an array of emitter OBJECTS at +0x2c4; only the state
         // is here so far -- see CM2Model::AnimateParticles.
         M2ModelParticle* m_particles = nullptr;
+        // +0x2c4: one emitter per M2Particle, or null where the model asks for an emitter type
+        // frozen does not have. Callers MUST tolerate the null -- see the note in
+        // InitializeLoaded. The objects themselves are carved out of the same buffer as the array,
+        // so neither is owned individually.
+        CM2ParticleEmitter** m_particleEmitters = nullptr;
         // The OPTIMIZED VISIBLE GEOMETRY cache, traced 2026-09-23. Nothing in frozen builds
         // it, so it stays null and every path that reads it takes the unoptimized branch; that is
         // the correct resting state rather than a bug, but it is why CM2Model::SetIndices and
