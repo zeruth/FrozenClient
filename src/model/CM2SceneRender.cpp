@@ -128,8 +128,15 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             this->m_curBatch = nullptr;
             this->m_curSkinSection = nullptr;
             this->m_curLighting = element->model->m_currentLighting;
-            // TODO
-            // this->m_curMaterial = this->dwordB8;
+            // The reference takes the ADDRESS of its embedded block at +0xb8 (0x823a51,
+            // `leal 0xb8(%esi), %edx`), not its value as the old note here said. The batch path
+            // below overwrites this pointer with the real material out of the model data; what is
+            // left pointing here is every element type that has no material of its own.
+            //
+            // Not cosmetic: SetupMaterial dereferences m_curMaterial and DrawParticle calls
+            // SetupMaterial, so without this a particle element would read whatever the previous
+            // element left -- a real material belonging to another model.
+            this->m_curMaterial = &this->m_scratchMaterial;
             this->m_data = element->model->m_shared->m_data;
 
             // TODO

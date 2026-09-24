@@ -64,6 +64,11 @@ class CM2SceneRender {
         M2SkinSection* m_prevSkinSection = nullptr;
         M2Material* m_curMaterial = nullptr;
         M2Material* m_prevMaterial = nullptr;
+        // +0xb8: a scratch material owned by the render, which m_curMaterial points at by default.
+        // Element types that have no M2Material of their own fill this in and use it -- particles
+        // are one, and DrawParticle builds exactly its two uint16s: a flags word from the
+        // emitter's material flags, and M2BlendIndexFromGx of its blend.
+        M2Material m_scratchMaterial = {};
 
         // Member functions
         CM2SceneRender(CM2Scene* scene)

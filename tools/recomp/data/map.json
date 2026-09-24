@@ -37561,7 +37561,7 @@
    "src/model/cm2scenerender.hpp"
   ],
   "frozen": "CM2SceneRender::CM2SceneRender",
-  "frozenSize": 167,
+  "frozenSize": 173,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 281,
@@ -37801,7 +37801,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 748,
+  "frozenSize": 764,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
@@ -37817,7 +37817,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Draw",
-  "frozenSize": 301,
+  "frozenSize": 166,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 157,
