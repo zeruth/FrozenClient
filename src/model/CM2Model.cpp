@@ -999,7 +999,39 @@ void CM2Model::AnimateST() {
         this->AnimateCamerasST();
     }
 
-    // TODO
+    // MISSING: the ribbon and particle emitter update. This is the single largest gap in this
+    // function -- `--diff 00828a00` scores it 46% and the whole shortfall is one contiguous block
+    // that belongs right here, between the camera update above and the draw-list link below.
+    // Decompiled 2026-09-23 so the next attempt does not start cold:
+    //
+    //   1. Delta time, which nothing else in frozen computes:
+    //          now = m_scene->time (scene + 0xc)
+    //          ticks = now - this->[0x8c]           // a per-model last-update stamp frozen lacks
+    //          dt = (float)ticks; if (ticks < 0) dt += 4294967296.0f;   // unsigned fixup
+    //          dt *= 0.001f;                        // the 1/1000 at 0x009e1134
+    //          this->[0x8c] = now
+    //      The fixup is the reference's own way of reading the subtraction as unsigned; it matters
+    //      only across a wrap, but it is one instruction and there is no reason to drop it.
+    //
+    //   2. For each of m_data->ribbons (count at data + 0x120, array at + 0x124, stride 0xb0):
+    //      take the per-model runtime state (this + 0x2b8, stride 0x50) and the emitter object
+    //      (this + 0x2bc, an array of pointers), then push the animated tracks into the emitter --
+    //      colour, alpha SCALED BY this->float198, height above, height below, texture slot. Each
+    //      push is guarded on the track actually having keys. Then copy the bone matrix
+    //      (m_boneMatrices[ribbon->boneIndex], 0x40 bytes), transform by it, transform by
+    //      m_scene->m_viewInv (scene + 0xc4), and if this->m_flags & 0x8000 advance the emitter by
+    //      dt.
+    //
+    //   3. For each of m_data->particleEmitters (count at data + 0x128):
+    //      this->FUN_008309c0(dt, i).
+    //
+    // Why it is not ported here: frozen has the M2Ribbon FILE data (M2Data.hpp) but none of the
+    // runtime object graph the block drives -- no per-model ribbon state array, no emitter
+    // objects, no CM2Model fields at +0x2b8 or +0x2bc, and no particle emitter runtime.
+    // src/world/ParticleFx.cpp is a separate stand-in, not this. Porting the loops before the
+    // objects exist would give frozen two loops over absent arrays, so the emitters come first.
+    // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not
+    // ported; this is the other half of why.
 
     if (this->m_flag8) {
         this->m_drawPrev = &this->m_scene->m_drawList;

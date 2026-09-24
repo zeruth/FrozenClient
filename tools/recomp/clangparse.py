@@ -33,8 +33,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 9  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 10  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
+#
+# NOTE this matches anywhere in a comment, not just on a line of its own. Writing the tag verbatim
+# inside explanatory prose -- "the ref: FUN_00401000 that used to be here was wrong" -- creates a
+# real tag. That happened twice on 2026-09-23, both times while removing a misattributed tag and
+# explaining the removal. Name the address without the `ref:` prefix in prose.
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
               os.path.join(ROOT, 'build', 'compile_commands.json')]
@@ -53,10 +58,41 @@ def load_compile_db():
     sys.exit('no compile_commands.json (configure a Ninja build dir with CMAKE_EXPORT_COMPILE_COMMANDS)')
 
 
+def tokenize_command(cmd):
+    """Split a command line into tokens, removing quotes wherever they appear in a token.
+
+    Not the same as splitting on quoted-or-unquoted runs. A shell strips quotes anywhere, so
+    `-DX=""` is X defined as nothing, `-DX="a b"` is X defined as `a b`, and `"c:/a b/x.h"` is one
+    path. Matching only a token that begins with a quote gets the first of those wrong, which is
+    what it did until 2026-09-23.
+    """
+    toks = []
+    cur = []
+    quoted = False
+    started = False
+
+    for ch in cmd:
+        if ch == '"':
+            quoted = not quoted
+            started = True
+        elif ch.isspace() and not quoted:
+            if started:
+                toks.append(''.join(cur))
+                cur = []
+                started = False
+        else:
+            cur.append(ch)
+            started = True
+
+    if started:
+        toks.append(''.join(cur))
+
+    return toks
+
+
 def split_command(cmd):
     """cl.exe style command line -> clang args in cl driver mode, without the output/source bits."""
-    toks = re.findall(r'"([^"]*)"|(\S+)', cmd)
-    toks = [a or b for a, b in toks]
+    toks = tokenize_command(cmd)
     args = ['--driver-mode=cl', '-fms-compatibility', '-fms-extensions', '-Wno-everything']
     skip = False
     for t in toks[1:]:
@@ -302,7 +338,7 @@ def parse_file(index, path, args, text):
 
 
 
-def content_key(path, deps=()):
+def content_key(path, deps=(), command=''):
     """Cache key for a source file and the project headers it includes.
 
     Was the mtime alone, which is wrong twice over: an mtime can repeat inside the filesystem's
@@ -322,6 +358,11 @@ def content_key(path, deps=()):
     """
     h = hashlib.blake2b(digest_size=16)
     h.update(file_digest(path))
+    # The arguments decide what the parse SEES -- defines, include paths, and how the command is
+    # tokenized. A cached entry produced under different arguments is stale even though every byte
+    # on disk is unchanged.
+    h.update(b'|cmd|')
+    h.update(command.encode('utf-8', 'replace'))
 
     for d in sorted(deps):
         h.update(b'|')
@@ -348,8 +389,12 @@ def main():
         if only and path not in only:
             continue
         c = cache.get(rel)
-        if c and c.get('key') == content_key(path, c.get('deps', ())) and c.get('v') == CACHE_VERSION:
+        if c and c.get('key') == content_key(path, c.get('deps', ()), e['command']) and c.get('v') == CACHE_VERSION:
             fns = c['fns']
+            # Replay a recorded parse failure. Without this the warning is only as complete as the
+            # last cold run, and a warm run silently reports zero broken files.
+            if c.get('bad'):
+                BAD_FILES.append((rel, c['bad'][0], c['bad'][1]))
         else:
             # newline='' is load-bearing, not tidiness. libclang hands back BYTE offsets into
             # the file as it read it; Python's text mode turns each \r\n into one \n, so every
@@ -364,7 +409,11 @@ def main():
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],
                        'header': v['header'], 'line': v['line']} for k, v in fns.items()}
             deps = list(LAST_INCLUDES)
-            cache[rel] = {'key': content_key(path, deps), 'v': CACHE_VERSION, 'fns': fns, 'deps': deps}
+            bad = None
+            if BAD_FILES and BAD_FILES[-1][0] == rel:
+                bad = [BAD_FILES[-1][1], BAD_FILES[-1][2]]
+            cache[rel] = {'key': content_key(path, deps, e['command']), 'v': CACHE_VERSION,
+                          'fns': fns, 'deps': deps, 'bad': bad}
             n += 1
         for k, v in fns.items():
             if v.get('header') and k in result:

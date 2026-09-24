@@ -7364,11 +7364,11 @@
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ui/simple/CSimpleButtonScript.cpp",
-   "src/ui/simple/csimplebuttonscript.cpp"
+   "src/ui/simple/CSimpleFontStringScript.cpp",
+   "src/ui/simple/csimplefontstringscript.cpp"
   ],
-  "frozen": "ButtonFontObject",
-  "frozenSize": 0,
+  "frozen": "FontString_GetFontObject",
+  "frozenSize": 106,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 78,
@@ -8065,14 +8065,14 @@
  "004a5000": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/simple/CSimpleAnim.cpp",
-   "src/ui/simple/csimpleanim.cpp"
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
   ],
-  "frozen": "CSimpleAnim::IsDone",
-  "frozenSize": 16,
+  "frozen": "CSimpleAnim_IsDone",
+  "frozenSize": 54,
   "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 88,
@@ -27752,7 +27752,7 @@
   "status": "ported"
  },
  "0060ed40": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.368,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.529,
@@ -27760,15 +27760,15 @@
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
-  "frozen": "Script_UnitMana",
-  "frozenSize": 231,
+  "frozen": "Script_UnitPower",
+  "frozenSize": 216,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 507,
   "status": "ported"
  },
  "0060ef40": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.438,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.643,
@@ -27776,8 +27776,8 @@
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
-  "frozen": "Script_UnitManaMax",
-  "frozenSize": 231,
+  "frozen": "Script_UnitPowerMax",
+  "frozenSize": 216,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 434,
@@ -47390,8 +47390,8 @@
  "00975370": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleEditBoxScript.cpp",
    "src/ui/simple/csimpleeditboxscript.cpp"
@@ -48495,7 +48495,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -48527,7 +48527,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"
@@ -48559,7 +48559,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/simple/CSimpleButtonScript.cpp",
    "src/ui/simple/csimplebuttonscript.cpp"

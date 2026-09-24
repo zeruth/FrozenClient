@@ -49,7 +49,7 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 | | what it claims | where it stands |
 |---|---|---|
 | **Linked** | an original function has a known counterpart here | **3,130 / 27,160** &nbsp;·&nbsp; ~11% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,213** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,215** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:
@@ -62,6 +62,13 @@ By surface, roughly:
 | The render surface: the map, model, entity, texture and device modules that draw the world | 267 / 4,589 &nbsp;·&nbsp; **~6%** |
 | Empty functions the render path still has call sites for | **42** &nbsp;·&nbsp; an upper bound, not a defect count |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |
+
+All 681 translation units now parse cleanly under libclang, so no row above is being computed
+from guessed call data. That was not true until 2026-09-23: 24 files failed to parse, and the fix
+moved **faithful** by 2 on its own. The cause was a quoting bug on this side rather than anything
+wrong with the code -- `-DOSCL_IMPORT_REF=""` was being passed through with its quotes, so the
+macro expanded to an empty string literal instead of to nothing, and every declaration using it
+failed. 23 of the 24 were third-party video-decoder sources and one was frozen's own.
 
 The last row is the one that moves week to week. Linked and faithful count functions that exist; it counts functions that **do not** and are called anyway. A few of those are worse than missing: a caller that changes its own control flow assuming the stub succeeded will do something wrong rather than nothing. Three such traps have been found and disarmed before anything switched them on: enabling the model cache's threading flag would have frozen on every second model, letting merged batches through would have stopped them drawing, and assigning the async-BLP hook would have stopped every BLP loading. Each was harmless only because a flag upstream was still off.
 
