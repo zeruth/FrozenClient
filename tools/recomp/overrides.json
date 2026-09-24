@@ -1026,8 +1026,8 @@
   },
   "0081fe90": {
     "frozen": "CM2SceneRender::SetupMaterial",
-    "status": "ported",
-    "note": "call order in DrawBatch, second of the three setup calls (see 0081fb10)"
+    "status": "faithful",
+    "note": "Measures 62% and the gap is the MEASUREMENT, not the port. All five missed calls are CGxDevice::IRsDirty: the reference inlined GxRsSet at each site, so it open-codes `if (value != current) { IRsDirty(); assign; }` where frozen calls GxRsSet. Calling GxRsSet is the correct source-level port -- matching the recall number would mean open-coding a render-state write five times to satisfy a metric. Everything the reference actually does is here and in order. Marked faithful so --fix stops offering it; checked 2026-09-24."
   },
   "00873480": {
     "frozen": "CShaderEffect::SetTexMtx_Identity",

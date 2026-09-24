@@ -212,7 +212,12 @@ void CM2Model::Animate() {
         return;
     }
 
-    if (!this->m_attachParent) {
+    // The reference tests this POSITIVELY and recurses in the true branch, which puts
+    // Animate ahead of the two Animate*MT calls in its call order. Inverting the test
+    // reverses that for no gain, so the arms are this way round on purpose.
+    if (this->m_attachParent) {
+        this->m_attachParent->Animate();
+    } else {
         C3Vector diffuse = { 1.0f, 1.0f, 1.0f };
         C3Vector emissive = { 0.0f, 0.0f, 0.0f };
 
@@ -221,8 +226,6 @@ void CM2Model::Animate() {
         } else {
             this->AnimateMT(&this->m_scene->m_view, diffuse, emissive, 1.0f, 1.0f);
         }
-    } else {
-        this->m_attachParent->Animate();
     }
 
     auto scene = this->m_scene;

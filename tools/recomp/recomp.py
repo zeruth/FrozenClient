@@ -1336,8 +1336,14 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
                 faithful_bytes += real[a]['size']
         else:
             st = 'unmapped'
-        by_status[st] += 1
-        bytes_by_status[st] += real[a]['size']
+        # A hand `faithful` verdict is still a PORTED function by every definition this
+        # report uses -- linked, not a stub, has a body -- so it is bucketed as one.
+        # Giving it a bucket of its own made `ported` go DOWN when someone recorded a
+        # fact about code that had not changed, which is the opposite of what a metric
+        # is for. The status itself stays 'faithful': the faithful count, the
+        # low-fidelity listing and --fix all key off that string.
+        by_status['ported' if st == 'faithful' else st] += 1
+        bytes_by_status['ported' if st == 'faithful' else st] += real[a]['size']
 
     # per module
     mods = collections.defaultdict(lambda: {'fns': 0, 'bytes': 0, 'mapped': 0, 'mappedBytes': 0, 'stub': 0, 'verified': 0, 'spine': 0})

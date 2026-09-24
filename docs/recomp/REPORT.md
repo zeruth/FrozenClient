@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 07:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 07:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,10 +9,10 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 27156 | 5.39M |
 | mapped to a frozen function | 3222 (=) (11.9%) | 721.8k (13.1%) |
-| &nbsp;&nbsp;ported | 2473 (=) | 537.5k |
+| &nbsp;&nbsp;ported | 2479 (=) | 542.1k |
 | &nbsp;&nbsp;stub (unimplemented body) | 689 (=) | 137.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1283 (=) (4.7%)** | **170.9k (3.1%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **1285 (+6) (4.7%)** | **172.7k (3.1%)** |
 | unmapped | 23934 | 4.68M |
 | world spine (reachable from OnFrameRender) | 5527, mapped 604 (=) (10.9%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5795, mapped 614 (=) (10.6%) | |
@@ -23,7 +23,7 @@ Match evidence: annotated 991, callgraph 186, callorder 127, cvar 32, handler 29
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 07:14 -- mapped 3222, ported 2473, stub 689, spine mapped 604.
+Previous run: 2026-09-24 07:21 -- mapped 3222, ported 2479, stub 689, spine mapped 604.
 
 ## Lua API coverage (binding tables)
 
@@ -636,7 +636,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 49% | 57 | 19 | 40 | 8 | 4% | 1310 |
-| 0081fe90 | `CM2SceneRender::SetupMaterial` | 62% | 13 | 16 | 41 | 14 | 4% | 1306 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 50% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `WowClientInit` | 16% | 59 | 23 | 23 | 2 | 0% | 1267 |
 | 0062e050 | `CGTooltip_SetInventoryItem` | 21% | 39 | 14 | 31 | 6 | 0% | 1226 |
@@ -649,6 +648,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00837a40 | `CM2Shared::InitializeSkinProfile` | 60% | 10 | 6 | 38 | 17 | 7% | 1137 |
 | 0060a630 | `Script_GetGUIDFromString` | 14% | 44 | 13 | 55 | 12 | 8% | 1122 |
 | 0060abf0 | `Script_GetTokenFromGUID` | 71% | 42 | 1 | 34 | 3 | 0% | 1121 |
+| 00813ee0 | `FrameXML_ProcessFile` | 79% | 42 | 46 | 35 | 24 | 19% | 1104 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -729,8 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
-| 2026-09-24 04:56 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:57 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 04:57 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
 | 2026-09-24 05:03 | 3191 (11.8%) | 1256 (4.6%) | 690 | 574/5527 | 2924/2964 | 1493 |
@@ -753,7 +751,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 07:03 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
 | 2026-09-24 07:06 | 3220 (11.9%) | 1282 (4.7%) | 689 | 602/5527 | 2924/2964 | 1493 |
 | 2026-09-24 07:14 | 3222 (11.9%) | 1283 (4.7%) | 689 | 604/5527 | 2924/2964 | 1493 |
-| 2026-09-24 07:15 | 3222 (11.9%) | 1283 (4.7%) | 689 | 604/5527 | 2924/2964 | 1493 |
+| 2026-09-24 07:20 | 3222 (11.9%) | 1285 (4.7%) | 689 | 604/5527 | 2924/2964 | 1493 |
+| 2026-09-24 07:21 | 3222 (11.9%) | 1279 (4.7%) | 689 | 604/5527 | 2924/2964 | 1493 |
+| 2026-09-24 07:22 | 3222 (11.9%) | 1285 (4.7%) | 689 | 604/5527 | 2924/2964 | 1493 |
 
 ## How to move a row
 
