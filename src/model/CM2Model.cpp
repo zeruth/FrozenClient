@@ -1097,9 +1097,38 @@ void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
     // for every model today because nothing would set it.
     emitter->Update(dt, matrix, cameraPosition, nullptr);
 
-    // The tail animates the emitter's subtree of spawned models and propagates `model + 0x2a8`
-    // into each. Frozen has neither that field nor anything that populates the model pool, so the
-    // walk would find nothing; left out rather than written against absent state.
+    // Animate the emitter's subtree of spawned models.
+    //
+    // FindSpawnedModel CONSUMES the index as it descends, so each iteration needs a fresh copy --
+    // passing the loop variable itself would leave it wrecked.
+    //
+    // The receiver for both Animate calls is the SPAWNED model rather than the owner. Ghidra
+    // loses that; the disassembly reloads ecx from the FindSpawnedModel result at 0x830d66.
+    //
+    // This finds nothing today: nothing allocates the 0x40-byte pool, so no emitter carries
+    // models. It is here because the four functions it needs are all ported now -- the subtree
+    // walkers came with that pool's element type -- and leaving the gap would mean a silent hole
+    // the moment an allocator lands.
+    uint32_t spawned = emitter->CountSpawnedModels();
+
+    for (uint32_t j = 0; j < spawned; j++) {
+        uint32_t index = j;
+
+        CM2Model* model = emitter->FindSpawnedModel(index);
+
+        // The reference does not check; frozen does, because a count and a walk that disagree
+        // would fault here rather than skip.
+        if (!model) {
+            continue;
+        }
+
+        model->AnimateMT(&this->m_scene->m_view, this->m_currentDiffuse, this->m_currentEmissive,
+                         this->float198, this->alpha19C);
+        model->AnimateST();
+
+        // The spawned model inherits the owner's lighting rather than resolving its own.
+        model->m_currentLighting = this->m_currentLighting;
+    }
 }
 
 void CM2Model::AnimateParticleTracks() {

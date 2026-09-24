@@ -38384,16 +38384,16 @@
   "status": "ported"
  },
  "008309c0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.548,
   "constOverlap": 0.042,
-  "faithful": false,
-  "fidelity": 0.556,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateParticleEmitter",
-  "frozenSize": 1089,
+  "frozenSize": 1274,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1011,
@@ -49560,7 +49560,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CountSpawnedModels",
-  "frozenSize": 0,
+  "frozenSize": 94,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 52,
@@ -49576,7 +49576,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::FindSpawnedModel",
-  "frozenSize": 0,
+  "frozenSize": 164,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 98,
