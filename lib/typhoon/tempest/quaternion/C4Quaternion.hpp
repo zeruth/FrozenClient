@@ -5,6 +5,10 @@ class C4Quaternion {
     public:
     // Static functions
     static C4Quaternion Nlerp(float ratio, const C4Quaternion& q1, const C4Quaternion& q2);
+    // True spherical interpolation, taking the SHORTEST arc. Nlerp above is what the M2
+    // key interpolation uses; this is what the blend between two sequences uses, and the
+    // difference shows on a wide blend.
+    static C4Quaternion Slerp(float ratio, const C4Quaternion& q1, const C4Quaternion& q2);
 
     // Member variables
     float x = 0.0f;

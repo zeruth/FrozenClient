@@ -174,23 +174,35 @@ void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track
         }
     }
 
-    // NOT PORTED, and the reason is a missing FEEDER rather than a missing transcription.
-    //
-    // The reference blends here: when the bone carries a blend weight and the track has no
-    // global sequence, it evaluates the track a SECOND time against modelBone->secondarySequence,
-    // using modelTrack.currentKey2 as that walk's cursor, and mixes the two by the weight. For a
-    // quaternion that mix is a slerp (FUN_00982460, which frozen has no counterpart for); for a
-    // vector it is a plain lerp.
-    //
-    // SO ANIMATIONS DO NOT BLEND -- every transition snaps. Two thirds of the chain is already
-    // here: M2ModelBone::secondarySequence is actively maintained by the bone-sequence machinery,
-    // and M2ModelBone::floatA8 is the reference's +0xa8 blend weight. NOTHING WRITES floatA8.
-    // CM2Model::AnimateMT only propagates it -- at 0x82f6cd a bone with no sequence on either
-    // slot inherits its parent's, striding the model bone array by 0xac -- so the value is born
-    // somewhere in the sequence setup.
-    //
-    // Write that writer first. Porting the blend under a permanently-zero weight is the mistake
-    // this codebase has already made once and written down.
+    // NOT BLENDED, and not by oversight. The blend at the end of M2AnimateTrack below was read
+    // from FUN_00828680 and FUN_0082b0a0, which are the NON-spline pair; a spline track's keys
+    // are M2SplineKey<T> and interpolate through `.value`, so whatever the reference does here
+    // is a different function that has not been read. Copying the shape of the other one would
+    // be guessing.
+}
+
+// Mix a track value with the one the secondary sequence produced, by the bone's blend
+// weight. A quaternion takes the SHORTEST ARC and everything else interpolates straight,
+// which is why these are two overloads and not one template: the reference slerps in
+// FUN_00828680 and lerps in FUN_0082b0a0, and using the wrong one shows on a wide blend.
+inline void M2BlendValue(C4Quaternion& value, const C4Quaternion& secondary, float weight) {
+    value = C4Quaternion::Slerp(weight, value, secondary);
+}
+
+inline void M2BlendValue(C3Vector& value, const C3Vector& secondary, float weight) {
+    value.x += (secondary.x - value.x) * weight;
+    value.y += (secondary.y - value.y) * weight;
+    value.z += (secondary.z - value.z) * weight;
+}
+
+inline void M2BlendValue(float& value, float secondary, float weight) {
+    value += (secondary - value) * weight;
+}
+
+// Anything else -- a texture slot index, a visibility byte -- does not interpolate at all,
+// so the blend cannot mean anything for it and the primary value stands.
+template<class T>
+inline void M2BlendValue(T&, const T&, float) {
 }
 
 template<class T1, class T2>
@@ -237,23 +249,42 @@ void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& 
         }
     }
 
-    // NOT PORTED, and the reason is a missing FEEDER rather than a missing transcription.
+    // Blend with the secondary sequence.
     //
-    // The reference blends here: when the bone carries a blend weight and the track has no
-    // global sequence, it evaluates the track a SECOND time against modelBone->secondarySequence,
-    // using modelTrack.currentKey2 as that walk's cursor, and mixes the two by the weight. For a
-    // quaternion that mix is a slerp (FUN_00982460, which frozen has no counterpart for); for a
-    // vector it is a plain lerp.
-    //
-    // SO ANIMATIONS DO NOT BLEND -- every transition snaps. Two thirds of the chain is already
-    // here: M2ModelBone::secondarySequence is actively maintained by the bone-sequence machinery,
-    // and M2ModelBone::floatA8 is the reference's +0xa8 blend weight. NOTHING WRITES floatA8.
-    // CM2Model::AnimateMT only propagates it -- at 0x82f6cd a bone with no sequence on either
-    // slot inherits its parent's, striding the model bone array by 0xac -- so the value is born
-    // somewhere in the sequence setup.
-    //
-    // Write that writer first. Porting the blend under a permanently-zero weight is the mistake
-    // this codebase has already made once and written down.
+    // The bone's weight is how much of the sequence it is fading OUT of still applies; it counts
+    // down to zero as the blend completes, at which point this whole block is a no-op. Guarded on
+    // loopIndex -- frozen's name for the global-sequence index, the uint16 at track + 2 the
+    // reference tests against -1 -- because a global-sequence track runs off world time and the
+    // bone's sequences do not drive it.
+    if (modelBone->floatA8 == 0.0f || track.loopIndex != 0xFFFF) {
+        return;
+    }
+
+    auto secondIndex = modelBone->secondarySequence.uint4 < track.sequenceKeys.Count()
+        ? modelBone->secondarySequence.uint4
+        : 0;
+
+    auto& secondKeys = track.sequenceKeys[secondIndex];
+
+    T2 secondary = defaultValue;
+
+    if (secondKeys.keys.Count()) {
+        uint32_t nextKey;
+        float ratio;
+
+        // currentKey2 is this walk's own cursor. Sharing currentKey with the primary walk would
+        // make each fight the other's search every frame.
+        model->FindKey(&modelBone->secondarySequence, track, modelTrack.currentKey2, nextKey, ratio);
+
+        if (track.trackType == 0) {
+            M2SetValue<T1, T2>(secondKeys.keys[modelTrack.currentKey2], secondary);
+        } else {
+            M2InterpolateLinear(secondKeys.keys[modelTrack.currentKey2], secondKeys.keys[nextKey],
+                                ratio, secondary);
+        }
+    }
+
+    M2BlendValue(modelTrack.currentValue, secondary, modelBone->floatA8);
 }
 
 #endif

@@ -1738,13 +1738,13 @@
   },
   "0082b0a0": {
     "frozen": "M2AnimateTrack<C3Vector,C3Vector>",
-    "status": "ported",
-    "note": "The C3Vector instantiation of the same template -- a 0xc key stride, linearly interpolated, same FindKey call. Read 2026-09-24 alongside 00828680."
+    "status": "faithful",
+    "note": "The C3Vector instantiation of the same template -- a 0xc key stride, linearly interpolated, same FindKey call. Read 2026-09-24 alongside 00828680. Status `faithful` is a hand verdict, NOT a measurement: the call-order score for this pair is 0% and always will be, because the clang inventory keys the template by its generic name and the instantiation reaches `frozen` only through the PDB, which carries a symbol and no body. There is nothing for the matcher to compare. Recorded so --fix stops offering a function whose number cannot move."
   },
   "00828680": {
     "frozen": "M2AnimateTrack<M2CompQuat,C4Quaternion>",
-    "status": "ported",
-    "note": "The compressed-quaternion instantiation of frozen's M2AnimateTrack template: ushort x4 keys scaled by 1/32767 minus one, and a call to FUN_008284d0, already linked as CM2Model::FindKey. Its second half -- the blend against the secondary sequence -- is not ported; the note at the end of M2AnimateTrack says why the feeder has to come first. Read 2026-09-24. No space after the comma: that is how frozen-pdb.txt spells it, and a name that is not in there binds to nothing."
+    "status": "faithful",
+    "note": "The compressed-quaternion instantiation of frozen's M2AnimateTrack template: ushort x4 keys scaled by 1/32767 minus one, and a call to FUN_008284d0, already linked as CM2Model::FindKey. Its second half -- the blend against the secondary sequence -- is not ported; the note at the end of M2AnimateTrack says why the feeder has to come first. Read 2026-09-24. No space after the comma: that is how frozen-pdb.txt spells it, and a name that is not in there binds to nothing. Status `faithful` is a hand verdict, NOT a measurement: the call-order score for this pair is 0% and always will be, because the clang inventory keys the template by its generic name and the instantiation reaches `frozen` only through the PDB, which carries a symbol and no body. There is nothing for the matcher to compare. Recorded so --fix stops offering a function whose number cannot move."
   },
   "00873ff0": {
     "status": "unlinked",

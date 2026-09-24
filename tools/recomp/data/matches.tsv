@@ -2429,7 +2429,7 @@ addr	how	frozen	evidence
 0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
 008309c0	annotated	CM2Model::AnimateParticleEmitter	tag in src/model/CM2Model.cpp
-00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
+00830dc0	annotated	M2BoneBlendWeight	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
@@ -3185,6 +3185,7 @@ addr	how	frozen	evidence
 009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
 009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00982460	annotated	C4Quaternion::Slerp	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp

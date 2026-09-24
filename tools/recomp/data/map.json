@@ -38470,11 +38470,11 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "M2AnimateTrack<M2CompQuat,C4Quaternion>",
-  "frozenSize": 543,
+  "frozenSize": 619,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 885,
-  "status": "ported"
+  "status": "faithful"
  },
  "00828a00": {
   "branchRatio": 0.425,
@@ -38530,11 +38530,11 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "M2AnimateTrack<C3Vector,C3Vector>",
-  "frozenSize": 375,
+  "frozenSize": 737,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 450,
-  "status": "ported"
+  "status": "faithful"
  },
  "0082bd60": {
   "branchRatio": 1.0,
@@ -38649,7 +38649,7 @@
   "status": "ported"
  },
  "0082f0f0": {
-  "branchRatio": 0.342,
+  "branchRatio": 0.362,
   "constOverlap": 0.021,
   "faithful": false,
   "fidelity": 0.159,
@@ -38658,7 +38658,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5155,
+  "frozenSize": 4822,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
@@ -38681,16 +38681,16 @@
   "status": "ported"
  },
  "00830dc0": {
-  "branchRatio": 0.75,
-  "constOverlap": 0.04,
-  "faithful": true,
-  "fidelity": 0.875,
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "CM2Model::Animate",
-  "frozenSize": 599,
+  "frozen": "M2BoneBlendWeight",
+  "frozenSize": 83,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 451,
@@ -38809,7 +38809,7 @@
   "status": "ported"
  },
  "00832840": {
-  "branchRatio": 0.941,
+  "branchRatio": 0.765,
   "constOverlap": 0.056,
   "faithful": true,
   "fidelity": 1.0,
@@ -38818,7 +38818,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnsetBoneSequence",
-  "frozenSize": 664,
+  "frozenSize": 529,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
@@ -50517,6 +50517,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 829,
+  "status": "ported"
+ },
+ "00982460": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4Quaternion::Slerp",
+  "frozenSize": 407,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 268,
   "status": "ported"
  },
  "00982970": {

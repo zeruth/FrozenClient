@@ -29,6 +29,12 @@ struct M2ModelAttachment {
     M2ModelTrack<uint8_t> visibilityTrack;
 };
 
+// How far a bone's blend from its secondary sequence to its primary one has run, in 0..1,
+// scaled by the bone's own ceiling. Shared by CM2Model::AnimateMT, which stores it, and
+// StopBoneSequence, which tests it to decide whether a fade is far enough along to be
+// worth restarting. ref: inline in both
+float M2BoneBlendWeight(const struct M2ModelBone& modelBone, uint32_t sceneTime);
+
 struct M2ModelBoneSeq {
     uint32_t uint0 = 0;
     uint16_t uint4 = -1;

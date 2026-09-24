@@ -207,6 +207,29 @@ void CM2Model::AddRef() {
 // animated first and this model is then animated onto the attachment matrix. When the animation
 // could not run (not loaded, or the parent has no fresh bone matrices) the transform still has to
 // be defined, so it falls back to the parent's, or to this model's own world transform.
+// How far a bone has blended out of its secondary sequence.
+//
+// `uint9C` is when the blend ENDS and floatA0 its reciprocal duration, so t counts DOWN
+// from 1 to 0 as the blend completes -- the weight is how much of the SECONDARY sequence
+// still applies. The curve is the classic smoothstep, `(3 - 2t) * t * t`, clamped at both
+// ends, and floatA4 is a per-bone ceiling: 0.75 for a normal sequence start, 1.0 for a
+// blended stop.
+float M2BoneBlendWeight(const M2ModelBone& modelBone, uint32_t sceneTime) {
+    float t = static_cast<float>(
+        static_cast<int32_t>(modelBone.uint9C) - static_cast<int32_t>(sceneTime))
+        * modelBone.floatA0;
+
+    float weight = 0.0f;
+
+    if (t > 1.0f) {
+        weight = 1.0f;
+    } else if (t >= 0.0f) {
+        weight = (3.0f - (t + t)) * t * t;
+    }
+
+    return weight * modelBone.floatA4;
+}
+
 void CM2Model::Animate() {
     if (this->m_animCounter == this->m_scene->uint14) {
         return;
@@ -439,7 +462,25 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             modelBone.sequence.uint6 = i;
         }
 
-        // TODO
+        // How far this bone has blended from its secondary sequence into its primary one.
+        // Ported 2026-09-24; this was a bare TODO, and with it the weight stayed zero and
+        // M2AnimateTrack's blend had nothing to work from, so every animation transition
+        // snapped.
+        if (modelBone.sequence.uint8 == 0xFFFF && modelBone.secondarySequence.uint8 == 0xFFFF) {
+            // No sequence on either slot: inherit, so a whole unanimated subtree fades
+            // with whatever is driving its root rather than snapping against it.
+            if (bone.parentIndex < this->m_shared->m_data->bones.Count()) {
+                modelBone.floatA8 = this->m_bones[bone.parentIndex].floatA8;
+            } else {
+                modelBone.floatA8 = 0.0f;
+            }
+        } else if (modelBone.sequence.uint0 == modelBone.secondarySequence.uint0
+                && modelBone.sequence.uint4 == modelBone.secondarySequence.uint4) {
+            // Both slots are playing the same thing; there is nothing to blend between.
+            modelBone.floatA8 = 0.0f;
+        } else {
+            modelBone.floatA8 = M2BoneBlendWeight(modelBone, this->m_scene->m_time);
+        }
 
         uint32_t boneFlags = bone.flags | modelBone.flags;
 
@@ -3992,21 +4033,11 @@ void CM2Model::UnsetBoneSequence(uint32_t boneId, int32_t a3, int32_t a4) {
         // promotion is skipped, so a fast stream of stops cannot keep restarting the blend.
         bool promote = true;
 
-        if (modelBone.secondarySequence.uint8 != 0xFFFF) {
-            float t = static_cast<float>(static_cast<int32_t>(modelBone.uint9C) - static_cast<int32_t>(this->m_scene->m_time)) * modelBone.floatA0;
-            float weight = 0.0f;
-
-            if (t >= 0.0f && t <= 1.0f) {
-                weight = (3.0f - (t + t)) * t * t;
-            } else if (t > 1.0f) {
-                weight = 1.0f;
-            }
-
-            weight = weight * modelBone.floatA4;
-
-            if (weight > 0.5f) {
-                promote = false;
-            }
+        // The same expression AnimateMT stores into floatA8, which is why it is one
+        // function now rather than two copies that could drift.
+        if (modelBone.secondarySequence.uint8 != 0xFFFF
+                && M2BoneBlendWeight(modelBone, this->m_scene->m_time) > 0.5f) {
+            promote = false;
         }
 
         if (promote) {
