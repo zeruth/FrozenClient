@@ -49177,7 +49177,7 @@
   "status": "ported"
  },
  "00979740": {
-  "branchRatio": 0.75,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -49224,6 +49224,22 @@
   "refSize": 425,
   "status": "ported"
  },
+ "0097acb0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Substep",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 322,
+  "status": "ported"
+ },
  "0097d820": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49254,6 +49270,38 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 687,
+  "status": "ported"
+ },
+ "0097db80": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateAndSpawnChildren",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 396,
+  "status": "ported"
+ },
+ "0097dd20": {
+  "branchRatio": 0.591,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Step",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 604,
   "status": "ported"
  },
  "00980ed0": {

@@ -1,6 +1,7 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
 #include <cstring>
+#include "util/Log.hpp"
 #include "world/ParticleFx.hpp"
 
 // Flush a velocity's denormals to zero, component by component, leaving an exact zero alone.
@@ -183,6 +184,23 @@ float CM2ParticleEmitter::RandomSpeed() {
     return (M2ParticleRandSigned(this->m_seed) * this->m_variation + 1.0f) * this->m_speed;
 }
 
+// This particle's own lifespan: the emitter's base, plus its own stored draw against the
+// emitter's variation, floored so nothing downstream divides by zero.
+//
+// The reference inlines this at both of its sites (0x979771 in the ground-snap and 0x97de9b in the
+// step) with the same instruction sequence, so it is one expression written twice rather than a
+// call. The ASSOCIATION is worth preserving: both multiply `raw * variation * (1/32767)`, taking
+// the raw int16 straight off the particle, and NOT `float(raw)/32767 * variation`. 0x009ea0b4
+// holds 3.0518509e-05, the float nearest 1/32767. Same value, different rounding.
+//
+// The 0.001 floor is 0x009e1134, and the step takes the larger of the two the same way.
+float CM2ParticleEmitter::ParticleLifespan(const Particle& p) const {
+    float life = static_cast<float>(p.m_lifeVariation.n) * this->m_lifespanVariation
+        * (1.0f / 32767.0f) + this->m_lifespan;
+
+    return life < 0.001f ? 0.001f : life;
+}
+
 // ref: FUN_00979740
 void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
     if (!g_m2ParticleHeightQuery || !this->m_groundOffset) {
@@ -195,13 +213,7 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
         return;
     }
 
-    // This particle's own lifespan, from the draw the creator stored in it. The floor is the same
-    // 0.001 the emitter uses elsewhere and keeps the division below finite.
-    float life = static_cast<float>(p.m_lifeVariation) * this->m_lifespanVariation + this->m_lifespan;
-
-    if (life < 0.001f) {
-        life = 0.001f;
-    }
+    float life = this->ParticleLifespan(p);
 
     C2Vector range;
     M2PartTrackEval2(range, *this->m_groundOffset, p.m_age / life);
@@ -430,9 +442,10 @@ bool CM2ParticleEmitter::IntegrateParticle(Particle& p, float dt) const {
         float rest;
 
         if (!(this->m_flags & 0x200)) {
-            dx = p.m_position.x - this->m_position.x;
-            rest = (p.m_position.y - this->m_position.y) * vyDt
-                + (p.m_position.z - this->m_position.z) * vzDt;
+            // The emitter's position is its placement matrix's translation row.
+            dx = p.m_position.x - this->m_placement.d0;
+            rest = (p.m_position.y - this->m_placement.d1) * vyDt
+                + (p.m_position.z - this->m_placement.d2) * vzDt;
         } else {
             dx = p.m_position.x;
             rest = p.m_position.y * vyDt + p.m_position.z * vzDt;
@@ -454,6 +467,229 @@ bool CM2ParticleEmitter::IntegrateParticle(Particle& p, float dt) const {
 // is the 0.001 at 0x009e1134, read out of the binary -- the same one the reference uses to convert
 // scene milliseconds to seconds, which is why it turns up in two unrelated places.
 //
+void CM2ParticleEmitter::RetireParticle(Particle& p, uint32_t liveIndex) {
+    // The kill hook. The reference reaches it as vtable[3]; frozen has no subclass that overrides
+    // it yet, so it is a direct call rather than a virtual -- the dispatch exists to let a derived
+    // emitter release whatever its particles carry, and the plain pool carries nothing.
+    (void)p;
+
+    uint32_t slot = this->m_liveIndices[liveIndex];
+
+    // The slot goes back to the free list, and the last live entry takes the dead one's place, so
+    // the walk carries on from the same index without shuffling everything down.
+    //
+    // The reference reaches both arrays through a growable-array Add (0x00480fd0) and Pop
+    // (0x0097d7b0) on containers at +0x5c and +0x4c -- which is where m_freeCount/+0x60 and
+    // m_liveCount/+0x50 come from, each being its container's count field. Frozen allocates both
+    // arrays at the pool size up front, so they never grow and the push and pop are these two
+    // lines. Its degenerate arm, taken when the live count is already zero, dereferences a null
+    // pointer; it is unreachable from inside a loop that only runs while the count is non-zero,
+    // and is not reproduced.
+    this->m_freeIndices[this->m_freeCount++] = slot;
+
+    this->m_liveCount--;
+    this->m_liveIndices[liveIndex] = this->m_liveIndices[this->m_liveCount];
+}
+
+// Integrate one particle, then let every child emitter emit from where it now is.
+//
+// This is where a trail is made. For each child the emitter's OWN placement translation is moved
+// to the particle's position, the child emits through the parent's matrix, and the translation is
+// put back -- so a child's particles appear at the parent particle and inherit the parent's
+// orientation, without the child needing a placement of its own.
+//
+// Ghidra drops ECX at that inner Emit call, which matters: the receiver decides whether the parent
+// or the child is emitting, and the two readings mean opposite things. ECX is loaded at 0x97dc4c
+// as `m_children[i]` and is not reloaded before the call at 0x97dcd0, so it is the CHILD that
+// emits, through the parent's matrix.
+//
+// ref: FUN_0097db80
+bool CM2ParticleEmitter::IntegrateAndSpawnChildren(float dt, Particle& p, uint32_t liveIndex) {
+    // Saved BEFORE integrating: this is where the particle was, and a child with flag 0x2000 uses
+    // it as its previous position so its own interpolated placement lays particles along the
+    // segment the parent particle just travelled.
+    C3Vector before = p.m_position;
+
+    bool alive;
+
+    if (this->m_particleKind == 0) {
+        alive = this->IntegrateParticle(p, dt);
+    } else {
+        // The 0x40-byte pool's integrator (FUN_0097bdb0) updates the CM2Model each of its
+        // particles carries and then delegates to the same arithmetic as the plain one. It is not
+        // ported, and nothing in frozen allocates m_modelPool, so this cannot currently be
+        // reached. Say so rather than integrating a model particle as a plain one: the pools have
+        // different strides and reading one as the other walks off the end.
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter: model-pool particles are not integrated yet "
+                     "(FUN_0097bdb0 unported); killing the particle instead of misreading it");
+
+        alive = false;
+    }
+
+    if (!alive) {
+        this->RetireParticle(p, liveIndex);
+
+        return false;
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        CM2ParticleEmitter* child = this->m_children[c];
+
+        C3Vector saved = { this->m_placement.d0, this->m_placement.d1, this->m_placement.d2 };
+
+        this->m_placement.d0 = p.m_position.x;
+        this->m_placement.d1 = p.m_position.y;
+        this->m_placement.d2 = p.m_position.z;
+
+        // 0x800: the child's particles start with this one's velocity, so a trail keeps moving
+        // with whatever shed it.
+        if (child->m_flags & 0x800) {
+            child->m_inheritedVelocity = p.m_velocity;
+        }
+
+        // 0x2000: the child interpolates its spawns along the segment this particle just covered.
+        if (child->m_flags & 0x2000) {
+            child->m_prevPosition = before;
+        }
+
+        child->Emit(dt, this->m_placement);
+
+        this->m_placement.d0 = saved.x;
+        this->m_placement.d1 = saved.y;
+        this->m_placement.d2 = saved.z;
+    }
+
+    return true;
+}
+
+// Age every live particle, then recurse into the children.
+//
+// `fromParent` is zero only when the emitter is being stepped on its own account. A child driven
+// through its parent passes one and does NOT emit here -- the parent has already emitted on its
+// behalf, from each of its own particles, in IntegrateAndSpawnChildren.
+//
+// ref: FUN_0097dd20
+void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
+    // The decompiler renders this guard `dt < 0.0 != (dt == 0.0)`, which is the x87
+    // compare-and-branch pattern rather than anything meaningful. As instructions (0x97dd2c) it is
+    // `fcom` + `fnstsw` + `testb $0x41, %ah` + `jnp`, and jnp on the C0|C3 mask is taken when
+    // exactly one bit is set -- C0 for less-than, C3 for equal. So it returns on dt < 0 OR dt == 0,
+    // and a zero-length frame does not emit. Written as `<=` so a NaN dt falls through, which is
+    // what the instruction does too.
+    if (dt <= 0.0f) {
+        return;
+    }
+
+    if ((this->m_flags & 0x3) == 0x3
+            || ((this->m_flags & 0x40) && (this->m_flags & 0x2))) {
+        // vtable[0]: the reference's per-step hook, which a derived emitter uses to refresh its
+        // placement before anything spawns. Nothing in frozen overrides it.
+    }
+
+    if (fromParent == 0) {
+        this->Emit(dt, this->m_placement);
+    }
+
+    if (this->m_pool && this->m_liveIndices && this->m_freeIndices) {
+        // Two branches over the same loop, and the split is the whole reason +0xa8 exists. With no
+        // lifespan variation every particle shares one lifetime, so the comparison is hoisted out;
+        // with variation each particle's own draw has to be decoded inside it. The reference
+        // writes both rather than always paying for the second.
+        if (this->m_lifespanVariation == 0.0f) {
+            float life = this->m_lifespan < 0.001f ? 0.001f : this->m_lifespan;
+
+            for (uint32_t i = 0; i < this->m_liveCount;) {
+                Particle& p = this->m_pool[this->m_liveIndices[i]];
+
+                p.m_age += dt;
+
+                if (p.m_age < life) {
+                    if (this->IntegrateAndSpawnChildren(dt, p, i)) {
+                        i++;
+                    }
+                } else {
+                    this->RetireParticle(p, i);
+                }
+            }
+        } else {
+            for (uint32_t i = 0; i < this->m_liveCount;) {
+                Particle& p = this->m_pool[this->m_liveIndices[i]];
+
+                p.m_age += dt;
+
+                if (p.m_age < this->ParticleLifespan(p)) {
+                    if (this->IntegrateAndSpawnChildren(dt, p, i)) {
+                        i++;
+                    }
+                } else {
+                    this->RetireParticle(p, i);
+                }
+            }
+        }
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        // Children go through the substepper rather than straight to Step, so a child of a
+        // fast-moving parent is still integrated in bounded slices.
+        this->m_children[c]->Substep(dt, 1);
+    }
+}
+
+// Split a frame into fixed 0.1s slices and step each one.
+//
+// ref: FUN_0097acb0
+void CM2ParticleEmitter::Substep(float dt, int32_t fromParent) {
+    // 0x009e3004 = 0.1, the slice; 0x009e30cc = 10.0, its reciprocal.
+    const float SLICE = 0.1f;
+
+    // A frame no longer than one slice needs no splitting, and neither does a negative one -- the
+    // reference passes 0.0 in that case, which Step then rejects at its own guard.
+    if (!(dt >= 0.0f) || !(SLICE < dt)) {
+        this->m_substepDelta = this->m_frameDelta;
+
+        this->Step(dt < 0.0f ? 0.0f : dt, fromParent);
+
+        return;
+    }
+
+    float slices = floorf(dt * 10.0f);
+
+    // The remainder is taken against the UNCAPPED count, before the lifespan cap below. That is
+    // deliberate: when the cap bites, the emitter simulates less than the full frame rather than
+    // stretching the slices, so a short-lived emitter is not over-integrated.
+    float remainder = dt - slices * SLICE;
+
+    float lifeCap = floorf(this->m_lifespan * 10.0f);
+
+    if (lifeCap < slices) {
+        slices = lifeCap;
+    }
+
+    // `fsubs 0.5; fistpl` at 0x97ad62. fistp rounds by the current x87 mode -- round-to-nearest,
+    // ties-to-even -- so this is the usual float-to-int floor idiom. Applied to a value that is
+    // ALREADY an exact integer it lands exactly on a tie every time, and ties-to-even means an odd
+    // count comes back one lower: 3 slices become 2, 4 stay 4. nearbyintf reads the same rounding
+    // mode, so it reproduces that rather than papering over it. Do not "fix" it to slices - 1 or
+    // to slices; neither matches.
+    int32_t full = static_cast<int32_t>(nearbyintf(slices - 0.5f));
+
+    // The frame's movement is divided across every step, the remainder step included -- hence
+    // full + 1. The reference converts that count as UNSIGNED (it adds 2^32 when the int is
+    // negative, 0x009e23ac), so the cast is to uint32_t.
+    float perStep = 1.0f / static_cast<float>(static_cast<uint32_t>(full + 1));
+
+    this->m_substepDelta.x = this->m_frameDelta.x * perStep;
+    this->m_substepDelta.y = this->m_frameDelta.y * perStep;
+    this->m_substepDelta.z = this->m_frameDelta.z * perStep;
+
+    for (; full != 0; full--) {
+        this->Step(SLICE, fromParent);
+    }
+
+    this->Step(remainder, fromParent);
+}
+
 // ref: FUN_00978da0
 void CM2ParticleEmitter::SetZSource(float zSource) {
     this->m_zSource = zSource;

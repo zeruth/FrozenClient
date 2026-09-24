@@ -86,9 +86,11 @@ class CM2ParticleEmitter {
         // model's animated tracks.
         float m_rate = 0.0f;
         float m_rateVariation = 0.0f;
-        // +0x6c: child emitters. FUN_0097ba30 counts a subtree by recursing through these, so an
-        // emitter is a node rather than a leaf.
+        // +0x6c and +0x70: child emitters. FUN_0097ba30 counts a subtree by recursing through
+        // these, so an emitter is a node rather than a leaf. The step walks the array at +0x70 as
+        // `CM2ParticleEmitter*[]` -- 0x97df56 loads `(%ebx)` straight into ECX for a thiscall.
         uint32_t m_childCount = 0;
+        CM2ParticleEmitter** m_children = nullptr;
         // +0x98: which pool is in use. Zero means the plain 0x20-byte one.
         uint32_t m_particleKind = 0;
         // +0xa4 and +0xa8: the base lifespan and its variation. The driver writes the base from
@@ -127,11 +129,21 @@ class CM2ParticleEmitter {
         // 0x200 suppresses the extra transform in placement; 0x800 and 0x80000 gate the drag and
         // the frame-delta scaling in the update. The driver raises 0x1 and 0x40 itself.
         uint32_t m_flags = 0;
-        // +0x1b4 / +0x1c4 / +0x1d0: three positions. The update copies +0x1b4 into +0x1d0 before
-        // anything else, so +0x1d0 is LAST frame's and +0x1b4 is this frame's; placement writes
-        // +0x1c4 from the caller's vector.
-        C3Vector m_position;
+        // +0x184: the emitter's placement matrix -- and the emitter's POSITION is its translation
+        // row. 0x184 + 0x30 is 0x1b4, which an earlier pass recorded as a separate m_position
+        // field; it never was one. Three things agree: the step passes `this + 0x184` to Emit,
+        // whose parameter is a matrix; m_origin below lands at exactly 0x184 + 0x40, immediately
+        // past the matrix's sixteen floats; and the integrate wrapper saves +0x1b4/+0x1b8/+0x1bc
+        // as a unit, overwrites them with a particle's position and puts them back.
+        //
+        // So position and placement are one thing here, and writing the matrix moves the emitter
+        // by construction.
+        C44Matrix m_placement;
+        // +0x1c4: where placement puts the emitter's own origin, from the caller's vector.
         C3Vector m_origin;
+        // +0x1d0: last frame's position, which is what lets emission interpolate along the segment
+        // travelled. The integrate wrapper also writes it on a CHILD emitter, from the parent
+        // particle's pre-step position, so a trail follows the particle that sheds it.
         C3Vector m_prevPosition;
         // +0x1dc: the accumulated time the 0x800 branch of the update advances.
         float m_time = 0.0f;
@@ -153,6 +165,28 @@ class CM2ParticleEmitter {
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
+
+        // Split `dt` into fixed 0.1s slices and step each, so a fast-moving emitter integrates
+        // in bounded increments rather than one long jump. ref: FUN_0097acb0
+        void Substep(float dt, int32_t fromParent);
+
+        // Age every live particle by `dt`, integrating or killing each, then recurse into the
+        // children. `fromParent` is non-zero when a parent is driving this emitter, and suppresses
+        // emission because the parent has already emitted on its behalf. ref: FUN_0097dd20
+        void Step(float dt, int32_t fromParent);
+
+        // Integrate one particle and, if it survived, let every child emitter emit from where it
+        // now is. Returns false when the particle was killed and retired, so the caller must not
+        // advance its index. ref: FUN_0097db80
+        bool IntegrateAndSpawnChildren(float dt, Particle& particle, uint32_t liveIndex);
+
+        // Kill one live particle: the kill hook, then swap-remove it from the live array and
+        // return its slot to the free list.
+        void RetireParticle(Particle& particle, uint32_t liveIndex);
+
+        // This particle's own lifespan, floored. See the definition for why the multiply order
+        // matters. ref: inlined at 0x979771 and 0x97de9b
+        float ParticleLifespan(const Particle& particle) const;
 
         // Take a free slot and fill it. Does nothing when the emitter is full.
         // ref: FUN_0097d820
