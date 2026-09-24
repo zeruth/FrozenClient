@@ -37686,7 +37686,7 @@
   "branchRatio": 0.205,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.346,
+  "fidelity": 0.288,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -38131,16 +38131,16 @@
   "status": "ported"
  },
  "00828a00": {
-  "branchRatio": 0.05,
+  "branchRatio": 0.425,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "M2ParticleTrackDrives",
-  "frozenSize": 0,
+  "frozen": "CM2Model::AnimateST",
+  "frozenSize": 1299,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -38291,7 +38291,7 @@
   "status": "ported"
  },
  "008309c0": {
-  "branchRatio": 0.476,
+  "branchRatio": 0.5,
   "constOverlap": 0.042,
   "faithful": false,
   "fidelity": 0.556,
@@ -38300,7 +38300,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateParticleEmitter",
-  "frozenSize": 1055,
+  "frozenSize": 1089,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1011,

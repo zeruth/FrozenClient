@@ -929,7 +929,6 @@ void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const 
 // (0x00835690), SetDirection (0x00834ae0) and SetVisible (0x008356f0), which is this
 // function's light loop and nothing else in the class. Its entry test, `[+0x10] & 1`, is
 // m_loaded.
-// ref: FUN_00828a00
 // The runtime half of every emitter, animated through the same M2AnimateTrack that drives every
 // other per-model track, against the emitter's own bone -- so a torch on a moving arm emits along
 // the arm rather than along the model.
@@ -1139,6 +1138,16 @@ void CM2Model::AnimateParticleTracks() {
     }
 }
 
+// The tag below spent at least two sessions on the wrong function. It sat above
+// AnimateParticleTracks -- itself probably displaced by an earlier insertion -- and moved again
+// onto M2ParticleTrackDrives when that static was added in front of it, which is when the
+// callgraph diff on CM2Scene::Animate made it visible by listing a brand-new static as one of the
+// reference's own callees.
+//
+// It belongs here: FUN_008309c0's tail calls FUN_00828a00 on each spawned model, which is
+// AnimateST's job, and AnimateST had no tag at all.
+//
+// ref: FUN_00828a00
 void CM2Model::AnimateST() {
     if (!this->m_loaded) {
         return;
