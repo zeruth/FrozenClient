@@ -9560,7 +9560,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "PumpBlpTextureAsync",
-  "frozenSize": 1212,
+  "frozenSize": 1356,
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 684,
@@ -9656,7 +9656,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1922,
+  "frozenSize": 2037,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 234,
@@ -9736,7 +9736,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 1922,
+  "frozenSize": 2037,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,
@@ -38035,7 +38035,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateParticleTracks",
-  "frozenSize": 0,
+  "frozenSize": 727,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -38115,7 +38115,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetSequenceInfo",
-  "frozenSize": 0,
+  "frozenSize": 695,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 706,
@@ -38179,7 +38179,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5592,
+  "frozenSize": 5140,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 6267,
@@ -38355,7 +38355,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 3168,
+  "frozenSize": 3424,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -49032,6 +49032,22 @@
   "refSize": 151,
   "status": "ported"
  },
+ "00978b70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleFlushDenormals",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
  "00978da0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49046,6 +49062,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 39,
+  "status": "ported"
+ },
+ "00979bb0": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::IntegrateParticle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 425,
   "status": "ported"
  },
  "00980f70": {

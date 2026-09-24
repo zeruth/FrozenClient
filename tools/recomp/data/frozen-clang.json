@@ -77400,6 +77400,49 @@
 "refs": [],
 "line": 3477
 },
+"M2ParticleFlushDenormals": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"fabsf",
+"fabsf",
+"fabsf"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"9.99999994e-09f"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 12
+},
+"CM2ParticleEmitter::IntegrateParticle": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2ParticleFlushDenormals",
+"M2ParticleFlushDenormals"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0.5f",
+"0x1000",
+"0x200",
+"0x80000",
+"1.0f"
+],
+"branches": 7,
+"stub": false,
+"lines": 70,
+"refs": [],
+"line": 36
+},
 "CM2ParticleEmitter::SetZSource": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -77416,7 +77459,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 13
+"line": 116
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

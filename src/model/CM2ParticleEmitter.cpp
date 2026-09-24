@@ -1,6 +1,109 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
 
+// Flush a velocity's denormals to zero, component by component, leaving an exact zero alone.
+//
+// The threshold is the 1e-8 at 0x00a9806c, read out of the binary. It matters because a particle's
+// velocity is multiplied by dt every step and then damped by drag, so a component that has decayed
+// into the denormal range keeps costing full denormal-arithmetic penalties on every step of every
+// particle while contributing nothing that could ever be seen.
+//
+// ref: FUN_00978b70
+static void M2ParticleFlushDenormals(C3Vector& v) {
+    if (v.x != 0.0f && fabsf(v.x) < 9.99999994e-09f) {
+        v.x = 0.0f;
+    }
+
+    if (v.y != 0.0f && fabsf(v.y) < 9.99999994e-09f) {
+        v.y = 0.0f;
+    }
+
+    if (v.z != 0.0f && fabsf(v.z) < 9.99999994e-09f) {
+        v.z = 0.0f;
+    }
+}
+
+// One particle, one step. Semi-implicit: the position takes the OLD velocity, and gravity
+// contributes its half-step term to z as well as changing the velocity, which is what keeps a
+// ballistic arc from drifting with the step size.
+//
+// The order below is the reference's and matters in two places. The velocity is sampled BEFORE the
+// position is moved, and those sampled values -- not the post-step ones -- are what the cull at
+// the end uses. And the wind is applied before the integration rather than folded into it, so a
+// particle crossing m_windTime during a step gets the whole step's wind or none of it.
+//
+// ref: FUN_00979bb0
+bool CM2ParticleEmitter::IntegrateParticle(Particle& p, float dt) const {
+    // Wind, while the particle is young enough for it.
+    if (p.m_age < this->m_windTime) {
+        p.m_velocity.x += this->m_wind.x * dt;
+        p.m_velocity.y += this->m_wind.y * dt;
+        p.m_velocity.z += this->m_wind.z * dt;
+
+        M2ParticleFlushDenormals(p.m_velocity);
+    }
+
+    // Carry the emitter's own movement into particles that are not brand new. The age test keeps a
+    // particle spawned during this step from being dragged by a motion that happened before it
+    // existed.
+    if ((this->m_flags & 0x80000) && dt + dt < p.m_age) {
+        p.m_position.x += this->m_substepDelta.x;
+        p.m_position.y += this->m_substepDelta.y;
+        p.m_position.z += this->m_substepDelta.z;
+    }
+
+    float vx = p.m_velocity.x;
+    float vyDt = p.m_velocity.y * dt;
+    float vzDt = p.m_velocity.z * dt;
+
+    p.m_position.x += vx * dt;
+    p.m_position.y += vyDt;
+    p.m_position.z = (p.m_position.z - this->m_gravity * dt * dt * 0.5f) + vzDt;
+
+    p.m_velocity.z -= this->m_gravity * dt;
+
+    if (this->m_drag != 0.0f) {
+        float f = dt * this->m_drag;
+
+        if (f > 1.0f) {
+            f = 1.0f;
+        }
+
+        p.m_velocity.x -= p.m_velocity.x * f;
+        p.m_velocity.y -= p.m_velocity.y * f;
+        p.m_velocity.z -= p.m_velocity.z * f;
+    }
+
+    M2ParticleFlushDenormals(p.m_velocity);
+
+    // The divergence cull, for emitters that carry flag 0x1000. The threshold it compares against
+    // is the 0.0 at 0x009e418c, so the test is purely a sign: kill the particle the moment it
+    // stops approaching the emitter and starts receding. That is what makes an implosion collapse
+    // inward and stop rather than pass through and fly out the far side.
+    //
+    // Flag 0x200 measures from the origin instead of from the emitter's current position, which is
+    // the same choice that flag makes in the placement code.
+    if (this->m_flags & 0x1000) {
+        float dx;
+        float rest;
+
+        if (!(this->m_flags & 0x200)) {
+            dx = p.m_position.x - this->m_position.x;
+            rest = (p.m_position.y - this->m_position.y) * vyDt
+                + (p.m_position.z - this->m_position.z) * vzDt;
+        } else {
+            dx = p.m_position.x;
+            rest = p.m_position.y * vyDt + p.m_position.z * vzDt;
+        }
+
+        if (dx * vx * dt + rest > 0.0f) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // The z source arrives from the driver as the animated value of M2Particle::zsourceTrack, and
 // anything under a thousandth is stored as a hard zero rather than kept.
 //

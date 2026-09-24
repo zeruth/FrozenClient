@@ -41,7 +41,14 @@ class CM2ParticleEmitter {
         // The age is the FIRST float of either: the step reads `*p`, adds the delta and compares
         // the result against the lifespan before deciding to integrate or kill.
         struct Particle {
+            // +0x00. The step reads this, adds the delta and compares the result against the
+            // emitter's lifespan before deciding to integrate or kill.
             float m_age;
+            // +0x04 and +0x10, confirmed twice over: the integrator moves these, and the wrapper
+            // above it saves +0x04..+0x0c as the pre-step position and hands +0x10..+0x18 to a
+            // child emitter as its inherited velocity.
+            C3Vector m_position;
+            C3Vector m_velocity;
         };
 
         // Member variables. Offsets are the reference's.
@@ -71,6 +78,13 @@ class CM2ParticleEmitter {
         // than storing it (FUN_00978da0). A z source that small is meant to be off, and leaving a
         // denormal there would divide badly downstream.
         float m_zSource = 0.0f;
+        // +0x168: drag. Zero disables it; otherwise each step takes `min(1, drag * dt)` of the
+        // velocity away, which is an exponential decay sampled per step rather than per second.
+        float m_drag = 0.0f;
+        // +0x16c and +0x178: a constant acceleration applied only while a particle is younger than
+        // m_windTime. M2Particle carries these as windVector and windTime.
+        C3Vector m_wind;
+        float m_windTime = 0.0f;
         // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives.
         float m_alpha = 0.0f;
         // +0x134: the flag word everything branches on. Known bits, from the two functions that
@@ -96,6 +110,10 @@ class CM2ParticleEmitter {
         // Member functions
         // ref: FUN_00978da0
         void SetZSource(float zSource);
+
+        // Advance one particle of the plain pool by `dt`. Returns false when the particle should
+        // be killed rather than kept. ref: FUN_00979bb0
+        bool IntegrateParticle(Particle& particle, float dt) const;
 };
 
 #endif

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 00:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 00:17 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3134 (+1) (11.5%) | 700.2k (12.7%) |
-| &nbsp;&nbsp;ported | 2386 (+1) | 515.9k |
+| mapped to a frozen function | 3136 (+2) (11.5%) | 700.7k (12.7%) |
+| &nbsp;&nbsp;ported | 2388 (+2) | 516.5k |
 | &nbsp;&nbsp;stub (unimplemented body) | 690 (=) | 137.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1217 (+1) (4.5%)** | **161.0k (2.9%)** |
-| unmapped | 24026 | 4.70M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 536 (+1) (9.7%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 546 (+1) (9.4%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1219 (+2) (4.5%)** | **161.5k (2.9%)** |
+| unmapped | 24024 | 4.70M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 538 (+2) (9.7%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 548 (+2) (9.5%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 269 (=) (5.9%)** | |
-| frozen functions (src/, from PDB + source) | 12229, stubs 1819 | |
+| frozen functions (src/, from PDB + source) | 12232, stubs 1819 | |
 
-Match evidence: annotated 910, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 258, sticky 22, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 912, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 258, sticky 22, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 00:05 -- mapped 3133, ported 2385, stub 690, spine mapped 535.
+Previous run: 2026-09-24 00:13 -- mapped 3134, ported 2386, stub 690, spine mapped 536.
 
 ## Lua API coverage (binding tables)
 
@@ -162,7 +162,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Minigame_C.cpp | 352 | 50.8k | 193 (54.8%) | 43.3% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 29 (12.7%) | 13.0% | 10 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.8% | 30 | 0 | 26 |
-| CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 9 (4.5%) | 2.8% | 0 | 0 | 120 |
+| CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 11 (5.6%) | 3.9% | 0 | 0 | 120 |
 | M2Shared.cpp | 65 | 45.9k | 10 (15.4%) | 7.7% | 1 | 0 | 19 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 11 (6.0%) | 5.5% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 7 | 2 | 0 |
@@ -566,7 +566,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `GetPredAdvancedBy0x1` | m4vh263dec | 8257 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CFF_Parse_CharStrings` | lib/freetype-2.0 | 7964 | vendor/freetype-2.0.9/src/cff/cffgload.c |
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
-| `ParticleFxRenderImpl` | world | 7268 | src/world/ParticleFx.cpp |
+| `ParticleFxRenderImpl` | world | 7220 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `std::_Matcher3<wchar_t,std::regex_traits<wchar_t>,wchar_t const *,void>::_Match_pat` | glue | 4820 |  |
 | `SHA1_Transform` | lib/common | 4679 | lib/common/common/SHA1.cpp |
@@ -581,9 +581,9 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
 | `LoadTile` | world | 3560 | src/world/Terrain.cpp |
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
-| `ParticleFxUpdateModel` | world | 3252 | src/world/ParticleFx.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
+| `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `RenderWmos` | world | 2898 | src/world/Terrain.cpp |
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
@@ -732,7 +732,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
-| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:22 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:24 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:33 | 3130 (11.5%) | 1213 (4.5%) | 690 | 532/5529 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 23:25 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-24 00:05 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-24 00:13 | 3134 (11.5%) | 1217 (4.5%) | 690 | 536/5529 | 2924/2964 | 1493 |
+| 2026-09-24 00:17 | 3136 (11.5%) | 1219 (4.5%) | 690 | 538/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 
