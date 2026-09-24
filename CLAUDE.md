@@ -330,6 +330,8 @@ seen running — treat them as suspect until a run confirms them.
   depth-stencil) and restoring the captured default surfaces when passed null. Render-target
   *texture creation* already worked (`D3DUSAGE_RENDERTARGET` + `D3DPOOL_DEFAULT`); only the binding
   was missing. This unblocks the FFX glow and the map shadow map — both still need their own ports.
-  Only the D3D backend implements the hook; the GL backends inherit a no-op.
+  The D3D and GLES backends implement the hook; GLL still inherits a no-op. On GLES a target the
+  driver cannot render to (R32F without `EXT_color_buffer_float`) turns the pass into a no-op
+  rather than letting it draw into the frame.
 - **Unit movement.** Not ported, so ribbons and footprints would draw nothing and cannot be
   evaluated yet.

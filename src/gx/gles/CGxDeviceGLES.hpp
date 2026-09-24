@@ -35,6 +35,10 @@ class CGxDeviceGLES : public CGxDevice {
             GLint fogParams = -1;
             GLint fogColor = -1;
             int32_t fogLinear = 0;
+            // The values last sent to this program, so an unchanged uniform is not re-sent
+            float sentAlphaRef = -2.0f;
+            float sentFogParams[4] = { -1.0f, -1.0f, -1.0f, -1.0f };
+            float sentFogColor[4] = { -1.0f, -1.0f, -1.0f, -1.0f };
         };
 
         struct GlesTexture {
@@ -89,9 +93,16 @@ class CGxDeviceGLES : public CGxDevice {
         int32_t m_presentY = 0;
         int32_t m_presentWidth = 0;
         int32_t m_presentHeight = 0;
+        GLuint m_rtFramebuffer = 0;
+        CGxTex* m_rtTextures[GxBuffers_Last] = {};
+        uint32_t m_rtPlanes[GxBuffers_Last] = {};
+        C2iVector m_rtSize = { 0, 0 };
+        int32_t m_rtIncomplete = 0;
+        int32_t m_rtIncompleteLogged = 0;
 
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*);
+        virtual void IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane);
         virtual void IRsSendToHw(EGxRenderState);
         virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat&);
         virtual int32_t DeviceSetFormat(const CGxFormat&);
@@ -120,6 +131,7 @@ class CGxDeviceGLES : public CGxDevice {
         void IOffscreenSetup();
         int32_t ICreateSurface();
         void IOffscreenDestroy();
+        void IRenderTargetApply();
         char* IBufLock(CGxBuf* buf);
         void IBufUnlock(CGxBuf* buf);
         GlesPool* IPoolGet(CGxPool* pool);

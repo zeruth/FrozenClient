@@ -379,7 +379,9 @@ void CGxDeviceGLES::ScenePresent() {
 }
 
 void CGxDeviceGLES::SceneClear(uint32_t mask, CImVector color) {
-    if (this->m_eglContext == EGL_NO_CONTEXT) {
+    // An incomplete render target draws nothing; above all it must not clear the frame buffer
+    // in its place
+    if (this->m_eglContext == EGL_NO_CONTEXT || this->m_rtIncomplete) {
         return;
     }
 
@@ -577,7 +579,27 @@ void CGxDeviceGLES::IPoolFlush(CGxPool* pool) {
         uint32_t end = std::min(glesPool->dirtyMax, size);
 
         if (glesPool->dirtyMin < end) {
-            glBufferSubData(target, glesPool->dirtyMin, end - glesPool->dirtyMin, static_cast<char*>(pool->m_mem) + glesPool->dirtyMin);
+            uint32_t offset = glesPool->dirtyMin;
+            uint32_t length = end - offset;
+            auto src = static_cast<char*>(pool->m_mem) + offset;
+            void* dst = nullptr;
+
+            // A stream pool is the D3D ring: it only writes past what earlier draws read until it
+            // wraps, and the wrap orphans the buffer above, which is D3DLOCK_NOOVERWRITE and
+            // D3DLOCK_DISCARD. The write is therefore safe without synchronization. It must not go
+            // through glBufferSubData: the buffer is still being read by the frame's earlier
+            // draws, and tiled mobile drivers answer that by copying the whole multi-megabyte
+            // pool (or stalling) before every UI quad and every terrain chunk.
+            if (pool->m_usage == GxPoolUsage_Stream) {
+                dst = glMapBufferRange(target, offset, length, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+            }
+
+            if (dst) {
+                memcpy(dst, src, length);
+                glUnmapBuffer(target);
+            } else {
+                glBufferSubData(target, offset, length, src);
+            }
         }
     }
 
@@ -727,17 +749,22 @@ void CGxDeviceGLES::IBindProgram() {
         this->m_curProgram = program;
     }
 
-    if (program->alphaRef >= 0) {
+    // Uniforms are program state, so only a value that changed since this program last saw it
+    // needs sending; this runs for every draw
+    if (program->alphaRef >= 0 && program->sentAlphaRef != this->m_alphaRef) {
         glUniform1f(program->alphaRef, this->m_alphaRef);
+        program->sentAlphaRef = this->m_alphaRef;
     }
 
     if (program->fogLinear) {
-        if (program->fogParams >= 0) {
+        if (program->fogParams >= 0 && memcmp(program->sentFogParams, this->m_fogParams, sizeof(this->m_fogParams))) {
             glUniform4fv(program->fogParams, 1, this->m_fogParams);
+            memcpy(program->sentFogParams, this->m_fogParams, sizeof(this->m_fogParams));
         }
 
-        if (program->fogColor >= 0) {
+        if (program->fogColor >= 0 && memcmp(program->sentFogColor, this->m_fogColor, sizeof(this->m_fogColor))) {
             glUniform4fv(program->fogColor, 1, this->m_fogColor);
+            memcpy(program->sentFogColor, this->m_fogColor, sizeof(this->m_fogColor));
         }
     }
 }
@@ -857,11 +884,16 @@ void CGxDeviceGLES::IXformSetViewport() {
     const auto& viewport = this->m_viewport;
     auto windowRect = this->DeviceCurWindow();
 
+    // A bound render target is its own surface: the viewport box is a fraction of it, not of the
+    // window
+    float surfaceWidth = this->m_rtSize.x > 0 ? static_cast<float>(this->m_rtSize.x) : windowRect.maxX;
+    float surfaceHeight = this->m_rtSize.y > 0 ? static_cast<float>(this->m_rtSize.y) : windowRect.maxY;
+
     // The viewport box is bottom up, which is GL's window convention
-    GLint x = static_cast<GLint>(viewport.x.l * windowRect.maxX + 0.5f);
-    GLint y = static_cast<GLint>(viewport.y.l * windowRect.maxY + 0.5f);
-    GLint width = static_cast<GLint>(viewport.x.h * windowRect.maxX + 0.5f) - x;
-    GLint height = static_cast<GLint>(viewport.y.h * windowRect.maxY + 0.5f) - y;
+    GLint x = static_cast<GLint>(viewport.x.l * surfaceWidth + 0.5f);
+    GLint y = static_cast<GLint>(viewport.y.l * surfaceHeight + 0.5f);
+    GLint width = static_cast<GLint>(viewport.x.h * surfaceWidth + 0.5f) - x;
+    GLint height = static_cast<GLint>(viewport.y.h * surfaceHeight + 0.5f) - y;
 
     glViewport(x, y, std::max(width, 0), std::max(height, 0));
     glDepthRangef(viewport.z.l, viewport.z.h);
@@ -896,7 +928,7 @@ void CGxDeviceGLES::Draw(CGxBatch* batch, int32_t indexed) {
     auto prim = CGxDeviceGLES::s_primitiveConversion[batch->m_primType];
 
 
-    if (!this->m_curProgram) {
+    if (!this->m_curProgram || this->m_rtIncomplete) {
         return;
     }
 
@@ -1447,6 +1479,20 @@ void CGxDeviceGLES::ITexUpload(CGxTex* texId) {
 
 void CGxDeviceGLES::TexDestroy(CGxTex* texId) {
     if (texId) {
+        // A destroyed target cannot stay bound
+        bool wasTarget = false;
+
+        for (int32_t buffer = 0; buffer < GxBuffers_Last; buffer++) {
+            if (this->m_rtTextures[buffer] == texId) {
+                this->m_rtTextures[buffer] = nullptr;
+                wasTarget = true;
+            }
+        }
+
+        if (wasTarget && this->m_eglContext != EGL_NO_CONTEXT) {
+            this->IRenderTargetApply();
+        }
+
         auto glesTex = static_cast<GlesTexture*>(texId->m_apiSpecificData);
 
         if (glesTex) {
@@ -1696,6 +1742,9 @@ void CGxDeviceGLES::IUpdateWindowSize() {
     if (this->m_eglContext != EGL_NO_CONTEXT) {
         this->IOffscreenSetup();
         glViewport(0, 0, renderWidth, renderHeight);
+
+        // Rebuilding the frame's target rebinds it; a pass drawing to a texture keeps its target
+        this->IRenderTargetApply();
     }
 
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Rendering %dx%d on a %dx%d surface at %d,%d %dx%d", renderWidth, renderHeight, width, height, this->m_presentX, this->m_presentY, this->m_presentWidth, this->m_presentHeight);
@@ -1755,5 +1804,79 @@ void CGxDeviceGLES::IOffscreenSetup() {
         this->IOffscreenDestroy();
         this->m_renderSize = this->m_surfaceSize;
         this->m_format.size = this->m_surfaceSize;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Render targets
+
+// Points drawing at a texture, or back at the frame buffer when both the colour and the depth
+// target are unbound. Without this the GLES device inherited the base class no-op, so a pass
+// meant for a texture drew into the frame instead: the map shadow pass, which runs after the
+// terrain and the sky, cleared the whole frame (colour and depth) to white and left only the
+// models drawn after it on screen.
+void CGxDeviceGLES::IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane) {
+    if (this->m_eglContext == EGL_NO_CONTEXT || buffer >= GxBuffers_Last) {
+        return;
+    }
+
+    if (texId && (texId->m_needsCreation || !texId->m_apiSpecificData)) {
+        this->ITexCreate(texId);
+    }
+
+    this->m_rtTextures[buffer] = texId;
+    this->m_rtPlanes[buffer] = plane;
+
+    this->IRenderTargetApply();
+}
+
+void CGxDeviceGLES::IRenderTargetApply() {
+    this->m_rtIncomplete = 0;
+    this->m_rtSize = { 0, 0 };
+    this->intF6C = 1;
+
+    auto color = this->m_rtTextures[GxBuffers_Color];
+    auto depth = this->m_rtTextures[GxBuffers_Depth];
+
+    if (!color && !depth) {
+        glBindFramebuffer(GL_FRAMEBUFFER, this->m_offscreenFramebuffer);
+        return;
+    }
+
+    if (!this->m_rtFramebuffer) {
+        glGenFramebuffers(1, &this->m_rtFramebuffer);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, this->m_rtFramebuffer);
+
+    auto colorTex = color ? static_cast<GlesTexture*>(color->m_apiSpecificData) : nullptr;
+    auto depthTex = depth ? static_cast<GlesTexture*>(depth->m_apiSpecificData) : nullptr;
+    GLuint colorName = colorTex ? colorTex->texture : 0;
+    GLuint depthName = depthTex ? depthTex->texture : 0;
+    GLint colorLevel = colorTex ? static_cast<GLint>(this->m_rtPlanes[GxBuffers_Color]) : 0;
+    GLint depthLevel = depthTex ? static_cast<GLint>(this->m_rtPlanes[GxBuffers_Depth]) : 0;
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorName, colorLevel);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthName, depthLevel);
+
+    GLenum drawBuffer = colorName ? GL_COLOR_ATTACHMENT0 : GL_NONE;
+    glDrawBuffers(1, &drawBuffer);
+
+    auto sizeFrom = color ? color : depth;
+    uint32_t plane = color ? this->m_rtPlanes[GxBuffers_Color] : this->m_rtPlanes[GxBuffers_Depth];
+    this->m_rtSize.x = std::max<int32_t>(sizeFrom->m_width >> plane, 1);
+    this->m_rtSize.y = std::max<int32_t>(sizeFrom->m_height >> plane, 1);
+
+    // A target the driver cannot render to (R32F needs EXT_color_buffer_float, for one) turns the
+    // pass into a no-op rather than letting it fall through to the frame
+    auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if ((color && !colorName) || (depth && !depthName) || status != GL_FRAMEBUFFER_COMPLETE) {
+        this->m_rtIncomplete = 1;
+
+        if (!this->m_rtIncompleteLogged) {
+            this->m_rtIncompleteLogged = 1;
+            __android_log_print(ANDROID_LOG_WARN, LOG_TAG, "Render target incomplete (0x%x, colour format %d, depth format %d); passes drawn to it are skipped", status, color ? color->m_format : -1, depth ? depth->m_format : -1);
+        }
     }
 }
