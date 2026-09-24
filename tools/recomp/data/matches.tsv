@@ -3101,6 +3101,8 @@ addr	how	frozen	evidence
 00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
 009793b0	annotated	M2PartTrackRatio	tag in src/model/CM2ParticleEmitter.cpp
 00979480	annotated	M2PartTrackEval2	tag in src/model/CM2ParticleEmitter.cpp
+00979740	annotated	CM2ParticleEmitter::GroundSnapParticle	tag in src/model/CM2ParticleEmitter.cpp
+00979870	annotated	CM2ParticleEmitter::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp

@@ -24,6 +24,9 @@ static void M2ParticleFlushDenormals(C3Vector& v) {
     }
 }
 
+M2ParticleHeightQuery g_m2ParticleHeightQuery = nullptr;
+void* g_m2ParticleHeightQueryContext = nullptr;
+
 // ref: FUN_00979330
 uint32_t M2PartTrackFindKey(const M2Array<fixed16>& times, float t) {
     uint32_t lo = 0;
@@ -175,6 +178,85 @@ void M2ParticleRandomUnitVector(C3Vector& out, CRndSeed& seed) {
 // ref: FUN_009792d0
 float CM2ParticleEmitter::RandomSpeed() {
     return (M2ParticleRandSigned(this->m_seed) * this->m_variation + 1.0f) * this->m_speed;
+}
+
+// ref: FUN_00979740
+void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
+    if (!g_m2ParticleHeightQuery || !this->m_groundOffset) {
+        return;
+    }
+
+    float groundZ = 0.0f;
+
+    if (!g_m2ParticleHeightQuery(p.m_position, groundZ, g_m2ParticleHeightQueryContext)) {
+        return;
+    }
+
+    // This particle's own lifespan, from the draw the creator stored in it. The floor is the same
+    // 0.001 the emitter uses elsewhere and keeps the division below finite.
+    float life = static_cast<float>(p.m_lifeVariation) * this->m_lifespanVariation + this->m_lifespan;
+
+    if (life < 0.001f) {
+        life = 0.001f;
+    }
+
+    C2Vector range;
+    M2PartTrackEval2(range, *this->m_groundOffset, p.m_age / life);
+
+    // The larger of the pair, which is what the reference's two-way compare picks.
+    p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;
+}
+
+// Fill one new particle.
+//
+// The age is the part to keep: a new particle starts at `rand[0,1) * dt`, NOT at zero, so a batch
+// spawned in one step is spread across that step instead of stacked on the same instant. Without
+// it an emitter pulses once a frame rather than flowing.
+//
+// ref: FUN_00979870
+void CM2ParticleEmitter::CreateParticle(Particle& p, float dt, const C44Matrix& placement) {
+    uint32_t u = CRandom::uint32(this->m_seed);
+    uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
+
+    float f;
+    memcpy(&f, &bits, sizeof(f));
+
+    float age = (f - 1.0f) * dt;
+
+    // This particle's draw against the emitter's lifespan variation, saturated and kept for the
+    // ground-snap to read back.
+    M2ParticleToFixed16(p.m_lifeVariation, M2ParticleRandSigned(this->m_seed));
+
+    if (age < 0.0f) {
+        age = 0.0f;
+    }
+
+    p.m_age = age;
+    p.m_randomTag = static_cast<uint16_t>(CRandom::uint32(this->m_seed));
+
+    p.m_position = { 0.0f, 0.0f, 0.0f };
+
+    // Flag 0x200 leaves the particle in emitter space; otherwise it is placed into the world here,
+    // and only then can it be dropped onto the ground.
+    if (!(this->m_flags & 0x200)) {
+        C3Vector placed;
+        TransformPointInPlace(placed, p.m_position, placement);
+
+        if (this->m_flags & 0x40000) {
+            this->GroundSnapParticle(p);
+        }
+    }
+
+    float speed = this->RandomSpeed();
+
+    C3Vector dir;
+    M2ParticleRandomUnitVector(dir, this->m_seed);
+
+    p.m_velocity.x = this->m_inheritedVelocity.x + dir.x * speed;
+    p.m_velocity.y = this->m_inheritedVelocity.y + dir.y * speed;
+    p.m_velocity.z = dir.z * speed + this->m_inheritedVelocity.z;
+
+    M2ParticleFlushDenormals(p.m_velocity);
 }
 
 // One particle, one step. Semi-implicit: the position takes the OLD velocity, and gravity

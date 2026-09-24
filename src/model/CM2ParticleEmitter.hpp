@@ -52,6 +52,12 @@ class CM2ParticleEmitter {
             // child emitter as its inherited velocity.
             C3Vector m_position;
             C3Vector m_velocity;
+            // +0x1c: this particle's own draw against the emitter's lifespan variation, saturated
+            // into fixed16 by the creator and read back by the ground-snap as
+            // `lifespan + fixed * lifespanVariation`.
+            fixed16 m_lifeVariation;
+            // +0x1e: a raw random word the creator draws and stores unmodified.
+            uint16_t m_randomTag;
         };
 
         // Member variables. Offsets are the reference's.
@@ -98,6 +104,9 @@ class CM2ParticleEmitter {
         // m_windTime. M2Particle carries these as windVector and windTime.
         C3Vector m_wind;
         float m_windTime = 0.0f;
+        // +0xe0: the ground-offset range, sampled over a particle's normalised age. Only the
+        // ground-snap reads it.
+        M2PartTrack<C2Vector>* m_groundOffset = nullptr;
         // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives.
         float m_alpha = 0.0f;
         // +0x134: the flag word everything branches on. Known bits, from the two functions that
@@ -115,6 +124,10 @@ class CM2ParticleEmitter {
         float m_time = 0.0f;
         // +0x1ec: the scale, taken as the length of the placement matrix's first row.
         float m_scale = 1.0f;
+        // +0x1e0: the velocity a new particle inherits. The integrate wrapper writes it into a
+        // CHILD emitter from the parent particle's own velocity, which is how a trail keeps moving
+        // with whatever shed it.
+        C3Vector m_inheritedVelocity;
         // +0x1f4: how far the emitter moved this frame, and +0x200 that delta divided across the
         // substeps the substepper chose.
         C3Vector m_frameDelta;
@@ -127,6 +140,15 @@ class CM2ParticleEmitter {
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
+
+        // Fill one new particle of the plain pool. `placement` is the emitter's world transform.
+        // ref: FUN_00979870
+        void CreateParticle(Particle& particle, float dt, const C44Matrix& placement);
+
+        // Drop a particle onto the ground, offset by the range sampled at its age. Does nothing
+        // when no height query is registered, which is also what the reference does when the query
+        // fails. ref: FUN_00979740
+        void GroundSnapParticle(Particle& particle);
 
         // A launch speed for one new particle: the emitter's speed, scaled by its variation and a
         // fresh signed draw. ref: FUN_009792d0
@@ -152,6 +174,15 @@ float M2PartTrackRatio(uint32_t& lo, uint32_t& hi, const M2Array<fixed16>& times
 
 // One 2-float part track, linearly interpolated at `t`. ref: FUN_00979480
 void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t);
+
+// The terrain height query the ground-snap calls through, and its context. The reference keeps
+// both as globals (0x00dce8c8 and 0x00dce8c4) that the world installs, and every call site checks
+// the return rather than assuming a hit -- so leaving this unset is a supported state, not a hole:
+// emitters simply do not snap to ground until the world registers one.
+typedef int32_t (*M2ParticleHeightQuery)(const C3Vector& at, float& groundZ, void* context);
+
+extern M2ParticleHeightQuery g_m2ParticleHeightQuery;
+extern void* g_m2ParticleHeightQueryContext;
 
 // Saturating float to fixed16. Anything at or beyond +/-1 clamps to the exact endpoints rather
 // than wrapping -- 0x7FFF and 0x8001, which are +1 and -1 exactly under fixed16's 1/32767 scaling.
