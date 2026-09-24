@@ -2047,6 +2047,7 @@ addr	how	frozen	evidence
 00754c30	callorder	PlayerHasEquippedItem	same slot between linked calls in 0051c690=Script_IsEquippedItem
 00763680	annotated	GenerateNodeString	tag in src/console/Screen.cpp
 00763c60	callgraph	ConsoleAccessGetEnabled	only unmatched callee of 004dd450=Script_IsConsoleActive
+00763c70	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 00763d80	annotated	CONSOLELINE::~CONSOLELINE	tag in src/console/Screen.cpp
 007644b0	annotated	ReserveLine	tag in src/console/Screen.cpp
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
@@ -2418,6 +2419,7 @@ addr	how	frozen	evidence
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
+00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"

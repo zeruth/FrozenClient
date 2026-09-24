@@ -318,7 +318,7 @@ void CM2Lighting::SetupGxFog() {
     fogColor.r = CM2Lighting::FogColorByte(this->m_fogColor.x);
     fogColor.a = 0xFF;
 
-    GxRsSet(GxRs_FogColor, static_cast<int32_t>(fogColor.value));
+    GxRsSet(GxRs_FogColor, fogColor.value);
     GxRsSet(GxRs_Fog, 1);
 }
 

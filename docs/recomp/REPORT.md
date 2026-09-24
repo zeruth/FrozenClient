@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-23 20:15 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-23 21:24 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3126 (=) (11.5%) | 698.9k (12.7%) |
-| &nbsp;&nbsp;ported | 2378 (=) | 514.7k |
-| &nbsp;&nbsp;stub (unimplemented body) | 690 (-1) | 137.7k |
+| mapped to a frozen function | 3128 (=) (11.5%) | 699.5k (12.7%) |
+| &nbsp;&nbsp;ported | 2380 (=) | 515.2k |
+| &nbsp;&nbsp;stub (unimplemented body) | 690 (=) | 137.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1211 (+1) (4.5%)** | **160.6k (2.9%)** |
-| unmapped | 24034 | 4.71M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 528 (=) (9.5%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 538 (=) (9.3%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 264 (=) (5.8%)** | |
-| frozen functions (src/, from PDB + source) | 12220, stubs 1819 | |
+| **faithful** (linked, not stub, call order >= 80%) | **1212 (=) (4.5%)** | **160.6k (2.9%)** |
+| unmapped | 24032 | 4.70M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 530 (=) (9.6%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 540 (=) (9.3%) | |
+| **render surface** (the modules that draw the world) | **4589, mapped 265 (=) (5.8%)** | |
+| frozen functions (src/, from PDB + source) | 12222, stubs 1819 | |
 
-Match evidence: annotated 904, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 257, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 906, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 257, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 20:14 -- mapped 3126, ported 2378, stub 691, spine mapped 528.
+Previous run: 2026-09-23 21:22 -- mapped 3128, ported 2380, stub 690, spine mapped 530.
 
 ## Lua API coverage (binding tables)
 
@@ -140,7 +140,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 705 | 182.3k | 9 (1.3%) | 0.7% | 0 | 0 | 294 |
 | Player_C.cpp | 736 | 148.3k | 12 (1.6%) | 5.9% | 0 | 0 | 163 |
 | HealthBar.cpp | 448 | 102.9k | 8 (1.8%) | 3.6% | 0 | 0 | 68 |
-| M2Scene.cpp | 283 | 101.1k | 85 (30.0%) | 46.5% | 8 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 86 (30.4%) | 47.0% | 8 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 15 (6.3%) | 8.3% | 0 | 0 | 1 |
 | GameUI.cpp | 491 | 96.4k | 199 (40.5%) | 45.2% | 92 | 0 | 73 |
 | Spell_C.cpp | 355 | 86.2k | 14 (3.9%) | 5.7% | 0 | 0 | 121 |
@@ -259,7 +259,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 9 (28.1%) | 26.5% | 0 | 0 | 0 |
 | EquipmentManager.cpp | 55 | 10.8k | 1 (1.8%) | 0.3% | 1 | 0 | 3 |
-| ConsoleClient.cpp | 52 | 10.3k | 10 (19.2%) | 17.4% | 0 | 0 | 6 |
+| ConsoleClient.cpp | 52 | 10.3k | 11 (21.2%) | 18.0% | 0 | 0 | 6 |
 | SBig.cpp | 54 | 10.2k | 0 (0.0%) | 0.0% | 0 | 0 | 36 |
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
 | RaidInfo.cpp | 33 | 10.1k | 17 (51.5%) | 43.5% | 10 | 0 | 1 |
@@ -729,24 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-23 19:06 | 3106 (11.4%) | 1192 (4.4%) | 689 | 510/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:08 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:09 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:12 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:13 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:13 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:15 | 3110 (11.5%) | 1194 (4.4%) | 690 | 514/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:18 | 3112 (11.5%) | 1194 (4.4%) | 692 | 516/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:22 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:24 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:25 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:25 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:25 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:26 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:27 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:27 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:32 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
-| 2026-09-23 19:36 | 3116 (11.5%) | 1197 (4.4%) | 692 | 520/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:40 | 3120 (11.5%) | 1201 (4.4%) | 692 | 523/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:43 | 3121 (11.5%) | 1202 (4.4%) | 692 | 523/5529 | 2924/2964 | 1493 |
 | 2026-09-23 19:45 | 3121 (11.5%) | 1205 (4.4%) | 692 | 523/5529 | 2924/2964 | 1493 |
@@ -754,6 +736,24 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 19:52 | 3123 (11.5%) | 1208 (4.4%) | 692 | 525/5529 | 2924/2964 | 1493 |
 | 2026-09-23 20:14 | 3126 (11.5%) | 1210 (4.5%) | 691 | 528/5529 | 2924/2964 | 1493 |
 | 2026-09-23 20:15 | 3126 (11.5%) | 1211 (4.5%) | 690 | 528/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:36 | 3129 (11.5%) | 1211 (4.5%) | 690 | 531/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:38 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:39 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:39 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:42 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:42 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 20:57 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:08 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:19 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:19 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:19 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:22 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
+| 2026-09-23 21:24 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 

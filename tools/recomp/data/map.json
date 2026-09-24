@@ -883,7 +883,7 @@
    "src/gx/renderstate.cpp"
   ],
   "frozen": "GxRsSet",
-  "frozenSize": 51,
+  "frozenSize": 85,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 55,
@@ -31135,7 +31135,7 @@
   "status": "ported"
  },
  "00685f50": {
-  "branchRatio": 0.857,
+  "branchRatio": 0.545,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -31144,7 +31144,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RsSet",
-  "frozenSize": 274,
+  "frozenSize": 512,
   "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 96,
@@ -32550,6 +32550,22 @@
   "how": "callgraph",
   "module": "ConsoleClient.cpp",
   "refSize": 6,
+  "status": "ported"
+ },
+ "00763c70": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/RenderState.cpp",
+   "src/gx/renderstate.cpp"
+  ],
+  "frozen": "GxRsSet",
+  "frozenSize": 85,
+  "how": "annotated",
+  "module": "ConsoleClient.cpp",
+  "refSize": 61,
   "status": "ported"
  },
  "00763d80": {
@@ -38508,6 +38524,22 @@
   "refSize": 92,
   "status": "ported"
  },
+ "00835750": {
+  "branchRatio": 0.071,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::SetupGxFog",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 510,
+  "status": "ported"
+ },
  "00835a20": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -42950,7 +42982,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::SetFogParams",
-  "frozenSize": 304,
+  "frozenSize": 302,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 379,
