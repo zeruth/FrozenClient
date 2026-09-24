@@ -499,6 +499,13 @@ class CM2ParticleEmitter {
         // twinkled off this frame and nothing was written. ref: FUN_0097be80
         bool WriteParticleVertices(const Particle& p, VertexCursor& cursor);
 
+        // Resolve a live-list slot into whichever pool this emitter uses.
+        Particle& LiveParticleAt(uint32_t slot);
+
+        // Walk this emitter's live particles into the cursor, at most `count` of them, then fold
+        // the bounds the writer accumulated back through `inverse`. ref: FUN_0097e580
+        void WriteLiveParticles(VertexCursor& cursor, uint32_t count, const C44Matrix& inverse);
+
         // Draw this emitter's particles. `relativeTo` is the matrix the owning model is placed
         // relative to, and `batched` becomes bit 0 of m_drawFlags. ref: FUN_0097ea60
         void Draw(const C44Matrix* relativeTo, void* a3, int32_t batched);

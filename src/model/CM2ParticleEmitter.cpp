@@ -1674,6 +1674,114 @@ void CM2ParticleEmitter::CellUvBase(uint32_t cell, float& u, float& v) const {
     v = static_cast<float>(static_cast<int32_t>(cell) >> this->m_cellShift) * this->m_cellHeight;
 }
 
+// One entry of the depth sort: a particle and how far into the scene it is.
+struct M2ParticleSortEntry {
+    float m_depth;
+    const CM2ParticleEmitter::Particle* m_particle;
+};
+
+// The sort itself. A file-scope container because the reference's is a global at 0x00dce894 --
+// one emitter draws at a time, so there is nothing to be gained by giving each its own.
+static TSGrowableArray<M2ParticleSortEntry> s_particleSort;
+
+// Resolve a live-list slot into whichever pool this emitter uses.
+//
+// The live list holds POOL INDICES, not particles -- ParticleAt is what picks between the two
+// pools, and the reference inlines both steps at each of its four sites.
+CM2ParticleEmitter::Particle& CM2ParticleEmitter::LiveParticleAt(uint32_t slot) {
+    return this->ParticleAt(this->m_liveIndices[slot]);
+}
+
+// Walk this emitter's live particles into the cursor.
+//
+// `count` is a CAP, not the live count, and the two paths below use different bounds on purpose:
+// the sorted one pushes EVERY live particle and pops only `count`, so what survives a full buffer
+// is the `count` farthest particles rather than the first `count` in list order. That is the
+// whole point of sorting -- when the buffer cannot hold everything, keep the ones behind.
+//
+// ref: FUN_0097e580
+void CM2ParticleEmitter::WriteLiveParticles(VertexCursor& cursor, uint32_t count,
+                                            const C44Matrix& inverse) {
+    if (!(this->m_flags & 0x20)) {
+        for (uint32_t i = 0; i < count; i++) {
+            this->WriteParticleVertices(this->LiveParticleAt(i), cursor);
+        }
+    } else {
+        // DIVERGED, and the reason is in the comment block on this file's draw chain: the
+        // reference's global heap (push FUN_007a0f50, pop FUN_0097e080) does not agree with
+        // itself about indexing -- push places 0-based, pop and the sift-up read 1-based -- so
+        // the first particle pushed is never popped. One particle per emitter per frame is
+        // silently dropped. Whether that is a sentinel whose base pointer is biased somewhere I
+        // did not find, or an off-by-one, I could not establish, and reproducing a suspected bug
+        // on a guess is worse than recording it. This sorts correctly instead, and neither heap
+        // function is tagged, because a different index convention is a different function.
+        s_particleSort.SetCount(0);
+
+        for (uint32_t i = 0; i < this->m_liveIndices.Count(); i++) {
+            const Particle& p = this->LiveParticleAt(i);
+
+            // Row 2 of the particle-space matrix: the view-space Z.
+            float depth = s_particleSpace.a2 * p.m_position.x
+                + s_particleSpace.b2 * p.m_position.y
+                + s_particleSpace.c2 * p.m_position.z
+                + s_particleSpace.d2;
+
+            M2ParticleSortEntry* entry = s_particleSort.New();
+
+            entry->m_depth = depth;
+            entry->m_particle = &p;
+        }
+
+        // Selection rather than a full sort: `count` is usually the whole list and never much
+        // less, so this is the same work without a comparator, and it pops largest-first the way
+        // the reference's max-heap does -- back to front, which is what alpha blending needs.
+        uint32_t live = s_particleSort.Count();
+
+        for (uint32_t written = 0; written < count && written < live; written++) {
+            uint32_t best = written;
+
+            for (uint32_t i = written + 1; i < live; i++) {
+                if (s_particleSort[best].m_depth < s_particleSort[i].m_depth) {
+                    best = i;
+                }
+            }
+
+            M2ParticleSortEntry swap = s_particleSort[written];
+            s_particleSort[written] = s_particleSort[best];
+            s_particleSort[best] = swap;
+
+            this->WriteParticleVertices(*s_particleSort[written].m_particle, cursor);
+        }
+    }
+
+    if (count) {
+        // The writer accumulated the bounds in VIEW space; `inverse` brings them back out into
+        // the emitter's own, and the origin puts them where the emitter is.
+        CAaBox bounds;
+
+        bounds.b = this->m_boundsMin;
+        bounds.t = this->m_boundsMax;
+
+        CAaBox folded = TransformBox(bounds, inverse);
+
+        this->m_boundsMin = {
+            folded.b.x + this->m_origin.x,
+            folded.b.y + this->m_origin.y,
+            folded.b.z + this->m_origin.z
+        };
+
+        this->m_boundsMax = {
+            folded.t.x + this->m_origin.x,
+            folded.t.y + this->m_origin.y,
+            folded.t.z + this->m_origin.z
+        };
+    }
+
+    // How many particles actually reached the buffer, which is not `count`: the twinkle gate
+    // drops some of them without writing anything.
+    this->m_drawnCount = cursor.m_count / this->m_verticesPerParticle;
+}
+
 // Write one particle's quads.
 //
 // Read out of the disassembly at 0x97be80 rather than the decompilation; see the comment block in

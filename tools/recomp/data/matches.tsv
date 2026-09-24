@@ -3153,6 +3153,7 @@ addr	how	frozen	evidence
 0097e150	annotated	CM2ParticleEmitter::CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
 0097e3f0	annotated	CM2ParticleEmitter::Reserve	tag in src/model/CM2ParticleEmitter.cpp
 0097e480	annotated	CM2ParticleEmitter::SetParticleCount	tag in src/model/CM2ParticleEmitter.cpp
+0097e580	annotated	CM2ParticleEmitter::WriteLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
 0097ea60	annotated	CM2ParticleEmitter::Draw	tag in src/model/CM2ParticleEmitter.cpp
 0097eb10	annotated	CM2ParticleEmitter::Update	tag in src/model/CM2ParticleEmitter.cpp
 0097edf0	annotated	CM2ParticleEmitter::PrepareStep	tag in src/model/CM2ParticleEmitter.cpp
@@ -3176,6 +3177,7 @@ addr	how	frozen	evidence
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
 00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp

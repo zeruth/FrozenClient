@@ -50014,6 +50014,22 @@
   "refSize": 241,
   "status": "ported"
  },
+ "0097e580": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.05,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::WriteLiveParticles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 414,
+  "status": "ported"
+ },
  "0097ea60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -50380,6 +50396,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 241,
+  "status": "ported"
+ },
+ "00984860": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "TransformBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 198,
   "status": "ported"
  },
  "00984930": {
