@@ -1067,6 +1067,18 @@ void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
         return;
     }
 
+    // FROZEN-ONLY GUARD. The reference indexes m_boneMatrices with no check, because its loader
+    // guarantees the array is there and the index is in range. Frozen's does not: the bone matrix
+    // array is allocated inside a `bones.Count()` branch, so a model with emitters and no bones
+    // leaves it null, and nothing validates boneIndex against the bone count on the way in. Both
+    // would fault here, and this runs for every model every frame now that the driver is wired.
+    // Skipping the placement leaves the emitter un-stepped for the frame, which is the same thing
+    // that happens to a culled one.
+    if (!this->m_boneMatrices
+            || file.boneIndex >= this->m_shared->m_data->bones.Count()) {
+        return;
+    }
+
     // All three matrix helpers here have the same receiver -- this local -- which the
     // decompilation does not show; see the note at the ribbon/particle block above.
     C44Matrix matrix = this->m_boneMatrices[file.boneIndex];
