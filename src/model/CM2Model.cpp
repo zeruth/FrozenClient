@@ -1,4 +1,5 @@
 #include "model/CM2Model.hpp"
+#include "util/Log.hpp"
 #include <storm/String.hpp>
 #include <cstdio>
 #include "db/Db.hpp"
@@ -1993,11 +1994,45 @@ int32_t CM2Model::InitializeLoaded() {
             new (&this->m_cameras[i]) M2ModelCamera();
         }
 
+        // The `break` is the reference's, not a simplification: FUN_00832ea0 aborts the whole
+        // camera loop on the first bad one rather than skipping it, so a model whose camera 0 is
+        // degenerate ends up with NO camera handles at all. That matters more than it looks --
+        // CSimpleModel::SetCameraByIndex then stores a null m_camera, the model still draws, and
+        // everything gated on having a camera silently does not. The login screen's snow is gated
+        // that way.
+        //
+        // What was NOT the reference's: doing it silently. The reference makes these two separate
+        // assertions and prints the failing expression and its value before breaking. frozen had
+        // them merged into one condition with no message, so a model that tripped it looked
+        // exactly like a model with no cameras. BLIZZARD_ASSERT is not usable here -- it compiles
+        // to (void)0 under NDEBUG, and Release is the only build whose visuals are trustworthy --
+        // so these report through SysMsgPrintf, which is what the reference's own helper does.
         for (int32_t i = 0; i < this->m_shared->m_data->cameras.Count(); i++) {
             auto& camera = this->m_shared->m_data->cameras[i];
             auto cameraHandle = CameraCreate();
 
-            if (camera.fieldOfView <= 0.0f || camera.fieldOfView >= 3.1415927f || camera.farClip <= camera.nearClip) {
+            if (camera.fieldOfView <= 0.0f || camera.fieldOfView >= 3.1415927f) {
+                SysMsgPrintf(SYSMSG_ERROR,
+                             "M2 camera %d: \"shared->fieldOfView > 0.0f && shared->fieldOfView < PI\","
+                             " shared->fieldOfView = %g (%s)",
+                             i, camera.fieldOfView, this->m_shared->m_filePath);
+
+                // DIVERGENCE, deliberate: the reference abandons this handle. Closing it costs
+                // nothing, cannot change what is drawn -- the loop stops either way -- and leaving
+                // a leak in on an error path only makes the next leak harder to find.
+                HandleClose(cameraHandle);
+
+                break;
+            }
+
+            if (camera.farClip <= camera.nearClip) {
+                SysMsgPrintf(SYSMSG_ERROR,
+                             "M2 camera %d: \"shared->nearClip < shared->farClip\","
+                             " shared->nearClip = %g, shared->farClip = %g (%s)",
+                             i, camera.nearClip, camera.farClip, this->m_shared->m_filePath);
+
+                HandleClose(cameraHandle);
+
                 break;
             }
 
