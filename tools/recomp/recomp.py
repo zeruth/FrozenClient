@@ -490,7 +490,11 @@ def merge_frozen(pdb, src):
         w['callees'] = set(k for k in (resolve(c) for c in w['calls']) if k)
         # ordered, unresolved names kept as '?name' so the sequence keeps its shape
         w['seq'] = [resolve(c) or '?' + c for c in w['callseq']]
-    return frozen
+    # `inlined` goes back too: match() needs it to tell a hand claim that names a function the
+    # compiler inlined away from one that names nothing at all. Those are different mistakes and
+    # want different fixes -- the first is a real reference function with no frozen counterpart
+    # function, the second is a typo or a port that was never written.
+    return frozen, inlined
 
 
 def lcs_len(a, b):
@@ -836,11 +840,12 @@ def load_overrides():
     return json.load(io.open(OVERRIDES, encoding='utf-8'))
 
 
-def match(refs, frozen, overrides, tables):
+def match(refs, frozen, overrides, tables, inlined=None):
     """addr -> (frozen name, confidence)"""
     m = {}
     used = set()
     evidence = {}
+    inlined = inlined or {}
 
     unlinked = set(a for a, o in overrides.items() if o.get('status') == 'unlinked')
     # Hand claims an `unlinked` override refused. The veto stays authoritative -- an `unlinked`
@@ -851,6 +856,11 @@ def match(refs, frozen, overrides, tables):
     # exactly the thing this tool should say out loud. NAMED hand_vetoed, not vetoed: the order
     # matcher below already keeps a local bool by that name, and it silently clobbered this list.
     hand_vetoed = []
+    # Hand claims that named a frozen function the inventory does not carry. Before 2026-09-24
+    # these returned False and said nothing, so four overrides.json entries sat in the file for a
+    # cycle reading as established facts while binding to nothing and moving no metric. A claim
+    # that cannot be honoured is a claim that is WRONG, and the tool has to say so.
+    hand_empty = []
 
     HAND = ('override', 'annotated')
 
@@ -860,6 +870,15 @@ def match(refs, frozen, overrides, tables):
         # (TextureCreate x3, CDataStore::Put x4) and COMDAT folding leaves the reference with
         # copies. Automatic evidence may not: one guess per name, or the matchers would spray a
         # popular name across a whole neighbourhood.
+        if name not in frozen and how in HAND and addr in refs:
+            # Three different mistakes wear the same face here, so name which one it is.
+            if name in inlined:
+                why = 'inlined at every call site -- no function in frozen\'s binary to bind'
+            elif any(k.split('::')[-1] == name.split('::')[-1] for k in frozen):
+                why = 'no such instantiation; the short name exists under other qualifications'
+            else:
+                why = 'no frozen function by that name -- typo, or never written'
+            hand_empty.append((addr, name, how, why))
         if addr in m or addr not in refs or name not in frozen or (name in used and how not in HAND):
             return False
         if addr in unlinked:
@@ -1173,6 +1192,13 @@ def match(refs, frozen, overrides, tables):
         if kept:
             print('  kept %d inferred link%s the matchers no longer derive (sticky)'
                   % (kept, '' if kept == 1 else 's'))
+
+    if hand_empty:
+        print('  %d hand claim%s names a frozen function the inventory does not carry -- it binds'
+              ' nothing and moves no metric:' % (len(hand_empty), '' if len(hand_empty) == 1 else 's'))
+        for addr, name, how, why in sorted(set(hand_empty)):
+            print('    ! %s  %-52s %s' % (addr, name[:52], why))
+        print('    grep tools/recomp/data/frozen-pdb.txt for the exact name before writing one')
 
     if hand_vetoed:
         print('  %d hand claim%s refused by an `unlinked` override -- one of the two is stale:'
@@ -1906,12 +1932,12 @@ def main():
     for a, r in refs.items():
         r['excluded'] = (r['named'] and r['name'].startswith('_')) or overrides.get(a, {}).get('status') == 'excluded'
     src, exact = overlay_clang(parse_sources())
-    frozen = merge_frozen(load_pdb_functions(), src)
+    frozen, inlined = merge_frozen(load_pdb_functions(), src)
     overrides = {k.lower().zfill(8): v for k, v in load_overrides().items() if isinstance(v, dict)}
     ref_tables = load_tables()
     frozen_tables = load_frozen_tables()
     pairs = pair_tables(ref_tables, frozen_tables)
-    m = match(refs, frozen, overrides, pairs)
+    m = match(refs, frozen, overrides, pairs, inlined)
 
     # Runtime evidence from the last calltrace/tracecompare run. Matching links become verified.
     # Contradicted ones are only REPORTED: one trace of one scene cannot tell a wrong link from a
