@@ -467,6 +467,137 @@ bool CM2ParticleEmitter::IntegrateParticle(Particle& p, float dt) const {
 // is the 0.001 at 0x009e1134, read out of the binary -- the same one the reference uses to convert
 // scene milliseconds to seconds, which is why it turns up in two unrelated places.
 //
+// Drive the emitter for one frame.
+//
+// ref: FUN_0097eb10
+void CM2ParticleEmitter::Update(float dt, const C44Matrix& matrix, const C3Vector& cameraPosition,
+                                const C44Matrix* relativeTo) {
+    // The distance emission thins by, from the matrix's translation to the camera. The reference
+    // parks it in a global (0x00dce68c) that emission reads rather than threading it down.
+    float dx = matrix.d0 - cameraPosition.x;
+    float dy = matrix.d1 - cameraPosition.y;
+    float dz = matrix.d2 - cameraPosition.z;
+    float distanceSq = dx * dx + dy * dy + dz * dz;
+
+    g_m2ParticleCameraDistance = distanceSq > 0.0f ? sqrtf(distanceSq) : 0.0f;
+
+    // Last frame's position, taken BEFORE placement overwrites the translation row. Emission
+    // interpolates along the segment between the two.
+    this->m_prevPosition.x = this->m_placement.d0;
+    this->m_prevPosition.y = this->m_placement.d1;
+    this->m_prevPosition.z = this->m_placement.d2;
+
+    this->Place(matrix, cameraPosition, relativeTo);
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        this->m_children[c]->Place(matrix, cameraPosition, relativeTo);
+    }
+
+    // 0x009ea27c = 2^-22. A frame shorter than that is not simulated at all; the emitter records
+    // that it was skipped and returns.
+    if (!(fabsf(dt) >= 2.384185791015625e-07f)) {
+        this->m_flags |= 0x100;
+
+        return;
+    }
+
+    if (this->m_flags & 0x80000) {
+        this->m_frameDelta.x = this->m_placement.d0 - this->m_prevPosition.x;
+        this->m_frameDelta.y = this->m_placement.d1 - this->m_prevPosition.y;
+        this->m_frameDelta.z = this->m_placement.d2 - this->m_prevPosition.z;
+
+        float lengthSq = this->m_frameDelta.x * this->m_frameDelta.x
+            + this->m_frameDelta.y * this->m_frameDelta.y
+            + this->m_frameDelta.z * this->m_frameDelta.z;
+
+        float speed = lengthSq > 0.0f ? sqrtf(lengthSq) / dt : 0.0f;
+
+        // Clamped to [0,1] in that order: negative first, then the ceiling. A follow base below
+        // zero is how a model says "ignore emitter motion until it is moving fast enough".
+        float follow = this->m_followScale * speed + this->m_followBase;
+
+        if (!(follow >= 0.0f)) {
+            follow = 0.0f;
+        } else if (follow >= 1.0f) {
+            follow = 1.0f;
+        }
+
+        this->m_frameDelta.x *= follow;
+        this->m_frameDelta.y *= follow;
+        this->m_frameDelta.z *= follow;
+    }
+
+    if (this->m_flags & 0x800) {
+        // The emitter's own velocity, resampled on a 1/30s tick rather than every frame, so that
+        // what new particles inherit does not jitter with the frame rate. 0x00aa2c9c is 1/30 and
+        // 0x00aa2d08 is 30; neither is written anywhere in the text section.
+        this->m_time += dt;
+
+        if ((1.0f / 30.0f) < this->m_time) {
+            float elapsed = this->m_time * 30.0f;
+
+            // An exact reset, not a carry -- see the stack trace in this file's commit message.
+            this->m_time = 0.0f;
+
+            if (this->m_liveCount == 0) {
+                this->m_inheritedVelocity = { 0.0f, 0.0f, 0.0f };
+            } else {
+                this->m_inheritedVelocity.x = this->m_placement.d0 - this->m_prevPosition.x;
+                this->m_inheritedVelocity.y = this->m_placement.d1 - this->m_prevPosition.y;
+                this->m_inheritedVelocity.z = this->m_placement.d2 - this->m_prevPosition.z;
+
+                float scale = (1.0f / elapsed) * this->m_velocitySampleScale;
+
+                this->m_inheritedVelocity.x *= scale;
+                this->m_inheritedVelocity.y *= scale;
+                this->m_inheritedVelocity.z *= scale;
+            }
+        }
+    }
+
+    this->Substep(dt, 0);
+
+    // 0x80 says this emitter ran this frame, as 0x100 above says it was skipped. The draw side
+    // reads them.
+    this->m_flags |= 0x80;
+
+    if (this->m_particleKind == 1) {
+        // FUN_0097e8d0, the spawned-model pass for the 0x40-byte pool. Unported, and unreachable
+        // while nothing allocates that pool -- the same position as its integrator.
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter: model-particle update pass is not ported "
+                     "(FUN_0097e8d0); spawned models will not follow their particles");
+    }
+}
+
+// Set the emitter's transform and origin for this frame.
+//
+// `relativeTo` is a POINTER, and the decompilation invites getting that wrong: Ghidra types it
+// `int param_4` and tests it as a boolean, which reads as a flag. ECX is loaded with it at
+// 0x97ac3a and never reloaded before the call at 0x97ac61, so it is that call's `this` -- the
+// matrix whose inverse is taken -- and `testl %ecx,%ecx` is a null check. Read as a flag, this
+// function would invert whatever happened to be in ECX: wrong everywhere, and it would still run.
+//
+// Flag 0x200 is emitter-space, and suppresses the re-expression: a particle that never leaves the
+// emitter's frame has nothing to be made relative to.
+//
+// ref: FUN_0097ac20
+void CM2ParticleEmitter::Place(const C44Matrix& matrix, const C3Vector& origin,
+                               const C44Matrix* relativeTo) {
+    this->m_origin = origin;
+
+    if (relativeTo && !(this->m_flags & 0x200)) {
+        this->m_placement = matrix * relativeTo->AffineInverse();
+    } else {
+        this->m_placement = matrix;
+    }
+
+    // The scale comes from the ARGUMENT's first row, not from the product just stored -- EDI holds
+    // param_2 on both paths into the tail at 0x97ac89. It matters when the two differ, which is
+    // exactly the case the branch above exists for.
+    this->m_scale = sqrtf(matrix.a0 * matrix.a0 + matrix.a1 * matrix.a1 + matrix.a2 * matrix.a2);
+}
+
 void CM2ParticleEmitter::RetireParticle(Particle& p, uint32_t liveIndex) {
     // The kill hook. The reference reaches it as vtable[3]; frozen has no subclass that overrides
     // it yet, so it is a direct call rather than a virtual -- the dispatch exists to let a derived

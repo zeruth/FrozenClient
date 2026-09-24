@@ -10049,6 +10049,22 @@
   "refSize": 45,
   "status": "ported"
  },
+ "004c2fc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::AffineInverse",
+  "frozenSize": 724,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 212,
+  "status": "ported"
+ },
  "004c33c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49224,6 +49240,22 @@
   "refSize": 425,
   "status": "ported"
  },
+ "0097ac20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Place",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 143,
+  "status": "ported"
+ },
  "0097acb0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -49302,6 +49334,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 604,
+  "status": "ported"
+ },
+ "0097eb10": {
+  "branchRatio": 0.917,
+  "constOverlap": 0.121,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Update",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 736,
   "status": "ported"
  },
  "00980ed0": {

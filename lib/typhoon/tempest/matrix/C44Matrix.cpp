@@ -165,6 +165,7 @@ C44Matrix C44Matrix::Adjoint() const {
  *
  * @return Inverse of matrix
  */
+// ref: FUN_004c2fc0
 C44Matrix C44Matrix::AffineInverse() const {
     auto matrix = C44Matrix(C33Matrix(*this).Transpose());
     matrix.Translate(C3Vector(-this->d0, -this->d1, -this->d2));

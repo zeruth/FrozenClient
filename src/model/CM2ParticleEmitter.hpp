@@ -124,6 +124,15 @@ class CM2ParticleEmitter {
         M2PartTrack<C2Vector>* m_groundOffset = nullptr;
         // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives.
         float m_alpha = 0.0f;
+        // +0x14c: scales the emitter velocity the update samples every 1/30s and hands to new
+        // particles. Read only there.
+        float m_velocitySampleScale = 0.0f;
+        // +0x17c and +0x180: how much of the emitter's own movement this frame carries into its
+        // particles, as a ramp against the emitter's speed -- `clamp01(m_followScale * speed +
+        // m_followBase)`, applied to m_frameDelta under flag 0x80000. A stationary emitter gets
+        // m_followBase; a fast one saturates at 1 and its particles are dragged along completely.
+        float m_followBase = 0.0f;
+        float m_followScale = 0.0f;
         // +0x134: the flag word everything branches on. Known bits, from the two functions that
         // test them: 0x1 and 0x2 together, or 0x40 with 0x2, make the step call its first virtual;
         // 0x200 suppresses the extra transform in placement; 0x800 and 0x80000 gate the drag and
@@ -165,6 +174,17 @@ class CM2ParticleEmitter {
         // Advance one particle of the plain pool by `dt`. Returns false when the particle should
         // be killed rather than kept. ref: FUN_00979bb0
         bool IntegrateParticle(Particle& particle, float dt) const;
+
+        // Drive the emitter for one frame: measure the camera distance, place this emitter and
+        // its children, derive what the particles inherit from the emitter's own motion, and
+        // substep. This is the entry point the model calls. ref: FUN_0097eb10
+        void Update(float dt, const C44Matrix& matrix, const C3Vector& cameraPosition,
+                    const C44Matrix* relativeTo);
+
+        // Set the emitter's transform and origin for this frame. When `relativeTo` is given and
+        // the emitter is not in emitter space (flag 0x200), the stored transform is re-expressed
+        // relative to it. ref: FUN_0097ac20
+        void Place(const C44Matrix& matrix, const C3Vector& origin, const C44Matrix* relativeTo);
 
         // Split `dt` into fixed 0.1s slices and step each, so a fast-moving emitter integrates
         // in bounded increments rather than one long jump. ref: FUN_0097acb0

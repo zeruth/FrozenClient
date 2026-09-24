@@ -37780,7 +37780,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 168
+"line": 169
 },
 "C44Matrix::Col0": {
 "files": [
@@ -37795,7 +37795,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 196
+"line": 197
 },
 "C44Matrix::Col1": {
 "files": [
@@ -37810,7 +37810,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 200
+"line": 201
 },
 "C44Matrix::Col2": {
 "files": [
@@ -37825,7 +37825,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 204
+"line": 205
 },
 "C44Matrix::Col3": {
 "files": [
@@ -37840,7 +37840,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 208
+"line": 209
 },
 "C44Matrix::Determinant": {
 "files": [
@@ -37853,7 +37853,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 213
+"line": 214
 },
 "C44Matrix::Identity": {
 "files": [
@@ -37869,7 +37869,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 218
+"line": 219
 },
 "C44Matrix::Inverse": {
 "files": [
@@ -37887,7 +37887,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 241
+"line": 242
 },
 "C44Matrix::Rotate": {
 "files": [
@@ -37904,7 +37904,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 246
+"line": 247
 },
 "C44Matrix::RotateAroundZ": {
 "files": [
@@ -37921,7 +37921,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 250
+"line": 251
 },
 "C44Matrix::Row0": {
 "files": [
@@ -37936,7 +37936,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 254
+"line": 255
 },
 "C44Matrix::Row0AsVec3": {
 "files": [
@@ -37949,7 +37949,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 258
+"line": 259
 },
 "C44Matrix::Row1": {
 "files": [
@@ -37964,7 +37964,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 262
+"line": 263
 },
 "C44Matrix::Row1AsVec3": {
 "files": [
@@ -37977,7 +37977,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 266
+"line": 267
 },
 "C44Matrix::Row2": {
 "files": [
@@ -37992,7 +37992,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 270
+"line": 271
 },
 "C44Matrix::Row2AsVec3": {
 "files": [
@@ -38005,7 +38005,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 274
+"line": 275
 },
 "C44Matrix::Row3": {
 "files": [
@@ -38020,7 +38020,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 278
+"line": 279
 },
 "C44Matrix::Row3AsVec3": {
 "files": [
@@ -38033,7 +38033,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 282
+"line": 283
 },
 "C44Matrix::Scale": {
 "files": [
@@ -38046,7 +38046,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 287
+"line": 288
 },
 "C44Matrix::Translate": {
 "files": [
@@ -38059,7 +38059,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 316
+"line": 317
 },
 "C44Matrix::Transpose": {
 "files": [
@@ -38074,7 +38074,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 322
+"line": 323
 },
 "C4Quaternion::Nlerp": {
 "files": [
@@ -77739,6 +77739,64 @@
 "refs": [],
 "line": 390
 },
+"CM2ParticleEmitter::Update": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"sqrtf",
+"CM2ParticleEmitter::Place",
+"CM2ParticleEmitter::Place",
+"fabsf",
+"sqrtf",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"CM2ParticleEmitter::Substep",
+"SysMsgPrintf"
+],
+"strings": [
+"CM2ParticleEmitter: model-particle update pass is not ported (FUN_0097e8d0); spawned models will not follow their particles"
+],
+"consts": [
+"0",
+"0.0f",
+"0x100",
+"0x80",
+"0x800",
+"0x80000",
+"1",
+"1.0f",
+"2.384185791015625e-07f",
+"30.0f"
+],
+"branches": 11,
+"stub": false,
+"lines": 98,
+"refs": [],
+"line": 473
+},
+"CM2ParticleEmitter::Place": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"C3Vector::operator=",
+"C44Matrix::AffineInverse",
+"operator*",
+"C44Matrix::operator=",
+"C44Matrix::operator=",
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0x200"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 585
+},
 "CM2ParticleEmitter::RetireParticle": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -77750,7 +77808,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 470
+"line": 601
 },
 "CM2ParticleEmitter::IntegrateAndSpawnChildren": {
 "files": [
@@ -77778,7 +77836,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 507
+"line": 638
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -77807,7 +77865,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 573
+"line": 704
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -77836,7 +77894,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 642
+"line": 773
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -77854,7 +77912,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 694
+"line": 825
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
