@@ -313,6 +313,11 @@ class CM2ParticleEmitter {
         // ref: FUN_0097e3f0
         void Reserve(uint32_t capacity, uint32_t used, uint32_t spare);
 
+        // Size this emitter's pool, and its children's, from the rate and lifespan they
+        // currently hold. This is vtable[0], the hook Step calls before emitting.
+        // ref: FUN_0097edf0
+        void PrepareStep();
+
         // Grow the emitter to hold `count` particles and put every new slot on the free list.
         // Nothing downstream works until this has run: SpawnParticle pops from that list, so an
         // emitter that has never been through here silently emits nothing. ref: FUN_0097e480

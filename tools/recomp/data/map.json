@@ -49387,7 +49387,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Substep",
-  "frozenSize": 903,
+  "frozenSize": 1122,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 322,
@@ -49515,7 +49515,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Step",
-  "frozenSize": 571,
+  "frozenSize": 745,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 604,
@@ -49547,7 +49547,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Reserve",
-  "frozenSize": 0,
+  "frozenSize": 139,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 143,
@@ -49563,7 +49563,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetParticleCount",
-  "frozenSize": 0,
+  "frozenSize": 402,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 241,
@@ -49583,6 +49583,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 736,
+  "status": "ported"
+ },
+ "0097edf0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrepareStep",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 199,
   "status": "ported"
  },
  "00980ed0": {

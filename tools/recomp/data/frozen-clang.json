@@ -78434,6 +78434,7 @@
 "src/model/cm2particleemitter.cpp"
 ],
 "callseq": [
+"CM2ParticleEmitter::PrepareStep",
 "CM2ParticleEmitter::Emit",
 "TSBaseArray<unsigned int>::Count",
 "TSBaseArray<unsigned int>::Count",
@@ -78461,9 +78462,45 @@
 ],
 "branches": 13,
 "stub": false,
-"lines": 69,
+"lines": 72,
 "refs": [],
 "line": 1139
+},
+"M2ParticleCapacityFor": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1.15f"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 1218
+},
+"CM2ParticleEmitter::PrepareStep": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2ParticleCapacityFor",
+"CM2ParticleEmitter::SetParticleCount",
+"M2ParticleCapacityFor",
+"CM2ParticleEmitter::SetParticleCount"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1000"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 1235
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -78493,7 +78530,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1218
+"line": 1262
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -78514,7 +78551,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1259
+"line": 1303
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78543,7 +78580,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1292
+"line": 1336
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78561,7 +78598,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1344
+"line": 1388
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

@@ -1149,8 +1149,11 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
 
     if ((this->m_flags & 0x3) == 0x3
             || ((this->m_flags & 0x40) && (this->m_flags & 0x2))) {
-        // vtable[0]: the reference's per-step hook, which a derived emitter uses to refresh its
-        // placement before anything spawns. Nothing in frozen overrides it.
+        // vtable[0]. An earlier pass left this empty, guessing it refreshed placement; it is the
+        // POOL SIZING, so leaving it out meant every emitter had zero slots and spawned nothing
+        // however correct the rest was. The gate is the same one that decides whether this frame
+        // emits at all, so the pool is sized exactly when it is about to be needed.
+        this->PrepareStep();
     }
 
     if (fromParent == 0) {
@@ -1203,6 +1206,47 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
         // Children go through the substepper rather than straight to Step, so a child of a
         // fast-moving parent is still integrated in bounded slices.
         this->m_children[c]->Substep(dt, 1);
+    }
+}
+
+// How many slots an emitter with this rate and lifespan needs.
+//
+// Rate times lifetime is the steady-state population; the 1.15 (0x009f23cc) is headroom over it.
+// The reference truncates by saving the x87 control word, OR-ing 0xc00 in to select
+// round-toward-zero, converting, and restoring -- a C cast truncates by definition, so the cast
+// here is the whole of it.
+static int32_t M2ParticleCapacityFor(const CM2ParticleEmitter& emitter) {
+    float population = (emitter.m_lifespanVariation + emitter.m_lifespan)
+        * (emitter.m_rateVariation + emitter.m_rate) * 1.15f;
+
+    return static_cast<int32_t>(population);
+}
+
+// Size this emitter's pool and its children's. vtable[0].
+//
+// Step calls this before emitting, and without it an emitter has no slots and spawns nothing --
+// which is the whole of why the wiring produced no particles until now.
+//
+// A child is sized by its OWN rate-times-lifetime product multiplied by the PARENT's count,
+// because every parent particle can shed a trail of its own. That product is what the 4096 cap is
+// there to bound; it is applied to the children only, not to this emitter.
+//
+// ref: FUN_0097edf0
+void CM2ParticleEmitter::PrepareStep() {
+    int32_t own = M2ParticleCapacityFor(*this);
+
+    this->SetParticleCount(own);
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        CM2ParticleEmitter* child = this->m_children[c];
+
+        int32_t count = M2ParticleCapacityFor(*child) * own;
+
+        if (count > 0x1000) {
+            count = 0x1000;
+        }
+
+        child->SetParticleCount(count);
     }
 }
 
