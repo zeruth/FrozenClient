@@ -38142,7 +38142,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 28
+"line": 44
 },
 "CRndSeed::CRndSeed": {
 "files": [
@@ -180336,6 +180336,19 @@
 "refs": [],
 "line": 645
 },
+"ParticleFxGetDensity": {
+"files": [
+"src/world/particlefx.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 655
+},
 "ParticleFxSetDensity": {
 "files": [
 "src/world/particlefx.cpp"
@@ -180350,7 +180363,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 651
+"line": 659
 },
 "ChunkMatrixT": {
 "files": [

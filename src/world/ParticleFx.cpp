@@ -648,6 +648,14 @@ void ParticleFxRenderModel(CM2Model* model, const C3Vector& cameraPos, const C3V
     ParticleFxRenderImpl(model, cameraPos, cameraDir, viewProjT, 0);
 }
 
+// The whole of the reference's getter: it loads the CVar and returns it, with the clamping done
+// once on the way in rather than on every read. frozen already clamps in the setter below, so the
+// two agree.
+// ref: FUN_00980ed0
+float ParticleFxGetDensity() {
+    return s_particleDensity;
+}
+
 void ParticleFxSetDensity(float density) {
     s_particleDensity = 0.0f;
 

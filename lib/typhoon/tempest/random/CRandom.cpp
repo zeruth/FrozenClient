@@ -24,6 +24,22 @@ uint32_t CRandom::dice(uint32_t sides, CRndSeed& seed) {
     return CMath::mulhwu(sides, CRandom::uint32(seed));
 }
 
+// The four wrap constants below do NOT match the ones a decompilation of FUN_00464580 shows, and
+// that is correct. Checked 2026-09-24 because they look like a transcription error and somebody
+// will eventually try to "fix" them.
+//
+// The reference computes `b - k` and, when that goes negative, throws the subtraction away and uses
+// `b + W` instead. This keeps the subtraction and folds the wrap into it, so its constant has to be
+// `W + k` for the two to agree:
+//
+//     lag   k       reference W   here W + k
+//     b1    0x04    0xB8          0xBC
+//     b2    0x0C    0xC8          0xD4
+//     b3    0x18    0xD4          0xEC
+//     b4    0x1C    0xD8          0xF4
+//
+// `b - k + (W + k)` is `b + W` in every row. Same generator, same sequence.
+//
 // ref: FUN_00464580
 uint32_t CRandom::uint32(CRndSeed& seed) {
     auto acc = seed.rndacc;
