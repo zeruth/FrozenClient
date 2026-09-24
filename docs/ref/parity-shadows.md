@@ -490,14 +490,21 @@ item by item against the code as it stands, rather than re-quoting it:
 | 4 | fog left on | **fixed** - `GxRs_Fog, 0` |
 | 5 | no stage-1 distance ramp | **still open** - frozen binds no stage 1 at all |
 | 6 | receiver coverage is terrain only | **partly** - WMO floors covered via `BlobShadowDrawWmo` |
-| 7 | casters are units only | **still open** |
+| 7 | casters are units only | **partly** - units and every doodad; game objects still excluded |
 | 8 | footprint is a fixed axis-aligned circle | **closed 2026-09-23** - see below |
 | 9 | no CPU up-facing cull | **partly** - `BuildWmoShadowGrid` keeps only up-facing triangles |
 | 10 | no gating CVars (`shadowLOD`, `extShadowQuality`) | **still open** |
 | 11 | `ShadowInit()` never called | still commented out at `src/client/Client.cpp:679`, but deliberately: the frozen blob path loads its own texture and does not need it |
 
-So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), caster
-fidelity (7), and the quality CVars (10).
+So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), the
+remaining caster gap (7), and the quality CVars (10).
+
+Item 7, checked 2026-09-23 rather than re-quoted: "units only" is no longer true. The object
+manager walk in `CGWorldFrame` does filter on `IsA(TYPE_UNIT)`, but the doodad walk beside it goes
+through `TerrainForEachDoodad`, which covers terrain doodads AND the doodads inside every loaded
+WMO instance. So the caster set is units plus every doodad. What is still missing against the
+reference's "every scene entity with a model" is the non-unit world objects -- game objects such
+as chests and doors -- which that `IsA(TYPE_UNIT)` test excludes.
 
 ### 2026-09-23 - item 8, the animated footprint
 
