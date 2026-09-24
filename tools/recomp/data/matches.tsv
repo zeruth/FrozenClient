@@ -3127,7 +3127,12 @@ addr	how	frozen	evidence
 009813c0	annotated	CM2ParticleEmitterPlane::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 009813d0	annotated	CM2ParticleEmitterPlane::SetLatitude	tag in src/model/CM2ParticleEmitter.cpp
 009813e0	annotated	CM2ParticleEmitterPlane::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
+009813f0	annotated	CM2ParticleEmitterSphere::CM2ParticleEmitterSphere	tag in src/model/CM2ParticleEmitter.cpp
+00981490	annotated	CM2ParticleEmitterSphere::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
+009814b0	annotated	CM2ParticleEmitterSphere::SetLength	tag in src/model/CM2ParticleEmitter.cpp
+009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
 009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp

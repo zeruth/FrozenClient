@@ -236,6 +236,112 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
     p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;
 }
 
+// ref: FUN_009813f0
+CM2ParticleEmitterSphere::CM2ParticleEmitterSphere() {
+    this->m_emitterType = 2;
+}
+
+// ref: FUN_00981490
+void CM2ParticleEmitterSphere::SetWidth(float minRadius) {
+    this->m_minRadius = minRadius;
+    this->m_radiusSpan = this->m_maxRadius - minRadius;
+}
+
+// ref: FUN_009814b0
+void CM2ParticleEmitterSphere::SetLength(float maxRadius) {
+    this->m_maxRadius = maxRadius;
+    this->m_radiusSpan = maxRadius - this->m_minRadius;
+}
+
+// The reference folded this and the plane emitter's SetLongitude into ONE function at
+// 0x009813e0 -- identical bodies, one store to +0x240 -- and points both vtables at it. It is
+// tagged over on the plane's SetLongitude, since a tag claims a single frozen function and only
+// one of the two can carry it. Written out rather than spelled as a tag on purpose: that spelling
+// creates a tag wherever it appears, comments included.
+void CM2ParticleEmitterSphere::SetLatitude(float latitude) {
+    this->m_latitude = latitude;
+}
+
+// ref: FUN_009814d0
+void CM2ParticleEmitterSphere::SetLongitude(float longitude) {
+    this->m_longitude = longitude;
+}
+
+// Fill one new particle: place it on the shell, then launch it.
+//
+// The position's LATITUDE IS MEASURED FROM THE XY PLANE here (z is sin(lat)), which is the
+// opposite convention to the plane emitter's direction build a few lines up, where z is cos(lat).
+// Both are transcribed from their own function; the mismatch is the reference's and looks like a
+// bug in one of them until you check both.
+//
+// ref: FUN_00981950
+void CM2ParticleEmitterSphere::CreateParticle(Particle& p, float dt, const C44Matrix& placement) {
+    p.m_age = (M2ParticleRandUnit(this->m_seed) - 1.0f) * dt;
+    p.m_randomTag = static_cast<uint16_t>(CRandom::uint32(this->m_seed));
+
+    // Like the plane emitter, this does not write m_lifeVariation; only the abstract base's
+    // creator does.
+
+    // Uniform across the shell's thickness -- note this is uniform in RADIUS, not in volume, so
+    // particles bunch toward the inner surface. That is what the reference does.
+    float radius = (M2ParticleRandUnit(this->m_seed) - 1.0f) * this->m_radiusSpan
+        + this->m_minRadius;
+
+    float latitude = M2ParticleRandSigned(this->m_seed) * this->m_latitude;
+    float longitude = M2ParticleRandSigned(this->m_seed) * this->m_longitude;
+
+    float sinLat = sinf(latitude);
+    float cosLat = cosf(latitude);
+    float sinLon = sinf(longitude);
+    float cosLon = cosf(longitude);
+
+    // The unit direction the position is built from. The third velocity case below reuses it.
+    C3Vector outward = { cosLon * cosLat, cosLat * sinLon, sinLat };
+
+    p.m_position.x = outward.x * radius;
+    p.m_position.y = outward.y * radius;
+    p.m_position.z = outward.z * radius;
+
+    C3Vector dir;
+
+    if (this->m_zSource != 0.0f) {
+        C3Vector away = { p.m_position.x, p.m_position.y, p.m_position.z - this->m_zSource };
+
+        float lengthSq = away.x * away.x + away.y * away.y + away.z * away.z;
+
+        if (2.384185791015625e-07f < lengthSq) {
+            float scale = 1.0f / sqrtf(lengthSq);
+
+            dir.x = away.x * scale;
+            dir.y = away.y * scale;
+            dir.z = away.z * scale;
+        } else {
+            // Degenerate: the particle landed on the z source. Use the raw difference rather than
+            // dividing by nearly zero. The plane emitter has no equivalent guard.
+            dir = away;
+        }
+    } else if (this->m_flags & 0x8000) {
+        // Straight up in emitter space.
+        dir = { 0.0f, 0.0f, 1.0f };
+    } else {
+        dir = outward;
+    }
+
+    float speed = this->RandomSpeed();
+
+    dir.x *= speed;
+    dir.y *= speed;
+    dir.z *= speed;
+
+    if (this->m_flags & 0x200) {
+        p.m_velocity = dir;
+    } else {
+        p.m_velocity.x = placement.a0 * dir.x + placement.b0 * dir.y + placement.c0 * dir.z;
+        p.m_velocity.y = placement.a1 * dir.x + placement.b1 * dir.y + placement.c1 * dir.z;
+        p.m_velocity.z = placement.a2 * dir.x + placement.b2 * dir.y + placement.c2 * dir.z;
+    }
+}
+
 // ref: FUN_00981310
 CM2ParticleEmitterPlane::CM2ParticleEmitterPlane() {
     this->m_emitterType = 1;

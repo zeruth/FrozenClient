@@ -367,19 +367,44 @@ class CM2ParticleEmitterPlane : public CM2ParticleEmitter {
         float m_latitude = 0.0f;
         float m_longitude = 0.0f;
 
-        // ref: FUN_00981310
         CM2ParticleEmitterPlane();
 
-        // ref: FUN_009813b0
         void SetWidth(float width) override;
-        // ref: FUN_009813c0
         void SetLength(float length) override;
-        // ref: FUN_009813d0
         void SetLatitude(float latitude) override;
-        // ref: FUN_009813e0
         void SetLongitude(float longitude) override;
 
-        // ref: FUN_009815c0
+        void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
+};
+
+// The sphere emitter: vtable 0x00aa2d5c, the second concrete subclass. Particles are placed on
+// a shell between an inner and an outer radius.
+//
+// It is the sphere one because its two extents are a RADIUS RANGE rather than two independent
+// widths: the setters keep min and max and cache their difference, and the creator draws a radius
+// uniformly across that span. Its emitter type tag is 2 where the plane's is 1, and CM2Model's
+// construction loop switches on `M2Particle::emitterType` (+0x29) to pick between them.
+class CM2ParticleEmitterSphere : public CM2ParticleEmitter {
+    public:
+        // +0x234, +0x238 and +0x23c: the radius range and its cached span. The span is the one
+        // field the constructor leaves alone -- both setters recompute it, and the driver calls
+        // both, so it is written before anything reads it.
+        float m_minRadius = 0.0f;
+        float m_maxRadius = 0.0f;
+        float m_radiusSpan = 0.0f;
+        // +0x240 and +0x244: the launch cone, in radians.
+        float m_latitude = 0.0f;
+        float m_longitude = 0.0f;
+
+        CM2ParticleEmitterSphere();
+
+        // The two radius setters are deliberately asymmetric: each writes its own end and then
+        // recomputes the cached span from the other.
+        void SetWidth(float minRadius) override;
+        void SetLength(float maxRadius) override;
+        void SetLatitude(float latitude) override;
+        void SetLongitude(float longitude) override;
+
         void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
 };
 
