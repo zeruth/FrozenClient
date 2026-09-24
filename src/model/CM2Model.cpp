@@ -2423,6 +2423,23 @@ int32_t CM2Model::InitializeLoaded() {
             if (emitter) {
                 const M2Particle& file = this->m_shared->m_data->particles[i];
 
+                // The material, from the same block at 0x833e08. The flags word is seeded
+                // with 0x7 and then two of its bits are taken from the file's flags INVERTED --
+                // the reference does it with an xor-and-xor dance that amounts to
+                // `bit = !(file.flags & mask)`.
+                uint32_t materialFlags = 0x7;
+
+                emitter->m_blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
+
+                materialFlags = (materialFlags & ~0x1u) | ((file.flags & 0x1) ? 0 : 0x1);
+                materialFlags = (materialFlags & ~0x2u) | ((file.flags & 0x8) ? 0 : 0x2);
+
+                emitter->m_materialFlags = materialFlags;
+
+                if (file.flags & 0x2) {
+                    emitter->m_flags |= 0x20;
+                }
+
                 if (file.flags & 0x4) {
                     emitter->m_flags |= 0x200000;
                 }

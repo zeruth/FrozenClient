@@ -160,6 +160,38 @@ float M2ParticleRandSigned(CRndSeed& seed) {
     return (static_cast<int32_t>(u) < 0) ? (2.0f - f) : (f - 2.0f);
 }
 
+// Map an M2Particle blend mode onto a GxBlend. See the declaration for why mode 3 matters.
+//
+// An out-of-range mode falls through with blend 0 and the flags untouched -- the reference has no
+// default case, so whatever `flags` was seeded with survives.
+uint32_t M2ParticleBlendToGx(uint8_t blendMode, uint32_t& flags) {
+    switch (blendMode) {
+    case 0:
+        flags |= 0x4;
+        return 0;   // GxBlend_Opaque
+    case 1:
+        flags |= 0x4;
+        return 1;   // GxBlend_AlphaKey
+    case 2:
+        flags &= ~0x4u;
+        return 2;   // GxBlend_Alpha
+    case 3:
+        flags &= ~0x4u;
+        return 10;  // GxBlend_NoAlphaAdd -- additive, ignoring source alpha
+    case 4:
+        flags &= ~0x4u;
+        return 3;   // GxBlend_Add
+    case 5:
+        flags &= ~0x4u;
+        return 4;   // GxBlend_Mod
+    case 6:
+        flags &= ~0x4u;
+        return 5;   // GxBlend_Mod2x
+    default:
+        return 0;
+    }
+}
+
 // A uniform draw in [1, 2) from one RNG call: the mantissa of a float with the exponent pinned
 // to zero. The reference inlines this at every site that needs a unit random; frozen keeps one
 // copy, because the alternative is the same six lines repeated and those six lines are exactly

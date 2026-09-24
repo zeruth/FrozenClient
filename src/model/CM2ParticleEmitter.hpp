@@ -170,6 +170,11 @@ class CM2ParticleEmitter {
         uint32_t m_indicesPerParticle = 0;
         // +0xac: set alongside the head/tail flags by the same setter. Born 1.0.
         float m_tailLength = 1.0f;
+        // +0xd0 and +0xd4: the emitter's material -- the GxBlend the particles draw with, and a
+        // flags word derived alongside it. The element builder's pass selection reads the blend,
+        // which is why it has to be the MAPPED value and not the file's blendMode byte.
+        uint32_t m_blendMode = 0;
+        uint32_t m_materialFlags = 0;
         // +0x0c, +0x10 and +0x14: the atlas cell geometry SetTextureGrid derives from the grid
         // below -- the shift for unpacking a cell index, and the cell's width and height in UV.
         // The constructor's defaults are this function's output for a 1x1 grid, which is how the
@@ -462,6 +467,14 @@ class CM2ParticleEmitterSphere : public CM2ParticleEmitter {
 
         void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
 };
+
+// Map an M2Particle blend mode onto the GxBlend the emitter draws with, and fold the
+// accompanying bit into `flags`. From the reference's jump table at 0x008344dc.
+//
+// Mode 3 is the one worth knowing: it becomes GxBlend_NoAlphaAdd, additive IGNORING source alpha,
+// where mode 4 becomes GxBlend_Add which weights by it. Collapsing the two is an easy mistake and
+// was live in the particle stand-in until 2026-09-24.
+uint32_t M2ParticleBlendToGx(uint8_t blendMode, uint32_t& flags);
 
 // A uniform draw in [-1, 1] from one RNG call.
 //

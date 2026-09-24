@@ -604,10 +604,17 @@ static void ParticleFxRenderImpl(CM2Model* only, const C3Vector& cameraPos, cons
         // 5 mod, 6 mod2x
         EGxBlend gxBlend;
 
+        // Mode 3 and mode 4 are NOT the same blend, and this collapsed them onto GxBlend_Add
+        // until 2026-09-24 -- while the comment directly above already said "3 add (no alpha), 4
+        // add alpha". The reference's jump table at 0x008344dc settles it: 3 becomes
+        // GxBlend_NoAlphaAdd, which is additive ignoring source alpha, and 4 becomes GxBlend_Add,
+        // which weights by it. Every mode-3 emitter was being drawn weighted by an alpha the
+        // reference ignores.
         switch (blend) {
             case 0: gxBlend = GxBlend_Opaque; break;
             case 1: gxBlend = GxBlend_AlphaKey; break;
-            case 3: case 4: gxBlend = GxBlend_Add; break;
+            case 3: gxBlend = GxBlend_NoAlphaAdd; break;
+            case 4: gxBlend = GxBlend_Add; break;
             case 5: gxBlend = GxBlend_Mod; break;
             case 6: gxBlend = GxBlend_Mod2x; break;
             default: gxBlend = GxBlend_Alpha; break;
