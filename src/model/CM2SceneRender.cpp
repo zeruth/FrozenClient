@@ -354,9 +354,34 @@ void CM2SceneRender::DrawCallback() {
 //     element->[0x30] = 0; element->[0x34] = -1; element->[0x38] = -1; element->[0x3c] = 0;
 //     then blend-mode bookkeeping off emitter->[0xd0] into two of the scene's counters.
 //
-// THE BLOCKER is frozen's M2Element: the reference writes +0x30 through +0x3c, past the end of
-// what frozen's struct covers even allowing for x64 widening, so the element layout has to be
-// extended before any of this can be written down honestly. Work that out first.
+// The element layout blocker is gone: M2Element is 17 dwords and frozen's struct now matches, and
+// it carries the emitter in a field of its own rather than overloading `index` the way the
+// reference does (a 64-bit pointer does not fit that 32-bit slot).
+//
+// The builder's SIGNATURE is settled too -- seven dwords of arguments, which `retl $0x1c`
+// confirms:
+//
+//     AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model,
+//                        float distance, float alpha,
+//                        int32_t flag, uint32_t* elementIndex, uint32_t* counter)
+//
+// `elementIndex` is a POINTER to the scene's running element count: the pass list gets the current
+// value appended and the count is then incremented, so the lists hold element indices. `counter`
+// is bumped whenever the blend is GxBlend_Add or GxBlend_NoAlphaAdd.
+//
+// Pass routing at the tail, onto frozen's existing array54[3]:
+//     blend <= 1 and alpha >= 0.99999 (0x00a45528)      -> array54[0]
+//     else if flag == 0 or emitter->m_flags & 0x40000   -> array54[2]
+//     else                                              -> array54[1]
+//
+// TWO THINGS STILL OPEN, both small and both worth doing before writing this:
+//   - the distance and alpha the loop passes come from a chain at 0x822c70 over the bone-space
+//     position and three values derived from model->[0xac..0xb8]. Not traced yet; do not guess it,
+//     distance drives the sort.
+//   - the reference caches emitter->[0x18] into the element's +0x24 slot. What +0x18 holds is not
+//     identified -- it is not set by the constructor or by SetTextureGrid. Frozen carries the
+//     emitter itself so it may not need the cache at all, but that cannot be asserted until the
+//     field is known.
 int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t* a4, uint32_t a5) {
     // TODO -- see the map above; the emission has to land before this can run.
     return 0;
