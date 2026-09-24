@@ -10159,7 +10159,7 @@
    "lib/typhoon/tempest/vector/c2vector.cpp"
   ],
   "frozen": "C2Vector::operator=",
-  "frozenSize": 0,
+  "frozenSize": 14,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 22,
@@ -10191,7 +10191,7 @@
    "lib/typhoon/tempest/matrix/c33matrix.cpp"
   ],
   "frozen": "C33Matrix::operator*=",
-  "frozenSize": 0,
+  "frozenSize": 41,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 80,
@@ -10207,7 +10207,7 @@
    "lib/typhoon/tempest/matrix/c33matrix.cpp"
   ],
   "frozen": "C33Matrix::RotationAroundAxis",
-  "frozenSize": 0,
+  "frozenSize": 462,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 274,
@@ -22148,7 +22148,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "TransformDirection",
-  "frozenSize": 0,
+  "frozenSize": 134,
   "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 84,
@@ -30935,7 +30935,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxVertexBufferFormatSize",
-  "frozenSize": 0,
+  "frozenSize": 18,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 15,
@@ -30951,7 +30951,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxVertexAttribOffset",
-  "frozenSize": 0,
+  "frozenSize": 24,
   "how": "callgraph",
   "module": "DBCache.cpp",
   "refSize": 30,
@@ -32539,7 +32539,7 @@
    "lib/typhoon/tempest/math/cmath.cpp"
   ],
   "frozen": "CMath::SinCos",
-  "frozenSize": 0,
+  "frozenSize": 61,
   "how": "annotated",
   "module": "ObjectEffect.cpp",
   "refSize": 156,
@@ -49624,7 +49624,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "M2PartTrackEvalCell",
-  "frozenSize": 0,
+  "frozenSize": 135,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 100,
@@ -49704,7 +49704,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SampleAppearance",
-  "frozenSize": 0,
+  "frozenSize": 1086,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 666,
@@ -49896,7 +49896,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::WriteParticleVertices",
-  "frozenSize": 0,
+  "frozenSize": 6523,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 5350,
@@ -50024,23 +50024,39 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::WriteLiveParticles",
-  "frozenSize": 0,
+  "frozenSize": 1588,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 414,
   "status": "ported"
  },
+ "0097e730": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.032,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::FillDrawBuffer",
+  "frozenSize": 949,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 410,
+  "status": "ported"
+ },
  "0097ea60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Draw",
-  "frozenSize": 135,
+  "frozenSize": 127,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 162,
@@ -50408,7 +50424,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "TransformBox",
-  "frozenSize": 0,
+  "frozenSize": 756,
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 198,

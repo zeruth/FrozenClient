@@ -506,6 +506,11 @@ class CM2ParticleEmitter {
         // the bounds the writer accumulated back through `inverse`. ref: FUN_0097e580
         void WriteLiveParticles(VertexCursor& cursor, uint32_t count, const C44Matrix& inverse);
 
+        // Build this emitter's geometry into a vertex buffer. `mapped` is a buffer the caller
+        // already locked -- the batched path shares one across several emitters -- or null to
+        // take a stream buffer of its own. ref: FUN_0097e730
+        void FillDrawBuffer(const C44Matrix* relativeTo, char* mapped);
+
         // Draw this emitter's particles. `relativeTo` is the matrix the owning model is placed
         // relative to, and `batched` becomes bit 0 of m_drawFlags. ref: FUN_0097ea60
         void Draw(const C44Matrix* relativeTo, void* a3, int32_t batched);

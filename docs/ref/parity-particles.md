@@ -108,12 +108,12 @@ this chain, so every receiver below was read off the disassembly rather than the
 ```
 CM2SceneRender::DrawParticle        FUN_008214e0   PORTED, 91%
   CM2ParticleEmitter::Draw          FUN_0097ea60   ported
-    <the quad builder>              FUN_0097e730   NOT PORTED
+    FillDrawBuffer                  FUN_0097e730   PORTED, 88%
       SetupDrawBasis                FUN_0097a390   PORTED, 100%
       CGxDevice::BufStream          FUN_00684850   ported
       SetupVertexCursor             FUN_0097a2e0   PORTED, 100%
-      <walk the live particles>     FUN_0097e580   NOT PORTED
-        <per-particle vertices>     FUN_0097be80   NOT PORTED  <- the bulk of the work
+      WriteLiveParticles          FUN_0097e580   PORTED, 60%
+        WriteParticleVertices       FUN_0097be80   PORTED, 90%
           SampleAppearance          FUN_00979e90   PORTED, 100%
             SampleColor             FUN_009795d0   PORTED, 100%
             M2PartTrackEvalAlpha    FUN_009794f0   PORTED, 100%
@@ -127,8 +127,36 @@ M2ParticleIndexBufferCreate         FUN_00979170   PORTED   (from CM2Cache::Init
 <the twinkle table fill>            inline 0x81c240  PORTED  (from CM2Cache::Initialize)
 ```
 
-**Three functions left**: the walk (`FUN_0097e580`), the writer (`FUN_0097be80`), and the pair
-that frames them (`FUN_0097e730` and `FUN_0097a580` with `FUN_0097a260`).
+**ONE FUNCTION LEFT**: the submit, `FUN_0097a580`, with the shared index buffer's fill
+`FUN_0097a260` under it. Everything above it is ported and live -- `CM2ParticleEmitter::Draw`
+reaches `FillDrawBuffer`, which builds real geometry into a real stream buffer every frame and
+then does not draw it.
+
+What blocks the submit is three shader-effect calls, of which only one is identified:
+
+| address | what is known |
+|---|---|
+| `FUN_00873480` | `CShaderEffect::SetTexMtx_Identity(0)` -- already linked |
+| `FUN_00873160` | 84 bytes, 8 callers, same module. Not identified. |
+| `FUN_00872b00` | 266 bytes, 5 callers, same module. Not identified. |
+
+Identify those two before writing it. Inventing them means guessing at render state, which is
+where this codebase's graphics bugs have historically come from. The rest of that function is
+already understood: bind the shared index buffer (refilling it through `FUN_0097a260` when its
+`unk1C`/`unk1D` say it is stale), `GxPrimVertexPtr` (`FUN_00681b00`) and `GxPrimIndexPtr`
+(`FUN_00682f10`) -- both of which frozen already has under those names, unlinked -- then one
+indexed triangle-list `GxDraw` of `m_indicesPerParticle * m_drawnCount` indices with
+`maxIndex = vertexCount - 1`.
+
+Two things about this chain that cost time to establish and should not be re-derived:
+
+* The guard at `0x00b2d530` has two readers and **no writer anywhere in the 5.4MB text section**,
+  which reads as a permanently-false branch. It is static initialised data holding **1**. Read it
+  out of the image, not the code.
+* The reference's depth-sort heap (`FUN_007a0f50` push, `FUN_0097e080` pop) does not agree with
+  itself about indexing -- push places 0-based, pop and the sift-up read 1-based -- so the first
+  particle pushed is never popped. frozen sorts correctly and neither is tagged; see the comment
+  in `CM2ParticleEmitter::WriteLiveParticles`.
 
 ### FUN_0097e730 -- the fill
 

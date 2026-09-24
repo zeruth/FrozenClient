@@ -3,7 +3,9 @@
 #include <tempest/Math.hpp>
 #include <cstdlib>
 #include <cstring>
+#include "gx/Device.hpp"
 #include "gx/Gx.hpp"
+#include "gx/Transform.hpp"
 #include "util/Log.hpp"
 #include "world/ParticleFx.hpp"
 
@@ -1674,6 +1676,14 @@ void CM2ParticleEmitter::CellUvBase(uint32_t cell, float& u, float& v) const {
     v = static_cast<float>(static_cast<int32_t>(cell) >> this->m_cellShift) * this->m_cellHeight;
 }
 
+// The particle system's master switch, at 0x00b2d530.
+//
+// It has two readers and NO writer anywhere in the reference's 5.4MB text section, which makes it
+// look like a dead branch that is always false. It is not: the image initialises it to 1, read
+// out of the data section rather than inferred. Kept as a variable rather than folded away
+// because the reference plainly means it as a switch.
+static int32_t s_particlesEnabled = 1;
+
 // One entry of the depth sort: a particle and how far into the scene it is.
 struct M2ParticleSortEntry {
     float m_depth;
@@ -2102,6 +2112,88 @@ bool CM2ParticleEmitter::WriteParticleVertices(const Particle& p, VertexCursor& 
     return true;
 }
 
+// Build this emitter's geometry into a vertex buffer.
+//
+// ref: FUN_0097e730
+void CM2ParticleEmitter::FillDrawBuffer(const C44Matrix* relativeTo, char* mapped) {
+    if (!s_particlesEnabled) {
+        this->m_drawFlags &= ~0x1u;
+        this->m_drawnCount = 0;
+
+        return;
+    }
+
+    // The device's CURRENT view, off its own xform stack -- `device + 0x1b00 + level * 0x40`,
+    // which is xform 10, GxXform_View. DrawParticle put the view into camera-relative space
+    // before calling down here, so this is that, not the scene's.
+    C44Matrix view;
+
+    GxXformView(view);
+
+    this->SetupDrawBasis(relativeTo, view);
+
+    if (!TextureGetGxTex(this->m_texture, 0, nullptr)) {
+        this->m_drawFlags &= ~0x1u;
+        this->m_drawnCount = 0;
+
+        return;
+    }
+
+    // As many particles as fit in a 0x4000-vertex budget, capped by how many are actually alive.
+    // The shared index buffer covers far more than this, so nothing has to grow.
+    uint32_t count = 0x4000 / this->m_verticesPerParticle;
+
+    if (this->m_liveIndices.Count() < count) {
+        count = this->m_liveIndices.Count();
+    }
+
+    // 4 and 8 in the reference's arithmetic, which are these two by name. The lit format carries
+    // a normal; the unlit one does not, which is what the cursor's stride-zero sink is for.
+    EGxVertexBufferFormat format = (this->m_materialFlags & 0x1) ? GxVBF_PNCT : GxVBF_PCT;
+
+    CGxBuf* buffer = nullptr;
+
+    if (!mapped) {
+        buffer = g_theGxDevicePtr->BufStream(
+            GxPoolTarget_Vertex,
+            GxVertexBufferFormatSize(format),
+            this->m_verticesPerParticle * count);
+
+        mapped = g_theGxDevicePtr->BufLock(buffer);
+    }
+
+    VertexCursor cursor;
+
+    this->SetupVertexCursor(mapped, format, cursor);
+
+    // The bounds come back out of view space through this. Note it inverts the VIEW rather than
+    // the full particle-space matrix, so they land in the emitter's parent space and the origin
+    // added afterwards puts them in the world.
+    C44Matrix inverse = view.AffineInverse();
+
+    this->WriteLiveParticles(cursor, count, inverse);
+
+    if (!buffer) {
+        return;
+    }
+
+    g_theGxDevicePtr->BufUnlock(buffer, 0);
+
+    buffer->unk1C = 1;
+
+    if (this->m_drawnCount) {
+        // FUN_0097a580, the submit: bind the shared index buffer, set the vertex and index
+        // pointers, three shader-effect calls, and one indexed triangle-list draw of
+        // `m_indicesPerParticle * m_drawnCount` indices.
+        //
+        // NOT PORTED. Two of those three shader calls (FUN_00873160 and FUN_00872b00, beside the
+        // already-linked SetTexMtx_Identity) are unidentified, and inventing them would be
+        // guessing at render state on the one path where guessing has historically put the
+        // graphics bugs in. Everything above this line is real; this is the last function.
+        GxXformSetView(view);
+    }
+}
+
 // Draw this emitter's particles.
 //
 // The bounds reset at the top is why the constructor initialises them inverted: the quad builder
@@ -2129,14 +2221,9 @@ void CM2ParticleEmitter::Draw(const C44Matrix* relativeTo, void* a3, int32_t bat
     this->m_drawFlags = (this->m_drawFlags & ~0x1u) | (batched & 0x1);
 
     if (this->m_particleKind == 0) {
-        // FUN_0097e730, the plain pool's quad builder -- 22 calls into the GX layer and not
-        // ported. The model pool has no branch here at all: those particles draw as models.
-        SysMsgPrintf(SYSMSG_ERROR,
-                     "CM2ParticleEmitter::Draw: the quad builder is not ported (FUN_0097e730); "
-                     "no particle geometry is emitted");
-
-        (void)relativeTo;
-        (void)a3;
+        // The model pool has no branch here at all: those particles draw as models, through the
+        // spawned-model walk instead of any geometry of their own.
+        this->FillDrawBuffer(relativeTo, static_cast<char*>(a3));
     }
 }
 
