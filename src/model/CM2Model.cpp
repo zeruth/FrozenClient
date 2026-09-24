@@ -1087,18 +1087,37 @@ void CM2Model::AnimateST() {
     // field, and each guarded on the track having more than one key, or one key whose time is
     // still ahead of the model's current time. Finally the model's alpha, clamped to 0..1.
     //
-    // The second half places and steps it, and needs three things frozen does not have yet:
-    //   - the bone matrix copy is followed by a multiply against a STATIC matrix at 0x00d411e0,
-    //     built once on first use. Its rows are (0,1,0,0), (-1,0,0,0), (0,0,1,0), (0,0,0,1) --
-    //     the -1.0 is 0x009e2ef4 -- so it is a +90 degree rotation about Z, the basis swap between
-    //     bone space and the emitter's frame. Worth having decoded; it looks like noise in the
-    //     decompilation.
-    //   - Ghidra drops ECX on the three matrix helpers around it (0x004c1b30 Translate,
-    //     0x004c2370, 0x00407f80 the C44Matrix copy), so their receivers need reading off the
-    //     disassembly the way FUN_0097ac20's and FUN_0097db80's did.
-    //   - the tail walks the emitter's subtree of SPAWNED MODELS (FUN_0097ba30 counts it,
-    //     FUN_0097ba70 reaches the i-th) and animates each. Both read the 0x40-byte model pool,
-    //     which is unported -- so that tail cannot land until it is.
+    // The second half places and steps it. Decoded in full 2026-09-24; it reads as
+    //
+    //     C44Matrix matrix = this->m_boneMatrices[file.boneIndex];
+    //     matrix.Translate(file.position);
+    //     matrix *= this->m_scene->m_viewInv;
+    //     matrix = PARTICLE_BASIS * matrix;
+    //     emitter->Update(dt, matrix, <camera position>, <relative matrix>);
+    //     <then the spawned-model subtree walk>
+    //
+    // with four things that are not apparent from the decompilation:
+    //   - PARTICLE_BASIS is the static matrix at 0x00d411e0, built once on first use. Its rows are
+    //     (0,1,0,0), (-1,0,0,0), (0,0,1,0), (0,0,0,1) -- the -1.0 is 0x009e2ef4 -- so it is a +90
+    //     degree rotation about Z, the basis swap between bone space and the emitter's frame. It
+    //     reads as noise until the constant is looked up.
+    //   - Ghidra drops ECX on the three matrix helpers (0x004c1b30 Translate, 0x004c2370 which is
+    //     operator*=, 0x00407f80 the copy). All three have the SAME receiver: the local copy of
+    //     the bone matrix. Read off the disassembly at 0x830c5a, 0x830c6c and 0x830d09.
+    //   - `scene + 0xf4` is not a field. It is 0xc4 + 0x30, the TRANSLATION ROW of m_viewInv,
+    //     which for a view-inverse is the camera position -- which is what Update's second
+    //     parameter wants.
+    //   - `model + 0x174` is a C44Matrix* the model is expressed relative to; the setter at
+    //     0x00824479 takes its AffineInverse, the same call Place makes of the same argument.
+    //     FROZEN HAS NO SUCH FIELD, so that argument has to be null until it does -- which is
+    //     correct for every model today, because nothing would set it.
+    //
+    // The subtree tail (FUN_0097ba30 counts, FUN_0097ba70 reaches the i-th spawned model) is no
+    // longer blocked: both are ported, along with the 0x40-byte model pool they read.
+    //
+    // What is still missing for the model-carrying path alone is FUN_0097e8d0, the spawned-model
+    // placement pass, which reads a matrix array off the global at 0x00c5df88. Emitters that do
+    // not spawn models do not need it.
     //
     // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this.
     // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not

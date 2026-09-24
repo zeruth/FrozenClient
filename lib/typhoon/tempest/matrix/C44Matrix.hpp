@@ -58,6 +58,9 @@ class C44Matrix {
     void Scale(float scale);
     void Translate(const C3Vector& move);
     C44Matrix Transpose() const;
+
+    // Multiply in place, receiver on the LEFT: `*this = *this * r`. Tagged at the definition.
+    C44Matrix& operator*=(const C44Matrix& r);
 };
 
 C44Matrix operator*(const C44Matrix& l, float a);

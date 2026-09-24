@@ -37753,6 +37753,22 @@
 "refs": [],
 "line": 138
 },
+"C44Matrix::operator*=": {
+"files": [
+"lib/typhoon/tempest/matrix/c44matrix.cpp"
+],
+"callseq": [
+"operator*",
+"C44Matrix::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 175
+},
 "C44Matrix::AffineInverse": {
 "files": [
 "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -37782,7 +37798,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 169
+"line": 182
 },
 "C44Matrix::Col0": {
 "files": [
@@ -37797,7 +37813,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 197
+"line": 210
 },
 "C44Matrix::Col1": {
 "files": [
@@ -37812,7 +37828,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 201
+"line": 214
 },
 "C44Matrix::Col2": {
 "files": [
@@ -37827,7 +37843,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 205
+"line": 218
 },
 "C44Matrix::Col3": {
 "files": [
@@ -37842,7 +37858,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 209
+"line": 222
 },
 "C44Matrix::Determinant": {
 "files": [
@@ -37855,7 +37871,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 214
+"line": 227
 },
 "C44Matrix::Identity": {
 "files": [
@@ -37871,7 +37887,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 219
+"line": 232
 },
 "C44Matrix::Inverse": {
 "files": [
@@ -37889,7 +37905,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 242
+"line": 255
 },
 "C44Matrix::Rotate": {
 "files": [
@@ -37906,7 +37922,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 247
+"line": 260
 },
 "C44Matrix::RotateAroundZ": {
 "files": [
@@ -37923,7 +37939,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 251
+"line": 264
 },
 "C44Matrix::Row0": {
 "files": [
@@ -37938,7 +37954,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 255
+"line": 268
 },
 "C44Matrix::Row0AsVec3": {
 "files": [
@@ -37951,7 +37967,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 259
+"line": 272
 },
 "C44Matrix::Row1": {
 "files": [
@@ -37966,7 +37982,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 263
+"line": 276
 },
 "C44Matrix::Row1AsVec3": {
 "files": [
@@ -37979,7 +37995,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 267
+"line": 280
 },
 "C44Matrix::Row2": {
 "files": [
@@ -37994,7 +38010,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 271
+"line": 284
 },
 "C44Matrix::Row2AsVec3": {
 "files": [
@@ -38007,7 +38023,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 275
+"line": 288
 },
 "C44Matrix::Row3": {
 "files": [
@@ -38022,7 +38038,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 279
+"line": 292
 },
 "C44Matrix::Row3AsVec3": {
 "files": [
@@ -38035,7 +38051,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 283
+"line": 296
 },
 "C44Matrix::Scale": {
 "files": [
@@ -38048,7 +38064,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 288
+"line": 301
 },
 "C44Matrix::Translate": {
 "files": [
@@ -38061,7 +38077,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 317
+"line": 330
 },
 "C44Matrix::Transpose": {
 "files": [
@@ -38076,7 +38092,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 323
+"line": 336
 },
 "C4Quaternion::Nlerp": {
 "files": [

@@ -165,6 +165,19 @@ C44Matrix C44Matrix::Adjoint() const {
  *
  * @return Inverse of matrix
  */
+// Multiply in place, receiver on the LEFT.
+//
+// The reference builds the product in a temporary and copies it back rather than writing into
+// itself, which it has to: the multiply reads every element of both operands, so accumulating
+// into the destination would feed partial results back in.
+//
+// ref: FUN_004c2370
+C44Matrix& C44Matrix::operator*=(const C44Matrix& r) {
+    *this = *this * r;
+
+    return *this;
+}
+
 // ref: FUN_004c2fc0
 C44Matrix C44Matrix::AffineInverse() const {
     auto matrix = C44Matrix(C33Matrix(*this).Transpose());

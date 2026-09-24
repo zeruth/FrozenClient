@@ -628,6 +628,7 @@ addr	how	frozen	evidence
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2300	annotated	TransformPointInPlace	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c2370	annotated	C44Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2fc0	annotated	C44Matrix::AffineInverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -2370,7 +2371,7 @@ addr	how	frozen	evidence
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
 00823d90	override	CM2Model::DetachFromScene	
-00823ed0	sticky	CM2Model::WaitForLoad	held from the previous run, where it was sticky
+00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 00824f00=CM2Model::IsLoaded
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
 00824d30	override	CM2Model::FreeExternalResources	
