@@ -148,11 +148,17 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             // loop header and the return only adds an extra skip -- so the elements are visited
             // and nothing is drawn for them yet.
             //
-            // The rest still holds. Type 0 is the only one that draws: type 2 needs
-            // CM2Model::IsBatchDoodadCompatible, which always returns 0, and type 1 needs
-            // CM2Scene::uint104, which is never written, so both fall through to 0. Types 3 and 5
-            // need ribbon and draw-callback elements the gather does not build, so porting either
-            // of those draws still means porting its gate first.
+            // The rest still holds, with type 1's gate now understood. Type 0 is the only one
+            // that draws. Type 2 needs CM2Model::IsBatchDoodadCompatible, which always returns 0.
+            //
+            // Type 1 needs TWO things: a batch with flag 0x4, and a non-null
+            // CM2Scene::m_projectionCallback -- the field previously called uint104, which is not
+            // a number but the projected-decal callback. Nothing calls
+            // CM2Scene::SetProjectionCallback yet, so it stays null and the gate stays shut; see
+            // docs/ref/parity-shadows.md for the whole chain.
+            //
+            // Types 3 and 5 need ribbon and draw-callback elements the gather does not build, so
+            // porting either of those draws still means porting its gate first.
             switch (this->m_curElement->type) {
                 case 0: {
                     this->DrawBatch();
