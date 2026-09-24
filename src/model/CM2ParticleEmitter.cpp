@@ -24,6 +24,106 @@ static void M2ParticleFlushDenormals(C3Vector& v) {
     }
 }
 
+// ref: FUN_00979330
+uint32_t M2PartTrackFindKey(const M2Array<fixed16>& times, float t) {
+    uint32_t lo = 0;
+
+    // TWO high bounds, and conflating them is wrong: `last` is fixed at the final index and only
+    // guards against running off the end, while `high` is the shrinking search bound. The first
+    // transcription of this used one variable for both and disagreed with a linear scan on roughly
+    // one lookup in eight -- caught by testing it against one rather than by reading it again.
+    uint32_t last = times.Count() - 1;
+
+    if (last == 0) {
+        return 0;
+    }
+
+    uint32_t high = last;
+
+    for (;;) {
+        uint32_t mid = (high + lo) >> 1;
+
+        if (static_cast<float>(times[mid]) <= t) {
+            lo = mid + 1;
+
+            // The reference's second test reaches Ghidra as
+            // `fVar1 < param_1 == (fVar1 == param_1)`, which is the x87 compare-and-branch pattern
+            // CLAUDE.md warns about rather than anything meaningful. For ordered values `a < b` and
+            // `a == b` cannot both hold, so the equality is true only when both are false: it means
+            // `a > b`. The key is the right one once the NEXT key's time is beyond t.
+            if (last <= lo || static_cast<float>(times[mid + 1]) > t) {
+                return mid;
+            }
+        } else {
+            high = mid - 1;
+        }
+
+        if (high <= lo) {
+            return lo;
+        }
+    }
+}
+
+// ref: FUN_009793b0
+float M2PartTrackRatio(uint32_t& lo, uint32_t& hi, const M2Array<fixed16>& times,
+                       uint32_t valueCount, float t) {
+    // Two keys: the whole track is one span, so the normalised time IS the ratio.
+    if (valueCount == 2) {
+        lo = 0;
+        hi = 1;
+
+        return t;
+    }
+
+    // Three keys: one comparison decides which of the two spans t falls in, and the ratio is t
+    // rescaled within it. Cheaper than entering the search for a case this common.
+    if (valueCount == 3) {
+        float mid = static_cast<float>(times[1]);
+
+        if (t < mid) {
+            lo = 0;
+            hi = 1;
+
+            return t / mid;
+        }
+
+        lo = 1;
+        hi = 2;
+
+        return (t - mid) / (1.0f - mid);
+    }
+
+    uint32_t key = M2PartTrackFindKey(times, t);
+
+    lo = key;
+    hi = key + 1;
+
+    float a = static_cast<float>(times[key]);
+    float b = static_cast<float>(times[key + 1]);
+
+    return (t - a) / (b - a);
+}
+
+// ref: FUN_00979480
+void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t) {
+    // A single value is the whole track.
+    if (track.values.Count() == 1) {
+        out = track.values[0];
+
+        return;
+    }
+
+    uint32_t lo = 0;
+    uint32_t hi = 0;
+    float ratio = M2PartTrackRatio(lo, hi, track.times, track.values.Count(), t);
+
+    const C2Vector& a = track.values[lo];
+    const C2Vector& b = track.values[hi];
+
+    out.x = (b.x - a.x) * ratio + a.x;
+    out.y = (b.y - a.y) * ratio + a.y;
+}
+
 // ref: FUN_00978ad0
 void M2ParticleToFixed16(fixed16& out, float value) {
     if (value >= 1.0f) {

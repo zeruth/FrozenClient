@@ -77435,6 +77435,79 @@
 "refs": [],
 "line": 13
 },
+"M2PartTrackFindKey": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2Array<fixed16>::Count",
+"M2Array<fixed16>::operator[]",
+"fixed16::operator float",
+"M2Array<fixed16>::operator[]",
+"fixed16::operator float"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 5,
+"stub": false,
+"lines": 38,
+"refs": [],
+"line": 28
+},
+"M2PartTrackRatio": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2Array<fixed16>::operator[]",
+"fixed16::operator float",
+"M2PartTrackFindKey",
+"M2Array<fixed16>::operator[]",
+"fixed16::operator float",
+"M2Array<fixed16>::operator[]",
+"fixed16::operator float"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"1.0f",
+"2",
+"3"
+],
+"branches": 3,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 68
+},
+"M2PartTrackEval2": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"M2Array<C2Vector>::Count",
+"M2Array<C2Vector>::operator[]",
+"C2Vector::operator=",
+"M2Array<C2Vector>::Count",
+"M2PartTrackRatio",
+"M2Array<C2Vector>::operator[]",
+"M2Array<C2Vector>::operator[]"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 108
+},
 "M2ParticleToFixed16": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -77451,7 +77524,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 28
+"line": 128
 },
 "M2ParticleRandSigned": {
 "files": [
@@ -77472,7 +77545,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 45
+"line": 145
 },
 "M2ParticleRandomUnitVector": {
 "files": [
@@ -77497,7 +77570,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 56
+"line": 156
 },
 "CM2ParticleEmitter::RandomSpeed": {
 "files": [
@@ -77514,7 +77587,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 76
+"line": 176
 },
 "CM2ParticleEmitter::IntegrateParticle": {
 "files": [
@@ -77537,7 +77610,7 @@
 "stub": false,
 "lines": 70,
 "refs": [],
-"line": 90
+"line": 190
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -77555,7 +77628,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 170
+"line": 270
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

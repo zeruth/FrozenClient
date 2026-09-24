@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "math/Types.hpp"
+#include "model/M2Data.hpp"
 #include <tempest/Matrix.hpp>
 #include <tempest/Random.hpp>
 #include <tempest/Vector.hpp>
@@ -139,6 +140,18 @@ class CM2ParticleEmitter {
 // 0x00a4040c -- worth stating because 1.5 is the value that "looks right" there and would silently
 // halve every randomised quantity in the particle system.
 float M2ParticleRandSigned(CRndSeed& seed);
+
+// The index of the key whose time brackets `t` from below, by binary search over a part track's
+// fixed16 times. ref: FUN_00979330
+uint32_t M2PartTrackFindKey(const M2Array<fixed16>& times, float t);
+
+// The two keys bracketing `t` and the ratio between them. Tracks of two and three keys -- most of
+// them -- take closed-form paths rather than the search. ref: FUN_009793b0
+float M2PartTrackRatio(uint32_t& lo, uint32_t& hi, const M2Array<fixed16>& times,
+                       uint32_t valueCount, float t);
+
+// One 2-float part track, linearly interpolated at `t`. ref: FUN_00979480
+void M2PartTrackEval2(C2Vector& out, const M2PartTrack<C2Vector>& track, float t);
 
 // Saturating float to fixed16. Anything at or beyond +/-1 clamps to the exact endpoints rather
 // than wrapping -- 0x7FFF and 0x8001, which are +1 and -1 exactly under fixed16's 1/32767 scaling.
