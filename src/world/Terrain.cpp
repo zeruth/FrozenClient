@@ -5130,6 +5130,15 @@ void BlobShadowsBegin() {
 // Note the sense: this returns how much light is REMOVED. The shader emits 1 - coverage, so the
 // multiplier that actually reaches the framebuffer at full coverage is ambient / (ambient + diffuse),
 // which is the quantity the paragraph above describes.
+// The reference's answer is now known and is NOT this: `FUN_007e4480` takes the strength as its
+// third argument, and the call site at 0x007e4a27 passes a CONSTANT 0.4 (the float at 0x009f98d8).
+// No time of day, no light ratio. Decoded 2026-09-23; see docs/ref/parity-shadows.md.
+//
+// Deliberately not swapped for 0.4 yet. What `FUN_007e4370` does with that scalar has not been
+// read, so it is not yet known whether 0.4 means the same thing as the value below -- this one is
+// the amount of light REMOVED, and blob_decal_ps.hlsl emits `1 - coverage`. Substituting a number
+// whose sense is unconfirmed, on a path that cannot be looked at right now, would be guessing at
+// the screen rather than porting. It wants the emit read first, then one change and one run.
 float BlobShadowStrength() {
     const C3Vector& ambient = CWorld::GetOutdoorAmbient();
     const C3Vector& diffuse = CWorld::GetOutdoorDiffuse();

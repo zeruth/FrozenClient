@@ -506,6 +506,86 @@ WMO instance. So the caster set is units plus every doodad. What is still missin
 reference's "every scene entity with a model" is the non-unit world objects -- game objects such
 as chests and doors -- which that `IsA(TYPE_UNIT)` test excludes.
 
+### 2026-09-23 - the reference blob draw, decoded end to end
+
+`FUN_007e4480` is the reference's blob shadow draw. Its call shape was settled from the
+instructions rather than the decompiler, because Ghidra mis-recovers the convention here and
+reports one argument where there are three. At `0x007e4a27`:
+
+    flds  0x9f98d8      ; 0.4
+    pushl %ecx
+    fstps (%esp)        ; stack arg 2 = 0.4
+    pushl %esi          ; stack arg 1 = the model
+    movl  %edi, %ecx    ; ECX = the CAaBox
+    calll 0x7e4480
+
+So it is `BlobShadowDraw(const CAaBox& box, CM2Model* model, float strength)`. The box check is
+`param_1[0..5]` read as six floats, and `param_2 + 0xb4` is the model's 4x4 -- the same +0xb4
+matrix `CM2Model` keeps, which is what confirms the argument order.
+
+**The footprint is an oriented rectangle, not a circle.** This is the part frozen does not do. The
+reference takes the X and Y half-extents SEPARATELY:
+
+    halfX = (box.t.x - box.b.x) * 0.5
+    halfY = (box.t.y - box.b.y) * 0.5
+    if (|halfX| < 2^-22 || |halfY| < 2^-22) return;
+
+and builds four corners -- `(+halfX,+halfY)`, `(+halfX,-halfY)`, `(-halfX,-halfY)`,
+`(-halfX,+halfY)` -- transforming each through the model's matrix. The texture projection is scaled
+by `1/|2*halfY|` and `1/|2*halfX|` on the two axes, so a long thin caster gets a long thin shadow
+that turns with the model. frozen collapses the box to `max(ex, ey)` and draws an axis-aligned
+circle of that radius, so its footprint is too wide on the short axis and never rotates.
+
+**The projection range along Z** is asymmetric, from two constants read out of the binary:
+
+    zLow  = centreZ - (5/3) * halfZ      ; 1.6666666 at 0x00af3e14
+    zHigh = centreZ + 1.0   * halfZ      ; 1.0       at 0x00af3e18
+
+where `halfZ = (box.t.z - box.b.z) * 0.5`. It reaches further below the caster than above it.
+
+**Strength.** CLAUDE.md lists "where the reference's shadow strength actually comes from" as unread.
+It is the third argument, and at this call site it is a CONSTANT `0.4` (the float at 0x009f98d8).
+It is the only scalar the draw takes, it survives to the final emit -- `FUN_007e4370(..., param_3)`
+-- and the function early-outs on `param_3 == 0.0`. What `FUN_007e4370` does with it has not been
+read, so "the strength is 0.4" is stated as: the sole scalar, constant at the call site. That is
+already enough to say frozen's `BlobShadowStrength()`, which computes
+`diffuseLuma / (ambient + diffuse)` clamped to [0.15, 0.85] and varies with the time of day, is not
+what the reference does here.
+
+**Render states**, which double as a check on the ones frozen already set:
+
+| reference | state | frozen |
+|---|---|---|
+| `GxRsSet(6, 4)` | BlendingMode = GxBlend_Mod | matches (item 3) |
+| `GxRsSet(0xb, 0)` | Lighting off | - |
+| `GxRsSet(0xc, 0)` | Fog off | matches (item 4) |
+| `GxRsSet(0xf, 0)` | DepthWrite off | - |
+| `GxRsSet(0x15, tex)` | Texture0 = the blob texture | matches |
+
+**Where the box comes from**, from `FUN_00793980`, the scene entity walk. Every entity is gated on
+its own `flags & 0x800` -- a per-entity "casts a shadow" bit frozen has no equivalent of -- and
+then the box is sourced one of two ways:
+
+- entity WITHOUT an associated object (`ClntObjMgrObjectPtr` returns null): the box is
+  `GetSequenceInfo(0, 0).extent` -- **sequence id 0, variation 0**, not the animation currently
+  playing.
+- entity WITH one: the box comes from `FUN_0071ed80`, which copies a `CAaBox` from
+  `unit->[0x970] + 0x44` (falling back to `FUN_00717a20()` when that slot is empty) and then, when
+  `unit->[0xd0]->[0xfc] > 0`, shifts both Z components by
+  `rec[0x40] - (box.t.z - box.b.z) * 0.5` from a two-level DBC lookup keyed on `unit->[0x9c0]`.
+
+That second path matters for a correction to this file's own previous entry. The change made
+earlier on 2026-09-23 pointed `CGUnit_C::GetAnimFootprint` at `CM2Model::GetSequenceInfo` with the
+CURRENT animation id. That is a real improvement over the raw id match it replaced -- it follows
+the model's fallback chain, which the old code did not -- but it is NOT the reference's mechanism
+for units. The reference reaches units through `FUN_0071ed80` and uses `GetSequenceInfo(0, 0)` only
+for objectless scene entities such as doodads. Recorded rather than reverted, because the ported
+behaviour is defensible on its own terms and the reference path needs `unit->[0x970]` and a DBC
+lookup frozen has not mapped; but it should not be described as matching the reference.
+
+**Still not written:** the oriented rectangle, the asymmetric Z range, the constant strength, and
+the per-entity 0x800 gate. All four are specified above.
+
 ### 2026-09-23 - item 8, the animated footprint
 
 Item 8 was stale in both directions, which is the usual state of this list.

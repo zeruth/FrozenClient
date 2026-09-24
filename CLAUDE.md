@@ -299,8 +299,12 @@ seen running — treat them as suspect until a run confirms them.
    ramps, which were decoded on 2026-09-16 and turn out to be a separate stage-1 fade along the
    projection axis rather than anything to do with the strength term. Genuinely still open: M2
    receivers (`DrawBatchProj` is a stub, and unreachable behind its own gate — see the note at
-   the dispatch in `CM2SceneRender::Draw`) and where the reference's shadow strength actually
-   comes from, which is still unread. **Animation-bbox footprints closed 2026-09-23**: the
+   the dispatch in `CM2SceneRender::Draw`), and the FOOTPRINT SHAPE: the reference builds an
+   oriented rectangle from the box's X and Y half-extents separately and turns it with the
+   model's matrix, where frozen collapses the box to `max(ex, ey)` and draws an axis-aligned
+   circle. **Shadow strength is solved 2026-09-23** and is not a light ratio at all: it is
+   the third argument of `FUN_007e4480`, a constant 0.4 at the call site (0x009f98d8).
+   **Animation-bbox footprints closed 2026-09-23**: the
    caster radius already came from the current sequence's authored box rather than the cull
    extent, but it resolved that sequence by a raw id match and so missed the model's fallback
    chain; `CGUnit_C::GetAnimFootprint` now goes through `CM2Model::GetSequenceInfo`, which is
