@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "math/Types.hpp"
 #include "model/M2Data.hpp"
+#include "storm/array/TSGrowableArray.hpp"
 #include <tempest/Matrix.hpp>
 #include <tempest/Random.hpp>
 #include <tempest/Vector.hpp>
@@ -71,27 +72,32 @@ class CM2ParticleEmitter {
         // constructs one yet; whatever ports the constructor must carry the random seed over, or
         // every emitter in a scene will emit in lockstep.
         CRndSeed m_seed = CRndSeed(0);
-        // +0x34: the 0x20-byte pool, used when m_particleKind is 0
-        Particle* m_pool = nullptr;
-        // +0x44: the 0x40-byte pool, used otherwise -- its particles carry a spawned model
-        Particle* m_modelPool = nullptr;
+        // +0x2c: the 0x20-byte pool, used when m_particleKind is 0. A TSGrowableArray, which is
+        // what the reference has: TSBaseArray is {m_alloc, m_count, m_data} at +0x0/+0x4/+0x8 and
+        // TSGrowableArray adds m_chunk at +0xc for 0x10 bytes total -- exactly the spacing between
+        // this and the two index containers at +0x4c and +0x5c. The pointer earlier recorded at
+        // +0x34 is this container's m_data.
+        TSGrowableArray<Particle> m_pool;
+        // +0x3c: the 0x40-byte pool, used otherwise -- its particles carry a spawned model at
+        // +0x3c of each. Its element type is not Particle and is not modelled yet; nothing
+        // allocates it, and both paths that would read it report instead.
+        TSGrowableArray<Particle> m_modelPool;
         // +0x20: which concrete emitter this is. The base constructor leaves it 0 and the plane
         // subclass's sets it to 1 (0x98132c), so it is a type tag rather than a state flag.
         uint32_t m_emitterType = 0;
         // +0x08: the fractional emission carry. A rate of 2.5 a second does not round to 2 or 3
         // -- the remainder stays here and is spent on a later frame.
         float m_emitCarry = 0.0f;
-        // +0x50: how many particles are live, and +0x54 the indices of those particles into
-        // whichever pool is in use. The step swap-removes from this array as particles die, which
-        // is why it walks `i` forward only when one survives.
-        uint32_t m_liveCount = 0;
-        uint32_t* m_liveIndices = nullptr;
-        // +0x60 and the array beside it: the slots not currently in use. Spawning pops one; the
-        // step pushes one back when a particle dies. Every spawn loop in the reference stops the
-        // moment this count reaches zero, so a full emitter silently emits nothing rather than
-        // growing.
-        uint32_t m_freeCount = 0;
-        uint32_t* m_freeIndices = nullptr;
+        // +0x4c: the indices of the live particles into whichever pool is in use. The step
+        // swap-removes from this array as particles die, which is why it walks `i` forward only
+        // when one survives. What earlier passes recorded as a separate m_liveCount at +0x50 is
+        // this container's m_count.
+        TSGrowableArray<uint32_t> m_liveIndices;
+        // +0x5c: the slots not currently in use. Spawning pops one; the step pushes one back
+        // when a particle dies. Every spawn loop in the reference stops the moment this is empty,
+        // so a full emitter silently emits nothing rather than growing mid-frame -- growth happens
+        // only in Reserve.
+        TSGrowableArray<uint32_t> m_freeIndices;
         // +0x9c and +0xa0: emission rate and its variation, both written by the driver from the
         // model's animated tracks.
         float m_rate = 0.0f;
@@ -282,6 +288,11 @@ class CM2ParticleEmitter {
         // the emitter is not in emitter space (flag 0x200), the stored transform is re-expressed
         // relative to it. ref: FUN_0097ac20
         void Place(const C44Matrix& matrix, const C3Vector& origin, const C44Matrix* relativeTo);
+
+        // Make room for `capacity` particles, rounded UP to a power of two, given `inUseA` and
+        // `inUseB` already accounted for. Grows the pool and both index arrays together, since a
+        // slot needs an entry in each. ref: FUN_0097e3f0
+        void Reserve(uint32_t capacity, uint32_t inUseA, uint32_t inUseB);
 
         // Split `dt` into fixed 0.1s slices and step each, so a fast-moving emitter integrates
         // in bounded increments rather than one long jump. ref: FUN_0097acb0

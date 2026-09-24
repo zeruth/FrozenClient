@@ -48,7 +48,7 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **3,166 / 27,160** &nbsp;·&nbsp; ~11% |
+| **Linked** | an original function has a known counterpart here | **3,167 / 27,160** &nbsp;·&nbsp; ~11% |
 | **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,240** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 

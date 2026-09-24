@@ -49432,6 +49432,22 @@
   "refSize": 662,
   "status": "ported"
  },
+ "0097e3f0": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Reserve",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 143,
+  "status": "ported"
+ },
  "0097eb10": {
   "branchRatio": 0.917,
   "constOverlap": 0.121,

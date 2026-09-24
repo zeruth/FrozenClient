@@ -457,15 +457,18 @@ void CM2ParticleEmitter::CreateParticle(Particle& p, float dt, const C44Matrix& 
 
 // ref: FUN_0097d820
 void CM2ParticleEmitter::SpawnParticle(float dt, const C44Matrix& placement) {
-    if (!this->m_freeCount || !this->m_pool || !this->m_liveIndices || !this->m_freeIndices) {
+    if (!this->m_freeIndices.Count()) {
         return;
     }
 
     // Pop the last free slot and make it live. The reference reaches the same two arrays through a
     // growable-array pop and a link; the effect is this.
-    uint32_t slot = this->m_freeIndices[--this->m_freeCount];
+    // Pop the free list and push the live one -- the reference's Pop (0x0097d7b0) and Add
+    // (0x00480fd0) on the two containers.
+    uint32_t slot = this->m_freeIndices[this->m_freeIndices.Count() - 1];
+    this->m_freeIndices.SetCount(this->m_freeIndices.Count() - 1);
 
-    this->m_liveIndices[this->m_liveCount++] = slot;
+    this->m_liveIndices.Add(1, &slot);
 
     this->CreateParticle(this->m_pool[slot], dt, placement);
 }
@@ -501,7 +504,7 @@ void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
     if ((this->m_flags & 0x40) && (this->m_flags & 0x2)) {
         int32_t n = static_cast<int32_t>(nearbyintf(rate));
 
-        while (this->m_freeCount && n) {
+        while (this->m_freeIndices.Count() && n) {
             this->SpawnParticle(0.0f, placement);
             n--;
         }
@@ -519,7 +522,7 @@ void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
     int32_t n = static_cast<int32_t>(nearbyintf(this->m_emitCarry + 0.5f));
 
     if (!(this->m_flags & 0x2000)) {
-        while (this->m_freeCount && n) {
+        while (this->m_freeIndices.Count() && n) {
             this->SpawnParticle(dt, placement);
             spawned++;
             n--;
@@ -530,7 +533,7 @@ void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
         C3Vector cur = { placement.d0, placement.d1, placement.d2 };
         const C3Vector& prev = this->m_prevPosition;
 
-        while (this->m_freeCount && n) {
+        while (this->m_freeIndices.Count() && n) {
             uint32_t u = CRandom::uint32(this->m_seed);
             uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
 
@@ -780,7 +783,7 @@ void CM2ParticleEmitter::Update(float dt, const C44Matrix& matrix, const C3Vecto
             // An exact reset, not a carry -- see the stack trace in this file's commit message.
             this->m_time = 0.0f;
 
-            if (this->m_liveCount == 0) {
+            if (this->m_liveIndices.Count() == 0) {
                 this->m_inheritedVelocity = { 0.0f, 0.0f, 0.0f };
             } else {
                 this->m_inheritedVelocity.x = this->m_placement.d0 - this->m_prevPosition.x;
@@ -847,6 +850,7 @@ void CM2ParticleEmitter::RetireParticle(Particle& p, uint32_t liveIndex) {
     (void)p;
 
     uint32_t slot = this->m_liveIndices[liveIndex];
+    uint32_t live = this->m_liveIndices.Count();
 
     // The slot goes back to the free list, and the last live entry takes the dead one's place, so
     // the walk carries on from the same index without shuffling everything down.
@@ -858,10 +862,10 @@ void CM2ParticleEmitter::RetireParticle(Particle& p, uint32_t liveIndex) {
     // lines. Its degenerate arm, taken when the live count is already zero, dereferences a null
     // pointer; it is unreachable from inside a loop that only runs while the count is non-zero,
     // and is not reproduced.
-    this->m_freeIndices[this->m_freeCount++] = slot;
+    this->m_freeIndices.Add(1, &slot);
 
-    this->m_liveCount--;
-    this->m_liveIndices[liveIndex] = this->m_liveIndices[this->m_liveCount];
+    this->m_liveIndices[liveIndex] = this->m_liveIndices[live - 1];
+    this->m_liveIndices.SetCount(live - 1);
 }
 
 // Integrate one particle, then let every child emitter emit from where it now is.
@@ -964,7 +968,11 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
         this->Emit(dt, this->m_placement);
     }
 
-    if (this->m_pool && this->m_liveIndices && this->m_freeIndices) {
+    // The reference guards on the LIVE COUNT (0x97ddac tests +0x50), not on the pool pointer. An
+    // earlier pass here added a defensive null check on all three arrays, which was a divergence:
+    // with the containers there are no pointers to check, and an empty live list is exactly what
+    // this is for.
+    if (this->m_liveIndices.Count()) {
         // Two branches over the same loop, and the split is the whole reason +0xa8 exists. With no
         // lifespan variation every particle shares one lifetime, so the comparison is hoisted out;
         // with variation each particle's own draw has to be decoded inside it. The reference
@@ -972,7 +980,7 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
         if (this->m_lifespanVariation == 0.0f) {
             float life = this->m_lifespan < 0.001f ? 0.001f : this->m_lifespan;
 
-            for (uint32_t i = 0; i < this->m_liveCount;) {
+            for (uint32_t i = 0; i < this->m_liveIndices.Count();) {
                 Particle& p = this->m_pool[this->m_liveIndices[i]];
 
                 p.m_age += dt;
@@ -986,7 +994,7 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
                 }
             }
         } else {
-            for (uint32_t i = 0; i < this->m_liveCount;) {
+            for (uint32_t i = 0; i < this->m_liveIndices.Count();) {
                 Particle& p = this->m_pool[this->m_liveIndices[i]];
 
                 p.m_age += dt;
@@ -1007,6 +1015,47 @@ void CM2ParticleEmitter::Step(float dt, int32_t fromParent) {
         // fast-moving parent is still integrated in bounded slices.
         this->m_children[c]->Substep(dt, 1);
     }
+}
+
+// Make room for `capacity` particles, rounded up to a power of two.
+//
+// Its four blocks are each `if (need + m_count > m_alloc) ReallocData(need + m_count)`, which is
+// TSGrowableArray::Reserve(need, 0) inlined -- round = 0, so no chunk rounding. The pool and both
+// index arrays grow together because a slot needs an entry in each.
+//
+// The rounding is the only real arithmetic, and it is NOT RoundToChunk (that one is a modulo). It
+// takes 2n-1 and clears its lowest set bit until a single bit remains, leaving the highest: n = 5
+// gives 9 = 0b1001 -> 8, n = 9 gives 17 -> 16. The test at the top short-circuits when n is
+// already a power of two, which is why an exact power passes through untouched rather than
+// doubling.
+//
+// ref: FUN_0097e3f0
+void CM2ParticleEmitter::Reserve(uint32_t capacity, uint32_t inUseA, uint32_t inUseB) {
+    uint32_t inUse = inUseA + inUseB;
+    uint32_t rounded = capacity;
+
+    if (rounded & (rounded - 1)) {
+        rounded = rounded + rounded - 1;
+
+        while (rounded & (rounded - 1)) {
+            rounded &= rounded - 1;
+        }
+    }
+
+    if (inUse >= rounded) {
+        return;
+    }
+
+    uint32_t need = rounded - inUse;
+
+    if (this->m_particleKind == 0) {
+        this->m_pool.Reserve(need, 0);
+    } else {
+        this->m_modelPool.Reserve(need, 0);
+    }
+
+    this->m_liveIndices.Reserve(need, 0);
+    this->m_freeIndices.Reserve(need, 0);
 }
 
 // Split a frame into fixed 0.1s slices and step each one.

@@ -77426,7 +77426,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 222
+"line": 228
 },
 "M2ParticleFlushDenormals": {
 "files": [
@@ -77903,13 +77903,22 @@
 "src/model/cm2particleemitter.cpp"
 ],
 "callseq": [
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"TSBaseArray<unsigned int>::Count",
+"TSGrowableArray<unsigned int>::SetCount",
+"TSGrowableArray<unsigned int>::Add",
+"TSBaseArray<CM2ParticleEmitter::Particle>::operator[]",
 "CM2ParticleEmitter::CreateParticle"
 ],
 "strings": [],
-"consts": [],
+"consts": [
+"1"
+],
 "branches": 1,
 "stub": false,
-"lines": 13,
+"lines": 16,
 "refs": [],
 "line": 459
 },
@@ -77921,10 +77930,13 @@
 "ParticleFxGetDensity",
 "M2ParticleRandSigned",
 "nearbyintf",
+"TSBaseArray<unsigned int>::Count",
 "CM2ParticleEmitter::SpawnParticle",
 "nearbyintf",
+"TSBaseArray<unsigned int>::Count",
 "CM2ParticleEmitter::SpawnParticle",
 "C3Vector::C3Vector",
+"TSBaseArray<unsigned int>::Count",
 "CRandom::uint32",
 "memcpy",
 "CM2ParticleEmitter::SpawnParticle"
@@ -77951,7 +77963,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 480
+"line": 483
 },
 "CM2ParticleEmitter::IntegrateParticle": {
 "files": [
@@ -77974,7 +77986,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 571
+"line": 574
 },
 "CM2ParticleEmitter::SetHeadTail": {
 "files": [
@@ -77997,7 +78009,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 658
+"line": 661
 },
 "CM2ParticleEmitter::SetTextureAnimated": {
 "files": [
@@ -78014,7 +78026,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 703
+"line": 706
 },
 "CM2ParticleEmitter::Update": {
 "files": [
@@ -78026,6 +78038,7 @@
 "CM2ParticleEmitter::Place",
 "fabsf",
 "sqrtf",
+"TSBaseArray<unsigned int>::Count",
 "C3Vector::C3Vector",
 "C3Vector::operator=",
 "CM2ParticleEmitter::Substep",
@@ -78050,7 +78063,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 714
+"line": 717
 },
 "CM2ParticleEmitter::Place": {
 "files": [
@@ -78072,20 +78085,29 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 826
+"line": 829
 },
 "CM2ParticleEmitter::RetireParticle": {
 "files": [
 "src/model/cm2particleemitter.cpp"
 ],
-"callseq": [],
+"callseq": [
+"TSBaseArray<unsigned int>::operator[]",
+"TSBaseArray<unsigned int>::Count",
+"TSGrowableArray<unsigned int>::Add",
+"TSBaseArray<unsigned int>::operator[]",
+"TSBaseArray<unsigned int>::operator[]",
+"TSGrowableArray<unsigned int>::SetCount"
+],
 "strings": [],
-"consts": [],
+"consts": [
+"1"
+],
 "branches": 0,
 "stub": false,
-"lines": 24,
+"lines": 25,
 "refs": [],
-"line": 842
+"line": 845
 },
 "CM2ParticleEmitter::IntegrateAndSpawnChildren": {
 "files": [
@@ -78113,7 +78135,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 880
+"line": 884
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -78121,8 +78143,15 @@
 ],
 "callseq": [
 "CM2ParticleEmitter::Emit",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"TSBaseArray<CM2ParticleEmitter::Particle>::operator[]",
 "CM2ParticleEmitter::IntegrateAndSpawnChildren",
 "CM2ParticleEmitter::RetireParticle",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"TSBaseArray<CM2ParticleEmitter::Particle>::operator[]",
 "CM2ParticleEmitter::ParticleLifespan",
 "CM2ParticleEmitter::IntegrateAndSpawnChildren",
 "CM2ParticleEmitter::RetireParticle",
@@ -78140,9 +78169,30 @@
 ],
 "branches": 13,
 "stub": false,
-"lines": 65,
+"lines": 69,
 "refs": [],
-"line": 946
+"line": 950
+},
+"CM2ParticleEmitter::Reserve": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"TSGrowableArray<CM2ParticleEmitter::Particle>::Reserve",
+"TSGrowableArray<CM2ParticleEmitter::Particle>::Reserve",
+"TSGrowableArray<unsigned int>::Reserve",
+"TSGrowableArray<unsigned int>::Reserve"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 4,
+"stub": false,
+"lines": 27,
+"refs": [],
+"line": 1033
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78171,7 +78221,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1015
+"line": 1064
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78189,7 +78239,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1067
+"line": 1116
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
