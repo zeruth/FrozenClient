@@ -1072,14 +1072,35 @@ void CM2Model::AnimateST() {
     //      m_scene->m_viewInv (scene + 0xc4), and if this->m_flags & 0x8000 advance the emitter by
     //      dt.
     //
-    //   3. For each of m_data->particleEmitters (count at data + 0x128):
-    //      this->FUN_008309c0(dt, i).
+    //   3. For each of m_data->particles (count at data + 0x128): this->FUN_008309c0(dt, i).
     //
-    // Why it is not ported here: frozen has the M2Ribbon FILE data (M2Data.hpp) but none of the
-    // runtime object graph the block drives -- no per-model ribbon state array, no emitter
-    // objects, no CM2Model fields at +0x2b8 or +0x2bc, and no particle emitter runtime.
-    // src/world/ParticleFx.cpp is a separate stand-in, not this. Porting the loops before the
-    // objects exist would give frozen two loops over absent arrays, so the emitters come first.
+    // STATUS, 2026-09-24. The particle half is no longer blocked on the object graph: the emitter
+    // runtime is ported (src/model/CM2ParticleEmitter.*), m_particles at +0x2c0 and
+    // m_particleEmitters at +0x2c4 both exist, and InitializeLoaded's factory builds a plane or
+    // sphere emitter per M2Particle. What is left is FUN_008309c0 itself, and the ribbon half,
+    // which still has no runtime state array.
+    //
+    // FUN_008309c0 reads as two halves. The first pushes this frame's animated values into the
+    // emitter: the enable bits from the runtime block's bytes at +0x80/+0x84/+0x86 against file
+    // flag 0x8000, then the emission rate through vtable[10], and speed, variation, latitude,
+    // longitude, gravity, life, width, length and z source -- each through its own setter or
+    // field, and each guarded on the track having more than one key, or one key whose time is
+    // still ahead of the model's current time. Finally the model's alpha, clamped to 0..1.
+    //
+    // The second half places and steps it, and needs three things frozen does not have yet:
+    //   - the bone matrix copy is followed by a multiply against a STATIC matrix at 0x00d411e0,
+    //     built once on first use. Its rows are (0,1,0,0), (-1,0,0,0), (0,0,1,0), (0,0,0,1) --
+    //     the -1.0 is 0x009e2ef4 -- so it is a +90 degree rotation about Z, the basis swap between
+    //     bone space and the emitter's frame. Worth having decoded; it looks like noise in the
+    //     decompilation.
+    //   - Ghidra drops ECX on the three matrix helpers around it (0x004c1b30 Translate,
+    //     0x004c2370, 0x00407f80 the C44Matrix copy), so their receivers need reading off the
+    //     disassembly the way FUN_0097ac20's and FUN_0097db80's did.
+    //   - the tail walks the emitter's subtree of SPAWNED MODELS (FUN_0097ba30 counts it,
+    //     FUN_0097ba70 reaches the i-th) and animates each. Both read the 0x40-byte model pool,
+    //     which is unported -- so that tail cannot land until it is.
+    //
+    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this.
     // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not
     // ported; this is the other half of why.
 
