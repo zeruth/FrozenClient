@@ -79245,6 +79245,25 @@
 "refs": [],
 "line": 329
 },
+"CM2SceneRender::SetupParticleTransform": {
+"files": [
+"src/model/cm2scenerender.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::Translate",
+"GxXformSetView",
+"C44Matrix::C44Matrix",
+"GxXformSet"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 429
+},
 "CM2SceneRender::DrawParticle": {
 "files": [
 "src/model/cm2scenerender.cpp"
@@ -79258,7 +79277,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 439
+"line": 466
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -79271,7 +79290,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 444
+"line": 471
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -79288,7 +79307,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 449
+"line": 476
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -79328,7 +79347,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 488
+"line": 515
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -79383,7 +79402,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 566
+"line": 593
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -79419,7 +79438,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 680
+"line": 707
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

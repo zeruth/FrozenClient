@@ -37567,6 +37567,22 @@
   "refSize": 452,
   "status": "ported"
  },
+ "0081f620": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SetupParticleTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
  "0081f700": {
   "branchRatio": 0.143,
   "constOverlap": 0.0,

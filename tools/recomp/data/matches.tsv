@@ -2359,6 +2359,7 @@ addr	how	frozen	evidence
 0081f1d0	annotated	CM2Scene::ComputeElementShaders	tag in src/model/CM2Scene.cpp
 0081f330	callgraph	CM2SceneRender::CM2SceneRender	only unmatched callee of 00823cb0=CM2Scene::Draw
 0081f450	override	CM2SceneRender::SetupTextures	
+0081f620	annotated	CM2SceneRender::SetupParticleTransform	tag in src/model/CM2SceneRender.cpp
 0081f700	annotated	CM2SceneRender::SetBatchVertices	tag in src/model/CM2SceneRender.cpp
 0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
 0081fb10	override	CM2SceneRender::SetupLighting	

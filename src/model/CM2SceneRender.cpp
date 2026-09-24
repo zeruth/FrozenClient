@@ -408,6 +408,33 @@ void CM2SceneRender::DrawCallback() {
 // element's +0x24 slot. It is set by neither the constructor nor SetTextureGrid. Frozen carries
 // the emitter in the element anyway, so the cache is probably redundant here -- but that cannot be
 // asserted until the field is known, so do not silently omit it without checking.
+// Put the view into camera-relative space for a particle draw.
+//
+// Translating the view matrix by the camera position cancels the camera translation, and the world
+// matrix goes to identity -- so particle geometry is built and submitted relative to the camera
+// rather than in absolute world coordinates. That is the arrangement CLAUDE.md's third priority
+// is about, arrived at here from the reference rather than from the depth symptoms.
+//
+// The caller passes `scene + 0xf4`, which is m_viewInv's translation row: the camera position.
+// The same value the particle driver hands to CM2ParticleEmitter::Update.
+//
+// SHAPE DIVERGENCE, recorded rather than silent: the reference sets the world matrix by writing
+// the device's transform-stack top directly -- the block at device+0x18c8, index at [0], dirty
+// byte at [4], matrices from +8 at 0x40 apiece, per-slot flags from +0x108 -- copying from a
+// global at 0x00af58a8 that was read out of the PE and is exactly identity. Frozen goes through
+// GxXformSet, which is the same operation through the API it already has instead of reaching into
+// the device's internals.
+//
+// ref: FUN_0081f620
+void CM2SceneRender::SetupParticleTransform(const C3Vector& cameraPosition) {
+    C44Matrix view = this->m_scene->m_view;
+
+    view.Translate(cameraPosition);
+
+    GxXformSetView(view);
+    GxXformSet(GxXform_World, C44Matrix());
+}
+
 // LIVE STUB as of 2026-09-24: the emission above now builds type-4 elements, so this is reached.
 // Returning 0 is safe -- Draw increments its index in the loop header and this return only adds an
 // extra skip -- so the elements are visited and nothing draws for them.
