@@ -75,6 +75,9 @@ class CM2ParticleEmitter {
         Particle* m_pool = nullptr;
         // +0x44: the 0x40-byte pool, used otherwise -- its particles carry a spawned model
         Particle* m_modelPool = nullptr;
+        // +0x20: which concrete emitter this is. The base constructor leaves it 0 and the plane
+        // subclass's sets it to 1 (0x98132c), so it is a type tag rather than a state flag.
+        uint32_t m_emitterType = 0;
         // +0x08: the fractional emission carry. A rate of 2.5 a second does not round to 2 or 3
         // -- the remainder stays here and is spent on a later frame.
         float m_emitCarry = 0.0f;
@@ -324,6 +327,42 @@ class CM2ParticleEmitter {
         // A launch speed for one new particle: the emitter's speed, scaled by its variation and a
         // fresh signed draw. ref: FUN_009792d0
         float RandomSpeed();
+};
+
+// The plane emitter: vtable 0x00aa2d30, the first of CParticleEmitter2's two concrete
+// subclasses. It lays particles on a rectangle and launches them into a latitude/longitude cone.
+//
+// Named by behaviour -- only the base's name appears in the binary's strings -- and it is the
+// plane one because its creator places particles across two independent extents on the emitter's
+// z = 0 plane. The other subclass (0x00aa2d5c) caches min/max differences instead and is not
+// ported.
+//
+// Its four fields are identified by the driver: FUN_008309c0 calls vtable slots [6], [7], [8] and
+// [9] with the model's width, length, latitude and longitude tracks, and those slots store here.
+class CM2ParticleEmitterPlane : public CM2ParticleEmitter {
+    public:
+        // +0x234 and +0x238: the rectangle's FULL extents. The creator multiplies each by a
+        // signed random and by a half, so a particle lands within +/- half of each.
+        float m_width = 0.0f;
+        float m_length = 0.0f;
+        // +0x23c and +0x240: the launch cone, in radians. Latitude is the POLAR angle from +Z.
+        float m_latitude = 0.0f;
+        float m_longitude = 0.0f;
+
+        // ref: FUN_00981310
+        CM2ParticleEmitterPlane();
+
+        // ref: FUN_009813b0
+        void SetWidth(float width) override;
+        // ref: FUN_009813c0
+        void SetLength(float length) override;
+        // ref: FUN_009813d0
+        void SetLatitude(float latitude) override;
+        // ref: FUN_009813e0
+        void SetLongitude(float longitude) override;
+
+        // ref: FUN_009815c0
+        void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
 };
 
 // A uniform draw in [-1, 1] from one RNG call.

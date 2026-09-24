@@ -160,6 +160,19 @@ float M2ParticleRandSigned(CRndSeed& seed) {
     return (static_cast<int32_t>(u) < 0) ? (2.0f - f) : (f - 2.0f);
 }
 
+// A uniform draw in [1, 2) from one RNG call: the mantissa of a float with the exponent pinned
+// to zero. The reference inlines this at every site that needs a unit random; frozen keeps one
+// copy, because the alternative is the same six lines repeated and those six lines are exactly
+// where a transcription mistake would hide.
+static float M2ParticleRandUnit(CRndSeed& seed) {
+    uint32_t bits = (CRandom::uint32(seed) & 0x7FFFFF) | 0x3F800000;
+
+    float f;
+    memcpy(&f, &bits, sizeof(f));
+
+    return f;
+}
+
 // ref: FUN_004c1680
 void M2ParticleRandomUnitVector(C3Vector& out, CRndSeed& seed) {
     float z = M2ParticleRandSigned(seed);
@@ -223,6 +236,105 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
     p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;
 }
 
+// ref: FUN_00981310
+CM2ParticleEmitterPlane::CM2ParticleEmitterPlane() {
+    this->m_emitterType = 1;
+}
+
+// ref: FUN_009813b0
+void CM2ParticleEmitterPlane::SetWidth(float width) {
+    this->m_width = width;
+}
+
+// ref: FUN_009813c0
+void CM2ParticleEmitterPlane::SetLength(float length) {
+    this->m_length = length;
+}
+
+// ref: FUN_009813d0
+void CM2ParticleEmitterPlane::SetLatitude(float latitude) {
+    this->m_latitude = latitude;
+}
+
+// ref: FUN_009813e0
+void CM2ParticleEmitterPlane::SetLongitude(float longitude) {
+    this->m_longitude = longitude;
+}
+
+// Fill one new particle: place it on the rectangle, then launch it.
+//
+// This is the creator the reference actually runs, as against the abstract base's further down.
+// Its direction build is thirty instructions of interleaved x87 with nothing named, and two
+// details only came out of tracing the stack by hand:
+//
+//   LATITUDE IS THE POLAR ANGLE from +Z, not an elevation from the XY plane. Swapping the sin and
+//   the cos would compile, would still emit plausible particles, and would aim every cone
+//   sideways.
+//
+//   The sequence `fld1; fsub %st(4), %st; faddp %st, %st(4)` at 0x9817e8 computes
+//   cos(lon) + (1 - cos(lon)), which is exactly 1.0. It reads like a term and is not: the compiler
+//   is materialising a 1.0 over a dead slot so it can multiply cos(lat) by it. Transcribing it
+//   literally would have invented arithmetic the source never had.
+//
+// ref: FUN_009815c0
+void CM2ParticleEmitterPlane::CreateParticle(Particle& p, float dt, const C44Matrix& placement) {
+    // Spread the batch across the step rather than stacking it on one instant, as the base does.
+    p.m_age = (M2ParticleRandUnit(this->m_seed) - 1.0f) * dt;
+    p.m_randomTag = static_cast<uint16_t>(CRandom::uint32(this->m_seed));
+
+    // NOTE the omission -- it is the reference's, not a transcription slip. This creator does NOT
+    // write m_lifeVariation at +0x1c; it writes only +0x1e. The abstract base's creator does write
+    // it. So a particle from a plane emitter carries whatever life variation the recycled slot
+    // happened to hold, and the step reads exactly that field whenever m_lifespanVariation is
+    // non-zero. Adding a fresh draw here is the obvious "fix" and would change how these effects
+    // die.
+
+    // The rectangle is CENTRED: a signed draw in [-1,1] times the extent times a half, so width
+    // and length are full extents rather than half-extents (the 0.5 is 0x009e2ec4).
+    p.m_position.x = M2ParticleRandSigned(this->m_seed) * this->m_width * 0.5f;
+    p.m_position.y = this->m_length * M2ParticleRandSigned(this->m_seed) * 0.5f;
+    p.m_position.z = 0.0f;
+
+    float speed = this->RandomSpeed();
+
+    C3Vector dir;
+
+    if (this->m_zSource != 0.0f) {
+        // With a z source the cone is ignored entirely: the particle is pushed straight out from a
+        // point m_zSource below it, at the same speed.
+        C3Vector away = { p.m_position.x, p.m_position.y, p.m_position.z - this->m_zSource };
+
+        float length = sqrtf(away.x * away.x + away.y * away.y + away.z * away.z);
+        float scale = speed / length;
+
+        dir.x = away.x * scale;
+        dir.y = away.y * scale;
+        dir.z = away.z * scale;
+    } else {
+        float latitude = M2ParticleRandSigned(this->m_seed) * this->m_latitude;
+        float longitude = M2ParticleRandSigned(this->m_seed) * this->m_longitude;
+
+        float sinLat = sinf(latitude);
+        float cosLat = cosf(latitude);
+        float sinLon = sinf(longitude);
+        float cosLon = cosf(longitude);
+
+        dir.x = cosLon * sinLat * speed;
+        dir.y = sinLat * sinLon * speed;
+        dir.z = cosLat * speed;
+    }
+
+    if (this->m_flags & 0x200) {
+        // Emitter space: the direction is already in the frame the particle lives in.
+        p.m_velocity = dir;
+    } else {
+        // Rotate into the world by the placement's 3x3. No translation -- this is a direction.
+        p.m_velocity.x = placement.a0 * dir.x + placement.b0 * dir.y + placement.c0 * dir.z;
+        p.m_velocity.y = placement.a1 * dir.x + placement.b1 * dir.y + placement.c1 * dir.z;
+        p.m_velocity.z = placement.a2 * dir.x + placement.b2 * dir.y + placement.c2 * dir.z;
+    }
+}
+
 // Construct an emitter.
 //
 // Nearly every field's value is a default member initialiser on the class, where the reference
@@ -282,11 +394,16 @@ void CM2ParticleEmitter::SetLongitude(float) {
 // DIVERGENCE, recorded in overrides.json under 00979870. This is the ABSTRACT BASE's creator, and
 // no live emitter in the reference runs it: FUN_0097d820 dispatches through vtable[2], the
 // function has zero direct callers, and both concrete subclasses override the slot with their own
-// implementations (0x009815c0 and 0x00981950) that do not chain to this one. Frozen keeps the
-// dispatch so the structure matches and so a ported subclass drops straight in, but until one is
-// ported every particle is created by a function the reference would never reach. The two differ
-// in more than detail -- 0x009815c0 draws its randoms inline rather than through the helpers this
-// uses -- so this is a real gap, not a rounding difference.
+// implementations (0x009815c0 and 0x00981950) that do not chain to this one.
+//
+// CM2ParticleEmitterPlane above now ports the first of those, so an emitter constructed as a plane
+// emitter no longer runs this. It stays because the dispatch is the reference's shape and because
+// the second subclass (0x00981950) is still unported; anything constructed as the bare base still
+// lands here, which the reference cannot do.
+//
+// The difference is not cosmetic. Compare the two: this one writes m_lifeVariation and the plane
+// one does not, and this one builds its direction from a uniform sphere sample where the plane one
+// builds a latitude/longitude cone.
 //
 // The age is the part to keep: a new particle starts at `rand[0,1) * dt`, NOT at zero, so a batch
 // spawned in one step is spread across that step instead of stacked on the same instant. Without
