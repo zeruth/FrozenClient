@@ -37469,7 +37469,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortOpaque",
-  "frozenSize": 71,
+  "frozenSize": 69,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 117,
@@ -37485,7 +37485,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparent",
-  "frozenSize": 415,
+  "frozenSize": 410,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 423,
@@ -37692,7 +37692,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 2635,
+  "frozenSize": 2649,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -37724,7 +37724,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 748,
+  "frozenSize": 752,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
