@@ -299,9 +299,12 @@ seen running — treat them as suspect until a run confirms them.
    ramps, which were decoded on 2026-09-16 and turn out to be a separate stage-1 fade along the
    projection axis rather than anything to do with the strength term. Genuinely still open: M2
    receivers (`DrawBatchProj` is a stub, and unreachable behind its own gate — see the note at
-   the dispatch in `CM2SceneRender::Draw`), animation-bbox footprints (the caster radius comes
-   from the cull extent, not the animated bounds), and where the reference's shadow strength
-   actually comes from, which is still unread. See `docs/ref/parity-shadows.md`.
+   the dispatch in `CM2SceneRender::Draw`) and where the reference's shadow strength actually
+   comes from, which is still unread. **Animation-bbox footprints closed 2026-09-23**: the
+   caster radius already came from the current sequence's authored box rather than the cull
+   extent, but it resolved that sequence by a raw id match and so missed the model's fallback
+   chain; `CGUnit_C::GetAnimFootprint` now goes through `CM2Model::GetSequenceInfo`, which is
+   what the reference uses. See `docs/ref/parity-shadows.md`.
 2. **Sky and atmosphere — the sun direction is solved.** It is *not* a real arc and *not* from
    Light.dbc: `FUN_007eea90` holds the azimuth at a constant 225 degrees and wobbles the zenith
    angle between 127 and 110 degrees twice a day from a four-key band, storing a vector that points

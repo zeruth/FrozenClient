@@ -402,33 +402,55 @@ void CGUnit_C::PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeM
     // TODO
 }
 
+// The half-extent of the CURRENT animation's authored box, which is what the blob shadow uses as
+// the caster footprint -- that is why a footprint grows as something rears up and shrinks as it
+// crouches, instead of being a fixed circle.
+//
+// This used to walk m_data->sequences itself, matching m_animSeq against sequences[i].id, and
+// returned 0 when no sequence carried that id. That is wrong in the case that matters: a model
+// frequently does NOT carry the animation it is asked for, and the reference does not give up when
+// that happens -- CM2Model::GetSequenceInfo (FUN_0082ced0) walks the model's fallback chain first
+// and reports the box of the sequence the model WOULD actually play. The hand-rolled loop skipped
+// the chain, so every such caster silently fell back to the model's global box and drew a footprint
+// that did not follow the animation at all.
+//
+// Using GetSequenceInfo also gives it its first caller in frozen. It was ported and correct but
+// unreached, which is how tools/deaddata.py came to report M2SequenceInfo::extent, center and
+// moveSpeed as written-and-never-read; extent is now read.
+//
+// Variation 0, deliberately and not as a guess: CGUnit_C tracks the animation id it applied but
+// not which variation the model chose, and Sub8260C0 counts variations along a chain whose head is
+// 0. Variations of one animation are alternate takes of the same motion, so their authored boxes
+// agree closely, and variation 0 is the one that exists whenever the animation does.
 float CGUnit_C::GetAnimFootprint() const {
-    if (!this->m_model || !this->m_model->m_shared || !this->m_model->m_shared->m_m2DataLoaded || !this->m_model->m_shared->m_data) {
+    auto model = this->m_model;
+
+    if (!model || !model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
         return 0.0f;
     }
 
-    auto& sequences = this->m_model->m_shared->m_data->sequences;
-
-    if (this->m_animSeq < 0 || !sequences.Count()) {
+    if (this->m_animSeq < 0) {
         return 0.0f;
     }
 
-    // m_animSeq is an AnimationData id, not an index, so find the sequence that carries it.
-    for (uint32_t i = 0; i < sequences.Count(); i++) {
-        if (sequences[i].id != this->m_animSeq) {
-            continue;
-        }
-
-        const CAaBox& e = sequences[i].bounds.extent;
-        float ex = (e.t.x - e.b.x) * 0.5f;
-        float ey = (e.t.y - e.b.y) * 0.5f;
-        float extent = ex > ey ? ex : ey;
-
-        // Degenerate per-sequence bounds are common; let the caller fall back to the model box.
-        return extent > 0.01f ? extent : 0.0f;
+    // GetSequenceInfo blocks in WaitForLoad when the model itself is not loaded yet. This runs
+    // inside the per-frame shadow pass, so take the miss and let the caller use the model box
+    // rather than stall a frame on a disc read.
+    if (!model->m_loaded) {
+        return 0.0f;
     }
 
-    return 0.0f;
+    M2SequenceInfo info = {};
+    model->GetSequenceInfo(static_cast<uint32_t>(this->m_animSeq), 0, info);
+
+    const CAaBox& e = info.extent;
+    float ex = (e.t.x - e.b.x) * 0.5f;
+    float ey = (e.t.y - e.b.y) * 0.5f;
+    float extent = ex > ey ? ex : ey;
+
+    // Degenerate bounds are common, and GetSequenceInfo also reports an all-zero box when the
+    // model has no such variation. Both mean the same thing here: let the caller fall back.
+    return extent > 0.01f ? extent : 0.0f;
 }
 
 // ref: FUN_0071af70

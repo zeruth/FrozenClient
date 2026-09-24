@@ -491,13 +491,46 @@ item by item against the code as it stands, rather than re-quoting it:
 | 5 | no stage-1 distance ramp | **still open** - frozen binds no stage 1 at all |
 | 6 | receiver coverage is terrain only | **partly** - WMO floors covered via `BlobShadowDrawWmo` |
 | 7 | casters are units only | **still open** |
-| 8 | footprint is a fixed axis-aligned circle | **still open** |
+| 8 | footprint is a fixed axis-aligned circle | **closed 2026-09-23** - see below |
 | 9 | no CPU up-facing cull | **partly** - `BuildWmoShadowGrid` keeps only up-facing triangles |
 | 10 | no gating CVars (`shadowLOD`, `extShadowQuality`) | **still open** |
 | 11 | `ShadowInit()` never called | still commented out at `src/client/Client.cpp:679`, but deliberately: the frozen blob path loads its own texture and does not need it |
 
-So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), caster and
-footprint fidelity (7, 8), and the quality CVars (10).
+So six of eleven are closed or partly closed. The live ones are the stage-1 fade (5), caster
+fidelity (7), and the quality CVars (10).
+
+### 2026-09-23 - item 8, the animated footprint
+
+Item 8 was stale in both directions, which is the usual state of this list.
+
+Already done before today: `CGUnit_C::GetAnimFootprint` sized the blob from the CURRENT sequence's
+authored box rather than a fixed circle, and `CGWorldFrame` fell back to the model's global box
+only when that came back degenerate. So "fixed axis-aligned circle" had not been true for a while.
+
+Genuinely wrong until today: that function resolved the animation by walking `m_data->sequences`
+itself and matching `m_animSeq` against `sequences[i].id`, returning 0 when nothing carried that
+id. A model frequently does NOT carry the animation it is asked for, and the reference does not
+give up there -- `CM2Model::GetSequenceInfo` (FUN_0082ced0) walks the model's fallback chain first
+and reports the box of the sequence the model would ACTUALLY play. Skipping the chain meant every
+such caster quietly fell back to the global model box and drew a footprint that did not follow the
+animation at all, which is the very thing item 8 is about.
+
+It now calls GetSequenceInfo. Two side effects worth recording:
+
+- GetSequenceInfo had no caller in frozen at all. It was ported and correct but unreached, which is
+  how `tools/deaddata.py` came to list `M2SequenceInfo::extent` as written-and-never-read. After
+  the change `extent` is gone from that report; `moveSpeed`, `center`, `sequenceId` and `playMode`
+  are still on it and still want consumers.
+- The call is guarded on `m_model->m_loaded`, because GetSequenceInfo blocks in `WaitForLoad`
+  otherwise and this runs inside the per-frame shadow pass. An unloaded model takes the model-box
+  fallback instead of stalling the frame.
+
+Variation 0 is passed deliberately rather than guessed: `CGUnit_C` tracks the animation id it
+applied but not which variation the model chose, variations of one animation are alternate takes
+with closely matching boxes, and variation 0 is the one that exists whenever the animation does.
+
+**Not seen running.** The change moves no recomp metric -- it connects two functions that were both
+already linked -- so the only evidence it is doing anything is the deaddata report and a run.
 
 **A suspected bug that turned out not to be one.** `BlobShadowStrength()` returns
 `diffuseLuma / (ambient + diffuse)` while its own comment says the correct multiplier is
