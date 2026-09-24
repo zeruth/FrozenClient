@@ -200,13 +200,6 @@ void CM2Model::AddRef() {
     this->m_refCount++;
 }
 
-// ref: FUN_00830dc0
-// Bring this model's transform and bone matrices up to date for the scene's current frame, on
-// demand rather than from the scene's animate pass. A model attached to another one cannot be
-// animated on its own -- its transform starts at the parent's attachment point -- so the parent is
-// animated first and this model is then animated onto the attachment matrix. When the animation
-// could not run (not loaded, or the parent has no fresh bone matrices) the transform still has to
-// be defined, so it falls back to the parent's, or to this model's own world transform.
 // How far a bone has blended out of its secondary sequence.
 //
 // `uint9C` is when the blend ENDS and floatA0 its reciprocal duration, so t counts DOWN
@@ -230,6 +223,13 @@ float M2BoneBlendWeight(const M2ModelBone& modelBone, uint32_t sceneTime) {
     return weight * modelBone.floatA4;
 }
 
+// ref: FUN_00830dc0
+// Bring this model's transform and bone matrices up to date for the scene's current frame, on
+// demand rather than from the scene's animate pass. A model attached to another one cannot be
+// animated on its own -- its transform starts at the parent's attachment point -- so the parent is
+// animated first and this model is then animated onto the attachment matrix. When the animation
+// could not run (not loaded, or the parent has no fresh bone matrices) the transform still has to
+// be defined, so it falls back to the parent's, or to this model's own world transform.
 void CM2Model::Animate() {
     if (this->m_animCounter == this->m_scene->uint14) {
         return;
@@ -492,7 +492,24 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             boneParentMatrix = &this->m_boneMatrices[bone.parentIndex];
 
             if (boneFlags & (0x1 | 0x2 | 0x4)) {
-                // TODO
+                // NOT PORTED: the ignore-parent-transform branch, 0x82f843..0x82fc2e.
+                //
+                // The bone's own world matrix is copied aside, and then bits 1 and 2 select
+                // between three variants through `boneFlags & 6`:
+                //
+                //   2  0x82faa9  normalises the copy's three rows, then combines with matrixF4
+                //   4  0x82f8ff  each row becomes the matching matrixF4 row rescaled to the
+                //                copy's row length, or left alone when that row is shorter
+                //                than 1e-5 (0x009ea558)
+                //   6  0x82f8ac  the three matrixF4 rows verbatim
+                //
+                // and bit 0 is handled separately at 0x82fb69: the translation comes from
+                // matrixF4's row 3 instead of being transformed.
+                //
+                // The twelve C3Vector::Normalize calls --diff reports missing are all in here.
+                // The gate and the selector are certain; which variant means "ignore rotation"
+                // and which "ignore scale" is NOT yet certain, and porting bone math on a
+                // reading that is only nearly right would be worse than leaving the branch out.
             }
         }
 
@@ -567,23 +584,19 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             this->m_boneMatrices[i] = *boneParentMatrix;
         }
 
-        // BOTH BILLBOARD BRANCHES BELOW ARE REASONED, NOT PORTED, and that is a defect rather
-        // than a gap. They were worked out from what a glow sprite ought to look like --
-        // the comment below still says so -- and CLAUDE.md is explicit that guessing an
-        // implementation from what the screen looks like is how the graphics bugs got in.
+        // BOTH BILLBOARD BRANCHES BELOW ARE REASONED, NOT PORTED. They were worked out from what
+        // a glow sprite ought to look like -- the comment below still says so -- and CLAUDE.md is
+        // explicit that guessing an implementation from what the screen looks like is how the
+        // graphics bugs got in.
         //
-        // The reference does something STRUCTURALLY DIFFERENT, at 0x82f930..0x8302c0. It
-        // does not write an axis-aligned scale matrix. For each of the three axes it takes
-        // the corresponding ROW OF matrixF4, compares the squared lengths of that row and
-        // of the bone's own row, and scales the matrixF4 row by the ratio's square root --
-        // falling back to 1.0 when the bone row is the longer of the two. A separate
-        // branch at 0x82faa9 normalises three consecutive rows through C3Vector::Normalize
-        // instead, which is where the twelve Normalize calls in the --diff come from and
-        // which this code makes none of.
+        // AND THE REFERENCE'S AnimateMT DOES NO BILLBOARDING AT ALL. It tests boneFlags bits 0,
+        // 1 and 2 and nothing else: there is no test of 0x8, 0x10, 0x20 or 0x40 anywhere in the
+        // function. So this is not a port that drifted, it is reasoned code standing in a
+        // function whose reference counterpart has no such branch. WHERE the reference
+        // billboards, if it does, is not established -- find that before touching this.
         //
-        // Replacing this means reading those ~400 lines of x87 across its four variants,
-        // not adjusting the arithmetic below until the numbers agree. Until then this runs
-        // and is approximately right, which is the most that can be claimed for it.
+        // (An earlier note here pointed at 0x82f930..0x8302c0 and called that the reference's
+        // billboard. It is not; see the TODO above, which is what that region actually is.)
         if (boneFlags & 0x8) {
             // Spherical billboard. The bone matrix is already in view space (its parent chain roots
             // at matrixF4 = model x view), so replacing its rotation with the view axes makes the

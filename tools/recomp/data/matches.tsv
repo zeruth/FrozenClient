@@ -2430,7 +2430,7 @@ addr	how	frozen	evidence
 0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
 008309c0	annotated	CM2Model::AnimateParticleEmitter	tag in src/model/CM2Model.cpp
-00830dc0	annotated	M2BoneBlendWeight	tag in src/model/CM2Model.cpp
+00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
