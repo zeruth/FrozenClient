@@ -10117,6 +10117,22 @@
   "refSize": 82,
   "status": "ported"
  },
+ "004c3460": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGMinimapFrame.cpp",
+   "src/ui/game/cgminimapframe.cpp"
+  ],
+  "frozen": "CGMinimapFrame::GetPingOffset",
+  "frozenSize": 5,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 307,
+  "status": "ported"
+ },
  "004c3600": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -10131,6 +10147,22 @@
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "004c4df0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C2Vector.cpp",
+   "lib/typhoon/tempest/vector/c2vector.cpp"
+  ],
+  "frozen": "C2Vector::operator=",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 22,
   "status": "ported"
  },
  "004c51b0": {
@@ -22106,6 +22138,22 @@
   "refSize": 52,
   "status": "ported"
  },
+ "0057c2e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "TransformDirection",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "QuestTextParser.cpp",
+  "refSize": 84,
+  "status": "ported"
+ },
  "0057c340": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -22286,7 +22334,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.273,
   "files": [
    "src/ui/game/CGMinimapFrameScript.cpp",
    "src/ui/game/cgminimapframescript.cpp"
@@ -32479,6 +32527,22 @@
   "how": "handler",
   "module": "Player_C.cpp",
   "refSize": 155,
+  "status": "ported"
+ },
+ "006f7a60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/math/CMath.cpp",
+   "lib/typhoon/tempest/math/cmath.cpp"
+  ],
+  "frozen": "CMath::SinCos",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 156,
   "status": "ported"
  },
  "00705a80": {
@@ -49820,6 +49884,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 195,
+  "status": "ported"
+ },
+ "0097be80": {
+  "branchRatio": 0.215,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.9,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::WriteParticleVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 5350,
   "status": "ported"
  },
  "0097d820": {

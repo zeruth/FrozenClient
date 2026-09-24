@@ -43,6 +43,12 @@ C3Vector operator*(const C3Vector& l, const C44Matrix& r);
 // operator above in the reference and kept distinct here; see the definition.
 void TransformPointInPlace(C3Vector& out, C3Vector& v, const C44Matrix& m);
 
+// Transform a DIRECTION by a matrix: the 3x3 part only, so the translation row does not apply.
+// The same nine multiplies as `C3Vector * C33Matrix` above, over a C44Matrix instead -- a
+// separate function in the reference because the caller has a C44Matrix in hand and building the
+// C33Matrix would cost more than striding over it.
+void TransformDirection(C3Vector& out, const C3Vector& v, const C44Matrix& m);
+
 bool operator!=(const C3Vector& l, const C3Vector& r);
 
 #endif

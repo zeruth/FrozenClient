@@ -487,6 +487,18 @@ class CM2ParticleEmitter {
         // Point a cursor block at a mapped vertex buffer. ref: FUN_0097a2e0
         void SetupVertexCursor(char* base, EGxVertexBufferFormat format, VertexCursor& cursor) const;
 
+        // Write one vertex through a cursor, absorb it into the emitter's running bounds, and
+        // advance all four pointers. Inline at every one of its ~20 sites in the reference.
+        void WriteVertex(VertexCursor& cursor, const C3Vector& position, const CImVector& color,
+                         float u, float v);
+
+        // The UV of a texture-atlas cell's top-left corner.
+        void CellUvBase(uint32_t cell, float& u, float& v) const;
+
+        // Write one particle's quads -- a head, a tail, or both. Returns false when the particle
+        // twinkled off this frame and nothing was written. ref: FUN_0097be80
+        bool WriteParticleVertices(const Particle& p, VertexCursor& cursor);
+
         // Draw this emitter's particles. `relativeTo` is the matrix the owning model is placed
         // relative to, and `batched` becomes bit 0 of m_drawFlags. ref: FUN_0097ea60
         void Draw(const C44Matrix* relativeTo, void* a3, int32_t batched);

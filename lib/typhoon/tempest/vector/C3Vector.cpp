@@ -51,6 +51,13 @@ C3Vector operator+(const C3Vector& l, const C3Vector& r) {
     return { x, y, z };
 }
 
+// ref: FUN_0057c2e0
+void TransformDirection(C3Vector& out, const C3Vector& v, const C44Matrix& m) {
+    out.x = v.x * m.a0 + v.y * m.b0 + v.z * m.c0;
+    out.y = v.x * m.a1 + v.y * m.b1 + v.z * m.c1;
+    out.z = v.x * m.a2 + v.y * m.b2 + v.z * m.c2;
+}
+
 C3Vector operator*(const C3Vector& l, const C33Matrix& r) {
     float x = l.x * r.a0 + l.y * r.b0 + l.z * r.c0;
     float y = l.x * r.a1 + l.y * r.b1 + l.z * r.c1;

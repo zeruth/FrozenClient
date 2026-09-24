@@ -3,6 +3,7 @@
 #include <tempest/Math.hpp>
 #include <cstdlib>
 #include <cstring>
+#include "gx/Gx.hpp"
 #include "util/Log.hpp"
 #include "world/ParticleFx.hpp"
 
@@ -1328,6 +1329,26 @@ void M2ParticleInitTwinkleTable() {
     }
 }
 
+// The four corners of a particle quad and their texture coordinates, both STATIC INITIALISED
+// DATA in the reference (0x00b2d5b4 and 0x00b2d5d4) rather than anything computed at startup --
+// read straight out of the image.
+//
+// +y is up and v = 0 is the top, and the order matches the shared index buffer's repeating
+// (0, 1, 2, 3, 2, 1): triangles (0,1,2) and (3,2,1), consistently wound.
+static const C2Vector s_particleCorner[4] = {
+    { -1.0f,  1.0f },
+    { -1.0f, -1.0f },
+    {  1.0f,  1.0f },
+    {  1.0f, -1.0f }
+};
+
+static const C2Vector s_particleCornerUv[4] = {
+    { 0.0f, 0.0f },
+    { 0.0f, 1.0f },
+    { 1.0f, 0.0f },
+    { 1.0f, 1.0f }
+};
+
 // The draw basis, which SetupDrawBasis computes once per emitter and everything below reads.
 //
 // The reference keeps these in three globals (0x00b2d540, 0x00b2d550, 0x00b2d590) rather than
@@ -1590,6 +1611,387 @@ void CM2ParticleEmitter::SampleAppearance(const Particle& p, CImVector& color, C
 
     size.x *= f;
     size.y *= f;
+}
+
+// Write one vertex and advance the cursor.
+//
+// The reference inlines this at every one of its ~20 sites; it is a function here because twenty
+// copies of the same eleven lines is how a transcription error hides. The bounds absorb every
+// vertex as it is written, which is why Draw resets them to an inverted box first.
+void CM2ParticleEmitter::WriteVertex(VertexCursor& cursor, const C3Vector& position,
+                                     const CImVector& color, float u, float v) {
+    cursor.m_position[0] = position.x;
+    cursor.m_position[1] = position.y;
+    cursor.m_position[2] = position.z;
+
+    if (position.x < this->m_boundsMin.x) { this->m_boundsMin.x = position.x; }
+    if (position.y < this->m_boundsMin.y) { this->m_boundsMin.y = position.y; }
+    if (position.z < this->m_boundsMin.z) { this->m_boundsMin.z = position.z; }
+
+    if (this->m_boundsMax.x < position.x) { this->m_boundsMax.x = position.x; }
+    if (this->m_boundsMax.y < position.y) { this->m_boundsMax.y = position.y; }
+    if (this->m_boundsMax.z < position.z) { this->m_boundsMax.z = position.z; }
+
+    // One normal for every particle vertex in the frame -- see s_particleNormal. On an unlit
+    // emitter the cursor points these three writes at a shared sink with stride zero.
+    cursor.m_normal[0] = s_particleNormal.x;
+    cursor.m_normal[1] = s_particleNormal.y;
+    cursor.m_normal[2] = s_particleNormal.z;
+
+    *cursor.m_color = color.value;
+
+    cursor.m_texCoord[0] = u;
+    cursor.m_texCoord[1] = v;
+
+    cursor.m_position = reinterpret_cast<float*>(
+        reinterpret_cast<char*>(cursor.m_position) + cursor.m_positionStride);
+    cursor.m_normal = reinterpret_cast<float*>(
+        reinterpret_cast<char*>(cursor.m_normal) + cursor.m_normalStride);
+    cursor.m_color = reinterpret_cast<uint32_t*>(
+        reinterpret_cast<char*>(cursor.m_color) + cursor.m_colorStride);
+    cursor.m_texCoord = reinterpret_cast<float*>(
+        reinterpret_cast<char*>(cursor.m_texCoord) + cursor.m_texCoordStride);
+
+    cursor.m_count++;
+}
+
+// The UV of a texture-atlas cell's top-left corner.
+//
+// The column is masked rather than divided, which is why SetTextureGrid insists both grid
+// dimensions are powers of two. Both the 2^32 fixup and the arithmetic shift are the compiler
+// treating an unsigned cell index as signed; neither can fire for a real cell, and both are
+// transcribed because "cannot fire" is a claim about the data, not about the code.
+void CM2ParticleEmitter::CellUvBase(uint32_t cell, float& u, float& v) const {
+    int32_t column = static_cast<int32_t>((this->m_textureCols - 1) & cell);
+
+    float fColumn = static_cast<float>(column);
+
+    if (column < 0) {
+        fColumn += 4294967296.0f;
+    }
+
+    u = fColumn * this->m_cellWidth;
+    v = static_cast<float>(static_cast<int32_t>(cell) >> this->m_cellShift) * this->m_cellHeight;
+}
+
+// Write one particle's quads.
+//
+// Read out of the disassembly at 0x97be80 rather than the decompilation; see the comment block in
+// docs/ref/parity-particles.md for why, and for the frame map this was rebuilt from.
+//
+// ref: FUN_0097be80
+bool CM2ParticleEmitter::WriteParticleVertices(const Particle& p, VertexCursor& cursor) {
+    // The particle's slot in the twinkle table. The address shift is the pool slot index -- a
+    // Particle is 0x20 bytes -- plus a term that advances with age, so a particle walks the table
+    // at m_twinkleFps entries a second.
+    //
+    // lrintf, not a cast: the reference's `fistpl` rounds to nearest-even and a cast truncates.
+    uint32_t twinkle = 0;
+
+    if (this->m_twinkleOnOff < 1.0f || this->m_twinkleSpan != 0.0f) {
+        int32_t step = static_cast<int32_t>(lrintf(this->m_twinkleFps * p.m_age));
+
+        twinkle = (static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&p) >> 5) + step) & 0x7F;
+    }
+
+    // THE PARTICLE IS DROPPED, not faded: a twinkling particle is absent on its off frames, and
+    // the caller sees a vertex count that did not move.
+    if (this->m_twinkleOnOff < 1.0f && this->m_twinkleOnOff < s_particleTwinkle[twinkle]) {
+        return false;
+    }
+
+    CImVector color;
+    C2Vector size = { 0.0f, 0.0f };
+    uint32_t headCell = 0;
+    uint32_t tailCell = 0;
+
+    color.value = 0;
+
+    if (this->m_flags & 0x1000000) {
+        // FUN_00979d60, the precompiled-ramp fast path. Unreachable: nothing builds the ramp at
+        // emitter +0x11c. Falling through to the normal sampler would be WRONG rather than
+        // approximate -- the ramp carries its own midpoint split -- so this says so instead.
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter: flag 0x1000000 wants the ramp sampler (FUN_00979d60), "
+                     "which is not ported");
+
+        return false;
+    }
+
+    this->SampleAppearance(p, color, size, headCell, tailCell);
+
+    float initialSpin = 0.0f;
+    float spinRate = 0.0f;
+
+    this->SampleSpin(p, initialSpin, spinRate);
+
+    // The device wants RGBA where the sampler produced ARGB: swap red and blue, nothing else.
+    if (GxCaps().m_colorFormat == GxCF_rgba) {
+        uint8_t red = color.r;
+
+        color.r = color.b;
+        color.b = red;
+    }
+
+    float twinkleScale = s_particleTwinkle[twinkle] * this->m_twinkleSpan + this->m_twinkleMin;
+
+    size.x *= twinkleScale;
+    size.y *= twinkleScale;
+
+    if (this->m_flags & 0x400) {
+        size.x *= this->m_scale;
+        size.y *= this->m_scale;
+    }
+
+    // The particle's centre, in view space.
+    C3Vector centre = p.m_position * s_particleSpace;
+
+    uint32_t flags = this->m_flags;
+
+    // ---------------------------------------------------------------- the head quad
+    if (flags & 0x4) {
+        float u0 = 0.0f;
+        float v0 = 0.0f;
+
+        this->CellUvBase(headCell, u0, v0);
+
+        float speedSq = p.m_velocity.x * p.m_velocity.x
+            + p.m_velocity.y * p.m_velocity.y
+            + p.m_velocity.z * p.m_velocity.z;
+
+        if ((flags & 0x200000) && 0.00000023841858f < speedSq) {
+            // VELOCITY-ALIGNED. The quad turns to lie along the particle's motion as it appears
+            // on screen, and -- the part the decompilation lost entirely -- its WIDTH is scaled
+            // by |xy|/|3D|, the fraction of the velocity that is visible. A particle flying
+            // straight at the camera therefore narrows to nothing rather than swelling.
+            C3Vector away = { -p.m_velocity.x, -p.m_velocity.y, -p.m_velocity.z };
+
+            // The 3x3 ONLY: this is a direction, so the translation row must not apply.
+            C3Vector screen;
+
+            TransformDirection(screen, away, s_particleSpace);
+
+            // The reference narrows the result to a C2Vector before measuring it, and measures
+            // the FULL length off the 3-vector -- so the two lengths come from different objects.
+            C2Vector flat;
+
+            flat = screen;
+
+            float flatSq = flat.x * flat.x + flat.y * flat.y;
+            float fullSq = screen.x * screen.x + screen.y * screen.y + screen.z * screen.z;
+
+            float inv = 0.00000023841858f < flatSq ? 1.0f / CMath::sqrt(flatSq) : 0.0f;
+
+            float dirX = flat.x * inv;
+            float dirY = flat.y * inv;
+
+            float width = size.x;
+
+            if (0.00000023841858f < inv) {
+                width = size.x * (1.0f / CMath::sqrt(fullSq)) / inv;
+            }
+
+            for (uint32_t i = 0; i < 4; i++) {
+                float a = s_particleCorner[i].x * width;
+                float b = s_particleCorner[i].y * size.y;
+
+                C3Vector position = {
+                    a * dirX - b * dirY + centre.x,
+                    a * dirY + b * dirX + centre.y,
+                    centre.z
+                };
+
+                this->WriteVertex(cursor, position, color,
+                                  s_particleCornerUv[i].x * this->m_cellWidth + u0,
+                                  s_particleCornerUv[i].y * this->m_cellHeight + v0);
+            }
+        } else if (this->m_spin == 0.0f && this->m_spinVariation == 0.0f) {
+            if (!(flags & 0x4000)) {
+                // PLAIN BILLBOARD. The common case by a wide margin, and the only shape that
+                // leaves Z alone.
+                for (uint32_t i = 0; i < 4; i++) {
+                    C3Vector position = {
+                        s_particleCorner[i].x * size.x + centre.x,
+                        s_particleCorner[i].y * size.y + centre.y,
+                        centre.z
+                    };
+
+                    this->WriteVertex(cursor, position, color,
+                                      s_particleCornerUv[i].x * this->m_cellWidth + u0,
+                                      s_particleCornerUv[i].y * this->m_cellHeight + v0);
+                }
+            } else {
+                // BASIS BILLBOARD: the corners laid out on the emitter's own two axes, which is
+                // a 3D plane, so this one moves Z as well.
+                for (uint32_t i = 0; i < 4; i++) {
+                    float a = s_particleCorner[i].x * size.x;
+                    float b = s_particleCorner[i].y * size.y;
+
+                    C3Vector position = {
+                        a * s_particleBasis.a0 + b * s_particleBasis.b0 + centre.x,
+                        a * s_particleBasis.a1 + b * s_particleBasis.b1 + centre.y,
+                        a * s_particleBasis.a2 + b * s_particleBasis.b2 + centre.z
+                    };
+
+                    this->WriteVertex(cursor, position, color,
+                                      s_particleCornerUv[i].x * this->m_cellWidth + u0,
+                                      s_particleCornerUv[i].y * this->m_cellHeight + v0);
+                }
+            }
+        } else {
+            float angle = p.m_age * spinRate + initialSpin;
+
+            // Flag 0x10000 turns every OTHER particle the opposite way, using bit 5 of the
+            // particle's address -- which alternates because the pool stride is 0x20. The same
+            // trick as the twinkle hash, and it survives x64 for the same reason.
+            if ((flags & 0x10000) && (reinterpret_cast<uintptr_t>(&p) & 0x20)) {
+                angle = -angle;
+            }
+
+            if (flags & 0x4000) {
+                // TUMBLED: the basis billboard, then turned about the emitter's tumble axis. The
+                // reference rebuilds the rotation matrix PER CORNER rather than once per
+                // particle -- four identical matrices -- and that is transcribed rather than
+                // hoisted, because hoisting it is a change in arithmetic even if it looks like
+                // one in cost only.
+                for (uint32_t i = 0; i < 4; i++) {
+                    C33Matrix rotation =
+                        C33Matrix::RotationAroundAxis(angle, this->m_tumbleAxis, true);
+
+                    float a = s_particleCorner[i].x * size.x;
+                    float b = s_particleCorner[i].y * size.y;
+
+                    float x = a * s_particleBasis.a0 + b * s_particleBasis.b0;
+                    float y = a * s_particleBasis.a1 + b * s_particleBasis.b1;
+                    float z = a * s_particleBasis.a2 + b * s_particleBasis.b2;
+
+                    C3Vector position = {
+                        rotation.a0 * x + rotation.a1 * y + rotation.a2 * z + centre.x,
+                        rotation.b0 * x + rotation.b1 * y + rotation.b2 * z + centre.y,
+                        rotation.c0 * x + rotation.c1 * y + rotation.c2 * z + centre.z
+                    };
+
+                    this->WriteVertex(cursor, position, color,
+                                      s_particleCornerUv[i].x * this->m_cellWidth + u0,
+                                      s_particleCornerUv[i].y * this->m_cellHeight + v0);
+                }
+            } else {
+                // SPUN BILLBOARD.
+                //
+                // DIVERGED, and recorded rather than tagged: the reference computes both terms in
+                // one pass through FUN_006f7a60, a polynomial approximation with its own range
+                // reduction (FUN_005fe800). That returns SINE through its second argument and
+                // cosine through its third -- settled by matching the first vertex the reference
+                // writes against corner 0, (-1, 1), since the signs only work out one way round.
+                // frozen uses the CRT's, which differs in the last bits and in nothing else.
+                //
+                // The reference also unrolls the four corners into longhand vertices built from
+                // the same four products. Algebraically identical, because every corner is
+                // (+-1, +-1), and the loop is the form a reader can check.
+                float sine = 0.0f;
+                float cosine = 0.0f;
+
+                CMath::SinCos(angle, sine, cosine);
+
+                for (uint32_t i = 0; i < 4; i++) {
+                    float a = s_particleCorner[i].x * size.x;
+                    float b = s_particleCorner[i].y * size.y;
+
+                    C3Vector position = {
+                        a * cosine - b * sine + centre.x,
+                        a * sine + b * cosine + centre.y,
+                        centre.z
+                    };
+
+                    this->WriteVertex(cursor, position, color,
+                                      s_particleCornerUv[i].x * this->m_cellWidth + u0,
+                                      s_particleCornerUv[i].y * this->m_cellHeight + v0);
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- the tail quad
+    if (!(flags & 0x8)) {
+        return true;
+    }
+
+    float u1 = 0.0f;
+    float v1 = 0.0f;
+
+    this->CellUvBase(tailCell, u1, v1);
+
+    // How far back the tail reaches. Flag 0x20000 shortens it for a young particle so a trail
+    // grows out of the head rather than springing into existence at full length.
+    float length = this->m_tailLength;
+
+    if ((flags & 0x20000) && p.m_age < length) {
+        length = p.m_age;
+    }
+
+    C3Vector away = { -p.m_velocity.x, -p.m_velocity.y, -p.m_velocity.z };
+
+    C3Vector tail;
+
+    TransformDirection(tail, away, s_particleSpace);
+
+    tail.x *= length;
+    tail.y *= length;
+    tail.z *= length;
+
+    // Narrowed the same way the head's velocity path narrows its direction.
+    C2Vector flat;
+
+    flat = tail;
+
+    float flatSq = flat.x * flat.x + flat.y * flat.y;
+
+    // 0x00aa2cec, and note it is NOT the 2^-22 used everywhere else in this file: a tail shorter
+    // than about 0.028 of a screen unit is drawn as a plain quad instead of being stretched.
+    if (flatSq < 0.0007716049440205097f) {
+        for (uint32_t i = 0; i < 4; i++) {
+            C3Vector position = {
+                s_particleCorner[i].x * size.x + centre.x,
+                s_particleCorner[i].y * size.y + centre.y,
+                centre.z
+            };
+
+            this->WriteVertex(cursor, position, color,
+                              s_particleCornerUv[i].x * this->m_cellWidth + u1,
+                              s_particleCornerUv[i].y * this->m_cellHeight + v1);
+        }
+
+        return true;
+    }
+
+    // STRETCHED. Two corners at the particle and two at the far end of the tail, each pair pushed
+    // apart along a perpendicular to the tail's screen direction.
+    //
+    // The perpendicular is (-py, px) where px and py are the direction scaled by size -- and the
+    // pairing is crossed: px takes size.x while py takes size.y, so the offset is
+    // (-dy*size.y, dx*size.x). That asymmetry is the reference's, and it is the kind of thing a
+    // reader would "correct" on sight.
+    float inv = 1.0f / CMath::sqrt(flatSq);
+
+    float px = tail.x * size.x * inv;
+    float py = tail.y * size.y * inv;
+
+    C3Vector far_ = { centre.x + tail.x, centre.y + tail.y, centre.z + tail.z };
+
+    C3Vector v[4] = {
+        { centre.x - py, centre.y + px, centre.z },
+        { centre.x + py, centre.y - px, centre.z },
+        { far_.x - py,   far_.y + px,   far_.z   },
+        { far_.x + py,   far_.y - px,   far_.z   }
+    };
+
+    for (uint32_t i = 0; i < 4; i++) {
+        this->WriteVertex(cursor, v[i], color,
+                          s_particleCornerUv[i].x * this->m_cellWidth + u1,
+                          s_particleCornerUv[i].y * this->m_cellHeight + v1);
+    }
+
+    return true;
 }
 
 // Draw this emitter's particles.

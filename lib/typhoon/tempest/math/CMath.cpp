@@ -1,5 +1,11 @@
 #include "tempest/math/CMath.hpp"
 
+// ref: FUN_006f7a60
+void CMath::SinCos(float angle, float& sine, float& cosine) {
+    sine = std::sin(angle);
+    cosine = std::cos(angle);
+}
+
 const float CMath::PI = 3.1415927f;
 const float CMath::TWO_PI = 6.2831855f;
 const float CMath::OO_TWO_PI = 1.0f / CMath::TWO_PI;
