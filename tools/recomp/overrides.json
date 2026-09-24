@@ -1799,7 +1799,7 @@
   "00979870": {
     "frozen": "CM2ParticleEmitter::CreateParticle",
     "status": "diverged",
-    "note": "the ABSTRACT BASE CParticleEmitter2 vtable[2] (base vtable 0x00aa2cc0). No live emitter reaches it: FUN_0097d820 dispatches virtually through vtable[2], this function has zero direct callers in the text section, and both concrete subclasses (vtables 0x00aa2d30 and 0x00aa2d5c) override the slot with 0x009815c0 and 0x00981950, neither chaining here. CM2ParticleEmitterPlane now ports 0x009815c0, so a plane emitter no longer runs this one; the second subclass is still unported. Found 2026-09-24 by scanning .rdata for the vtables; the adjacent strings name the class CParticleEmitter2 and the file ParticleSystem2.cpp"
+    "note": "the ABSTRACT BASE CParticleEmitter2 vtable[2] (base vtable 0x00aa2cc0). No live emitter reaches it: FUN_0097d820 dispatches virtually through vtable[2], this function has zero direct callers in the text section, and both concrete subclasses override the slot. Both are now ported -- CM2ParticleEmitterPlane (0x009815c0, type 1) and CM2ParticleEmitterSphere (0x00981950, type 2) -- so what remains diverged is only that frozen's base is concrete where the reference's is abstract, and anything built as the bare base runs this creator. Found 2026-09-24 by scanning .rdata for the vtables; the adjacent strings name the class CParticleEmitter2 and the file ParticleSystem2.cpp"
   },
   "00979250": {
     "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",

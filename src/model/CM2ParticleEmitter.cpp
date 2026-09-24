@@ -502,10 +502,11 @@ void CM2ParticleEmitter::SetLongitude(float) {
 // function has zero direct callers, and both concrete subclasses override the slot with their own
 // implementations (0x009815c0 and 0x00981950) that do not chain to this one.
 //
-// CM2ParticleEmitterPlane above now ports the first of those, so an emitter constructed as a plane
-// emitter no longer runs this. It stays because the dispatch is the reference's shape and because
-// the second subclass (0x00981950) is still unported; anything constructed as the bare base still
-// lands here, which the reference cannot do.
+// Both are now ported -- CM2ParticleEmitterPlane and CM2ParticleEmitterSphere -- so nothing built
+// as either runs this. It stays because the dispatch is the reference's shape, and because the
+// base is still concrete here where the reference's is abstract: anything constructed as the bare
+// base lands on this creator, which the reference cannot do. The remaining hole is the THIRD
+// emitter class (constructor 0x009820f0, 0x40c bytes), which is a separate hierarchy.
 //
 // The difference is not cosmetic. Compare the two: this one writes m_lifeVariation and the plane
 // one does not, and this one builds its direction from a uniform sphere sample where the plane one
