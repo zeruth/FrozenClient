@@ -1800,5 +1800,10 @@
     "frozen": "CM2ParticleEmitter::CreateParticle",
     "status": "diverged",
     "note": "the ABSTRACT BASE CParticleEmitter2 vtable[2] (base vtable 0x00aa2cc0). No live emitter reaches it: FUN_0097d820 dispatches virtually through vtable[2], this function has zero direct callers in the text section, and both concrete subclasses (vtables 0x00aa2d30 and 0x00aa2d5c) override the slot with 0x009815c0 and 0x00981950, neither chaining here. Frozen keeps the virtual dispatch and this base implementation until a subclass is ported. Found 2026-09-24 by scanning .rdata for the vtables; the adjacent strings name the class CParticleEmitter2 and the file ParticleSystem2.cpp"
+  },
+  "00979250": {
+    "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+    "status": "diverged",
+    "note": "the reference initialises CParticleEmitter2's parameter block at +0x98 through this helper, called from the constructor FUN_0097e150. Frozen expresses the same values as default member initialisers on the class instead, so there is no separate function to link -- same state after construction, different shape. The values it supplies that frozen previously had wrong: m_alpha 1.0, m_flags 6, m_variation 0.1, m_tailLength 1.0, texture grid 1x1. Read 2026-09-24"
   }
 }

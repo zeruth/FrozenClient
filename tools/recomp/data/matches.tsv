@@ -619,6 +619,7 @@ addr	how	frozen	evidence
 004be9c0	string	TextBlockGenerateFont	unique "%s-%d-%f"
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
+004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097e150=CM2ParticleEmitter::CM2ParticleEmitter
 004c1680	annotated	M2ParticleRandomUnitVector	tag in src/model/CM2ParticleEmitter.cpp
 004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -3100,6 +3101,7 @@ addr	how	frozen	evidence
 00978d00	annotated	CM2ParticleEmitter::SetHeadTail	tag in src/model/CM2ParticleEmitter.cpp
 00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
 00978e30	annotated	CM2ParticleEmitter::SetTextureAnimated	tag in src/model/CM2ParticleEmitter.cpp
+00979250	override	CM2ParticleEmitter::CM2ParticleEmitter	
 009792d0	annotated	CM2ParticleEmitter::RandomSpeed	tag in src/model/CM2ParticleEmitter.cpp
 00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
 009793b0	annotated	M2PartTrackRatio	tag in src/model/CM2ParticleEmitter.cpp
@@ -3114,6 +3116,7 @@ addr	how	frozen	evidence
 0097d8c0	annotated	CM2ParticleEmitter::Emit	tag in src/model/CM2ParticleEmitter.cpp
 0097db80	annotated	CM2ParticleEmitter::IntegrateAndSpawnChildren	tag in src/model/CM2ParticleEmitter.cpp
 0097dd20	annotated	CM2ParticleEmitter::Step	tag in src/model/CM2ParticleEmitter.cpp
+0097e150	annotated	CM2ParticleEmitter::CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
 0097eb10	annotated	CM2ParticleEmitter::Update	tag in src/model/CM2ParticleEmitter.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp

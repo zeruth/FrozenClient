@@ -120,7 +120,8 @@ class CM2ParticleEmitter {
         // +0xb0, +0xb4, +0xb8: written every frame by the driver from the animated tracks.
         float m_speed = 0.0f;
         float m_gravity = 0.0f;
-        float m_variation = 0.0f;
+        // Defaults to 0.1, from FUN_00979250 -- not zero.
+        float m_variation = 0.1f;
         // +0xbc: the z source, written through a setter that zeroes anything under 0.001 rather
         // than storing it (FUN_00978da0). A z source that small is meant to be off, and leaving a
         // denormal there would divide badly downstream.
@@ -141,14 +142,18 @@ class CM2ParticleEmitter {
         // side sizes its batch from these.
         uint32_t m_verticesPerParticle = 0;
         uint32_t m_indicesPerParticle = 0;
-        // +0xac: set alongside the head/tail flags by the same setter.
-        float m_tailLength = 0.0f;
+        // +0xac: set alongside the head/tail flags by the same setter. Born 1.0.
+        float m_tailLength = 1.0f;
         // +0x120 and +0x124: the texture tile grid. Their PRODUCT is what decides whether texture
         // animation is possible at all -- see SetTextureAnimated.
-        uint32_t m_textureRows = 0;
-        uint32_t m_textureCols = 0;
-        // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives.
-        float m_alpha = 0.0f;
+        // Both born 1, so the product is 1 and texture animation starts off -- which is what
+        // SetTextureAnimated's guard is testing. Zeroes here would make that guard trivially true
+        // in the wrong direction and leave a 1x1 emitter looking animated.
+        uint32_t m_textureRows = 1;
+        uint32_t m_textureCols = 1;
+        // +0x130: the model's alpha, clamped to 0..1 by the driver before it arrives. Born
+        // OPAQUE -- an emitter starting at zero alpha draws nothing until the driver writes it.
+        float m_alpha = 1.0f;
         // +0x14c: scales the emitter velocity the update samples every 1/30s and hands to new
         // particles. Read only there.
         float m_velocitySampleScale = 0.0f;
@@ -162,7 +167,12 @@ class CM2ParticleEmitter {
         // test them: 0x1 and 0x2 together, or 0x40 with 0x2, make the step call its first virtual;
         // 0x200 suppresses the extra transform in placement; 0x800 and 0x80000 gate the drag and
         // the frame-delta scaling in the update. The driver raises 0x1 and 0x40 itself.
-        uint32_t m_flags = 0;
+        //
+        // Born as 6, not 0, and that matters: Step emits only when `(flags & 3) == 3`, the
+        // constructor supplies the 0x2 and the driver raises the 0x1. Starting at zero means the
+        // driver's bit never completes the pair and the emitter silently never emits. The 0x4 is
+        // the head quad, so a new emitter draws one quad per particle.
+        uint32_t m_flags = 0x6;
         // +0x184: the emitter's placement matrix -- and the emitter's POSITION is its translation
         // row. 0x184 + 0x30 is 0x1b4, which an earlier pass recorded as a separate m_position
         // field; it never was one. FOUR things agree: the step passes `this + 0x184` to Emit,
@@ -189,10 +199,24 @@ class CM2ParticleEmitter {
         // CHILD emitter from the parent particle's own velocity, which is how a trail keeps moving
         // with whatever shed it.
         C3Vector m_inheritedVelocity;
+        // +0x218 and +0x224: the emitter's bounds, born INVERTED -- min at +FLT_MAX and max at
+        // -FLT_MAX (0x009ea8fc and 0x00a37f1c), the usual empty-box convention so that the first
+        // point absorbed sets both corners. +0x230 is the last base field; the two concrete
+        // subclasses put their own first field at +0x234, which fixes the base size at 0x234.
+        C3Vector m_boundsMin = { 3.4028234663852886e+38f, 3.4028234663852886e+38f,
+                                 3.4028234663852886e+38f };
+        C3Vector m_boundsMax = { -3.4028234663852886e+38f, -3.4028234663852886e+38f,
+                                 -3.4028234663852886e+38f };
         // +0x1f4: how far the emitter moved this frame, and +0x200 that delta divided across the
         // substeps the substepper chose.
         C3Vector m_frameDelta;
         C3Vector m_substepDelta;
+
+        // Construct an emitter with the reference's defaults and a randomly seeded RNG.
+        // ref: FUN_0097e150
+        CM2ParticleEmitter();
+
+        virtual ~CM2ParticleEmitter() = default;
 
         // The reference's vtable, recovered by scanning .rdata for runs of pointers into the
         // particle module and reading the strings beside them. The class is CParticleEmitter2 and

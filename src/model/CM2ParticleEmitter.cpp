@@ -1,5 +1,6 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include "util/Log.hpp"
 #include "world/ParticleFx.hpp"
@@ -220,6 +221,26 @@ void CM2ParticleEmitter::GroundSnapParticle(Particle& p) {
 
     // The larger of the pair, which is what the reference's two-way compare picks.
     p.m_position.z = (range.y < range.x ? range.x : range.y) + groundZ;
+}
+
+// Construct an emitter.
+//
+// Nearly every field's value is a default member initialiser on the class, where the reference
+// writes it here -- same result, and it keeps each value beside the field it documents. What has
+// to live in the body is the part with logic: the random seed.
+//
+// The reference builds it from two calls to the CRT rand() at 0x0088b867, the classic
+// `x = x*0x343FD + 0x269EC3` returning bits 16..30. That is FIFTEEN bits, so
+// `(rand() << 16) | (rand() & 0xffff)` leaves bits 15 and 31 always clear: a 30-bit seed with two
+// holes in it, not a 32-bit one. Reproduced as written rather than tidied, because an emitter's
+// entire visual signature -- every launch direction, speed and lifetime -- comes out of this
+// stream, and a "better" seed would be a different-looking effect.
+//
+// ref: FUN_0097e150
+CM2ParticleEmitter::CM2ParticleEmitter() {
+    uint32_t seed = (static_cast<uint32_t>(rand()) << 16) | (static_cast<uint32_t>(rand()) & 0xFFFF);
+
+    this->m_seed = CRndSeed(seed);
 }
 
 // Slot [10].

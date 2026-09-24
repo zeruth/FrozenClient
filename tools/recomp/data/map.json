@@ -9899,6 +9899,22 @@
   "refSize": 78,
   "status": "ported"
  },
+ "004c1510": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/random/CRndSeed.cpp",
+   "lib/typhoon/tempest/random/crndseed.cpp"
+  ],
+  "frozen": "CRndSeed::CRndSeed",
+  "frozenSize": 122,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 116,
+  "status": "ported"
+ },
  "004c1680": {
   "branchRatio": 0.0,
   "constOverlap": 0.125,
@@ -49160,6 +49176,22 @@
   "refSize": 55,
   "status": "ported"
  },
+ "00979250": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.032,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 123,
+  "status": "diverged"
+ },
  "009792d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -49382,6 +49414,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 604,
+  "status": "ported"
+ },
+ "0097e150": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 662,
   "status": "ported"
  },
  "0097eb10": {
