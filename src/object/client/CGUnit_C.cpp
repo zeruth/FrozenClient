@@ -211,7 +211,17 @@ int32_t CGUnit_C::CanBeTargetted() {
 int32_t CGUnit_C::GetDisplayID() const {
     // Prefer local display ID if set and unit's display ID hasn't been overridden from unit's
     // native display ID.
-    if (this->GetLocalDisplayID() && this->GetDisplayID() == this->GetNativeDisplayID()) {
+    //
+    // The middle test used to read `this->GetDisplayID()`, which is THIS function: unbounded
+    // recursion and a stack overflow. It never fired only because `m_localDisplayID` is still
+    // initialised to 0 and nothing writes it, so the `&&` short-circuits before reaching it -- a
+    // landmine rather than a live crash, and one that goes off the moment anything sets a local
+    // display id, which is what the reference uses for transform and shapeshift effects.
+    //
+    // The comparison the reference makes is between the OBJECT's display id and its native one
+    // (FUN_00717a20 reads them at unit data +0xf4 and +0xf8), so the base accessor is what belongs
+    // here.
+    if (this->GetLocalDisplayID() && this->CGUnit::GetDisplayID() == this->GetNativeDisplayID()) {
         return this->GetLocalDisplayID();
     }
 
@@ -226,6 +236,13 @@ int32_t CGUnit_C::GetLocalDisplayID() const {
     return this->m_localDisplayID;
 }
 
+// Resolve this unit to its CreatureModelData record, through CreatureDisplayInfo. The reference
+// picks the display id the same way GetDisplayID above does -- the cached local one unless the
+// object's display id has been overridden away from its native one -- and reports the same two
+// failures, which are the strings this function already carries as comments:
+// NOCREATUREDISPLAYIDFOUND when the display id resolves to nothing, and INVALIDDISPLAYMODELRECORD
+// when it does but its m_modelID does not.
+// ref: FUN_00717a20
 CreatureModelDataRec* CGUnit_C::GetModelData() const {
     auto displayID = this->GetDisplayID();
 
@@ -422,6 +439,61 @@ void CGUnit_C::PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeM
 // not which variation the model chose, and Sub8260C0 counts variations along a chain whose head is
 // 0. Variations of one animation are alternate takes of the same motion, so their authored boxes
 // agree closely, and variation 0 is the one that exists whenever the animation does.
+// The box the reference projects as this unit's blob shadow. It is the CreatureModelData
+// geoBox -- NOT the model's own bounds and not an animated box -- raised to the mount's height
+// when the unit is riding something.
+//
+// Offsets, all confirmed against frozen's generated record rather than assumed: the reference
+// copies six floats from the model record at +0x44, which is m_geoBoxMinX through m_geoBoxMaxZ in
+// the 32-bit layout, and reads the mount height at +0x40, which is m_mountHeight immediately
+// before them. The gate is `unit data +0xfc > 0`, and +0xfc is the field right after displayID and
+// nativeDisplayID, which is mountDisplayID -- so the branch is simply "is this unit mounted".
+//
+// The shift centres the box on the mount height rather than offsetting by it:
+// `mountHeight - halfZ` added to both Z components moves the box so its middle sits at the height
+// the mount carries the rider. That is what keeps a mounted player's shadow the right size and in
+// the right place instead of sunk into the ground.
+//
+// ONE SUBSTITUTION, stated because it is not a straight port: the reference looks the MOUNT's
+// record up from a cached field at unit +0x9c0 whose frozen counterpart has not been identified.
+// mountDisplayID is used instead, which is the id the gate itself tests and reaches the same
+// record through the same two-level chain. If +0x9c0 turns out to hold something else, the height
+// this picks is wrong -- but the gate would still be right.
+//
+// Nothing calls this yet. It is the missing half of the reference's unit shadow path: the blob
+// caster in CGWorldFrame currently sizes from GetAnimFootprint below, which is a different box
+// from a different source. Wiring them together changes what is drawn and wants a run.
+// ref: FUN_0071ed80
+CAaBox& CGUnit_C::GetShadowBox(CAaBox& box) const {
+    box.b = { 0.0f, 0.0f, 0.0f };
+    box.t = { 0.0f, 0.0f, 0.0f };
+
+    auto rec = this->m_modelData ? this->m_modelData : this->GetModelData();
+
+    if (rec) {
+        box.b = { rec->m_geoBoxMinX, rec->m_geoBoxMinY, rec->m_geoBoxMinZ };
+        box.t = { rec->m_geoBoxMaxX, rec->m_geoBoxMaxY, rec->m_geoBoxMaxZ };
+    }
+
+    int32_t mountDisplayID = this->Unit()->mountDisplayID;
+
+    if (mountDisplayID > 0) {
+        auto mountDisplay = g_creatureDisplayInfoDB.GetRecord(mountDisplayID);
+        auto mountModel = mountDisplay
+            ? g_creatureModelDataDB.GetRecord(mountDisplay->m_modelID)
+            : nullptr;
+
+        if (mountModel) {
+            float shift = mountModel->m_mountHeight - (box.t.z - box.b.z) * 0.5f;
+
+            box.b.z += shift;
+            box.t.z += shift;
+        }
+    }
+
+    return box;
+}
+
 float CGUnit_C::GetAnimFootprint() const {
     auto model = this->m_model;
 

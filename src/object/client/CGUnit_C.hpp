@@ -8,6 +8,7 @@
 #include "object/client/CMovement_C.hpp"
 #include "object/Types.hpp"
 #include "util/GUID.hpp"
+#include <tempest/Box.hpp>
 
 class CCharacterComponent;
 class ChrClassesRec;
@@ -77,6 +78,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // animated box rather than the model's global one, so a crouching or rearing creature
         // casts the right footprint.
         float GetAnimFootprint() const;
+        CAaBox& GetShadowBox(CAaBox& box) const;
 
         // Duration (ms) of the model's animation with the given AnimationData id, or 0 if it has none.
         uint32_t GetSequenceDuration(int32_t animID);

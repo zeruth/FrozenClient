@@ -32280,6 +32280,19 @@
   "refSize": 155,
   "status": "ported"
  },
+ "00705a80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "WowClientDB<ChrRacesRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "sticky",
+  "module": "Corpse_C.cpp",
+  "refSize": 50,
+  "status": "ported"
+ },
  "00706d70": {
   "branchRatio": 0.083,
   "constOverlap": 0.0,
@@ -32376,6 +32389,22 @@
   "refSize": 102,
   "status": "ported"
  },
+ "00717a20": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetModelData",
+  "frozenSize": 108,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
  "00718a00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -32438,6 +32467,21 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 22,
+  "status": "ported"
+ },
+ "0071ed80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/CGUnit_C.cpp"
+  ],
+  "frozen": "CGUnit_C::GetShadowBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 230,
   "status": "ported"
  },
  "0071f300": {
