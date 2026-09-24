@@ -144,6 +144,27 @@ class CM2Model {
         C44Matrix matrixB4;
         C44Matrix matrixF4;
 
+        // +0x174: the space this model's PARTICLES and RIBBONS are expressed relative to, or null
+        // for world space -- which is the normal case, and why CM2ParticleEmitter::Draw takes a
+        // nullable matrix. CM2SceneRender::DrawParticle and DrawRibbon both hand it straight to
+        // the emitter's Draw.
+        //
+        // FUN_00824460 is its only setter and is not ported. It walks the attachment tree from
+        // this model down (skipping attachments whose index is 0xFFFF) and, on the null ->
+        // non-null transition ONLY, transforms the already-live particles through the new
+        // matrix's AffineInverse so they do not jump; passing null runs the same transform with
+        // the OUTGOING matrix on the way out. Porting it means porting FUN_008243e0 with it.
+        // Until then this stays null and every particle draws in world space, which is what the
+        // reference does for everything that never calls that setter.
+        C44Matrix* m_particleRelative = nullptr;
+
+        // NOT PORTED, and recorded so the gap is visible rather than silently closed: the
+        // reference has a THIRD C44Matrix at +0x134, between matrixF4 and the pointer above. The
+        // constructor identity-initialises it at 0x82c002..0x82c058 -- the 1.0 stores land on
+        // 0x134, 0x148, 0x15c and 0x170, a 0x14 stride, which is a 4x4 diagonal and nothing else.
+        // Its readers have not been traced. Frozen's layout therefore diverges here by 0x40
+        // bytes, which costs nothing because no offset in frozen is hard-coded.
+
         // This model's own tint, before anything a parent hands down: the reference keeps these at
         // +0x178 through +0x194 and folds them into the current values every animate. Nothing
         // writes them yet -- the setters that do are not ported -- so they stay neutral, which

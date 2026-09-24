@@ -1006,8 +1006,8 @@
   },
   "008214e0": {
     "frozen": "CM2SceneRender::DrawParticle",
-    "status": "stub",
-    "note": "logs 'Particle: model=%s' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
+    "status": "ported",
+    "note": "Ported 2026-09-24 from the decompilation plus the disassembly at 0x8214e0, which carries three register arguments Ghidra drops: the shader effect chosen on the emitter's material bit 0 and stashed in the incoming a5 parameter slot (so it reads as a dead store), that effect as the receiver of CShaderEffect::SetCurrent, and the emitter as the receiver of CM2ParticleEmitter::Draw. Every callee already existed in frozen. NOT VERIFIED -- the geometry stage inside Draw is still FUN_0097e730, so this sets up a draw that emits no quads. The batched branch (FUN_00821100, selected by CM2Cache::m_flags & 0x80) is not ported and returns 0; the string this override used to be identified by belongs to FUN_005eeb70, which is a bare retl."
   },
   "008230d0": {
     "frozen": "CM2SceneRender::DrawCallback",

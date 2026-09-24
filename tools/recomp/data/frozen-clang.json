@@ -39744,7 +39744,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 203
+"line": 224
 },
 "M2ArrayDelta": {
 "files": [
@@ -79314,7 +79314,7 @@
 "stub": false,
 "lines": 167,
 "refs": [],
-"line": 74
+"line": 75
 },
 "CM2SceneRender::DrawBatch": {
 "files": [
@@ -79359,7 +79359,7 @@
 "stub": false,
 "lines": 88,
 "refs": [],
-"line": 242
+"line": 243
 },
 "CM2SceneRender::DrawBatchDoodad": {
 "files": [
@@ -79372,7 +79372,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 334
+"line": 335
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -79385,7 +79385,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 338
+"line": 339
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -79398,7 +79398,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 342
+"line": 343
 },
 "CM2SceneRender::SetupParticleTransform": {
 "files": [
@@ -79417,22 +79417,45 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 442
+"line": 443
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
 "src/model/cm2scenerender.cpp"
 ],
-"callseq": [],
+"callseq": [
+"M2BlendIndexFromGx",
+"TextureGetGxTex",
+"GxRsSet",
+"TSBaseArray<CGxAppRenderState>::operator[]",
+"CGxStateBom::operator!=",
+"CGxDevice::IRsDirty",
+"CGxStateBom::operator=",
+"CShaderEffect::SetCurrent",
+"CM2SceneRender::SetupLighting",
+"CM2SceneRender::SetupMaterial",
+"C3Vector::C3Vector",
+"CM2SceneRender::SetupParticleTransform",
+"CM2ParticleEmitter::Draw",
+"GxXformSetView",
+"GxXformSet"
+],
 "strings": [],
 "consts": [
-"0"
+"0",
+"0x1",
+"0x10",
+"0x2",
+"0x4",
+"0x5",
+"0x80",
+"1"
 ],
-"branches": 0,
-"stub": true,
-"lines": 4,
+"branches": 10,
+"stub": false,
+"lines": 121,
 "refs": [],
-"line": 479
+"line": 484
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -79445,7 +79468,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 484
+"line": 606
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -79462,7 +79485,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 489
+"line": 611
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -79502,7 +79525,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 528
+"line": 650
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -79557,7 +79580,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 606
+"line": 728
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -79593,7 +79616,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 720
+"line": 842
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

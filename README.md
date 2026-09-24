@@ -42,14 +42,14 @@ been watched doing it at runtime.
 Guessing an implementation from what the screen looks like is how most of the graphics bugs in this
 codebase got in, so accuracy is measured rather than asserted. `tools/recomp/` links the original's
 27,161 functions to Frozen's and writes `docs/recomp/REPORT.md`. The numbers below are from the
-2026-09-23 run.
+2026-09-24 run.
 
 Three measures, deliberately never rolled into one, because each is a stronger claim than the last:
 
 | | what it claims | where it stands |
 |---|---|---|
 | **Linked** | an original function has a known counterpart here | **3,191 / 27,156** &nbsp;·&nbsp; ~11% |
-| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,256** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
+| **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,257** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
 By surface, roughly:

@@ -37453,7 +37453,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "M2BlendIndexFromGx",
-  "frozenSize": 0,
+  "frozenSize": 108,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 51,
@@ -37744,20 +37744,20 @@
   "status": "stub"
  },
  "008214e0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.038,
+  "faithful": true,
+  "fidelity": 0.909,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawParticle",
-  "frozenSize": 0,
+  "frozenSize": 696,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 391,
-  "status": "stub"
+  "status": "ported"
  },
  "00821930": {
   "branchRatio": 0.667,
@@ -37817,7 +37817,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 764,
+  "frozenSize": 792,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
@@ -49736,7 +49736,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Draw",
-  "frozenSize": 0,
+  "frozenSize": 135,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 162,
