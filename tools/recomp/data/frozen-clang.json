@@ -78490,6 +78490,33 @@
 "refs": [],
 "line": 1183
 },
+"CM2ParticleEmitter::Draw": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"TSBaseArray<unsigned int>::Count",
+"SysMsgPrintf"
+],
+"strings": [
+"CM2ParticleEmitter::Draw: the quad builder is not ported (FUN_0097e730); no particle geometry is emitted"
+],
+"consts": [
+"0",
+"0x1",
+"0x1u",
+"3.4028234663852886e+38f"
+],
+"branches": 2,
+"stub": false,
+"lines": 30,
+"refs": [],
+"line": 1215
+},
 "CM2ParticleEmitter::HasLiveParticles": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -78506,7 +78533,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1214
+"line": 1252
 },
 "CM2ParticleEmitter::CountSpawnedModels": {
 "files": [
@@ -78525,7 +78552,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1229
+"line": 1267
 },
 "CM2ParticleEmitter::FindSpawnedModel": {
 "files": [
@@ -78547,7 +78574,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1248
+"line": 1286
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -78584,7 +78611,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 1275
+"line": 1313
 },
 "M2ParticleCapacityFor": {
 "files": [
@@ -78599,7 +78626,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1364
+"line": 1402
 },
 "CM2ParticleEmitter::PrepareStep": {
 "files": [
@@ -78620,7 +78647,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1381
+"line": 1419
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -78650,7 +78677,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1408
+"line": 1446
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -78671,7 +78698,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1449
+"line": 1487
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78700,7 +78727,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 1482
+"line": 1520
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78718,7 +78745,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1543
+"line": 1581
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

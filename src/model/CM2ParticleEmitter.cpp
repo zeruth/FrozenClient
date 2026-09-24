@@ -1205,6 +1205,44 @@ bool CM2ParticleEmitter::IntegrateModelParticle(ModelParticle& p, float dt) cons
     return this->IntegrateParticle(p, dt);
 }
 
+// Draw this emitter's particles.
+//
+// The bounds reset at the top is why the constructor initialises them inverted: the quad builder
+// absorbs each particle as it emits one, so the box that comes out describes the frame that just
+// drew rather than accumulating across frames.
+//
+// ref: FUN_0097ea60
+void CM2ParticleEmitter::Draw(const C44Matrix* relativeTo, void* a3, int32_t batched) {
+    this->m_boundsMin = { 3.4028234663852886e+38f, 3.4028234663852886e+38f,
+                          3.4028234663852886e+38f };
+    this->m_boundsMax = { -3.4028234663852886e+38f, -3.4028234663852886e+38f,
+                          -3.4028234663852886e+38f };
+
+    // Note this tests THIS emitter's live list, not the subtree's -- an emitter with no particles
+    // of its own returns here without descending, even if a child has some. HasLiveParticles is
+    // the subtree test and the element builder uses that one instead, which is what keeps a
+    // parent's element alive for its children's sake.
+    if (this->m_liveIndices.Count() == 0) {
+        this->m_drawFlags &= ~0x1u;
+        this->m_drawnCount = 0;
+
+        return;
+    }
+
+    this->m_drawFlags = (this->m_drawFlags & ~0x1u) | (batched & 0x1);
+
+    if (this->m_particleKind == 0) {
+        // FUN_0097e730, the plain pool's quad builder -- 22 calls into the GX layer and not
+        // ported. The model pool has no branch here at all: those particles draw as models.
+        SysMsgPrintf(SYSMSG_ERROR,
+                     "CM2ParticleEmitter::Draw: the quad builder is not ported (FUN_0097e730); "
+                     "no particle geometry is emitted");
+
+        (void)relativeTo;
+        (void)a3;
+    }
+}
+
 // Does this emitter's subtree hold any live particle?
 //
 // Short-circuits on the first one found, and does not count -- the caller only wants to know

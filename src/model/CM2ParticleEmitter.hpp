@@ -252,6 +252,13 @@ class CM2ParticleEmitter {
         // CHILD emitter from the parent particle's own velocity, which is how a trail keeps moving
         // with whatever shed it.
         C3Vector m_inheritedVelocity;
+        // +0x138: a SECOND flags word, distinct from m_flags at +0x134. The constructor does
+        // not touch it and only Draw and the quad builder read it; bit 0 is the batched-draw bit
+        // Draw folds in from its caller.
+        uint32_t m_drawFlags = 0;
+        // +0x1c: how many particles the last draw emitted. Draw zeroes it when there is nothing
+        // to draw.
+        uint32_t m_drawnCount = 0;
         // +0x218 and +0x224: the emitter's bounds, born INVERTED -- min at +FLT_MAX and max at
         // -FLT_MAX (0x009ea8fc and 0x00a37f1c), the usual empty-box convention so that the first
         // point absorbed sets both corners. +0x230 is the last base field; the two concrete
@@ -375,6 +382,10 @@ class CM2ParticleEmitter {
         // Spin one model particle's orientation by `dt`, then integrate it like a plain one.
         // ref: FUN_0097bdb0
         bool IntegrateModelParticle(ModelParticle& particle, float dt) const;
+
+        // Draw this emitter's particles. `relativeTo` is the matrix the owning model is placed
+        // relative to, and `batched` becomes bit 0 of m_drawFlags. ref: FUN_0097ea60
+        void Draw(const C44Matrix* relativeTo, void* a3, int32_t batched);
 
         // Does this emitter's SUBTREE hold any live particle? The gate the whole draw path
         // opens on -- CM2Scene's element builder refuses to emit an element without it.
