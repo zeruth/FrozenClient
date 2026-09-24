@@ -37581,7 +37581,7 @@
   "branchRatio": 0.205,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.288,
+  "fidelity": 0.327,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -38026,16 +38026,16 @@
   "status": "ported"
  },
  "00828a00": {
-  "branchRatio": 0.45,
+  "branchRatio": 0.125,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.458,
+  "fidelity": 0.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "CM2Model::AnimateST",
-  "frozenSize": 1173,
+  "frozen": "CM2Model::AnimateParticleTracks",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -49030,6 +49030,22 @@
   "how": "string",
   "module": "CSimpleHTML.cpp",
   "refSize": 151,
+  "status": "ported"
+ },
+ "00978da0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetZSource",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 39,
   "status": "ported"
  },
  "00980f70": {

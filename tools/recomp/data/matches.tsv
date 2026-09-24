@@ -2388,7 +2388,7 @@ addr	how	frozen	evidence
 008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
-00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
+00828a00	annotated	CM2Model::AnimateParticleTracks	tag in src/model/CM2Model.cpp
 00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
@@ -3092,6 +3092,7 @@ addr	how	frozen	evidence
 00978360	annotated	CSimpleButton_GetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
+00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp

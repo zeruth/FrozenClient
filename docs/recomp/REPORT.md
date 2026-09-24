@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 00:05 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 00:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 27160 | 5.39M |
-| mapped to a frozen function | 3133 (=) (11.5%) | 700.2k (12.7%) |
-| &nbsp;&nbsp;ported | 2385 (=) | 515.9k |
+| mapped to a frozen function | 3134 (+1) (11.5%) | 700.2k (12.7%) |
+| &nbsp;&nbsp;ported | 2386 (+1) | 515.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 690 (=) | 137.7k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1216 (=) (4.5%)** | **160.9k (2.9%)** |
-| unmapped | 24027 | 4.70M |
-| world spine (reachable from OnFrameRender) | 5529, mapped 535 (=) (9.7%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 545 (=) (9.4%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **1217 (+1) (4.5%)** | **161.0k (2.9%)** |
+| unmapped | 24026 | 4.70M |
+| world spine (reachable from OnFrameRender) | 5529, mapped 536 (+1) (9.7%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5797, mapped 546 (+1) (9.4%) | |
 | **render surface** (the modules that draw the world) | **4589, mapped 269 (=) (5.9%)** | |
-| frozen functions (src/, from PDB + source) | 12227, stubs 1819 | |
+| frozen functions (src/, from PDB + source) | 12229, stubs 1819 | |
 
-Match evidence: annotated 909, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 258, sticky 22, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 910, callgraph 180, callorder 127, cvar 32, handler 29, order 150, override 258, sticky 22, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-23 23:25 -- mapped 3133, ported 2385, stub 690, spine mapped 535.
+Previous run: 2026-09-24 00:05 -- mapped 3133, ported 2385, stub 690, spine mapped 535.
 
 ## Lua API coverage (binding tables)
 
@@ -162,7 +162,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Minigame_C.cpp | 352 | 50.8k | 193 (54.8%) | 43.3% | 0 | 0 | 68 |
 | LFGInfo.cpp | 229 | 47.7k | 29 (12.7%) | 13.0% | 10 | 0 | 7 |
 | ScriptEvents.cpp | 225 | 46.9k | 167 (74.2%) | 71.8% | 30 | 0 | 26 |
-| CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 8 (4.0%) | 2.7% | 0 | 0 | 120 |
+| CSimpleHyperlinkedFrame.cpp | 198 | 46.2k | 9 (4.5%) | 2.8% | 0 | 0 | 120 |
 | M2Shared.cpp | 65 | 45.9k | 10 (15.4%) | 7.7% | 1 | 0 | 19 |
 | ScanDLLGlue.cpp | 184 | 45.1k | 11 (6.0%) | 5.5% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 7 | 2 | 0 |
@@ -614,7 +614,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 42 | 152 | 52 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 26% | 71 | 32 | 170 | 54 | 2% | 5663 |
-| 00821a20 | `CM2Scene::Animate` | 29% | 54 | 35 | 219 | 45 | 8% | 5621 |
+| 00821a20 | `CM2Scene::Animate` | 33% | 54 | 35 | 219 | 45 | 8% | 5621 |
 | 00857ca0 | `luaV_execute` | 47% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 20% | 137 | 33 | 172 | 19 | 2% | 5010 |
 | 006e2e90 | `InventoryChangeFailureHandler` | 7% | 214 | 14 | 104 | 8 | 2% | 4848 |
@@ -629,7 +629,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00405dd0 | `Sub405DD0` | 22% | 50 | 2 | 59 | 0 | 0% | 1706 |
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 14% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 00828a00 | `CM2Model::AnimateST` | 46% | 24 | 17 | 40 | 18 | 0% | 1415 |
+| 00828a00 | `CM2Model::AnimateParticleTracks` | 0% | 24 | 10 | 40 | 5 | 0% | 1415 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
@@ -733,7 +733,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
-| 2026-09-23 21:20 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:22 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:24 | 3128 (11.5%) | 1212 (4.5%) | 690 | 530/5529 | 2924/2964 | 1493 |
 | 2026-09-23 21:33 | 3130 (11.5%) | 1213 (4.5%) | 690 | 532/5529 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-23 23:20 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-23 23:25 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
 | 2026-09-24 00:05 | 3133 (11.5%) | 1216 (4.5%) | 690 | 535/5529 | 2924/2964 | 1493 |
+| 2026-09-24 00:13 | 3134 (11.5%) | 1217 (4.5%) | 690 | 536/5529 | 2924/2964 | 1493 |
 
 ## How to move a row
 
