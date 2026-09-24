@@ -109,14 +109,26 @@ this chain, so every receiver below was read off the disassembly rather than the
 CM2SceneRender::DrawParticle        FUN_008214e0   PORTED, 91%
   CM2ParticleEmitter::Draw          FUN_0097ea60   ported
     <the quad builder>              FUN_0097e730   NOT PORTED
-      <view basis setup>            FUN_0097a390   NOT PORTED
+      SetupDrawBasis                FUN_0097a390   PORTED, 100%
       CGxDevice::BufStream          FUN_00684850   ported
-      <vertex write cursors>        FUN_0097a2e0   NOT PORTED
+      SetupVertexCursor             FUN_0097a2e0   PORTED, 100%
       <walk the live particles>     FUN_0097e580   NOT PORTED
         <per-particle vertices>     FUN_0097be80   NOT PORTED  <- the bulk of the work
+          SampleAppearance          FUN_00979e90   PORTED, 100%
+            SampleColor             FUN_009795d0   PORTED, 100%
+            M2PartTrackEvalAlpha    FUN_009794f0   PORTED, 100%
+            M2PartTrackEvalCell     FUN_00979560   PORTED, 100%
+          SampleSpin                FUN_0097a130   PORTED, 100%
+          C33Matrix::RotationAroundAxis  FUN_004c5820  PORTED
       <the draw call>               FUN_0097a580   NOT PORTED
         <shared index buffer fill>  FUN_0097a260   NOT PORTED
+
+M2ParticleIndexBufferCreate         FUN_00979170   PORTED   (from CM2Cache::Initialize)
+<the twinkle table fill>            inline 0x81c240  PORTED  (from CM2Cache::Initialize)
 ```
+
+**Three functions left**: the walk (`FUN_0097e580`), the writer (`FUN_0097be80`), and the pair
+that frames them (`FUN_0097e730` and `FUN_0097a580` with `FUN_0097a260`).
 
 ### FUN_0097e730 -- the fill
 
@@ -187,7 +199,33 @@ corners by the emitter's world position, and finally sets `+0x1c` to
 
 ### FUN_0097be80 -- the per-particle vertices
 
-The big one, and **five different quad shapes** live in it. The flag word is `+0x134`:
+**READ THIS IN ASSEMBLY, NOT FROM THE DECOMPILATION.** Ghidra's stack-frame numbering inside the
+velocity-aligned branch does not reconcile with the disassembly -- it reports `local_14 = local_c`
+where the instructions at 0x97c0e1 plainly do `[ebp-0xc] = [ebp-0x4]` -- so the locals it names
+cannot be trusted to be the ones it says. The function is ~1,400 lines of disassembly and this is
+the one place in the whole chain where transcribing the decompilation would silently produce
+wrong geometry rather than a compile error.
+
+The two tables it indexes are **static initialised data**, not computed at startup, and were read
+straight out of the image:
+
+| i | corner (0x00b2d5b4, stride 8) | UV (0x00b2d5d4, stride 8) |
+|---|---|---|
+| 0 | (-1,  1) | (0, 0) |
+| 1 | (-1, -1) | (0, 1) |
+| 2 | ( 1,  1) | (1, 0) |
+| 3 | ( 1, -1) | (1, 1) |
+
+which is +y up with v=0 at the top, and matches the index pattern (0, 1, 2, 3, 2, 1) the shared
+index buffer holds: triangles (0,1,2) and (3,2,1), consistently wound.
+
+The velocity-aligned branch's call sequence, read at 0x97c063..0x97c11b, since the decompilation
+garbles it: negate the particle's velocity, put it through the **3x3 only** of the particle-space
+matrix (`FUN_0057c2e0`, which is a direction transform and drops translation), copy its X and Y
+into a 2-vector (`FUN_004c4df0`), and take `1/|xy|` guarded on 2^-22. The quad is then stretched
+along that screen-space direction, with the width scaled by the ratio of the 3D and 2D lengths.
+
+Five different quad shapes live in it. The flag word is `+0x134`:
 
 | gate | shape |
 |---|---|
@@ -224,9 +262,18 @@ shorts in all, i.e. 21,845 quads -- is bound, the stream is set, and a batch
 
 ## Suggested order
 
-1. `FUN_0097a2e0` (the cursors) and `FUN_0097a390` (the basis), which are small and fully read.
-2. `FUN_0097be80`, starting with the plain billboard path -- it draws the overwhelming majority of
-   particles. **Do not fall back to the billboard for the other four shapes**; an unported shape
-   should say so, not silently draw the wrong thing.
-3. `FUN_0097e730` and `FUN_0097a580` to close the chain, then a run.
+Steps 1 and 2 of the original list are done; what is left:
+
+1. `FUN_0097be80`, **from the disassembly**, starting with the plain billboard path -- it draws
+   the overwhelming majority of particles. **Do not fall back to the billboard for the other four
+   shapes**; an unported shape should say so, not silently draw the wrong thing.
+2. `FUN_0097e580` (the walk). Its unsorted path is short; the sorted one (flag `0x20`) needs
+   `FUN_007a0f50` and `FUN_0097e080` and can wait.
+3. `FUN_0097e730` and `FUN_0097a580` with `FUN_0097a260` to close the chain, then a run.
 4. Only then replace `ParticleFx.cpp`, and verify that in its own change.
+
+Two things are ported but **unreachable**, and neither is on this path: `SampleColor`'s flag
+`0x10` colour override (its setter `FUN_0097a990` and the `model30` inheritance in
+`CM2Model::InitializeLoaded` are not ported) and `FUN_00979d60`, the flag `0x1000000` fast path
+that replaces the whole appearance sampler with two lookups into a precompiled ramp at emitter
+`+0x11c`. Both hang off that same unported ramp, so they are one piece of work, not two.
