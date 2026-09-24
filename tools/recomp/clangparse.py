@@ -33,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 8  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 9  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 REF_TAG_RE = re.compile(r'//\s*ref:\s*(?:FUN_|0x)?(00[4-9a-fA-F][0-9a-fA-F]{5}|[4-9a-fA-F][0-9a-fA-F]{5})\b')
 COMPILE_DB = [os.path.join(ROOT, 'cmake-build-release', 'compile_commands.json'),
@@ -187,8 +187,44 @@ def body_does_nothing(src):
     return bool(SENTINEL_BODY_RE.match(COMMENT_RE.sub(' ', src).strip()))
 
 
+# Set by parse_file, read by main() to build the cache key. See content_key.
+LAST_INCLUDES = []
+
+# path -> digest of its bytes, for this run only. A file cannot change while the run is in
+# progress, and without this every shared header is re-read once per TU that includes it.
+_FILE_DIGESTS = {}
+
+
+def file_digest(path):
+    d = _FILE_DIGESTS.get(path)
+
+    if d is None:
+        try:
+            d = hashlib.blake2b(io.open(path, 'rb').read(), digest_size=16).digest()
+        except OSError:
+            # A header that has gone away is itself a change; a fixed marker is enough.
+            d = b'<missing>'
+
+        _FILE_DIGESTS[path] = d
+
+    return d
+
+
 def parse_file(index, path, args, text):
     tu = index.parse(path, args=args, options=ci.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES * 0)
+    # Project-local headers this TU pulled in, for the cache key in main(). Module-level for the
+    # same reason BAD_FILES is: parse_file's return shape is consumed in two places.
+    del LAST_INCLUDES[:]
+    _root = os.path.normcase(os.path.abspath(ROOT)) + os.sep
+    _seen = set()
+    for inc in tu.get_includes():
+        f = getattr(inc.include, 'name', None)
+        if not f:
+            continue
+        a = os.path.normcase(os.path.abspath(f))
+        if a.startswith(_root) and a not in _seen:
+            _seen.add(a)
+            LAST_INCLUDES.append(os.path.relpath(a, os.path.normcase(os.path.abspath(ROOT))).replace(chr(92), '/'))
     errors = [d for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
     if errors:
         # Kept for the summary at the end of main(). A file in here has unreliable data of every
@@ -266,18 +302,32 @@ def parse_file(index, path, args, text):
 
 
 
-def content_key(path):
-    """Cache key for a source file.
+def content_key(path, deps=()):
+    """Cache key for a source file and the project headers it includes.
 
     Was the mtime alone, which is wrong twice over: an mtime can repeat inside the filesystem's
     granularity during a fast write-parse-write cycle, and a checkout can hand back different
     content with a newer stamp that looks fresh but is served from cache anyway. Measured on
+    Measured on
     2026-09-19: four WHOA_UNIMPLEMENTED bindings were cached as non-stubs and stayed that way
     across runs, so they were counted ported while still stubs. Hashing the bytes costs one read
     per file and cannot go stale.
+
+    Hashing the source alone was still not enough, because a definition can live in a HEADER and a
+    `// ref:` tag certainly can. Editing a .hpp left every TU that includes it on the old cache
+    entry, so the change was invisible to the report: on 2026-09-23 a duplicate ref tag was deleted
+    from CSimpleRegion.hpp and the next three runs still counted it. `deps` is the project-local
+    include list the previous parse recorded, and folding it in means any header edit reparses
+    exactly the files that can see it.
     """
     h = hashlib.blake2b(digest_size=16)
-    h.update(io.open(path, 'rb').read())
+    h.update(file_digest(path))
+
+    for d in sorted(deps):
+        h.update(b'|')
+        h.update(d.encode('utf-8'))
+        h.update(b'|')
+        h.update(file_digest(os.path.join(ROOT, d)))
 
     return h.hexdigest()
 
@@ -298,7 +348,7 @@ def main():
         if only and path not in only:
             continue
         c = cache.get(rel)
-        if c and c.get('key') == content_key(path) and c.get('v') == CACHE_VERSION:
+        if c and c.get('key') == content_key(path, c.get('deps', ())) and c.get('v') == CACHE_VERSION:
             fns = c['fns']
         else:
             # newline='' is load-bearing, not tidiness. libclang hands back BYTE offsets into
@@ -313,7 +363,8 @@ def main():
             fns = {k: {'callseq': v['callseq'], 'strings': sorted(v['strings']), 'consts': sorted(v['consts']),
                        'branches': v['branches'], 'stub': v['stub'], 'lines': v['lines'], 'refs': v['refs'],
                        'header': v['header'], 'line': v['line']} for k, v in fns.items()}
-            cache[rel] = {'key': content_key(path), 'v': CACHE_VERSION, 'fns': fns}
+            deps = list(LAST_INCLUDES)
+            cache[rel] = {'key': content_key(path, deps), 'v': CACHE_VERSION, 'fns': fns, 'deps': deps}
             n += 1
         for k, v in fns.items():
             if v.get('header') and k in result:

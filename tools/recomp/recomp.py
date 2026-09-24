@@ -899,6 +899,27 @@ def match(refs, frozen, overrides, tables):
         for addr in sorted(w['refs']):
             bind(addr, name, 'annotated', 'tag in ' + (w['files'][0] if w['files'] else '?'))
 
+    # The mirror of the check above: one reference ADDRESS tagged on several frozen names. That is
+    # what a comment block left behind by a port looks like -- the stale block keeps its own
+    # `// ref:` and the new one adds a second for the same address. Side by side both bind to the
+    # same function and nothing looks wrong, so this stays invisible until something is inserted
+    # between them and the older tag lands on the newcomer. CM2Lighting::FogColorByte was tagged
+    # FUN_008353d0 exactly that way, which freed the callgraph matcher to guess 008745d0 for the
+    # real SetupGxLights. Overloads are not a false positive here: recomp keys frozen by NAME, so
+    # every overload of one name is a single key and cannot appear as two.
+    addr_owners = {}
+    for name, w in frozen.items():
+        for addr in w['refs']:
+            addr_owners.setdefault(addr, set()).add(name)
+
+    for addr, names in sorted(addr_owners.items()):
+        if len(names) > 1:
+            print('  ! %s is tagged on %d different frozen functions: %s'
+                  % (addr, len(names), ', '.join(sorted(names))))
+            print('    only one can be right -- look for a stale comment block that kept its tag')
+            print('    (a tag on a DECLARATION in a .hpp can also do this: clangparse binds it to a'
+                  ' neighbouring declaration, so tag the definition in the .cpp instead)')
+
     # binding tables: frozen's FrameScript_Method/Function arrays paired with the reference's by
     # shared names, then each entry bound by name inside its pair (so CSimpleFrame's AddLine and
     # CSimpleHTML's AddLine each find their own)
