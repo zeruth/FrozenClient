@@ -48,6 +48,9 @@ void OsSleep(uint32_t duration) {
 #endif
 
 #if defined(WHOA_SYSTEM_MAC) || defined(WHOA_SYSTEM_LINUX)
-    usleep(duration);
+    // The duration is in milliseconds, as for Sleep; usleep takes microseconds. Passing it
+    // through unscaled made OsSleep(1) a 1us nap, and the async read thread's idle loop spun on
+    // the queue lock instead of resting.
+    usleep(duration * 1000);
 #endif
 }
