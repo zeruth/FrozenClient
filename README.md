@@ -48,7 +48,7 @@ Three measures, deliberately never rolled into one, because each is a stronger c
 
 | | what it claims | where it stands |
 |---|---|---|
-| **Linked** | an original function has a known counterpart here | **3,191 / 27,160** &nbsp;·&nbsp; ~11% |
+| **Linked** | an original function has a known counterpart here | **3,191 / 27,156** &nbsp;·&nbsp; ~11% |
 | **Faithful** | linked, not a stub, and reproduces ≥80% of the original's call sequence in order | **1,256** &nbsp;·&nbsp; ~4% of the client, ~38% of what is linked |
 | **Verified** | a run was watched behaving like the original | **14** &nbsp;·&nbsp; barely started |
 
@@ -58,7 +58,7 @@ By surface, roughly:
 |---|---|
 | Lua bindings the original registers (widget methods and global blocks) | 2,924 / 2,964 registered &nbsp;·&nbsp; ~99% |
 | &nbsp;&nbsp;of those, actually implemented rather than a stub | 1,433 &nbsp;·&nbsp; **~48%** |
-| Functions reachable from the world render entry point | 574 / 5,529 &nbsp;·&nbsp; ~9% |
+| Functions reachable from the world render entry point | 574 / 5,527 &nbsp;·&nbsp; ~9% |
 | The render surface: the map, model, entity, texture and device modules that draw the world | 280 / 4,589 &nbsp;·&nbsp; **~6%** |
 | Empty functions the render path still has call sites for | **42** &nbsp;·&nbsp; an upper bound, not a defect count |
 | Original code, by bytes rather than function count | ~12% linked, ~2.4% faithful |

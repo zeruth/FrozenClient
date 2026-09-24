@@ -34941,7 +34941,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.159,
   "faithful": false,
-  "fidelity": 0.605,
+  "fidelity": 0.619,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -37763,7 +37763,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.095,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -37779,7 +37779,7 @@
   "branchRatio": 0.251,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.404,
+  "fidelity": 0.525,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -38563,7 +38563,7 @@
   "branchRatio": 0.535,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.348,
+  "fidelity": 0.353,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -45679,7 +45679,7 @@
   "branchRatio": 0.111,
   "constOverlap": 0.059,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.857,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -49650,7 +49650,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -49666,7 +49666,7 @@
   "branchRatio": 0.591,
   "constOverlap": 0.059,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -49714,7 +49714,7 @@
   "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
