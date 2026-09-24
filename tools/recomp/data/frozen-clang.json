@@ -76735,6 +76735,8 @@
 "M2Array<float>::operator[]",
 "CM2ParticleEmitter::SetZSource",
 "CM2ParticleEmitter::SetHeadTail",
+"CM2ParticleEmitter::SetTwinkleScale",
+"C3Vector::operator=",
 "CM2ParticleEmitter::SetTextureGrid",
 "CM2ParticleEmitter::SetTextureAnimated",
 "M2Array<M2Particle>::Count",
@@ -76806,7 +76808,7 @@
 ],
 "branches": 84,
 "stub": false,
-"lines": 580,
+"lines": 607,
 "refs": [],
 "line": 2130
 },
@@ -76823,7 +76825,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 2745
+"line": 2772
 },
 "CM2Model::IsDrawable": {
 "files": [
@@ -76843,7 +76845,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 2752
+"line": 2779
 },
 "CM2Model::IsLoaded": {
 "files": [
@@ -76864,7 +76866,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 2785
+"line": 2812
 },
 "CM2Model::LinkToCallbackListTail": {
 "files": [
@@ -76877,7 +76879,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 2826
+"line": 2853
 },
 "CM2Model::OptimizeVisibleGeometry": {
 "files": [
@@ -76890,7 +76892,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 2833
+"line": 2860
 },
 "CM2Model::ProcessCallbacks": {
 "files": [
@@ -76919,7 +76921,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 2837
+"line": 2864
 },
 "CM2Model::SequenceFinished": {
 "files": [
@@ -76963,7 +76965,7 @@
 "stub": false,
 "lines": 83,
 "refs": [],
-"line": 2912
+"line": 2939
 },
 "CM2Model::ProcessCallbacksRecursive": {
 "files": [
@@ -76980,7 +76982,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 2996
+"line": 3023
 },
 "CM2Model::Release": {
 "files": [
@@ -76998,7 +77000,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 3011
+"line": 3038
 },
 "CM2Model::ReplaceTexture": {
 "files": [
@@ -77025,7 +77027,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 3027
+"line": 3054
 },
 "CM2Model::SetAnimating": {
 "files": [
@@ -77042,7 +77044,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 3077
+"line": 3104
 },
 "CM2Model::SetBoneSequence": {
 "files": [
@@ -77097,7 +77099,7 @@
 "stub": false,
 "lines": 153,
 "refs": [],
-"line": 3109
+"line": 3136
 },
 "CM2Model::ApplySequencePlayBack": {
 "files": [
@@ -77123,7 +77125,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 3266
+"line": 3293
 },
 "CM2Model::SetBoneSequenceDeferred": {
 "files": [
@@ -77155,7 +77157,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 3296
+"line": 3323
 },
 "CM2Model::SetGeometryVisible": {
 "files": [
@@ -77181,7 +77183,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 3349
+"line": 3376
 },
 "CM2Model::SetIndices": {
 "files": [
@@ -77194,7 +77196,7 @@
 "stub": true,
 "lines": 6,
 "refs": [],
-"line": 3408
+"line": 3435
 },
 "CM2Model::SetLightingCallback": {
 "files": [
@@ -77207,7 +77209,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 3415
+"line": 3442
 },
 "CM2Model::SetLoadedCallback": {
 "files": [
@@ -77222,7 +77224,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 3420
+"line": 3447
 },
 "CM2Model::SetPrimaryBoneSequence": {
 "files": [
@@ -77250,7 +77252,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 3427
+"line": 3454
 },
 "CM2Model::SetSecondaryBoneSequence": {
 "files": [
@@ -77270,7 +77272,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 3485
+"line": 3512
 },
 "CM2Model::SetupBoneSequence": {
 "files": [
@@ -77300,7 +77302,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 3496
+"line": 3523
 },
 "CM2Model::SetupLighting": {
 "files": [
@@ -77327,7 +77329,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 3551
+"line": 3578
 },
 "CM2Model::SetVisible": {
 "files": [
@@ -77343,7 +77345,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 3575
+"line": 3602
 },
 "CM2Model::SetWorldTransform": {
 "files": [
@@ -77362,7 +77364,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 3583
+"line": 3610
 },
 "CM2Model::Sub826350": {
 "files": [
@@ -77392,7 +77394,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 3594
+"line": 3621
 },
 "CM2Model::Sub8269C0": {
 "files": [
@@ -77407,7 +77409,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 3690
+"line": 3717
 },
 "CM2Model::Sub826E60": {
 "files": [
@@ -77428,7 +77430,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 3694
+"line": 3721
 },
 "CM2Model::UnlinkFromAnimateList": {
 "files": [
@@ -77441,7 +77443,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3735
+"line": 3762
 },
 "CM2Model::UnlinkFromAttachList": {
 "files": [
@@ -77454,7 +77456,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3745
+"line": 3772
 },
 "CM2Model::UnlinkFromCallbackList": {
 "files": [
@@ -77467,7 +77469,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 3755
+"line": 3782
 },
 "CM2Model::UnlinkFromDrawList": {
 "files": [
@@ -77480,7 +77482,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3770
+"line": 3797
 },
 "CM2Model::UnoptimizeVisibleGeometry": {
 "files": [
@@ -77493,7 +77495,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 3780
+"line": 3807
 },
 "CM2Model::UnsetBoneSequence": {
 "files": [
@@ -77531,7 +77533,7 @@
 "stub": false,
 "lines": 120,
 "refs": [],
-"line": 3789
+"line": 3816
 },
 "CM2Model::UpdateLoaded": {
 "files": [
@@ -77550,7 +77552,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 3910
+"line": 3937
 },
 "CM2Model::WaitForLoad": {
 "files": [
@@ -77569,7 +77571,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 3927
+"line": 3954
 },
 "M2ParticleFlushDenormals": {
 "files": [
@@ -78321,6 +78323,19 @@
 "refs": [],
 "line": 863
 },
+"CM2ParticleEmitter::SetTwinkleScale": {
+"files": [
+"src/model/cm2particleemitter.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 873
+},
 "CM2ParticleEmitter::SetMaterial": {
 "files": [
 "src/model/cm2particleemitter.cpp"
@@ -78335,7 +78350,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 878
+"line": 886
 },
 "CM2ParticleEmitter::SetTextureGrid": {
 "files": [
@@ -78356,7 +78371,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 898
+"line": 906
 },
 "CM2ParticleEmitter::SetTextureAnimated": {
 "files": [
@@ -78373,7 +78388,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 929
+"line": 937
 },
 "CM2ParticleEmitter::Update": {
 "files": [
@@ -78410,7 +78425,7 @@
 "stub": false,
 "lines": 98,
 "refs": [],
-"line": 940
+"line": 948
 },
 "CM2ParticleEmitter::Place": {
 "files": [
@@ -78432,7 +78447,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1052
+"line": 1060
 },
 "CM2ParticleEmitter::RetireParticle": {
 "files": [
@@ -78454,7 +78469,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1068
+"line": 1076
 },
 "CM2ParticleEmitter::IntegrateAndSpawnChildren": {
 "files": [
@@ -78480,7 +78495,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1107
+"line": 1115
 },
 "CM2ParticleEmitter::ParticleAt": {
 "files": [
@@ -78498,7 +78513,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1167
+"line": 1175
 },
 "CM2ParticleEmitter::IntegrateModelParticle": {
 "files": [
@@ -78523,7 +78538,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1183
+"line": 1191
 },
 "CM2ParticleEmitter::Draw": {
 "files": [
@@ -78550,7 +78565,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1215
+"line": 1223
 },
 "CM2ParticleEmitter::HasLiveParticles": {
 "files": [
@@ -78568,7 +78583,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1252
+"line": 1260
 },
 "CM2ParticleEmitter::CountSpawnedModels": {
 "files": [
@@ -78587,7 +78602,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1267
+"line": 1275
 },
 "CM2ParticleEmitter::FindSpawnedModel": {
 "files": [
@@ -78609,7 +78624,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1286
+"line": 1294
 },
 "CM2ParticleEmitter::Step": {
 "files": [
@@ -78646,7 +78661,7 @@
 "stub": false,
 "lines": 82,
 "refs": [],
-"line": 1313
+"line": 1321
 },
 "M2ParticleCapacityFor": {
 "files": [
@@ -78661,7 +78676,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1402
+"line": 1410
 },
 "CM2ParticleEmitter::PrepareStep": {
 "files": [
@@ -78682,7 +78697,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1419
+"line": 1427
 },
 "CM2ParticleEmitter::SetParticleCount": {
 "files": [
@@ -78712,7 +78727,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1446
+"line": 1454
 },
 "CM2ParticleEmitter::Reserve": {
 "files": [
@@ -78733,7 +78748,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1487
+"line": 1495
 },
 "CM2ParticleEmitter::Substep": {
 "files": [
@@ -78762,7 +78777,7 @@
 "stub": false,
 "lines": 59,
 "refs": [],
-"line": 1520
+"line": 1528
 },
 "CM2ParticleEmitter::SetZSource": {
 "files": [
@@ -78780,7 +78795,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1581
+"line": 1589
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

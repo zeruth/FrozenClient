@@ -164,6 +164,26 @@ class CM2ParticleEmitter {
         // than storing it (FUN_00978da0). A z source that small is meant to be off, and leaving a
         // denormal there would divide badly downstream.
         float m_zSource = 0.0f;
+        // +0xc0 through +0xcc: the spin parameters, copied straight out of the record.
+        float m_initialSpin = 0.0f;
+        float m_initialSpinVariation = 0.0f;
+        float m_spin = 0.0f;
+        float m_spinVariation = 0.0f;
+        // +0x13c, +0x140, and +0x144/+0x148: the twinkle parameters. The scale arrives as a
+        // CRange and is cached as a min and a SPAN, the same idiom the sphere emitter uses for
+        // its radius range.
+        float m_twinkleFps = 0.0f;
+        float m_twinkleOnOff = 0.0f;
+        float m_twinkleMin = 0.0f;
+        float m_twinkleSpan = 0.0f;
+        // +0x150 through +0x164: the tumble box, as three INTERLEAVED (min, span) pairs -- which
+        // is why this is not two C3Vectors. Same caching idiom again.
+        struct Range {
+            float min;
+            float span;
+        };
+
+        Range m_tumble[3] = {};
         // +0x168: drag. Zero disables it; otherwise each step takes `min(1, drag * dt)` of the
         // velocity away, which is an exponential decay sampled per step rather than per second.
         float m_drag = 0.0f;
@@ -328,6 +348,9 @@ class CM2ParticleEmitter {
         // Choose which of the two quads each particle draws, and size a particle's geometry
         // from that. ref: FUN_00978d00
         void SetHeadTail(int32_t head, int32_t tail, float tailLength, int32_t flag20000);
+
+        // Cache a CRange as a min and a span. ref: FUN_0097ac00
+        void SetTwinkleScale(const CRange& range);
 
         // Take the emitter's material and a counted reference to its texture. The material is
         // a two-dword pair, blend then flags, which the reference builds as a local at its call

@@ -38569,7 +38569,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 4080,
+  "frozenSize": 4386,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -49368,7 +49368,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 526,
+  "frozenSize": 573,
   "how": "override",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 123,
@@ -49484,6 +49484,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 425,
+  "status": "ported"
+ },
+ "0097ac00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetTwinkleScale",
+  "frozenSize": 26,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 29,
   "status": "ported"
  },
  "0097ac20": {
@@ -49672,7 +49688,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 526,
+  "frozenSize": 573,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 662,

@@ -2527,6 +2527,33 @@ int32_t CM2Model::InitializeLoaded() {
                     emitter->m_flags |= 0x800000;
                 }
 
+                // The scalar parameters, straight out of the record. m_drag, m_wind, m_windTime
+                // and m_velocitySampleScale are read by IntegrateParticle and Update and had
+                // never been written by anything -- so drag, wind and the inherited-velocity
+                // scale have all been silently zero however carefully those were ported.
+                emitter->m_twinkleFps = file.twinkleFPS;
+                emitter->m_twinkleOnOff = file.twinkleOnOff;
+                emitter->SetTwinkleScale(file.twinkleScale);
+
+                emitter->m_velocitySampleScale = file.ivelScale;
+                emitter->m_drag = file.drag;
+
+                emitter->m_initialSpin = file.initialSpin;
+                emitter->m_initialSpinVariation = file.initialSpinVariation;
+                emitter->m_spin = file.spin;
+                emitter->m_spinVariation = file.spinVariation;
+
+                // The tumble box becomes three (min, span) pairs.
+                emitter->m_tumble[0].min = file.tumble.b.x;
+                emitter->m_tumble[0].span = file.tumble.t.x - file.tumble.b.x;
+                emitter->m_tumble[1].min = file.tumble.b.y;
+                emitter->m_tumble[1].span = file.tumble.t.y - file.tumble.b.y;
+                emitter->m_tumble[2].min = file.tumble.b.z;
+                emitter->m_tumble[2].span = file.tumble.t.z - file.tumble.b.z;
+
+                emitter->m_wind = file.windVector;
+                emitter->m_windTime = file.windTime;
+
                 if (file.flags & 0x2) {
                     emitter->m_flags |= 0x20;
                 }

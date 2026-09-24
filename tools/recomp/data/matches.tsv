@@ -3120,6 +3120,7 @@ addr	how	frozen	evidence
 00979740	annotated	CM2ParticleEmitter::GroundSnapParticle	tag in src/model/CM2ParticleEmitter.cpp
 00979870	override	CM2ParticleEmitter::CreateParticle	
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
+0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
 0097b9e0	annotated	CM2ParticleEmitter::HasLiveParticles	tag in src/model/CM2ParticleEmitter.cpp

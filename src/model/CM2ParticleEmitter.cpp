@@ -867,6 +867,14 @@ CM2ParticleEmitter::~CM2ParticleEmitter() {
     }
 }
 
+// Cache the twinkle scale as a min and a span.
+//
+// ref: FUN_0097ac00
+void CM2ParticleEmitter::SetTwinkleScale(const CRange& range) {
+    this->m_twinkleMin = range.l;
+    this->m_twinkleSpan = range.h - range.l;
+}
+
 // Take the emitter's material and a counted reference to its texture.
 //
 // The release comes FIRST and unconditionally, before the new reference is taken. That order is
