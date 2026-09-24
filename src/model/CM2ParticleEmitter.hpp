@@ -63,6 +63,13 @@ class CM2ParticleEmitter {
         // Member variables. Offsets are the reference's.
         // +0x24: this emitter's own RNG state. Every emitter draws from its own rather than a
         // shared one, so two identical emitters side by side do not produce identical particles.
+        //
+        // GAP: the reference SEEDS it randomly. The base constructor (FUN_0097e150) ends by
+        // building a 32-bit value out of two 16-bit rand() calls and seeding this with it, which
+        // is what actually makes those two emitters differ -- a separate stream is not enough if
+        // both start from the same number. Frozen starts every emitter at 0 because nothing
+        // constructs one yet; whatever ports the constructor must carry the random seed over, or
+        // every emitter in a scene will emit in lockstep.
         CRndSeed m_seed = CRndSeed(0);
         // +0x34: the 0x20-byte pool, used when m_particleKind is 0
         Particle* m_pool = nullptr;
@@ -88,7 +95,13 @@ class CM2ParticleEmitter {
         float m_rateVariation = 0.0f;
         // +0x6c and +0x70: child emitters. FUN_0097ba30 counts a subtree by recursing through
         // these, so an emitter is a node rather than a leaf. The step walks the array at +0x70 as
-        // `CM2ParticleEmitter*[]` -- 0x97df56 loads `(%ebx)` straight into ECX for a thiscall.
+        // `CM2ParticleEmitter*[]` -- 0x97df56 loads `(%ebx)` straight into ECX for a thiscall, and
+        // the subtree counter at 0x97ba50 does the same, so two functions agree on the layout.
+        //
+        // The base constructor appears to contradict that with `movl $0x4, 0x6c(%esi)` near its
+        // start. It does not: its last act before returning is `movl %edi, 0x6c(%esi)` with EDI
+        // still zero from the top, so an emitter is born with no children and a null array. These
+        // defaults already match; the 4 is not worth chasing a second time.
         uint32_t m_childCount = 0;
         CM2ParticleEmitter** m_children = nullptr;
         // +0x98: which pool is in use. Zero means the plain 0x20-byte one.
@@ -152,10 +165,12 @@ class CM2ParticleEmitter {
         uint32_t m_flags = 0;
         // +0x184: the emitter's placement matrix -- and the emitter's POSITION is its translation
         // row. 0x184 + 0x30 is 0x1b4, which an earlier pass recorded as a separate m_position
-        // field; it never was one. Three things agree: the step passes `this + 0x184` to Emit,
+        // field; it never was one. FOUR things agree: the step passes `this + 0x184` to Emit,
         // whose parameter is a matrix; m_origin below lands at exactly 0x184 + 0x40, immediately
-        // past the matrix's sixteen floats; and the integrate wrapper saves +0x1b4/+0x1b8/+0x1bc
-        // as a unit, overwrites them with a particle's position and puts them back.
+        // past the matrix's sixteen floats; the integrate wrapper saves +0x1b4/+0x1b8/+0x1bc
+        // as a unit, overwrites them with a particle's position and puts them back; and the base
+        // constructor zeroes 0x150..0x1bc and then writes 1.0 to exactly +0x184, +0x198, +0x1ac
+        // and +0x1c0 -- the diagonal of a C44Matrix based at 0x184, an identity written as one.
         //
         // So position and placement are one thing here, and writing the matrix moves the emitter
         // by construction.
