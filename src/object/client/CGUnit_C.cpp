@@ -221,6 +221,10 @@ int32_t CGUnit_C::GetDisplayID() const {
     // The comparison the reference makes is between the OBJECT's display id and its native one
     // (FUN_00717a20 reads them at unit data +0xf4 and +0xf8), so the base accessor is what belongs
     // here.
+    // The branch below is still DEAD, separately from the recursion that used to be in it:
+    // m_localDisplayID is never written, so GetLocalDisplayID() is always 0 and the && never gets
+    // past its first term. Porting whatever sets a local display id is what makes this live.
+    // tools/deaddata.py reports it under DEAD GUARDS, through the accessor.
     if (this->GetLocalDisplayID() && this->CGUnit::GetDisplayID() == this->GetNativeDisplayID()) {
         return this->GetLocalDisplayID();
     }
