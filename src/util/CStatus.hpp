@@ -3,6 +3,7 @@
 
 #include "util/Log.hpp"
 #include <storm/List.hpp>
+#include <cstdarg>
 
 enum STATUS_TYPE {
     STATUS_INFO = 0x0,

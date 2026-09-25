@@ -7,6 +7,7 @@
 #include "gx/Texture.hpp"
 #include "util/CStatus.hpp"
 #include <tempest/Matrix.hpp>
+#include <cstdio>
 #include <cmath>
 #include <cstdlib>
 
