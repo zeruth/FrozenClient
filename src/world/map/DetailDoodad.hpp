@@ -56,6 +56,45 @@ static const int32_t TEXMAP_SHIFT[8] = { 0, 2, 4, 6, 8, 10, 12, 14 };
 static const uint16_t PREDTEX_MASK[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 static const int32_t PREDTEX_SHIFT[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
+// The rest of the builder's numbers, also read rather than inferred.
+static const float CELL_HALF = 2.0833332538604736f;   // DAT_00a40474: jitter half-extent in a cell
+static const float TAU_HALF = 3.1415927410125732f;    // DAT_00a40478: rotation is (r + 1) * this
+static const float SCALE_JITTER = 0.33000001f;        // DAT_00a14acc: scale is r * this + 1
+static const float SHADOW_SCALE = 1.9199999570846558f;// DAT_00a4047c: yards to MCSH cells, 64/33.33
+static const float MIN_NORMAL_Z = 0.4000000059604645f;// DAT_009f98d8: steeper than this, no grass
+static const float COLOR_MAX = 255.0f;                // DAT_009e30c0
+static const float ROUND_BIAS = 0.5f;                 // DAT_00af0abc
+
+// How the scatter works, decoded from FUN_007d3390 end to end. Everything below is established
+// -- no table or constant in it is a guess -- so writing it is transcription.
+//
+// The chunk is seeded from its own indices, CRndSeed(indexX << 16 | indexY), so it scatters the
+// same way every time it loads. Then, `groundEffectDensity` times over:
+//
+//  1. Pick a cell of the eight-by-eight grid at random, x and y each from three random bits.
+//     A bitmask a row keeps a cell from being prepared twice, though the pick list still holds
+//     the repeat and the scatter below runs for it again.
+//  2. Preparing a cell means building its four triangles: each takes two of CELL_CORNER by
+//     TRI_CORNER and the matching two heights by TRI_VERTEX, and PlaneFromPoints gives the
+//     plane. Where the chunk has MCCV, the cell also keeps the corner colour and the two colour
+//     deltas along the triangle's edges, all scaled by 2.
+//  3. The cell's ground effect comes from the low quality texture map, two bits a column by
+//     TEXMAP_MASK/SHIFT, unless the chunk's predTex bit for that column (PREDTEX_MASK/SHIFT)
+//     says otherwise; a hole in the chunk (s_holeMask) skips the cell outright.
+//  4. That effect's four doodad kinds are dealt into a sixteen-slot bag by their weights,
+//     stepping thirteen slots at a time so the kinds interleave rather than clump, and any
+//     slots left over are filled round-robin from the four.
+//  5. The effect's own count -- its DBC column after the weights, defaulting to eight -- says
+//     how many to place. For each: two random numbers give a point in the cell, the kind comes
+//     from the bag at (n + cell) & 15, and the triangle is chosen by which side of the cell's
+//     two diagonals the point falls. A triangle whose normal leans past MIN_NORMAL_Z gets
+//     nothing. The height comes from that triangle's plane, the colour from the interpolated
+//     MCCV (or white, and darkened where MCSH shadows it), the rotation from (r + 1) * TAU_HALF
+//     and the scale from r * SCALE_JITTER + 1.
+//
+// What remains unported is FUN_007b31e0, which takes all of that and fills one instance, and
+// the 0xa4-byte instance layout it fills.
+
 // One kind of detail doodad: the row that names it, and the model once something has asked for
 // it. The model is not opened until a chunk that wants this kind comes into range.
 class CDoodadModel {
