@@ -186,9 +186,15 @@ class CWorldScene {
         // File one liquid layer under the distance row its centre falls in, or drop it when
         // that is past the last row. ref: FUN_00792df0
         static void AddLiquid(CChunkLiquid* liquid, const C3Vector& center);
+        // File one entity under the distance row its nearest corner falls in, or set it aside
+        // as hidden for the frame. ref: FUN_00792e60
+        static void AddEntity(CMapEntity* entity);
         // Move a row's liquid layers to the frame list, testing each on the way.
         // ref: FUN_007935a0
         static void TraverseRowLiquids(Row* row);
+        // Every entity the frame found visible, in the order the rows were walked. The row
+        // visit hands them over through the same link the row used. DAT_00cdb098
+        static STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) s_frameEntityList;
         // ref: FUN_00791120
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
         // ref: FUN_00791cb0

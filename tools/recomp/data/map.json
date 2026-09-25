@@ -44096,7 +44096,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOccluded",
-  "frozenSize": 0,
+  "frozenSize": 702,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 369,
@@ -44256,7 +44256,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::VisitStaticEntity",
-  "frozenSize": 0,
+  "frozenSize": 450,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 501,
@@ -44326,6 +44326,22 @@
   "refSize": 111,
   "status": "ported"
  },
+ "00792e60": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddEntity",
+  "frozenSize": 574,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 241,
+  "status": "ported"
+ },
  "00793060": {
   "branchRatio": 0.167,
   "constOverlap": 0.033,
@@ -44336,7 +44352,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowEntities",
-  "frozenSize": 0,
+  "frozenSize": 723,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 521,
@@ -44601,14 +44617,14 @@
  "0079a790": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 886,
+  "frozenSize": 1488,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -45638,6 +45654,22 @@
   "refSize": 137,
   "status": "ported"
  },
+ "007b5590": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::BucketEntities",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "007b5950": {
   "branchRatio": 0.372,
   "constOverlap": 0.065,
@@ -45690,13 +45722,13 @@
   "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.077,
+  "fidelity": 0.092,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 51,
+  "frozenSize": 882,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,
@@ -67279,7 +67311,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWFrustum::SphereInside",
-  "frozenSize": 0,
+  "frozenSize": 134,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 79,

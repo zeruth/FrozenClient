@@ -36,6 +36,7 @@ static const float ANIMATE_RANGE_SQ = 100.0f;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWorldScene::RENDER_LIST_COUNT];
 CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
 STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) CWorldScene::s_frameLiquidList;
+STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) CWorldScene::s_frameEntityList;
 C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
@@ -951,6 +952,51 @@ void CWorldScene::AddLiquid(CChunkLiquid* liquid, const C3Vector& center) {
     }
 }
 
+// ref: FUN_00792e60
+// Where one entity goes for the frame. An entity whose model has nothing to draw, or that has
+// asked to be left out, is set aside as hidden; everything else is filed under the distance row
+// its nearest corner falls in. Anything past the last row is simply dropped, which is how the
+// far clip removes entities without a test of its own.
+//
+// The sort distance is taken along the real view plane, not the flattened one the rows use, so
+// two entities in the same row still sort against each other correctly.
+void CWorldScene::AddEntity(CMapEntity* entity) {
+    uint32_t flags = entity->m_flags7c;
+
+    // TODO the reference lets an entity flagged 0x4000 back in when its model has something at
+    // +0x58, a field frozen's CM2Model has not identified. Frozen treats 0x4000 as final, so
+    // such an entity stays hidden where the reference would show it.
+    if (!(flags & 0x4000)) {
+        C3Vector nearPoint = { 0.0f, 0.0f, 0.0f };
+
+        CWorldScene::BoxNearPoint(entity->m_bounds, &nearPoint);
+
+        entity->m_visible = 2;
+        entity->m_sortDistance = nearPoint.x * CWorldScene::s_viewPlane.n.x
+                               + nearPoint.y * CWorldScene::s_viewPlane.n.y
+                               + nearPoint.z * CWorldScene::s_viewPlane.n.z
+                               + CWorldScene::s_viewPlane.d;
+
+        if (!(flags & 0x1)) {
+            float distance = nearPoint.x * CWorldScene::s_viewPlane2d.n.x
+                           + nearPoint.y * CWorldScene::s_viewPlane2d.n.y
+                           + nearPoint.z * CWorldScene::s_viewPlane2d.n.z
+                           + CWorldScene::s_viewPlane2d.d;
+
+            int32_t row = 0;
+
+            if (distance <= 0.0f
+                || (row = static_cast<int32_t>(roundf(distance * CHUNKS_PER_UNIT - 0.5f))) < static_cast<int32_t>(ROW_COUNT)) {
+                CWorldScene::s_rows[row].entities.LinkToHead(entity);
+            }
+
+            return;
+        }
+    }
+
+    CWorldScene::s_hiddenEntities.LinkToTail(entity);
+}
+
 // ref: FUN_007935a0
 // Every liquid layer this row collected moves to the frame list, which is what the draw walks
 // later; the row's link and the frame list's are the same one, so the move is a relink and the
@@ -1049,12 +1095,12 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
         CWorldScene::TraverseRowChunks(row, i);
         CWorldScene::TraverseRowMapObjDefs(row, window, portal);
         CWorldScene::TraverseRowLiquids(row);
-        // TODO FUN_00793060(row)
+        CWorldScene::TraverseRowEntities(row);
 
         int32_t band = CWorldScene::DistanceBand(static_cast<float>(i) * CHUNK_SIZE);
-        // TODO FUN_007987a0(row, band)
+
+        CWorldScene::TraverseRowStaticEntities(row, band);
         CWorldScene::TraverseRowOccluders(row);
-        (void)band;
     }
 
     // TODO FUN_00791980(window)
@@ -1668,6 +1714,14 @@ void CWorldScene::TraverseRowEntities(Row* row) {
             // TODO the reference also hangs FUN_00780cd0 off the model here, the hook that
             // lets an entity answer for its own lighting.
         }
+
+        // The entity is visible, so it joins the frame's list -- through the same link the row
+        // used, which is why next was read first. That list is what the shadow pass draws from,
+        // and it is already reduced to what the frame can see.
+        //
+        // TODO the reference asks the entity's own callback first and keeps it out when the
+        // callback refuses; frozen has no entity callbacks yet, so every visible entity joins.
+        CWorldScene::s_frameEntityList.LinkToTail(entity);
 
         entity = next;
     }

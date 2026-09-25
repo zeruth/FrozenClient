@@ -2776,6 +2776,7 @@ addr	how	frozen	evidence
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
 00792df0	annotated	CWorldScene::AddLiquid	tag in src/world/CWorldScene.cpp
+00792e60	annotated	CWorldScene::AddEntity	tag in src/world/CWorldScene.cpp
 00793060	annotated	CWorldScene::TraverseRowEntities	tag in src/world/CWorldScene.cpp
 007935a0	annotated	CWorldScene::TraverseRowLiquids	tag in src/world/CWorldScene.cpp
 00793760	annotated	CWorldScene::TraverseRowOccluders	tag in src/world/CWorldScene.cpp
@@ -2858,6 +2859,7 @@ addr	how	frozen	evidence
 007b5420	annotated	CMap::UpdateFrameLiquids	tag in src/world/map/CMap.cpp
 007b54a0	annotated	CMap::UpdateDetailDoodads	tag in src/world/map/CMap.cpp
 007b5500	annotated	CMap::AgeRenderChunks	tag in src/world/map/CMap.cpp
+007b5590	annotated	CMap::BucketEntities	tag in src/world/map/CMap.cpp
 007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
 007b5d00	annotated	CMap::SetupMapObjDef	tag in src/world/map/CMapLoad.cpp
 007b6110	annotated	CMap::UpdateMapObjDefs	tag in src/world/map/CMapLoad.cpp

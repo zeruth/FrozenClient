@@ -237,6 +237,9 @@ class CMap {
         static void FreeDoodadDef(CMapDoodadDef* def);
         static void UnlinkDoodadDef(CMapDoodadDef* def);
         static CMapEntity* AllocEntity(int32_t linkToHead);
+        // Put every entity the map holds into the distance row it belongs in this frame.
+        // ref: FUN_007b5590
+        static void BucketEntities(int32_t update);
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);

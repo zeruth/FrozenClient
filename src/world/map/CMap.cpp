@@ -764,6 +764,26 @@ CMapObjDefGroup* CMap::AllocMapObjDefGroup() {
     return group;
 }
 
+// ref: FUN_007b5590
+// Every entity goes back into a distance row once a frame. Bit 2 of the state word takes one
+// out of the scene entirely -- it is not hidden, it simply is not there this frame -- so those
+// are passed over rather than filed.
+void CMap::BucketEntities(int32_t update) {
+    if (!update) {
+        return;
+    }
+
+    for (auto obj = CMap::s_entityList.Head(); obj; obj = CMap::s_entityList.Next(obj)) {
+        auto entity = static_cast<CMapEntity*>(obj);
+
+        if (entity->m_flags7c & 0x4) {
+            continue;
+        }
+
+        CWorldScene::AddEntity(entity);
+    }
+}
+
 // ref: FUN_007c0980
 CChunkLiquid* CMap::AllocChunkLiquid() {
     uint32_t memHandle;
@@ -968,7 +988,7 @@ void CMap::Update(int32_t update) {
     CMap::UpdateAreas(update);
     CMap::UpdateMapObjDefs(update);
     // TODO FUN_007b5630(): entity update
-    // TODO FUN_007b5590(update): entity placement
+    CMap::BucketEntities(update);
 
     if (CMap::s_loading) {
         if (CMap::s_streamingMode == 0) {
