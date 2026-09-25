@@ -2778,7 +2778,7 @@ addr	how	frozen	evidence
 00793760	annotated	CWorldScene::TraverseRowOccluders	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
-007946d0	annotated	CWorldScene::AddOcclusionVolume	tag in src/world/CWorldScene.cpp
+007946d0	annotated	CWorldScene::SubmitOccluderBox	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	

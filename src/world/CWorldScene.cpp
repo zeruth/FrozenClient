@@ -1483,9 +1483,8 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
             // Not drawing, but its box still feeds the horizon buffer.
-            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f): the model's bounds, brought out to
-            // world space, go to the object the occlusion volumes live in -- the ones
-            // SphereOccludedByVolumes tests against. That is item 7's other half.
+            // TODO CWorldScene::SubmitOccluderBox(box, 0.0f) with the model's bounds brought
+            // out to world space. What that sink is for is still open; see the note there.
             //
             // The reference reads the model's bounds here without checking it has one; frozen
             // checks.
@@ -1541,7 +1540,7 @@ void CWorldScene::TraverseRowStaticEntities(Row* row, uint32_t detailBand) {
         }
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
-            // TODO the occlusion volume, as in TraverseChunkDoodads.
+            // TODO the occluder box, as in TraverseChunkDoodads.
             entity = next;
 
             continue;
@@ -1763,13 +1762,19 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
 }
 
 // ref: FUN_007946d0
-// A solid box hides what is behind it. The reference turns it into five quads rather than six:
-// the four sides, each dropped a yard below the box so the volume closes against the ground,
-// and the top. There is no bottom, because nothing is ever seen from under one.
+// A solid box, handed on as five quads rather than six: the four sides, each dropped a yard
+// below the box so the shape closes against the ground, and the top. There is no bottom,
+// because nothing is ever seen from under one.
 //
 // The box is let out by a twentieth of a yard first, so a surface lying exactly on it is
 // treated as inside rather than falling on the boundary.
-void CWorldScene::AddOcclusionVolume(const CAaBox& box, float maxDistance) {
+//
+// What the faces are for is not established. They go to FUN_00792360, which builds a fan of
+// vertices carrying a position, a distance-faded alpha and two coordinate pairs, into an
+// object frozen has not identified. That is a rasterised primitive, not the plane list
+// SphereOccludedByVolumes reads, so despite the name the reference gives this neighbourhood
+// these are NOT that test's input. Do not wire it to that test.
+void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
     if (box.b.x >= box.t.x || box.b.y >= box.t.y || box.b.z >= box.t.z) {
         return;
     }
@@ -1806,9 +1811,7 @@ void CWorldScene::AddOcclusionVolume(const CAaBox& box, float maxDistance) {
     };
 
     for (int32_t i = 0; i < 5; i++) {
-        // TODO FUN_00792360(quad, 4, maxDistance, 0, 0, 0): the volume each face sweeps away
-        // from the camera, which is what SphereOccludedByVolumes then tests against. Not
-        // ported, so nothing is accumulated and that test still passes everything.
+        // TODO FUN_00792360(quad, 4, maxDistance, 0, 0, 0).
         (void)faces[i];
     }
 }

@@ -44367,7 +44367,7 @@
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
-  "frozen": "CWorldScene::AddOcclusionVolume",
+  "frozen": "CWorldScene::SubmitOccluderBox",
   "frozenSize": 0,
   "how": "annotated",
   "module": "WorldParam.cpp",

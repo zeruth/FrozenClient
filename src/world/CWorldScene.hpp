@@ -183,8 +183,8 @@ class CWorldScene {
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
         // ref: FUN_00791cb0
         static void VisitStaticEntity(CMapStaticEntity* entity);
-        // Turn one solid box into the volumes that hide what is behind it. ref: FUN_007946d0
-        static void AddOcclusionVolume(const CAaBox& box, float maxDistance);
+        // Hand one solid box to the occluder sink as five faces. ref: FUN_007946d0
+        static void SubmitOccluderBox(const CAaBox& box, float maxDistance);
 
         // The occluders of one distance row: solid chunks raise the horizon, chunks you can
         // see through reopen it, and the reopening has to come second. ref: FUN_00793760

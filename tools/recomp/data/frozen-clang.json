@@ -194280,7 +194280,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 54,
+"lines": 53,
 "refs": [],
 "line": 1472
 },
@@ -194311,7 +194311,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1531
+"line": 1530
 },
 "CWorldScene::TraverseRowEntities": {
 "files": [
@@ -194342,7 +194342,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 1587
+"line": 1586
 },
 "CWorldScene::ShadeHorizon": {
 "files": [
@@ -194375,7 +194375,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 1639
+"line": 1638
 },
 "CWorldScene::TraverseRowOccluders": {
 "files": [
@@ -194400,9 +194400,9 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 1728
+"line": 1727
 },
-"CWorldScene::AddOcclusionVolume": {
+"CWorldScene::SubmitOccluderBox": {
 "files": [
 "src/world/cworldscene.cpp"
 ],
@@ -194420,9 +194420,9 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 43,
+"lines": 41,
 "refs": [],
-"line": 1772
+"line": 1777
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
