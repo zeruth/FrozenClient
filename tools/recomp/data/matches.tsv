@@ -2853,8 +2853,10 @@ addr	how	frozen	evidence
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
+007b1000	annotated	RotateBasisAboutZ	tag in src/world/map/DetailDoodad.cpp
 007b12b0	annotated	FillIndexBuffer	tag in src/world/map/DetailDoodad.cpp
 007b1b10	annotated	OnModelLoaded	tag in src/world/map/DetailDoodad.cpp
+007b1b50	annotated	FillVertexBuffer	tag in src/world/map/DetailDoodad.cpp
 007b2760	annotated	Initialize	tag in src/world/map/DetailDoodad.cpp
 007b29b0	annotated	ReleaseBuffers	tag in src/world/map/DetailDoodad.cpp
 007b2a80	annotated	CreateBuffers	tag in src/world/map/DetailDoodad.cpp

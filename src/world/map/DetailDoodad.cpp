@@ -9,6 +9,7 @@
 #include "gx/buffer/CGxPool.hpp"
 #include "gx/Buffer.hpp"
 #include "gx/RenderState.hpp"
+#include "gx/CGxCaps.hpp"
 #include <tempest/Random.hpp>
 #include <cstring>
 #include <cmath>
@@ -36,6 +37,7 @@ CGxPool* s_vertexPool = nullptr;
 CGxPool* s_indexPool = nullptr;
 TSGrowableArray<CGxBuf*> s_buffers;
 int32_t s_rebuild = 1;
+int32_t s_useShaders = 0;
 
 // How many the density setting scatters per chunk before the ceiling applies.
 static const uint32_t PER_DENSITY_UNIT = 0x40;
@@ -125,6 +127,12 @@ void Initialize() {
     // TODO the reference also makes the "WDETAILDOODADINST" object heap the scattered instances
     // come from, and loads the module's own shaders. Frozen's stand-in already holds a detail
     // pixel shader; the heap waits for the scatter builder that would use it.
+    //
+    // s_useShaders stays 0 for exactly that reason. The reference sets it from a device setting
+    // and then loads Shaders\Vertex\DetailDoodad and Shaders\Pixel\DetailDoodad only if it is
+    // on, so with no shaders loaded the vertex fill has to bake the brightness ramp into the
+    // vertex colour itself. Setting it without loading them would drop the ramp entirely.
+    s_useShaders = 0;
 
     // The reference takes the highest id straight off the DBC; frozen's WowClientDB keeps that
     // private, so it is found by looking, which comes to the same table.
@@ -607,10 +615,188 @@ void AcquireBuffers(uint32_t vertexCount, CGxBuf** vertexBuf, uint32_t indexCoun
     (*indexBuf)->unk1C = 0;
 }
 
-// TODO ref: FUN_007b1b50, 2655 bytes -- builds each placement's quad into the vertex buffer
-// from its model, position, rotation, scale, normal and colour. THIS IS WHY Draw HAS NO CALLER:
-// wiring the pass with this empty would draw whatever the last chunk left in the ring.
+// ref: FUN_007b1000
+// Turn a basis about its own third axis. The reference passes the axis in, and its one caller
+// always passes +Z, so the general axis term collapses to the plain Z rotation it writes here.
+static void RotateBasisAboutZ(float* out, const float* basis, float angle) {
+    float c = cosf(angle);
+    float s = sinf(angle);
+
+    out[0] = basis[0] * c + basis[3] * s;
+    out[1] = basis[1] * c + basis[4] * s;
+    out[2] = basis[2] * c + basis[5] * s;
+
+    out[3] = basis[0] * -s + basis[3] * c;
+    out[4] = basis[1] * -s + basis[4] * c;
+    out[5] = basis[2] * -s + basis[5] * c;
+
+    // The Z row is scaled by (1 - c) * axis.z^2 + c, which for a unit +Z axis is 1.
+    out[6] = basis[6];
+    out[7] = basis[7];
+    out[8] = basis[8];
+}
+
+// Part of ref: FUN_007b1b50
+// An orthonormal frame standing on the terrain triangle: the normal is the third row, and the
+// second is the one perpendicular to it that leaves x alone -- the reference multiplies that
+// component by a constant which is zero.
+static void SlopeBasis(const C3Vector& n, float* basis) {
+    float uy = n.z;
+    float uz = -n.y;
+
+    float len = sqrtf(uy * uy + uz * uz);
+    float inv = len != 0.0f ? 1.0f / len : 0.0f;
+
+    float ux = 0.0f;
+
+    uy *= inv;
+    uz *= inv;
+
+    // row 0 = n x u
+    basis[0] = n.y * uz - n.z * uy;
+    basis[1] = n.z * ux - uz * n.x;
+    basis[2] = uy * n.x - n.y * ux;
+
+    basis[3] = ux;
+    basis[4] = uy;
+    basis[5] = uz;
+
+    basis[6] = n.x;
+    basis[7] = n.y;
+    basis[8] = n.z;
+}
+
+// Part of ref: FUN_007b1b50
+// Without the module's shaders the brightness ramp has to be baked in: every channel is scaled
+// by a factor the colour's own alpha drives, from about 0.70 at alpha 0 to about 1.00 at 255,
+// and the alpha is then thrown away.
+static uint32_t ShadeVertexColor(uint32_t color) {
+    if (!s_useShaders) {
+        uint32_t m = (color >> 24) * 0x4c + 0xb332;
+
+        uint32_t r = ((color & 0xff) * m) >> 16;
+        uint32_t g = (((color >> 8) & 0xff) * m) >> 16;
+        uint32_t b = (((color >> 16) & 0xff) * m) >> 16;
+
+        color = 0xff000000u | (b << 16) | (g << 8) | r;
+    }
+
+    // The device wants the other byte order, so red and blue change places.
+    if (g_theGxDevicePtr->Caps().m_colorFormat == GxCF_rgba) {
+        color = (color & 0xff00ff00u) | ((color & 0xff) << 16) | ((color >> 16) & 0xff);
+    }
+
+    return color;
+}
+
+// ref: FUN_007b1b50
+// Every placement writes its model out whole: one vertex per entry of the skin's vertex list,
+// carrying the TERRAIN's normal rather than the model's, so a blade of grass is lit by the
+// ground it stands on. Two ways of placing it, chosen by the kind's own DBC flag: upright and
+// merely turned, or stood up along the slope.
+//
+// The slope frames are cached four at a time. The reference keys that cache on the placement's
+// cell -- the low two bits pick the slot and the rest identify the group -- so neighbouring
+// blades on one cell share a frame instead of each building its own.
 void FillVertexBuffer(SBatch* batch) {
+    auto vertices = reinterpret_cast<float*>(g_theGxDevicePtr->BufLock(batch->vertexBuf));
+
+    float frames[4][9];
+    uint32_t frameGroup = 0xffff;
+    uint8_t frameValid = 0;
+
+    for (uint32_t i = 0; i < batch->placements.Count(); i++) {
+        const auto& p = batch->placements[i];
+
+        auto entry = s_models[p.doodadId];
+
+        if (!entry->m_model->IsLoaded(0, 0)) {
+            entry->m_model->WaitForLoad(0);
+        }
+
+        auto data = entry->m_model->m_shared->m_data;
+
+        if (!entry->m_model->IsLoaded(0, 0)) {
+            entry->m_model->WaitForLoad(0);
+        }
+
+        auto skin = entry->m_model->m_shared->skinProfile;
+
+        uint32_t count = skin->vertices.Count();
+        const uint16_t* lookup = skin->vertices.Data();
+        const M2Vertex* modelVertices = data->vertices.Data();
+
+        uint32_t color = ShadeVertexColor(p.color);
+
+        const float* frame = nullptr;
+        float c = 0.0f;
+        float sn = 0.0f;
+
+        if (entry->m_rec->m_flags & 0x1) {
+            // Stood up along the slope, from a frame shared across the cell.
+            uint32_t group = p.cell & 0xfc;
+
+            if (group != frameGroup) {
+                frameGroup = group;
+                frameValid = 0;
+            }
+
+            uint32_t slot = p.cell & 3;
+
+            if (!(frameValid & (1 << slot))) {
+                float basis[9];
+
+                SlopeBasis(p.normal, basis);
+                RotateBasisAboutZ(frames[slot], basis, p.rotation);
+
+                frameValid |= static_cast<uint8_t>(1 << slot);
+            }
+
+            frame = frames[slot];
+        } else {
+            // Upright, and merely turned about Z.
+            c = cosf(p.rotation);
+            sn = sinf(p.rotation);
+        }
+
+        for (uint32_t k = 0; k < count; k++) {
+            const M2Vertex& v = modelVertices[lookup[k]];
+
+            float x;
+            float y;
+            float z;
+
+            if (frame) {
+                x = v.position.x * frame[0] + v.position.y * frame[3] + v.position.z * frame[6];
+                y = v.position.x * frame[1] + v.position.y * frame[4] + v.position.z * frame[7];
+                z = v.position.x * frame[2] + v.position.y * frame[5] + v.position.z * frame[8];
+            } else {
+                x = v.position.x * c - v.position.y * sn;
+                y = v.position.x * sn + v.position.y * c;
+                z = v.position.z;
+            }
+
+            vertices[0] = x * p.scale + p.position.x;
+            vertices[1] = y * p.scale + p.position.y;
+            vertices[2] = z * p.scale + p.position.z;
+
+            // The ground's normal, not the model's.
+            vertices[3] = p.normal.x;
+            vertices[4] = p.normal.y;
+            vertices[5] = p.normal.z;
+
+            memcpy(&vertices[6], &color, sizeof(color));
+
+            vertices[7] = v.texcoord[0].x;
+            vertices[8] = v.texcoord[0].y;
+
+            vertices += 9;
+        }
+    }
+
+    g_theGxDevicePtr->BufUnlock(batch->vertexBuf, 0);
+
+    batch->vertexBuf->unk1C = 1;
 }
 
 // ref: FUN_007b12b0

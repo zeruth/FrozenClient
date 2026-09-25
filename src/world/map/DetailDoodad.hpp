@@ -127,12 +127,22 @@ static const uint16_t HOLE_MASK[16] = {
 // yards, all inside their chunk, every kind drawn from that chunk's own ground effect table,
 // and each chunk scattering identically twice over.
 //
-// WHAT STANDS BETWEEN HERE AND RETIRING THE STAND-IN, which is more than the builder: frozen's
-// Terrain.cpp already scatters, batches and draws grass today, so porting the builder alone
-// would fill instances nothing renders while the stand-in carried on. The buffer fill and the
-// draw pass have to land with it, the same way the terrain doodads had to move in one change.
-// That is why Scatter has no caller yet: FUN_007b31e0 (the instance fill) and FUN_007984a0
-// (the draw) go in with it, and only then does the stand-in come out.
+// WHAT STANDS BETWEEN HERE AND RETIRING THE STAND-IN is now only the wiring. Every function
+// this module needs is ported: the scatter, the instance fill, the buffer acquire, both buffer
+// fills and the draw. What is missing is the pass that walks the frame's chunks and calls Draw,
+// and the deletion of Terrain.cpp's own scatter -- which have to happen together, because both
+// running at once would draw the grass twice.
+//
+// Two things in here are ported but have NOT been seen working, and should be treated as
+// suspect until they have:
+//
+//  - The GEOMETRY the vertex fill writes. Its counts are checked (20 batches filled with no
+//    mismatch against the totals the instance fill accumulated and no overrun), but nothing has
+//    looked at where the blades actually stand.
+//  - The SLOPE-ALIGNED branch of the vertex fill, which stands a doodad up along the terrain
+//    normal instead of merely turning it about Z. Only 30 of the 580 GroundEffectDoodad rows
+//    set the flag that selects it, and none of them appear in the starting zone, so across 832
+//    placements it ran exactly zero times.
 
 // One kind of detail doodad: the row that names it, and the model once something has asked for
 // it. The model is not opened until a chunk that wants this kind comes into range.
@@ -155,6 +165,10 @@ extern CGxPool* s_vertexPool;                  // DAT_00d1c4d8
 extern CGxPool* s_indexPool;                   // DAT_00d1c4d4
 extern TSGrowableArray<CGxBuf*> s_buffers;     // DAT_00d1c50c
 extern int32_t s_rebuild;                      // DAT_00d1c4c0
+// Whether the module's own vertex and pixel shaders were loaded. When they were, the shader
+// applies the doodad's brightness ramp and the buffer keeps the raw colour; when they were not,
+// the ramp is baked into the vertex colour on the way in.
+extern int32_t s_useShaders;                   // DAT_00d1c4f0
 
 // One scattered doodad. 0x2c bytes, laid out as the reference's, which keeps these in a
 // growable array on each of the instance's four batches. Only the triangle's NORMAL is kept,
@@ -220,7 +234,8 @@ void AddPlacement(CDetailDoodadData* instance, int32_t doodadId, const C3Vector&
 void AcquireBuffers(uint32_t vertexCount, CGxBuf** vertexBuf, uint32_t indexCount,
                     CGxBuf** indexBuf);
 
-// Build the batch's vertices. Not ported yet -- see the note at the definition.
+// Turn one detail doodad's model into vertices: each model vertex placed, oriented, coloured
+// and handed its texture coordinates. ref: FUN_007b1b50
 void FillVertexBuffer(SBatch* batch);
 
 // Write the batch's indices: each placement's model contributes its whole index list, shifted

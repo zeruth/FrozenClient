@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 19:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 19:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26961 | 5.35M |
-| mapped to a frozen function | 4313 (+4) (16.0%) | 897.6k (16.4%) |
-| &nbsp;&nbsp;ported | 3634 (+4) | 720.2k |
+| mapped to a frozen function | 4315 (+2) (16.0%) | 900.4k (16.4%) |
+| &nbsp;&nbsp;ported | 3636 (+2) | 723.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 32 (=) | 7.4k |
-| **faithful** (linked, not stub, call order >= 80%) | **2206 (+1) (8.2%)** | **284.6k (5.2%)** |
-| unmapped | 22648 | 4.48M |
+| **faithful** (linked, not stub, call order >= 80%) | **2208 (+2) (8.2%)** | **287.4k (5.2%)** |
+| unmapped | 22646 | 4.48M |
 | world spine (reachable from OnFrameRender) | 5385, mapped 1386 (=) (25.7%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5652, mapped 1404 (=) (24.8%) | |
-| **render surface** (the modules that draw the world) | **4523, mapped 818 (+4) (18.1%)** | |
-| frozen functions (src/, from PDB + source) | 13655, stubs 1700 | |
+| **render surface** (the modules that draw the world) | **4523, mapped 820 (+2) (18.1%)** | |
+| frozen functions (src/, from PDB + source) | 13662, stubs 1700 | |
 
-Match evidence: annotated 2114, callgraph 238, callorder 110, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2116, callgraph 238, callorder 110, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 19:30 -- mapped 4309, ported 3630, stub 578, spine mapped 1386.
+Previous run: 2026-09-25 19:36 -- mapped 4313, ported 3634, stub 578, spine mapped 1386.
 
 ## Lua API coverage (binding tables)
 
@@ -144,7 +144,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
 | ChatFrame.cpp | 344 | 81.0k | 97 (28.2%) | 18.5% | 34 | 2 | 33 |
 | lmemPool.cpp | 342 | 80.2k | 78 (22.8%) | 32.1% | 0 | 0 | 107 |
-| Map.cpp | 229 | 76.5k | 49 (21.4%) | 23.7% | 0 | 2 | 135 |
+| Map.cpp | 229 | 76.5k | 51 (22.3%) | 27.4% | 0 | 2 | 135 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 179 | 63.0k | 58 (32.4%) | 35.6% | 3 | 4 | 110 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
@@ -584,6 +584,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CGxString::CreateGeometry` | gx | 2696 | src/gx/font/CGxString.cpp |
+| `DetailDoodad::FillVertexBuffer` | world | 2690 |  |
 | `ParseLiquid` | world | 2616 | src/world/Terrain.cpp |
 | `SFileOpenArchive` | lib/stormlib-9.31 | 2611 | lib/squall/vendor/stormlib-9.31/src/SFileOpenArchive.cpp |
 | `AchievementRec::Read` | db | 2604 | src/db/rec/AchievementRec.cpp |
@@ -598,7 +599,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `DetailDoodad::Scatter` | world | 2320 |  |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
 | `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
-| `WriteCmpData` | lib/stormlib-9.31 | 2231 | lib/squall/vendor/stormlib-9.31/src/pklib/implode.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 16:16 | 4295 (15.9%) | 2192 (8.1%) | 579 | 1374/5385 | 2924/2964 | 1380 |
 | 2026-09-25 16:23 | 4295 (15.9%) | 2192 (8.1%) | 579 | 1374/5385 | 2924/2964 | 1380 |
 | 2026-09-25 16:23 | 4295 (15.9%) | 2193 (8.1%) | 579 | 1374/5385 | 2924/2964 | 1380 |
 | 2026-09-25 16:26 | 4295 (15.9%) | 2193 (8.1%) | 579 | 1374/5385 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 19:29 | 4309 (16.0%) | 2203 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
 | 2026-09-25 19:30 | 4309 (16.0%) | 2205 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
 | 2026-09-25 19:36 | 4313 (16.0%) | 2206 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
+| 2026-09-25 19:48 | 4315 (16.0%) | 2208 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
 
 ## How to move a row
 
