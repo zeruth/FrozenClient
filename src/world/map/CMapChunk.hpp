@@ -79,8 +79,6 @@ class CMapChunk : public CMapBaseObj {
         // the inner row interleaved after each outer row as MCVT stores heights. z is unused.
         static float s_vertexTable[145][3];  // DAT_00d25498
         static float s_invCellSize;          // DAT_00d25488: -1 / s_vertexTable[1][1]
-        // Added to a batch's max index per chunk appended (DAT_00aeec6e, set at runtime)
-        static uint16_t s_vertexSpan;
 
         // The alpha unpackers' scratch: a decompressed row per layer, and the rows a chunk
         // without MCSH or a layer without MCAL read (CMapChunkAlpha.cpp)

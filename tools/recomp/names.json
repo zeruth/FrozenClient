@@ -84,7 +84,7 @@
     "00d2549c": {"name": "CMapChunk::s_vertexTable_y", "type": "float", "note": "s_vertexTable[0][1]"},
     "00d254a8": {"name": "CMapChunk::s_vertexTable_1_y", "type": "float", "note": "s_vertexTable[1][1] = -CELL_SIZE"},
     "00d25488": {"name": "CMapChunk::s_invCellSize", "type": "float", "note": "-1 / s_vertexTable[1][1] (007c3d90)"},
-    "00aeec6e": {"name": "CMapChunk::s_vertexSpan", "type": "uint16_t", "note": "added to a batch's max index per chunk (007c51b0); set at runtime"},
+    "00aeec60": {"name": "CMap::s_chunkBatch", "type": "CGxBatch", "note": "the batch one chunk contributes: prim 6, 768 indices, max index 144; FUN_007ba340 fills it, AppendIndices (007c51b0) advances a render chunk batch by its max index"},
     "00ce049f": {"name": "CMap::s_chunkVerticesWorldSpace", "type": "uint8_t", "note": "set at map load (007bd9b8/007bd9c1); picks the world-space vertex fillers 007c3f30/007c4620 over the local ones"},
     "00d1d06c": {"name": "CMap::s_terrainVertexFormat", "type": "int32_t", "note": "1 = no MCCV colour in the chunk vertex; written at 007b7336/007ba353"},
     "00d25b88": {"name": "s_rowX", "type": "float[9]", "note": "FillVerticesWorld scratch: chunk row X"},

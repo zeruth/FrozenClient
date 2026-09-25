@@ -45338,6 +45338,22 @@
   "refSize": 144,
   "status": "ported"
  },
+ "007ba340": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::InitializeRenderChunks",
+  "frozenSize": 181,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "007ba3d0": {
   "branchRatio": 0.222,
   "constOverlap": 0.0,
@@ -46173,14 +46189,14 @@
  "007c3d90": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Initialize",
-  "frozenSize": 343,
+  "frozenSize": 349,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 29,

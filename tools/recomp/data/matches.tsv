@@ -2839,6 +2839,7 @@ addr	how	frozen	evidence
 007b9ee0	annotated	CMapRenderChunk::BuildShadowTexture	tag in src/world/map/CMapRenderChunk.cpp
 007b9f90	annotated	CMapRenderChunk::BuildAlphaTexture	tag in src/world/map/CMapRenderChunk.cpp
 007ba050	annotated	CMapRenderChunk::UpdateAlphaTextures	tag in src/world/map/CMapRenderChunk.cpp
+007ba340	annotated	CMap::InitializeRenderChunks	tag in src/world/map/CMap.cpp
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp

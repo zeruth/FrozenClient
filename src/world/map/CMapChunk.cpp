@@ -10,7 +10,6 @@
 
 float CMapChunk::s_vertexTable[145][3];
 float CMapChunk::s_invCellSize;
-uint16_t CMapChunk::s_vertexSpan;
 
 // Row-major bit for each 2x2 cell of a chunk's 4x4 hole grid (DAT_00a3faf0)
 static const uint16_t s_holeMask[16] = {
@@ -154,9 +153,9 @@ void CMapChunk::Destroy() {
 }
 
 // ref: FUN_007c3d90
-// Once per client: the vertex table and its cell scale. The reference calls FUN_007ba340 first,
-// which is not ported yet (Map.cpp region).
+// Once per client: the render chunk state, then the vertex table and its cell scale
 void CMapChunk::Initialize() {
+    CMap::InitializeRenderChunks();
     CMapChunk::BuildVertexTable();
     CMapChunk::s_invCellSize = -1.0f / CMapChunk::s_vertexTable[1][1];
 }
@@ -305,7 +304,7 @@ void CMapChunk::AppendIndices(uint16_t* indices, CGxBatch* batch) {
         batch->m_minIndex = static_cast<uint16_t>(base);
     }
 
-    uint32_t top = base + CMapChunk::s_vertexSpan;
+    uint32_t top = base + CMap::s_chunkBatch.m_maxIndex;
     if (top < batch->m_maxIndex) {
         top = batch->m_maxIndex;
     }

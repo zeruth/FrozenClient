@@ -164,6 +164,9 @@ class CMap {
         static uint32_t s_renderChunkPoolIndices;         // DAT_00d1d05c: chunks x 0x600
         static uint16_t s_chunkVertexCount;               // DAT_00af14a0: 145
         static uint16_t s_chunkIndexCount;                // DAT_00af14c0: 768
+        // The batch one chunk contributes (DAT_00aeec60): 768 indices over 145 vertices;
+        // AppendIndices advances a render chunk's batch by its max index per chunk
+        static CGxBatch s_chunkBatch;
 
         static int32_t s_mapID;
         static char s_mapName[];
@@ -191,6 +194,7 @@ class CMap {
         static void UpdateDetailDoodads();
 
         // Render chunk buffers
+        static void InitializeRenderChunks();
         static CMapChunkBufEntry* AllocBufEntry(uint32_t flags, CMapRenderChunk* renderChunk);
         static void RecycleBufBlocks();
         static void CreateRenderChunkPools();

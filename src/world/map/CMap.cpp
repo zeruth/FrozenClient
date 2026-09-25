@@ -115,6 +115,7 @@ uint32_t CMap::s_renderChunkPoolVertices;
 uint32_t CMap::s_renderChunkPoolIndices;
 uint16_t CMap::s_chunkVertexCount = 145;
 uint16_t CMap::s_chunkIndexCount = 768;
+CGxBatch CMap::s_chunkBatch;
 
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
 static const float MAP_HALF_EXTENT = 17066.666015625f;    // DAT_009e2acc
@@ -1119,6 +1120,27 @@ void CMap::AgeRenderChunks() {
 
 // ----------------------------------------------------------------------------------------------
 // Render chunk buffers
+
+// ref: FUN_007ba340
+// Once per client, before the chunk vertex table: the terrain shader state starts dirty at
+// vertex format 1, the chunk batch is 768 indices over vertices 0..144, and the buffer pools
+// are empty. The two zero rows the alpha unpackers read are static and already zero.
+void CMap::InitializeRenderChunks() {
+    CMap::s_terrainShadersDirty = 1;
+    CMap::s_terrainVertexFormat = 1;
+    CMap::s_chunkBatch.m_count = CMap::s_chunkIndexCount;
+    CMap::s_chunkBatch.m_maxIndex = CMap::s_chunkVertexCount - 1;
+    CMap::s_renderChunkPoolVertices = 0;
+    CMap::s_renderChunkPoolIndices = 0;
+    CMap::s_chunkBatch.m_primType = static_cast<EGxPrim>(6);
+    CMap::s_chunkBatch.m_start = 0;
+    CMap::s_chunkBatch.m_minIndex = 0;
+    CMap::s_renderChunkVertexPool = nullptr;
+    CMap::s_renderChunkIndexPool = nullptr;
+    CMap::s_bufBlocks.SetCount(0);
+    memset(CMapChunk::s_zeroAlphaRow, 0, 0x40);
+    memset(CMapChunk::s_zeroShadowRow, 0, 0x40);
+}
 
 // ref: FUN_007b9340
 // A buffer slot for a render chunk. A two-chunk batch takes a whole free block and uses its
