@@ -93,6 +93,10 @@
     "status": "excluded",
     "note": "the same append for the volume list's second array, 0xc-byte elements"
   },
+  "007a8e90": {
+    "status": "excluded",
+    "note": "TSGrowableArray's own append for the anti-portal rectangle list, 0x10-byte elements. frozen uses the container, so there is no separate function to bind"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

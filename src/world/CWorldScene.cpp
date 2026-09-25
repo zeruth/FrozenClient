@@ -1774,6 +1774,10 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
 // object frozen has not identified. That is a rasterised primitive, not the plane list
 // SphereOccludedByVolumes reads, so despite the name the reference gives this neighbourhood
 // these are NOT that test's input. Do not wire it to that test.
+//
+// What is known about the sink: it is a growable array at 0x00adf4a0, and the only thing that
+// reads it is CMap::UpdateAreas, the tile streaming pass. So whatever it holds is consumed
+// while tiles load, not while a frame is drawn.
 void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
     if (box.b.x >= box.t.x || box.b.y >= box.t.y || box.b.z >= box.t.z) {
         return;

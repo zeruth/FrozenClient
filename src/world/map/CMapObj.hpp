@@ -178,12 +178,17 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
             int32_t stamp;
         };
 
-        // How much of the screen one doorway covers, as seen from here. The outline goes out
-        // to world space, is clipped to the camera's frustum, and what survives is projected.
-        // Returns how many corners survived, and writes their screen positions to `screen`
-        // (room for CLIP_POLYGON_MAX). ref: FUN_007a85e0
+        // How much of the screen one doorway covers, as seen from here. Every corner is moved
+        // by `offset` first, the outline goes out to world space, is clipped to the camera's
+        // frustum, and what survives is projected. Returns how many corners survived, and
+        // writes their screen positions to `screen` (room for CLIP_POLYGON_MAX).
+        //
+        // The offset is zero for the doorway itself. The anti-portal pass nudges the outline
+        // off the plane by a hundredth along its own normal, so the two rectangles it compares
+        // are not coplanar. ref: FUN_007a85e0
         static uint32_t ProjectPortal(const SMOPortal* portal, const C3Vector* vertices,
-                                      const C44Matrix& placement, C3Vector* screen);
+                                      const C3Vector& offset, const C44Matrix& placement,
+                                      C3Vector* screen);
 
         // Work out one doorway's rectangle for this frame: whether the camera is standing in
         // it, whether it faces away or projects to nothing, and otherwise how much of the

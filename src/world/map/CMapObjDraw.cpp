@@ -1143,7 +1143,8 @@ void CMapObj::TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, Porta
 // the camera's own frustum, and each surviving corner projected; a corner behind the eye would
 // divide by a vanishing w, so w is held at a ten-thousandth.
 uint32_t CMapObj::ProjectPortal(const SMOPortal* portal, const C3Vector* vertices,
-                                const C44Matrix& placement, C3Vector* screen) {
+                                const C3Vector& offset, const C44Matrix& placement,
+                                C3Vector* screen) {
     uint32_t count = portal->count;
 
     if (count > CLIP_POLYGON_MAX) {
@@ -1157,7 +1158,13 @@ uint32_t CMapObj::ProjectPortal(const SMOPortal* portal, const C3Vector* vertice
     C3Vector world[CLIP_POLYGON_MAX];
 
     for (uint32_t i = 0; i < count; i++) {
-        world[i] = vertices[i] * placement;
+        C3Vector moved = {
+            vertices[i].x + offset.x,
+            vertices[i].y + offset.y,
+            vertices[i].z + offset.z
+        };
+
+        world[i] = moved * placement;
     }
 
     // The four sides and the far plane. The near one is left out: a doorway straddling the eye
@@ -1248,8 +1255,10 @@ void CMapObj::MeasurePortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect
     uint32_t count = 0;
 
     if (!(rect->flags & 0x2)) {
+        C3Vector noOffset = { 0.0f, 0.0f, 0.0f };
+
         count = CMapObj::ProjectPortal(portal, &mapObj->m_mopv[portal->startVertex],
-                                       placement, screen);
+                                       noOffset, placement, screen);
 
         if (!count) {
             rect->flags |= 0x1;

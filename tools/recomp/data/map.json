@@ -45024,7 +45024,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::ProjectPortal",
-  "frozenSize": 3104,
+  "frozenSize": 3170,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 533,
@@ -45072,7 +45072,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::MeasurePortal",
-  "frozenSize": 512,
+  "frozenSize": 543,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 201,
@@ -45130,7 +45130,7 @@
   "branchRatio": 0.278,
   "constOverlap": 0.07,
   "faithful": false,
-  "fidelity": 0.368,
+  "fidelity": 0.389,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
