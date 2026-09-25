@@ -198891,6 +198891,46 @@
 "refs": [],
 "line": 1145
 },
+"CMapObj::ScreenBounds": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"3.4028235e+38f"
+],
+"branches": 5,
+"stub": false,
+"lines": 24,
+"refs": [],
+"line": 1214
+},
+"CMapObj::MeasurePortal": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::TestCameraInPortal",
+"C3Vector::C3Vector",
+"CMapObj::ProjectPortal",
+"CMapObj::ScreenBounds"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1",
+"0x2",
+"1.0f",
+"3.4028235e+38f"
+],
+"branches": 4,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 1243
+},
 "TriangleOutsideHull": {
 "files": [
 "src/world/map/cmapobjgroup.cpp"

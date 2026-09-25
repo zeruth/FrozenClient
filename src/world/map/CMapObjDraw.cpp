@@ -1208,3 +1208,73 @@ uint32_t CMapObj::ProjectPortal(const SMOPortal* portal, const C3Vector* vertice
 
     return clippedCount;
 }
+
+// ref: FUN_007a6b90
+// The reference unrolls this four corners at a time; the comparisons per corner are the same.
+void CMapObj::ScreenBounds(PortalRect* rect, const C3Vector* points, uint32_t count) {
+    rect->minY = 3.4028235e+38f;
+    rect->minX = 3.4028235e+38f;
+    rect->maxY = -3.4028235e+38f;
+    rect->maxX = -3.4028235e+38f;
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (points[i].x < rect->minX) {
+            rect->minX = points[i].x;
+        }
+
+        if (rect->maxX < points[i].x) {
+            rect->maxX = points[i].x;
+        }
+
+        if (points[i].y < rect->minY) {
+            rect->minY = points[i].y;
+        }
+
+        if (rect->maxY < points[i].y) {
+            rect->maxY = points[i].y;
+        }
+    }
+}
+
+// ref: FUN_007a9090
+// A doorway is one of three things: the camera is standing in it, so it opens onto the whole
+// screen; nothing of it survives the clip, so it opens onto nothing; or it covers a rectangle,
+// which is what the walk narrows the view to before stepping through.
+void CMapObj::MeasurePortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect,
+                            const C44Matrix& placement) {
+    CMapObj::TestCameraInPortal(mapObj, portal, rect);
+
+    C3Vector screen[CLIP_POLYGON_MAX];
+    uint32_t count = 0;
+
+    if (!(rect->flags & 0x2)) {
+        count = CMapObj::ProjectPortal(portal, &mapObj->m_mopv[portal->startVertex],
+                                       placement, screen);
+
+        if (!count) {
+            rect->flags |= 0x1;
+        }
+    }
+
+    if (rect->flags & 0x2) {
+        // Standing in the doorway: the whole screen.
+        rect->minY = -3.4028235e+38f;
+        rect->minX = -3.4028235e+38f;
+        rect->maxY = 1.0f;
+        rect->maxX = 1.0f;
+
+        return;
+    }
+
+    if (rect->flags & 0x1) {
+        // Nothing of it is in view: an empty rectangle nothing can overlap.
+        rect->minY = 3.4028235e+38f;
+        rect->minX = 3.4028235e+38f;
+        rect->maxY = -3.4028235e+38f;
+        rect->maxX = -3.4028235e+38f;
+
+        return;
+    }
+
+    CMapObj::ScreenBounds(rect, screen, count);
+}

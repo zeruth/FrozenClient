@@ -44774,6 +44774,22 @@
   "refSize": 46,
   "status": "ported"
  },
+ "007a6b90": {
+  "branchRatio": 0.208,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::ScreenBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 472,
+  "status": "ported"
+ },
  "007a6e00": {
   "branchRatio": 0.2,
   "constOverlap": 0.0,
@@ -44964,6 +44980,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 895,
+  "status": "ported"
+ },
+ "007a9090": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::MeasurePortal",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 201,
   "status": "ported"
  },
  "007a9160": {

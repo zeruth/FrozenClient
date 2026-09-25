@@ -167,10 +167,13 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
             // Bit 1: the camera is standing in the doorway, so it opens onto everything.
             // Bit 4: the walk is crossing from lit to unlit, or the other way.
             uint16_t flags;
-            float minX;
+            // The reference orders these vertical-first, and the window the walk narrows is
+            // ordered to match, so the overlap test lines up index for index. Keeping its
+            // order rather than the obvious one is what makes that work.
             float minY;
-            float maxX;
+            float minX;
             float maxY;
+            float maxX;
             // The frame this was worked out on; anything older is recomputed.
             int32_t stamp;
         };
@@ -181,6 +184,15 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // (room for CLIP_POLYGON_MAX). ref: FUN_007a85e0
         static uint32_t ProjectPortal(const SMOPortal* portal, const C3Vector* vertices,
                                       const C44Matrix& placement, C3Vector* screen);
+
+        // Work out one doorway's rectangle for this frame: whether the camera is standing in
+        // it, whether it faces away or projects to nothing, and otherwise how much of the
+        // screen it covers. ref: FUN_007a9090
+        static void MeasurePortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect,
+                                  const C44Matrix& placement);
+
+        // The rectangle a run of projected corners covers. ref: FUN_007a6b90
+        static void ScreenBounds(PortalRect* rect, const C3Vector* points, uint32_t count);
 
         // ref: FUN_007a7210
         // Is the camera standing in this doorway? Then it opens onto everything.
