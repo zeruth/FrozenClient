@@ -2258,7 +2258,7 @@ addr	how	frozen	evidence
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
-00681f20	callorder	GxTexUpdate	same slot between linked calls in 004b7bd0=PumpBlpTextureAsync
+00681f20	callorder	GxTexUpdate	same slot between linked calls in 004b7bd0=PumpBlpTextureAsync, 007b9de0=CMapRenderChunk::BuildLayerAlphaTexture, 007b9ee0=CMapRenderChunk::BuildShadowTexture
 00681f60	override	GxXformSetViewport	
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682d20	callgraph	GxXformProjNativeTranspose	only unmatched callee of 00872c10=CShaderEffect::UpdateProjMatrix
@@ -2795,16 +2795,49 @@ addr	how	frozen	evidence
 007b7330	annotated	CMap::SetTerrainShaderLevel	tag in src/world/map/CMap.cpp
 007b7350	annotated	CMapRenderChunk::ReleaseLayers	tag in src/world/map/CMapRenderChunk.cpp
 007b73e0	annotated	CMapRenderChunk::CheckTexturesLoaded	tag in src/world/map/CMapRenderChunk.cpp
+007b7420	annotated	CMapChunk::DecompressAlphaRow	tag in src/world/map/CMapChunkAlpha.cpp
+007b74a0	annotated	CMapChunk::NextAlphaRows	tag in src/world/map/CMapChunkAlpha.cpp
+007b7530	annotated	CMapChunk::NextNibbleRows	tag in src/world/map/CMapChunkAlpha.cpp
+007b75b0	annotated	UnpackAlpha4	tag in src/world/map/CMapChunkAlpha.cpp
+007b7620	annotated	UnpackAlpha4Half	tag in src/world/map/CMapChunkAlpha.cpp
+007b76f0	annotated	UnpackAlpha4Edge	tag in src/world/map/CMapChunkAlpha.cpp
+007b77d0	annotated	UnpackAlpha4EdgeHalf	tag in src/world/map/CMapChunkAlpha.cpp
+007b7860	annotated	CMapChunk::GatherLayerAlphas	tag in src/world/map/CMapChunkAlpha.cpp
+007b7930	annotated	CMapChunk::UnpackShadowBits	tag in src/world/map/CMapChunkAlpha.cpp
+007b79a0	annotated	CMapChunk::UnpackShadowBitsHalf	tag in src/world/map/CMapChunkAlpha.cpp
+007b7a70	annotated	CreateBlendTexture	tag in src/world/map/CMapRenderChunk.cpp
 007b7af0	annotated	CMapRenderChunk::Init	tag in src/world/map/CMapRenderChunk.cpp
 007b7bd0	annotated	CMap::SetupChunkLighting	tag in src/world/map/CMap.cpp
+007b7c60	annotated	UnpackPacked8	tag in src/world/map/CMapChunkAlpha.cpp
+007b7dc0	annotated	UnpackPacked8Half	tag in src/world/map/CMapChunkAlpha.cpp
+007b8070	annotated	UnpackPacked4	tag in src/world/map/CMapChunkAlpha.cpp
+007b8190	annotated	UnpackPacked4Half	tag in src/world/map/CMapChunkAlpha.cpp
+007b84a0	annotated	CMapChunk::PackNibbleRow	tag in src/world/map/CMapChunkAlpha.cpp
+007b85a0	annotated	UnpackPacked4Edge	tag in src/world/map/CMapChunkAlpha.cpp
+007b8620	annotated	UnpackPacked4EdgeHalf	tag in src/world/map/CMapChunkAlpha.cpp
+007b87f0	annotated	CMapChunk::UnpackAlphaShadowBits	tag in src/world/map/CMapChunkAlpha.cpp
+007b88d0	annotated	UnpackAlpha8Shadow	tag in src/world/map/CMapChunkAlpha.cpp
+007b89c0	annotated	UnpackAlpha8ShadowHalf	tag in src/world/map/CMapChunkAlpha.cpp
+007b8b80	annotated	UnpackAlpha8Base	tag in src/world/map/CMapChunkAlpha.cpp
+007b8c70	annotated	UnpackAlpha8BaseHalf	tag in src/world/map/CMapChunkAlpha.cpp
+007b8e20	annotated	CMapChunk::UnpackAlphaBits	tag in src/world/map/CMapChunkAlpha.cpp
 007b9250	annotated	CMapRenderChunk::AddLayer	tag in src/world/map/CMapRenderChunk.cpp
 007b9340	annotated	CMap::AllocBufEntry	tag in src/world/map/CMap.cpp
 007b9560	annotated	CMap::RecycleBufBlocks	tag in src/world/map/CMap.cpp
 007b9690	annotated	CMapRenderChunk::CMapRenderChunk	tag in src/world/map/CMapRenderChunk.cpp
 007b9770	annotated	CMapRenderChunk::AssignLayers	tag in src/world/map/CMapRenderChunk.cpp
 007b9830	annotated	CMapRenderChunk::ReleaseBufEntry	tag in src/world/map/CMapRenderChunk.cpp
+007b9890	annotated	CMapRenderChunk::FillLayerAlpha	tag in src/world/map/CMapRenderChunk.cpp
+007b9950	annotated	CMapRenderChunk::FillShadow	tag in src/world/map/CMapRenderChunk.cpp
+007b99b0	annotated	CMapRenderChunk::FillAlpha	tag in src/world/map/CMapRenderChunk.cpp
+007b9bc0	annotated	LayerAlphaTexCallback	tag in src/world/map/CMapRenderChunk.cpp
+007b9c20	annotated	ShadowTexCallback	tag in src/world/map/CMapRenderChunk.cpp
+007b9c60	annotated	AlphaTexCallback	tag in src/world/Terrain.cpp
 007b9cb0	annotated	CMapChunkBufBlock::CMapChunkBufBlock	tag in src/world/map/CMapRenderChunk.cpp
 007b9d60	annotated	CMapRenderChunk::~CMapRenderChunk	tag in src/world/map/CMapRenderChunk.cpp
+007b9de0	annotated	CMapRenderChunk::BuildLayerAlphaTexture	tag in src/world/map/CMapRenderChunk.cpp
+007b9ee0	annotated	CMapRenderChunk::BuildShadowTexture	tag in src/world/map/CMapRenderChunk.cpp
+007b9f90	annotated	CMapRenderChunk::BuildAlphaTexture	tag in src/world/map/CMapRenderChunk.cpp
 007ba050	annotated	CMapRenderChunk::UpdateAlphaTextures	tag in src/world/map/CMapRenderChunk.cpp
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
@@ -2859,6 +2892,7 @@ addr	how	frozen	evidence
 007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
 007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
 007c3d90	annotated	CMapChunk::Initialize	tag in src/world/map/CMapChunk.cpp
+007c3db0	order	CMapChunk::AlphaSize	definition order between CMapChunk::BuildIndices and CMapChunk::UpdateSortDistance in src/world/map/CMapChunk.cpp
 007c3e70	annotated	CMapChunk::UpdateSortDistance	tag in src/world/map/CMapChunk.cpp
 007c3f30	annotated	CMapChunk::FillVerticesWorld	tag in src/world/map/CMapChunk.cpp
 007c4620	annotated	CMapChunk::FillVerticesWorldColor	tag in src/world/map/CMapChunk.cpp
@@ -2915,6 +2949,8 @@ addr	how	frozen	evidence
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
+007d66d0	annotated	CMapChunk::CanPairWith	tag in src/world/map/CMapChunk.cpp
+007d6810	annotated	CMapArea::PairRenderChunks	tag in src/world/map/CMapArea.cpp
 007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
 007d6a90	annotated	CMapArea::DestroyChunks	tag in src/world/map/CMapArea.cpp
 007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
@@ -3439,14 +3475,14 @@ addr	how	frozen	evidence
 00855060	string	luaopen_base	unique "coroutine"
 00855240	callorder	luaE_newthread	same slot between linked calls in 0084db90=lua_newthread
 00855a20	string	luaD_seterrorobj	unique "error in error handling"
-00855bf0	sticky	luaD_reallocstack	held from the previous run, where it was callgraph
+00855bf0	sticky	luaD_reallocstack	held from the previous run, where it was sticky
 00855c50	callorder	luaD_reallocCI	same slot between linked calls in 00856330=growCI
-00855cd0	sticky	luaD_growstack	held from the previous run, where it was callgraph
+00855cd0	sticky	luaD_growstack	held from the previous run, where it was sticky
 00856150	string	lua_yield	unique "attempt to yield across metamethod/C-call boundary"
 008562e0	callgraph	luaD_throw	only unmatched callee of 0085d6f0=luaM_realloc_
 00856330	string	growCI	unique "stack overflow"
-00856370	sticky	luaD_precall	held from the previous run, where it was callorder
-00856760	sticky	luaD_call	held from the previous run, where it was callorder
+00856370	sticky	luaD_precall	held from the previous run, where it was sticky
+00856760	sticky	luaD_call	held from the previous run, where it was sticky
 008568f0	string	lua_resume	unique "cannot resume non-suspended coroutine"
 00856970	callorder	luaD_pcall	same slot between linked calls in 0084ec50=lua_pcall
 00856af0	callgraph	luaS_resize	only unmatched callee of 00856bc0=newlstr

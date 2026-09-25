@@ -1,6 +1,7 @@
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMapRenderChunk.hpp"
 #include "world/CWorldScene.hpp"
 #include "async/AsyncFile.hpp"
 #include "async/CAsyncObject.hpp"
@@ -362,5 +363,74 @@ void CMapArea::Destroy() {
         auto next = this->m_parentLinkList.Next(link);
         CMap::FreeBaseObjLink(link);
         link = next;
+    }
+}
+
+// ref: FUN_007d6810
+// Render chunks two chunks wide, for the shader vertex mode: the four chunks of an even 2x2
+// cell pair along whichever axis lets more of them share a render chunk (a pair needs the same
+// textures, see CMapChunk::CanPairWith); flag 1 pairs a chunk with its row neighbour, 2 with
+// its column neighbour. Chunks left over get one of their own. Nothing happens until all four
+// exist.
+void CMapArea::PairRenderChunks(const int32_t* cell) {
+    int32_t x = cell[0];
+    int32_t y = cell[1];
+
+    CMapChunk* chunks[4] = {
+        this->m_chunks[y * 16 + x],
+        this->m_chunks[(y + 1) * 16 + x],
+        this->m_chunks[y * 16 + x + 1],
+        this->m_chunks[(y + 1) * 16 + x + 1]
+    };
+
+    for (int32_t i = 0; i < 4; i++) {
+        if (!chunks[i]) {
+            return;
+        }
+    }
+
+    int32_t rowPairA = chunks[0]->CanPairWith(chunks[1]);
+    int32_t rowPairB = chunks[2]->CanPairWith(chunks[3]);
+    int32_t colPairA = chunks[0]->CanPairWith(chunks[2]);
+    int32_t colPairB = chunks[1]->CanPairWith(chunks[3]);
+
+    if (rowPairA + rowPairB != 0 || colPairB + colPairA != 0) {
+        int32_t partner = 2;
+        int32_t secondFirst = 1;
+        int32_t secondPair = colPairB;
+        uint8_t flags = 2;
+        int32_t firstPair = colPairA;
+
+        if (colPairB + colPairA < rowPairA + rowPairB) {
+            partner = 1;
+            secondFirst = 2;
+            secondPair = rowPairB;
+            flags = 1;
+            firstPair = rowPairA;
+        }
+
+        if (firstPair) {
+            auto renderChunk = CMap::AllocRenderChunk();
+            auto first = chunks[0];
+            auto second = chunks[partner];
+            first->m_renderChunk = renderChunk;
+            renderChunk->Init(first, second, first->m_position, flags);
+            second->m_renderChunk = first->m_renderChunk;
+        }
+
+        if (secondPair) {
+            auto renderChunk = CMap::AllocRenderChunk();
+            auto first = chunks[secondFirst];
+            auto second = chunks[3];
+            first->m_renderChunk = renderChunk;
+            renderChunk->Init(first, second, first->m_position, flags);
+            second->m_renderChunk = first->m_renderChunk;
+        }
+    }
+
+    for (int32_t i = 0; i < 4; i++) {
+        if (!chunks[i]->m_renderChunk) {
+            chunks[i]->CreateRenderChunk();
+        }
     }
 }

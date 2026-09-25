@@ -40,7 +40,7 @@ uint32_t CWorld::s_tickTimeFixed;
 uint32_t CWorld::s_tickTimeMs;
 float CWorld::s_tickTimeSec;
 float CWorld::s_textureScroll[8][4];
-int32_t CWorld::s_terrainAlphaFull;
+int32_t CWorld::s_terrainShadowLevel;
 const float CWorld::s_textureScrollDir[8][2] = {
     { -1.0f,  0.0f },
     { -1.0f,  1.0f },
@@ -867,6 +867,8 @@ void CWorld::Initialize() {
         CWorld::s_textureScroll[i][2] = 0.0f;
         CWorld::s_textureScroll[i][3] = 1.0f;
     }
+
+    CWorld::s_terrainShadowLevel = CWorldParam::cvar_shadowLevel ? CWorldParam::cvar_shadowLevel->GetInt() : 1;
 
     // TODO FUN_007bd3a0
 

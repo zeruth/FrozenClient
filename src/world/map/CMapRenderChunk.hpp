@@ -54,6 +54,10 @@ class CMapChunkBufBlock {
 // (m_flags bits 0-1) it draws a neighbouring pair from one buffer.
 class CMapRenderChunk {
     public:
+        // The texels of the alpha or shadow texture being built (DAT_00d1d098, 0x8000 bytes: a
+        // two-chunk 8888 map at full size)
+        static uint8_t s_blendBuffer[0x8000];
+
         CMapRenderChunk();
         ~CMapRenderChunk();
 
@@ -86,6 +90,12 @@ class CMapRenderChunk {
         void ReleaseLayers();
         void ReleaseBufEntry();
         void UpdateAlphaTextures();
+        void BuildLayerAlphaTexture(CMapRenderChunkLayer* layer);
+        void BuildShadowTexture();
+        void BuildAlphaTexture();
+        void FillLayerAlpha(const CMapRenderChunkLayer* layer);
+        void FillShadow();
+        void FillAlpha();
         void SetupVertexShader(int32_t textureCount, int32_t chunkSpecular);
         void DrawLocal();
         void DrawWorld();

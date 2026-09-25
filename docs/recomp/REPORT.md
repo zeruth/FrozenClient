@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 04:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 05:22 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,26 +8,26 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26977 | 5.36M |
-| mapped to a frozen function | 4094 (+661) (15.2%) | 837.6k (15.3%) |
-| &nbsp;&nbsp;ported | 3432 (+670) | 665.2k |
-| &nbsp;&nbsp;stub (unimplemented body) | 580 (-36) | 125.5k |
+| mapped to a frozen function | 4130 (=) (15.3%) | 846.1k (15.4%) |
+| &nbsp;&nbsp;ported | 3468 (=) | 673.8k |
+| &nbsp;&nbsp;stub (unimplemented body) | 580 (=) | 125.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **2049 (+574) (7.6%)** | **255.7k (4.7%)** |
-| unmapped | 22883 | 4.54M |
-| world spine (reachable from OnFrameRender) | 5401, mapped 1251 (+491) (23.2%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5668, mapped 1269 (+499) (22.4%) | |
-| **render surface** (the modules that draw the world) | **4538, mapped 643 (+196) (14.2%)** | |
-| frozen functions (src/, from PDB + source) | 13239, stubs 1702 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2080 (=) (7.7%)** | **262.0k (4.8%)** |
+| unmapped | 22847 | 4.53M |
+| world spine (reachable from OnFrameRender) | 5401, mapped 1257 (=) (23.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5668, mapped 1275 (=) (22.5%) | |
+| **render surface** (the modules that draw the world) | **4538, mapped 679 (=) (15.0%)** | |
+| frozen functions (src/, from PDB + source) | 13286, stubs 1702 | |
 
-Match evidence: annotated 1912, callgraph 229, callorder 114, cvar 32, handler 29, order 139, override 299, sticky 16, string 304, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 1947, callgraph 229, callorder 114, cvar 32, handler 29, order 140, override 299, sticky 16, string 304, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 03:33 -- mapped 3433, ported 2762, stub 616, spine mapped 760.
+Previous run: 2026-09-25 05:21 -- mapped 4130, ported 3468, stub 580, spine mapped 1257.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1380 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (-31). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1380 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
-| DetailDoodad.cpp | 161 | 41.1k | 28 (17.4%) | 15.5% | 2 | 0 | 70 |
+| DetailDoodad.cpp | 161 | 41.1k | 61 (37.9%) | 34.3% | 2 | 0 | 70 |
 | VehicleCamera_C.cpp | 94 | 40.6k | 5 (5.3%) | 1.4% | 0 | 0 | 38 |
 | DBCache.cpp | 236 | 38.8k | 44 (18.6%) | 11.2% | 0 | 0 | 83 |
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
@@ -181,7 +181,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Calendar.cpp | 108 | 32.1k | 19 (17.6%) | 16.7% | 18 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | XMLTree.cpp | 183 | 31.0k | 86 (47.0%) | 49.9% | 5 | 0 | 30 |
-| MapChunkLiquid.cpp | 77 | 30.9k | 20 (26.0%) | 25.2% | 0 | 0 | 47 |
+| MapChunkLiquid.cpp | 77 | 30.9k | 22 (28.6%) | 27.2% | 0 | 0 | 47 |
 | MinimapFrame.cpp | 76 | 30.8k | 22 (28.9%) | 18.2% | 0 | 0 | 1 |
 | UnitMissileTrajectory_C.cpp | 93 | 30.6k | 4 (4.3%) | 1.4% | 0 | 0 | 57 |
 | Client.cpp | 167 | 30.6k | 59 (35.3%) | 39.5% | 10 | 0 | 30 |
@@ -206,7 +206,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ObjectEffect.cpp | 81 | 20.5k | 4 (4.9%) | 1.9% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 1 (1.1%) | 0.1% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
-| MapMem.cpp | 87 | 20.1k | 55 (63.2%) | 56.1% | 0 | 0 | 63 |
+| MapMem.cpp | 87 | 20.1k | 56 (64.4%) | 57.0% | 0 | 0 | 63 |
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 51 (39.8%) | 37.2% | 4 | 1 | 2 |
 | Cursor.cpp | 111 | 19.5k | 13 (11.7%) | 11.4% | 0 | 0 | 16 |
 | CheckExecutableSignature.cpp | 94 | 19.4k | 7 (7.4%) | 16.1% | 0 | 0 | 28 |
@@ -631,7 +631,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00828a00 | `CM2Model::AnimateST` | 50% | 24 | 8 | 40 | 17 | 0% | 1415 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
-| 00798da0 | `CWorldScene::RenderTerrain` | 77% | 31 | 40 | 38 | 8 | 0% | 1379 |
+| 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
 | 0079a870 | `CMap::Render` | 23% | 54 | 20 | 24 | 6 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
@@ -726,31 +726,31 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-24 08:13 | 3232 (11.9%) | 1294 (4.8%) | 689 | 614/5527 | 2924/2964 | 1493 |
-| 2026-09-24 23:27 | 3270 (12.0%) | 1312 (4.8%) | 689 | 646/5526 | 2924/2964 | 1493 |
-| 2026-09-24 23:38 | 3282 (12.1%) | 1323 (4.9%) | 689 | 656/5526 | 2924/2964 | 1493 |
-| 2026-09-24 23:39 | 3282 (12.1%) | 1321 (4.9%) | 689 | 656/5526 | 2924/2964 | 1493 |
-| 2026-09-24 23:53 | 3309 (12.2%) | 1336 (4.9%) | 689 | 675/5516 | 2924/2964 | 1493 |
-| 2026-09-25 00:08 | 3324 (12.3%) | 1339 (4.9%) | 692 | 686/5516 | 2924/2964 | 1493 |
-| 2026-09-25 00:26 | 3348 (12.3%) | 1353 (5.0%) | 691 | 710/5513 | 2924/2964 | 1493 |
-| 2026-09-25 00:27 | 3348 (12.3%) | 1353 (5.0%) | 691 | 710/5513 | 2924/2964 | 1493 |
-| 2026-09-25 00:27 | 3349 (12.3%) | 1353 (5.0%) | 691 | 711/5513 | 2924/2964 | 1493 |
-| 2026-09-25 00:27 | 3349 (12.3%) | 1353 (5.0%) | 691 | 711/5513 | 2924/2964 | 1493 |
-| 2026-09-25 00:49 | 3368 (12.4%) | 1358 (5.0%) | 691 | 729/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:50 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:50 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:50 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
-| 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
 | 2026-09-25 00:51 | 3369 (12.4%) | 1359 (5.0%) | 691 | 730/5512 | 2924/2964 | 1493 |
 | 2026-09-25 00:52 | 3371 (12.4%) | 1361 (5.0%) | 691 | 732/5510 | 2924/2964 | 1493 |
 | 2026-09-25 01:16 | 3399 (12.5%) | 1377 (5.1%) | 692 | 760/5509 | 2924/2964 | 1493 |
 | 2026-09-25 03:32 | 3433 (12.7%) | 1475 (5.4%) | 616 | 760/5509 | 2924/2964 | 1411 |
 | 2026-09-25 03:33 | 3433 (12.7%) | 1475 (5.4%) | 616 | 760/5509 | 2924/2964 | 1411 |
 | 2026-09-25 04:52 | 4094 (15.2%) | 2049 (7.6%) | 580 | 1251/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:17 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:17 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:17 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:17 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:17 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:18 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:18 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:18 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:18 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:18 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:19 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:19 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:19 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:19 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:20 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:20 | 4130 (15.3%) | 2078 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:21 | 4130 (15.3%) | 2080 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:21 | 4130 (15.3%) | 2080 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
+| 2026-09-25 05:22 | 4130 (15.3%) | 2080 (7.7%) | 580 | 1257/5401 | 2924/2964 | 1380 |
 
 ## How to move a row
 

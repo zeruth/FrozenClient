@@ -103,6 +103,7 @@ int32_t CMap::s_terrainShadersDirty;
 STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) CMap::s_frameChunkList;
 
 uint8_t CMap::s_terrainShaders;
+uint8_t CMap::s_shaderVertexMode;
 TSGrowableArray<CMapChunkBufBlock> CMap::s_bufBlocks;
 STORM_EXPLICIT_LIST(CMapChunkBufEntry, link) CMap::s_freeBufEntryList;
 STORM_EXPLICIT_LIST(CMapChunkBufBlock, freeLink) CMap::s_freeBufBlockList;
@@ -248,7 +249,7 @@ void CMap::LoadSettings() {
         }
     }
 
-    // TODO DAT_00ce0498 = terrainShaders ? s_chunkVerticesWorldSpace : 0
+    CMap::s_shaderVertexMode = terrainShaders ? CMap::s_chunkVerticesWorldSpace : 0;
 }
 
 // ref: FUN_007b7330

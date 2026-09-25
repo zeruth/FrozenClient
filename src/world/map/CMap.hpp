@@ -144,6 +144,9 @@ class CMap {
         static int32_t s_terrainShadersDirty;             // DAT_00d1d058
         // The terrain shaders loaded and valid (DAT_00ce049e, from LoadSettings)
         static uint8_t s_terrainShaders;
+        // World-space vertices under the terrain shaders (DAT_00ce0498): render chunks then
+        // pair up two chunks wide
+        static uint8_t s_shaderVertexMode;
 
         // Render chunk buffers: two pools sized for every chunk the far clip can reach
         // (CreateRenderChunkPools), carved into blocks of two slots. Free single slots wait in

@@ -291,6 +291,19 @@ void CWorldScene::RenderTerrain() {
         }
 
         ShadowMapBindTerrain();
+
+        // Diverged: frozen's D3D backend never reports the two capability fields the reference
+        // gates on above (int134, int138), and fogs shader-drawn geometry through the
+        // fixed-function table fog (CGxDeviceD3d::IStateSetD3dDefaults), so the ramp and the
+        // enable go through the render states here as the stand-in did. The vertex shader's
+        // own fog output is unused on that path.
+        if (!GxCaps().int138) {
+            bool fogActive = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
+            g_theGxDevicePtr->RsSet(GxRs_FogStart, CWorld::GetFogStart());
+            g_theGxDevicePtr->RsSet(GxRs_FogEnd, CWorld::GetFogEnd());
+            g_theGxDevicePtr->RsSet(GxRs_FogColor, fogColor.value);
+            g_theGxDevicePtr->RsSet(GxRs_Fog, fogActive ? 1 : 0);
+        }
     }
 
     CWorldScene::RenderChunkLists();

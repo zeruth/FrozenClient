@@ -86,9 +86,9 @@ class CWorld {
         // direction, advanced every update along s_textureScrollDir and wrapped at 64
         static float s_textureScroll[8][4];
         static const float s_textureScrollDir[8][2];   // DAT_00adee78
-        // Every terrain chunk keeps its full-size alpha map however far it is (DAT_00cd7550,
-        // from a CVar read at world start whose name is not recovered yet)
-        static int32_t s_terrainAlphaFull;
+        // The shadowLevel CVar as read at world start (DAT_00cd7550): non-zero makes every
+        // terrain chunk take its half-size alpha map
+        static int32_t s_terrainShadowLevel;
         static Weather* s_weather;
 
         // Public static functions

@@ -26,7 +26,9 @@ struct SMMapHeader {
     uint32_t ofsMFBO;       // +0x24
     uint32_t ofsMH2O;       // +0x28
     uint32_t ofsMTXF;       // +0x2c
-    uint32_t pad[4];        // +0x30
+    uint8_t mampValue;      // +0x30: the alpha maps are 64 >> this texels wide (0 in every 3.3.5 ADT)
+    uint8_t pad31[3];
+    uint32_t pad[3];        // +0x34
 };
 
 // One MCIN entry: where a chunk's MCNK sits in the file
@@ -94,6 +96,7 @@ class CMapArea : public CMapBaseObj {
         void CreateChunk(int32_t x, int32_t y);
         void CreateChunks(int32_t update, const int32_t* rect);
         void DestroyChunks(const int32_t* rect);
+        void PairRenderChunks(const int32_t* cell);
         void Destroy();
 };
 

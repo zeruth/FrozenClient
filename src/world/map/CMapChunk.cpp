@@ -330,10 +330,87 @@ void CMapChunk::EnsureRenderChunk() {
         return;
     }
 
-    // TODO if (CMap::s_shaderVertexMode) { cell = { m_areaChunkX & ~1, m_areaChunkY & ~1 }; FUN_007d6810(&cell); return; }
+    if (CMap::s_shaderVertexMode) {
+        int32_t cell[2] = { this->m_areaChunkX & ~1, this->m_areaChunkY & ~1 };
+        auto area = static_cast<CMapArea*>(this->m_parentLinkList.Head()->ref);
+        area->PairRenderChunks(cell);
+        return;
+    }
 
     this->CreateRenderChunk();
     this->m_renderChunkReady = 1;
+}
+
+// ref: FUN_007d66d0
+// Whether two chunks can share a render chunk, which marks both as having had their render chunk
+// decided either way. Classic maps need the same layers in the same order, none animated; on a
+// shader-vertex map the union of both texture sets has to fit four layers and no layer may be
+// animated or specular.
+int32_t CMapChunk::CanPairWith(CMapChunk* other) {
+    this->m_renderChunkReady = 1;
+    other->m_renderChunkReady = 1;
+
+    if (!(CMap::s_wdtHeader[0] & 0x4)) {
+        uint32_t count = other->m_header->nLayers;
+
+        if (this->m_header->nLayers != count) {
+            return 0;
+        }
+
+        for (uint32_t i = 0; i < count; i++) {
+            if (other->m_layers[i].flags & 0xc0) {
+                return 0;
+            }
+            if (this->m_layers[i].flags & 0xc0) {
+                return 0;
+            }
+            if (this->m_layers[i].textureId != other->m_layers[i].textureId) {
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+
+    uint32_t count = this->m_header->nLayers;
+    uint32_t total = count;
+
+    if (other->m_header->nLayers == 0) {
+        return count < 5;
+    }
+
+    for (uint32_t j = 0; j < other->m_header->nLayers; j++) {
+        const SMLayer* layer = &other->m_layers[j];
+
+        if (layer->flags & 0x4c0) {
+            return 0;
+        }
+
+        bool found = false;
+
+        for (uint32_t i = 0; i < count; i++) {
+            if (this->m_layers[i].flags & 0x4c0) {
+                return 0;
+            }
+
+            if (this->m_layers[i].textureId == layer->textureId) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            total++;
+        }
+    }
+
+    return total < 5;
+}
+
+// The width of this chunk's alpha and shadow maps in texels: 64, less the tile's MAMP shift
+uint32_t CMapChunk::AlphaSize() const {
+    auto area = static_cast<CMapArea*>(const_cast<CMapChunk*>(this)->m_parentLinkList.Head()->ref);
+    return 0x40u >> (area->m_header->mampValue & 0x1f);
 }
 
 // ref: FUN_007c3e70
@@ -383,7 +460,7 @@ void CMapChunk::UpdateLiquidVisibility() {
 
 // ref: FUN_007d3fe0
 // Readies a visible chunk for the frame: its render chunk exists, is marked for the half-size
-// alpha beyond 777 yards (unless the full-size setting is on), and is built. Then, with detail
+// alpha beyond 777 yards or whenever the shadowLevel setting is on, and is built. Then, with detail
 // doodads on and the chunk within 70 yards, its detail doodads are created and queued; that
 // system (FUN_007d3390, FUN_00792fa0) is not ported yet.
 void CMapChunk::PrepareRender() {
@@ -397,7 +474,7 @@ void CMapChunk::PrepareRender() {
         float dy = cameraPos.y - this->m_center.y;
         float dz = cameraPos.z - this->m_center.z;
 
-        if (CWorld::s_terrainAlphaFull || 603729.0f < dy * dy + dz * dz + dx * dx) {
+        if (CWorld::s_terrainShadowLevel || 603729.0f < dy * dy + dz * dz + dx * dx) {
             this->m_renderChunk->m_flags10 |= 0x10;
         }
 

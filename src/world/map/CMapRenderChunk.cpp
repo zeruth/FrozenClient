@@ -3,6 +3,7 @@
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/CWorld.hpp"
+#include "world/CWorldParam.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/ShadowMap.hpp"
 #include "gx/Buffer.hpp"
@@ -381,19 +382,285 @@ void CMapRenderChunk::UpdateAlphaTextures() {
 
     if (!CMap::s_terrainShaders && !CMap::s_terrainSpecular) {
         for (int32_t i = 0; i < this->m_layerCount; i++) {
-            // TODO FUN_007b9de0(&m_layers[i]): the layer's own alpha texture
+            this->BuildLayerAlphaTexture(&this->m_layers[i]);
         }
 
         if (!(CMap::s_wdtHeader[0] & 0x4)) {
-            // TODO FUN_007b9ee0(): the shadow texture
+            this->BuildShadowTexture();
             this->m_flags10 &= ~0x30;
             return;
         }
     } else {
-        // TODO FUN_007b9f90(): the packed alpha texture
+        this->BuildAlphaTexture();
     }
 
     this->m_flags10 &= ~0x30;
+}
+
+// ----------------------------------------------------------------------------------------------
+// Alpha and shadow textures
+
+uint8_t CMapRenderChunk::s_blendBuffer[0x8000];
+
+// ref: FUN_007b7a70
+// A "TerrainBlend" texture filled through a callback: 4444 or 8888 as asked, except that a
+// shader-vertex map takes the format the terrainAlphaBitDepth setting picks
+static HTEXTURE CreateBlendTexture(uint32_t width, uint32_t height, void* userArg, TEXTURE_CALLBACK* callback, EGxTexFormat format, EGxTexFormat dataFormat) {
+    if (CMap::s_wdtHeader[0] & 0x4) {
+        int32_t bitDepth = CWorldParam::cvar_terrainAlphaBitDepth ? CWorldParam::cvar_terrainAlphaBitDepth->GetInt() : 8;
+        format = bitDepth != 8 ? GxTex_Argb4444 : GxTex_Argb8888;
+    }
+
+    CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
+    return TextureCreate(GxTex_2d, width, height, 0, format, dataFormat, flags, userArg, callback, "TerrainBlend", 0);
+}
+
+// The bytes per row a blend texture's callback reports: the shader-vertex maps are 8888
+static uint32_t BlendPitch(uint32_t width) {
+    return (CMap::s_wdtHeader[0] & 0x4) ? width * 4 : width * 2;
+}
+
+// ref: FUN_007b9bc0
+static void LayerAlphaTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mip, void* userArg, uint32_t& pitch, const void*& data) {
+    if (cmd == GxTex_Latch) {
+        auto layer = static_cast<CMapRenderChunkLayer*>(userArg);
+        layer->owner->FillLayerAlpha(layer);
+        pitch = BlendPitch(width);
+        data = CMapRenderChunk::s_blendBuffer;
+    }
+}
+
+// ref: FUN_007b9c20
+static void ShadowTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mip, void* userArg, uint32_t& pitch, const void*& data) {
+    if (cmd == GxTex_Latch) {
+        static_cast<CMapRenderChunk*>(userArg)->FillShadow();
+        pitch = width * 2;
+        data = CMapRenderChunk::s_blendBuffer;
+    }
+}
+
+// ref: FUN_007b9c60
+static void AlphaTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mip, void* userArg, uint32_t& pitch, const void*& data) {
+    if (cmd == GxTex_Latch) {
+        static_cast<CMapRenderChunk*>(userArg)->FillAlpha();
+        data = CMapRenderChunk::s_blendBuffer;
+        pitch = BlendPitch(width);
+    }
+}
+
+// ref: FUN_007b9de0
+// One layer's own alpha texture, for the fixed-function layering: a layer with an MCAL map, or
+// any layer past the first on a shader-vertex map
+void CMapRenderChunk::BuildLayerAlphaTexture(CMapRenderChunkLayer* layer) {
+    if (layer->alphaTexture) {
+        HandleClose(layer->alphaTexture);
+    }
+
+    layer->alphaTexture = nullptr;
+
+    uint32_t twoChunk = (CMap::s_wdtHeader[0] >> 2) & 0x1;
+    bool second = twoChunk && layer->index != 0;
+
+    if ((layer->flags & 0x100) || second) {
+        uint32_t width = this->m_chunk->AlphaSize();
+        uint32_t height = this->m_chunk->AlphaSize();
+
+        if (this->m_flags10 & 0x8) {
+            width /= 2;
+            height /= 2;
+        }
+
+        EGxTexFormat format = twoChunk ? GxTex_Argb8888 : GxTex_Argb4444;
+        layer->alphaTexture = CreateBlendTexture(width, height, layer, LayerAlphaTexCallback, format, format);
+        GxTexUpdate(TextureGetGxTex(layer->alphaTexture, 1, nullptr), 0, 0, width, height, 1);
+    }
+}
+
+// ref: FUN_007b9ee0
+// The shadow texture on its own, for the fixed-function layering, when the chunk has MCSH and
+// shadows are on
+void CMapRenderChunk::BuildShadowTexture() {
+    if (this->m_shadowTexture) {
+        HandleClose(this->m_shadowTexture);
+    }
+
+    this->m_shadowTexture = nullptr;
+
+    if ((CWorld::s_enables & CWorld::Enables::Enable_Shadow) && (this->m_chunk->m_header->flags & 0x1)) {
+        uint32_t size = this->m_chunk->AlphaSize();
+
+        if (this->m_flags10 & 0x8) {
+            size /= 2;
+        }
+
+        this->m_shadowTexture = CreateBlendTexture(size, size, this, ShadowTexCallback, GxTex_Argb4444, GxTex_Argb4444);
+        GxTexUpdate(TextureGetGxTex(this->m_shadowTexture, 1, nullptr), 0, 0, size, size, 1);
+    }
+}
+
+// ref: FUN_007b9f90
+// The packed alpha texture the terrain shaders sample: shadow and layers 1..3 in one map, twice
+// as tall for a row pair, twice as wide for a column pair
+void CMapRenderChunk::BuildAlphaTexture() {
+    if (this->m_alphaTexture) {
+        HandleClose(this->m_alphaTexture);
+    }
+
+    this->m_alphaTexture = nullptr;
+
+    uint32_t size = this->m_chunk->AlphaSize();
+
+    if (this->m_flags10 & 0x8) {
+        size /= 2;
+    }
+
+    uint32_t width = size;
+    uint32_t height;
+
+    if (!(this->m_flags & 0x1)) {
+        height = size;
+
+        if (this->m_flags & 0x2) {
+            width = size * 2;
+        }
+    } else {
+        height = size * 2;
+    }
+
+    EGxTexFormat format = (CMap::s_wdtHeader[0] & 0x4) ? GxTex_Argb8888 : GxTex_Argb4444;
+    this->m_alphaTexture = CreateBlendTexture(width, height, this, AlphaTexCallback, format, format);
+    GxTexUpdate(TextureGetGxTex(this->m_alphaTexture, 1, nullptr), 0, 0, width, height, 1);
+}
+
+// ref: FUN_007b9890
+// The texels of one layer's alpha texture
+void CMapRenderChunk::FillLayerAlpha(const CMapRenderChunkLayer* layer) {
+    int32_t genFormat = (CMap::s_wdtHeader[0] & 0x4) ? 2 : 3;
+    auto chunk = this->m_chunk;
+    const SMLayer* mcly = &chunk->m_layers[layer->index];
+
+    SMLayerAlpha info;
+    info.flags = mcly->flags;
+    info.alpha = (mcly->flags & 0x100) ? chunk->m_alpha + mcly->offsetInMCAL : nullptr;
+
+    const uint8_t* shadow = nullptr;
+    if ((chunk->m_header->flags & 0x1) && (CWorld::s_enables & CWorld::Enables::Enable_Shadow)) {
+        shadow = chunk->m_shadow;
+    }
+
+    CMapChunk::UnpackAlphaBits(this, CMapRenderChunk::s_blendBuffer, chunk->AlphaSize(), &info, shadow, genFormat, chunk->m_header->flags & 0x8000);
+}
+
+// ref: FUN_007b9950
+// The texels of the shadow texture
+void CMapRenderChunk::FillShadow() {
+    auto chunk = this->m_chunk;
+    const uint8_t* shadow = (chunk->m_header->flags & 0x1) ? chunk->m_shadow : nullptr;
+    uint32_t size = chunk->AlphaSize();
+
+    if (!(this->m_flags10 & 0x8)) {
+        CMapChunk::UnpackShadowBits(reinterpret_cast<uint16_t*>(CMapRenderChunk::s_blendBuffer), size, shadow);
+        return;
+    }
+
+    CMapChunk::UnpackShadowBitsHalf(reinterpret_cast<uint16_t*>(CMapRenderChunk::s_blendBuffer), size, shadow);
+}
+
+// ref: FUN_007b99b0
+// The texels of the packed alpha texture: the chunk's layers, then the second chunk's placed
+// beside or below them with each of its layers in the slot the merged layer list gave that
+// texture (its base texture's slot gets the implicit alpha)
+void CMapRenderChunk::FillAlpha() {
+    int32_t genFormat = (CMap::s_wdtHeader[0] & 0x4) ? 2 : 3;
+    auto chunk = this->m_chunk;
+    uint32_t layerCount = chunk->m_header->nLayers;
+
+    SMLayerAlpha layers[4] = {};
+
+    for (uint32_t i = 0; i < layerCount; i++) {
+        const SMLayer* mcly = &chunk->m_layers[i];
+
+        if (mcly->flags & 0x100) {
+            layers[i].alpha = chunk->m_alpha + mcly->offsetInMCAL;
+        }
+
+        layers[i].flags = mcly->flags;
+    }
+
+    const uint8_t* shadow = nullptr;
+    if ((chunk->m_header->flags & 0x1) && (CWorld::s_enables & CWorld::Enables::Enable_Shadow)) {
+        shadow = chunk->m_shadow;
+    }
+
+    uint32_t size = chunk->AlphaSize();
+    uint32_t pitch = size;
+
+    if (this->m_flags & 0x2) {
+        pitch = size * 2;
+    }
+
+    if (this->m_flags10 & 0x8) {
+        pitch >>= 1;
+    }
+
+    CMapChunk::UnpackAlphaShadowBits(this, CMapRenderChunk::s_blendBuffer, 0, pitch, size, layers, 0, shadow, genFormat, chunk->m_header->flags & 0x8000);
+
+    auto chunk2 = this->m_chunk2;
+
+    if (!chunk2) {
+        return;
+    }
+
+    SMLayerAlpha layers2[4] = {};
+    uint32_t baseLayer = 0;
+    uint32_t layerCount2 = chunk2->m_header->nLayers;
+
+    for (uint32_t j = 0; j < layerCount2; j++) {
+        const SMLayer* mcly = &chunk2->m_layers[j];
+
+        for (uint32_t i = 0; i < this->m_layerCount; i++) {
+            if (this->m_layers[i].textureId == mcly->textureId) {
+                if (mcly->flags & 0x100) {
+                    layers2[i].alpha = chunk2->m_alpha + mcly->offsetInMCAL;
+                }
+
+                layers2[i].flags = mcly->flags;
+
+                if (j == 0) {
+                    baseLayer = i;
+                }
+
+                break;
+            }
+        }
+    }
+
+    const uint8_t* shadow2 = nullptr;
+    if ((chunk2->m_header->flags & 0x1) && (CWorld::s_enables & CWorld::Enables::Enable_Shadow)) {
+        shadow2 = chunk2->m_shadow;
+    }
+
+    uint32_t offset;
+
+    if (!(this->m_flags & 0x1)) {
+        offset = 0;
+
+        if (this->m_flags & 0x2) {
+            offset = size;
+
+            if (this->m_flags10 & 0x8) {
+                offset = size >> 1;
+            }
+        }
+    } else {
+        offset = size * size;
+
+        if (this->m_flags10 & 0x8) {
+            offset = (size * size) >> 2;
+        }
+    }
+
+    CMapChunk::UnpackAlphaShadowBits(this, CMapRenderChunk::s_blendBuffer, offset, pitch, size, layers2, baseLayer, shadow2, genFormat, chunk2->m_header->flags & 0x8000);
 }
 
 // ----------------------------------------------------------------------------------------------

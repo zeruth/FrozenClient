@@ -53,6 +53,12 @@ struct SMLayer {
     uint32_t effectId;
 };
 
+// One layer's alpha as the unpackers walk it: the MCLY flags and the next MCAL row
+struct SMLayerAlpha {
+    uint32_t flags = 0;
+    const uint8_t* alpha = nullptr;
+};
+
 // The two vertex formats the fillers write. CMap::s_terrainVertexFormat == 1 selects the one
 // without the baked colour.
 struct CMapChunkVertex {
@@ -76,9 +82,24 @@ class CMapChunk : public CMapBaseObj {
         // Added to a batch's max index per chunk appended (DAT_00aeec6e, set at runtime)
         static uint16_t s_vertexSpan;
 
+        // The alpha unpackers' scratch: a decompressed row per layer, and the rows a chunk
+        // without MCSH or a layer without MCAL read (CMapChunkAlpha.cpp)
+        static uint8_t s_alphaRows[4][0x40];
+        static uint8_t s_zeroShadowRow[0x40];
+        static uint8_t s_zeroAlphaRow[0x80];
+
         // Static functions
         static void Initialize();
         static void BuildVertexTable();
+        static const uint8_t* DecompressAlphaRow(uint8_t* dst, int32_t count, const uint8_t* src);
+        static void NextAlphaRows(const uint8_t** shadow, const uint8_t** shadowRow, SMLayerAlpha* layers, uint32_t size, const uint8_t** rows);
+        static void NextNibbleRows(uint32_t size, const uint8_t** shadow, const uint8_t** shadowRow, SMLayerAlpha* layers, const uint8_t** rows);
+        static void GatherLayerAlphas(const CMapRenderChunk* renderChunk, const CMapChunk* chunk, SMLayerAlpha* out);
+        static void PackNibbleRow(uint16_t* dst, int32_t count, const uint8_t** rows, const uint8_t* shadowRow);
+        static void UnpackAlphaBits(const CMapRenderChunk* renderChunk, void* dst, uint32_t size, SMLayerAlpha* layer, const uint8_t* shadow, int32_t genFormat, uint32_t bigAlpha);
+        static void UnpackAlphaShadowBits(const CMapRenderChunk* renderChunk, void* dst, uint32_t offset, uint32_t pitch, uint32_t size, SMLayerAlpha* layers, uint32_t baseLayer, const uint8_t* shadow, int32_t genFormat, uint32_t bigAlpha);
+        static void UnpackShadowBits(uint16_t* dst, uint32_t size, const uint8_t* shadow);
+        static void UnpackShadowBitsHalf(uint16_t* dst, uint32_t size, const uint8_t* shadow);
 
         // Member variables. Reference offsets follow the base object (which ends at +0x24).
         int32_t m_areaChunkX = 0;            // +0x24: index within the area (used & ~1)
@@ -133,6 +154,8 @@ class CMapChunk : public CMapBaseObj {
         void FillVerticesWorldColor(CMapChunkVertexColor* dst, const C3Vector* offset);
         void CreateRenderChunk();
         void EnsureRenderChunk();
+        int32_t CanPairWith(CMapChunk* other);
+        uint32_t AlphaSize() const;
         void UpdateSortDistance();
         void UpdateLiquidVisibility();
         void PrepareRender();
