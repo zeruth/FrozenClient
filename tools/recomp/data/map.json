@@ -43974,6 +43974,22 @@
   "refSize": 304,
   "status": "ported"
  },
+ "0078f6a0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.231,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::ShadeHorizon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 601,
+  "status": "ported"
+ },
  "0078fae0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -48135,6 +48151,22 @@
   "module": "MapChunk.cpp",
   "refSize": 403,
   "status": "stub"
+ },
+ "007cfb10": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.273,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapChunk.cpp",
+   "src/world/map/cmapchunk.cpp"
+  ],
+  "frozen": "CMapChunk::FeedHorizon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 198,
+  "status": "ported"
  },
  "007cfbe0": {
   "branchRatio": 0.667,

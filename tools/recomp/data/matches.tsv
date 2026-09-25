@@ -2754,6 +2754,7 @@ addr	how	frozen	evidence
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
+0078f6a0	annotated	CWorldScene::ShadeHorizon	tag in src/world/CWorldScene.cpp
 0078fae0	annotated	CWorldScene::GetFrustumCorners	tag in src/world/CWorldScene.cpp
 0078fb20	annotated	CWorldScene::BoxOutsideFrustum	tag in src/world/CWorldScene.cpp
 0078fb60	annotated	CWorldScene::DistanceBand	tag in src/world/CWorldScene.cpp
@@ -3014,6 +3015,7 @@ addr	how	frozen	evidence
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
+007cfb10	annotated	CMapChunk::FeedHorizon	tag in src/world/map/CMapChunk.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
 007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
 007d02c0	annotated	CMapRenderChunk::FillBuffers	tag in src/world/map/CMapRenderChunk.cpp

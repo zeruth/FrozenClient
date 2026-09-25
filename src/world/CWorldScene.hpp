@@ -133,7 +133,10 @@ class CWorldScene {
         static C44Matrix s_viewProjMatrix;                  // DAT_00adf5a8
         static float s_viewProjW[4];                        // DAT_00cd8fc8: its fourth column
         static C44Matrix s_occlusionMatrix;                 // DAT_00adf460: view (flattened) x projection for the horizon buffer
-        static float s_horizonBuffer[HORIZON_COLUMNS];      // DAT_00cd8938: the horizon height per screen column, from the occluders
+        static float s_horizonBuffer[HORIZON_COLUMNS];
+        // One flag per horizon column (DAT_00cd87b8). A column whose bit 0 is set is not
+        // punched back open by a chunk with holes in it.
+        static uint8_t s_horizonColumnFlags[HORIZON_COLUMNS];      // DAT_00cd8938: the horizon height per screen column, from the occluders
         static uint32_t s_rowStats[0x60];                   // DAT_00cd87b8: cleared every frame; not read by the terrain traversal
         static float s_farChunkDistance;                    // DAT_00cd8784: farclip less a chunk
         static float s_nearChunkDistance;                   // DAT_00cd8780: where the occluder chunks start
@@ -168,6 +171,13 @@ class CWorldScene {
 
         static void UpdateCamera(const C3Vector& cameraPos, const C3Vector& cameraTarget);
         static void BuildRowPlanes(const C3Vector& dir, const C3Vector& cameraPos);
+        // Raise the horizon along a ridge of terrain: each pair of consecutive points spans a
+        // run of columns, and every column in it remembers the higher skyline. A chunk with
+        // holes in it punches those columns back open instead. ref: FUN_0078f6a0
+        static void ShadeHorizon(const float (*table)[3], const float* heights,
+                                 const int32_t* indices, int32_t count,
+                                 const C3Vector& position, int32_t holes);
+
         static int32_t BoxOutsideFrustum(const CAaBox& box);
         // ref: FUN_00791120
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);

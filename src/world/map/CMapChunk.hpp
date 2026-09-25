@@ -81,6 +81,10 @@ class CMapChunk : public CMapBaseObj {
         static float s_vertexTable[145][3];  // DAT_00d25498
         static float s_invCellSize;          // DAT_00d25488: -1 / s_vertexTable[1][1]
 
+        // Raise the horizon along this chunk's two far edges, the ones facing the camera.
+        // ref: FUN_007cfb10
+        void FeedHorizon();
+
         // The alpha unpackers' scratch: a decompressed row per layer, and the rows a chunk
         // without MCSH or a layer without MCAL read (CMapChunkAlpha.cpp)
         static uint8_t s_alphaRows[4][0x40];

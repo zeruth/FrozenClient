@@ -752,3 +752,34 @@ void CMapChunk::GetBounds(CAaBox* box) {
         } while (liquid);
     }
 }
+
+// ref: FUN_007cfb10
+// A chunk hides what is behind it along its silhouette, which from any one camera is its far
+// row and its far column. Which of the two edges is the far one depends on which way the
+// camera is looking, so the row starts at the last of the nine rows when the view runs west,
+// and the column at the last of the nine when it runs south.
+void CMapChunk::FeedHorizon() {
+    if (!this->m_heights || !this->m_header) {
+        return;
+    }
+
+    int32_t indices[9];
+
+    int32_t rowBase = CWorldScene::s_cameraTarget.x < CWorldScene::s_cameraPos.x ? 0x88 : 0;
+
+    for (int32_t i = 0; i < 9; i++) {
+        indices[i] = rowBase + i;
+    }
+
+    CWorldScene::ShadeHorizon(CMapChunk::s_vertexTable, this->m_heights, indices, 9,
+                              this->m_position, this->m_header->holes);
+
+    int32_t columnBase = CWorldScene::s_cameraTarget.y < CWorldScene::s_cameraPos.y ? 8 : 0;
+
+    for (int32_t i = 0; i < 9; i++) {
+        indices[i] = columnBase + i * 0x11;
+    }
+
+    CWorldScene::ShadeHorizon(CMapChunk::s_vertexTable, this->m_heights, indices, 9,
+                              this->m_position, this->m_header->holes);
+}

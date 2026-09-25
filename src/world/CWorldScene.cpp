@@ -54,6 +54,7 @@ C44Matrix CWorldScene::s_viewProjMatrix;
 float CWorldScene::s_viewProjW[4];
 C44Matrix CWorldScene::s_occlusionMatrix;
 float CWorldScene::s_horizonBuffer[CWorldScene::HORIZON_COLUMNS];
+uint8_t CWorldScene::s_horizonColumnFlags[CWorldScene::HORIZON_COLUMNS];
 uint32_t CWorldScene::s_rowStats[0x60];
 float CWorldScene::s_farChunkDistance;
 float CWorldScene::s_nearChunkDistance;
@@ -1622,5 +1623,92 @@ void CWorldScene::TraverseRowEntities(Row* row) {
         }
 
         entity = next;
+    }
+}
+
+// ref: FUN_0078f6a0
+// The skyline a ridge of terrain cuts. Each point is projected through the occlusion matrix,
+// which flattens the view, and each pair of consecutive points covers a run of columns; every
+// column in that run remembers the higher of the two skylines it has seen.
+//
+// Looking near enough to straight up or straight down there is no horizon to speak of, and the
+// reference gives up rather than produce nonsense.
+void CWorldScene::ShadeHorizon(const float (*table)[3], const float* heights,
+                               const int32_t* indices, int32_t count,
+                               const C3Vector& position, int32_t holes) {
+    if (!(CWorld::s_enables & 0x20)) {
+        return;
+    }
+
+    if (CWorldScene::s_viewDir.z < -0.9f || 0.9f < CWorldScene::s_viewDir.z) {
+        return;
+    }
+
+    if (count <= 0 || count > 16) {
+        return;
+    }
+
+    C3Vector projected[16];
+
+    for (int32_t i = 0; i < count; i++) {
+        int32_t v = indices[i];
+
+        C3Vector p = {
+            table[v][0] + position.x,
+            table[v][1] + position.y,
+            heights[v] + position.z
+        };
+
+        p = p * CWorldScene::s_occlusionMatrix;
+
+        float inv = 1.0f / p.z;
+
+        projected[i].x = p.x * inv;
+        projected[i].y = p.y * inv;
+        projected[i].z = p.z;
+    }
+
+    for (int32_t i = 0; i < count - 1; i++) {
+        int32_t first = static_cast<int32_t>(roundf(projected[i].x * 64.0f - 0.5f)) + 192;
+        int32_t last = static_cast<int32_t>(roundf(projected[i + 1].x * 64.0f - 0.5f)) + 192;
+
+        if (last < first) {
+            int32_t swap = first;
+            first = last;
+            last = swap;
+        }
+
+        if (first < 0) {
+            first = 0;
+        }
+
+        if (last > static_cast<int32_t>(CWorldScene::HORIZON_COLUMNS) - 1) {
+            last = CWorldScene::HORIZON_COLUMNS - 1;
+        }
+
+        if (holes) {
+            // A chunk you can see through raises nothing; it reopens what it spans, except
+            // where a column has been marked to keep what it has.
+            for (int32_t c = first; c <= last; c++) {
+                if (!(CWorldScene::s_horizonColumnFlags[c] & 0x1)) {
+                    CWorldScene::s_horizonBuffer[c] = -1000001.0f;
+                }
+            }
+
+            continue;
+        }
+
+        // Both ends have to be in front of the eye for the span to mean anything.
+        if (projected[i].z < 0.0277f || projected[i + 1].z < 0.0277f) {
+            continue;
+        }
+
+        float height = projected[i + 1].y < projected[i].y ? projected[i + 1].y : projected[i].y;
+
+        for (int32_t c = first; c <= last; c++) {
+            if (CWorldScene::s_horizonBuffer[c] < height) {
+                CWorldScene::s_horizonBuffer[c] = height;
+            }
+        }
     }
 }
