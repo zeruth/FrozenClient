@@ -23,8 +23,13 @@
 #include "gx/Texture.hpp"
 #include "gx/shader/CGxShader.hpp"
 #include "gx/texture/CGxTex.hpp"
+#include "gx/Draw.hpp"
+#include "gx/RenderState.hpp"
+#include "gx/Transform.hpp"
+#include "gx/shader/CShaderEffect.hpp"
 #include "model/CM2Lighting.hpp"
 #include "util/CStatus.hpp"
+#include "world/CWorldScene.hpp"
 #include "util/SFile.hpp"
 #include "world/CWorld.hpp"
 #include <cstdlib>
@@ -978,6 +983,108 @@ void CMap::ClearFrameChunkList() {
 // per liquid and the fade test on +0x30 are not ported yet
 void CMap::UpdateFrameLiquids() {
     // TODO
+}
+
+// ref: FUN_0079a870
+// The map's frame: the visibility traversal from the camera, the scene clear, then the passes.
+// Ported so far: the render chunk pools, the outdoor traversal, the clear and the terrain pass.
+// Everything else the reference does here is listed in place as it comes; the map objects,
+// liquids, sky and the rest still draw from the stand-in and CGWorldFrame around this call.
+void CMap::Render(const C3Vector& cameraPos, float dt) {
+    if (!CWorldScene::s_cameraGroup) {
+        // TODO FUN_00792bd0(): the map object defs into their distance rows
+    }
+
+    // TODO FUN_00790920(): the camera's liquid and height above the ground
+
+    GxRsPush();
+    GxXformPush(GxXform_World);
+
+    CWorldScene::s_visibleMapObjCount = 0;
+    CWorldScene::s_visibleChunkCount = 0;
+    CWorldScene::s_visibleEntityCount = 0;
+    CWorldScene::s_visibleCount8624 = 0;
+
+    CWorldScene::s_frustums[0].SetCorners(CWorldScene::s_frustumCorners);
+    CWorldScene::s_farChunkDistance = CWorld::GetFarClip() - 33.33333206176758f;
+    // TODO CWorldScene::s_hasMapObjs from the map object def list; DAT_00cd877c from the
+    // camera's field of view: fogEnd / cos(fov * 0.5) - fogEnd
+    // TODO FUN_00782f20(): the timed object transforms
+
+    CMap::CreateRenderChunkPools();
+
+    // TODO FUN_007ae060(), FUN_007b2a80(): the detail doodad buffers
+
+    memset(CWorldScene::s_rowStats, 0, sizeof(CWorldScene::s_rowStats));
+
+    for (uint32_t i = 0; i < CWorldScene::HORIZON_COLUMNS; i++) {
+        CWorldScene::s_horizonBuffer[i] = -1000000.0f;
+    }
+
+    // TODO FUN_007cd910(), FUN_007cc810(): the low-detail terrain
+
+    if (!CWorldScene::s_cameraGroup) {
+        CWorldScene::s_frameStamp++;
+        CWorldScene::s_window.minX = 0.0f;
+        CWorldScene::s_window.minY = 0.0f;
+        CWorldScene::s_window.maxX = 1.0f;
+        CWorldScene::s_window.maxY = 1.0f;
+        CWorldScene::s_window.depth = 0.0f;
+        CWorldScene::s_portalWindow.minX = 0.0f;
+        CWorldScene::s_portalWindow.depth = 0.0f;
+        CWorldScene::s_portalWindow.minY = 0.0f;
+        CWorldScene::s_portalWindow.unknown14 = 0.0f;
+        CWorldScene::s_nearChunkDistance = -10000.0f;
+        CWorldScene::s_portalWindow.maxX = 1.0f;
+        CWorldScene::s_portalWindow.maxY = 1.0f;
+        CWorldScene::s_portalWindow.unknown18 = 0.0f;
+        CWorldScene::Traverse(&CWorldScene::s_portalWindow, 0);
+    } else {
+        CWorldScene::s_frameStamp++;
+        // TODO the portal walk from the camera's group (FUN_007b3b20 x2, FUN_00794190 x2), then
+        // Traverse(&s_portalWindow, 1) or FUN_00794250(), and FUN_00799f80(&window)
+    }
+
+    // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks
+    // TODO FUN_007cecd0(): a list emptied here
+
+    CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
+
+    if (!g_theGxDevicePtr->MasterEnable(GxMasterEnable_PolygonFill)) {
+        clearColor.value = 0xFF000000;
+    } else if (CWorldScene::s_window.depth < 0.0f) {
+        // TODO the interior fog colour (light block +0xa0)
+        clearColor.value = 0xFF000000;
+    } else if (!CWorld::IsCameraUnderLiquid()) {
+        // TODO with no skybox override (light block +0x1cc) and the sky flag DAT_00d38ad0 set,
+        // the fog colour; otherwise transparent black
+        clearColor.value = 0;
+    } else {
+        const C3Vector& fog = CWorld::GetFogColor();
+        clearColor.b = CM2Lighting::FogColorByte(fog.z);
+        clearColor.g = CM2Lighting::FogColorByte(fog.y);
+        clearColor.r = CM2Lighting::FogColorByte(fog.x);
+        clearColor.a = 0xFF;
+    }
+
+    GxSceneClear(0x3, clearColor);
+
+    // TODO FUN_009a80c0(); FUN_007bb670(&cameraPos): the map shadow; the M2 scene's AdvanceTime
+    // and Animate (CGWorldFrame::OnWorldRender still does them); FUN_006fda20(); FUN_007bb570()
+
+    CShaderEffect::UpdateProjMatrix();
+    CWorld::SetupFogRenderStates();
+    CWorldScene::RenderTerrain();
+
+    // TODO FUN_007964a0(): the map objects; FUN_00795f80(); the liquids, sky and the passes after
+    // them (see the reference body)
+
+    GxXformPop(GxXform_World);
+    GxRsPop();
+
+    // TODO FUN_006164b0(), and the decal pass behind CWorld enable 0x200000
+    (void)dt;
+    (void)cameraPos;
 }
 
 // ref: FUN_007b5500

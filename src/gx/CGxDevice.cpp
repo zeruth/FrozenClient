@@ -1604,6 +1604,7 @@ void CGxDevice::XformProjNative(C44Matrix& matrix) {
     }
 }
 
+// ref: FUN_0057c3a0
 void CGxDevice::XformPush(EGxXform xf) {
     this->m_xforms[xf].Push();
 }

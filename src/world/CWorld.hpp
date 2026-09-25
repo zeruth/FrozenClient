@@ -12,6 +12,20 @@ class CM2Lighting;
 class CM2Scene;
 class Weather;
 
+// The five model distance bands the reference keeps at DAT_00adf350: per band a default near and
+// far distance and a fade width, and the environmentDetail-scaled results derived from them (far,
+// far squared, fade start, fade start squared). The first and last bands are never scaled.
+struct WorldDetailBands {
+    float defaultNear[5];
+    float defaultFar[5];
+    float nearDist[5];
+    float fadeWidth[5];
+    float farDist[5];
+    float farDistSq[5];
+    float fadeStart[5];
+    float fadeStartSq[5];
+};
+
 class CWorld {
     public:
         // Bands 14..17, the liquid gradient endpoints (reference FUN_008a2bf0). Type 0 is OCEAN
@@ -72,6 +86,9 @@ class CWorld {
         // direction, advanced every update along s_textureScrollDir and wrapped at 64
         static float s_textureScroll[8][4];
         static const float s_textureScrollDir[8][2];   // DAT_00adee78
+        // Every terrain chunk keeps its full-size alpha map however far it is (DAT_00cd7550,
+        // from a CVar read at world start whose name is not recovered yet)
+        static int32_t s_terrainAlphaFull;
         static Weather* s_weather;
 
         // Public static functions
@@ -93,6 +110,8 @@ class CWorld {
         static float GetFogStart();
         static float GetFogEnd();
         static float GetFogRate();
+        static const WorldDetailBands& GetDetailBands();
+        static void SetupFogRenderStates();
         static void UpdateOutdoorLight();                  // recompute colours at the current time
         static void SetCameraUnderLiquid(bool under);      // selects the underwater LightParams set
         static bool IsCameraUnderLiquid();

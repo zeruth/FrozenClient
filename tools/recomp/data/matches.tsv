@@ -631,6 +631,7 @@ addr	how	frozen	evidence
 004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c2270	annotated	TransformVector4	tag in src/world/CWorldScene.cpp
 004c2300	annotated	TransformPointInPlace	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c2370	annotated	C44Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c23d0	annotated	C44Matrix::Transpose	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -1396,6 +1397,7 @@ addr	how	frozen	evidence
 0057c2a0	override	C44Matrix::Identity	
 0057c2e0	annotated	TransformDirection	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_SphereMap
+0057c3a0	annotated	CGxDevice::XformPush	tag in src/gx/CGxDevice.cpp
 0057c450	annotated	CGxDevice::XformSet	tag in src/gx/CGxDevice.cpp
 0057e070	annotated	CGMinimapFrame::SetOtherTracking	tag in src/ui/game/CGMinimapFrame.cpp
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
@@ -1993,6 +1995,7 @@ addr	how	frozen	evidence
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
+00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::Reserve	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
@@ -2038,6 +2041,7 @@ addr	how	frozen	evidence
 006bd550	annotated	GxuFontGetStringPosition	tag in src/gx/font/GxuFont.cpp
 006bdfc0	callgraph	GxuFontDestroyString	only unmatched callee of 00763d80=CONSOLELINE::~CONSOLELINE
 006be2b0	string	GxuFontCreateString	unique "vertJustification < GxVJ_Last"
+006bf6d0	annotated	FrustumCorners	tag in src/world/CWorldScene.cpp
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006c75e0	callgraph	CGxString::Recycle	only unmatched callee of 006bdfc0=GxuFontDestroyString
@@ -2182,6 +2186,7 @@ addr	how	frozen	evidence
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
 00780860	annotated	CWorld::UpdateWindow	tag in src/world/CWorld.cpp
+00781610	annotated	CWorld::SetupFogRenderStates	tag in src/world/CWorld.cpp
 007831a0	override	CWorld::Update	
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
@@ -2218,11 +2223,26 @@ addr	how	frozen	evidence
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
+0078fb20	annotated	CWorldScene::BoxOutsideFrustum	tag in src/world/CWorldScene.cpp
+0078fb60	annotated	CWorldScene::DistanceBand	tag in src/world/CWorldScene.cpp
+0078fc40	annotated	CWorldScene::SphereOccluded	tag in src/world/CWorldScene.cpp
+0078fdc0	annotated	CWorldScene::BoxOccluded	tag in src/world/CWorldScene.cpp
+00790520	annotated	CWorldScene::ChunkVertexPoint	tag in src/world/CWorldScene.cpp
+00790620	annotated	CWorldScene::ViewPlane2dDistance	tag in src/world/CWorldScene.cpp
+00790650	annotated	CWorldScene::BoxNearPoint	tag in src/world/CWorldScene.cpp
+007906c0	annotated	CWorldScene::BuildRowPlanes	tag in src/world/CWorldScene.cpp
+00790af0	annotated	CWorldScene::SubFrustum	tag in src/world/CWorldScene.cpp
+007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
+00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
+00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
 007997d0	annotated	CWorldScene::Initialize	tag in src/world/CWorldScene.cpp
+00799d40	annotated	CWorldScene::TraverseRowChunks	tag in src/world/CWorldScene.cpp
+0079a790	annotated	CWorldScene::Traverse	tag in src/world/CWorldScene.cpp
+0079a870	annotated	CMap::Render	tag in src/world/map/CMap.cpp
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp
@@ -2307,6 +2327,7 @@ addr	how	frozen	evidence
 007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
 007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
 007c3d90	annotated	CMapChunk::Initialize	tag in src/world/map/CMapChunk.cpp
+007c3e70	annotated	CMapChunk::UpdateSortDistance	tag in src/world/map/CMapChunk.cpp
 007c3f30	annotated	CMapChunk::FillVerticesWorld	tag in src/world/map/CMapChunk.cpp
 007c4620	annotated	CMapChunk::FillVerticesWorldColor	tag in src/world/map/CMapChunk.cpp
 007c4960	annotated	CMapChunk::FillVerticesLocal	tag in src/world/map/CMapChunk.cpp
@@ -2316,6 +2337,7 @@ addr	how	frozen	evidence
 007c5440	annotated	CMapChunk::EnsureRenderChunk	tag in src/world/map/CMapChunk.cpp
 007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
 007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
+007c5b20	annotated	CMapChunk::UpdateLiquidVisibility	tag in src/world/map/CMapChunk.cpp
 007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
 007c5e50	annotated	CMapChunk::~CMapChunk	tag in src/world/map/CMapChunk.cpp
 007c64b0	annotated	CMapChunk::Load	tag in src/world/map/CMapChunk.cpp
@@ -2344,6 +2366,7 @@ addr	how	frozen	evidence
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
 007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
 007d02c0	annotated	CMapRenderChunk::FillBuffers	tag in src/world/map/CMapRenderChunk.cpp
@@ -2356,7 +2379,9 @@ addr	how	frozen	evidence
 007d3240	annotated	CMapRenderChunk::DrawSolidWorld	tag in src/world/map/CMapRenderChunk.cpp
 007d3e10	annotated	CWorldScene::SelectChunkShaders	tag in src/world/CWorldScene.cpp
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
+007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
+007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
 007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
 007d6a90	annotated	CMapArea::DestroyChunks	tag in src/world/map/CMapArea.cpp
 007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
@@ -3335,7 +3360,10 @@ addr	how	frozen	evidence
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983d20	annotated	CWorldScene::Frustum::SphereInside	tag in src/world/CWorldScene.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983e70	annotated	CWorldScene::Frustum::ComputePlanes	tag in src/world/CWorldScene.cpp
+00984240	annotated	CWorldScene::Frustum::SetCorners	tag in src/world/CWorldScene.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp

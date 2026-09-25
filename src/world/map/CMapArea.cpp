@@ -1,6 +1,7 @@
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/CWorldScene.hpp"
 #include "async/AsyncFile.hpp"
 #include "async/CAsyncObject.hpp"
 #include "gx/Gx.hpp"
@@ -267,8 +268,8 @@ void CMapArea::CreateChunk(int32_t x, int32_t y) {
 // ref: FUN_007d6bf0
 // For every chunk of the tile inside rect (map chunk coordinates, {minX, minY, maxX, maxY}):
 // chunks outside the world's chunk window are destroyed, chunks inside it are created if
-// missing. With update set the reference also refreshes each live chunk's sort distance and
-// liquid visibility (FUN_007d6690, FUN_007c3e70, FUN_007c5b20), which are not ported yet.
+// missing. With update set, each live chunk of a rect the frustum reaches refreshes its sort
+// distance (which puts it in its distance row) and its liquid visibility.
 void CMapArea::CreateChunks(int32_t update, const int32_t* rect) {
     // rect = { minRow, minCol, maxRow, maxCol } in map chunk coordinates; the grid is [row][col]
     for (int32_t row = rect[0]; row <= rect[2]; row++) {
@@ -290,8 +291,10 @@ void CMapArea::CreateChunks(int32_t update, const int32_t* rect) {
                     this->CreateChunk(x, y);
                 }
 
-                if (update) {
-                    // TODO FUN_007d6690(rect) then FUN_007c3e70 / FUN_007c5b20 on the chunk
+                if (update && CWorldScene::ChunkRectInView(rect)) {
+                    auto chunk = this->m_chunks[y * 16 + x];
+                    chunk->UpdateSortDistance();
+                    chunk->UpdateLiquidVisibility();
                 }
             }
         }

@@ -155,6 +155,7 @@ class CMap {
         static CGxShader* GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t color);
         static void MapMemInitialize();
         static void Update(int32_t update);
+        static void Render(const C3Vector& cameraPos, float dt);
         static void UpdateAreas(int32_t update);
         static void UpdateAreaChunks(int32_t update, CMapArea* area, const int32_t* rect, int32_t depth);
         static void UnloadAll();

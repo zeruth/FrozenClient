@@ -4779,11 +4779,10 @@ void TerrainRender() {
 
     const C44Matrix& viewProjT = s_viewProjT;
 
-    if (haveShaded) {
-        RenderShaded(viewProjT);
-    } else {
-        RenderFallback(viewProjT);
-    }
+    // The terrain chunks draw through the ported map (CMap::Render -> CWorldScene::RenderTerrain)
+    // since 2026-09-25; RenderShaded / RenderFallback stay only for the blob shadow receivers,
+    // which still re-draw this copy of the chunk geometry
+    (void)haveShaded;
 
     WmoUpdateVisibility(s_cameraPos);
     RenderWmos(viewProjT);

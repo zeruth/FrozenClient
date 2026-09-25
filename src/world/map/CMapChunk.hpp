@@ -90,7 +90,7 @@ class CMapChunk : public CMapBaseObj {
         C3Vector m_center;                   // +0x3c
         float m_radius = 0.0f;               // +0x48
         CAaBox m_bounds;                     // +0x4c .. +0x60
-        // TODO +0x64..+0x78
+        CAaBox m_liquidBounds;               // +0x64 .. +0x78: of the chunk's liquids; min above max when there are none
         C3Vector m_position;                 // +0x7c: chunk origin; only z is added to heights
         float m_sortDistance = 0.0f;         // +0x88: distance along the camera forward
         CAaBox m_bounds2;                    // +0x8c .. +0xa0: a copy of m_bounds after ComputeBounds
@@ -98,8 +98,8 @@ class CMapChunk : public CMapBaseObj {
         CMapRenderChunk* m_renderChunk = nullptr; // +0xa8
         int32_t m_renderChunkReady = 0;      // +0xac
         uint32_t m_areaId = 0;               // +0xb0: the MCNK header's areaId
-        TSLink<CMapChunk> m_linkB4;          // +0xb4: unlinked by the destructor; its list is not known yet
-        TSLink<CMapChunk> m_frameLink;       // +0xbc: CMap::s_frameChunkList, emptied every update
+        TSLink<CMapChunk> m_rowLink;         // +0xb4: the distance row's chunk list (CWorldScene::s_rows)
+        TSLink<CMapChunk> m_frameLink;       // +0xbc: CMap::s_frameChunkList, emptied every update, or a row's occluder list
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_entityLinkList;     // +0xc4: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_mapObjDefLinkList;  // +0xd0: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_linkListDc;         // +0xdc
@@ -133,6 +133,9 @@ class CMapChunk : public CMapBaseObj {
         void FillVerticesWorldColor(CMapChunkVertexColor* dst, const C3Vector* offset);
         void CreateRenderChunk();
         void EnsureRenderChunk();
+        void UpdateSortDistance();
+        void UpdateLiquidVisibility();
+        void PrepareRender();
         void FillVerticesLocal(CMapChunkVertex* dst);
         void FillVerticesLocalColor(CMapChunkVertexColor* dst);
         void ComputeBounds();

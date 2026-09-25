@@ -4,6 +4,8 @@
 #include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
 #include "world/Terrain.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
 #include "model/Model2.hpp"
@@ -38,6 +40,7 @@ uint32_t CWorld::s_tickTimeFixed;
 uint32_t CWorld::s_tickTimeMs;
 float CWorld::s_tickTimeSec;
 float CWorld::s_textureScroll[8][4];
+int32_t CWorld::s_terrainAlphaFull;
 const float CWorld::s_textureScrollDir[8][2] = {
     { -1.0f,  0.0f },
     { -1.0f,  1.0f },
@@ -1108,7 +1111,7 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
         }
     }
 
-    // TODO the scene camera FUN_00795400(cameraPos, cameraTarget)
+    CWorldScene::UpdateCamera(cameraPos, cameraTarget);
 
     float farClipDelta = CWorld::s_farClip - CWorld::s_updateFarClip;
     bool smallChange = farClipDelta <= 10.0f;
@@ -1165,20 +1168,7 @@ void CWorld::SetHorizonNearClipScale(float scale) {
     CWorld::s_horizonNearClipScale = scale;
 }
 
-// The five model distance bands the reference keeps at DAT_00adf350: per band a default near and
-// far distance and a fade width, and the environmentDetail-scaled results derived from them (far,
-// far squared, fade start, fade start squared). The first and last bands are never scaled.
-struct WorldDetailBands {
-    float defaultNear[5];
-    float defaultFar[5];
-    float nearDist[5];
-    float fadeWidth[5];
-    float farDist[5];
-    float farDistSq[5];
-    float fadeStart[5];
-    float fadeStartSq[5];
-};
-
+// The distance bands (DAT_00adf350, see WorldDetailBands)
 static WorldDetailBands s_detailBands = {
     { 1.0f, 4.0f, 15.0f, 100.0f, 100000.0f },
     { 30.0f, 100.0f, 200.0f, 750.0f, 1250.0f },
@@ -1189,6 +1179,28 @@ static WorldDetailBands s_detailBands = {
     { 25.0f, 90.0f, 185.0f, 730.0f, 1200.0f },
     { 625.0f, 8100.0f, 34225.0f, 532900.0f, 1440000.0f },
 };
+
+const WorldDetailBands& CWorld::GetDetailBands() {
+    return s_detailBands;
+}
+
+// ref: FUN_00781610
+// The fixed-function fog states from the current light: start and end only on a device
+// without vertex shaders (the shaders fog for themselves), the colour always
+void CWorld::SetupFogRenderStates() {
+    if (GxCaps().m_shaderTargets[GxSh_Vertex] == 0) {
+        g_theGxDevicePtr->RsSet(GxRs_FogStart, CWorld::GetFogStart());
+        g_theGxDevicePtr->RsSet(GxRs_FogEnd, CWorld::GetFogEnd());
+    }
+
+    const C3Vector& fog = CWorld::GetFogColor();
+    CImVector color;
+    color.b = CM2Lighting::FogColorByte(fog.z);
+    color.g = CM2Lighting::FogColorByte(fog.y);
+    color.r = CM2Lighting::FogColorByte(fog.x);
+    color.a = 0xFF;
+    g_theGxDevicePtr->RsSet(GxRs_FogColor, color.value);
+}
 
 // ref: FUN_0078f570
 void CWorld::SetEnvironmentDetail(float detail) {

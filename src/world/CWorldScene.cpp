@@ -10,11 +10,59 @@
 #include "gx/Transform.hpp"
 #include "gx/shader/CGxShader.hpp"
 #include "model/CM2Lighting.hpp"
+#include <tempest/Intersect.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
+#include <cmath>
 #include <cstring>
 
+static const float CHUNK_SIZE = 33.33333206176758f;
+static const float CHUNKS_PER_UNIT = 0.0299999993f;         // DAT_00a3f7ec
+static const float MAP_HALF_EXTENT = 17066.666f;
+
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWorldScene::RENDER_LIST_COUNT];
+CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
+C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
+C3Vector CWorldScene::s_frustumCorners[8];
+CWorldScene::Frustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
+int32_t CWorldScene::s_frustumDepth;
+C3Vector CWorldScene::s_cameraTarget;
+C3Vector CWorldScene::s_viewDir;
+C4Plane CWorldScene::s_viewPlane;
+C4Plane CWorldScene::s_viewPlane2d;
+CAaBox CWorldScene::s_frustumBounds;
+int32_t CWorldScene::s_frustumChunkRect[4];
+int32_t CWorldScene::s_cameraQuadrant;
+int32_t CWorldScene::s_targetQuadrant;
+C44Matrix CWorldScene::s_viewMatrix;
+C44Matrix CWorldScene::s_projMatrix;
+C44Matrix CWorldScene::s_viewProjMatrix;
+float CWorldScene::s_viewProjW[4];
+C44Matrix CWorldScene::s_occlusionMatrix;
+float CWorldScene::s_horizonBuffer[CWorldScene::HORIZON_COLUMNS];
+uint32_t CWorldScene::s_rowStats[0x60];
+float CWorldScene::s_farChunkDistance;
+float CWorldScene::s_nearChunkDistance;
+float CWorldScene::s_occluderFarClip;
+int32_t CWorldScene::s_visibleChunkCount;
+int32_t CWorldScene::s_visibleMapObjCount;
+int32_t CWorldScene::s_visibleEntityCount;
+int32_t CWorldScene::s_visibleCount8624;
+int32_t CWorldScene::s_frameStamp;
+void* CWorldScene::s_cameraGroup;
+float CWorldScene::s_cameraGroundHeight;
+int32_t CWorldScene::s_hasMapObjs;
+CWorldScene::ViewWindow CWorldScene::s_window;
+CWorldScene::ViewWindow CWorldScene::s_portalWindow;
+const int32_t CWorldScene::s_quadrantVertex[4] = { 0, 8, 0x88, 0x90 };
+
+static_assert(sizeof(CWorldScene::Frustum) == 0xfc, "a traversal frustum is 0xfc bytes");
+
+// The box corner each of the eight corners takes from the min (0) or max (1) per axis
+// (DAT_00adf3f4, DAT_00adf414, DAT_00adf434)
+static const int32_t s_boxCornerX[8] = { 0, 1, 1, 0, 0, 1, 1, 0 };
+static const int32_t s_boxCornerY[8] = { 0, 0, 1, 1, 0, 0, 1, 1 };
+static const int32_t s_boxCornerZ[8] = { 0, 0, 0, 0, 1, 1, 1, 1 };
 HTEXTURE CWorldScene::s_solidTexture;
 HTEXTURE CWorldScene::s_blackTexture;
 CWorldScene::TerrainConstants CWorldScene::s_terrainConstants;
@@ -389,6 +437,604 @@ void CWorldScene::RenderHiddenChunks() {
 
         chunk->m_link.Unlink();
         CMap::s_activeRenderChunkList.LinkToTail(chunk);
+
+        chunk = next;
+    }
+}
+
+// ----------------------------------------------------------------------------------------------
+// The camera and its frustum
+
+// ref: FUN_007912c0
+// The plane through three points, facing along (b - a) x (c - a)
+static void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c) {
+    plane->n.x = (b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y);
+    plane->n.y = (b.z - a.z) * (c.x - a.x) - (c.z - a.z) * (b.x - a.x);
+    plane->n.z = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+
+    float inv = 1.0f / sqrtf(plane->n.x * plane->n.x + plane->n.y * plane->n.y + plane->n.z * plane->n.z);
+    float x = plane->n.x;
+    plane->n.x = x * inv;
+    float y = plane->n.y;
+    plane->n.y = y * inv;
+    float z = plane->n.z;
+    plane->n.z = z * inv;
+    plane->d = -(y * inv * a.y + a.x * x * inv + a.z * z * inv);
+}
+
+// ref: FUN_004c2270
+// A row vector through a matrix
+static void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m) {
+    out->x = v.x * m.a0 + m.c0 * v.z + m.b0 * v.y + m.d0 * v.w;
+    out->y = m.c1 * v.z + m.a1 * v.x + m.b1 * v.y + m.d1 * v.w;
+    out->z = m.c2 * v.z + m.a2 * v.x + m.b2 * v.y + m.d2 * v.w;
+    out->w = m.c3 * v.z + m.a3 * v.x + m.b3 * v.y + m.d3 * v.w;
+}
+
+// ref: FUN_006bf6d0
+// The eight corners of a view frustum in the space the view matrix maps from: the clip-space
+// cube unprojected through the inverse view-projection. A perspective projection is walked at
+// its near and far distances with w set to the view depth, so no divide is needed; an
+// orthographic one at the unit cube. Near face first, each face (-x,-y) (-x,+y) (+x,+y) (+x,-y).
+static void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vector* corners) {
+    C44Matrix invView = view.Inverse(view.Determinant());
+    C44Matrix invProj = proj.Inverse(proj.Determinant());
+    C44Matrix inv = invProj * invView;
+
+    C4Vector clip[8];
+
+    if (2.38418579e-07f <= fabsf(proj.d3 - 1.0f)) {
+        float nearW = -proj.d2 / (proj.c2 + 1.0f);
+        float farW = -proj.d2 / (proj.c2 - 1.0f);
+        float n = -nearW;
+
+        clip[0] = { n, n, n, nearW };
+        clip[1] = { n, nearW, n, nearW };
+        clip[2] = { nearW, nearW, n, nearW };
+        clip[3] = { nearW, n, n, nearW };
+        float f = -farW;
+        clip[4] = { f, f, farW, farW };
+        clip[5] = { f, farW, farW, farW };
+        clip[6] = { farW, farW, farW, farW };
+        clip[7] = { farW, f, farW, farW };
+    } else {
+        clip[0] = { -1.0f, -1.0f, -1.0f, 1.0f };
+        clip[1] = { -1.0f, 1.0f, -1.0f, 1.0f };
+        clip[2] = { 1.0f, 1.0f, -1.0f, 1.0f };
+        clip[3] = { 1.0f, -1.0f, -1.0f, 1.0f };
+        clip[4] = { -1.0f, -1.0f, 1.0f, 1.0f };
+        clip[5] = { -1.0f, 1.0f, 1.0f, 1.0f };
+        clip[6] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        clip[7] = { 1.0f, -1.0f, 1.0f, 1.0f };
+    }
+
+    for (int32_t i = 0; i < 8; i++) {
+        C4Vector out;
+        TransformVector4(&out, clip[i], inv);
+        corners[i].x = out.x;
+        corners[i].y = out.y;
+        corners[i].z = out.z;
+    }
+}
+
+// ref: FUN_00984240
+void CWorldScene::Frustum::SetCorners(const C3Vector* corners) {
+    for (int32_t i = 0; i < 8; i++) {
+        this->corners[i] = corners[i];
+    }
+
+    this->ComputePlanes();
+}
+
+// ref: FUN_00983e70
+// The four side planes and the far plane from the corners; the near plane is the far plane
+// turned around through a near corner
+void CWorldScene::Frustum::ComputePlanes() {
+    PlaneFromPoints(&this->planes[0], this->corners[1], this->corners[5], this->corners[6]);
+    PlaneFromPoints(&this->planes[1], this->corners[0], this->corners[7], this->corners[4]);
+    PlaneFromPoints(&this->planes[2], this->corners[0], this->corners[4], this->corners[5]);
+    PlaneFromPoints(&this->planes[3], this->corners[3], this->corners[6], this->corners[7]);
+    PlaneFromPoints(&this->planes[4], this->corners[5], this->corners[4], this->corners[6]);
+
+    this->planes[5].n.x = -this->planes[4].n.x;
+    this->planes[5].n.y = -this->planes[4].n.y;
+    this->planes[5].n.z = -this->planes[4].n.z;
+    this->planes[5].d = -(-this->planes[4].n.z * this->corners[2].z + this->corners[2].y * -this->planes[4].n.y + this->corners[2].x * -this->planes[4].n.x);
+}
+
+// ref: FUN_00983d20
+// Non-zero while the sphere is not entirely behind any plane
+int32_t CWorldScene::Frustum::SphereInside(const CAaSphere& sphere) {
+    int32_t last = 0;
+
+    for (int32_t i = 0; i < 6; i++) {
+        last = i;
+        const C4Plane& p = this->planes[i];
+
+        if (p.n.y * sphere.c.y + p.n.z * sphere.c.z + p.n.x * sphere.c.x + p.d < -sphere.r) {
+            return 0;
+        }
+    }
+
+    return last - 2;
+}
+
+// ref: FUN_00795400
+// The scene's view of the camera for this update: its target and direction, the plane facing
+// along the view and its flattened twin, the 64 row planes, the frustum corners in world space
+// (from the device's view and projection), the base frustum, its bounds and the chunk
+// rectangle they cover, and which way the target lies. Not ported yet: the portal window arrays
+// (FUN_00794190), the horizon occlusion matrix (FUN_006bfe60) and the sound listener
+// (FUN_009a81f0).
+void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& cameraTarget) {
+    // if (DAT_00cd8610) FUN_005eeb70(): nothing
+
+    CWorldScene::s_window = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, 0.0f, 0.0f };
+    CWorldScene::s_portalWindow = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, 0.0f, 0.0f };
+    // TODO DAT_00cd8620 = 0, DAT_00cd861c = 0, FUN_00794190(&array, 0) twice
+
+    CWorldScene::s_cameraTarget = cameraTarget;
+
+    C3Vector dir = {
+        cameraTarget.x - cameraPos.x,
+        cameraTarget.y - cameraPos.y,
+        cameraTarget.z - cameraPos.z
+    };
+    float inv = 1.0f / sqrtf(dir.x * dir.x + dir.z * dir.z + dir.y * dir.y);
+    CWorldScene::s_viewDir.x = dir.x * inv;
+    CWorldScene::s_viewDir.y = dir.y * inv;
+    CWorldScene::s_viewDir.z = dir.z * inv;
+
+    CWorldScene::s_viewPlane.d = -(CWorldScene::s_viewDir.z * cameraPos.z + cameraPos.y * CWorldScene::s_viewDir.y + cameraPos.x * CWorldScene::s_viewDir.x);
+
+    CWorldScene::s_occluderFarClip = CWorld::GetFarClip() - 100.0f;
+    if (CWorldScene::s_occluderFarClip < 400.0f) {
+        CWorldScene::s_occluderFarClip = 400.0f;
+    }
+
+    float z = 0.0f;
+    float len2 = CWorldScene::s_viewDir.x * CWorldScene::s_viewDir.x + CWorldScene::s_viewDir.y * CWorldScene::s_viewDir.y;
+    CWorldScene::s_viewPlane2d.n.x = CWorldScene::s_viewDir.x;
+    CWorldScene::s_viewPlane2d.n.y = CWorldScene::s_viewDir.y;
+
+    if (9.99999975e-05f < len2) {
+        z = 1.0f / sqrtf(len2);
+        CWorldScene::s_viewPlane2d.n.x = CWorldScene::s_viewDir.x * z;
+        CWorldScene::s_viewPlane2d.n.y = CWorldScene::s_viewDir.y * z;
+        z = z * 0.0f;
+    }
+
+    CWorldScene::s_viewPlane2d.n.z = z;
+    CWorldScene::s_viewPlane2d.d = -(z * cameraPos.z + CWorldScene::s_viewPlane2d.n.y * cameraPos.y + cameraPos.x * CWorldScene::s_viewPlane2d.n.x);
+    CWorldScene::s_viewPlane.n = CWorldScene::s_viewDir;
+
+    C3Vector dir2d = { CWorldScene::s_viewPlane2d.n.x, CWorldScene::s_viewPlane2d.n.y, z };
+    CWorldScene::BuildRowPlanes(dir2d, cameraPos);
+
+    CWorldScene::s_viewMatrix = g_theGxDevicePtr->m_xforms[GxXform_View].m_mtx[g_theGxDevicePtr->m_xforms[GxXform_View].m_level];
+    CWorldScene::s_projMatrix = g_theGxDevicePtr->m_projection;
+    // TODO the device viewport copy at DAT_00cd8fb0
+
+    FrustumCorners(CWorldScene::s_viewMatrix, CWorldScene::s_projMatrix, CWorldScene::s_frustumCorners);
+
+    for (int32_t i = 0; i < 8; i++) {
+        CWorldScene::s_frustumCorners[i].x += cameraPos.x;
+        CWorldScene::s_frustumCorners[i].y += cameraPos.y;
+        CWorldScene::s_frustumCorners[i].z += cameraPos.z;
+    }
+
+    CWorldScene::s_frustums[0].SetCorners(CWorldScene::s_frustumCorners);
+
+    // The reference translates a matrix by -cameraPos here whose identity the decompilation
+    // loses; the products below read the view and projection copies directly
+    CWorldScene::s_viewProjMatrix = CWorldScene::s_viewMatrix * CWorldScene::s_projMatrix;
+    CWorldScene::s_viewProjW[0] = CWorldScene::s_viewProjMatrix.a3;
+    CWorldScene::s_viewProjW[1] = CWorldScene::s_viewProjMatrix.b3;
+    CWorldScene::s_viewProjW[2] = CWorldScene::s_viewProjMatrix.c3;
+    CWorldScene::s_viewProjW[3] = CWorldScene::s_viewProjMatrix.d3;
+
+    BoundsFromPoints(CWorldScene::s_frustumBounds, CWorldScene::s_frustumCorners, 8);
+
+    CWorldScene::s_frustumChunkRect[1] = static_cast<int32_t>(roundf(-(CWorldScene::s_frustumBounds.t.y - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+    CWorldScene::s_frustumChunkRect[0] = static_cast<int32_t>(roundf(-(CWorldScene::s_frustumBounds.t.x - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+    CWorldScene::s_frustumChunkRect[3] = static_cast<int32_t>(roundf(-(CWorldScene::s_frustumBounds.b.y - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+    CWorldScene::s_frustumChunkRect[2] = static_cast<int32_t>(roundf(-(CWorldScene::s_frustumBounds.b.x - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+
+    CWorldScene::s_frustumDepth = 0;
+    CWorldScene::s_frustums[0].SetCorners(CWorldScene::s_frustumCorners);
+
+    CWorldScene::s_cameraQuadrant = 0;
+    if (cameraPos.x < cameraTarget.x) {
+        CWorldScene::s_cameraQuadrant = 2;
+    }
+    if (cameraPos.y < cameraTarget.y) {
+        CWorldScene::s_cameraQuadrant++;
+    }
+
+    CWorldScene::s_targetQuadrant = 0;
+    if (cameraTarget.x < cameraPos.x) {
+        CWorldScene::s_targetQuadrant = 2;
+    }
+    if (cameraTarget.y < cameraPos.y) {
+        CWorldScene::s_targetQuadrant++;
+    }
+
+    CWorldScene::s_viewPlane.n = CWorldScene::s_viewDir;
+    CWorldScene::s_viewPlane.d = -(CWorldScene::s_viewDir.z * cameraPos.z + cameraPos.y * CWorldScene::s_viewDir.y + cameraPos.x * CWorldScene::s_viewDir.x);
+
+    // TODO the horizon occlusion matrix: identity when the view is vertical, otherwise the
+    // flattened view (FUN_006bfe60) translated by -cameraPos times the projection
+    C44Matrix identity;
+    CWorldScene::s_occlusionMatrix = identity;
+
+    // TODO FUN_009a81f0(PushSecondsUntil()): the sound listener
+}
+
+// ref: FUN_007906c0
+// The front plane of each of the 64 distance rows: the flattened view direction, a chunk
+// further along it per row
+void CWorldScene::BuildRowPlanes(const C3Vector& dir, const C3Vector& cameraPos) {
+    float distance = 0.0f;
+
+    for (uint32_t i = 0; i < ROW_COUNT; i++) {
+        auto plane = &CWorldScene::s_rowPlanes[i];
+        plane->n = dir;
+        plane->d = -((cameraPos.y + distance * dir.y) * dir.y + (distance * dir.z + cameraPos.z) * dir.z + dir.x * (cameraPos.x + dir.x * distance));
+        distance += CHUNK_SIZE;
+    }
+}
+
+// ref: FUN_0078fb20
+int32_t CWorldScene::BoxOutsideFrustum(const CAaBox& box) {
+    return AaBoxVsPlanes6(CWorldScene::s_frustums[CWorldScene::s_frustumDepth].planes, box) == 0;
+}
+
+// ref: FUN_0078fb60
+// Which of the five detail bands a distance along the view falls in
+int32_t CWorldScene::DistanceBand(float distance) {
+    const WorldDetailBands& bands = CWorld::GetDetailBands();
+
+    if (distance < 0.0f) {
+        return 0;
+    }
+
+    float sq = distance * distance;
+
+    if (sq < bands.farDistSq[0]) {
+        return 0;
+    }
+    if (sq < bands.farDistSq[1]) {
+        return 1;
+    }
+    if (sq < bands.farDistSq[2]) {
+        return 2;
+    }
+    if (bands.farDistSq[3] <= sq) {
+        return 4;
+    }
+
+    return 3;
+}
+
+// ref: FUN_0078fdc0
+// Whether the horizon buffer hides a box: its corners project into screen columns, and it is
+// occluded (2) when every column's horizon stands above the box's highest projected point.
+// Nothing feeds the buffer yet, so everything is visible.
+uint32_t CWorldScene::BoxOccluded(const CAaBox& box, uint32_t flags) {
+    if (!(CWorld::s_enables & CWorld::Enables::Enable_Culling) || CWorldScene::s_viewDir.z < -0.899999976f || 0.899999976f < CWorldScene::s_viewDir.z) {
+        return 0;
+    }
+
+    float minX = 3.4028235e+38f;
+    float maxX = -3.4028235e+38f;
+    float maxY = -3.4028235e+38f;
+    const C3Vector* ends[2] = { &box.b, &box.t };
+
+    for (int32_t i = 0; i < 8; i++) {
+        C4Vector corner = { ends[s_boxCornerX[i]]->x, ends[s_boxCornerY[i]]->y, ends[s_boxCornerZ[i]]->z, 1.0f };
+        C4Vector p;
+        TransformVector4(&p, corner, CWorldScene::s_occlusionMatrix);
+
+        if (!(flags & 0x8) && p.z < 50.0f) {
+            return 0;
+        }
+
+        float inv = 1.0f / p.z;
+        float sx = p.x * inv;
+        float sy = p.y * inv;
+
+        if (sx < minX) {
+            minX = sx;
+        }
+        if (maxX < sx) {
+            maxX = sx;
+        }
+        if (maxY < sy) {
+            maxY = sy;
+        }
+    }
+
+    int32_t first = static_cast<int32_t>(roundf(minX * 64.0f - 0.5f)) + 0xc0;
+    int32_t last = static_cast<int32_t>(roundf(maxX * 64.0f - 0.5f)) + 0xc1;
+
+    if (first < static_cast<int32_t>(HORIZON_COLUMNS) && -1 < last) {
+        if (first < 0) {
+            first = 0;
+        }
+        if (static_cast<int32_t>(HORIZON_COLUMNS) - 1 < last) {
+            last = HORIZON_COLUMNS - 1;
+        }
+
+        for (; first <= last; first++) {
+            if (CWorldScene::s_horizonBuffer[first] < maxY) {
+                return 0;
+            }
+        }
+
+        return 2;
+    }
+
+    return 0;
+}
+
+// ref: FUN_0078fc40
+// The sphere form of BoxOccluded: the centre projects to a column, the radius through the
+// projection to a half-width
+uint32_t CWorldScene::SphereOccluded(const C3Vector& center, float radius, uint32_t flags) {
+    if (!(CWorld::s_enables & CWorld::Enables::Enable_Culling) || fabsf(radius) < 2.38418579e-07f || CWorldScene::s_viewDir.z < -0.899999976f || 0.899999976f < CWorldScene::s_viewDir.z) {
+        return 0;
+    }
+
+    C4Vector c = { center.x, center.y, center.z, 1.0f };
+    C4Vector p;
+    TransformVector4(&p, c, CWorldScene::s_occlusionMatrix);
+
+    C4Vector r = { radius, radius, 0.0f, 0.0f };
+    C4Vector pr;
+    TransformVector4(&pr, r, CWorldScene::s_projMatrix);
+
+    if (!(flags & 0x8) && p.z < 50.0f) {
+        return 0;
+    }
+
+    float inv = 1.0f / p.z;
+    int32_t first = static_cast<int32_t>(roundf((p.x * inv - pr.y * inv) * 64.0f - 0.5f)) + 0xc0;
+    int32_t last = static_cast<int32_t>(roundf((pr.y * inv + p.x * inv) * 64.0f - 0.5f)) + 0xc1;
+
+    if (first < static_cast<int32_t>(HORIZON_COLUMNS) && -1 < last) {
+        if (first < 0) {
+            first = 0;
+        }
+        if (static_cast<int32_t>(HORIZON_COLUMNS) - 1 < last) {
+            last = HORIZON_COLUMNS - 1;
+        }
+
+        for (; first <= last; first++) {
+            if (CWorldScene::s_horizonBuffer[first] < p.y * inv + pr.x * inv) {
+                return 0;
+            }
+        }
+
+        return 2;
+    }
+
+    return 0;
+}
+
+// ref: FUN_007cce00
+// Whether a sphere sits entirely behind one of the occlusion volumes (DAT_00d2dcf0, plane
+// ranges into DAT_00d2dce0). No volumes are registered yet, so the reference's own early-out
+// applies.
+int32_t CWorldScene::SphereOccludedByVolumes(const CAaSphere& sphere) {
+    // TODO the volume list: for each, every plane's signed distance to the centre must be at
+    // most -radius for the sphere to be occluded
+    return 0;
+}
+
+// ref: FUN_00790650
+// The corner of a box on the camera's side of the target along each axis
+void CWorldScene::BoxNearPoint(const CAaBox& box, C3Vector* point) {
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+
+    point->x = cameraPos.x <= CWorldScene::s_cameraTarget.x ? box.b.x : box.t.x;
+    point->y = cameraPos.y <= CWorldScene::s_cameraTarget.y ? box.b.y : box.t.y;
+
+    if (CWorldScene::s_cameraTarget.z < cameraPos.z) {
+        point->z = box.t.z;
+        return;
+    }
+
+    point->z = box.b.z;
+}
+
+// ref: FUN_00790520
+// One of the chunk's 145 vertices in world space
+void CWorldScene::ChunkVertexPoint(const CMapChunk* chunk, int32_t vertex, C3Vector* point) {
+    point->x = CMapChunk::s_vertexTable[vertex][0] + chunk->m_position.x;
+    point->y = CMapChunk::s_vertexTable[vertex][1] + chunk->m_position.y;
+    point->z = chunk->m_heights[vertex] + chunk->m_position.z;
+}
+
+// ref: FUN_00790620
+float CWorldScene::ViewPlane2dDistance(const C3Vector& point) {
+    return point.x * CWorldScene::s_viewPlane2d.n.x + point.z * CWorldScene::s_viewPlane2d.n.z + point.y * CWorldScene::s_viewPlane2d.n.y + CWorldScene::s_viewPlane2d.d;
+}
+
+// ref: FUN_00792d80
+// Puts a chunk in the distance row its nearest vertex falls in (behind the camera counts as
+// the first row); one past the last row is dropped
+void CWorldScene::BucketChunk(CMapChunk* chunk, const C3Vector& point) {
+    float distance = point.x * CWorldScene::s_viewPlane2d.n.x + point.z * CWorldScene::s_viewPlane2d.n.z + point.y * CWorldScene::s_viewPlane2d.n.y + CWorldScene::s_viewPlane2d.d;
+    int32_t row = 0;
+
+    if (distance <= 0.0f || (row = static_cast<int32_t>(roundf(distance * CHUNKS_PER_UNIT - 0.5f))) < static_cast<int32_t>(ROW_COUNT)) {
+        CWorldScene::s_rows[row].chunks.LinkToTail(chunk);
+    }
+}
+
+// ref: FUN_00790af0
+// Narrows the current frustum to a window of the screen: the near and far faces' corners are
+// interpolated across the window's rectangle
+void CWorldScene::SubFrustum(const ViewWindow* window) {
+    C3Vector corners[8];
+    const C3Vector* src = CWorldScene::s_frustumCorners;
+
+    for (int32_t face = 0; face < 8; face += 4) {
+        const C3Vector* c = &src[face];
+        C3Vector* out = &corners[face];
+
+        C3Vector e12 = { c[2].x - c[1].x, c[2].y - c[1].y, c[2].z - c[1].z };
+        C3Vector a = { e12.x * window->minY + c[1].x, c[1].y + e12.y * window->minY, e12.z * window->minY + c[1].z };
+        C3Vector b = { e12.x * window->maxY + c[1].x, e12.y * window->maxY + c[1].y, window->maxY * e12.z + c[1].z };
+
+        C3Vector e03 = { c[3].x - c[0].x, c[3].y - c[0].y, c[3].z - c[0].z };
+        C3Vector cc = { e03.x * window->minY + c[0].x, e03.y * window->minY + c[0].y, c[0].z + e03.z * window->minY };
+        C3Vector d = { e03.x * window->maxY + c[0].x, e03.y * window->maxY + c[0].y, c[0].z + e03.z * window->maxY };
+
+        C3Vector ac = { a.x - cc.x, a.y - cc.y, a.z - cc.z };
+        out[0] = { ac.x * window->minX + cc.x, ac.y * window->minX + cc.y, ac.z * window->minX + cc.z };
+        out[1] = { ac.x * window->maxX + cc.x, ac.y * window->maxX + cc.y, ac.z * window->maxX + cc.z };
+
+        C3Vector bd = { b.x - d.x, b.y - d.y, b.z - d.z };
+        out[3] = { bd.x * window->minX + d.x, bd.y * window->minX + d.y, bd.z * window->minX + d.z };
+        out[2] = { bd.x * window->maxX + d.x, bd.y * window->maxX + d.y, d.z + window->maxX * bd.z };
+    }
+
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth].SetCorners(corners);
+}
+
+// ref: FUN_007d6690
+// Whether a chunk rectangle ({minRow, minCol, maxRow, maxCol}) overlaps the one the frustum
+// bounds cover
+int32_t CWorldScene::ChunkRectInView(const int32_t* rect) {
+    if (rect[1] <= CWorldScene::s_frustumChunkRect[3] && rect[0] <= CWorldScene::s_frustumChunkRect[2] && CWorldScene::s_frustumChunkRect[1] <= rect[3] && CWorldScene::s_frustumChunkRect[0] <= rect[2]) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_0079a790
+// The visibility traversal through a window of the screen: one frustum level deeper, narrowed
+// to the window, then every distance row near to far. Only the chunks are visited so far; the
+// low-detail areas (FUN_007cd850, FUN_00791980), map object defs (FUN_0079a160), liquids
+// (FUN_007935a0), entities (FUN_00793060, FUN_007987a0) and occluders (FUN_00793760) are not
+// ported yet.
+void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
+    // TODO FUN_007cd850(&cameraPos, s_frustumCorners, portal)
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+    CWorldScene::SubFrustum(window);
+
+    for (uint32_t i = 0; i < ROW_COUNT; i++) {
+        auto row = &CWorldScene::s_rows[i];
+
+        CWorldScene::TraverseRowChunks(row, i);
+        // TODO FUN_0079a160(row, window, portal)
+        // TODO FUN_007935a0(row)
+        // TODO FUN_00793060(row)
+
+        int32_t band = CWorldScene::DistanceBand(static_cast<float>(i) * CHUNK_SIZE);
+        // TODO FUN_007987a0(row, band)
+        // TODO FUN_00793760(row)
+        (void)band;
+    }
+
+    // TODO FUN_00791980(window)
+
+    CWorldScene::s_frustumDepth--;
+}
+
+// ref: FUN_00799d40
+// The chunks of one distance row: each leaves the occluder list it may be on, is tested against
+// the frustum and the horizon (bounds first, then the extended bounds), is built for drawing and
+// put on the render list its render chunk's layers select, and, with culling on, joins the row's
+// occluders when it is solid or starts within the rows. The doodads hanging off each chunk
+// (FUN_00799980) are not visited yet.
+void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
+    C3Vector point = { 0.0f, 0.0f, 0.0f };
+    int32_t culling = (CWorld::s_enables & CWorld::Enables::Enable_Culling) && rowIndex <= 0x3e;
+    const Frustum& frustum = CWorldScene::s_frustums[CWorldScene::s_frustumDepth];
+
+    for (auto chunk = row->chunks.Head(); chunk; ) {
+        auto next = row->chunks.Next(chunk);
+
+        chunk->m_frameLink.Unlink();
+
+        if (!AaBoxVsPlanes6(frustum.planes, chunk->m_bounds)) {
+            chunk = next;
+            continue;
+        }
+
+        CAaSphere sphere = { chunk->m_center, chunk->m_radius };
+        if (CWorldScene::SphereOccludedByVolumes(sphere)) {
+            chunk = next;
+            continue;
+        }
+
+        if (CWorldScene::BoxOccluded(chunk->m_bounds, 0)) {
+            chunk = next;
+            continue;
+        }
+
+        int32_t band = CWorldScene::DistanceBand(chunk->m_sortDistance);
+        // TODO FUN_00799980(&chunk->m_entityLinkList, band)
+        (void)band;
+
+        if (!AaBoxVsPlanes6(frustum.planes, chunk->m_bounds2)) {
+            chunk = next;
+            continue;
+        }
+
+        if (CWorldScene::BoxOccluded(chunk->m_bounds2, 0)) {
+            chunk = next;
+            continue;
+        }
+
+        if (chunk->m_header->holes != 0xFFFF) {
+            CWorldScene::s_visibleChunkCount++;
+            chunk->PrepareRender();
+
+            auto renderChunk = chunk->m_renderChunk;
+
+            if (renderChunk) {
+                uint32_t layers = (renderChunk->m_flags & 0x8) ? renderChunk->m_layerCount : 0;
+                uint32_t permutation = 0;
+
+                if (layers) {
+                    uint32_t flags = renderChunk->m_flags10;
+
+                    if (flags & 0x1) {
+                        permutation = ((flags & 0x4) | 0x2) >> 1;
+                    } else {
+                        permutation = (flags >> 1) & 0x2;
+                    }
+                }
+
+                CWorldScene::s_renderChunkLists[permutation + layers * 4].LinkToTail(renderChunk);
+            }
+        }
+
+        if (culling) {
+            bool occluder = chunk->m_header->holes != 0;
+
+            if (!occluder) {
+                CWorldScene::ChunkVertexPoint(chunk, CWorldScene::s_quadrantVertex[CWorldScene::s_targetQuadrant], &point);
+                float distance = CWorldScene::ViewPlane2dDistance(point);
+
+                if (distance <= 0.0f) {
+                    occluder = true;
+                } else {
+                    float rows = distance * CHUNKS_PER_UNIT;
+                    occluder = static_cast<int32_t>(roundf(rows - 0.5f)) < static_cast<int32_t>(ROW_COUNT);
+                }
+            }
+
+            if (occluder) {
+                CWorldScene::s_rows[rowIndex].occluderChunks.LinkToTail(chunk);
+            }
+        }
 
         chunk = next;
     }

@@ -2,6 +2,8 @@
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapRenderChunk.hpp"
+#include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
 #include "gx/Gx.hpp"
 #include <cfloat>
 #include <cmath>
@@ -48,7 +50,7 @@ CMapChunk::~CMapChunk() {
     this->m_mapObjDefLinkList.UnlinkAll();
     this->m_entityLinkList.UnlinkAll();
     this->m_frameLink.Unlink();
-    this->m_linkB4.Unlink();
+    this->m_rowLink.Unlink();
 }
 
 // ref: FUN_007c64b0
@@ -332,6 +334,79 @@ void CMapChunk::EnsureRenderChunk() {
 
     this->CreateRenderChunk();
     this->m_renderChunkReady = 1;
+}
+
+// ref: FUN_007c3e70
+// Every update, for a chunk in view: how far along the view its nearest corner lies, and the
+// distance row its vertex nearest the camera puts it in
+void CMapChunk::UpdateSortDistance() {
+    if (CWorldScene::BoxOutsideFrustum(this->m_bounds)) {
+        return;
+    }
+
+    C3Vector point = { 0.0f, 0.0f, 0.0f };
+    CWorldScene::BoxNearPoint(this->m_bounds, &point);
+
+    const C4Plane& plane = CWorldScene::s_viewPlane;
+    this->m_sortDistance = plane.n.x * point.x + plane.n.y * point.y + plane.n.z * point.z + plane.d;
+
+    int32_t vertex = CWorldScene::s_quadrantVertex[CWorldScene::s_cameraQuadrant];
+    C3Vector nearest = {
+        CMapChunk::s_vertexTable[vertex][0] + this->m_position.x,
+        CMapChunk::s_vertexTable[vertex][1] + this->m_position.y,
+        this->m_heights[vertex] + this->m_position.z
+    };
+    CWorldScene::BucketChunk(this, nearest);
+}
+
+// ref: FUN_007c5b20
+// Every update, for a chunk whose liquids are in view: each liquid in view goes into a distance
+// row at the camera's height clamped to the liquid's range. The liquid bounds (FUN_007cde80)
+// and the row insertion (FUN_00792df0) are not ported yet, so the walk stops at the chunk test.
+void CMapChunk::UpdateLiquidVisibility() {
+    if (this->m_liquidBounds.t.x < this->m_liquidBounds.b.x || CWorldScene::BoxOutsideFrustum(this->m_liquidBounds)) {
+        return;
+    }
+
+    int32_t vertex = CWorldScene::s_quadrantVertex[CWorldScene::s_cameraQuadrant];
+    C3Vector point = {
+        CMapChunk::s_vertexTable[vertex][0] + this->m_position.x,
+        CMapChunk::s_vertexTable[vertex][1] + this->m_position.y,
+        this->m_heights[vertex] + this->m_position.z
+    };
+    (void)point;
+
+    // TODO for each liquid of m_liquidList: FUN_007cde80(liquid, &box); if
+    // !BoxOutsideFrustum(box): point.z = clamp(cameraPos.z, liquid->m_minHeight,
+    // liquid->m_maxHeight); FUN_00792df0(liquid, &point)
+}
+
+// ref: FUN_007d3fe0
+// Readies a visible chunk for the frame: its render chunk exists, is marked for the half-size
+// alpha beyond 777 yards (unless the full-size setting is on), and is built. Then, with detail
+// doodads on and the chunk within 70 yards, its detail doodads are created and queued; that
+// system (FUN_007d3390, FUN_00792fa0) is not ported yet.
+void CMapChunk::PrepareRender() {
+    if (!this->m_renderChunk) {
+        this->EnsureRenderChunk();
+    }
+
+    if (this->m_renderChunk) {
+        const C3Vector& cameraPos = CWorld::GetCameraPos();
+        float dx = cameraPos.x - this->m_center.x;
+        float dy = cameraPos.y - this->m_center.y;
+        float dz = cameraPos.z - this->m_center.z;
+
+        if (CWorld::s_terrainAlphaFull || 603729.0f < dy * dy + dz * dz + dx * dx) {
+            this->m_renderChunk->m_flags10 |= 0x10;
+        }
+
+        this->m_renderChunk->Build();
+    }
+
+    if ((CWorld::s_enables & CWorld::Enables::Enable_DetailDoodads) && this->m_sortDistance < 70.0f) {
+        // TODO if (!m_ptrA4) FUN_007d3390(this); if (m_ptrA4) FUN_00792fa0(m_ptrA4)
+    }
 }
 
 // ref: FUN_007c54c0

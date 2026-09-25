@@ -7,6 +7,7 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "world/Terrain.hpp"
+#include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"
 #include "gx/Texture.hpp"
 #include "component/CCharacterComponent.hpp"
@@ -237,21 +238,10 @@ void CGWorldFrame::OnWorldRender() {
     // to draw, when an interior lighting override is active, or when the camera is under liquid
     // (CMap::Render's clear). The sky dome is then ADDED over that black, so the dome's own colour
     // is the sky; clearing to the sky colour as well would double it.
-    bool underLiquid = CWorld::IsCameraUnderLiquid();
-    const C3Vector& backdrop = CWorld::GetFogColor();
-    CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
-
-    if (underLiquid) {
-        clearColor.b = static_cast<uint8_t>(backdrop.z * 255.0f);
-        clearColor.g = static_cast<uint8_t>(backdrop.y * 255.0f);
-        clearColor.r = static_cast<uint8_t>(backdrop.x * 255.0f);
-    }
-    GxSceneClear(0x3, clearColor);
-
-    CShaderEffect::UpdateProjMatrix();
-
-    // Reference order (CMap::Render FUN_0079a870): terrain chunks, WMO groups, then the sky through
-    // the far-depth viewport, so the sky fills only what the opaque world left untouched.
+    // The clear, the projection refresh and the terrain chunks are CMap::Render's now (the clear
+    // colour logic above lives there); the map objects and liquids still come from the stand-in
+    // TerrainRender, and the sky follows them as in the reference.
+    CMap::Render(this->m_camera->Position(), CWorld::GetTickTimeSec());
     TerrainRender();
     SkyRender();
 

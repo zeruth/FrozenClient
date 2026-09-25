@@ -16,6 +16,10 @@
     "status": "excluded",
     "note": "TSGrowableArray<CMapChunkBufBlock>::SetCount instantiation (constructs each new block through FUN_007b9cb0); squall template"
   },
+  "00790020": {
+    "status": "excluded",
+    "note": "60-dword copy: the traversal frustum's assignment operator (CWorldScene::Frustum, 0xfc bytes with the tail left alone), 12 callers; frozen assigns the struct"
+  },
   "007b0f10": {
     "status": "excluded",
     "note": "CM2Lighting default construction folded with Initialize(nullptr, {centre, 0}) into one helper (2 callers), the sibling of 00790440; frozen constructs in place"
