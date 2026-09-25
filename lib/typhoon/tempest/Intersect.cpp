@@ -521,3 +521,16 @@ uint32_t ClipPolygonToPlanes(const C4Plane* planes, uint32_t planeCount,
 
     return result;
 }
+
+// ref: FUN_0078f3e0
+float DistancePointBox(const CAaBox& box, const C3Vector& point) {
+    float x = point.x < box.b.x ? box.b.x : (point.x <= box.t.x ? point.x : box.t.x);
+    float y = point.y < box.b.y ? box.b.y : (point.y <= box.t.y ? point.y : box.t.y);
+    float z = point.z < box.b.z ? box.b.z : (point.z <= box.t.z ? point.z : box.t.z);
+
+    float dx = x - point.x;
+    float dy = y - point.y;
+    float dz = z - point.z;
+
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}

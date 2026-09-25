@@ -1761,3 +1761,54 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
     // TODO the row's second occluder list (+0x3c), which holds the map objects that shade the
     // horizon. Nothing links into it yet.
 }
+
+// ref: FUN_007946d0
+// A solid box hides what is behind it. The reference turns it into five quads rather than six:
+// the four sides, each dropped a yard below the box so the volume closes against the ground,
+// and the top. There is no bottom, because nothing is ever seen from under one.
+//
+// The box is let out by a twentieth of a yard first, so a surface lying exactly on it is
+// treated as inside rather than falling on the boundary.
+void CWorldScene::AddOcclusionVolume(const CAaBox& box, float maxDistance) {
+    if (box.b.x >= box.t.x || box.b.y >= box.t.y || box.b.z >= box.t.z) {
+        return;
+    }
+
+    CAaBox grown;
+    grown.b.x = box.b.x - 0.05f;
+    grown.b.y = box.b.y - 0.05f;
+    grown.b.z = box.b.z - 0.05f;
+    grown.t.x = box.t.x + 0.05f;
+    grown.t.y = box.t.y + 0.05f;
+    grown.t.z = box.t.z + 0.05f;
+
+    // Too far away to be worth hiding anything with.
+    if (DistancePointBox(grown, CWorldScene::s_cameraPos) > maxDistance) {
+        return;
+    }
+
+    float skirt = grown.b.z - 1.0f;
+
+    const C3Vector faces[5][4] = {
+        // -x, then +x: the pair order flips so both face outward.
+        { { grown.b.x, grown.b.y, skirt }, { grown.b.x, grown.t.y, skirt },
+          { grown.b.x, grown.t.y, grown.t.z }, { grown.b.x, grown.b.y, grown.t.z } },
+        { { grown.t.x, grown.t.y, skirt }, { grown.t.x, grown.b.y, skirt },
+          { grown.t.x, grown.b.y, grown.t.z }, { grown.t.x, grown.t.y, grown.t.z } },
+        // -y, then +y.
+        { { grown.t.x, grown.b.y, skirt }, { grown.b.x, grown.b.y, skirt },
+          { grown.b.x, grown.b.y, grown.t.z }, { grown.t.x, grown.b.y, grown.t.z } },
+        { { grown.b.x, grown.t.y, skirt }, { grown.t.x, grown.t.y, skirt },
+          { grown.t.x, grown.t.y, grown.t.z }, { grown.b.x, grown.t.y, grown.t.z } },
+        // the top.
+        { { grown.b.x, grown.b.y, grown.t.z }, { grown.t.x, grown.b.y, grown.t.z },
+          { grown.t.x, grown.t.y, grown.t.z }, { grown.b.x, grown.t.y, grown.t.z } },
+    };
+
+    for (int32_t i = 0; i < 5; i++) {
+        // TODO FUN_00792360(quad, 4, maxDistance, 0, 0, 0): the volume each face sweeps away
+        // from the camera, which is what SphereOccludedByVolumes then tests against. Not
+        // ported, so nothing is accumulated and that test still passes everything.
+        (void)faces[i];
+    }
+}

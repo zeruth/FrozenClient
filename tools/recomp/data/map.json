@@ -43925,6 +43925,22 @@
   "refSize": 97,
   "status": "ported"
  },
+ "0078f3e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DistancePointBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 153,
+  "status": "ported"
+ },
  "0078f480": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44324,6 +44340,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 225,
+  "status": "ported"
+ },
+ "007946d0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddOcclusionVolume",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 1009,
   "status": "ported"
  },
  "00795400": {

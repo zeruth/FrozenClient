@@ -49,6 +49,10 @@ const uint32_t CLIP_POLYGON_MAX = 32;
 uint32_t ClipPolygonToPlanes(const C4Plane* planes, uint32_t planeCount,
                              const C3Vector* vertices, uint32_t count, C3Vector* out);
 
+// Distance from a point to a box: zero inside it, otherwise to the nearest face.
+// ref: FUN_0078f3e0
+float DistancePointBox(const CAaBox& box, const C3Vector& point);
+
 // Whether two scalars are within `epsilon` of each other. ref: FUN_00482870
 bool NearlyEqual(float a, float b, float epsilon);
 

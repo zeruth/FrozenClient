@@ -37893,6 +37893,21 @@
 "refs": [],
 "line": 433
 },
+"DistancePointBox": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [],
+"branches": 6,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 526
+},
 "CMath::cos": {
 "files": [
 "lib/typhoon/tempest/math/cmath.hpp"
@@ -194335,6 +194350,28 @@
 "lines": 36,
 "refs": [],
 "line": 1728
+},
+"CWorldScene::AddOcclusionVolume": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"CAaBox::CAaBox",
+"DistancePointBox"
+],
+"strings": [],
+"consts": [
+"0",
+"0.05f",
+"1.0f",
+"4",
+"5"
+],
+"branches": 3,
+"stub": false,
+"lines": 43,
+"refs": [],
+"line": 1772
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [

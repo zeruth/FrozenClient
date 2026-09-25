@@ -85,6 +85,14 @@
     "status": "excluded",
     "note": "a 0xf4-byte struct copy of one CWFrustum onto another, which the compiler emitted out of line. frozen writes the assignment at each call site"
   },
+  "00791f80": {
+    "status": "excluded",
+    "note": "TSGrowableArray's own append for the occlusion volume list: grow to a multiple of the chunk size, then copy one 0x20-byte element in. frozen uses the container, so there is no separate function to bind"
+  },
+  "007920a0": {
+    "status": "excluded",
+    "note": "the same append for the volume list's second array, 0xc-byte elements"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"
