@@ -45303,10 +45303,10 @@
   "status": "ported"
  },
  "007ad1f0": {
-  "branchRatio": 0.364,
-  "constOverlap": 0.1,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 0.636,
+  "constOverlap": 0.15,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"

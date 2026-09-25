@@ -1491,9 +1491,27 @@ void CMapObj::WalkFromInside(const C44Matrix& placement, const C44Matrix& invers
 
     CWorldScene::s_frustumDepth--;
 
-    // TODO the tail: every group the root flags always-draw (MOGI bit 16) has its box brought
-    // out to world space and is marked visible regardless of the walk. frozen's walk skips
-    // those groups, so nothing marks them yet.
+    // The walk only reaches what the portals connect. A group the root flags always-draw is
+    // reported anyway, on nothing but its own box being in view -- that is how a building's
+    // outer shell stays drawn while the camera is inside one of its rooms.
+    //
+    // Unexercised so far: across 215 placed buildings and 2759 groups on map 609, not one
+    // carries MOGI bit 16, so this loop has never had anything to report. What that run did
+    // confirm is the reading -- every one of those 2759 boxes came out well formed, so the
+    // stride and the field offsets are right.
+    for (uint32_t i = 0; i < this->m_groupCount; i++) {
+        if (!(this->m_mogi[i].flags & 0x10000)) {
+            continue;
+        }
+
+        CAaBox box = TransformBox(this->m_mogi[i].bounds, placement);
+
+        if (CWorldScene::BoxOutsideFrustum(box)) {
+            continue;
+        }
+
+        this->ReportVisible(i);
+    }
 }
 
 // ref: FUN_007b3b20

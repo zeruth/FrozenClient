@@ -199604,20 +199604,24 @@
 "AdvancePortalStamp",
 "CWFrustum::operator=",
 "CMapObj::GetGroup",
-"CMapObj::WalkPortals"
+"CMapObj::WalkPortals",
+"TransformBox",
+"CWorldScene::BoxOutsideFrustum",
+"CMapObj::ReportVisible"
 ],
 "strings": [],
 "consts": [
 "0",
+"0x10000",
 "0x48",
 "0xffff",
 "1",
 "1.0f",
 "4"
 ],
-"branches": 4,
+"branches": 7,
 "stub": false,
-"lines": 39,
+"lines": 57,
 "refs": [],
 "line": 1457
 },
@@ -199636,7 +199640,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1502
+"line": 1520
 },
 "TriangleOutsideHull": {
 "files": [
