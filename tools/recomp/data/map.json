@@ -44118,6 +44118,22 @@
   "refSize": 731,
   "status": "ported"
  },
+ "00791120": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::SphereOutsideFrustum",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
  "007912c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44132,6 +44148,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 184,
+  "status": "ported"
+ },
+ "00791cb0": {
+  "branchRatio": 0.467,
+  "constOverlap": 0.182,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::VisitStaticEntity",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 501,
   "status": "ported"
  },
  "00792ad0": {
@@ -44247,12 +44279,13 @@
   "status": "ported"
  },
  "007983b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/world/CWFrustum.cpp"
+   "src/world/CWFrustum.cpp",
+   "src/world/cwfrustum.cpp"
   ],
   "frozen": "CWFrustum::Alloc",
   "frozenSize": 259,
@@ -44323,6 +44356,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 193,
+  "status": "ported"
+ },
+ "00799980": {
+  "branchRatio": 0.538,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseChunkDoodads",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 482,
   "status": "ported"
  },
  "00799d40": {
@@ -44559,7 +44608,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 166,
+  "frozenSize": 199,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -44630,12 +44679,13 @@
   "status": "ported"
  },
  "007a7630": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::BatchOutsideFrustum",
   "frozenSize": 0,
@@ -44645,12 +44695,13 @@
   "status": "ported"
  },
  "007a8320": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetInstanceTransform",
   "frozenSize": 0,
@@ -44660,12 +44711,13 @@
   "status": "ported"
  },
  "007a8440": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.75,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupFog",
   "frozenSize": 0,
@@ -44675,12 +44727,13 @@
   "status": "ported"
  },
  "007a84d0": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.667,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SelectShaders",
   "frozenSize": 0,
@@ -44706,12 +44759,13 @@
   "status": "ported"
  },
  "007a8940": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.05,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetMaterialColor",
   "frozenSize": 0,
@@ -44721,12 +44775,13 @@
   "status": "ported"
  },
  "007a8b10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.095,
   "faithful": false,
   "fidelity": 0.167,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLighting",
   "frozenSize": 0,
@@ -44736,12 +44791,13 @@
   "status": "ported"
  },
  "007a9160": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.222,
   "faithful": false,
   "fidelity": 0.333,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLocalLights",
   "frozenSize": 0,
@@ -44751,12 +44807,13 @@
   "status": "ported"
  },
  "007a9380": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.509,
+  "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.532,
+  "fidelity": 0.597,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesOutdoor",
   "frozenSize": 0,
@@ -44766,12 +44823,13 @@
   "status": "ported"
  },
  "007abf50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.375,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::Render",
   "frozenSize": 0,
@@ -44781,12 +44839,13 @@
   "status": "ported"
  },
  "007ac6a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.708,
+  "constOverlap": 0.083,
   "faithful": true,
-  "fidelity": 0.846,
+  "fidelity": 0.885,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatches",
   "frozenSize": 0,
@@ -44796,12 +44855,13 @@
   "status": "ported"
  },
  "007ac9f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.649,
+  "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.707,
+  "fidelity": 0.756,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesSplit",
   "frozenSize": 0,
@@ -46150,7 +46210,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::CreateDoodadDef",
-  "frozenSize": 520,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 610,
@@ -46374,7 +46434,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocDoodadDef",
-  "frozenSize": 348,
+  "frozenSize": 384,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -47405,12 +47465,13 @@
   "status": "ported"
  },
  "007c8560": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.292,
+  "constOverlap": 0.062,
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/world/map/CMapObjGroupBuffers.cpp"
+   "src/world/map/CMapObjGroupBuffers.cpp",
+   "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::FillVertexBuffer",
   "frozenSize": 0,
@@ -47420,12 +47481,13 @@
   "status": "ported"
  },
  "007c8b90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjGroupBuffers.cpp"
+   "src/world/map/CMapObjGroupBuffers.cpp",
+   "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::FillIndexBuffer",
   "frozenSize": 0,
@@ -47515,12 +47577,13 @@
   "status": "ported"
  },
  "007c9cb0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjGroupBuffers.cpp"
+   "src/world/map/CMapObjGroupBuffers.cpp",
+   "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::BindVertexStream",
   "frozenSize": 0,
@@ -47530,12 +47593,13 @@
   "status": "ported"
  },
  "007c9d80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjGroupBuffers.cpp"
+   "src/world/map/CMapObjGroupBuffers.cpp",
+   "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::BindIndexStream",
   "frozenSize": 0,
@@ -47657,12 +47721,13 @@
   "status": "ported"
  },
  "007cb3b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
-   "src/world/map/VBBList.cpp"
+   "src/world/map/VBBList.cpp",
+   "src/world/map/vbblist.cpp"
   ],
   "frozen": "VBBList::NewBlock",
   "frozenSize": 0,
@@ -47672,12 +47737,13 @@
   "status": "ported"
  },
  "007cb990": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/VBBList.cpp"
+   "src/world/map/VBBList.cpp",
+   "src/world/map/vbblist.cpp"
   ],
   "frozen": "VBBList::InitializeLists",
   "frozenSize": 60,
@@ -47687,12 +47753,13 @@
   "status": "ported"
  },
  "007cb9f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/VBBList.cpp"
+   "src/world/map/VBBList.cpp",
+   "src/world/map/vbblist.cpp"
   ],
   "frozen": "VBBList::Free",
   "frozenSize": 118,
@@ -47702,12 +47769,13 @@
   "status": "ported"
  },
  "007cbbc0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.273,
+  "constOverlap": 0.143,
   "faithful": false,
   "fidelity": 0.6,
   "files": [
-   "src/world/map/VBBList.cpp"
+   "src/world/map/VBBList.cpp",
+   "src/world/map/vbblist.cpp"
   ],
   "frozen": "VBBList::Alloc",
   "frozenSize": 0,
@@ -47717,12 +47785,13 @@
   "status": "ported"
  },
  "007cbcb0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.25,
+  "branchRatio": 0.5,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjGroupBuffers.cpp"
+   "src/world/map/CMapObjGroupBuffers.cpp",
+   "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::CreateBuffers",
   "frozenSize": 0,
@@ -48323,12 +48392,13 @@
   "status": "ported"
  },
  "007d78c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.867,
+  "constOverlap": 0.026,
   "faithful": false,
   "fidelity": 0.714,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::BakePortalLight",
   "frozenSize": 0,
@@ -58180,12 +58250,13 @@
   "status": "ported"
  },
  "00873ee0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetAlphaRefForBlendMode",
   "frozenSize": 0,
@@ -66351,12 +66422,13 @@
   "status": "ported"
  },
  "00983f40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/CWFrustum.cpp"
+   "src/world/CWFrustum.cpp",
+   "src/world/cwfrustum.cpp"
   ],
   "frozen": "CWFrustum::Transform",
   "frozenSize": 0,
@@ -66366,10 +66438,10 @@
   "status": "ported"
  },
  "00983fe0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cwfrustum.hpp"
@@ -66437,7 +66509,8 @@
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp",
-   "src/world/map/CMapObjDraw.cpp"
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "ImVectorToFloats",
   "frozenSize": 0,

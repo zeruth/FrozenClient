@@ -2763,7 +2763,9 @@ addr	how	frozen	evidence
 007906c0	annotated	CWorldScene::BuildRowPlanes	tag in src/world/CWorldScene.cpp
 00790af0	annotated	CWorldScene::SubFrustum	tag in src/world/CWorldScene.cpp
 00790e20	override	CWorldScene::SubFrustum	
+00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
+00791cb0	annotated	CWorldScene::VisitStaticEntity	tag in src/world/CWorldScene.cpp
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
@@ -2776,6 +2778,7 @@ addr	how	frozen	evidence
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
 00799310	annotated	CWorldScene::MarkMapObjGroupVisible	tag in src/world/CWorldScene.cpp
 007997d0	annotated	CWorldScene::Initialize	tag in src/world/CWorldScene.cpp
+00799980	annotated	CWorldScene::TraverseChunkDoodads	tag in src/world/CWorldScene.cpp
 00799d40	annotated	CWorldScene::TraverseRowChunks	tag in src/world/CWorldScene.cpp
 0079a160	annotated	CWorldScene::TraverseRowMapObjDefs	tag in src/world/CWorldScene.cpp
 0079a790	annotated	CWorldScene::Traverse	tag in src/world/CWorldScene.cpp

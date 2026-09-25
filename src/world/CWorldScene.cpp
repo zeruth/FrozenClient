@@ -5,6 +5,8 @@
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
+#include "model/CM2Model.hpp"
+#include "world/map/CMapStaticEntity.hpp"
 #include "world/CWFrustum.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "gx/CGxDevice.hpp"
@@ -24,6 +26,8 @@
 static const float CHUNK_SIZE = 33.33333206176758f;
 static const float CHUNKS_PER_UNIT = 0.0299999993f;         // DAT_00a3f7ec
 static const float MAP_HALF_EXTENT = 17066.666f;
+// How near the camera an out-of-sight doodad has to be to keep animating (DAT_009e8cc8).
+static const float ANIMATE_RANGE_SQ = 100.0f;
 
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWorldScene::RENDER_LIST_COUNT];
 CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
@@ -1344,4 +1348,134 @@ void CWorldScene::RenderMapObjs() {
     CWorldScene::s_frustumDepth--;
 
     GxRsPop();
+}
+
+// ----------------------------------------------------------------------------------------------
+// The doodads of one chunk
+
+// ref: FUN_00791120
+int32_t CWorldScene::SphereOutsideFrustum(const C3Vector& center, float radius) {
+    CAaSphere sphere;
+    sphere.c = center;
+    sphere.r = radius;
+
+    return CWorldScene::s_frustums[CWorldScene::s_frustumDepth].SphereInside(sphere) == 0;
+}
+
+// ref: FUN_00791cb0
+// A placed thing the traversal reached: it leaves whatever row it was in, takes its distance
+// along the camera forward, and tells its model to draw. Past the far edge of its detail band
+// it is dropped, and through the band's fade width it draws thinner rather than vanishing.
+void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
+    entity->m_rowLink.Unlink();
+
+    if ((entity->m_flags & 0x20) || !(CWorld::s_enables & 0x1)) {
+        return;
+    }
+
+    const C4Plane& plane = CWorldScene::s_viewPlane;
+    entity->m_sortDistance = plane.n.x * entity->m_sphere.c.x
+                           + plane.n.y * entity->m_sphere.c.y
+                           + plane.n.z * entity->m_sphere.c.z
+                           + plane.d
+                           - entity->m_sphere.r;
+
+    float alpha = 1.0f;
+
+    if ((CWorld::s_enables & 0x4000) && !(entity->m_flags & 0x800)) {
+        const WorldDetailBands& bands = CWorld::GetDetailBands();
+        uint32_t band = entity->m_detailLevel;
+
+        float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+        float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+        float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+        float distanceSq = dx * dx + dy * dy + dz * dz;
+
+        if (bands.farDistSq[band] < distanceSq) {
+            return;
+        }
+
+        if (bands.fadeStartSq[band] < distanceSq) {
+            float fade = 1.0f - (sqrtf(distanceSq) - bands.fadeStart[band]) / bands.fadeWidth[band];
+
+            if (fade <= 1.0f) {
+                if (fade <= 0.01f) {
+                    return;
+                }
+
+                alpha = fade;
+            }
+        }
+    }
+
+    if (!entity->m_model) {
+        return;
+    }
+
+    entity->m_model->SetAnimating(1);
+
+    // Diverged: the reference chooses between two pairs of draw bits on a model field at
+    // +0x48, and frozen's CM2Model deliberately does not follow the reference's offsets there
+    // (see the note above its own +0x134 block). Every doodad takes the first pair. If
+    // doodads that carry attachments come out wrong, this is the line.
+    entity->m_model->m_flags |= 0x8;
+    entity->m_model->m_flags |= 0x10000;
+
+    entity->m_model->m_baseAlpha = alpha;
+}
+
+// ref: FUN_00799980
+// Every doodad a chunk holds, once per frame. One too fine for this row's detail band ends the
+// walk when the map says its doodads are sorted that way, and a doodad already reached through
+// another chunk this frame is skipped.
+void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand) {
+    for (auto link = links->Head(); link; link = links->Next(link)) {
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        if (entity->m_detailLevel < detailBand) {
+            if (CMap::s_wdtHeader[0] & 0x8) {
+                return;
+            }
+
+            continue;
+        }
+
+        if (!entity->m_model || !(entity->m_flags & 0x80)) {
+            // Not drawing, but its box still feeds the horizon buffer.
+            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f): what that object accumulates is not
+            // recovered yet. The reference reads the model's own bounds here without checking
+            // that the model exists; frozen checks.
+            continue;
+        }
+
+        if (entity->m_frameStamp == CWorldScene::s_frameStamp) {
+            continue;
+        }
+
+        entity->m_frameStamp = CWorldScene::s_frameStamp;
+        entity->m_visible = 1;
+
+        if (!CWorldScene::SphereOutsideFrustum(entity->m_sphere.c, entity->m_sphere.r)) {
+            entity->m_visible = 0;
+
+            if (CWorldScene::SphereOccluded(entity->m_sphere.c, entity->m_sphere.r, 0x10) < 2) {
+                CWorldScene::VisitStaticEntity(entity);
+
+                CWorldScene::s_visibleEntityCount++;
+
+                continue;
+            }
+        }
+
+        // Out of sight: it keeps animating only if it asked to, or if the camera is near
+        // enough that it would be noticed starting up again.
+        float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+        float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+        float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+
+        int32_t keepAnimating = (entity->m_flags7c & 0x400)
+            || (dx * dx + dy * dy + dz * dz) < ANIMATE_RANGE_SQ;
+
+        entity->m_model->SetAnimating(keepAnimating);
+    }
 }

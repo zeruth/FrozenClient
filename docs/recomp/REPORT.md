@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 11:59 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 12:06 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26964 | 5.35M |
-| mapped to a frozen function | 4230 (+1) (15.7%) | 876.1k (16.0%) |
-| &nbsp;&nbsp;ported | 3568 (+1) | 703.7k |
+| mapped to a frozen function | 4233 (+3) (15.7%) | 877.1k (16.0%) |
+| &nbsp;&nbsp;ported | 3571 (+3) | 704.8k |
 | &nbsp;&nbsp;stub (unimplemented body) | 580 (=) | 125.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **2142 (=) (7.9%)** | **273.7k (5.0%)** |
-| unmapped | 22734 | 4.50M |
-| world spine (reachable from OnFrameRender) | 5388, mapped 1319 (+1) (24.5%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5655, mapped 1337 (+1) (23.6%) | |
-| **render surface** (the modules that draw the world) | **4526, mapped 761 (+1) (16.8%)** | |
-| frozen functions (src/, from PDB + source) | 13497, stubs 1702 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2144 (+2) (8.0%)** | **273.4k (5.0%)** |
+| unmapped | 22731 | 4.50M |
+| world spine (reachable from OnFrameRender) | 5388, mapped 1322 (+3) (24.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5655, mapped 1340 (+3) (23.7%) | |
+| **render surface** (the modules that draw the world) | **4526, mapped 764 (+3) (16.9%)** | |
+| frozen functions (src/, from PDB + source) | 13500, stubs 1702 | |
 
-Match evidence: annotated 2035, callgraph 237, callorder 110, cvar 32, handler 29, order 140, override 306, sticky 16, string 305, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2038, callgraph 237, callorder 110, cvar 32, handler 29, order 140, override 306, sticky 16, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 11:53 -- mapped 4229, ported 3567, stub 580, spine mapped 1318.
+Previous run: 2026-09-25 11:59 -- mapped 4230, ported 3568, stub 580, spine mapped 1319.
 
 ## Lua API coverage (binding tables)
 
@@ -146,7 +146,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | lmemPool.cpp | 342 | 80.2k | 78 (22.8%) | 32.1% | 0 | 0 | 107 |
 | Map.cpp | 230 | 76.6k | 33 (14.3%) | 15.3% | 0 | 0 | 136 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| WorldParam.cpp | 181 | 63.3k | 44 (24.3%) | 26.3% | 3 | 0 | 112 |
+| WorldParam.cpp | 181 | 63.3k | 47 (26.0%) | 27.9% | 3 | 0 | 112 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 284 | 61.3k | 41 (14.4%) | 19.4% | 11 | 0 | 113 |
 | SoundEngine.cpp | 406 | 59.7k | 33 (8.1%) | 18.7% | 0 | 0 | 58 |
@@ -622,12 +622,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 00795400 | `CWorldScene::UpdateCamera` | 38% | 19 | 24 | 8 | 7 | 0% | 2291 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
-| 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 53% | 62 | 51 | 53 | ? | ? | 2146 |
+| 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 60% | 62 | 55 | 53 | 27 | 6% | 2146 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 76% | 45 | 23 | 21 | 10 | 11% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
 | 004c6a40 | `SI2::PlaySoundKit` | 26% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 00405dd0 | `Sub405DD0` | 22% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 007ac9f0 | `CMapObjGroup::DrawBatchesSplit` | 71% | 41 | 42 | 37 | ? | ? | 1566 |
+| 007ac9f0 | `CMapObjGroup::DrawBatchesSplit` | 76% | 41 | 45 | 37 | 24 | 6% | 1566 |
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 16% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 00828a00 | `CM2Model::AnimateST` | 50% | 24 | 8 | 40 | 17 | 0% | 1415 |
@@ -640,7 +640,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `WowClientInit` | 14% | 59 | 23 | 23 | 2 | 0% | 1267 |
-| 007c8560 | `CMapObjGroup::FillVertexBuffer` | 67% | 6 | 6 | 24 | ? | ? | 1255 |
+| 007c8560 | `CMapObjGroup::FillVertexBuffer` | 67% | 6 | 8 | 24 | 7 | 6% | 1255 |
 | 00780f50 | `CWorld::Initialize` | 42% | 31 | 15 | 4 | 4 | 0% | 1247 |
 | 0062e050 | `CGTooltip_SetInventoryItem` | 21% | 39 | 14 | 31 | 6 | 0% | 1226 |
 | 007d28b0 | `CMapRenderChunk::DrawLocal` | 67% | 13 | 20 | 20 | 7 | 0% | 1207 |
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-25 10:27 | 4176 (15.5%) | 2116 (7.8%) | 580 | 1294/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:27 | 4176 (15.5%) | 2116 (7.8%) | 580 | 1294/5388 | 2924/2964 | 1380 |
-| 2026-09-25 10:27 | 4176 (15.5%) | 2116 (7.8%) | 580 | 1294/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 11:46 | 4223 (15.7%) | 2138 (7.9%) | 580 | 1312/5388 | 2924/2964 | 1380 |
 | 2026-09-25 11:53 | 4229 (15.7%) | 2142 (7.9%) | 580 | 1318/5388 | 2924/2964 | 1380 |
 | 2026-09-25 11:59 | 4230 (15.7%) | 2142 (7.9%) | 580 | 1319/5388 | 2924/2964 | 1380 |
+| 2026-09-25 12:06 | 4233 (15.7%) | 2144 (8.0%) | 580 | 1322/5388 | 2924/2964 | 1380 |
 
 ## How to move a row
 

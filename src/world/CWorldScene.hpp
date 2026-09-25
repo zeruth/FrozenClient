@@ -6,6 +6,7 @@
 #include "world/map/CMapRenderChunk.hpp"
 #include "gx/Texture.hpp"
 #include "world/CWFrustum.hpp"
+#include "world/map/CMapBaseObj.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -16,6 +17,7 @@
 
 class CGxShader;
 class CMapObjDef;
+class CMapStaticEntity;
 
 // The per-frame scene of the world (reference WorldScene.cpp): the camera's view of the map, the
 // distance rows the map's objects are bucketed into, the render lists the visibility traversal
@@ -162,6 +164,12 @@ class CWorldScene {
         static void UpdateCamera(const C3Vector& cameraPos, const C3Vector& cameraTarget);
         static void BuildRowPlanes(const C3Vector& dir, const C3Vector& cameraPos);
         static int32_t BoxOutsideFrustum(const CAaBox& box);
+        // ref: FUN_00791120
+        static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
+        // ref: FUN_00791cb0
+        static void VisitStaticEntity(CMapStaticEntity* entity);
+        // ref: FUN_00799980
+        static void TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand);
         static int32_t DistanceBand(float distance);
         static uint32_t BoxOccluded(const CAaBox& box, uint32_t flags);
         static uint32_t SphereOccluded(const C3Vector& center, float radius, uint32_t flags);
