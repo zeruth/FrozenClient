@@ -1,6 +1,7 @@
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
+#include "world/map/CMapRenderChunk.hpp"
 #include "gx/Gx.hpp"
 #include <cfloat>
 #include <cmath>
@@ -293,33 +294,55 @@ int16_t CMapChunk::BuildIndices(uint16_t* indices, int16_t baseVertex) {
 // ref: FUN_007c51b0
 // Appends this chunk's triangles to a batch, placing its vertices after the batch's current
 // highest index, and widens the batch's index range to cover them.
-void CMapChunk::AppendIndices(uint16_t* indices, MAPCHUNKINDEXRANGE* range) {
-    uint32_t base = range->maxIndex ? static_cast<uint16_t>(range->maxIndex + 1) : 0;
+void CMapChunk::AppendIndices(uint16_t* indices, CGxBatch* batch) {
+    uint32_t base = batch->m_maxIndex ? static_cast<uint16_t>(batch->m_maxIndex + 1) : 0;
 
     int16_t count = this->BuildIndices(indices, static_cast<int16_t>(base));
 
-    if (static_cast<uint16_t>(base) <= range->minIndex) {
-        range->minIndex = static_cast<uint16_t>(base);
+    if (static_cast<uint16_t>(base) <= batch->m_minIndex) {
+        batch->m_minIndex = static_cast<uint16_t>(base);
     }
 
     uint32_t top = base + CMapChunk::s_vertexSpan;
-    if (top < range->maxIndex) {
-        top = range->maxIndex;
+    if (top < batch->m_maxIndex) {
+        top = batch->m_maxIndex;
     }
-    range->maxIndex = static_cast<uint16_t>(top);
+    batch->m_maxIndex = static_cast<uint16_t>(top);
 
-    range->indexCount = static_cast<uint16_t>(range->indexCount + count);
+    batch->m_count = static_cast<uint16_t>(batch->m_count + count);
+}
+
+// ref: FUN_007c3b40
+// A render chunk for this chunk alone, drawn from the chunk's own origin
+void CMapChunk::CreateRenderChunk() {
+    this->m_renderChunk = CMap::AllocRenderChunk();
+    this->m_renderChunk->Init(this, nullptr, this->m_position, 0);
+}
+
+// ref: FUN_007c5440
+// Gives the chunk its render chunk once. With the shader vertex mode on (DAT_00ce0498) the
+// reference instead pairs chunks two by two through FUN_007d6810 on the even cell coordinates,
+// which is not ported yet, so every chunk gets its own.
+void CMapChunk::EnsureRenderChunk() {
+    if (this->m_renderChunkReady) {
+        return;
+    }
+
+    // TODO if (CMap::s_shaderVertexMode) { cell = { m_areaChunkX & ~1, m_areaChunkY & ~1 }; FUN_007d6810(&cell); return; }
+
+    this->CreateRenderChunk();
+    this->m_renderChunkReady = 1;
 }
 
 // ref: FUN_007c54c0
 // World-space chunks share one buffer and write at their vertex base; local-space chunks each
 // fill their own buffer from the start. The format flag drops the colour from the vertex.
-void CMapChunk::BuildVertices(void* buffer, int32_t vertexBase, int32_t a3) {
+void CMapChunk::BuildVertices(void* buffer, int32_t vertexBase, const C3Vector* offset) {
     if (CMap::s_chunkVerticesWorldSpace) {
         if (CMap::s_terrainVertexFormat == 1) {
-            this->FillVerticesWorld(static_cast<CMapChunkVertex*>(buffer) + vertexBase, a3);
+            this->FillVerticesWorld(static_cast<CMapChunkVertex*>(buffer) + vertexBase, offset);
         } else {
-            this->FillVerticesWorldColor(static_cast<CMapChunkVertexColor*>(buffer) + vertexBase, a3);
+            this->FillVerticesWorldColor(static_cast<CMapChunkVertexColor*>(buffer) + vertexBase, offset);
         }
     } else {
         if (CMap::s_terrainVertexFormat == 1) {
@@ -363,7 +386,7 @@ static void ChunkWorldRows(const CMapChunk* chunk, float* rowX, float* colY) {
 }
 
 // ref: FUN_007c3f30
-void CMapChunk::FillVerticesWorld(CMapChunkVertex* dst, int32_t a2) {
+void CMapChunk::FillVerticesWorld(CMapChunkVertex* dst, const C3Vector* offset) {
     ChunkWorldRows(this, s_rowX, s_colY);
 
     const float* height = this->m_heights;
@@ -394,7 +417,7 @@ void CMapChunk::FillVerticesWorld(CMapChunkVertex* dst, int32_t a2) {
 }
 
 // ref: FUN_007c4620
-void CMapChunk::FillVerticesWorldColor(CMapChunkVertexColor* dst, int32_t a2) {
+void CMapChunk::FillVerticesWorldColor(CMapChunkVertexColor* dst, const C3Vector* offset) {
     ChunkWorldRows(this, s_rowXColor, s_colYColor);
 
     const float* height = this->m_heights;

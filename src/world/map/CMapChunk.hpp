@@ -3,6 +3,7 @@
 
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapBaseObj.hpp"
+#include "gx/CGxBatch.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Vector.hpp>
@@ -63,16 +64,6 @@ struct CMapChunkVertexColor {
     C3Vector position;
     C3Vector normal;
     uint32_t color;                     // MCCV, or 0xFF7FFFFF when the chunk has none
-};
-
-// What CMapChunk::AppendIndices accumulates one batch of chunk triangles into. Only the three
-// fields the reference touches are known (its +0x8, +0xc, +0xe).
-struct MAPCHUNKINDEXRANGE {
-    uint32_t unk0;
-    uint32_t unk4;
-    uint32_t indexCount;                // +0x8, kept as a 16-bit sum
-    uint16_t minIndex;                  // +0xc
-    uint16_t maxIndex;                  // +0xe
 };
 
 class CMapChunk : public CMapBaseObj {
@@ -136,10 +127,12 @@ class CMapChunk : public CMapBaseObj {
         void Destroy();
         void ParseSubChunks(int32_t fixSizes);
         int16_t BuildIndices(uint16_t* indices, int16_t baseVertex);
-        void AppendIndices(uint16_t* indices, MAPCHUNKINDEXRANGE* range);
-        void BuildVertices(void* buffer, int32_t vertexBase, int32_t a3);
-        void FillVerticesWorld(CMapChunkVertex* dst, int32_t a2);
-        void FillVerticesWorldColor(CMapChunkVertexColor* dst, int32_t a2);
+        void AppendIndices(uint16_t* indices, CGxBatch* batch);
+        void BuildVertices(void* buffer, int32_t vertexBase, const C3Vector* offset);
+        void FillVerticesWorld(CMapChunkVertex* dst, const C3Vector* offset);
+        void FillVerticesWorldColor(CMapChunkVertexColor* dst, const C3Vector* offset);
+        void CreateRenderChunk();
+        void EnsureRenderChunk();
         void FillVerticesLocal(CMapChunkVertex* dst);
         void FillVerticesLocalColor(CMapChunkVertexColor* dst);
         void ComputeBounds();

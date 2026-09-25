@@ -14,6 +14,7 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
 #include "gx/Texture.hpp"
+#include <storm/Array.hpp>
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Vector.hpp>
@@ -23,6 +24,7 @@ class CAsyncObject;
 class CGxBuf;
 class CGxPool;
 class CGxShader;
+class CM2Lighting;
 class CMapObj;
 class CMapObjGroup;
 class SFile;
@@ -112,6 +114,25 @@ class CMap {
         static CGxPool* s_lowDetailIndexPool;             // DAT_00cdfffc
         static CGxBuf* s_lowDetailIndexBuf;               // DAT_00cdfff8
         static int32_t s_terrainShadersDirty;             // DAT_00d1d058
+        // The terrain shaders loaded and valid (DAT_00ce049e, from LoadSettings)
+        static uint8_t s_terrainShaders;
+
+        // Render chunk buffers: two pools sized for every chunk the far clip can reach
+        // (CreateRenderChunkPools), carved into blocks of two slots. Free single slots wait in
+        // s_freeBufEntryList, blocks free for a two-chunk batch in s_freeBufBlockList; every
+        // block in use is on s_bufBlockList. Render chunks that drew recently sit on
+        // s_activeRenderChunkList and age out of their slot after two seconds.
+        static TSGrowableArray<CMapChunkBufBlock> s_bufBlocks;                        // DAT_00d252f4/f8
+        static STORM_EXPLICIT_LIST(CMapChunkBufEntry, link) s_freeBufEntryList;         // 0x00aeec88
+        static STORM_EXPLICIT_LIST(CMapChunkBufBlock, freeLink) s_freeBufBlockList;     // 0x00aeec70
+        static STORM_EXPLICIT_LIST(CMapChunkBufBlock, link) s_bufBlockList;             // 0x00aeec7c
+        static STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) s_activeRenderChunkList;    // 0x00adfc28
+        static CGxPool* s_renderChunkVertexPool;          // DAT_00d1d068
+        static CGxPool* s_renderChunkIndexPool;           // DAT_00d1d064
+        static uint32_t s_renderChunkPoolVertices;        // DAT_00d1d060: chunks x 0x122
+        static uint32_t s_renderChunkPoolIndices;         // DAT_00d1d05c: chunks x 0x600
+        static uint16_t s_chunkVertexCount;               // DAT_00af14a0: 145
+        static uint16_t s_chunkIndexCount;                // DAT_00af14c0: 768
 
         static int32_t s_mapID;
         static char s_mapName[];
@@ -134,6 +155,15 @@ class CMap {
         static void UpdateFrameLiquids();
         static void AgeRenderChunks();
         static void UpdateDetailDoodads();
+
+        // Render chunk buffers
+        static CMapChunkBufEntry* AllocBufEntry(uint32_t flags, CMapRenderChunk* renderChunk);
+        static void RecycleBufBlocks();
+        static void CreateRenderChunkPools();
+        static void DestroyRenderChunkPools();
+        static void FreeBufBlocks();
+        static void ReleaseAllBufEntries();
+        static void SetupChunkLighting(CM2Lighting* lighting);
 
         // Map memory: one Alloc/Free pair per pooled kind. Alloc takes a slot from the kind's
         // heap, constructs it, records the mem handle and (for most kinds) links it into the

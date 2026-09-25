@@ -1989,6 +1989,7 @@ addr	how	frozen	evidence
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
+00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
@@ -2218,6 +2219,7 @@ addr	how	frozen	evidence
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
+0079e780	annotated	CMap::ReleaseAllBufEntries	tag in src/world/map/CMap.cpp
 0079e7c0	annotated	CMap::MapMemInitialize	tag in src/world/map/CMap.cpp
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
@@ -2232,6 +2234,22 @@ addr	how	frozen	evidence
 007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
 007b6b00	annotated	CMap::Update	tag in src/world/map/CMap.cpp
 007b7330	annotated	CMap::SetTerrainShaderLevel	tag in src/world/map/CMap.cpp
+007b7350	annotated	CMapRenderChunk::ReleaseLayers	tag in src/world/map/CMapRenderChunk.cpp
+007b73e0	annotated	CMapRenderChunk::CheckTexturesLoaded	tag in src/world/map/CMapRenderChunk.cpp
+007b7af0	annotated	CMapRenderChunk::Init	tag in src/world/map/CMapRenderChunk.cpp
+007b7bd0	annotated	CMap::SetupChunkLighting	tag in src/world/map/CMap.cpp
+007b9250	annotated	CMapRenderChunk::AddLayer	tag in src/world/map/CMapRenderChunk.cpp
+007b9340	annotated	CMap::AllocBufEntry	tag in src/world/map/CMap.cpp
+007b9560	annotated	CMap::RecycleBufBlocks	tag in src/world/map/CMap.cpp
+007b9690	annotated	CMapRenderChunk::CMapRenderChunk	tag in src/world/map/CMapRenderChunk.cpp
+007b9770	annotated	CMapRenderChunk::AssignLayers	tag in src/world/map/CMapRenderChunk.cpp
+007b9830	annotated	CMapRenderChunk::ReleaseBufEntry	tag in src/world/map/CMapRenderChunk.cpp
+007b9cb0	annotated	CMapChunkBufBlock::CMapChunkBufBlock	tag in src/world/map/CMapRenderChunk.cpp
+007b9d60	annotated	CMapRenderChunk::~CMapRenderChunk	tag in src/world/map/CMapRenderChunk.cpp
+007ba050	annotated	CMapRenderChunk::UpdateAlphaTextures	tag in src/world/map/CMapRenderChunk.cpp
+007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
+007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
+007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
 007bf8b0	annotated	CMap::LoadWdt	tag in src/world/map/CMap.cpp
@@ -2277,6 +2295,7 @@ addr	how	frozen	evidence
 007c3700	annotated	CMap::UnloadArea	tag in src/world/map/CMap.cpp
 007c3730	annotated	CMap::UnloadAll	tag in src/world/map/CMap.cpp
 007c3a10	annotated	CMapChunk::ParseSubChunks	tag in src/world/map/CMapChunk.cpp
+007c3b40	annotated	CMapChunk::CreateRenderChunk	tag in src/world/map/CMapChunk.cpp
 007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
 007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
 007c3d90	annotated	CMapChunk::Initialize	tag in src/world/map/CMapChunk.cpp
@@ -2286,6 +2305,7 @@ addr	how	frozen	evidence
 007c4f10	annotated	CMapChunk::FillVerticesLocalColor	tag in src/world/map/CMapChunk.cpp
 007c51b0	annotated	CMapChunk::AppendIndices	tag in src/world/map/CMapChunk.cpp
 007c5220	annotated	CMapChunk::ComputeBounds	tag in src/world/map/CMapChunk.cpp
+007c5440	annotated	CMapChunk::EnsureRenderChunk	tag in src/world/map/CMapChunk.cpp
 007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
 007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
 007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
@@ -2316,6 +2336,10 @@ addr	how	frozen	evidence
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007d02c0	annotated	CMapRenderChunk::FillBuffers	tag in src/world/map/CMapRenderChunk.cpp
+007d0420	annotated	CMapRenderChunk::DrawStreamed	tag in src/world/map/CMapRenderChunk.cpp
+007d04a0	annotated	CMapRenderChunk::Bind	tag in src/world/map/CMapRenderChunk.cpp
+007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
 007d6a90	annotated	CMapArea::DestroyChunks	tag in src/world/map/CMapArea.cpp
 007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
@@ -2326,6 +2350,7 @@ addr	how	frozen	evidence
 007d7020	annotated	CMapArea::LoadCallback	tag in src/world/map/CMapArea.cpp
 007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
 007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
+007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp

@@ -23,6 +23,7 @@
 #include "gx/Texture.hpp"
 #include "gx/shader/CGxShader.hpp"
 #include "gx/texture/CGxTex.hpp"
+#include "model/CM2Lighting.hpp"
 #include "util/CStatus.hpp"
 #include "util/SFile.hpp"
 #include "world/CWorld.hpp"
@@ -90,6 +91,19 @@ CGxBuf* CMap::s_lowDetailIndexBuf;
 int32_t CMap::s_terrainShadersDirty;
 
 STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) CMap::s_frameChunkList;
+
+uint8_t CMap::s_terrainShaders;
+TSGrowableArray<CMapChunkBufBlock> CMap::s_bufBlocks;
+STORM_EXPLICIT_LIST(CMapChunkBufEntry, link) CMap::s_freeBufEntryList;
+STORM_EXPLICIT_LIST(CMapChunkBufBlock, freeLink) CMap::s_freeBufBlockList;
+STORM_EXPLICIT_LIST(CMapChunkBufBlock, link) CMap::s_bufBlockList;
+STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_activeRenderChunkList;
+CGxPool* CMap::s_renderChunkVertexPool;
+CGxPool* CMap::s_renderChunkIndexPool;
+uint32_t CMap::s_renderChunkPoolVertices;
+uint32_t CMap::s_renderChunkPoolIndices;
+uint16_t CMap::s_chunkVertexCount = 145;
+uint16_t CMap::s_chunkIndexCount = 768;
 
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
 static const float MAP_HALF_EXTENT = 17066.666015625f;    // DAT_009e2acc
@@ -209,6 +223,7 @@ void CMap::LoadSettings() {
         auto b = CMap::GetTerrain0PixelShader(vertexShaded, 0, 0);
         terrainShaders = a && a->Valid() && b && b->Valid();
     }
+    CMap::s_terrainShaders = terrainShaders;
 
     if (specularWanted && terrainShaders) {
         auto a = CMap::GetTerrain0PixelShader(vertexShaded, 1, 0);
@@ -875,7 +890,7 @@ void CMap::Update(int32_t update) {
     // TODO DAT_00ce04c0 = 0; DAT_00ce04bc = 0; DAT_00ce04ac = 0 (per-frame counters)
     // TODO FUN_007cf840(dt): chunk liquid animation
     // TODO FUN_007ad020(): WMO material shader selection
-    // TODO FUN_007b9560(): render chunk buffer recycling
+    CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
     // TODO FUN_007b6110(update): WMO def update
     // TODO FUN_007b5630(): entity update
@@ -928,10 +943,254 @@ void CMap::UpdateFrameLiquids() {
 }
 
 // ref: FUN_007b5500
-// The render chunks in use (DAT_00adfc28): age each by the frame time, release the buffers of
-// one idle for two seconds (FUN_007b9830), and drop the ones no longer referenced
+// The render chunks that drew recently: each ages by the frame time, one idle for two seconds
+// gives its buffer slot back, and one without a slot leaves the list
 void CMap::AgeRenderChunks() {
-    // TODO
+    float dt = CWorld::GetTickTimeSec();
+
+    for (auto chunk = CMap::s_activeRenderChunkList.Head(); chunk; ) {
+        auto next = CMap::s_activeRenderChunkList.Next(chunk);
+
+        chunk->m_age += dt;
+
+        if (2.0f < chunk->m_age) {
+            chunk->ReleaseBufEntry();
+        }
+
+        if (!chunk->m_bufEntry) {
+            chunk->m_link.Unlink();
+        }
+
+        chunk = next;
+    }
+}
+
+// ----------------------------------------------------------------------------------------------
+// Render chunk buffers
+
+// ref: FUN_007b9340
+// A buffer slot for a render chunk. A two-chunk batch takes a whole free block and uses its
+// first entry (creating its double-size buffers on first use); a single chunk takes a free
+// entry, or breaks a free block into two single entries, keeping one and freeing the other.
+// Buffers already created are marked stale so FillBuffers refills them.
+CMapChunkBufEntry* CMap::AllocBufEntry(uint32_t flags, CMapRenderChunk* renderChunk) {
+    uint32_t stride = CMap::s_terrainVertexFormat == 2 ? sizeof(CMapChunkVertexColor) : sizeof(CMapChunkVertex);
+
+    if (flags & 0x3) {
+        auto block = CMap::s_freeBufBlockList.Head();
+
+        if (!block) {
+            return nullptr;
+        }
+
+        block->freeLink.Unlink();
+
+        auto entry = &block->entries[0];
+        entry->renderChunk = renderChunk;
+        entry->flags = flags;
+
+        if (!entry->vertexBuf) {
+            uint32_t index = block->index;
+            entry->vertexBuf = g_theGxDevicePtr->BufCreate(CMap::s_renderChunkVertexPool, stride, 0x122, index * stride * 0x91);
+            entry->indexBuf = g_theGxDevicePtr->BufCreate(CMap::s_renderChunkIndexPool, 2, 0x600, index * 0x600);
+            return entry;
+        }
+
+        entry->vertexBuf->unk1C = 0;
+        entry->indexBuf->unk1C = 0;
+        return entry;
+    }
+
+    auto entry = CMap::s_freeBufEntryList.Head();
+
+    if (entry) {
+        entry->link.Unlink();
+        entry->renderChunk = renderChunk;
+        entry->flags = flags;
+        entry->vertexBuf->unk1C = 0;
+        entry->indexBuf->unk1C = 0;
+        return entry;
+    }
+
+    auto block = CMap::s_freeBufBlockList.Head();
+
+    if (!block) {
+        return nullptr;
+    }
+
+    block->freeLink.Unlink();
+
+    if (block->entries[0].vertexBuf) {
+        // TODO FUN_006c42b0: destroy the double-size buffers (frozen has no BufDestroy yet)
+        block->entries[0].vertexBuf = nullptr;
+        block->entries[0].indexBuf = nullptr;
+    }
+
+    CMapChunkBufEntry* last = nullptr;
+
+    for (int32_t i = 0; i < 2; i++) {
+        uint32_t index = block->index;
+        auto e = &block->entries[i];
+        e->vertexBuf = g_theGxDevicePtr->BufCreate(CMap::s_renderChunkVertexPool, stride, 0x91, (index + i) * stride * 0x91);
+        e->indexBuf = g_theGxDevicePtr->BufCreate(CMap::s_renderChunkIndexPool, 2, 0x300, (index + i) * 0x600);
+        e->flags = 0;
+        e->renderChunk = nullptr;
+
+        if (i == 0) {
+            CMap::s_freeBufEntryList.LinkToTail(e);
+        }
+
+        last = e;
+    }
+
+    last->renderChunk = renderChunk;
+    last->flags = flags;
+    return last;
+}
+
+// ref: FUN_007b9560
+// A block whose two single entries are both free again and that is not already waiting as a
+// whole block drops its single-size buffers and rejoins the free block list
+void CMap::RecycleBufBlocks() {
+    for (uint32_t i = 0; i < CMap::s_bufBlocks.Count(); i++) {
+        auto block = &CMap::s_bufBlocks[i];
+
+        if (block->freeLink.IsLinked() || !block->entries[0].link.IsLinked() || !block->entries[1].link.IsLinked()) {
+            continue;
+        }
+
+        for (int32_t n = 0; n < 2; n++) {
+            auto e = &block->entries[n];
+
+            if (e->vertexBuf) {
+                // TODO FUN_006c42b0(e->vertexBuf): destroy unless it is a stream buffer
+            }
+            if (e->indexBuf) {
+                // TODO FUN_006c42b0(e->indexBuf)
+            }
+
+            e->vertexBuf = nullptr;
+            e->indexBuf = nullptr;
+            e->flags = 0;
+            e->link.Unlink();
+        }
+
+        CMap::s_freeBufBlockList.LinkToHead(block);
+    }
+}
+
+// ref: FUN_007ba600
+// When the terrain shader level changed: every render chunk gives up its slot, the old pools
+// go, and new ones are made for every chunk the far clip can reach (one chunk per 33 yards,
+// plus one, squared), carved into that many half-blocks.
+void CMap::CreateRenderChunkPools() {
+    if (!CMap::s_terrainShadersDirty) {
+        return;
+    }
+
+    CMap::ReleaseAllBufEntries();
+    CMap::DestroyRenderChunkPools();
+
+    int32_t span = 1 - static_cast<int32_t>(CWorld::GetFarClip() * -0.029999999329447746f);
+    int32_t chunks = span * span;
+
+    CMap::s_renderChunkPoolVertices = chunks * 0x122;
+    CMap::s_renderChunkPoolIndices = chunks * 0x600;
+
+    uint32_t stride = CMap::s_terrainVertexFormat == 2 ? sizeof(CMapChunkVertexColor) : sizeof(CMapChunkVertex);
+
+    CMap::s_renderChunkVertexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Vertex, GxPoolUsage_Dynamic, CMap::s_renderChunkPoolVertices * stride, GxPoolHintBit_Unk3, "CMapRenderChunk_vtx");
+    CMap::s_renderChunkIndexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, chunks * 0xc00, GxPoolHintBit_Unk3, "CMapRenderChunk_idx");
+
+    CMap::s_bufBlocks.SetCount((chunks * 2 + 1) >> 1);
+
+    for (uint32_t i = 0; i < CMap::s_bufBlocks.Count(); i++) {
+        auto block = &CMap::s_bufBlocks[i];
+        block->index = i * 2;
+        block->entries[0].block = block;
+        block->entries[1].block = block;
+        CMap::s_freeBufBlockList.LinkToTail(block);
+        CMap::s_bufBlockList.LinkToTail(block);
+    }
+
+    CMap::s_terrainShadersDirty = 0;
+}
+
+// ref: FUN_007ba5a0
+// The reference destroys both pools through the device (vfunc +0xd4), which frozen's device
+// does not expose yet
+void CMap::DestroyRenderChunkPools() {
+    CMap::FreeBufBlocks();
+
+    CMap::s_renderChunkPoolVertices = 0;
+    CMap::s_renderChunkPoolIndices = 0;
+    CMap::s_terrainShadersDirty = 1;
+
+    if (CMap::s_renderChunkVertexPool) {
+        // TODO g_theGxDevicePtr->PoolDestroy(s_renderChunkVertexPool)
+        CMap::s_renderChunkVertexPool = nullptr;
+    }
+
+    if (CMap::s_renderChunkIndexPool) {
+        // TODO g_theGxDevicePtr->PoolDestroy(s_renderChunkIndexPool)
+        CMap::s_renderChunkIndexPool = nullptr;
+    }
+}
+
+// ref: FUN_007ba3d0
+// Empties every buffer list, destroys every entry's buffers and drops the block array
+void CMap::FreeBufBlocks() {
+    for (auto entry = CMap::s_freeBufEntryList.Head(); entry; ) {
+        auto next = CMap::s_freeBufEntryList.Next(entry);
+        entry->link.Unlink();
+        entry = next;
+    }
+
+    for (auto block = CMap::s_freeBufBlockList.Head(); block; ) {
+        auto next = CMap::s_freeBufBlockList.Next(block);
+        block->freeLink.Unlink();
+        block->link.Unlink();
+        block = next;
+    }
+
+    for (uint32_t i = 0; i < CMap::s_bufBlocks.Count(); i++) {
+        auto block = &CMap::s_bufBlocks[i];
+
+        for (int32_t n = 0; n < 2; n++) {
+            auto e = &block->entries[n];
+
+            if (e->vertexBuf) {
+                // TODO FUN_006c42b0(e->vertexBuf)
+                e->vertexBuf = nullptr;
+            }
+            if (e->indexBuf) {
+                // TODO FUN_006c42b0(e->indexBuf)
+                e->indexBuf = nullptr;
+            }
+        }
+    }
+
+    CMap::s_bufBlocks.SetCount(0);
+}
+
+// ref: FUN_0079e780
+void CMap::ReleaseAllBufEntries() {
+    for (auto chunk = CMap::s_chunkList.Head(); chunk; chunk = CMap::s_chunkList.Next(chunk)) {
+        if (chunk->m_renderChunk) {
+            chunk->m_renderChunk->ReleaseBufEntry();
+        }
+    }
+}
+
+// ref: FUN_007b7bd0
+// The map's own light and fog on top of the scene lights selected for a chunk. The reference
+// adds the day/night block's sun (a CM2Light at DAT_00ce04a8 + 0x58); frozen keeps the outdoor
+// light as a direction and two colours, so it goes in as an ambient and a diffuse until that
+// block is ported.
+void CMap::SetupChunkLighting(CM2Lighting* lighting) {
+    lighting->AddAmbient(CWorld::GetOutdoorAmbient());
+    lighting->AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
+    lighting->SetFog(CWorld::GetFogColor(), CWorld::GetFogStart(), CWorld::GetFogEnd());
 }
 
 // ref: FUN_007b54a0

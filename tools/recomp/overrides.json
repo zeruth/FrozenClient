@@ -4,6 +4,18 @@
     "status": "ported",
     "note": "lapi.c lua_isnumber: callees index2adr + luaV_tonumber, 1195 callers; pinned 2026-09-23 after the callgraph matcher re-paired it with fprintf and 31 Script_ ports lost fidelity"
   },
+  "0079f820": {
+    "status": "excluded",
+    "note": "Storm TSLink::Unlink, one COMDAT body (22 callers in Map.cpp); squall template"
+  },
+  "007f7980": {
+    "status": "excluded",
+    "note": "Storm TSGrowableArray chunk-size rounding helper (66 callers); squall template"
+  },
+  "007ba250": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMapChunkBufBlock>::SetCount instantiation (constructs each new block through FUN_007b9cb0); squall template"
+  },
   "_": "Hand-confirmed reference -> frozen links. Keys are reference addresses; frozen is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no frozen name). recomp.py trusts this file over every automatic match. One frozen name may serve several addresses (overload sets, COMDAT copies).",
   "004fb080": {
     "frozen": "CGWorldFrame::OnFrameRender",
@@ -1838,8 +1850,9 @@
     "note": "one instruction: returns the address of the block at 0x00cd8f5c. CGWorldFrame::OnWorldRender calls it twice. An accessor for a global render-state block; frozen has no counterpart to link."
   },
   "007d9990": {
-    "status": "unlinked",
-    "note": "the ONE texture loader every WMO material texture goes through, five callers. It takes a filename and nothing else, builds CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), calls TextureCreate, and logs \"Failed to load texture: %s\" on failure. Because the flags are hardcoded here, there is no path on which the reference clamps a WMO texture -- which is how frozen's invented clamp-from-MOMT-flags was caught on 2026-09-23. frozen loads these inline in its WMO loader, so there is no discrete counterpart to link."
+    "frozen": "CMap::LoadTexture",
+    "status": "ported",
+    "note": "the ONE texture loader every WMO material texture goes through, five callers. It takes a filename and nothing else, builds CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), calls TextureCreate, and logs \"Failed to load texture: %s\" on failure. Because the flags are hardcoded here, there is no path on which the reference clamps a WMO texture -- which is how frozen's invented clamp-from-MOMT-flags was caught on 2026-09-23. Ported as CMap::LoadTexture on 2026-09-24 for the terrain tile textures; the WMO loader still loads its textures inline and should go through it."
   },
   "007d7710": {
     "status": "unlinked",

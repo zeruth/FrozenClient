@@ -463,6 +463,7 @@ CGxDevice::CGxDevice() {
     this->ShaderConstantsClear();
 }
 
+// ref: FUN_00687660
 CGxBuf* CGxDevice::BufCreate(CGxPool* pool, uint32_t itemSize, uint32_t itemCount, uint32_t index) {
     auto m = SMemAlloc(sizeof(CGxBuf), __FILE__, __LINE__, 0x0);
     auto buf = new (m) CGxBuf(pool, itemSize, itemCount, index);
