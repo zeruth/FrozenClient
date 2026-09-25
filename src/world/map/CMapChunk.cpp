@@ -525,9 +525,10 @@ bool CMapChunk::DetailDoodadsReady() {
 // WDETAILDOODADINST heap into m_detailDoodads, then picks cells of the eight-by-eight grid at
 // random -- one bit a cell so none is used twice -- and for each builds a plane from the
 // chunk's heights with colour and normal deltas from MCCV and MCNR. Holes and the low-quality
-// texture map decide which ground effect a cell takes. It leans on about eight constant tables
-// that still need establishing; getting one of those masks wrong would scatter grass in the
-// wrong places, which is not something a counter would catch.
+// texture map decide which ground effect a cell takes. Its eight constant tables are established
+// and sit in DetailDoodad.hpp, read out of the reference's data section rather than inferred,
+// and the branch it takes is the only one -- the flag it tests is written once at startup, to
+// zero, and never again. What is left is transcribing the arithmetic, not research.
 void CMapChunk::PrepareRender() {
     if (!this->m_renderChunk) {
         this->EnsureRenderChunk();
