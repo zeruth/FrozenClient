@@ -44806,6 +44806,22 @@
   "refSize": 2068,
   "status": "ported"
  },
+ "007a0820": {
+  "branchRatio": 0.583,
+  "constOverlap": 0.176,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTerrainLiquid",
+  "frozenSize": 495,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 422,
+  "status": "ported"
+ },
  "007a0d60": {
   "branchRatio": 0.8,
   "constOverlap": 0.094,
@@ -48518,7 +48534,7 @@
    "src/world/map/CChunkLiquid.cpp"
   ],
   "frozen": "CChunkLiquid::GetHeightAt",
-  "frozenSize": 0,
+  "frozenSize": 276,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 207,
@@ -48548,7 +48564,7 @@
    "src/world/map/CChunkLiquid.cpp"
   ],
   "frozen": "CChunkLiquid::CoversTile",
-  "frozenSize": 0,
+  "frozenSize": 102,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 127,
@@ -61461,7 +61477,7 @@
    "src/util/bitarray.cpp"
   ],
   "frozen": "BitArray::IsSet",
-  "frozenSize": 0,
+  "frozenSize": 31,
   "how": "annotated",
   "module": "DynamicString.cpp",
   "refSize": 43,

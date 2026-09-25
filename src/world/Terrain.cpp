@@ -3232,9 +3232,27 @@ void ParseLiquid(TerrainChunk& chunk, int32_t chunkIndex, const uint8_t* mh2o, u
 
 // The liquid surface above a point, if the point lies under one of the loaded MH2O layers: the
 // covering cell's highest corner is the surface. Returns the layer's kind, or -1 when in air.
+// The terrain half is the map's now (CMap::GetTerrainLiquid, which reads the real MH2O
+// per-tile mask and interpolates the layer's own surface). The WMO half below is still the
+// stand-in's: the reference keeps interior pools and canals in a separate query
+// (FUN_007a09d0, over the group BSP) that frozen has not ported, and dropping this loop would
+// stop the client noticing them at all.
 int32_t LiquidAt(const C3Vector& pos, float& surfaceZ) {
     int32_t found = -1;
     surfaceZ = 0.0f;
+
+    {
+        uint32_t liquidType = 0;
+        float height = 0.0f;
+
+        if (CMap::GetTerrainLiquid(pos, &liquidType, &height, 0)) {
+            auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
+
+            found = rec ? rec->m_type : 0;
+            s_cameraLiquidType = static_cast<int32_t>(liquidType);
+            surfaceZ = height;
+        }
+    }
 
     // A surface is above the point when the point is inside its box and under its top. Terrain
     // layers additionally resolve the exact covering cell; WMO surfaces (canals, interior pools)
@@ -3264,55 +3282,6 @@ int32_t LiquidAt(const C3Vector& pos, float& surfaceZ) {
             }
         }
 
-        for (auto& chunk : tile.chunks) {
-            if (!chunk.liquidCount || !chunk.valid) {
-                continue;
-            }
-
-            for (uint32_t l = 0; l < chunk.liquidCount; l++) {
-                const ChunkLiquid& liq = chunk.liquids[l];
-
-                if (pos.x < liq.boundsMin.x || pos.x > liq.boundsMax.x || pos.y < liq.boundsMin.y || pos.y > liq.boundsMax.y || pos.z > liq.boundsMax.z) {
-                    continue;
-                }
-
-                // Chunk-relative cell of the point (rows run along -x, columns along -y)
-                float rowF = (chunk.position[0].x - pos.x) / UNIT_SIZE;
-                float colF = (chunk.position[0].y - pos.y) / UNIT_SIZE;
-                int32_t row = static_cast<int32_t>(rowF);
-                int32_t col = static_cast<int32_t>(colF);
-
-                if (row < 0 || row > 7 || col < 0 || col > 7) {
-                    continue;
-                }
-
-                int32_t bit = row * 8 + col;
-
-                if (!(liq.cellMask[bit >> 3] & (1 << (bit & 7)))) {
-                    continue;
-                }
-
-                int32_t j = row - liq.yOffset;
-                int32_t i = col - liq.xOffset;
-
-                if (j < 0 || j >= liq.height || i < 0 || i >= liq.width) {
-                    continue;
-                }
-
-                uint32_t vw = liq.width + 1;
-                uint32_t k = static_cast<uint32_t>(j) * vw + static_cast<uint32_t>(i);
-                float z = liq.verts[k].z;
-                z = liq.verts[k + 1].z > z ? liq.verts[k + 1].z : z;
-                z = liq.verts[k + vw].z > z ? liq.verts[k + vw].z : z;
-                z = liq.verts[k + vw + 1].z > z ? liq.verts[k + vw + 1].z : z;
-
-                if (pos.z < z && (found < 0 || z > surfaceZ)) {
-                    found = liq.kind;
-                    s_cameraLiquidType = liq.liquidType;
-                    surfaceZ = z;
-                }
-            }
-        }
     }
 
     return found;

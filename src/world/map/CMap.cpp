@@ -793,6 +793,68 @@ CMapChunk* CMap::ChunkAt(const C3Vector& position) {
     return area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
 }
 
+// How close under a surface still counts as being at it.
+static const float LIQUID_EPSILON = 0.009999999776482582f;   // DAT_009f1968
+
+// ref: FUN_007a0820
+// The same addressing as ChunkAt, but the fractions within the cell are kept: the layer's own
+// height is interpolated at the point rather than taken flat. A tile still loading is passed
+// over rather than half-read.
+bool CMap::GetTerrainLiquid(const C3Vector& position, uint32_t* liquidType, float* height,
+                            int32_t strict) {
+    float cellFromY = -(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+    float cellFromX = -(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+
+    int32_t col = static_cast<int32_t>(roundf(cellFromY - CELL_ROUND_BIAS));
+    int32_t row = static_cast<int32_t>(roundf(cellFromX - CELL_ROUND_BIAS));
+
+    auto area = CMap::s_areaGrid[((row >> 7) & 0x3f) * 64 + ((col >> 7) & 0x3f)];
+
+    if (!area || area->m_asyncObject) {
+        return false;
+    }
+
+    auto chunk = area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+
+    if (!chunk) {
+        return false;
+    }
+
+    uint32_t tile[2] = { static_cast<uint32_t>(col) & 7, static_cast<uint32_t>(row) & 7 };
+    float frac[2] = { cellFromY - static_cast<float>(col), cellFromX - static_cast<float>(row) };
+
+    for (auto liquid = chunk->m_liquidList.Head(); liquid; liquid = chunk->m_liquidList.Next(liquid)) {
+        if (!liquid->CoversTile(tile[0], tile[1])) {
+            continue;
+        }
+
+        if (!liquid->GetHeightAt(frac, tile, height)) {
+            continue;
+        }
+
+        if (position.z >= *height + LIQUID_EPSILON) {
+            continue;
+        }
+
+        if (!strict) {
+            *liquidType = liquid->m_liquidType;
+
+            return true;
+        }
+
+        // TODO FUN_007ad3b0 picks the terrain height under the point from the chunk's own
+        // triangles; the reference requires it to be below the point before it will call this
+        // liquid. Not ported, and its sentinel is a height of -10000, which is always below --
+        // so frozen answers the strict question the same way it answers the loose one. A point
+        // under solid ground with water above it would read as in the water.
+        *liquidType = liquid->m_liquidType;
+
+        return true;
+    }
+
+    return false;
+}
+
 // ref: FUN_007b5630
 // The waiting list, walked once a frame. An entity sits on it from the moment it is created
 // until its model is in; then it is placed, told how big it is, and let go. An entity with no

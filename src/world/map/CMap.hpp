@@ -244,6 +244,12 @@ class CMap {
         // Addressed the way CMap::GetTerrainLiquid does it: in cells, with the tile's row
         // coming from x and its column from y.
         static CMapChunk* ChunkAt(const C3Vector& position);
+        // The liquid standing over a world point, if any: its LiquidType id through `liquidType`
+        // and its surface height through `height`. With `strict` the ground under the point has
+        // to be below it too, so a point inside a cliff over water does not read as swimming.
+        // ref: FUN_007a0820
+        static bool GetTerrainLiquid(const C3Vector& position, uint32_t* liquidType,
+                                     float* height, int32_t strict);
         static CMapEntity* AllocEntity(int32_t linkToHead);
         // Put every entity the map holds into the distance row it belongs in this frame.
         // ref: FUN_007b5590
