@@ -1715,6 +1715,23 @@
   "refSize": 224,
   "status": "ported"
  },
+ "0047bd40": {
+  "branchRatio": 0.867,
+  "constOverlap": 0.571,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Unicode.cpp",
+   "lib/squall/storm/unicode.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "frozen": "SUniSGetUTF8",
+  "frozenSize": 291,
+  "how": "callgraph",
+  "module": "framing.c",
+  "refSize": 255,
+  "status": "ported"
+ },
  "0047be50": {
   "branchRatio": 1.0,
   "constOverlap": 0.571,
@@ -1953,6 +1970,22 @@
   "how": "override",
   "module": "RCString.cpp",
   "refSize": 108,
+  "status": "ported"
+ },
+ "0047d1d0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/event/Input.cpp",
+   "src/event/input.cpp"
+  ],
+  "frozen": "ConvertButtonNumberToMOUSEBUTTON",
+  "frozenSize": 14,
+  "how": "callgraph",
+  "module": "RCString.cpp",
+  "refSize": 96,
   "status": "ported"
  },
  "0047d230": {
@@ -2717,7 +2750,7 @@
   ],
   "frozen": "CSimpleRegion::SetFrame",
   "frozenSize": 250,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleRender.cpp",
   "refSize": 297,
   "status": "ported"
@@ -3331,20 +3364,20 @@
   "status": "ported"
  },
  "0048c240": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleTextureScript.cpp",
    "src/ui/simple/csimpletexturescript.cpp"
   ],
   "frozen": "CSimpleTexture_SetGradient",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 205,
+  "how": "annotated",
   "module": "CScriptRegion.cpp",
   "refSize": 206,
-  "status": "stub"
+  "status": "ported"
  },
  "0048c310": {
   "branchRatio": 0.25,
@@ -6146,7 +6179,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.429,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
@@ -6175,20 +6208,20 @@
   "status": "stub"
  },
  "0049f260": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleFrameScript.cpp",
    "src/ui/simple/csimpleframescript.cpp"
   ],
   "frozen": "CSimpleFrame_CanChangeAttributes",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 111,
+  "how": "annotated",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 112,
-  "status": "stub"
+  "status": "ported"
  },
  "0049f2d0": {
   "branchRatio": 0.889,
@@ -9844,9 +9877,9 @@
   "faithful": false,
   "fidelity": 0.0,
   "files": [],
-  "frozen": "TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr",
+  "frozen": "TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr",
   "frozenSize": 139,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Profile.cpp",
   "refSize": 144,
   "status": "ported"
@@ -10376,15 +10409,15 @@
  "004c5be0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::IsPlaying",
-  "frozenSize": 0,
-  "how": "callorder",
+  "frozenSize": 5,
+  "how": "callgraph",
   "module": "TextureBlob.cpp",
   "refSize": 15,
   "status": "ported"
@@ -10946,8 +10979,8 @@
  "004d8ba0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -10963,7 +10996,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.5,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -10979,7 +11012,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.333,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11010,8 +11043,8 @@
  "004d95c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11059,7 +11092,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11075,7 +11108,7 @@
   "branchRatio": 0.696,
   "constOverlap": 0.29,
   "faithful": false,
-  "fidelity": 0.658,
+  "fidelity": 0.711,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11107,7 +11140,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.104,
   "faithful": false,
-  "fidelity": 0.169,
+  "fidelity": 0.176,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -11184,36 +11217,36 @@
   "status": "ported"
  },
  "004dbf30": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_SetUsesToken",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 95,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 78,
-  "status": "stub"
+  "status": "ported"
  },
  "004dbf80": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_SetSavedAccountList",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 95,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 79,
-  "status": "stub"
+  "status": "ported"
  },
  "004dbfd0": {
   "branchRatio": 0.0,
@@ -11462,36 +11495,36 @@
   "status": "stub"
  },
  "004dcae0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_IsAddonVersionCheckEnabled",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 61,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "004dcb20": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_SetAddonVersionCheck",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 32,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 51,
-  "status": "stub"
+  "status": "ported"
  },
  "004dcbf0": {
   "branchRatio": 1.0,
@@ -11805,7 +11838,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp",
@@ -12028,20 +12061,20 @@
   "status": "stub"
  },
  "004ddbd0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_GetBillingTimeRemaining",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 76,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 76,
-  "status": "stub"
+  "status": "ported"
  },
  "004ddc20": {
   "branchRatio": 1.0,
@@ -12060,20 +12093,20 @@
   "status": "ported"
  },
  "004ddc60": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp"
   ],
   "frozen": "Script_GetBillingPlan",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 162,
+  "how": "annotated",
   "module": "CGlueMgr.cpp",
   "refSize": 171,
-  "status": "stub"
+  "status": "ported"
  },
  "004de1f0": {
   "branchRatio": 0.667,
@@ -12559,7 +12592,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.875,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
@@ -12799,7 +12832,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
@@ -12815,7 +12848,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.875,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
@@ -12860,20 +12893,20 @@
   "status": "ported"
  },
  "004e1b70": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/CCharacterCreationScript.cpp",
    "src/glue/ccharactercreationscript.cpp"
   ],
   "frozen": "Script_PaidChange_GetName",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 205,
+  "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 81,
-  "status": "stub"
+  "status": "ported"
  },
  "004e20b0": {
   "branchRatio": 0.6,
@@ -13643,215 +13676,277 @@
   "refSize": 171,
   "status": "stub"
  },
- "004fe630": {
-  "branchRatio": 0.0,
+ "004fe160": {
+  "branchRatio": 0.571,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ListChannelByName",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "ResolveChannelName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "004fe330": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 0.786,
+  "files": [
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
+  ],
+  "frozen": "SendChannelCommandWithName",
+  "frozenSize": 406,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 289,
+  "status": "ported"
+ },
+ "004fe460": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 0.889,
+  "files": [
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
+  ],
+  "frozen": "SendChannelCommand",
+  "frozenSize": 295,
+  "how": "annotated",
+  "module": "ChatFrame.cpp",
+  "refSize": 203,
+  "status": "ported"
+ },
+ "004fe630": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
+  ],
+  "frozen": "Script_ListChannelByName",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe810": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_SetChannelOwner",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_SetChannelOwner",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe830": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_DisplayChannelOwner",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_DisplayChannelOwner",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe950": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelModerator",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelModerator",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe970": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelUnmoderator",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelUnmoderator",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe990": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelMute",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelMute",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe9b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelUnmute",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelUnmute",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe9d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelInvite",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelInvite",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fe9f0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelKick",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelKick",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fea10": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelBan",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelBan",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fea30": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelUnban",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelUnban",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fea50": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelToggleAnnouncements",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelToggleAnnouncements",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fea70": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelVoiceOn",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelVoiceOn",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004fea90": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_ChannelVoiceOff",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_ChannelVoiceOff",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004feab0": {
   "branchRatio": 0.0,
@@ -13883,6 +13978,21 @@
   "refSize": 28,
   "status": "stub"
  },
+ "004feaf0": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_ChangeChatColor",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "ChatFrame.cpp",
+  "refSize": 540,
+  "status": "stub"
+ },
  "004feee0": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -13900,49 +14010,36 @@
   "status": "ported"
  },
  "004ffc30": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_SetChannelWatch",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_SetChannelWatch",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "004ffcc0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/ChatFrameScript.cpp",
+   "src/ui/game/chatframescript.cpp"
   ],
-  "frozen": "Script_Stub_DeclineInvite",
-  "frozenSize": 60,
-  "how": "string",
+  "frozen": "Script_DeclineInvite",
+  "frozenSize": 28,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 28,
-  "status": "stub"
- },
- "00500980": {
-  "branchRatio": 0.077,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_DoEmote",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "ChatFrame.cpp",
-  "refSize": 345,
-  "status": "stub"
+  "status": "ported"
  },
  "00501140": {
   "branchRatio": 0.143,
@@ -14019,7 +14116,7 @@
   "refSize": 215,
   "status": "stub"
  },
- "00505360": {
+ "005052e0": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
@@ -14027,11 +14124,26 @@
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
-  "frozen": "Script_Stub_ExpandChannelHeader",
+  "frozen": "Script_Stub_CollapseChannelHeader",
   "frozenSize": 60,
   "how": "order",
   "module": "ChatFrame.cpp",
   "refSize": 116,
+  "status": "stub"
+ },
+ "0050ed00": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_ComplainChat",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "ChatFrame.cpp",
+  "refSize": 197,
   "status": "stub"
  },
  "0050f7c0": {
@@ -14051,20 +14163,20 @@
   "status": "ported"
  },
  "0050f830": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_FrameXML_Debug",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 93,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "0050f890": {
   "branchRatio": 0.0,
@@ -14543,20 +14655,20 @@
   "status": "ported"
  },
  "00510de0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetEuropeanNumbers",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 32,
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 29,
-  "status": "stub"
+  "status": "ported"
  },
  "00510e00": {
   "branchRatio": 1.0,
@@ -15265,14 +15377,14 @@
  "00514ba0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetMouseButtonName",
-  "frozenSize": 75,
+  "frozenSize": 178,
   "how": "override",
   "module": "GameUI.cpp",
   "refSize": 111,
@@ -15351,10 +15463,10 @@
   "status": "ported"
  },
  "00515010": {
-  "branchRatio": 0.8,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/glue/GlueScript.cpp",
    "src/glue/gluescript.cpp",
@@ -15362,11 +15474,11 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetCVarAbsoluteMax",
-  "frozenSize": 150,
-  "how": "table",
+  "frozenSize": 272,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 198,
-  "status": "stub"
+  "status": "ported"
  },
  "00515100": {
   "branchRatio": 0.5,
@@ -15539,26 +15651,26 @@
   ],
   "frozen": "Script_IsInInstance",
   "frozenSize": 40,
-  "how": "table",
+  "how": "override",
   "module": "GameUI.cpp",
   "refSize": 172,
-  "status": "ported"
+  "status": "stub"
  },
  "00515750": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetInstanceDifficulty",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 35,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 55,
-  "status": "stub"
+  "status": "ported"
  },
  "00515790": {
   "branchRatio": 0.25,
@@ -16380,19 +16492,19 @@
  },
  "00517d70": {
   "branchRatio": 0.4,
-  "constOverlap": 0.0,
+  "constOverlap": 0.5,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_CanMapChangeDifficulty",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 156,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 129,
-  "status": "stub"
+  "status": "ported"
  },
  "0051a3d0": {
   "branchRatio": 0.182,
@@ -16507,20 +16619,20 @@
   "status": "ported"
  },
  "0051ab20": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_AcceptGroup",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 126,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 120,
-  "status": "stub"
+  "status": "ported"
  },
  "0051acd0": {
   "branchRatio": 0.4,
@@ -16609,18 +16721,18 @@
  "0051afb0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_GetDamageBonusStat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 155,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 146,
-  "status": "stub"
+  "status": "ported"
  },
  "0051b050": {
   "branchRatio": 0.4,
@@ -17710,6 +17822,22 @@
   "refSize": 205,
   "status": "stub"
  },
+ "00524720": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGPartyInfo.cpp",
+   "src/ui/game/cgpartyinfo.cpp"
+  ],
+  "frozen": "CGPartyInfo::DisplayDungeonDifficulty",
+  "frozenSize": 127,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 89,
+  "status": "ported"
+ },
  "00525530": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -17736,7 +17864,7 @@
    "src/ui/game/cgpartyinfo.cpp"
   ],
   "frozen": "CGPartyInfo::ApplyRaidDifficulty",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 241,
@@ -17951,36 +18079,36 @@
   "status": "stub"
  },
  "00526050": {
-  "branchRatio": 0.2,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.6,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetDungeonDifficulty",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 319,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 332,
-  "status": "stub"
+  "status": "ported"
  },
  "005261a0": {
-  "branchRatio": 0.286,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.571,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetRaidDifficulty",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 252,
+  "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 292,
-  "status": "stub"
+  "status": "ported"
  },
  "005262e0": {
   "branchRatio": 0.4,
@@ -18050,7 +18178,7 @@
   "branchRatio": 0.087,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.158,
+  "fidelity": 0.14,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -19837,116 +19965,116 @@
   "status": "stub"
  },
  "00549b80": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldPortExpiration",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 177,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 183,
-  "status": "stub"
+  "status": "ported"
  },
  "00549c40": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldInstanceExpiration",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 90,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 133,
-  "status": "stub"
+  "status": "ported"
  },
  "00549cd0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldInstanceRunTime",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 67,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 96,
-  "status": "stub"
+  "status": "ported"
  },
  "00549d30": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldEstimatedWaitTime",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 144,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 150,
-  "status": "stub"
+  "status": "ported"
  },
  "00549dd0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldTimeWaited",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 159,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 163,
-  "status": "stub"
+  "status": "ported"
  },
  "00549e80": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetNumBattlefieldScores",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 33,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "00549ec0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldWinner",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 57,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 83,
-  "status": "stub"
+  "status": "ported"
  },
  "00549f20": {
   "branchRatio": 0.0,
@@ -19965,20 +20093,20 @@
   "status": "ported"
  },
  "00549f60": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldStatData",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 182,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 210,
-  "status": "stub"
+  "status": "ported"
  },
  "0054a040": {
   "branchRatio": 0.333,
@@ -19999,66 +20127,66 @@
  "0054a0e0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetNumBattlefieldFlagPositions",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 56,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 90,
-  "status": "stub"
+  "status": "ported"
  },
  "0054a140": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetNumBattlefieldVehicles",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 33,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "0054a180": {
-  "branchRatio": 0.4,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldTeamInfo",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 231,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 252,
-  "status": "stub"
+  "status": "ported"
  },
  "0054a280": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldArenaFaction",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 51,
+  "how": "annotated",
   "module": "SpellBookFrame.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "0054a2c0": {
   "branchRatio": 0.0,
@@ -20109,20 +20237,20 @@
   "status": "stub"
  },
  "0054baa0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetNumBattlefields",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 33,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 52,
-  "status": "stub"
+  "status": "ported"
  },
  "0054bae0": {
   "branchRatio": 0.0,
@@ -20143,34 +20271,34 @@
  "0054bb40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_SetSelectedBattlefield",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 116,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 134,
-  "status": "stub"
+  "status": "ported"
  },
  "0054bbd0": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetSelectedBattlefield",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 83,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "0054bc30": {
   "branchRatio": 0.0,
@@ -20301,20 +20429,20 @@
   "status": "ported"
  },
  "0054c740": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldMapIconScale",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 97,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 96,
-  "status": "stub"
+  "status": "ported"
  },
  "0054c7a0": {
   "branchRatio": 0.0,
@@ -20396,6 +20524,70 @@
   "refSize": 50,
   "status": "stub"
  },
+ "0054d4f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGBattlefieldInfo.cpp",
+   "src/ui/game/cgbattlefieldinfo.cpp"
+  ],
+  "frozen": "CGBattlefieldInfo::SendMgrEntryInviteResponse",
+  "frozenSize": 143,
+  "how": "annotated",
+  "module": "BattlefieldInfo.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "0054d590": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/ui/game/CGBattlefieldInfo.cpp",
+   "src/ui/game/cgbattlefieldinfo.cpp"
+  ],
+  "frozen": "CGBattlefieldInfo::SendMgrQueueRequest",
+  "frozenSize": 119,
+  "how": "annotated",
+  "module": "BattlefieldInfo.cpp",
+  "refSize": 145,
+  "status": "ported"
+ },
+ "0054d630": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGBattlefieldInfo.cpp",
+   "src/ui/game/cgbattlefieldinfo.cpp"
+  ],
+  "frozen": "CGBattlefieldInfo::SendMgrQueueInviteResponse",
+  "frozenSize": 143,
+  "how": "annotated",
+  "module": "BattlefieldInfo.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "0054d6d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/ui/game/CGBattlefieldInfo.cpp",
+   "src/ui/game/cgbattlefieldinfo.cpp"
+  ],
+  "frozen": "CGBattlefieldInfo::SendMgrExitRequest",
+  "frozenSize": 119,
+  "how": "annotated",
+  "module": "BattlefieldInfo.cpp",
+  "refSize": 145,
+  "status": "ported"
+ },
  "0054d770": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -20413,20 +20605,20 @@
   "status": "stub"
  },
  "0054d8f0": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_GetBattlefieldInstanceInfo",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 146,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 160,
-  "status": "stub"
+  "status": "ported"
  },
  "0054d990": {
   "branchRatio": 0.5,
@@ -20509,68 +20701,68 @@
   "status": "stub"
  },
  "0054e160": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_BattlefieldMgrEntryInviteResponse",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 66,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 49,
-  "status": "stub"
+  "status": "ported"
  },
  "0054e1a0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_BattlefieldMgrQueueRequest",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 30,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 32,
-  "status": "stub"
+  "status": "ported"
  },
  "0054e1c0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_BattlefieldMgrQueueInviteResponse",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 66,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 49,
-  "status": "stub"
+  "status": "ported"
  },
  "0054e200": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
   ],
   "frozen": "Script_BattlefieldMgrExitRequest",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 30,
+  "how": "annotated",
   "module": "BattlefieldInfo.cpp",
   "refSize": 32,
-  "status": "stub"
+  "status": "ported"
  },
  "0054e6d0": {
   "branchRatio": 0.5,
@@ -21675,7 +21867,7 @@
   "files": [],
   "frozen": "TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete",
   "frozenSize": 46,
-  "how": "callorder",
+  "how": "sticky",
   "module": "UIBindings.cpp",
   "refSize": 133,
   "status": "ported"
@@ -21856,17 +22048,17 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_GetReadyCheckTimeLeft",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 119,
+  "how": "annotated",
   "module": "MailInfo.cpp",
   "refSize": 135,
-  "status": "stub"
+  "status": "ported"
  },
  "00572ed0": {
   "branchRatio": 0.5,
@@ -21933,20 +22125,20 @@
   "status": "ported"
  },
  "00573ab0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_IsRealRaidLeader",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 84,
+  "how": "annotated",
   "module": "RaidInfo.cpp",
   "refSize": 70,
-  "status": "stub"
+  "status": "ported"
  },
  "00573b00": {
   "branchRatio": 0.0,
@@ -22048,17 +22240,17 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_ConfirmReadyCheck",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 154,
+  "how": "annotated",
   "module": "RaidInfo.cpp",
   "refSize": 190,
-  "status": "stub"
+  "status": "ported"
  },
  "00574180": {
   "branchRatio": 0.0,
@@ -22071,10 +22263,10 @@
   ],
   "frozen": "Script_GetReadyCheckStatus",
   "frozenSize": 19,
-  "how": "table",
+  "how": "override",
   "module": "RaidInfo.cpp",
   "refSize": 388,
-  "status": "ported"
+  "status": "stub"
  },
  "005743b0": {
   "branchRatio": 0.3,
@@ -22096,17 +22288,17 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
   ],
   "frozen": "Script_ConvertToRaid",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 135,
+  "how": "annotated",
   "module": "RaidInfo.cpp",
   "refSize": 168,
-  "status": "stub"
+  "status": "ported"
  },
  "00574ab0": {
   "branchRatio": 0.222,
@@ -22808,20 +23000,20 @@
   "status": "stub"
  },
  "00586870": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/TradeInfoScript.cpp",
    "src/ui/game/tradeinfoscript.cpp"
   ],
   "frozen": "Script_SetTradeMoney",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 78,
+  "how": "annotated",
   "module": "MerchantFrame.cpp",
   "refSize": 97,
-  "status": "stub"
+  "status": "ported"
  },
  "00586c80": {
   "branchRatio": 0.5,
@@ -22840,20 +23032,20 @@
   "status": "stub"
  },
  "00586d00": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/TradeInfoScript.cpp",
    "src/ui/game/tradeinfoscript.cpp"
   ],
   "frozen": "Script_GetTradePlayerItemLink",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 140,
+  "how": "annotated",
   "module": "TradeFrame.cpp",
   "refSize": 135,
-  "status": "stub"
+  "status": "ported"
  },
  "00587940": {
   "branchRatio": 0.667,
@@ -24117,6 +24309,38 @@
   "refSize": 71,
   "status": "stub"
  },
+ "005ac260": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/GMTicketInfoScript.cpp",
+   "src/ui/game/gmticketinfoscript.cpp"
+  ],
+  "frozen": "SetSurveyAnswer",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GMTicketInfo.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
+ "005ac2d0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/GMTicketInfoScript.cpp",
+   "src/ui/game/gmticketinfoscript.cpp"
+  ],
+  "frozen": "SetSurveyComment",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GMTicketInfo.cpp",
+  "refSize": 75,
+  "status": "ported"
+ },
  "005ac320": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -24135,35 +24359,35 @@
  },
  "005ac390": {
   "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/ui/game/GMTicketInfoScript.cpp",
    "src/ui/game/gmticketinfoscript.cpp"
   ],
   "frozen": "Script_GMSurveyAnswerSubmit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 339,
+  "how": "annotated",
   "module": "GMTicketInfo.cpp",
   "refSize": 231,
-  "status": "stub"
+  "status": "ported"
  },
  "005ac480": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GMTicketInfoScript.cpp",
    "src/ui/game/gmticketinfoscript.cpp"
   ],
   "frozen": "Script_GMSurveyCommentSubmit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 152,
+  "how": "annotated",
   "module": "GMTicketInfo.cpp",
   "refSize": 65,
-  "status": "stub"
+  "status": "ported"
  },
  "005ac750": {
   "branchRatio": 0.5,
@@ -24716,19 +24940,20 @@
   "status": "stub"
  },
  "005b8c10": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/CalendarScript.cpp",
+   "src/ui/game/calendarscript.cpp"
   ],
-  "frozen": "Script_Stub_CalendarIsActionPending",
-  "frozenSize": 60,
-  "how": "table",
+  "frozen": "Script_CalendarIsActionPending",
+  "frozenSize": 26,
+  "how": "annotated",
   "module": "AchievementInfo.cpp",
   "refSize": 30,
-  "status": "stub"
+  "status": "ported"
  },
  "005b99f0": {
   "branchRatio": 0.5,
@@ -25510,22 +25735,37 @@
   "refSize": 188,
   "status": "stub"
  },
- "005cb330": {
-  "branchRatio": 0.25,
+ "005ca220": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GuildControlGetNumRanks",
+  "frozenSize": 22,
+  "how": "order",
+  "module": "TalentInfo.cpp",
+  "refSize": 52,
+  "status": "stub"
+ },
+ "005ca260": {
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
-  "frozen": "Script_Stub_GuildControlAddRank",
+  "frozen": "Script_Stub_GuildControlSetRank",
   "frozenSize": 60,
   "how": "order",
   "module": "TalentInfo.cpp",
-  "refSize": 179,
+  "refSize": 71,
   "status": "stub"
  },
- "005cb3f0": {
+ "005ca2b0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
@@ -25533,42 +25773,43 @@
   "files": [
    "src/ui/game/miscscriptstubs.cpp"
   ],
-  "frozen": "Script_Stub_GuildControlDelRank",
+  "frozen": "Script_Stub_GuildControlSetRankFlag",
   "frozenSize": 60,
   "how": "order",
+  "module": "TalentInfo.cpp",
+  "refSize": 121,
+  "status": "stub"
+ },
+ "005cae20": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GuildRosterSetOfficerNote",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "TalentInfo.cpp",
+  "refSize": 288,
+  "status": "stub"
+ },
+ "005cb3f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/GuildScript.cpp",
+   "src/ui/game/guildscript.cpp"
+  ],
+  "frozen": "Script_GuildControlDelRank",
+  "frozenSize": 77,
+  "how": "annotated",
   "module": "TalentInfo.cpp",
   "refSize": 113,
-  "status": "stub"
- },
- "005cc3e0": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_GuildControlGetRankFlags",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "TalentInfo.cpp",
-  "refSize": 143,
-  "status": "stub"
- },
- "005ccc90": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_GuildControlGetRankName",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "GuildInfo.cpp",
-  "refSize": 254,
-  "status": "stub"
+  "status": "ported"
  },
  "005cde20": {
   "branchRatio": 0.0,
@@ -25928,20 +26169,20 @@
   "status": "ported"
  },
  "005e7780": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CharacterInfoScript.cpp",
    "src/ui/game/characterinfoscript.cpp"
   ],
   "frozen": "Script_HasInspectHonorData",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 51,
+  "how": "annotated",
   "module": "QuestLog.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "005e77c0": {
   "branchRatio": 0.667,
@@ -26487,6 +26728,22 @@
   "refSize": 221,
   "status": "stub"
  },
+ "005eec20": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/GameScript.cpp",
+   "src/ui/game/gamescript.cpp"
+  ],
+  "frozen": "ButtonNumberToMouseButton",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "PaperDollInfoFrame.cpp",
+  "refSize": 208,
+  "status": "ported"
+ },
  "005ef490": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -26513,10 +26770,42 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 897,
+  "frozenSize": 917,
   "how": "string",
   "module": "CalendarEvent.cpp",
   "refSize": 274,
+  "status": "ported"
+ },
+ "005f4ca0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/AddOn.cpp",
+   "src/ui/addon.cpp"
+  ],
+  "frozen": "AddOnVersionCheckEnabled",
+  "frozenSize": 15,
+  "how": "annotated",
+  "module": "AddOns.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "005f4cb0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/AddOn.cpp",
+   "src/ui/addon.cpp"
+  ],
+  "frozen": "AddOnSetVersionCheck",
+  "frozenSize": 55,
+  "how": "annotated",
+  "module": "AddOns.cpp",
+  "refSize": 47,
   "status": "ported"
  },
  "005f7630": {
@@ -26897,20 +27186,20 @@
   "status": "ported"
  },
  "00608270": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/ScriptFunctionsSystem.cpp",
    "src/ui/scriptfunctionssystem.cpp"
   ],
   "frozen": "Script_ConsoleExec",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 77,
+  "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 70,
-  "status": "stub"
+  "status": "ported"
  },
  "006082c0": {
   "branchRatio": 0.5,
@@ -27204,7 +27493,7 @@
   "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27460,7 +27749,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -27937,20 +28226,20 @@
   "status": "ported"
  },
  "0060e410": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetPetSpellBonusDamage",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 89,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 95,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e470": {
   "branchRatio": 1.0,
@@ -27987,18 +28276,18 @@
  "0060e560": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetAttackPowerForStat",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 201,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 198,
-  "status": "stub"
+  "status": "ported"
  },
  "0060e630": {
   "branchRatio": 0.3,
@@ -29249,20 +29538,20 @@
   "status": "ported"
  },
  "00613140": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
   ],
   "frozen": "Script_GetRuneCount",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 125,
+  "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 155,
-  "status": "stub"
+  "status": "ported"
  },
  "006131e0": {
   "branchRatio": 0.333,
@@ -29726,6 +30015,22 @@
   "how": "override",
   "module": "Cursor.cpp",
   "refSize": 547,
+  "status": "ported"
+ },
+ "0061be50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_GetColorNoAlpha",
+  "frozenSize": 220,
+  "how": "annotated",
+  "module": "Cursor.cpp",
+  "refSize": 191,
   "status": "ported"
  },
  "0061c620": {
@@ -31037,22 +31342,6 @@
   "refSize": 497,
   "status": "ported"
  },
- "0067d770": {
-  "branchRatio": 0.056,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/ScriptUtil.cpp",
-   "src/ui/game/scriptutil.cpp"
-  ],
-  "frozen": "Script_GetUnitFromName",
-  "frozenSize": 60,
-  "how": "override",
-  "module": "DBCache.cpp",
-  "refSize": 448,
-  "status": "ported"
- },
  "00681210": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -31847,7 +32136,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.7,
   "files": [
    "src/gx/gll/CGxDeviceGLL.cpp"
   ],
@@ -32066,6 +32355,22 @@
   "refSize": 134,
   "status": "ported"
  },
+ "006b0850": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/net/connection/ClientConnection.cpp",
+   "src/net/connection/clientconnection.cpp"
+  ],
+  "frozen": "ClientConnection::Cleanup",
+  "frozenSize": 40,
+  "how": "callorder",
+  "module": "blp.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
  "006b0970": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -32075,9 +32380,9 @@
    "src/client/ClientServices.cpp",
    "src/client/clientservices.cpp"
   ],
-  "frozen": "ClientServices::IsConnected",
-  "frozenSize": 12,
-  "how": "callgraph",
+  "frozen": "ClientServices::Connection",
+  "frozenSize": 8,
+  "how": "override",
   "module": "blp.cpp",
   "refSize": 26,
   "status": "ported"
@@ -32370,6 +32675,38 @@
   "refSize": 6,
   "status": "ported"
  },
+ "006b1390": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/net/connection/ClientConnection.cpp",
+   "src/net/connection/clientconnection.cpp"
+  ],
+  "frozen": "ClientConnection::Connect",
+  "frozenSize": 103,
+  "how": "callorder",
+  "module": "blp.cpp",
+  "refSize": 192,
+  "status": "ported"
+ },
+ "006b14c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/net/connection/ClientConnection.cpp",
+   "src/net/connection/clientconnection.cpp"
+  ],
+  "frozen": "ClientConnection::GetCharacterList",
+  "frozenSize": 69,
+  "how": "callorder",
+  "module": "blp.cpp",
+  "refSize": 147,
+  "status": "ported"
+ },
  "006b1620": {
   "branchRatio": 0.5,
   "constOverlap": 0.042,
@@ -32638,6 +32975,22 @@
   "refSize": 115,
   "status": "ported"
  },
+ "006d4450": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::SendGroupAccept",
+  "frozenSize": 83,
+  "how": "annotated",
+  "module": "Player_C.cpp",
+  "refSize": 113,
+  "status": "ported"
+ },
  "006d46d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -32665,9 +33018,25 @@
   ],
   "frozen": "Player_C_GetDisplayId",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "Player_C.cpp",
   "refSize": 91,
+  "status": "ported"
+ },
+ "006d7070": {
+  "branchRatio": 0.583,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGPlayer_C.cpp",
+   "src/object/client/cgplayer_c.cpp"
+  ],
+  "frozen": "CGPlayer_C::GetAttackPowerForStat",
+  "frozenSize": 254,
+  "how": "annotated",
+  "module": "Player_C.cpp",
+  "refSize": 169,
   "status": "ported"
  },
  "006d7f10": {
@@ -32812,6 +33181,22 @@
   "how": "annotated",
   "module": "ObjectEffect.cpp",
   "refSize": 156,
+  "status": "ported"
+ },
+ "007043c0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGTradeInfo.cpp",
+   "src/ui/game/cgtradeinfo.cpp"
+  ],
+  "frozen": "CGTradeInfo::SetPlayerTradeMoney",
+  "frozenSize": 156,
+  "how": "annotated",
+  "module": "Trade_C.cpp",
+  "refSize": 222,
   "status": "ported"
  },
  "00705a80": {
@@ -32981,7 +33366,7 @@
    "src/object/client/cgunit_c.cpp"
   ],
   "frozen": "CGUnit_C::GetShapeshiftForm",
-  "frozenSize": 0,
+  "frozenSize": 38,
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 26,
@@ -33295,7 +33680,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.545,
+  "fidelity": 0.455,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -33401,6 +33786,22 @@
   "how": "callgraph",
   "module": "ConsoleVar.cpp",
   "refSize": 118,
+  "status": "ported"
+ },
+ "00766940": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/console/CVar.cpp",
+   "src/console/cvar.cpp"
+  ],
+  "frozen": "CVar::SetInt",
+  "frozenSize": 142,
+  "how": "annotated",
+  "module": "ConsoleVar.cpp",
+  "refSize": 66,
   "status": "ported"
  },
  "00766ab0": {
@@ -33566,8 +33967,8 @@
  "00768900": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -33582,8 +33983,8 @@
  "007689e0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -33599,7 +34000,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.2,
   "files": [
    "src/console/Command.cpp",
    "src/console/command.cpp"
@@ -33999,7 +34400,7 @@
   "branchRatio": 0.48,
   "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.35,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
@@ -34528,7 +34929,7 @@
   ],
   "frozen": "SCreateThread",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SThread.cpp",
   "refSize": 37,
   "status": "ported"
@@ -34705,7 +35106,7 @@
   ],
   "frozen": "SThread::Create",
   "frozenSize": 50,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "SCmd.cpp",
   "refSize": 47,
   "status": "ported"
@@ -35761,7 +36162,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainPixelShader",
-  "frozenSize": 274,
+  "frozenSize": 280,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 195,
@@ -37713,7 +38114,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SetupTerrainConstants",
-  "frozenSize": 1160,
+  "frozenSize": 1054,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1130,
@@ -38214,19 +38615,20 @@
   "status": "stub"
  },
  "007dc910": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/VoiceScript.cpp",
+   "src/ui/game/voicescript.cpp"
   ],
-  "frozen": "Script_Stub_VoiceIsDisabledByClient",
-  "frozenSize": 21,
-  "how": "order",
+  "frozen": "Script_VoiceIsDisabledByClient",
+  "frozenSize": 51,
+  "how": "annotated",
   "module": "ComSatClient.cpp",
   "refSize": 58,
-  "status": "stub"
+  "status": "ported"
  },
  "007dcec0": {
   "branchRatio": 0.667,
@@ -38852,6 +39254,38 @@
   "refSize": 144,
   "status": "ported"
  },
+ "008125c0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameXML.cpp",
+   "src/ui/framexml.cpp"
+  ],
+  "frozen": "FrameXML_SetDebugLevel",
+  "frozenSize": 7,
+  "how": "annotated",
+  "module": "Spell_C.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "008125d0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameXML.cpp",
+   "src/ui/framexml.cpp"
+  ],
+  "frozen": "FrameXML_GetDebugLevel",
+  "frozenSize": 7,
+  "how": "annotated",
+  "module": "Spell_C.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "00812ce0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -39055,7 +39489,7 @@
   ],
   "frozen": "StringToDrawLayer",
   "frozenSize": 92,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 74,
   "status": "ported"
@@ -39719,6 +40153,22 @@
   "refSize": 139,
   "status": "ported"
  },
+ "00817da0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_SetEuropeanNumbers",
+  "frozenSize": 5,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 9,
+  "status": "ported"
+ },
  "00817db0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -39775,7 +40225,7 @@
   ],
   "frozen": "FrameScript_Sprintf",
   "frozenSize": 840,
-  "how": "string",
+  "how": "callorder",
   "module": "XMLTree.cpp",
   "refSize": 726,
   "status": "ported"
@@ -39908,24 +40358,11 @@
   "refSize": 39,
   "status": "ported"
  },
- "0081b330": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr",
-  "frozenSize": 139,
-  "how": "sticky",
-  "module": "XMLTree.cpp",
-  "refSize": 72,
-  "status": "ported"
- },
  "0081b380": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/ui/FrameScript_Object.cpp",
    "src/ui/framescript_object.cpp"
@@ -39941,7 +40378,7 @@
   "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/ui/FrameScript_Object.cpp",
    "src/ui/framescript_object.cpp"
@@ -39951,6 +40388,22 @@
   "how": "sticky",
   "module": "XMLTree.cpp",
   "refSize": 93,
+  "status": "ported"
+ },
+ "0081b510": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_GetEventListeners",
+  "frozenSize": 173,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 30,
   "status": "ported"
  },
  "0081b530": {
@@ -39970,84 +40423,84 @@
   "status": "ported"
  },
  "0081b720": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_GetText",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 159,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 143,
-  "status": "stub"
+  "status": "ported"
  },
  "0081b7b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_CreateFont",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 129,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 110,
-  "status": "stub"
+  "status": "ported"
  },
  "0081b820": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_GetCurrentKeyBoardFocus",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 95,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 76,
-  "status": "stub"
+  "status": "ported"
  },
  "0081b9c0": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_EnumerateFrames",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 283,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 234,
-  "status": "stub"
+  "status": "ported"
  },
  "0081bab0": {
-  "branchRatio": 0.4,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_GetNumFrames",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 106,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 101,
-  "status": "stub"
+  "status": "ported"
  },
  "0081bb20": {
   "branchRatio": 0.8,
@@ -40066,20 +40519,20 @@
   "status": "ported"
  },
  "0081be70": {
-  "branchRatio": 0.182,
+  "branchRatio": 0.545,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
    "src/ui/simple/ScriptMethods.cpp",
    "src/ui/simple/scriptmethods.cpp"
   ],
   "frozen": "Script_GetFramesRegisteredForEvent",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 318,
+  "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 221,
-  "status": "stub"
+  "status": "diverged"
  },
  "0081bfa0": {
   "branchRatio": 1.0,
@@ -42294,7 +42747,7 @@
   ],
   "frozen": "lua_toboolean",
   "frozenSize": 43,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 42,
   "status": "ported"
@@ -42867,6 +43320,21 @@
   "how": "override",
   "module": "Minigame_C.cpp",
   "refSize": 128,
+  "status": "ported"
+ },
+ "0084f010": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "vendor/lua-5.1.3/src/lstrlib.c"
+  ],
+  "frozen": "lua_seteuropeannumbers",
+  "frozenSize": 7,
+  "how": "callgraph",
+  "module": "Minigame_C.cpp",
+  "refSize": 18,
   "status": "ported"
  },
  "0084f0f0": {
@@ -44372,16 +44840,16 @@
   "status": "ported"
  },
  "00853c50": {
-  "branchRatio": 0.783,
-  "constOverlap": 0.031,
+  "branchRatio": 0.92,
+  "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.536,
+  "fidelity": 0.714,
   "files": [
    "vendor/lua-5.1.3/src/lstrlib.c"
   ],
   "frozen": "str_format",
-  "frozenSize": 1468,
-  "how": "order",
+  "frozenSize": 1616,
+  "how": "string",
   "module": "Minigame_C.cpp",
   "refSize": 969,
   "status": "ported"
@@ -46003,22 +46471,6 @@
   "refSize": 88,
   "status": "ported"
  },
- "0086ae20": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/GameScript.cpp",
-   "src/ui/game/gamescript.cpp"
-  ],
-  "frozen": "PushSecondsUntil",
-  "frozenSize": 0,
-  "how": "callgraph",
-  "module": "lmemPool.cpp",
-  "refSize": 11,
-  "status": "ported"
- },
  "0086b280": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -46323,6 +46775,22 @@
   "refSize": 562,
   "status": "ported"
  },
+ "00873f50": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/glue/GlueScript.cpp",
+   "src/glue/gluescript.cpp"
+  ],
+  "frozen": "ExtShadowQualityAbsoluteMax",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "00873ff0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -46337,6 +46805,22 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 25,
+  "status": "ported"
+ },
+ "008740d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/hash/Hashkey.cpp",
+   "lib/squall/storm/hash/hashkey.cpp"
+  ],
+  "frozen": "HASHKEY_STR::GetString",
+  "frozenSize": 4,
+  "how": "callgraph",
+  "module": "OsClipboard.cpp",
+  "refSize": 242,
   "status": "ported"
  },
  "00874660": {
@@ -46432,6 +46916,22 @@
   "how": "annotated",
   "module": "SoundEngine.cpp",
   "refSize": 150,
+  "status": "ported"
+ },
+ "00878730": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/sound/SESound.cpp",
+   "src/sound/sesound.cpp"
+  ],
+  "frozen": "SESound::IsPlaying",
+  "frozenSize": 59,
+  "how": "callgraph",
+  "module": "SoundEngine.cpp",
+  "refSize": 45,
   "status": "ported"
  },
  "00879290": {
@@ -46642,34 +47142,15 @@
   "refSize": 1303,
   "status": "ported"
  },
- "008889b0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/FrameScript_Object.cpp",
-   "src/ui/framescript_object.cpp"
-  ],
-  "frozen": "FrameScript_Object::RegisterScriptObject",
-  "frozenSize": 281,
-  "how": "callgraph",
-  "module": "ComSatSoundIOSoundEngine.cpp",
-  "refSize": 35,
-  "status": "ported"
- },
  "0088be0d": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/console/CVar.cpp",
-   "src/console/cvar.cpp"
-  ],
-  "frozen": "CVar::GetString",
-  "frozenSize": 9,
-  "how": "callgraph",
+  "files": [],
+  "frozen": "sscanf",
+  "frozenSize": 82,
+  "how": "callorder",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
   "status": "ported"
@@ -48048,20 +48529,20 @@
   "status": "ported"
  },
  "00961090": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleModelScript.cpp",
    "src/ui/simple/csimplemodelscript.cpp"
   ],
   "frozen": "CSimpleModel_GetScale",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 54,
+  "how": "annotated",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 67,
-  "status": "stub"
+  "status": "ported"
  },
  "009610e0": {
   "branchRatio": 0.0,
@@ -48266,9 +48747,41 @@
   ],
   "frozen": "CSimpleCheckbox::SetChecked",
   "frozenSize": 120,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 128,
+  "status": "ported"
+ },
+ "009623f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleCheckbox.cpp",
+   "src/ui/simple/csimplecheckbox.cpp"
+  ],
+  "frozen": "CSimpleCheckbox::SetCheckedTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "00962440": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleCheckbox.cpp",
+   "src/ui/simple/csimplecheckbox.cpp"
+  ],
+  "frozen": "CSimpleCheckbox::SetDisabledCheckedTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 76,
   "status": "ported"
  },
  "009624c0": {
@@ -48281,7 +48794,7 @@
    "src/ui/simple/csimplecheckbox.cpp"
   ],
   "frozen": "CSimpleCheckbox::LoadXML",
-  "frozenSize": 534,
+  "frozenSize": 555,
   "how": "string",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 411,
@@ -48611,7 +49124,7 @@
   "branchRatio": 0.417,
   "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.179,
+  "fidelity": 0.25,
   "files": [
    "src/ui/simple/CSimpleEditBox.cpp",
    "src/ui/simple/csimpleeditbox.cpp"
@@ -48832,6 +49345,38 @@
   "how": "string",
   "module": "CSimpleMessageScrollFrame.cpp",
   "refSize": 123,
+  "status": "ported"
+ },
+ "0096bd90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleSlider.cpp",
+   "src/ui/simple/csimpleslider.cpp"
+  ],
+  "frozen": "CSimpleSlider::SetThumbTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleMessageScrollFrame.cpp",
+  "refSize": 77,
+  "status": "ported"
+ },
+ "0096bde0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleSlider.cpp",
+   "src/ui/simple/csimpleslider.cpp"
+  ],
+  "frozen": "CSimpleSlider::SetOrientation",
+  "frozenSize": 49,
+  "how": "annotated",
+  "module": "CSimpleMessageScrollFrame.cpp",
+  "refSize": 45,
   "status": "ported"
  },
  "0096c470": {
@@ -49558,17 +50103,17 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "src/ui/simple/CSimpleSliderScript.cpp",
    "src/ui/simple/csimplesliderscript.cpp"
   ],
   "frozen": "CSimpleSlider_SetOrientation",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 216,
+  "how": "annotated",
   "module": "CSimpleHTML.cpp",
   "refSize": 203,
-  "status": "stub"
+  "status": "ported"
  },
  "00971d90": {
   "branchRatio": 0.0,
@@ -53683,20 +54228,20 @@
   "status": "stub"
  },
  "00985e30": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/sound/SI2Script.cpp",
    "src/sound/si2script.cpp"
   ],
   "frozen": "Script_VoiceChat_IsPlayingLoopbackSound",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 51,
+  "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 45,
-  "status": "stub"
+  "status": "ported"
  },
  "00985e60": {
   "branchRatio": 0.0,
@@ -53808,6 +54353,22 @@
   "how": "callgraph",
   "module": "cmemblock.cpp",
   "refSize": 207,
+  "status": "ported"
+ },
+ "00986410": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SI2Script.cpp",
+   "src/sound/si2script.cpp"
+  ],
+  "frozen": "IsPlayingLoopbackSound",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SoundInterface2VoiceChat.cpp",
+  "refSize": 14,
   "status": "ported"
  },
  "00987570": {
