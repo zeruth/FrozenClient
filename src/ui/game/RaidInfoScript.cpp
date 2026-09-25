@@ -12,6 +12,7 @@
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 #include <common/Time.hpp>
+#include <cmath>
 
 namespace {
 
@@ -40,8 +41,23 @@ int32_t Script_GetRaidRosterInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00572bc0
 int32_t Script_SetRaidRosterSelection(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetRaidRosterSelection(index)");
+        return 0;
+    }
+
+    int32_t index = static_cast<int32_t>(llrint(lua_tonumber(L, 1)));
+
+    if (static_cast<uint32_t>(index - 1) < CGRaidInfo::NumMembers()) {
+        CGRaidInfo::s_selection = CGRaidInfo::GetMember(index);
+        return 0;
+    }
+
+    CGRaidInfo::s_selection = 0;
+
+    return 0;
 }
 
 int32_t Script_GetRaidRosterSelection(lua_State* L) {

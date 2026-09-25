@@ -191,6 +191,7 @@ void CSimpleStatusBar::OnLayerUpdate(float elapsedSec) {
     this->m_changed = false;
 }
 
+// ref: FUN_00961560
 void CSimpleStatusBar::RunOnMinMaxChangedScript() {
     if (!this->m_onMinMaxChanged.luaRef) {
         return;
@@ -216,6 +217,7 @@ void CSimpleStatusBar::RunOnValueChangedScript() {
     this->RunScript(this->m_onValueChanged, 1, nullptr);
 }
 
+// ref: FUN_00961720
 void CSimpleStatusBar::SetBarTexture(CSimpleTexture* texture, int32_t drawlayer) {
     // No change
     if (this->m_barTexture == texture) {
@@ -235,9 +237,9 @@ void CSimpleStatusBar::SetBarTexture(CSimpleTexture* texture, int32_t drawlayer)
         texture->SetPoint(FRAMEPOINT_TOPRIGHT, this, FRAMEPOINT_TOPRIGHT, 0.0f, 0.0f, true);
     }
 
-    this->m_barTexture = texture;
-
     this->m_changed = true;
+
+    this->m_barTexture = texture;
 }
 
 void CSimpleStatusBar::SetMinMaxValues(float min, float max) {

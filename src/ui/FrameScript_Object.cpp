@@ -35,6 +35,16 @@ const char* FrameScript_Object::GetDisplayName() {
     return name ? name : "<unnamed>";
 }
 
+// The registry reference of this object's Lua table, registering it first if it never was.
+// ref: FUN_00488380
+int32_t FrameScript_Object::GetLuaObjectRef() {
+    if (!this->lua_registered) {
+        this->RegisterScriptObject(nullptr);
+    }
+
+    return this->lua_objectRef;
+}
+
 int32_t FrameScript_Object::GetScript(lua_State* L) {
     if (!lua_isstring(L, 2)) {
         luaL_error(L, "Usage: %s:GetScript(\"type\")", this->GetDisplayName());

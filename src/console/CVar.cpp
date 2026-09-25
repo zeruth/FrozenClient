@@ -438,3 +438,24 @@ int32_t CVar::Update() {
 
     return 1;
 }
+
+// ref: FUN_00766860
+bool CVarBitField::GetBit(uint32_t index) const {
+    const char* string = this->m_cvar->m_stringValue.GetString();
+
+    if (*string) {
+        const char* end = string;
+
+        while (*end) {
+            end++;
+        }
+
+        uint32_t length = static_cast<uint32_t>(end - string);
+
+        if (index < (length * 3 - 3) * 2) {
+            return ((1 << (index % 6)) & string[index / 6 + 1]) != 0;
+        }
+    }
+
+    return false;
+}

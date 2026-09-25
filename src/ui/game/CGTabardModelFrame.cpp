@@ -43,3 +43,8 @@ bool CGTabardModelFrame::IsA(int32_t type) {
         || type == CGCharacterModelBase::GetObjectType()
         || CSimpleModel::IsA(type);
 }
+
+// ref: FUN_007eae60
+uint32_t GetGuildTabardCost() {
+    return 100000;
+}

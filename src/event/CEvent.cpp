@@ -18,6 +18,7 @@ CKeyEvent& CKeyEvent::operator=(const EVENT_DATA_KEY& data) {
     return *this;
 }
 
+// ref: FUN_00480de0
 CMouseEvent& CMouseEvent::operator=(const EVENT_DATA_MOUSE& data) {
     this->mode = data.mode;
     this->button = data.button;

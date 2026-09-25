@@ -32,6 +32,7 @@
 #include "ui/game/GameScript.hpp"
 #include "ui/game/GuildScript.hpp"
 #include "ui/game/PartyInfoScript.hpp"
+#include "ui/game/QuestFrameScript.hpp"
 #include "ui/game/RaidInfoScript.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include "ui/game/TradeInfoScript.hpp"
@@ -45,12 +46,18 @@
 #include <common/MD5.hpp>
 
 WOWGUID CGGameUI::s_currentObjectTrack;
+CVar* CGGameUI::s_currencyTokensUnused1Cvar;
+CVar* CGGameUI::s_currencyTokensUnused2Cvar;
+CVar* CGGameUI::s_currencyTokensBackpack1Cvar;
+CVar* CGGameUI::s_currencyTokensBackpack2Cvar;
 uint32_t CGGameUI::s_cursorMoney;
 uint32_t CGGameUI::s_cursorKind = CGGameUI::CURSOR_NONE;
 uint32_t CGGameUI::s_cursorHolding;
 uint32_t CGGameUI::s_cursorIndex;
 uint32_t CGGameUI::s_cursorItemEntry;
 WOWGUID CGGameUI::s_cursorItemGUID;
+WOWGUID CGGameUI::s_cursorItemBagGUID;
+uint32_t CGGameUI::s_cursorItemSlot;
 uint32_t CGGameUI::s_cursorSpell;
 uint32_t CGGameUI::s_cursorMacro;
 CScriptObject* CGGameUI::s_gameTooltip;
@@ -88,6 +95,7 @@ void LoadScriptFunctions() {
     // TODO
 
     ActionBarRegisterScriptFunctions();
+    QuestFrameRegisterScriptFunctions();
     PartyInfoRegisterScriptFunctions();
 
     // TODO
@@ -170,8 +178,45 @@ bool CGGameUI::CursorHasItem() {
         || CGGameUI::s_cursorKind == CGGameUI::CURSOR_ITEM_ENTRY_ALT;
 }
 
+// ref: FUN_00513680
+void CGGameUI::GetCursorItem(WOWGUID* item, WOWGUID* bag, uint32_t* slot) {
+    *item = CGGameUI::s_cursorItemGUID;
+    *bag = CGGameUI::s_cursorItemBagGUID;
+    *slot = CGGameUI::s_cursorItemSlot;
+}
+
+// ref: FUN_00513660
+WOWGUID CGGameUI::GetCursorItemGUID() {
+    if (CGGameUI::s_cursorKind == CGGameUI::CURSOR_ITEM_OBJECT) {
+        return CGGameUI::s_cursorItemGUID;
+    }
+
+    return 0;
+}
+
+// ref: FUN_005136d0
+uint32_t CGGameUI::GetCursorItemEntry() {
+    return CGGameUI::s_cursorItemEntry;
+}
+
+// ref: FUN_005136e0
+void CGGameUI::GetCursorItemEntryAndIndex(uint32_t* entry, uint32_t* index) {
+    *entry = CGGameUI::s_cursorItemEntry;
+    *index = CGGameUI::s_cursorIndex;
+}
+
 uint32_t CGGameUI::GetCursorKind() {
     return CGGameUI::s_cursorKind;
+}
+
+// ref: FUN_005136c0
+uint32_t CGGameUI::GetCursorSpell() {
+    return CGGameUI::s_cursorSpell;
+}
+
+// ref: FUN_00513df0
+char* CGGameUI::GetLastError() {
+    return CGGameUI::s_lastError;
 }
 
 uint32_t CGGameUI::GetCursorMoney() {
@@ -532,10 +577,10 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("timeMgrAlarmMessage", "The time manager's alarm message", 0x10, "", nullptr, GAME);
     CVar::Register("timeMgrAlarmEnabled", "Toggles whether or not the time manager's alarm will go off", 0x10, "0", nullptr, GAME);
     CVar::Register("combatLogRetentionTime", "The maximum duration in seconds to retain combat log entries", 0x10, "300", nullptr, GAME);
-    CVar::Register("currencyTokensUnused1", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
-    CVar::Register("currencyTokensUnused2", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
-    CVar::Register("currencyTokensBackpack1", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
-    CVar::Register("currencyTokensBackpack2", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
+    CGGameUI::s_currencyTokensUnused1Cvar = CVar::Register("currencyTokensUnused1", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
+    CGGameUI::s_currencyTokensUnused2Cvar = CVar::Register("currencyTokensUnused2", "Currency token types marked as unused.", 0x20, "0", nullptr, GAME);
+    CGGameUI::s_currencyTokensBackpack1Cvar = CVar::Register("currencyTokensBackpack1", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
+    CGGameUI::s_currencyTokensBackpack2Cvar = CVar::Register("currencyTokensBackpack2", "Currency token types shown on backpack.", 0x20, "0", nullptr, GAME);
     CVar::Register("showTokenFrame", "The token UI has been shown", 0x20, "0", nullptr, GAME);
     CVar::Register("showTokenFrameHonor", "The token UI has shown Honor", 0x20, "0", nullptr, GAME);
     CVar::Register("predictedHealth", "Whether or not to use predicted health values in the UI", 0x10, "1", nullptr, GAME);

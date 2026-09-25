@@ -69,6 +69,10 @@ class CGlueMgr {
         static int32_t m_showedDisconnect;
         static CSimpleTop* m_simpleTop;
         static int32_t m_suspended;
+        // The option changes the player has still to acknowledge. Nothing fills them yet: the
+        // code that adds a warning is not ported.
+        static uint32_t m_numChangedOptionWarnings; // ref: DAT_00b6af9c
+        static const char** m_changedOptionWarnings; // ref: DAT_00b6afc8
 
         // Static functions
         static void CancelRealmListQuery();
@@ -101,6 +105,7 @@ class CGlueMgr {
         static void PollRealmList(const char* msg, int32_t complete, int32_t result, WOWCS_OPS op);
         static void QuitGame();
         static void RealmListDialogCancelled();
+        static int32_t RenameCharacter(uint64_t guid, const char* name);
         static void Resume();
         static void SetCurrentAccount(const char* accountName);
         static void SetIdleState(GLUE_IDLE_STATE state);

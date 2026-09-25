@@ -7,6 +7,7 @@
 #include "util/CStatus.hpp"
 #include <common/MD5.hpp>
 #include <cstdio>
+#include <storm/Array.hpp>
 #include <storm/String.hpp>
 
 namespace {
@@ -19,7 +20,25 @@ const int32_t ADDON_NAME_MAX = 64;
 char s_loaded[ADDON_MAX][ADDON_NAME_MAX];
 int32_t s_loadedCount;
 
+// The reference's list of every add-on it found on disk. Nothing fills it: the enumeration that
+// builds it is not ported, and the loader above does not need it.
+TSFixedArray<UIADDON*> s_addOns;    // ref: DAT_00c24944
+
 } // namespace
+
+// ref: FUN_005f4ff0
+uint32_t AddOnGetNumAddOns() {
+    return s_addOns.Count();
+}
+
+// ref: FUN_005f5000
+UIADDON* AddOnGetAddOn(uint32_t index) {
+    if (s_addOns.Count() <= index) {
+        return nullptr;
+    }
+
+    return s_addOns[index];
+}
 
 bool AddOnIsLoaded(const char* name) {
     if (!name || !*name) {

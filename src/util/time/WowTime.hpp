@@ -13,20 +13,28 @@ class WowTime {
         static char* WowGetTimeString(WowTime* time, char* str, int32_t len);
 
         // Member variables
-        int32_t m_minute = -1;
-        int32_t m_hour = -1;
-        int32_t m_weekday = -1;
-        int32_t m_monthday = -1;
-        int32_t m_month = -1;
-        int32_t m_year = -1;
-        int32_t m_flags = 0x0;
-        int32_t m_holidayOffset = 0;
+        int32_t m_minute;
+        int32_t m_hour;
+        int32_t m_weekday;
+        int32_t m_monthday;
+        int32_t m_month;
+        int32_t m_year;
+        int32_t m_flags;
+        int32_t m_holidayOffset;
 
         // Member functions
+        WowTime();
         void AddDays(int32_t days, bool includeTime);
+        int32_t CompareHour(const WowTime& other) const;
+        int32_t CompareMinute(const WowTime& other) const;
+        int32_t CompareMonth(const WowTime& other) const;
+        int32_t CompareMonthday(const WowTime& other) const;
+        int32_t CompareWeekday(const WowTime& other) const;
         int32_t GetHourAndMinutes();
+        bool Matches(const WowTime& other) const;
+        bool SetDate(uint32_t month, uint32_t monthday, uint32_t year);
         void SetHourAndMinutes(int32_t minutes);
-        int32_t SetHourAndMinutes(uint32_t hour, uint32_t minutes);
+        bool SetHourAndMinutes(uint32_t hour, uint32_t minutes);
 };
 
 #endif

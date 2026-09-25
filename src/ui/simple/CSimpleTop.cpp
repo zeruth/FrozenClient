@@ -11,8 +11,14 @@
 #include <cstring>
 #include <tempest/Math.hpp>
 
+// ref: DAT_00b499a8
 CSimpleTop* CSimpleTop::s_instance;
 uint32_t CSimpleTop::m_eventTime;
+
+// ref: FUN_004883b0
+CSimpleTop* CSimpleTop::GetInstance() {
+    return CSimpleTop::s_instance;
+}
 
 void PaintScreen(void* param, const RECTF* rect, const RECTF* visible, float elapsedSec) {
     CSimpleTop::s_instance->OnLayerUpdate(elapsedSec);

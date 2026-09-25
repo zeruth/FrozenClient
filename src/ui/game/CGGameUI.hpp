@@ -4,6 +4,7 @@
 #include "util/guid/Types.hpp"
 
 class CScriptObject;
+class CVar;
 class CSimpleTop;
 
 class CGGameUI {
@@ -38,8 +39,18 @@ class CGGameUI {
         // entry-only ones deliberately do not, so an item being dragged out of a merchant window
         // does not answer yes.
         static bool CursorHasItem();
+        static void GetCursorItem(WOWGUID* item, WOWGUID* bag, uint32_t* slot);
+        static WOWGUID GetCursorItemGUID();
+        static uint32_t GetCursorItemEntry();
+        static void GetCursorItemEntryAndIndex(uint32_t* entry, uint32_t* index);
         static uint32_t GetCursorKind();
+        static uint32_t GetCursorSpell();
+        static char* GetLastError();
         // Static variables
+        static CVar* s_currencyTokensUnused1Cvar;   // ref: DAT_00bd09f4
+        static CVar* s_currencyTokensUnused2Cvar;   // ref: DAT_00bd09f8
+        static CVar* s_currencyTokensBackpack1Cvar; // ref: DAT_00bd09fc
+        static CVar* s_currencyTokensBackpack2Cvar; // ref: DAT_00bd0a00
         static CScriptObject* s_gameTooltip;
         static CSimpleTop* s_simpleTop;
 
@@ -67,6 +78,8 @@ class CGGameUI {
         static uint32_t s_cursorIndex;      // merchant slot, guild bank slot
         static uint32_t s_cursorItemEntry;
         static WOWGUID s_cursorItemGUID;
+        static WOWGUID s_cursorItemBagGUID;     // ref: DAT_00bd0760
+        static uint32_t s_cursorItemSlot;       // ref: DAT_00bd075c
         static uint32_t s_cursorSpell;
         static uint32_t s_cursorMacro;
         static bool s_inWorld;

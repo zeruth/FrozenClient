@@ -360,6 +360,7 @@ void CSimpleScrollFrame::SetVerticalScroll(float offset) {
     }
 }
 
+// ref: FUN_0096b1c0
 void CSimpleScrollFrame::UpdateScrollChild() {
     if (!this->m_scrollChild) {
         return;

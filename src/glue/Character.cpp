@@ -6,6 +6,251 @@
 #include <string>
 #include <vector>
 
+// ref: FUN_007e0f10
+bool IsDigitChar(uint16_t c) {
+    return static_cast<uint16_t>(c - 0x30) < 10;
+}
+
+// ref: FUN_007e0f30
+bool IsLatinLetter(uint16_t c) {
+    if ((c < 0x41 || c > 0x5A)
+        && (c < 0x61 || c > 0x7A)
+        && (static_cast<uint16_t>(c - 0xC0) > 0x1D || c == 0xD7) && c != 0xDF
+        && (static_cast<uint16_t>(c - 0xE0) > 0x1F || c == 0xF7 || c == 0xFE)
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_007e10f0
+bool IsLowerCaseChar(uint16_t c) {
+    if (static_cast<uint16_t>(c - 0x61) > 0x19 && static_cast<uint16_t>(c - 0xE0) > 0x1E && static_cast<uint16_t>(c - 0x430) > 0x1F) {
+        return c != 0x451;
+    }
+
+    return false;
+}
+
+// ref: FUN_007e1130
+uint16_t ToUpperName(uint16_t c) {
+    if (static_cast<uint16_t>(c - 0x61) > 0x19 && static_cast<uint16_t>(c - 0xE0) > 0x1E) {
+        if (c == 0x153) {
+            return 0x152;
+        }
+
+        if (static_cast<uint16_t>(c - 0x430) > 0x1F) {
+            if (c == 0x451) {
+                c = 0x401;
+            }
+
+            return c;
+        }
+    }
+
+    return c - 0x20;
+}
+
+// ref: FUN_007e1180
+uint16_t ToLowerName(uint16_t c) {
+    if (static_cast<uint16_t>(c - 0x41) > 0x19 && static_cast<uint16_t>(c - 0xC0) > 0x1E) {
+        if (c == 0x152) {
+            return 0x153;
+        }
+
+        if (static_cast<uint16_t>(c - 0x410) > 0x1F) {
+            if (c == 0x401) {
+                c = 0x451;
+            }
+
+            return c;
+        }
+    }
+
+    return c + 0x20;
+}
+
+// ref: FUN_007e1640
+bool TruncateAtLineBreak(char* text) {
+    while (true) {
+        if (!text || *text == '\0') {
+            return false;
+        }
+
+        auto c = *text;
+        bool lineBreak;
+
+        if (c == '\\' || c == '|') {
+            lineBreak = text[1] == 'n';
+        } else {
+            if (c == '\r') {
+                break;
+            }
+
+            lineBreak = c == '\n';
+        }
+
+        if (lineBreak) {
+            break;
+        }
+
+        text++;
+    }
+
+    *text = '\0';
+
+    return true;
+}
+
+// ref: FUN_007e1680
+bool StripTextEscapes(const char* src, char* dst, int32_t dstSize) {
+    auto c = *src;
+    bool stripped = false;
+
+    if (c != '\0') {
+        auto last = dst + dstSize - 1;
+        bool inLink = false;
+
+        do {
+            if (last <= dst) {
+                break;
+            }
+
+            const char* next;
+
+            if (c != '|') {
+                if (inLink && (c == '[' || c == ']')) {
+                    next = src + 1;
+                } else {
+                    *dst++ = c;
+                    next = src + 1;
+                }
+            } else {
+                c = src[1];
+                next = src + 1;
+
+                switch (c) {
+                    case 'C':
+                    case 'c': {
+                        next = src + 2;
+                        stripped = true;
+
+                        for (uint32_t i = 0; i < 8; i++) {
+                            if (*next == '\0') {
+                                goto done;
+                            }
+
+                            next++;
+                        }
+
+                        break;
+                    }
+
+                    case 'H': {
+                        stripped = true;
+
+                        do {
+                            if (c == '|' && next[1] == 'h') {
+                                if (*next != '\0') {
+                                    next += 2;
+                                }
+
+                                break;
+                            }
+
+                            c = next[1];
+                            next++;
+                        } while (c != '\0');
+
+                        inLink = true;
+
+                        break;
+                    }
+
+                    case 'T': {
+                        stripped = true;
+
+                        while (c != '|' || next[1] != 't') {
+                            c = next[1];
+                            next++;
+
+                            if (c == '\0') {
+                                *dst = '\0';
+
+                                return stripped;
+                            }
+                        }
+
+                        if (*next == '\0') {
+                            goto done;
+                        }
+
+                        next += 2;
+
+                        break;
+                    }
+
+                    case 'h': {
+                        next = src + 2;
+                        stripped = true;
+                        inLink = false;
+
+                        break;
+                    }
+
+                    case 'r': {
+                        stripped = true;
+                        next++;
+
+                        break;
+                    }
+
+                    default: {
+                        *dst++ = '|';
+                        *dst++ = *next;
+                        next++;
+
+                        break;
+                    }
+                }
+            }
+
+            c = *next;
+            src = next;
+        } while (c != '\0');
+    }
+
+done:
+    *dst = '\0';
+
+    return stripped;
+}
+
+// ref: FUN_007e17f0
+void StripPipeCharacters(const char* src, char* dst, int32_t dstSize) {
+    auto c = *src;
+
+    if (c != '\0') {
+        auto last = dst + dstSize - 1;
+
+        do {
+            if (last <= dst) {
+                break;
+            }
+
+            if (c != '|') {
+                *dst++ = c;
+            }
+
+            c = src[1];
+            src++;
+        } while (c != '\0');
+    }
+
+    *dst = '\0';
+}
+
 namespace {
 
 enum NAME_CHARSET {
@@ -151,11 +396,7 @@ bool IsCharInCharset(wchar_t c, int32_t charset) {
 
     switch (charset) {
         case CHARSET_LATIN:
-            return (u >= 'A' && u <= 'Z')
-                || (u >= 'a' && u <= 'z')
-                || (u >= 0xC0 && u <= 0xDD && u != 0xD7)
-                || u == 0xDF
-                || (u >= 0xE0 && u <= 0xFF && u != 0xF7 && u != 0xFE);
+            return IsLatinLetter(u);
 
         case CHARSET_ASCII:
             return (u >= 'A' && u <= 'Z') || (u >= 'a' && u <= 'z');
@@ -175,24 +416,6 @@ bool IsCharInCharset(wchar_t c, int32_t charset) {
         default:
             return false;
     }
-}
-
-wchar_t ToLowerName(wchar_t c) {
-    auto u = static_cast<uint16_t>(c);
-
-    if ((u >= 'A' && u <= 'Z') || (u >= 0xC0 && u <= 0xDE) || (u >= 0x410 && u <= 0x42F)) {
-        return static_cast<wchar_t>(u + 0x20);
-    }
-
-    if (u == 0x152) {
-        return 0x153;
-    }
-
-    if (u == 0x401) {
-        return 0x451;
-    }
-
-    return c;
 }
 
 // Port of the original validator. allowedChars lists characters accepted outside the detected
@@ -356,27 +579,56 @@ bool NameNeedsDeclension(WOW_LOCALE locale, const char* name) {
     return false;
 }
 
-int32_t ValidateName(const char* name) {
-    uint32_t length = 0;
-    int32_t language = -1;
+// ref: FUN_007e1e90
+int32_t ValidateCharacterName(int32_t locale, const char* name, bool checkNamesProfanity, bool checkChatProfanity, bool checkNamesReserved, bool useForceEnglish, int32_t extraLength) {
+    uint32_t length;
+    int32_t language;
 
-    auto result = ValidateNameInternal(CURRENT_LANGUAGE, nullptr, name, length, language, true, true, true, false, true, -1);
+    auto result = ValidateNameInternal(locale, nullptr, name, length, language, checkNamesProfanity, checkChatProfanity, checkNamesReserved, false, useForceEnglish, -1);
 
     if (result == NAME_SUCCESS) {
         uint32_t maxLength = 12;
 
-        if (language == CHARSET_KOREAN) {
+        if (language == CHARSET_KOREAN || language == CHARSET_CHINESE) {
             maxLength = 8;
-        } else if (language == CHARSET_CHINESE) {
-            maxLength = 6;
+
+            if (language == CHARSET_CHINESE) {
+                maxLength = 6;
+            }
         }
 
-        if (length > maxLength) {
+        if (maxLength + extraLength < length) {
             result = NAME_TOO_LONG;
         }
     }
 
-    return result + CHAR_NAME_SUCCESS;
+    return result;
+}
+
+// ref: FUN_007e1f00
+int32_t ValidatePetName(int32_t locale, const char* name, bool checkNamesProfanity, bool checkChatProfanity, bool checkNamesReserved, bool useForceEnglish, int32_t extraLength) {
+    uint32_t length;
+    int32_t language;
+
+    auto result = ValidateNameInternal(locale, nullptr, name, length, language, checkNamesProfanity, checkChatProfanity, checkNamesReserved, false, useForceEnglish, -1);
+
+    if (result == NAME_SUCCESS) {
+        uint32_t maxLength = 12;
+
+        if (language == CHARSET_KOREAN || language == CHARSET_CHINESE) {
+            maxLength = 8;
+        }
+
+        if (maxLength + extraLength < length) {
+            result = NAME_TOO_LONG;
+        }
+    }
+
+    return result;
+}
+
+int32_t ValidateName(const char* name) {
+    return ValidateCharacterName(CURRENT_LANGUAGE, name, true, true, true, true, 0) + CHAR_NAME_SUCCESS;
 }
 
 void ValidateNameInitialize(int32_t localeMask, int32_t charsetMask) {

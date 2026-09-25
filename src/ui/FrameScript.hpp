@@ -86,6 +86,8 @@ TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>>* FrameScript_GetEventLis
 
 const char* FrameScript_GetCurrentObject(lua_State* L, int32_t a2);
 
+char FrameScript_GetPluralIndex(int32_t a1);
+
 char const* FrameScript_GetText(const char* a1, int32_t count, FRAMESCRIPT_GENDER gender);
 
 int32_t FrameScript_GetVariable(const char* a1, const char** a2);

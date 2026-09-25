@@ -32,6 +32,7 @@ class CSimpleTop : public CLayoutFrame {
         static uint32_t m_eventTime;
 
         // Static functions
+        static CSimpleTop* GetInstance();
         static int32_t OnChar(const EVENT_DATA_CHAR* pCharData, void* param);
         static int32_t OnDisplaySizeChanged(const EVENT_DATA_SIZE* pSizeData, void* param);
         static int32_t OnFocusChanged(const void* a1, void* a2);

@@ -462,3 +462,83 @@ void CameraRegisterCVars() {
     CVar::Register("cameraSmoothTimeMin", nullptr, 0x10, "0.1", &ValidateCameraTime, DEFAULT);
     CVar::Register("cameraSmoothTimeMax", nullptr, 0x10, "2.0", &ValidateCameraTime, DEFAULT);
 }
+
+// ref: FUN_005fe580
+void CGCamera::SetTimedValue(int32_t index, int32_t startTime, int32_t duration, uint32_t value) {
+    if (this->m_unk9C & 0x40) {
+        return;
+    }
+
+    uint32_t bit = 1u << ((index * 2) & 0x1F);
+
+    if (!(bit & this->m_unk160)) {
+        this->m_unk160 |= bit;
+        this->m_unk164[index] = startTime;
+    }
+
+    this->m_unk1AC[index] = value;
+
+    if (duration) {
+        this->m_unk194[index] = startTime + duration;
+        return;
+    }
+
+    this->m_unk194[index] = 0;
+}
+
+// ref: FUN_005fe890
+void CGCamera::SetBlendA(uint32_t value, int32_t start, int32_t end) {
+    this->m_unk2D4 = start;
+    this->m_unk2D8 = end;
+
+    if (start != end) {
+        this->m_unk2DC = this->m_unk2E4;
+        this->m_unk2E0 = value;
+        return;
+    }
+
+    this->m_unk2E4 = value;
+}
+
+// ref: FUN_005fe8d0
+void CGCamera::SetBlendB(uint32_t value, int32_t start, int32_t end) {
+    this->m_unk2E8 = start;
+    this->m_unk2EC = end;
+
+    if (start != end) {
+        this->m_unk2F0 = this->m_unk2F8;
+        this->m_unk2F4 = value;
+        return;
+    }
+
+    this->m_unk2F8 = value;
+}
+
+// ref: FUN_005fe910
+void CGCamera::SetUnk2FC(uint32_t value) {
+    this->m_unk2FC = value;
+}
+
+// ref: FUN_005fe920
+void CGCamera::SetOverride2D0(float value) {
+    this->m_unk9C |= 0x20;
+    this->m_unk2D0 = value;
+}
+
+// ref: FUN_005fe940
+void CGCamera::ClearOverride2D0() {
+    this->m_unk9C &= ~0x20u;
+}
+
+// ref: FUN_005fe3c0
+float CameraWrapAngleOnce(float angle) {
+    if (angle < 0.0f) {
+        return angle + CMath::TWO_PI;
+    }
+
+    if (CMath::TWO_PI < angle) {
+        return angle - CMath::TWO_PI;
+    }
+
+    return angle;
+}

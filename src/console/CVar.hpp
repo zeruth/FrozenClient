@@ -49,4 +49,15 @@ class CVar : public TSHashObject<CVar, HASHKEY_STRI> {
         int32_t Update();
 };
 
+// A handle on a CVar whose string packs one flag per bit, six to a character, starting after the
+// first character.
+class CVarBitField {
+    public:
+        // Member variables
+        CVar* m_cvar;
+
+        // Member functions
+        bool GetBit(uint32_t index) const;
+};
+
 #endif

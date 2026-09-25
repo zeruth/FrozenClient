@@ -10,6 +10,7 @@ uint32_t CGRaidInfo::s_realNumMembers;
 WOWGUID CGRaidInfo::s_members[MAX_RAID_MEMBERS];
 char CGRaidInfo::s_names[MAX_RAID_MEMBERS][48];
 uint8_t CGRaidInfo::s_flags[MAX_RAID_MEMBERS];
+WOWGUID CGRaidInfo::s_selection;
 
 uint32_t CGRaidInfo::NumMembers() {
     return CGRaidInfo::s_numMembers;
@@ -77,6 +78,36 @@ uint32_t CGRaidInfo::IndexOf(WOWGUID guid) {
     for (uint32_t i = 0; i < MAX_RAID_MEMBERS; i++) {
         if (CGRaidInfo::s_members[i] == guid) {
             return i + 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_00572690
+uint32_t CGRaidInfo::GetSelectionIndex() {
+    if (!CGRaidInfo::s_selection) {
+        return 0xFFFFFFFF;
+    }
+
+    for (uint32_t i = 0; i < CGRaidInfo::s_numMembers; i++) {
+        if (CGRaidInfo::s_members[i] == CGRaidInfo::s_selection) {
+            return i;
+        }
+    }
+
+    return 0xFFFFFFFF;
+}
+
+// ref: FUN_005726f0
+int32_t CGRaidInfo::IsMember(WOWGUID guid) {
+    if (!guid) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < CGRaidInfo::s_numMembers; i++) {
+        if (CGRaidInfo::s_members[i] == guid) {
+            return 1;
         }
     }
 

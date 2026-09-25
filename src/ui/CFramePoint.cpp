@@ -76,6 +76,7 @@ int32_t CFramePoint::GetRelativeRect(CRect& rect) {
     return 1;
 }
 
+// ref: FUN_0049c7f0
 void CFramePoint::MarkUnused() {
     this->m_framePoint = FRAMEPOINT_NUMPOINTS;
     this->m_offset = { 0.0f, 0.0f };

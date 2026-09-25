@@ -6,6 +6,8 @@
 #include <cstdint>
 
 struct lua_State;
+class C2Vector;
+class CRect;
 
 const char* LanguageProcess(const char* string);
 
@@ -23,6 +25,9 @@ uint64_t StringToClickAction(const char* string);
 
 const char* DrawLayerToString(int32_t layer);
 int32_t StringToDrawLayer(const char* string, int32_t& layer);
+
+// The nine anchor points of a rect, in FRAMEPOINT order.
+void RectFramePoints(C2Vector* points, const CRect& rect);
 
 const char* FramePointToString(FRAMEPOINT point);
 

@@ -275,6 +275,7 @@ enum NETMESSAGE {
     MSG_CHANNEL_START                   = 0x0139,
     MSG_CHANNEL_UPDATE                  = 0x013A,
     SMSG_AI_REACTION                    = 0x013C,
+    CMSG_SET_SELECTION                  = 0x013D,
     SMSG_ATTACK_START                   = 0x0143,
     SMSG_ATTACK_STOP                    = 0x0144,
     SMSG_ATTACKSWING_NOTINRANGE         = 0x0145,

@@ -7,6 +7,9 @@
 #include <new>
 
 CInputControl* s_inputControl;              // reference DAT_00c24954
+// Handed to the missile trajectory code as its fallback value. Written only by code that is not
+// ported yet (FUN_005f9550, FUN_005f9f10).
+static float s_storedFloat;                 // ref: DAT_00c24958
 static CVar* s_cinematicJoystickCvar;       // DAT_00c2495c
 static CVar* s_enableWowMouseCvar;          // DAT_00c24960
 static int32_t s_joystick = -1;             // DAT_00ad192c: the open joystick, -1 for none
@@ -15,6 +18,43 @@ static int32_t s_joystick = -1;             // DAT_00ad192c: the open joystick, 
 CInputControl::CInputControl() {
     // TODO FUN_005fcd70: constructs the hash table at +0x1c
     this->m_lastTimeMs = OsGetAsyncTimeMs();
+}
+
+// ref: FUN_005f95d0
+CInputControl* InputControlGetActive() {
+    return s_inputControl;
+}
+
+// ref: FUN_005f95e0
+void CInputControl::ClearFlagBits16To19() {
+    this->m_unk04 &= 0xFFF0FFFF;
+}
+
+// ref: FUN_005f95f0
+void CInputControl::ClearFlagBits12And16() {
+    this->m_unk04 &= 0xFFFEEFFF;
+}
+
+// ref: FUN_005f96e0
+float InputControlGetStoredFloat() {
+    return s_storedFloat;
+}
+
+// ref: FUN_005f9850
+// True when the control word at +0x04 holds none of the masked bits (0x300 alone included).
+int32_t CInputControl::IsIdle() {
+    uint32_t flags = this->m_unk04;
+
+    if ((flags & 0x1030) == 0
+        && (flags & 0xC0) == 0
+        && ((flags & 0x2000001) == 0 || (flags & 0x300) == 0)
+        && ((flags & 0x300) == 0 || (flags & 0x2000001) != 0)
+        && (flags & 0x1E00000) == 0
+    ) {
+        return 1;
+    }
+
+    return 0;
 }
 
 // ref: FUN_005f96f0

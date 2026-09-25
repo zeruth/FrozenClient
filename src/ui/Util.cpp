@@ -3,6 +3,8 @@
 #include "gx/font/TextBlock.hpp"
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
+#include <tempest/Rect.hpp>
+#include <tempest/Vector.hpp>
 
 const char* LanguageProcess(const char* string) {
     // TODO
@@ -722,4 +724,17 @@ const char* JustifyToString(uint32_t justify) {
     }
 
     return "UNKNOWN";
+}
+
+// ref: FUN_00512410
+void RectFramePoints(C2Vector* points, const CRect& rect) {
+    points[FRAMEPOINT_TOPLEFT] = { rect.minX, rect.maxY };
+    points[FRAMEPOINT_TOP] = { (rect.maxX - rect.minX) * 0.5f + rect.minX, rect.maxY };
+    points[FRAMEPOINT_TOPRIGHT] = { rect.maxX, rect.maxY };
+    points[FRAMEPOINT_LEFT] = { rect.minX, (rect.maxY - rect.minY) * 0.5f + rect.minY };
+    points[FRAMEPOINT_CENTER] = { (rect.maxX - rect.minX) * 0.5f + rect.minX, (rect.maxY - rect.minY) * 0.5f + rect.minY };
+    points[FRAMEPOINT_RIGHT] = { rect.maxX, (rect.maxY - rect.minY) * 0.5f + rect.minY };
+    points[FRAMEPOINT_BOTTOMLEFT] = { rect.minX, rect.minY };
+    points[FRAMEPOINT_BOTTOM] = { (rect.maxX - rect.minX) * 0.5f + rect.minX, rect.minY };
+    points[FRAMEPOINT_BOTTOMRIGHT] = { rect.maxX, rect.minY };
 }

@@ -49,6 +49,18 @@ class CGRaidInfo {
         // numbering -- see SetRoster for where.
         static WOWGUID GetMember(uint32_t index);
 
+        // ref: FUN_00572690
+        // The roster slot (0-based) of the selected member, or 0xFFFFFFFF when nothing is
+        // selected or the selection has left the roster.
+        static uint32_t GetSelectionIndex();
+
+        // ref: FUN_005726f0
+        static int32_t IsMember(WOWGUID guid);
+
+        // The member SetRaidRosterSelection picked (ref: DAT_00beb610). Only the script binding
+        // writes it.
+        static WOWGUID s_selection;
+
     private:
         // Private static variables
         static uint32_t s_numMembers;

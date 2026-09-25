@@ -21,6 +21,7 @@
 #include "util/SFile.hpp"
 #include "util/Unimplemented.hpp"
 #include <cstdint>
+#include <storm/String.hpp>
 
 int32_t Script_IsShiftKeyDown(lua_State* L) {
     if (EventIsKeyDown(KEY_LSHIFT) || EventIsKeyDown(KEY_RSHIFT)) {
@@ -921,8 +922,22 @@ int32_t Script_GetCVarAbsoluteMax(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004de1f0
 int32_t Script_GetChangedOptionWarnings(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto count = CGlueMgr::m_numChangedOptionWarnings;
+
+    if (!count) {
+        return 0;
+    }
+
+    lua_checkstack(L, count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto warning = CGlueMgr::m_changedOptionWarnings[i];
+        lua_pushlstring(L, warning, SStrLen(warning));
+    }
+
+    return count;
 }
 
 int32_t Script_AcceptChangedOptionWarnings(lua_State* L) {

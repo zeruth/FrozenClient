@@ -13,8 +13,9 @@
 #include <common/Time.hpp>
 #include <cstring>
 
-WOWGUID CGPartyInfo::m_members[4];
+WOWGUID CGPartyInfo::m_members[4];  // ref: DAT_00bd1948
 PARTY_MEMBER CGPartyInfo::m_memberInfo[4];
+PARTY_MEMBER_RECORD CGPartyInfo::m_memberRecords[4];
 WOWGUID CGPartyInfo::m_leader;
 
 // Group loot at uncommon: the values the reference's party init starts from, and what a player who
@@ -53,6 +54,57 @@ uint32_t CGPartyInfo::NumMembers() {
     }
 
     return count;
+}
+
+// ref: FUN_0052bc50
+WOWGUID CGPartyInfo::GetMemberGuid(uint32_t slot) {
+    if (slot > 3) {
+        return 0;
+    }
+
+    return CGPartyInfo::m_members[slot];
+}
+
+// ref: FUN_0052bee0
+PARTY_MEMBER_RECORD* CGPartyInfo::GetMemberRecord(const WOWGUID& guid) {
+    if (guid) {
+        for (uint32_t slot = 0; slot < 4; slot++) {
+            if (CGPartyInfo::m_members[slot] == guid) {
+                return &CGPartyInfo::m_memberRecords[slot];
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0052bf30
+// Unlike GetMemberRecord there is no null-guid test up front: an empty slot is skipped instead.
+PARTY_MEMBER_RECORD* CGPartyInfo::GetMemberRecordByPet(const WOWGUID& pet) {
+    for (uint32_t slot = 0; slot < 4; slot++) {
+        if (CGPartyInfo::m_members[slot] && CGPartyInfo::m_memberRecords[slot].petGuid == pet) {
+            return &CGPartyInfo::m_memberRecords[slot];
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0052c680
+bool CGPartyInfo::IsPlayerOrMember(const WOWGUID& guid) {
+    if (guid) {
+        if (ClntObjMgrGetActivePlayer() == guid) {
+            return true;
+        }
+
+        for (uint32_t slot = 0; slot < 4; slot++) {
+            if (CGPartyInfo::m_members[slot] == guid) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 WOWGUID CGPartyInfo::GetMember(uint32_t index) {

@@ -360,6 +360,12 @@ void CSimpleModel::SetCameraByIndex(uint32_t index) {
     this->SetCamera(camera);
 }
 
+// A straight copy of the whole light, links and all: the reference moves 0x1b dwords.
+// ref: FUN_0095f5c0
+void CSimpleModel::SetLight(const CM2Light& light) {
+    this->m_light = light;
+}
+
 void CSimpleModel::SetFogColor(CImVector& fogColor) {
     this->m_fogColor = fogColor;
     this->m_flags |= 0x1;

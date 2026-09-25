@@ -109,6 +109,23 @@ uint32_t CGMinimapFrame::GetTrackingSpell(uint32_t index) {
 
     return 0;
 }
+
+// ref: FUN_0053bd10
+// Walks the list from its end, as the reference does.
+int32_t CGMinimapFrame::HasTrackingSpell(uint32_t spellID) {
+    uint32_t index = CGMinimapFrame::GetNumTrackingSpells();
+
+    do {
+        if (index == 0) {
+            return 0;
+        }
+
+        index--;
+    } while (spellID != CGMinimapFrame::GetTrackingSpell(index));
+
+    return 1;
+}
+
 uint32_t CGMinimapFrame::s_trackingSpell = 0;
 
 namespace {

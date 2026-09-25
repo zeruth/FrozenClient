@@ -31,6 +31,7 @@ void ConsoleSetActive(int32_t active) {
     s_active = active;
 }
 
+// ref: FUN_00763c40
 void ConsoleSetHotKey(KEY hotkey) {
     s_consoleKey = hotkey;
 }

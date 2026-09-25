@@ -32,6 +32,7 @@
 #include "ui/FrameXML.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
 #include "ui/Util.hpp"
+#include "ui/game/CGArenaTeamInfo.hpp"
 #include "ui/game/CGGameUI.hpp"
 #include "ui/game/Types.hpp"
 #include "ui/simple/CSimpleTop.hpp"
@@ -1152,54 +1153,132 @@ int32_t Script_GuildInfo(lua_State* L) {
     return 0;
 }
 
-// TODO FUN_00515cc0, opcode 0x34f. The shape is the guild commands above -- a team index from
-// argument 1, minus one, then the packet -- except that the index does not go on the wire.
-// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
-// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
-// stride is seven dwords, so it is not the same table and the id is not available.
-// Sending the index would be a well-formed packet naming the wrong team.
+// ref: FUN_00515cc0
 int32_t Script_ArenaTeamInviteByName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_isnumber(L, 1) && lua_isstring(L, 2)) {
+        auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+        auto name = lua_tostring(L, 2);
+        auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
+
+        if (name && *name) {
+            if (SStrLen(name) < 0x31) {
+                CDataStore msg;
+                msg.Put(static_cast<uint32_t>(CMSG_ARENA_TEAM_INVITE));
+                msg.Put(teamID);
+                msg.PutString(name);
+                msg.Finalize();
+                ClientServices::Send(&msg);
+
+                return 0;
+            }
+
+            luaL_error(L, "Name too long");
+        }
+
+        return 0;
+    }
+
+    luaL_error(L, "Usage: ArenaTeamInviteByName(team, name)");
+
+    return 0;
 }
 
-// TODO FUN_00515dd0, opcode 0x353. The shape is the guild commands above -- a team index from
-// argument 1, minus one, then the packet -- except that the index does not go on the wire.
-// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
-// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
-// stride is seven dwords, so it is not the same table and the id is not available.
-// Sending the index would be a well-formed packet naming the wrong team.
+// ref: FUN_00515dd0
 int32_t Script_ArenaTeamLeave(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: ArenaTeamLeave(team)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_ARENA_TEAM_LEAVE));
+    msg.Put(teamID);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
-// TODO FUN_00515eb0, opcode 0x354. The shape is the guild commands above -- a team index from
-// argument 1, minus one, then the packet -- except that the index does not go on the wire.
-// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
-// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
-// stride is seven dwords, so it is not the same table and the id is not available.
-// Sending the index would be a well-formed packet naming the wrong team.
+// ref: FUN_00515eb0
 int32_t Script_ArenaTeamUninviteByName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: ArenaTeamUninviteByName(team, name)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto name = lua_tostring(L, 2);
+
+    if (name && SStrLen(name) >= 0x31) {
+        luaL_error(L, "Name too long");
+
+        return 0;
+    }
+
+    auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_ARENA_TEAM_REMOVE));
+    msg.Put(teamID);
+    msg.PutString(name);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
-// TODO FUN_00515ff0, opcode 0x356. The shape is the guild commands above -- a team index from
-// argument 1, minus one, then the packet -- except that the index does not go on the wire.
-// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
-// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
-// stride is seven dwords, so it is not the same table and the id is not available.
-// Sending the index would be a well-formed packet naming the wrong team.
+// ref: FUN_00515ff0
 int32_t Script_ArenaTeamSetLeaderByName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: ArenaTeamSetLeaderByName(team, name)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto name = lua_tostring(L, 2);
+
+    if (name && SStrLen(name) >= 0x31) {
+        luaL_error(L, "Name too long");
+
+        return 0;
+    }
+
+    auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_ARENA_TEAM_LEADER));
+    msg.Put(teamID);
+    msg.PutString(name);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
-// TODO FUN_00516130, opcode 0x355. The shape is the guild commands above -- a team index from
-// argument 1, minus one, then the packet -- except that the index does not go on the wire.
-// The reference looks the TEAM ID up first, in a three-entry table at DAT_00c0f840 with a
-// stride of 0xe dwords, and sends that. Frozen has CGPlayerData::arenaTeamInfo[3] but its
-// stride is seven dwords, so it is not the same table and the id is not available.
-// Sending the index would be a well-formed packet naming the wrong team.
+// ref: FUN_00516130
 int32_t Script_ArenaTeamDisband(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: ArenaTeamDisband(team)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_ARENA_TEAM_DISBAND));
+    msg.Put(teamID);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_GetScreenWidth(lua_State* L) {
@@ -1283,6 +1362,18 @@ static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
 // entry by code not ported yet (the writer is not identified), so both read 0 today.
 static int32_t s_instanceMapID = 0;                  // ref: DAT_00bd088c
 static uint32_t s_instanceDifficulty = 0;            // ref: DAT_00bd0894
+
+// More game UI state whose writers are server handlers not ported yet, so all of it reads 0.
+static int32_t s_deathReleaseMapID = 0;              // ref: DAT_00bd0844
+static C3Vector s_deathReleasePosition;              // ref: DAT_00bd0a64
+static uint8_t s_comboPoints = 0;                    // ref: DAT_00bd084d
+static WOWGUID s_comboTarget = 0;                    // ref: DAT_00bd08a8
+static int32_t s_zoneID = 0;                         // ref: DAT_00bd080c
+static int32_t s_areaID = 0;                         // ref: DAT_00bd0810
+static WOWGUID s_boundTradeableItem = 0;             // ref: DAT_00bd08d8
+static uint32_t s_boundTradeableValue = 0;           // ref: DAT_00bd08e0
+static TOTEMSLOT s_totemSlots[NUM_TOTEM_SLOTS];      // ref: DAT_00bd0b00
+static int32_t s_mirrorTimers[NUM_MIRROR_TIMERS][7]; // ref: DAT_00bd0b80
 
 static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs) {
     int32_t remaining = 0;
@@ -1851,8 +1942,25 @@ int32_t Script_GetLocale(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00516aa0
 int32_t Script_GetGMTicketCategories(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    uint32_t count = g_gmTicketCategoryDB.GetNumRecords();
+    int32_t pushed = count * 2;
+
+    lua_checkstack(L, pushed);
+
+    if (!count) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto rec = g_gmTicketCategoryDB.GetRecordByIndex(i);
+
+        lua_pushnumber(L, static_cast<double>(rec->m_ID));
+        lua_pushstring(L, rec->m_category);
+    }
+
+    return pushed;
 }
 
 int32_t Script_DropItemOnUnit(lua_State* L) {
@@ -2825,13 +2933,73 @@ int32_t Script_IsTitleKnown(lua_State* L) {
     return 1;
 }
 
-// TODO FUN_0051b4e0 walks CharTitles.dbc: a record array at DAT_00ad3390 with DAT_00ad337c
-// entries and a stride of 0x14, matching argument 1 against the mask id at +0x10 and then
-// taking the male name at +8 or the female one at +0xc according to the player's sex byte.
-// Frozen does not load CharTitles.dbc at all -- there is no src/db/rec entry for it -- so
-// this needs the DBC before it needs the binding.
+// ref: FUN_0051b4e0
 int32_t Script_GetTitleName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetTitleName(titleMaskID)");
+
+        return 0;
+    }
+
+    auto maskID = static_cast<int32_t>(lua_tonumber(L, 1));
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+    uint8_t sex = player ? player->Player()->bytes_3_1 : 0;
+
+    char title[256];
+    title[0] = '\0';
+
+    CharTitlesRec* rec = nullptr;
+
+    for (int32_t i = 0; i < g_charTitlesDB.GetNumRecords(); i++) {
+        auto candidate = g_charTitlesDB.GetRecordByIndex(i);
+
+        if (candidate && candidate->m_maskID == maskID) {
+            rec = candidate;
+            break;
+        }
+    }
+
+    if (!rec) {
+        return 0;
+    }
+
+    if (sex == 1) {
+        strcpy(title, *rec->m_name1 == '\0' ? rec->m_name : rec->m_name1);
+    } else {
+        strcpy(title, *rec->m_name == '\0' ? rec->m_name1 : rec->m_name);
+    }
+
+    char name[256];
+    int32_t length = 0;
+    bool inToken = false;
+    uint32_t i = 0;
+
+    if (SStrLen(title)) {
+        do {
+            auto c = title[i];
+
+            if (c == '\0') {
+                name[length] = '\0';
+                break;
+            }
+
+            if (c == '%') {
+                inToken = true;
+            } else if (!inToken || c == ' ') {
+                inToken = false;
+                name[length] = c;
+                length++;
+            }
+
+            i++;
+        } while (i < SStrLen(title));
+    }
+
+    name[length] = '\0';
+
+    lua_pushstring(L, name);
+
+    return 1;
 }
 
 int32_t Script_UseItemByName(lua_State* L) {
@@ -3149,6 +3317,230 @@ int32_t Script_SetAllowLowLevelRaid(lua_State* L) {
     return 0;
 }
 
+}
+
+// ref: FUN_00512ca0
+void GetDeathReleaseLocation(int32_t* mapID, C3Vector* position) {
+    *mapID = s_deathReleaseMapID;
+    *position = s_deathReleasePosition;
+}
+
+// ref: FUN_00513290
+void DisplayUIMessage(const char* text, int32_t error) {
+    if (text && *text) {
+        // 0xbb UI_ERROR_MESSAGE, 0xbc UI_INFO_MESSAGE
+        FrameScript_SignalEvent(0xbc - (error != 0), "%s", text);
+    }
+}
+
+// ref: FUN_00513920
+uint8_t GetComboPoints(WOWGUID guid) {
+    if (guid == 0) {
+        guid = CGGameUI::GetLockedTarget();
+    }
+
+    if (guid == s_comboTarget) {
+        return s_comboPoints;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00513990
+TOTEMSLOT* GetTotemSlot(uint32_t slot) {
+    if (static_cast<int32_t>(slot) >= 0 && slot < NUM_TOTEM_SLOTS) {
+        return &s_totemSlots[slot];
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00513a00
+void SetBoundTradeableValue(uint32_t value) {
+    s_boundTradeableValue = value;
+}
+
+// ref: FUN_00513a10
+void SetBoundTradeableItem(WOWGUID item) {
+    s_boundTradeableItem = item;
+}
+
+// ref: FUN_00513e40
+uint32_t MirrorTimerIndexFromName(const char* name) {
+    if (!SStrCmpI(name, "EXHAUSTION", STORM_MAX_STR)) {
+        return 0;
+    }
+
+    if (!SStrCmpI(name, "BREATH", STORM_MAX_STR)) {
+        return 1;
+    }
+
+    return (SStrCmpI(name, "FEIGNDEATH", STORM_MAX_STR) != 0) + 2;
+}
+
+// ref: FUN_00513f20
+int32_t* GetMirrorTimer(uint32_t index) {
+    if (index < NUM_MIRROR_TIMERS) {
+        return s_mirrorTimers[index];
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00518dc0
+void SendSetSelection(WOWGUID guid) {
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_SET_SELECTION));
+    msg.Put(guid);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_00519640
+bool InstanceMapHasFlag100() {
+    auto rec = g_mapDB.GetRecord(s_instanceMapID);
+
+    return rec && (rec->m_flags & 0x100);
+}
+
+// ref: FUN_005197d0
+void DestroyTotem(uint32_t slot) {
+    if (static_cast<int32_t>(slot) < 0 || slot >= NUM_TOTEM_SLOTS) {
+        return;
+    }
+
+    auto totem = &s_totemSlots[slot];
+
+    if (totem->guid == 0) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_TOTEM_DESTROYED));
+    msg.Put(static_cast<uint8_t>(slot));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    totem->guid = 0;
+    totem->unk10 = 0;
+    totem->unk14 = 0;
+    totem->unk18 = 0;
+    totem->unk1C = 0;
+
+    // 0xa5 PLAYER_TOTEM_UPDATE
+    FrameScript_SignalEvent(0xa5, "%d", slot + 1);
+}
+
+// ref: FUN_00519ca0
+AreaTableRec* GetCurrentAreaRec() {
+    auto rec = g_areaTableDB.GetRecord(s_areaID);
+
+    if (!rec) {
+        rec = g_areaTableDB.GetRecord(s_zoneID);
+    }
+
+    return rec;
+}
+
+// ref: FUN_0051a1d0
+bool IsCurrentAreaFlyable() {
+    auto rec = g_areaTableDB.GetRecord(s_areaID);
+
+    if (!rec) {
+        rec = g_areaTableDB.GetRecord(s_zoneID);
+    }
+
+    return rec && (rec->m_flags & 0x400) && !(rec->m_flags & 0x20000000);
+}
+
+// ref: FUN_005218c0
+void DisplayNameError(int32_t result) {
+    switch (result) {
+        case 2:
+            CGGameUI::DisplayError(599);
+            return;
+        case 3:
+            CGGameUI::DisplayError(600);
+            return;
+        case 4:
+            CGGameUI::DisplayError(0x259);
+            return;
+        default:
+            CGGameUI::DisplayError(0x256);
+            return;
+        case 6:
+            CGGameUI::DisplayError(0x25a);
+            return;
+        case 7:
+            CGGameUI::DisplayError(0x25b);
+            return;
+        case 8:
+            CGGameUI::DisplayError(0x25c);
+            return;
+        case 0xb:
+            CGGameUI::DisplayError(0x25d);
+            return;
+        case 0xc:
+            CGGameUI::DisplayError(0x25e);
+            return;
+        case 0xd:
+            CGGameUI::DisplayError(0x25f);
+            return;
+        case 0xe:
+            CGGameUI::DisplayError(0x260);
+            return;
+        case 0xf:
+            CGGameUI::DisplayError(0x261);
+            return;
+        case 0x10:
+            CGGameUI::DisplayError(0x262);
+            return;
+    }
+}
+
+// ref: FUN_005219e0
+void DisplayReferAFriendError(int32_t result, const char* name) {
+    switch (result) {
+        case 1:
+            CGGameUI::DisplayError(0x263);
+            return;
+        case 2:
+            CGGameUI::DisplayError(0x264);
+            return;
+        case 3:
+            CGGameUI::DisplayError(0x265);
+            return;
+        case 4:
+            CGGameUI::DisplayError(0x266);
+            return;
+        case 5:
+            CGGameUI::DisplayError(0x267);
+            return;
+        case 6:
+            CGGameUI::DisplayError(0x268);
+            return;
+        case 7:
+            CGGameUI::DisplayError(0x269, 0x3c);
+            return;
+        case 8:
+            CGGameUI::DisplayError(199);
+            return;
+        case 9:
+            CGGameUI::DisplayError(0x51, name);
+            return;
+        case 10:
+            CGGameUI::DisplayError(0x26a, 0x3c);
+            return;
+        case 0xb:
+            CGGameUI::DisplayError(0x26b);
+            return;
+        case 0xc:
+            CGGameUI::DisplayError(0x26d);
+            break;
+        case 0xd:
+            CGGameUI::DisplayError(0x26c, name);
+            return;
+    }
 }
 
 static FrameScript_Method s_ScriptFunctions[] = {

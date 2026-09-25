@@ -78,6 +78,8 @@ float CGlueMgr::m_screenWidth;
 int32_t CGlueMgr::m_showedDisconnect;
 CSimpleTop* CGlueMgr::m_simpleTop;
 int32_t CGlueMgr::m_suspended;
+uint32_t CGlueMgr::m_numChangedOptionWarnings;
+const char** CGlueMgr::m_changedOptionWarnings;
 
 #if defined(WHOA_SYSTEM_WIN)
 static thread_local uint64_t s_loginGUID;
@@ -1178,6 +1180,36 @@ void CGlueMgr::RealmListDialogCancelled() {
     }
 }
 
+// A name the client itself rejects is reported through the rename dialog and nothing is sent.
+// ref: FUN_004d8d20
+int32_t CGlueMgr::RenameCharacter(uint64_t guid, const char* name) {
+    if (!guid || !name || !*name) {
+        return 1;
+    }
+
+    auto result = ValidateName(name);
+
+    if (result != CHAR_NAME_SUCCESS) {
+        FrameScript_SignalEvent(23, "%s", ClientServices::GetErrorToken(result));
+
+        return 0;
+    }
+
+    CGlueMgr::SetIdleState(IDLE_7);
+
+    auto text = FrameScript_GetText("CHAR_RENAME_IN_PROGRESS", -1, GENDER_NOT_APPLICABLE);
+    FrameScript_SignalEvent(3, "%s%s", "CANCEL", text);
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_CHARACTER_RENAME_REQUEST));
+    msg.Put(guid);
+    msg.PutString(name);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 1;
+}
+
 void CGlueMgr::Resume() {
     // TODO
     // CGlueMgr::m_disconnectPending = 0;
@@ -1312,6 +1344,7 @@ void CGlueMgr::Resume() {
     // }
 }
 
+// ref: FUN_004d7f60
 void CGlueMgr::SetCurrentAccount(const char* accountName) {
     SStrCopy(CGlueMgr::m_accountName, accountName, sizeof(CGlueMgr::m_accountName));
     SStrUpper(CGlueMgr::m_accountName);

@@ -32,10 +32,16 @@ class CInputControl {
 
         // Member functions
         CInputControl();
+        void ClearFlagBits12And16();
+        void ClearFlagBits16To19();
+        int32_t IsIdle();
         void SetWowMouseEnabled(bool enabled);
 };
 
 extern CInputControl* s_inputControl;
+
+CInputControl* InputControlGetActive();
+float InputControlGetStoredFloat();
 
 void InputControlInitialize();
 

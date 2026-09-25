@@ -318,15 +318,12 @@ WHOA_LUA_STUB(CalendarEventDecline)
 WHOA_LUA_STUB(CalendarEventGetCalendarType)
 WHOA_LUA_STUB(CalendarEventGetInvite)
 WHOA_LUA_STUB(CalendarEventGetInviteResponseTime)
-WHOA_LUA_STUB(CalendarEventGetInviteSortCriterion)
-WHOA_LUA_STUB(CalendarEventGetNumInvites)
 WHOA_LUA_STUB(CalendarEventGetRepeatOptions)
 WHOA_LUA_STUB(CalendarEventGetSelectedInvite)
 WHOA_LUA_STUB(CalendarEventGetStatusOptions)
 WHOA_LUA_STUB(CalendarEventGetTextures)
 WHOA_LUA_STUB(CalendarEventGetTypes)
 WHOA_LUA_STUB(CalendarEventHasPendingInvite)
-WHOA_LUA_STUB(CalendarEventHaveSettingsChanged)
 WHOA_LUA_STUB(CalendarEventInvite)
 WHOA_LUA_STUB(CalendarEventIsModerator)
 WHOA_LUA_STUB(CalendarEventRemoveInvite)
@@ -720,7 +717,6 @@ WHOA_LUA_STUB(GetNewSocketLink)
 WHOA_LUA_STUB(GetNextAchievement)
 WHOA_LUA_STUB(GetNextCompleatedTutorial)
 WHOA_LUA_STUB(GetNextStableSlotCost)
-WHOA_LUA_STUB(GetObjectiveText)
 WHOA_LUA_STUB(GetOwnerAuctionItems)
 WHOA_LUA_STUB(GetPackageInfo)
 WHOA_LUA_STUB(GetPartyLFGBackfillInfo)
@@ -744,7 +740,6 @@ WHOA_LUA_STUB(GetPetitionNameInfo)
 WHOA_LUA_STUB(GetPlayerMapPosition)
 WHOA_LUA_STUB(GetPrevCompleatedTutorial)
 WHOA_LUA_STUB(GetPreviousAchievement)
-WHOA_LUA_STUB(GetProgressText)
 WHOA_LUA_STUB(GetQuestBackgroundMaterial)
 WHOA_LUA_STUB(GetQuestGreenRange)
 WHOA_LUA_STUB(GetQuestIndexForTimer)
@@ -795,7 +790,6 @@ WHOA_LUA_STUB(GetRandomDungeonBestChoice)
 WHOA_LUA_STUB(GetRewardArenaPoints)
 WHOA_LUA_STUB(GetRewardHonor)
 WHOA_LUA_STUB(GetRewardMoney)
-WHOA_LUA_STUB(GetRewardSpell)
 WHOA_LUA_STUB(GetRewardTalents)
 WHOA_LUA_STUB(GetRewardText)
 WHOA_LUA_STUB(GetRewardTitle)
@@ -1428,15 +1422,12 @@ const ScriptFunction s_stubs[] = {
     { "CalendarEventGetCalendarType",            &Script_Stub_CalendarEventGetCalendarType },
     { "CalendarEventGetInvite",                  &Script_Stub_CalendarEventGetInvite },
     { "CalendarEventGetInviteResponseTime",      &Script_Stub_CalendarEventGetInviteResponseTime },
-    { "CalendarEventGetInviteSortCriterion",     &Script_Stub_CalendarEventGetInviteSortCriterion },
-    { "CalendarEventGetNumInvites",              &Script_Stub_CalendarEventGetNumInvites },
     { "CalendarEventGetRepeatOptions",           &Script_Stub_CalendarEventGetRepeatOptions },
     { "CalendarEventGetSelectedInvite",          &Script_Stub_CalendarEventGetSelectedInvite },
     { "CalendarEventGetStatusOptions",           &Script_Stub_CalendarEventGetStatusOptions },
     { "CalendarEventGetTextures",                &Script_Stub_CalendarEventGetTextures },
     { "CalendarEventGetTypes",                   &Script_Stub_CalendarEventGetTypes },
     { "CalendarEventHasPendingInvite",           &Script_Stub_CalendarEventHasPendingInvite },
-    { "CalendarEventHaveSettingsChanged",        &Script_Stub_CalendarEventHaveSettingsChanged },
     { "CalendarEventInvite",                     &Script_Stub_CalendarEventInvite },
     { "CalendarEventIsModerator",                &Script_Stub_CalendarEventIsModerator },
     { "CalendarEventRemoveInvite",               &Script_Stub_CalendarEventRemoveInvite },
@@ -1776,7 +1767,6 @@ const ScriptFunction s_stubs[] = {
     { "GetNextAchievement",                      &Script_Stub_GetNextAchievement },
     { "GetNextCompleatedTutorial",               &Script_Stub_GetNextCompleatedTutorial },
     { "GetNextStableSlotCost",                   &Script_Stub_GetNextStableSlotCost },
-    { "GetObjectiveText",                        &Script_Stub_GetObjectiveText },
     { "GetOwnerAuctionItems",                    &Script_Stub_GetOwnerAuctionItems },
     { "GetPackageInfo",                          &Script_Stub_GetPackageInfo },
     { "GetPartyLFGBackfillInfo",                 &Script_Stub_GetPartyLFGBackfillInfo },
@@ -1794,7 +1784,6 @@ const ScriptFunction s_stubs[] = {
     { "GetPlayerMapPosition",                    &Script_Stub_GetPlayerMapPosition },
     { "GetPrevCompleatedTutorial",               &Script_Stub_GetPrevCompleatedTutorial },
     { "GetPreviousAchievement",                  &Script_Stub_GetPreviousAchievement },
-    { "GetProgressText",                         &Script_Stub_GetProgressText },
     { "GetQuestBackgroundMaterial",              &Script_Stub_GetQuestBackgroundMaterial },
     { "GetQuestGreenRange",                      &Script_Stub_GetQuestGreenRange },
     { "GetQuestIndexForTimer",                   &Script_Stub_GetQuestIndexForTimer },
@@ -1839,7 +1828,6 @@ const ScriptFunction s_stubs[] = {
     { "GetRewardArenaPoints",                    &Script_Stub_GetRewardArenaPoints },
     { "GetRewardHonor",                          &Script_Stub_GetRewardHonor },
     { "GetRewardMoney",                          &Script_Stub_GetRewardMoney },
-    { "GetRewardSpell",                          &Script_Stub_GetRewardSpell },
     { "GetRewardTalents",                        &Script_Stub_GetRewardTalents },
     { "GetRewardText",                           &Script_Stub_GetRewardText },
     { "GetRewardTitle",                          &Script_Stub_GetRewardTitle },

@@ -440,8 +440,24 @@ int32_t Script_IsPossessBarVisible(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005a8330
+// One value per spell the slot offers; the slot wraps modulo four rather than being range-checked.
 int32_t Script_GetMultiCastTotemSpells(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetMultiCastTotemSpells(slot)");
+
+        return 0;
+    }
+
+    auto slot = static_cast<uint32_t>(lua_tointeger(L, 1) - 1) & 3;
+    auto& spells = CGActionBar::s_multiCastTotemSpells[slot];
+    uint32_t count = spells.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        lua_pushinteger(L, spells[i]);
+    }
+
+    return count;
 }
 
 int32_t Script_SetMultiCastSpell(lua_State* L) {

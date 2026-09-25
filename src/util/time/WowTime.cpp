@@ -70,15 +70,9 @@ void WowTime::WowDecodeTime(uint32_t value, WowTime* time) {
     );
 }
 
+// The retail build carries no range asserts here.
+// ref: FUN_0076c910
 void WowTime::WowEncodeTime(uint32_t& value, int32_t minute, int32_t hour, int32_t weekday, int32_t monthday, int32_t month, int32_t year, int32_t flags) {
-    STORM_ASSERT(minute == -1 || (minute >= 0 && minute < 60));
-    STORM_ASSERT(hour == -1 || (hour >= 0 && hour < 24));
-    STORM_ASSERT(weekday == -1 || (weekday >= 0 && weekday < 7));
-    STORM_ASSERT(monthday == -1 || (monthday >= 0 && monthday < 32));
-    STORM_ASSERT(month == -1 || (month >= 0 && month < 12));
-    STORM_ASSERT(year == -1 || year >= 0 && year <= ((1 << 5) - 1));
-    STORM_ASSERT(flags >= 0 && flags <= ((1 << 2) - 1));
-
     value   = ((flags & 3) << 29)       // Flags: bits 29-30 (2 bits, max 3)
             | ((year & 31) << 24)       // Year: bits 24-28 (5 bits, max 31)
             | ((month & 15) << 20)      // Month: bits 20-23 (4 bits, max 15)
@@ -88,17 +82,15 @@ void WowTime::WowEncodeTime(uint32_t& value, int32_t minute, int32_t hour, int32
             | (minute & 63);            // Minute: bits 0-5 (6 bits, max 63)
 }
 
+// ref: FUN_0076ca50
 void WowTime::WowEncodeTime(uint32_t& value, const WowTime* time) {
-    WowTime::WowEncodeTime(
-        value,
-        time->m_minute,
-        time->m_hour,
-        time->m_weekday,
-        time->m_monthday,
-        time->m_month,
-        time->m_year,
-        time->m_flags
-    );
+    value   = ((time->m_flags & 3) << 29)
+            | ((time->m_year & 31) << 24)
+            | ((time->m_month & 15) << 20)
+            | ((time->m_monthday & 63) << 14)
+            | ((time->m_weekday & 7) << 11)
+            | ((time->m_hour & 31) << 6)
+            | (time->m_minute & 63);
 }
 
 char* WowTime::WowGetTimeString(WowTime* time, char* str, int32_t len) {
@@ -158,6 +150,18 @@ char* WowTime::WowGetTimeString(WowTime* time, char* str, int32_t len) {
     return str;
 }
 
+// ref: FUN_0076c190
+WowTime::WowTime() {
+    this->m_minute = -1;
+    this->m_hour = -1;
+    this->m_weekday = -1;
+    this->m_monthday = -1;
+    this->m_month = -1;
+    this->m_year = -1;
+    this->m_flags = 0;
+    this->m_holidayOffset = 0;
+}
+
 void WowTime::AddDays(int32_t days, bool includeTime) {
     // Validate date
 
@@ -211,26 +215,106 @@ void WowTime::AddDays(int32_t days, bool includeTime) {
     }
 }
 
+// ref: FUN_0076c670
+int32_t WowTime::CompareHour(const WowTime& other) const {
+    if (other.m_hour < this->m_hour) {
+        return 1;
+    }
+
+    return (other.m_hour <= this->m_hour) - 1;
+}
+
+// ref: FUN_0076c6a0
+int32_t WowTime::CompareMinute(const WowTime& other) const {
+    if (other.m_minute < this->m_minute) {
+        return 1;
+    }
+
+    return (other.m_minute <= this->m_minute) - 1;
+}
+
+// ref: FUN_0076c5e0
+int32_t WowTime::CompareMonth(const WowTime& other) const {
+    if (other.m_month < this->m_month) {
+        return 1;
+    }
+
+    return (other.m_month <= this->m_month) - 1;
+}
+
+// ref: FUN_0076c610
+int32_t WowTime::CompareMonthday(const WowTime& other) const {
+    if (other.m_monthday < this->m_monthday) {
+        return 1;
+    }
+
+    return (other.m_monthday <= this->m_monthday) - 1;
+}
+
+// ref: FUN_0076c640
+int32_t WowTime::CompareWeekday(const WowTime& other) const {
+    if (other.m_weekday < this->m_weekday) {
+        return 1;
+    }
+
+    return (other.m_weekday <= this->m_weekday) - 1;
+}
+
+// ref: FUN_0076c360
 int32_t WowTime::GetHourAndMinutes() {
     if (this->m_hour < 0 || this->m_minute < 0) {
         return 0;
     }
 
-    return this->m_hour * 60 + this->m_minute;
+    return this->m_minute + this->m_hour * 60;
 }
 
+// A negative field on either side is a wildcard and matches anything.
+// ref: FUN_0076c890
+bool WowTime::Matches(const WowTime& other) const {
+    return (other.m_year < 0 || this->m_year < 0 || other.m_year == this->m_year)
+        && (other.m_month < 0 || this->m_month < 0 || other.m_month == this->m_month)
+        && (other.m_monthday < 0 || this->m_monthday < 0 || other.m_monthday == this->m_monthday)
+        && (other.m_weekday < 0 || this->m_weekday < 0 || other.m_weekday == this->m_weekday)
+        && (other.m_hour < 0 || this->m_hour < 0 || other.m_hour == this->m_hour)
+        && (other.m_minute < 0 || this->m_minute < 0 || other.m_minute == this->m_minute);
+}
+
+// ref: FUN_0076c480
+bool WowTime::SetDate(uint32_t month, uint32_t monthday, uint32_t year) {
+    if (month >= 12 || monthday >= 32) {
+        return false;
+    }
+
+    if (year >= 2000) {
+        year -= 2000;
+    }
+
+    if (year >= 32) {
+        return false;
+    }
+
+    this->m_month = month;
+    this->m_monthday = monthday;
+    this->m_year = year;
+
+    return true;
+}
+
+// ref: FUN_0076c380
 void WowTime::SetHourAndMinutes(int32_t minutes) {
-    this->m_hour = minutes / 60;
     this->m_minute = minutes % 60;
+    this->m_hour = minutes / 60;
 }
 
-int32_t WowTime::SetHourAndMinutes(uint32_t hour, uint32_t minutes) {
+// ref: FUN_0076c3c0
+bool WowTime::SetHourAndMinutes(uint32_t hour, uint32_t minutes) {
     if (hour >= 24 || minutes >= 60) {
-        return 0;
+        return false;
     }
 
     this->m_hour = hour;
     this->m_minute = minutes;
 
-    return 1;
+    return true;
 }

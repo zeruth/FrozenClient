@@ -2,6 +2,7 @@
 #define UI_GAME_C_G_QUEST_POI_FRAME_HPP
 
 #include "ui/simple/CSimpleFrame.hpp"
+#include <tempest/Vector.hpp>
 
 class CGQuestPOIFrame : public CSimpleFrame {
     public:
@@ -49,5 +50,10 @@ class CGQuestPOIFrame : public CSimpleFrame {
         // Member functions
         CGQuestPOIFrame(CSimpleFrame* parent);
 };
+
+// ref: FUN_0058e5c0
+// Where the infinite lines through a1-a2 and b1-b2 cross, in the xy plane with z = 0. False, and
+// out untouched, when the lines are parallel to within 2^-22.
+bool QuestPOILineIntersect(const C2Vector& a1, const C2Vector& a2, const C2Vector& b1, const C2Vector& b2, C3Vector& out);
 
 #endif

@@ -58,6 +58,7 @@ class CSimpleModel : public CSimpleFrame {
         void SetCamera(HCAMERA camera);
         void SetCameraByID(uint32_t id);
         void SetCameraByIndex(uint32_t index);
+        void SetLight(const CM2Light& light);
         void SetFogColor(CImVector& fogColor);
         void SetFogFar(float fogFar);
         void SetFogNear(float fogNear);

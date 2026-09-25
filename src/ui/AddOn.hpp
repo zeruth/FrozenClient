@@ -10,6 +10,12 @@
 // <name>_LoadUI stubs that call UIParentLoadAddOn, so with no loader behind LoadAddOn those
 // functions simply never come into existence -- silently, because nothing fails.
 
+// One entry of the reference's add-on list (UIADDON). Not laid out: nothing reads into it yet.
+struct UIADDON;
+
+uint32_t AddOnGetNumAddOns();
+UIADDON* AddOnGetAddOn(uint32_t index);
+
 // Whether an add-on has already been loaded this session.
 bool AddOnIsLoaded(const char* name);
 

@@ -27,7 +27,27 @@ enum NAME_RESULT {
 // Error token index of CHAR_NAME_SUCCESS; ValidateName returns this plus a NAME_RESULT
 #define CHAR_NAME_SUCCESS 87
 
+bool IsDigitChar(uint16_t c);
+
+bool IsLatinLetter(uint16_t c);
+
+bool IsLowerCaseChar(uint16_t c);
+
+uint16_t ToUpperName(uint16_t c);
+
+uint16_t ToLowerName(uint16_t c);
+
+bool TruncateAtLineBreak(char* text);
+
+bool StripTextEscapes(const char* src, char* dst, int32_t dstSize);
+
+void StripPipeCharacters(const char* src, char* dst, int32_t dstSize);
+
 bool NameNeedsDeclension(WOW_LOCALE locale, const char* name);
+
+int32_t ValidateCharacterName(int32_t locale, const char* name, bool checkNamesProfanity, bool checkChatProfanity, bool checkNamesReserved, bool useForceEnglish, int32_t extraLength);
+
+int32_t ValidatePetName(int32_t locale, const char* name, bool checkNamesProfanity, bool checkChatProfanity, bool checkNamesReserved, bool useForceEnglish, int32_t extraLength);
 
 int32_t ValidateName(const char* name);
 

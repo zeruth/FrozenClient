@@ -36,4 +36,8 @@ class CGTabardModelFrame : public CGCharacterModelBase {
         CGTabardModelFrame(CSimpleFrame* parent);
 };
 
+// What saving a guild tabard costs, in copper: ten gold. The save path refuses when the player
+// has less, before sending MSG_SAVE_GUILD_EMBLEM.
+uint32_t GetGuildTabardCost();
+
 #endif

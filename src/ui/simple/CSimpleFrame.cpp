@@ -422,6 +422,7 @@ void CSimpleFrame::Raise() {
     this->m_top->RaiseFrame(this, 1);
 }
 
+// ref: FUN_0048ea40
 void CSimpleFrame::RegisterForEvents(int32_t a2) {
     for (int32_t event = SIMPLE_EVENT_CHAR; event < NUM_SIMPLE_EVENTS; event++) {
         if (this->m_eventmask & (1 << event)) {
@@ -1504,6 +1505,7 @@ void CSimpleFrame::SetBackdrop(CBackdropGenerator* backdrop) {
     this->m_backdrop = backdrop;
 }
 
+// ref: FUN_00490f60
 void CSimpleFrame::SetBeingScrolled(int32_t a2, int32_t a3) {
     auto visible = this->m_visible;
 

@@ -158,6 +158,7 @@ bool CScriptRegion::ProtectedFunctionsAllowed() {
     return true;
 }
 
+// ref: FUN_004883a0
 void CScriptRegion::SetParent(CSimpleFrame* parent) {
     this->m_parent = parent;
 }

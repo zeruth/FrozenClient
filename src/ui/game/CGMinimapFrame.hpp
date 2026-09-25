@@ -96,6 +96,9 @@ class CGMinimapFrame : public CSimpleFrame {
         static uint32_t GetNumTrackingSpells();
         static uint32_t GetTrackingSpell(uint32_t index);
 
+        // ref: FUN_0053bd10
+        static int32_t HasTrackingSpell(uint32_t spellID);
+
         // ref: FUN_007fdf60
         static bool IsTrackingSpell(uint32_t spellID);
 

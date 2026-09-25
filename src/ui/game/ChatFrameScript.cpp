@@ -26,6 +26,23 @@ int32_t s_numChatChannels;
 // ref: DAT_00bcf094
 ChatChannel* s_chatChannels;
 
+// One row of the channel roster list: a header, or a joined channel. Only the fields read by
+// ported code are named.
+struct ChannelListEntry {
+    int32_t channel;        // +0x00, index into s_chatChannels for a channel row
+    int32_t unk04;
+    int32_t type;           // +0x08, 0 for a channel row
+    uint32_t unk0C[5];
+};
+
+static_assert(sizeof(ChannelListEntry) == 0x20, "ChannelListEntry is 0x20 bytes in the reference");
+
+// Nothing fills these yet: the code that builds the roster list is not ported.
+// ref: DAT_00b74460
+uint32_t s_numChannelListEntries;
+// ref: DAT_00b74468
+ChannelListEntry s_channelListEntries[20];
+
 // A channel argument is a name, or a channel number that resolves to the joined channel's name.
 // A number that matches no joined channel resolves to nothing.
 // ref: FUN_004fe160
@@ -216,6 +233,39 @@ int32_t Script_DeclineInvite(lua_State* L) {
     return 0;
 }
 
+}
+
+// A channel row answers with its channel's name and type 0; a header of type 1 to 3 with an empty
+// name and its type; anything else with nothing and type 4.
+// ref: FUN_004fe1c0
+const char* ChannelListEntryName(uint32_t index, int32_t* type) {
+    *type = 4;
+
+    if (index >= s_numChannelListEntries) {
+        return nullptr;
+    }
+
+    auto entryType = s_channelListEntries[index].type;
+
+    if (entryType == 0) {
+        auto channel = s_channelListEntries[index].channel;
+
+        if (channel >= 0 && channel < s_numChatChannels) {
+            auto number = s_chatChannels[channel].number;
+
+            if (number > 0 && number <= s_numChatChannels && s_chatChannels[number - 1].number == number) {
+                *type = 0;
+
+                return s_chatChannels[number - 1].name;
+            }
+        }
+    } else if (entryType == 2 || entryType == 3 || entryType == 1) {
+        *type = entryType;
+
+        return "";
+    }
+
+    return nullptr;
 }
 
 static FrameScript_Method s_ScriptFunctions[] = {

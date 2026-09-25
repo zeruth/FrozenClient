@@ -36,10 +36,35 @@ struct PARTY_MEMBER {
     uint8_t roles = 0;
 };
 
+// The reference's per-member record block (0x310 bytes a member), copied wholesale when the roster
+// is rebuilt. Only the member's pet guid at +0x160 has been identified; the rest is carried as
+// raw bytes until the code that reads it is ported. Nothing fills it yet.
+struct PARTY_MEMBER_RECORD {
+    uint8_t unk000[0x160] = { 0 };
+    WOWGUID petGuid = 0;
+    uint8_t unk168[0x310 - 0x168] = { 0 };
+};
+
 class CGPartyInfo {
     public:
         // Public static functions
         static uint32_t NumMembers();
+
+        // ref: FUN_0052bc50
+        // One member's guid by 0-based slot; 0 past the fourth.
+        static WOWGUID GetMemberGuid(uint32_t slot);
+
+        // ref: FUN_0052bee0
+        // The record block of the member with this guid; null for a null guid or a non-member.
+        static PARTY_MEMBER_RECORD* GetMemberRecord(const WOWGUID& guid);
+
+        // ref: FUN_0052bf30
+        // The record block of the occupied slot whose member's pet has this guid.
+        static PARTY_MEMBER_RECORD* GetMemberRecordByPet(const WOWGUID& pet);
+
+        // ref: FUN_0052c680
+        // The active player or one of the four members. A null guid is neither.
+        static bool IsPlayerOrMember(const WOWGUID& guid);
 
         // One member by 1-based index, as the party1..party4 unit tokens number them. Returns 0
         // for an empty slot or an index outside 1..4.
@@ -123,6 +148,7 @@ class CGPartyInfo {
         // Private static variables
         static WOWGUID m_members[];
         static PARTY_MEMBER m_memberInfo[4];
+        static PARTY_MEMBER_RECORD m_memberRecords[4];  // ref: DAT_00bd0d08
         static WOWGUID m_leader;
         static uint32_t m_lootMethod;
         static WOWGUID m_masterLooter;

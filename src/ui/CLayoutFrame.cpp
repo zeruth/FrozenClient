@@ -12,18 +12,20 @@
 
 STORM_EXPLICIT_LIST(CLayoutFrame, resizeLink) LayoutFrame::s_resizePendingList;
 
+// ref: FUN_00488be0
 float SynthesizeSide(float center, float opposite, float size) {
     if (opposite != CFramePoint::UNDEFINED && size != 0.0f) {
         return opposite + size;
     } else if (center != CFramePoint::UNDEFINED && size != 0.0f) {
         return center + (size * 0.5f);
     } else if (center != CFramePoint::UNDEFINED && opposite != CFramePoint::UNDEFINED) {
-        return center + center - opposite;
+        return (center - opposite) + center;
     } else {
         return CFramePoint::UNDEFINED;
     }
 }
 
+// ref: FUN_00488c60
 float SynthesizeCenter(float side1, float side2, float size) {
     if (side1 != CFramePoint::UNDEFINED && side2 != CFramePoint::UNDEFINED) {
         return (side1 + side2) * 0.5f;
@@ -316,6 +318,7 @@ void CLayoutFrame::GetClampRectInsets(float& a1, float& a2, float& a3, float& a4
     a1 = 0.0f;
 }
 
+// ref: FUN_00488ed0
 void CLayoutFrame::GetFirstPointX(const FRAMEPOINT* const pointarray, int32_t elements, float& x) {
     for (int32_t retry = 0; retry < 10; retry++) {
         if (this->Sub488DB0(pointarray, elements, x)) {
@@ -324,6 +327,7 @@ void CLayoutFrame::GetFirstPointX(const FRAMEPOINT* const pointarray, int32_t el
     }
 }
 
+// ref: FUN_00488f10
 void CLayoutFrame::GetFirstPointY(const FRAMEPOINT* const pointarray, int32_t elements, float& y) {
     for (int32_t retry = 0; retry < 10; retry++) {
         if (this->Sub488E40(pointarray, elements, y)) {
@@ -377,6 +381,7 @@ float CLayoutFrame::GetWidth() {
     return this->m_width;
 }
 
+// ref: FUN_00482ac0
 int32_t CLayoutFrame::HasPoints() {
     for (int32_t i = 0; i < FRAMEPOINT_NUMPOINTS; i++) {
         auto point = this->m_points[i];
@@ -614,6 +619,7 @@ void CLayoutFrame::OnFrameSizeChanged(const CRect& rect) {
     }
 }
 
+// ref: FUN_00489a00
 void CLayoutFrame::OnProtectedAttach(CLayoutFrame* frame) {
     if (this->m_flags & 0x400) {
         frame->SetProtectFlag(0x400);
@@ -621,6 +627,16 @@ void CLayoutFrame::OnProtectedAttach(CLayoutFrame* frame) {
 
     if (this->m_flags & (0x100 | 0x200)) {
         frame->SetProtectFlag(0x200);
+    }
+}
+
+// The counterpart run when the relationship ends: any protection at all on this frame leaves
+// `frame` protected (0x400).
+//
+// ref: FUN_00489a40
+void CLayoutFrame::OnProtectedDetach(CLayoutFrame* frame) {
+    if (this->m_flags & (0x100 | 0x200 | 0x400)) {
+        frame->SetProtectFlag(0x400);
     }
 }
 
