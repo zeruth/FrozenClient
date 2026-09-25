@@ -327,49 +327,16 @@ void CGWorldFrame::OnWorldRender() {
         // with reducing OnWorldRender to the reference's order.
         CWorldScene::DrawEntityShadows();
 
-        // Doodads cast too: the reference walks every scene entity with a model, not just units
-        // (FUN_00793980). Terrain and WMO props are scene models, so they come through here; the
-        // batched ground effects are not scene entities and correctly cast nothing.
+        // Doodads do NOT cast blob shadows, and a walk that made them was frozen's own
+        // invention. In the reference BlobShadowDraw has one caller, its gate; the gate has two,
+        // both inside the entity shadow pass; and no doodad is ever registered through
+        // CWorld::AddObject -- a doodad is a CMapStaticEntity and never reaches that list at
+        // all. Props are shadowed by the terrain's baked shadow map instead, which is why only
+        // units carry a blob in the game.
         //
-        // The distance cap and size floor below are NOT the reference's -- it has neither. They
-        // are here because the list is wrong: the reference casts from the scene entity list,
-        // which the visibility traversal has already reduced to what is in view, where
-        // TerrainForEachDoodad walks every doodad of every loaded tile. Handing that whole set
-        // to the gate costs a pass over the overlapping chunk meshes per model, and a profile
-        // already found the main thread inside the WMO half of that draw on six samples of
-        // nine. The caps go when the reference's entity walk (FUN_00793980) is ported over the
-        // real list, not before.
-        {
-            struct CasterArg { C3Vector eye; } arg = { CWorld::GetCameraPos() };
-
-            TerrainForEachDoodad([](CM2Model* model, void* a) {
-                auto& ctx = *static_cast<CasterArg*>(a);
-
-                if (!model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
-                    return;
-                }
-
-                const C44Matrix& M = model->matrixB4;
-                float dx = M.d0 - ctx.eye.x;
-                float dy = M.d1 - ctx.eye.y;
-                float dz = M.d2 - ctx.eye.z;
-
-                if (dx * dx + dy * dy + dz * dz > 60.0f * 60.0f) {
-                    return;
-                }
-
-                const CAaBox& box = model->m_shared->m_data->bounds.extent;
-                float scale = sqrtf(M.a0 * M.a0 + M.a1 * M.a1 + M.a2 * M.a2);
-                float ex = (box.t.x - box.b.x) * 0.5f;
-                float ey = (box.t.y - box.b.y) * 0.5f;
-
-                if ((ex > ey ? ex : ey) * scale < 1.0f) {
-                    return;
-                }
-
-                BlobShadowDrawCaster(model, box);
-            }, &arg);
-        }
+        // Removing the walk also removes the cost caps it needed: it ran over every doodad of
+        // every loaded tile, and a profile had found the main thread inside the WMO half of that
+        // draw on six samples of nine.
 
         BlobShadowsEnd();
     }

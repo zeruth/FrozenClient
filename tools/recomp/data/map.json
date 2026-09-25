@@ -15240,7 +15240,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1825,
+  "frozenSize": 1797,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,

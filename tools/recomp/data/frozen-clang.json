@@ -120759,9 +120759,6 @@
 "CM2Model::SetAnimating",
 "BlobShadowsBegin",
 "CWorldScene::DrawEntityShadows",
-"CWorld::GetCameraPos",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:345:34)::operator void (*)(CM2Model *, void *)",
-"TerrainForEachDoodad",
 "BlobShadowsEnd",
 "CWorld::GetM2Scene",
 "CWorld::GetFogEnd",
@@ -120773,7 +120770,7 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:407:30)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:374:30)::operator void (*)(CM2Model *, void *)",
 "TerrainForEachDoodad",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
@@ -120827,7 +120824,7 @@
 ],
 "branches": 25,
 "stub": false,
-"lines": 281,
+"lines": 248,
 "refs": [],
 "line": 211
 },
@@ -120882,7 +120879,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 493
+"line": 460
 },
 "Script_GetInventorySlotInfo": {
 "files": [
