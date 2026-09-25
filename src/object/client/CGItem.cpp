@@ -28,3 +28,12 @@ uint32_t CGItem::TotalFieldsSaved() {
 CGItemData* CGItem::Item() const {
     return this->m_item;
 }
+
+// ref: FUN_00584ae0
+int32_t CGItem::GetMaxDurability() const {
+    if (this->m_item->flags >> 3 & 1) {
+        return 0;
+    }
+
+    return this->m_item->maxDurability;
+}

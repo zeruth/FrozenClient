@@ -49,6 +49,16 @@ uint32_t CGPlayer::GetNextLevelXP() const {
     return this->Player()->nextLevelXP;
 }
 
+// The reference accepts 26 indices against the descriptor's 25 quest log entries.
+// ref: FUN_005e0870
+CQuestLogData* CGPlayer::GetQuestLog(int32_t index) const {
+    if (index >= 0 && index < 26) {
+        return &this->m_player->questLog[index];
+    }
+
+    return nullptr;
+}
+
 uint32_t CGPlayer::GetXP() const {
     return this->Player()->xp;
 }

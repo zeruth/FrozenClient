@@ -111,7 +111,7 @@ struct CGUnitData {
     float minRangedDamage;
     float maxRangedDamage;
     int32_t powerCostModifier[7];
-    int32_t powerCostMultiplier[7];
+    float powerCostMultiplier[7];
     int32_t maxHealthModifier;
     float hoverHeight;
     int32_t pad4;
@@ -137,8 +137,21 @@ class CGUnit {
         float GetRawFacing() const;
         int32_t GetStatNonNegative(int32_t index) const;
 
+        // ref: FUN_005ee050
+        // The smallest cost modifier among the schools in the mask; 0 when the mask is empty.
+        int32_t GetPowerCostModifier(uint32_t schoolMask) const;
+
+        // ref: FUN_005ee0b0
+        // The smallest cost multiplier among the schools in the mask, plus one.
+        float GetPowerCostMultiplier(uint32_t schoolMask) const;
+
         // The unit fields, for the script layer's unit queries
         CGUnitData* Unit() const;
+
+        int32_t HasCharmer() const;
+        const WOWGUID& GetCharmerOrCreator() const;
+        int32_t IsControlledBy(const WOWGUID& guid) const;
+        int32_t IsPetitionerAndTabardDesigner() const;
 
     protected:
         // Protected member variables

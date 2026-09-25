@@ -21,6 +21,10 @@ const char* ItemNameFromEntry(int32_t entryID, int32_t suffix);
 const char* ItemLinkBuild(int32_t entryID, int32_t quality, int32_t enchant,
                           const ITEM_LINK_GEMS& gems, int32_t suffix, int32_t seed);
 
+// ref: FUN_0061e360
+// The same link for an item without gems.
+const char* ItemLinkBuild(int32_t entryID, int32_t quality, int32_t enchant, int32_t suffix, int32_t seed);
+
 // ref: FUN_0061e3a0
 // The link for an item that exists as an object, which is where the enchant, gems and random
 // property come from. Null for a null item.

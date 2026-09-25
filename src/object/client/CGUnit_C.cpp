@@ -7,6 +7,8 @@
 #include "object/client/NameCache.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
+#include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 #include <storm/Error.hpp>
 #include <tempest/Math.hpp>
 
@@ -206,6 +208,15 @@ int32_t CGUnit_C::CanHighlight() {
 
 int32_t CGUnit_C::CanBeTargetted() {
     return this->CanHighlight();
+}
+
+// ref: FUN_004d43c0
+int32_t CGUnit_C::IsActiveMover() const {
+    if (this->GetGUID() == CGUnit_C::s_activeMover) {
+        return 1;
+    }
+
+    return 0;
 }
 
 // ref: FUN_00616b10
@@ -1072,4 +1083,875 @@ int32_t AdjustSheathState(int32_t state, const uint8_t* first, const uint8_t* se
     }
 
     return state;
+}
+
+// ref: FUN_00743320
+void CGUnit_C::SetFlag21() {
+    this->m_flag21 = 1;
+}
+
+// ref: FUN_0074b9a0
+// Reads unit +0x7d0, which is +0x48 of the embedded movement block at +0x788: the low bit of the
+// second movement flag word.
+uint8_t CGUnit_C::HasMoveFlags2Bit0() const {
+    return this->m_localMove.GetMoveFlags2() & 1;
+}
+
+// ref: FUN_00716710
+// Unit flag 0x2 clear with any of 0xc00004 set answers no outright. Without flag 0x1000000 the unit
+// itself must be an uncharmed player; with it, the charmer (or the creator, when nothing charms it)
+// must be. Either way the player must not carry unit flag 0x1.
+bool CGUnit_C::IsPlayerControlled() const {
+    uint32_t flags = this->m_unit->flags;
+
+    if (!(flags & 0x2) && (flags & 0xC00004)) {
+        return false;
+    }
+
+    auto data = this->m_unit;
+
+    if (!(data->flags & 0x1000000)) {
+        if (!this->IsA(TYPE_PLAYER)) {
+            return false;
+        }
+
+        if (data->charmedBy != 0) {
+            return false;
+        }
+
+        return !(data->flags & 0x1);
+    }
+
+    const WOWGUID& controllerGUID = data->charmedBy != 0 ? data->charmedBy : data->createdBy;
+    auto controller = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(controllerGUID, TYPE_UNIT, __FILE__, __LINE__));
+
+    if (!controller) {
+        return false;
+    }
+
+    if (!controller->IsA(TYPE_PLAYER)) {
+        return false;
+    }
+
+    return !(controller->m_unit->flags & 0x1);
+}
+
+// ref: FUN_00716fa0
+// The reference reads the walk speed at CGUnit_C +0x818 and the move flags at +0x7cc, which are
+// +0x90 and +0x44 of the movement block the unit embeds (m_localMove): the offsets CMovementShared
+// documents for m_walkSpeed and m_moveFlags. Ghidra drops GetCurrentSpeed's receiver; it is taken
+// as that same block, which is also what m_move points at in frozen.
+bool CGUnit_C::IsMovingAtWalkPace() const {
+    return this->m_localMove.GetCurrentSpeed(0) <= this->m_localMove.GetWalkSpeed() + this->m_localMove.GetWalkSpeed();
+}
+
+// ref: FUN_00718a90
+// Players answer 0; a creature whose template has not arrived answers 1.
+uint32_t CGUnit_C::GetCreatureTypeFlag10() const {
+    if (this->IsA(TYPE_PLAYER)) {
+        return 0;
+    }
+
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (!info) {
+        return 1;
+    }
+
+    return (info->typeFlags >> 10) & 1;
+}
+
+// ref: FUN_00718b70
+// The player behind this unit: the unit's charmer (or creator), or the unit itself when it has
+// neither, if that is a player; otherwise that one's own charmer (or creator), if a player.
+CGUnit_C* CGUnit_C::GetControllingPlayer() {
+    CGUnit_C* unit = this;
+    auto data = this->m_unit;
+    const WOWGUID& ownerGUID = data->charmedBy != 0 ? data->charmedBy : data->createdBy;
+
+    if (ownerGUID != 0) {
+        const WOWGUID& guid = data->charmedBy != 0 ? data->charmedBy : data->createdBy;
+        unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__));
+    }
+
+    if (unit) {
+        if (unit->IsA(TYPE_PLAYER)) {
+            return unit;
+        }
+
+        auto unitData = unit->m_unit;
+        const WOWGUID& guid = unitData->charmedBy != 0 ? unitData->charmedBy : unitData->createdBy;
+        auto owner = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__));
+
+        if (owner && owner->IsA(TYPE_PLAYER)) {
+            return owner;
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0071b770
+// Base value by power type: mana the descriptor's base mana, health (-2) its base health.
+int32_t CGUnit_C::GetBasePower(int32_t powerType) const {
+    switch (powerType) {
+        case 0:
+            return this->m_unit->baseMana;
+
+        case 1:
+        case 6:
+            return 1000;
+
+        case 2:
+        case 3:
+            return 100;
+
+        case 5:
+            return 1;
+
+        case -2:
+            return this->m_unit->baseHealth;
+
+        default:
+            return 0;
+    }
+}
+
+// ref: FUN_0071b810
+// Move flag 0x1000000 of the embedded movement block (see IsMovingAtWalkPace).
+uint32_t CGUnit_C::CanFly() const {
+    return this->m_localMove.GetMoveFlags() & 0x1000000;
+}
+
+// ref: FUN_0071c500
+// Not the active player, and a player whose model data carries flag 0x4 and whose extended display
+// carries flag 0x1 -- or has no extended display at all.
+bool CGUnit_C::IsOtherPlayerWithFlaggedModel() const {
+    WOWGUID guid = this->GetGUID();
+
+    if (ClntObjMgrGetActivePlayer() != guid) {
+        bool player = this->IsA(TYPE_PLAYER);
+
+        if (player && this->m_modelData && (this->m_modelData->m_flags & 0x4)
+            && this->m_displayInfoExtra && (this->m_displayInfoExtra->m_flags & 0x1)
+        ) {
+            return true;
+        }
+
+        if (!this->m_displayInfoExtra && player && (this->m_modelData->m_flags & 0x4)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071c570
+// NPC flag 0x1000000 (spell click) without unit flag2 0x2000; with flag2 0x1000 only for a party or
+// raid member or pet.
+bool CGUnit_C::IsSpellClickable() const {
+    if ((this->m_unit->npcFlags & 0x1000000) && !(this->m_unit->flags2 & 0x2000)) {
+        if (this->m_unit->flags2 & 0x1000) {
+            if (!CGPartyInfo::IsMemberOrPet(this->GetGUID()) && !CGRaidInfo::IsMemberOrPet(this->GetGUID())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+// ref: FUN_0071c8b0
+bool CGUnit_C::IsMovingFasterThanWalkPace() const {
+    if (this->m_localMove.GetCurrentSpeed(0) <= this->m_localMove.GetWalkSpeed() + this->m_localMove.GetWalkSpeed()) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_00721ca0
+// In a shapeshift form whose SpellShapeshiftForm row lacks flag 0x1 (a stance). Like the reference,
+// this reads the row without a null check.
+//
+// DIVERGENCE: the reference answers false when the byte at CGUnit_C +0x9f4 is set; nothing that
+// writes it is ported, so frozen treats it as clear (as GetCreatureType does).
+bool CGUnit_C::IsInNonStanceForm() const {
+    uint32_t form = (this->m_unit->bytes2 >> 24) & 0xFF;
+
+    if (form == 0) {
+        return false;
+    }
+
+    auto formRec = g_spellShapeshiftFormDB.GetRecord(static_cast<int32_t>(form));
+
+    return !(formRec->m_flags & 0x1);
+}
+
+// ref: FUN_00717540
+bool ResolveAnimationBehavior(int32_t animID, int32_t tier, int32_t* out) {
+    if (animID < g_animationDataDB.GetNumRecords()) {
+        if (tier == 0 && animID >= 0) {
+            auto rec = g_animationDataDB.GetRecordByIndex(animID);
+
+            if (rec && rec->m_behaviorID == animID && rec->m_behaviorTier == 0) {
+                *out = rec->m_ID;
+                return true;
+            }
+        }
+
+        auto rec = g_animationDataDB.GetRecord(animID);
+
+        if (rec && rec->m_behaviorTier != 0) {
+            *out = animID;
+            return true;
+        }
+
+        for (int32_t i = 0; i < g_animationDataDB.GetNumRecords(); i++) {
+            auto row = g_animationDataDB.GetRecordByIndex(i);
+
+            if (row->m_behaviorID == animID && row->m_behaviorTier == tier) {
+                *out = row->m_ID;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007176b0
+int32_t GetAnimationBehavior(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        return rec->m_behaviorID;
+    }
+
+    return 0x1FA;
+}
+
+// ref: FUN_00718b30
+bool FactionHasReputation(int32_t factionID) {
+    auto rec = g_factionDB.GetRecord(factionID);
+
+    if (rec) {
+        return rec->m_reputationIndex >= 0;
+    }
+
+    return false;
+}
+
+// ref: FUN_0071c050
+float GetNativeRaceModelScale(const CreatureDisplayInfoRec* display) {
+    auto extra = g_creatureDisplayInfoExtraDB.GetRecord(display->m_extendedDisplayInfoID);
+
+    if (extra) {
+        auto race = g_chrRacesDB.GetRecord(extra->m_displayRaceID);
+
+        if (race) {
+            int32_t displayID = 0;
+
+            if (extra->m_displaySexID == 0) {
+                displayID = race->m_maleDisplayID;
+            } else if (extra->m_displaySexID == 1) {
+                displayID = race->m_femaleDisplayID;
+            }
+
+            auto native = g_creatureDisplayInfoDB.GetRecord(displayID);
+
+            if (native) {
+                return native->m_creatureModelScale;
+            }
+        }
+    }
+
+    return 1.0f;
+}
+
+// ref: FUN_0071d2a0
+// 39 JumpEnd, 187 JumpLandRun.
+bool IsJumpLandAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior == 0x27 || behavior == 0xBB) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d2e0
+// 46 AttackBow, 49 AttackRifle, 105 through 112.
+bool IsRangedAttackAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x2E:
+        case 0x31:
+        case 0x69:
+        case 0x6A:
+        case 0x6B:
+        case 0x6C:
+        case 0x6D:
+        case 0x6E:
+        case 0x6F:
+        case 0x70:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071d380
+// 2 Spell, 32 SpellCast, 33 SpellCastArea, 53 SpellCastDirected, 54 SpellCastOmni.
+bool IsSpellCastAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x02:
+        case 0x20:
+        case 0x21:
+        case 0x35:
+        case 0x36:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071d410
+// 51 ReadySpellDirected, 52 ReadySpellOmni.
+bool IsReadySpellAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x32 && behavior < 0x35) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d450
+// 16 AttackUnarmed, 20 ParryUnarmed, 25 ReadyUnarmed, 117, 118.
+bool IsUnarmedAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x10:
+        case 0x14:
+        case 0x19:
+        case 0x75:
+        case 0x76:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071d550
+// 57 Special1H, 58 Special2H, 118.
+bool IsSpecialAttackAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x38 && (behavior < 0x3B || behavior == 0x76)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d590
+bool IsCombatAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x0A:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+        case 0x14:
+        case 0x15:
+        case 0x16:
+        case 0x17:
+        case 0x18:
+        case 0x1E:
+        case 0x24:
+        case 0x39:
+        case 0x3A:
+        case 0x3B:
+        case 0x55:
+        case 0x56:
+        case 0x57:
+        case 0x58:
+        case 0x5F:
+        case 0x75:
+        case 0x76:
+        case 0xAA:
+        case 0xAB:
+        case 0xAC:
+        case 0xAD:
+        case 0xAE:
+        case 0xAF:
+        case 0xB0:
+        case 0xB1:
+        case 0xB2:
+        case 0xB3:
+        case 0xD4:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071d6b0
+bool IsBaseStateAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        switch (rec->m_behaviorID) {
+            case 0x00:
+            case 0x01:
+            case 0x03:
+            case 0x04:
+            case 0x05:
+            case 0x06:
+            case 0x08:
+            case 0x09:
+            case 0x0A:
+            case 0x0B:
+            case 0x0C:
+            case 0x0D:
+            case 0x25:
+            case 0x26:
+            case 0x27:
+            case 0x28:
+            case 0x29:
+            case 0x2A:
+            case 0x2B:
+            case 0x2C:
+            case 0x2D:
+            case 0x5C:
+            case 0x5D:
+            case 0x5E:
+            case 0x5F:
+            case 0x77:
+            case 0x78:
+            case 0x7F:
+            case 0x83:
+            case 0x84:
+            case 0x87:
+            case 0x8F:
+            case 0xBB:
+            case 0xC1:
+                return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d7c0
+// 37 JumpStart, 38 Jump, 39 JumpEnd, 187 JumpLandRun.
+bool IsJumpAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x24 && (behavior < 0x28 || behavior == 0xBB)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d800
+bool IsActionAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x02:
+        case 0x08:
+        case 0x09:
+        case 0x0A:
+        case 0x0E:
+        case 0x0F:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+        case 0x14:
+        case 0x15:
+        case 0x16:
+        case 0x17:
+        case 0x18:
+        case 0x19:
+        case 0x1A:
+        case 0x1B:
+        case 0x1C:
+        case 0x1D:
+        case 0x1E:
+        case 0x1F:
+        case 0x20:
+        case 0x21:
+        case 0x22:
+        case 0x23:
+        case 0x24:
+        case 0x2E:
+        case 0x2F:
+        case 0x30:
+        case 0x31:
+        case 0x33:
+        case 0x34:
+        case 0x35:
+        case 0x36:
+        case 0x37:
+        case 0x38:
+        case 0x39:
+        case 0x3A:
+        case 0x3B:
+        case 0x3C:
+        case 0x3D:
+        case 0x3E:
+        case 0x3F:
+        case 0x40:
+        case 0x41:
+        case 0x42:
+        case 0x43:
+        case 0x44:
+        case 0x45:
+        case 0x46:
+        case 0x47:
+        case 0x48:
+        case 0x49:
+        case 0x4A:
+        case 0x4C:
+        case 0x4D:
+        case 0x4E:
+        case 0x50:
+        case 0x51:
+        case 0x52:
+        case 0x53:
+        case 0x54:
+        case 0x55:
+        case 0x56:
+        case 0x57:
+        case 0x58:
+        case 0x59:
+        case 0x5A:
+        case 0x69:
+        case 0x6A:
+        case 0x6B:
+        case 0x6C:
+        case 0x6D:
+        case 0x6E:
+        case 0x6F:
+        case 0x70:
+        case 0x71:
+        case 0x75:
+        case 0x76:
+        case 0x7A:
+        case 0x7B:
+        case 0x7C:
+        case 0x7D:
+        case 0x80:
+        case 0x81:
+        case 0x82:
+        case 0x85:
+        case 0x86:
+        case 0x88:
+        case 0x89:
+        case 0x8A:
+        case 0x99:
+        case 0x9A:
+        case 0x9B:
+        case 0x9C:
+        case 0xB9:
+        case 0xBA:
+        case 0xC3:
+        case 0xD5:
+        case 0xD6:
+        case 0xD7:
+        case 0xD8:
+        case 0xD9:
+        case 0xDA:
+        case 0xDB:
+        case 0xDC:
+        case 0xDD:
+        case 0xDE:
+        case 0xE1:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071d940
+bool IsEmoteAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    switch (behavior) {
+        case 0x3C:
+        case 0x3D:
+        case 0x3E:
+        case 0x3F:
+        case 0x40:
+        case 0x41:
+        case 0x42:
+        case 0x43:
+        case 0x44:
+        case 0x45:
+        case 0x46:
+        case 0x47:
+        case 0x48:
+        case 0x49:
+        case 0x4A:
+        case 0x4C:
+        case 0x4D:
+        case 0x4E:
+        case 0x50:
+        case 0x51:
+        case 0x52:
+        case 0x53:
+        case 0x54:
+        case 0x71:
+        case 0x88:
+        case 0x89:
+        case 0x8A:
+        case 0xB2:
+        case 0xB9:
+        case 0xBA:
+        case 0xC3:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_0071da20
+// 107, 111, 112: the members of IsRangedAttackAnimation's set that are neither bow nor rifle.
+bool IsThrownAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior == 0x6B || (behavior > 0x6E && behavior < 0x71)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071da60
+// 46 AttackBow, 105, 109.
+bool IsBowAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior == 0x2E || behavior == 0x69 || behavior == 0x6D) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071daa0
+// 49 AttackRifle, 106, 110.
+bool IsRifleAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior == 0x31 || behavior == 0x6A || behavior == 0x6E) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dae0
+// 25 ReadyUnarmed through 29 ReadyBow.
+bool IsReadyAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x18 && behavior < 0x1E) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071db20
+bool IsAnimationBehavior127Or201To202(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior == 0x7F || (behavior > 200 && behavior < 0xCB)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071db70
+bool IsAnimationBehavior466To468Or472(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x1D1 && (behavior < 0x1D5 || behavior == 0x1D8)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dbc0
+bool IsAnimationBehavior6Or132Or467To468Or472(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+        bool match;
+
+        if (behavior < 0x1D5) {
+            if (behavior > 0x1D2) {
+                return true;
+            }
+
+            if (behavior == 6) {
+                return true;
+            }
+
+            match = behavior == 0x84;
+        } else {
+            match = behavior == 0x1D8;
+        }
+
+        if (match) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dc20
+bool IsAnimationBehavior37To40Or467(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x24 && (behavior < 0x29 || behavior == 0x1D3)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dd80
+bool IsAnimationBehavior1Or131Or466To467(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior < 0x84) {
+            if (behavior == 0x83 || behavior == 1) {
+                return true;
+            }
+        } else if (behavior > 0x1D1 && behavior < 0x1D4) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dde0
+// 1 Death, 6 Dead, 131, 132, 466 through 468, 472.
+bool IsDeathAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior < 0x85) {
+            if (behavior > 0x82 || behavior == 1 || behavior == 6) {
+                return true;
+            }
+        } else if (behavior > 0x1D1) {
+            if (behavior < 0x1D5) {
+                return true;
+            }
+
+            if (behavior == 0x1D8) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071de50
+bool IsAnimationBehavior133To134(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x84 && behavior < 0x87) {
+            return true;
+        }
+    }
+
+    return false;
 }

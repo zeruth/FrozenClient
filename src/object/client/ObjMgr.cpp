@@ -121,6 +121,44 @@ void ClntObjMgrFreeObject(CGObject_C* object) {
     }
 }
 
+// ref: FUN_004d3bf0
+// The byte offset in an object's descriptor where the fields its own type adds begin: past the
+// object fields for most types, past the item fields for a container and past the unit fields for
+// a player. The reference takes the type in EAX.
+uint32_t ClntObjMgrGetTypeFieldsOffset(OBJECT_TYPE_ID typeID) {
+    switch (typeID) {
+        case ID_ITEM:
+        case ID_UNIT:
+        case ID_GAMEOBJECT:
+        case ID_DYNAMICOBJECT:
+        case ID_CORPSE:
+            return 0x18;
+
+        case ID_CONTAINER:
+            return 0x100;
+
+        case ID_PLAYER:
+            return 0x250;
+
+        default:
+            return 0;
+    }
+}
+
+// ref: FUN_004d4b30
+// Calls callback for every visible object in list order and stops at the first that returns 0.
+int32_t ClntObjMgrEnumVisibleObjects(int32_t (*callback)(WOWGUID, void*), void* param) {
+    auto mgr = ClntObjMgrGetCurrent();
+
+    for (auto object = mgr->m_visibleObjects.Head(); object; object = mgr->m_visibleObjects.Next(object)) {
+        if (!callback(object->GetGUID(), param)) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 WOWGUID ClntObjMgrGetActivePlayer() {
     if (!s_curMgr) {
         return 0;
@@ -129,6 +167,7 @@ WOWGUID ClntObjMgrGetActivePlayer() {
     return s_curMgr->m_activePlayer;
 }
 
+// ref: FUN_004d3730
 ClntObjMgr* ClntObjMgrGetCurrent() {
     return s_curMgr;
 }
@@ -141,6 +180,7 @@ uint32_t ClntObjMgrGetMapID() {
     return s_curMgr->m_mapID;
 }
 
+// ref: FUN_004d37c0
 PLAYER_TYPE ClntObjMgrGetPlayerType() {
     return s_curMgr->m_type;
 }

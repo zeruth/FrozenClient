@@ -76,6 +76,13 @@ const char* ItemLinkBuild(int32_t entryID, int32_t quality, int32_t enchant,
     return s_link;
 }
 
+// ref: FUN_0061e360
+const char* ItemLinkBuild(int32_t entryID, int32_t quality, int32_t enchant, int32_t suffix, int32_t seed) {
+    ITEM_LINK_GEMS gems;
+
+    return ItemLinkBuild(entryID, quality, enchant, gems, suffix, seed);
+}
+
 // ref: FUN_0061e3a0
 const char* ItemLinkFromObject(CGItem_C* item) {
     if (!item) {

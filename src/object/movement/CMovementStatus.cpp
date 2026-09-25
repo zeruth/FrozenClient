@@ -1,6 +1,27 @@
 #include "object/movement/CMovementStatus.hpp"
 #include "util/DataStore.hpp"
 
+// ref: FUN_004f4c50
+CMovementStatus::CMovementStatus() {
+    this->uint0 = 0;
+    this->transport = 0;
+    this->moveFlags = 0x0;
+    this->uint14 = 0;
+    this->byte16 = 0xFF;
+    this->position18 = { 0.0f, 0.0f, 0.0f };
+    this->facing24 = 0.0f;
+    this->position28 = { 0.0f, 0.0f, 0.0f };
+    this->facing34 = 0.0f;
+    this->float38 = 0.0f;
+    this->uint3C = 0;
+    this->float40 = 0.0f;
+    this->float44 = 0.0f;
+    this->float48 = 0.0f;
+    this->float4C = 0.0f;
+    this->float50 = 0.0f;
+    this->uint54 = 0;
+}
+
 uint32_t CMovementStatus::Skip(CDataStore* msg) {
     uint32_t moveFlags = 0;
     msg->Get(moveFlags);

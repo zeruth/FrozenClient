@@ -12,6 +12,7 @@ struct CMovementStatus {
     WOWGUID transport = 0;
     uint32_t moveFlags = 0x0;
     uint16_t uint14 = 0;
+    uint8_t byte16 = 0xFF;
     // TODO
     C3Vector position18;
     float facing24 = 0.0f;
@@ -24,7 +25,10 @@ struct CMovementStatus {
     float float48 = 0.0f;
     float float4C = 0.0f;
     float float50 = 0.0f;
+    uint32_t uint54 = 0;
     // TODO
+
+    CMovementStatus();
 
     static uint32_t Skip(CDataStore* msg);
 };

@@ -26,6 +26,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         uint32_t m_postInited       : 1;
         uint32_t m_flag19           : 1;
         uint32_t m_disablePending   : 1;
+        uint32_t m_flag21           : 1;
         // TODO
 
         // Virtual public member functions

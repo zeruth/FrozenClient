@@ -23,6 +23,7 @@ CGObject_C::CGObject_C(uint32_t time, CClientObjCreate& objCreate) {
     this->m_postInited = false;
     this->m_flag19 = false;
     this->m_disablePending = false;
+    this->m_flag21 = false;
 
     // TODO
 

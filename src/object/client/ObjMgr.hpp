@@ -8,6 +8,10 @@
 
 CGObject_C* ClntObjMgrAllocObject(OBJECT_TYPE_ID typeID, WOWGUID guid);
 
+uint32_t ClntObjMgrGetTypeFieldsOffset(OBJECT_TYPE_ID typeID);
+
+int32_t ClntObjMgrEnumVisibleObjects(int32_t (*callback)(WOWGUID, void*), void* param);
+
 WOWGUID ClntObjMgrGetActivePlayer();
 
 void ClntObjMgrFreeObject(CGObject_C* object);

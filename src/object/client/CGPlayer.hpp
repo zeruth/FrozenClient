@@ -151,6 +151,7 @@ class CGPlayer {
         // Public member functions
         uint32_t GetMoney() const;
         uint32_t GetNextLevelXP() const;
+        CQuestLogData* GetQuestLog(int32_t index) const;
         uint32_t GetXP() const;
 
         // Public to match CGUnit::Unit(), which is the sibling accessor for the unit block and has

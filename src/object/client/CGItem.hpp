@@ -34,6 +34,10 @@ class CGItem {
         // other data blocks. The script bindings read these the way the reference does.
         CGItemData* Item() const;
 
+        // ref: FUN_00584ae0
+        // 0 for an item flagged indestructible (ITEM_FIELD_FLAGS bit 3).
+        int32_t GetMaxDurability() const;
+
         // Public static functions
         static uint32_t GetBaseOffset();
         static uint32_t GetBaseOffsetSaved();

@@ -56,6 +56,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Public member functions
         CGUnit_C(uint32_t time, CClientObjCreate& objCreate);
         int32_t GetDisplayID() const;
+        // ref: FUN_004d43c0
+        int32_t IsActiveMover() const;
         CreatureModelDataRec* GetModelData() const;
         float GetModelScale() const;
         float GetRawSmoothFacing() const;
@@ -109,6 +111,31 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         uint32_t GetCreatureTypeFlag26() const;
         int32_t GetCreatureSkinningType() const;
         void PlayEmote(uint32_t emoteID);
+
+        // ref: FUN_00716710
+        bool IsPlayerControlled() const;
+        // ref: FUN_00716fa0
+        bool IsMovingAtWalkPace() const;
+        // ref: FUN_00718a90
+        uint32_t GetCreatureTypeFlag10() const;
+        // ref: FUN_00718b70
+        CGUnit_C* GetControllingPlayer();
+        // ref: FUN_0071b770
+        int32_t GetBasePower(int32_t powerType) const;
+        // ref: FUN_0071b810
+        uint32_t CanFly() const;
+        // ref: FUN_0071c500
+        bool IsOtherPlayerWithFlaggedModel() const;
+        // ref: FUN_0071c570
+        bool IsSpellClickable() const;
+        // ref: FUN_0071c8b0
+        bool IsMovingFasterThanWalkPace() const;
+        // ref: FUN_00721ca0
+        bool IsInNonStanceForm() const;
+        // Sets bit 21 of the object's flag word (CGObject_C::m_flag21).
+        void SetFlag21();
+        // Bit 0 of the vehicle state byte.
+        uint8_t HasMoveFlags2Bit0() const;
 
     protected:
         // Protected member functions
@@ -190,5 +217,72 @@ int32_t AdjustSheathState(int32_t state, const uint8_t* first, const uint8_t* se
 // One packed spline offset from a movement message: 11, 11 and 10 signed bits in quarter yards,
 // taken away from `base`.
 void ReadPackedMovementOffset(CDataStore* msg, const C3Vector& base, C3Vector& out);
+
+// ref: FUN_00717540
+// The AnimationData row standing in for `animID` at behaviour tier `tier`: the row itself when it
+// is its own tier-0 behaviour or already a tiered one, else the first row with that behaviour and
+// tier. The reference passes animID in ESI.
+bool ResolveAnimationBehavior(int32_t animID, int32_t tier, int32_t* out);
+
+// ref: FUN_007176b0
+// AnimationData behaviour id, 0x1fa when the row is missing.
+int32_t GetAnimationBehavior(int32_t animID);
+
+// ref: FUN_00718b30
+// Faction.dbc: the faction has a reputation index.
+bool FactionHasReputation(int32_t factionID);
+
+// ref: FUN_0071c050
+// Scale of the native race model a display dresses (display -> extra -> race -> male/female
+// display), or 1. The reference passes the display record in EAX.
+float GetNativeRaceModelScale(const CreatureDisplayInfoRec* display);
+
+// Predicates over an animation's AnimationData behaviour id. The reference passes the id in EAX
+// for the ones without a stack argument; names follow the ids each tests.
+
+// ref: FUN_0071d2a0
+bool IsJumpLandAnimation(int32_t animID);
+// ref: FUN_0071d2e0
+bool IsRangedAttackAnimation(int32_t animID);
+// ref: FUN_0071d380
+bool IsSpellCastAnimation(int32_t animID);
+// ref: FUN_0071d410
+bool IsReadySpellAnimation(int32_t animID);
+// ref: FUN_0071d450
+bool IsUnarmedAnimation(int32_t animID);
+// ref: FUN_0071d550
+bool IsSpecialAttackAnimation(int32_t animID);
+// ref: FUN_0071d590
+bool IsCombatAnimation(int32_t animID);
+// ref: FUN_0071d6b0
+bool IsBaseStateAnimation(int32_t animID);
+// ref: FUN_0071d7c0
+bool IsJumpAnimation(int32_t animID);
+// ref: FUN_0071d800
+bool IsActionAnimation(int32_t animID);
+// ref: FUN_0071d940
+bool IsEmoteAnimation(int32_t animID);
+// ref: FUN_0071da20
+bool IsThrownAnimation(int32_t animID);
+// ref: FUN_0071da60
+bool IsBowAnimation(int32_t animID);
+// ref: FUN_0071daa0
+bool IsRifleAnimation(int32_t animID);
+// ref: FUN_0071dae0
+bool IsReadyAnimation(int32_t animID);
+// ref: FUN_0071db20
+bool IsAnimationBehavior127Or201To202(int32_t animID);
+// ref: FUN_0071db70
+bool IsAnimationBehavior466To468Or472(int32_t animID);
+// ref: FUN_0071dbc0
+bool IsAnimationBehavior6Or132Or467To468Or472(int32_t animID);
+// ref: FUN_0071dc20
+bool IsAnimationBehavior37To40Or467(int32_t animID);
+// ref: FUN_0071dd80
+bool IsAnimationBehavior1Or131Or466To467(int32_t animID);
+// ref: FUN_0071dde0
+bool IsDeathAnimation(int32_t animID);
+// ref: FUN_0071de50
+bool IsAnimationBehavior133To134(int32_t animID);
 
 #endif
