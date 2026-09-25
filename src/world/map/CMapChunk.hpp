@@ -170,6 +170,9 @@ class CMapChunk : public CMapBaseObj {
         void FillVerticesLocalColor(CMapChunkVertexColor* dst);
         void ComputeBounds();
         void GetBounds(CAaBox* box);
+        // Whether every detail doodad kind this chunk's texture layers call for has its
+        // model in. Asking starts the loads. ref: FUN_007d05f0
+        bool DetailDoodadsReady();
 };
 
 #endif

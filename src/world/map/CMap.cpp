@@ -326,7 +326,9 @@ CGxShader* CMap::GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env) {
 void CMap::MapMemInitialize() {
     CMapChunk::Initialize();
 
-    // TODO FUN_007afee0, FUN_007cb990, FUN_007b2760, FUN_007a03c0; the two 0x2c-byte records at
+    DetailDoodad::Initialize();
+
+    // TODO FUN_007afee0, FUN_007cb990, FUN_007a03c0; the two 0x2c-byte records at
     // DAT_00d253d0 / DAT_00d253a4
 
     for (int32_t i = 0; i < 64 * 64; i++) {

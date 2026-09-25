@@ -1,6 +1,13 @@
 #include "world/map/DetailDoodad.hpp"
 #include "world/CWorldParam.hpp"
 #include "console/CVar.hpp"
+#include "db/Db.hpp"
+#include "world/CWorld.hpp"
+#include "model/CM2Scene.hpp"
+#include "model/CM2Model.hpp"
+#include <storm/Memory.hpp>
+#include <storm/String.hpp>
+#include <new>
 #include "gx/Buffer.hpp"
 #include "gx/Device.hpp"
 #include "gx/CGxDevice.hpp"
@@ -9,6 +16,7 @@
 
 namespace DetailDoodad {
 
+TSGrowableArray<CDoodadModel*> s_models;
 uint32_t s_perChunk = 0;
 uint32_t s_vertexBytes = 0;
 uint32_t s_indexCount = 0;
@@ -96,6 +104,103 @@ void CreateBuffers() {
     }
 
     s_rebuild = 0;
+}
+
+// ref: FUN_007b2760
+// The table is as long as the highest id the DBC carries, so a kind can be looked up by its id
+// with no search; the ids it does not use stay null.
+void Initialize() {
+    // TODO the reference also makes the "WDETAILDOODADINST" object heap the scattered instances
+    // come from, and loads the module's own shaders. Frozen's stand-in already holds a detail
+    // pixel shader; the heap waits for the scatter builder that would use it.
+
+    // The reference takes the highest id straight off the DBC; frozen's WowClientDB keeps that
+    // private, so it is found by looking, which comes to the same table.
+    int32_t maxId = -1;
+
+    for (int32_t i = 0; i < g_groundEffectDoodadDB.GetNumRecords(); i++) {
+        auto rec = g_groundEffectDoodadDB.GetRecordByIndex(i);
+
+        if (rec && rec->m_ID > maxId) {
+            maxId = rec->m_ID;
+        }
+    }
+
+    uint32_t count = maxId < 0 ? 0 : static_cast<uint32_t>(maxId) + 1;
+
+    s_models.SetCount(count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        s_models[i] = nullptr;
+    }
+
+    for (int32_t i = 0; i < g_groundEffectDoodadDB.GetNumRecords(); i++) {
+        auto rec = g_groundEffectDoodadDB.GetRecordByIndex(i);
+
+        if (!rec || rec->m_ID < 0) {
+            continue;
+        }
+
+        auto entry = static_cast<CDoodadModel*>(
+            SMemAlloc(sizeof(CDoodadModel), __FILE__, __LINE__, 0x0));
+
+        if (!entry) {
+            continue;
+        }
+
+        new (entry) CDoodadModel();
+
+        entry->m_rec = rec;
+        s_models[rec->m_ID] = entry;
+    }
+}
+
+// ref: FUN_007b3050
+// The DBC gives a name relative to one folder, so the path is that folder and the name.
+bool EnsureModel(CDoodadModel* entry) {
+    if (entry->m_model) {
+        return true;
+    }
+
+    char path[260];
+
+    uint32_t n = SStrCopy(path, "World\\NoDXT\\Detail\\", sizeof(path));
+    SStrCopy(path + n, entry->m_rec->m_doodadPath, sizeof(path) - n);
+
+    auto scene = CWorld::GetM2Scene();
+
+    entry->m_model = scene ? scene->CreateModel(path, 0) : nullptr;
+
+    if (!entry->m_model) {
+        return false;
+    }
+
+    // TODO FUN_007b1b10 as the loaded callback: the reference is told when the model lands so it
+    // can work out the kind's bounds. Not ported, so nothing reacts to the load.
+
+    return true;
+}
+
+// ref: FUN_007b3530
+// Asking is what starts the load, so a chunk that keeps asking will eventually be told yes.
+bool IsReady(int32_t doodadId) {
+    if (doodadId < 0 || static_cast<uint32_t>(doodadId) >= s_models.Count()) {
+        return false;
+    }
+
+    auto entry = s_models[doodadId];
+
+    if (!entry) {
+        return false;
+    }
+
+    if (entry->m_model) {
+        return entry->m_model->IsLoaded(0, 0) != 0;
+    }
+
+    EnsureModel(entry);
+
+    return false;
 }
 
 }

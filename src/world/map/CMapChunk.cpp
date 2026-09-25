@@ -7,6 +7,7 @@
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidVertexData.hpp"
 #include "db/Db.hpp"
+#include "world/map/DetailDoodad.hpp"
 #include "gx/Gx.hpp"
 #include <storm/Memory.hpp>
 #include <new>
@@ -478,6 +479,37 @@ void CMapChunk::UpdateLiquidVisibility() {
 
         CWorldScene::AddLiquid(liquid, point);
     }
+}
+
+// ref: FUN_007d05f0
+// A chunk scatters grass only once every kind its layers call for is loaded, or it would come up
+// in pieces as the models arrived. Each layer names one ground effect, and each of those names up
+// to four kinds.
+//
+// Nothing calls this yet: the reference asks from inside the scatter builder, and asking is what
+// starts the loads, so calling it earlier would only pull in grass models that nothing draws.
+bool CMapChunk::DetailDoodadsReady() {
+    if (!this->m_header || !this->m_layers) {
+        return true;
+    }
+
+    bool ready = true;
+
+    for (uint32_t i = 0; i < this->m_header->nLayers; i++) {
+        auto effect = g_groundEffectTextureDB.GetRecord(this->m_layers[i].effectId);
+
+        if (!effect) {
+            continue;
+        }
+
+        for (uint32_t slot = 0; slot < 4; slot++) {
+            if (effect->m_doodadID[slot] && !DetailDoodad::IsReady(effect->m_doodadID[slot])) {
+                ready = false;
+            }
+        }
+    }
+
+    return ready;
 }
 
 // ref: FUN_007d3fe0
