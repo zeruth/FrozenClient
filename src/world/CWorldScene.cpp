@@ -117,10 +117,10 @@ void CWorldScene::Initialize() {
 }
 
 // ref: FUN_007d3e10
-// The shaders for one (specular, colour) permutation of the chunk lists: the pixel shader per
-// layer count, as far as the device has texture stages and the shader loaded, and the draw for
-// chunks that have none.
-void CWorldScene::SelectChunkShaders(int32_t specular, int32_t color) {
+// The shaders for one permutation of the chunk lists (a specular layer; a layer carrying flag
+// 0x80): the pixel shader per layer count, as far as the device has texture stages and the
+// shader loaded, and the draw for chunks that have none.
+void CWorldScene::SelectChunkShaders(int32_t specular, int32_t flag80) {
     CWorldScene::s_terrain0PixelShader = nullptr;
     CWorldScene::s_terrain0PixelShaderNoAlpha = nullptr;
 
@@ -142,7 +142,7 @@ void CWorldScene::SelectChunkShaders(int32_t specular, int32_t color) {
     CWorldScene::s_terrain0PixelShaderNoAlpha = CMap::GetTerrain0PixelShader(twoChunk, 0, specular);
 
     for (int32_t layers = 1; layers <= 4; layers++) {
-        auto shader = CMap::GetTerrainPixelShader(twoChunk, layers, shadowLevel, specular, color);
+        auto shader = CMap::GetTerrainPixelShader(twoChunk, layers, shadowLevel, specular, flag80);
 
         if (layers <= GxCaps().m_numTmus && shader && shader->Valid()) {
             CWorldScene::s_layerPixelShaders[layers - 1] = shader;
@@ -154,9 +154,8 @@ void CWorldScene::SelectChunkShaders(int32_t specular, int32_t color) {
 
 // ref: FUN_007cfbe0
 // The frame's share of the terrain vertex constants: the view transform (with its transpose),
-// the native projection with its z row negated (the reference tests the device's
-// transposed-projection flag at +0x1b4, which nothing in the binary sets), the sun in view space
-// and the fog ramp. The point-light block is cleared for the chunks to fill.
+// the native projection, the sun in view space and the fog ramp. The point-light block is
+// cleared for the chunks to fill.
 void CWorldScene::SetupTerrainConstants(const C44Matrix& world, const C44Matrix& view) {
     auto constants = &CWorldScene::s_terrainConstants;
     memset(constants, 0, sizeof(*constants));
@@ -166,10 +165,13 @@ void CWorldScene::SetupTerrainConstants(const C44Matrix& world, const C44Matrix&
     constants->viewTransposed = worldView.Transpose();
     constants->proj = g_theGxDevicePtr->m_projNative;
 
-    constants->proj.c0 = constants->proj.c0 * -1.0f;
-    constants->proj.c1 = constants->proj.c1 * -1.0f;
-    constants->proj.c2 = constants->proj.c2 * -1.0f;
-    constants->proj.c3 = -1.0f * constants->proj.c3;
+    // Diverged: the reference negates the third row of the native projection here (its device
+    // flag at +0x1b4 is never set, so it always does). frozen's view space is +z forward and its
+    // native projection is built for that (GxuXformCreateProjection_Exact puts 1 in c3, and the
+    // stand-in terrain shader drew correctly from view * m_projNative unchanged), so the
+    // negation flipped clip z and D3D clipped every chunk: terrain invisible on the first run,
+    // 2026-09-25. The reference's own view convention that makes the negation right there has
+    // not been traced.
 
     constants->lights[0].attenuation[0] = 1.0f;
     constants->lights[1].attenuation[0] = 1.0f;
@@ -318,6 +320,7 @@ void CWorldScene::RenderChunkLists() {
     STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) debugList;
     const C3Vector& cameraPos = CWorld::GetCameraPos();
 
+    // A list's low permutation bit is "a layer carries flag 0x80", its high bit the specular layer
     for (int32_t permutation = 0; permutation < 4; permutation++) {
         CWorldScene::SelectChunkShaders(permutation >> 1, permutation & 0x1);
 

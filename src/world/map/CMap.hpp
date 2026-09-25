@@ -152,7 +152,7 @@ class CMap {
         static void SetTerrainShaderLevel(int32_t level);
         static CGxShader* GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env);
         static CGxShader* GetTerrainVertexShader(int32_t lights, int32_t layers, int32_t specular, int32_t color, int32_t chunkSpecular, int32_t shadow);
-        static CGxShader* GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t color);
+        static CGxShader* GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t flag80);
         static void MapMemInitialize();
         static void Update(int32_t update);
         static void Render(const C3Vector& cameraPos, float dt);

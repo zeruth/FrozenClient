@@ -155,7 +155,7 @@ class CWorldScene {
 
         // Static functions
         static void Initialize();
-        static void SelectChunkShaders(int32_t specular, int32_t color);
+        static void SelectChunkShaders(int32_t specular, int32_t flag80);
         static void SetupTerrainConstants(const C44Matrix& world, const C44Matrix& view);
         static void RenderTerrain();
         static void RenderChunkLists();

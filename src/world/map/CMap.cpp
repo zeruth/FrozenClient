@@ -264,30 +264,33 @@ CGxShader* CMap::GetTerrainVertexShader(int32_t lights, int32_t layers, int32_t 
 
 // ref: FUN_0079e5c0
 // The pixel shader for a layer count under a shadow level: Terrain1 without shadows, the
-// Terrain2/3 sets (or their PCF variants on the ps_2_0 and arbfp1 profiles) with them
-CGxShader* CMap::GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t color) {
+// Terrain2/3 sets (or their PCF variants on the ps_2_0 and arbfp1 profiles) with them. The x1
+// term is the cube-map specular variant (a layer with MCLY flag 0x400, the list's high bit), the
+// x16 term the variant for a layer carrying flag 0x80 (the list's low bit); the shipped
+// Terrain1.bls confirms it, permutation 1 declares a cube sampler on s0.
+CGxShader* CMap::GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t flag80) {
     layers = layers - 1;
 
     switch (shadowLevel) {
     case 0:
-        return CMap::s_terrain1PixelShaders[color + (layers + (twoChunk + specular * 2) * 4) * 2];
+        return CMap::s_terrain1PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
 
     case 1:
         break;
 
     case 2:
     case 3:
-        return CMap::s_terrain2PixelShaders[color - 8 + layers * 2 + (shadowLevel * 4 + (twoChunk + specular * 2) * 0xc) * 2];
+        return CMap::s_terrain2PixelShaders[specular - 8 + layers * 2 + (shadowLevel * 4 + (twoChunk + flag80 * 2) * 0xc) * 2];
 
     default:
         return nullptr;
     }
 
     if (GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_ps_2_0 && GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_arbfp1) {
-        return CMap::s_terrain2PixelShaders[color + (layers + (twoChunk + specular * 2) * 0xc) * 2];
+        return CMap::s_terrain2PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 0xc) * 2];
     }
 
-    return CMap::s_terrain2PcfPixelShaders[color + (layers + (twoChunk + specular * 2) * 4) * 2];
+    return CMap::s_terrain2PcfPixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
 }
 
 // ref: FUN_0079e4b0
