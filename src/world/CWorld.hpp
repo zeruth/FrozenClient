@@ -68,6 +68,10 @@ class CWorld {
         // Public static variables
         static uint32_t s_enables;
         static uint32_t s_enables2;
+        // The eight scrolling texture offsets (DAT_00cd77f8): one (x, y, 0, 1) per MCLY animation
+        // direction, advanced every update along s_textureScrollDir and wrapped at 64
+        static float s_textureScroll[8][4];
+        static const float s_textureScrollDir[8][2];   // DAT_00adee78
         static Weather* s_weather;
 
         // Public static functions
@@ -88,6 +92,7 @@ class CWorld {
         static const C3Vector& GetFogColor();
         static float GetFogStart();
         static float GetFogEnd();
+        static float GetFogRate();
         static void UpdateOutdoorLight();                  // recompute colours at the current time
         static void SetCameraUnderLiquid(bool under);      // selects the underwater LightParams set
         static bool IsCameraUnderLiquid();

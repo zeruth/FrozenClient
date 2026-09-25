@@ -1,6 +1,7 @@
 #include "model/CM2Lighting.hpp"
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
 #include "world/Terrain.hpp"
 #include "gx/Gx.hpp"
@@ -36,6 +37,17 @@ float CWorld::s_prevFarClip;
 uint32_t CWorld::s_tickTimeFixed;
 uint32_t CWorld::s_tickTimeMs;
 float CWorld::s_tickTimeSec;
+float CWorld::s_textureScroll[8][4];
+const float CWorld::s_textureScrollDir[8][2] = {
+    { -1.0f,  0.0f },
+    { -1.0f,  1.0f },
+    {  0.0f,  1.0f },
+    {  1.0f,  1.0f },
+    {  1.0f,  0.0f },
+    {  1.0f, -1.0f },
+    {  0.0f, -1.0f },
+    { -1.0f, -1.0f },
+};
 Weather* CWorld::s_weather;
 C3Vector CWorld::s_outdoorAmbient = { 0.45f, 0.45f, 0.5f };
 C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
@@ -626,6 +638,10 @@ float CWorld::GetFogEnd() {
     return CWorld::s_fogEnd;
 }
 
+float CWorld::GetFogRate() {
+    return CWorld::s_fogRate;
+}
+
 const C3Vector& CWorld::GetSkyColor(int32_t index) {
     if (index < 0) {
         index = 0;
@@ -789,6 +805,17 @@ void CWorld::Initialize() {
     );
 
     // TODO
+
+    for (int32_t i = 0; i < 8; i++) {
+        CWorld::s_textureScroll[i][0] = 0.0f;
+        CWorld::s_textureScroll[i][1] = 0.0f;
+        CWorld::s_textureScroll[i][2] = 0.0f;
+        CWorld::s_textureScroll[i][3] = 1.0f;
+    }
+
+    // TODO FUN_007bd3a0
+
+    CWorldScene::Initialize();
 
     CMap::Initialize();
 
@@ -1061,8 +1088,27 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
 
     CWorld::s_updateCount++;
 
-    // TODO the per-update callback (DAT_00cd7764), the eight scrolling texture offsets
-    // (DAT_00cd77fc, DAT_00adee78), and the scene camera FUN_00795400(cameraPos, cameraTarget)
+    // TODO the per-update callback (DAT_00cd7764)
+
+    // The reference steps by DAT_00cd76a0, the frame time its ring average (FUN_0077f900, not
+    // ported) produces; the tick time is the nearest thing frozen keeps
+    float scrollStep = CWorld::s_tickTimeSec;
+
+    for (int32_t i = 0; i < 8; i++) {
+        float x = CWorld::s_textureScrollDir[i][0] * scrollStep + CWorld::s_textureScroll[i][0];
+        CWorld::s_textureScroll[i][0] = x;
+        float y = CWorld::s_textureScrollDir[i][1] * scrollStep + CWorld::s_textureScroll[i][1];
+        CWorld::s_textureScroll[i][1] = y;
+
+        if (64.0f <= x) {
+            CWorld::s_textureScroll[i][0] = 0.0f;
+        }
+        if (64.0f <= y) {
+            CWorld::s_textureScroll[i][1] = 0.0f;
+        }
+    }
+
+    // TODO the scene camera FUN_00795400(cameraPos, cameraTarget)
 
     float farClipDelta = CWorld::s_farClip - CWorld::s_updateFarClip;
     bool smallChange = farClipDelta <= 10.0f;

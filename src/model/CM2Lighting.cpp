@@ -8,6 +8,34 @@
 #include "model/CM2Scene.hpp"
 #include <cstring>
 
+// ref: FUN_008349e0
+// The n-th kept point light: its position, diffuse colour and attenuation triple, for the terrain
+// vertex shader constants. Fails past the kept count.
+int32_t CM2Lighting::GetLight(uint32_t index, C3Vector* pos, C3Vector* color, C3Vector* attenuation) {
+    if (index >= this->m_lightCount) {
+        return 0;
+    }
+
+    auto light = this->m_lights[index];
+    *pos = light->m_pos;
+    *color = light->m_dirColor;
+    attenuation->x = light->m_constantAttenuation;
+    attenuation->y = light->m_linearAttenuation;
+    attenuation->z = light->m_quadraticAttenuation;
+    return 1;
+}
+
+// ref: FUN_008355d0
+// The sun after the collected lights are folded into it
+int32_t CM2Lighting::GetSunlight(C3Vector* dir, C3Vector* ambient, C3Vector* diffuse, C3Vector* specular) {
+    this->SetupSunlight();
+    *dir = this->m_sunDir;
+    *ambient = this->m_sunAmbient;
+    *diffuse = this->m_sunDiffuse;
+    *specular = this->m_sunSpecular;
+    return 1;
+}
+
 void CM2Lighting::AddAmbient(const C3Vector& ambColor) {
     this->m_sunAmbient = this->m_sunAmbient + ambColor;
 }

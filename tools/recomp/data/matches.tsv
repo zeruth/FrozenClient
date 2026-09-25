@@ -1971,6 +1971,7 @@ addr	how	frozen	evidence
 00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
 00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683100	annotated	CGxDevice::MasterEnable	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
 006838b0	override	TSGrowableArray<CGxPushedRenderState>::Reserve	
@@ -2217,7 +2218,14 @@ addr	how	frozen	evidence
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
+00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
+00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
+007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
+00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
+007997d0	annotated	CWorldScene::Initialize	tag in src/world/CWorldScene.cpp
+0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
+0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp
 0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
 0079e780	annotated	CMap::ReleaseAllBufEntries	tag in src/world/map/CMap.cpp
 0079e7c0	annotated	CMap::MapMemInitialize	tag in src/world/map/CMap.cpp
@@ -2336,10 +2344,19 @@ addr	how	frozen	evidence
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
+007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
 007d02c0	annotated	CMapRenderChunk::FillBuffers	tag in src/world/map/CMapRenderChunk.cpp
 007d0420	annotated	CMapRenderChunk::DrawStreamed	tag in src/world/map/CMapRenderChunk.cpp
 007d04a0	annotated	CMapRenderChunk::Bind	tag in src/world/map/CMapRenderChunk.cpp
+007d06b0	annotated	BuildTexMatrices	tag in src/world/map/CMapRenderChunk.cpp
+007d28b0	annotated	CMapRenderChunk::DrawLocal	tag in src/world/map/CMapRenderChunk.cpp
+007d2d70	annotated	CMapRenderChunk::DrawWorld	tag in src/world/map/CMapRenderChunk.cpp
+007d3010	annotated	CMapRenderChunk::DrawSolidLocal	tag in src/world/map/CMapRenderChunk.cpp
+007d3240	annotated	CMapRenderChunk::DrawSolidWorld	tag in src/world/map/CMapRenderChunk.cpp
+007d3e10	annotated	CWorldScene::SelectChunkShaders	tag in src/world/CWorldScene.cpp
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
+007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
 007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
 007d6a90	annotated	CMapArea::DestroyChunks	tag in src/world/map/CMapArea.cpp
 007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
@@ -2561,6 +2578,7 @@ addr	how	frozen	evidence
 00834900	annotated	CM2Lighting::Initialize	tag in src/model/CM2Lighting.cpp
 00834940	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
 00834990	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
+008349e0	annotated	CM2Lighting::GetLight	tag in src/model/CM2Lighting.cpp
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
 00834ab0	annotated	CM2Light::Unlink	tag in src/model/CM2Light.cpp
 00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
@@ -2569,6 +2587,7 @@ addr	how	frozen	evidence
 008350a0	override	CM2Lighting::CameraSpace	
 00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
 008353d0	annotated	CM2Lighting::SetupGxLights	tag in src/model/CM2Lighting.cpp
+008355d0	annotated	CM2Lighting::GetSunlight	tag in src/model/CM2Lighting.cpp
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
@@ -2879,6 +2898,8 @@ addr	how	frozen	evidence
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp
 00873ca0	annotated	CShaderEffect::SetLocalLighting	tag in src/gx/shader/CShaderEffect.cpp
+00873ff0	override	ShadowMapGetShaderLevel	
+00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -3317,6 +3338,7 @@ addr	how	frozen	evidence
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
+00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp
 00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
 00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
 009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp

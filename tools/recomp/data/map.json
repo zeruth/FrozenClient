@@ -31357,6 +31357,22 @@
   "refSize": 73,
   "status": "ported"
  },
+ "00683100": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::MasterEnable",
+  "frozenSize": 15,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 33,
+  "status": "ported"
+ },
  "00683560": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -34731,7 +34747,7 @@
   "status": "ported"
  },
  "007831a0": {
-  "branchRatio": 0.276,
+  "branchRatio": 0.379,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.25,
@@ -34740,7 +34756,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Update",
-  "frozenSize": 467,
+  "frozenSize": 1064,
   "how": "override",
   "module": "SEvt.cpp",
   "refSize": 862,
@@ -35306,6 +35322,102 @@
   "refSize": 304,
   "status": "ported"
  },
+ "00793b10": {
+  "branchRatio": 0.357,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderSolidChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 282,
+  "status": "ported"
+ },
+ "00793c30": {
+  "branchRatio": 0.182,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderHiddenChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 225,
+  "status": "ported"
+ },
+ "007989c0": {
+  "branchRatio": 0.278,
+  "constOverlap": 0.023,
+  "faithful": false,
+  "fidelity": 0.889,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderChunkLists",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 991,
+  "status": "ported"
+ },
+ "00798da0": {
+  "branchRatio": 0.211,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.767,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderTerrain",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 1379,
+  "status": "ported"
+ },
+ "007997d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::Initialize",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
+ "0079e470": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTerrainVertexShader",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
  "0079e4b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -35320,6 +35432,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 49,
+  "status": "ported"
+ },
+ "0079e5c0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTerrainPixelShader",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 195,
   "status": "ported"
  },
  "0079e6a0": {
@@ -37210,6 +37338,38 @@
   "refSize": 151,
   "status": "ported"
  },
+ "007cfbe0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::SetupTerrainConstants",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 1130,
+  "status": "ported"
+ },
+ "007d0050": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::SetupVertexShader",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 612,
+  "status": "ported"
+ },
  "007d02c0": {
   "branchRatio": 0.636,
   "constOverlap": 0.067,
@@ -37246,7 +37406,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.889,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapRenderChunk.cpp",
    "src/world/map/cmaprenderchunk.cpp"
@@ -37256,6 +37416,102 @@
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 326,
+  "status": "ported"
+ },
+ "007d06b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "BuildTexMatrices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 173,
+  "status": "ported"
+ },
+ "007d28b0": {
+  "branchRatio": 0.35,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::DrawLocal",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 1207,
+  "status": "ported"
+ },
+ "007d2d70": {
+  "branchRatio": 0.474,
+  "constOverlap": 0.045,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::DrawWorld",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 669,
+  "status": "ported"
+ },
+ "007d3010": {
+  "branchRatio": 0.111,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::DrawSolidLocal",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 534,
+  "status": "ported"
+ },
+ "007d3240": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::DrawSolidWorld",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 323,
+  "status": "ported"
+ },
+ "007d3e10": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::SelectChunkShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 349,
   "status": "ported"
  },
  "007d3f70": {
@@ -37272,6 +37528,22 @@
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 108,
+  "status": "ported"
+ },
+ "007d40a0": {
+  "branchRatio": 0.417,
+  "constOverlap": 0.081,
+  "faithful": false,
+  "fidelity": 0.917,
+  "files": [
+   "src/world/map/CMapRenderChunk.cpp",
+   "src/world/map/cmaprenderchunk.cpp"
+  ],
+  "frozen": "CMapRenderChunk::DrawDebug",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 689,
   "status": "ported"
  },
  "007d6980": {
@@ -40790,6 +41062,22 @@
   "refSize": 75,
   "status": "ported"
  },
+ "008349e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::GetLight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
  "00834a40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -40912,10 +41200,26 @@
    "src/model/cm2lighting.cpp"
   ],
   "frozen": "CM2Lighting::SetupGxLights",
-  "frozenSize": 1014,
+  "frozenSize": 515,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 502,
+  "status": "ported"
+ },
+ "008355d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::GetSunlight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 104,
   "status": "ported"
  },
  "00835640": {
@@ -45498,7 +45802,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.8,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
@@ -45620,6 +45924,38 @@
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 562,
+  "status": "ported"
+ },
+ "00873ff0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapGetShaderLevel",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "OsClipboard.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
+ "00874660": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindTerrain",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 247,
   "status": "ported"
  },
  "00875d30": {
@@ -52627,6 +52963,22 @@
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 829,
+  "status": "ported"
+ },
+ "00984c90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "ImVectorToFloats",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 76,
   "status": "ported"
  },
  "00984f60": {

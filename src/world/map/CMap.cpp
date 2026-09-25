@@ -81,6 +81,8 @@ int32_t CMap::s_loading;
 int32_t CMap::s_streamingMode;
 
 CGxShader* CMap::s_terrainVertexShaders[0x80];
+CGxShader* CMap::s_terrain2PixelShaders[0x60];
+CGxShader* CMap::s_terrain2PcfPixelShaders[0x20];
 CGxShader* CMap::s_terrainPixelShaders[3];
 CGxShader* CMap::s_terrainEnvPixelShader[1];
 CGxShader* CMap::s_terrain1PixelShaders[0x20];
@@ -245,6 +247,42 @@ void CMap::LoadSettings() {
 void CMap::SetTerrainShaderLevel(int32_t level) {
     CMap::s_terrainVertexFormat = level;
     CMap::s_terrainShadersDirty = 1;
+}
+
+// ref: FUN_0079e470
+// The Terrain vertex shader permutation: 64 x point lights, 16 x (layers - 1), 8 x specular
+// support, 4 x vertex colour, 2 x a specular layer in the chunk, 1 x shadow map
+CGxShader* CMap::GetTerrainVertexShader(int32_t lights, int32_t layers, int32_t specular, int32_t color, int32_t chunkSpecular, int32_t shadow) {
+    uint32_t index = (shadow != 0) + (chunkSpecular + (color - 4 + (specular + (layers + lights * 4) * 2) * 2) * 2) * 2;
+    return CMap::s_terrainVertexShaders[index];
+}
+
+// ref: FUN_0079e5c0
+// The pixel shader for a layer count under a shadow level: Terrain1 without shadows, the
+// Terrain2/3 sets (or their PCF variants on the ps_2_0 and arbfp1 profiles) with them
+CGxShader* CMap::GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t color) {
+    layers = layers - 1;
+
+    switch (shadowLevel) {
+    case 0:
+        return CMap::s_terrain1PixelShaders[color + (layers + (twoChunk + specular * 2) * 4) * 2];
+
+    case 1:
+        break;
+
+    case 2:
+    case 3:
+        return CMap::s_terrain2PixelShaders[color - 8 + layers * 2 + (shadowLevel * 4 + (twoChunk + specular * 2) * 0xc) * 2];
+
+    default:
+        return nullptr;
+    }
+
+    if (GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_ps_2_0 && GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_arbfp1) {
+        return CMap::s_terrain2PixelShaders[color + (layers + (twoChunk + specular * 2) * 0xc) * 2];
+    }
+
+    return CMap::s_terrain2PcfPixelShaders[color + (layers + (twoChunk + specular * 2) * 4) * 2];
 }
 
 // ref: FUN_0079e4b0

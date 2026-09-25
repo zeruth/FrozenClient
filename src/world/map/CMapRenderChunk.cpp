@@ -3,7 +3,10 @@
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
+#include "world/ShadowMap.hpp"
 #include "gx/Buffer.hpp"
+#include "gx/RenderState.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Texture.hpp"
@@ -391,4 +394,364 @@ void CMapRenderChunk::UpdateAlphaTextures() {
     }
 
     this->m_flags10 &= ~0x30;
+}
+
+// ----------------------------------------------------------------------------------------------
+// Drawing
+
+// The MCLY animation speed divisors (DAT_00af14f8), indexed by bits 3-5 of the layer flags
+static const float s_layerScrollSpeeds[8] = { 64.0f, 48.0f, 32.0f, 16.0f, 8.0f, 4.0f, 2.0f, 1.0f };
+
+// ref: FUN_007d06b0
+// The fixed-function texture matrices for local-space chunks: chunk XY scaled into layer UV
+// (with the axes swapped) and moved by the camera-relative origin, and the same at an eighth for
+// the alpha map
+static void BuildTexMatrices(C44Matrix* layer, C44Matrix* alpha, const C3Vector* offset, float scale) {
+    layer->Scale(scale);
+    float a0 = layer->a0, a1 = layer->a1, a2 = layer->a2, a3 = layer->a3;
+    layer->a0 = layer->b0; layer->a1 = layer->b1; layer->a2 = layer->b2; layer->a3 = layer->b3;
+    layer->b0 = a0; layer->b1 = a1; layer->b2 = a2; layer->b3 = a3;
+    layer->Translate(*offset);
+
+    alpha->Scale(scale * 0.125f);
+    a0 = alpha->a0; a1 = alpha->a1; a2 = alpha->a2; a3 = alpha->a3;
+    alpha->a0 = alpha->b0; alpha->a1 = alpha->b1; alpha->a2 = alpha->b2; alpha->a3 = alpha->b3;
+    alpha->b0 = a0; alpha->b1 = a1; alpha->b2 = a2; alpha->b3 = a3;
+    alpha->Translate(*offset);
+}
+
+// ref: FUN_007d0050
+// The terrain vertex shader and its per-chunk constants: the scene lights at the chunk's bounding
+// sphere (the nearest three as point lights, the rest folded into the sun), the chunk origin, the
+// UV scale of every texture (the alpha map's halved along the paired axis of a two-chunk batch),
+// then the permutation the chunk needs.
+void CMapRenderChunk::SetupVertexShader(int32_t textureCount, int32_t chunkSpecular) {
+    int32_t specular = CMap::s_terrainSpecular;
+    int32_t color = CMap::s_terrainVertexFormat == 2;
+
+    CM2Lighting lighting;
+    CAaSphere sphere = { this->m_center, this->m_radius };
+    lighting.Initialize(nullptr, sphere);
+    CWorld::GetM2Scene()->SelectLights(&lighting);
+    CMap::SetupChunkLighting(&lighting);
+
+    auto constants = &CWorldScene::s_terrainConstants;
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+    int32_t lights = 0;
+
+    for (uint32_t i = 0; i < 3; i++) {
+        C3Vector pos = { 0.0f, 0.0f, 0.0f };
+        auto light = &constants->lights[i];
+
+        if (!lighting.GetLight(i, &pos, reinterpret_cast<C3Vector*>(light->color), reinterpret_cast<C3Vector*>(light->attenuation))) {
+            light->pos[0] = 0.0f;
+            light->pos[1] = 0.0f;
+            light->pos[2] = 0.0f;
+            light->pos[3] = 0.0f;
+            light->color[0] = 0.0f;
+            light->color[1] = 0.0f;
+            light->color[2] = 0.0f;
+            light->color[3] = 0.0f;
+            light->attenuation[0] = 1.0f;
+            light->attenuation[1] = 0.0f;
+            light->attenuation[2] = 0.0f;
+            light->attenuation[3] = 0.0f;
+        } else {
+            light->pos[0] = pos.x - cameraPos.x;
+            light->pos[1] = pos.y - cameraPos.y;
+            light->pos[2] = pos.z - cameraPos.z;
+            light->pos[3] = 1.0f;
+            lights = 1;
+        }
+    }
+
+    constants->position[0] = this->m_position.x;
+    constants->position[1] = this->m_position.y;
+    constants->position[2] = this->m_position.z;
+    constants->position[3] = 0.0f;
+
+    int32_t layers = textureCount - 1;
+    float invCellSize = CMapChunk::s_invCellSize;
+    float scale = -invCellSize;
+
+    if (layers) {
+        constants->texScale[0][0] = scale;
+        constants->texScale[0][1] = scale;
+        constants->texScale[0][2] = 0.0f;
+        constants->texScale[0][3] = 0.0f;
+
+        for (int32_t i = 1; i < layers; i++) {
+            constants->texScale[i][0] = constants->texScale[0][0];
+            constants->texScale[i][1] = constants->texScale[0][1];
+            constants->texScale[i][2] = constants->texScale[0][2];
+            constants->texScale[i][3] = constants->texScale[0][3];
+        }
+    }
+
+    float alphaX = scale * 0.125f;
+    float alphaY = 0.125f * scale;
+
+    if (this->m_flags & 0x1) {
+        alphaX = invCellSize * -0.0625f;
+    } else if (this->m_flags & 0x2) {
+        alphaY = invCellSize * -0.0625f;
+    }
+
+    constants->texScale[layers][0] = alphaX;
+    constants->texScale[layers][1] = alphaY;
+    constants->texScale[layers][2] = 0.0f;
+    constants->texScale[layers][3] = 0.0f;
+
+    int32_t shadowLevel = ShadowMapGetShaderLevel();
+    auto shader = CMap::GetTerrainVertexShader(lights, layers, specular, color, chunkSpecular, shadowLevel != 0);
+    g_theGxDevicePtr->RsSet(GxRs_VertexShader, shader);
+    g_theGxDevicePtr->ShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(constants), CWorldScene::TERRAIN_CONSTANT_COUNT);
+}
+
+// ref: FUN_007d28b0
+// Draws a local-space render chunk through the pixel shader already selected: each layer's
+// texture on its own stage with a fixed-function texture matrix (scrolled for animated layers),
+// the alpha map on the stage after them, then the batch
+void CMapRenderChunk::DrawLocal() {
+    g_theGxDevicePtr->RsSet(GxRs_BlendingMode, 0);
+    g_theGxDevicePtr->RsSetAlphaRef();
+
+    C44Matrix layerMatrix;
+    C44Matrix alphaMatrix;
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+    C3Vector offset = {
+        cameraPos.x - this->m_position.x,
+        cameraPos.y - this->m_position.y,
+        cameraPos.z - this->m_position.z
+    };
+    BuildTexMatrices(&layerMatrix, &alphaMatrix, &offset, -CMapChunk::s_invCellSize);
+
+    if (this->m_flags10 & 0x1) {
+        float mask[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        for (uint32_t i = 0; i < this->m_layerCount; i++) {
+            if (this->m_layers[i].flags & 0x80) {
+                mask[i] = 0.0f;
+            }
+        }
+
+        g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 1, mask, 1);
+    }
+
+    int32_t chunkSpecular = (this->m_flags10 & 0x4) != 0;
+    int32_t i = 0;
+
+    for (; i < this->m_layerCount; i++) {
+        auto layer = &this->m_layers[i];
+        auto texture = TextureGetGxTex(layer->texture, 0, nullptr);
+        g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), texture);
+        GxTexSetWrap(texture, GxTex_Wrap, GxTex_Wrap);
+
+        if (i == 0 && chunkSpecular) {
+            g_theGxDevicePtr->RsSet(GxRs_TexGen0, 4);
+            g_theGxDevicePtr->RsSet(GxRs_Unk61, 0);
+        } else {
+            C44Matrix matrix = layerMatrix;
+
+            if (layer->flags & 0x40) {
+                uint32_t dir = layer->flags & 0x7;
+                float speed = (1.0f / CMapChunk::s_invCellSize) / s_layerScrollSpeeds[(layer->flags >> 3) & 0x7];
+                C3Vector scroll = {
+                    CWorld::s_textureScroll[dir][0] * speed,
+                    CWorld::s_textureScroll[dir][1] * speed,
+                    CWorld::s_textureScroll[dir][2] * speed
+                };
+                matrix.Translate(scroll);
+            }
+
+            g_theGxDevicePtr->XformSet(static_cast<EGxXform>(GxXform_Tex0 + i), matrix);
+        }
+    }
+
+    auto alpha = TextureGetGxTex(this->m_alphaTexture, 1, nullptr);
+    g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), alpha);
+    g_theGxDevicePtr->XformSet(static_cast<EGxXform>(GxXform_Tex0 + i), alphaMatrix);
+
+    g_theGxDevicePtr->Draw(&this->m_batch, 1);
+
+    for (; i >= 0; i--) {
+        g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
+    }
+}
+
+// ref: FUN_007d2d70
+// Draws a world-space render chunk through the pixel shader already selected: the layers and
+// alpha map on their stages, the scroll of animated layers in the vertex constants, the vertex
+// shader set up for the chunk, then the batch
+void CMapRenderChunk::DrawWorld() {
+    g_theGxDevicePtr->RsSet(GxRs_BlendingMode, 0);
+    g_theGxDevicePtr->RsSetAlphaRef();
+
+    if (this->m_flags10 & 0x1) {
+        float mask[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        for (uint32_t i = 0; i < this->m_layerCount; i++) {
+            if (this->m_layers[i].flags & 0x80) {
+                mask[i] = 0.0f;
+            }
+        }
+
+        g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 1, mask, 1);
+    }
+
+    int32_t chunkSpecular = (this->m_flags10 & 0x4) != 0;
+    auto constants = &CWorldScene::s_terrainConstants;
+    int32_t i = 0;
+
+    for (; i < this->m_layerCount; i++) {
+        auto layer = &this->m_layers[i];
+        auto texture = TextureGetGxTex(layer->texture, 0, nullptr);
+        g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), texture);
+        GxTexSetWrap(texture, GxTex_Wrap, GxTex_Wrap);
+
+        if (layer->flags & 0x40) {
+            uint32_t dir = layer->flags & 0x7;
+            float speed = (1.0f / CMapChunk::s_invCellSize) / s_layerScrollSpeeds[(layer->flags >> 3) & 0x7];
+            float y = 0.125f * CWorld::s_textureScroll[dir][1] * speed;
+            constants->layerScroll[i][0] = -(CWorld::s_textureScroll[dir][0] * speed * 0.125f);
+            constants->layerScroll[i][1] = -y;
+        }
+    }
+
+    CGxTex* alpha = nullptr;
+    if (this->m_alphaTexture) {
+        alpha = TextureGetGxTex(this->m_alphaTexture, 1, nullptr);
+    }
+    g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), alpha);
+
+    this->SetupVertexShader(this->m_layerCount + 1, chunkSpecular);
+
+    g_theGxDevicePtr->Draw(&this->m_batch, 1);
+
+    for (uint32_t n = 0; n < this->m_layerCount; n++) {
+        if (this->m_layers[n].flags & 0x40) {
+            constants->layerScroll[n][0] = 0.0f;
+            constants->layerScroll[n][1] = 0.0f;
+            g_theGxDevicePtr->ShaderConstantsSet(GxSh_Vertex, CWorldScene::TERRAIN_CONSTANT_LAYER_SCROLL + n, constants->layerScroll[n], 1);
+        }
+    }
+
+    for (; i >= 0; i--) {
+        g_theGxDevicePtr->RsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
+    }
+}
+
+// ref: FUN_007d3010
+// A local-space chunk with no textures of its own: the grey placeholder on stage 0 and, with
+// terrain shaders, black on stage 1 (grey again without), identity texture matrices
+void CMapRenderChunk::DrawSolidLocal() {
+    C44Matrix identity;
+    g_theGxDevicePtr->XformSet(GxXform_Tex0, identity);
+    g_theGxDevicePtr->XformSet(GxXform_Tex1, identity);
+
+    g_theGxDevicePtr->RsSet(GxRs_BlendingMode, 0);
+    g_theGxDevicePtr->RsSetAlphaRef();
+
+    auto texture = TextureGetGxTex(CWorldScene::s_solidTexture, 1, nullptr);
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, texture);
+    GxTexSetWrap(texture, GxTex_Wrap, GxTex_Wrap);
+
+    auto second = CMap::s_terrainShaders ? CWorldScene::s_blackTexture : CWorldScene::s_solidTexture;
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, TextureGetGxTex(second, 1, nullptr));
+
+    g_theGxDevicePtr->Draw(&this->m_batch, 1);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<CGxTex*>(nullptr));
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, static_cast<CGxTex*>(nullptr));
+}
+
+// ref: FUN_007d3240
+// The world-space counterpart: grey and black on the first two stages, the vertex shader set up
+// for one layer and the alpha map
+void CMapRenderChunk::DrawSolidWorld() {
+    g_theGxDevicePtr->RsSet(GxRs_BlendingMode, 0);
+    g_theGxDevicePtr->RsSetAlphaRef();
+
+    auto texture = TextureGetGxTex(CWorldScene::s_solidTexture, 1, nullptr);
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, texture);
+    GxTexSetWrap(texture, GxTex_Wrap, GxTex_Wrap);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, TextureGetGxTex(CWorldScene::s_blackTexture, 1, nullptr));
+
+    this->SetupVertexShader(2, 0);
+
+    g_theGxDevicePtr->Draw(&this->m_batch, 1);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<CGxTex*>(nullptr));
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, static_cast<CGxTex*>(nullptr));
+}
+
+// ref: FUN_007d40a0
+// The normal-vector debug pass (CWorld enable bit 0x40000000): one white line from every vertex
+// along its normal, streamed from world-space vertices with no shaders, fog or lighting
+void CMapRenderChunk::DrawDebug() {
+    GxRsPush();
+
+    g_theGxDevicePtr->RsSet(GxRs_Fog, 0);
+    g_theGxDevicePtr->RsSet(GxRs_Lighting, 0);
+    g_theGxDevicePtr->RsSet(GxRs_VertexShader, static_cast<CGxShader*>(nullptr));
+    g_theGxDevicePtr->RsSet(GxRs_PixelShader, static_cast<CGxShader*>(nullptr));
+
+    int32_t vertexCount = this->m_chunk2 ? 0x122 : 0x91;
+    int32_t lineVertexCount = vertexCount * 2;
+
+    auto vertexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x10, lineVertexCount);
+    auto vertices = reinterpret_cast<float*>(g_theGxDevicePtr->BufLock(vertexBuf));
+    auto indexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, lineVertexCount);
+    auto indices = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(indexBuf));
+
+    CMapChunkVertex chunkVertices[0x91];
+    uint16_t index = 0;
+
+    for (int32_t n = 0; n < 2; n++) {
+        auto chunk = n ? this->m_chunk2 : this->m_chunk;
+
+        if (!chunk) {
+            continue;
+        }
+
+        C3Vector offset = { 0.0f, 0.0f, 0.0f };
+        chunk->FillVerticesWorld(chunkVertices, &offset);
+
+        for (int32_t v = 0; v < 0x91; v++) {
+            auto src = &chunkVertices[v];
+            vertices[0] = src->position.x;
+            vertices[1] = src->position.y;
+            vertices[2] = src->position.z;
+            reinterpret_cast<uint32_t*>(vertices)[3] = 0xFFFFFFFF;
+            vertices[4] = src->position.x + src->normal.x * 0.75f;
+            vertices[5] = src->position.y + src->normal.y * 0.75f;
+            vertices[6] = src->position.z + src->normal.z * 0.75f;
+            reinterpret_cast<uint32_t*>(vertices)[7] = 0xFFFFFFFF;
+            vertices += 8;
+
+            indices[0] = index;
+            indices[1] = index + 1;
+            indices += 2;
+            index += 2;
+        }
+    }
+
+    g_theGxDevicePtr->BufUnlock(vertexBuf, 0);
+    vertexBuf->unk1C = 1;
+    GxPrimVertexPtr(vertexBuf, GxVBF_PC);
+
+    g_theGxDevicePtr->BufUnlock(indexBuf, 0);
+    indexBuf->unk1C = 1;
+    g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_Lines;
+    batch.m_start = 0;
+    batch.m_count = lineVertexCount;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = static_cast<uint16_t>(lineVertexCount);
+    g_theGxDevicePtr->Draw(&batch, 1);
+
+    GxRsPop();
 }

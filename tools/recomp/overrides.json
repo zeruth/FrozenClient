@@ -16,6 +16,50 @@
     "status": "excluded",
     "note": "TSGrowableArray<CMapChunkBufBlock>::SetCount instantiation (constructs each new block through FUN_007b9cb0); squall template"
   },
+  "007b0f10": {
+    "status": "excluded",
+    "note": "CM2Lighting default construction folded with Initialize(nullptr, {centre, 0}) into one helper (2 callers), the sibling of 00790440; frozen constructs in place"
+  },
+  "00982950": {
+    "status": "excluded",
+    "note": "three-dword copy (C3Vector assignment) folded into one COMDAT body, 21 callers"
+  },
+  "007d3230": {
+    "status": "excluded",
+    "note": "thunk to FUN_007d3010 (CMapRenderChunk::DrawSolidLocal)"
+  },
+  "00790440": {
+    "status": "excluded",
+    "note": "CM2Lighting default construction folded with Initialize(nullptr, sphere) into one helper (11 callers); frozen constructs the CM2Lighting in place and calls Initialize"
+  },
+  "007d0760": {
+    "status": "unlinked",
+    "note": "fixed-function terrain chunk draw for paired chunks, selected into DAT_00d25098 when terrain shaders are off (CMap::s_terrainShaders == 0). Not ported: frozen draws terrain through the shader path only; CWorldScene::SelectChunkShaders routes it to a no-op with a note"
+  },
+  "007d0d70": {
+    "status": "unlinked",
+    "note": "fixed-function terrain chunk draw for single chunks, the no-shader sibling of 007d0760; not ported for the same reason"
+  },
+  "007d13f0": {
+    "status": "unlinked",
+    "note": "local-space paired-chunk draw for a layer count that has no pixel shader (DAT_00d1d080 slot null); not ported, frozen loads every Terrain1 permutation"
+  },
+  "007d1ad0": {
+    "status": "unlinked",
+    "note": "local-space single-chunk draw for a layer count without a pixel shader; not ported (see 007d13f0)"
+  },
+  "007d20a0": {
+    "status": "unlinked",
+    "note": "world-space paired-chunk draw for a layer count without a pixel shader; not ported (see 007d13f0)"
+  },
+  "007d2520": {
+    "status": "unlinked",
+    "note": "world-space single-chunk draw for a layer count without a pixel shader; not ported (see 007d13f0)"
+  },
+  "005eeb70": {
+    "status": "excluded",
+    "note": "nullsub (1692 callers), the draw of the hidden chunk list among them"
+  },
   "_": "Hand-confirmed reference -> frozen links. Keys are reference addresses; frozen is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no frozen name). recomp.py trusts this file over every automatic match. One frozen name may serve several addresses (overload sets, COMDAT copies).",
   "004fb080": {
     "frozen": "CGWorldFrame::OnFrameRender",
@@ -1813,8 +1857,9 @@
     "note": "The compressed-quaternion instantiation of frozen's M2AnimateTrack template: ushort x4 keys scaled by 1/32767 minus one, and a call to FUN_008284d0, already linked as CM2Model::FindKey. Its second half -- the blend against the secondary sequence -- is not ported; the note at the end of M2AnimateTrack says why the feeder has to come first. Read 2026-09-24. No space after the comma: that is how frozen-pdb.txt spells it, and a name that is not in there binds to nothing. Status `faithful` is a hand verdict, NOT a measurement: the call-order score for this pair is 0% and always will be, because the clang inventory keys the template by its generic name and the instantiation reaches `frozen` only through the PDB, which carries a symbol and no body. There is nothing for the matcher to compare. Recorded so --fix stops offering a function whose number cannot move."
   },
   "00873ff0": {
-    "status": "unlinked",
-    "note": "a 24-byte global accessor with 15 callers: returns table[0x00b1d554 + i*4] where i is 0 when the flag at 0x00b1d51c is set and [0x00d43154] otherwise, i.e. \"the current shader effect, unless an override is active\". CM2Scene::ComputeElementShaders calls it and CGxDevice::Caps and nothing else, which is why that function measures 0% call-order recall against frozen's: frozen computes the permutation inline from the material, the lighting and the skin section rather than reading a global. A decomposition difference, not missing behaviour -- checked 2026-09-23 before concluding the 0% meant a defect."
+    "frozen": "ShadowMapGetShaderLevel",
+    "status": "ported",
+    "note": "a 24-byte global accessor with 15 callers: returns table[0x00b1d554 + i*4] where i is 0 when the flag at 0x00b1d51c is set and [0x00d43154] otherwise. docs/ref/parity-shadowmap.md identifies the table as {0,1,1,2,2,3,3} indexed by extShadowQuality with the realloc flag masking it: the shadow-map shader level. Ported 2026-09-25 as ShadowMapGetShaderLevel (src/world/ShadowMap.cpp), always 0 until the shadow map lands. CM2Scene::ComputeElementShaders reads it too; frozen's version computes the permutation inline, which is why that function measured 0% recall (checked 2026-09-23)."
   },
   "0083dc90": {
     "frozen": "CM2Shared::Release",

@@ -51,6 +51,8 @@ class CM2Lighting {
         void SetFog(const C3Vector& fogColor, float fogStart, float fogEnd);
         void SetFog(const C3Vector& fogColor, float fogStart, float fogEnd, float fogDensity);
         static uint8_t FogColorByte(float c);
+        int32_t GetLight(uint32_t index, C3Vector* pos, C3Vector* color, C3Vector* attenuation);
+        int32_t GetSunlight(C3Vector* dir, C3Vector* ambient, C3Vector* diffuse, C3Vector* specular);
         void SetupGxFog();
         void SetupGxLights(const C3Vector* a2);
         void SetupSunlight();

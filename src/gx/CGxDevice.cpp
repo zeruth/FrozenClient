@@ -950,6 +950,7 @@ void CGxDevice::ITexWHDStartEnd(CGxTex* texId, uint32_t& width, uint32_t& height
     }
 }
 
+// ref: FUN_00683100
 int32_t CGxDevice::MasterEnable(EGxMasterEnables state) {
     return ((1 << state) & this->m_appMasterEnables) != 0;
 }

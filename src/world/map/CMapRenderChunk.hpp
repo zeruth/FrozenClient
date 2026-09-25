@@ -86,6 +86,12 @@ class CMapRenderChunk {
         void ReleaseLayers();
         void ReleaseBufEntry();
         void UpdateAlphaTextures();
+        void SetupVertexShader(int32_t textureCount, int32_t chunkSpecular);
+        void DrawLocal();
+        void DrawWorld();
+        void DrawSolidLocal();
+        void DrawSolidWorld();
+        void DrawDebug();
 };
 
 #endif
