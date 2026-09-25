@@ -177,34 +177,29 @@ builders and the two-chunk pairing all draw through `CMap::Render` now, and the 
 the look. `CGWorldFrame::OnWorldRender` calls `CMap::Render` before the stand-in `TerrainRender`,
 whose chunk pass is gone.
 
-**Map objects are the current item and are most of the way there, none of it run.** Loaded,
-culled, aged and buffered; the draw is written but nothing calls it. What landed, in order:
-the load chain and the visibility path, root and group ageing, the named shader effect registry
-(`CShaderEffectManager::LoadEffectFile` parses the five `.wfx` files), `CMapObj::Initialize`
-binding each MOMT shader id to its effect, `VBBList` plus `CMapObjGroupBuffers.cpp` for the group's
-GPU buffers, the five pieces of per-batch render state in `CMapObjDraw.cpp`, and
-`CMapObjGroup::DrawBatches`.
+**Map objects: the whole draw chain is ported, and none of it has been run.** Loaded, culled,
+aged, buffered and drawn; the only thing between here and buildings on screen is the wiring.
+What landed, in order: the load chain and the visibility path, root and group ageing, the named
+shader effect registry (`CShaderEffectManager::LoadEffectFile` parses the five `.wfx` files),
+`CMapObj::Initialize` binding each MOMT shader id to its effect, `VBBList` plus
+`CMapObjGroupBuffers.cpp` for the group's GPU buffers, the per-batch render state in
+`CMapObjDraw.cpp`, all three group draws (flat, three-range, outdoor), `CWFrustum` and the
+per-doorway record list, `CMapObj::Render`, `CWorldScene::RenderMapObjs`, and the portal light
+bake with the five tempest geometry helpers it needed.
 
-Two facts worth not re-deriving: the WMO draw always takes the shader path, because the
-reference's shader-level global reads a constant 5; and `VBBList`'s block-sharing mode is dead in
+Three facts worth not re-deriving: the WMO draw always takes the shader path, because the
+reference's shader-level global reads a constant 5; `VBBList`'s block-sharing mode is dead in
 3.3.5a, both lists being built with the flag clear, so only the one-pool-per-block path needs
-writing.
+writing; and `CMapObj::Render` transforms each frustum record by the def's inverse placement,
+which is what lets the per-batch cull test a batch's raw group-space box.
 
-What the map object work still needs before the stand-in's WMO half can retire:
+What the map object work still needs:
 
-- `CMapObj::Render` (`FUN_007abf50`), which walks the frustum records and calls `DrawBatches`
-  for each.
-- `CWorldScene::RenderMapObjs` (`FUN_007964a0`), the pass itself, and its wiring into
-  `CMap::Render`. **Turning it on and removing the stand-in's WMO draw is one change that needs
-  one run**, because until then both would draw.
-- The outdoor group draw (`FUN_007a9380`), taken when the root's MOHD is flagged outdoor.
-  `DrawBatches` returns early there today, so those groups draw nothing.
-- The per-vertex portal light bake (`FUN_007d78c0`), which darkens a group's colours where a
-  portal occludes.
-- The portal walk (`FUN_007b3b20` / `FUN_007ad1f0`) and the interior path behind
-  `CWorldScene::s_cameraGroup`.
-- A flat grey fallback texture (the reference's `FUN_004b9550` at startup, kept at 0x00cd8618),
-  without which a batch whose texture is still loading is skipped rather than drawn untextured.
+- **The wiring.** `CWorldScene::RenderMapObjs` is not called. Turning it on means removing the
+  stand-in's WMO draw in the same change, or both would draw. **One change, one run.**
+- The interior path: the portal walk (`FUN_007ac060` and its tree, `FUN_007ad350`,
+  `FUN_007b3b20`) behind `CWorldScene::s_cameraGroup`, which frozen never sets. Only matters
+  with the camera inside a building.
 - The two light gaps `CMapObjDraw.cpp` documents: one fog set where the reference picks between
   two, and the exterior/interior ambient and diffuse, which the reference reads from two
   LightParams columns per zone.
