@@ -44368,7 +44368,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowEntities",
-  "frozenSize": 723,
+  "frozenSize": 738,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 521,
@@ -44624,7 +44624,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowChunks",
-  "frozenSize": 929,
+  "frozenSize": 976,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 561,
@@ -44640,7 +44640,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowMapObjDefs",
-  "frozenSize": 806,
+  "frozenSize": 860,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 243,
@@ -48482,20 +48482,20 @@
   "status": "ported"
  },
  "007cce00": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOccludedByVolumes",
-  "frozenSize": 0,
+  "frozenSize": 441,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 403,
-  "status": "stub"
+  "status": "ported"
  },
  "007cde10": {
   "branchRatio": -1.0,

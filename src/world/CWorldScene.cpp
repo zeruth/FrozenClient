@@ -49,6 +49,8 @@ int32_t CWorldScene::s_frustumDepth;
 C3Vector CWorldScene::s_cameraPos;
 C3Vector CWorldScene::s_cameraTarget;
 C3Vector CWorldScene::s_viewDir;
+TSGrowableArray<C4Plane> CWorldScene::s_occlusionPlanes;
+TSGrowableArray<CWorldScene::OcclusionVolume> CWorldScene::s_occlusionVolumes;
 float CWorldScene::s_cameraLiquidDepth;
 uint32_t CWorldScene::s_cameraLiquidType;
 C4Plane CWorldScene::s_viewPlane;
@@ -899,9 +901,41 @@ uint32_t CWorldScene::SphereOccluded(const C3Vector& center, float radius, uint3
 // Whether a sphere sits entirely behind one of the occlusion volumes (DAT_00d2dcf0, plane
 // ranges into DAT_00d2dce0). No volumes are registered yet, so the reference's own early-out
 // applies.
+// ref: FUN_007cce00
+// A sphere is hidden by a volume when it sits fully behind every one of that volume's planes --
+// one plane it is in front of is enough to see it past. The radius is added to the signed
+// distance so a sphere only grazing a plane still counts as in front.
+//
+// The volumes come from the low-detail terrain (the same lazy setup FUN_007cd850 drives), which
+// frozen has not ported, so the list is empty and this answers no to everything. That is the
+// safe direction: nothing is wrongly culled while it stands.
 int32_t CWorldScene::SphereOccludedByVolumes(const CAaSphere& sphere) {
-    // TODO the volume list: for each, every plane's signed distance to the centre must be at
-    // most -radius for the sphere to be occluded
+    for (uint32_t v = 0; v < CWorldScene::s_occlusionVolumes.Count(); v++) {
+        const auto& volume = CWorldScene::s_occlusionVolumes[v];
+
+        int32_t behind = 0;
+
+        while (behind < volume.planeCount) {
+            const auto& plane = CWorldScene::s_occlusionPlanes[volume.firstPlane + behind];
+
+            float distance = plane.n.x * sphere.c.x
+                           + plane.n.y * sphere.c.y
+                           + plane.n.z * sphere.c.z
+                           + plane.d
+                           + sphere.r;
+
+            if (distance > 0.0f) {
+                break;
+            }
+
+            behind++;
+        }
+
+        if (behind == volume.planeCount) {
+            return 1;
+        }
+    }
+
     return 0;
 }
 

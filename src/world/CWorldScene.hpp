@@ -128,6 +128,16 @@ class CWorldScene {
         static C3Vector s_viewDir;                          // DAT_00cd8f74: unit camera-to-target
         // How far the camera is below the liquid it is in, zero when it is in none. What the
         // underwater darkening reads to decide how deep the water looks.
+        // One distant occluder: a run of planes in s_occlusionPlanes that together bound the
+        // volume it hides. Filled by the low-detail terrain, which is not ported, so the list
+        // is empty and nothing is ever occluded by one.
+        struct OcclusionVolume {
+            int32_t firstPlane;     // +0x00
+            int32_t planeCount;     // +0x04
+        };
+
+        static TSGrowableArray<C4Plane> s_occlusionPlanes;   // DAT_00d2dcd8
+        static TSGrowableArray<OcclusionVolume> s_occlusionVolumes;  // DAT_00d2dce8
         static float s_cameraLiquidDepth;                   // DAT_00cd8790
         // Which LiquidType the camera was in last frame, so a change can be noticed.
         static uint32_t s_cameraLiquidType;
