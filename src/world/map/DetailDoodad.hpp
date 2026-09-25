@@ -92,8 +92,17 @@ static const float ROUND_BIAS = 0.5f;                 // DAT_00af0abc
 //     MCCV (or white, and darkened where MCSH shadows it), the rotation from (r + 1) * TAU_HALF
 //     and the scale from r * SCALE_JITTER + 1.
 //
-// What remains unported is FUN_007b31e0, which takes all of that and fills one instance, and
-// the 0xa4-byte instance layout it fills.
+// FUN_007b31e0, which takes all of that and fills one instance, is decoded too. The instance
+// is 0xa4 bytes from the WDETAILDOODADINST heap and holds four batches of 0x24: a model key,
+// running vertex and index totals, and a growable array of 0x2c-byte placements (cell, kind,
+// position, rotation, scale, plane, colour). A placement joins the batch whose model matches
+// and which still has room in one buffer of the ring, so a chunk draws at most four models.
+//
+// WHAT STANDS BETWEEN HERE AND RETIRING THE STAND-IN, which is more than the builder: frozen's
+// Terrain.cpp already scatters, batches and draws grass today, so porting the builder alone
+// would fill instances nothing renders while the stand-in carried on. The buffer fill and the
+// draw pass have to land with it, the same way the terrain doodads had to move in one change.
+// Until all three are in, this module's value is that none of it needs working out any more.
 
 // One kind of detail doodad: the row that names it, and the model once something has asked for
 // it. The model is not opened until a chunk that wants this kind comes into range.
