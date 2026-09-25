@@ -25,3 +25,6 @@ Logs/
 # Python bytecode from the tools under tools/
 __pycache__/
 *.pyc
+
+# recomp: rendered reference modules are regenerated from the corpus
+/docs/recomp/modules

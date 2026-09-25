@@ -2,3 +2,7 @@ data/frozen-pdb.txt
 data/clang-cache.json
 data/trace-ref.jsonl
 data/trace-frozen.jsonl
+data/corpus.jsonl
+data/corpus.jsonl.bak
+data/corpus.jsonl.new
+data/corpus.jsonl.part

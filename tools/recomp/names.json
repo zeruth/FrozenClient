@@ -1,0 +1,57 @@
+{
+  "_about": [
+    "Recovered names for the reference binary, applied by tools/recomp/corpus.py when it renders a",
+    "decompilation. A name here is a claim as strong as a // ref: tag: it says what the function or",
+    "global IS, not what it resembles. Linked frozen names come from data/map.json automatically and",
+    "do not need to be repeated here; add a function only when it is not linked yet or the frozen",
+    "name is wrong. Keys are 8-digit lower-case hex reference addresses.",
+    "functions: addr -> name.  globals: addr -> {name, type, note}.",
+    "classes: class -> {\"0xNN\": {name, type, note}}.  this: addr -> class (which class a function's",
+    "this/param_1 is, so its field accesses render as this->name)."
+  ],
+  "functions": {
+    "00409670": "GxRsPush",
+    "00685fb0": "GxRsPop",
+    "006813b0": "GxSceneClear",
+    "00681f60": "GxXformSetViewport",
+    "004fb080": "CGWorldFrame::OnFrameRender",
+    "004faf90": "CGWorldFrame::RenderWorld",
+    "004f8ea0": "CGWorldFrame::OnWorldRender",
+    "007831a0": "CWorld::Update",
+    "0079a870": "CMap::Render",
+    "007b6b00": "CMap::Update",
+    "007abf50": "CMapObj::Render",
+    "007e4a40": "ShadowInit",
+    "007f3230": "SkySunGlare",
+    "0081c9c0": "CM2Scene::AdvanceTime",
+    "00821a20": "CM2Scene::Animate",
+    "00823cb0": "CM2Scene::Draw",
+    "00823130": "CM2SceneRender::Draw",
+    "00872c10": "CShaderEffect::UpdateProjMatrix"
+  },
+  "globals": {
+    "00cd8794": {"name": "s_cameraLiquidType", "type": "int", "note": "liquid type id under the camera, 0 when not in liquid (docs/world-render-inventory.md, liquid-under-camera row)"},
+    "00adf350": {"name": "s_worldDetailBands", "type": "WorldDetailBands", "note": "the five model distance bands (CWorld.cpp s_detailBands in frozen)"},
+    "00d38ccc": {"name": "s_drawGlare", "type": "int", "note": "gates the sun/moon glare post pass FUN_007f0870"}
+  },
+  "classes": {},
+  "this": {},
+  "modules": [
+    {"lo": "0077e000", "hi": "0078ca50", "module": "World.cpp",
+     "note": "CWorld::Update 007831a0 and its callees; the SEvt.cpp anchor at 0077e9f0 is an inlined header assert. Edges provisional."},
+    {"lo": "0078ca50", "hi": "0078df90", "module": "MapWeather.cpp",
+     "note": "MapWeather render 0078ca50 and update 0078d170 (docs/world-render-inventory.md); ends at the WorldParam.cpp anchor."},
+    {"lo": "0078f370", "hi": "0079a870", "module": "WorldScene.cpp",
+     "note": "CWFrustum tests from 0078f370, CWorldScene 00790920..00798da0 (inventory, RTTI). Start provisional: WorldParam.cpp runs from 0078df90 to somewhere before this."},
+    {"lo": "0079a870", "hi": "007a2000", "module": "Map.cpp",
+     "note": "CMap::Render 0079a870, footprints 0079fcc0, underwater overlay 0079ca70; the .\\Map.cpp anchor is at 0079e7c0. End provisional."},
+    {"lo": "007a2000", "hi": "007b0000", "module": "MapObj.cpp",
+     "note": "receiver gatherers 007a2aa0/007a6af0, transforms 007a8320/007a9160, CMapObj::Render 007abf50, material select 007ad020, CPortalView walk 007ad1f0, MapObj begin 007ae060. Edges provisional; may also hold MapObjGroup.cpp."},
+    {"lo": "007b0000", "hi": "007b4000", "module": "DetailDoodad.cpp",
+     "note": "VS constants 007b10e0, anchor 007b2760, begin 007b2a80/007b2d30."},
+    {"lo": "007b4000", "hi": "007bb000", "module": "Map.cpp",
+     "note": "CMap::Update 007b6b00 and its callees (007b48c0 WMO def distance, 007b5950, 007b6110, 007b9560, lowDetailIndexPool 007ba600). Either Map.cpp continues here after DetailDoodad.cpp or this is a file with no asserts; ported into CMap either way."},
+    {"lo": "007bb000", "hi": "007bd5a0", "module": "MapShadow.cpp",
+     "note": "MapShadow 007bb3e0/007bb570/007bb670 (docs/ref/parity-shadowmap.md); ends at the MapLoad.cpp anchor."}
+  ]
+}
