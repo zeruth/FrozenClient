@@ -1,4 +1,8 @@
 {
+  "007c5690": {
+    "status": "diverged",
+    "note": "CMapChunk::CreateLiquid. The reference's teardown unlinks a layer, which zeroes the link, and only then reads the next pointer through it, so it stops after the first layer and leaves any others linked into storage it has handed back. Frozen reads the link before unlinking. Everything else matches."
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",

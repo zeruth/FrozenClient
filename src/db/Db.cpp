@@ -30,6 +30,7 @@ WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 WowClientDB<LightRec> g_lightDB;
 WowClientDB<LightParamsRec> g_lightParamsDB;
 WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
+WowClientDB<LiquidMaterialRec> g_liquidMaterialDB;
 WowClientDB<LiquidTypeRec> g_liquidTypeDB;
 WowClientDB<WeatherRec> g_weatherDB;
 WowClientDB<GroundEffectTextureRec> g_groundEffectTextureDB;
@@ -96,6 +97,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_lightParamsDB, __FILE__, __LINE__);
     loadFn(&g_lightSkyboxDB, __FILE__, __LINE__);
     loadFn(&g_liquidTypeDB, __FILE__, __LINE__);
+    loadFn(&g_liquidMaterialDB, __FILE__, __LINE__);
     loadFn(&g_weatherDB, __FILE__, __LINE__);
     loadFn(&g_groundEffectTextureDB, __FILE__, __LINE__);
     loadFn(&g_groundEffectDoodadDB, __FILE__, __LINE__);

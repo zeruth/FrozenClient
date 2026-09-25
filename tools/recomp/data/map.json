@@ -47512,6 +47512,22 @@
   "refSize": 160,
   "status": "ported"
  },
+ "007c5690": {
+  "branchRatio": 0.371,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/CMapChunk.cpp",
+   "src/world/map/cmapchunk.cpp"
+  ],
+  "frozen": "CMapChunk::CreateLiquid",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 1162,
+  "status": "diverged"
+ },
  "007c5b20": {
   "branchRatio": 0.1,
   "constOverlap": 0.0,
@@ -47579,8 +47595,8 @@
  "007c64b0": {
   "branchRatio": 0.333,
   "constOverlap": 0.15,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -48215,6 +48231,36 @@
   "module": "MapChunk.cpp",
   "refSize": 403,
   "status": "stub"
+ },
+ "007cde10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::ReleaseSurface",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 24,
+  "status": "ported"
+ },
+ "007cdf80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::BuildVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 291,
+  "status": "ported"
  },
  "007cfb10": {
   "branchRatio": 0.8,
@@ -59677,6 +59723,126 @@
   "refSize": 31,
   "status": "ported"
  },
+ "008a3130": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMH2O::GetHeight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 40,
+  "status": "ported"
+ },
+ "008a3160": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMH2O::GetDepth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "008a31b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMH2O::GetCoord",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "008a31e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMCLQ::CVertexDataMCLQ",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
+ "008a3200": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMCLQ::GetHeight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
+ "008a3220": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMCLQ::GetDepth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 35,
+  "status": "ported"
+ },
+ "008a3250": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMCLQ::GetCoord",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 33,
+  "status": "ported"
+ },
+ "008a3280": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidVertexData.cpp"
+  ],
+  "frozen": "CVertexDataMH2O::CVertexDataMH2O",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 50,
+  "status": "ported"
+ },
  "008a65d0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -60248,6 +60414,21 @@
   ],
   "frozen": "LiquidTypeRec::GetFilename",
   "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008b2a90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/LiquidMaterialRec.cpp"
+  ],
+  "frozen": "LiquidMaterialRec::GetFilename",
+  "frozenSize": 0,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,

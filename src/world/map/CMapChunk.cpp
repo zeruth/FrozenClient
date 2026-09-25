@@ -4,7 +4,12 @@
 #include "world/map/CMapRenderChunk.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/map/CChunkLiquid.hpp"
+#include "world/map/LiquidVertexData.hpp"
+#include "db/Db.hpp"
 #include "gx/Gx.hpp"
+#include <storm/Memory.hpp>
+#include <new>
 #include <cfloat>
 #include <cmath>
 
@@ -54,8 +59,8 @@ CMapChunk::~CMapChunk() {
 
 // ref: FUN_007c64b0
 // Binds the chunk to its MCNK: sub-chunks, area id, origin from the indices and the header's z,
-// bounds, then its liquids, sound emitters and doodad/WMO references (the last three are
-// FUN_007c5690, FUN_007c6060 and FUN_007c6150, not ported yet), and finally the tile's grid slot.
+// bounds, then its liquids, sound emitters (FUN_007c6060, not ported) and doodad/WMO references,
+// and finally the tile's grid slot.
 void CMapChunk::Load(uint8_t* data, int32_t fixSizes) {
     this->m_data = data;
     this->ParseSubChunks(fixSizes);
@@ -72,7 +77,7 @@ void CMapChunk::Load(uint8_t* data, int32_t fixSizes) {
 
     this->ComputeBounds();
 
-    // TODO FUN_007c5690(fixSizes): liquids (MCLQ and MH2O layers)
+    this->CreateLiquid();
     // TODO FUN_007c6060(fixSizes): MCSE sound emitters
 
     this->m_flags = 0;
@@ -751,6 +756,143 @@ void CMapChunk::GetBounds(CAaBox* box) {
             liquid = this->m_liquidList.Next(liquid);
         } while (liquid);
     }
+}
+
+// An MCLQ layer is a fixed size whichever kind it is: two heights, a nine-by-nine grid of
+// eight-byte vertices, the eight-by-eight wet-tile mask, then the flow records.
+static const uint32_t MCLQ_VERTEX_OFFSET = 8;
+static const uint32_t MCLQ_MASK_OFFSET = 656;
+static const uint32_t MCLQ_LAYER_SIZE = 804;
+
+// ref: FUN_007c5690
+// Every liquid layer the chunk should have, rebuilt from scratch: the old ones go, then either
+// the MCLQ layers the chunk's own flags name or the MH2O layers the tile holds for it. A tile
+// carries one format or the other, never both, so at most one of the two halves does anything.
+//
+// MCLQ names its four kinds by position -- river, ocean, magma, slime, in flag order -- and each
+// is one LiquidType id above the last. MH2O names the type outright, so nothing is inferred.
+void CMapChunk::CreateLiquid() {
+    auto liquid = this->m_liquidList.Head();
+
+    while (liquid) {
+        // The reference reads the next link after unlinking this one, which zeroes it, so its
+        // teardown stops after the first layer and any others stay linked into storage it has
+        // handed back. Frozen reads the link first. Recorded as a divergence.
+        auto next = this->m_liquidList.Next(liquid);
+
+        liquid->m_chunkLink.Unlink();
+        liquid->ReleaseSurface();
+        CMap::FreeChunkLiquid(liquid);
+
+        liquid = next;
+    }
+
+    // MCLQ: one layer per set flag, in flag order, each following the last.
+    auto mclq = this->m_liquidData;
+
+    if (mclq) {
+        for (uint32_t layer = 0; layer < 4; layer++) {
+            if (!(this->m_header->flags & (4 << layer))) {
+                continue;
+            }
+
+            uint32_t liquidType = layer + 1;
+
+            // Outland's magma is not the ordinary one.
+            if (CMap::s_mapID == 0x212 && layer == 2) {
+                liquidType = 0xf;
+            }
+
+            auto typeRec = g_liquidTypeDB.GetRecord(liquidType);
+            auto materialRec = typeRec ? g_liquidMaterialDB.GetRecord(typeRec->m_materialID) : nullptr;
+            auto chunkLiquid = CMap::AllocChunkLiquid();
+
+            if (!materialRec || !chunkLiquid) {
+                continue;
+            }
+
+            this->m_liquidList.LinkToTail(chunkLiquid);
+
+            chunkLiquid->m_liquidType = liquidType;
+            chunkLiquid->m_chunk = this;
+            chunkLiquid->m_vertexFormat = materialRec->m_LVF;
+            chunkLiquid->m_origin = this->m_position;
+            chunkLiquid->m_minHeight = reinterpret_cast<const float*>(mclq)[0];
+            chunkLiquid->m_maxHeight = reinterpret_cast<const float*>(mclq)[1];
+            chunkLiquid->m_tileX = 0;
+            chunkLiquid->m_tileY = 0;
+            chunkLiquid->m_tileEndX = 8;
+            chunkLiquid->m_tileEndY = 8;
+
+            auto mem = SMemAlloc(sizeof(Liquid::CVertexDataMCLQ), __FILE__, __LINE__, 0x0);
+
+            chunkLiquid->m_vertexData = mem
+                ? new (mem) Liquid::CVertexDataMCLQ(mclq + MCLQ_VERTEX_OFFSET, chunkLiquid->m_vertexFormat)
+                : nullptr;
+
+            chunkLiquid->m_tileMask = mclq + MCLQ_MASK_OFFSET;
+
+            mclq += MCLQ_LAYER_SIZE;
+
+            chunkLiquid->BuildVertices();
+        }
+    }
+
+    // MH2O: whatever the tile holds for this chunk, however many layers that is.
+    auto area = static_cast<CMapArea*>(this->m_parentLinkList.Head()->ref);
+
+    if (area && area->m_liquid && area->m_liquid->HasLiquid()) {
+        auto entry = area->m_liquid->Chunk(this->m_areaChunkX, this->m_areaChunkY);
+
+        // TODO BitArray::Assign on the chunk's two eight-by-eight grids, from the tile's deep
+        // and fishable masks: where you can swim and where you can fish are not kept yet.
+
+        for (uint32_t layer = 0; layer < entry->layerCount; layer++) {
+            auto instance = area->m_liquid->Layer(entry, layer);
+            auto chunkLiquid = CMap::AllocChunkLiquid();
+
+            if (!chunkLiquid) {
+                continue;
+            }
+
+            this->m_liquidList.LinkToTail(chunkLiquid);
+
+            chunkLiquid->m_chunk = this;
+            chunkLiquid->m_liquidType = instance->liquidType;
+            chunkLiquid->m_vertexFormat = instance->material;
+            chunkLiquid->m_origin = this->m_position;
+            chunkLiquid->m_minHeight = instance->minHeight;
+            chunkLiquid->m_maxHeight = instance->maxHeight;
+            chunkLiquid->m_tileX = instance->tileY;
+            chunkLiquid->m_tileY = instance->tileX;
+            chunkLiquid->m_tileEndX = instance->tileHeight + instance->tileY;
+            chunkLiquid->m_tileEndY = instance->tileWidth + instance->tileX;
+
+            auto mem = SMemAlloc(sizeof(Liquid::CVertexDataMH2O), __FILE__, __LINE__, 0x0);
+
+            chunkLiquid->m_vertexData = mem
+                ? new (mem) Liquid::CVertexDataMH2O(area->m_liquid, instance)
+                : nullptr;
+
+            // TODO BitArray::Assign on the layer's wet-tile mask, which is as many bits as its
+            // rectangle has tiles.
+
+            chunkLiquid->BuildVertices();
+        }
+    }
+
+    // The chunk's liquid box, or an inverted one when it ended up with no layers at all.
+    if (this->m_liquidList.Head()) {
+        this->GetBounds(&this->m_liquidBounds);
+        return;
+    }
+
+    this->m_liquidBounds.b.x = FLT_MAX;
+    this->m_liquidBounds.b.y = FLT_MAX;
+    this->m_liquidBounds.b.z = FLT_MAX;
+    this->m_liquidBounds.t.x = -FLT_MAX;
+    this->m_liquidBounds.t.y = -FLT_MAX;
+    this->m_liquidBounds.t.z = -FLT_MAX;
 }
 
 // ref: FUN_007cfb10

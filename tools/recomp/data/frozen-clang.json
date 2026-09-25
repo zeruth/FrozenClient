@@ -48643,13 +48643,14 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 64
+"line": 65
 },
 "StaticDBLoadAll": {
 "files": [
 "src/db/db.cpp"
 ],
 "callseq": [
+"?loadFn",
 "?loadFn",
 "?loadFn",
 "?loadFn",
@@ -48716,9 +48717,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 61,
+"lines": 62,
 "refs": [],
-"line": 68
+"line": 69
 },
 "ClientDBInitialize": {
 "files": [
@@ -48733,7 +48734,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 130
+"line": 132
 },
 "DbUnpackRecord": {
 "files": [
@@ -48751,7 +48752,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 141
+"line": 143
 },
 "AchievementRec::GetFilename": {
 "files": [
@@ -196340,6 +196341,21 @@
 "refs": [],
 "line": 3
 },
+"Liquid::CVertexData::~CVertexData": {
+"files": [
+"src/world/map/liquidvertexdata.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [
+"008a32c0"
+],
+"line": 33
+},
 "CMapChunk::CMapChunk": {
 "files": [
 "src/world/map/cmapchunk.cpp"
@@ -196353,7 +196369,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 38
+"line": 43
 },
 "CMapChunk::~CMapChunk": {
 "files": [
@@ -196374,7 +196390,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 45
+"line": 50
 },
 "CMapChunk::Load": {
 "files": [
@@ -196383,6 +196399,7 @@
 "callseq": [
 "CMapChunk::ParseSubChunks",
 "CMapChunk::ComputeBounds",
+"CMapChunk::CreateLiquid",
 "TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
 "CMapChunk::CreateRefs"
 ],
@@ -196399,7 +196416,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 59
+"line": 64
 },
 "CMapChunk::Destroy": {
 "files": [
@@ -196434,7 +196451,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 96
+"line": 101
 },
 "CMapChunk::Initialize": {
 "files": [
@@ -196453,7 +196470,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 157
+"line": 162
 },
 "CMapChunk::BuildVertexTable": {
 "files": [
@@ -196472,7 +196489,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 167
+"line": 172
 },
 "CMapChunk::ParseSubChunks": {
 "files": [
@@ -196492,7 +196509,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 196
+"line": 201
 },
 "CMapChunk::BuildIndices": {
 "files": [
@@ -196521,7 +196538,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 257
+"line": 262
 },
 "CMapChunk::AppendIndices": {
 "files": [
@@ -196539,7 +196556,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 298
+"line": 303
 },
 "CMapChunk::CreateRenderChunk": {
 "files": [
@@ -196557,7 +196574,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 318
+"line": 323
 },
 "CMapChunk::EnsureRenderChunk": {
 "files": [
@@ -196577,7 +196594,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 327
+"line": 332
 },
 "CMapChunk::CanPairWith": {
 "files": [
@@ -196597,7 +196614,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 348
+"line": 353
 },
 "CMapChunk::AlphaSize": {
 "files": [
@@ -196615,7 +196632,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 410
+"line": 415
 },
 "CMapChunk::UpdateSortDistance": {
 "files": [
@@ -196638,7 +196655,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 418
+"line": 423
 },
 "CMapChunk::UpdateLiquidVisibility": {
 "files": [
@@ -196657,7 +196674,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 442
+"line": 447
 },
 "CMapChunk::PrepareRender": {
 "files": [
@@ -196678,7 +196695,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 465
+"line": 470
 },
 "CMapChunk::BuildVertices": {
 "files": [
@@ -196698,7 +196715,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 491
+"line": 496
 },
 "ChunkVertexColor": {
 "files": [
@@ -196717,7 +196734,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 509
+"line": 514
 },
 "ChunkNormal": {
 "files": [
@@ -196734,7 +196751,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 519
+"line": 524
 },
 "ChunkWorldRows": {
 "files": [
@@ -196751,7 +196768,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 527
+"line": 532
 },
 "CMapChunk::FillVerticesWorld": {
 "files": [
@@ -196773,7 +196790,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 540
+"line": 545
 },
 "CMapChunk::FillVerticesWorldColor": {
 "files": [
@@ -196797,7 +196814,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 571
+"line": 576
 },
 "ChunkLocalStep": {
 "files": [
@@ -196813,7 +196830,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 608
+"line": 613
 },
 "CMapChunk::FillVerticesLocal": {
 "files": [
@@ -196837,7 +196854,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 618
+"line": 623
 },
 "CMapChunk::FillVerticesLocalColor": {
 "files": [
@@ -196863,7 +196880,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 655
+"line": 660
 },
 "CMapChunk::ComputeBounds": {
 "files": [
@@ -196884,7 +196901,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 695
+"line": 700
 },
 "CMapChunk::GetBounds": {
 "files": [
@@ -196902,7 +196919,57 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 738
+"line": 743
+},
+"CMapChunk::CreateLiquid": {
+"files": [
+"src/world/map/cmapchunk.cpp"
+],
+"callseq": [
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Head",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Next",
+"TSLink<CChunkLiquid>::Unlink",
+"CChunkLiquid::ReleaseSurface",
+"CMap::FreeChunkLiquid",
+"WowClientDB<LiquidTypeRec>::GetRecord",
+"WowClientDB<LiquidMaterialRec>::GetRecord",
+"CMap::AllocChunkLiquid",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::LinkToTail",
+"C3Vector::operator=",
+"SMemAlloc",
+"Liquid::CVertexDataMCLQ::CVertexDataMCLQ",
+"CChunkLiquid::BuildVertices",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
+"CMapLiquidData::HasLiquid",
+"CMapLiquidData::Chunk",
+"CMapLiquidData::Layer",
+"CMap::AllocChunkLiquid",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::LinkToTail",
+"C3Vector::operator=",
+"SMemAlloc",
+"Liquid::CVertexDataMH2O::CVertexDataMH2O",
+"CChunkLiquid::BuildVertices",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Head",
+"CMapChunk::GetBounds"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapchunk.cpp"
+],
+"consts": [
+"0",
+"0x0",
+"0x212",
+"0xf",
+"1",
+"2",
+"4",
+"8"
+],
+"branches": 13,
+"stub": false,
+"lines": 123,
+"refs": [],
+"line": 774
 },
 "CMapChunk::FeedHorizon": {
 "files": [
@@ -196924,7 +196991,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 761
+"line": 903
 },
 "Nibble": {
 "files": [

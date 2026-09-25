@@ -2975,6 +2975,7 @@ addr	how	frozen	evidence
 007c5440	annotated	CMapChunk::EnsureRenderChunk	tag in src/world/map/CMapChunk.cpp
 007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
 007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
+007c5690	annotated	CMapChunk::CreateLiquid	tag in src/world/map/CMapChunk.cpp
 007c5b20	annotated	CMapChunk::UpdateLiquidVisibility	tag in src/world/map/CMapChunk.cpp
 007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
 007c5e50	annotated	CMapChunk::~CMapChunk	tag in src/world/map/CMapChunk.cpp
@@ -3019,6 +3020,8 @@ addr	how	frozen	evidence
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
+007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
+007cdf80	annotated	CChunkLiquid::BuildVertices	tag in src/world/map/CChunkLiquid.cpp
 007cfb10	annotated	CMapChunk::FeedHorizon	tag in src/world/map/CMapChunk.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
 007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
@@ -3753,6 +3756,14 @@ addr	how	frozen	evidence
 008a30b0	annotated	CMapLiquidData::FishableMask	tag in src/world/map/CMapLiquidData.cpp
 008a30e0	annotated	CMapLiquidData::DeepMask	tag in src/world/map/CMapLiquidData.cpp
 008a3110	annotated	CMapLiquidData::ExistsMask	tag in src/world/map/CMapLiquidData.cpp
+008a3130	annotated	CVertexDataMH2O::GetHeight	tag in src/world/map/LiquidVertexData.cpp
+008a3160	annotated	CVertexDataMH2O::GetDepth	tag in src/world/map/LiquidVertexData.cpp
+008a31b0	annotated	CVertexDataMH2O::GetCoord	tag in src/world/map/LiquidVertexData.cpp
+008a31e0	annotated	CVertexDataMCLQ::CVertexDataMCLQ	tag in src/world/map/LiquidVertexData.cpp
+008a3200	annotated	CVertexDataMCLQ::GetHeight	tag in src/world/map/LiquidVertexData.cpp
+008a3220	annotated	CVertexDataMCLQ::GetDepth	tag in src/world/map/LiquidVertexData.cpp
+008a3250	annotated	CVertexDataMCLQ::GetCoord	tag in src/world/map/LiquidVertexData.cpp
+008a3280	annotated	CVertexDataMH2O::CVertexDataMH2O	tag in src/world/map/LiquidVertexData.cpp
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"
@@ -3789,6 +3800,7 @@ addr	how	frozen	evidence
 008b12d0	string	ItemSubClassRec::GetFilename	unique "DBFilesClient\ItemSubClass.dbc"
 008b1940	string	ItemVisualsRec::GetFilename	unique "DBFilesClient\ItemVisuals.dbc"
 008b2710	string	LiquidTypeRec::GetFilename	unique "DBFilesClient\LiquidType.dbc"
+008b2a90	string	LiquidMaterialRec::GetFilename	unique "DBFilesClient\LiquidMaterial.dbc"
 008b2b10	string	LoadingScreensRec::GetFilename	unique "DBFilesClient\LoadingScreens.dbc"
 008b3aa0	string	MapRec::GetFilename	unique "DBFilesClient\Map.dbc"
 008b4810	string	NameGenRec::GetFilename	unique "DBFilesClient\NameGen.dbc"

@@ -149,6 +149,9 @@ class CMapChunk : public CMapBaseObj {
         ~CMapChunk() override;
         void Load(uint8_t* data, int32_t fixSizes);
         void CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodadCount, uint32_t mapObjCount);
+        // Replace the chunk's liquid layers with the ones its data now describes, from
+        // whichever of the two formats the tile carries. ref: FUN_007c5690
+        void CreateLiquid();
         void Destroy();
         void ParseSubChunks(int32_t fixSizes);
         int16_t BuildIndices(uint16_t* indices, int16_t baseVertex);

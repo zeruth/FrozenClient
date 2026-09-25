@@ -31,6 +31,7 @@
 #include "db/rec/LightRec.hpp"
 #include "db/rec/LightParamsRec.hpp"
 #include "db/rec/LightSkyboxRec.hpp"
+#include "db/rec/LiquidMaterialRec.hpp"
 #include "db/rec/LiquidTypeRec.hpp"
 #include "db/rec/WeatherRec.hpp"
 #include "db/rec/GroundEffectTextureRec.hpp"
@@ -91,6 +92,7 @@ extern WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 extern WowClientDB<LightRec> g_lightDB;
 extern WowClientDB<LightParamsRec> g_lightParamsDB;
 extern WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
+extern WowClientDB<LiquidMaterialRec> g_liquidMaterialDB;
 extern WowClientDB<LiquidTypeRec> g_liquidTypeDB;
 extern WowClientDB<WeatherRec> g_weatherDB;
 extern WowClientDB<GroundEffectTextureRec> g_groundEffectTextureDB;
