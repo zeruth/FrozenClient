@@ -51,9 +51,22 @@ class CMaterialSettings {
         void LoadTextures();
 };
 
+// What actually draws a surface. There is one implementation a liquid material -- water, magma
+// and procedural water -- in two flavours each, one written against the shaders and one against
+// the fixed-function pipe, and the bank picks between them once from the device's caps. None of
+// the six is ported yet; their names are recorded in overrides.json.
+class IMaterial;
+
 // The settings for one liquid type, built on first use. A type the DBC does not carry logs and
 // comes back as water. ref: FUN_008a28f0
 CMaterialSettings* GetMaterialSettings(int32_t liquidType);
+
+// The material for one liquid type, built on first use. Keyed by the LiquidMaterial row the
+// type names, not by the type, so every water shares one. ref: FUN_008a1fa0
+IMaterial* GetMaterial(int32_t liquidType);
+
+// Drop every material the bank holds. ref: FUN_008a1f50
+void ReleaseMaterials();
 
 // Drop every record the bank holds. ref: part of FUN_008a2380
 void ReleaseMaterialSettings();

@@ -40,6 +40,34 @@
     "status": "unlinked",
     "note": "Liquid module: hands a drawn liquid surface back to its pool, called from CChunkLiquid::UpdateAnim when a layer has been out of sight two seconds. The surface objects are not ported, so the call is a TODO in place. NOT CWorld::GetTickTimeSec, which the callgraph matcher proposed here"
   },
+  "008a4710": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialProcWater: the shader implementation for procedural water (LiquidMaterial 3). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a4770": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialProcWaterFFP: the fixed-function implementation for procedural water (LiquidMaterial 3). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a4790": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialWater: the shader implementation for water with specular (LiquidMaterial 1). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a47f0": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialWaterNoSpec: the shader implementation for water without specular (LiquidMaterial 1). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a4850": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialWaterFFP: the fixed-function implementation for water (LiquidMaterial 1). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a4870": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialMagma: the shader implementation for magma and slime (LiquidMaterial 2). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
+  "008a48d0": {
+    "status": "unlinked",
+    "note": "Liquid::CMaterialMagmaFFP: the fixed-function implementation for magma and slime (LiquidMaterial 2). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",

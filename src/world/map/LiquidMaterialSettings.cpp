@@ -1,5 +1,7 @@
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "db/Db.hpp"
+#include "gx/CGxCaps.hpp"
+#include "gx/Gx.hpp"
 #include "util/Log.hpp"
 #include <storm/Array.hpp>
 #include <storm/Memory.hpp>
@@ -156,6 +158,69 @@ CMaterialSettings* GetMaterialSettings(int32_t liquidType) {
         // it never happens, because no map loads without one.
         liquidType = 1;
     }
+}
+
+// The materials, indexed by LiquidMaterial.dbc id rather than by liquid type: every kind of
+// water shares one material. DAT_00d43b2c / DAT_00d43b28
+static TSGrowableArray<IMaterial*> s_materialBank;
+
+// ref: FUN_008a1fa0
+// Which of a material's two implementations is used is decided once, from the device: the
+// shader ones need vertex shaders at all and pixel shader model 3. The two capability slots the
+// reference reads sit sixteen bytes apart, which is the distance from the vertex entry to the
+// pixel entry in the shader-target table, and the choice they drive is shader versus
+// fixed-function -- so that is the table being read.
+IMaterial* GetMaterial(int32_t liquidType) {
+    LiquidTypeRec* typeRec = nullptr;
+
+    while (true) {
+        typeRec = g_liquidTypeDB.GetRecord(liquidType);
+
+        if (typeRec) {
+            break;
+        }
+
+        SysMsgPrintf(SYSMSG_ERROR, "Material Bank: Liquid type [%d] not found, defaulting to water!", liquidType);
+
+        liquidType = 1;
+    }
+
+    uint32_t materialId = typeRec->m_materialID;
+
+    if (materialId < s_materialBank.Count() && s_materialBank[materialId]) {
+        return s_materialBank[materialId];
+    }
+
+    const CGxCaps& caps = GxCaps();
+
+    bool shaders = caps.m_shaderTargets[GxSh_Vertex] >= 1
+                && caps.m_shaderTargets[GxSh_Pixel] >= 3;
+
+    IMaterial* material = nullptr;
+
+    // TODO the six implementations, none of them ported: for material 1 water, either
+    // CMaterialWater (FUN_008a4790) or CMaterialWaterNoSpec (FUN_008a47f0) on the shader path
+    // depending on whether specular is wanted, else CMaterialWaterFFP (FUN_008a4850); for 2
+    // magma, CMaterialMagma (FUN_008a4870) or CMaterialMagmaFFP (FUN_008a48d0); for 3
+    // procedural water, CMaterialProcWater (FUN_008a4710) or CMaterialProcWaterFFP
+    // (FUN_008a4770). Until they land the bank hands back nothing and no surface draws.
+    (void)shaders;
+
+    s_materialBank.GrowToFit(materialId, 1);
+    s_materialBank[materialId] = material;
+
+    return material;
+}
+
+// ref: FUN_008a1f50
+void ReleaseMaterials() {
+    for (uint32_t i = 0; i < s_materialBank.Count(); i++) {
+        if (s_materialBank[i]) {
+            // TODO each material releases itself through its own vtable.
+        }
+    }
+
+    s_materialBank.SetCount(0);
 }
 
 // ref: part of FUN_008a2380
