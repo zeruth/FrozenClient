@@ -193,10 +193,14 @@ reference's shader-level global reads a constant 5; `VBBList`'s block-sharing mo
 writing; and `CMapObj::Render` transforms each frustum record by the def's inverse placement,
 which is what lets the per-batch cull test a batch's raw group-space box.
 
-What the map object work still needs:
+**The switch-over has landed and has not been run.** `CMap::Render` calls
+`CWorldScene::RenderMapObjs` and the stand-in no longer draws buildings; its visibility sweep
+stays because the floor light, the indoor test and the blob shadow receivers read the instance
+list it fills. Commit 91ff8bcd, one revert if the buildings come out wrong. What to look at
+first: whether buildings appear at all, their depth against the terrain, and whether interiors
+are lit or black.
 
-- **The wiring.** `CWorldScene::RenderMapObjs` is not called. Turning it on means removing the
-  stand-in's WMO draw in the same change, or both would draw. **One change, one run.**
+What the map object work still needs:
 - The interior path: the portal walk (`FUN_007ac060` and its tree, `FUN_007ad350`,
   `FUN_007b3b20`) behind `CWorldScene::s_cameraGroup`, which frozen never sets. Only matters
   with the camera inside a building.
