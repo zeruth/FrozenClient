@@ -1,4 +1,8 @@
 #include "ui/game/CGBattlefieldInfo.hpp"
+#include "client/ClientServices.hpp"
+#include "net/Types.hpp"
+#include "object/client/ObjMgr.hpp"
+#include <common/DataStore.hpp>
 
 // Written by the battlefield packet handlers, none of which are ported yet; the reference
 // zero-initialises all of it.
@@ -24,4 +28,58 @@ int32_t* CGBattlefieldInfo::s_instanceIDs;                      // ref: DAT_00be
 
 void CGBattlefieldInfo::RequestPlayerPositions() {
     // TODO
+}
+
+// ref: FUN_0054d4f0
+void CGBattlefieldInfo::SendMgrEntryInviteResponse(uint32_t battleId, int32_t accept) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE));
+    msg.Put(battleId);
+    msg.Put(static_cast<uint8_t>(accept));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0054d590
+void CGBattlefieldInfo::SendMgrQueueRequest(uint32_t battleId) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST));
+    msg.Put(battleId);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0054d630
+void CGBattlefieldInfo::SendMgrQueueInviteResponse(uint32_t battleId, int32_t accept) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_BATTLEFIELD_MGR_QUEUE_INVITE_RESPONSE));
+    msg.Put(battleId);
+    msg.Put(static_cast<uint8_t>(accept));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0054d6d0
+void CGBattlefieldInfo::SendMgrExitRequest(uint32_t battleId) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_BATTLEFIELD_MGR_EXIT_REQUEST));
+    msg.Put(battleId);
+    msg.Finalize();
+    ClientServices::Send(&msg);
 }

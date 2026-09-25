@@ -9,6 +9,7 @@
 #include "net/Types.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/Util.hpp"
 #include "util/Unimplemented.hpp"
 
 namespace {
@@ -440,20 +441,42 @@ int32_t Script_GetNumArenaOpponents(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0054e160
 int32_t Script_BattlefieldMgrEntryInviteResponse(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto battleId = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)));
+    auto accept = StringToBOOL(L, 2, 0);
+
+    CGBattlefieldInfo::SendMgrEntryInviteResponse(battleId, accept);
+
+    return 0;
 }
 
+// ref: FUN_0054e1a0
 int32_t Script_BattlefieldMgrQueueRequest(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto battleId = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)));
+
+    CGBattlefieldInfo::SendMgrQueueRequest(battleId);
+
+    return 0;
 }
 
+// ref: FUN_0054e1c0
 int32_t Script_BattlefieldMgrQueueInviteResponse(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto battleId = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)));
+    auto accept = StringToBOOL(L, 2, 0);
+
+    CGBattlefieldInfo::SendMgrQueueInviteResponse(battleId, accept);
+
+    return 0;
 }
 
+// ref: FUN_0054e200
 int32_t Script_BattlefieldMgrExitRequest(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto battleId = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)));
+
+    CGBattlefieldInfo::SendMgrExitRequest(battleId);
+
+    return 0;
 }
 
 int32_t Script_GetWorldPVPQueueStatus(lua_State* L) {

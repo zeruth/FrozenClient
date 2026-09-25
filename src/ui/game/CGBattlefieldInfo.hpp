@@ -50,6 +50,10 @@ class CGBattlefieldInfo {
 
         // Static functions
         static void RequestPlayerPositions();
+        static void SendMgrEntryInviteResponse(uint32_t battleId, int32_t accept);
+        static void SendMgrQueueInviteResponse(uint32_t battleId, int32_t accept);
+        static void SendMgrQueueRequest(uint32_t battleId);
+        static void SendMgrExitRequest(uint32_t battleId);
 };
 
 #endif

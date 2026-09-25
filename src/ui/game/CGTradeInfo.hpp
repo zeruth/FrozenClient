@@ -9,11 +9,13 @@ class CGTradeInfo {
         // Public static functions
         static uint32_t GetPlayerTradeMoney();
         static WOWGUID GetTradePartner();
+        static int32_t SetPlayerTradeMoney(uint32_t money);
 
     private:
         // Private static variables
         static uint32_t s_playerMoney;
         static WOWGUID s_tradingPlayer;
+        static uint32_t s_tradeUpdateCount;
 };
 
 #endif
