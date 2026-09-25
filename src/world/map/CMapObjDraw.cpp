@@ -1278,3 +1278,135 @@ void CMapObj::MeasurePortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect
 
     CMapObj::ScreenBounds(rect, screen, count);
 }
+
+C44Matrix CMapObj::s_portalPlacement;
+int32_t CMapObj::s_portalStamp;
+
+// ref: FUN_007ac060
+// One room, then every room its doorways open onto. A doorway facing away from the camera is
+// skipped, one covering none of the remaining view is skipped, and what is left narrows the
+// view for the room beyond it.
+void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* window,
+                          uint32_t depth, int32_t interior) {
+    if (depth > CMapObj::PORTAL_DEPTH_MAX) {
+        return;
+    }
+
+    auto group = this->GetGroup(groupIndex, 0);
+
+    if (!group) {
+        return;
+    }
+
+    // A group that draws on its own is not walked into; it was already handled.
+    if (group->m_flags & 0x10000) {
+        return;
+    }
+
+    // Stepping out of a room into daylight ends the interior run.
+    if (interior && (group->m_flags & 0x48)) {
+        interior = 0;
+    }
+
+    CMapObj::s_interiorFog = interior;
+
+    if (CMapObj::s_visibleCallback) {
+        CMapObj::s_visibleCallback(groupIndex, CMapObj::s_visibleCallbackArg);
+    }
+
+    if (!group->m_portalCount || !this->m_mopr || !this->m_mopt) {
+        return;
+    }
+
+    if (CWorldScene::s_frustumDepth + 1 >= static_cast<int32_t>(CWorldScene::FRUSTUM_DEPTH_MAX)) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < group->m_portalCount; i++) {
+        auto ref = &this->m_mopr[group->m_portalStart + i];
+
+        if (ref->groupIndex == 0xffff || ref->groupIndex == fromGroup) {
+            continue;
+        }
+
+        if (ref->portalIndex >= this->m_portalRects.Count()) {
+            continue;
+        }
+
+        auto portal = &this->m_mopt[ref->portalIndex];
+        auto rect = &this->m_portalRects[ref->portalIndex];
+
+        // Measured at most once a frame: a doorway reached twice covers the same rectangle.
+        if (rect->stamp != CMapObj::s_portalStamp) {
+            rect->stamp = CMapObj::s_portalStamp;
+            rect->flags = 0;
+
+            uint32_t targetFlags = this->GroupFlags(ref->groupIndex);
+
+            // Crossing between lit and unlit is marked so the room beyond knows.
+            if (!(targetFlags & 0x8) && !(group->m_flags & 0x8)) {
+                rect->flags = 0x10;
+            }
+
+            CMapObj::MeasurePortal(this, portal, rect, CMapObj::s_portalPlacement);
+        }
+
+        // Which face of the doorway the camera is on; a doorway seen from behind leads nowhere.
+        const C4Plane& plane = portal->plane;
+        const C3Vector& camera = CMapObj::s_localCameraPos;
+
+        float side = plane.n.x * camera.x + plane.n.y * camera.y + plane.n.z * camera.z + plane.d;
+
+        if (ref->side < 0) {
+            side = -side;
+        }
+
+        if (side < 0.0f) {
+            continue;
+        }
+
+        // Nothing of it in view.
+        if (!(rect->flags & 0x2) && (rect->flags & 0x1)) {
+            continue;
+        }
+
+        if (rect->minY > window[3] || window[1] > rect->maxY
+            || rect->minX > window[2] || window[0] > rect->maxX) {
+            continue;
+        }
+
+        // The doorway narrowed to what is left of the view. The reference clamps three of the
+        // four edges and repeats one of them instead of clamping the fourth; kept, because a
+        // doorway is measured against this same window on the way in, so the unclamped edge
+        // cannot exceed it in practice.
+        float sub[4];
+        sub[0] = rect->minY < window[0] ? window[0] : rect->minY;
+        sub[1] = rect->minX < window[1] ? window[1] : rect->minX;
+        sub[2] = rect->maxY;
+        sub[3] = window[3] < rect->maxX ? window[3] : rect->maxX;
+
+        // A doorway edge-on covers no area and leads nowhere.
+        if (NearlyEqual(sub[1], sub[3], 0.001f) || NearlyEqual(sub[0], sub[2], 0.001f)) {
+            continue;
+        }
+
+        // The traversal's windows run 0 to 1; a projected rectangle runs -1 to 1.
+        CWorldScene::ViewWindow narrowed;
+        narrowed.minX = (sub[0] + 1.0f) * 0.5f;
+        narrowed.minY = (sub[1] + 1.0f) * 0.5f;
+        narrowed.maxX = (sub[2] + 1.0f) * 0.5f;
+        narrowed.maxY = (sub[3] + 1.0f) * 0.5f;
+        narrowed.depth = -1.0f;
+        narrowed.unknown14 = 0.0f;
+        narrowed.unknown18 = 0.0f;
+
+        CWorldScene::s_frustumDepth++;
+        CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =
+            CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+        CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, &narrowed);
+
+        this->WalkPortals(ref->groupIndex, groupIndex, sub, depth + 1, interior);
+
+        CWorldScene::s_frustumDepth--;
+    }
+}

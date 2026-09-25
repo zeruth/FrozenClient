@@ -2549,7 +2549,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "NearlyEqual",
-  "frozenSize": 0,
+  "frozenSize": 18,
   "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 32,
@@ -44464,7 +44464,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowMapObjDefs",
-  "frozenSize": 586,
+  "frozenSize": 815,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 243,
@@ -44752,7 +44752,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetVisibleCallback",
-  "frozenSize": 0,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 22,
@@ -44784,7 +44784,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::ScreenBounds",
-  "frozenSize": 0,
+  "frozenSize": 570,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 472,
@@ -44800,7 +44800,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupPortalContext",
-  "frozenSize": 0,
+  "frozenSize": 456,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 715,
@@ -44832,7 +44832,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "ClipPolygonToPlanes",
-  "frozenSize": 0,
+  "frozenSize": 1215,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 907,
@@ -44944,7 +44944,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::ProjectPortal",
-  "frozenSize": 0,
+  "frozenSize": 3104,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 533,
@@ -44992,7 +44992,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::MeasurePortal",
-  "frozenSize": 0,
+  "frozenSize": 512,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 201,
@@ -45044,6 +45044,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 262,
+  "status": "ported"
+ },
+ "007ac060": {
+  "branchRatio": 0.278,
+  "constOverlap": 0.07,
+  "faithful": false,
+  "fidelity": 0.368,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::WalkPortals",
+  "frozenSize": 1119,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 1591,
   "status": "ported"
  },
  "007ac6a0": {
@@ -45303,7 +45319,7 @@
   "status": "ported"
  },
  "007b3a10": {
-  "branchRatio": 0.833,
+  "branchRatio": 1.0,
   "constOverlap": 0.1,
   "faithful": false,
   "fidelity": 0.571,
@@ -46530,7 +46546,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObj",
-  "frozenSize": 500,
+  "frozenSize": 540,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 75,
@@ -46546,7 +46562,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeMapObj",
-  "frozenSize": 240,
+  "frozenSize": 252,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 102,
@@ -48568,7 +48584,7 @@
   "status": "ported"
  },
  "007d7470": {
-  "branchRatio": 0.556,
+  "branchRatio": 0.667,
   "constOverlap": 0.068,
   "faithful": true,
   "fidelity": 1.0,
@@ -48577,7 +48593,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::ParseChunks",
-  "frozenSize": 728,
+  "frozenSize": 803,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 657,

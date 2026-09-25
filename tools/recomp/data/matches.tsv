@@ -2821,6 +2821,7 @@ addr	how	frozen	evidence
 007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
 007a9380	annotated	CMapObjGroup::DrawBatchesOutdoor	tag in src/world/map/CMapObjDraw.cpp
 007abf50	annotated	CMapObj::Render	tag in src/world/map/CMapObjDraw.cpp
+007ac060	annotated	CMapObj::WalkPortals	tag in src/world/map/CMapObjDraw.cpp
 007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
 007ac9f0	annotated	CMapObjGroup::DrawBatchesSplit	tag in src/world/map/CMapObjDraw.cpp
 007ad020	annotated	CMapObj::UpdateAll	tag in src/world/map/CMapObj.cpp

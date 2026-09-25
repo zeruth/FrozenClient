@@ -193998,19 +193998,25 @@
 "CWorldScene::BoxOccluded",
 "CMapObj::GetGroup",
 "CWorldScene::MarkMapObjGroupVisible",
-"CMapObj::GetGroup",
-"CWorldScene::MarkMapObjGroupVisible"
+"CMapObj::SetVisibleCallback",
+"C44Matrix::operator=",
+"CMapObj::SetupPortalContext",
+"CMapObj::WalkPortals"
 ],
 "strings": [],
 "consts": [
 "0",
 "0x10000",
 "0x8",
-"1"
+"0xffff",
+"1",
+"1.0f",
+"2.0f",
+"4"
 ],
-"branches": 6,
+"branches": 5,
 "stub": false,
-"lines": 33,
+"lines": 42,
 "refs": [],
 "line": 1165
 },
@@ -194036,7 +194042,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1202
+"line": 1211
 },
 "CWorldScene::BucketMapObjDefGroup": {
 "files": [
@@ -194062,7 +194068,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1228
+"line": 1237
 },
 "CWorldScene::BucketMapObjDefGroups": {
 "files": [
@@ -194089,7 +194095,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1256
+"line": 1265
 },
 "CWorldScene::RenderMapObjs": {
 "files": [
@@ -194136,7 +194142,7 @@
 "stub": false,
 "lines": 91,
 "refs": [],
-"line": 1292
+"line": 1301
 },
 "CWorldScene::SphereOutsideFrustum": {
 "files": [
@@ -194155,7 +194161,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1388
+"line": 1397
 },
 "CWorldScene::VisitStaticEntity": {
 "files": [
@@ -194183,7 +194189,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1400
+"line": 1409
 },
 "CWorldScene::TraverseChunkDoodads": {
 "files": [
@@ -194211,7 +194217,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1462
+"line": 1471
 },
 "CWorldScene::TraverseRowStaticEntities": {
 "files": [
@@ -194240,7 +194246,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1518
+"line": 1527
 },
 "CWorldScene::TraverseRowEntities": {
 "files": [
@@ -194271,7 +194277,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 1574
+"line": 1583
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -197936,6 +197942,9 @@
 "NextChunk",
 "NextChunk",
 "NextChunk",
+"TSGrowableArray<CMapObj::PortalRect>::SetCount",
+"TSBaseArray<CMapObj::PortalRect>::operator[]",
+"TSBaseArray<CMapObj::PortalRect>::operator[]",
 "isnan",
 "C3Vector::C3Vector",
 "C3Vector::operator=",
@@ -197967,9 +197976,9 @@
 "8",
 "800000.0f"
 ],
-"branches": 5,
+"branches": 6,
 "stub": false,
-"lines": 92,
+"lines": 99,
 "refs": [],
 "line": 203
 },
@@ -197990,7 +197999,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 299
+"line": 306
 },
 "CMapObj::BoundingSphere": {
 "files": [
@@ -198008,7 +198017,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 313
+"line": 320
 },
 "CMapObj::Bounds": {
 "files": [
@@ -198024,7 +198033,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 333
+"line": 340
 },
 "CMapObj::GroupBoundingSphere": {
 "files": [
@@ -198042,7 +198051,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 343
+"line": 350
 },
 "CMapObj::GroupBounds": {
 "files": [
@@ -198058,7 +198067,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 365
+"line": 372
 },
 "CMapObj::GroupFlags": {
 "files": [
@@ -198073,7 +198082,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 375
+"line": 382
 },
 "CMapObj::GetGroup": {
 "files": [
@@ -198088,7 +198097,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 386
+"line": 393
 },
 "CMapObj::WaitForRoot": {
 "files": [
@@ -198103,7 +198112,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 403
+"line": 410
 },
 "CMapObj::WaitForGroup": {
 "files": [
@@ -198118,7 +198127,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 410
+"line": 417
 },
 "CMapObj::ReadGroup": {
 "files": [
@@ -198135,7 +198144,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 419
+"line": 426
 },
 "CMapObjGroup::FreeBuffers": {
 "files": [
@@ -198152,7 +198161,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 429
+"line": 436
 },
 "CMapObj::UpdateMaterialColors": {
 "files": [
@@ -198176,7 +198185,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 438
+"line": 445
 },
 "CMapObj::UpdateAll": {
 "files": [
@@ -198202,7 +198211,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 461
+"line": 468
 },
 "CMapObj::Initialize": {
 "files": [
@@ -198256,7 +198265,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 512
+"line": 519
 },
 "CMapObj::SetInstanceTransform": {
 "files": [
@@ -198930,6 +198939,49 @@
 "lines": 37,
 "refs": [],
 "line": 1243
+},
+"CMapObj::WalkPortals": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::GetGroup",
+"?s_visibleCallback",
+"TSBaseArray<CMapObj::PortalRect>::Count",
+"TSBaseArray<CMapObj::PortalRect>::operator[]",
+"CMapObj::GroupFlags",
+"CMapObj::MeasurePortal",
+"NearlyEqual",
+"NearlyEqual",
+"CWorldScene::ViewWindow::ViewWindow",
+"CWFrustum::operator=",
+"CWorldScene::SubFrustum",
+"CMapObj::WalkPortals"
+],
+"strings": [],
+"consts": [
+"0",
+"0.001f",
+"0.0f",
+"0.5f",
+"0x1",
+"0x10",
+"0x10000",
+"0x2",
+"0x48",
+"0x8",
+"0xffff",
+"1",
+"1.0f",
+"2",
+"3",
+"4"
+],
+"branches": 20,
+"stub": false,
+"lines": 123,
+"refs": [],
+"line": 1289
 },
 "TriangleOutsideHull": {
 "files": [

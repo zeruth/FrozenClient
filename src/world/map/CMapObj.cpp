@@ -240,6 +240,13 @@ void CMapObj::ParseChunks() {
 
     auto mopt = NextChunk(cursor);
     this->m_mopt = reinterpret_cast<SMOPortal*>(const_cast<uint8_t*>(mopt.body));
+
+    this->m_portalRects.SetCount(this->m_portalCount);
+
+    for (uint32_t i = 0; i < this->m_portalCount; i++) {
+        this->m_portalRects[i].flags = 0;
+        this->m_portalRects[i].stamp = 0;
+    }
     this->m_portalCount = mopt.size / sizeof(SMOPortal);
 
     for (uint32_t i = 0; i < this->m_portalCount; i++) {

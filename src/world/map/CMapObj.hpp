@@ -198,6 +198,22 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Is the camera standing in this doorway? Then it opens onto everything.
         static void TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect);
 
+        // How many doorways deep the walk will go. The reference reads a global set once at
+        // startup; frozen caps it so the frustum stack it pushes onto cannot overflow.
+        static const uint32_t PORTAL_DEPTH_MAX = 4;
+
+        // The instance the walk is currently inside, kept here the way the reference keeps it
+        // (DAT_00adff10 and DAT_00d1c424) because the walk is several calls deep by the time
+        // it needs them.
+        static C44Matrix s_portalPlacement;
+        static int32_t s_portalStamp;
+
+        // Step through every doorway of one group that is still in view, marking each room it
+        // reaches and narrowing the view by the doorway it came through. `fromGroup` is where
+        // it came from, so it does not go straight back. ref: FUN_007ac060
+        void WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* window,
+                         uint32_t depth, int32_t interior);
+
         // ref: FUN_007a6e00
         static void SetupPortalContext(const C44Matrix& placement, const C44Matrix& inversePlacement,
                                        const C3Vector& cameraPos, const C3Vector& cameraTarget);
@@ -250,6 +266,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         SMOGroupInfo* m_mogi = nullptr;           // +0x130
         const C3Vector* m_mopv = nullptr;         // +0x134: portal vertices
         SMOPortal* m_mopt = nullptr;              // +0x138
+        // One rectangle per doorway, worked out at most once a frame. The reference keeps a
+        // single global array because only one building is ever being walked; per root costs
+        // the same and cannot be indexed past its end.
+        TSGrowableArray<PortalRect> m_portalRects;
         const SMOPortalRef* m_mopr = nullptr;     // +0x13c
         const C3Vector* m_movv = nullptr;         // +0x140: visible block vertices
         const uint8_t* m_movb = nullptr;          // +0x144: visible blocks, 4 bytes each

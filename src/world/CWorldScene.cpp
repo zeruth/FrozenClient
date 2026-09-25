@@ -1180,15 +1180,24 @@ void CWorldScene::VisitMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup
                     CWorldScene::MarkMapObjGroupVisible(defGroup->m_groupIndex, def);
                 }
             } else if (flags & 0x8) {
-                // Diverged, and this is the big one. The reference narrows the window by a texel
-                // either way and hands the group to FUN_007ad350 -> FUN_007ac060, the recursive
-                // portal walk, which is what marks an exterior group visible and then walks into
-                // whatever rooms its portals open onto. That walk is not ported. Marking the
-                // group here gets the building itself on screen; what is missing is the geometry
-                // on the far side of its doorways.
-                if (def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0)) {
-                    CWorldScene::MarkMapObjGroupVisible(defGroup->m_groupIndex, def);
-                }
+                // The ordinary case: step into the building through this group and follow its
+                // doorways. The walk marks the group itself and then every room it can reach.
+                // The window is nudged in by a texel either way, as the reference does.
+                float ndc[4] = {
+                    window->minX * 2.0f - 1.0f,
+                    window->minY * 2.0f - 1.0f,
+                    window->maxX * 2.0f - 1.0f,
+                    window->maxY * 2.0f - 1.0f
+                };
+
+                CMapObj::SetVisibleCallback(&CWorldScene::MarkMapObjGroupVisible, def);
+                CMapObj::s_portalPlacement = def->m_placement;
+                CMapObj::s_portalStamp++;
+
+                CMapObj::SetupPortalContext(def->m_placement, def->m_inversePlacement,
+                                            CWorldScene::s_cameraPos, CWorldScene::s_cameraTarget);
+
+                def->m_mapObj->WalkPortals(defGroup->m_groupIndex, 0xffff, ndc, 0, 1);
             }
         }
     }
