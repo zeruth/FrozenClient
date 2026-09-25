@@ -77140,6 +77140,24 @@
 "refs": [],
 "line": 1312
 },
+"TextureHasPendingData": {
+"files": [
+"src/gx/texture.cpp"
+],
+"callseq": [
+"TextureGetTexturePtr"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 1321
+},
 "TextureGetRefCount": {
 "files": [
 "src/gx/texture.cpp"
@@ -77157,7 +77175,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1322
+"line": 1329
 },
 "TextureIncreasePriority": {
 "files": [
@@ -77170,7 +77188,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1347
+"line": 1354
 },
 "TextureInitialize": {
 "files": [
@@ -77192,7 +77210,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1351
+"line": 1358
 },
 "TextureIsSame": {
 "files": [
@@ -77214,7 +77232,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1359
+"line": 1366
 },
 "CGxTexFlags::operator==": {
 "files": [

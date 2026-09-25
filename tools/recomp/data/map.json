@@ -10005,6 +10005,22 @@
   "refSize": 29,
   "status": "ported"
  },
+ "004b5800": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureHasPendingData",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "004b58d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.2,
@@ -59738,11 +59754,26 @@
   "refSize": 3,
   "status": "ported"
  },
+ "008a2450": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.357,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialSettings::LoadTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 809,
+  "status": "ported"
+ },
  "008a27c0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp"
   ],

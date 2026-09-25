@@ -4,6 +4,9 @@
 #include <storm/Array.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include <common/Handle.hpp>
+#include "gx/texture/CGxTex.hpp"
+#include <tempest/Vector.hpp>
 #include <new>
 
 namespace Liquid {
@@ -46,10 +49,77 @@ bool CMaterialSettings::LoadFromDbc(int32_t liquidType) {
 
     this->m_procedural = materialRec->m_flags & 1;
 
-    // TODO FUN_008a2450: load the six animation frames, picking the procedural texture flags
-    // when the name says so.
+    this->LoadTextures();
 
     return true;
+}
+
+// How far a numbered animation is followed before the loader gives up. The reference stops at
+// thirty, whether or not the files keep going.
+static const uint32_t MAX_FRAMES = 30;
+
+// ref: FUN_008a2450
+// Procedural water is generated rather than read, so it is sampled without mipmaps and clamped;
+// everything else is an ordinary wrapped, trilinear texture.
+void CMaterialSettings::LoadTextures() {
+    for (uint32_t slot = 0; slot < TEXTURE_SLOTS; slot++) {
+        const char* name = this->m_textureName[slot];
+
+        this->m_current[slot] = nullptr;
+
+        if (!name[0]) {
+            continue;
+        }
+
+        bool procedural = SStrStrI(name, "procedural") != nullptr;
+
+        CGxTexFlags flags(procedural ? GxTex_Linear : GxTex_LinearMipLinear,
+                          !procedural, !procedural, 0, 0, 0, 1);
+
+        CStatus status;
+
+        if (!SStrStrI(name, "%d")) {
+            HTEXTURE texture = nullptr;
+
+            if (procedural) {
+                // TODO FUN_004b6f30: the generated texture, looked up by name hash rather than
+                // read off disk. Without it the still falls through to the solid below, which
+                // is what the reference does only when the generator has nothing for the name.
+                CImVector green = { 0, 0xff, 0, 0xff };
+
+                texture = TextureCreateSolid(green);
+            } else {
+                texture = TextureCreate(name, flags, &status, 0);
+            }
+
+            if (texture) {
+                this->m_frames[slot].Add(1, &texture);
+            }
+
+            continue;
+        }
+
+        // An animation: the name is a pattern, and the frames are numbered from one.
+        bool any = false;
+
+        for (uint32_t frame = 1; frame < MAX_FRAMES + 1; frame++) {
+            char path[CMaterialSettings::TEXTURE_NAME_SIZE];
+            SStrPrintf(path, sizeof(path), name, frame);
+
+            HTEXTURE texture = TextureCreate(path, flags, &status, 0);
+
+            this->m_frames[slot].Add(1, &texture);
+
+            if (TextureHasPendingData(texture)) {
+                any = true;
+            }
+        }
+
+        // TODO the second set, FUN_004b8d70 over the same names, kept only when it comes out the
+        // same length as the first. Which loader that is, and so what the second set is for, is
+        // not established, so m_framesAlt stays empty.
+        (void)any;
+    }
 }
 
 // ref: FUN_008a28f0
@@ -92,7 +162,19 @@ CMaterialSettings* GetMaterialSettings(int32_t liquidType) {
 void ReleaseMaterialSettings() {
     for (uint32_t i = 0; i < s_settingsBank.Count(); i++) {
         if (s_settingsBank[i]) {
-            // TODO the loaded frames go back through FUN_008a1c90 / FUN_008a1d00 first.
+            auto settings = s_settingsBank[i];
+
+            for (uint32_t slot = 0; slot < CMaterialSettings::TEXTURE_SLOTS; slot++) {
+                for (uint32_t frame = 0; frame < settings->m_frames[slot].Count(); frame++) {
+                    if (settings->m_frames[slot][frame]) {
+                        HandleClose(settings->m_frames[slot][frame]);
+                    }
+                }
+
+                settings->m_frames[slot].SetCount(0);
+            }
+
+            settings->~CMaterialSettings();
             SMemFree(s_settingsBank[i], __FILE__, __LINE__, 0x0);
             s_settingsBank[i] = nullptr;
         }

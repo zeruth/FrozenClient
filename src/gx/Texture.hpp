@@ -91,6 +91,11 @@ CTexture* TextureGetTexturePtr(HTEXTURE);
 void TextureFreeMem(void* ptr);
 
 void TextureGetTexFlags(HTEXTURE handle, CGxTexFlags* flags);
+// Whether the texture has a read in flight and somewhere to put it -- an async object and a gx
+// texture both. A name that resolved to no file gets neither, so this is how a caller walking a
+// numbered sequence finds out where the sequence stops. Named for what it tests; the reference
+// gives it no name. ref: FUN_004b5800
+int32_t TextureHasPendingData(HTEXTURE handle);
 
 int32_t TextureGetRefCount(HTEXTURE handle);
 

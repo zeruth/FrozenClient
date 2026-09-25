@@ -2,6 +2,7 @@
 #define WORLD_MAP_LIQUID_MATERIAL_SETTINGS_HPP
 
 #include "gx/Texture.hpp"
+#include <storm/Array.hpp>
 #include <cstdint>
 
 namespace Liquid {
@@ -29,12 +30,25 @@ class CMaterialSettings {
         // Whether the water is drawn by the procedural shaders rather than the plain ones;
         // LiquidMaterial's own flag bit 0.
         uint8_t m_procedural;                                  // +0x360
-        // TODO +0x364 onwards: the loaded frames, which FUN_008a2450 fills.
+        // The frame the surface is showing right now, one a slot. Nothing here fills it; the
+        // draw picks it out of m_frames as the clock moves.
+        HTEXTURE m_current[TEXTURE_SLOTS];                     // +0x364
+        // Every frame of each slot's animation. A slot whose name carries no "%d" holds the one
+        // still image instead.
+        TSGrowableArray<HTEXTURE> m_frames[TEXTURE_SLOTS];     // +0x37c
+        // A second set the reference loads beside the first and keeps only when it came out the
+        // same length. What distinguishes the two is the loader it uses, which frozen has not
+        // identified, so this stays empty.
+        TSGrowableArray<HTEXTURE> m_framesAlt[TEXTURE_SLOTS];  // +0x3dc
 
         // Member functions
         // Fill the record from one LiquidType row and the material it names. False when the DBC
         // carries neither, which is what sends the bank to its fallback. ref: FUN_008a27c0
         bool LoadFromDbc(int32_t liquidType);
+
+        // Open each slot's frames. A name carrying "%d" is an animation, numbered from one until
+        // the files run out; anything else is a single still. ref: FUN_008a2450
+        void LoadTextures();
 };
 
 // The settings for one liquid type, built on first use. A type the DBC does not carry logs and

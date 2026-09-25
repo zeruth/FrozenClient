@@ -1317,6 +1317,13 @@ void TextureGetTexFlags(HTEXTURE handle, CGxTexFlags* flags) {
     *flags = TextureGetTexturePtr(handle)->gxTexFlags;
 }
 
+// ref: FUN_004b5800
+int32_t TextureHasPendingData(HTEXTURE handle) {
+    auto texture = TextureGetTexturePtr(handle);
+
+    return texture->asyncObject && texture->gxTex ? 1 : 0;
+}
+
 // ref: FUN_004b6280
 // How many holders the texture handle has; 1 means the caller's is the only one.
 int32_t TextureGetRefCount(HTEXTURE handle) {
