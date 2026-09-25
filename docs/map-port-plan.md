@@ -168,84 +168,96 @@ to be re-ported against later.
 
 Movement, spells and the UI stubs are not in this plan; they start after the scene matches.
 
-## State of the load chain (2026-09-25, end of day)
+## State of the load chain (2026-09-25, after the long port session)
 
-**Terrain draws through the ported map and looks right.** Item 1 of the queue is complete: the
-chunk and tile layers, streaming, the render chunk and its pools, the chunk pass, the scene
-camera and traversal, the alpha and shadow texture builders and the two-chunk pairing.
+Thirty-five commits landed on 2026-09-25. Terrain.cpp went 6488 -> 6211 lines and the process
+from about 1.08 GB resident to 890 MB. linked 4257 -> 4307, faithful 2159 -> 2201, verified
+14 -> 30, stubs 580 -> 578.
 
-**Map objects draw, are lit, and their interiors are walked.** `CMap::Render` calls
-`CWorldScene::RenderMapObjs` and the stand-in no longer draws buildings; its visibility sweep
-stays because the floor light, the indoor test and the blob shadow receivers read the instance
-list it fills. Six faults were found and fixed on the first runs, all recorded in commit
-`8440b6ca`; the one worth remembering is that the vertex program adds constant 29 *after*
-multiplying the baked colour by the light, so a building whose baked colours are zero -- and
-plenty are -- can only be lit by that constant.
+**Items 1, 3 and 5 are done. Item 11 is two thirds done.**
 
-**Occlusion culling behind terrain is live.** Solid chunks raise the skyline along their
-silhouette, chunks with holes reopen what they span, and the buffer is refilled with minus a
-million every frame.
+- **1 terrain.** Was already complete; the comment claiming its three texture builders were
+  unported was simply stale.
+- **3 doodads.** The map places and draws the terrain doodads. `CreateDoodadDef` makes the
+  model and hands it the full placement, `CMap::UpdatePendingEntities` works out its bounds and
+  detail band once the model lands, and `TraverseChunkDoodads` decides each frame whether it
+  draws. The stand-in's arrays, per-frame cull, unload path and walk are deleted. What is left
+  of `TerrainForEachDoodad` yields only the doodads inside buildings, which retire with item 2.
+- **5 blob shadows.** `RenderShaded` and `RenderFallback` are deleted. Doodads do not cast blobs
+  and the invented walk that made them is gone.
+- **11 close out.** `TerrainAreaIDAt` and `TerrainSphereVisible` now answer from the map. Only
+  the `OnWorldRender` pass ordering remains, and it genuinely waits on items 4 and 6.
 
-Facts worth not re-deriving:
+**Item 4 is complete except for the draw**: the MH2O reader, `CChunkLiquid` creation (load
+verified), the row and frame chain, the point query including strict mode, and the camera
+liquid. Only the two-bucket pass is missing.
 
-- The WMO draw always takes the shader path: the reference's shader-level global reads a
-  constant 5.
-- `VisitMapObjDefGroup`'s two branches are the other way round from how they read. Group flag
-  bit 3 is the ordinary exterior group and goes to the portal walk; bit 16 is the shortcut.
-- `CMapObj::Render` transforms each frustum record by the def's inverse placement, which is what
-  lets the per-batch cull test a raw group-space box.
-- The portal rectangle's components are ordered vertical-first, and the window the walk narrows
-  matches, so the overlap test lines up index for index.
-- `VBBList`'s block-sharing mode is dead in 3.3.5a; only the one-pool-per-block path exists.
-- Doodad defs leave the chunk reference walk without flag bit 7, which the traversal tests
-  before it will draw one, and without a detail level, which decides how far away one survives.
-  Neither is set by the creation or the reference walk, so both come from the model's own load.
-  **Wiring the doodad traversal before finding where would silently drop every doodad past the
-  nearest distance band.**
+**Item 6 is fully decoded and nothing in it needs research.** The two pools and the ring of 128
+buffer pairs are built and verified, the 799-kind table and the readiness gate are in, and every
+table and constant the scatter builder uses has been read out of the reference's data section.
+
+### Facts worth not re-deriving
+
+- The WMO draw always takes the shader path: the reference's shader-level global reads 5.
+- `VisitMapObjDefGroup`'s two branches are the other way round from how they read: group flag
+  bit 3 is the ordinary exterior group and goes to the portal walk, bit 16 is the shortcut.
+- `CMapObj::Render` transforms each frustum record by the def's inverse placement, which lets
+  the per-batch cull test a raw group-space box.
+- The portal rectangle's components are ordered vertical-first, and the walk's window matches.
+- `VBBList`'s block-sharing mode is dead in 3.3.5a.
+- **The doodad draw bit (0x80) is set by `FUN_007b5740` once `CM2Model::IsLoaded` says the model
+  arrived.** It means "placed". An older note here said nothing ORs it in; that was wrong, and
+  the search failed because it only looked at load-time code.
+- **The detail level is not stored anywhere**: `CMapStaticEntity::Place` computes it from the
+  widest side of the placed box against thresholds of 1, 4, 15 and 100 yards.
+- **Blob shadows are cast only by `CMapEntity` objects.** `BlobShadowDraw` has one caller, its
+  gate has two, and no `CWorld::AddObject` caller is in the map module. Doodads are
+  `CMapStaticEntity` and can never reach the caster; props are shadowed by the baked MCSH.
+- **`CWorld::AddObject` builds `m_flags7c`, and bit 0x800 is inverted** -- an object opts *out*
+  of shadows by setting its own bit 1.
+- **`CMapDoodadDef` had no constructor and nothing set `Type_DoodadDef`**, so every test asking
+  whether an entity is a doodad quietly answered no, including a live one in
+  `CMap::LinkToMapObjDefGroup`. Only Chunk, Entity and DoodadDef are set even now; Area,
+  MapObjDef, MapObjDefGroup and Light are still missing and have no readers yet.
+- The map addresses a point in cells: the tile's row comes from x and its column from y, which
+  is why the chunk indices look transposed. `CMap::ChunkAt` is that addressing named.
+- A terrain cell is four triangles fanned through its centre vertex, not a bilinear quad.
+- The light block holds three fog sets; the sky interpolates +0x8c and +0xb0 into +0xa0, so the
+  map object's fog selection is between the current fog and one end of that blend.
 
 ### What each remaining item needs
 
-Every one of these is a module frozen has not started, not a handful of functions. Sizes are the
-reference's, excluding dependencies.
-
 | item | state | what it needs |
 |---|---|---|
-| 3 doodads | placed and visited, not wired | the two flags above, then the swap: the stand-in's own doodad creation and `TerrainForEachDoodad` both have to move at once |
-| 4 liquids | field map only | the liquid mesh module (the reference's 0x008a3xxx block) under `CChunkLiquid` creation |
-| 5 blob shadows | not started | the decal draw (`FUN_007e4480`, 1370 bytes) and its setup; frozen's stand-in versions work and would be retired |
-| 6 detail doodads | not started | `FUN_007d3390` alone is 2662 bytes, plus the buffers |
-| 7 occluders | horizon half done and live | the occlusion volumes, and `CMapAreaLow` needs the whole WDL low-detail module |
-| 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects currently substitute for, and the global dimness against the reference |
-| 9 weather | not started | the MapWeather module: the class plus three emitters |
-| 10 map shadow | not started | the shadow map module (0x00874xxx-0x00875xxx), the render targets and the shadowed terrain shader sets |
-| 11 close out | blocked | items 3 through 10 |
+| 2 map objects | draws, lit, interiors walked; portal tail filled | the large portal internals (`FUN_007ac060` 1591, `FUN_007a9380` 2146), the WMO doodads and blob receivers, and floor light -- which is gated on the unported placement code that writes `m_field80`, not on analysis |
+| 4 liquids | everything but the draw | the `Liquid` module: seven `IMaterial` implementations named in overrides.json, `CInstance`, `CreateSurface` (1421), five constant-setup routines and the `vsLiquidWater`/`psLiquidWater` pair, about 9 KB |
+| 6 detail doodads | decoded, resources built | the builder (`FUN_007d3390`, 2662), the instance fill (`FUN_007b31e0`, 432), the buffer fill and the draw (`FUN_007984a0`, 756) -- **all in one change**, because Terrain.cpp already scatters, batches and draws grass and the two would otherwise both run |
+| 7 occluders | horizon live; volume test real but starved | the volumes come from the low-detail terrain: `FUN_007cd4e0` (857) builds their planes, `FUN_007cd850` walks 62 area records -- and that table is filled from the WDL, which `CMap::Load` still lists as a TODO |
+| 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects substitute for |
+| 9 weather | not started | ~14 KB across 17 functions against a 58-line stub -- the queue's "~290 lines" is well short |
+| 10 map shadow | not started | the shadow map module, its render targets and the shadowed terrain shader sets |
+| 11 close out | two thirds done | `OnWorldRender`'s ordering, which waits on 4 and 6 |
 
-What the reference does on the same path that is still listed as `TODO FUN_...` in place:
+### How the work actually went, for whoever picks it up
 
-1. **Per row of the traversal** (`CWorldScene::Traverse`): map object defs `FUN_0079a160` (and
-   their bucketing `FUN_00792bd0` at the start of `CMap::Render`), liquids `FUN_007935a0`,
-   entities `FUN_00793060` / `FUN_007987a0` and the chunk's doodad links `FUN_00799980`,
-   occluders `FUN_00793760` (which feeds the horizon buffer through `FUN_007cfb10` /
-   `FUN_0078f6a0`; until then `BoxOccluded` always sees an open horizon), low detail
-   `FUN_007cd850` / `FUN_00791980`. The stand-in still draws WMOs, doodads and liquids after
-   `CMap::Render`.
-2. **Inside `CMap::Render`**: the portal path (`s_cameraGroup`), the camera liquid
-   `FUN_00790920`, the interior clear colour and the sky flag, the map shadow `FUN_007bb670` /
-   `FUN_007bb570`, the map object pass `FUN_007964a0`, liquids `FUN_00795f80` / `FUN_008a2240`,
-   the sky and the decal passes. `CGWorldFrame::OnWorldRender` keeps doing the sky, entities and
-   blob shadows around it.
-3. **Alpha and shadow textures** of a render chunk (`FUN_007b9de0`, `FUN_007b9ee0`,
-   `FUN_007b9f90` behind `CMapRenderChunk::UpdateAlphaTextures`): until they land every chunk
-   draws its base layer only.
-4. **Detail doodads** `FUN_007d3390` / `FUN_00792fa0` from `CMapChunk::PrepareRender`; the
-   two-chunk render chunk pairing `FUN_007d6810` (`CMap::s_shaderVertexMode`); the
-   fixed-function chunk draws (six functions, listed in overrides.json as not ported); the
-   shadow-mapped terrain shaders (`CMap::s_terrain2PixelShaders`, loaded by the shadow map
-   system).
-5. **Inside the ported layers**: chunk liquids `FUN_007c5690` and their row insertion
-   (`CMapChunk::UpdateLiquidVisibility` stops at the chunk test), sound emitters
-   `FUN_007c6060`, MCRF references `FUN_007c6150`, the MH2O parse `FUN_007d4f10`, the entity and
-   def releases in `CMapChunk::Destroy`, `BufDestroy`/`PoolDestroy` in the device.
+The items that closed were the ones where the module under the entry point was shallow enough
+to finish in one go. The ones that have not closed are all **draws**, and the reason is not
+missing analysis -- items 4 and 6 are decoded to their constants. It is that a draw has no
+invariant to test without looking at the screen.
+
+Everything landed this session was bounded by a counter and a log instead: a chunk that must
+round-trip its own centre (2500 checked, none wrong), a triangle fan that must reproduce its
+centre vertex (120 probes, worst error 0.0008 yards), a camera depth that must equal the offset
+it was placed at (12 of 20 probes, error 0.0000), 448 chunks building liquid, 133 doodads drawn
+a frame out of 798 links walked. That works for queries. It does not work for "does the water
+look right", which is why the two big draws want a session with the screen available.
+
+Three traps worth knowing, all of which cost time here: a counter that counts the wrong thing
+reads as success (`placed=3440` was counting a flag write, caught only because a companion log
+line printed zero times); a log check passes on a missing file unless it refuses to
+(`scratchpad/run.sh` now does, and also refuses a build older than the newest source); and
+`recomp.py --fix` lists functions that are **linked but unfaithful**, so everything in it is
+already ported -- check `matches.tsv` for the address before decompiling anything from it.
 
 ## What "done" means for a module
 
