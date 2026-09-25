@@ -225,13 +225,36 @@ table and constant the scatter builder uses has been read out of the reference's
 - The light block holds three fog sets; the sky interpolates +0x8c and +0xb0 into +0xa0, so the
   map object's fog selection is between the current fog and one end of that blend.
 
+### What the detail doodad work established (2026-09-25, later)
+
+- **Batches are keyed by TEXTURE, not by model.** `CDoodadModel +0x08` is a texture the loaded
+  callback resolves from the model's first `M2Texture`, and that is what the instance batches
+  on -- so a chunk with several kinds of grass still draws in one call.
+- **The skin profile's counts are at +0x04 and +0x0c**, which read like `M2Array` offsets and
+  are not: the SKIN chunk opens with a four-byte magic. Three separate sites agree.
+- **`MIN_NORMAL_Z` is a slope against a UNIT normal.** The cross product through a cell's centre
+  comes out pointing under the ground and scaled by twice the triangle's area. `HeightAt` can
+  ignore both because its division cancels them; the scatter cannot, and unnormalized it rejects
+  every placement on every chunk -- which is exactly what the first run did, on flat ground.
+- **`FUN_007984a0` is the detail doodad pass, not a model pass.** It reads a chunk's vtable,
+  matrix and position, which is why it looks like one; the chunk comes from the instance's
+  `+0x98`. Its field accesses are what fill in the instance's `+0x94..+0xa3` tail.
+- **The vertex colour ramp and the module's shaders are the same switch.** The flag that skips
+  the CPU brightness ramp is the one that decides whether `Shaders\Vertex\DetailDoodad` gets
+  loaded, so a port without the shaders must keep the ramp.
+- **30 of the 580 `GroundEffectDoodad` rows set the slope flag**, and none are in the starting
+  zone. The slope-aligned branch of the vertex fill is ported and has run zero times.
+- **Frozen cannot reproduce these structs' offsets**, for two structural reasons: it is a 64-bit
+  build, and its `TSBaseArray` has virtual methods so every `TSGrowableArray` carries a vtable
+  the reference's does not. Do not write static_asserts against the reference offsets.
+
 ### What each remaining item needs
 
 | item | state | what it needs |
 |---|---|---|
 | 2 map objects | draws, lit, interiors walked; portal tail filled | the large portal internals (`FUN_007ac060` 1591, `FUN_007a9380` 2146), the WMO doodads and blob receivers, and floor light -- which is gated on the unported placement code that writes `m_field80`, not on analysis |
 | 4 liquids | everything but the draw | the `Liquid` module: seven `IMaterial` implementations named in overrides.json, `CInstance`, `CreateSurface` (1421), five constant-setup routines and the `vsLiquidWater`/`psLiquidWater` pair, about 9 KB |
-| 6 detail doodads | decoded, resources built | the builder (`FUN_007d3390`, 2662), the instance fill (`FUN_007b31e0`, 432), the buffer fill and the draw (`FUN_007984a0`, 756) -- **all in one change**, because Terrain.cpp already scatters, batches and draws grass and the two would otherwise both run |
+| 6 detail doodads | **module complete, unwired** | every function is ported: scatter, instance fill, buffer acquire, both buffer fills, draw. What is left is the pass (`FUN_007984a0`, 756) with its state setup (`FUN_007b2d30`, 798) and shader-path constants (`FUN_007b10e0`, 197), and deleting Terrain.cpp's own scatter -- **in one change**, because both running would draw the grass twice |
 | 7 occluders | horizon live; volume test real but starved | the volumes come from the low-detail terrain: `FUN_007cd4e0` (857) builds their planes, `FUN_007cd850` walks 62 area records -- and that table is filled from the WDL, which `CMap::Load` still lists as a TODO |
 | 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects substitute for |
 | 9 weather | not started | ~14 KB across 17 functions against a 58-line stub -- the queue's "~290 lines" is well short |
