@@ -499,8 +499,19 @@ int32_t CSimpleFrame_AllowAttributeChanges(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0049f260
 int32_t CSimpleFrame_CanChangeAttributes(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->ProtectedFunctionsAllowed() && !frame->AttributeChangesAllowed()) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t CSimpleFrame_GetAttribute(lua_State* L) {

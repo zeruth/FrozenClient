@@ -230,12 +230,14 @@ int32_t CSimpleModel_GetFacing(lua_State* L) {
     return 1;
 }
 
-// FUN_004a6700 is the model's GetScale -- it reads DAT_00b499ec, the model object type --
-// and it returns TWO values through a helper at 004980d0, not one. The note that used to
-// stand here guessed a single m_scale push, which would have been wrong in arity before it
-// was wrong in value. Identify 004980d0 first.
+// ref: FUN_00961090
 int32_t CSimpleModel_GetScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleModel::GetObjectType();
+    auto model = static_cast<CSimpleModel*>(FrameScript_GetObjectThis(L, type));
+
+    lua_pushnumber(L, model->m_scale);
+
+    return 1;
 }
 
 int32_t CSimpleModel_AdvanceTime(lua_State* L) {

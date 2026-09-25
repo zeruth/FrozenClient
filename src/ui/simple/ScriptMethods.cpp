@@ -21,6 +21,7 @@
 #include "ui/simple/CSimpleSlider.hpp"
 #include "ui/simple/CSimpleStatusBar.hpp"
 #include "ui/simple/CSimpleTexture.hpp"
+#include "ui/simple/CSimpleTop.hpp"
 #include "util/CStatus.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
@@ -28,20 +29,63 @@
 #include <storm/String.hpp>
 #include <cstdint>
 
+// ref: FUN_0081b720
 int32_t Script_GetText(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto token = lua_tostring(L, 1);
+    int32_t count = -1;
+    auto gender = GENDER_NOT_APPLICABLE;
+
+    if (!token) {
+        luaL_error(L, "Usage: GetText(\"token\" [,gender] [,ordinal])");
+    }
+
+    if (lua_isnumber(L, 2)) {
+        gender = static_cast<FRAMESCRIPT_GENDER>(lua_tointeger(L, 2));
+    }
+
+    if (lua_isnumber(L, 3)) {
+        count = lua_tointeger(L, 3);
+    }
+
+    lua_pushstring(L, FrameScript_GetText(token, count, gender));
+
+    return 1;
 }
 
+// ref: FUN_0081bab0
 int32_t Script_GetNumFrames(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto top = CSimpleTop::s_instance;
+
+    uint32_t count = 0;
+    for (auto frame = top->m_frames.Head(); frame; frame = top->m_frames.Link(frame)->Next()) {
+        count++;
+    }
+
+    lua_pushnumber(L, static_cast<double>(count));
+
+    return 1;
 }
 
 int32_t Script_EnumerateFrames(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0081b7b0
 int32_t Script_CreateFont(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: CreateFont(\"name\")");
+        return 0;
+    }
+
+    auto font = CSimpleFont::GetFont(lua_tostring(L, 1), 1);
+
+    if (!font->lua_registered) {
+        font->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, font->lua_objectRef);
+
+    return 1;
 }
 
 int32_t Script_CreateFrame(lua_State* L) {
@@ -152,8 +196,22 @@ int32_t Script_GetFramesRegisteredForEvent(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0081b820
 int32_t Script_GetCurrentKeyBoardFocus(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto focus = CSimpleEditBox::s_currentFocus;
+
+    if (!focus) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    if (!focus->lua_registered) {
+        focus->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, focus->lua_objectRef);
+
+    return 1;
 }
 
 static FrameScript_Method s_ScriptFunctions[] = {

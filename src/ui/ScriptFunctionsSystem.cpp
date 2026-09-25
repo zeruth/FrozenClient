@@ -1,5 +1,6 @@
 #include "ui/FrameScript.hpp"
 #include "client/Client.hpp"
+#include "console/Command.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
@@ -21,8 +22,16 @@ int32_t Script_GetGameTime(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_00608270
 int32_t Script_ConsoleExec(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: ConsoleExec(\"console_command\")");
+        return 0;
+    }
+
+    ConsoleCommandExecute(lua_tostring(L, 1), 0);
+
+    return 0;
 }
 
 int32_t Script_AccessDenied(lua_State* L) {
