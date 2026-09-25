@@ -92,10 +92,10 @@ class CMapChunk : public CMapBaseObj {
         // Member variables. Reference offsets follow the base object (which ends at +0x24).
         int32_t m_areaChunkX = 0;            // +0x24: index within the area (used & ~1)
         int32_t m_areaChunkY = 0;            // +0x28
-        int32_t m_unk2c = 0;                 // +0x2c
-        int32_t m_unk30 = 0;                 // +0x30
-        int32_t m_indexY = 0;                // +0x34: map-wide chunk index along Y (drives the Y coordinate)
-        int32_t m_indexX = 0;                // +0x38: map-wide chunk index along X (drives the X coordinate)
+        int32_t m_cellY = 0;                 // +0x2c: m_indexY * 8, the chunk's first cell along Y
+        int32_t m_cellX = 0;                 // +0x30: m_indexX * 8
+        int32_t m_indexY = 0;                // +0x34: map-wide chunk index along Y (the tile's column index, drives the Y coordinate)
+        int32_t m_indexX = 0;                // +0x38: map-wide chunk index along X (the tile's row index, drives the X coordinate)
         C3Vector m_center;                   // +0x3c
         float m_radius = 0.0f;               // +0x48
         CAaBox m_bounds;                     // +0x4c .. +0x60
@@ -106,7 +106,8 @@ class CMapChunk : public CMapBaseObj {
         void* m_ptrA4 = nullptr;             // +0xa4: released with FUN_007b3960 on destroy
         CMapRenderChunk* m_renderChunk = nullptr; // +0xa8
         int32_t m_renderChunkReady = 0;      // +0xac
-        // TODO +0xb0..+0xb8
+        uint32_t m_areaId = 0;               // +0xb0: the MCNK header's areaId
+        TSLink<CMapChunk> m_linkB4;          // +0xb4: unlinked by the destructor; its list is not known yet
         TSLink<CMapChunk> m_areaLink;        // +0xbc
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_entityLinkList;     // +0xc4: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_mapObjDefLinkList;  // +0xd0: owners released on destroy
@@ -116,7 +117,8 @@ class CMapChunk : public CMapBaseObj {
         STORM_EXPLICIT_LIST(CChunkLiquid, m_chunkLink) m_liquidList;        // +0x100
         uint8_t* m_data = nullptr;           // +0x10c: the 'MCNK' IFF chunk
         SMChunk* m_header = nullptr;         // +0x110: m_data + 8
-        // TODO +0x114, +0x118
+        uint16_t* m_lowQualityTextureMap = nullptr; // +0x114: &m_header->lowQualityTextureMap
+        uint32_t* m_predTex = nullptr;       // +0x118: &m_header->predTex
         float* m_heights = nullptr;          // +0x11c: MCVT
         uint32_t* m_vertexColors = nullptr;  // +0x120: MCCV (packed bytes)
         int8_t* m_normals = nullptr;         // +0x124: MCNR
@@ -128,6 +130,10 @@ class CMapChunk : public CMapBaseObj {
         uint8_t* m_soundEmitters = nullptr;  // +0x13c: MCSE
 
         // Member functions
+        CMapChunk();
+        ~CMapChunk() override;
+        void Load(uint8_t* data, int32_t fixSizes);
+        void Destroy();
         void ParseSubChunks(int32_t fixSizes);
         int16_t BuildIndices(uint16_t* indices, int16_t baseVertex);
         void AppendIndices(uint16_t* indices, MAPCHUNKINDEXRANGE* range);

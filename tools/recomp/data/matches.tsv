@@ -68,7 +68,7 @@ addr	how	frozen	evidence
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
-004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync
+004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync, 007d7150=CMapArea::BeginLoad
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
 00422130	override	SFile::IsStreamingMode	
@@ -78,7 +78,7 @@ addr	how	frozen	evidence
 00424b10	sticky	FrameXML_SetProgressCallback	held from the previous run, where it was sticky
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
-00424f80	sticky	SFile::Open	held from the previous run, where it was sticky
+00424f80	callgraph	SFile::Open	only unmatched callee of 007bd480=CMap::SafeOpen
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
 00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
 00464580	annotated	CRandom::uint32	tag in lib/typhoon/tempest/random/CRandom.cpp
@@ -610,8 +610,11 @@ addr	how	frozen	evidence
 004b9550	override	TextureCreateSolid	
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
+004b9de0	override	AsyncFileReadDestroyObject	
+004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 0083da10=CM2Shared::LoadSequence
+004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 0083da10=CM2Shared::LoadSequence
+004bab50	override	AsyncFileReadObject	
 004bc410	callorder	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::Ptr	same slot between linked calls in 00768900=ConsoleCommandParse
 004bd960	sticky	CSimpleFontString::GetFontName	held from the previous run, where it was sticky
 004bd9d0	callgraph	TextBlockGetFontPtr	only unmatched callee of 00763680=GenerateNodeString
@@ -2159,6 +2162,7 @@ addr	how	frozen	evidence
 0076f770	annotated	SStrStrI	tag in lib/squall/storm/String.cpp
 0076f9e0	override	SStrDupA	
 0076fb80	override	SStrToFloat	
+00770260	callgraph	SCreateThread	only unmatched callee of 00774740=SThread::Create
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
@@ -2168,8 +2172,8 @@ addr	how	frozen	evidence
 00774620	callorder	SCritSect::SCritSect	same slot between linked calls in 0047f2f0=IEvtSchedulerInitialize
 00774630	order	SCritSect::~SCritSect	definition order between SCritSect::SCritSect and SCritSect::Enter in lib/squall/storm/thread/SCritSect.cpp
 00774640	override	SCritSect::Enter	
-00774650	callorder	SCritSect::Leave	same slot between linked calls in 00765270=ConsoleWrite, 0087ee60=SESound::LoadDiskSound
-00774740	callorder	SThread::Create	same slot between linked calls in 00469320=WowConnectionNet::Start
+00774650	callgraph	SCritSect::Leave	only unmatched callee of 004b9ea0=AsyncFileReadCancel
+00774740	callgraph	SThread::Create	only unmatched callee of 00469320=WowConnectionNet::Start
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
@@ -2216,6 +2220,8 @@ addr	how	frozen	evidence
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
+007b4830	annotated	CMap::AreaDistanceSq	tag in src/world/map/CMap.cpp
+007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
 007bfe40	annotated	CMap::MapMemAlloc	tag in src/world/map/CMap.cpp
 007bfe60	annotated	CMap::MapMemFree	tag in src/world/map/CMap.cpp
@@ -2250,6 +2256,12 @@ addr	how	frozen	evidence
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
+007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp
+007c30b0	annotated	CMapArea::GrowTextures	tag in src/world/map/CMapArea.cpp
+007c3370	annotated	CMapChunk::Destroy	tag in src/world/map/CMapChunk.cpp
+007c35d0	annotated	CMap::DestroyChunk	tag in src/world/map/CMap.cpp
+007c35f0	annotated	CMapArea::Destroy	tag in src/world/map/CMapArea.cpp
+007c3700	annotated	CMap::UnloadArea	tag in src/world/map/CMap.cpp
 007c3a10	annotated	CMapChunk::ParseSubChunks	tag in src/world/map/CMapChunk.cpp
 007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
 007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
@@ -2262,6 +2274,9 @@ addr	how	frozen	evidence
 007c5220	annotated	CMapChunk::ComputeBounds	tag in src/world/map/CMapChunk.cpp
 007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
 007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
+007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
+007c5e50	annotated	CMapChunk::~CMapChunk	tag in src/world/map/CMapChunk.cpp
+007c64b0	annotated	CMapChunk::Load	tag in src/world/map/CMapChunk.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
 007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
@@ -2287,6 +2302,17 @@ addr	how	frozen	evidence
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
+007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
+007d6bf0	annotated	CMapArea::CreateChunks	tag in src/world/map/CMapArea.cpp
+007d6d20	annotated	CMapArea::LoadTextures	tag in src/world/map/CMapArea.cpp
+007d6e10	annotated	CMapArea::~CMapArea	tag in src/world/map/CMapArea.cpp
+007d6ef0	annotated	CMapArea::ParseChunks	tag in src/world/map/CMapArea.cpp
+007d7020	annotated	CMapArea::LoadCallback	tag in src/world/map/CMapArea.cpp
+007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
+007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
+007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
+007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
 007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
 007dc010	override	StringToMouseButton	
@@ -2794,6 +2820,7 @@ addr	how	frozen	evidence
 00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086ae20	callgraph	PushSecondsUntil	only unmatched callee of 00516210=Script_GetReleaseTimeRemaining, 00516280=Script_GetCorpseRecoveryDelay, 005162e0=Script_GetInstanceBootTimeRemaining
+0086b280	callgraph	OsSleep	only unmatched callee of 004b9de0=AsyncFileReadDestroyObject
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp

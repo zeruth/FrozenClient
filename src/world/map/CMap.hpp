@@ -13,11 +13,16 @@
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
+#include "gx/Texture.hpp"
 #include <storm/List.hpp>
+#include <tempest/Box.hpp>
+#include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CAsyncObject;
 class CMapObj;
 class CMapObjGroup;
+class SFile;
 
 class CMap {
     public:
@@ -55,6 +60,22 @@ class CMap {
         // Terrain vertex format (DAT_00d1d06c, set with the terrain shader level): 1 drops the
         // baked MCCV colour from the vertex.
         static int32_t s_terrainVertexFormat;
+        // Terrain layers load their "_s.blp" specular variant (DAT_00ce049d, set at map load
+        // from the specular CVar bit and the shader check)
+        static uint8_t s_terrainSpecular;
+
+        // The loaded tiles, [row * 64 + col] (DAT_00ce48d0), and the links whose owners they are
+        // (DAT_00adfbec); a tile lives in both from CreateArea until UnloadArea
+        static CMapArea* s_areaGrid[64 * 64];
+        static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_areaLinkList;
+
+        // The window of map chunk coordinates kept loaded around the camera, as CWorld::Update
+        // maintains it (DAT_00cd77d8 minRow, DAT_00cd77dc minCol, DAT_00cd77e0 maxRow,
+        // DAT_00cd77e4 maxCol)
+        static int32_t s_chunkWindowMinY;
+        static int32_t s_chunkWindowMinX;
+        static int32_t s_chunkWindowMaxY;
+        static int32_t s_chunkWindowMaxX;
 
         static int32_t s_mapID;
         static char s_mapName[];
@@ -101,6 +122,15 @@ class CMap {
         static CMapBaseObjLink* AllocBaseObjLink(CMapBaseObj* owner);
         static void FreeBaseObjLink(CMapBaseObjLink* link);
         static void LinkToMapObjDefGroup(CMapBaseObj* owner, CMapObjDefGroup* group);
+
+        // Tiles and chunks
+        static CMapArea* CreateArea(int32_t x, int32_t y);
+        static void UnloadArea(CMapArea* area);
+        static void DestroyChunk(CMapChunk* chunk);
+        static float AreaDistanceSq(const CAaBox& box, const C2Vector& point);
+        static int32_t SafeOpen(const char* path, SFile** file);
+        static void AsyncLoadCleanup(CAsyncObject* object);
+        static HTEXTURE LoadTexture(const char* name);
 
     private:
         static void FreeAreaLowObject(uint32_t* heap, CMapAreaLow* area);

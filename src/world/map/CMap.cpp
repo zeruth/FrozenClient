@@ -14,7 +14,14 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
 #include "sound/SI2.hpp"
+#include "async/AsyncFile.hpp"
+#include "async/CAsyncObject.hpp"
+#include "gx/Texture.hpp"
+#include "gx/texture/CGxTex.hpp"
+#include "util/CStatus.hpp"
+#include "util/SFile.hpp"
 #include <common/ObjectAlloc.hpp>
+#include <storm/Error.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <new>
@@ -44,6 +51,19 @@ STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_renderChunkFreeList;
 
 uint8_t CMap::s_chunkVerticesWorldSpace;
 int32_t CMap::s_terrainVertexFormat;
+uint8_t CMap::s_terrainSpecular;
+
+CMapArea* CMap::s_areaGrid[64 * 64];
+STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_areaLinkList;
+
+int32_t CMap::s_chunkWindowMinY;
+int32_t CMap::s_chunkWindowMinX;
+int32_t CMap::s_chunkWindowMaxY;
+int32_t CMap::s_chunkWindowMaxX;
+
+static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
+static const float MAP_HALF_EXTENT = 17066.666015625f;    // DAT_009e2acc
+static const float TILE_SIZE = 533.3333129882812f;        // DAT_00a0b5e4
 
 int32_t CMap::s_mapID = -1;
 char CMap::s_mapName[256];
@@ -493,6 +513,116 @@ void CMap::FreeAreaLowObject(uint32_t* heap, CMapAreaLow* area) {
 // ref: FUN_007c0c60
 void CMap::FreeAreaLow(CMapAreaLow* area) {
     CMap::FreeAreaLowObject(CMap::s_areaLowHeap, area);
+}
+
+// ----------------------------------------------------------------------------------------------
+// Tiles and chunks
+
+// ref: FUN_007d9a70
+// A tile at grid column x, row y: pooled, linked under the map, placed by its indices. The
+// corner is the tile's largest-x, largest-y point (both axes run negative with the index); the
+// box spans one tile back from it.
+CMapArea* CMap::CreateArea(int32_t x, int32_t y) {
+    auto area = CMap::AllocArea();
+    auto link = CMap::AllocBaseObjLink(area);
+    CMap::s_areaLinkList.LinkToTail(link);
+
+    area->m_chunkBaseX = x << 4;
+    area->m_areaY = y;
+
+    float cornerY = static_cast<float>(y << 4) * CHUNK_SIZE;
+    area->m_flags = 0;
+    area->m_areaX = x;
+    area->m_chunkBaseY = y << 4;
+    area->m_bounds.t.y = cornerY;
+
+    float cornerX = static_cast<float>(x << 4) * -CHUNK_SIZE + MAP_HALF_EXTENT;
+    cornerY = -cornerY + MAP_HALF_EXTENT;
+    area->m_corner.x = cornerY;
+    area->m_bounds.t.x = cornerY;
+    area->m_corner.y = cornerX;
+    area->m_bounds.t.y = cornerX;
+    area->m_bounds.b.x = cornerY - TILE_SIZE;
+    area->m_bounds.b.y = cornerX - TILE_SIZE;
+
+    CMap::s_areaGrid[y * 64 + x] = area;
+
+    return area;
+}
+
+// ref: FUN_007c3700
+void CMap::UnloadArea(CMapArea* area) {
+    CMap::s_areaGrid[area->m_areaY * 64 + area->m_areaX] = nullptr;
+    area->Destroy();
+    CMap::FreeArea(area);
+}
+
+// ref: FUN_007c35d0
+void CMap::DestroyChunk(CMapChunk* chunk) {
+    chunk->Destroy();
+    CMap::FreeChunk(chunk);
+}
+
+// ref: FUN_007b4830
+// Squared distance in the plane from a point to a box, zero along an axis the point is inside
+float CMap::AreaDistanceSq(const CAaBox& box, const C2Vector& point) {
+    float x;
+
+    if (box.b.x <= point.x) {
+        x = point.x <= box.t.x ? point.x : box.t.x;
+    } else {
+        x = box.b.x;
+    }
+
+    float dx = x - point.x;
+
+    if (point.y < box.b.y) {
+        return (box.b.y - point.y) * (box.b.y - point.y) + dx * dx;
+    }
+
+    if (box.t.y < point.y) {
+        return (box.t.y - point.y) * (box.t.y - point.y) + dx * dx;
+    }
+
+    return (point.y - point.y) * (point.y - point.y) + dx * dx;
+}
+
+// ref: FUN_007bd480
+// Ten tries at the archive before giving up on the map entirely
+int32_t CMap::SafeOpen(const char* path, SFile** file) {
+    for (int32_t i = 10; i; i--) {
+        if (SFile::Open(path, file)) {
+            return 1;
+        }
+    }
+
+    SErrDisplayAppFatal("CMap::SafeOpen() failed %s", path);
+    return 0;
+}
+
+// ref: FUN_007c2ff0
+// The cleanup a cancelled tile read runs: the async object goes, then the buffer it was reading
+// into (the tile gave up ownership when it cancelled)
+void CMap::AsyncLoadCleanup(CAsyncObject* object) {
+    void* buffer = object->buffer;
+
+    AsyncFileReadDestroyObject(object);
+    CMap::MapMemFree(buffer);
+}
+
+// ref: FUN_007d9990
+// A map texture: trilinear, wrapped both ways. The reference collects the load status into a
+// CStatus and, when the load fails, prints through a routine that is a bare ret in the retail
+// client (FUN_005eeb70).
+HTEXTURE CMap::LoadTexture(const char* name) {
+    CStatus status;
+
+    CGxTexFlags flags(GxTex_LinearMipLinear, 1, 1, 0, 0, 0, 1);
+    auto texture = TextureCreate(name, flags, &status, 0);
+
+    // TODO FUN_004b4f90(&status, 2) is not identified
+
+    return texture;
 }
 
 // ref: FUN_007c1ff0

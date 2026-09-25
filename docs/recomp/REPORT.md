@@ -1,29 +1,29 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 23:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 23:53 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 27141 | 5.39M |
-| mapped to a frozen function | 3282 (=) (12.1%) | 735.0k (13.3%) |
-| &nbsp;&nbsp;ported | 2539 (=) | 555.3k |
+| reference (non-thunk) | 27131 | 5.38M |
+| mapped to a frozen function | 3309 (+27) (12.2%) | 740.2k (13.4%) |
+| &nbsp;&nbsp;ported | 2566 (+27) | 560.4k |
 | &nbsp;&nbsp;stub (unimplemented body) | 689 (=) | 137.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1321 (-2) (4.9%)** | **182.3k (3.3%)** |
-| unmapped | 23859 | 4.67M |
-| world spine (reachable from OnFrameRender) | 5526, mapped 656 (=) (11.9%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5794, mapped 666 (=) (11.5%) | |
-| **render surface** (the modules that draw the world) | **4575, mapped 341 (=) (7.5%)** | |
-| frozen functions (src/, from PDB + source) | 12432, stubs 1818 | |
+| **faithful** (linked, not stub, call order >= 80%) | **1336 (+15) (4.9%)** | **183.8k (3.3%)** |
+| unmapped | 23822 | 4.66M |
+| world spine (reachable from OnFrameRender) | 5516, mapped 675 (+19) (12.2%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5784, mapped 685 (+19) (11.8%) | |
+| **render surface** (the modules that draw the world) | **4565, mapped 366 (+25) (8.0%)** | |
+| frozen functions (src/, from PDB + source) | 12457, stubs 1818 | |
 
-Match evidence: annotated 1041, callgraph 190, callorder 128, cvar 32, handler 29, order 150, override 265, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 1063, callgraph 195, callorder 126, cvar 32, handler 29, order 150, override 268, sticky 20, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 23:38 -- mapped 3282, ported 2539, stub 689, spine mapped 656.
+Previous run: 2026-09-24 23:39 -- mapped 3282, ported 2539, stub 689, spine mapped 656.
 
 ## Lua API coverage (binding tables)
 
@@ -168,7 +168,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 7 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
-| DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
+| DetailDoodad.cpp | 162 | 41.3k | 2 (1.2%) | 0.5% | 0 | 0 | 71 |
 | VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
 | TextureCache.cpp | 252 | 38.9k | 18 (7.1%) | 12.8% | 6 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 3 | 0 | 23 |
@@ -176,7 +176,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | DBCache.cpp | 236 | 38.8k | 36 (15.3%) | 11.2% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 4 (1.4%) | 1.1% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 6 (3.8%) | 10.2% | 0 | 0 | 86 |
-| MapChunk.cpp | 129 | 37.2k | 25 (19.4%) | 23.8% | 0 | 0 | 85 |
+| MapChunk.cpp | 129 | 37.2k | 28 (21.7%) | 27.1% | 0 | 0 | 85 |
 | ConsoleVar.cpp | 243 | 36.1k | 73 (30.0%) | 29.8% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 10 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 32 (15.0%) | 18.6% | 0 | 0 | 84 |
@@ -186,7 +186,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | UnitMissileTrajectory_C.cpp | 97 | 31.1k | 0 (0.0%) | 0.0% | 0 | 0 | 61 |
 | MinimapFrame.cpp | 78 | 31.1k | 21 (26.9%) | 17.9% | 0 | 0 | 3 |
 | XMLTree.cpp | 184 | 31.1k | 79 (42.9%) | 47.7% | 11 | 0 | 31 |
-| MapChunkLiquid.cpp | 77 | 30.9k | 0 (0.0%) | 0.0% | 0 | 0 | 47 |
+| MapChunkLiquid.cpp | 77 | 30.9k | 4 (5.2%) | 3.1% | 0 | 0 | 47 |
 | Client.cpp | 169 | 30.8k | 53 (31.4%) | 38.0% | 10 | 0 | 31 |
 | CGlueMgr.cpp | 183 | 28.9k | 92 (50.3%) | 55.8% | 31 | 0 | 1 |
 | LoadingScreen.cpp | 201 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 80 |
@@ -205,12 +205,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 48 (40.0%) | 44.1% | 24 | 0 | 0 |
-| Texture.cpp | 146 | 22.2k | 25 (17.1%) | 24.2% | 5 | 0 | 75 |
+| Texture.cpp | 146 | 22.2k | 28 (19.2%) | 26.5% | 5 | 0 | 75 |
 | Cursor.cpp | 117 | 20.7k | 3 (2.6%) | 4.5% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 1 (1.2%) | 0.7% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
-| MapMem.cpp | 87 | 20.1k | 45 (51.7%) | 48.4% | 0 | 0 | 63 |
+| MapMem.cpp | 87 | 20.1k | 51 (58.6%) | 53.8% | 0 | 0 | 63 |
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 46 (35.9%) | 34.9% | 5 | 1 | 2 |
 | CheckExecutableSignature.cpp | 94 | 19.4k | 3 (3.2%) | 1.9% | 0 | 0 | 28 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
@@ -264,7 +264,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | WowConnection.cpp | 44 | 10.1k | 1 (2.3%) | 2.3% | 0 | 0 | 4 |
 | RaidInfo.cpp | 33 | 10.1k | 17 (51.5%) | 43.5% | 10 | 0 | 1 |
 | CurrencyTypes.cpp | 48 | 10.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| MapLoad.cpp | 29 | 9.9k | 1 (3.4%) | 3.3% | 0 | 0 | 22 |
 | fmod_output_dsound.cpp | 36 | 9.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | fmod_codec_s3m.cpp | 14 | 9.7k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | fmod_codec.cpp | 43 | 9.2k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
@@ -278,12 +277,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | GuildInfo.cpp | 35 | 8.3k | 2 (5.7%) | 16.8% | 1 | 0 | 1 |
 | MerchantFrame.cpp | 41 | 8.3k | 10 (24.4%) | 32.0% | 6 | 0 | 4 |
 | fmod_pluginfactory.cpp | 38 | 8.3k | 0 (0.0%) | 0.0% | 0 | 0 | 23 |
-| MapObjRead.cpp | 37 | 8.1k | 0 (0.0%) | 0.0% | 0 | 0 | 11 |
+| MapObjRead.cpp | 37 | 8.1k | 2 (5.4%) | 2.8% | 0 | 0 | 11 |
 | fmod_codec_oggvorbis.cpp | 31 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | CalendarEvent.cpp | 40 | 7.9k | 1 (2.5%) | 3.4% | 0 | 0 | 0 |
 | ChatBubbleFrame.cpp | 55 | 7.6k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
 | RealmList.cpp | 46 | 7.5k | 26 (56.5%) | 54.0% | 2 | 0 | 0 |
 | fmod_sample_openal.cpp | 19 | 7.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
+| MapLoad.cpp | 19 | 7.4k | 1 (5.3%) | 4.5% | 0 | 0 | 12 |
 | PetitionVendor.cpp | 38 | 6.9k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | Vehicle_C.cpp | 43 | 6.8k | 0 (0.0%) | 0.0% | 0 | 0 | 19 |
 | Corpse_C.cpp | 63 | 6.8k | 2 (3.2%) | 4.2% | 0 | 0 | 14 |
@@ -319,7 +319,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | WDataStore.cpp | 32 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 14 |
 | CGxDeviceOpenGl.cpp | 25 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | Bag_C.cpp | 34 | 4.5k | 1 (2.9%) | 3.2% | 0 | 0 | 12 |
-| MapArea.cpp | 21 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 11 |
+| MapArea.cpp | 21 | 4.5k | 5 (23.8%) | 19.3% | 0 | 0 | 11 |
 | ReputationInfo.cpp | 40 | 4.5k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | fmod_codec_tag.cpp | 7 | 4.4k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | ArenaTeamInfo.cpp | 33 | 4.3k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -340,8 +340,8 @@ Module = the source file named by the reference's own assert strings near the fu
 | DynamicObject_C.cpp | 25 | 3.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | ModelBlob.cpp | 29 | 3.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | Tumor.cpp | 58 | 3.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| SThread.cpp | 17 | 3.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| TimeManager.cpp | 34 | 3.3k | 1 (2.9%) | 1.0% | 0 | 0 | 5 |
+| SThread.cpp | 17 | 3.4k | 1 (5.9%) | 1.1% | 0 | 0 | 0 |
+| TimeManager.cpp | 34 | 3.3k | 2 (5.9%) | 1.5% | 0 | 0 | 5 |
 | fmod_output_asio.cpp | 22 | 3.2k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | fmod_channelpool.cpp | 20 | 3.2k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | mdct.c | 11 | 2.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-24 06:29 | 3209 (11.8%) | 1273 (4.7%) | 689 | 591/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:30 | 3209 (11.8%) | 1273 (4.7%) | 689 | 591/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:31 | 3209 (11.8%) | 1273 (4.7%) | 689 | 591/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:43 | 3211 (11.8%) | 1274 (4.7%) | 689 | 593/5527 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 23:27 | 3270 (12.0%) | 1312 (4.8%) | 689 | 646/5526 | 2924/2964 | 1493 |
 | 2026-09-24 23:38 | 3282 (12.1%) | 1323 (4.9%) | 689 | 656/5526 | 2924/2964 | 1493 |
 | 2026-09-24 23:39 | 3282 (12.1%) | 1321 (4.9%) | 689 | 656/5526 | 2924/2964 | 1493 |
+| 2026-09-24 23:53 | 3309 (12.2%) | 1336 (4.9%) | 689 | 675/5516 | 2924/2964 | 1493 |
 
 ## How to move a row
 

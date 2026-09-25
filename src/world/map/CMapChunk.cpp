@@ -1,5 +1,6 @@
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMap.hpp"
+#include "world/map/CMapArea.hpp"
 #include "gx/Gx.hpp"
 #include <cfloat>
 #include <cmath>
@@ -28,6 +29,126 @@ static const float CELL_SIZE = 4.166666507720947f;        // DAT_00a3fda8: CHUNK
 static const float HALF_CELL = 2.0833332538604736f;       // DAT_00a3fab0
 static const float INV_127 = 0.007874015718698502f;       // DAT_00a40360
 static const uint32_t NO_VERTEX_COLOR = 0xFF7FFFFF;       // the float -3.3961514e+38 the reference stores
+
+// ref: FUN_007c5c50
+// The reference constructor also builds two small objects at the end of the chunk with
+// FUN_0095da10 (destroyed by FUN_0095da80), not identified yet.
+CMapChunk::CMapChunk() {
+    this->m_type |= CMapBaseObj::Type_Chunk;
+    this->m_flags |= 0x1;
+}
+
+// ref: FUN_007c5e50
+// Every list is emptied and every link dropped; FUN_005bd800 between them is not identified.
+CMapChunk::~CMapChunk() {
+    this->m_liquidList.UnlinkAll();
+    this->m_linkListE8.UnlinkAll();
+    this->m_linkListDc.UnlinkAll();
+    this->m_mapObjDefLinkList.UnlinkAll();
+    this->m_entityLinkList.UnlinkAll();
+    this->m_areaLink.Unlink();
+    this->m_linkB4.Unlink();
+}
+
+// ref: FUN_007c64b0
+// Binds the chunk to its MCNK: sub-chunks, area id, origin from the indices and the header's z,
+// bounds, then its liquids, sound emitters and doodad/WMO references (the last three are
+// FUN_007c5690, FUN_007c6060 and FUN_007c6150, not ported yet), and finally the tile's grid slot.
+void CMapChunk::Load(uint8_t* data, int32_t fixSizes) {
+    this->m_data = data;
+    this->ParseSubChunks(fixSizes);
+
+    this->m_areaId = this->m_header->areaId;
+
+    this->m_position.x = -(CHUNK_SIZE * static_cast<float>(this->m_indexX)) + MAP_HALF_EXTENT;
+    this->m_position.y = -(static_cast<float>(this->m_indexY) * CHUNK_SIZE) + MAP_HALF_EXTENT;
+    this->m_position.z = 0.0f;
+    this->m_position.z = this->m_header->position.z;
+
+    this->m_lowQualityTextureMap = this->m_header->lowQualityTextureMap;
+    this->m_predTex = &this->m_header->predTex;
+
+    this->ComputeBounds();
+
+    // TODO FUN_007c5690(fixSizes): liquids (MCLQ and MH2O layers)
+    // TODO FUN_007c6060(fixSizes): MCSE sound emitters
+
+    this->m_flags = 0;
+    if (this->m_header->flags & 0x2) {
+        this->m_flags = 0x40;
+    }
+
+    auto area = static_cast<CMapArea*>(this->m_parentLinkList.Head()->ref);
+
+    // TODO FUN_007c6150(area, m_refs, m_header->nDoodadRefs, m_header->nMapObjRefs): MCRF references
+
+    area->m_chunks[this->m_areaChunkY * 16 + this->m_areaChunkX] = this;
+    this->m_flags |= 0x80;
+}
+
+// ref: FUN_007c3370
+// Releases everything the chunk owns before CMap::FreeChunk returns it to the heap. The entity
+// and def releases the reference runs on the owners it unlinks (FUN_007c3020, FUN_007c3250),
+// the detail-doodad release (FUN_007b3960), the liquid destroy (FUN_007cde10) and the sound
+// handle release (FUN_007c3330 / FUN_004cb1d0) are not ported yet.
+void CMapChunk::Destroy() {
+    if (this->m_renderChunk) {
+        CMap::FreeRenderChunk(this->m_renderChunk);
+        this->m_renderChunk = nullptr;
+    }
+
+    if (this->m_ptrA4) {
+        // TODO FUN_007b3960(m_ptrA4)
+        this->m_ptrA4 = nullptr;
+    }
+
+    for (auto liquid = this->m_liquidList.Head(); liquid; ) {
+        auto next = this->m_liquidList.Next(liquid);
+        liquid->m_chunkLink.Unlink();
+        // TODO FUN_007cde10(liquid)
+        CMap::FreeChunkLiquid(liquid);
+        liquid = next;
+    }
+
+    this->m_areaLink.Unlink();
+
+    for (auto link = this->m_entityLinkList.Head(); link; ) {
+        auto next = this->m_entityLinkList.Next(link);
+        auto owner = link->owner;
+        CMap::FreeBaseObjLink(link);
+        if (!(owner->m_type & CMapBaseObj::Type_200)) {
+            // TODO FUN_007c3020(owner): release the entity once nothing links it
+        }
+        link = next;
+    }
+
+    for (auto link = this->m_mapObjDefLinkList.Head(); link; ) {
+        auto next = this->m_mapObjDefLinkList.Next(link);
+        CMap::FreeBaseObjLink(link);
+        // TODO FUN_007c3250(owner): release the map obj def once nothing links it
+        link = next;
+    }
+
+    for (auto link = this->m_parentLinkList.Head(); link; ) {
+        auto next = this->m_parentLinkList.Next(link);
+        CMap::FreeBaseObjLink(link);
+        link = next;
+    }
+
+    for (auto link = this->m_linkListDc.Head(); link; ) {
+        auto next = this->m_linkListDc.Next(link);
+        CMap::FreeBaseObjLink(link);
+        link = next;
+    }
+
+    for (auto link = this->m_linkListE8.Head(); link; ) {
+        auto next = this->m_linkListE8.Next(link);
+        CMap::FreeBaseObjLink(link);
+        link = next;
+    }
+
+    // TODO the sound handle list at +0xf4: FUN_004cb1d0 on each, freed by FUN_007c3330
+}
 
 // ref: FUN_007c3d90
 // Once per client: the vertex table and its cell scale. The reference calls FUN_007ba340 first,
