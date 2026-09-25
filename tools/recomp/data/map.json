@@ -44304,7 +44304,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCamera",
-  "frozenSize": 1955,
+  "frozenSize": 1974,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 2291,
@@ -44916,6 +44916,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 177,
+  "status": "ported"
+ },
+ "007a85e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::ProjectPortal",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 533,
   "status": "ported"
  },
  "007a8940": {

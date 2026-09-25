@@ -175,6 +175,13 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
             int32_t stamp;
         };
 
+        // How much of the screen one doorway covers, as seen from here. The outline goes out
+        // to world space, is clipped to the camera's frustum, and what survives is projected.
+        // Returns how many corners survived, and writes their screen positions to `screen`
+        // (room for CLIP_POLYGON_MAX). ref: FUN_007a85e0
+        static uint32_t ProjectPortal(const SMOPortal* portal, const C3Vector* vertices,
+                                      const C44Matrix& placement, C3Vector* screen);
+
         // ref: FUN_007a7210
         // Is the camera standing in this doorway? Then it opens onto everything.
         static void TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect);

@@ -37,6 +37,7 @@ CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
 C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
+CWFrustum CWorldScene::s_clipFrustum;
 int32_t CWorldScene::s_frustumDepth;
 C3Vector CWorldScene::s_cameraPos;
 C3Vector CWorldScene::s_cameraTarget;
@@ -693,6 +694,8 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
     CWorldScene::s_viewProjW[1] = CWorldScene::s_viewProjMatrix.b3;
     CWorldScene::s_viewProjW[2] = CWorldScene::s_viewProjMatrix.c3;
     CWorldScene::s_viewProjW[3] = CWorldScene::s_viewProjMatrix.d3;
+
+    CWorldScene::s_clipFrustum.SetCorners(CWorldScene::s_frustumCorners);
 
     BoundsFromPoints(CWorldScene::s_frustumBounds, CWorldScene::s_frustumCorners, 8);
 

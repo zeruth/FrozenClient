@@ -1137,3 +1137,74 @@ void CMapObj::TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, Porta
         rect->flags |= 0x2;
     }
 }
+
+// ref: FUN_007a85e0
+// A doorway's outline, measured against the screen. It is taken out to world space, clipped to
+// the camera's own frustum, and each surviving corner projected; a corner behind the eye would
+// divide by a vanishing w, so w is held at a ten-thousandth.
+uint32_t CMapObj::ProjectPortal(const SMOPortal* portal, const C3Vector* vertices,
+                                const C44Matrix& placement, C3Vector* screen) {
+    uint32_t count = portal->count;
+
+    if (count > CLIP_POLYGON_MAX) {
+        count = CLIP_POLYGON_MAX;
+    }
+
+    if (!count) {
+        return 0;
+    }
+
+    C3Vector world[CLIP_POLYGON_MAX];
+
+    for (uint32_t i = 0; i < count; i++) {
+        world[i] = vertices[i] * placement;
+    }
+
+    // The four sides and the far plane. The near one is left out: a doorway straddling the eye
+    // is handled by the camera-in-doorway test instead of by cutting it.
+    C3Vector clipped[CLIP_POLYGON_MAX];
+    uint32_t clippedCount = ClipPolygonToPlanes(CWorldScene::s_clipFrustum.planes, 5,
+                                                world, count, clipped);
+
+    if (clippedCount < 3) {
+        return 0;
+    }
+
+    C44Matrix view;
+    C44Matrix proj;
+
+    GxXformView(view);
+    GxXformProjection(proj);
+
+    C44Matrix viewProj = view * proj;
+
+    for (uint32_t i = 0; i < clippedCount; i++) {
+        C4Vector v = {
+            clipped[i].x - CWorldScene::s_cameraPos.x,
+            clipped[i].y - CWorldScene::s_cameraPos.y,
+            clipped[i].z - CWorldScene::s_cameraPos.z,
+            1.0f
+        };
+
+        C4Vector p;
+        p.x = view.a0 * v.x + view.b0 * v.y + view.c0 * v.z + view.d0 * v.w;
+        p.y = view.a1 * v.x + view.b1 * v.y + view.c1 * v.z + view.d1 * v.w;
+        p.z = view.a2 * v.x + view.b2 * v.y + view.c2 * v.z + view.d2 * v.w;
+        p.w = view.a3 * v.x + view.b3 * v.y + view.c3 * v.z + view.d3 * v.w;
+
+        C4Vector c;
+        c.x = proj.a0 * p.x + proj.b0 * p.y + proj.c0 * p.z + proj.d0 * p.w;
+        c.y = proj.a1 * p.x + proj.b1 * p.y + proj.c1 * p.z + proj.d1 * p.w;
+        c.z = proj.a2 * p.x + proj.b2 * p.y + proj.c2 * p.z + proj.d2 * p.w;
+        c.w = proj.a3 * p.x + proj.b3 * p.y + proj.c3 * p.z + proj.d3 * p.w;
+
+        float w = c.w < 0.0001f ? 0.0001f : c.w;
+        float inv = 1.0f / w;
+
+        screen[i].x = c.x * inv;
+        screen[i].y = c.y * inv;
+        screen[i].z = c.z;
+    }
+
+    return clippedCount;
+}

@@ -114,6 +114,10 @@ class CWorldScene {
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
         static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
+        // The camera's own frustum in world space, rebuilt with the corners (DAT_00cdd108).
+        // The portal walk clips a doorway's outline against its four sides and its far plane
+        // before measuring how much of the screen the doorway covers.
+        static CWFrustum s_clipFrustum;
         static int32_t s_frustumDepth;                      // DAT_00cd8798
         static C3Vector s_cameraPos;                        // DAT_00cd8f5c
         static C3Vector s_cameraTarget;                     // DAT_00cd8f68

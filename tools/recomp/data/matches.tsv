@@ -2813,6 +2813,7 @@ addr	how	frozen	evidence
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp
 007a84d0	annotated	CMapObj::SelectShaders	tag in src/world/map/CMapObjDraw.cpp
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
+007a85e0	annotated	CMapObj::ProjectPortal	tag in src/world/map/CMapObjDraw.cpp
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp
 007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
