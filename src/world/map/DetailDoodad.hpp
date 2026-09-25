@@ -10,6 +10,7 @@
 
 class CGxBuf;
 class CMapChunk;
+
 class CM2Model;
 class CGxPool;
 
@@ -139,6 +140,14 @@ static const uint16_t HOLE_MASK[16] = {
 //  - The GEOMETRY the vertex fill writes. Its counts are checked (20 batches filled with no
 //    mismatch against the totals the instance fill accumulated and no overrun), but nothing has
 //    looked at where the blades actually stand.
+// THE PASS IS ALREADY DECODED, and it is FUN_007984a0 -- which reads like a general model pass
+// and is not one. Its list nodes are these instances: it takes the chunk from +0x98, builds that
+// chunk's matrix with FUN_00790440, asks the chunk for its lighting through its own vtable slot
+// 1, translates by the chunk's position less the camera, and then either sets up fixed-function
+// lights and fog or hands the matrix to the shader path (FUN_007b10e0) depending on what
+// FUN_007b2d30 reports -- and only then calls Draw. Wiring it needs those two and nothing else
+// from this module.
+//
 //  - The SLOPE-ALIGNED branch of the vertex fill, which stands a doodad up along the terrain
 //    normal instead of merely turning it about Z. Only 30 of the 580 GroundEffectDoodad rows
 //    set the flag that selects it, and none of them appear in the starting zone, so across 832
@@ -201,12 +210,33 @@ struct SBatch {
 
 // One chunk's worth of detail doodads. The reference takes it from the WDETAILDOODADINST heap,
 // and this is its own name, off the RTTI on the array that holds them.
+//
+// The tail is read out of the pass, FUN_007984a0, which walks these: it clears +0x94, takes the
+// chunk from +0x98 (and then reads that chunk's own vtable, matrix at +0x3c and position at
+// +0x7c), and unlinks +0x9c from the chunk's list before relinking the instance elsewhere.
 class CDetailDoodadData {
     public:
-        uint32_t unk00 = 0;         // +0x00
-        SBatch m_batches[4];        // +0x04: a chunk draws at most four textures' worth
-        // TODO +0x94 .. +0xa3
+        uint32_t unk00 = 0;             // +0x00
+        SBatch m_batches[4];            // +0x04: a chunk draws at most four textures' worth
+        uint32_t m_queued = 0;          // +0x94: cleared by the pass as it takes the instance
+        CMapChunk* m_chunk = nullptr;   // +0x98: the chunk it was scattered on
+        TSLink<CDetailDoodadData> m_frameLink;  // +0x9c: this frame's list of instances to draw
 };
+
+// THE OFFSETS IN THE COMMENTS ABOVE ARE THE REFERENCE'S, AND FROZEN DOES NOT REPRODUCE THEM.
+// Two reasons, both structural and neither worth working around:
+//
+//  - Frozen is a 64-bit build. Every pointer in these structs is eight bytes where the
+//    reference's is four, so anything after the first one has moved.
+//  - Frozen's TSBaseArray declares MemFileName and MemLineNo virtual, so every TSGrowableArray
+//    carries a vtable pointer the reference's does not. The reference's batch array is sixteen
+//    bytes of {capacity, count, data, chunk} at +0x14; frozen's is larger.
+//
+// The offsets are kept in the comments because they are what the decompilation reads and what
+// the next person will be checking against -- not because the struct reproduces them. Nothing
+// here depends on the layout: no allocation is shared with the reference and no field is
+// reached by a raw offset. A static_assert on any of these numbers would be asserting something
+// a 64-bit build cannot satisfy, which is why there is not one.
 
 // Functions
 // Build the two pools and the ring of buffers, sized from the ground effect density. Does
