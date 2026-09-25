@@ -5,10 +5,19 @@
 #include <common/DataStore.hpp>
 #include "ui/FrameScript.hpp"
 #include "ui/game/CGRaidInfo.hpp"
+#include "ui/game/CGPartyInfo.hpp"
+#include "ui/Util.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <common/Time.hpp>
 
 namespace {
+
+// The ready check's deadline in milliseconds, 0 when none is running. Written by the ready-check
+// message handlers, which are not ported yet, so it reads 0 -- no check in progress.
+uint32_t s_readyCheckDeadlineMs = 0; // ref: DAT_00beb61c
 
 int32_t Script_GetNumRaidMembers(lua_State* L) {
     lua_pushnumber(L, CGRaidInfo::NumMembers());
@@ -46,8 +55,18 @@ int32_t Script_IsRaidLeader(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00573ab0
+// Compares against the party's REAL leader, and without IsRealPartyLeader's non-zero test.
 int32_t Script_IsRealRaidLeader(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (ClntObjMgrGetActivePlayer() != CGPartyInfo::GetRealLeader()) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
 int32_t Script_IsRaidOfficer(lua_State* L) {
@@ -64,8 +83,25 @@ int32_t Script_SwapRaidSubgroup(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00574a00
+// Only the party leader, with at least one member, and at level 10 or above.
 int32_t Script_ConvertToRaid(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto leader = CGPartyInfo::GetLeader();
+
+    if (!CGPartyInfo::GetMember(1) || ClntObjMgrGetActivePlayer() != leader) {
+        return 0;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (player && player->Unit()->level > 9) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(CMSG_GROUP_RAID_CONVERT));
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    return 0;
 }
 
 int32_t Script_PromoteToLeader(lua_State* L) {
@@ -148,12 +184,48 @@ int32_t Script_DoReadyCheck(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005740c0
 int32_t Script_ConfirmReadyCheck(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CGRaidInfo::NumMembers() && !CGPartyInfo::GetMember(1)) {
+        return 0;
+    }
+
+    auto now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    if (s_readyCheckDeadlineMs && static_cast<int32_t>(now - s_readyCheckDeadlineMs) < 0
+        && s_readyCheckDeadlineMs != now) {
+        auto ready = static_cast<uint8_t>(StringToBOOL(L, 1, 0));
+
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(MSG_RAID_READY_CHECK));
+        msg.Put(ready);
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    return 0;
 }
 
+// ref: FUN_00572c80
 int32_t Script_GetReadyCheckTimeLeft(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CGRaidInfo::NumMembers() && !CGPartyInfo::GetMember(1)) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    auto now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    uint32_t remaining;
+
+    if (!s_readyCheckDeadlineMs || static_cast<int32_t>(now - s_readyCheckDeadlineMs) >= 0) {
+        remaining = 0;
+    } else {
+        remaining = s_readyCheckDeadlineMs - now;
+    }
+
+    lua_pushnumber(L, static_cast<double>(remaining / 1000));
+
+    return 1;
 }
 
 int32_t Script_GetReadyCheckStatus(lua_State* L) {

@@ -297,8 +297,21 @@ int32_t Script_OffhandHasWeapon(lua_State* L) {
     return 1;
 }
 
+// Set when the inspected player's honor stats have arrived. Written by the inspect honor handler
+// and ClearInspectPlayer, neither ported yet, so it reads 0.
+uint32_t s_inspectHonorDataValid = 0; // ref: DAT_00c24228
+
+// ref: FUN_005e7780
 int32_t Script_HasInspectHonorData(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (s_inspectHonorDataValid) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_RequestInspectHonorData(lua_State* L) {

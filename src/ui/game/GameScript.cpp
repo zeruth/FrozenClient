@@ -38,6 +38,7 @@
 #include "gx/Screen.hpp"
 #include "util/Filesystem.hpp"
 #include "util/Unimplemented.hpp"
+#include <cmath>
 #include <ctime>
 
 namespace {
@@ -1154,8 +1155,25 @@ int32_t Script_GetScreenHeight(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0051afb0
+// The player's class, from UNIT_FIELD_BYTES_0 byte 1, looked up in ChrClasses; the stat index is
+// reported plus one, and 0 means no player or no class record.
 int32_t Script_GetDamageBonusStat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+    if (player) {
+        auto rec = g_chrClassesDB.GetRecord((player->Unit()->bytes0 >> 8) & 0xFF);
+
+        if (rec) {
+            lua_pushnumber(L, static_cast<double>(rec->m_damageBonusStat + 1));
+
+            return 1;
+        }
+    }
+
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 // Defined with the other countdown state further down; declared here because this binding appears
@@ -2600,8 +2618,40 @@ int32_t Script_GetRaidDifficulty(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_005261a0
+// Out-of-range values are dropped silently. In a group only the leader may set it (0x54 is
+// ERR_NOT_LEADER); the value is applied locally to both settings before the request goes out.
 int32_t Script_SetRaidDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetRaidDifficulty(difficulty)");
+
+        return 0;
+    }
+
+    // Rounded, not truncated: the reference converts with fistp under the default rounding mode
+    auto difficulty = static_cast<uint32_t>(llrint(lua_tonumber(L, 1) - 1.0));
+
+    if (difficulty >= 4) {
+        return 0;
+    }
+
+    if (CGPartyInfo::GetMember(1) || CGRaidInfo::NumMembers()) {
+        if (CGPartyInfo::GetLeader() != ClntObjMgrGetActivePlayer()) {
+            CGGameUI::DisplayError(0x54);
+
+            return 0;
+        }
+    }
+
+    CGPartyInfo::ApplyRaidDifficulty(difficulty, true, true);
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(MSG_SET_RAID_DIFFICULTY));
+    msg.Put(difficulty);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 int32_t Script_ReportBug(lua_State* L) {

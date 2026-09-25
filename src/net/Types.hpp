@@ -729,6 +729,9 @@ enum NETMESSAGE {
     SMSG_INSTANCE_RESET                 = 0x031E,
     SMSG_INSTANCE_RESET_FAILED          = 0x031F,
     SMSG_UPDATE_LAST_INSTANCE           = 0x0320,
+    // Bidirectional: the client answers a ready check with this opcode plus a byte
+    // (FUN_005740c0, ConfirmReadyCheck).
+    MSG_RAID_READY_CHECK                = 0x0322,
     CMSG_LUA_USAGE                      = 0x0323,
     SMSG_PET_ACTION_SOUND               = 0x0324,
     SMSG_PET_DISMISS_SOUND              = 0x0325,

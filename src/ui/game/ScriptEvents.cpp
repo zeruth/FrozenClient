@@ -2175,11 +2175,15 @@ int32_t Script_GetSpellBonusHealing(lua_State* L) {
     return 1;
 }
 
-// TODO FUN_0060e410 reads CGPlayerData + 0x1264, which no named field in frozen's struct
-// has been shown to sit at. The five percentages above were safe because three of their
-// offsets matched the struct order exactly; this one has no such corroboration yet.
+// ref: FUN_0060e410
+// CGPlayerData + 0x1264 is petSpellPower: offsetof agrees, and it is the last of the 1178 player
+// fields (0x499 * 4). Pushed signed, as the reference converts it.
 int32_t Script_GetPetSpellBonusDamage(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto data = ActivePlayerData();
+
+    lua_pushnumber(L, data ? static_cast<double>(static_cast<int32_t>(data->petSpellPower)) : 0.0);
+
+    return 1;
 }
 
 // ref: FUN_0060e470
