@@ -2,6 +2,7 @@
 #define WORLD_MAP_C_MAP_OBJ_HPP
 
 #include "gx/Texture.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include <storm/Array.hpp>
 #include <storm/Hash.hpp>
 #include <storm/List.hpp>
@@ -12,7 +13,6 @@
 #include <cstdint>
 
 class CAsyncObject;
-class CMapObjGroup;
 
 // MOHD: the WMO root header, 64 bytes, the first chunk after MVER.
 struct SMOHeader {
@@ -107,9 +107,7 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Static functions
         // ref: FUN_007ae140
         static uint32_t QuerySkipFlags(uint32_t queryFlags);
-        // ref: FUN_007b0cc0
         static CMapObj* Create(const char* path);
-        // ref: FUN_007d8050
         static void ReadCallback(void* arg);
 
         // Member variables
@@ -165,15 +163,14 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // The reference sizes its heap record for 512 groups and writes the pointers into the
         // object itself (0x9f8 - 0x1f8 = 0x800 bytes of them).
         CMapObjGroup* m_groups[512] = {};         // +0x1f8
+        // The groups whose files have arrived and parsed (+0x1e8); a group joins it at the
+        // end of its own read
+        STORM_EXPLICIT_LIST(CMapObjGroup, m_link) m_loadedGroups;
 
         // Member functions
-        // ref: FUN_007d80c0
         int32_t Read(const char* path);
-        // ref: FUN_007d7eb0
         void ReadComplete();
-        // ref: FUN_007d7470
         void ParseChunks();
-        // ref: FUN_007d72d0
         void ClearMaterialTextures();
 
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);

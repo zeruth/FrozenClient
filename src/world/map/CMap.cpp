@@ -63,6 +63,7 @@ STORM_EXPLICIT_LIST(CMapBaseObj, m_lameAssLink) CMap::s_entityList;
 STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) CMap::s_lightList;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_renderChunkFreeList;
 STORM_EXPLICIT_LIST(CMapObj, m_link) CMap::s_mapObjLoadList;
+STORM_EXPLICIT_LIST(CMapObjGroup, m_link) CMap::s_mapObjGroupLoadList;
 
 uint8_t CMap::s_chunkVerticesWorldSpace;
 int32_t CMap::s_terrainVertexFormat;
@@ -896,6 +897,21 @@ int32_t CMap::SafeOpen(const char* path, SFile** file) {
     }
 
     SErrDisplayAppFatal("CMap::SafeOpen() failed %s", path);
+    return 0;
+}
+
+// ref: FUN_007bd4d0
+// Ten tries at reading a whole file, then the fatal
+int32_t CMap::SafeRead(const char* path, SFile* file, void* buffer, uint32_t size) {
+    for (int32_t i = 10; i; i--) {
+        if (SFile::Read(file, buffer, size, nullptr, nullptr, nullptr)) {
+            return 1;
+        }
+
+        SysMsgPrintf(SYSMSG_ERROR, "CMap::SafeRead() failed %s\n", path);
+    }
+
+    SErrDisplayAppFatal("CMap::SafeRead() failed %s", path);
     return 0;
 }
 

@@ -11,6 +11,7 @@
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapLight.hpp"
 #include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
@@ -82,6 +83,8 @@ class CMap {
         // The WMO roots with a file read in flight (0x00adfc4c); a root leaves it in its
         // postload callback
         static STORM_EXPLICIT_LIST(CMapObj, m_link) s_mapObjLoadList;
+        // The WMO groups with a file read in flight (0x00adfc58)
+        static STORM_EXPLICIT_LIST(CMapObjGroup, m_link) s_mapObjGroupLoadList;
 
         // Chunk vertex mode, decided at map load (DAT_00ce049f): non-zero keeps every chunk's
         // vertices in world space in one shared buffer; zero keeps them chunk-local and folds
@@ -249,6 +252,7 @@ class CMap {
         static void DestroyChunk(CMapChunk* chunk);
         static float AreaDistanceSq(const CAaBox& box, const C2Vector& point);
         static int32_t SafeOpen(const char* path, SFile** file);
+        static int32_t SafeRead(const char* path, SFile* file, void* buffer, uint32_t size);
         static void AsyncLoadCleanup(CAsyncObject* object);
         static HTEXTURE LoadTexture(const char* name);
 

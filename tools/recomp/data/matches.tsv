@@ -650,7 +650,7 @@ addr	how	frozen	evidence
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 0083da10=CM2Shared::LoadSequence
+004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 007d85e0=CMapObjGroup::Read
 004bab50	override	AsyncFileReadObject	
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners
@@ -2767,6 +2767,7 @@ addr	how	frozen	evidence
 00799d40	annotated	CWorldScene::TraverseRowChunks	tag in src/world/CWorldScene.cpp
 0079a790	annotated	CWorldScene::Traverse	tag in src/world/CWorldScene.cpp
 0079a870	annotated	CMap::Render	tag in src/world/map/CMap.cpp
+0079adc0	annotated	CMapObjGroup::SetBsp	tag in src/world/map/CMapObjGroupLoad.cpp
 0079ae80	override	CMap::BuildBspLeafCache	
 0079b440	annotated	CMap::GetLoadedArea	tag in src/world/map/CMap.cpp
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
@@ -2846,6 +2847,7 @@ addr	how	frozen	evidence
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
+007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
 007bf8b0	annotated	CMap::LoadWdt	tag in src/world/map/CMap.cpp
 007bfce0	annotated	CMap::Load	tag in src/world/map/CMap.cpp
@@ -2923,6 +2925,8 @@ addr	how	frozen	evidence
 007c7a00	annotated	TriangleOutsideBox	tag in src/world/map/CMapObjGroup.cpp
 007c7ae0	override	CMapObjGroup::RecordHits	
 007c7fe0	annotated	CMapObjGroup::SampleColorAtFace	tag in src/world/map/CMapObjGroup.cpp
+007c8c60	annotated	CMapObjGroup::BuildLiquidVertices	tag in src/world/map/CMapObjGroupLoad.cpp
+007c8d80	annotated	CMapObjGroup::FirstLiquidTileType	tag in src/world/map/CMapObjGroupLoad.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9ab0	annotated	CMapObjGroup::DualQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
@@ -2964,10 +2968,19 @@ addr	how	frozen	evidence
 007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
 007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
 007d72d0	annotated	CMapObj::ClearMaterialTextures	tag in src/world/map/CMapObj.cpp
+007d7310	annotated	CMapObjGroup::ResolveLiquidType	tag in src/world/map/CMapObjGroupLoad.cpp
+007d7380	annotated	CMapObjGroup::FixVertexColors	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7470	annotated	CMapObj::ParseChunks	tag in src/world/map/CMapObj.cpp
+007d7710	override	CMapObjGroup::LoadMaterialTextures	
+007d7c30	annotated	CMapObjGroup::ParseOptionalChunks	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7eb0	annotated	CMapObj::ReadComplete	tag in src/world/map/CMapObj.cpp
+007d7f50	annotated	CMapObjGroup::ParseChunks	tag in src/world/map/CMapObjGroupLoad.cpp
 007d8050	annotated	CMapObj::ReadCallback	tag in src/world/map/CMapObj.cpp
 007d80c0	annotated	CMapObj::Read	tag in src/world/map/CMapObj.cpp
+007d81c0	annotated	CMapObjGroup::BuildAntiPortals	tag in src/world/map/CMapObjGroupLoad.cpp
+007d82e0	annotated	CMapObjGroup::ReadComplete	tag in src/world/map/CMapObjGroupLoad.cpp
+007d8570	annotated	CMapObjGroup::ReadCallback	tag in src/world/map/CMapObjGroupLoad.cpp
+007d85e0	annotated	CMapObjGroup::Read	tag in src/world/map/CMapObjGroupLoad.cpp
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp

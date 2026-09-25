@@ -44184,6 +44184,22 @@
   "refSize": 1355,
   "status": "ported"
  },
+ "0079adc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::SetBsp",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "0079ae80": {
   "branchRatio": 0.75,
   "constOverlap": 0.13,
@@ -45450,6 +45466,22 @@
   "refSize": 78,
   "status": "ported"
  },
+ "007bd4d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::SafeRead",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
  "007bd8a0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -46660,7 +46692,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::RecordHits",
-  "frozenSize": 615,
+  "frozenSize": 639,
   "how": "override",
   "module": "MapChunk.cpp",
   "refSize": 1062,
@@ -46676,10 +46708,42 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SampleColorAtFace",
-  "frozenSize": 1150,
+  "frozenSize": 1171,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 882,
+  "status": "ported"
+ },
+ "007c8c60": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::BuildLiquidVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 275,
+  "status": "ported"
+ },
+ "007c8d80": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::FirstLiquidTileType",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 75,
   "status": "ported"
  },
  "007c9a00": {
@@ -46788,7 +46852,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::QuerySegment",
-  "frozenSize": 324,
+  "frozenSize": 340,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 189,
@@ -46852,7 +46916,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::FreeQueryData",
-  "frozenSize": 137,
+  "frozenSize": 146,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 191,
@@ -47338,6 +47402,38 @@
   "refSize": 49,
   "status": "ported"
  },
+ "007d7310": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.857,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::ResolveLiquidType",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "007d7380": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::FixVertexColors",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 240,
+  "status": "ported"
+ },
  "007d7470": {
   "branchRatio": 0.556,
   "constOverlap": 0.068,
@@ -47354,6 +47450,38 @@
   "refSize": 657,
   "status": "ported"
  },
+ "007d7710": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::LoadMaterialTextures",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapArea.cpp",
+  "refSize": 146,
+  "status": "ported"
+ },
+ "007d7c30": {
+  "branchRatio": 0.786,
+  "constOverlap": 0.22,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::ParseOptionalChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 634,
+  "status": "ported"
+ },
  "007d7eb0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -47368,6 +47496,22 @@
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 154,
+  "status": "ported"
+ },
+ "007d7f50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::ParseChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 191,
   "status": "ported"
  },
  "007d8050": {
@@ -47400,6 +47544,70 @@
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 251,
+  "status": "ported"
+ },
+ "007d81c0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::BuildAntiPortals",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 278,
+  "status": "ported"
+ },
+ "007d82e0": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.267,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::ReadComplete",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 655,
+  "status": "ported"
+ },
+ "007d8570": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::ReadCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "007d85e0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::Read",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 331,
   "status": "ported"
  },
  "007d9990": {

@@ -1,7 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 #define WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 
-#include "world/map/CMapObj.hpp"
+#include <storm/Array.hpp>
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -11,7 +11,10 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CAsyncObject;
+class CMapObj;
 class CMapObjGroup;
+struct SMOMaterial;
 
 // MOBN: one node of the group's axis-aligned BSP over its faces. The name and layout are the
 // format's own; the reference walks these 16-byte records in place.
@@ -129,6 +132,19 @@ struct CMapObjHitRecord {
     void* object;                 // whatever the caller passed as the hit's owner
 };
 
+// MOBA: one draw batch of a group, 24 bytes.
+struct SMOBatch {
+    int16_t bounds[6];          // +0x00: the batch's box in group space, as integers
+    uint32_t startIndex;        // +0x0c: into MOVI
+    uint16_t count;             // +0x10
+    uint16_t minVertex;         // +0x12
+    uint16_t maxVertex;         // +0x14
+    uint8_t flags;              // +0x16
+    uint8_t materialId;         // +0x17
+};
+
+static_assert(sizeof(SMOBatch) == 0x18, "SMOBatch is 24 bytes");
+
 // ref: FUN_007c7a00
 bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c);
 
@@ -154,21 +170,84 @@ class CMapObjGroup {
         static uint16_t* AllocHitIndices(uint32_t count);
         static void QueryEnd(SMOPoly* polys);
 
-        // Member variables. The reference offsets, for the day the whole class is laid out.
-        uint32_t m_memHandle = 0;                // +0: CMap::s_mapObjGroupHeap slot (CMap::AllocMapObjGroup)
+        // Member variables, with the reference's offsets.
+        uint32_t m_memHandle = 0;                // +0x00: CMap::s_mapObjGroupHeap slot
+
+        // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a
+        // pooled VertArray reached through a pointer at +0x1c; frozen owns the array (diverged).
+        TSGrowableArray<C3Vector> m_liquidVertices;
+
         uint32_t m_flags = 0;                    // +0x30: MOGP flags
+        CAaBox m_mogpBounds;                     // +0x34: the group's own box, from MOGP
+        uint32_t m_portalStart = 0;              // +0x50: into the root's MOPR
+        uint32_t m_portalCount = 0;              // +0x54
+        uint32_t m_fogIds = 0;                   // +0x58: four MFOG indices, one byte each
+        uint16_t m_batchCountA = 0;              // +0x5c: the trans, interior and exterior batch
+        uint16_t m_batchCountB = 0;              // +0x5e   counts; the three runs partition MOBA
+        uint16_t m_batchCountC = 0;              // +0x60   in that order
+
+        // The BSP over the group's faces (the reference gives it its own object at +0x64)
         CAaBspNode* m_bspNodes = nullptr;        // +0x68: MOBN
-        uint32_t m_bspNodeCount = 0;
+        uint32_t m_bspNodeCount = 0;             // +0x70
         uint16_t* m_bspFaceRefs = nullptr;       // +0x6c: MOBR
-        uint32_t m_bspFaceRefCount = 0;
-        CAaBox m_bounds;                         // +0xb0
+        uint32_t m_bspFaceRefCount = 0;          // +0x74
+        CAaBox m_bounds;                         // +0xb0: the BSP's own copy of the group box
+
+        const char* m_name = nullptr;            // +0xd8: into the root's MOGN
+
+        // The group file's chunks, pointed straight into m_fileBuffer (nothing here is owned)
         SMOPoly* m_polys = nullptr;              // +0xdc: MOPY
-        const uint16_t* m_indices = nullptr;     // +0xe0: MOVI (not owned)
-        const C3Vector* m_vertices = nullptr;    // +0xe8: MOVT (not owned)
-        uint32_t m_vertexCount = 0;              // +0xec
-        const CImVector* m_colors = nullptr;     // +0x108: MOCV (not owned)
-        uint32_t m_faceCount = 0;                // +0x150
-        CMapObj* m_mapObj = nullptr;             // +0x18c
+        const uint16_t* m_indices = nullptr;     // +0xe0: MOVI
+        const uint16_t* m_triangleStrips = nullptr; // +0xe4: MORI
+        const C3Vector* m_vertices = nullptr;    // +0xe8: MOVT
+        const C3Vector* m_normals = nullptr;     // +0xec: MONR
+        const C2Vector* m_texCoords = nullptr;   // +0xf0: MOTV
+        const C2Vector* m_texCoords2 = nullptr;  // +0xf4: the second MOTV
+        SMOBatch* m_batches = nullptr;           // +0xf8: MOBA
+        const uint8_t* m_morb = nullptr;         // +0xfc: MORB, the ranges MORI's strips go with
+        const uint16_t* m_lightRefs = nullptr;   // +0x100: MOLR
+        const uint16_t* m_doodadRefs = nullptr;  // +0x104: MODR
+        CImVector* m_colors = nullptr;           // +0x108: MOCV
+        const CImVector* m_colors2 = nullptr;    // +0x10c: the second MOCV
+
+        // MLIQ: a grid of liquid heights over the group, with a flag byte per tile
+        uint32_t m_liquidXVerts = 0;             // +0x114
+        uint32_t m_liquidYVerts = 0;             // +0x118
+        uint32_t m_liquidXTiles = 0;             // +0x11c
+        uint32_t m_liquidYTiles = 0;             // +0x120
+        C3Vector m_liquidPos;                    // +0x124: the grid's corner, group-local
+        uint16_t m_liquidMaterial = 0;           // +0x130
+        const uint8_t* m_liquidVerts = nullptr;  // +0x134: eight bytes each, the height at +4
+        const uint8_t* m_liquidTiles = nullptr;  // +0x138: one byte each
+        float m_liquidMinZ = 0.0f;               // +0x13c
+        float m_liquidMaxZ = 0.0f;               // +0x140
+        uint32_t m_liquidType = 0;               // +0x144: the LiquidType row, after the fixup
+
+        uint32_t m_faceCount = 0;                // +0x150: MOPY
+        uint32_t m_indexCount = 0;               // +0x154: MOVI
+        uint32_t m_triangleStripCount = 0;       // +0x158: MORI
+        uint32_t m_vertexCount = 0;              // +0x15c: MOVT
+        uint32_t m_normalCount = 0;              // +0x160: MONR
+        uint32_t m_texCoordCount = 0;            // +0x164: MOTV
+        uint32_t m_texCoord2Count = 0;           // +0x168
+        uint32_t m_batchCount = 0;               // +0x16c: MOBA
+        uint32_t m_lightRefCount = 0;            // +0x170
+        uint32_t m_doodadRefCount = 0;           // +0x174
+        uint32_t m_colorCount = 0;               // +0x178: MOCV
+        uint32_t m_color2Count = 0;              // +0x17c
+        uint32_t m_groupID = 0;                  // +0x180: the group's WMOGroupID
+
+        uint8_t* m_fileBuffer = nullptr;         // +0x184: the whole group file, owned
+        uint32_t m_fileSize = 0;                 // +0x188
+        CMapObj* m_mapObj = nullptr;             // +0x18c: the root
+        CAsyncObject* m_asyncObject = nullptr;   // +0x194: the read in flight
+        uint32_t m_state = 0;                    // +0x198: bit 0 loaded, bit 1 the root attenuates
+                                                 //   vertex colour, bit 2 every batch is
+                                                 //   untextured, bit 3 a batch blends by mode 6
+        uint32_t m_minIndex = 0;                 // +0x19c: over the batches
+        uint32_t m_maxIndex = 0;                 // +0x1a0
+        uint16_t m_minVertex = 0;                // +0x1a4
+        uint16_t m_maxVertex = 0;                // +0x1a6
         TSLink<CMapObjGroup> m_link;             // +0x1b4: unlinked by CMap::FreeMapObjGroup
 
         // Member functions
@@ -188,6 +267,20 @@ class CMapObjGroup {
         void BoxQueryNode(CMapObjGroupBoxQuery& query, int32_t nodeIdx, const CAaBox& queryBox, const CAaBox& box);
         void BoxQueryLeaf(CMapObjGroupBoxQuery& query, const CAaBspNode* node);
         void RecordHits(const C44Matrix* placement, void* object, uint32_t flags);
+
+        // Loading the group file
+        static void Read(CMapObj* mapObj, uint32_t groupIndex, int32_t sync);
+        static void ReadCallback(void* arg);
+        static uint32_t ResolveLiquidType(uint32_t flags, uint32_t liquid);
+        void ReadComplete();
+        void ParseChunks(const uint8_t* cursor);
+        void ParseOptionalChunks(const uint8_t* cursor);
+        void SetBsp(CAaBspNode* nodes, uint32_t nodeCount, uint16_t* faceRefs, uint32_t faceRefCount, const CAaBox& bounds);
+        void FixVertexColors();
+        void LoadMaterialTextures(uint32_t materialId);
+        uint8_t FirstLiquidTileType() const;
+        void BuildLiquidVertices();
+        void BuildAntiPortals();
 };
 
 #endif
