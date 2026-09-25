@@ -2861,6 +2861,7 @@ addr	how	frozen	evidence
 007b54a0	annotated	CMap::UpdateDetailDoodads	tag in src/world/map/CMap.cpp
 007b5500	annotated	CMap::AgeRenderChunks	tag in src/world/map/CMap.cpp
 007b5590	annotated	CMap::BucketEntities	tag in src/world/map/CMap.cpp
+007b5630	annotated	CMap::UpdatePendingEntities	tag in src/world/map/CMap.cpp
 007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
 007b5d00	annotated	CMap::SetupMapObjDef	tag in src/world/map/CMapLoad.cpp
 007b6110	annotated	CMap::UpdateMapObjDefs	tag in src/world/map/CMapLoad.cpp
@@ -2920,6 +2921,7 @@ addr	how	frozen	evidence
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
+007bdb10	annotated	CMapStaticEntity::Place	tag in src/world/map/CMapStaticEntity.cpp
 007bde50	annotated	CMap::CreateDefGroups	tag in src/world/map/CMapLoad.cpp
 007becd0	annotated	CMap::CreateDoodadDef	tag in src/world/map/CMapLoad.cpp
 007bf460	annotated	CMap::CreateMapObjDef	tag in src/world/map/CMapLoad.cpp

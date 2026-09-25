@@ -4,6 +4,7 @@
 #include "world/map/CMapBaseObj.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
+#include <tempest/Matrix.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
 
@@ -23,6 +24,9 @@ class CMapStaticEntity : public CMapBaseObj {
         // its model's own bounds have arrived; until then they sit on the position.
         CAaSphere m_sphere;                      // +0x38
         CAaBox m_bounds;                         // +0x48
+        // The centre of the collision box, out in the world. Placement writes it; the queries
+        // that ask what a point is standing inside read it.
+        C3Vector m_collisionCenter;              // +0x60
         C3Vector m_position = { 0.0f, 0.0f, 0.0f };  // +0x6c
         float m_scale = 1.0f;                    // +0x78
         // How opaque it draws, before any distance fade. The chunk reference walk sets it to
@@ -42,6 +46,16 @@ class CMapStaticEntity : public CMapBaseObj {
         // reached on, so a thing straddling two chunks is visited once.
         TSLink<CMapStaticEntity> m_rowLink;      // +0xa8
         int32_t m_frameStamp = 0;                // +0xb0
+        // The model's collision box, out in the world. Separate from m_bounds, which is the
+        // drawn box: a tree's canopy is in one and not the other.
+        CAaBox m_collisionBounds;                // +0xc0
+
+        // Member functions
+        // Work out where the entity actually is, now that its model has arrived: its sphere,
+        // its drawn and collision boxes, and which of the five detail bands its size puts it
+        // in. The placement matrix lives on the subclasses in frozen, so it is passed in; the
+        // reference reads it at one offset both of them share. ref: FUN_007bdb10
+        void Place(const C44Matrix& placement);
 };
 
 #endif

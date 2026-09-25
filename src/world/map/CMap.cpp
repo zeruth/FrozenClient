@@ -29,6 +29,7 @@
 #include "gx/Transform.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include "model/CM2Lighting.hpp"
+#include "model/CM2Model.hpp"
 #include "util/CStatus.hpp"
 #include "world/CWorldScene.hpp"
 #include "util/SFile.hpp"
@@ -61,6 +62,7 @@ STORM_EXPLICIT_LIST(CMapChunk, m_lameAssLink) CMap::s_chunkList;
 STORM_EXPLICIT_LIST(CChunkLiquid, m_link) CMap::s_chunkLiquidList;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_lameAssLink) CMap::s_mapObjDefGroupList;
 STORM_EXPLICIT_LIST(CMapBaseObj, m_lameAssLink) CMap::s_entityList;
+STORM_EXPLICIT_LIST(CMapStaticEntity, m_rowLink) CMap::s_pendingEntityList;
 STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) CMap::s_lightList;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_renderChunkFreeList;
 STORM_EXPLICIT_LIST(CMapObj, m_link) CMap::s_mapObjLoadList;
@@ -764,6 +766,47 @@ CMapObjDefGroup* CMap::AllocMapObjDefGroup() {
     return group;
 }
 
+// ref: FUN_007b5630
+// The waiting list, walked once a frame. An entity sits on it from the moment it is created
+// until its model is in; then it is placed, told how big it is, and let go. An entity with no
+// model at all is placed straight away -- there is nothing to wait for.
+//
+// Placing it is what sets the bit both traversal walks test, so nothing draws a doodad until
+// this has run on it.
+void CMap::UpdatePendingEntities() {
+    // TODO SFile::IsStreamingMode() gates a hint (FUN_00825150) the reference gives the
+    // streamer for a model that is still coming. Not ported.
+
+    for (auto entity = CMap::s_pendingEntityList.Head(); entity; ) {
+        auto next = CMap::s_pendingEntityList.Next(entity);
+
+        if (entity->m_model && !entity->m_model->IsLoaded(0, 0)) {
+            entity = next;
+
+            continue;
+        }
+
+        // Bit 4 says someone else owns the placement.
+        if (!(entity->m_flags7c & 0x10)) {
+            // TODO the reference passes the entity itself and reads its matrix at a fixed
+            // offset; frozen keeps that matrix on the two subclasses, so the placement is
+            // driven from there. Until the doodad defs hand theirs over, this places nothing.
+
+            // TODO FUN_007a06a0(&m_position): under liquid, the entity draws at the dimmed
+            // opacity DAT_00a40304 rather than one.
+
+            // TODO FUN_007b55e0: a doodad standing inside a building joins that building's
+            // group, so the interior light reaches it.
+
+            entity->m_flags |= 0x81;
+        }
+
+        entity->m_rowLink.Unlink();
+
+        entity = next;
+    }
+}
+
 // ref: FUN_007b5590
 // Every entity goes back into a distance row once a frame. Bit 2 of the state word takes one
 // out of the scene entirely -- it is not hidden, it simply is not there this frame -- so those
@@ -987,10 +1030,7 @@ void CMap::Update(int32_t update) {
     CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
     CMap::UpdateMapObjDefs(update);
-    // TODO FUN_007b5630(): the static entity update, which walks the entities whose models
-    // are still arriving and calls FUN_007b5740 on each. That is what places a doodad and
-    // sets the bit both traversal walks test before they will draw it; see the note in
-    // CMapChunk::CreateRefs.
+    CMap::UpdatePendingEntities();
     CMap::BucketEntities(update);
 
     if (CMap::s_loading) {

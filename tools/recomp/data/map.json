@@ -44832,7 +44832,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 237,
+  "frozenSize": 266,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -45686,6 +45686,22 @@
   "refSize": 67,
   "status": "verified"
  },
+ "007b5630": {
+  "branchRatio": 0.214,
+  "constOverlap": 0.2,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdatePendingEntities",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 260,
+  "status": "ported"
+ },
  "007b5950": {
   "branchRatio": 0.372,
   "constOverlap": 0.065,
@@ -45738,13 +45754,13 @@
   "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.092,
+  "fidelity": 0.108,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 120,
+  "frozenSize": 343,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,
@@ -46632,6 +46648,21 @@
   "refSize": 332,
   "status": "ported"
  },
+ "007bdb10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp"
+  ],
+  "frozen": "CMapStaticEntity::Place",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLoad.cpp",
+  "refSize": 607,
+  "status": "ported"
+ },
  "007bde50": {
   "branchRatio": 0.222,
   "constOverlap": 0.045,
@@ -46706,7 +46737,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Load",
-  "frozenSize": 232,
+  "frozenSize": 412,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 339,
@@ -46882,7 +46913,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocDoodadDef",
-  "frozenSize": 400,
+  "frozenSize": 423,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -47682,7 +47713,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMapChunk::CreateRefs",
-  "frozenSize": 1019,
+  "frozenSize": 1031,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 813,

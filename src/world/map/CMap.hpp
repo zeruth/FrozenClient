@@ -8,6 +8,7 @@
 #include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapDoodadDef.hpp"
+#include "world/map/CMapStaticEntity.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapLight.hpp"
 #include "world/map/CMapObj.hpp"
@@ -77,6 +78,9 @@ class CMap {
         static STORM_EXPLICIT_LIST(CChunkLiquid, m_link) s_chunkLiquidList;               // 0x00aeedb0
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_lameAssLink) s_mapObjDefGroupList;  // 0x00aeedbc
         static STORM_EXPLICIT_LIST(CMapBaseObj, m_lameAssLink) s_entityList;              // 0x00aeedc8
+        // Static entities waiting on their models. One leaves as soon as its model is in
+        // and it has been placed, through the same link the distance rows use.
+        static STORM_EXPLICIT_LIST(CMapStaticEntity, m_rowLink) s_pendingEntityList;      // 0x00adfc10
         static STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) s_lightList;                 // 0x00aeedd4
         // Render chunks are not pooled through ObjectAlloc: freed ones wait here for reuse
         static STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) s_renderChunkFreeList;        // 0x00aeed74
@@ -240,6 +244,9 @@ class CMap {
         // Put every entity the map holds into the distance row it belongs in this frame.
         // ref: FUN_007b5590
         static void BucketEntities(int32_t update);
+        // Place every static entity whose model has now arrived, and let it off the waiting
+        // list. Until this has run on one, nothing will draw it. ref: FUN_007b5630
+        static void UpdatePendingEntities();
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);
