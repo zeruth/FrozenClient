@@ -47548,7 +47548,7 @@
   "branchRatio": 0.371,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.7,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -48323,6 +48323,51 @@
   "module": "MapChunk.cpp",
   "refSize": 291,
   "status": "verified"
+ },
+ "007ce0b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::GetHeightAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 207,
+  "status": "ported"
+ },
+ "007ce180": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::ReadTileFlags",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
+ "007ce1f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::CoversTile",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 127,
+  "status": "ported"
  },
  "007cee10": {
   "branchRatio": -1.0,

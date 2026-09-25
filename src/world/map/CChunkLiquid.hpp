@@ -4,6 +4,7 @@
 #include <storm/List.hpp>
 #include <tempest/Vector.hpp>
 #include <tempest/Box.hpp>
+#include "util/BitArray.hpp"
 #include <cstdint>
 
 class CMapChunk;
@@ -54,7 +55,10 @@ class CChunkLiquid {
         // How to read the layer's vertices, and the per-tile mask saying which squares of the
         // rectangle are actually wet.
         Liquid::CVertexData* m_vertexData = nullptr;  // +0x44
-        // TODO +0x48..+0x50
+        // One bit per tile of the rectangle, saying which squares are wet. MH2O layers keep it;
+        // MCLQ ones leave it empty and answer out of m_tileMask instead.
+        BitArray m_exists;                    // +0x48
+        // MCLQ's own eight-by-eight grid, a byte a tile. Null on an MH2O layer.
         const uint8_t* m_tileMask = nullptr;  // +0x54
         // TODO +0x58: the drawn surface, released through the Liquid module on destroy
         void* m_surface = nullptr;        // +0x58
@@ -83,6 +87,19 @@ class CChunkLiquid {
 
         // Age the layer by one frame. ref: FUN_007cde30
         void UpdateAnim();
+
+        // Whether the layer actually covers one tile of its chunk's eight-by-eight grid. An
+        // MH2O layer answers from its wet-tile bits, an MCLQ one from its own grid.
+        // ref: FUN_007ce1f0
+        bool CoversTile(uint32_t x, uint32_t y) const;
+
+        // One tile of an MCLQ layer's grid: which liquid it holds, and the two flags the file
+        // carries beside it. Returns whether the tile is this layer's. ref: FUN_007ce180
+        bool ReadTileFlags(uint32_t x, uint32_t y, uint32_t* kind, uint32_t* fishable, uint32_t* shared) const;
+
+        // The surface height at a point inside one tile, `frac` being how far across it lies.
+        // False when the tile is outside the layer's rectangle. ref: FUN_007ce0b0
+        bool GetHeightAt(const float* frac, const uint32_t* tile, float* height) const;
 };
 
 #endif

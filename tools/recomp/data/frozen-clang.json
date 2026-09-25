@@ -197005,6 +197005,8 @@
 "C3Vector::operator=",
 "SMemAlloc",
 "Liquid::CVertexDataMH2O::CVertexDataMH2O",
+"CMapLiquidData::ExistsMask",
+"BitArray::Assign",
 "CChunkLiquid::BuildVertices",
 "TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Head",
 "CMapChunk::GetBounds"
@@ -197024,7 +197026,7 @@
 ],
 "branches": 13,
 "stub": false,
-"lines": 123,
+"lines": 124,
 "refs": [],
 "line": 792
 },
@@ -197048,7 +197050,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 921
+"line": 922
 },
 "Nibble": {
 "files": [

@@ -71,3 +71,73 @@ void CChunkLiquid::UpdateAnim() {
         this->m_animTime += CWorld::GetTickTimeSec();
     }
 }
+
+// ref: FUN_007ce180
+// MCLQ keeps a byte a tile: the low nibble names the liquid, and 0xf means the tile is dry.
+// The tile belongs to this layer when the nibble agrees with the layer's own type in its low
+// two bits -- which is all the reference compares, so the nibble's upper bits are free.
+bool CChunkLiquid::ReadTileFlags(uint32_t x, uint32_t y, uint32_t* kind, uint32_t* fishable, uint32_t* shared) const {
+    if (!this->m_tileMask) {
+        return false;
+    }
+
+    uint8_t flags = this->m_tileMask[x + y * 8];
+
+    *kind = flags & 0xf;
+    *fishable = (flags >> 6) & 1;
+    *shared = flags >> 7;
+
+    if (*kind == 0xf) {
+        return false;
+    }
+
+    return (((this->m_liquidType - 1) ^ *kind) & 3) == 0;
+}
+
+// ref: FUN_007ce1f0
+bool CChunkLiquid::CoversTile(uint32_t x, uint32_t y) const {
+    if (this->m_tileMask) {
+        uint32_t kind, fishable, shared;
+
+        return this->ReadTileFlags(x, y, &kind, &fishable, &shared);
+    }
+
+    if (this->m_tileY <= x && this->m_tileX <= y
+        && x < this->m_tileEndY && y < this->m_tileEndX) {
+        // The wet-tile bits are per tile, not per vertex, so the row is one shorter than the
+        // vertex grid's.
+        uint32_t stride = this->m_tileEndY - this->m_tileY;
+
+        return const_cast<BitArray&>(this->m_exists).IsSet((y - this->m_tileX) * stride + (x - this->m_tileY));
+    }
+
+    return false;
+}
+
+// ref: FUN_007ce0b0
+// Bilinear across the four vertices of one tile: along the row first, then between the two rows.
+bool CChunkLiquid::GetHeightAt(const float* frac, const uint32_t* tile, float* height) const {
+    uint32_t x = tile[0];
+    uint32_t y = tile[1];
+
+    if (x < this->m_tileY || y < this->m_tileX
+        || this->m_tileEndY < x || this->m_tileEndX < y) {
+        return false;
+    }
+
+    uint32_t stride = this->m_tileEndY - this->m_tileY + 1;
+    uint32_t rowA = (y - this->m_tileX) * stride + (x - this->m_tileY);
+    uint32_t rowB = rowA + stride;
+
+    float h00 = this->m_vertexData->GetHeight(rowA);
+    float h01 = this->m_vertexData->GetHeight(rowA + 1);
+    float h10 = this->m_vertexData->GetHeight(rowB);
+    float h11 = this->m_vertexData->GetHeight(rowB + 1);
+
+    float a = (h01 - h00) * frac[0] + h00;
+    float b = (h11 - h10) * frac[0] + h10;
+
+    *height = (b - a) * frac[1] + a;
+
+    return true;
+}

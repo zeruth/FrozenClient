@@ -892,8 +892,9 @@ void CMapChunk::CreateLiquid() {
                 ? new (mem) Liquid::CVertexDataMH2O(area->m_liquid, instance)
                 : nullptr;
 
-            // TODO BitArray::Assign on the layer's wet-tile mask, which is as many bits as its
-            // rectangle has tiles.
+            chunkLiquid->m_exists.Assign(
+                const_cast<uint8_t*>(area->m_liquid->ExistsMask(instance)),
+                instance->tileHeight * instance->tileWidth, false);
 
             chunkLiquid->BuildVertices();
         }
