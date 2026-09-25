@@ -44594,6 +44594,51 @@
   "refSize": 50,
   "status": "ported"
  },
+ "007a7630": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObjGroup::BatchOutsideFrustum",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 143,
+  "status": "ported"
+ },
+ "007a8440": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetupFog",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 142,
+  "status": "ported"
+ },
+ "007a84d0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SelectShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 69,
+  "status": "ported"
+ },
  "007a8520": {
   "branchRatio": 0.667,
   "constOverlap": 0.111,
@@ -44608,6 +44653,36 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 177,
+  "status": "ported"
+ },
+ "007a8940": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetMaterialColor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 285,
+  "status": "ported"
+ },
+ "007a8b10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetupLighting",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 895,
   "status": "ported"
  },
  "007ad020": {
@@ -66111,7 +66186,8 @@
   "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
-   "src/world/cworldscene.cpp"
+   "src/world/cworldscene.cpp",
+   "src/world/map/CMapObjDraw.cpp"
   ],
   "frozen": "ImVectorToFloats",
   "frozenSize": 0,

@@ -308,6 +308,9 @@ class CMapObjGroup {
         void FillVertexBuffer(CGxBuf* buf, EGxVertexBufferFormat format);
         // ref: FUN_007c8b90
         void FillIndexBuffer(CGxBuf* buf);
+
+        // ref: FUN_007a7630
+        static bool BatchOutsideFrustum(const SMOBatch* batch);
 };
 
 #endif

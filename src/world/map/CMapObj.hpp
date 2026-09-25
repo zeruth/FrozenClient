@@ -136,6 +136,25 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
 
         void UpdateMaterialColors();
 
+        // --- draw state -------------------------------------------------------------------
+        // What the draw last set, so a run of batches sharing a setting pushes it once. The
+        // reference keeps each as a MapObj.cpp file static.
+        static uint32_t s_fogState;             // DAT_00cfbeb0
+        static int32_t s_lightingMode;          // DAT_00cfbeac
+        static uint32_t s_materialColor;        // DAT_00d1bef8
+        static int32_t s_shadowState;           // DAT_00cfbea8
+        static uint32_t s_vertexPermuteBase;    // DAT_00cfbeb4
+        static uint32_t s_shadowMode;           // DAT_00d43010
+
+        // ref: FUN_007a8440
+        static void SetupFog(uint32_t state);
+        // ref: FUN_007a8b10
+        static void SetupLighting(CMapObjGroup* group, int32_t mode);
+        // ref: FUN_007a8940
+        static void SetMaterialColor(const CImVector& color);
+        // ref: FUN_007a84d0
+        static void SelectShaders();
+
         // Member variables
         uint32_t m_memHandle = 0;                 // +0x00: CMap::s_mapObjHeap slot
         char m_name[260] = {};                    // +0x1c: the path the root was read from
