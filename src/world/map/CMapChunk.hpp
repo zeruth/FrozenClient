@@ -108,7 +108,7 @@ class CMapChunk : public CMapBaseObj {
         int32_t m_renderChunkReady = 0;      // +0xac
         uint32_t m_areaId = 0;               // +0xb0: the MCNK header's areaId
         TSLink<CMapChunk> m_linkB4;          // +0xb4: unlinked by the destructor; its list is not known yet
-        TSLink<CMapChunk> m_areaLink;        // +0xbc
+        TSLink<CMapChunk> m_frameLink;       // +0xbc: CMap::s_frameChunkList, emptied every update
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_entityLinkList;     // +0xc4: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_mapObjDefLinkList;  // +0xd0: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_linkListDc;         // +0xdc

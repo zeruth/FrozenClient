@@ -640,7 +640,7 @@
   "branchRatio": 0.062,
   "constOverlap": 0.056,
   "faithful": false,
-  "fidelity": 0.212,
+  "fidelity": 0.231,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -915,7 +915,7 @@
    "src/gx/loadingscreen.cpp"
   ],
   "frozen": "LoadingScreenFinish",
-  "frozenSize": 0,
+  "frozenSize": 329,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 207,
@@ -34698,17 +34698,33 @@
   "refSize": 14,
   "status": "ported"
  },
- "007831a0": {
-  "branchRatio": 0.034,
+ "00780860": {
+  "branchRatio": 0.833,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.2,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::UpdateWindow",
+  "frozenSize": 651,
+  "how": "annotated",
+  "module": "SEvt.cpp",
+  "refSize": 1135,
+  "status": "ported"
+ },
+ "007831a0": {
+  "branchRatio": 0.276,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Update",
-  "frozenSize": 181,
+  "frozenSize": 467,
   "how": "override",
   "module": "SEvt.cpp",
   "refSize": 862,
@@ -35274,6 +35290,22 @@
   "refSize": 304,
   "status": "ported"
  },
+ "0079e4b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTerrain0PixelShader",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 49,
+  "status": "ported"
+ },
  "0079e6a0": {
   "branchRatio": 0.143,
   "constOverlap": 0.0,
@@ -35291,17 +35323,17 @@
   "status": "ported"
  },
  "0079e7c0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.159,
+  "branchRatio": 0.476,
+  "constOverlap": 0.114,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.738,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::MapMemInitialize",
-  "frozenSize": 891,
-  "how": "string",
+  "frozenSize": 1363,
+  "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2068,
   "status": "ported"
@@ -35354,6 +35386,22 @@
   "refSize": 200,
   "status": "ported"
  },
+ "007b47f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CompareAreaDistance",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
  "007b4830": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -35370,6 +35418,134 @@
   "refSize": 135,
   "status": "ported"
  },
+ "007b4df0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateAreaChunks",
+  "frozenSize": 331,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 278,
+  "status": "ported"
+ },
+ "007b53b0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::ClearFrameChunkList",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
+ "007b5420": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateFrameLiquids",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 122,
+  "status": "stub"
+ },
+ "007b54a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateDetailDoodads",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 96,
+  "status": "stub"
+ },
+ "007b5500": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::AgeRenderChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 137,
+  "status": "stub"
+ },
+ "007b5950": {
+  "branchRatio": 0.372,
+  "constOverlap": 0.065,
+  "faithful": false,
+  "fidelity": 0.684,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateAreas",
+  "frozenSize": 1167,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 943,
+  "status": "ported"
+ },
+ "007b6b00": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.031,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::Update",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 975,
+  "status": "ported"
+ },
+ "007b7330": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::SetTerrainShaderLevel",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 23,
+  "status": "ported"
+ },
  "007bd480": {
   "branchRatio": 1.0,
   "constOverlap": 0.5,
@@ -35380,24 +35556,56 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::SafeOpen",
-  "frozenSize": 0,
+  "frozenSize": 91,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 78,
   "status": "ported"
  },
- "007bfce0": {
-  "branchRatio": 0.0,
+ "007bd8a0": {
+  "branchRatio": 0.278,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.211,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::LoadSettings",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLoad.cpp",
+  "refSize": 332,
+  "status": "ported"
+ },
+ "007bf8b0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.458,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::LoadWdt",
+  "frozenSize": 598,
+  "how": "annotated",
+  "module": "MapLoad.cpp",
+  "refSize": 1068,
+  "status": "ported"
+ },
+ "007bfce0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.474,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Load",
-  "frozenSize": 144,
-  "how": "string",
+  "frozenSize": 215,
+  "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 339,
   "status": "ported"
@@ -35412,7 +35620,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::MapMemAlloc",
-  "frozenSize": 0,
+  "frozenSize": 23,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 26,
@@ -35428,7 +35636,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::MapMemFree",
-  "frozenSize": 0,
+  "frozenSize": 21,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 26,
@@ -35524,7 +35732,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeArea",
-  "frozenSize": 0,
+  "frozenSize": 103,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 100,
@@ -35684,7 +35892,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeChunkLiquid",
-  "frozenSize": 0,
+  "frozenSize": 197,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 96,
@@ -35716,7 +35924,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeRenderChunk",
-  "frozenSize": 0,
+  "frozenSize": 207,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 81,
@@ -35748,7 +35956,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocBaseObjLink",
-  "frozenSize": 0,
+  "frozenSize": 203,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 108,
@@ -35780,7 +35988,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocChunk",
-  "frozenSize": 0,
+  "frozenSize": 289,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 103,
@@ -35844,7 +36052,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeBaseObjLink",
-  "frozenSize": 0,
+  "frozenSize": 270,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 155,
@@ -35940,7 +36148,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AsyncLoadCleanup",
-  "frozenSize": 0,
+  "frozenSize": 44,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 34,
@@ -35972,7 +36180,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Destroy",
-  "frozenSize": 0,
+  "frozenSize": 576,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 607,
@@ -35988,7 +36196,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::DestroyChunk",
-  "frozenSize": 0,
+  "frozenSize": 116,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 26,
@@ -36004,7 +36212,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::Destroy",
-  "frozenSize": 0,
+  "frozenSize": 320,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 252,
@@ -36024,6 +36232,22 @@
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 46,
+  "status": "ported"
+ },
+ "007c3730": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UnloadAll",
+  "frozenSize": 242,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 144,
   "status": "ported"
  },
  "007c3a10": {
@@ -36084,7 +36308,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Initialize",
-  "frozenSize": 0,
+  "frozenSize": 343,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 29,
@@ -36180,7 +36404,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::ComputeBounds",
-  "frozenSize": 0,
+  "frozenSize": 569,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 536,
@@ -36228,7 +36452,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::CMapChunk",
-  "frozenSize": 0,
+  "frozenSize": 428,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 507,
@@ -36244,7 +36468,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::~CMapChunk",
-  "frozenSize": 0,
+  "frozenSize": 947,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 521,
@@ -36260,7 +36484,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Load",
-  "frozenSize": 0,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 237,
@@ -36682,6 +36906,22 @@
   "refSize": 271,
   "status": "ported"
  },
+ "007d6a90": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapArea.cpp",
+   "src/world/map/cmaparea.cpp"
+  ],
+  "frozen": "CMapArea::DestroyChunks",
+  "frozenSize": 197,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 159,
+  "status": "ported"
+ },
  "007d6b30": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -36708,7 +36948,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::CreateChunks",
-  "frozenSize": 0,
+  "frozenSize": 547,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 290,
@@ -36724,7 +36964,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::LoadTextures",
-  "frozenSize": 0,
+  "frozenSize": 655,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 235,
@@ -36772,7 +37012,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::LoadCallback",
-  "frozenSize": 0,
+  "frozenSize": 313,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 37,
@@ -36788,7 +37028,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::CMapArea",
-  "frozenSize": 0,
+  "frozenSize": 283,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 207,
@@ -36820,7 +37060,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::Load",
-  "frozenSize": 0,
+  "frozenSize": 272,
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 75,
@@ -36836,7 +37076,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::CreateArea",
-  "frozenSize": 0,
+  "frozenSize": 555,
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 158,

@@ -20,6 +20,9 @@
 #include <cstdint>
 
 class CAsyncObject;
+class CGxBuf;
+class CGxPool;
+class CGxShader;
 class CMapObj;
 class CMapObjGroup;
 class SFile;
@@ -42,6 +45,10 @@ class CMap {
         static uint32_t* s_mapObjDefGroupHeap;
         static uint32_t* s_mapObjDefHeap;
         static uint32_t* s_chunkLiquidHeap;
+
+        // Chunks touched this update, emptied at the start of the next (DAT_00adfc1c); a chunk's
+        // m_frameLink is its place in it
+        static STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) s_frameChunkList;
 
         // Every allocated object of a kind, linked by the allocator (reference list globals noted)
         static STORM_EXPLICIT_LIST(CMapArea, m_lameAssLink) s_areaList;                   // 0x00aeed8c
@@ -76,6 +83,35 @@ class CMap {
         static int32_t s_chunkWindowMinX;
         static int32_t s_chunkWindowMaxY;
         static int32_t s_chunkWindowMaxX;
+        // The inner rectangle round the target, two chunks inside the window (DAT_00cd77c8
+        // minRow, DAT_00cd77cc minCol, DAT_00cd77d0 maxRow, DAT_00cd77d4 maxCol): tiles that
+        // cover it are waited for synchronously
+        static int32_t s_chunkInnerMinY;
+        static int32_t s_chunkInnerMinX;
+        static int32_t s_chunkInnerMaxY;
+        static int32_t s_chunkInnerMaxX;
+
+        // The WDT: MVER (DAT_00ce04cc), MPHD (DAT_00cf08d0) and MAIN (DAT_00ce88d0, one entry per
+        // tile, bit 0 = the tile exists)
+        static uint32_t s_wdtVersion;
+        static uint32_t s_wdtHeader[8];
+        static uint32_t s_areaInfo[64 * 64][2];
+
+        // Set while a map is loading behind a loading screen (DAT_00adfbc8); streaming waits for
+        // the tiles round the target only when clear
+        static int32_t s_loading;
+        static int32_t s_streamingMode;       // DAT_00ce0494: SFile streaming mode or trial
+
+        // The terrain shaders MapMemInitialize loads (docs/ref/parity-map-memory.md)
+        static CGxShader* s_terrainVertexShaders[0x80];   // DAT_00ce0008: Terrain, 128 permutations
+        static CGxShader* s_terrainPixelShaders[3];       // DAT_00ce0488: Terrain0, 3 permutations
+        static CGxShader* s_terrainEnvPixelShader[1];     // DAT_00ce0004: Terrain0_env
+        static CGxShader* s_terrain1PixelShaders[0x20];   // DAT_00ce0408: Terrain1, up to 32
+        static CGxShader* s_terrain1wPixelShaders[8];     // DAT_00ce0428: Terrain1w / Terrain1w_1..4
+        static CGxShader* s_terrainShadowMapPixelShader[1]; // DAT_00ce0000: TerrainSM
+        static CGxPool* s_lowDetailIndexPool;             // DAT_00cdfffc
+        static CGxBuf* s_lowDetailIndexBuf;               // DAT_00cdfff8
+        static int32_t s_terrainShadersDirty;             // DAT_00d1d058
 
         static int32_t s_mapID;
         static char s_mapName[];
@@ -85,7 +121,19 @@ class CMap {
         // Static functions
         static void Initialize();
         static void Load(const char* mapName, int32_t mapID);
+        static void LoadWdt();
+        static void LoadSettings();
+        static void SetTerrainShaderLevel(int32_t level);
+        static CGxShader* GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env);
         static void MapMemInitialize();
+        static void Update(int32_t update);
+        static void UpdateAreas(int32_t update);
+        static void UpdateAreaChunks(int32_t update, CMapArea* area, const int32_t* rect, int32_t depth);
+        static void UnloadAll();
+        static void ClearFrameChunkList();
+        static void UpdateFrameLiquids();
+        static void AgeRenderChunks();
+        static void UpdateDetailDoodads();
 
         // Map memory: one Alloc/Free pair per pooled kind. Alloc takes a slot from the kind's
         // heap, constructs it, records the mem handle and (for most kinds) links it into the
@@ -134,6 +182,7 @@ class CMap {
 
     private:
         static void FreeAreaLowObject(uint32_t* heap, CMapAreaLow* area);
+        static void MapMemInitializeHeaps();
 };
 
 #endif

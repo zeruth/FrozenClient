@@ -298,6 +298,29 @@ void CMapArea::CreateChunks(int32_t update, const int32_t* rect) {
     }
 }
 
+// ref: FUN_007d6a90
+// Destroys every chunk of the tile inside rect ({minRow, minCol, maxRow, maxCol} in map chunk
+// coordinates), clearing each grid slot first
+void CMapArea::DestroyChunks(const int32_t* rect) {
+    int32_t row0 = rect[0] - this->m_chunkBaseY;
+    int32_t col0 = rect[1] - this->m_chunkBaseX;
+    int32_t row1 = rect[2] - this->m_chunkBaseY;
+    int32_t col1 = rect[3] - this->m_chunkBaseX;
+
+    for (int32_t row = row0; row <= row1; row++) {
+        for (int32_t col = col0; col <= col1; col++) {
+            auto slot = &this->m_chunks[row * 16 + col];
+            auto chunk = *slot;
+
+            if (chunk) {
+                *slot = nullptr;
+                CMap::FreeBaseObjLink(chunk->m_parentLinkList.Head());
+                CMap::DestroyChunk(chunk);
+            }
+        }
+    }
+}
+
 // ref: FUN_007c35f0
 // Tears the tile down: a read still in flight is cancelled (the cleanup then owns the buffer),
 // every chunk is unlinked, cleared from the grid and its MCIN slot, and destroyed, the textures

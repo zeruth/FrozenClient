@@ -15,11 +15,18 @@
 #include "world/map/CMapRenderChunk.hpp"
 #include "sound/SI2.hpp"
 #include "async/AsyncFile.hpp"
+#include "async/AsyncFileRead.hpp"
 #include "async/CAsyncObject.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
+#include "gx/Gx.hpp"
 #include "gx/Texture.hpp"
+#include "gx/shader/CGxShader.hpp"
 #include "gx/texture/CGxTex.hpp"
 #include "util/CStatus.hpp"
 #include "util/SFile.hpp"
+#include "world/CWorld.hpp"
+#include <cstdlib>
 #include <common/ObjectAlloc.hpp>
 #include <storm/Error.hpp>
 #include <storm/Memory.hpp>
@@ -60,6 +67,29 @@ int32_t CMap::s_chunkWindowMinY;
 int32_t CMap::s_chunkWindowMinX;
 int32_t CMap::s_chunkWindowMaxY;
 int32_t CMap::s_chunkWindowMaxX;
+int32_t CMap::s_chunkInnerMinY;
+int32_t CMap::s_chunkInnerMinX;
+int32_t CMap::s_chunkInnerMaxY;
+int32_t CMap::s_chunkInnerMaxX;
+
+uint32_t CMap::s_wdtVersion;
+uint32_t CMap::s_wdtHeader[8];
+uint32_t CMap::s_areaInfo[64 * 64][2];
+
+int32_t CMap::s_loading;
+int32_t CMap::s_streamingMode;
+
+CGxShader* CMap::s_terrainVertexShaders[0x80];
+CGxShader* CMap::s_terrainPixelShaders[3];
+CGxShader* CMap::s_terrainEnvPixelShader[1];
+CGxShader* CMap::s_terrain1PixelShaders[0x20];
+CGxShader* CMap::s_terrain1wPixelShaders[8];
+CGxShader* CMap::s_terrainShadowMapPixelShader[1];
+CGxPool* CMap::s_lowDetailIndexPool;
+CGxBuf* CMap::s_lowDetailIndexBuf;
+int32_t CMap::s_terrainShadersDirty;
+
+STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) CMap::s_frameChunkList;
 
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
 static const float MAP_HALF_EXTENT = 17066.666015625f;    // DAT_009e2acc
@@ -78,9 +108,13 @@ void CMap::Initialize() {
     // TODO
 }
 
+// ref: FUN_007bfce0
+// Names the map's files, tears the previous map down, reads the WDT and starts the tiles round
+// the target loading. The light block (FUN_007d9bd0 / FUN_007d9d50 / FUN_007da100), the map
+// object cache flush (FUN_007b0040), FUN_0079fa10, the WDL low-detail load (FUN_007cc310), the
+// .tex cache open (FUN_007bd540), the per-map day/night setup (FUN_007f2790) and the final
+// AsyncFileReadWaitAll (FUN_004bae10) are not ported yet.
 void CMap::Load(const char* mapName, int32_t mapID) {
-    // TODO
-
     auto nameOfs = SStrCopy(CMap::s_mapPath, "World\\Maps\\");
     SStrCopy(&CMap::s_mapPath[nameOfs], mapName);
 
@@ -88,14 +122,212 @@ void CMap::Load(const char* mapName, int32_t mapID) {
 
     SStrPrintf(CMap::s_wdtFilename, sizeof(CMap::s_wdtFilename), "%s\\%s.wdt", CMap::s_mapPath, CMap::s_mapName);
 
-    // TODO
+    // TODO DAT_00ce04a8 = FUN_007d9bd0(1, 0); CM2Light::SetLightType(0); FUN_007d9d50; FUN_007da100
+
+    CMap::UnloadAll();
+
+    // TODO FUN_007b0040(1); FUN_0079fa10()
 
     CMap::s_mapID = mapID;
+    // TODO DAT_00cf08f0 = 1 (map loaded), DAT_00cf08f4 = 0 (global WMO)
+    CMap::s_loading = 1;
 
-    // TODO
+    CMap::s_streamingMode = SFile::IsStreamingMode() | SFile::IsStreamingTrial();
+    bool waitAll = CMap::s_streamingMode == 0;
+
+    // TODO FUN_007cc310(s_mapPath, s_mapName): the WDL
+    CMap::LoadWdt();
+    // TODO FUN_007bd540(): the .tex cache
+    // TODO FUN_007f2790(mapID)
+
+    CMap::Update(0);
+
+    if (waitAll) {
+        // TODO FUN_004bae10(): AsyncFileReadWaitAll
+    }
+
+    // TODO the load progress callback (DAT_00cdfff4)(1.0f, DAT_00cdfff0)
+
+    CMap::s_loading = 0;
+    // TODO DAT_00cdfff4 = 0; DAT_00cd7678 = 1 (day/night: force a full update)
 }
 
+// ref: FUN_007bf8b0
+// The WDT: version, header, the 64x64 tile table, and, when the header says the map is one
+// global WMO, that WMO's placement (not ported yet: it needs the map obj def creation from
+// MapLoad.cpp). Then the terrain shader level from the header and the settings pass.
+void CMap::LoadWdt() {
+    SFile* file = nullptr;
+    SFile::Open(CMap::s_wdtFilename, &file);
+
+    if (!file) {
+        SErrDisplayAppFatal("CMap::LoadWdt() failed %s\n", CMap::s_wdtFilename);
+        return;
+    }
+
+    uint32_t chunkHeader[2] = { 0, 0 };
+
+    SFile::Read(file, chunkHeader, 8, nullptr, nullptr, nullptr);
+    SFile::Read(file, &CMap::s_wdtVersion, 4, nullptr, nullptr, nullptr);
+    SFile::Read(file, chunkHeader, 8, nullptr, nullptr, nullptr);
+    SFile::Read(file, CMap::s_wdtHeader, 0x20, nullptr, nullptr, nullptr);
+    SFile::Read(file, chunkHeader, 8, nullptr, nullptr, nullptr);
+    SFile::Read(file, CMap::s_areaInfo, 0x8000, nullptr, nullptr, nullptr);
+
+    if (CMap::s_wdtHeader[0] & 0x1) {
+        // TODO MWMO name + MODF entry -> AllocMapObjDef, FUN_007beae0, FUN_007b0cc0, linked
+        // under the map (DAT_00cf08f4 = 1)
+    }
+
+    CMap::SetTerrainShaderLevel((CMap::s_wdtHeader[0] & 0x2) ? 2 : 1);
+    CMap::LoadSettings();
+
+    SFile::Close(file);
+}
+
+// ref: FUN_007bd8a0
+// What the map may do on this device: the world enables' shader bits, gated on the terrain
+// shaders actually having loaded. DAT_00ce04a2 / a1 / a0 / 9e are the intermediate flags the
+// reference keeps; DAT_00ce0498 is the world-space vertex mode shaders can rely on.
+void CMap::LoadSettings() {
+    uint8_t vertexShaders = (CWorld::s_enables2 & CWorld::Enables2::Enable_VertexShader) != 0;
+    uint8_t pixelShaders = (CWorld::s_enables & CWorld::Enables::Enable_PixelShader) != 0;
+    uint8_t specularWanted = 0;
+
+    if ((CWorld::s_enables & CWorld::Enables::Enable_8000000) && pixelShaders) {
+        specularWanted = 1;
+    }
+
+    uint32_t vertexShaded = 0;   // (DAT_00cf08d0 >> 2) & 1 in the reference: the MPHD's third bit
+    vertexShaded = (CMap::s_wdtHeader[0] >> 2) & 0x1;
+
+    uint8_t terrainShaders = 0;
+    CMap::s_terrainSpecular = 0;
+
+    if (pixelShaders) {
+        auto a = CMap::GetTerrain0PixelShader(vertexShaded, 1, 0);
+        auto b = CMap::GetTerrain0PixelShader(vertexShaded, 0, 0);
+        terrainShaders = a && a->Valid() && b && b->Valid();
+    }
+
+    if (specularWanted && terrainShaders) {
+        auto a = CMap::GetTerrain0PixelShader(vertexShaded, 1, 0);
+        auto b = CMap::GetTerrain0PixelShader(vertexShaded, 0, 0);
+        CMap::s_terrainSpecular = a && a->Valid() && b && b->Valid();
+    }
+
+    if (vertexShaders) {
+        CMap::s_chunkVerticesWorldSpace = 0;
+        if (terrainShaders && CMap::s_terrainVertexShaders[0]) {
+            CMap::s_chunkVerticesWorldSpace = CMap::s_terrainVertexShaders[0]->Valid() != 0;
+        }
+    }
+
+    // TODO DAT_00ce0498 = terrainShaders ? s_chunkVerticesWorldSpace : 0
+}
+
+// ref: FUN_007b7330
+void CMap::SetTerrainShaderLevel(int32_t level) {
+    CMap::s_terrainVertexFormat = level;
+    CMap::s_terrainShadersDirty = 1;
+}
+
+// ref: FUN_0079e4b0
+CGxShader* CMap::GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env) {
+    if (a1 == 0) {
+        return CMap::s_terrainPixelShaders[0];
+    }
+
+    if (a2) {
+        return env ? CMap::s_terrainEnvPixelShader[0] : CMap::s_terrainPixelShaders[1];
+    }
+
+    return CMap::s_terrainPixelShaders[2];
+}
+
+// ref: FUN_0079e7c0
+// The static init the reference runs once: the chunk tables, the module inits, the grids, the
+// terrain shaders, the low-detail index pool, then the object heaps. The module inits
+// (FUN_007afee0, FUN_007cb990, FUN_007b2760, FUN_007a03c0, FUN_0079e3c0, FUN_0079e4f0), the
+// liquid vertex buffer list (FUN_007d58b0) and the final capability flag (FUN_0086b9a0) are not
+// ported yet.
 void CMap::MapMemInitialize() {
+    CMapChunk::Initialize();
+
+    // TODO FUN_007afee0, FUN_007cb990, FUN_007b2760, FUN_007a03c0; the two 0x2c-byte records at
+    // DAT_00d253d0 / DAT_00d253a4
+
+    for (int32_t i = 0; i < 64 * 64; i++) {
+        CMap::s_areaGrid[i] = nullptr;
+        CMap::s_areaInfo[i][0] = 0;
+    }
+
+    // TODO the 0x800-entry growable array at DAT_00cf4928 and the map state flags
+    // (DAT_00ce04c8, DAT_00ce04c4, DAT_00ce04a4 = -2, DAT_00adfbc4 = -1, DAT_00cf08f4 = 0,
+    // DAT_00cf08f0 = 0, DAT_00ce04ac = 0), FUN_0079e3c0, FUN_0079e4f0
+
+    for (int32_t i = 0; i < 0x80; i++) {
+        CMap::s_terrainVertexShaders[i] = nullptr;
+    }
+    for (int32_t i = 0; i < 3; i++) {
+        CMap::s_terrainPixelShaders[i] = nullptr;
+    }
+    CMap::s_terrainEnvPixelShader[0] = nullptr;
+    for (int32_t i = 0; i < 0x20; i++) {
+        CMap::s_terrain1PixelShaders[i] = nullptr;
+    }
+    for (int32_t i = 0; i < 8; i++) {
+        CMap::s_terrain1wPixelShaders[i] = nullptr;
+    }
+    CMap::s_terrainShadowMapPixelShader[0] = nullptr;
+
+    g_theGxDevicePtr->ShaderCreate(CMap::s_terrainVertexShaders, GxSh_Vertex, "Shaders\\Vertex", "Terrain", 0x80);
+    g_theGxDevicePtr->ShaderCreate(CMap::s_terrainPixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain0", 3);
+    g_theGxDevicePtr->ShaderCreate(CMap::s_terrainEnvPixelShader, GxSh_Pixel, "Shaders\\Pixel", "Terrain0_env", 1);
+
+    // The reference switches on the pixel shader profile (CGxCaps +0xc4): 1 and 2 are the
+    // ps_1_x profiles with their own Terrain1w variants, 8..10 the register-combiner and
+    // texture-shader profiles; everything else gets the full 32-permutation set
+    switch (GxCaps().m_shaderTargets[GxSh_Pixel]) {
+    case GxShPS_ps_1_1:
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1PixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1", 6);
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1wPixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1w", 6);
+        break;
+    case GxShPS_ps_1_4:
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1PixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1", 8);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[0], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_1", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[1], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_1", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[2], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_2", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[3], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_2", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[4], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_3", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[5], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_3", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[6], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_4", 1);
+        g_theGxDevicePtr->ShaderCreate(&CMap::s_terrain1wPixelShaders[7], GxSh_Pixel, "Shaders\\Pixel", "Terrain1w_4", 1);
+        break;
+    case GxShPS_nvts:
+    case GxShPS_nvts2:
+    case GxShPS_nvts3:
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1PixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1", 4);
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1wPixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1w", 4);
+        break;
+    default:
+        g_theGxDevicePtr->ShaderCreate(CMap::s_terrain1PixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain1", 0x20);
+        break;
+    }
+
+    g_theGxDevicePtr->ShaderCreate(CMap::s_terrainShadowMapPixelShader, GxSh_Pixel, "Shaders\\Pixel", "TerrainSM", 1);
+
+    CMap::s_lowDetailIndexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, 0x1800, GxPoolHintBit_Unk0, "CMap::lowDetailIndexPool");
+    CMap::s_lowDetailIndexBuf = g_theGxDevicePtr->BufCreate(CMap::s_lowDetailIndexPool, 2, 0xc00, 0);
+
+    // TODO FUN_007d58b0(0, 1, 0x10, 0x221, 0x18): the liquid vertex buffer block list
+
+    CMap::MapMemInitializeHeaps();
+
+    // TODO FUN_0086b9a0 -> DAT_00cf08f8 when bit 2 is set
+}
+
+void CMap::MapMemInitializeHeaps() {
     CMap::s_lightHeap           = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapLight),         128,    "WLIGHT",           true));
     CMap::s_cacheLightHeap      = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapCacheLight),    256,    "WCACHELIGHT",      true));
     CMap::s_mapObjGroupHeap     = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapObjGroup),      128,    "WMAPOBJGROUP",     true));
@@ -623,6 +855,249 @@ HTEXTURE CMap::LoadTexture(const char* name) {
     // TODO FUN_004b4f90(&status, 2) is not identified
 
     return texture;
+}
+
+// ----------------------------------------------------------------------------------------------
+// Update
+
+// ref: FUN_007b6b00
+// The per-frame map update: unload everything when the window moved too far, animate liquids,
+// pick WMO shaders, stream tiles, update WMO defs and entities, and, while a map is loading,
+// keep streaming until every tile round the target is in. The non-streaming loading loop
+// (four rounds of AsyncFileReadWaitAll with progress callbacks) and the streaming-mode loop are
+// recorded where they go; FUN_007cf840, FUN_007ad020, FUN_007b9560, FUN_007b6110, FUN_007b5630
+// and FUN_007b5590 are not ported yet.
+void CMap::Update(int32_t update) {
+    if (CWorld::s_reloadMap) {
+        CMap::UnloadAll();
+    }
+
+    // TODO DAT_00ce04c0 = 0; DAT_00ce04bc = 0; DAT_00ce04ac = 0 (per-frame counters)
+    // TODO FUN_007cf840(dt): chunk liquid animation
+    // TODO FUN_007ad020(): WMO material shader selection
+    // TODO FUN_007b9560(): render chunk buffer recycling
+    CMap::UpdateAreas(update);
+    // TODO FUN_007b6110(update): WMO def update
+    // TODO FUN_007b5630(): entity update
+    // TODO FUN_007b5590(update): entity placement
+
+    if (CMap::s_loading) {
+        if (CMap::s_streamingMode == 0) {
+            // TODO four rounds of: AsyncFileReadWaitAll (FUN_004bae10), the progress callback,
+            // UpdateAreas, FUN_007b6110, FUN_007ad020, FUN_007b5630
+        } else {
+            // TODO the streaming-mode load loop (FUN_007b4960, FUN_007b5e80, FUN_007b50b0)
+        }
+    }
+}
+
+// ref: FUN_007c3730
+// Drops every loaded tile and every mid-detail tile, then the low-detail ones (FUN_007cbfe0 is
+// not ported yet)
+void CMap::UnloadAll() {
+    for (auto link = CMap::s_areaLinkList.Head(); link; ) {
+        auto next = CMap::s_areaLinkList.Next(link);
+        auto area = static_cast<CMapArea*>(link->owner);
+
+        CMap::FreeBaseObjLink(link);
+        CMap::s_areaGrid[area->m_areaY * 64 + area->m_areaX] = nullptr;
+        area->Destroy();
+        CMap::FreeArea(area);
+
+        link = next;
+    }
+
+    // TODO the 64x64 grid of CMapAreaMed at DAT_00ce08d0: FreeAreaMed each
+    // TODO FUN_007cbfe0(): the low-detail areas
+}
+
+// ref: FUN_007b53b0
+void CMap::ClearFrameChunkList() {
+    for (auto chunk = CMap::s_frameChunkList.Head(); chunk; ) {
+        auto next = CMap::s_frameChunkList.Next(chunk);
+        chunk->m_frameLink.Unlink();
+        chunk = next;
+    }
+}
+
+// ref: FUN_007b5420
+// The liquids animated this frame (DAT_00adfc34, link at CChunkLiquid +0x68); FUN_007cde30
+// per liquid and the fade test on +0x30 are not ported yet
+void CMap::UpdateFrameLiquids() {
+    // TODO
+}
+
+// ref: FUN_007b5500
+// The render chunks in use (DAT_00adfc28): age each by the frame time, release the buffers of
+// one idle for two seconds (FUN_007b9830), and drop the ones no longer referenced
+void CMap::AgeRenderChunks() {
+    // TODO
+}
+
+// ref: FUN_007b54a0
+// The detail doodad batches (DAT_00adfc40): rebuilt after ten frames (FUN_007b0d40 / FUN_007b30d0),
+// freed after twenty (FUN_007b3960)
+void CMap::UpdateDetailDoodads() {
+    // TODO
+}
+
+// ref: FUN_007b47f0
+static int32_t CompareAreaDistance(const void* a, const void* b) {
+    float da = *reinterpret_cast<const float*>(static_cast<const uint8_t*>(a) + 4);
+    float db = *reinterpret_cast<const float*>(static_cast<const uint8_t*>(b) + 4);
+
+    if (da < db) {
+        return -1;
+    }
+
+    if (db < da) {
+        return 1;
+    }
+
+    return 0;
+}
+
+struct AREADISTANCE {
+    CMapArea* area;
+    float distanceSq;
+};
+
+// ref: FUN_007b5950
+// Streaming. Tiles outside the tile window go (unless their read is in progress); every tile
+// the WDT lists inside it exists; all of them are sorted by distance to the target; each
+// unloaded one starts its read, tiles covering the inner rectangle are waited for when nothing
+// else is loading, and every loaded tile's chunks are refreshed against the window through the
+// quadtree walk. The streaming-mode prioritisation (FUN_004b9950 / FUN_004ba3d0 / FUN_004b9970)
+// and the tile-edge pass (FUN_007b4bc0) are not ported yet.
+void CMap::UpdateAreas(int32_t update) {
+    int32_t maxRow = CMap::s_chunkWindowMaxY >> 4;
+    int32_t minCol = CMap::s_chunkWindowMinX >> 4;
+    int32_t minRow = CMap::s_chunkWindowMinY >> 4;
+    int32_t maxCol = CMap::s_chunkWindowMaxX >> 4;
+
+    AREADISTANCE sorted[1023];
+    uint32_t count = 0;
+
+    CMap::ClearFrameChunkList();
+    CMap::UpdateFrameLiquids();
+    CMap::AgeRenderChunks();
+    CMap::UpdateDetailDoodads();
+
+    int32_t waitForTarget = 1;
+    if (CMap::s_streamingMode || CMap::s_loading) {
+        waitForTarget = 0;
+    }
+
+    C2Vector target = { CWorld::s_targetPos.x, CWorld::s_targetPos.y };
+
+    for (auto link = CMap::s_areaLinkList.Head(); link; ) {
+        auto area = static_cast<CMapArea*>(link->owner);
+        auto next = CMap::s_areaLinkList.Next(link);
+
+        if (area->m_areaX < minCol || maxCol < area->m_areaX || area->m_areaY < minRow || maxRow < area->m_areaY) {
+            if (!area->m_asyncObject || !area->m_asyncObject->isCurrent) {
+                CMap::FreeBaseObjLink(link);
+                CMap::UnloadArea(area);
+            }
+        } else {
+            sorted[count].distanceSq = CMap::AreaDistanceSq(area->m_bounds, target);
+            sorted[count].area = area;
+            count++;
+        }
+
+        link = next;
+    }
+
+    for (int32_t row = minRow; row <= maxRow; row++) {
+        for (int32_t col = minCol; col <= maxCol; col++) {
+            if ((CMap::s_areaInfo[row * 64 + col][0] & 0x1) && !CMap::s_areaGrid[row * 64 + col]) {
+                auto area = CMap::CreateArea(col, row);
+                sorted[count].area = area;
+                sorted[count].distanceSq = CMap::AreaDistanceSq(area->m_bounds, target);
+                count++;
+            }
+        }
+    }
+
+    if (count) {
+        qsort(sorted, count, sizeof(AREADISTANCE), &CompareAreaDistance);
+    }
+
+    int32_t rect[4];
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto area = sorted[i].area;
+
+        if (!area->m_fileBuffer) {
+            area->Load();
+        }
+
+        if (minCol <= area->m_areaX && area->m_areaX <= maxCol && minRow <= area->m_areaY && area->m_areaY <= maxRow) {
+            int32_t x0 = area->m_areaX * 16;
+            int32_t y0 = area->m_areaY * 16;
+            int32_t x1 = x0 + 15;
+            int32_t y1 = y0 + 15;
+
+            if (x0 <= CMap::s_chunkInnerMaxX && y0 <= CMap::s_chunkInnerMaxY && CMap::s_chunkInnerMinX <= x1 && CMap::s_chunkInnerMinY <= y1 && waitForTarget && area->m_asyncObject) {
+                AsyncFileReadWait(area->m_asyncObject);
+            }
+
+            if (!area->m_asyncObject) {
+                rect[0] = area->m_chunkBaseY;
+                rect[1] = area->m_chunkBaseX;
+                rect[2] = area->m_chunkBaseY + 15;
+                rect[3] = area->m_chunkBaseX + 15;
+                CMap::UpdateAreaChunks(update, area, rect, 0);
+            } else if (CMap::s_streamingMode) {
+                // TODO remember the nearest still-loading tile for the prioritisation below
+            }
+        }
+    }
+
+    if (CMap::s_streamingMode) {
+        // TODO FUN_004b9950 / FUN_004ba3d0 / FUN_004b9970: bump the reads of near tiles
+    }
+
+    if (update) {
+        // TODO FUN_007b4bc0(): the tile-edge pass
+    }
+}
+
+// ref: FUN_007b4df0
+// Quadtree over a tile's chunk rectangle: a rectangle touching the window is split in four to
+// depth two and then handed to CreateChunks; one outside it has its chunks destroyed.
+void CMap::UpdateAreaChunks(int32_t update, CMapArea* area, const int32_t* rect, int32_t depth) {
+    int32_t sub[4];
+
+    if (rect[1] <= CMap::s_chunkWindowMaxX && rect[0] <= CMap::s_chunkWindowMaxY && CMap::s_chunkWindowMinX <= rect[3] && CMap::s_chunkWindowMinY <= rect[2]) {
+        if (depth == 2) {
+            area->CreateChunks(update, rect);
+            return;
+        }
+
+        depth++;
+
+        sub[0] = rect[0];
+        sub[1] = rect[1];
+        sub[2] = ((rect[2] - rect[0]) >> 1) + rect[0];
+        sub[3] = ((rect[3] - rect[1]) >> 1) + rect[1];
+        CMap::UpdateAreaChunks(update, area, sub, depth);
+
+        sub[3] = rect[3];
+        sub[1] = ((rect[3] - rect[1]) >> 1) + 1 + rect[1];
+        CMap::UpdateAreaChunks(update, area, sub, depth);
+
+        sub[2] = rect[2];
+        sub[0] = ((rect[2] - rect[0]) >> 1) + 1 + rect[0];
+        CMap::UpdateAreaChunks(update, area, sub, depth);
+
+        sub[1] = rect[1];
+        sub[3] = ((rect[3] - rect[1]) >> 1) + rect[1];
+        CMap::UpdateAreaChunks(update, area, sub, depth);
+        return;
+    }
+
+    area->DestroyChunks(rect);
 }
 
 // ref: FUN_007c1ff0

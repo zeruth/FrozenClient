@@ -3,6 +3,7 @@
 
 #include "event/Event.hpp"
 #include "world/Types.hpp"
+#include <tempest/Box.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
@@ -101,6 +102,27 @@ class CWorld {
         static float GetTickTimeSec();
         static void Initialize();
         static void LoadMap(const char* mapName, const C3Vector& position, int32_t mapID);
+        static void UpdateWindow(const C3Vector& targetPos);
+
+        // The position the map streams around (DAT_00cd7778) and the two boxes UpdateWindow
+        // builds round it: 150 yards each way (DAT_00cd7784), and the far clip each way
+        // (DAT_00cd779c)
+        static C3Vector s_targetPos;
+        static CAaBox s_nearBox;
+        static CAaBox s_farBox;
+        // The far clip the map was last updated with (DAT_00cd7744): a jump of more than ten
+        // yards reloads behind a loading screen
+        static float s_updateFarClip;
+        // The chunk window of the previous update (DAT_00cd77e8 minRow, DAT_00cd77ec minCol,
+        // DAT_00cd77f0 maxRow, DAT_00cd77f4 maxCol); when the new one no longer overlaps it the
+        // map is reloaded outright (DAT_00cd767c)
+        static int32_t s_prevWindowMinY;
+        static int32_t s_prevWindowMinX;
+        static int32_t s_prevWindowMaxY;
+        static int32_t s_prevWindowMaxX;
+        static int32_t s_reloadMap;
+        static int32_t s_mapDirty;              // DAT_00d4314c
+        static int32_t s_updateCount;           // DAT_00cd7690
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
         static void SetFarClip(float farClip);
         static void SetNearClip(float nearClip);

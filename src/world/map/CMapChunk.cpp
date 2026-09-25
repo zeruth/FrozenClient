@@ -46,7 +46,7 @@ CMapChunk::~CMapChunk() {
     this->m_linkListDc.UnlinkAll();
     this->m_mapObjDefLinkList.UnlinkAll();
     this->m_entityLinkList.UnlinkAll();
-    this->m_areaLink.Unlink();
+    this->m_frameLink.Unlink();
     this->m_linkB4.Unlink();
 }
 
@@ -110,7 +110,7 @@ void CMapChunk::Destroy() {
         liquid = next;
     }
 
-    this->m_areaLink.Unlink();
+    this->m_frameLink.Unlink();
 
     for (auto link = this->m_entityLinkList.Head(); link; ) {
         auto next = this->m_entityLinkList.Next(link);

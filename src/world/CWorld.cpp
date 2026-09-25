@@ -9,6 +9,9 @@
 #include "world/CWorldParam.hpp"
 #include "world/Map.hpp"
 #include "world/Weather.hpp"
+#include "world/map/CMap.hpp"
+#include "gx/LoadingScreen.hpp"
+#include "util/SFile.hpp"
 #include "db/Db.hpp"
 #include "client/Client.hpp"
 #include <storm/Memory.hpp>
@@ -42,6 +45,17 @@ C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
 C3Vector CWorld::s_outdoorDirection = { -0.402096f, -0.301572f, 0.864504f };
 bool CWorld::s_cameraUnderLiquid = false;
 C3Vector CWorld::s_cameraDir = { 1.0f, 0.0f, 0.0f };
+C3Vector CWorld::s_targetPos;
+CAaBox CWorld::s_nearBox;
+CAaBox CWorld::s_farBox;
+float CWorld::s_updateFarClip;
+int32_t CWorld::s_prevWindowMinY;
+int32_t CWorld::s_prevWindowMinX;
+int32_t CWorld::s_prevWindowMaxY;
+int32_t CWorld::s_prevWindowMaxX;
+int32_t CWorld::s_reloadMap;
+int32_t CWorld::s_mapDirty;
+int32_t CWorld::s_updateCount;
 // Zenith first, horizon last, then the fog band -- the order the dome's rings read them in.
 C3Vector CWorld::s_skyColors[6] = {
     { 0.2f, 0.35f, 0.65f }, { 0.3f, 0.42f, 0.7f }, { 0.4f, 0.5f, 0.75f },
@@ -814,6 +828,18 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
 
     // TODO
 
+    // The reference (FUN_00781430) takes the far clip from the map, remembers it as the value the
+    // map was updated with, builds the chunk window from the spawn position and seeds the
+    // previous window with it, and only then loads the map, so the load-time update streams the
+    // tiles round the spawn. The rest of that function (the streaming-trial hook and the liquid
+    // setup FUN_008a1720 / FUN_008a1730 / FUN_008a1f50) is not ported yet.
+    CWorld::s_updateFarClip = CWorld::s_farClip;
+    CWorld::UpdateWindow(position);
+    CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;
+    CWorld::s_prevWindowMinY = CMap::s_chunkWindowMinY;
+    CWorld::s_prevWindowMaxY = CMap::s_chunkWindowMaxY;
+    CWorld::s_prevWindowMaxX = CMap::s_chunkWindowMaxX;
+
     CMap::Load(mapName, mapID);
     TerrainLoad(mapName, mapID);
 
@@ -931,6 +957,75 @@ void CWorld::SetUpdateTime(float tickTimeSec, uint32_t curTimeMs) {
     CWorld::s_tickTimeSec = tickTimeSec;
 }
 
+// ref: FUN_00780860
+// Everything the map streams against, from the target position: the two update boxes, the inner
+// chunk rectangle (the target's chunk, widened by one chunk per 33 yards of far clip, snapped to
+// even chunks) and the loaded window two chunks beyond it, widened to at least eight chunks and
+// clamped to the map. The reference also rebuilds the camera matrix and frustum corners here
+// (FUN_006bf370 / FUN_006bf6d0 into the device's transform stack), which is not ported yet.
+void CWorld::UpdateWindow(const C3Vector& targetPos) {
+    CWorld::s_targetPos = targetPos;
+
+    // TODO camera facing -> matrix (FUN_006bf370), frustum corners (FUN_006bf6d0), device
+    // transform (FUN_00407f80 on g_theGxDevicePtr's stack)
+
+    const float NEAR_EXTENT = 150.0f;   // DAT_009f989c
+    CWorld::s_nearBox.b = { targetPos.x - NEAR_EXTENT, targetPos.y - NEAR_EXTENT, targetPos.z - NEAR_EXTENT };
+    CWorld::s_nearBox.t = { targetPos.x + NEAR_EXTENT, targetPos.y + NEAR_EXTENT, targetPos.z + NEAR_EXTENT };
+
+    float farClip = CWorld::s_farClip;
+    CWorld::s_farBox.b = { targetPos.x - farClip, targetPos.y - farClip, targetPos.z - farClip };
+    CWorld::s_farBox.t = { targetPos.x + farClip, targetPos.y + farClip, targetPos.z + farClip };
+
+    // One chunk of margin per chunk of far clip (the multiply is by -0.03 and the result truncated)
+    int32_t margin = 1 - static_cast<int32_t>(farClip * -0.029999999329447746f);
+
+    const float MAP_HALF_EXTENT = 17066.666015625f;
+    const float CHUNKS_PER_UNIT = 0.029999999329447746f;
+    int32_t chunkY = static_cast<int32_t>(roundf(-(targetPos.x - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+    int32_t chunkX = static_cast<int32_t>(roundf(-(targetPos.y - MAP_HALF_EXTENT) * CHUNKS_PER_UNIT - 0.5f));
+
+    if (SFile::IsStreamingTrial()) {
+        // TODO FUN_00420a50(chunkX, chunkY): streaming trial bookkeeping
+    }
+
+    int32_t hi = (chunkX + margin) & ~1;
+    CMap::s_chunkInnerMinX = (chunkX - margin) & ~1;
+    CMap::s_chunkInnerMaxX = hi + 1;
+    CMap::s_chunkWindowMinX = CMap::s_chunkInnerMinX - 2;
+    CMap::s_chunkWindowMaxX = hi + 3;
+
+    hi = (chunkY + margin) & ~1;
+    CMap::s_chunkInnerMinY = (chunkY - margin) & ~1;
+    CMap::s_chunkInnerMaxY = hi + 1;
+    CMap::s_chunkWindowMinY = CMap::s_chunkInnerMinY - 2;
+    CMap::s_chunkWindowMaxY = hi + 3;
+
+    if (CMap::s_chunkWindowMaxX - chunkX < 8) {
+        int32_t widen = 8 - (CMap::s_chunkWindowMaxX - chunkX);
+        CMap::s_chunkWindowMinY = (CMap::s_chunkWindowMinY - widen) & ~1;
+        CMap::s_chunkWindowMinX = (CMap::s_chunkWindowMinX - widen) & ~1;
+        CMap::s_chunkWindowMaxX = ((CMap::s_chunkWindowMaxX + widen) & ~1) + 1;
+        CMap::s_chunkWindowMaxY = ((CMap::s_chunkWindowMaxY + widen) & ~1) + 1;
+    }
+
+    if (CMap::s_chunkInnerMinX < 0) CMap::s_chunkInnerMinX = 0;
+    if (CMap::s_chunkInnerMaxX > 0x3FF) CMap::s_chunkInnerMaxX = 0x3FF;
+    if (CMap::s_chunkInnerMinY < 0) CMap::s_chunkInnerMinY = 0;
+    if (CMap::s_chunkInnerMaxY > 0x3FF) CMap::s_chunkInnerMaxY = 0x3FF;
+    if (CMap::s_chunkWindowMinX < 0) CMap::s_chunkWindowMinX = 0;
+    if (CMap::s_chunkWindowMaxX > 0x3FF) CMap::s_chunkWindowMaxX = 0x3FF;
+    if (CMap::s_chunkWindowMinY < 0) CMap::s_chunkWindowMinY = 0;
+    if (CMap::s_chunkWindowMaxY > 0x3FF) CMap::s_chunkWindowMaxY = 0x3FF;
+}
+
+// ref: FUN_007831a0
+// The reference's frame update, of which the map part is ported: the previous chunk window is
+// kept, the new one built from the target, a window that no longer overlaps flags a full reload,
+// a far-clip jump of more than ten yards goes behind a loading screen, and CMap::Update runs.
+// The frame-time ring (FUN_0077f900), the scene camera (FUN_00795400), the day/night, underwater
+// and weather updates and the zone-light selection at the end are not ported yet; the stand-in
+// light handling below stays until they are.
 void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos) {
     // The outdoor light is selected by the viewer's position (see UpdateOutdoorLight), so record the
     // camera each frame; the light and fog then reflect the zone the player is actually standing in.
@@ -942,6 +1037,55 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
     if (len > 1e-4f) {
         CWorld::s_cameraDir = { d.x / len, d.y / len, d.z / len };
     }
+
+    // TODO FUN_0077f900 and the 30-entry frame-time ring (DAT_00cd76b0 / DAT_00cd7728)
+
+    CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;
+    CWorld::s_prevWindowMinY = CMap::s_chunkWindowMinY;
+    CWorld::s_prevWindowMaxY = CMap::s_chunkWindowMaxY;
+    CWorld::s_prevWindowMaxX = CMap::s_chunkWindowMaxX;
+
+    CWorld::UpdateWindow(targetPos);
+
+    int32_t maxX = CWorld::s_prevWindowMaxX <= CMap::s_chunkWindowMaxX ? CWorld::s_prevWindowMaxX : CMap::s_chunkWindowMaxX;
+    int32_t maxY = CWorld::s_prevWindowMaxY <= CMap::s_chunkWindowMaxY ? CWorld::s_prevWindowMaxY : CMap::s_chunkWindowMaxY;
+    int32_t minX = CWorld::s_prevWindowMinX <= CMap::s_chunkWindowMinX ? CMap::s_chunkWindowMinX : CWorld::s_prevWindowMinX;
+    int32_t minY = CWorld::s_prevWindowMinY <= CMap::s_chunkWindowMinY ? CMap::s_chunkWindowMinY : CWorld::s_prevWindowMinY;
+
+    if (minY < maxY && minX < maxX) {
+        CWorld::s_reloadMap = 0;
+    } else {
+        CWorld::s_reloadMap = 1;
+        CWorld::s_mapDirty = 1;
+    }
+
+    CWorld::s_updateCount++;
+
+    // TODO the per-update callback (DAT_00cd7764), the eight scrolling texture offsets
+    // (DAT_00cd77fc, DAT_00adee78), and the scene camera FUN_00795400(cameraPos, cameraTarget)
+
+    float farClipDelta = CWorld::s_farClip - CWorld::s_updateFarClip;
+    bool smallChange = farClipDelta <= 10.0f;
+    bool bigChange = 10.0f < farClipDelta;
+    CWorld::s_updateFarClip = CWorld::s_farClip;
+
+    if (bigChange) {
+        // TODO the load progress callback (DAT_00cdfff4 = FUN_0040af40, DAT_00cdfff0 = 0)
+        LoadingScreenStart(CMap::s_mapID, 1);
+        CMap::s_loading = 1;
+    }
+
+    CMap::Update(smallChange);
+
+    if (bigChange) {
+        CMap::s_loading = 0;
+        // TODO FUN_004b9910(0, 0)
+        LoadingScreenFinish();
+    }
+
+    // TODO FUN_00795d40, the day/night update FUN_007816f0, the fog-end read into
+    // DAT_00cd7668, the underwater update FUN_0079bf40, the weather update FUN_0078d170, and the
+    // zone light blend at the end
 }
 
 float CWorld::GetCloudDensity() {

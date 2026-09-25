@@ -668,7 +668,7 @@ addr	how	frozen	evidence
 004d1600	string	SI2::RegisterUserCVars	unique "1048576"
 004d3100	override	ObjectFree	
 004d3330	override	ObjectAlloc	
-004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 004f3110=TextureCacheAllocEntry, 0079e7c0=CMap::MapMemInitialize, 0081c6e0=M2Initialize
+004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 004f3110=TextureCacheAllocEntry, 0081c6e0=M2Initialize
 004d3790	override	ClntObjMgrGetActivePlayer	
 004d41c0	annotated	SkipSetOfObjects	tag in src/object/client/MessageHandlers.cpp
 004d4ac0	string	ClntObjMgrInitializeShared	score 0.50 shared ObjUsage
@@ -1991,7 +1991,7 @@ addr	how	frozen	evidence
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
-00689a50	callgraph	CGxShader::Valid	only unmatched callee of 00483290=CSimpleTexture::GetImageModePixelShader
+00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
@@ -2179,6 +2179,7 @@ addr	how	frozen	evidence
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
+00780860	annotated	CWorld::UpdateWindow	tag in src/world/CWorld.cpp
 007831a0	override	CWorld::Update	
 00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
@@ -2215,14 +2216,26 @@ addr	how	frozen	evidence
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
+0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
-0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
+0079e7c0	annotated	CMap::MapMemInitialize	tag in src/world/map/CMap.cpp
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
+007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
 007b4830	annotated	CMap::AreaDistanceSq	tag in src/world/map/CMap.cpp
+007b4df0	annotated	CMap::UpdateAreaChunks	tag in src/world/map/CMap.cpp
+007b53b0	annotated	CMap::ClearFrameChunkList	tag in src/world/map/CMap.cpp
+007b5420	annotated	CMap::UpdateFrameLiquids	tag in src/world/map/CMap.cpp
+007b54a0	annotated	CMap::UpdateDetailDoodads	tag in src/world/map/CMap.cpp
+007b5500	annotated	CMap::AgeRenderChunks	tag in src/world/map/CMap.cpp
+007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
+007b6b00	annotated	CMap::Update	tag in src/world/map/CMap.cpp
+007b7330	annotated	CMap::SetTerrainShaderLevel	tag in src/world/map/CMap.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
-007bfce0	string	CMap::Load	unique "%s\%s.wdt"
+007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
+007bf8b0	annotated	CMap::LoadWdt	tag in src/world/map/CMap.cpp
+007bfce0	annotated	CMap::Load	tag in src/world/map/CMap.cpp
 007bfe40	annotated	CMap::MapMemAlloc	tag in src/world/map/CMap.cpp
 007bfe60	annotated	CMap::MapMemFree	tag in src/world/map/CMap.cpp
 007bfe80	annotated	CMap::UnlinkDoodadDef	tag in src/world/map/CMap.cpp
@@ -2262,6 +2275,7 @@ addr	how	frozen	evidence
 007c35d0	annotated	CMap::DestroyChunk	tag in src/world/map/CMap.cpp
 007c35f0	annotated	CMapArea::Destroy	tag in src/world/map/CMapArea.cpp
 007c3700	annotated	CMap::UnloadArea	tag in src/world/map/CMap.cpp
+007c3730	annotated	CMap::UnloadAll	tag in src/world/map/CMap.cpp
 007c3a10	annotated	CMapChunk::ParseSubChunks	tag in src/world/map/CMapChunk.cpp
 007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
 007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
@@ -2303,6 +2317,7 @@ addr	how	frozen	evidence
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007d6980	annotated	CMapArea::LoadTexture	tag in src/world/map/CMapArea.cpp
+007d6a90	annotated	CMapArea::DestroyChunks	tag in src/world/map/CMapArea.cpp
 007d6b30	annotated	CMapArea::CreateChunk	tag in src/world/map/CMapArea.cpp
 007d6bf0	annotated	CMapArea::CreateChunks	tag in src/world/map/CMapArea.cpp
 007d6d20	annotated	CMapArea::LoadTextures	tag in src/world/map/CMapArea.cpp

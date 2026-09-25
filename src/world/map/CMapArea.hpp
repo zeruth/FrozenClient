@@ -93,6 +93,7 @@ class CMapArea : public CMapBaseObj {
         void GrowTextures(uint32_t capacity);
         void CreateChunk(int32_t x, int32_t y);
         void CreateChunks(int32_t update, const int32_t* rect);
+        void DestroyChunks(const int32_t* rect);
         void Destroy();
 };
 
