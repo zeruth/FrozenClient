@@ -5,9 +5,10 @@
 
 #define SHA1_DIGEST_SIZE 20
 
+// The reference's order (FUN_0077aaa0): the bit count first, then the chaining state.
 typedef struct {
-    uint32_t state[5];
     uint32_t count[2];
+    uint32_t state[5];
     char buffer[64];
 } SHA1_CONTEXT;
 

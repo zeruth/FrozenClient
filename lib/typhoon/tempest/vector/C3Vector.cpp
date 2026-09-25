@@ -1,16 +1,28 @@
 #include "tempest/vector/C3Vector.hpp"
 #include "tempest/Math.hpp"
 #include "tempest/Matrix.hpp"
+#include "tempest/vector/C2Vector.hpp"
 #include <new>
 
 C3Vector C3Vector::operator-() const {
     return { -this->x, -this->y, -this->z };
 }
 
+// ref: FUN_004c35a0
 C3Vector& C3Vector::operator*=(float a) {
     this->x *= a;
     this->y *= a;
     this->z *= a;
+
+    return *this;
+}
+
+// ref: FUN_004c35d0
+C3Vector& C3Vector::operator/=(float a) {
+    float inv = 1.0f / a;
+    this->x = this->x * inv;
+    this->y = inv * this->y;
+    this->z = inv * this->z;
 
     return *this;
 }
@@ -24,11 +36,29 @@ C3Vector& C3Vector::operator+=(const C3Vector& v) {
     return *this;
 }
 
+// ref: FUN_00568680
+C3Vector& C3Vector::operator-=(const C3Vector& v) {
+    this->x = this->x - v.x;
+    this->y = this->y - v.y;
+    this->z = this->z - v.z;
+
+    return *this;
+}
+
 C3Vector C3Vector::Cross(const C3Vector& l, const C3Vector& r) {
     return {
         (l.y * r.z) - (l.z * r.y),
         (l.z * r.x) - (l.x * r.z),
         (l.x * r.y) - (l.y * r.x)
+    };
+}
+
+// ref: FUN_004c3650
+C3Vector C3Vector::Cross(const C3Vector& l, const C2Vector& r) {
+    return {
+        -(r.y * l.z),
+        r.x * l.z,
+        r.y * l.x - l.y * r.x
     };
 }
 
@@ -73,6 +103,14 @@ void C3Vector::Normalize() {
     }
 }
 
+// ref: FUN_004c3420
+void C3Vector::NormalizeUnchecked() {
+    float inv = 1.0f / CMath::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+    this->x = this->x * inv;
+    this->y = this->y * inv;
+    this->z = inv * this->z;
+}
+
 float C3Vector::SquaredMag() const {
     return this->x * this->x + this->y * this->y + this->z * this->z;
 }
@@ -91,6 +129,16 @@ C3Vector operator-(const C3Vector& l, const C3Vector& r) {
     float x = l.x - r.x;
     float y = l.y - r.y;
     float z = l.z - r.z;
+
+    return { x, y, z };
+}
+
+// ref: FUN_004bec40
+// z is multiplied scale-first in the reference; the product is the same.
+C3Vector operator*(const C3Vector& l, float r) {
+    float x = l.x * r;
+    float y = l.y * r;
+    float z = r * l.z;
 
     return { x, y, z };
 }

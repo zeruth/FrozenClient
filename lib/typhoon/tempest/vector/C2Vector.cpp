@@ -27,3 +27,10 @@ void C2Vector::Normalize() {
         this->y = inv * this->y;
     }
 }
+
+// ref: FUN_006ff6a0
+void C2Vector::NormalizeUnchecked() {
+    float inv = 1.0f / CMath::sqrt(this->y * this->y + this->x * this->x);
+    this->x = this->x * inv;
+    this->y = inv * this->y;
+}

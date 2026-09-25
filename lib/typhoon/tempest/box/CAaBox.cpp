@@ -1,5 +1,6 @@
 #include "tempest/box/CAaBox.hpp"
 #include "tempest/matrix/C44Matrix.hpp"
+#include "tempest/sphere/CAaSphere.hpp"
 #include <cstdint>
 
 // ref: FUN_006cb900
@@ -20,6 +21,34 @@ void CAaBox::Scale(float s) {
     this->t.x = this->t.x * s;
     this->t.y = this->t.y * s;
     this->t.z = s * this->t.z;
+}
+
+// ref: FUN_004f5de0
+void CAaBox::GetCenter(C3Vector& center) const {
+    center.x = (this->t.x + this->b.x) * 0.5f;
+    center.y = (this->t.y + this->b.y) * 0.5f;
+    center.z = (this->t.z + this->b.z) * 0.5f;
+}
+
+// ref: FUN_0078f370
+int32_t CAaBox::Intersects(const CAaBox& other) const {
+    if (other.b.x <= this->t.x && other.b.y <= this->t.y && other.b.z <= this->t.z
+        && this->b.x <= other.t.x && this->b.y <= other.t.y && this->b.z <= other.t.z) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_0075b5b0
+int32_t CAaBox::IsPointInside(const C3Vector& p) const {
+    if (this->b.x <= p.x && this->b.y <= p.y && this->b.z <= p.z
+        && p.x <= this->t.x && p.y <= this->t.y && p.z <= this->t.z
+    ) {
+        return 1;
+    }
+
+    return 0;
 }
 
 // ref: FUN_00984860
@@ -63,6 +92,16 @@ CAaBox TransformBox(const CAaBox& box, const C44Matrix& m) {
     return out;
 }
 
+// ref: FUN_007fa140
+void SphereToBox(const CAaSphere& sphere, CAaBox& box) {
+    box.b.x = sphere.c.x - sphere.r;
+    box.b.y = sphere.c.y - sphere.r;
+    box.t.x = sphere.c.x + sphere.r;
+    box.b.z = sphere.c.z - sphere.r;
+    box.t.y = sphere.c.y + sphere.r;
+    box.t.z = sphere.c.z + sphere.r;
+}
+
 // ref: FUN_0070bd20
 int32_t AaBoxIsDegenerate(const CAaBox& box) {
     if (box.b.x < box.t.x && box.b.y < box.t.y && box.b.z < box.t.z) {
@@ -70,4 +109,13 @@ int32_t AaBoxIsDegenerate(const CAaBox& box) {
     }
 
     return 1;
+}
+
+// ref: FUN_007bd450
+int32_t AaBoxIsInverted(const CAaBox& box) {
+    if (box.t.x < box.b.x && box.t.y < box.b.y && box.t.z < box.b.z) {
+        return 1;
+    }
+
+    return 0;
 }

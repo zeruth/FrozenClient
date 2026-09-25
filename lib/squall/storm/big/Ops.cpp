@@ -31,6 +31,7 @@ void And(BigBuffer& a, const BigBuffer& b, const BigBuffer& c) {
     a.SetCount(i);
 }
 
+// ref: FUN_0077ad10
 int32_t Compare(const BigBuffer& a, const BigBuffer& b) {
     int32_t result = 0;
 
@@ -243,6 +244,7 @@ uint64_t MakeLarge(uint32_t low, uint32_t high) {
     return low + (static_cast<uint64_t>(high) << 32);
 }
 
+// ref: FUN_0077b2b0
 void Mul(BigBuffer& a, const BigBuffer& b, uint64_t c) {
     // TODO assertion c <= SMALL_BOUND
 
@@ -437,6 +439,8 @@ void Square(BigBuffer& a, const BigBuffer& b, BigStack& stack) {
     stack.UnmakeDistinct(a, aa);
 }
 
+// ref: FUN_0077b3e0
+// No check that the borrow came out zero: the reference has none here.
 void Sub(BigBuffer& a, const BigBuffer& b, const BigBuffer& c) {
     uint64_t borrow = 0;
     uint32_t i = 0;
@@ -446,7 +450,6 @@ void Sub(BigBuffer& a, const BigBuffer& b, const BigBuffer& c) {
     }
 
     a.SetCount(i);
-    STORM_ASSERT(!borrow);
 }
 
 void Sub(BigBuffer& a, const BigBuffer& b, uint32_t c) {

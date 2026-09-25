@@ -43,4 +43,8 @@ void OsBuildFontFilePath(const char*, char*, size_t);
 
 char* OsPathFindExtensionWithDot(char*);
 
+// The open flags for a Win32-style request: access (GENERIC_READ 0x80000000, GENERIC_WRITE
+// 0x40000000), share mode (1 read, 2 write) and creation disposition (1..5).
+uint32_t OsFileTranslateOpenFlags(uint32_t access, uint8_t shareMode, uint32_t disposition);
+
 #endif

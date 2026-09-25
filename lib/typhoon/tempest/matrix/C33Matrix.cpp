@@ -3,6 +3,7 @@
 #include "tempest/matrix/C44Matrix.hpp"
 #include "tempest/vector/C3Vector.hpp"
 
+// ref: FUN_004c5550
 C33Matrix C33Matrix::RotationAroundZ(float angle) {
     float cosAngle = cos(angle);
     float sinAngle = sin(angle);
@@ -148,6 +149,7 @@ C33Matrix C33Matrix::Transpose() const {
     };
 }
 
+// ref: FUN_004c5340
 C33Matrix operator*(const C33Matrix& l, const C33Matrix& r) {
     float a0 = l.a0 * r.a0 + l.a1 * r.b0 + l.a2 * r.c0;
     float a1 = l.a0 * r.a1 + l.a1 * r.b1 + l.a2 * r.c1;

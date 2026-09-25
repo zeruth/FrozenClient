@@ -32,6 +32,7 @@ class AsyncFileRead {
         static STORM_EXPLICIT_LIST(CAsyncObject, link) s_asyncFileReadPostList;
         static STORM_EXPLICIT_LIST(CAsyncObject, link) s_asyncFileReadFreeList;
         static int32_t s_waiting;
+        static int32_t s_queueLockHeld;
 };
 
 CAsyncQueue* AsyncFileReadCreateQueue();
@@ -45,5 +46,11 @@ int32_t AsyncFileReadPollHandler(const void* a1, void* a2);
 uint32_t AsyncFileReadThread(void* thread);
 
 void AsyncFileReadWait(CAsyncObject* object);
+
+void AsyncFileReadSetProgressCallback(void* callback, void* param);
+
+void AsyncFileReadUnlockQueue();
+
+bool AsyncFileReadIsBusy();
 
 #endif

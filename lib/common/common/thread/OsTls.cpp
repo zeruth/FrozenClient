@@ -49,6 +49,7 @@ int32_t OsTlsAlloc() {
 #endif
 }
 
+// ref: FUN_0086d6d0
 void* OsTlsGetValue(uint32_t tlsIndex) {
 #if defined(WHOA_SYSTEM_WIN)
     return TlsGetValue(tlsIndex);

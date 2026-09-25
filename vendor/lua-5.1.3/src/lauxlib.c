@@ -501,6 +501,9 @@ LUALIB_API int luaL_ref (lua_State *L, int t) {
 }
 
 
+// ref: FUN_0084f7a0
+// The reference also saves the two taint globals (0x00d4139c, 0x00d413a0), clears them for the
+// body and restores them after; this Lua carries no taint, so there is nothing to save.
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
   if (ref >= 0) {
     t = abs_index(L, t);

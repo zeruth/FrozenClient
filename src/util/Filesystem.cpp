@@ -251,3 +251,39 @@ char* OsPathFindExtensionWithDot(char* pathName) {
 
     return result;
 }
+
+// ref: FUN_00461ef0
+uint32_t OsFileTranslateOpenFlags(uint32_t access, uint8_t shareMode, uint32_t disposition) {
+    uint32_t flags = static_cast<int32_t>(access) < 0 ? 1 : 0;
+
+    if (access & 0x40000000) {
+        flags |= 0x2;
+    }
+
+    if (shareMode & 0x1) {
+        flags |= 0x4;
+    }
+
+    if (shareMode & 0x2) {
+        flags |= 0x8;
+    }
+
+    switch (disposition) {
+        case 1:
+            return flags | 0xc00;
+
+        case 2:
+            return flags | 0x400;
+
+        case 3:
+            return flags | 0x1000;
+
+        case 4:
+            return flags | 0x200;
+
+        case 5:
+            flags |= 0x100;
+    }
+
+    return flags;
+}

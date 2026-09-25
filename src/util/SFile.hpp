@@ -60,4 +60,11 @@ class SFile {
         size_t m_size;
 };
 
+class SCritSect;
+
+// The SFile core's lock wrappers. The reference passes a CRITICAL_SECTION; frozen's portable
+// critical section is SCritSect.
+void SFileCritSectEnter(SCritSect* critSect);
+void SFileCritSectLeave(SCritSect* critSect);
+
 #endif

@@ -27,6 +27,8 @@ TSList<CAsyncThread, TSGetLink<CAsyncThread>> AsyncFileRead::s_asyncThreadList;
 STORM_EXPLICIT_LIST(CAsyncObject, link) AsyncFileRead::s_asyncFileReadPostList;
 STORM_EXPLICIT_LIST(CAsyncObject, link) AsyncFileRead::s_asyncFileReadFreeList;
 int32_t AsyncFileRead::s_waiting;
+// ref: DAT_00b4a1ec
+int32_t AsyncFileRead::s_queueLockHeld;
 
 CAsyncQueue* AsyncFileReadCreateQueue() {
     CAsyncQueue* queue = AsyncFileRead::s_asyncQueueList.NewNode(0, 2, 0x8);
@@ -244,4 +246,45 @@ void AsyncFileReadWait(CAsyncObject* object) {
     }
 
     AsyncFileRead::s_waiting--;
+}
+
+// ref: FUN_004b9910
+void AsyncFileReadSetProgressCallback(void* callback, void* param) {
+    AsyncFileRead::s_progressCallback = callback;
+    AsyncFileRead::s_progressParam = param;
+}
+
+// ref: FUN_004b9970
+void AsyncFileReadUnlockQueue() {
+    AsyncFileRead::s_queueLock.Leave();
+    AsyncFileRead::s_queueLockHeld = 0;
+}
+
+// ref: FUN_004bad80
+// Whether any read is still outstanding: a thread holding a request, a queue with requests
+// waiting, or a finished read not yet handed to its callback.
+bool AsyncFileReadIsBusy() {
+    AsyncFileRead::s_queueLock.Enter();
+
+    bool busy = false;
+
+    for (auto thread = AsyncFileRead::s_asyncThreadList.Head(); thread; thread = AsyncFileRead::s_asyncThreadList.Next(thread)) {
+        if (thread->currentObject) {
+            busy = true;
+        }
+    }
+
+    for (auto queue = AsyncFileRead::s_asyncQueueList.Head(); queue; queue = AsyncFileRead::s_asyncQueueList.Next(queue)) {
+        if (queue->readList.Head()) {
+            busy = true;
+        }
+    }
+
+    if (AsyncFileRead::s_asyncFileReadPostList.Head()) {
+        busy = true;
+    }
+
+    AsyncFileRead::s_queueLock.Leave();
+
+    return busy;
 }

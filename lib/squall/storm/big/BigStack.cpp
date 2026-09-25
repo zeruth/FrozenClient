@@ -1,5 +1,16 @@
 #include "storm/big/BigStack.hpp"
 
+// ref: FUN_0077aff0
+// Every buffer starts empty and none is handed out.
+BigStack::BigStack() {
+    this->m_used = 0;
+}
+
+// ref: FUN_0077ae80
+// Only the member destructors: each buffer's storage is freed, last buffer first.
+BigStack::~BigStack() {
+}
+
 BigBuffer& BigStack::Alloc(uint32_t* count) {
     STORM_ASSERT(this->m_used < SIZE);
 

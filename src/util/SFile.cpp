@@ -8,6 +8,7 @@
 #undef SErrSetLastError
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include <storm/Thread.hpp>
 
 // MPQ reading is backed by StormLib. The original client carries its own implementation in
 // BlizzardCore's mopaq package (SFile.cpp, SFileArchives.cpp). The archive list, priority
@@ -393,4 +394,14 @@ int32_t SFile::SetLocalePath(const char* path) {
 int32_t SFile::Unload(void* ptr) {
     SMemFree(ptr, __FILE__, __LINE__, 0);
     return 1;
+}
+
+// ref: FUN_004283b0
+void SFileCritSectEnter(SCritSect* critSect) {
+    critSect->Enter();
+}
+
+// ref: FUN_004283c0
+void SFileCritSectLeave(SCritSect* critSect) {
+    critSect->Leave();
 }

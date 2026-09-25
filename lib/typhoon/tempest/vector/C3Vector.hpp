@@ -3,6 +3,7 @@
 
 #include "tempest/vector/CImVector.hpp"
 
+class C2Vector;
 class C33Matrix;
 class C44Matrix;
 
@@ -10,6 +11,8 @@ class C3Vector {
     public:
     // Static functions
     static C3Vector Cross(const C3Vector& l, const C3Vector& r);
+    // l x (r.x, r.y, 0): the cross product with a vector in the XY plane
+    static C3Vector Cross(const C3Vector& l, const C2Vector& r);
     static C3Vector Max(const C3Vector& l, const C3Vector& r);
     static C3Vector Min(const C3Vector& l, const C3Vector& r);
 
@@ -30,15 +33,21 @@ class C3Vector {
         , z(color.b / 255.0f) {};
     C3Vector operator-() const;
     C3Vector& operator*=(float a);
+    C3Vector& operator/=(float a);
     C3Vector& operator+=(const C3Vector& v);
+    C3Vector& operator-=(const C3Vector& v);
     float Mag() const;
     void Normalize();
+    // Normalize without the zero-length guard
+    void NormalizeUnchecked();
     float SquaredMag() const;
 };
 
 C3Vector operator+(const C3Vector& l, const C3Vector& r);
 
 C3Vector operator-(const C3Vector& l, const C3Vector& r);
+
+C3Vector operator*(const C3Vector& l, float r);
 
 C3Vector operator*(const C3Vector& l, const C33Matrix& r);
 

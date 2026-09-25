@@ -5,6 +5,33 @@
 #include "tempest/matrix/C33Matrix.hpp"
 #include <cmath>
 
+// ref: FUN_004c31b0
+C44Matrix C44Matrix::RotationAroundX(float angle) {
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
+
+    return {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, cosAngle, sinAngle, 0.0f,
+        0.0f, -sinAngle, cosAngle, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+}
+
+// ref: FUN_004c3220
+C44Matrix C44Matrix::RotationAroundY(float angle) {
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
+
+    return {
+        cosAngle, 0.0f, -sinAngle, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        sinAngle, 0.0f, cosAngle, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+}
+
+// ref: FUN_004c3290
 C44Matrix C44Matrix::RotationAroundZ(float angle) {
     float cosAngle = cos(angle);
     float sinAngle = sin(angle);
@@ -96,6 +123,7 @@ C44Matrix::C44Matrix(float scale) {
     this->d3 = 1.0f;
 }
 
+// ref: FUN_004c1d80
 C44Matrix::C44Matrix(const C33Matrix& m) {
     this->a0 = m.a0;
     this->a1 = m.a1;
@@ -332,6 +360,7 @@ void C44Matrix::Scale(const C3Vector& scale) {
     this->c2 *= scale.z;
 }
 
+// ref: FUN_004c1bf0
 void C44Matrix::Scale(float scale) {
     this->a0 *= scale;
     this->a1 *= scale;
@@ -378,6 +407,17 @@ C44Matrix C44Matrix::Transpose() const {
     return { a0, b0, c0, d0, a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3 };
 }
 
+// ref: FUN_004c1e60
+C44Matrix operator+(const C44Matrix& l, const C44Matrix& r) {
+    return {
+        l.a0 + r.a0, l.a1 + r.a1, l.a2 + r.a2, l.a3 + r.a3,
+        l.b0 + r.b0, l.b1 + r.b1, l.b2 + r.b2, l.b3 + r.b3,
+        l.c0 + r.c0, l.c1 + r.c1, l.c2 + r.c2, l.c3 + r.c3,
+        l.d0 + r.d0, l.d1 + r.d1, l.d2 + r.d2, l.d3 + r.d3
+    };
+}
+
+// ref: FUN_004c2120
 C44Matrix operator*(const C44Matrix& l, float a) {
     float a0 = l.a0 * a;
     float a1 = l.a1 * a;

@@ -9,6 +9,8 @@ class C4Vector;
 class C44Matrix {
     public:
     // Static functions
+    static C44Matrix RotationAroundX(float angle);
+    static C44Matrix RotationAroundY(float angle);
     static C44Matrix RotationAroundZ(float angle);
 
     // Member variables
@@ -64,6 +66,8 @@ class C44Matrix {
     // Multiply in place, receiver on the LEFT: `*this = *this * r`. Tagged at the definition.
     C44Matrix& operator*=(const C44Matrix& r);
 };
+
+C44Matrix operator+(const C44Matrix& l, const C44Matrix& r);
 
 C44Matrix operator*(const C44Matrix& l, float a);
 

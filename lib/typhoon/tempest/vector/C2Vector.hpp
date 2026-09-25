@@ -16,6 +16,8 @@ class C2Vector {
         , y(y) {};
     bool operator==(const C2Vector& v);
     void Normalize();
+    // Normalize without the length floor. ref: FUN_006ff6a0
+    void NormalizeUnchecked();
 
     // Take a 3-vector's x and y and drop its z. An overload rather than a copy assignment: the
     // reference's is a distinct function and declaring the copy assignment would make C2Vector
