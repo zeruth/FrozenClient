@@ -2304,7 +2304,7 @@ addr	how	frozen	evidence
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
-00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::SetCount	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
+00688290	sticky	TSGrowableArray<CMapChunkBufBlock>::SetCount	held from the previous run, where it was sticky
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
@@ -2850,6 +2850,8 @@ addr	how	frozen	evidence
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
+007b29b0	annotated	ReleaseBuffers	tag in src/world/map/DetailDoodad.cpp
+007b2a80	annotated	CreateBuffers	tag in src/world/map/DetailDoodad.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b3b20	annotated	CMapObj::EnterPortalWalk	tag in src/world/map/CMapObjDraw.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp

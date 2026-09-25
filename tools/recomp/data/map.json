@@ -36763,7 +36763,7 @@
   "files": [],
   "frozen": "TSGrowableArray<CMapChunkBufBlock>::SetCount",
   "frozenSize": 593,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "CGxDevice.cpp",
   "refSize": 172,
   "status": "ported"
@@ -45508,6 +45508,36 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 119,
+  "status": "ported"
+ },
+ "007b29b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "ReleaseBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
+ "007b2a80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "CreateBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 530,
   "status": "ported"
  },
  "007b3a10": {

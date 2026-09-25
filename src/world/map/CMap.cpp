@@ -14,6 +14,7 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
+#include "world/map/DetailDoodad.hpp"
 #include "sound/SI2.hpp"
 #include "async/AsyncFile.hpp"
 #include "async/AsyncFileRead.hpp"
@@ -1141,6 +1142,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     if (!CWorldScene::s_cameraGroup) {
         CWorldScene::BucketMapObjDefGroups();
     }
+
+    // The grass buffers, rebuilt only when something has asked for it.
+    DetailDoodad::CreateBuffers();
 
     // TODO FUN_00790920(): the camera's liquid and height above the ground
 
