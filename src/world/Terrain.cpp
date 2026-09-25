@@ -169,11 +169,6 @@ struct TerrainTile {
     uint32_t textureCount = 0;
     TerrainChunk chunks[256];
 
-    // M2 doodads placed on this tile (MDDF); the world scene draws them, we own the references
-    CM2Model** doodads = nullptr;
-    float* doodadScale = nullptr;  // placement scale, so the cull sphere matches the world size
-    uint32_t doodadCount = 0;
-
     // Placement uniqueIds this tile loaded (a large object listed in several tiles is owned by the
     // first tile to load it; the rest skip it). Removed from the global registry on unload.
     uint32_t* ownedUnique = nullptr;
@@ -2024,8 +2019,6 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     tile.y = tileY;
     tile.loaded = true;
     tile.textureCount = 0;
-    tile.doodads = nullptr;
-    tile.doodadCount = 0;
     tile.wmos = nullptr;
     tile.wmoCount = 0;
 
@@ -2152,52 +2145,8 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
         tile.ownedUniqueCount = 0;
     }
 
-    if (scene && mmdx && mmid && mddf && mddfCount) {
-        tile.doodads = static_cast<CM2Model**>(SMemAlloc(mddfCount * sizeof(CM2Model*), __FILE__, __LINE__, 0));
-        tile.doodadScale = static_cast<float*>(SMemAlloc(mddfCount * sizeof(float), __FILE__, __LINE__, 0));
-        tile.doodadCount = 0;
-
-        for (uint32_t i = 0; i < mddfCount; i++) {
-            const uint8_t* e = mddf + i * 36;
-            uint32_t nameId = *reinterpret_cast<const uint32_t*>(e + 0);
-
-            if (nameId >= mmidCount) {
-                continue;
-            }
-
-            // Skip a doodad already placed by an overlapping neighbour tile (deduped by uniqueId)
-            if (!ClaimUnique(tile, *reinterpret_cast<const uint32_t*>(e + 4))) {
-                continue;
-            }
-
-            const char* modelPath = mmdx + mmid[nameId];
-
-            float px = *reinterpret_cast<const float*>(e + 8);
-            float py = *reinterpret_cast<const float*>(e + 12);
-            float pz = *reinterpret_cast<const float*>(e + 16);
-            float ry = *reinterpret_cast<const float*>(e + 24); // rotation about the vertical axis
-            uint16_t scaleRaw = *reinterpret_cast<const uint16_t*>(e + 32);
-
-            C3Vector worldPos = { MAP_CORNER - pz, MAP_CORNER - px, py };
-            // NOTE: the M2 doodad path below uses the same negated-axis position conversion as
-            // the WMO path, so it probably needs the same 180 degree yaw correction. Left alone
-            // deliberately: the correction above was measured against WMO bounding boxes, and there
-            // is no equivalent measurement for doodads yet. Fix it when it can be checked, not
-            // because it looks similar.
-            float yaw = ry * DEG2RAD;
-            float scale = scaleRaw / 1024.0f;
-
-            // Retired. The map places terrain doodads now: CMap::CreateDoodadDef makes the
-            // model and hands it the full placement, CMap::UpdatePendingEntities works out its
-            // bounds and detail band once the model lands, and the chunk walk decides every
-            // frame whether it draws. This copy only ever used the yaw, throwing away the two
-            // other rotations the file carries, and drew everything all the time.
-            (void)modelPath;
-            (void)worldPos;
-            (void)yaw;
-            (void)scale;
-        }
-    }
+    // The tile's own doodads (MDDF) are the map's now, placed by CMap::CreateDoodadDef out of
+    // CMapChunk::CreateRefs. Nothing is read here, so nothing is allocated for them either.
 
     // Place the tile's WMO buildings (MODF), resolving the path through MWID -> MWMO and using the
     // world placement transform derived from the MODF bounding box.
@@ -2337,27 +2286,6 @@ void FreeTile(TerrainTile& tile) {
         tile.ownedUnique = nullptr;
         tile.ownedUniqueCount = 0;
     }
-
-    if (tile.doodads) {
-        for (uint32_t i = 0; i < tile.doodadCount; i++) {
-            if (tile.doodads[i]) {
-                ParticleFxForgetModel(tile.doodads[i]);
-                tile.doodads[i]->DetachFromScene();
-                tile.doodads[i]->Release();
-            }
-        }
-
-        SMemFree(tile.doodads, __FILE__, __LINE__, 0);
-        tile.doodads = nullptr;
-    }
-
-
-    if (tile.doodadScale) {
-        SMemFree(tile.doodadScale, __FILE__, __LINE__, 0);
-        tile.doodadScale = nullptr;
-    }
-
-    tile.doodadCount = 0;
 
     for (auto& chunk : tile.chunks) {
         if (chunk.details) {
@@ -4575,15 +4503,6 @@ void TerrainUpdateView() {
             continue;
         }
 
-        for (uint32_t i = 0; i < tile.doodadCount; i++) {
-            C3Vector c = DoodadCullCenter(tile.doodads[i]);
-            float r = DoodadCullRadius(tile.doodads[i], tile.doodadScale[i]);
-            bool vis = SphereVisible(c, r);
-
-            tile.doodads[i]->SetVisible(vis ? 1 : 0);
-            tile.doodads[i]->SetAnimating(vis ? 1 : 0);
-        }
-
         if (tile.wmos) {
             for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
                 WmoInstance& w = tile.wmos[wi];
@@ -5398,12 +5317,6 @@ void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg) {
     for (auto& tile : s_tiles) {
         if (!tile.loaded) {
             continue;
-        }
-
-        for (uint32_t i = 0; i < tile.doodadCount; i++) {
-            if (tile.doodads[i]) {
-                fn(tile.doodads[i], arg);
-            }
         }
 
         if (tile.wmos) {
