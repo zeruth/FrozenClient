@@ -5336,6 +5336,66 @@ void BuildWmoShadowGrid(WmoGroup& grp) {
     }
 }
 
+// How dark a blob is. A constant at the reference's own call site, not a light ratio.
+// DAT_009f98d8
+static const float BLOB_SHADOW_STRENGTH = 0.4f;
+
+// ref: FUN_007e49e0
+// The gate every blob caster passes through. A model opts out through its own flag, a box with
+// no extent casts nothing, and the whole system stands down when the extended shadow quality is
+// turned up -- with real exterior shadows on, blobs would double up on them.
+void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box) {
+    if (!model || !model->IsDrawable(0, 0) || model->m_flag4000) {
+        return;
+    }
+
+    if (AaBoxIsDegenerate(box)) {
+        return;
+    }
+
+    if (CWorldParam::cvar_extShadowQuality && CWorldParam::cvar_extShadowQuality->GetInt() >= 1) {
+        return;
+    }
+
+    if (!s_blobActive) {
+        return;
+    }
+
+    // The box is in the model's own space, and the model's matrix places and scales it. The
+    // reference turns the two half-extents into an oriented rectangle and spins it with that
+    // matrix; frozen's draw still takes a centre and one radius and lays down a circle, so the
+    // footprint is round where the reference's is rectangular, and a long thin caster comes out
+    // as wide as it is long. Recorded as a divergence on BlobShadowDraw.
+    const C44Matrix& placement = model->matrixB4;
+
+    float scale = sqrtf(placement.a0 * placement.a0
+                      + placement.a1 * placement.a1
+                      + placement.a2 * placement.a2);
+
+    C3Vector local = {
+        (box.b.x + box.t.x) * 0.5f,
+        (box.b.y + box.t.y) * 0.5f,
+        (box.b.z + box.t.z) * 0.5f
+    };
+
+    C3Vector centre = {
+        placement.a0 * local.x + placement.b0 * local.y + placement.c0 * local.z + placement.d0,
+        placement.a1 * local.x + placement.b1 * local.y + placement.c1 * local.z + placement.d1,
+        placement.a2 * local.x + placement.b2 * local.y + placement.c2 * local.z + placement.d2
+    };
+
+    float ex = (box.t.x - box.b.x) * 0.5f;
+    float ey = (box.t.y - box.b.y) * 0.5f;
+    float radius = (ex > ey ? ex : ey) * scale;
+
+    if (radius <= 0.0f) {
+        return;
+    }
+
+    BlobShadowDraw(centre, radius);
+    BlobShadowDrawWmo(centre, radius);
+}
+
 void BlobShadowDrawWmo(const C3Vector& pos, float radius) {
     if (!s_blobActive || radius <= 0.0f) {
         return;

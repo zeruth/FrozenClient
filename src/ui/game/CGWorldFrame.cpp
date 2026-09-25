@@ -325,74 +325,57 @@ void CGWorldFrame::OnWorldRender() {
                 continue;
             }
 
-            float scale = object->GetScale() * static_cast<CGUnit_C*>(object)->GetModelScale();
-            float radius = 1.0f;
+            // The reference sizes a unit's blob from the box CGUnit_C::GetShadowBox builds out
+            // of CreatureModelData, shifted for whatever the unit is riding -- not from the
+            // model's own bounds, and with no clamps of its own. BlobShadowDrawCaster applies
+            // the rest of the gate.
+            CAaBox shadowBox;
 
-            // Prefer the current animation's bounds (the reference sizes the blob from the
-            // animated box); fall back to the model's global box when a sequence has none.
-            float extent = static_cast<CGUnit_C*>(object)->GetAnimFootprint();
-
-            if (extent <= 0.0f && object->m_model->m_shared && object->m_model->m_shared->m_m2DataLoaded && object->m_model->m_shared->m_data) {
-                const M2Bounds& b = object->m_model->m_shared->m_data->bounds;
-                float ex = (b.extent.t.x - b.extent.b.x) * 0.5f;
-                float ey = (b.extent.t.y - b.extent.b.y) * 0.5f;
-                extent = ex > ey ? ex : ey;
-            }
-
-            if (extent > 0.0f) {
-                radius = extent * scale * 0.9f;
-            }
-
-            if (radius < 0.5f) {
-                radius = 0.5f;
-            } else if (radius > 8.0f) {
-                radius = 8.0f;
-            }
-
-            BlobShadowDraw(object->GetPosition(), radius);
-            BlobShadowDrawWmo(object->GetPosition(), radius);
+            BlobShadowDrawCaster(object->m_model,
+                                 static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox));
         }
 
         // Doodads cast too: the reference walks every scene entity with a model, not just units
         // (FUN_00793980). Terrain and WMO props are scene models, so they come through here; the
-        // batched ground effects are not scene entities and correctly cast nothing. Bound the cost
-        // with a distance cap and skip small props, standing in for the reference's shadow LOD.
+        // batched ground effects are not scene entities and correctly cast nothing.
+        //
+        // The distance cap and size floor below are NOT the reference's -- it has neither. They
+        // are here because the list is wrong: the reference casts from the scene entity list,
+        // which the visibility traversal has already reduced to what is in view, where
+        // TerrainForEachDoodad walks every doodad of every loaded tile. Handing that whole set
+        // to the gate costs a pass over the overlapping chunk meshes per model, and a profile
+        // already found the main thread inside the WMO half of that draw on six samples of
+        // nine. The caps go when the reference's entity walk (FUN_00793980) is ported over the
+        // real list, not before.
         {
             struct CasterArg { C3Vector eye; } arg = { CWorld::GetCameraPos() };
 
             TerrainForEachDoodad([](CM2Model* model, void* a) {
                 auto& ctx = *static_cast<CasterArg*>(a);
 
-                if (!model->m_flag8 || !model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
+                if (!model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
                     return;
                 }
 
-                const C44Matrix& M = model->matrixB4; // world placement, scale baked in
-                C3Vector pos = { M.d0, M.d1, M.d2 };
-                float dx = pos.x - ctx.eye.x;
-                float dy = pos.y - ctx.eye.y;
-                float dz = pos.z - ctx.eye.z;
+                const C44Matrix& M = model->matrixB4;
+                float dx = M.d0 - ctx.eye.x;
+                float dy = M.d1 - ctx.eye.y;
+                float dz = M.d2 - ctx.eye.z;
 
                 if (dx * dx + dy * dy + dz * dz > 60.0f * 60.0f) {
                     return;
                 }
 
+                const CAaBox& box = model->m_shared->m_data->bounds.extent;
                 float scale = sqrtf(M.a0 * M.a0 + M.a1 * M.a1 + M.a2 * M.a2);
-                const M2Bounds& b = model->m_shared->m_data->bounds;
-                float ex = (b.extent.t.x - b.extent.b.x) * 0.5f;
-                float ey = (b.extent.t.y - b.extent.b.y) * 0.5f;
-                float radius = (ex > ey ? ex : ey) * scale * 0.9f;
+                float ex = (box.t.x - box.b.x) * 0.5f;
+                float ey = (box.t.y - box.b.y) * 0.5f;
 
-                if (radius < 1.0f) {
-                    return; // pebbles and tufts: not worth a pass over the chunk mesh
+                if ((ex > ey ? ex : ey) * scale < 1.0f) {
+                    return;
                 }
 
-                if (radius > 8.0f) {
-                    radius = 8.0f;
-                }
-
-                BlobShadowDraw(pos, radius);
-                BlobShadowDrawWmo(pos, radius);
+                BlobShadowDrawCaster(model, box);
             }, &arg);
         }
 

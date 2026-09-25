@@ -2,6 +2,7 @@
 #define WORLD_TERRAIN_HPP
 
 #include <tempest/Vector.hpp>
+#include <tempest/Box.hpp>
 
 class CM2Model;
 
@@ -24,6 +25,10 @@ int32_t TerrainCameraLiquidKind();
 // Blob shadows: call Begin once per frame after the opaque world, Draw per entity, then End.
 void BlobShadowsBegin();
 void BlobShadowDraw(const C3Vector& pos, float radius);
+// Whether one model should cast a blob at all, and the blob it casts. Every caster goes through
+// here: the reference applies no distance cap and no size floor, because the box it is handed
+// decides everything. ref: FUN_007e49e0
+void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box);
 // The same decal on WMO floors (interiors, bridges, platforms).
 void BlobShadowDrawWmo(const C3Vector& pos, float radius);
 void BlobShadowsEnd();

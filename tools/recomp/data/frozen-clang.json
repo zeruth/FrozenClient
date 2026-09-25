@@ -120762,15 +120762,11 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "CGObject::IsA",
 "CGObject::GetGUID",
-"CGObject::GetScale",
-"CGUnit_C::GetModelScale",
-"CGUnit_C::GetAnimFootprint",
-"CGObject_C::GetPosition",
-"BlobShadowDraw",
-"CGObject_C::GetPosition",
-"BlobShadowDrawWmo",
+"CAaBox::CAaBox",
+"CGUnit_C::GetShadowBox",
+"BlobShadowDrawCaster",
 "CWorld::GetCameraPos",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:363:34)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:353:34)::operator void (*)(CM2Model *, void *)",
 "TerrainForEachDoodad",
 "BlobShadowsEnd",
 "CWorld::GetM2Scene",
@@ -120783,7 +120779,7 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:432:30)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:415:30)::operator void (*)(CM2Model *, void *)",
 "TerrainForEachDoodad",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
@@ -120830,16 +120826,14 @@
 "0.0f",
 "0.1f",
 "0.5f",
-"0.9f",
 "1",
 "1.0f",
 "2.0f",
-"30.0f",
-"8.0f"
+"30.0f"
 ],
-"branches": 33,
+"branches": 28,
 "stub": false,
-"lines": 307,
+"lines": 290,
 "refs": [],
 "line": 210
 },
@@ -120894,7 +120888,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 518
+"line": 501
 },
 "Script_GetInventorySlotInfo": {
 "files": [
@@ -204705,6 +204699,33 @@
 "refs": [],
 "line": 5237
 },
+"BlobShadowDrawCaster": {
+"files": [
+"src/world/terrain.cpp"
+],
+"callseq": [
+"CM2Model::IsDrawable",
+"AaBoxIsDegenerate",
+"CVar::GetInt",
+"sqrtf",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"BlobShadowDraw",
+"BlobShadowDrawWmo"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"1"
+],
+"branches": 6,
+"stub": false,
+"lines": 51,
+"refs": [],
+"line": 5347
+},
 "BlobShadowDrawWmo": {
 "files": [
 "src/world/terrain.cpp"
@@ -204743,7 +204764,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 5339
+"line": 5399
 },
 "BlobShadowsEnd": {
 "files": [
@@ -204758,7 +204779,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 5458
+"line": 5518
 },
 "TerrainSphereVisible": {
 "files": [
@@ -204773,7 +204794,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5465
+"line": 5525
 },
 "TerrainCameraLiquidKind": {
 "files": [
@@ -204786,7 +204807,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5470
+"line": 5530
 },
 "TerrainViewProjT": {
 "files": [
@@ -204799,7 +204820,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5474
+"line": 5534
 },
 "TerrainFogActive": {
 "files": [
@@ -204812,7 +204833,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5478
+"line": 5538
 },
 "TerrainUiShaders": {
 "files": [
@@ -204829,7 +204850,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 5482
+"line": 5542
 },
 "TerrainForEachDoodad": {
 "files": [
@@ -204847,7 +204868,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 5488
+"line": 5548
 },
 "BuildWmoContainGrid": {
 "files": [
@@ -204874,7 +204895,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 5519
+"line": 5579
 },
 "WmoGroupContains": {
 "files": [
@@ -204897,7 +204918,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 5615
+"line": 5675
 },
 "TerrainAreaIDAt": {
 "files": [
@@ -204912,7 +204933,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 5674
+"line": 5734
 },
 "TerrainPointIsIndoors": {
 "files": [
@@ -204929,7 +204950,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 5707
+"line": 5767
 },
 "TerrainWmoFloorLightAt": {
 "files": [
@@ -204949,7 +204970,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 5749
+"line": 5809
 },
 "InterpBodyBand": {
 "files": [
@@ -204968,7 +204989,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 5823
+"line": 5883
 },
 "DrawSkyBody": {
 "files": [
@@ -205011,7 +205032,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 5891
+"line": 5951
 },
 "DrawGlare": {
 "files": [
@@ -205055,7 +205076,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 5951
+"line": 6011
 },
 "SkyBodiesRender": {
 "files": [
@@ -205116,7 +205137,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 6017
+"line": 6077
 },
 "SkyLerp": {
 "files": [
@@ -205131,7 +205152,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 6116
+"line": 6176
 },
 "SkyRender": {
 "files": [
@@ -205256,7 +205277,7 @@
 "stub": false,
 "lines": 309,
 "refs": [],
-"line": 6120
+"line": 6180
 },
 "WeatherDensityCallback": {
 "files": [

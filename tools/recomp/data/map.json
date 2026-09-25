@@ -15231,7 +15231,7 @@
   "status": "ported"
  },
  "004f8ea0": {
-  "branchRatio": 0.424,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.224,
@@ -15240,7 +15240,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 2198,
+  "frozenSize": 1985,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -39489,7 +39489,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "AaBoxIsDegenerate",
-  "frozenSize": 0,
+  "frozenSize": 42,
   "how": "annotated",
   "module": "Item_C.cpp",
   "refSize": 65,
@@ -40449,7 +40449,7 @@
    "src/object/client/cgunit_c.cpp"
   ],
   "frozen": "CGUnit_C::GetShadowBox",
-  "frozenSize": 0,
+  "frozenSize": 319,
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 230,
@@ -49578,6 +49578,22 @@
   "refSize": 1370,
   "status": "diverged"
  },
+ "007e49e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Terrain.cpp",
+   "src/world/terrain.cpp"
+  ],
+  "frozen": "BlobShadowDrawCaster",
+  "frozenSize": 579,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
  "007e6480": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -53350,7 +53366,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetSequenceInfo",
-  "frozenSize": 695,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 706,
