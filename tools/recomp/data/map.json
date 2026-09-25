@@ -45558,6 +45558,21 @@
   "refSize": 119,
   "status": "ported"
  },
+ "007b12b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "FillIndexBuffer",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
  "007b1b10": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45618,6 +45633,21 @@
   "refSize": 530,
   "status": "ported"
  },
+ "007b2ca0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "AcquireBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
  "007b3050": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45648,6 +45678,21 @@
   "refSize": 432,
   "status": "verified"
  },
+ "007b3390": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "DrawBatch",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 238,
+  "status": "ported"
+ },
  "007b3530": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45661,6 +45706,21 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 48,
+  "status": "ported"
+ },
+ "007b36b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "Draw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 39,
   "status": "ported"
  },
  "007b3a10": {

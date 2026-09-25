@@ -4,6 +4,11 @@
 #include "world/map/CMap.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/buffer/CGxBuf.hpp"
+#include "gx/buffer/CGxPool.hpp"
+#include "gx/Buffer.hpp"
+#include "gx/RenderState.hpp"
 #include <tempest/Random.hpp>
 #include <cstring>
 #include <cmath>
@@ -321,7 +326,7 @@ static float SignedUnit(uint32_t r) {
 // Part of ref: FUN_007d3390
 // The picking and placing half of the scatter, without the instance and batch bookkeeping the
 // reference wraps around it.
-uint32_t Scatter(CMapChunk* chunk, CInstance* instance) {
+uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance) {
     if (!chunk->m_header || !chunk->m_heights || !chunk->m_layers || !chunk->m_header->nLayers) {
         return 0;
     }
@@ -519,7 +524,7 @@ uint32_t Scatter(CMapChunk* chunk, CInstance* instance) {
 // joins the first batch already on its texture that can still fit the model's vertices and
 // indices inside one buffer of the ring; failing that it opens a free batch, and failing that
 // the chunk is full and the doodad is dropped.
-void AddPlacement(CInstance* instance, int32_t doodadId, const C3Vector& position,
+void AddPlacement(CDetailDoodadData* instance, int32_t doodadId, const C3Vector& position,
                   float rotation, float scale, const C3Vector& normal, uint16_t cell,
                   uint32_t color) {
     auto entry = s_models[doodadId];
@@ -575,6 +580,124 @@ void AddPlacement(CInstance* instance, int32_t doodadId, const C3Vector& positio
 
     batch.vertexTotal += vertexCount;
     batch.indexTotal += indexCount;
+}
+
+// ref: FUN_007b2ca0
+// The ring is a free list of pairs built up front by CreateBuffers, taken from the end. When it
+// is empty -- more chunks drawing at once than the ring was sized for -- the batch falls back
+// to a streaming buffer of its own, which costs an allocation but never drops the draw.
+void AcquireBuffers(uint32_t vertexCount, CGxBuf** vertexBuf, uint32_t indexCount,
+                    CGxBuf** indexBuf) {
+    uint32_t count = s_buffers.Count();
+
+    if (!count) {
+        *vertexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, VERTEX_STRIDE, vertexCount);
+        *indexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, indexCount);
+
+        return;
+    }
+
+    *vertexBuf = s_buffers[count - 2];
+    *indexBuf = s_buffers[count - 1];
+
+    s_buffers.SetCount(count - 2);
+
+    // Whatever the last chunk left in them is not this chunk's, so both have to be refilled.
+    (*vertexBuf)->unk1C = 0;
+    (*indexBuf)->unk1C = 0;
+}
+
+// TODO ref: FUN_007b1b50, 2655 bytes -- builds each placement's quad into the vertex buffer
+// from its model, position, rotation, scale, normal and colour. THIS IS WHY Draw HAS NO CALLER:
+// wiring the pass with this empty would draw whatever the last chunk left in the ring.
+void FillVertexBuffer(SBatch* batch) {
+}
+
+// ref: FUN_007b12b0
+// Every placement contributes its model's whole index list, shifted by however many vertices
+// have been written before it, so one batch is one draw however many kinds it holds.
+void FillIndexBuffer(SBatch* batch) {
+    auto indices = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(batch->indexBuf));
+
+    uint32_t written = 0;
+    uint32_t vertexBase = 0;
+
+    for (uint32_t i = 0; i < batch->placements.Count(); i++) {
+        auto entry = s_models[batch->placements[i].doodadId];
+
+        if (!entry->m_model->IsLoaded(0, 0)) {
+            entry->m_model->WaitForLoad(0);
+        }
+
+        auto skin = entry->m_model->m_shared->skinProfile;
+
+        uint32_t count = skin->indices.Count();
+        const uint16_t* src = skin->indices.Data();
+
+        for (uint32_t k = 0; k < count; k++) {
+            indices[written++] = static_cast<uint16_t>(src[k] + vertexBase);
+        }
+
+        vertexBase += skin->vertices.Count();
+    }
+
+    g_theGxDevicePtr->BufUnlock(batch->indexBuf, 0);
+
+    batch->indexBuf->unk1C = 1;
+}
+
+// ref: FUN_007b3390
+// A batch is one texture, so it is one draw. Both buffers are filled lazily here rather than at
+// scatter time: unk1C says whether the buffer already holds this batch's data, and unk1D
+// whether the device still has it at all.
+void DrawBatch(SBatch* batch) {
+    if (!batch->texture) {
+        return;
+    }
+
+    auto tex = TextureGetGxTex(batch->texture, 0, nullptr);
+
+    if (!tex) {
+        return;
+    }
+
+    // No pair yet, or the one held belongs to a pool that has been reset under it.
+    if (!batch->vertexBuf || batch->vertexBuf->m_pool->unk1C == 2) {
+        AcquireBuffers(batch->vertexTotal, &batch->vertexBuf, batch->indexTotal,
+                       &batch->indexBuf);
+    }
+
+    if (!batch->vertexBuf->unk1C || !batch->vertexBuf->unk1D) {
+        FillVertexBuffer(batch);
+    }
+
+    GxPrimVertexPtr(batch->vertexBuf, GxVBF_PNCT);
+
+    if (!batch->indexBuf->unk1C || !batch->indexBuf->unk1D) {
+        FillIndexBuffer(batch);
+    }
+
+    g_theGxDevicePtr->PrimIndexPtr(batch->indexBuf);
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<void*>(tex));
+
+    CGxBatch draw;
+
+    draw.m_primType = GxPrim_Triangles;
+    draw.m_start = 0;
+    draw.m_count = batch->indexTotal;
+    draw.m_minIndex = 0;
+    draw.m_maxIndex = static_cast<uint16_t>(batch->vertexTotal - 1);
+
+    g_theGxDevicePtr->Draw(&draw, 1);
+}
+
+// ref: FUN_007b36b0
+void Draw(CDetailDoodadData* instance) {
+    for (uint32_t i = 0; i < 4; i++) {
+        if (instance->m_batches[i].texture) {
+            DrawBatch(&instance->m_batches[i]);
+        }
+    }
 }
 
 }

@@ -159,7 +159,9 @@ extern int32_t s_rebuild;                      // DAT_00d1c4c0
 // One scattered doodad. 0x2c bytes, laid out as the reference's, which keeps these in a
 // growable array on each of the instance's four batches. Only the triangle's NORMAL is kept,
 // not the whole plane: the plane's job ended when it gave the doodad its height.
-struct SPlacement {
+//
+// The name is the reference's own, off the RTTI on the growable array's Reserve.
+struct CDetailDoodadInstAdd {
     uint16_t unk0 = 0;      // +0x00: written by nothing the instance fill touches
     uint16_t cell = 0;      // +0x02: which of the chunk's 64 cells it stands on
     int32_t doodadId = 0;   // +0x04
@@ -176,15 +178,16 @@ struct SBatch {
     HTEXTURE texture = nullptr;     // +0x00: the key -- batches are keyed by texture, not model
     uint32_t vertexTotal = 0;       // +0x04: running, against s_perChunk
     uint32_t indexTotal = 0;        // +0x08: running, against s_indexCount
-    // TODO +0x0c, +0x10: two words the instance fill never touches, most likely the pair of
-    // buffers out of the ring that this batch ends up drawing from.
-    uint32_t unk0c = 0;
-    uint32_t unk10 = 0;
-    TSGrowableArray<SPlacement> placements;  // +0x14
+    // The pair out of the ring this batch draws from, taken at draw time rather than at
+    // scatter time, so a chunk that is scattered and never drawn costs no buffer.
+    CGxBuf* vertexBuf = nullptr;    // +0x0c
+    CGxBuf* indexBuf = nullptr;     // +0x10
+    TSGrowableArray<CDetailDoodadInstAdd> placements;  // +0x14
 };
 
-// One chunk's worth of detail doodads. The reference takes it from the WDETAILDOODADINST heap.
-class CInstance {
+// One chunk's worth of detail doodads. The reference takes it from the WDETAILDOODADINST heap,
+// and this is its own name, off the RTTI on the array that holds them.
+class CDetailDoodadData {
     public:
         uint32_t unk00 = 0;         // +0x00
         SBatch m_batches[4];        // +0x04: a chunk draws at most four textures' worth
@@ -199,7 +202,7 @@ void CreateBuffers();
 // Scatter one chunk's grass into `instance`, returning how many were placed. Part of
 // FUN_007d3390: the picking and placing, without the allocation of the instance itself.
 // Places nothing when the chunk has no layers or its models have not arrived.
-uint32_t Scatter(CMapChunk* chunk, CInstance* instance);
+uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance);
 
 // The model has landed, so its first texture can be resolved and kept as the batching key.
 // ref: FUN_007b1b10
@@ -208,9 +211,27 @@ void OnModelLoaded(CM2Model* model, void* param);
 // File one placement into the instance: the batch already drawing this texture and still with
 // room in one buffer of the ring, or a free batch, or nowhere if all four are taken.
 // ref: FUN_007b31e0
-void AddPlacement(CInstance* instance, int32_t doodadId, const C3Vector& position,
+void AddPlacement(CDetailDoodadData* instance, int32_t doodadId, const C3Vector& position,
                   float rotation, float scale, const C3Vector& normal, uint16_t cell,
                   uint32_t color);
+
+// Take a vertex and index buffer for one batch: the last pair off the ring, or a streaming
+// pair of its own when the ring has run dry. ref: FUN_007b2ca0
+void AcquireBuffers(uint32_t vertexCount, CGxBuf** vertexBuf, uint32_t indexCount,
+                    CGxBuf** indexBuf);
+
+// Build the batch's vertices. Not ported yet -- see the note at the definition.
+void FillVertexBuffer(SBatch* batch);
+
+// Write the batch's indices: each placement's model contributes its whole index list, shifted
+// by the vertices already written. ref: FUN_007b12b0
+void FillIndexBuffer(SBatch* batch);
+
+// Draw one batch, filling whichever of its two buffers is not filled yet. ref: FUN_007b3390
+void DrawBatch(SBatch* batch);
+
+// Draw a chunk's detail doodads, one call per texture it uses. ref: FUN_007b36b0
+void Draw(CDetailDoodadData* instance);
 
 // Give the pools and every buffer back. ref: FUN_007b29b0
 void ReleaseBuffers();
