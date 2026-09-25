@@ -83,6 +83,9 @@ CGxTex* TextureGetGxTex(CTexture*, int32_t, CStatus*);
 
 CGxTex* TextureGetGxTex(HTEXTURE, int32_t, CStatus*);
 
+// Whether the texture's own data carries an alpha channel. ref: FUN_004b54f0
+int32_t TextureHasAlpha(HTEXTURE handle);
+
 CTexture* TextureGetTexturePtr(HTEXTURE);
 
 void TextureFreeMem(void* ptr);

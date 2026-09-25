@@ -6,8 +6,12 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/ShadowMap.hpp"
+#include "world/map/CMap.hpp"
 
+#include "gx/CGxBatch.hpp"
 #include "gx/CGxDevice.hpp"
+#include "gx/Texture.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "gx/RenderState.hpp"
@@ -208,4 +212,169 @@ void CMapObj::SelectShaders() {
     uint32_t lit = CMapObj::s_lightingMode != 0 ? 1 : 0;
 
     CShaderEffect::SetShaders(base * 2 + lit, CShaderEffect::PixelPermute());
+}
+
+// ref: FUN_00873ee0
+// The alpha reference the current blend mode calls for, as the shader path wants it: a
+// fraction rather than the 0..255 the fixed-function state takes.
+void CMapObj::SetAlphaRefForBlendMode() {
+    int32_t blendMode = 0;
+    g_theGxDevicePtr->RsGet(GxRs_BlendingMode, blendMode);
+
+    CShaderEffect::SetAlphaRef(CGxDevice::s_alphaRef[blendMode] / 255.0f);
+}
+
+namespace {
+
+// The per-byte average the reference computes with a carry trick: each channel of the two
+// colours halved and added, with the alpha taken from the sum unhalved.
+CImVector AverageColor(const CImVector& a, const CImVector& b) {
+    CImVector out;
+    out.b = static_cast<uint8_t>((a.b + b.b) >> 1);
+    out.g = static_cast<uint8_t>((a.g + b.g) >> 1);
+    out.r = static_cast<uint8_t>((a.r + b.r) >> 1);
+    out.a = static_cast<uint8_t>(a.a + b.a);
+
+    return out;
+}
+
+}
+
+// ref: FUN_007ac6a0
+// One group's batches, drawn. `record` is which frustum record of the portal walk this pass
+// is for; on the first the batches shed last frame's drawn marks, and after that a batch
+// reached through a second doorway is skipped rather than drawn twice.
+void CMapObjGroup::DrawBatches(int32_t record) {
+    auto mapObj = this->m_mapObj;
+
+    if (mapObj->m_mohd->flags & 0x2) {
+        // TODO FUN_007a9380: the outdoor draw, which takes the group's baked exterior colours
+        // instead of the lighting registers.
+        return;
+    }
+
+    // Drawing resets how long the buffers have gone unused, so the ageing pass leaves them.
+    this->m_bufferIdleTime = 0.0f;
+
+    this->CreateBuffers();
+    this->BindIndexStream();
+    this->BindVertexStream();
+
+    GxRsPush();
+
+    CMapObj::s_fogState = 0xffffffff;
+    CMapObj::s_lightingMode = -1;
+    CMapObj::s_materialColor = 0xffffffff;
+    CMapObj::s_shadowState = -1;
+
+    // What a material whose own texture has not arrived draws with. The reference makes a
+    // flat 0xff808080 texture for this in CWorldScene::Initialize (FUN_004b9550) and keeps
+    // it at 0x00cd8618; frozen has no such texture, so a batch whose texture is still
+    // coming is skipped, which is what the reference does when its own fallback is absent.
+    // TODO make the grey fallback so those batches draw untextured rather than not at all.
+    CGxTex* fallback = nullptr;
+
+    for (uint32_t i = 0; i < this->m_batchCountC; i++) {
+        auto batch = &this->m_batches[i];
+
+        if (!record) {
+            batch->flags &= 0x0f;
+        }
+
+        if ((batch->flags & 0xf0) || CMapObjGroup::BatchOutsideFrustum(batch)) {
+            continue;
+        }
+
+        batch->flags |= 0xf0;
+
+        auto material = &mapObj->m_materials[batch->materialId];
+        auto textures = &mapObj->m_materialTextures[batch->materialId];
+
+        CGxTex* tex0 = TextureGetGxTex(textures->texture1, 0, nullptr);
+
+        if (!tex0) {
+            if (!fallback) {
+                continue;
+            }
+
+            tex0 = fallback;
+        }
+
+        CGxTex* tex1 = fallback;
+
+        if (textures->texture2) {
+            tex1 = TextureGetGxTex(textures->texture2, 0, nullptr);
+
+            if (!tex1) {
+                if (!fallback) {
+                    continue;
+                }
+
+                tex1 = fallback;
+            }
+        }
+
+        // A diffuse material with no blending whose texture carries no alpha is really an
+        // opaque one, and the opaque program is cheaper.
+        uint32_t shader = material->shader;
+
+        if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
+            shader = 4;
+        }
+
+        CMapObj::SetupFog(~material->flags & 0x2);
+        CMapObj::SetupLighting(this, ~material->flags & 0x1);
+
+        // A group flagged unlit or unfogged takes no terrain shadow either.
+        int32_t shadowed = (this->m_flags & 0x48) ? 0 : 1;
+
+        if (CMapObj::s_shadowState != shadowed) {
+            CMapObj::s_shadowState = shadowed;
+
+            ShadowMapBindMapObj(shadowed);
+
+            CMapObj::s_shadowMode = shadowed
+                ? (ShadowMapGetShaderLevel() ? 1 : 0)
+                : ShadowMapGetShaderLevel();
+        }
+
+        GxRsSet(GxRs_Culling, ~(material->flags >> 2) & 0x1);
+
+        CImVector sidn;
+        sidn.value = (material->flags & 0x10) ? material->frameSidnColor : 0;
+
+        CMapObj::SetMaterialColor(AverageColor(CMapObj::s_instanceColor, sidn));
+
+        GxRsSet(GxRs_BlendingMode, static_cast<int32_t>(material->blendMode));
+
+        CMapObj::SetAlphaRefForBlendMode();
+
+        GxTexSetWrap(
+            tex0,
+            static_cast<EGxTexWrapMode>(~(material->flags >> 6) & 0x1),
+            static_cast<EGxTexWrapMode>(~(material->flags >> 7) & 0x1)
+        );
+
+        GxRsSet(GxRs_Texture0, tex0);
+        GxRsSet(GxRs_Texture1, tex1);
+
+        auto effect = CMapObj::s_effects[shader];
+
+        if (effect) {
+            effect->SetCurrent();
+        }
+
+        CMapObj::SelectShaders();
+
+        CGxBatch gxBatch;
+        gxBatch.m_primType = GxPrim_Triangles;
+        gxBatch.m_start = batch->startIndex;
+        gxBatch.m_count = batch->count;
+        gxBatch.m_minIndex = batch->minVertex;
+        gxBatch.m_maxIndex = batch->maxVertex;
+
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
+    }
+
+    GxRsPop();
 }

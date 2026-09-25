@@ -21,4 +21,9 @@ int32_t ShadowMapGetShaderLevel();
 // The shadow map textures and constants a terrain draw samples
 void ShadowMapBindTerrain();
 
+// The map object half of the same bind: the shadow map goes to texture stage 4 and its
+// cascade constants to pixel c3. `lit` picks the lit map over the unlit one.
+// ref: FUN_008745d0
+void ShadowMapBindMapObj(int32_t lit);
+
 #endif

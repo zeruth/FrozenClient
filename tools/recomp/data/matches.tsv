@@ -621,6 +621,7 @@ addr	how	frozen	evidence
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
+004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
 004b5750	annotated	TextureGetTexFlags	tag in src/gx/Texture.cpp
 004b58d0	annotated	CBLPFile::CBLPFile	tag in src/gx/blp/CBLPFile.cpp
@@ -2799,6 +2800,7 @@ addr	how	frozen	evidence
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp
+007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
 007ad020	annotated	CMapObj::UpdateAll	tag in src/world/map/CMapObj.cpp
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007ae1a0	annotated	CMapObj::ReadGroup	tag in src/world/map/CMapObj.cpp
@@ -3650,10 +3652,12 @@ addr	how	frozen	evidence
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp
 00873ca0	annotated	CShaderEffect::SetLocalLighting	tag in src/gx/shader/CShaderEffect.cpp
+00873ee0	annotated	CMapObj::SetAlphaRefForBlendMode	tag in src/world/map/CMapObjDraw.cpp
 00873f50	annotated	ExtShadowQualityAbsoluteMax	tag in src/glue/GlueScript.cpp
 00873f80	annotated	ShadowMapGetQuality	tag in src/world/ShadowMap.cpp
 00873ff0	override	ShadowMapGetShaderLevel	
 008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
+008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00876530	override	CShaderEffectManager::GetEffect	

@@ -76863,6 +76863,24 @@
 "refs": [],
 "line": 1289
 },
+"TextureHasAlpha": {
+"files": [
+"src/gx/texture.cpp"
+],
+"callseq": [
+"SErrSetLastError"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 1294
+},
 "TextureFreeMem": {
 "files": [
 "src/gx/texture.cpp"
@@ -76880,7 +76898,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1294
+"line": 1305
 },
 "TextureGetTexFlags": {
 "files": [
@@ -76900,7 +76918,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1301
+"line": 1312
 },
 "TextureGetRefCount": {
 "files": [
@@ -76919,7 +76937,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1311
+"line": 1322
 },
 "TextureIncreasePriority": {
 "files": [
@@ -76932,7 +76950,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1336
+"line": 1347
 },
 "TextureInitialize": {
 "files": [
@@ -76954,7 +76972,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1340
+"line": 1351
 },
 "TextureIsSame": {
 "files": [
@@ -76976,7 +76994,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1348
+"line": 1359
 },
 "CGxTexFlags::operator==": {
 "files": [
@@ -200575,6 +200593,21 @@
 "lines": 7,
 "refs": [],
 "line": 26
+},
+"ShadowMapBindMapObj": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 37
 },
 "ChunkMatrixT": {
 "files": [

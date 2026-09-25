@@ -9941,6 +9941,22 @@
   "refSize": 103,
   "status": "stub"
  },
+ "004b54f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureHasAlpha",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "004b55e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44685,6 +44701,21 @@
   "refSize": 895,
   "status": "ported"
  },
+ "007ac6a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.769,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObjGroup::DrawBatches",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 847,
+  "status": "ported"
+ },
  "007ad020": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -58023,6 +58054,21 @@
   "refSize": 562,
   "status": "ported"
  },
+ "00873ee0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetAlphaRefForBlendMode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "00873f50": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -58085,6 +58131,22 @@
   "how": "callgraph",
   "module": "OsClipboard.cpp",
   "refSize": 242,
+  "status": "ported"
+ },
+ "008745d0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindMapObj",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 136,
   "status": "ported"
  },
  "00874660": {

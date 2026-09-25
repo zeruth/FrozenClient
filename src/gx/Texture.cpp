@@ -1290,6 +1290,17 @@ CTexture* TextureGetTexturePtr(HTEXTURE handle) {
     return reinterpret_cast<CTexture*>(handle);
 }
 
+// ref: FUN_004b54f0
+int32_t TextureHasAlpha(HTEXTURE handle) {
+    if (!handle) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+
+        return 0;
+    }
+
+    return reinterpret_cast<CTexture*>(handle)->flags & 0x1;
+}
+
 // ref: FUN_004b55e0
 void TextureFreeMem(void* ptr) {
     if (ptr) {

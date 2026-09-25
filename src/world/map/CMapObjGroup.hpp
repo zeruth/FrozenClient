@@ -311,6 +311,9 @@ class CMapObjGroup {
 
         // ref: FUN_007a7630
         static bool BatchOutsideFrustum(const SMOBatch* batch);
+
+        // ref: FUN_007ac6a0
+        void DrawBatches(int32_t record);
 };
 
 #endif

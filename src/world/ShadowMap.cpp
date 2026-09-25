@@ -30,3 +30,18 @@ void ShadowMapBindTerrain() {
 
     // TODO the shadow map bind proper (docs/ref/parity-shadowmap.md section 6b)
 }
+
+// ref: FUN_008745d0
+// Same shape as ShadowMapBindTerrain: with no shadow map the quality is 0 and the reference
+// itself returns here.
+void ShadowMapBindMapObj(int32_t lit) {
+    if (g_shadowMapRealloc || g_shadowMapQuality <= 0) {
+        return;
+    }
+
+    (void)lit;
+
+    // TODO the map object shadow bind proper: the cascade constants into pixel c3 and the
+    // shadow texture into stage 4, choosing the unlit map and the second constant set when
+    // the geometry is unlit and the quality is above 2.
+}
