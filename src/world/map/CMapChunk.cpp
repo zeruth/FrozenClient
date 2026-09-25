@@ -82,7 +82,7 @@ void CMapChunk::Load(uint8_t* data, int32_t fixSizes) {
 
     auto area = static_cast<CMapArea*>(this->m_parentLinkList.Head()->ref);
 
-    // TODO FUN_007c6150(area, m_refs, m_header->nDoodadRefs, m_header->nMapObjRefs): MCRF references
+    this->CreateRefs(area, this->m_refs, this->m_header->nDoodadRefs, this->m_header->nMapObjRefs);
 
     area->m_chunks[this->m_areaChunkY * 16 + this->m_areaChunkX] = this;
     this->m_flags |= 0x80;

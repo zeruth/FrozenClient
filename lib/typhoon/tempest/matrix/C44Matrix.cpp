@@ -309,6 +309,16 @@ void C44Matrix::Rotate(const C4Quaternion& rotation) {
     *this = C44Matrix(rotation) * *this;
 }
 
+// ref: FUN_004c3300
+void C44Matrix::RotateAroundX(float angle) {
+    *this = C44Matrix::RotationAroundX(angle) * *this;
+}
+
+// ref: FUN_004c3340
+void C44Matrix::RotateAroundY(float angle) {
+    *this = C44Matrix::RotationAroundY(angle) * *this;
+}
+
 void C44Matrix::RotateAroundZ(float angle) {
     *this = C44Matrix::RotationAroundZ(angle) * *this;
 }

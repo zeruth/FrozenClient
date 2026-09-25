@@ -9,6 +9,7 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CMapArea;
 class CMapRenderChunk;
 
 // The MCNK header, 128 bytes after the chunk's 8-byte IFF header, as it sits in the ADT.
@@ -143,6 +144,7 @@ class CMapChunk : public CMapBaseObj {
         CMapChunk();
         ~CMapChunk() override;
         void Load(uint8_t* data, int32_t fixSizes);
+        void CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodadCount, uint32_t mapObjCount);
         void Destroy();
         void ParseSubChunks(int32_t fixSizes);
         int16_t BuildIndices(uint16_t* indices, int16_t baseVertex);

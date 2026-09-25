@@ -691,7 +691,9 @@ addr	how	frozen	evidence
 004c31b0	annotated	C44Matrix::RotationAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3220	annotated	C44Matrix::RotationAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3290	annotated	C44Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 008251d0=CM2Model::SetWorldTransform
+004c3300	annotated	C44Matrix::RotateAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c3340	annotated	C44Matrix::RotateAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 007bf460=CMap::CreateMapObjDef
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3420	annotated	C3Vector::NormalizeUnchecked	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3460	callgraph	CGMinimapFrame::GetPingOffset	only unmatched callee of 0057efe0=CGMinimapFrame_GetPingPosition
@@ -2849,6 +2851,7 @@ addr	how	frozen	evidence
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
+007bf460	annotated	CMap::CreateMapObjDef	tag in src/world/map/CMapLoad.cpp
 007bf8b0	annotated	CMap::LoadWdt	tag in src/world/map/CMap.cpp
 007bfce0	annotated	CMap::Load	tag in src/world/map/CMap.cpp
 007bfe40	annotated	CMap::MapMemAlloc	tag in src/world/map/CMap.cpp
@@ -2910,6 +2913,7 @@ addr	how	frozen	evidence
 007c5b20	annotated	CMapChunk::UpdateLiquidVisibility	tag in src/world/map/CMapChunk.cpp
 007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
 007c5e50	annotated	CMapChunk::~CMapChunk	tag in src/world/map/CMapChunk.cpp
+007c6150	annotated	CMapChunk::CreateRefs	tag in src/world/map/CMapLoad.cpp
 007c64b0	annotated	CMapChunk::Load	tag in src/world/map/CMapChunk.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
@@ -2967,6 +2971,7 @@ addr	how	frozen	evidence
 007d7020	annotated	CMapArea::LoadCallback	tag in src/world/map/CMapArea.cpp
 007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
 007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
+007d71d0	override	CMapBaseObj::~CMapBaseObj	
 007d72d0	annotated	CMapObj::ClearMaterialTextures	tag in src/world/map/CMapObj.cpp
 007d7310	annotated	CMapObjGroup::ResolveLiquidType	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7380	annotated	CMapObjGroup::FixVertexColors	tag in src/world/map/CMapObjGroupLoad.cpp

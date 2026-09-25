@@ -12,6 +12,22 @@
     "status": "unlinked",
     "note": "allocates one occluder quad from the antiportal pool (DAT_00aeee5c through FUN_007b0160). CMapObjGroup::BuildAntiPortals walks the faces and picks the two vertices each occluder would take, but nothing consumes occluders yet -- the horizon buffer they feed is not ported -- so the allocation is left out and marked in place"
   },
+  "007bddf0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::Ptr instantiation (the placed-WMO uniqueId table at 0x00d25434); squall instantiates the template"
+  },
+  "007beae0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::Insert instantiation; squall instantiates the template"
+  },
+  "007be520": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::Initialize instantiation; squall template"
+  },
+  "007be9d0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::MonitorFullness instantiation; squall template"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

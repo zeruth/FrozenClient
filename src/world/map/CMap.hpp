@@ -251,6 +251,7 @@ class CMap {
         static void UnloadArea(CMapArea* area);
         static void DestroyChunk(CMapChunk* chunk);
         static float AreaDistanceSq(const CAaBox& box, const C2Vector& point);
+        static CMapObjDef* CreateMapObjDef(const char* name, const SMODF* modf, const C3Vector& origin, int32_t dedup);
         static int32_t SafeOpen(const char* path, SFile** file);
         static int32_t SafeRead(const char* path, SFile* file, void* buffer, uint32_t size);
         static void AsyncLoadCleanup(CAsyncObject* object);

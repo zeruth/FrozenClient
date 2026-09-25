@@ -592,10 +592,12 @@ void CMap::FreeMapObjDef(CMapObjDef* def) {
 }
 
 // ref: FUN_0079e6a0
+// The def leaves the uniqueId hash: the two links are the table's slot chain and its full list,
+// which the reference unlinks by hand rather than through TSHashTable::Unlink.
 void CMap::UnlinkMapObjDef(CMapObjDef* def) {
-    if (def->m_link28.IsLinked()) {
-        def->m_link28.Unlink();
-        def->m_link30.Unlink();
+    if (def->m_linktoslot.IsLinked()) {
+        def->m_linktoslot.Unlink();
+        def->m_linktofull.Unlink();
     }
 }
 
