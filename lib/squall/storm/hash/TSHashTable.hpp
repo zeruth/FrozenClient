@@ -258,6 +258,7 @@ T* TSHashTable<T, TKey>::New(uint32_t hashval, const TKey& key, size_t extrabyte
     return ptr;
 }
 
+// ref: FUN_00767000
 template <class T, class TKey>
 T* TSHashTable<T, TKey>::Next(const T* ptr) {
     return this->m_fulllist.Next(ptr);
@@ -279,6 +280,7 @@ T* TSHashTable<T, TKey>::Ptr(const char* str) {
     return nullptr;
 }
 
+// ref: FUN_006c2a50 (a dword-keyed instance, called from the font kerning code)
 template <class T, class TKey>
 T* TSHashTable<T, TKey>::Ptr(uint32_t hashval, const TKey& key) {
     if (!this->Initialized()) {

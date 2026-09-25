@@ -54,6 +54,7 @@ uint32_t TSGrowableArray<T>::Add(uint32_t count, uint32_t incr, const T* data) {
     return this->m_count - count;
 }
 
+// ref: FUN_00590ae0 (folded across the 16-byte element types: the chunk cap is 0x10)
 template <class T>
 uint32_t TSGrowableArray<T>::CalcChunkSize(uint32_t count) {
     uint32_t maxChunk = std::max(static_cast<int32_t>(256 / sizeof(T)), 8);
@@ -129,11 +130,22 @@ uint32_t TSGrowableArray<T>::RoundToChunk(uint32_t count, uint32_t chunk) {
     }
 }
 
+// ref: FUN_00481030 (the unsigned int instance)
+// The new total is rounded up to the chunk, not the growth: Reserve rounds only what it adds, so
+// the two leave different capacities behind.
 template <class T>
 void TSGrowableArray<T>::SetCount(uint32_t count) {
     if (count > this->m_count) {
         // Expand size
-        this->Reserve(count - this->m_count, 1);
+        if (count > this->m_alloc) {
+            uint32_t chunk = this->m_chunk;
+
+            if (!chunk) {
+                chunk = this->CalcChunkSize(count);
+            }
+
+            this->ReallocData(this->RoundToChunk(count, chunk));
+        }
 
         T* element;
 

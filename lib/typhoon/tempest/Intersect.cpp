@@ -68,6 +68,76 @@ bool IntersectRayTriangle(const C3Ray& ray, const C3Vector* vertices, const uint
     return true;
 }
 
+// Transcribed from its own decompilation rather than folded into the one above: it reads the same
+// three constants (-1e-6 at 0x00aa2e70, 1e-6 at 0x00a32b48, 1.0 at 0x009e1130) in the same order.
+//
+// ref: FUN_009836b0
+bool IntersectRayTriangle(const C3Ray& ray, const C3Vector* vertices, const int32_t* tri, float* t, C2Vector* uv, float epsilon) {
+    const C3Vector& p0 = vertices[tri[0]];
+    const C3Vector& p1 = vertices[tri[1]];
+
+    float e1x = p1.x - p0.x;
+    float e1y = p1.y - p0.y;
+    float e1z = p1.z - p0.z;
+
+    const C3Vector& p2 = vertices[tri[2]];
+
+    float e2x = p2.x - p0.x;
+    float e2y = p2.y - p0.y;
+    float e2z = p2.z - p0.z;
+
+    float px = ray.dir.y * e2z - ray.dir.z * e2y;
+    float py = ray.dir.z * e2x - ray.dir.x * e2z;
+    float pz = ray.dir.x * e2y - ray.dir.y * e2x;
+
+    float det = px * e1x + py * e1y + pz * e1z;
+
+    if (-1.0e-6f < det && det < 1.0e-6f) {
+        return false;
+    }
+
+    float invDet = 1.0f / det;
+
+    float tx = ray.origin.x - p0.x;
+    float ty = ray.origin.y - p0.y;
+    float tz = ray.origin.z - p0.z;
+
+    float u = (tx * px + tz * pz + ty * py) * invDet;
+
+    if (u < -epsilon) {
+        return false;
+    }
+
+    if (!(u <= epsilon + 1.0f)) {
+        return false;
+    }
+
+    float qx = e1z * ty - tz * e1y;
+    float qy = tz * e1x - e1z * tx;
+    float qz = tx * e1y - ty * e1x;
+
+    float v = (ray.dir.x * qx + ray.dir.y * qy + ray.dir.z * qz) * invDet;
+
+    if (v < -epsilon) {
+        return false;
+    }
+
+    if (!(v + u <= epsilon + 1.0f)) {
+        return false;
+    }
+
+    if (t) {
+        *t = (qx * e2x + qy * e2y + qz * e2z) * invDet;
+    }
+
+    if (uv) {
+        uv->x = u;
+        uv->y = v;
+    }
+
+    return true;
+}
+
 // ref: FUN_00983d70
 void ClassifyPointPlanes6(const C4Plane* planes, const C3Vector& point, uint8_t* outcode) {
     *outcode = 0;

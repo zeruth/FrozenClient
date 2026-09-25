@@ -486,6 +486,7 @@ uLong ZEXPORT deflateBound(strm, sourceLen)
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
  */
+/* ref: FUN_008639c0 */
 local void putShortMSB (s, b)
     deflate_state *s;
     uInt b;
@@ -500,6 +501,7 @@ local void putShortMSB (s, b)
  * to avoid allocating a large strm->next_out buffer and copying into it.
  * (See also read_buf()).
  */
+/* ref: FUN_008639f0 */
 local void flush_pending(strm)
     z_streamp strm;
 {
@@ -696,6 +698,7 @@ int ZEXPORT deflate (strm, flush)
 }
 
 /* ========================================================================= */
+/* ref: FUN_00863e50 */
 int ZEXPORT deflateEnd (strm)
     z_streamp strm;
 {
@@ -818,6 +821,7 @@ local int read_buf(strm, buf, size)
 /* ===========================================================================
  * Initialize the "longest match" routines for a new zlib stream
  */
+/* ref: FUN_00863f20 */
 local void lm_init (s)
     deflate_state *s;
 {

@@ -45,6 +45,7 @@ int luaZ_lookahead (ZIO *z) {
 }
 
 
+/* ref: FUN_0085d140 */
 void luaZ_init (lua_State *L, ZIO *z, lua_Reader reader, void *data) {
   z->L = L;
   z->reader = reader;

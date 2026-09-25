@@ -12,6 +12,9 @@
 // space.
 bool IntersectRayTriangle(const C3Ray& ray, const C3Vector* vertices, const uint16_t* tri, float* t, C2Vector* uv, float epsilon);
 
+// The same test over 32-bit indices: a separate function in the reference, same arithmetic.
+bool IntersectRayTriangle(const C3Ray& ray, const C3Vector* vertices, const int32_t* tri, float* t, C2Vector* uv, float epsilon);
+
 // Outcode of a point against six planes: bit i is set when the point lies behind plane i.
 void ClassifyPointPlanes6(const C4Plane* planes, const C3Vector& point, uint8_t* outcode);
 

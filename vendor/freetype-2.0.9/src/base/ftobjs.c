@@ -640,6 +640,7 @@
   }
 
 
+  // ref: FUN_00990cb0
   static void
   ft_glyphslot_clear( FT_GlyphSlot  slot )
   {
@@ -1850,6 +1851,7 @@
 
   /* documentation is in freetype.h */
 
+  // ref: FUN_009911a0
   FT_EXPORT_DEF( FT_UInt )
   FT_Get_Char_Index( FT_Face   face,
                      FT_ULong  charcode )
@@ -2087,6 +2089,7 @@
   /*************************************************************************/
 
   /* lookup a renderer by glyph format in the library's list */
+  // ref: FUN_009911d0
   FT_BASE_DEF( FT_Renderer )
   FT_Lookup_Renderer( FT_Library       library,
                       FT_Glyph_Format  format,
@@ -2129,6 +2132,7 @@
   }
 
 
+  // ref: FUN_00991220
   static FT_Renderer
   ft_lookup_glyph_renderer( FT_GlyphSlot  slot )
   {

@@ -73,6 +73,7 @@ void TSList<T, TGetLink>::ChangeLinkOffset(ptrdiff_t linkoffset) {
     }
 }
 
+// ref: FUN_0047e8a0 (the EvtKeyDown instance)
 template <class T, class TGetLink>
 void TSList<T, TGetLink>::Clear() {
     T* node;
@@ -92,6 +93,8 @@ void TSList<T, TGetLink>::CopyConstructor(const TSList& source) {
     this->SetLinkOffset(source.m_linkoffset);
 }
 
+// ref: FUN_00489ad0 (the CLayoutFrame::FRAMENODE instance)
+// ref: FUN_004807a0 (the EvtKeyDown instance)
 template <class T, class TGetLink>
 T* TSList<T, TGetLink>::DeleteNode(T* ptr) {
     T* next = this->Next(ptr);

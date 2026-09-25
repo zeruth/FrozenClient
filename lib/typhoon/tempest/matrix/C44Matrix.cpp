@@ -76,6 +76,26 @@ C44Matrix::C44Matrix(float a0, float a1, float a2, float a3, float b0, float b1,
     this->d3 = d3;
 }
 
+// ref: FUN_004e26f0
+C44Matrix::C44Matrix(float scale) {
+    this->a0 = scale;
+    this->a1 = 0.0f;
+    this->a2 = 0.0f;
+    this->a3 = 0.0f;
+    this->b0 = 0.0f;
+    this->b1 = scale;
+    this->b2 = 0.0f;
+    this->b3 = 0.0f;
+    this->c0 = 0.0f;
+    this->c1 = 0.0f;
+    this->c2 = scale;
+    this->c3 = 0.0f;
+    this->d0 = 0.0f;
+    this->d1 = 0.0f;
+    this->d2 = 0.0f;
+    this->d3 = 1.0f;
+}
+
 C44Matrix::C44Matrix(const C33Matrix& m) {
     this->a0 = m.a0;
     this->a1 = m.a1;

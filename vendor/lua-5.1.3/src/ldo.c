@@ -505,6 +505,7 @@ static void f_parser (lua_State *L, void *ud) {
 }
 
 
+/* ref: FUN_00856a90 */
 int luaD_protectedparser (lua_State *L, ZIO *z, const char *name) {
   struct SParser p;
   int status;

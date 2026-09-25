@@ -31,6 +31,7 @@ TSFixedArray<T>::TSFixedArray(const TSFixedArray<T>& source) {
     this->Set(source.Count(), source.Ptr());
 }
 
+// ref: FUN_006c2b50 (the TEXTURECACHEROW instance)
 template <class T>
 TSFixedArray<T>::~TSFixedArray() {
     for (uint32_t i = 0; i < this->Count(); i++) {
@@ -52,6 +53,7 @@ TSFixedArray<T>& TSFixedArray<T>::operator=(const TSFixedArray<T>& source) {
     return *this;
 }
 
+// ref: FUN_00409770
 template <class T>
 void TSFixedArray<T>::Clear() {
     this->~TSFixedArray<T>();
@@ -77,6 +79,19 @@ void TSFixedArray<T>::ReallocAndClearData(uint32_t count) {
     }
 }
 
+// ref: FUN_00408d80
+// ref: FUN_00493a40 (the CFrameStrataNode* instance)
+// ref: FUN_0058e030 (the CGQuestLog::QUESTPOI instance)
+// ref: FUN_005fef70 (the NTempest::CFacet instance)
+// ref: FUN_0060a1c0 (the UniqueSignal instance)
+// ref: FUN_0060a260 (the const VehicleUIIndSeatRec* instance)
+// ref: FUN_006c26e0 (the TSExplicitList<CHARCODEDESC> instance)
+// ref: FUN_006c2840 (the TSExplicitList<KERNNODE> instance)
+// ref: FUN_006c9df0 (the TEXTURECACHEROW instance)
+// ref: FUN_00599030 (the NTempest::CImVector instance)
+// ref: FUN_00514100 (the NearestUnitData instance)
+// ref: FUN_0051a2e0 (the unsigned __int64 instance)
+// ref: FUN_00525720 (the TSExplicitList<SAVEDVARIABLE> instance)
 template <class T>
 void TSFixedArray<T>::ReallocData(uint32_t count) {
     T* oldData = this->m_data;
@@ -89,11 +104,11 @@ void TSFixedArray<T>::ReallocData(uint32_t count) {
 
     this->m_alloc = count;
 
-    void* v6 = SMemReAlloc(oldData, sizeof(T) * count, nullptr, 0, 0x10);
+    void* v6 = SMemReAlloc(oldData, sizeof(T) * count, this->MemFileName(), this->MemLineNo(), 0x10);
     this->m_data = (T*)v6;
 
     if (!v6) {
-        this->m_data = (T*)SMemAlloc(sizeof(T) * count, nullptr, 0, 0x0);
+        this->m_data = (T*)SMemAlloc(sizeof(T) * count, this->MemFileName(), this->MemLineNo(), 0x0);
 
         if (oldData) {
             uint32_t smallestCount = count >= this->m_count ? this->m_count : count;
@@ -103,11 +118,13 @@ void TSFixedArray<T>::ReallocData(uint32_t count) {
                 (&oldData[i])->~T();
             }
 
-            SMemFree(oldData, nullptr, 0, 0x0);
+            SMemFree(oldData, this->MemFileName(), this->MemLineNo(), 0x0);
         }
     }
 }
 
+// ref: FUN_0058eb60 (the unsigned short instance)
+// ref: FUN_0058ebd0 (the C2Vector instance)
 template <class T>
 void TSFixedArray<T>::Set(uint32_t count, const T* data) {
     this->ReallocAndClearData(count);

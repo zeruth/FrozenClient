@@ -364,6 +364,51 @@ size_t STORMAPI SStrCopy(char* dest, const char* source, size_t destsize) {
     return static_cast<size_t>(destbuf - dest);
 }
 
+// SStrCopy that also stops after maxchars UTF-8 characters. When the destination fills first,
+// the string is cut after the last character-start byte copied.
+// ref: FUN_0076eda0
+size_t STORMAPI SStrCopyUTF8(char* dest, const char* source, size_t destsize, size_t maxchars) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(dest);
+    STORM_VALIDATE(source);
+    STORM_VALIDATE_END;
+
+    char* destbuf = dest;
+    char* cut = dest;
+    char* last = &dest[destsize - 1];
+
+    if (*source) {
+        do {
+            if (destbuf >= last) {
+                *cut = '\0';
+                return static_cast<size_t>(destbuf - dest);
+            }
+
+            if (!maxchars) {
+                break;
+            }
+
+            *destbuf = *source;
+
+            if ((static_cast<uint8_t>(*source) & 0xC0) != 0x80) {
+                maxchars--;
+                cut = destbuf + 1;
+            }
+
+            destbuf++;
+            source++;
+        } while (*source);
+    }
+
+    if (destbuf < last) {
+        *destbuf = '\0';
+        return static_cast<size_t>(destbuf - dest);
+    }
+
+    *cut = '\0';
+    return static_cast<size_t>(destbuf - dest);
+}
+
 char* STORMAPI SStrDupA(const char* string, const char* filename, uint32_t linenumber) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(string);
@@ -376,6 +421,7 @@ char* STORMAPI SStrDupA(const char* string, const char* filename, uint32_t linen
     return dup;
 }
 
+// ref: FUN_0076f340
 uint32_t STORMAPI SStrHash(const char* string, uint32_t flags, uint32_t seed) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(string);
@@ -387,7 +433,7 @@ uint32_t STORMAPI SStrHash(const char* string, uint32_t flags, uint32_t seed) {
 
     if (flags & SSTR_HASH_CASESENSITIVE) {
         for (; *string; string++) {
-            ch = *string;
+            ch = static_cast<uint8_t>(*string);
 
             result = (s_hashtable[ch / 16] - s_hashtable[ch % 16]) ^ (adjust + result);
             adjust = 33 * adjust + result + ch + 3;
@@ -395,7 +441,7 @@ uint32_t STORMAPI SStrHash(const char* string, uint32_t flags, uint32_t seed) {
     }
     else {
         for (; *string; string++) {
-            ch = *string;
+            ch = static_cast<uint8_t>(*string);
 
             if (ch >= 'a' && ch <= 'z') {
                 ch -= 32;
@@ -521,6 +567,24 @@ size_t STORMAPI SStrLenUTF8(const char* string) {
     return length;
 }
 
+// SStrLenUTF8 over at most the first maxbytes bytes.
+// ref: FUN_0076eee0
+size_t STORMAPI SStrNLenUTF8(const char* string, size_t maxbytes) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(string);
+    STORM_VALIDATE_END;
+
+    size_t length = 0;
+
+    for (auto p = reinterpret_cast<const uint8_t*>(string); *p && maxbytes; p++, maxbytes--) {
+        if ((*p & 0xC0) != 0x80) {
+            length++;
+        }
+    }
+
+    return length;
+}
+
 // ref: FUN_0076f6e0
 void STORMAPI SStrLower(char* string) {
     while (*string) {
@@ -586,6 +650,7 @@ size_t STORMCDECL SStrPrintf(char* dest, size_t maxchars, const char* format, ..
     return ISStrVPrintf(dest, maxchars, format, va);
 }
 
+// ref: FUN_0076f0a0
 size_t STORMCDECL SStrVPrintf(char* dest, size_t maxchars, const char* format, va_list arglist) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(dest);

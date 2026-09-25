@@ -359,6 +359,7 @@ CDataStore& CDataStore::Put(uint64_t val) {
     return *this;
 }
 
+// ref: FUN_0047b160
 CDataStore& CDataStore::Put(float val) {
     STORM_ASSERT(!this->IsFinal());
 
@@ -429,6 +430,20 @@ void CDataStore::Seek(uint32_t pos) {
     STORM_ASSERT(this->IsFinal());
 
     this->m_read = pos;
+}
+
+// ref: FUN_0047aef0
+CDataStore& CDataStore::Set(uint32_t pos, uint8_t val) {
+    STORM_ASSERT(!this->IsFinal());
+    STORM_ASSERT(pos + sizeof(val) <= this->m_size);
+
+    this->FetchWrite(pos, sizeof(val), nullptr, 0);
+
+    auto ofs = pos - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint8_t*>(ptr) = val;
+
+    return *this;
 }
 
 // ref: FUN_0047af40

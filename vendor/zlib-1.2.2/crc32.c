@@ -255,6 +255,7 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
+/* ref: FUN_00863700 */
 local unsigned long crc32_little(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;

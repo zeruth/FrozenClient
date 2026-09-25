@@ -46,6 +46,7 @@ class CDataStore {
     CDataStore& PutData(const void* val, uint32_t bytes);
     CDataStore& PutString(const char* val);
     void Seek(uint32_t pos);
+    CDataStore& Set(uint32_t pos, uint8_t val);
     CDataStore& Set(uint32_t pos, uint16_t val);
     void SetSize(uint32_t size);
     uint32_t Size() const;

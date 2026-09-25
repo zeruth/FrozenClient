@@ -408,6 +408,7 @@ void _tr_init(s)
 /* ===========================================================================
  * Initialize a new block.
  */
+/* ref: FUN_00866820 */
 local void init_block(s)
     deflate_state *s;
 {
@@ -1154,6 +1155,7 @@ local unsigned bi_reverse(code, len)
 /* ===========================================================================
  * Flush the bit buffer, keeping at most 7 bits in it.
  */
+/* ref: FUN_00867900 */
 local void bi_flush(s)
     deflate_state *s;
 {
@@ -1171,6 +1173,7 @@ local void bi_flush(s)
 /* ===========================================================================
  * Flush the bit buffer and align the output on a byte boundary
  */
+/* ref: FUN_00867980 */
 local void bi_windup(s)
     deflate_state *s;
 {

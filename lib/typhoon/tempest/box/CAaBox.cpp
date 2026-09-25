@@ -2,6 +2,26 @@
 #include "tempest/matrix/C44Matrix.hpp"
 #include <cstdint>
 
+// ref: FUN_006cb900
+void CAaBox::SetPoint(const C3Vector& p) {
+    this->b.x = p.x;
+    this->b.y = p.y;
+    this->b.z = p.z;
+    this->t.x = p.x;
+    this->t.y = p.y;
+    this->t.z = p.z;
+}
+
+// ref: FUN_005fecb0
+void CAaBox::Scale(float s) {
+    this->b.x = this->b.x * s;
+    this->b.y = this->b.y * s;
+    this->b.z = this->b.z * s;
+    this->t.x = this->t.x * s;
+    this->t.y = this->t.y * s;
+    this->t.z = s * this->t.z;
+}
+
 // ref: FUN_00984860
 CAaBox TransformBox(const CAaBox& box, const C44Matrix& m) {
     // The translation row is where a zero-sized box would land, so both corners start there and
@@ -41,4 +61,13 @@ CAaBox TransformBox(const CAaBox& box, const C44Matrix& m) {
     out.t = { hi[0], hi[1], hi[2] };
 
     return out;
+}
+
+// ref: FUN_0070bd20
+int32_t AaBoxIsDegenerate(const CAaBox& box) {
+    if (box.b.x < box.t.x && box.b.y < box.t.y && box.b.z < box.t.z) {
+        return 0;
+    }
+
+    return 1;
 }

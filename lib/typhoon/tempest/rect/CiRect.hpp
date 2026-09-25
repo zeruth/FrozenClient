@@ -5,6 +5,9 @@
 
 class CiRect {
     public:
+    // Static functions
+    static CiRect Intersection(const CiRect& l, const CiRect& r);
+
     // Member variables
     int32_t minY;
     int32_t minX;

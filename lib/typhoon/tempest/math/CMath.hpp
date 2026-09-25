@@ -41,9 +41,8 @@ class CMath {
         return z > CMath::fabs(a - b);
     }
 
-    static int32_t fint(float n) {
-        return static_cast<int32_t>(n);
-    }
+    // Truncates toward zero. Out of line so it has a symbol to bind to.
+    static int32_t fint(float n);
 
     static int32_t fint_n(float n) {
         return n <= 0.0f ? static_cast<int32_t>(n - 0.5f) : static_cast<int32_t>(n + 0.5f);

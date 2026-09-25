@@ -298,6 +298,7 @@ extern voidp  calloc OF((uInt items, uInt size));
 extern void   free   OF((voidpf ptr));
 #endif
 
+/* ref: FUN_00868300 */
 voidpf zcalloc (opaque, items, size)
     voidpf opaque;
     unsigned items;

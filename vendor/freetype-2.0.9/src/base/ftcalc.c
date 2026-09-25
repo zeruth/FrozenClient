@@ -182,19 +182,40 @@
 
   /* documentation is in freetype.h */
 
+  // ref: FUN_00990680
+  /*                                                                     */
+  /* The reference's FreeType took the 32-bit path, and from an older    */
+  /* release than this one: the large-operand branch truncates its low   */
+  /* partial product instead of rounding it, so the result can be one    */
+  /* unit below 2.0.9's.  Reproduced here in 32-bit unsigned arithmetic  */
+  /* so glyph metrics scale exactly as the reference's do.               */
   FT_EXPORT_DEF( FT_Long )
   FT_MulFix( FT_Long  a,
              FT_Long  b )
   {
-    FT_Int   s = 1;
-    FT_Long  c;
+    FT_UInt32  ua, ub, s;
 
 
-    if ( a < 0 ) { a = -a; s = -1; }
-    if ( b < 0 ) { b = -b; s = -s; }
+    if ( a == 0 || b == 0x10000L )
+      return a;
 
-    c = (FT_Long)( ( (FT_Int64)a * b + 0x8000 ) >> 16 );
-    return ( s > 0 ) ? c : -c ;
+    ua = (FT_UInt32)a;
+    ub = (FT_UInt32)b;
+
+    s = ua ^ ub;
+    if ( (FT_Int32)ua < 0 ) ua = 0U - ua;
+    if ( (FT_Int32)ub < 0 ) ub = 0U - ub;
+
+    if ( ua < 0x801 && ub < 0x100001L )
+      ua = ( ua * ub + 0x8000 ) >> 16;
+    else
+      ua = ( ( ( ub & 0xFFFF ) * ( ua & 0xFFFF ) ) >> 16 ) +
+           ( ub >> 16 ) * ( ua & 0xFFFF ) + ( ua >> 16 ) * ub;
+
+    if ( (FT_Int32)s < 0 )
+      ua = 0U - ua;
+
+    return (FT_Long)(FT_Int32)ua;
   }
 
 

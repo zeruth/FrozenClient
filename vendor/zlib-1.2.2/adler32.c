@@ -44,6 +44,7 @@
 #endif
 
 /* ========================================================================= */
+/* ref: FUN_008635c0 */
 uLong ZEXPORT adler32(adler, buf, len)
     uLong adler;
     const Bytef *buf;
