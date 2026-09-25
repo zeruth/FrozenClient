@@ -33,6 +33,7 @@
 #include "util/SFile.hpp"
 #include "world/CWorld.hpp"
 #include <cstdlib>
+#include <cstring>
 #include <common/ObjectAlloc.hpp>
 #include <storm/Error.hpp>
 #include <storm/Memory.hpp>
@@ -68,6 +69,8 @@ uint8_t CMap::s_terrainSpecular;
 
 CMapArea* CMap::s_areaGrid[64 * 64];
 STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_areaLinkList;
+TSGrowableArray<int32_t> CMap::s_cellList;
+int32_t CMap::s_cellListCount;
 
 int32_t CMap::s_chunkWindowMinY;
 int32_t CMap::s_chunkWindowMinX;
@@ -1524,4 +1527,125 @@ void CMap::LinkToMapObjDefGroup(CMapBaseObj* owner, CMapObjDefGroup* group) {
     } else if (owner->m_type & CMapBaseObj::Type_DoodadDef) {
         group->m_doodadDefLinkList.LinkToTail(link);
     }
+}
+
+// A tile, but only once its file has finished loading: one still waiting on its async read counts
+// as absent.
+// ref: FUN_0079b440
+CMapArea* CMap::GetLoadedArea(int32_t x, int32_t y) {
+    auto area = CMap::s_areaGrid[y * 64 + x];
+
+    if (area && area->m_asyncObject) {
+        area = nullptr;
+    }
+
+    return area;
+}
+
+// Copy a BSP leaf's faces into a cache entry, deduplicating their vertices through a 1024-slot
+// open-addressed table keyed by the group vertex index. A leaf with more than 300 faces, or more
+// than 450 distinct vertices, is marked in status and left partly built. The reference reads the
+// face refs from +0x8 of its second argument; the caller is not ported, so this takes them
+// directly.
+// ref: FUN_0079ae80
+void CMap::BuildBspLeafCache(CMapBspLeafCache* leaf, const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices) {
+    int16_t slotVertex[1024];
+    uint16_t slotKey[1024];
+
+    memset(static_cast<void*>(leaf), 0, sizeof(*leaf));
+    leaf->node = node;
+    leaf->status = 0;
+    leaf->vertexCount = 0;
+    leaf->faceCount = 0;
+    memset(slotKey, 0xFF, sizeof(slotKey));
+
+    if (node->nFaces > 300) {
+        leaf->status = 1;
+        return;
+    }
+
+    auto refs = &faceRefs[node->faceStart];
+
+    for (int32_t i = 0; i < node->nFaces; i++) {
+        uint16_t face = refs[i];
+        leaf->faceSource[i] = face;
+
+        auto corner = &indices[face * 3];
+
+        for (int32_t k = 0; k < 3; k++) {
+            uint16_t vertex = corner[k];
+            uint32_t slot = vertex & 0x3FF;
+
+            while (slotKey[slot] != vertex) {
+                if (slotKey[slot] == 0xFFFF) {
+                    if (leaf->vertexCount > 0x1C1) {
+                        leaf->status = 2;
+                        return;
+                    }
+
+                    leaf->vertices[leaf->vertexCount] = vertices[vertex];
+                    leaf->vertexSource[leaf->vertexCount] = vertex;
+                    slotVertex[slot] = leaf->vertexCount;
+                    slotKey[slot] = vertex;
+                    leaf->vertexCount++;
+
+                    break;
+                }
+
+                slot = (slot + 1) & 0x3FF;
+            }
+
+            leaf->faceIndices[leaf->faceCount * 3 + k] = slotVertex[slot];
+        }
+
+        leaf->faceFlags[leaf->faceCount] = polys[face].flags & 0xFF7F;
+        leaf->faceCount++;
+    }
+}
+
+// Append the cells of a line that runs along its second coordinate, from line[1] to line[3] in
+// either direction, as (line[1] + step, line[0]) pairs.
+// ref: FUN_007a20e0
+void CMap::AddCellSpanY(const int32_t* line) {
+    int32_t y = line[1];
+    auto cells = CMap::s_cellList.Ptr();
+
+    if (line[3] < y) {
+        do {
+            cells[CMap::s_cellListCount++] = y;
+            y--;
+            cells[CMap::s_cellListCount++] = line[0];
+        } while (line[3] <= y);
+
+        return;
+    }
+
+    do {
+        cells[CMap::s_cellListCount++] = y;
+        y++;
+        cells[CMap::s_cellListCount++] = line[0];
+    } while (y <= line[3]);
+}
+
+// The same along the first coordinate, from line[0] to line[2], as (line[1], line[0] + step).
+// ref: FUN_007a2180
+void CMap::AddCellSpanX(const int32_t* line) {
+    int32_t x = line[0];
+    auto cells = CMap::s_cellList.Ptr();
+
+    if (line[2] < x) {
+        do {
+            cells[CMap::s_cellListCount++] = line[1];
+            cells[CMap::s_cellListCount++] = x;
+            x--;
+        } while (line[2] <= x);
+
+        return;
+    }
+
+    do {
+        cells[CMap::s_cellListCount++] = line[1];
+        cells[CMap::s_cellListCount++] = x;
+        x++;
+    } while (x <= line[2]);
 }

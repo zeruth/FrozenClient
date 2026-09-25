@@ -1586,6 +1586,7 @@ void CM2Model::AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* pos
     this->AddRef();
 }
 
+// ref: FUN_00834540
 void CM2Model::AttachToScene(CM2Scene* scene) {
     this->DetachFromScene();
 
@@ -1603,8 +1604,16 @@ void CM2Model::AttachToScene(CM2Scene* scene) {
             this->m_lights[i].light.Initialize(this->m_scene);
         }
 
-        // TODO
-        // - sequence / sequence fallback logic
+        // Start every bone on Stand: id 0 when animation 0 resolves to something the model
+        // carries, otherwise the model's first sequence.
+        auto data = this->m_shared->m_data;
+
+        M2SequenceFallback fallback;
+        this->Sub826350(fallback, 0);
+
+        uint16_t sequenceId = CM2Model::Sub825E00(data, fallback.uint0) ? 0 : data->sequences[0].id;
+
+        this->SetBoneSequence(0xFFFFFFFF, sequenceId, 0xFFFFFFFF, 0, 1.0f, 0, 1);
     } else {
         for (auto modelCall = this->m_modelCallList; modelCall; modelCall = modelCall->modelCallNext) {
             modelCall->time += this->m_scene->m_time;
@@ -2843,7 +2852,11 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 8: {
-                // TODO
+                this->SetBoneSequenceSpeed(
+                    modelCall->args[0],
+                    *reinterpret_cast<float*>(&modelCall->args[1])
+                );
+
                 break;
             }
 
@@ -2863,7 +2876,7 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 12: {
-                // TODO
+                this->SetParticleEmission(modelCall->args[0]);
                 break;
             }
 
@@ -3014,6 +3027,7 @@ int32_t CM2Model::IsLoaded(int32_t a2, int32_t attachments) {
     return 1;
 }
 
+// ref: FUN_008244f0
 void CM2Model::LinkToCallbackListTail() {
     this->m_callbackPrev = this->m_shared->m_callbackListTail;
     this->m_callbackNext = nullptr;
@@ -3265,6 +3279,7 @@ void CM2Model::ReplaceTexture(uint32_t textureId, HTEXTURE texture) {
     // TODO replace particle textures
 }
 
+// ref: FUN_00823f10
 void CM2Model::SetAnimating(int32_t animating) {
     if (!animating) {
         if (this->m_animatePrev) {
@@ -3608,6 +3623,7 @@ void CM2Model::SetLightingCallback(void (*lightingCallback)(CM2Model*, CM2Lighti
     this->m_lightingArg = lightingArg;
 }
 
+// ref: FUN_008251b0
 void CM2Model::SetLoadedCallback(void (*loadedCallback)(CM2Model*, void*), void* loadedArg) {
     this->m_loadedCallback = loadedCallback;
     this->m_loadedArg = loadedArg;
@@ -4117,4 +4133,568 @@ void CM2Model::WaitForLoad(const char* a2) {
     if (this->m_flags & 0x20) {
         this->InitializeLoaded();
     }
+}
+
+// ref: FUN_00824320
+uint32_t CM2Model::GetSharedUint194() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    return this->m_shared->uint194;
+}
+
+// ref: FUN_00825ee0
+bool CM2Model::HasSequence(uint32_t sequenceId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    return CM2Model::Sub825E00(this->m_shared->m_data, sequenceId);
+}
+
+// ref: FUN_00825f40
+// Follow AnimationData.dbc's fallback chain from sequenceId to the first animation this model
+// carries. -1 when the chain leaves the table, revisits an id, points at itself, or passes id 505
+// (the reference's scratch array is 0x7e8 bytes). Unlike Sub826350 it keeps no play direction.
+uint32_t CM2Model::ResolveSequenceFallback(uint32_t sequenceId) {
+    if (sequenceId > 0x1F9) {
+        return 0xFFFFFFFF;
+    }
+
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    int32_t visited[506];
+    memset(visited, 0, sizeof(visited));
+
+    auto data = this->m_shared->m_data;
+    bool found = CM2Model::Sub825E00(data, sequenceId);
+
+    while (!found) {
+        if (sequenceId > 0x1F9) {
+            return 0xFFFFFFFF;
+        }
+
+        auto record = g_animationDataDB.GetRecord(static_cast<int32_t>(sequenceId));
+
+        if (visited[sequenceId]) {
+            return 0xFFFFFFFF;
+        }
+
+        if (!record) {
+            return 0xFFFFFFFF;
+        }
+
+        uint32_t next = static_cast<uint32_t>(record->m_fallback);
+
+        if (sequenceId == next) {
+            return 0xFFFFFFFF;
+        }
+
+        visited[sequenceId] = 1;
+        found = CM2Model::Sub825E00(data, next);
+        sequenceId = next;
+    }
+
+    return sequenceId;
+}
+
+// ref: FUN_008261b0
+// How many variations `data` carries of one animation: the sequence the id resolves to plus every
+// hop along its variationNext chain. 0 when the id is not there.
+int32_t CM2Model::GetSequenceVariationCount(M2Data* data, uint32_t sequenceId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    uint32_t index = 0xFFFF;
+    uint32_t hashCount = data->sequenceIdxHashById.Count();
+
+    if (hashCount == 0) {
+        for (uint32_t i = 0; i < data->sequences.Count(); i++) {
+            if (data->sequences[i].id == sequenceId) {
+                index = i & 0xFFFF;
+                break;
+            }
+        }
+    } else {
+        uint32_t slot = sequenceId % hashCount;
+        uint16_t probe = data->sequenceIdxHashById[slot];
+
+        if (probe != 0xFFFF) {
+            int32_t step = 1;
+
+            while (data->sequences[probe].id != sequenceId) {
+                slot = (step * step + slot) % hashCount;
+                probe = data->sequenceIdxHashById[slot];
+
+                if (probe == 0xFFFF) {
+                    break;
+                }
+
+                step++;
+            }
+
+            if (probe != 0xFFFF) {
+                index = probe;
+            }
+        }
+    }
+
+    if (index < data->sequences.Count()) {
+        int32_t count = 1;
+
+        for (uint16_t next = data->sequences[index].variationNext; next != 0xFFFF; next = data->sequences[next].variationNext) {
+            count++;
+        }
+
+        return count;
+    }
+
+    return 0;
+}
+
+// ref: FUN_008264b0
+// Whether the model has bones at all and, for a real id, whether that key bone exists. -1 asks
+// only the first question.
+int32_t CM2Model::HasBone(uint32_t boneId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    if (data->bones.Count()
+        && (boneId == 0xFFFFFFFF
+            || (boneId < data->boneIndicesById.Count() && data->boneIndicesById[boneId] != 0xFFFF))
+    ) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_008266b0
+// A key bone's primary sequence state. -1 names bone 0. Returns 0, leaving the state untouched,
+// when the bone does not exist.
+int32_t CM2Model::GetBoneSequenceState(uint32_t boneId, M2BoneSequenceState* state) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint32_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return 0;
+    }
+
+    auto& bone = this->m_bones[boneIndex];
+
+    state->uint90 = bone.uint90;
+    state->uint94 = bone.uint94;
+
+    int32_t elapsed = static_cast<int32_t>(llrint(
+        static_cast<float>(static_cast<int32_t>(this->m_scene->m_time - bone.sequence.uintC)) * bone.sequence.float14
+    ));
+
+    state->currentTime = elapsed + bone.sequence.uint1C;
+    state->speed = bone.sequence.float14;
+    state->startTime = bone.sequence.uintC;
+    state->endTime = bone.sequence.uint10;
+    state->finished = bone.sequence.uintA;
+
+    if (bone.sequence.uint8 != 0xFFFF
+        && data->sequences[bone.sequence.uint8].duration <= static_cast<uint32_t>(state->currentTime)
+    ) {
+        state->pastDuration = 1;
+
+        return 1;
+    }
+
+    state->pastDuration = 0;
+
+    return 1;
+}
+
+// ref: FUN_008267e0
+uint32_t CM2Model::GetBoneUint90(uint32_t boneId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return 0;
+    }
+
+    return this->m_bones[boneIndex].uint90;
+}
+
+// ref: FUN_00826870
+// The animation id a key bone is playing as its primary sequence, and optionally which variation
+// of it. -1 when the bone or its sequence does not exist.
+uint32_t CM2Model::GetBoneSequenceId(uint32_t boneId, uint32_t* variationIndex) {
+    if (variationIndex) {
+        *variationIndex = 0;
+    }
+
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex < data->bones.Count()) {
+        uint32_t sequenceIndex = this->m_bones[boneIndex].sequence.uint8;
+
+        if (sequenceIndex < data->sequences.Count()) {
+            if (variationIndex) {
+                *variationIndex = data->sequences[sequenceIndex].variationIndex;
+            }
+
+            return data->sequences[sequenceIndex].id;
+        }
+    }
+
+    return 0xFFFFFFFF;
+}
+
+// ref: FUN_00826930
+// The playback speed of a key bone's primary sequence, 1 when the bone does not exist.
+float CM2Model::GetBoneSequenceSpeed(uint32_t boneId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return 1.0f;
+    }
+
+    return this->m_bones[boneIndex].sequence.float14;
+}
+
+// ref: FUN_00826a60
+// Whether a key bone has a parent. Bone 0, which -1 also names, never counts.
+bool CM2Model::BoneHasParent(uint32_t boneId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint32_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex < data->bones.Count() && boneIndex != 0) {
+        return data->bones[boneIndex].parentIndex != 0xFFFF;
+    }
+
+    return false;
+}
+
+// ref: FUN_00827000
+// Change the playback speed of a key bone's primary sequence without a jump: the start time is
+// moved so the bone stays at the same point in the sequence, and the end time is recomputed from
+// the sequence's duration times its replay count. A speed within 1e-5 of zero (0x009ea558) holds
+// the bone where it is. Before the model has loaded the request is queued as model call 8.
+void CM2Model::SetBoneSequenceSpeed(uint32_t boneId, float speed) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 8;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+        *reinterpret_cast<float*>(&modelCall->args[1]) = speed;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return;
+    }
+
+    auto& sequence = this->m_bones[boneIndex].sequence;
+
+    if (sequence.uint8 == 0xFFFF) {
+        return;
+    }
+
+    int32_t time = static_cast<int32_t>(this->m_scene->m_time);
+    int32_t elapsed = static_cast<int32_t>(llrint(
+        static_cast<float>(time - static_cast<int32_t>(sequence.uintC)) * sequence.float14
+    ));
+    uint32_t length = data->sequences[sequence.uint8].duration * sequence.uint20;
+
+    float inverse;
+
+    if (fabsf(speed) <= 0.00001f) {
+        inverse = 0.0f;
+    } else {
+        inverse = 1.0f / speed;
+    }
+
+    elapsed = static_cast<int32_t>(llrint(
+        static_cast<float>(elapsed + static_cast<int32_t>(sequence.uint1C)) * fabsf(inverse)
+    ));
+
+    int32_t start = time - elapsed;
+    sequence.uintC = start;
+    sequence.uint10 = static_cast<int32_t>(llrint(static_cast<float>(length) * fabsf(inverse))) + start;
+    sequence.float14 = speed;
+    sequence.float18 = inverse;
+}
+
+// ref: FUN_00827460
+// An attachment's authored position, in bone space. The reference does not check the looked-up
+// index against the attachment count, so an id the model lacks reads attachments[0xFFFF]: callers
+// must only ask for attachments that exist (HasAttachment).
+void CM2Model::GetAttachmentPosition(C3Vector* position, uint32_t id) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t index;
+
+    if (id < data->attachmentIndicesById.Count()) {
+        index = data->attachmentIndicesById[id];
+    } else {
+        index = 0xFFFF;
+    }
+
+    *position = data->attachments[index].position;
+}
+
+// ref: FUN_008275f0
+int32_t CM2Model::HasEvent(uint32_t eventId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    for (uint32_t i = 0; i < data->events.Count(); i++) {
+        if (data->events[i].eventId == eventId) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_00827670
+// An event's position and bone. Unlike its neighbours this does not wait for the model to load.
+int32_t CM2Model::GetEvent(uint32_t eventId, C3Vector** position, uint16_t* boneIndex) {
+    auto data = this->m_shared->m_data;
+
+    for (uint32_t i = 0; i < data->events.Count(); i++) {
+        if (data->events[i].eventId == eventId) {
+            *position = &this->m_shared->m_data->events[i].position;
+            *boneIndex = this->m_shared->m_data->events[i].boneIndex;
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_008278e0
+int32_t CM2Model::HasCamera(uint32_t cameraId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    if (cameraId < data->cameraIndicesById.Count() && data->cameraIndicesById[cameraId] != 0xFFFF) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00827960
+HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    if (cameraId < data->cameraIndicesById.Count()) {
+        uint16_t index = data->cameraIndicesById[cameraId];
+
+        if (index != 0xFFFF) {
+            return this->m_cameras[index].m_camera;
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_008279f0
+// Raise or clear bit 0x2 of every emitter's flags, the half of the (flags & 3) == 3 test the step
+// emits on. Before the model has loaded the request is queued as model call 12.
+//
+// DIVERGENCE: the reference touches every emitter unconditionally; frozen leaves a null where it
+// has no emitter class for the model's type (see InitializeLoaded), so those are skipped.
+void CM2Model::SetParticleEmission(int32_t enable) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 12;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = enable;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    uint32_t count = this->m_shared->m_data->particles.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto emitter = this->m_particleEmitters[i];
+
+        if (!emitter) {
+            continue;
+        }
+
+        if (enable) {
+            emitter->m_flags |= 0x2;
+        } else {
+            emitter->m_flags &= ~0x2u;
+        }
+    }
+}
+
+// ref: FUN_00831330
+// An attachment's position in world space: its authored position through its bone's current
+// matrix, then out of camera space. Animates the model first. Like GetAttachmentPosition, the
+// reference does not guard an id the model lacks.
+C3Vector CM2Model::GetAttachmentWorldPosition(uint32_t id) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint32_t boneIndex = 0xFFFF;
+    uint16_t index;
+
+    if (id < data->attachmentIndicesById.Count()) {
+        index = data->attachmentIndicesById[id];
+    } else {
+        index = 0xFFFF;
+    }
+
+    if (index < data->attachments.Count()) {
+        boneIndex = data->attachments[index].boneIndex;
+    }
+
+    this->Animate();
+
+    return (data->attachments[index].position * this->m_boneMatrices[boneIndex & 0xFFFF]) * this->m_scene->m_viewInv;
+}
+
+// ref: FUN_00824a80
+// Rebuild the three rows of a 4-float-stride basis around `axis`: the second row becomes
+// row0 x axis, normalised unless it is degenerate (squared length at or below 2^-22, the constant
+// at 0x009ea27c), the first becomes row1 x axis, and the third is the axis itself.
+void M2BuildBasisFromAxis(float* basis, const float* axis) {
+    float z = axis[2];
+    float x0 = axis[0];
+    float x1 = axis[0];
+    float y = axis[1];
+
+    basis[4] = basis[2] * axis[1] - basis[1] * axis[2];
+    basis[5] = basis[0] * z - basis[2] * x0;
+    basis[6] = basis[1] * x1 - y * basis[0];
+
+    float lengthSq = basis[4] * basis[4] + basis[5] * basis[5] + basis[6] * basis[6];
+
+    if (0.00000023841858f < lengthSq) {
+        float scale = 1.0f / sqrtf(lengthSq);
+
+        basis[4] = basis[4] * scale;
+        basis[5] = scale * basis[5];
+        basis[6] = scale * basis[6];
+    }
+
+    x0 = axis[0];
+    z = axis[2];
+    y = axis[1];
+    x1 = axis[0];
+
+    basis[0] = basis[5] * axis[2] - axis[1] * basis[6];
+    basis[1] = x0 * basis[6] - basis[4] * z;
+    basis[2] = basis[4] * y - x1 * basis[5];
+
+    basis[8] = axis[0];
+    basis[9] = axis[1];
+    basis[10] = axis[2];
 }

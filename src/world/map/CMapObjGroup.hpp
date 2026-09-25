@@ -129,6 +129,9 @@ struct CMapObjHitRecord {
     void* object;                 // whatever the caller passed as the hit's owner
 };
 
+// ref: FUN_007c7a00
+bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c);
+
 class CMapObjGroup {
     public:
         // Static variables: the pool of hit records the queries append to (reference globals
@@ -145,6 +148,10 @@ class CMapObjGroup {
 
         // Static functions
         static CMapObjHitRecord* AllocHitRecord(uint32_t indexCount, uint32_t faceCount);
+        // ref: FUN_007a6140
+        static CMapObjHitRecord* AllocHitRecord();
+        // ref: FUN_007a6190
+        static uint16_t* AllocHitIndices(uint32_t count);
         static void QueryEnd(SMOPoly* polys);
 
         // Member variables. The reference offsets, for the day the whole class is laid out.

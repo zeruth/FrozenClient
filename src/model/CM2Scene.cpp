@@ -12,8 +12,11 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Sort.hpp"
+#include "gx/buffer/Types.hpp"
+#include <storm/Memory.hpp>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <tempest/Math.hpp>
 
 uint32_t CM2Scene::s_optFlags = 0xFFFFFFFF;
@@ -1095,5 +1098,212 @@ void CM2Scene::SelectLights(CM2Lighting* lighting) {
         }
 
         x = (x + 1) & 0x3f;
+    }
+}
+
+// Make room for one candidate per model on the ray list. The capacity only grows, doubling from
+// one, and the old contents are not kept.
+// ref: FUN_0081cad0
+void CM2Scene::ReserveRayCandidates() {
+    uint32_t count = 0;
+
+    for (auto model = this->m_rayModelList; model; model = model->m_rayNext) {
+        count++;
+    }
+
+    if (this->m_rayCandidateCapacity < count) {
+        if (this->m_rayCandidates) {
+            SMemFree(this->m_rayCandidates, "delete[]", -1, 0);
+        }
+
+        if (this->m_rayCandidateOrder) {
+            SMemFree(this->m_rayCandidateOrder, "delete[]", -1, 0);
+        }
+
+        if (this->m_rayCandidateCapacity == 0) {
+            this->m_rayCandidateCapacity = 1;
+        }
+
+        while (this->m_rayCandidateCapacity < count) {
+            this->m_rayCandidateCapacity <<= 1;
+        }
+
+        this->m_rayCandidates = static_cast<M2SceneRayCandidate*>(SMemAlloc(sizeof(M2SceneRayCandidate) * this->m_rayCandidateCapacity, __FILE__, 0x4e9, 0));
+        this->m_rayCandidateOrder = static_cast<uint32_t*>(SMemAlloc(sizeof(uint32_t) * this->m_rayCandidateCapacity, __FILE__, 0x4ea, 0));
+    }
+}
+
+// Normalise the ray from start to end. A degenerate ray (t or the length under 1e-5, the constant
+// at 0x009ea558) empties the ray list and clears scene flag 0x2 instead. Only each model's back
+// link is cleared, through the link itself, exactly as the reference walks it.
+// ref: FUN_0081cf20
+int32_t CM2Scene::RaySetup(const C3Vector& start, const C3Vector& end, float t, float* length, C3Vector* dir) {
+    const float epsilon = 1.0e-5f;
+
+    if (epsilon <= t) {
+        float dx = end.x - start.x;
+        float dy = end.y - start.y;
+        float dz = end.z - start.z;
+        float len = sqrtf(dy * dy + dz * dz + dx * dx);
+        *length = len;
+
+        if (epsilon <= len) {
+            float inv = 1.0f / len;
+            dir->x = inv * dx;
+            dir->y = dy * inv;
+            dir->z = dz * inv;
+
+            return 1;
+        }
+    }
+
+    for (auto model = this->m_rayModelList; model; model = model->m_rayNext) {
+        *model->m_rayPrev = nullptr;
+        model->m_rayPrev = nullptr;
+    }
+
+    this->m_flags &= ~0x2;
+
+    return 0;
+}
+
+// Blend up to four bone matrices by their byte weights (scaled by the 1/255 at 0x00a45564). A zero
+// weight ends the list. The result is forced affine: last column (0, 0, 0, 1).
+// ref: FUN_0081d2c0
+void CM2Scene::BlendBoneMatrices(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out) {
+    const float scale = 0.0039215689f;
+
+    auto m = reinterpret_cast<const float*>(&bones[indices.b[0]]);
+    float w = static_cast<float>(weights.b[0]) * scale;
+    float acc[16];
+
+    for (int32_t k = 0; k < 16; k++) {
+        acc[k] = m[k] * w;
+    }
+
+    for (int32_t i = 1; i < 4; i++) {
+        if (weights.b[i] == 0) {
+            break;
+        }
+
+        m = reinterpret_cast<const float*>(&bones[indices.b[i]]);
+        w = static_cast<float>(weights.b[i]) * scale;
+
+        for (int32_t k = 0; k < 16; k++) {
+            acc[k] = m[k] * w + acc[k];
+        }
+    }
+
+    auto dst = reinterpret_cast<float*>(out);
+
+    for (int32_t k = 0; k < 16; k++) {
+        dst[k] = acc[k];
+    }
+
+    dst[3] = 0.0f;
+    dst[7] = 0.0f;
+    dst[11] = 0.0f;
+    dst[15] = 1.0f;
+}
+
+// The same blend over the three columns that carry the rotation and translation; the fourth column
+// of out is left as it was.
+// ref: FUN_0081d3d0
+void CM2Scene::BlendBoneMatrices3x4(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out) {
+    static const int32_t s_elements[12] = { 0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14 };
+    const float scale = 0.0039215689f;
+
+    auto dst = reinterpret_cast<float*>(out);
+    auto m = reinterpret_cast<const float*>(&bones[indices.b[0]]);
+    float w = static_cast<float>(weights.b[0]) * scale;
+
+    for (auto k : s_elements) {
+        dst[k] = m[k] * w;
+    }
+
+    for (int32_t i = 1; i < 4; i++) {
+        if (weights.b[i] == 0) {
+            return;
+        }
+
+        m = reinterpret_cast<const float*>(&bones[indices.b[i]]);
+        w = static_cast<float>(weights.b[i]) * scale;
+
+        for (auto k : s_elements) {
+            dst[k] = m[k] * w + dst[k];
+        }
+    }
+}
+
+// Test a run of triangles, already projected by ProjectSectionVertices, against a point in the
+// query plane. A hit inside the triangle at a non-negative height replaces best when it is no
+// higher than *bestHeight -- or unconditionally, with preferOther set, when best is empty or has a
+// different key. Returns the (possibly new) best candidate.
+// ref: FUN_0081d510
+M2SceneRayCandidate* CM2Scene::RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best) {
+    const float epsilon = 1.0e-5f;
+
+    for (; indices < indicesEnd; indices += 3) {
+        auto projected = this->m_rayProjected;
+        auto& p0 = projected[indices[0] - vertexBase];
+        auto& p1 = projected[indices[1] - vertexBase];
+        auto& p2 = projected[indices[2] - vertexBase];
+
+        float area = (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
+
+        if (epsilon <= fabsf(area)) {
+            float inv = 1.0f / area;
+            float b0 = ((p2.y - point.y) * (p1.x - point.x) - (p2.x - point.x) * (p1.y - point.y)) * inv;
+
+            if (0.0f <= b0) {
+                float b1 = ((p0.y - point.y) * (p2.x - point.x) - (p0.x - point.x) * (p2.y - point.y)) * inv;
+
+                if (0.0f <= b1) {
+                    float b2 = ((p0.x - point.x) * (p1.y - point.y) - (p0.y - point.y) * (p1.x - point.x)) * inv;
+
+                    if (0.0f <= b2) {
+                        float height = p0.z * b0 + b2 * p2.z + p1.z * b1;
+
+                        if (0.0f <= height
+                            && ((preferOther && (!best || best->key != candidate->key)) || height <= *bestHeight)) {
+                            *bestHeight = height;
+                            best = candidate;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return best;
+}
+
+// Skin a section's vertices by their first bone only (optionally pushed out along the rotated
+// normal) and project them onto a plane: m_rayProjected gets the in-plane x and y and the signed
+// distance from the plane.
+// ref: FUN_0081d9c0
+void CM2Scene::ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist) {
+    auto data = model->m_shared->m_data;
+    uint32_t i = section->vertexStart;
+    uint32_t end = section->vertexCount + i;
+    auto dst = this->m_rayProjected;
+
+    for (; i < end; i++) {
+        auto& vertex = data->vertices[skinProfile->vertices[i]];
+        auto& bone = model->m_boneMatrices[vertex.indices.b[0]];
+
+        C3Vector p = vertex.position * bone;
+
+        if (addNormal) {
+            p.x = vertex.normal.x * bone.a0 + bone.b0 * vertex.normal.y + bone.c0 * vertex.normal.z + p.x;
+            p.y = bone.a1 * vertex.normal.x + bone.b1 * vertex.normal.y + bone.c1 * vertex.normal.z + p.y;
+            p.z = p.z + (bone.a2 * vertex.normal.x + bone.b2 * vertex.normal.y + bone.c2 * vertex.normal.z);
+        }
+
+        float d = (planeNormal.x * p.x + planeNormal.y * p.y + planeNormal.z * p.z) - planeDist;
+        dst->x = p.x - planeNormal.x * d;
+        dst->y = p.y - planeNormal.y * d;
+        dst->z = d;
+        dst++;
     }
 }

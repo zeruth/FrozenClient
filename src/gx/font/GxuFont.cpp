@@ -20,8 +20,12 @@ STORM_LIST(CGxString) g_strings;
 
 static TSList<CGxStringBatch, TSGetLink<CGxStringBatch>> s_unusedBatches;
 
+// A code that turns out not to be one leaves `advance` at the length of the '|' itself and `wide`
+// at '|', so the caller draws the pipe as a character.
+// ref: FUN_006bd5a0
 QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector* color, uint32_t flags, uint32_t& wide) {
     wide = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(text), &advance);
+    int32_t pipeLength = advance;
 
     switch (wide) {
         case 0x0:
@@ -47,107 +51,101 @@ QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector*
         }
     }
 
-    if (wide != '|' || flags & FLAG_IGNORE_PIPES) {
+    if (wide != '|') {
         return CODE_INVALIDCODE;
     }
 
-    auto quotedCode = text[advance];
-
-    if (!quotedCode) {
+    if (flags & FLAG_IGNORE_PIPES) {
         return CODE_INVALIDCODE;
     }
 
-    switch (quotedCode) {
+    auto codeText = text + pipeLength;
+
+    switch (*codeText) {
         case 'C':
         case 'c': {
             if (flags & FLAG_IGNORE_COLORS) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
-            int32_t offset = advance + 1;
+            auto hexText = codeText + 1;
             uint8_t value[4];
+            uint32_t count = 0;
 
-            for (int32_t i = 0; i < 4; i++) {
-                if (!text[offset + 0] || !text[offset + 1]) {
-                    return CODE_INVALIDCODE;
-                }
-
-                char hex[4];
-                hex[0] = text[offset + 0];
-                hex[1] = text[offset + 1];
-                hex[2] = '\0';
+            for (int32_t offset = 0; hexText[offset] && hexText[offset + 1]; offset += 2) {
+                char hex[4] = {};
+                hex[0] = hexText[offset + 0];
+                hex[1] = hexText[offset + 1];
 
                 char* end = nullptr;
-
                 auto v = strtol(hex, &end, 16);
 
-                // Error parsing hex
                 if (end && *end) {
+                    advance = pipeLength;
+                    wide = '|';
+
                     return CODE_INVALIDCODE;
                 }
 
-                value[i] = v;
+                value[count++] = static_cast<uint8_t>(v);
 
-                offset += 2;
+                if (count > 3) {
+                    if (color) {
+                        // Alpha is ignored
+                        color->value = CImVector::MakeARGB(0xFF, value[1], value[2], value[3]);
+                    }
+
+                    advance = 10;
+
+                    return CODE_COLORON;
+                }
             }
 
-            if (color) {
-                // Alpha is ignored
-                color->value = CImVector::MakeARGB(0xFF, value[1], value[2], value[3]);
-            }
+            advance = pipeLength;
 
-            advance = 10;
-
-            return CODE_COLORON;
+            break;
         }
 
         case 'H': {
             if (flags & FLAG_IGNORE_HYPERLINKS) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
-            auto linkText = text + advance;
+            auto linkText = codeText + pipeLength;
 
             while (*linkText) {
                 auto code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(linkText), &advance);
                 linkText += advance;
 
                 if (code == '|') {
-                    break;
+                    if (*linkText) {
+                        auto endCode = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(linkText), &advance);
+                        linkText += advance;
+
+                        // Something after |h, a payload, and display text that is not empty
+                        if (*linkText && endCode == 'h' && linkText - text != 4 && (linkText[0] != '|' || linkText[1] != 'h')) {
+                            advance = linkText - text;
+
+                            return CODE_HYPERLINKSTART;
+                        }
+                    }
+
+                    advance = pipeLength;
+                    wide = '|';
+
+                    return CODE_INVALIDCODE;
                 }
             }
 
-            if (!*linkText) {
-                return CODE_INVALIDCODE;
-            }
+            advance = pipeLength;
 
-            auto endCode = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(linkText), &advance);
-            linkText += advance;
-
-            // Null terminator or end code isn't |h (end link payload)
-            if (!*linkText || endCode != 'h') {
-                return CODE_INVALIDCODE;
-            }
-
-            // Empty link (no payload)
-            if (linkText - text == 4) {
-                return CODE_INVALIDCODE;
-            }
-
-            // Empty display text
-            if (linkText[0] == '|' && linkText[1] == 'h') {
-                return CODE_INVALIDCODE;
-            }
-
-            advance = linkText - text;
-
-            return CODE_HYPERLINKSTART;
+            break;
         }
 
         case 'N':
         case 'n': {
             if (flags & FLAG_IGNORE_NEWLINES) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
             advance = 2;
@@ -158,7 +156,7 @@ QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector*
         case 'R':
         case 'r': {
             if (flags & FLAG_IGNORE_COLORS) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
             advance = 2;
@@ -168,45 +166,42 @@ QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector*
 
         case 'T': {
             if (flags & FLAG_IGNORE_TEXTURES) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
-            auto textureText = text + advance;
+            auto textureText = codeText + pipeLength;
 
             while (*textureText) {
                 auto code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(textureText), &advance);
                 textureText += advance;
 
                 if (code == '|') {
-                    break;
+                    if (*textureText) {
+                        auto endCode = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(textureText), &advance);
+
+                        // |t may end the string; only an empty payload is refused
+                        if (endCode == 't' && textureText + advance - text != 4) {
+                            advance = textureText + advance - text;
+
+                            return CODE_TEXTURESTART;
+                        }
+                    }
+
+                    advance = pipeLength;
+                    wide = '|';
+
+                    return CODE_INVALIDCODE;
                 }
             }
 
-            if (!*textureText) {
-                return CODE_INVALIDCODE;
-            }
+            advance = pipeLength;
 
-            auto endCode = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(textureText), &advance);
-            textureText += advance;
-
-            // Null terminator or end code isn't |t
-            if (!*textureText || endCode != 't') {
-                return CODE_INVALIDCODE;
-            }
-
-            // Empty texture (no payload)
-            if (textureText - text == 4) {
-                return CODE_INVALIDCODE;
-            }
-
-            advance = textureText - text;
-
-            return CODE_TEXTURESTART;
+            break;
         }
 
         case 'h': {
             if (flags & FLAG_IGNORE_HYPERLINKS) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
             advance = 2;
@@ -216,7 +211,7 @@ QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector*
 
         case 't': {
             if (flags & FLAG_IGNORE_TEXTURES) {
-                return CODE_INVALIDCODE;
+                break;
             }
 
             advance = 2;
@@ -231,9 +226,13 @@ QUOTEDCODE GxuDetermineQuotedCode(const char* text, int32_t& advance, CImVector*
         }
 
         default: {
-            return CODE_INVALIDCODE;
+            break;
         }
     }
+
+    wide = '|';
+
+    return CODE_INVALIDCODE;
 }
 
 int32_t GxuFontAddToBatch(CGxStringBatch* batch, CGxString* string) {

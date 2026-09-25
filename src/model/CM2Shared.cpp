@@ -444,10 +444,33 @@ CM2Shared::~CM2Shared() {
     // TODO
 }
 
-void CM2Shared::AddRef() {
-    // TODO free list management etc
+// ref: FUN_00835970
+// A shared model coming back from zero references is taken off its cache's free list first.
+uint32_t CM2Shared::AddRef() {
+    if (this->m_refCount == 0 && this->m_cache) {
+        if (this->m_freePrev) {
+            *this->m_freePrev = this->m_freeNext;
+        }
+
+        if (this->m_freeNext) {
+            this->m_freeNext->m_freePrev = this->m_freePrev;
+            this->m_refCount++;
+            this->m_freePrev = nullptr;
+            this->m_freeNext = nullptr;
+            this->uint38 = 0;
+
+            return this->m_refCount;
+        }
+
+        this->m_cache->m_freeListTail = this->m_freePrev;
+        this->m_freePrev = nullptr;
+        this->m_freeNext = nullptr;
+        this->uint38 = 0;
+    }
 
     this->m_refCount++;
+
+    return this->m_refCount;
 }
 
 int32_t CM2Shared::CallbackWhenLoaded(CM2Model* model) {

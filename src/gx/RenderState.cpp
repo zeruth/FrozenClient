@@ -43,6 +43,7 @@ void GxRsSet(EGxRenderState which, CGxShader* value) {
     g_theGxDevicePtr->RsSet(which, value);
 }
 
+// ref: FUN_00408240
 void GxRsSet(EGxRenderState which, CGxTex* value) {
     g_theGxDevicePtr->RsSet(which, value);
 }

@@ -6,11 +6,25 @@
 #include <cstdint>
 #include <storm/Array.hpp>
 #include <tempest/Matrix.hpp>
+#include <tempest/Vector.hpp>
 
 class CM2Cache;
 class CM2Light;
 class CM2Lighting;
 class CM2Model;
+struct M2SkinProfile;
+struct M2SkinSection;
+struct ubyte4;
+
+// One model a ray query's bounding-sphere pass kept (reference: 16 bytes in the array at scene
+// + 0x118): the model, the entry and exit distances along the ray clamped to [0, length], and the
+// model's +0x2e4 key.
+struct M2SceneRayCandidate {
+    CM2Model* model;
+    float tNear;
+    float tFar;
+    uint32_t key;
+};
 
 class CM2Scene {
     public:
@@ -67,7 +81,31 @@ class CM2Scene {
         void* m_projectionCallback = nullptr;
         void* m_projectionContext = nullptr;
 
+        // The ray query state, reference +0x114 through +0x124. The model list is threaded through
+        // CM2Model::m_rayPrev / m_rayNext; its filler (FUN_007a2760, from the map's segment query)
+        // is not ported, so it stays empty.
+        CM2Model* m_rayModelList = nullptr;                  // +0x114
+        M2SceneRayCandidate* m_rayCandidates = nullptr;      // +0x118
+        uint32_t* m_rayCandidateOrder = nullptr;             // +0x11c
+        uint32_t m_rayCandidateCapacity = 0;                 // +0x120
+        // Section vertices projected onto the query plane: in-plane x, y and the height above it.
+        C3Vector* m_rayProjected = nullptr;                  // +0x124
+
+        // Static functions
+        // ref: FUN_0081d2c0
+        static void BlendBoneMatrices(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out);
+        // ref: FUN_0081d3d0
+        static void BlendBoneMatrices3x4(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out);
+
         // Member functions
+        // ref: FUN_0081cad0
+        void ReserveRayCandidates();
+        // ref: FUN_0081cf20
+        int32_t RaySetup(const C3Vector& start, const C3Vector& end, float t, float* length, C3Vector* dir);
+        // ref: FUN_0081d510
+        M2SceneRayCandidate* RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best);
+        // ref: FUN_0081d9c0
+        void ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
 
         // Install the projected-decal callback. Until something calls this, the scene emits no
         // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30

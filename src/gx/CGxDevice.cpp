@@ -950,6 +950,17 @@ void CGxDevice::ITexWHDStartEnd(CGxTex* texId, uint32_t& width, uint32_t& height
     }
 }
 
+// A negative value only reads the flag; anything else stores (value > 0) and answers it.
+// ref: FUN_00682e20
+int32_t CGxDevice::ContextFlag(int32_t value) {
+    if (value >= 0) {
+        this->m_context = value > 0;
+        return value > 0;
+    }
+
+    return this->m_context;
+}
+
 // ref: FUN_00683100
 int32_t CGxDevice::MasterEnable(EGxMasterEnables state) {
     return ((1 << state) & this->m_appMasterEnables) != 0;
@@ -1132,15 +1143,16 @@ void CGxDevice::ScissorSet(const CRect* rect) {
     this->m_scissorRect.maxX = rect->maxX;
 }
 
+// ref: FUN_006844c0
 void CGxDevice::PrimVertexFormat(CGxBuf* buf, CGxVertexAttrib* attribs, uint32_t count) {
     for (int32_t i = 0; i < count; i++) {
         int32_t attrib = attribs->attrib;
 
         int32_t dirty = buf->unk1E
             || this->m_primVertexFormatBuf[attrib] != buf
+            || this->m_primVertexFormatAttrib[attrib].bufSize != attribs->bufSize
             || this->m_primVertexFormatAttrib[attrib].type != attribs->type
-            || this->m_primVertexFormatAttrib[attrib].offset != attribs->offset
-            || this->m_primVertexFormatAttrib[attrib].bufSize != attribs->bufSize;
+            || this->m_primVertexFormatAttrib[attrib].offset != attribs->offset;
 
         if (dirty) {
             this->m_primVertexDirty |= 1 << attrib;
@@ -1160,12 +1172,14 @@ void CGxDevice::PrimVertexFormat(CGxBuf* buf, CGxVertexAttrib* attribs, uint32_t
     this->m_primVertexFormat = GxVertexBufferFormats_Last;
 }
 
+// ref: FUN_00682eb0
 void CGxDevice::PrimVertexMask(uint32_t mask) {
     this->m_primVertexDirty |= mask ^ this->m_primVertexMask;
     this->m_primVertexMask = mask;
     this->m_primVertexFormat = GxVertexBufferFormats_Last;
 }
 
+// ref: FUN_00682ee0
 void CGxDevice::PrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     this->m_primVertexFormat = format;
     this->m_primVertexBuf = buf;
@@ -1547,6 +1561,7 @@ void CGxDevice::TexDestroy(CGxTex* texId) {
     }
 }
 
+// ref: FUN_006848a0
 void CGxDevice::TexMarkForUpdate(CGxTex* texId, const CiRect& updateRect, int32_t immediate) {
     texId->m_needsUpdate = 1;
 
@@ -1581,6 +1596,17 @@ void CGxDevice::TexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode w
     }
 }
 
+// A negative value only reads the flag; anything else stores (value > 0) and answers it.
+// ref: FUN_00682dc0
+int32_t CGxDevice::WindowVisibleFlag(int32_t value) {
+    if (value >= 0) {
+        this->m_windowVisible = value > 0;
+        return value > 0;
+    }
+
+    return this->m_windowVisible;
+}
+
 void CGxDevice::ValidateDraw(CGxBatch* batch, int32_t count) {
     // TODO
 }
@@ -1607,6 +1633,15 @@ void CGxDevice::XformProjNative(C44Matrix& matrix) {
 // ref: FUN_0057c3a0
 void CGxDevice::XformPush(EGxXform xf) {
     this->m_xforms[xf].Push();
+}
+
+// Push, then load the new top: one call in the reference, with both halves inlined.
+// ref: FUN_00616a30
+void CGxDevice::XformPush(EGxXform xf, const C44Matrix& matrix) {
+    auto& stack = this->m_xforms[xf];
+
+    stack.Push();
+    stack.Top() = matrix;
 }
 
 // The reference indexes `device + 0x1008 + xf * 0x118`, and CGxMatrixStack is byte-for-byte

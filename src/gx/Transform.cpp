@@ -35,10 +35,12 @@ void GxXformSet(EGxXform xf, const C44Matrix& matrix) {
     g_theGxDevicePtr->XformSet(xf, matrix);
 }
 
+// ref: FUN_00408030
 void GxXformSetProjection(const C44Matrix& matrix) {
     g_theGxDevicePtr->XformSetProjection(matrix);
 }
 
+// ref: FUN_00408050
 void GxXformSetView(const C44Matrix& matrix) {
     g_theGxDevicePtr->XformSetView(matrix);
 }
@@ -56,6 +58,7 @@ void GxXformSetViewport(float minX, float maxX, float minY, float maxY, float mi
     g_theGxDevicePtr->XformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);
 }
 
+// ref: FUN_004080e0
 void GxXformView(C44Matrix& matrix) {
     g_theGxDevicePtr->XformView(matrix);
 }
@@ -121,10 +124,14 @@ void GxuXformCreateLookAtSgCompat(const C3Vector& eye, const C3Vector& center, c
     }
 }
 
+// Degenerate bounds set ERROR_INVALID_PARAMETER and leave dst untouched.
+// ref: FUN_006bf4c0
 void GxuXformCreateOrtho(float minX, float maxX, float minY, float maxY, float minZ, float maxZ, C44Matrix& dst) {
-    STORM_ASSERT(minX != maxX);
-    STORM_ASSERT(minY != maxY);
-    STORM_ASSERT(minZ < maxZ);
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(minX != maxX);
+    STORM_VALIDATE(minY != maxY);
+    STORM_VALIDATE(minZ < maxZ);
+    STORM_VALIDATE_END_VOID;
 
     double v10 = maxX - minX;
     double v11 = maxY - minY;

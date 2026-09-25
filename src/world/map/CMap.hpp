@@ -28,6 +28,23 @@ class CM2Lighting;
 class CMapObj;
 class CMapObjGroup;
 class SFile;
+struct CAaBspNode;
+struct SMOPoly;
+
+// One entry of CMap's BSP leaf cache (reference: 0x2460 bytes, 1024 of them after a 0x1000-byte
+// key table, looked up by FUN_0079b1f0): a leaf's faces with their vertices deduplicated into a
+// compact local array.
+struct CMapBspLeafCache {
+    const CAaBspNode* node;
+    uint8_t status;                 // 0 built, 1 more than 300 faces, 2 more than 450 vertices
+    uint16_t vertexCount;
+    C3Vector vertices[450];
+    uint16_t vertexSource[450];     // each local vertex's group vertex index
+    uint16_t faceCount;
+    uint16_t faceIndices[300 * 3];  // local vertex indices, three per face
+    uint16_t faceFlags[300];        // the face's MOPY flags without F_COLLIDE_HIT
+    uint16_t faceSource[300];       // each face's group face index
+};
 
 class CMap {
     public:
@@ -77,6 +94,12 @@ class CMap {
         // (DAT_00adfbec); a tile lives in both from CreateArea until UnloadArea
         static CMapArea* s_areaGrid[64 * 64];
         static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_areaLinkList;
+
+        // Cell pairs a map query collects, two ints per cell (DAT_00cf4928, a 0x800-entry array
+        // MapMemInitialize is meant to size; that part is not ported) and the running int count
+        // written into it (DAT_00ce04c8).
+        static TSGrowableArray<int32_t> s_cellList;
+        static int32_t s_cellListCount;
 
         // The window of map chunk coordinates kept loaded around the camera, as CWorld::Update
         // maintains it (DAT_00cd77d8 minRow, DAT_00cd77dc minCol, DAT_00cd77e0 maxRow,
@@ -217,6 +240,15 @@ class CMap {
         static int32_t SafeOpen(const char* path, SFile** file);
         static void AsyncLoadCleanup(CAsyncObject* object);
         static HTEXTURE LoadTexture(const char* name);
+
+        // ref: FUN_0079b440
+        static CMapArea* GetLoadedArea(int32_t x, int32_t y);
+        // ref: FUN_0079ae80
+        static void BuildBspLeafCache(CMapBspLeafCache* leaf, const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices);
+        // ref: FUN_007a20e0
+        static void AddCellSpanY(const int32_t* line);
+        // ref: FUN_007a2180
+        static void AddCellSpanX(const int32_t* line);
 
     private:
         static void FreeAreaLowObject(uint32_t* heap, CMapAreaLow* area);

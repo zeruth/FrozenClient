@@ -37,6 +37,12 @@ struct EMBEDDEDPARSEINFO {
 };
 
 struct GXUEMBEDDEDTEXTUREINFO {
+    // ref: FUN_006c0af0
+    // DIVERGED: the reference zeroes every dword but +0x18 and +0x1c, which its |T parser
+    // (FUN_006c0e80) always writes before reporting success. Frozen zeroes those two as well --
+    // the member initializers -- because Wrap.cpp reads them while that parser is not ported.
+    GXUEMBEDDEDTEXTUREINFO() {}
+
     float float0 = 0.0f;
     float float4 = 0.0f;
     float float8 = 0.0f;

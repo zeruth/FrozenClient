@@ -274,6 +274,7 @@ class CGxDevice {
         void IShaderLoad(CGxShader*[], EGxShTarget, const char*, const char*, int32_t);
         void ITexBind(void) {};
         void ITexWHDStartEnd(CGxTex*, uint32_t&, uint32_t&, uint32_t&, uint32_t&);
+        int32_t ContextFlag(int32_t value);
         int32_t MasterEnable(EGxMasterEnables);
         CGxPool* PoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, const char*);
         void PrimIndexPtr(CGxBuf*);
@@ -302,10 +303,12 @@ class CGxDevice {
         void ShaderConstantsUnlock(EGxShTarget target, uint32_t index, uint32_t count);
         void TexMarkForUpdate(CGxTex*, const CiRect&, int32_t);
         void TexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode wrapV);
+        int32_t WindowVisibleFlag(int32_t value);
         void XformPop(EGxXform xf);
         void XformProjection(C44Matrix&);
         void XformProjNative(C44Matrix&);
         void XformPush(EGxXform xf);
+        void XformPush(EGxXform xf, const C44Matrix& matrix);
         void XformSet(EGxXform xf, const C44Matrix& matrix);
         void XformSetViewport(float, float, float, float, float, float);
         void XformView(C44Matrix&);

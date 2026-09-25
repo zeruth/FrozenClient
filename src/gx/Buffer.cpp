@@ -227,6 +227,7 @@ void GxPrimIndexPtr(CGxBuf* buf) {
     g_theGxDevicePtr->PrimIndexPtr(buf);
 }
 
+// ref: FUN_00681ab0
 void GxPrimIndexPtr(uint32_t indexCount, const uint16_t* indices) {
     auto buf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, indexCount);
 

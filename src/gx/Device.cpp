@@ -60,6 +60,7 @@ void* GxDevWindow() {
     return g_theGxDevicePtr->DeviceWindow();
 }
 
+// ref: FUN_00616af0
 int32_t GxMasterEnable(EGxMasterEnables state) {
     return g_theGxDevicePtr->MasterEnable(state);
 }

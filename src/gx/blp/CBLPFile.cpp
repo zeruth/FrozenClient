@@ -7,6 +7,12 @@
 
 TSGrowableArray<unsigned char> CBLPFile::s_blpFileLoadBuffer;
 
+// Floyd-Steinberg error rows for the dithered palette conversions: two rows of 1026 pixels of
+// three channels, alternating between the current and the next row.
+static int32_t s_ditherErrors1555[2 * 0xC06];  // ref: DAT_00c67580
+static int32_t s_ditherErrors565[2 * 0xC06];   // ref: DAT_00c6d5b0
+
+// ref: FUN_006ae8b0
 void CBLPFile::Close() {
     this->m_inMemoryImage = nullptr;
 
@@ -15,6 +21,281 @@ void CBLPFile::Close() {
     }
 
     this->m_images = nullptr;
+}
+
+// ref: FUN_006ae990
+// Palette indices followed by an 8-bit alpha plane of the same length.
+void CBLPFile::DecompPalARGB8888Alpha8(uint32_t* out, const unsigned char* in, uint32_t count) {
+    for (uint32_t i = count; i != 0; i--) {
+        memcpy(out, &this->m_header.extended.palette[*in], sizeof(uint32_t));
+        reinterpret_cast<unsigned char*>(out)[3] = in[count];
+
+        in++;
+        out++;
+    }
+}
+
+// ref: FUN_006aee70
+void CBLPFile::DecompPalARGB1555DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height) {
+    const BlpPalPixel* palette = this->m_header.extended.palette;
+    uint16_t* row = out;
+
+    memset(s_ditherErrors1555, 0, (width * 3 + 6) * 4);
+
+    for (uint32_t y = 0; y < height; y++) {
+        int32_t* next = &s_ditherErrors1555[((y - 1) & 1) * 0xC06];
+
+        next[2] = 0;
+        next[1] = 0;
+        next[0] = 0;
+        next[5] = 0;
+        next[4] = 0;
+        next[3] = 0;
+
+        int32_t* below = next + 1;
+        int32_t* cur = &s_ditherErrors1555[(y & 1) * 0xC06 + 6];
+
+        for (uint32_t x = 0; x < width; x++) {
+            const BlpPalPixel& color = palette[in[x]];
+
+            int32_t r = color.r * 0x10000 + (cur[-3] >> 4);
+            int32_t g = color.g * 0x10000 + (cur[-2] >> 4);
+            int32_t b = color.b * 0x10000 + (cur[-1] >> 4);
+
+            uint32_t br = static_cast<uint32_t>(b) + 0x40000;
+            uint32_t gr = static_cast<uint32_t>(g) + 0x40000;
+            uint32_t rr = static_cast<uint32_t>(r) + 0x40000;
+
+            int32_t r5 = static_cast<int32_t>(rr) >> 19;
+            int32_t g5 = static_cast<int32_t>(gr) >> 19;
+            int32_t b5 = static_cast<int32_t>(br) >> 19;
+
+            if (r5 < 0) {
+                r5 = 0;
+            } else if (r5 > 0x1F) {
+                r5 = 0x1F;
+            }
+
+            if (g5 < 0) {
+                g5 = 0;
+            } else if (g5 > 0x1F) {
+                g5 = 0x1F;
+            }
+
+            if (b5 < 0) {
+                b5 = 0;
+            } else if (b5 > 0x1F) {
+                b5 = 0x1F;
+            }
+
+            r = static_cast<int32_t>(static_cast<uint32_t>(r) - (rr & 0xFFF80000));
+            row[x] = static_cast<uint16_t>(((r5 << 5 | g5) << 5) | b5);
+            g = static_cast<int32_t>(static_cast<uint32_t>(g) - (gr & 0xFFF80000));
+            b = static_cast<int32_t>(static_cast<uint32_t>(b) - (br & 0xFFF80000));
+
+            cur[0] += r * 7;
+            cur[1] += g * 7;
+            cur[2] += b * 7;
+            below[-1] += r * 5;
+            below[0] += g * 5;
+            below[1] += b * 5;
+            below[2] += r * 3;
+            below[3] += g * 3;
+            below[4] += b * 3;
+            below[6] = g;
+            below[7] = b;
+            below[5] = r;
+
+            cur += 3;
+            below += 3;
+        }
+
+        in += width;
+        row += width;
+    }
+
+    char alphaSize = this->m_header.alphaSize;
+    uint32_t count = width * height;
+    uint32_t bit = 0;
+
+    if (alphaSize == 1) {
+        for (; count != 0; count--) {
+            uint8_t shift = static_cast<uint8_t>(bit);
+            bit++;
+
+            *out |= static_cast<uint16_t>((static_cast<uint16_t>(1 << (shift & 0x1F)) & static_cast<uint16_t>(*in)) << ((0xF - shift) & 0x1F));
+
+            if (bit > 7) {
+                bit = 0;
+                in++;
+            }
+
+            out++;
+        }
+    } else if (alphaSize == 4) {
+        for (; count != 0; count--) {
+            if (bit == 0) {
+                *out |= static_cast<uint16_t>((*in & 0xFFF8) << 12);
+                bit = static_cast<unsigned char>(this->m_header.alphaSize);
+            } else {
+                bit = 0;
+                *out |= static_cast<uint16_t>((*in & 0x80) << 8);
+                in++;
+            }
+
+            out++;
+        }
+    } else if (alphaSize == 8) {
+        for (; count != 0; count--) {
+            unsigned char a = *in;
+            in++;
+            *out |= static_cast<uint16_t>((a & 0x80) << 8);
+            out++;
+        }
+    }
+}
+
+// ref: FUN_006af140
+void CBLPFile::DecompPalRGB565DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height) {
+    const BlpPalPixel* palette = this->m_header.extended.palette;
+
+    memset(s_ditherErrors565, 0, (width * 3 + 6) * 4);
+
+    for (uint32_t y = 0; y < height; y++) {
+        int32_t* next = &s_ditherErrors565[((y - 1) & 1) * 0xC06];
+
+        next[2] = 0;
+        next[1] = 0;
+        next[0] = 0;
+        next[5] = 0;
+        next[4] = 0;
+        next[3] = 0;
+
+        int32_t* below = next + 1;
+        int32_t* cur = &s_ditherErrors565[(y & 1) * 0xC06 + 6];
+
+        for (uint32_t x = 0; x < width; x++) {
+            const BlpPalPixel& color = palette[in[x]];
+
+            int32_t r = color.r * 0x10000 + (cur[-3] >> 4);
+            int32_t g = color.g * 0x10000 + (cur[-2] >> 4);
+            int32_t b = color.b * 0x10000 + (cur[-1] >> 4);
+
+            uint32_t br = static_cast<uint32_t>(b) + 0x40000;
+            uint32_t gr = static_cast<uint32_t>(g) + 0x20000;
+            uint32_t rr = static_cast<uint32_t>(r) + 0x40000;
+
+            int32_t r5 = static_cast<int32_t>(rr) >> 19;
+            int32_t g6 = static_cast<int32_t>(gr) >> 18;
+            int32_t b5 = static_cast<int32_t>(br) >> 19;
+
+            if (r5 < 0) {
+                r5 = 0;
+            } else if (r5 > 0x1F) {
+                r5 = 0x1F;
+            }
+
+            if (g6 < 0) {
+                g6 = 0;
+            } else if (g6 > 0x3F) {
+                g6 = 0x3F;
+            }
+
+            if (b5 < 0) {
+                b5 = 0;
+            } else if (b5 > 0x1F) {
+                b5 = 0x1F;
+            }
+
+            r = static_cast<int32_t>(static_cast<uint32_t>(r) - (rr & 0xFFF80000));
+            out[x] = static_cast<uint16_t>(((r5 << 6 | g6) << 5) | b5);
+            g = static_cast<int32_t>(static_cast<uint32_t>(g) - (gr & 0xFFFC0000));
+            b = static_cast<int32_t>(static_cast<uint32_t>(b) - (br & 0xFFF80000));
+
+            cur[0] += r * 7;
+            cur[1] += g * 7;
+            cur[2] += b * 7;
+            below[-1] += r * 5;
+            below[0] += g * 5;
+            below[1] += b * 5;
+            below[2] += r * 3;
+            below[3] += g * 3;
+            below[4] += b * 3;
+            below[6] = g;
+            below[5] = r;
+            below[7] = b;
+
+            cur += 3;
+            below += 3;
+        }
+
+        in += width;
+        out += width;
+    }
+}
+
+// ref: FUN_006af6a0
+uint32_t CBLPFile::GetMipPixelCount(uint32_t mipLevel) {
+    uint32_t height = this->m_header.height >> (mipLevel & 0x1F);
+
+    if (height < 2) {
+        height = 1;
+    }
+
+    uint32_t width = this->m_header.width >> (mipLevel & 0x1F);
+
+    if (width < 2) {
+        width = 1;
+    }
+
+    return width * height;
+}
+
+// ref: FUN_006af730
+// Bytes in one mip level and bytes per row of it, for the uncompressed formats.
+int32_t CBLPFile::GetMipSize(PIXEL_FORMAT format, uint32_t mipLevel, uint32_t* size, uint32_t* stride) {
+    uint32_t width = this->m_header.width >> (mipLevel & 0x1F);
+
+    if (width < 2) {
+        width = 1;
+    }
+
+    uint32_t height = this->m_header.height >> (mipLevel & 0x1F);
+
+    if (height < 2) {
+        height = 1;
+    }
+
+    uint32_t pixels = height * width;
+    uint32_t alphaBytes = pixels >> 2;
+
+    if (alphaBytes == 0) {
+        alphaBytes = 1;
+    }
+
+    switch (format) {
+        case PIXEL_ARGB8888:
+            *size = pixels * 4;
+            *stride = width * 4;
+            return 1;
+
+        case PIXEL_ARGB1555:
+        case PIXEL_ARGB4444:
+        case PIXEL_RGB565:
+            *size = pixels * 2;
+            *stride = width * 2;
+            return 1;
+
+        case PIXEL_ARGB2565:
+            *size = alphaBytes + pixels * 2;
+            *stride = width * 2;
+            return 1;
+
+        default:
+            *size = 0;
+            *stride = 0;
+            return 0;
+    }
 }
 
 int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipLevel, unsigned char* data, uint32_t& stride) {
@@ -247,6 +528,19 @@ int32_t CBLPFile::Source(void* fileBits) {
         this->m_numLevels = CalcLevelCount(this->m_header.width, this->m_header.height);
     } else {
         this->m_numLevels = 1;
+    }
+
+    return 1;
+}
+
+// ref: FUN_006af6e0
+int32_t CBLPFile::Unlock(uint32_t mipLevel) {
+    if (this->m_lockDecompMem) {
+        SMemFree(this->m_lockDecompMem, __FILE__, __LINE__, 0);
+    }
+
+    if (mipLevel && (!(this->m_header.hasMips & 0xF) || mipLevel >= this->m_numLevels)) {
+        return 0;
     }
 
     return 1;

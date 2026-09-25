@@ -20,8 +20,12 @@ void FontFaceCloseHandle(HFACE handle) {
     }
 }
 
+// ref: FUN_006c8080
+// A null handle is a parameter error rather than an assertion: ERROR_INVALID_PARAMETER and no face.
 FT_Face FontFaceGetFace(HFACE handle) {
-    STORM_ASSERT(handle);
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END;
 
     return reinterpret_cast<FACEDATA*>(handle)->face;
 }

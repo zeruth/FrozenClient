@@ -13,6 +13,8 @@ class CM2Cache {
         // Member variables
         uint32_t m_initialized = 0;
         uint32_t m_flags = 0;
+        // +0xc: the tail link of the unreferenced-shared list (see CM2Shared::m_freePrev).
+        CM2Shared** m_freeListTail = nullptr;
 
         // Member functions
         void BeginThread(void (*callback)(void*), void* arg);

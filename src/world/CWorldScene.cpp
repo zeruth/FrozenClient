@@ -520,6 +520,31 @@ static void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vecto
     }
 }
 
+// Every plane starts as (0, 0, 1, 0), the corners and the first nine words past them are zeroed,
+// then the corners are copied in and the planes rebuilt from them.
+//
+// ref: FUN_00983fe0
+CWorldScene::Frustum::Frustum(const C3Vector* corners) {
+    for (int32_t i = 0; i < 6; i++) {
+        this->planes[i].n = { 0.0f, 0.0f, 1.0f };
+        this->planes[i].d = 0.0f;
+    }
+
+    for (int32_t i = 0; i < 8; i++) {
+        this->corners[i] = { 0.0f, 0.0f, 0.0f };
+    }
+
+    for (int32_t i = 0; i < 9; i++) {
+        this->unknownC0[i] = 0;
+    }
+
+    for (int32_t i = 0; i < 8; i++) {
+        this->corners[i] = corners[i];
+    }
+
+    this->ComputePlanes();
+}
+
 // ref: FUN_00984240
 void CWorldScene::Frustum::SetCorners(const C3Vector* corners) {
     for (int32_t i = 0; i < 8; i++) {

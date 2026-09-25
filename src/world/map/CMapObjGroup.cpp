@@ -83,6 +83,71 @@ CMapObjHitRecord* CMapObjGroup::AllocHitRecord(uint32_t indexCount, uint32_t fac
     return nullptr;
 }
 
+// A hit record with no pool space reserved: only the record count is checked.
+// ref: FUN_007a6140
+CMapObjHitRecord* CMapObjGroup::AllocHitRecord() {
+    uint32_t i = CMapObjGroup::s_hitRecordCount;
+
+    if (CMapObjGroup::s_hitRecordCount + 1 < 0x20) {
+        CMapObjGroup::s_hitRecordCount++;
+
+        CMapObjHitRecord* record = &CMapObjGroup::s_hitRecords[i];
+        record->placement = nullptr;
+        record->vertices = nullptr;
+        record->vertexCount = 0;
+        record->unused3 = 0;
+        record->indices = nullptr;
+        record->faces = nullptr;
+        record->indexCount = 0;
+        record->faceCount = 0;
+        record->minIndex = 0;
+        record->maxIndex = 0;
+        record->object = nullptr;
+        record->minIndex = 0xFFFF;
+
+        return record;
+    }
+
+    CMapObjGroup::s_hitFlags |= 0x1;
+
+    return nullptr;
+}
+
+// ref: FUN_007a6190
+uint16_t* CMapObjGroup::AllocHitIndices(uint32_t count) {
+    uint32_t start = CMapObjGroup::s_hitIndexPoolCount;
+
+    if (count + CMapObjGroup::s_hitIndexPoolCount < 0xc000) {
+        CMapObjGroup::s_hitIndexPoolCount = count + CMapObjGroup::s_hitIndexPoolCount;
+
+        return &CMapObjGroup::s_hitIndexPool[start];
+    }
+
+    CMapObjGroup::s_hitFlags |= 0x1;
+
+    return nullptr;
+}
+
+// Whether all three corners lie beyond the same face of the box, tested on the sign bits of the
+// differences as the reference does.
+// ref: FUN_007c7a00
+bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c) {
+    const float* bmin = &box.b.x;
+    const float* bmax = &box.t.x;
+    const float* pa = &a.x;
+    const float* pb = &b.x;
+    const float* pc = &c.x;
+
+    for (int32_t i = 0; i < 3; i++) {
+        if ((std::signbit(bmax[i] - pa[i]) && std::signbit(bmax[i] - pb[i]) && std::signbit(bmax[i] - pc[i]))
+            || (std::signbit(pa[i] - bmin[i]) && std::signbit(pb[i] - bmin[i]) && std::signbit(pc[i] - bmin[i]))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // ref: FUN_007c7610
 void CMapObjGroup::QueryEnd(SMOPoly* polys) {
     while (s_collideHitCount != 0) {

@@ -38,6 +38,10 @@ class CMapObj {
         CImVector m_ambientColor;             // +0x1a0: MOHD ambColor
         TSLink<CMapObj> m_link;               // +0x1c4: unlinked by CMap::FreeMapObj
 
+        // Static functions
+        // ref: FUN_007ae140
+        static uint32_t QuerySkipFlags(uint32_t queryFlags);
+
         // Member functions
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
 };

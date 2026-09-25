@@ -7,6 +7,7 @@
 #include "gx/Buffer.hpp"
 #include "gx/Texture.hpp"
 #include "storm/array/TSGrowableArray.hpp"
+#include <tempest/Box.hpp>
 #include <tempest/Quaternion.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Random.hpp>
@@ -531,6 +532,22 @@ class CM2ParticleEmitter {
         // The `index`-th spawned model in this subtree, or null. `index` is consumed as the walk
         // descends, which is how the recursion stays a flat enumeration. ref: FUN_0097ba70
         CM2Model* FindSpawnedModel(uint32_t& index) const;
+
+        // The emitter's bounds: the reference hands out the address of +0x218, where the min and
+        // max corners sit back to back. ref: FUN_00978be0
+        CAaBox* GetBounds();
+
+        // Move every live particle through `m` (unless flag 0x200 is set): positions as points,
+        // velocities as directions. Then the children. ref: FUN_0097aef0
+        void Transform(const C44Matrix& m);
+
+        // For this subtree: one per emitter that draws batched (m_drawFlags bit 0) and has a live
+        // particle. ref: FUN_0097bae0
+        uint32_t CountBatchedEmitters() const;
+
+        // For this subtree: the triangles the live particles cost, indices over three.
+        // ref: FUN_0097bb30
+        uint32_t CountTriangles() const;
 
         // Age every live particle by `dt`, integrating or killing each, then recurse into the
         // children. `fromParent` is non-zero when a parent is driving this emitter, and suppresses

@@ -52,6 +52,8 @@ class CWorldScene {
             C3Vector corners[8];                // +0x60
             uint32_t unknownC0[15];             // +0xc0: not read by the terrain traversal
 
+            Frustum() = default;
+            explicit Frustum(const C3Vector* corners);
             void SetCorners(const C3Vector* corners);
             void ComputePlanes();
             int32_t SphereInside(const CAaSphere& sphere);

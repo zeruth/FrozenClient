@@ -2395,6 +2395,71 @@ CM2Model* CM2ParticleEmitter::FindSpawnedModel(uint32_t& index) const {
     return nullptr;
 }
 
+// ref: FUN_00978be0
+CAaBox* CM2ParticleEmitter::GetBounds() {
+    return reinterpret_cast<CAaBox*>(&this->m_boundsMin);
+}
+
+// Positions go through the whole matrix, velocities through its 3x3 part only, both in place.
+// The live count is read once, before the walk.
+//
+// ref: FUN_0097aef0
+void CM2ParticleEmitter::Transform(const C44Matrix& m) {
+    if (!(this->m_flags & 0x200)) {
+        uint32_t count = this->m_liveIndices.Count();
+
+        for (uint32_t i = 0; i < count; i++) {
+            uint32_t index = this->m_liveIndices[i];
+
+            Particle* particle = this->m_particleKind == 0
+                ? &this->m_pool[index]
+                : static_cast<Particle*>(&this->m_modelPool[index]);
+
+            C3Vector moved;
+            TransformPointInPlace(moved, particle->m_position, m);
+
+            C3Vector& v = particle->m_velocity;
+            float x = v.x * m.a0 + v.z * m.c0 + v.y * m.b0;
+            float y = v.y * m.b1 + v.z * m.c1 + v.x * m.a1;
+            float oldX = v.x;
+            float oldY = v.y;
+            v.x = x;
+            v.y = y;
+            v.z = oldX * m.a2 + oldY * m.b2 + m.c2 * v.z;
+        }
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        this->m_children[c]->Transform(m);
+    }
+}
+
+// ref: FUN_0097bae0
+uint32_t CM2ParticleEmitter::CountBatchedEmitters() const {
+    uint32_t count = this->m_drawFlags & 1;
+
+    if (this->m_liveIndices.Count() <= count) {
+        count = this->m_liveIndices.Count();
+    }
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        count += this->m_children[c]->CountBatchedEmitters();
+    }
+
+    return count;
+}
+
+// ref: FUN_0097bb30
+uint32_t CM2ParticleEmitter::CountTriangles() const {
+    uint32_t count = (this->m_indicesPerParticle * this->m_liveIndices.Count()) / 3;
+
+    for (uint32_t c = 0; c < this->m_childCount; c++) {
+        count += this->m_children[c]->CountTriangles();
+    }
+
+    return count;
+}
+
 // Age every live particle, then recurse into the children.
 //
 // `fromParent` is zero only when the emitter is being stepped on its own account. A child driven

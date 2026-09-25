@@ -200,12 +200,13 @@ void CalcWrapPointNonBillboarded(const char* currentText, CGxFont* face, float f
     }
 }
 
+// ref: FUN_006c02f0
 int32_t CanWrapBetween(uint32_t codeA, uint32_t codeB) {
     if (!codeB) {
         return 0;
     }
 
-    if (codeB != '-' && codeB != ';' && codeB != '/' && codeA != ('|') && codeA != '\xFF\xFF\xFF\xFF') {
+    if (codeB != '-' && codeB != ';' && codeB != '/' && codeA != '|' && codeA != 0xFFFFFFFF) {
         if (iswspace(codeB)) {
             return 0;
         }

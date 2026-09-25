@@ -10,6 +10,13 @@
 
 uint16_t TEXTURECACHE::s_textureData[256 * 256];
 
+// ref: FUN_006c4340
+// Only the buffer, its size and the texture rectangle start zeroed (the member initializers); the
+// glyph metrics are left for the renderer to fill, as the reference leaves them.
+GLYPHBITMAPDATA::GLYPHBITMAPDATA() {
+}
+
+// ref: FUN_006c4360
 GLYPHBITMAPDATA::~GLYPHBITMAPDATA() {
     if (this->m_data) {
         SMemFree(this->m_data, __FILE__, __LINE__, 0x0);
@@ -18,7 +25,14 @@ GLYPHBITMAPDATA::~GLYPHBITMAPDATA() {
     this->m_data = nullptr;
 }
 
+// ref: FUN_006c4190
+// A move: the source gives up its buffer. Copying onto itself is a no-op, which the self check is
+// for -- without it the buffer would be freed and then copied back as a dangling pointer.
 void GLYPHBITMAPDATA::CopyFrom(GLYPHBITMAPDATA* data) {
+    if (this == data) {
+        return;
+    }
+
     if (this->m_data) {
         SMemFree(this->m_data, __FILE__, __LINE__, 0);
     }
@@ -950,6 +964,7 @@ const char* CGxFont::GetName(void) const {
     return FontFaceGetFontName(this->m_faceHandle);
 }
 
+// ref: FUN_006c2270
 uint32_t CGxFont::GetPixelSize() {
     return this->m_pixelSize;
 }

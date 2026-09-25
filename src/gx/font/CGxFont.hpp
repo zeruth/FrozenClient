@@ -26,7 +26,11 @@ class GLYPHBITMAPDATA {
         CRect m_textureCoords;
 
         // Member functions
+        // ref: FUN_006c4340
+        GLYPHBITMAPDATA();
+        // ref: FUN_006c4360
         ~GLYPHBITMAPDATA();
+        // ref: FUN_006c4190
         void CopyFrom(GLYPHBITMAPDATA*);
 };
 

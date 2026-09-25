@@ -50,6 +50,19 @@ struct M2SequenceInfo {
     uint32_t playMode;
 };
 
+// What CM2Model::GetBoneSequenceState reports about a bone's primary sequence: eight dwords in the
+// reference, in this order.
+struct M2BoneSequenceState {
+    uint32_t uint90;        // the bone's +0x90
+    uint32_t uint94;        // the bone's +0x94, zero-extended
+    int32_t currentTime;    // how far into the sequence the bone is, in sequence time
+    float speed;
+    uint32_t startTime;
+    uint32_t endTime;
+    uint32_t finished;
+    uint32_t pastDuration;  // currentTime has reached the sequence's duration
+};
+
 class CM2Model {
     public:
         // Static variables
@@ -218,6 +231,16 @@ class CM2Model {
         // `if (ptr2D0)` guards (FUN_00824b70, FUN_00829e40, FUN_00832dd0), and porting the
         // consumer alone would give frozen a function it must never call.
         void* ptr2D0 = nullptr;
+        // Membership in the scene's ray query list (CM2Scene::m_rayModelList), reference +0x2d4
+        // through +0x2e4. Written by the map's segment query (FUN_007a2760, not ported): the
+        // query kind (3 tests the collision box, anything else the current sequence's bounds),
+        // the list links, the map object that put the model there, and a key the triangle test
+        // compares.
+        uint32_t m_rayQueryType = 0;          // +0x2d4
+        CM2Model** m_rayPrev = nullptr;       // +0x2d8
+        CM2Model* m_rayNext = nullptr;        // +0x2dc
+        void* m_rayOwner = nullptr;           // +0x2e0
+        uint32_t m_rayKey = 0;                // +0x2e4
         uint32_t m_memHandle;
 
         // Member functions
@@ -315,6 +338,48 @@ class CM2Model {
         void UnsetBoneSequence(uint32_t boneId, int32_t a3, int32_t a4);
         void UpdateLoaded();
         void WaitForLoad(const char* a2);
+
+        // Queries and setters by id. Most wait for the model to load first, as the reference does
+        // inline; the setters queue a model call instead while it is still loading.
+        // ref: FUN_00824320
+        uint32_t GetSharedUint194();
+        // ref: FUN_00825ee0
+        bool HasSequence(uint32_t sequenceId);
+        // ref: FUN_00825f40
+        uint32_t ResolveSequenceFallback(uint32_t sequenceId);
+        // ref: FUN_008261b0
+        int32_t GetSequenceVariationCount(M2Data* data, uint32_t sequenceId);
+        // ref: FUN_008264b0
+        int32_t HasBone(uint32_t boneId);
+        // ref: FUN_008266b0
+        int32_t GetBoneSequenceState(uint32_t boneId, M2BoneSequenceState* state);
+        // ref: FUN_008267e0
+        uint32_t GetBoneUint90(uint32_t boneId);
+        // ref: FUN_00826870
+        uint32_t GetBoneSequenceId(uint32_t boneId, uint32_t* variationIndex);
+        // ref: FUN_00826930
+        float GetBoneSequenceSpeed(uint32_t boneId);
+        // ref: FUN_00826a60
+        bool BoneHasParent(uint32_t boneId);
+        // ref: FUN_00827000
+        void SetBoneSequenceSpeed(uint32_t boneId, float speed);
+        // ref: FUN_00827460
+        void GetAttachmentPosition(C3Vector* position, uint32_t id);
+        // ref: FUN_008275f0
+        int32_t HasEvent(uint32_t eventId);
+        // ref: FUN_00827670
+        int32_t GetEvent(uint32_t eventId, C3Vector** position, uint16_t* boneIndex);
+        // ref: FUN_008278e0
+        int32_t HasCamera(uint32_t cameraId);
+        // ref: FUN_00827960
+        HCAMERA GetCameraById(uint32_t cameraId);
+        // ref: FUN_008279f0
+        void SetParticleEmission(int32_t enable);
+        // ref: FUN_00831330
+        C3Vector GetAttachmentWorldPosition(uint32_t id);
 };
+
+// ref: FUN_00824a80
+void M2BuildBasisFromAxis(float* basis, const float* axis);
 
 #endif

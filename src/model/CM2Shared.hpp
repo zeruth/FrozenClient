@@ -67,6 +67,11 @@ class CM2Shared {
         M2SkinSection* m_skinSections = nullptr;
         uint32_t uint190 = 0;
         uint32_t uint194 = 0;
+        // The cache's list of shared models nobody references any more, reference +0x30 through
+        // +0x38. Only the unported half of Release links a shared in; AddRef unlinks it on revival.
+        CM2Shared** m_freePrev = nullptr;
+        CM2Shared* m_freeNext = nullptr;
+        uint32_t uint38 = 0;
 
         // Member functions
         CM2Shared(CM2Cache* cache)
@@ -80,7 +85,7 @@ class CM2Shared {
             , m_flag40(0)
             {};
         ~CM2Shared();
-        void AddRef();
+        uint32_t AddRef();
         int32_t CallbackWhenLoaded(CM2Model* model);
         CShaderEffect* CreateSimpleEffect(uint32_t textureCount, uint16_t shader, uint16_t textureCoordComboIndex);
         CShaderEffect* GetEffect(M2Batch* batch);

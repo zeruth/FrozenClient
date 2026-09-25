@@ -73,9 +73,8 @@ class CM2Ribbon {
         uint32_t m_head = 0;
         uint32_t m_tail = 0;
         uint32_t uint1C = 0;
-        uint32_t uint20 = 0;
-        uint32_t uint24 = 0;
-        uint32_t uint28 = 0;
+        // +0x20: a point, moved with the rest of the ribbon by Transform. Not read elsewhere yet.
+        C3Vector vec20 = {};
         // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's
         // translation row, so the geometry is stored relative to it.
         C3Vector m_origin = {};
@@ -98,7 +97,13 @@ class CM2Ribbon {
         float m_cellV0 = 0.0f;
         float m_cellU1 = 0.0f;
         float m_cellV1 = 0.0f;
-        uint32_t uint7C[30] = {};
+        // +0x7c, +0x88, +0x94, +0xa0: four directions, turned with the ribbon by Transform (as
+        // directions: no translation). Not read elsewhere yet.
+        C3Vector vec7C = {};
+        C3Vector vec88 = {};
+        C3Vector vec94 = {};
+        C3Vector vecA0 = {};
+        uint32_t uintAC[18] = {};
         // +0xf4 and +0x100: the bounds, born INVERTED -- min at +FLT_MAX and max at -FLT_MAX, the
         // same empty-box convention and the same two constants (0x009ea8fc, 0x00a37f1c) the
         // particle emitter uses.
@@ -128,9 +133,8 @@ class CM2Ribbon {
         // +0x160. Bit 0 is cleared by Initialize and set alongside bits 1..3; bit 2 is what
         // SetAbove drives. The rest is unread.
         uint32_t m_flags = 0;
-        uint32_t uint164 = 0;
-        uint32_t uint168 = 0;
-        uint32_t uint16C = 0;
+        // +0x164: a point, moved with the rest of the ribbon by Transform.
+        C3Vector vec164 = {};
         uint32_t uint170 = 0;
         // +0x174 and +0x178: both born 10.0 (0x009e30cc) in Initialize, not in the constructor.
         float float174 = 0.0f;
@@ -150,6 +154,20 @@ class CM2Ribbon {
         // Does this ribbon have any trail at all? CM2Scene::Animate asks before
         // spending an element on it.
         bool IsEmpty() const;
+
+        // Set or clear flag 0x8 from bit 0 of `enable`, dropping flag 0x1 when it ends up clear --
+        // SetAbove's pattern on the next bit.
+        void SetFlag8(int32_t enable);
+
+        // Move the ribbon through `m`: its points (+0x20, +0x164, every vertex) as points, its
+        // four directions through the 3x3 part.
+        void Transform(const C44Matrix& m);
+
+        // How many material passes the ribbon draws with.
+        uint32_t GetMaterialCount() const;
+
+        // The live span of the segment ring in vertices, two per segment.
+        uint32_t CountVertices() const;
 };
 
 #endif
