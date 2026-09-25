@@ -173,6 +173,11 @@ class CMapChunk : public CMapBaseObj {
         void FillVerticesLocalColor(CMapChunkVertexColor* dst);
         void ComputeBounds();
         void GetBounds(CAaBox* box);
+        // The terrain height at a point inside one of the chunk's cells, from the plane of
+        // whichever of that cell's four triangles the point lands in. False where the chunk has
+        // a hole there. `col` is the cell along y and `row` the cell along x, both already
+        // reduced to the chunk. ref: FUN_007ad3b0
+        bool HeightAt(const C3Vector& position, uint32_t col, uint32_t row, float* height);
         // Whether every detail doodad kind this chunk's texture layers call for has its
         // model in. Asking starts the loads. ref: FUN_007d05f0
         bool DetailDoodadsReady();

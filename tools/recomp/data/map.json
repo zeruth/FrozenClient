@@ -44807,16 +44807,16 @@
   "status": "ported"
  },
  "007a0820": {
-  "branchRatio": 0.583,
+  "branchRatio": 0.667,
   "constOverlap": 0.176,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainLiquid",
-  "frozenSize": 495,
+  "frozenSize": 580,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 422,
@@ -45317,6 +45317,22 @@
   "module": "Map.cpp",
   "refSize": 93,
   "status": "ported"
+ },
+ "007ad3b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapChunk.cpp",
+   "src/world/map/cmapchunk.cpp"
+  ],
+  "frozen": "CMapChunk::HeightAt",
+  "frozenSize": 646,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 833,
+  "status": "verified"
  },
  "007ae140": {
   "branchRatio": 1.0,

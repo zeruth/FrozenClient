@@ -842,14 +842,19 @@ bool CMap::GetTerrainLiquid(const C3Vector& position, uint32_t* liquidType, floa
             return true;
         }
 
-        // TODO FUN_007ad3b0 picks the terrain height under the point from the chunk's own
-        // triangles; the reference requires it to be below the point before it will call this
-        // liquid. Not ported, and its sentinel is a height of -10000, which is always below --
-        // so frozen answers the strict question the same way it answers the loose one. A point
-        // under solid ground with water above it would read as in the water.
-        *liquidType = liquid->m_liquidType;
+        // Strict: the ground under the point has to be below it too, or a point inside a
+        // cliff with water on the far side would read as swimming. A cell the chunk has a hole
+        // in leaves the height alone, and the sentinel is below everything, so a hole counts as
+        // open water -- which is what the reference does.
+        float ground = -10000.0f;
 
-        return true;
+        chunk->HeightAt(position, static_cast<uint32_t>(col), static_cast<uint32_t>(row), &ground);
+
+        if (ground < position.z + LIQUID_EPSILON) {
+            *liquidType = liquid->m_liquidType;
+
+            return true;
+        }
     }
 
     return false;

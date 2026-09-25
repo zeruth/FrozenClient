@@ -2838,6 +2838,7 @@ addr	how	frozen	evidence
 007ad020	annotated	CMapObj::UpdateAll	tag in src/world/map/CMapObj.cpp
 007ad1f0	annotated	CMapObj::WalkFromInside	tag in src/world/map/CMapObjDraw.cpp
 007ad350	annotated	CMapObj::WalkFromOutside	tag in src/world/map/CMapObjDraw.cpp
+007ad3b0	annotated	CMapChunk::HeightAt	tag in src/world/map/CMapChunk.cpp
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007ae1a0	annotated	CMapObj::ReadGroup	tag in src/world/map/CMapObj.cpp
 007ae1c0	annotated	CMapObj::WaitForRoot	tag in src/world/map/CMapObj.cpp

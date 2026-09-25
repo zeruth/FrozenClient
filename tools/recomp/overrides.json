@@ -100,6 +100,10 @@
     "status": "unlinked",
     "note": "CWorldScene::UpdateCameraLiquid -- what the camera is standing in and how deep, plus the underwater switch. NOT DetailDoodad::CreateBuffers, which the callorder matcher proposed here only because frozen calls CreateBuffers from the spot in CMap::Render where this one's TODO sits. Its own dependencies (FUN_007a0820, FUN_007c8360, FUN_0079b8e0, FUN_0079b360, FUN_008a2aa0, FUN_007f1070) are all unported"
   },
+  "007ad3b0": {
+    "status": "verified",
+    "note": "CMapChunk::HeightAt. run 2026-09-25: probed 120 cell centres across the loaded map and every one came back with that cell's own centre vertex height, worst error 0.0008 yards, mean 0.0001. That is the four-triangle fan reproducing the vertex it fans from, which nothing but a correct triangle pick and plane solve does. Against Terrain.cpp's bilinear stand-in, 373 of 400 sample points agreed within half a yard and 27 did not, worst 2.6 -- the stand-in interpolates over the outer nine-by-nine grid only and never reads the inner vertices, so those are the stand-in being wrong, not this"
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",

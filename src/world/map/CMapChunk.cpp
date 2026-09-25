@@ -482,6 +482,73 @@ void CMapChunk::UpdateLiquidVisibility() {
     }
 }
 
+// Where the cell's centre vertex sits relative to its first corner: half a cell in each
+// direction. The reference keeps it as the fifth entry of the corner table. DAT_00adfc94
+static const float CELL_MID_X = -2.0833332538604736f;
+static const float CELL_MID_Y = -2.0833332538604736f;
+
+// ref: FUN_007ad3b0
+// A cell is four triangles meeting at its centre vertex, so the height comes from whichever of
+// them the point is in: two cross products against the cell's diagonals pick it, and the plane
+// through the centre and that triangle's two corners gives the height.
+//
+// The reference scales the plane by an approximate reciprocal square root before solving. Every
+// term carries that factor and the division cancels it, so it makes no difference to the answer
+// and is left out.
+bool CMapChunk::HeightAt(const C3Vector& position, uint32_t col, uint32_t row, float* height) {
+    col &= 7;
+    row &= 7;
+
+    if (s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
+        return false;
+    }
+
+    float baseX = static_cast<float>(row) * -CELL_SIZE;
+    float baseY = static_cast<float>(col) * -CELL_SIZE;
+
+    float midX = baseX + CELL_MID_X;
+    float midY = baseY + CELL_MID_Y;
+
+    float px = position.x - this->m_position.x;
+    float py = position.y - this->m_position.y;
+
+    // Which side of each diagonal the point falls on. Corner 2 is the far corner and corner 0
+    // the near one; corners 1 and 3 are the other pair.
+    float d1 = ((baseY - CELL_SIZE) - py) * -CELL_SIZE - ((baseX - CELL_SIZE) - px) * -CELL_SIZE;
+    float d2 = (baseY - py) * -CELL_SIZE - ((baseX - CELL_SIZE) - px) * CELL_SIZE;
+
+    uint32_t tri = d1 <= 0.0f ? 1 : 0;
+
+    if (d2 <= 0.0f) {
+        tri += 2;
+    }
+
+    const float* heights = this->m_heights + (row * 17 + col);
+
+    float ax = baseX + DetailDoodad::CELL_CORNER[DetailDoodad::TRI_CORNER[tri][0]][0];
+    float ay = baseY + DetailDoodad::CELL_CORNER[DetailDoodad::TRI_CORNER[tri][0]][1];
+    float bx = baseX + DetailDoodad::CELL_CORNER[DetailDoodad::TRI_CORNER[tri][1]][0];
+    float by = baseY + DetailDoodad::CELL_CORNER[DetailDoodad::TRI_CORNER[tri][1]][1];
+
+    float ha = heights[DetailDoodad::TRI_VERTEX[tri][0]];
+    float hb = heights[DetailDoodad::TRI_VERTEX[tri][1]];
+    float hm = heights[9];
+
+    float nx = (hb - hm) * (ay - midY) - (ha - hm) * (by - midY);
+    float ny = (ha - hm) * (bx - midX) - (hb - hm) * (ax - midX);
+    float nz = (by - midY) * (ax - midX) - (bx - midX) * (ay - midY);
+
+    if (nz == 0.0f) {
+        return false;
+    }
+
+    float d = -(midX * nx + midY * ny + nz * hm);
+
+    *height = -((nx * px + ny * py + d) / nz) + this->m_position.z;
+
+    return true;
+}
+
 // ref: FUN_007d05f0
 // A chunk scatters grass only once every kind its layers call for is loaded, or it would come up
 // in pieces as the models arrived. Each layer names one ground effect, and each of those names up
