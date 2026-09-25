@@ -2770,7 +2770,7 @@ addr	how	frozen	evidence
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
-007983b0	callgraph	TSBaseArray<CMapObjDefGroup *>::operator[]	only unmatched callee of 00799310=CWorldScene::MarkMapObjGroupVisible
+007983b0	override	CWFrustum::Alloc	
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
 00799310	annotated	CWorldScene::MarkMapObjGroupVisible	tag in src/world/CWorldScene.cpp
@@ -2800,6 +2800,7 @@ addr	how	frozen	evidence
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp
+007abf50	annotated	CMapObj::Render	tag in src/world/map/CMapObjDraw.cpp
 007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
 007ac9f0	annotated	CMapObjGroup::DrawBatchesSplit	tag in src/world/map/CMapObjDraw.cpp
 007ad020	annotated	CMapObj::UpdateAll	tag in src/world/map/CMapObj.cpp
@@ -4158,11 +4159,11 @@ addr	how	frozen	evidence
 009836b0	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
-00983d20	annotated	CWorldScene::Frustum::SphereInside	tag in src/world/CWorldScene.cpp
+00983d20	annotated	CWFrustum::SphereInside	tag in src/world/CWorldScene.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
-00983e70	annotated	CWorldScene::Frustum::ComputePlanes	tag in src/world/CWorldScene.cpp
-00983fe0	annotated	CWorldScene::Frustum::Frustum	tag in src/world/CWorldScene.cpp
-00984240	annotated	CWorldScene::Frustum::SetCorners	tag in src/world/CWorldScene.cpp
+00983e70	annotated	CWFrustum::ComputePlanes	tag in src/world/CWorldScene.cpp
+00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWorldScene.cpp
+00984240	annotated	CWFrustum::SetCorners	tag in src/world/CWorldScene.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp

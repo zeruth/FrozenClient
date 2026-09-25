@@ -26,7 +26,7 @@ STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWo
 CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
 C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
-CWorldScene::Frustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
+CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
 int32_t CWorldScene::s_frustumDepth;
 C3Vector CWorldScene::s_cameraTarget;
 C3Vector CWorldScene::s_viewDir;
@@ -61,7 +61,9 @@ CMapObjDef* CWorldScene::s_visibleCallbackDef;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) CWorldScene::s_mapObjDefGroupCandidates;
 const int32_t CWorldScene::s_quadrantVertex[4] = { 0, 8, 0x88, 0x90 };
 
-static_assert(sizeof(CWorldScene::Frustum) == 0xfc, "a traversal frustum is 0xfc bytes");
+// The reference record is 0xfc bytes: 0xf4 of data and an 8-byte link. The link is
+// wider here, so only the data part can match.
+static_assert(offsetof(CWFrustum, unknownC0) == 0xc0, "a traversal frustum is six planes then eight corners");
 
 // The box corner each of the eight corners takes from the min (0) or max (1) per axis
 // (DAT_00adf3f4, DAT_00adf414, DAT_00adf434)
@@ -542,7 +544,7 @@ static void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vecto
 // then the corners are copied in and the planes rebuilt from them.
 //
 // ref: FUN_00983fe0
-CWorldScene::Frustum::Frustum(const C3Vector* corners) {
+CWFrustum::CWFrustum(const C3Vector* corners) {
     for (int32_t i = 0; i < 6; i++) {
         this->planes[i].n = { 0.0f, 0.0f, 1.0f };
         this->planes[i].d = 0.0f;
@@ -564,7 +566,7 @@ CWorldScene::Frustum::Frustum(const C3Vector* corners) {
 }
 
 // ref: FUN_00984240
-void CWorldScene::Frustum::SetCorners(const C3Vector* corners) {
+void CWFrustum::SetCorners(const C3Vector* corners) {
     for (int32_t i = 0; i < 8; i++) {
         this->corners[i] = corners[i];
     }
@@ -575,7 +577,7 @@ void CWorldScene::Frustum::SetCorners(const C3Vector* corners) {
 // ref: FUN_00983e70
 // The four side planes and the far plane from the corners; the near plane is the far plane
 // turned around through a near corner
-void CWorldScene::Frustum::ComputePlanes() {
+void CWFrustum::ComputePlanes() {
     PlaneFromPoints(&this->planes[0], this->corners[1], this->corners[5], this->corners[6]);
     PlaneFromPoints(&this->planes[1], this->corners[0], this->corners[7], this->corners[4]);
     PlaneFromPoints(&this->planes[2], this->corners[0], this->corners[4], this->corners[5]);
@@ -590,7 +592,7 @@ void CWorldScene::Frustum::ComputePlanes() {
 
 // ref: FUN_00983d20
 // Non-zero while the sphere is not entirely behind any plane
-int32_t CWorldScene::Frustum::SphereInside(const CAaSphere& sphere) {
+int32_t CWFrustum::SphereInside(const CAaSphere& sphere) {
     int32_t last = 0;
 
     for (int32_t i = 0; i < 6; i++) {
@@ -1007,7 +1009,7 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
 void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
     C3Vector point = { 0.0f, 0.0f, 0.0f };
     int32_t culling = (CWorld::s_enables & CWorld::Enables::Enable_Culling) && rowIndex <= 0x3e;
-    const Frustum& frustum = CWorldScene::s_frustums[CWorldScene::s_frustumDepth];
+    const CWFrustum& frustum = CWorldScene::s_frustums[CWorldScene::s_frustumDepth];
 
     for (auto chunk = row->chunks.Head(); chunk; ) {
         auto next = row->chunks.Next(chunk);
@@ -1123,9 +1125,21 @@ void CWorldScene::MarkMapObjGroupVisible(uint32_t groupIndex, CMapObjDef* def) {
         defGroup->m_flags &= ~0x8000u;
     }
 
-    // TODO DAT_00cfbeb8: set while the interior pass is drawing, which flags the group as seen
-    // from inside; then a CWFrustum record of the current frustum is pooled and hung off the
-    // group so the render pass can clip to what the portal left
+    // The portal walk sets this while it is inside a room, so a group first reached from in
+    // there is marked as seen from inside.
+    if (CMapObj::s_interiorFog) {
+        defGroup->m_flags |= 0x8000;
+    }
+
+    // What the view had been narrowed to when the traversal arrived. A group reached through
+    // two doorways collects two of these and draws once per doorway, clipped to each.
+    auto record = CWFrustum::Alloc();
+
+    if (record) {
+        *record = CWorldScene::s_frustums[CWorldScene::s_frustumDepth];
+
+        defGroup->m_frustums.LinkToTail(record);
+    }
 }
 
 // ref: FUN_007b3a10

@@ -76,6 +76,15 @@
     "status": "ported",
     "note": "the FixedFunc block of an effect file. Lives in an anonymous namespace in CShaderEffectManager.cpp, so the PDB carries no qualified name to match on"
   },
+  "007983b0": {
+    "frozen": "CWFrustum::Alloc",
+    "status": "ported",
+    "note": "takes a view-frustum record off the pool, or makes one. Ghidra names it TSBaseArray<CMapObjDefGroup *>::operator[] from a neighbouring template; the RTTI string it allocates against says CWFrustum, which is where frozen's class name comes from"
+  },
+  "00790020": {
+    "status": "excluded",
+    "note": "a 0xf4-byte struct copy of one CWFrustum onto another, which the compiler emitted out of line. frozen writes the assignment at each call site"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

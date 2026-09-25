@@ -44159,7 +44159,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::BucketMapObjDefGroups",
-  "frozenSize": 589,
+  "frozenSize": 600,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 419,
@@ -44234,10 +44234,12 @@
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
-  "frozen": "TSBaseArray<CMapObjDefGroup *>::operator[]",
-  "frozenSize": 142,
-  "how": "callgraph",
+  "files": [
+   "src/world/CWFrustum.cpp"
+  ],
+  "frozen": "CWFrustum::Alloc",
+  "frozenSize": 259,
+  "how": "override",
   "module": "WorldParam.cpp",
   "refSize": 230,
   "status": "ported"
@@ -44275,16 +44277,16 @@
   "status": "ported"
  },
  "00799310": {
-  "branchRatio": 0.429,
+  "branchRatio": 0.714,
   "constOverlap": 0.176,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::MarkMapObjGroupVisible",
-  "frozenSize": 0,
+  "frozenSize": 677,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 281,
@@ -44348,7 +44350,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 636,
+  "frozenSize": 797,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -44701,6 +44703,21 @@
   "refSize": 895,
   "status": "ported"
  },
+ "007abf50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::Render",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 262,
+  "status": "ported"
+ },
  "007ac6a0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -44965,7 +44982,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::VisitMapObjDefGroup",
-  "frozenSize": 867,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 266,
@@ -46519,7 +46536,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDefGroup",
-  "frozenSize": 520,
+  "frozenSize": 551,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 103,
@@ -66153,7 +66170,7 @@
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
-  "frozen": "CWorldScene::Frustum::SphereInside",
+  "frozen": "CWFrustum::SphereInside",
   "frozenSize": 0,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
@@ -66185,7 +66202,7 @@
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
-  "frozen": "CWorldScene::Frustum::ComputePlanes",
+  "frozen": "CWFrustum::ComputePlanes",
   "frozenSize": 0,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
@@ -66199,10 +66216,10 @@
   "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
-   "src/world/cworldscene.hpp"
+   "src/world/cwfrustum.hpp"
   ],
-  "frozen": "CWorldScene::Frustum::Frustum",
-  "frozenSize": 0,
+  "frozen": "CWFrustum::CWFrustum",
+  "frozenSize": 133,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 599,
@@ -66217,7 +66234,7 @@
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
-  "frozen": "CWorldScene::Frustum::SetCorners",
+  "frozen": "CWFrustum::SetCorners",
   "frozenSize": 432,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",

@@ -8,6 +8,7 @@
 #include "world/CWorldScene.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
 
 #include "gx/CGxBatch.hpp"
 #include "gx/CGxDevice.hpp"
@@ -560,4 +561,45 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
     }
 
     GxRsPop();
+}
+
+// ref: FUN_007abf50
+// One group of one building, drawn once per record the traversal left on it. A group whose
+// vertex colours are baked takes the three-range draw; one without them takes the flat one.
+void CMapObj::Render(uint32_t groupIndex, CMapObjDefGroup* defGroup) {
+    auto group = this->GetGroup(groupIndex, 0);
+
+    if (!group) {
+        return;
+    }
+
+    if (!(group->m_state & 0x2)) {
+        // TODO FUN_007d78c0: bake the light coming through this group's portals into its
+        // vertex colours. The state bit is set here either way, as the reference does, so it
+        // is attempted once; until the bake lands the group draws its authored colours.
+        group->m_state |= 0x2;
+    }
+
+    // TODO FUN_00872e40: refresh the sun from the shared material block at 0x00ce04a8 + 0x58.
+    CShaderEffect::UpdateProjMatrix();
+
+    int32_t index = 0;
+
+    for (auto record = defGroup->m_frustums.Head(); record; record = defGroup->m_frustums.Next(record)) {
+        CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = *record;
+
+        // TODO FUN_0078fb00(defGroup): the clip volume the doorway itself cut out, which is
+        // narrower than the frustum the record carries.
+
+        if (group->m_colors) {
+            group->DrawBatchesSplit(index);
+        } else {
+            group->DrawBatches(index);
+        }
+
+        index++;
+    }
+
+    // TODO the two debug passes the world enables gate: bounding volumes (0x40000000) and
+    // portals (0x1000).
 }

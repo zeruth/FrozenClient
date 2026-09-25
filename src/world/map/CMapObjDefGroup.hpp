@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_DEF_GROUP_HPP
 #define WORLD_MAP_C_MAP_OBJ_DEF_GROUP_HPP
 
+#include "world/CWFrustum.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
@@ -21,7 +22,11 @@ class CMapObjDefGroup : public CMapBaseObj {
         float m_sortDistance = 0.0f;         // +0x4c: along the camera forward
         uint32_t m_groupIndex = 0;           // +0x50: into the root's groups
         CImVector m_ambientColor;            // +0x5c: taken from the def
-        // TODO +0x54, +0x60..+0x74
+        // TODO +0x54, +0x60..+0x6c
+        // What the traversal left of the view each time it reached this group, one record per
+        // doorway. The render pass draws the group once per record, clipped to it, and gives
+        // them all back afterwards (+0x6c).
+        STORM_EXPLICIT_LIST(CWFrustum, link) m_frustums;
         // Its place in the frame's candidate list and then in the distance row the
         // bucketing put it in (+0xa8): one link, because it is only ever in one of them
         TSLink<CMapObjDefGroup> m_rowLink;

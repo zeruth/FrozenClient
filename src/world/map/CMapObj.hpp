@@ -13,6 +13,7 @@
 #include <cstdint>
 
 class CAsyncObject;
+class CMapObjDefGroup;
 class CShaderEffect;
 
 // MOHD: the WMO root header, 64 bytes, the first chunk after MVER.
@@ -135,6 +136,9 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static const int32_t SHADER_LEVEL = 5;
 
         void UpdateMaterialColors();
+
+        // ref: FUN_007abf50
+        void Render(uint32_t groupIndex, CMapObjDefGroup* defGroup);
 
         // --- draw state -------------------------------------------------------------------
         // What the draw last set, so a run of batches sharing a setting pushes it once. The

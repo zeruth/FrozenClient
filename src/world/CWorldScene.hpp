@@ -5,6 +5,7 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
 #include "gx/Texture.hpp"
+#include "world/CWFrustum.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -43,22 +44,6 @@ class CWorldScene {
                 float color[4];
                 float attenuation[4];           // constant, linear, quadratic
             } lights[3];                        // c28-c36: the nearest point lights
-        };
-
-        // A view frustum as the traversal keeps it (reference 0xfc bytes at DAT_00cdb168, one per
-        // portal recursion depth): six planes facing inward and the eight world-space corners they
-        // were built from, near face first (corners 0-3), far face after (4-7), each face going
-        // (-x,-y) (-x,+y) (+x,+y) (+x,-y) in clip space.
-        struct Frustum {
-            C4Plane planes[6];                  // +0x00: side, side, side, side, far, near
-            C3Vector corners[8];                // +0x60
-            uint32_t unknownC0[15];             // +0xc0: not read by the terrain traversal
-
-            Frustum() = default;
-            explicit Frustum(const C3Vector* corners);
-            void SetCorners(const C3Vector* corners);
-            void ComputePlanes();
-            int32_t SphereInside(const CAaSphere& sphere);
         };
 
         // A list slot of a distance row whose element type is not ported yet (a TSExplicitList's
@@ -125,7 +110,7 @@ class CWorldScene {
         static Row s_rows[ROW_COUNT];                       // DAT_00cd9048
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
-        static Frustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
+        static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
         static int32_t s_frustumDepth;                      // DAT_00cd8798
         static C3Vector s_cameraTarget;                     // DAT_00cd8f68
         static C3Vector s_viewDir;                          // DAT_00cd8f74: unit camera-to-target
