@@ -62,6 +62,7 @@ STORM_EXPLICIT_LIST(CMapObjDefGroup, m_lameAssLink) CMap::s_mapObjDefGroupList;
 STORM_EXPLICIT_LIST(CMapBaseObj, m_lameAssLink) CMap::s_entityList;
 STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) CMap::s_lightList;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_renderChunkFreeList;
+STORM_EXPLICIT_LIST(CMapObj, m_link) CMap::s_mapObjLoadList;
 
 uint8_t CMap::s_chunkVerticesWorldSpace;
 int32_t CMap::s_terrainVertexFormat;

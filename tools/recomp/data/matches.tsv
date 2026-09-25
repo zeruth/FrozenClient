@@ -75,7 +75,7 @@ addr	how	frozen	evidence
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
-004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync, 007d7150=CMapArea::BeginLoad
+004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync, 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
 00422130	override	SFile::IsStreamingMode	
@@ -650,7 +650,7 @@ addr	how	frozen	evidence
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 0083da10=CM2Shared::LoadSequence
+004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 0083da10=CM2Shared::LoadSequence
 004bab50	override	AsyncFileReadObject	
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners
@@ -2783,6 +2783,7 @@ addr	how	frozen	evidence
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
+007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
 007b4830	annotated	CMap::AreaDistanceSq	tag in src/world/map/CMap.cpp
 007b4df0	annotated	CMap::UpdateAreaChunks	tag in src/world/map/CMap.cpp
@@ -2962,6 +2963,11 @@ addr	how	frozen	evidence
 007d7020	annotated	CMapArea::LoadCallback	tag in src/world/map/CMapArea.cpp
 007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
 007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
+007d72d0	annotated	CMapObj::ClearMaterialTextures	tag in src/world/map/CMapObj.cpp
+007d7470	annotated	CMapObj::ParseChunks	tag in src/world/map/CMapObj.cpp
+007d7eb0	annotated	CMapObj::ReadComplete	tag in src/world/map/CMapObj.cpp
+007d8050	annotated	CMapObj::ReadCallback	tag in src/world/map/CMapObj.cpp
+007d80c0	annotated	CMapObj::Read	tag in src/world/map/CMapObj.cpp
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp

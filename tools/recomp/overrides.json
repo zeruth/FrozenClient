@@ -4,6 +4,22 @@
     "status": "ported",
     "note": "lapi.c lua_isnumber: callees index2adr + luaV_tonumber, 1195 callers; pinned 2026-09-23 after the callgraph matcher re-paired it with fprintf and 31 Script_ ports lost fidelity"
   },
+  "007b0690": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"
+  },
+  "007b0c60": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Insert instantiation: Initialize on first use, MonitorFullness, link into the slot and the full list, then store the hashval; squall instantiates the template"
+  },
+  "007b0990": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Initialize instantiation: slot mask 3 and four empty slot lists; squall template"
+  },
+  "007b0bc0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObj, HASHKEY_NONE>::MonitorFullness instantiation: grows the slot array when a chain runs past 13; squall template"
+  },
   "0079f820": {
     "status": "excluded",
     "note": "Storm TSLink::Unlink, one COMDAT body (22 callers in Map.cpp); squall template"

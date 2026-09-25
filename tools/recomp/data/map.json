@@ -44440,6 +44440,22 @@
   "refSize": 200,
   "status": "ported"
  },
+ "007b0cc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::Create",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
  "007b47f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -46660,7 +46676,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::SampleColorAtFace",
-  "frozenSize": 1132,
+  "frozenSize": 1150,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 882,
@@ -47304,6 +47320,86 @@
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 125,
+  "status": "ported"
+ },
+ "007d72d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::ClearMaterialTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 49,
+  "status": "ported"
+ },
+ "007d7470": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.068,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::ParseChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 657,
+  "status": "ported"
+ },
+ "007d7eb0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::ReadComplete",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 154,
+  "status": "ported"
+ },
+ "007d8050": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::ReadCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "007d80c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::Read",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 251,
   "status": "ported"
  },
  "007d9990": {

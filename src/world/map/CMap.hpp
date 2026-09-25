@@ -10,6 +10,7 @@
 #include "world/map/CMapDoodadDef.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapLight.hpp"
+#include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
@@ -78,6 +79,9 @@ class CMap {
         static STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) s_lightList;                 // 0x00aeedd4
         // Render chunks are not pooled through ObjectAlloc: freed ones wait here for reuse
         static STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) s_renderChunkFreeList;        // 0x00aeed74
+        // The WMO roots with a file read in flight (0x00adfc4c); a root leaves it in its
+        // postload callback
+        static STORM_EXPLICIT_LIST(CMapObj, m_link) s_mapObjLoadList;
 
         // Chunk vertex mode, decided at map load (DAT_00ce049f): non-zero keeps every chunk's
         // vertices in world space in one shared buffer; zero keeps them chunk-local and folds

@@ -1,48 +1,181 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_HPP
 #define WORLD_MAP_C_MAP_OBJ_HPP
 
+#include "gx/Texture.hpp"
+#include <storm/Array.hpp>
+#include <storm/Hash.hpp>
 #include <storm/List.hpp>
+#include <tempest/Box.hpp>
+#include <tempest/Plane.hpp>
 #include <tempest/Segment.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CAsyncObject;
 class CMapObjGroup;
 
-// MOMT: one material of a WMO (64 bytes). The group queries only read texture1, to tell a
-// textured face from an untextured one.
-struct SMOMaterial {
-    uint32_t flags;
-    uint32_t shader;
-    uint32_t blendMode;
-    uint32_t texture1;
-    uint32_t sidnColor;
-    uint32_t frameSidnColor;
-    uint32_t texture2;
-    uint32_t diffColor;
-    uint32_t groundType;
-    uint32_t texture3;
-    uint32_t color3;
-    uint32_t flags3;
-    uint32_t runtime[4];
+// MOHD: the WMO root header, 64 bytes, the first chunk after MVER.
+struct SMOHeader {
+    uint32_t nTextures;         // +0x00
+    uint32_t nGroups;           // +0x04
+    uint32_t nPortals;          // +0x08
+    uint32_t nLights;           // +0x0c
+    uint32_t nDoodadNames;      // +0x10
+    uint32_t nDoodadDefs;       // +0x14
+    uint32_t nDoodadSets;       // +0x18
+    CImVector ambColor;         // +0x1c
+    uint32_t wmoID;             // +0x20
+    CAaBox bounds;              // +0x24
+    uint16_t flags;             // +0x3c: bit 0 attenuates vertex colour, bit 2 keeps the unshifted
+                                //   liquid type, bit 3 skips the MOCV fixup
+    uint16_t numLod;            // +0x3e
 };
 
-// A loaded WMO root: what its groups reach through their m_mapObj pointer. Only the fields the
-// ported group queries read are here; reference offsets are noted per field.
-class CMapObj {
+static_assert(sizeof(SMOHeader) == 0x40, "SMOHeader is 64 bytes");
+
+// MOGI: one group's entry in the root, 32 bytes. The root keeps these so it can cull and place a
+// group before its own file has arrived.
+struct SMOGroupInfo {
+    uint32_t flags;             // +0x00: the group's MOGP flags; bit 18 (0x40000) is the skybox flag
+    CAaBox bounds;              // +0x04
+    int32_t nameOffset;         // +0x1c: into MOGN, or -1
+};
+
+static_assert(sizeof(SMOGroupInfo) == 0x20, "SMOGroupInfo is 32 bytes");
+
+// MOPT: one portal, 20 bytes. The vertices are MOPV entries.
+struct SMOPortal {
+    uint16_t startVertex;       // +0x00
+    uint16_t count;             // +0x02
+    C4Plane plane;              // +0x04
+};
+
+static_assert(sizeof(SMOPortal) == 0x14, "SMOPortal is 20 bytes");
+
+// MOPR: one portal reference from a group, 8 bytes.
+struct SMOPortalRef {
+    uint16_t portalIndex;       // +0x00
+    uint16_t groupIndex;        // +0x02
+    int16_t side;               // +0x04: which side of the portal's plane the group is on
+    uint16_t pad;               // +0x06
+};
+
+static_assert(sizeof(SMOPortalRef) == 0x8, "SMOPortalRef is 8 bytes");
+
+// MOMT: one material of a WMO (64 bytes). The group queries only read texture1, to tell a
+// textured face from an untextured one; the loader fills the two texture handles at the end.
+struct SMOMaterial {
+    uint32_t flags;             // +0x00
+    uint32_t shader;            // +0x04
+    uint32_t blendMode;         // +0x08
+    uint32_t texture1;          // +0x0c: offset into MOTX
+    uint32_t sidnColor;         // +0x10
+    uint32_t frameSidnColor;    // +0x14
+    uint32_t texture2;          // +0x18: offset into MOTX
+    uint32_t diffColor;         // +0x1c
+    uint32_t groundType;        // +0x20
+    uint32_t texture3;          // +0x24
+    uint32_t color3;            // +0x28
+    uint32_t flags3;            // +0x2c
+    uint32_t runtime[4];        // +0x30: the file leaves these for the client
+};
+
+static_assert(sizeof(SMOMaterial) == 0x40, "SMOMaterial is 64 bytes");
+
+// The two texture handles a material draws with. The reference keeps them inside the material's
+// own runtime bytes (+0x38 and +0x3c) and so writes into the file buffer; a handle is eight
+// bytes on 64-bit and two would not fit there, so frozen keeps them in an array beside the
+// materials with the same lifetime (diverged).
+struct SMOMaterialTextures {
+    HTEXTURE texture1 = nullptr;
+    HTEXTURE texture2 = nullptr;
+};
+
+// A loaded WMO root (reference 0x9f8 bytes). One instance per distinct .wmo path: the defs that
+// place it share it through the name cache and a reference count.
+//
+// The reference's field offsets are noted per field. They hold from m_name (+0x1c) on; the hash
+// fields above it sit at +0x04..+0x18 there and the memory handle at +0x00, which is the one
+// place frozen's layout differs (the base class has to come first here).
+class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
     public:
-        // Member variables
-        uint32_t m_memHandle = 0;             // +0: CMap::s_mapObjHeap slot (CMap::AllocMapObj)
-        uint32_t m_mohdFlags = 0;             // +0x120 -> +0x3c: the MOHD header's flags
-        SMOMaterial* m_materials = nullptr;   // +0x160: MOMT
-        uint32_t m_materialCount = 0;
-        CImVector m_ambientColor;             // +0x1a0: MOHD ambColor
-        TSLink<CMapObj> m_link;               // +0x1c4: unlinked by CMap::FreeMapObj
+        // Static variables
+        // Every loaded root by SStrHash of its path (DAT_00d1c428): Create hands back the one
+        // that is already there and counts a reference instead of reading the file twice.
+        static TSHashTable<CMapObj, HASHKEY_NONE> s_cache;
 
         // Static functions
         // ref: FUN_007ae140
         static uint32_t QuerySkipFlags(uint32_t queryFlags);
+        // ref: FUN_007b0cc0
+        static CMapObj* Create(const char* path);
+        // ref: FUN_007d8050
+        static void ReadCallback(void* arg);
+
+        // Member variables
+        uint32_t m_memHandle = 0;                 // +0x00: CMap::s_mapObjHeap slot
+        char m_name[260] = {};                    // +0x1c: the path the root was read from
+
+        // The file's chunks, pointed straight into m_fileBuffer (nothing here is owned)
+        SMOHeader* m_mohd = nullptr;              // +0x120
+        const char* m_motx = nullptr;             // +0x124: texture name block
+        const char* m_mogn = nullptr;             // +0x128: group name block
+        const char* m_mosb = nullptr;             // +0x12c: skybox model name, null when empty
+        SMOGroupInfo* m_mogi = nullptr;           // +0x130
+        const C3Vector* m_mopv = nullptr;         // +0x134: portal vertices
+        SMOPortal* m_mopt = nullptr;              // +0x138
+        const SMOPortalRef* m_mopr = nullptr;     // +0x13c
+        const C3Vector* m_movv = nullptr;         // +0x140: visible block vertices
+        const uint8_t* m_movb = nullptr;          // +0x144: visible blocks, 4 bytes each
+        const uint8_t* m_molt = nullptr;          // +0x148: lights, 0x30 bytes each
+        const uint8_t* m_mods = nullptr;          // +0x14c: doodad sets, 0x20 bytes each
+        const char* m_modn = nullptr;             // +0x150: doodad name block
+        const uint8_t* m_modd = nullptr;          // +0x154: doodad defs, 0x28 bytes each
+        const uint8_t* m_mfog = nullptr;          // +0x158: fog, 0x30 bytes each
+        const C4Plane* m_mcvp = nullptr;          // +0x15c: convex volume planes, optional
+        SMOMaterial* m_materials = nullptr;       // +0x160: MOMT
+        TSGrowableArray<SMOMaterialTextures> m_materialTextures;  // diverged, see the struct
+
+        uint32_t m_motxSize = 0;                  // +0x164: in bytes, the name blocks have no count
+        uint32_t m_mognSize = 0;                  // +0x168
+        uint32_t m_groupCount = 0;                // +0x16c
+        uint32_t m_portalVertexCount = 0;         // +0x170
+        uint32_t m_portalCount = 0;               // +0x174
+        uint32_t m_portalRefCount = 0;            // +0x178
+        uint32_t m_visibleBlockVertexCount = 0;   // +0x17c
+        uint32_t m_visibleBlockCount = 0;         // +0x180
+        uint32_t m_lightCount = 0;                // +0x184
+        uint32_t m_doodadSetCount = 0;            // +0x188
+        uint32_t m_modnSize = 0;                  // +0x18c
+        uint32_t m_doodadDefCount = 0;            // +0x190
+        uint32_t m_fogCount = 0;                  // +0x194
+        uint32_t m_convexVolumePlaneCount = 0;    // +0x198
+        uint32_t m_materialCount = 0;             // +0x19c
+
+        CImVector m_ambientColor;                 // +0x1a0: MOHD ambColor
+        CAaBox m_bounds;                          // +0x1a8: MOHD bounds
+
+        TSLink<CMapObj> m_link;                   // +0x1c4: CMap::s_mapObjLoadList while reading
+        void* m_fileBuffer = nullptr;             // +0x1cc: the whole .wmo root, owned
+        uint32_t m_fileSize = 0;                  // +0x1d0
+        int32_t m_refCount = 0;                   // +0x1d4: defs sharing this root
+        CAsyncObject* m_asyncObject = nullptr;    // +0x1dc: the read in flight
+        int32_t m_rootLoaded = 0;                 // +0x1e0: the root's chunks are parsed
+        uint32_t m_groupsToLoad = 0;              // +0x1f4: groups whose files have not arrived
+        // The reference sizes its heap record for 512 groups and writes the pointers into the
+        // object itself (0x9f8 - 0x1f8 = 0x800 bytes of them).
+        CMapObjGroup* m_groups[512] = {};         // +0x1f8
 
         // Member functions
+        // ref: FUN_007d80c0
+        int32_t Read(const char* path);
+        // ref: FUN_007d7eb0
+        void ReadComplete();
+        // ref: FUN_007d7470
+        void ParseChunks();
+        // ref: FUN_007d72d0
+        void ClearMaterialTextures();
+
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
 };
 

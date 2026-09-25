@@ -1021,7 +1021,7 @@ bool CMapObjGroup::SampleColorAtFace(const C3Vector& point, uint16_t face, CImVe
     uint32_t r1 = out[1] * 2;
     uint32_t r0 = out[0] * 2;
 
-    if (mapObj->m_mohdFlags & 0x2) {
+    if (mapObj->m_mohd->flags & 0x2) {
         r2 += ambient[2];
         r1 += ambient[1];
         r0 += ambient[0];

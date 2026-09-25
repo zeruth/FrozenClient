@@ -332,7 +332,9 @@ struct WmoInstance {
     // match the torch-lit walls and do not cycle with the outdoor day/night like exterior props.
     C3Vector interiorAmbient = { 0.35f, 0.35f, 0.35f };
 
-    // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour
+    // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour.
+    // mapObj.m_mohd points at this copy, which the ported group queries read the flags through.
+    SMOHeader mohd = {};
     CMapObj mapObj;
 };
 
@@ -1365,7 +1367,8 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 out.interiorAmbient.z = ab / 255.0f;
             }
 
-            out.mapObj.m_mohdFlags = mohdFlags;
+            out.mohd.flags = mohdFlags;
+            out.mapObj.m_mohd = &out.mohd;
             out.mapObj.m_ambientColor.b = ab;
             out.mapObj.m_ambientColor.g = ag;
             out.mapObj.m_ambientColor.r = ar;
