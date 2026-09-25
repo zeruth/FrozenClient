@@ -143,10 +143,18 @@ void CMapChunk::CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodad
         // survives, so as things stand every doodad would take the other branch and none would
         // draw.
         //
-        // Where bit 7 comes from is not established. It is not set here, not in the creation,
-        // and no instruction anywhere in the reference's world module ORs it into a flags
-        // field, so it arrives through a wholesale assignment somewhere else. Find that before
-        // wiring anything: guessing it would look like a tuning problem for a day.
+        // Bit 7 is settled, and an earlier note here had it wrong: it IS OR'd in, by
+        // FUN_007b5740, the static entity's placement update. That function sets bit 0, and
+        // then, only once CM2Model::IsLoaded says the model has arrived, calls FUN_007bdb10 to
+        // work out the entity's real bounds from the placed model and ORs bit 7 in beside it.
+        // Until the model lands it takes the other branch, which puts approximate bounds on the
+        // entity from the model's global box and leaves bit 7 clear.
+        //
+        // So bit 7 means "the model arrived and this entity has been placed", and it is not a
+        // load-time flag at all -- nothing here can or should set it. Wiring the doodads means
+        // porting that update: FUN_007b5740 (303 bytes) with FUN_007bdb10 (607), FUN_007c2f80
+        // (100) and FUN_007b55e0 (66), driven from FUN_007b5630, which CMap::Update already
+        // names as a TODO. The detail level comes from the same place.
     }
 }
 

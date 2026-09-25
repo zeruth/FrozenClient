@@ -987,7 +987,10 @@ void CMap::Update(int32_t update) {
     CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
     CMap::UpdateMapObjDefs(update);
-    // TODO FUN_007b5630(): entity update
+    // TODO FUN_007b5630(): the static entity update, which walks the entities whose models
+    // are still arriving and calls FUN_007b5740 on each. That is what places a doodad and
+    // sets the bit both traversal walks test before they will draw it; see the note in
+    // CMapChunk::CreateRefs.
     CMap::BucketEntities(update);
 
     if (CMap::s_loading) {
