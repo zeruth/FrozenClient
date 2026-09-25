@@ -1144,7 +1144,7 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
         }
 
         int32_t band = CWorldScene::DistanceBand(chunk->m_sortDistance);
-        // TODO FUN_00799980(&chunk->m_entityLinkList, band)
+        CWorldScene::TraverseChunkDoodads(&chunk->m_entityLinkList, band);
         (void)band;
 
         if (!AaBoxVsPlanes6(frustum.planes, chunk->m_bounds2)) {

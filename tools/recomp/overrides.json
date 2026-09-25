@@ -80,6 +80,22 @@
     "status": "verified",
     "note": "CMap::BucketEntities. run 2026-09-25 on map 609 with counters through the whole chain: 230 entities bucketed a frame, ~65 reaching the shadow pass, 64 of them resolving to no unit and carrying no 0x800, one unit casting. That split is the reference's own rule -- CGObject_C passes bit 1 for game objects and dynamic objects, which inverts into a clear 0x800, and only units come through with it set"
   },
+  "007bdb10": {
+    "status": "verified",
+    "note": "CMapStaticEntity::Place. run 2026-09-25 on map 609 with counters through the whole chain: 3440 doodad defs created, all 3440 placed, the waiting list draining to zero, and 133 doodads drawn a frame out of 798 links walked -- the rest turned away by the distance band (128), by having been reached through another chunk already (494) or by the frustum (21). A sample placement came out with a model box of 38 by 40 by 80 yards, a world box of 30 by 31 by 62, detail band 3 and a sphere radius of 31, which is a large structure doodad. Retiring the stand-in's own copies left the counts identical and dropped the process from 1.15 GB to 1.00 GB"
+  },
+  "007b5630": {
+    "status": "verified",
+    "note": "CMap::UpdatePendingEntities. run 2026-09-25 on map 609 with counters through the whole chain: 3440 doodad defs created, all 3440 placed, the waiting list draining to zero, and 133 doodads drawn a frame out of 798 links walked -- the rest turned away by the distance band (128), by having been reached through another chunk already (494) or by the frustum (21). A sample placement came out with a model box of 38 by 40 by 80 yards, a world box of 30 by 31 by 62, detail band 3 and a sphere radius of 31, which is a large structure doodad. Retiring the stand-in's own copies left the counts identical and dropped the process from 1.15 GB to 1.00 GB"
+  },
+  "00799980": {
+    "status": "verified",
+    "note": "CWorldScene::TraverseChunkDoodads. run 2026-09-25 on map 609 with counters through the whole chain: 3440 doodad defs created, all 3440 placed, the waiting list draining to zero, and 133 doodads drawn a frame out of 798 links walked -- the rest turned away by the distance band (128), by having been reached through another chunk already (494) or by the frustum (21). A sample placement came out with a model box of 38 by 40 by 80 yards, a world box of 30 by 31 by 62, detail band 3 and a sphere radius of 31, which is a large structure doodad. Retiring the stand-in's own copies left the counts identical and dropped the process from 1.15 GB to 1.00 GB"
+  },
+  "007c21e0": {
+    "status": "verified",
+    "note": "CMapDoodadDef::CMapDoodadDef. run 2026-09-25 on map 609 with counters through the whole chain: 3440 doodad defs created, all 3440 placed, the waiting list draining to zero, and 133 doodads drawn a frame out of 798 links walked -- the rest turned away by the distance band (128), by having been reached through another chunk already (494) or by the frustum (21). A sample placement came out with a model box of 38 by 40 by 80 yards, a world box of 30 by 31 by 62, detail band 3 and a sphere radius of 31, which is a large structure doodad. Retiring the stand-in's own copies left the counts identical and dropped the process from 1.15 GB to 1.00 GB"
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",

@@ -15144,7 +15144,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetBoundingSphere",
-  "frozenSize": 0,
+  "frozenSize": 185,
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 122,
@@ -15240,7 +15240,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1797,
+  "frozenSize": 1824,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -44592,23 +44592,23 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseChunkDoodads",
-  "frozenSize": 0,
+  "frozenSize": 741,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 482,
-  "status": "ported"
+  "status": "verified"
  },
  "00799d40": {
   "branchRatio": 0.652,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.9,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowChunks",
-  "frozenSize": 915,
+  "frozenSize": 929,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 561,
@@ -44832,7 +44832,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 266,
+  "frozenSize": 267,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -45687,10 +45687,10 @@
   "status": "verified"
  },
  "007b5630": {
-  "branchRatio": 0.214,
+  "branchRatio": 0.286,
   "constOverlap": 0.2,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -45700,7 +45700,7 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 260,
-  "status": "ported"
+  "status": "verified"
  },
  "007b5950": {
   "branchRatio": 0.372,
@@ -45760,7 +45760,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 343,
+  "frozenSize": 359,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,
@@ -46657,11 +46657,11 @@
    "src/world/map/CMapStaticEntity.cpp"
   ],
   "frozen": "CMapStaticEntity::Place",
-  "frozenSize": 0,
+  "frozenSize": 567,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 607,
-  "status": "ported"
+  "status": "verified"
  },
  "007bde50": {
   "branchRatio": 0.222,
@@ -46680,16 +46680,16 @@
   "status": "ported"
  },
  "007becd0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.6,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.7,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::CreateDoodadDef",
-  "frozenSize": 0,
+  "frozenSize": 775,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 610,
@@ -46737,7 +46737,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Load",
-  "frozenSize": 412,
+  "frozenSize": 433,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 339,
@@ -46906,14 +46906,14 @@
  "007c01f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocDoodadDef",
-  "frozenSize": 423,
+  "frozenSize": 99,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -47270,6 +47270,21 @@
   "module": "MapMem.cpp",
   "refSize": 69,
   "status": "ported"
+ },
+ "007c21e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapDoodadDef.cpp"
+  ],
+  "frozen": "CMapDoodadDef::CMapDoodadDef",
+  "frozenSize": 275,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 362,
+  "status": "verified"
  },
  "007c2ff0": {
   "branchRatio": 1.0,
@@ -47713,7 +47728,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMapChunk::CreateRefs",
-  "frozenSize": 1031,
+  "frozenSize": 477,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 813,

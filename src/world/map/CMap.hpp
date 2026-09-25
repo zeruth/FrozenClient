@@ -247,6 +247,10 @@ class CMap {
         // Place every static entity whose model has now arrived, and let it off the waiting
         // list. Until this has run on one, nothing will draw it. ref: FUN_007b5630
         static void UpdatePendingEntities();
+        // Every placed doodad's model, reached through the chunks that hold it. A doodad that
+        // straddles two chunks is handed over once. Frozen's own: the reference has no such
+        // walk, because the systems that want one keep their own lists.
+        static void ForEachDoodadModel(void (*fn)(CM2Model* model, void* arg), void* arg);
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);

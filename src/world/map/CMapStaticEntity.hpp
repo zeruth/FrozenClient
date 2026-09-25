@@ -46,6 +46,9 @@ class CMapStaticEntity : public CMapBaseObj {
         // reached on, so a thing straddling two chunks is visited once.
         TSLink<CMapStaticEntity> m_rowLink;      // +0xa8
         int32_t m_frameStamp = 0;                // +0xb0
+        // Frozen's own, beside the reference's: CMap::ForEachDoodadModel needs a mark of
+        // its own so it and the traversal do not answer each other's dedupe.
+        int32_t m_walkStamp = 0;                 // diverged
         // The model's collision box, out in the world. Separate from m_bounds, which is the
         // drawn box: a tree's canopy is in one and not the other.
         CAaBox m_collisionBounds;                // +0xc0

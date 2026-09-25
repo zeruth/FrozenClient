@@ -35,6 +35,10 @@ class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef
         // TODO +0x158 onwards beyond the sound kit
         // The doodad's own sound emitter, stopped by CMap::FreeDoodadDef before the def is released.
         SOUNDKITOBJECT m_soundKit;        // +0x158
+
+        // Member functions
+        // ref: FUN_007c21e0
+        CMapDoodadDef();
 };
 
 #endif

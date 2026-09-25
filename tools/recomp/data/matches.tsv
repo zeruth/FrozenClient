@@ -2960,6 +2960,7 @@ addr	how	frozen	evidence
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
+007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
 007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp
 007c30b0	annotated	CMapArea::GrowTextures	tag in src/world/map/CMapArea.cpp
 007c3370	annotated	CMapChunk::Destroy	tag in src/world/map/CMapChunk.cpp

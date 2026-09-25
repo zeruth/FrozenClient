@@ -2187,22 +2187,15 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
             float yaw = ry * DEG2RAD;
             float scale = scaleRaw / 1024.0f;
 
-            CM2Model* model = scene->CreateModel(modelPath, 0);
-
-            if (!model) {
-                continue;
-            }
-
-            model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
-            model->SetWorldTransform(worldPos, yaw, scale);
-            model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
-            model->SetAnimating(1);
-            model->SetVisible(1);
-            model->m_flag10000 = 1;
-
-            tile.doodadScale[tile.doodadCount] = scale;
-            tile.doodads[tile.doodadCount] = model;
-            tile.doodadCount++;
+            // Retired. The map places terrain doodads now: CMap::CreateDoodadDef makes the
+            // model and hands it the full placement, CMap::UpdatePendingEntities works out its
+            // bounds and detail band once the model lands, and the chunk walk decides every
+            // frame whether it draws. This copy only ever used the yaw, throwing away the two
+            // other rotations the file carries, and drew everything all the time.
+            (void)modelPath;
+            (void)worldPos;
+            (void)yaw;
+            (void)scale;
         }
     }
 

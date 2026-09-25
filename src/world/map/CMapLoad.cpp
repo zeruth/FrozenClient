@@ -1,4 +1,5 @@
 #include "world/map/CMap.hpp"
+#include "model/CM2Model.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapObj.hpp"
@@ -384,13 +385,30 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
 
     def->m_inversePlacement.Identity();
 
-    // Deferred: the reference makes the model here, marks it 0x8000, hands it the placement,
-    // registers the sound-event callback (FUN_007bd5a0) and starts its idle with
-    // CM2Model::SetBoneSequence. Nothing draws these defs yet -- the stand-in still places and
-    // draws its own copy of every doodad -- so making a second model per placement would load
-    // every .m2 in view twice for nothing. The line goes back when the doodad visits are wired
-    // into the traversal and the stand-in's doodads retire, which is one change and one run.
-    (void)name;
+    // The model. It starts neither visible nor animating: the traversal decides both, every
+    // frame, from where the doodad is and how far off. Until CMap::UpdatePendingEntities has
+    // placed it, nothing will draw it at all.
+    auto scene = CWorld::GetM2Scene();
+
+    def->m_model = scene ? scene->CreateModel(name, 0) : nullptr;
+
+    if (def->m_model) {
+        def->m_model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
+
+        // The placement goes to the model whole. SetWorldTransform would rebuild it from a
+        // position, one angle and a scale, which is the stand-in's shape and throws away two of
+        // the three rotations the file carries.
+        def->m_model->matrixB4 = def->m_placement;
+        def->m_model->m_flag8000 = 1;
+
+        def->m_model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
+    }
+
+    // TODO the reference also registers the doodad's sound-event callback (FUN_007bd5a0) here.
+
+    // It waits for its model, however long that takes. Placement is what gives it its real
+    // bounds and its detail band, and what sets the bit the traversal tests.
+    CMap::s_pendingEntityList.LinkToTail(def);
 
     return def;
 }

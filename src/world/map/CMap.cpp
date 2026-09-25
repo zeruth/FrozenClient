@@ -774,9 +774,6 @@ CMapObjDefGroup* CMap::AllocMapObjDefGroup() {
 // Placing it is what sets the bit both traversal walks test, so nothing draws a doodad until
 // this has run on it.
 void CMap::UpdatePendingEntities() {
-    // TODO SFile::IsStreamingMode() gates a hint (FUN_00825150) the reference gives the
-    // streamer for a model that is still coming. Not ported.
-
     for (auto entity = CMap::s_pendingEntityList.Head(); entity; ) {
         auto next = CMap::s_pendingEntityList.Next(entity);
 
@@ -788,9 +785,11 @@ void CMap::UpdatePendingEntities() {
 
         // Bit 4 says someone else owns the placement.
         if (!(entity->m_flags7c & 0x10)) {
-            // TODO the reference passes the entity itself and reads its matrix at a fixed
-            // offset; frozen keeps that matrix on the two subclasses, so the placement is
-            // driven from there. Until the doodad defs hand theirs over, this places nothing.
+            // The reference reads the placement matrix off the entity at one offset both def
+            // types share; frozen keeps it on the subclasses, so it is fetched by type.
+            if (entity->m_type & CMapBaseObj::Type_DoodadDef) {
+                entity->Place(static_cast<CMapDoodadDef*>(entity)->m_placement);
+            }
 
             // TODO FUN_007a06a0(&m_position): under liquid, the entity draws at the dimmed
             // opacity DAT_00a40304 rather than one.
@@ -804,6 +803,45 @@ void CMap::UpdatePendingEntities() {
         entity->m_rowLink.Unlink();
 
         entity = next;
+    }
+}
+
+// Frozen's own, with no reference counterpart: the particle system wants every doodad model in
+// the world, and nothing else keeps a list of them. Walking the chunks is the cheapest way to
+// reach them all, and the frame stamp keeps a doodad on two chunks from being handed over twice.
+void CMap::ForEachDoodadModel(void (*fn)(CM2Model* model, void* arg), void* arg) {
+    // Its own counter, not the scene's. Sharing that one would have this walk and the
+    // traversal quietly deciding for each other which doodads they had already seen.
+    static int32_t s_walkStamp = 0;
+
+    s_walkStamp--;
+
+    for (int32_t i = 0; i < 64 * 64; i++) {
+        auto area = CMap::s_areaGrid[i];
+
+        if (!area) {
+            continue;
+        }
+
+        for (int32_t c = 0; c < 256; c++) {
+            auto chunk = area->m_chunks[c];
+
+            if (!chunk) {
+                continue;
+            }
+
+            for (auto link = chunk->m_entityLinkList.Head(); link; link = chunk->m_entityLinkList.Next(link)) {
+                auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+                if (!entity->m_model || entity->m_walkStamp == s_walkStamp) {
+                    continue;
+                }
+
+                entity->m_walkStamp = s_walkStamp;
+
+                fn(entity->m_model, arg);
+            }
+        }
     }
 }
 
