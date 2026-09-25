@@ -317,6 +317,8 @@ class CMapObjGroup {
         void DrawBatches(int32_t record);
         // ref: FUN_007ac9f0
         void DrawBatchesSplit(int32_t record);
+        // ref: FUN_007a9380
+        void DrawBatchesOutdoor(int32_t record);
 };
 
 #endif

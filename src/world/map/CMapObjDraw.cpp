@@ -297,8 +297,8 @@ void CMapObjGroup::DrawBatches(int32_t record) {
     auto mapObj = this->m_mapObj;
 
     if (mapObj->m_mohd->flags & 0x2) {
-        // TODO FUN_007a9380: the outdoor draw, which takes the group's baked exterior colours
-        // instead of the lighting registers.
+        this->DrawBatchesOutdoor(record);
+
         return;
     }
 
@@ -316,12 +316,11 @@ void CMapObjGroup::DrawBatches(int32_t record) {
     CMapObj::s_materialColor = 0xffffffff;
     CMapObj::s_shadowState = -1;
 
-    // What a material whose own texture has not arrived draws with. The reference makes a
-    // flat 0xff808080 texture for this in CWorldScene::Initialize (FUN_004b9550) and keeps
-    // it at 0x00cd8618; frozen has no such texture, so a batch whose texture is still
-    // coming is skipped, which is what the reference does when its own fallback is absent.
-    // TODO make the grey fallback so those batches draw untextured rather than not at all.
-    CGxTex* fallback = nullptr;
+    // What a material whose own texture has not arrived draws with: the flat 0xff808080
+    // texture the scene makes at startup, which is the reference's own fallback.
+    CGxTex* fallback = CWorldScene::s_solidTexture
+        ? TextureGetGxTex(CWorldScene::s_solidTexture, 1, nullptr)
+        : nullptr;
 
     for (uint32_t i = 0; i < this->m_batchCountC; i++) {
         auto batch = &this->m_batches[i];
@@ -438,7 +437,8 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
     auto mapObj = this->m_mapObj;
 
     if (mapObj->m_mohd->flags & 0x2) {
-        // TODO FUN_007a9380: the outdoor draw.
+        this->DrawBatchesOutdoor(record);
+
         return;
     }
 
@@ -458,8 +458,9 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
     // Which of the light's two fog sets this instance asked for.
     uint32_t fogSet = CMapObj::s_interiorFog ? 1 : 2;
 
-    // TODO the grey fallback texture, as in DrawBatches.
-    CGxTex* fallback = nullptr;
+    CGxTex* fallback = CWorldScene::s_solidTexture
+        ? TextureGetGxTex(CWorldScene::s_solidTexture, 1, nullptr)
+        : nullptr;
 
     uint32_t interiorEnd = static_cast<uint32_t>(this->m_batchCountA) + this->m_batchCountB;
 
@@ -650,4 +651,213 @@ void CMapObj::Render(uint32_t groupIndex, const C44Matrix& inversePlacement, CMa
 
     // TODO the two debug passes the world enables gate: bounding volumes (0x40000000) and
     // portals (0x1000).
+}
+
+// ref: FUN_007a9380
+// The draw a group under an outdoor root takes: a bridge or a ruin, lit by the sky rather
+// than by a room. Its transition batches blend between the sun and the building's own
+// declared ambient, and geometry flagged unlit or unfogged falls back to the second fog set.
+//
+// The reference writes this out beside the other two draws rather than sharing their body,
+// and it is kept that way here.
+void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
+    auto mapObj = this->m_mapObj;
+
+    this->m_bufferIdleTime = 0.0f;
+
+    this->CreateBuffers();
+    this->BindIndexStream();
+    this->BindVertexStream();
+
+    GxRsPush();
+
+    CMapObj::s_fogState = 0xffffffff;
+    CMapObj::s_lightingMode = -1;
+    CMapObj::s_materialColor = 0xffffffff;
+    CMapObj::s_shadowState = -1;
+
+    uint32_t fogSet = CMapObj::s_interiorFog ? 1 : 2;
+
+    CGxTex* fallback = CWorldScene::s_solidTexture
+        ? TextureGetGxTex(CWorldScene::s_solidTexture, 1, nullptr)
+        : nullptr;
+
+    for (uint32_t i = 0; i < this->m_batchCount; i++) {
+        auto batch = &this->m_batches[i];
+
+        if (!record) {
+            batch->flags &= 0x0f;
+        }
+
+        if ((batch->flags & 0xf0) || CMapObjGroup::BatchOutsideFrustum(batch)) {
+            continue;
+        }
+
+        batch->flags |= 0xf0;
+
+        auto material = &mapObj->m_materials[batch->materialId];
+        auto textures = &mapObj->m_materialTextures[batch->materialId];
+
+        CGxTex* tex0 = TextureGetGxTex(textures->texture1, 0, nullptr);
+
+        if (!tex0) {
+            if (!fallback) {
+                continue;
+            }
+
+            tex0 = fallback;
+        }
+
+        CGxTex* tex1 = nullptr;
+
+        if (textures->texture2) {
+            tex1 = TextureGetGxTex(textures->texture2, 0, nullptr);
+
+            if (!tex1) {
+                if (!fallback) {
+                    continue;
+                }
+
+                tex1 = fallback;
+            }
+        }
+
+        uint32_t shader = material->shader;
+
+        if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
+            shader = 4;
+        }
+
+        GxRsSet(GxRs_Culling, ~(material->flags >> 2) & 0x1);
+
+        CImVector sidn;
+        sidn.value = (material->flags & 0x10) ? material->frameSidnColor : 0;
+
+        CMapObj::SetMaterialColor(AverageColor(CMapObj::s_instanceColor, sidn));
+
+        GxTexSetWrap(
+            tex0,
+            static_cast<EGxTexWrapMode>(~(material->flags >> 6) & 0x1),
+            static_cast<EGxTexWrapMode>(~(material->flags >> 7) & 0x1)
+        );
+
+        GxRsSet(GxRs_Texture0, tex0);
+        GxRsSet(GxRs_Texture1, tex1);
+
+        auto effect = CMapObj::s_effects[shader];
+
+        if (effect) {
+            effect->SetCurrent();
+        }
+
+        CGxBatch gxBatch;
+        gxBatch.m_primType = GxPrim_Triangles;
+        gxBatch.m_start = batch->startIndex;
+        gxBatch.m_count = batch->count;
+        gxBatch.m_minIndex = batch->minVertex;
+        gxBatch.m_maxIndex = batch->maxVertex;
+
+        if (i < this->m_batchCountA) {
+            // A transition batch: once under the sky, once under the building's own ambient.
+            CMapObj::SetupFog((material->flags & 0x2) ? 0 : fogSet);
+
+            if (CMapObj::s_shadowState != 0) {
+                CMapObj::s_shadowState = 0;
+
+                ShadowMapBindMapObj(0);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+            }
+
+            int32_t skyMode = (material->flags & 0x1)
+                ? 0
+                : ((material->flags & 0x20) ? 2 : 1);
+
+            CMapObj::SetupLighting(this, skyMode);
+            CMapObj::SetupFog(~material->flags & 0x2);
+
+            GxRsSet(GxRs_BlendingMode, GxBlend_SrcAlphaOpaque);
+
+            CMapObj::SetAlphaRefForBlendMode();
+            CMapObj::SelectShaders();
+
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+
+            CMapObj::SetupLighting(this, 3);
+            CMapObj::SetupFog((material->flags & 0x2) ? 0 : fogSet);
+
+            if (CMapObj::s_shadowState != 1) {
+                CMapObj::s_shadowState = 1;
+
+                ShadowMapBindMapObj(1);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+            }
+
+            GxRsSet(GxRs_BlendingMode, GxBlend_InvSrcAlphaAdd);
+
+            CMapObj::SetAlphaRefForBlendMode();
+            CMapObj::SelectShaders();
+
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+
+            continue;
+        }
+
+        if (!(this->m_flags & 0x48)) {
+            CMapObj::SetupLighting(this, (material->flags & 0x20) ? 2 : 3);
+
+            if (CMapObj::s_shadowState != 1) {
+                CMapObj::s_shadowState = 1;
+
+                ShadowMapBindMapObj(1);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+            }
+
+            CMapObj::SetupFog(fogSet);
+        } else {
+            CMapObj::SetupLighting(this, ~material->flags & 0x1);
+
+            if (CMapObj::s_shadowState != 0) {
+                CMapObj::s_shadowState = 0;
+
+                ShadowMapBindMapObj(0);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+            }
+
+            // Straight to the second fog set, past the cache's usual selection.
+            if (CMapObj::s_fogState != 2) {
+                CMapObj::s_fogState = 2;
+
+                // Diverged with CMapObj::SetupFog: frozen carries one fog set, so this reads
+                // the same start, end, rate and colour that set does.
+                const C3Vector& fog = CWorld::GetFogColor();
+
+                CImVector color;
+                color.b = static_cast<uint8_t>(fog.z * 255.0f);
+                color.g = static_cast<uint8_t>(fog.y * 255.0f);
+                color.r = static_cast<uint8_t>(fog.x * 255.0f);
+                color.a = 0xff;
+
+                CShaderEffect::SetFogParams(
+                    CWorld::GetFogStart(),
+                    CWorld::GetFogEnd(),
+                    CWorld::GetFogRate(),
+                    color
+                );
+                CShaderEffect::SetFogEnabled(1);
+            }
+        }
+
+        GxRsSet(GxRs_BlendingMode, static_cast<int32_t>(material->blendMode));
+
+        CMapObj::SetAlphaRefForBlendMode();
+        CMapObj::SelectShaders();
+
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
+    }
+
+    GxRsPop();
 }

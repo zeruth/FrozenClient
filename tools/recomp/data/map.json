@@ -44749,6 +44749,21 @@
   "refSize": 151,
   "status": "ported"
  },
+ "007a9380": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.532,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObjGroup::DrawBatchesOutdoor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 2146,
+  "status": "ported"
+ },
  "007abf50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -44767,8 +44782,8 @@
  "007ac6a0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.769,
+  "faithful": true,
+  "fidelity": 0.846,
   "files": [
    "src/world/map/CMapObjDraw.cpp"
   ],
@@ -44783,7 +44798,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.659,
+  "fidelity": 0.707,
   "files": [
    "src/world/map/CMapObjDraw.cpp"
   ],
