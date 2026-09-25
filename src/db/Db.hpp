@@ -10,6 +10,7 @@
 #include "db/rec/CharHairGeosetsRec.hpp"
 #include "db/rec/CharSectionsRec.hpp"
 #include "db/rec/CharStartOutfitRec.hpp"
+#include "db/rec/CharTitlesRec.hpp"
 #include "db/rec/ChatProfanityRec.hpp"
 #include "db/rec/CharacterFacialHairStylesRec.hpp"
 #include "db/rec/ChrClassesRec.hpp"
@@ -39,10 +40,13 @@
 #include "db/rec/CreatureSoundDataRec.hpp"
 #include "db/rec/CreatureFamilyRec.hpp"
 #include "db/rec/CreatureTypeRec.hpp"
+#include "db/rec/CurrencyTypesRec.hpp"
 #include "db/rec/SpellShapeshiftFormRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
+#include "db/rec/FactionRec.hpp"
 #include "db/rec/FactionTemplateRec.hpp"
 #include "db/rec/GameTipsRec.hpp"
+#include "db/rec/GMTicketCategoryRec.hpp"
 #include "db/rec/ItemClassRec.hpp"
 #include "db/rec/ItemDisplayInfoRec.hpp"
 #include "db/rec/ItemSubClassRec.hpp"
@@ -66,6 +70,7 @@ extern WowClientDB<CharBaseInfoRec> g_charBaseInfoDB;
 extern WowClientDB<CharHairGeosetsRec> g_charHairGeosetsDB;
 extern WowClientDB<CharSectionsRec> g_charSectionsDB;
 extern WowClientDB<CharStartOutfitRec> g_charStartOutfitDB;
+extern WowClientDB<CharTitlesRec> g_charTitlesDB;
 extern WowClientDB<ChatProfanityRec> g_chatProfanityDB;
 extern WowClientDB<CharacterFacialHairStylesRec> g_characterFacialHairStylesDB;
 extern WowClientDB<ChrClassesRec> g_chrClassesDB;
@@ -95,10 +100,13 @@ extern WowClientDB<LightFloatBandRec> g_lightFloatBandDB;
 extern WowClientDB<CreatureSoundDataRec> g_creatureSoundDataDB;
 extern WowClientDB<CreatureFamilyRec> g_creatureFamilyDB;
 extern WowClientDB<CreatureTypeRec> g_creatureTypeDB;
+extern WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;
+extern WowClientDB<FactionRec> g_factionDB;
 extern WowClientDB<FactionTemplateRec> g_factionTemplateDB;
 extern WowClientDB<GameTipsRec> g_gameTipsDB;
+extern WowClientDB<GMTicketCategoryRec> g_gmTicketCategoryDB;
 extern WowClientDB<ItemClassRec> g_itemClassDB;
 extern WowClientDB<ItemDisplayInfoRec> g_itemDisplayInfoDB;
 extern WowClientDB<ItemSubClassRec> g_itemSubClassDB;

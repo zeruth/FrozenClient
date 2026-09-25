@@ -236,6 +236,15 @@ bool SpellBookKnows(uint32_t spellId) {
     return std::find(s_known.begin(), s_known.end(), spellId) != s_known.end();
 }
 
+// ref: FUN_0053b410
+uint8_t SpellCompanionType(const SpellRec* spell) {
+    if (spell->m_effect[0] == 28) {
+        return 0;
+    }
+
+    return (spell->m_effectAura[0] != 78) + 1;
+}
+
 int32_t SpellBookTabCount() {
     return static_cast<int32_t>(s_tabs.size());
 }

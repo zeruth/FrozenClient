@@ -101,6 +101,13 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // The creature's title -- "Innkeeper", "Stable Master" -- or null when it has none.
         const char* GetSubName() const;
+        // Single bits of the creature template's type flags (the template the reference keeps at
+        // CGUnit_C +0x964), and the skinning profession the flags select: 1 herbalism (0x100),
+        // 2 mining (0x200), 3 engineering (0x8000), 0 plain skinning.
+        uint32_t GetCreatureTypeFlag11() const;
+        uint32_t GetCreatureTypeFlag12() const;
+        uint32_t GetCreatureTypeFlag26() const;
+        int32_t GetCreatureSkinningType() const;
         void PlayEmote(uint32_t emoteID);
 
     protected:
@@ -137,5 +144,51 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 };
 
 int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
+// Opcode classifiers for the unit's movement messages, named by the sets they test.
+
+// ref: FUN_00990370
+// The movement acknowledgements: teleport, the force-speed and force-rate acks, root and unroot,
+// knockback, hover, feather fall, water walk, can-fly and swim/fly transition, and three more.
+bool IsMovementAckOpcode(int32_t opcode);
+
+// ref: FUN_00990420
+// IsMovementAckOpcode's set plus CMSG_MOVE_NOT_ACTIVE_MOVER (0x2d1).
+bool IsMovementAckOrNotActiveMoverOpcode(int32_t opcode);
+
+// ref: FUN_009904e0
+// Swim start and stop, the collision and swim cheats, CMSG_MOVE_SET_FLY and the two controlled
+// vehicle opcodes.
+bool IsMovementStateOpcode(int32_t opcode);
+
+// ref: FUN_007151f0
+// The speed and rate acks, knockback, can-fly, feather fall, water walk, swim/fly transition and
+// 0x517: the acknowledgements that carry one more value after the movement block.
+bool IsMovementAckWithValueOpcode(int32_t opcode);
+
+// ref: FUN_00714ce0
+// Folds bits 0x4, 0x8, 0x10 and 0x100 of `src` into `dst` as 0x2, 0x4, 0x8 and 0x20.
+void ConvertAnimationFlags(uint32_t src, uint32_t* dst);
+
+// ref: FUN_00714c80
+// A weapon (item class 2) of a two-handed subclass: axe, mace, polearm, sword, staff, exotic,
+// spear, fishing pole. `weapon` is the class byte followed by the subclass byte.
+bool IsTwoHandedWeapon(const uint8_t* weapon);
+
+// ref: FUN_00714e80
+// The walk, run, shuffle, backpedal, jump and swim animations, and five more by id.
+bool IsMovementAnimation(uint32_t animID);
+
+// ref: FUN_00715d00
+// The sheath state a unit may take with two items: melee with no first item and no second (or a
+// holdable, inventory type 0x17) becomes unarmed; unarmed with a weapon (item class 2) in either
+// or a shield (inventory type 0xe) second becomes melee. Each item is its class byte, with the
+// inventory type at +4.
+int32_t AdjustSheathState(int32_t state, const uint8_t* first, const uint8_t* second);
+
+// ref: FUN_007152b0
+// One packed spline offset from a movement message: 11, 11 and 10 signed bits in quarter yards,
+// taken away from `base`.
+void ReadPackedMovementOffset(CDataStore* msg, const C3Vector& base, C3Vector& out);
 
 #endif

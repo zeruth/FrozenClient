@@ -43,6 +43,15 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
 
         static void SetLocalPlayerInfo(const CHARACTER_INFO& info);
 
+        // The subclass mask the player is proficient in, per item class (0..16). The reference
+        // tests an item's subclass bit against it before calling the item usable. Nothing fills it
+        // yet, so every class reads 0 -- which the callers treat as "no restriction".
+        static uint32_t s_itemProficiency[17];
+
+        // ref: FUN_006cde90
+        // The mask for one item class; 0 past the seventeenth.
+        static uint32_t GetItemProficiency(uint8_t itemClass);
+
         // ref: FUN_006d4450
         // CMSG_GROUP_ACCEPT with the accept flags the binding assembled.
         static void SendGroupAccept(uint32_t flags);
@@ -65,7 +74,15 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         float GetModDamageDonePct(uint32_t school) const;
 
         int32_t GetAttackPowerForStat(int32_t stat, int32_t value) const;
+
+        // ref: FUN_005cd920
+        // The skill line in one skill-info slot. Only the active player's copy is sent, so any
+        // other player answers 0.
+        uint16_t GetSkillLineID(uint32_t index) const;
         uint32_t GetMoney() const;
+        // The rank in one skill-info slot plus its permanent bonus; a rank of 0 stays 0. The
+        // active player's copy only, like GetSkillLineID.
+        uint32_t GetSkillRank(uint32_t index) const;
         uint32_t GetNextLevelXP() const;
         uint32_t GetXP() const;
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);

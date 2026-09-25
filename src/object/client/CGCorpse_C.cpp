@@ -1,4 +1,5 @@
 #include "object/client/CGCorpse_C.hpp"
+#include "db/Db.hpp"
 
 CGCorpse_C::CGCorpse_C(uint32_t time, CClientObjCreate& objCreate) : CGObject_C(time, objCreate) {
     // TODO
@@ -21,4 +22,19 @@ void CGCorpse_C::SetStorage(uint32_t* storage, uint32_t* saved) {
 
     this->m_corpse = reinterpret_cast<CGCorpseData*>(&storage[CGCorpse::GetBaseOffset()]);
     this->m_corpseSaved = &saved[CGCorpse::GetBaseOffsetSaved()];
+}
+
+// ref: FUN_007057a0
+const char* CGCorpse_C::GetPortraitTextureName() const {
+    auto displayID = this->Corpse()->displayID;
+
+    if (displayID) {
+        auto rec = g_creatureDisplayInfoDB.GetRecord(displayID);
+
+        if (rec) {
+            return rec->m_portraitTextureName;
+        }
+    }
+
+    return nullptr;
 }

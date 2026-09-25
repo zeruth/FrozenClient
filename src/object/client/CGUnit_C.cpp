@@ -208,6 +208,7 @@ int32_t CGUnit_C::CanBeTargetted() {
     return this->CanHighlight();
 }
 
+// ref: FUN_00616b10
 int32_t CGUnit_C::GetDisplayID() const {
     // Prefer local display ID if set and unit's display ID hasn't been overridden from unit's
     // native display ID.
@@ -825,4 +826,250 @@ int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* m
     static_cast<CGUnit_C*>(object)->PlayEmote(emoteID);
 
     return 1;
+}
+
+// ref: FUN_00990370
+bool IsMovementAckOpcode(int32_t opcode) {
+    switch (opcode) {
+        case 0x0E9:
+        case 0x0EB:
+        case 0x0C7:
+        case 0x0E3:
+        case 0x0E5:
+        case 0x0E7:
+        case 0x2DD:
+        case 0x382:
+        case 0x384:
+        case 0x2DB:
+        case 0x2DF:
+        case 0x45D:
+        case 0x0F6:
+        case 0x345:
+        case 0x2CF:
+        case 0x2D0:
+        case 0x0F0:
+        case 0x4CF:
+        case 0x4D1:
+        case 0x340:
+        case 0x517:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_00990420
+bool IsMovementAckOrNotActiveMoverOpcode(int32_t opcode) {
+    switch (opcode) {
+        case 0x0E9:
+        case 0x0EB:
+        case 0x0C7:
+        case 0x0E3:
+        case 0x0E5:
+        case 0x0E7:
+        case 0x2DD:
+        case 0x382:
+        case 0x384:
+        case 0x2DB:
+        case 0x2DF:
+        case 0x45D:
+        case 0x0F6:
+        case 0x345:
+        case 0x2CF:
+        case 0x2D0:
+        case 0x0F0:
+        case 0x2D1:
+        case 0x4CF:
+        case 0x4D1:
+        case 0x340:
+        case 0x517:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_009904e0
+bool IsMovementStateOpcode(int32_t opcode) {
+    switch (opcode) {
+        case 0x0CA:
+        case 0x0CB:
+        case 0x0D9:
+        case 0x2D8:
+        case 0x2D9:
+        case 0x346:
+        case 0x46D:
+        case 0x49B:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_00715f70
+uint32_t CGUnit_C::GetCreatureTypeFlag11() const {
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (info) {
+        return (info->typeFlags >> 11) & 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00715f90
+uint32_t CGUnit_C::GetCreatureTypeFlag12() const {
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (info) {
+        return (info->typeFlags >> 12) & 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00715df0
+uint32_t CGUnit_C::GetCreatureTypeFlag26() const {
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (info) {
+        return (info->typeFlags >> 26) & 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00715e50
+int32_t CGUnit_C::GetCreatureSkinningType() const {
+    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+
+    if (info) {
+        if (info->typeFlags & 0x100) {
+            return 1;
+        }
+
+        if (info->typeFlags & 0x200) {
+            return 2;
+        }
+
+        if (info->typeFlags & 0x8000) {
+            return 3;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_007151f0
+bool IsMovementAckWithValueOpcode(int32_t opcode) {
+    if (opcode != 0x0E3 && opcode != 0x0E5 && opcode != 0x0E7
+        && opcode != 0x2DD && opcode != 0x382 && opcode != 0x384 && opcode != 0x2DB && opcode != 0x2DF
+        && opcode != 0x45D
+        && opcode != 0x0F6 && opcode != 0x345 && opcode != 0x2CF && opcode != 0x2D0 && opcode != 0x340
+        && opcode != 0x517
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_00714ce0
+void ConvertAnimationFlags(uint32_t src, uint32_t* dst) {
+    if (!dst) {
+        return;
+    }
+
+    if (src & 0x4) {
+        *dst |= 0x2;
+    }
+
+    if (src & 0x8) {
+        *dst |= 0x4;
+    }
+
+    if (src & 0x10) {
+        *dst |= 0x8;
+    }
+
+    if (src & 0x100) {
+        *dst |= 0x20;
+    }
+}
+
+// ref: FUN_00714c80
+bool IsTwoHandedWeapon(const uint8_t* weapon) {
+    if (weapon && weapon[0] == 2) {
+        switch (weapon[1]) {
+            case 1:
+            case 5:
+            case 6:
+            case 8:
+            case 10:
+            case 12:
+            case 17:
+            case 20:
+                return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_00714e80
+bool IsMovementAnimation(uint32_t animID) {
+    switch (animID) {
+        case 0x04:
+        case 0x05:
+        case 0x0B:
+        case 0x0C:
+        case 0x0D:
+        case 0x25:
+        case 0x26:
+        case 0x27:
+        case 0x2A:
+        case 0x2B:
+        case 0x2C:
+        case 0x2D:
+        case 0x77:
+        case 0x87:
+        case 0x8F:
+        case 0xBB:
+        case 0xDF:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_007152b0
+void ReadPackedMovementOffset(CDataStore* msg, const C3Vector& base, C3Vector& out) {
+    uint32_t packed;
+    msg->Get(packed);
+
+    float y = static_cast<float>(static_cast<int32_t>((packed >> 11) << 21) >> 21) * 0.25f;
+    float z = static_cast<float>(static_cast<int32_t>(packed) >> 22) * 0.25f;
+
+    out.x = base.x - static_cast<float>(static_cast<int32_t>(packed << 21) >> 21) * 0.25f;
+    out.y = base.y - y;
+    out.z = base.z - z;
+}
+
+// ref: FUN_00715d00
+int32_t AdjustSheathState(int32_t state, const uint8_t* first, const uint8_t* second) {
+    if (state == 1) {
+        if (!first && (!second || second[4] == 0x17)) {
+            return 0;
+        }
+    } else if (state == 0) {
+        if ((second && second[4] == 0x0E) || (first && first[0] == 2) || (second && second[0] == 2)) {
+            state = 1;
+        }
+    }
+
+    return state;
 }

@@ -135,6 +135,7 @@ class CGUnit {
         int32_t GetNativeDisplayID() const;
         C3Vector GetPosition() const;
         float GetRawFacing() const;
+        int32_t GetStatNonNegative(int32_t index) const;
 
         // The unit fields, for the script layer's unit queries
         CGUnitData* Unit() const;

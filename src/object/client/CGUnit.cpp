@@ -46,6 +46,14 @@ float CGUnit::GetRawFacing() const {
     return this->m_move->GetRawFacing();
 }
 
+// The stat with a negative value read as zero (branchless in the reference: v & ((v < 0) - 1)).
+// ref: FUN_005774b0
+int32_t CGUnit::GetStatNonNegative(int32_t index) const {
+    auto stat = this->m_unit->stats[index];
+
+    return stat < 0 ? 0 : stat;
+}
+
 CGUnitData* CGUnit::Unit() const {
     return this->m_unit;
 }

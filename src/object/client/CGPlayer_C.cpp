@@ -12,6 +12,25 @@
 #include <storm/Error.hpp>
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
+uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
+
+// ref: FUN_006cde90
+uint32_t CGPlayer_C::GetItemProficiency(uint8_t itemClass) {
+    if (itemClass > 16) {
+        return 0;
+    }
+
+    return CGPlayer_C::s_itemProficiency[itemClass];
+}
+
+// ref: FUN_005cd920
+uint16_t CGPlayer_C::GetSkillLineID(uint32_t index) const {
+    if (ClntObjMgrGetActivePlayer() != this->GetGUID()) {
+        return 0;
+    }
+
+    return this->Player()->skillInfo[index].skillLineID;
+}
 
 // ref: FUN_006b1050
 const CHARACTER_INFO* CGPlayer_C::GetLocalPlayerInfo() {
@@ -144,6 +163,22 @@ int32_t CGPlayer_C::GetAttackPowerForStat(int32_t stat, int32_t value) const {
     return attackPower;
 }
 
+// ref: FUN_0051a250
+uint32_t CGPlayer_C::GetSkillRank(uint32_t index) const {
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        return 0;
+    }
+
+    uint32_t rank = this->Player()->skillInfo[index].skillRank;
+
+    if (rank) {
+        rank += static_cast<uint16_t>(this->Player()->skillInfo[index].skillPermModifier);
+    }
+
+    return rank;
+}
+
+// ref: FUN_0051a2b0
 uint32_t CGPlayer_C::GetMoney() const {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
         return 0;
