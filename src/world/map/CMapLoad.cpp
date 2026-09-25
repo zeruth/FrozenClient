@@ -358,16 +358,13 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
 
     def->m_inversePlacement.Identity();
 
-    auto scene = CWorld::GetM2Scene();
-
-    if (scene) {
-        def->m_model = scene->CreateModel(name, 0x20);
-    }
-
-    if (def->m_model) {
-        // TODO the reference marks the model 0x8000, hands it the placement, registers the
-        // sound-event callback (FUN_007bd5a0) and starts its idle with CM2Model::SetBoneSequence.
-    }
+    // Deferred: the reference makes the model here, marks it 0x8000, hands it the placement,
+    // registers the sound-event callback (FUN_007bd5a0) and starts its idle with
+    // CM2Model::SetBoneSequence. Nothing draws these defs yet -- the stand-in still places and
+    // draws its own copy of every doodad -- so making a second model per placement would load
+    // every .m2 in view twice for nothing. The line goes back when the doodad visits are wired
+    // into the traversal and the stand-in's doodads retire, which is one change and one run.
+    (void)name;
 
     return def;
 }

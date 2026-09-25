@@ -4780,15 +4780,16 @@ void TerrainRender() {
 
     s_viewUpdated = false;
 
-    const C44Matrix& viewProjT = s_viewProjT;
 
     // The terrain chunks draw through the ported map (CMap::Render -> CWorldScene::RenderTerrain)
     // since 2026-09-25; RenderShaded / RenderFallback stay only for the blob shadow receivers,
     // which still re-draw this copy of the chunk geometry
     (void)haveShaded;
 
+    // The buildings draw through the ported map (CMap::Render -> CWorldScene::RenderMapObjs)
+    // since 2026-09-25. The stand-in's own visibility sweep stays: the floor light, the indoor
+    // test and the blob shadow receivers all read the instance list it fills.
     WmoUpdateVisibility(s_cameraPos);
-    RenderWmos(viewProjT);
 
     // Opaque liquids (magma, slime) belong to CMap::Render like the terrain and buildings
     LiquidRender(0);

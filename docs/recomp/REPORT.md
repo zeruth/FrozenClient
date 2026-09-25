@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 12:09 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 12:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26964 | 5.35M |
-| mapped to a frozen function | 4235 (+2) (15.7%) | 878.1k (16.0%) |
-| &nbsp;&nbsp;ported | 3573 (+2) | 705.8k |
+| mapped to a frozen function | 4235 (=) (15.7%) | 878.1k (16.0%) |
+| &nbsp;&nbsp;ported | 3573 (=) | 705.8k |
 | &nbsp;&nbsp;stub (unimplemented body) | 580 (=) | 125.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
 | **faithful** (linked, not stub, call order >= 80%) | **2144 (=) (8.0%)** | **273.4k (5.0%)** |
 | unmapped | 22729 | 4.50M |
-| world spine (reachable from OnFrameRender) | 5388, mapped 1324 (+2) (24.6%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5655, mapped 1342 (+2) (23.7%) | |
-| **render surface** (the modules that draw the world) | **4526, mapped 766 (+2) (16.9%)** | |
-| frozen functions (src/, from PDB + source) | 13506, stubs 1702 | |
+| world spine (reachable from OnFrameRender) | 5388, mapped 1324 (=) (24.6%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5655, mapped 1342 (=) (23.7%) | |
+| **render surface** (the modules that draw the world) | **4526, mapped 766 (=) (16.9%)** | |
+| frozen functions (src/, from PDB + source) | 13500, stubs 1702 | |
 
 Match evidence: annotated 2040, callgraph 237, callorder 110, cvar 32, handler 29, order 140, override 306, sticky 16, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 12:06 -- mapped 4233, ported 3571, stub 580, spine mapped 1322.
+Previous run: 2026-09-25 12:09 -- mapped 4235, ported 3573, stub 580, spine mapped 1324.
 
 ## Lua API coverage (binding tables)
 
@@ -581,7 +581,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
 | `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
-| `RenderWmos` | world | 2898 | src/world/Terrain.cpp |
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CGxString::CreateGeometry` | gx | 2696 | src/gx/font/CGxString.cpp |
@@ -599,6 +598,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
 | `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
+| `WriteCmpData` | lib/stormlib-9.31 | 2231 | lib/squall/vendor/stormlib-9.31/src/pklib/implode.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -635,7 +635,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
-| 0079a870 | `CMap::Render` | 25% | 54 | 21 | 24 | 6 | 0% | 1355 |
+| 0079a870 | `CMap::Render` | 26% | 54 | 22 | 24 | 6 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 10:27 | 4176 (15.5%) | 2116 (7.8%) | 580 | 1294/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 11:59 | 4230 (15.7%) | 2142 (7.9%) | 580 | 1319/5388 | 2924/2964 | 1380 |
 | 2026-09-25 12:06 | 4233 (15.7%) | 2144 (8.0%) | 580 | 1322/5388 | 2924/2964 | 1380 |
 | 2026-09-25 12:09 | 4235 (15.7%) | 2144 (8.0%) | 580 | 1324/5388 | 2924/2964 | 1380 |
+| 2026-09-25 12:13 | 4235 (15.7%) | 2144 (8.0%) | 580 | 1324/5388 | 2924/2964 | 1380 |
 
 ## How to move a row
 

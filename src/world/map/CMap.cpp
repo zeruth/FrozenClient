@@ -1107,8 +1107,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     CWorld::SetupFogRenderStates();
     CWorldScene::RenderTerrain();
 
-    // TODO FUN_007964a0(): the map objects; FUN_00795f80(); the liquids, sky and the passes after
-    // them (see the reference body)
+    CWorldScene::RenderMapObjs();
+
+    // TODO FUN_00795f80(): the liquids, sky and the passes after them (see the reference body)
 
     GxXformPop(GxXform_World);
     GxRsPop();

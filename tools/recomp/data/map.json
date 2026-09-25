@@ -9951,7 +9951,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureHasAlpha",
-  "frozenSize": 0,
+  "frozenSize": 38,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 30,
@@ -44288,7 +44288,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderMapObjs",
-  "frozenSize": 0,
+  "frozenSize": 921,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1058,
@@ -44458,13 +44458,13 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.245,
+  "fidelity": 0.264,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 462,
+  "frozenSize": 467,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -44736,7 +44736,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetInstanceTransform",
-  "frozenSize": 0,
+  "frozenSize": 69,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 272,
@@ -44752,7 +44752,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupFog",
-  "frozenSize": 0,
+  "frozenSize": 200,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 142,
@@ -44816,7 +44816,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLighting",
-  "frozenSize": 0,
+  "frozenSize": 542,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 895,
@@ -44832,7 +44832,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLocalLights",
-  "frozenSize": 0,
+  "frozenSize": 134,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 151,
@@ -44848,7 +44848,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesOutdoor",
-  "frozenSize": 0,
+  "frozenSize": 2023,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2146,
@@ -44864,7 +44864,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::Render",
-  "frozenSize": 0,
+  "frozenSize": 329,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 262,
@@ -44880,7 +44880,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatches",
-  "frozenSize": 0,
+  "frozenSize": 1363,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 847,
@@ -44896,7 +44896,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesSplit",
-  "frozenSize": 0,
+  "frozenSize": 1805,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1566,
@@ -46233,16 +46233,16 @@
   "status": "ported"
  },
  "007becd0": {
-  "branchRatio": 0.6,
-  "constOverlap": 0.042,
+  "branchRatio": 1.0,
+  "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::CreateDoodadDef",
-  "frozenSize": 532,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 610,
@@ -47250,7 +47250,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMapChunk::CreateRefs",
-  "frozenSize": 460,
+  "frozenSize": 1005,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 813,
@@ -47506,7 +47506,7 @@
    "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::FillVertexBuffer",
-  "frozenSize": 0,
+  "frozenSize": 652,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 1255,
@@ -47618,7 +47618,7 @@
    "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::BindVertexStream",
-  "frozenSize": 0,
+  "frozenSize": 147,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 98,
@@ -47634,7 +47634,7 @@
    "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::BindIndexStream",
-  "frozenSize": 0,
+  "frozenSize": 169,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 75,
@@ -47810,7 +47810,7 @@
    "src/world/map/vbblist.cpp"
   ],
   "frozen": "VBBList::Alloc",
-  "frozenSize": 0,
+  "frozenSize": 381,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 236,
@@ -47826,7 +47826,7 @@
    "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::CreateBuffers",
-  "frozenSize": 0,
+  "frozenSize": 236,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 180,
@@ -48433,7 +48433,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::BakePortalLight",
-  "frozenSize": 0,
+  "frozenSize": 1134,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 861,
@@ -58083,7 +58083,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::PixelPermute",
-  "frozenSize": 0,
+  "frozenSize": 49,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 87,
@@ -58371,7 +58371,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindScene",
-  "frozenSize": 0,
+  "frozenSize": 3,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 238,
@@ -58387,7 +58387,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindMapObj",
-  "frozenSize": 0,
+  "frozenSize": 3,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 136,
@@ -66319,7 +66319,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "IntersectRayPlane",
-  "frozenSize": 0,
+  "frozenSize": 291,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 283,
@@ -66335,7 +66335,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "PointInPolygon",
-  "frozenSize": 0,
+  "frozenSize": 723,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 957,
@@ -66447,7 +66447,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWFrustum::ComputePlanes",
-  "frozenSize": 0,
+  "frozenSize": 252,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 201,
@@ -66463,7 +66463,7 @@
    "src/world/cwfrustum.cpp"
   ],
   "frozen": "CWFrustum::Transform",
-  "frozenSize": 0,
+  "frozenSize": 364,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 101,
@@ -66577,7 +66577,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "DistancePointPolygon",
-  "frozenSize": 0,
+  "frozenSize": 1670,
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 142,
@@ -66641,7 +66641,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "RayFromPoints",
-  "frozenSize": 0,
+  "frozenSize": 207,
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 152,
