@@ -27,6 +27,11 @@ class CMapBaseObj {
 
     public:
         // Enums
+        // What an object is. The reference ORs the bit in each subclass's own constructor, and
+        // frozen has been missing most of them: as of 2026-09-25 only Chunk, Entity and
+        // DoodadDef are set. The others have no reader yet, so they are latent rather than
+        // broken -- but DoodadDef was not, and went unnoticed because the tests that asked for
+        // it simply answered no. Set the bit before writing anything that tests one.
         enum {
             Type_BaseObj        = 0x1,
             Type_Area           = 0x2,
