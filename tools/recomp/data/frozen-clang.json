@@ -196013,7 +196013,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 20
+"line": 21
 },
 "CMapArea::~CMapArea": {
 "files": [
@@ -196037,7 +196037,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 25
+"line": 26
 },
 "CMapArea::Load": {
 "files": [
@@ -196057,7 +196057,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 55
+"line": 56
 },
 "CMapArea::BeginLoad": {
 "files": [
@@ -196078,7 +196078,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 66
+"line": 67
 },
 "CMapArea::LoadCallback": {
 "files": [
@@ -196094,17 +196094,23 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 83
+"line": 84
 },
 "CMapArea::ParseChunks": {
 "files": [
 "src/world/map/cmaparea.cpp"
 ],
 "callseq": [
+"SMemAlloc",
+"CMapLiquidData::CMapLiquidData",
+"CMapLiquidData::SetBody",
 "CMapArea::LoadTextures"
 ],
-"strings": [],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmaparea.cpp"
+],
 "consts": [
+"0x0",
 "0x1",
 "0x10",
 "0x24",
@@ -196112,11 +196118,11 @@
 "6",
 "8"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 36,
+"lines": 46,
 "refs": [],
-"line": 96
+"line": 97
 },
 "CMapArea::GrowTextures": {
 "files": [
@@ -196139,7 +196145,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 135
+"line": 146
 },
 "CMapArea::LoadTextures": {
 "files": [
@@ -196161,7 +196167,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 161
+"line": 172
 },
 "CMapArea::LoadTexture": {
 "files": [
@@ -196189,7 +196195,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 216
+"line": 227
 },
 "CMapArea::CreateChunk": {
 "files": [
@@ -196212,7 +196218,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 248
+"line": 259
 },
 "CMapArea::CreateChunks": {
 "files": [
@@ -196240,7 +196246,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 274
+"line": 285
 },
 "CMapArea::DestroyChunks": {
 "files": [
@@ -196263,7 +196269,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 308
+"line": 319
 },
 "CMapArea::Destroy": {
 "files": [
@@ -196289,7 +196295,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 332
+"line": 343
 },
 "CMapArea::PairRenderChunks": {
 "files": [
@@ -196319,7 +196325,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 375
+"line": 386
 },
 "CMapBaseObj::GetType": {
 "files": [

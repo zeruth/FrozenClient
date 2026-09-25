@@ -3034,6 +3034,7 @@ addr	how	frozen	evidence
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
+007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
 007d66d0	annotated	CMapChunk::CanPairWith	tag in src/world/map/CMapChunk.cpp
 007d6810	annotated	CMapArea::PairRenderChunks	tag in src/world/map/CMapArea.cpp
@@ -3745,6 +3746,13 @@ addr	how	frozen	evidence
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
+008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
+008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
+008a3070	annotated	CMapLiquidData::Chunk	tag in src/world/map/CMapLiquidData.cpp
+008a3090	annotated	CMapLiquidData::Layer	tag in src/world/map/CMapLiquidData.cpp
+008a30b0	annotated	CMapLiquidData::FishableMask	tag in src/world/map/CMapLiquidData.cpp
+008a30e0	annotated	CMapLiquidData::DeepMask	tag in src/world/map/CMapLiquidData.cpp
+008a3110	annotated	CMapLiquidData::ExistsMask	tag in src/world/map/CMapLiquidData.cpp
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"

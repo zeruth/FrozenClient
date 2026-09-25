@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_AREA_HPP
 #define WORLD_MAP_C_MAP_AREA_HPP
 
+#include "world/map/CMapLiquidData.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include "gx/Texture.hpp"
 #include <storm/List.hpp>
@@ -82,7 +83,7 @@ class CMapArea : public CMapBaseObj {
         uint32_t* m_mapObjNameOffsets = nullptr;  // +0xac: MWID
         uint8_t* m_flightBounds = nullptr;        // +0xb0: MFBO
         uint32_t* m_textureFlags = nullptr;       // +0xb4: MTXF
-        void* m_liquid = nullptr;                 // +0xb8: the MH2O liquid instance
+        CMapLiquidData* m_liquid = nullptr;       // +0xb8: the tile's MH2O reader
         CMapChunk* m_chunks[256] = {};            // +0xbc: [y * 16 + x]
 
         // Member functions

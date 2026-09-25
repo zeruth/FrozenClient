@@ -13,6 +13,7 @@
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <tempest/Vector.hpp>
+#include <new>
 
 static const char* AREA_TEXTURE_TAG = ".?AVCMapAreaTexture@@";
 
@@ -115,9 +116,19 @@ void CMapArea::ParseChunks() {
         this->m_flightBounds = body + header->ofsMFBO + 8;
     }
 
+    // MH2O only when the tile has one and it is not an empty chunk. Nothing is unpacked here:
+    // the reader keeps the body and the chunks read layers out of it as they are built.
     if (header->ofsMH2O && *reinterpret_cast<uint32_t*>(body + header->ofsMH2O + 4)) {
-        // TODO FUN_008a3050 (the liquid instance, 8 bytes from SMemAlloc) and FUN_007d4f10
-        // (its MH2O parse) are not ported yet
+        auto liquid = static_cast<CMapLiquidData*>(SMemAlloc(sizeof(CMapLiquidData), __FILE__, __LINE__, 0x0));
+
+        this->m_liquid = liquid;
+
+        // The reference sets the body whether or not the allocation succeeded, which would
+        // write through null; frozen checks.
+        if (liquid) {
+            new (liquid) CMapLiquidData();
+            liquid->SetBody(body + header->ofsMH2O + 8);
+        }
     }
 
     if (this->m_header->ofsMTXF) {
