@@ -4204,6 +4204,7 @@ addr	how	frozen	evidence
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp
 00984ce0	annotated	DistancePointSegmentSq	tag in lib/typhoon/tempest/Intersect.cpp
 00984db0	annotated	DistancePointPolygon	tag in lib/typhoon/tempest/Intersect.cpp
+00984e50	annotated	DistancePointPolygonInPlane	tag in lib/typhoon/tempest/Intersect.cpp
 00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
 00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
 009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp

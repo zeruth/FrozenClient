@@ -49,6 +49,12 @@ const uint32_t CLIP_POLYGON_MAX = 32;
 uint32_t ClipPolygonToPlanes(const C4Plane* planes, uint32_t planeCount,
                              const C3Vector* vertices, uint32_t count, C3Vector* out);
 
+// Distance from a point to a polygon that lies in `plane`. The point drops onto the plane
+// first: if it lands inside the outline the answer is how far it had to drop, and if it lands
+// outside it is the distance to the nearest edge. ref: FUN_00984e50
+float DistancePointPolygonInPlane(const C3Vector& point, const C3Vector* vertices,
+                                  int32_t count, const C4Plane& plane);
+
 // Distance from a point to a box: zero inside it, otherwise to the nearest face.
 // ref: FUN_0078f3e0
 float DistancePointBox(const CAaBox& box, const C3Vector& point);

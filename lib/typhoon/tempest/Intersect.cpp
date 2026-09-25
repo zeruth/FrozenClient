@@ -534,3 +534,39 @@ float DistancePointBox(const CAaBox& box, const C3Vector& point) {
 
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }
+
+// ref: FUN_00984e50
+float DistancePointPolygonInPlane(const C3Vector& point, const C3Vector* vertices,
+                                  int32_t count, const C4Plane& plane) {
+    float distance = plane.n.x * point.x + plane.n.y * point.y + plane.n.z * point.z + plane.d;
+
+    C3Vector dropped = point;
+
+    // A point already in the plane stays put; otherwise it steps along the normal, whichever
+    // way it has to, and the ray is met with the plane.
+    if (distance > 0.001f || distance < -0.001f) {
+        C3Vector toward;
+
+        if (distance > 0.001f) {
+            toward.x = point.x - plane.n.x;
+            toward.y = point.y - plane.n.y;
+            toward.z = point.z - plane.n.z;
+        } else {
+            toward.x = point.x + plane.n.x;
+            toward.y = point.y + plane.n.y;
+            toward.z = point.z + plane.n.z;
+        }
+
+        C3Ray ray;
+        RayFromPoints(ray, point, toward, false);
+        IntersectRayPlane(ray, plane, nullptr, &dropped, 0.01f);
+    }
+
+    uint32_t axis = DominantAxis(plane.n);
+
+    if (PointInPolygon(dropped, vertices, count, axis)) {
+        return fabsf(distance);
+    }
+
+    return DistancePointPolygon(point, vertices, count);
+}

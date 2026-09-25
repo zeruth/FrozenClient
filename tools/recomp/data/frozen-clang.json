@@ -37908,6 +37908,32 @@
 "refs": [],
 "line": 526
 },
+"DistancePointPolygonInPlane": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"C3Ray::C3Ray",
+"RayFromPoints",
+"IntersectRayPlane",
+"DominantAxis",
+"PointInPolygon",
+"fabsf",
+"DistancePointPolygon"
+],
+"strings": [],
+"consts": [
+"0.001f",
+"0.01f"
+],
+"branches": 3,
+"stub": false,
+"lines": 33,
+"refs": [],
+"line": 539
+},
 "CMath::cos": {
 "files": [
 "lib/typhoon/tempest/math/cmath.hpp"

@@ -66903,6 +66903,22 @@
   "refSize": 142,
   "status": "ported"
  },
+ "00984e50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DistancePointPolygonInPlane",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 262,
+  "status": "ported"
+ },
  "00984f60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
