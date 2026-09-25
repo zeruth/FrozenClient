@@ -729,9 +729,8 @@
     "note": "only unmatched callee of CGTooltip_IsUnit (2026-09-18), lost when inlined callees were expanded"
   },
   "0067d770": {
-    "frozen": "Script_GetUnitFromName",
-    "status": "ported",
-    "note": "only unmatched callee of Script_UnitIsSameServer (2026-09-18); also the resolved callee in CGUnit_C name lookup FUN_0072a000"
+    "status": "unlinked",
+    "note": "A guid-keyed name-cache lookup (RTTI .?AUDBCACHECALLBACK@@): every caller passes a 64-bit guid, an out pointer and a callback, e.g. (DAT_00c9eab8, DAT_00c9eabc, &local_c, FUN_00515900, 0, 0) in ResurrectGetOfferer. Not Script_GetUnitFromName, which takes a unit token and is 0060c1f0. The 2026-09-18 pin came from the callgraph alone; corrected 2026-09-25 from the decompiled call sites."
   },
   "00488540": {
     "frozen": "CScriptRegion::ProtectedFunctionsAllowed",
@@ -1954,5 +1953,28 @@
     "frozen": "CM2Shared::LoadSequence",
     "status": "ported",
     "note": "Windows build is call-for-call. On 64-bit POSIX (Android) it diverges on purpose: when the .anim buffer from SequenceBufferAlloc lands out of 32-bit reach of the model data (the keyframe M2Arrays hold a 32-bit delta into it), it is swapped for one mmap'd near the model (SequenceBufferPlaceNear). Android's allocator keeps allocation sizes in regions gigabytes apart, so without this the delta overflowed and tripped the delta assertion (2026-09-24)."
+  },
+  "0086ae20": {
+    "status": "unlinked",
+    "note": "The millisecond clock getter (11 bytes, 446 callers, calls FUN_0086adc0), not frozen's PushSecondsUntil, a GameScript-local Lua helper the callgraph matcher parked here. Ports read it as OsGetAsyncTimeMs. Corrected 2026-09-25."
+  },
+  "006b0970": {
+    "frozen": "ClientServices::Connection",
+    "status": "ported",
+    "note": "26 bytes: asserts s_currentConnection (00c79cf4) and returns it. Callers dereference the result (GetBillingTimeRemaining reads +0x2f24 off it), so it is Connection(), not IsConnected() as the callgraph matcher had it. Corrected 2026-09-25."
+  },
+  "008889b0": {
+    "status": "unlinked",
+    "note": "A stripped assert that still terminates (35 bytes, 241 callers), called as FUN_008889b0(\"\", \"\", 0); ClientServices.cpp already says so. Not FrameScript_Object::RegisterScriptObject, where the callgraph matcher put it. Corrected 2026-09-25."
+  },
+  "005156a0": {
+    "frozen": "Script_IsInInstance",
+    "status": "stub",
+    "note": "The binding link is right, but frozen's body is a fixed nil, \"none\" answer; the reference reads the current map's state at 00bd088c. Status corrected from ported 2026-09-25."
+  },
+  "00574180": {
+    "frozen": "Script_GetReadyCheckStatus",
+    "status": "stub",
+    "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25."
   }
 }
