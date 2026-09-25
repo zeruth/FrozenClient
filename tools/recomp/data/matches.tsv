@@ -2806,6 +2806,7 @@ addr	how	frozen	evidence
 007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
 007a6e00	annotated	CMapObj::SetupPortalContext	tag in src/world/map/CMapObjDraw.cpp
 007a7210	annotated	CMapObj::TestCameraInPortal	tag in src/world/map/CMapObjDraw.cpp
+007a72a0	annotated	ClipPolygonToPlanes	tag in lib/typhoon/tempest/Intersect.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs

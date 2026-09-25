@@ -428,3 +428,96 @@ float DistancePointPolygon(const C3Vector& point, const C3Vector* vertices, int3
 bool NearlyEqual(float a, float b, float epsilon) {
     return fabsf(a - b) < epsilon;
 }
+
+// ref: FUN_007a72a0
+uint32_t ClipPolygonToPlanes(const C4Plane* planes, uint32_t planeCount,
+                             const C3Vector* vertices, uint32_t count, C3Vector* out) {
+    if (!count || count > CLIP_POLYGON_MAX) {
+        return 0;
+    }
+
+    // Two buffers the clip ping-pongs between, one plane at a time.
+    C3Vector buffers[2][CLIP_POLYGON_MAX];
+    uint8_t side[CLIP_POLYGON_MAX + 1];
+    float distance[CLIP_POLYGON_MAX + 1];
+
+    uint32_t current = 0;
+
+    for (uint32_t i = 0; i < count; i++) {
+        buffers[0][i] = vertices[i];
+    }
+
+    uint32_t counts[2] = { count, 0 };
+
+    for (uint32_t p = 0; p < planeCount; p++) {
+        const C3Vector* in = buffers[current];
+        uint32_t inCount = counts[current];
+        uint32_t next = (current + 1) & 1;
+        C3Vector* dst = buffers[next];
+
+        if (!inCount) {
+            return 0;
+        }
+
+        const C4Plane& plane = planes[p];
+
+        for (uint32_t i = 0; i < inCount; i++) {
+            float d = in[i].x * plane.n.x + in[i].y * plane.n.y + in[i].z * plane.n.z + plane.d;
+
+            distance[i] = d;
+
+            if (d > 0.0001f) {
+                side[i] = 1;
+            } else if (d < -0.0001f) {
+                side[i] = 2;
+            } else {
+                side[i] = 0;
+            }
+        }
+
+        // The wrap-around entry, so the last edge is treated like any other.
+        side[inCount] = side[0];
+        distance[inCount] = distance[0];
+
+        uint32_t outCount = 0;
+
+        for (uint32_t i = 0; i < inCount; i++) {
+            if (!side[i]) {
+                // Lying in the plane: kept, and its edges are never cut.
+                dst[outCount++] = in[i];
+
+                continue;
+            }
+
+            if (side[i] == 1) {
+                dst[outCount++] = in[i];
+            }
+
+            if (side[i + 1] && side[i + 1] != side[i]) {
+                uint32_t j = (i + 1) % inCount;
+                float t = distance[i] / (distance[i] - distance[j]);
+
+                dst[outCount].x = (in[j].x - in[i].x) * t + in[i].x;
+                dst[outCount].y = (in[j].y - in[i].y) * t + in[i].y;
+                dst[outCount].z = (in[j].z - in[i].z) * t + in[i].z;
+
+                outCount++;
+            }
+        }
+
+        if (!outCount) {
+            return 0;
+        }
+
+        counts[next] = outCount;
+        current = next;
+    }
+
+    uint32_t result = counts[current];
+
+    for (uint32_t i = 0; i < result; i++) {
+        out[i] = buffers[current][i];
+    }
+
+    return result;
+}

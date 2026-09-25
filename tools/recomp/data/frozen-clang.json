@@ -37869,6 +37869,30 @@
 "refs": [],
 "line": 428
 },
+"ClipPolygonToPlanes": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"0.0001f",
+"1",
+"2"
+],
+"branches": 13,
+"stub": false,
+"lines": 90,
+"refs": [],
+"line": 433
+},
 "CMath::cos": {
 "files": [
 "lib/typhoon/tempest/math/cmath.hpp"

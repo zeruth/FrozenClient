@@ -34,6 +34,21 @@ uint32_t DominantAxis(const C3Vector& v);
 uint32_t AaBoxVsPlanes6(const C4Plane* planes, const CAaBox& box);
 uint32_t AaBoxBehindPlanes6(const C4Plane* planes, const CAaBox& box);
 
+// The most vertices a clipped polygon is allowed to keep. The reference's two working
+// buffers hold 32 each and it never checks, so a polygon that grew past that would run off
+// the end; clipping a convex polygon against five planes cannot.
+const uint32_t CLIP_POLYGON_MAX = 32;
+
+// Clip a polygon against a run of planes, keeping what lies in front of every one
+// (Sutherland-Hodgman). Returns how many vertices survived, zero if the polygon fell
+// entirely behind one of them. `out` needs room for CLIP_POLYGON_MAX.
+//
+// A vertex within a ten-thousandth of a plane counts as on it and is kept without cutting
+// the edge, which is what stops a polygon lying in a plane from collapsing.
+// ref: FUN_007a72a0
+uint32_t ClipPolygonToPlanes(const C4Plane* planes, uint32_t planeCount,
+                             const C3Vector* vertices, uint32_t count, C3Vector* out);
+
 // Whether two scalars are within `epsilon` of each other. ref: FUN_00482870
 bool NearlyEqual(float a, float b, float epsilon);
 

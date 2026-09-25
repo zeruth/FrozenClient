@@ -44806,6 +44806,22 @@
   "refSize": 139,
   "status": "ported"
  },
+ "007a72a0": {
+  "branchRatio": 0.722,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "ClipPolygonToPlanes",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 907,
+  "status": "ported"
+ },
  "007a7630": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
