@@ -44223,10 +44223,26 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCamera",
-  "frozenSize": 1934,
+  "frozenSize": 1955,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 2291,
+  "status": "ported"
+ },
+ "007964a0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.818,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderMapObjs",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 1058,
   "status": "ported"
  },
  "007983b0": {
@@ -44627,6 +44643,21 @@
   "refSize": 143,
   "status": "ported"
  },
+ "007a8320": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetInstanceTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
  "007a8440": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -44701,6 +44732,21 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 895,
+  "status": "ported"
+ },
+ "007a9160": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObj::SetupLocalLights",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 151,
   "status": "ported"
  },
  "007abf50": {
@@ -58165,6 +58211,22 @@
   "refSize": 242,
   "status": "ported"
  },
+ "008744e0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindScene",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 238,
+  "status": "ported"
+ },
  "008745d0": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -66207,6 +66269,21 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 201,
+  "status": "ported"
+ },
+ "00983f40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWFrustum.cpp"
+  ],
+  "frozen": "CWFrustum::Transform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 101,
   "status": "ported"
  },
  "00983fe0": {

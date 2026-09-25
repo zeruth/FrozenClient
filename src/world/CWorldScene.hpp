@@ -112,6 +112,7 @@ class CWorldScene {
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
         static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
         static int32_t s_frustumDepth;                      // DAT_00cd8798
+        static C3Vector s_cameraPos;                        // DAT_00cd8f5c
         static C3Vector s_cameraTarget;                     // DAT_00cd8f68
         static C3Vector s_viewDir;                          // DAT_00cd8f74: unit camera-to-target
         static C4Plane s_viewPlane;                         // DAT_00cd8f80: the plane through the camera facing the view
@@ -152,6 +153,8 @@ class CWorldScene {
         static void SelectChunkShaders(int32_t specular, int32_t flag80);
         static void SetupTerrainConstants(const C44Matrix& world, const C44Matrix& view);
         static void RenderTerrain();
+        // Every map object the frame can see, drawn. ref: FUN_007964a0
+        static void RenderMapObjs();
         static void RenderChunkLists();
         static void RenderSolidChunks();
         static void RenderHiddenChunks();

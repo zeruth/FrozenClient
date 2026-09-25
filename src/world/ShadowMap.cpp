@@ -45,3 +45,12 @@ void ShadowMapBindMapObj(int32_t lit) {
     // shadow texture into stage 4, choosing the unlit map and the second constant set when
     // the geometry is unlit and the quality is above 2.
 }
+
+// ref: FUN_008744e0
+void ShadowMapBindScene() {
+    if (g_shadowMapRealloc || g_shadowMapQuality <= 0) {
+        return;
+    }
+
+    // TODO the constant and texture binds proper, as in ShadowMapBindTerrain.
+}

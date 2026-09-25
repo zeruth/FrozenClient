@@ -26,4 +26,9 @@ void ShadowMapBindTerrain();
 // ref: FUN_008745d0
 void ShadowMapBindMapObj(int32_t lit);
 
+// The shadow map state shared by a whole pass: the light matrices into vertex c224, the
+// cascade constants into pixel c4 and c5, and at the highest quality three filter textures
+// into stages 5 through 7. ref: FUN_008744e0
+void ShadowMapBindScene();
+
 #endif

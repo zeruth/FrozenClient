@@ -14,6 +14,7 @@
 
 class CAsyncObject;
 class CMapObjDefGroup;
+class CM2Lighting;
 class CShaderEffect;
 
 // MOHD: the WMO root header, 64 bytes, the first chunk after MVER.
@@ -138,7 +139,7 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void UpdateMaterialColors();
 
         // ref: FUN_007abf50
-        void Render(uint32_t groupIndex, CMapObjDefGroup* defGroup);
+        void Render(uint32_t groupIndex, const C44Matrix& inversePlacement, CMapObjDefGroup* defGroup);
 
         // --- draw state -------------------------------------------------------------------
         // What the draw last set, so a run of batches sharing a setting pushes it once. The
@@ -166,6 +167,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static void SelectShaders();
         // ref: FUN_00873ee0
         static void SetAlphaRefForBlendMode();
+        // ref: FUN_007a8320
+        static void SetInstanceTransform(const C44Matrix& worldView);
+        // ref: FUN_007a9160
+        static void SetupLocalLights(CM2Lighting* lighting, const C3Vector& cameraPos);
 
         // Member variables
         uint32_t m_memHandle = 0;                 // +0x00: CMap::s_mapObjHeap slot

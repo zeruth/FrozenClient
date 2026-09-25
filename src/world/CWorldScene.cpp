@@ -5,6 +5,8 @@
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
+#include "world/CWFrustum.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
@@ -12,6 +14,7 @@
 #include "gx/Transform.hpp"
 #include "gx/shader/CGxShader.hpp"
 #include "model/CM2Lighting.hpp"
+#include "model/CM2Scene.hpp"
 #include <tempest/Intersect.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
@@ -28,6 +31,7 @@ C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
 int32_t CWorldScene::s_frustumDepth;
+C3Vector CWorldScene::s_cameraPos;
 C3Vector CWorldScene::s_cameraTarget;
 C3Vector CWorldScene::s_viewDir;
 C4Plane CWorldScene::s_viewPlane;
@@ -621,6 +625,7 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
     CWorldScene::s_portalWindow = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, 0.0f, 0.0f };
     // TODO DAT_00cd8620 = 0, DAT_00cd861c = 0, FUN_00794190(&array, 0) twice
 
+    CWorldScene::s_cameraPos = cameraPos;
     CWorldScene::s_cameraTarget = cameraTarget;
 
     C3Vector dir = {
@@ -1255,4 +1260,88 @@ void CWorldScene::BucketMapObjDefGroups() {
 
         defGroup = next;
     }
+}
+
+// ----------------------------------------------------------------------------------------------
+// The map object pass
+
+// ref: FUN_007964a0
+// Every map object group the traversal reached, drawn. Each takes the view down one level of
+// portal recursion, sets its instance transform and lighting, hands itself to CMapObj::Render,
+// and gives its frustum records back.
+void CWorldScene::RenderMapObjs() {
+    GxRsPush();
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =
+        CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+
+    ShadowMapBindScene();
+
+    for (auto defGroup = CWorldScene::s_visibleMapObjGroups.Head(); defGroup; ) {
+        auto next = CWorldScene::s_visibleMapObjGroups.Next(defGroup);
+
+        CWorldScene::s_visibleMapObjGroups.UnlinkNode(defGroup);
+
+        // The def that placed this group is the owner of its one parent link.
+        auto parentLink = defGroup->m_parentLinkList.Head();
+        auto def = parentLink ? static_cast<CMapObjDef*>(parentLink->ref) : nullptr;
+
+        if (def && def->m_mapObj && (CWorld::s_enables & 0x100)) {
+            // The instance's transform with the camera translation already folded in, so the
+            // vertex program sees local coordinates.
+            C44Matrix toCamera;
+            toCamera.Identity();
+
+            C3Vector back = {
+                -CWorldScene::s_cameraPos.x,
+                -CWorldScene::s_cameraPos.y,
+                -CWorldScene::s_cameraPos.z
+            };
+            toCamera.Translate(back);
+
+            C44Matrix worldView = def->m_placement * toCamera;
+            CMapObj::SetInstanceTransform(worldView);
+
+            // A def placed with a negative scale draws its faces the other way round.
+            int32_t flipped = (def->m_flags >> 15) & 0x1;
+
+            CM2Lighting lighting;
+            lighting.Initialize(nullptr, *reinterpret_cast<const CAaSphere*>(&defGroup->m_center));
+
+            auto scene = CWorld::GetM2Scene();
+
+            if (scene) {
+                scene->SelectLights(&lighting);
+            }
+
+            // The group's own MOLT lights on top of whatever the scene found.
+            defGroup->SelectLights(&lighting);
+
+            CMapObj::SetupLocalLights(&lighting, CWorldScene::s_cameraPos);
+
+            // TODO when the def's own two fog ids match the world's, the reference overrides
+            // the instance colour from the light block. frozen has neither field.
+
+            CMapObj::s_interiorFog = flipped;
+
+            def->m_mapObj->Render(defGroup->m_groupIndex, def->m_inversePlacement, defGroup);
+        }
+
+        // The records this group collected go back to the pool.
+        for (auto record = defGroup->m_frustums.Head(); record; ) {
+            auto nextRecord = defGroup->m_frustums.Next(record);
+
+            defGroup->m_frustums.UnlinkNode(record);
+            CWFrustum::Free(record);
+
+            record = nextRecord;
+        }
+
+        defGroup = next;
+    }
+
+    CWorldScene::s_frustumDepth--;
+
+    GxRsPop();
 }

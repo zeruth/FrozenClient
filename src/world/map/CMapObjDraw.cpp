@@ -19,6 +19,7 @@
 #include "gx/Transform.hpp"
 #include "gx/Shader.hpp"
 #include "gx/shader/CShaderEffect.hpp"
+#include "model/CM2Lighting.hpp"
 
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -43,6 +44,51 @@ void ImVectorToFloats(float* out, const CImVector& color) {
     out[3] = color.a / 255.0f;
 }
 
+}
+
+// ref: FUN_007a8320
+// One instance's transform, with the camera translation already folded in: it goes to the
+// device as the world matrix and, transposed, to the vertex constants the map object programs
+// read their transform from.
+void CMapObj::SetInstanceTransform(const C44Matrix& worldView) {
+    if (CShaderEffect::s_enableShaders) {
+        C44Matrix transposed = worldView.Transpose();
+
+        GxShaderConstantsSet(GxSh_Vertex, 0x1f, reinterpret_cast<const float*>(&transposed), 4);
+    }
+
+    GxXformSet(GxXform_World, worldView);
+}
+
+// ref: FUN_007a9160
+// The point lights near this instance, uploaded for its geometry to read. The permutation
+// base the shader selection adds to is the number of them.
+void CMapObj::SetupLocalLights(CM2Lighting* lighting, const C3Vector& cameraPos) {
+    if (!CShaderEffect::s_enableShaders) {
+        lighting->SetupGxLights(&cameraPos);
+
+        CMapObj::s_instanceColor.value = 0;
+
+        return;
+    }
+
+    CMapObj::s_vertexPermuteBase = lighting->m_lightCount;
+
+    if (CMapObj::s_vertexPermuteBase) {
+        // TODO FUN_007a8a60: the reference refreshes its own light block first.
+
+        CShaderEffect::LocalLights lights;
+        CShaderEffect::ComputeLocalLights(
+            &lights,
+            CMapObj::s_vertexPermuteBase,
+            lighting->m_lights,
+            &cameraPos
+        );
+
+        GxShaderConstantsSet(GxSh_Vertex, 0x11, lights.float0, 0xb);
+    }
+
+    CMapObj::s_instanceColor.value = 0;
 }
 
 // ref: FUN_007a7630
@@ -566,7 +612,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 // ref: FUN_007abf50
 // One group of one building, drawn once per record the traversal left on it. A group whose
 // vertex colours are baked takes the three-range draw; one without them takes the flat one.
-void CMapObj::Render(uint32_t groupIndex, CMapObjDefGroup* defGroup) {
+void CMapObj::Render(uint32_t groupIndex, const C44Matrix& inversePlacement, CMapObjDefGroup* defGroup) {
     auto group = this->GetGroup(groupIndex, 0);
 
     if (!group) {
@@ -586,10 +632,12 @@ void CMapObj::Render(uint32_t groupIndex, CMapObjDefGroup* defGroup) {
     int32_t index = 0;
 
     for (auto record = defGroup->m_frustums.Head(); record; record = defGroup->m_frustums.Next(record)) {
-        CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = *record;
+        auto frustum = &CWorldScene::s_frustums[CWorldScene::s_frustumDepth];
+        *frustum = *record;
 
-        // TODO FUN_0078fb00(defGroup): the clip volume the doorway itself cut out, which is
-        // narrower than the frustum the record carries.
+        // Into the building's own space, where the batch boxes already are. Without this the
+        // per-batch cull would be comparing group coordinates against a world-space volume.
+        frustum->Transform(inversePlacement);
 
         if (group->m_colors) {
             group->DrawBatchesSplit(index);

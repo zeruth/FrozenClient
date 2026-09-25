@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <storm/List.hpp>
+#include <tempest/Matrix.hpp>
 #include <tempest/Plane.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
@@ -41,6 +42,10 @@ class CWFrustum {
         explicit CWFrustum(const C3Vector* corners);
         void SetCorners(const C3Vector* corners);
         void ComputePlanes();
+        // Move the whole volume into another space, corners first and planes after. The map
+        // object pass uses it to bring the view into a building's own space, where the batch
+        // boxes already live. ref: FUN_00983f40
+        void Transform(const C44Matrix& matrix);
         int32_t SphereInside(const CAaSphere& sphere);
 };
 

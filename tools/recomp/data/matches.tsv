@@ -2770,6 +2770,7 @@ addr	how	frozen	evidence
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
+007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
@@ -2795,11 +2796,13 @@ addr	how	frozen	evidence
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
+007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp
 007a84d0	annotated	CMapObj::SelectShaders	tag in src/world/map/CMapObjDraw.cpp
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp
+007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
 007abf50	annotated	CMapObj::Render	tag in src/world/map/CMapObjDraw.cpp
 007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
 007ac9f0	annotated	CMapObjGroup::DrawBatchesSplit	tag in src/world/map/CMapObjDraw.cpp
@@ -3659,6 +3662,7 @@ addr	how	frozen	evidence
 00873f80	annotated	ShadowMapGetQuality	tag in src/world/ShadowMap.cpp
 00873ff0	override	ShadowMapGetShaderLevel	
 008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
+008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
@@ -4162,6 +4166,7 @@ addr	how	frozen	evidence
 00983d20	annotated	CWFrustum::SphereInside	tag in src/world/CWorldScene.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983e70	annotated	CWFrustum::ComputePlanes	tag in src/world/CWorldScene.cpp
+00983f40	annotated	CWFrustum::Transform	tag in src/world/CWFrustum.cpp
 00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWorldScene.cpp
 00984240	annotated	CWFrustum::SetCorners	tag in src/world/CWorldScene.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
