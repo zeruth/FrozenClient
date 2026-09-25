@@ -416,6 +416,14 @@ bool CVar::Set(const char* value, bool setValue, bool setReset, bool setDefault,
     return true;
 }
 
+// ref: FUN_00766940
+void CVar::SetInt(int32_t value, bool setValue, bool setReset, bool setDefault, bool a6) {
+    char buffer[32];
+    SStrPrintf(buffer, sizeof(buffer), "%d", value);
+
+    this->Set(buffer, setValue, setReset, setDefault, a6);
+}
+
 int32_t CVar::Update() {
     if (!(this->m_flags & 0x2)) {
         return 0;

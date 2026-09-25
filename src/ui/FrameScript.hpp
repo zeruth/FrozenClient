@@ -74,6 +74,8 @@ int32_t FrameScript_ExecuteFile(const char* filePath, const char* a2, MD5_CTX* m
 
 void FrameScript_Flush();
 
+void FrameScript_SetEuropeanNumbers(int32_t enable);
+
 void FrameScript_GetColor(lua_State* L, int32_t idx, CImVector& color);
 
 int32_t FrameScript_GetColorNoAlpha(lua_State* L, int32_t idx, CImVector& color);

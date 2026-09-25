@@ -599,6 +599,16 @@ void FrameXML_ReleaseHashNode(const char* name) {
     hashedNode->locked = false;
 }
 
+// ref: FUN_008125d0
+int32_t FrameXML_GetDebugLevel() {
+    return FrameXML::s_debugLevel;
+}
+
+// ref: FUN_008125c0
+void FrameXML_SetDebugLevel(int32_t level) {
+    FrameXML::s_debugLevel = level;
+}
+
 void FrameXML_SetProgressCallback(void (*callback)(float, void*), void* param, uint32_t total) {
     s_progressCallback = callback;
     s_progressParam = param;

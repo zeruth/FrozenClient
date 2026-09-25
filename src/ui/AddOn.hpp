@@ -17,4 +17,8 @@ bool AddOnIsLoaded(const char* name);
 // token the interface expects ("MISSING" when the add-on is not in the archives).
 int32_t AddOnLoad(const char* name, const char** reason);
 
+// The "checkAddonVersion" CVar: whether an add-on built for an older interface is refused.
+bool AddOnVersionCheckEnabled();
+void AddOnSetVersionCheck(bool enabled);
+
 #endif

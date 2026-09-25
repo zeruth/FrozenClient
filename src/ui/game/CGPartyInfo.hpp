@@ -84,6 +84,15 @@ class CGPartyInfo {
         static void ApplyDungeonDifficulty(uint32_t difficulty, bool own, bool group);
         static void ApplyRaidDifficulty(uint32_t difficulty, bool own, bool group);
 
+        // Plain stores into the two dungeon settings, for SetDungeonDifficulty, which writes them
+        // directly rather than through ApplyDungeonDifficulty.
+        static void SetOwnDungeonDifficulty(uint32_t difficulty);
+        static void SetGroupDungeonDifficulty(uint32_t difficulty);
+
+        // ref: FUN_00524720
+        // Reports the dungeon difficulty in force (DUNGEON_DIFFICULTY1, 2, ...) as UI error 0x1f7.
+        static void DisplayDungeonDifficulty();
+
         // ref: FUN_0052c8c0
         // Whether a guid belongs to a party member or to a member's pet. The player is NOT a
         // member for this purpose -- "player" and "pet" are their own tokens.

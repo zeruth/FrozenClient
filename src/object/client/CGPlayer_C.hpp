@@ -43,6 +43,10 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
 
         static void SetLocalPlayerInfo(const CHARACTER_INFO& info);
 
+        // ref: FUN_006d4450
+        // CMSG_GROUP_ACCEPT with the accept flags the binding assembled.
+        static void SendGroupAccept(uint32_t flags);
+
         // Virtual public member functions
         virtual ~CGPlayer_C();
 
@@ -60,6 +64,7 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         // are integers.
         float GetModDamageDonePct(uint32_t school) const;
 
+        int32_t GetAttackPowerForStat(int32_t stat, int32_t value) const;
         uint32_t GetMoney() const;
         uint32_t GetNextLevelXP() const;
         uint32_t GetXP() const;

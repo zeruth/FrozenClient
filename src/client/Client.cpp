@@ -67,11 +67,11 @@ CGameTime g_clientGameTime;
 
 static CVar* s_desktopGammaCvar;
 static CVar* s_gammaCvar;
-static CVar* s_accountUsesTokenCvar;
+CVar* s_accountUsesTokenCvar;
 static CVar* s_movieCvar;
 static CVar* s_expansionMovieCvar;
 static CVar* s_movieSubtitleCvar;
-static CVar* s_checkAddonVersionCvar;
+CVar* s_checkAddonVersionCvar;
 static CVar* s_mouseSpeedCvar;
 static CVar* s_errorsCvar;
 static CVar* s_showErrorsCvar;

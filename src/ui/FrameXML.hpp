@@ -42,6 +42,8 @@ int32_t FrameXML_CreateFrames(const char* tocPath, const char* a2, MD5_CTX* md5,
 
 void FrameXML_FreeHashNodes();
 
+int32_t FrameXML_GetDebugLevel();
+
 XMLTree* FrameXML_LoadXML(const char* filePath, MD5_CTX* md5, CStatus* status);
 
 int32_t FrameXML_ProcessFile(const char* filePath, const char* a2, MD5_CTX* md5, CStatus* status);
@@ -51,6 +53,8 @@ void FrameXML_RegisterDefault();
 int32_t FrameXML_RegisterFactory(const char* type, CSimpleFrame* (*factory)(CSimpleFrame*), bool);
 
 void FrameXML_ReleaseHashNode(const char* name);
+
+void FrameXML_SetDebugLevel(int32_t level);
 
 void FrameXML_SetProgressCallback(void (*callback)(float, void*), void* param, uint32_t total);
 

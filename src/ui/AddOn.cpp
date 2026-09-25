@@ -1,5 +1,7 @@
 #include "ui/AddOn.hpp"
 
+#include "client/Client.hpp"
+#include "console/CVar.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/FrameXML.hpp"
 #include "util/CStatus.hpp"
@@ -86,4 +88,20 @@ int32_t AddOnLoad(const char* name, const char** reason) {
     FrameScript_SignalEvent(423, "%s", name);
 
     return 1;
+}
+
+// ref: FUN_005f4ca0
+bool AddOnVersionCheckEnabled() {
+    return s_checkAddonVersionCvar->m_intValue != 0;
+}
+
+// ref: FUN_005f4cb0
+void AddOnSetVersionCheck(bool enabled) {
+    if (enabled) {
+        s_checkAddonVersionCvar->Set("1", true, false, false, true);
+
+        return;
+    }
+
+    s_checkAddonVersionCvar->Set("0", true, false, false, true);
 }

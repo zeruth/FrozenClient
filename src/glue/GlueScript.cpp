@@ -11,9 +11,11 @@
 #include "net/connection/ClientConnection.hpp"
 #include "sound/Interface.hpp"
 #include "sound/SI2.hpp"
+#include "ui/AddOn.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
 #include "ui/Types.hpp"
+#include "ui/Util.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "util/Lua.hpp"
 #include "util/SFile.hpp"
@@ -83,8 +85,17 @@ int32_t Script_GetUsesToken(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004dbf30
 int32_t Script_SetUsesToken(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_type(L, 1) != LUA_TBOOLEAN) {
+        luaL_error(L, "Usage: SetUsesToken( 0 | 1 )");
+
+        return 0;
+    }
+
+    s_accountUsesTokenCvar->SetInt(lua_toboolean(L, 1), true, false, false, true);
+
+    return 0;
 }
 
 int32_t Script_GetSavedAccountList(lua_State* L) {
@@ -515,12 +526,30 @@ int32_t Script_ResetAddOns(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004dcae0
 int32_t Script_IsAddonVersionCheckEnabled(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (AddOnVersionCheckEnabled()) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
+// ref: FUN_004dcb20
 int32_t Script_SetAddonVersionCheck(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (StringToBOOL(L, 1, 1)) {
+        AddOnSetVersionCheck(true);
+
+        return 0;
+    }
+
+    AddOnSetVersionCheck(false);
+
+    return 0;
 }
 
 int32_t Script_GetCursorPosition(lua_State* L) {
@@ -855,8 +884,41 @@ int32_t Script_GetCVarAbsoluteMin(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+namespace {
+
+// ref: FUN_00873f50
+// A bare constant in the reference; its other three callers are outside this file.
+uint32_t ExtShadowQualityAbsoluteMax() {
+    return 5;
+}
+
+} // namespace
+
+// ref: FUN_00515010
 int32_t Script_GetCVarAbsoluteMax(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: GetCVarAbsoluteMax(\"cvar\")");
+
+        return 0;
+    }
+
+    auto var = CVar::LookupRegistered(lua_tostring(L, 1));
+
+    if (var && !(var->m_flags & 0x40)) {
+        if (!SStrCmpI(var->m_key.GetString(), "extShadowQuality", STORM_MAX_STR)) {
+            lua_pushnumber(L, static_cast<double>(ExtShadowQualityAbsoluteMax()));
+
+            return 1;
+        }
+
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    luaL_error(L, "Couldn't find CVar named '%s'", lua_tostring(L, 1));
+
+    return 0;
 }
 
 int32_t Script_GetChangedOptionWarnings(lua_State* L) {

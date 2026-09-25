@@ -78,6 +78,10 @@ static_assert(offsetof(CGUnitData, rangedAttackPowerMods) == 0x1e4, "CGUnitData 
 static_assert(offsetof(CGUnitData, rangedAttackPowerMultiplier) == 0x1e8, "CGUnitData layout");
 static_assert(offsetof(CGPlayerData, modTargetResistance) == 0x105c, "CGPlayerData layout");
 
+// ref: DAT_00c24388
+// One bit per rune slot, set while that rune is ready. Written by the rune packet handlers, which
+// frozen does not have yet, so every rune reads as not ready.
+static uint32_t s_runesReady;
 
 // The player's own data, or null. Every function below answers 0.0 without it, which is what the
 // reference pushes -- the character sheet shows a zero rather than going blank.
@@ -2206,8 +2210,28 @@ int32_t Script_GetArmorPenetration(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0060e560
 int32_t Script_GetAttackPowerForStat(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: Script_GetAttackPowerForStat(stat, value)");
+
+        return 0;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (!player) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    auto stat = static_cast<int32_t>(lua_tonumber(L, 1));
+    auto value = static_cast<int32_t>(lua_tonumber(L, 2));
+
+    lua_pushnumber(L, static_cast<double>(player->GetAttackPowerForStat(stat - 1, value)));
+
+    return 1;
 }
 
 // ref: FUN_00611780
@@ -2574,8 +2598,27 @@ int32_t Script_GetRuneCooldown(lua_State* L) {
     return 3;
 }
 
+// ref: FUN_00613140
 int32_t Script_GetRuneCount(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CGPlayer_C::GetActivePtr()) {
+        return 0;
+    }
+
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetRuneCount(slot)");
+
+        return 0;
+    }
+
+    auto slot = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    if (slot < 8) {
+        lua_pushnumber(L, static_cast<double>(((1u << slot) & s_runesReady) != 0));
+
+        return 1;
+    }
+
+    return 0;
 }
 
 int32_t Script_GetRuneType(lua_State* L) {

@@ -20,6 +20,12 @@ namespace Client {
 
 extern CGameTime g_clientGameTime;
 
+// ref: DAT_00b2f988 ("g_accountUsesToken")
+extern CVar* s_accountUsesTokenCvar;
+
+// ref: DAT_00b2f978 ("checkAddonVersion")
+extern CVar* s_checkAddonVersionCvar;
+
 void ClientInitializeGame(uint32_t mapId, C3Vector position);
 
 void ClientPostClose(int32_t a1);

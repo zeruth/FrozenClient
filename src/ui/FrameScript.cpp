@@ -483,6 +483,11 @@ int32_t FrameScript_GetColorNoAlpha(lua_State* L, int32_t idx, CImVector& color)
     return idx + 3;
 }
 
+// ref: FUN_00817da0
+void FrameScript_SetEuropeanNumbers(int32_t enable) {
+    lua_seteuropeannumbers(enable);
+}
+
 lua_State* FrameScript_GetContext(void) {
     return FrameScript::s_context;
 }

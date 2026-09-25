@@ -7,6 +7,8 @@
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/Game.hpp"
+#include "client/ClientServices.hpp"
+#include <common/DataStore.hpp>
 #include <storm/Error.hpp>
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
@@ -45,6 +47,15 @@ uint8_t CGPlayer_C::GetLocalPlayerLevel() {
 
 void CGPlayer_C::SetLocalPlayerInfo(const CHARACTER_INFO& info) {
     CGPlayer_C::s_localPlayerInfo = info;
+}
+
+// ref: FUN_006d4450
+void CGPlayer_C::SendGroupAccept(uint32_t flags) {
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_GROUP_ACCEPT));
+    msg.Put(flags);
+    msg.Finalize();
+    ClientServices::Send(&msg);
 }
 
 // ref: FUN_004038f0
@@ -90,6 +101,47 @@ float CGPlayer_C::GetModDamageDonePct(uint32_t school) const {
     }
 
     return this->Player()->modDamageDonePct[school];
+}
+
+// ref: FUN_006d7070
+// stat is 0-based (0 strength, 1 agility). The class record's second field decides whether
+// strength counts double; a form flagged 0x20 adds the raw agility on top.
+int32_t CGPlayer_C::GetAttackPowerForStat(int32_t stat, int32_t value) const {
+    auto classRec = g_chrClassesDB.GetRecord((this->Unit()->bytes0 >> 8) & 0xFF);
+
+    if (!classRec) {
+        return 0;
+    }
+
+    auto notAgility = classRec->m_damageBonusStat != 1;
+
+    auto base = value - 10;
+
+    if (base < 0) {
+        base = 0;
+    }
+
+    int32_t attackPower = 0;
+
+    if (stat == 0) {
+        attackPower = base;
+
+        if (notAgility) {
+            return base * 2;
+        }
+    } else if (stat == 1) {
+        if (!notAgility) {
+            attackPower = base;
+        }
+
+        auto form = g_spellShapeshiftFormDB.GetRecord(this->GetShapeshiftForm());
+
+        if (form && (form->m_flags & 0x20)) {
+            attackPower += value;
+        }
+    }
+
+    return attackPower;
 }
 
 uint32_t CGPlayer_C::GetMoney() const {

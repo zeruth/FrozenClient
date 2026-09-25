@@ -6,6 +6,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include "ui/game/Types.hpp"
 
 #include <common/DataStore.hpp>
@@ -232,6 +233,31 @@ void CGPartyInfo::ApplyDungeonDifficulty(uint32_t difficulty, bool own, bool gro
     if (group) {
         CGPartyInfo::m_dungeonDifficulty = difficulty;
     }
+}
+
+void CGPartyInfo::SetOwnDungeonDifficulty(uint32_t difficulty) {
+    CGPartyInfo::m_ownDungeonDifficulty = difficulty;
+}
+
+void CGPartyInfo::SetGroupDungeonDifficulty(uint32_t difficulty) {
+    CGPartyInfo::m_dungeonDifficulty = difficulty;
+}
+
+// ref: FUN_00524720
+// The value in force follows the same rule as GetDungeonDifficulty: the group's while in a party
+// that is not a raid, the player's own otherwise.
+void CGPartyInfo::DisplayDungeonDifficulty() {
+    auto difficulty = CGPartyInfo::m_ownDungeonDifficulty;
+
+    if (CGPartyInfo::GetMember(1) && !CGRaidInfo::NumMembers()) {
+        difficulty = CGPartyInfo::m_dungeonDifficulty;
+    }
+
+    char token[64];
+    SStrPrintf(token, sizeof(token), "DUNGEON_DIFFICULTY%d", difficulty + 1);
+
+    auto text = FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE);
+    CGGameUI::DisplayError(0x1f7, text);
 }
 
 // ref: FUN_005255a0

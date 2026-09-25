@@ -29,6 +29,7 @@
 #include "console/Command.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/FrameXML.hpp"
 #include "ui/ScriptFunctionsShared.hpp"
 #include "ui/Util.hpp"
 #include "ui/game/CGGameUI.hpp"
@@ -43,8 +44,18 @@
 
 namespace {
 
+// ref: FUN_0050f830
 int32_t Script_FrameXML_Debug(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto level = FrameXML_GetDebugLevel();
+
+    if (lua_isnumber(L, 1)) {
+        level = static_cast<int32_t>(lua_tonumber(L, 1));
+        FrameXML_SetDebugLevel(level);
+    }
+
+    lua_pushnumber(L, static_cast<double>(level));
+
+    return 1;
 }
 
 int32_t Script_GetBuildInfo(lua_State* L) {
@@ -205,8 +216,44 @@ int32_t Script_IsMouseButtonDown(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005eec20
+// A 1-based button number to its MOUSEBUTTON bit. Numbers 2 and 3 cross over: button 2 is the
+// right button (0x4) and button 3 the middle one (0x2). Anything outside 1..31 is no button.
+uint32_t ButtonNumberToMouseButton(int32_t number) {
+    switch (number) {
+        case 1:
+            return 0x1;
+        case 2:
+            return 0x4;
+        case 3:
+            return 0x2;
+        default:
+            if (number >= 4 && number <= 31) {
+                return 1u << (number - 1);
+            }
+
+            return 0;
+    }
+}
+
+// ref: FUN_00514ba0
 int32_t Script_GetMouseButtonName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_isnumber(L, 1)) {
+        auto button = ButtonNumberToMouseButton(static_cast<int32_t>(lua_tonumber(L, 1)));
+        lua_pushstring(L, GetButtonName(button));
+
+        return 1;
+    }
+
+    if (lua_isstring(L, 1)) {
+        lua_settop(L, 1);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 // TODO FUN_0050f950 pushes a string kept at +0x1234 of the UI manager -- the name of the
@@ -940,8 +987,27 @@ int32_t Script_CancelTrade(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0051ab20
 int32_t Script_AcceptGroup(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGPlayer_C::GetActivePtr()) {
+        uint32_t flags = 0;
+
+        if (StringToBOOL(L, 1, 0)) {
+            flags = 0x2;
+        }
+
+        if (StringToBOOL(L, 2, 0)) {
+            flags |= 0x4;
+        }
+
+        if (StringToBOOL(L, 3, 0)) {
+            flags |= 0x8;
+        }
+
+        CGPlayer_C::SendGroupAccept(flags);
+    }
+
+    return 0;
 }
 
 int32_t Script_DeclineGroup(lua_State* L) {
@@ -1212,6 +1278,11 @@ uint32_t s_releaseDeadlineMs = 0;                    // ref: DAT_00bd0848
 bool s_releaseBlocked = false;                       // ref: DAT_00bd084c
 static int32_t s_bindAreaID = 0;                     // the bind point's area, from the player
 static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
+
+// The map the game UI believes it is on and that map's difficulty, 0-based. Written on world
+// entry by code not ported yet (the writer is not identified), so both read 0 today.
+static int32_t s_instanceMapID = 0;                  // ref: DAT_00bd088c
+static uint32_t s_instanceDifficulty = 0;            // ref: DAT_00bd0894
 
 static int32_t PushSecondsUntil(lua_State* L, uint32_t deadlineMs) {
     int32_t remaining = 0;
@@ -1910,8 +1981,11 @@ int32_t Script_ShowCloak(lua_State* L) {
 // TODO FUN_00510de0 takes the boolean and hands it to a number-formatting flag
 // (FUN_00817da0). Frozen formats numbers without a locale separator setting at all, so
 // there is nothing for this to set yet.
+// ref: FUN_00510de0
 int32_t Script_SetEuropeanNumbers(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    FrameScript_SetEuropeanNumbers(StringToBOOL(L, 1, 1));
+
+    return 0;
 }
 
 // ref: FUN_00516b90
@@ -2558,8 +2632,11 @@ int32_t Script_IsInInstance(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_00515750
 int32_t Script_GetInstanceDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, static_cast<double>(s_instanceDifficulty + 1));
+
+    return 1;
 }
 
 int32_t Script_GetInstanceInfo(lua_State* L) {
@@ -2600,8 +2677,51 @@ int32_t Script_GetDungeonDifficulty(lua_State* L) {
     return 2;
 }
 
+// ref: FUN_00526050
+// Only normal and heroic (0 and 1 after the minus one). Unlike SetRaidDifficulty this writes both
+// settings itself, and announces the new value when the one in force before it was different.
 int32_t Script_SetDungeonDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetDungeonDifficulty(difficulty)");
+
+        return 0;
+    }
+
+    // Rounded, not truncated: the reference converts with fistp under the default rounding mode
+    auto difficulty = static_cast<uint32_t>(llrint(lua_tonumber(L, 1) - 1.0));
+
+    if (difficulty > 1) {
+        return 0;
+    }
+
+    auto previous = CGPartyInfo::GetOwnDungeonDifficulty();
+
+    if (CGPartyInfo::GetMember(1) || CGRaidInfo::NumMembers()) {
+        if (CGPartyInfo::GetLeader() != ClntObjMgrGetActivePlayer()) {
+            CGGameUI::DisplayError(0x54);
+
+            return 0;
+        }
+
+        if (CGPartyInfo::GetMember(1) && !CGRaidInfo::NumMembers()) {
+            previous = CGPartyInfo::GetDungeonDifficulty();
+        }
+    }
+
+    CGPartyInfo::SetOwnDungeonDifficulty(difficulty);
+    CGPartyInfo::SetGroupDungeonDifficulty(difficulty);
+
+    if (previous != difficulty) {
+        CGPartyInfo::DisplayDungeonDifficulty();
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(MSG_SET_DUNGEON_DIFFICULTY));
+    msg.Put(difficulty);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    return 0;
 }
 
 // ref: FUN_00515810
@@ -2986,8 +3106,26 @@ int32_t Script_EndBoundTradeable(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00517d70
+// Map.dbc flag 0x100 on the given map, or on the current one when no map is given.
 int32_t Script_CanMapChangeDifficulty(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto mapID = s_instanceMapID;
+
+    if (lua_isnumber(L, 1)) {
+        mapID = static_cast<int32_t>(lua_tonumber(L, 1));
+    }
+
+    auto mapRec = g_mapDB.GetRecord(mapID);
+
+    if (mapRec && (mapRec->m_flags & 0x100)) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_GetExpansionLevel(lua_State* L) {
