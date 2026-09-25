@@ -1,4 +1,4 @@
-file(GLOB PRIVATE_SOURCES "*.cpp" "rec/*.cpp")
+file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "*.cpp" "rec/*.cpp")
 
 add_library(db STATIC
     ${PRIVATE_SOURCES}

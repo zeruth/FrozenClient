@@ -1,4 +1,4 @@
-file(GLOB COMMON_SOURCES
+file(GLOB COMMON_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "datamgr/*.cpp"
     "datastore/*.cpp"

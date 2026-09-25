@@ -1,4 +1,4 @@
-file(GLOB GX_SOURCES
+file(GLOB GX_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "blp/*.cpp"
     "buffer/*.cpp"
@@ -8,7 +8,7 @@ file(GLOB GX_SOURCES
 )
 
 if(WHOA_SYSTEM_WIN)
-    file(GLOB WIN_SOURCES
+    file(GLOB WIN_SOURCES CONFIGURE_DEPENDS
         "d3d/*.cpp"
         "win/*.cpp"
     )
@@ -17,7 +17,7 @@ if(WHOA_SYSTEM_WIN)
 endif()
 
 if(WHOA_SYSTEM_MAC)
-    file(GLOB MAC_SOURCES
+    file(GLOB MAC_SOURCES CONFIGURE_DEPENDS
         "gll/*.cpp"
         "gll/*.mm"
         "mac/*.cpp"
@@ -31,7 +31,7 @@ if(WHOA_SYSTEM_MAC)
 endif()
 
 if(WHOA_SYSTEM_ANDROID)
-    file(GLOB ANDROID_SOURCES
+    file(GLOB ANDROID_SOURCES CONFIGURE_DEPENDS
         "gles/*.cpp"
     )
 

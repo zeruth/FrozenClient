@@ -1,5 +1,5 @@
 if(WHOA_SYSTEM_MAC)
-    file(GLOB PRIVATE_SOURCES
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS
         "Test.cpp"
         "stub/Mac.mm"
         "console/*.cpp"
@@ -28,7 +28,7 @@ if(WHOA_SYSTEM_MAC)
 endif()
 
 if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
-    file(GLOB PRIVATE_SOURCES
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS
         "Test.cpp"
         "console/*.cpp"
         "gx/*.cpp"

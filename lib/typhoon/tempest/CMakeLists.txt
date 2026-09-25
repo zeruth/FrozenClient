@@ -1,4 +1,4 @@
-file(GLOB TEMPEST_SOURCES
+file(GLOB TEMPEST_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "box/*.cpp"
     "math/*.cpp"

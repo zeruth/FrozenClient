@@ -1,4 +1,4 @@
-file(GLOB PRIVATE_SOURCES
+file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "connection/*.cpp"
     "grunt/*.cpp"
@@ -7,14 +7,14 @@ file(GLOB PRIVATE_SOURCES
 )
 
 if(WHOA_SYSTEM_WIN)
-    file(GLOB WINSOCK_SOURCES
+    file(GLOB WINSOCK_SOURCES CONFIGURE_DEPENDS
         "connection/winsock/*.cpp"
     )
     list(APPEND PRIVATE_SOURCES ${WINSOCK_SOURCES})
 endif()
 
 if(WHOA_SYSTEM_MAC OR WHOA_SYSTEM_LINUX)
-    file(GLOB BSD_SOURCES
+    file(GLOB BSD_SOURCES CONFIGURE_DEPENDS
         "connection/bsd/*.cpp"
     )
     list(APPEND PRIVATE_SOURCES ${BSD_SOURCES})

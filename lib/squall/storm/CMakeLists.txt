@@ -1,7 +1,7 @@
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(-Wno-invalid-offsetof HAS_NO_INVALID_OFFSETOF)
 
-file(GLOB STORM_SOURCES
+file(GLOB STORM_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "big/*.cpp"
     "crypto/*.cpp"
@@ -13,7 +13,7 @@ file(GLOB STORM_SOURCES
 )
 
 if(WHOA_SYSTEM_WIN)
-    file(GLOB STORM_WIN_SOURCES
+    file(GLOB STORM_WIN_SOURCES CONFIGURE_DEPENDS
         "win/*.cpp"
         "error/win/*.cpp"
         "thread/win/*.cpp"
@@ -22,7 +22,7 @@ if(WHOA_SYSTEM_WIN)
 endif()
 
 if(WHOA_SYSTEM_MAC)
-    file(GLOB STORM_MAC_SOURCES
+    file(GLOB STORM_MAC_SOURCES CONFIGURE_DEPENDS
         "mac/*.cpp"
         "mac/*.mm"
         "thread/mac/*.cpp"
@@ -32,7 +32,7 @@ if(WHOA_SYSTEM_MAC)
 endif()
 
 if(WHOA_SYSTEM_LINUX)
-    file(GLOB STORM_LINUX_SOURCES
+    file(GLOB STORM_LINUX_SOURCES CONFIGURE_DEPENDS
         "linux/*.cpp"
         "thread/linux/*.cpp"
     )

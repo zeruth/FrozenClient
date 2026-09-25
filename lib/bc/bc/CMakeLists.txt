@@ -1,4 +1,4 @@
-file(GLOB BC_SOURCES
+file(GLOB BC_SOURCES CONFIGURE_DEPENDS
     "*.cpp"
     "lock/*.cpp"
     "system/**.cpp"

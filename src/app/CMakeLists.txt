@@ -1,5 +1,5 @@
 if(WHOA_SYSTEM_WIN)
-    file(GLOB PRIVATE_SOURCES "win/*.cpp")
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "win/*.cpp")
 
     add_executable(Frozen WIN32 ${PRIVATE_SOURCES})
 
@@ -14,7 +14,7 @@ if(WHOA_SYSTEM_WIN)
 endif()
 
 if(WHOA_SYSTEM_MAC)
-    file(GLOB PRIVATE_SOURCES "mac/*.cpp" "mac/*.mm")
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "mac/*.cpp" "mac/*.mm")
 
     set_source_files_properties(${PRIVATE_SOURCES}
         PROPERTIES COMPILE_FLAGS "-x objective-c++"
@@ -38,7 +38,7 @@ if(WHOA_SYSTEM_MAC)
 endif()
 
 if(WHOA_SYSTEM_ANDROID)
-    file(GLOB PRIVATE_SOURCES "android/*.cpp")
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "android/*.cpp")
 
     # The client is loaded by the native activity as a shared library, with the NDK's glue
     # providing the activity callbacks and the native thread
@@ -68,7 +68,7 @@ if(WHOA_SYSTEM_ANDROID)
             GLESv3
     )
 elseif(WHOA_SYSTEM_LINUX)
-    file(GLOB PRIVATE_SOURCES "linux/*.cpp")
+    file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "linux/*.cpp")
 
     add_executable(Frozen ${PRIVATE_SOURCES})
 

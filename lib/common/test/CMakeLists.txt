@@ -1,4 +1,4 @@
-file(GLOB_RECURSE TEST_SOURCES "*.cpp")
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "*.cpp")
 
 if(WHOA_SYSTEM_MAC)
     set_source_files_properties(${TEST_SOURCES}

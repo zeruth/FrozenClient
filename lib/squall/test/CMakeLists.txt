@@ -15,7 +15,7 @@ if(WHOA_TEST_STORMDLL)
         list(APPEND TEST_SOURCES Unicode.cpp)
     endif()
 else()
-    file(GLOB TEST_SOURCES
+    file(GLOB TEST_SOURCES CONFIGURE_DEPENDS
         "*.cpp"
         "big/*.cpp"
     )

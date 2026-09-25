@@ -1,4 +1,4 @@
-file(GLOB PRIVATE_SOURCES "*.cpp")
+file(GLOB PRIVATE_SOURCES CONFIGURE_DEPENDS "*.cpp")
 
 add_library(glue STATIC
     ${PRIVATE_SOURCES}
