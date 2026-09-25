@@ -197353,7 +197353,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 27
+"line": 28
 },
 "CMapChunk::CreateRefs": {
 "files": [
@@ -197362,6 +197362,9 @@
 "callseq": [
 "C3Vector::C3Vector",
 "CMap::CreateMapObjDef",
+"CMap::AllocBaseObjLink",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail",
+"CMap::CreateDoodadDef",
 "CMap::AllocBaseObjLink",
 "TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail"
 ],
@@ -197372,11 +197375,11 @@
 "0x1",
 "1"
 ],
-"branches": 2,
+"branches": 4,
 "stub": false,
-"lines": 27,
+"lines": 41,
 "refs": [],
-"line": 96
+"line": 97
 },
 "BoxDistanceSq": {
 "files": [
@@ -197389,7 +197392,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 129
+"line": 144
 },
 "CMap::CreateDefGroups": {
 "files": [
@@ -197422,7 +197425,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 140
+"line": 155
 },
 "CMap::SetupMapObjDef": {
 "files": [
@@ -197450,7 +197453,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 179
+"line": 194
 },
 "CMap::UpdateMapObjDefs": {
 "files": [
@@ -197488,7 +197491,47 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 211
+"line": 226
+},
+"CMap::CreateDoodadDef": {
+"files": [
+"src/world/map/cmapload.cpp"
+],
+"callseq": [
+"HASHKEY_NONE::HASHKEY_NONE",
+"TSHashTable<CMapDoodadDef,HASHKEY_NONE>::Ptr",
+"CMap::AllocDoodadDef",
+"HASHKEY_NONE::HASHKEY_NONE",
+"TSHashTable<CMapDoodadDef,HASHKEY_NONE>::Insert",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C44Matrix::Identity",
+"C44Matrix::Translate",
+"C44Matrix::RotateAroundZ",
+"C44Matrix::RotateAroundY",
+"C44Matrix::RotateAroundX",
+"C44Matrix::Scale",
+"C44Matrix::Identity",
+"CWorld::GetM2Scene",
+"CM2Scene::CreateModel"
+],
+"strings": [],
+"consts": [
+"0.017453292f",
+"0.0f",
+"0x1",
+"0x20",
+"0x801",
+"1.0f",
+"1024.0f",
+"3.14159274f"
+],
+"branches": 5,
+"stub": false,
+"lines": 61,
+"refs": [],
+"line": 313
 },
 "CMapObj::QuerySkipFlags": {
 "files": [

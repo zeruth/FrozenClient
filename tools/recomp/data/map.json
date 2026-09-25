@@ -43327,7 +43327,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::AddObject",
-  "frozenSize": 101,
+  "frozenSize": 113,
   "how": "annotated",
   "module": "SEvt.cpp",
   "refSize": 629,
@@ -44559,7 +44559,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 114,
+  "frozenSize": 166,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -46140,6 +46140,22 @@
   "refSize": 392,
   "status": "ported"
  },
+ "007becd0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/CMapLoad.cpp",
+   "src/world/map/cmapload.cpp"
+  ],
+  "frozen": "CMap::CreateDoodadDef",
+  "frozenSize": 520,
+  "how": "annotated",
+  "module": "MapLoad.cpp",
+  "refSize": 610,
+  "status": "ported"
+ },
  "007bf460": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -46358,7 +46374,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocDoodadDef",
-  "frozenSize": 0,
+  "frozenSize": 348,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -47133,16 +47149,16 @@
   "status": "ported"
  },
  "007c6150": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.571,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMapChunk::CreateRefs",
-  "frozenSize": 253,
+  "frozenSize": 460,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 813,

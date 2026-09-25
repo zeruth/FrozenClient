@@ -226,6 +226,13 @@ class CMap {
         static void FreeAreaLow(CMapAreaLow* area);
         static CMapChunk* AllocChunk();
         static void FreeChunk(CMapChunk* chunk);
+        // Every doodad the map has placed, by its MDDF uniqueId, so two tiles sharing an edge
+        // place the one that straddles it once (DAT_00d1ba90).
+        static TSHashTable<CMapDoodadDef, HASHKEY_NONE> s_doodadUniqueIds;
+
+        // ref: FUN_007becd0
+        static CMapDoodadDef* CreateDoodadDef(const char* name, const SMDDF* mddf, const C3Vector& origin);
+
         static CMapDoodadDef* AllocDoodadDef();
         static void FreeDoodadDef(CMapDoodadDef* def);
         static void UnlinkDoodadDef(CMapDoodadDef* def);

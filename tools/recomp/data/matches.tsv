@@ -2890,6 +2890,7 @@ addr	how	frozen	evidence
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
 007bde50	annotated	CMap::CreateDefGroups	tag in src/world/map/CMapLoad.cpp
+007becd0	annotated	CMap::CreateDoodadDef	tag in src/world/map/CMapLoad.cpp
 007bf460	annotated	CMap::CreateMapObjDef	tag in src/world/map/CMapLoad.cpp
 007bf8b0	annotated	CMap::LoadWdt	tag in src/world/map/CMap.cpp
 007bfce0	annotated	CMap::Load	tag in src/world/map/CMap.cpp

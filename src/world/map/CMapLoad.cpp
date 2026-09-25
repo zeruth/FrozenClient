@@ -5,6 +5,7 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapObjDef.hpp"
+#include "model/CM2Scene.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/Matrix.hpp>
@@ -116,9 +117,23 @@ void CMapChunk::CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodad
         this->m_mapObjDefLinkList.LinkToTail(link);
     }
 
-    // TODO the doodad half: for each of the first doodadCount refs, CMap::CreateDoodadDef
-    // (FUN_007becd0) off the tile's MDDF, a link into m_entityLinkList, and FUN_007b4fa0 when the
-    // def is flagged to join a map object def group
+    for (uint32_t i = 0; i < doodadCount; i++) {
+        auto mddf = &reinterpret_cast<const SMDDF*>(area->m_doodadDefs)[refs[i]];
+
+        auto name = area->m_doodadNames + area->m_doodadNameOffsets[mddf->nameId];
+        auto def = CMap::CreateDoodadDef(name, mddf, origin);
+
+        if (!def) {
+            continue;
+        }
+
+        auto link = CMap::AllocBaseObjLink(def);
+        link->ref = this;
+        this->m_entityLinkList.LinkToTail(link);
+
+        // TODO FUN_007b4fa0: a doodad flagged as a building's own joins the map object def group
+        // it stands in, so the interior light reaches it.
+    }
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -287,4 +302,72 @@ void CMap::UpdateMapObjDefs(int32_t update) {
             // TODO FUN_007946d0(def->m_bounds, FLT_MAX): the def's place in the collision grid
         }
     }
+}
+
+TSHashTable<CMapDoodadDef, HASHKEY_NONE> CMap::s_doodadUniqueIds;
+
+// ref: FUN_007becd0
+// One doodad placed. The tile records it in its own axes; the world turns that round, scales it
+// from the thousand-and-twenty-fourths the file counts in, and turns the three Euler angles into
+// the matrix its model draws through.
+CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const C3Vector& origin) {
+    // Already placed by the neighbouring tile.
+    auto existing = CMap::s_doodadUniqueIds.Ptr(mddf->uniqueId, HASHKEY_NONE());
+
+    if (existing) {
+        return existing;
+    }
+
+    auto def = CMap::AllocDoodadDef();
+
+    if (!def) {
+        return nullptr;
+    }
+
+    CMap::s_doodadUniqueIds.Insert(def, mddf->uniqueId, HASHKEY_NONE());
+
+    def->m_position.x = origin.x - mddf->position.z;
+    def->m_position.y = origin.y - mddf->position.x;
+    def->m_position.z = origin.z + mddf->position.y;
+
+    // Nothing knows how far it reaches until its model arrives, so both start on the point.
+    def->m_sphere.c = def->m_position;
+    def->m_sphere.r = 0.0f;
+    def->m_bounds.b = def->m_position;
+    def->m_bounds.t = def->m_position;
+
+    def->m_scale = mddf->scale * (1.0f / 1024.0f);
+
+    def->m_flags = 0x1;
+
+    if (mddf->flags & 0x1) {
+        def->m_flags = 0x801;
+    }
+
+    def->m_model = nullptr;
+
+    const float DEG_TO_RAD = 0.017453292f;
+    const float PI = 3.14159274f;
+
+    def->m_placement.Identity();
+    def->m_placement.Translate(def->m_position);
+    def->m_placement.RotateAroundZ(mddf->rotation.y * DEG_TO_RAD + PI);
+    def->m_placement.RotateAroundY(mddf->rotation.x * DEG_TO_RAD);
+    def->m_placement.RotateAroundX(mddf->rotation.z * DEG_TO_RAD);
+    def->m_placement.Scale(def->m_scale);
+
+    def->m_inversePlacement.Identity();
+
+    auto scene = CWorld::GetM2Scene();
+
+    if (scene) {
+        def->m_model = scene->CreateModel(name, 0x20);
+    }
+
+    if (def->m_model) {
+        // TODO the reference marks the model 0x8000, hands it the placement, registers the
+        // sound-event callback (FUN_007bd5a0) and starts its idle with CM2Model::SetBoneSequence.
+    }
+
+    return def;
 }

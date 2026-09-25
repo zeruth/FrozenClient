@@ -435,9 +435,9 @@ void CMap::MapMemFree(void* ptr) {
 
 // ref: FUN_007bfe80
 void CMap::UnlinkDoodadDef(CMapDoodadDef* def) {
-    if (def->m_link94.IsLinked()) {
-        def->m_link94.Unlink();
-        def->m_link9c.Unlink();
+    if (def->m_linktoslot.IsLinked()) {
+        def->m_linktoslot.Unlink();
+        def->m_linktofull.Unlink();
     }
 }
 
