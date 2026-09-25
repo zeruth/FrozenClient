@@ -6,6 +6,7 @@
 
 
 #include <ctype.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -683,13 +684,6 @@ static int str_gsub (lua_State *L) {
 
 /* maximum size of each formatted item (> len(format('%99.99f', -1e308))) */
 #define MAX_ITEM	512
-/* valid flags in a format specification */
-#define FLAGS	"-+ #0"
-/*
-** maximum size of each format specification (such as '%-099.99d')
-** (+10 accounts for %99.99x plus margin of error)
-*/
-#define MAX_FORMAT	(sizeof(FLAGS) + sizeof(LUA_INTFRMLEN) + 10)
 
 
 static void addquoted (lua_State *L, luaL_Buffer *b, int arg) {
@@ -721,28 +715,6 @@ static void addquoted (lua_State *L, luaL_Buffer *b, int arg) {
   luaL_addchar(b, '"');
 }
 
-static const char *scanformat (lua_State *L, const char *strfrmt, char *form) {
-  const char *p = strfrmt;
-  while (*p != '\0' && strchr(FLAGS, *p) != NULL) p++;  /* skip flags */
-  if ((size_t)(p - strfrmt) >= sizeof(FLAGS))
-    luaL_error(L, "invalid format (repeated flags)");
-  if (isdigit(uchar(*p))) p++;  /* skip width */
-  if (isdigit(uchar(*p))) p++;  /* (2 digits at most) */
-  if (*p == '.') {
-    p++;
-    if (isdigit(uchar(*p))) p++;  /* skip precision */
-    if (isdigit(uchar(*p))) p++;  /* (2 digits at most) */
-  }
-  if (isdigit(uchar(*p)))
-    luaL_error(L, "invalid format (width or precision too long)");
-  *(form++) = '%';
-  strncpy(form, strfrmt, p - strfrmt + 1);
-  form += p - strfrmt + 1;
-  *form = '\0';
-  return p;
-}
-
-
 static void addintlen (char *form) {
   size_t l = strlen(form);
   char spec = form[l - 1];
@@ -751,6 +723,18 @@ static void addintlen (char *form) {
   form[l + sizeof(LUA_INTFRMLEN) - 1] = '\0';
 }
 
+
+/*
+** The client's format, not stock 5.1's (ref: FUN_00853c50). It differs in four ways:
+** - positional arguments: "%1$s" .. "%99$s" select the argument, and the items after one
+**   continue from it (the localized global strings reorder their arguments this way);
+** - flags, width and precision are read by matching FORMAT_SPEC, at most two digits each and
+**   sixteen characters in all, instead of scanformat's hand-rolled scan;
+** - "%F" is accepted (see below);
+** - %d/%i/%c truncate to 32 bits, %o/%u/%x/%X round to nearest (the reference converts with
+**   fistp), as the 32-bit client's long does.
+*/
+#define FORMAT_SPEC	"[-+ #0]*(%d*)%.?(%d*)"
 
 static int str_format (lua_State *L) {
   int arg = 1;
@@ -765,28 +749,60 @@ static int str_format (lua_State *L) {
     else if (*++strfrmt == L_ESC)
       luaL_addchar(&b, *strfrmt++);  /* %% */
     else { /* format item */
-      char form[MAX_FORMAT];  /* to store the format (`%...') */
+      char form[24];  /* to store the format (`%...') */
       char buff[MAX_ITEM];  /* to store the formatted item */
+      const char *spec = strfrmt;
+      const char *end;
+      MatchState ms;
+      char *f;
+      if (isdigit(uchar(*strfrmt))) {
+        if (strfrmt[1] == '$') {
+          arg = strfrmt[0] - '0';
+          spec = strfrmt + 2;
+        }
+        else if (isdigit(uchar(strfrmt[1])) && strfrmt[2] == '$') {
+          arg = (strfrmt[0] - '0') * 10 + (strfrmt[1] - '0');
+          spec = strfrmt + 3;
+        }
+      }
       arg++;
-      strfrmt = scanformat(L, strfrmt, form);
-      switch (*strfrmt++) {
-        case 'c': {
-          sprintf(buff, form, (int)luaL_checknumber(L, arg));
+      ms.src_init = strfrmt;
+      ms.src_end = strfrmt + strlen(strfrmt);
+      ms.L = L;
+      ms.level = 0;
+      end = match(&ms, spec, FORMAT_SPEC);
+      if (ms.capture[0].len > 2 || ms.capture[1].len > 2 || end - spec > 16)
+        luaL_error(L, "invalid format (width or precision too long)");
+      form[0] = L_ESC;
+      strncpy(form + 1, spec, end - spec + 1);
+      form[end - spec + 2] = '\0';
+      strfrmt = end + 1;
+      switch (*end) {
+        case 'e':  case 'E': case 'f':
+        case 'g': case 'G': {
+          sprintf(buff, form, (double)luaL_checknumber(L, arg));
           break;
         }
-        case 'd':  case 'i': {
-          addintlen(form);
-          sprintf(buff, form, (LUA_INTFRM_T)luaL_checknumber(L, arg));
+        case 'F': {
+          for (f = form; *f != '\0'; f++)
+            if (*f == 'F') *f = 'f';
+          sprintf(buff, form, (double)luaL_checknumber(L, arg));
+          /* The reference then passes buff through FUN_0084f030 (150 bytes, not yet
+             decompiled), so %F output may still differ from the client's. */
           break;
         }
         case 'o':  case 'u':  case 'x':  case 'X': {
           addintlen(form);
-          sprintf(buff, form, (unsigned LUA_INTFRM_T)luaL_checknumber(L, arg));
+          sprintf(buff, form, (unsigned long)(unsigned int)llrint(luaL_checknumber(L, arg)));
           break;
         }
-        case 'e':  case 'E': case 'f':
-        case 'g': case 'G': {
-          sprintf(buff, form, (double)luaL_checknumber(L, arg));
+        case 'c': {
+          sprintf(buff, form, (int)(long long)luaL_checknumber(L, arg));
+          break;
+        }
+        case 'd':  case 'i': {
+          addintlen(form);
+          sprintf(buff, form, (long)(int)(long long)luaL_checknumber(L, arg));
           break;
         }
         case 'q': {
@@ -796,21 +812,18 @@ static int str_format (lua_State *L) {
         case 's': {
           size_t l;
           const char *s = luaL_checklstring(L, arg, &l);
-          if (!strchr(form, '.') && l >= 100) {
-            /* no precision and string is too long to be formatted;
-               keep original string */
-            lua_pushvalue(L, arg);
-            luaL_addvalue(&b);
-            continue;  /* skip the `addsize' at the end */
-          }
-          else {
+          if (ms.capture[1].len != 0 || l < 100) {
             sprintf(buff, form, s);
             break;
           }
+          /* no precision and string is too long to be formatted;
+             keep original string */
+          lua_pushvalue(L, arg);
+          luaL_addvalue(&b);
+          continue;  /* skip the `addsize' at the end */
         }
-        default: {  /* also treat cases `pnLlh' */
-          return luaL_error(L, "invalid option " LUA_QL("%%%c") " to "
-                               LUA_QL("format"), *(strfrmt - 1));
+        default: {
+          return luaL_error(L, "invalid option in `format'");
         }
       }
       luaL_addlstring(&b, buff, strlen(buff));
