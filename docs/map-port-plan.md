@@ -168,43 +168,47 @@ to be re-ported against later.
 
 Movement, spells and the UI stubs are not in this plan; they start after the scene matches.
 
-## State of the load chain (2026-09-24, three cycles in)
+## State of the load chain (2026-09-25, seven cycles in)
 
-Ported and committed, bottom up, nothing calling into it yet: the map memory block
-(`CMap::Alloc*`/`Free*`, base-obj links, `LinkToMapObjDefGroup`), the chunk data layer
-(`CMapChunk::ParseSubChunks`, `BuildIndices`, `AppendIndices`, the four vertex fillers,
-`ComputeBounds`, `GetBounds`, `Load`, `Destroy`, ctor/dtor), and the tile layer (`CMap::CreateArea`,
-`CMapArea::Load`/`BeginLoad`/`LoadCallback`/`ParseChunks`/`LoadTextures`/`CreateChunk`/
-`CreateChunks`/`Destroy`, `CMap::UnloadArea`, `DestroyChunk`, `SafeOpen`, `LoadTexture`).
+Ported and committed, and now the path the terrain chunks draw through: the map memory block,
+the chunk data layer, the tile layer, streaming (`CMap::Update` -> `UpdateAreas` ->
+`CMapArea::CreateChunks`), the WDT and settings loads, the render chunk with its buffer pools
+(`CMapRenderChunk`, commit d86ee654), the chunk pass and the render chunk draws (`CWorldScene`,
+`CMapRenderChunk::DrawWorld` and friends, commit 6f658b56), and the scene camera plus the chunk
+visibility traversal (`CWorldScene::UpdateCamera` / `Traverse` / `TraverseRowChunks`,
+`CMap::Render`, commit 183e0281). `CGWorldFrame::OnWorldRender` calls `CMap::Render` before the
+stand-in `TerrainRender`, whose chunk pass is gone. **Built, not yet seen running.** The first
+run needs to check: chunks appear at all (the traversal, the render lists and
+`s_terrainVertexShaders` from `Terrain.bls` are all first-time code), depth against the
+stand-in's WMOs, and the sun/fog look (the terrain constants take the projection with its z row
+negated, as the reference does; see `CWorldScene::SetupTerrainConstants`).
 
-The reference chain from load to a drawn chunk, with what is still to port, in order:
+What the reference does on the same path that is still listed as `TODO FUN_...` in place:
 
-1. **Streaming** `FUN_007b5950` (943 bytes, Map.cpp region): walks `s_areaLinkList`, unloads tiles
-   outside the tile window, creates missing ones through `CreateArea` for every `s_areaInfo` cell
-   with bit 0, sorts them by `AreaDistanceSq` to the camera (`_qsort` with `FUN_007b47f0`),
-   starts each unloaded tile's read (`CMapArea::Load`), waits synchronously for tiles that cover
-   the camera (`AsyncFileReadWait`), and calls `FUN_007b4df0(_, area, rect, 0)` per loaded tile,
-   which reaches `CMapArea::CreateChunks`. Helpers `FUN_007b53b0/5420/5500/54a0` set the window.
-   `CMap::Update` `FUN_007b6b00` calls it (and `FUN_007c3730` unload-all first when flagged).
-2. **WDT** `CMap::LoadWdt` `FUN_007bf8b0` (MVER, MPHD into `s_wdtHeader`, MAIN into `s_areaInfo`,
-   the global WMO when MPHD bit 0), then `FUN_007b7330` (terrain shader level from MPHD bit 1)
-   and the settings pass `FUN_007bd8a0` (`s_chunkVerticesWorldSpace`, `s_terrainSpecular` ...).
-   `CMap::Load` `FUN_007bfce0` is linked at 0.21 and needs the rest of its body.
-3. **Chunk render buffers** `FUN_007d02c0` (calls `BuildVertices`/`AppendIndices`; callers
-   `FUN_007d0420`, `FUN_007d3f70`), the render chunk class (`CMapRenderChunk`, 0xa0 bytes,
-   ctor `FUN_007b9690`, dtor `FUN_007b9d60`, `FUN_007b7af0` init from `FUN_007c5440`), the
-   per-chunk matrix `FUN_007d0050`, the terrain shader constants `FUN_007cfbe0`, the chunk draw
-   `FUN_007d3390` (2662 bytes) / `FUN_007d3e10` / `FUN_007d28b0`, and the shader loading in the
-   `MapMemInitialize` region (`FUN_0079e4b0`, see `docs/ref/parity-map-memory.md`).
-4. **The pass** `CWorldScene` chunk pass `FUN_00798da0` from `CMap::Render` `FUN_0079a870`, then
-   the switch in `CGWorldFrame::OnWorldRender` and the deletion of `TerrainRender`'s terrain half.
-
-Still open inside the ported layers, each marked `TODO FUN_...` at its call site: chunk liquids
-`FUN_007c5690`, sound emitters `FUN_007c6060`, MCRF references `FUN_007c6150` (doodad and WMO
-def creation, MapLoad.cpp), the MH2O parse `FUN_007d4f10`, the per-frame refresh inside
-`CreateChunks` (`FUN_007d6690`, `FUN_007c3e70`, `FUN_007c5b20`), the entity and def releases in
-`CMapChunk::Destroy` (`FUN_007c3020`, `FUN_007c3250`), and the three device capabilities the
-specular texture path reads.
+1. **Per row of the traversal** (`CWorldScene::Traverse`): map object defs `FUN_0079a160` (and
+   their bucketing `FUN_00792bd0` at the start of `CMap::Render`), liquids `FUN_007935a0`,
+   entities `FUN_00793060` / `FUN_007987a0` and the chunk's doodad links `FUN_00799980`,
+   occluders `FUN_00793760` (which feeds the horizon buffer through `FUN_007cfb10` /
+   `FUN_0078f6a0`; until then `BoxOccluded` always sees an open horizon), low detail
+   `FUN_007cd850` / `FUN_00791980`. The stand-in still draws WMOs, doodads and liquids after
+   `CMap::Render`.
+2. **Inside `CMap::Render`**: the portal path (`s_cameraGroup`), the camera liquid
+   `FUN_00790920`, the interior clear colour and the sky flag, the map shadow `FUN_007bb670` /
+   `FUN_007bb570`, the map object pass `FUN_007964a0`, liquids `FUN_00795f80` / `FUN_008a2240`,
+   the sky and the decal passes. `CGWorldFrame::OnWorldRender` keeps doing the sky, entities and
+   blob shadows around it.
+3. **Alpha and shadow textures** of a render chunk (`FUN_007b9de0`, `FUN_007b9ee0`,
+   `FUN_007b9f90` behind `CMapRenderChunk::UpdateAlphaTextures`): until they land every chunk
+   draws its base layer only.
+4. **Detail doodads** `FUN_007d3390` / `FUN_00792fa0` from `CMapChunk::PrepareRender`; the
+   two-chunk render chunk pairing `FUN_007d6810` (`CMap::s_shaderVertexMode`); the
+   fixed-function chunk draws (six functions, listed in overrides.json as not ported); the
+   shadow-mapped terrain shaders (`CMap::s_terrain2PixelShaders`, loaded by the shadow map
+   system).
+5. **Inside the ported layers**: chunk liquids `FUN_007c5690` and their row insertion
+   (`CMapChunk::UpdateLiquidVisibility` stops at the chunk test), sound emitters
+   `FUN_007c6060`, MCRF references `FUN_007c6150`, the MH2O parse `FUN_007d4f10`, the entity and
+   def releases in `CMapChunk::Destroy`, `BufDestroy`/`PoolDestroy` in the device.
 
 ## What "done" means for a module
 
