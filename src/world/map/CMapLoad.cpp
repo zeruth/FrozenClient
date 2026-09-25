@@ -6,6 +6,7 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
 #include <tempest/Matrix.hpp>
 #include <cmath>
 
@@ -266,8 +267,20 @@ void CMap::UpdateMapObjDefs(int32_t update) {
                 }
             }
 
-            // TODO with update set and the def flagged 0x80000000, the reference also rebuilds
-            // the group's collision (FUN_00794ad0 / FUN_00792ad0) and walks its portals
+            // A set-up def hands each of its groups to the frame, once the group's file is in
+            // and the group reaches what the frustum covers
+            if (update && (def->m_flags & 0x80)) {
+                if (!group || !(group->m_state & 0x1)) {
+                    // TODO FUN_00794ad0(defGroup, FLT_MAX): the group leaves the collision grid
+                    // while its file is still coming
+                } else if (!(def->m_flags & 0x20)) {
+                    if (CWorldScene::s_frustumBounds.Intersects(defGroup->m_bounds)) {
+                        CWorldScene::BucketMapObjDefGroup(def, defGroup);
+                    }
+
+                    // TODO the group's portals, walked from here into the neighbours they open
+                }
+            }
         }
 
         if (!(def->m_flags & 0x80)) {

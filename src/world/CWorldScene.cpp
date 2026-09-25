@@ -3,6 +3,8 @@
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjDef.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
@@ -54,6 +56,9 @@ float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
 CWorldScene::ViewWindow CWorldScene::s_window;
 CWorldScene::ViewWindow CWorldScene::s_portalWindow;
+STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) CWorldScene::s_visibleMapObjGroups;
+CMapObjDef* CWorldScene::s_visibleCallbackDef;
+STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) CWorldScene::s_mapObjDefGroupCandidates;
 const int32_t CWorldScene::s_quadrantVertex[4] = { 0, 8, 0x88, 0x90 };
 
 static_assert(sizeof(CWorldScene::Frustum) == 0xfc, "a traversal frustum is 0xfc bytes");
@@ -923,9 +928,8 @@ void CWorldScene::GetFrustumCorners(C3Vector* corners) {
 // ref: FUN_00790af0
 // Narrows the current frustum to a window of the screen: the near and far faces' corners are
 // interpolated across the window's rectangle
-void CWorldScene::SubFrustum(const ViewWindow* window) {
+void CWorldScene::SubFrustum(const C3Vector* src, const ViewWindow* window) {
     C3Vector corners[8];
-    const C3Vector* src = CWorldScene::s_frustumCorners;
 
     for (int32_t face = 0; face < 8; face += 4) {
         const C3Vector* c = &src[face];
@@ -973,13 +977,13 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
 
     CWorldScene::s_frustumDepth++;
     CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
-    CWorldScene::SubFrustum(window);
+    CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, window);
 
     for (uint32_t i = 0; i < ROW_COUNT; i++) {
         auto row = &CWorldScene::s_rows[i];
 
         CWorldScene::TraverseRowChunks(row, i);
-        // TODO FUN_0079a160(row, window, portal)
+        CWorldScene::TraverseRowMapObjDefs(row, window, portal);
         // TODO FUN_007935a0(row)
         // TODO FUN_00793060(row)
 
@@ -1085,5 +1089,156 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
         }
 
         chunk = next;
+    }
+}
+
+// ----------------------------------------------------------------------------------------------
+// The map objects of one distance row
+
+// ref: FUN_00799310
+// A group the traversal reached: it joins the frame's visible list once, takes its distance along
+// the camera forward, and tells the frame that some building wants the exterior lit pass.
+void CWorldScene::MarkMapObjGroupVisible(uint32_t groupIndex, CMapObjDef* def) {
+    auto defGroup = def->m_defGroups[groupIndex];
+    auto group = def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+    if (!defGroup->m_renderLink.IsLinked()) {
+        CWorldScene::s_visibleMapObjGroups.LinkToTail(defGroup);
+
+        if (group && (group->m_flags & 0x1000) && (CWorld::s_enables & 0x1000000)) {
+            // TODO the liquid list at DAT_00cdb08c, whose link offset is not recovered yet: a
+            // group with MLIQ joins it so the liquid pass can draw its surface
+        }
+
+        C3Vector point = { 0.0f, 0.0f, 0.0f };
+        CWorldScene::BoxNearPoint(defGroup->m_bounds, &point);
+
+        const C4Plane& plane = CWorldScene::s_viewPlane;
+        defGroup->m_sortDistance = plane.n.x * point.x + plane.n.y * point.y + plane.n.z * point.z + plane.d;
+
+        if (group && (group->m_flags & 0x40)) {
+            CWorldScene::s_hasMapObjs = 1;
+        }
+
+        defGroup->m_flags &= ~0x8000u;
+    }
+
+    // TODO DAT_00cfbeb8: set while the interior pass is drawing, which flags the group as seen
+    // from inside; then a CWFrustum record of the current frustum is pooled and hung off the
+    // group so the render pass can clip to what the portal left
+}
+
+// ref: FUN_007b3a10
+// One placed group, seen through a window of the screen. The frustum goes one level deeper and
+// narrows to the window; a group that survives it is either handed to the visible list or, when
+// it is an interior, walked into through its portals.
+void CWorldScene::VisitMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup, const ViewWindow* window, int32_t portal) {
+    CWorldScene::s_visibleCallbackDef = def;
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+    CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, window);
+
+    uint32_t flags = def->m_mapObj->GroupFlags(defGroup->m_groupIndex);
+
+    if (!CWorldScene::BoxOutsideFrustum(defGroup->m_bounds)) {
+        if (portal || !CWorldScene::BoxOccluded(defGroup->m_bounds, 1)) {
+            if (flags & 0x10000) {
+                // The group draws on its own: hand it over once its file is in
+                if (def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0)) {
+                    CWorldScene::MarkMapObjGroupVisible(defGroup->m_groupIndex, def);
+                }
+            } else if (flags & 0x8) {
+                // TODO an interior group: the reference narrows the window by a texel either way
+                // and walks into it through FUN_007ad350 -> FUN_007ac060, which is the portal
+                // recursion and the group's own draw
+            }
+        }
+    }
+
+    CWorldScene::s_frustumDepth--;
+}
+
+// ref: FUN_0079a160
+// Every placed group bucketed into this distance row: each leaves the row, and the ones the
+// frustum, the occlusion volumes and the horizon all keep are visited.
+void CWorldScene::TraverseRowMapObjDefs(Row* row, const ViewWindow* window, int32_t portal) {
+    for (auto defGroup = row->mapObjDefGroups.Head(); defGroup; ) {
+        auto next = row->mapObjDefGroups.Next(defGroup);
+
+        defGroup->m_lameAssLink.Unlink();
+
+        CAaSphere sphere = { defGroup->m_center, defGroup->m_radius };
+
+        if (AaBoxVsPlanes6(CWorldScene::s_frustums[CWorldScene::s_frustumDepth].planes, defGroup->m_bounds)
+            && !CWorldScene::SphereOccludedByVolumes(sphere)
+            && !CWorldScene::BoxOccluded(defGroup->m_bounds, 1)) {
+            auto def = static_cast<CMapObjDef*>(defGroup->m_parentLinkList.Head()->ref);
+            CWorldScene::VisitMapObjDefGroup(def, defGroup, window, portal);
+            // TODO FUN_007998a0(defGroup->m_doodadDefLinkList, band): the group's own doodads
+        }
+
+        defGroup = next;
+    }
+}
+
+// ref: FUN_00792ad0
+// A group the def update found in reach: one that draws at all becomes a candidate for this
+// frame, either unconditionally when its def is flagged always-visible, or when it falls inside
+// the sixty-four distance rows.
+void CWorldScene::BucketMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup) {
+    uint32_t flags = def->m_mapObj->GroupFlags(defGroup->m_groupIndex);
+
+    if (!(flags & 0x10008)) {
+        return;
+    }
+
+    if (def->m_flags & 0x400) {
+        CWorldScene::s_mapObjDefGroupCandidates.LinkToTail(defGroup);
+        return;
+    }
+
+    C3Vector point = { 0.0f, 0.0f, 0.0f };
+    CWorldScene::BoxNearPoint(defGroup->m_bounds, &point);
+
+    const C4Plane& plane = CWorldScene::s_viewPlane;
+    defGroup->m_sortDistance = plane.n.z * point.z + plane.n.y * point.y + plane.n.x * point.x + plane.d;
+
+    float distance = CWorldScene::ViewPlane2dDistance(point);
+
+    if (distance <= 0.0f || static_cast<int32_t>(roundf(distance * CHUNKS_PER_UNIT - 0.5f)) < static_cast<int32_t>(ROW_COUNT)) {
+        CWorldScene::s_mapObjDefGroupCandidates.LinkToTail(defGroup);
+    }
+}
+
+// ref: FUN_00792bd0
+// The candidates spread over the distance rows, near to far, so the traversal meets each at the
+// right depth. One past the last row ends the walk, as the reference leaves it.
+void CWorldScene::BucketMapObjDefGroups() {
+    for (auto defGroup = CWorldScene::s_mapObjDefGroupCandidates.Head(); defGroup; ) {
+        auto next = CWorldScene::s_mapObjDefGroupCandidates.Next(defGroup);
+
+        defGroup->m_rowLink.Unlink();
+
+        C3Vector point = { 0.0f, 0.0f, 0.0f };
+        CWorldScene::BoxNearPoint(defGroup->m_bounds, &point);
+
+        const C4Plane& plane = CWorldScene::s_viewPlane;
+        defGroup->m_sortDistance = plane.n.x * point.x + plane.n.y * point.y + plane.n.z * point.z + plane.d;
+
+        float distance = CWorldScene::ViewPlane2dDistance(point);
+        int32_t row = 0;
+
+        if (0.0f < distance) {
+            row = static_cast<int32_t>(roundf(distance * CHUNKS_PER_UNIT - 0.5f));
+
+            if (static_cast<int32_t>(ROW_COUNT) - 1 < row) {
+                return;
+            }
+        }
+
+        CWorldScene::s_rows[row].mapObjDefGroups.LinkToTail(defGroup);
+
+        defGroup = next;
     }
 }

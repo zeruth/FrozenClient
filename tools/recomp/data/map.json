@@ -44034,10 +44034,26 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SubFrustum",
-  "frozenSize": 642,
+  "frozenSize": 625,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 811,
+  "status": "ported"
+ },
+ "00790e20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::SubFrustum",
+  "frozenSize": 625,
+  "how": "override",
+  "module": "WorldParam.cpp",
+  "refSize": 731,
   "status": "ported"
  },
  "007912c0": {
@@ -44054,6 +44070,38 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 184,
+  "status": "ported"
+ },
+ "00792ad0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::BucketMapObjDefGroup",
+  "frozenSize": 488,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
+ "00792bd0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::BucketMapObjDefGroups",
+  "frozenSize": 589,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 419,
   "status": "ported"
  },
  "00792d80": {
@@ -44120,6 +44168,19 @@
   "refSize": 2291,
   "status": "ported"
  },
+ "007983b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSBaseArray<CMapObjDefGroup *>::operator[]",
+  "frozenSize": 142,
+  "how": "callgraph",
+  "module": "WorldParam.cpp",
+  "refSize": 230,
+  "status": "ported"
+ },
  "007989c0": {
   "branchRatio": 0.278,
   "constOverlap": 0.023,
@@ -44150,6 +44211,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1379,
+  "status": "ported"
+ },
+ "00799310": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.176,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::MarkMapObjGroupVisible",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 281,
   "status": "ported"
  },
  "007997d0": {
@@ -44184,17 +44261,33 @@
   "refSize": 561,
   "status": "ported"
  },
+ "0079a160": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseRowMapObjDefs",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 243,
+  "status": "ported"
+ },
  "0079a790": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.4,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 352,
+  "frozenSize": 636,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -44204,13 +44297,13 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.226,
+  "fidelity": 0.245,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 446,
+  "frozenSize": 462,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -44648,6 +44741,22 @@
   "refSize": 119,
   "status": "ported"
  },
+ "007b3a10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::VisitMapObjDefGroup",
+  "frozenSize": 867,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 266,
+  "status": "ported"
+ },
  "007b47f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44809,16 +44918,16 @@
   "status": "ported"
  },
  "007b6110": {
-  "branchRatio": 0.296,
-  "constOverlap": 0.036,
+  "branchRatio": 0.37,
+  "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.412,
+  "fidelity": 0.529,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::UpdateMapObjDefs",
-  "frozenSize": 965,
+  "frozenSize": 1027,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 989,
@@ -46196,7 +46305,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDefGroup",
-  "frozenSize": 485,
+  "frozenSize": 520,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 103,

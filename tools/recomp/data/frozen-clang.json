@@ -192609,7 +192609,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 55
+"line": 57
 },
 "DrawChunkUnsupported": {
 "files": [
@@ -192622,7 +192622,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 81
+"line": 86
 },
 "ImVectorToFloats": {
 "files": [
@@ -192642,7 +192642,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 86
+"line": 91
 },
 "FogColorImVector": {
 "files": [
@@ -192664,7 +192664,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 95
+"line": 100
 },
 "CWorldScene::Initialize": {
 "files": [
@@ -192684,7 +192684,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 108
+"line": 113
 },
 "CWorldScene::SelectChunkShaders": {
 "files": [
@@ -192710,7 +192710,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 123
+"line": 128
 },
 "CWorldScene::SetupTerrainConstants": {
 "files": [
@@ -192751,7 +192751,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 159
+"line": 164
 },
 "CWorldScene::RenderTerrain": {
 "files": [
@@ -192826,7 +192826,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 241
+"line": 246
 },
 "CWorldScene::RenderChunkLists": {
 "files": [
@@ -192872,7 +192872,7 @@
 "stub": false,
 "lines": 68,
 "refs": [],
-"line": 332
+"line": 337
 },
 "CWorldScene::RenderSolidChunks": {
 "files": [
@@ -192899,7 +192899,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 404
+"line": 409
 },
 "CWorldScene::RenderHiddenChunks": {
 "files": [
@@ -192921,7 +192921,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 440
+"line": 445
 },
 "PlaneFromPoints": {
 "files": [
@@ -192938,7 +192938,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 466
+"line": 471
 },
 "TransformVector4": {
 "files": [
@@ -192951,7 +192951,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 483
+"line": 488
 },
 "FrustumCorners": {
 "files": [
@@ -193018,7 +193018,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 495
+"line": 500
 },
 "CWorldScene::Frustum::SetCorners": {
 "files": [
@@ -193037,7 +193037,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 562
+"line": 567
 },
 "CWorldScene::Frustum::ComputePlanes": {
 "files": [
@@ -193065,7 +193065,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 573
+"line": 578
 },
 "CWorldScene::Frustum::SphereInside": {
 "files": [
@@ -193082,7 +193082,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 588
+"line": 593
 },
 "CWorldScene::UpdateCamera": {
 "files": [
@@ -193134,7 +193134,7 @@
 "stub": false,
 "lines": 103,
 "refs": [],
-"line": 610
+"line": 615
 },
 "CWorldScene::BuildRowPlanes": {
 "files": [
@@ -193152,7 +193152,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 717
+"line": 722
 },
 "CWorldScene::BoxOutsideFrustum": {
 "files": [
@@ -193169,7 +193169,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 729
+"line": 734
 },
 "CWorldScene::DistanceBand": {
 "files": [
@@ -193191,7 +193191,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 735
+"line": 740
 },
 "CWorldScene::BoxOccluded": {
 "files": [
@@ -193224,7 +193224,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 764
+"line": 769
 },
 "CWorldScene::SphereOccluded": {
 "files": [
@@ -193261,7 +193261,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 824
+"line": 829
 },
 "CWorldScene::SphereOccludedByVolumes": {
 "files": [
@@ -193276,7 +193276,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 869
+"line": 874
 },
 "CWorldScene::BoxNearPoint": {
 "files": [
@@ -193291,7 +193291,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 877
+"line": 882
 },
 "CWorldScene::ChunkVertexPoint": {
 "files": [
@@ -193307,7 +193307,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 893
+"line": 898
 },
 "CWorldScene::ViewPlane2dDistance": {
 "files": [
@@ -193320,7 +193320,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 900
+"line": 905
 },
 "CWorldScene::BucketChunk": {
 "files": [
@@ -193340,7 +193340,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 907
+"line": 912
 },
 "CWorldScene::GetFrustumCorners": {
 "files": [
@@ -193358,7 +193358,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 917
+"line": 922
 },
 "CWorldScene::SubFrustum": {
 "files": [
@@ -193395,9 +193395,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 27,
+"lines": 26,
 "refs": [],
-"line": 926
+"line": 931
 },
 "CWorldScene::ChunkRectInView": {
 "files": [
@@ -193415,7 +193415,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 957
+"line": 961
 },
 "CWorldScene::Traverse": {
 "files": [
@@ -193425,6 +193425,7 @@
 "CWorldScene::Frustum::operator=",
 "CWorldScene::SubFrustum",
 "CWorldScene::TraverseRowChunks",
+"CWorldScene::TraverseRowMapObjDefs",
 "CWorldScene::DistanceBand"
 ],
 "strings": [],
@@ -193436,7 +193437,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 971
+"line": 975
 },
 "CWorldScene::TraverseRowChunks": {
 "files": [
@@ -193478,7 +193479,138 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 1003
+"line": 1007
+},
+"CWorldScene::MarkMapObjGroupVisible": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"TSBaseArray<CMapObjDefGroup *>::operator[]",
+"CMapObj::GetGroup",
+"TSLink<CMapObjDefGroup>::IsLinked",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail",
+"C3Vector::C3Vector",
+"CWorldScene::BoxNearPoint"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x1000",
+"0x1000000",
+"0x40",
+"0x8000u",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 29,
+"refs": [],
+"line": 1101
+},
+"CWorldScene::VisitMapObjDefGroup": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"CWorldScene::Frustum::operator=",
+"CWorldScene::SubFrustum",
+"CMapObj::GroupFlags",
+"CWorldScene::BoxOutsideFrustum",
+"CWorldScene::BoxOccluded",
+"CMapObj::GetGroup",
+"CWorldScene::MarkMapObjGroupVisible"
+],
+"strings": [],
+"consts": [
+"0",
+"0x10000",
+"0x8",
+"1"
+],
+"branches": 5,
+"stub": false,
+"lines": 26,
+"refs": [],
+"line": 1135
+},
+"CWorldScene::TraverseRowMapObjDefs": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::Head",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::Next",
+"TSLink<CMapBaseObj>::Unlink",
+"AaBoxVsPlanes6",
+"CWorldScene::SphereOccludedByVolumes",
+"CWorldScene::BoxOccluded",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
+"CWorldScene::VisitMapObjDefGroup"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 1165
+},
+"CWorldScene::BucketMapObjDefGroup": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"CMapObj::GroupFlags",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail",
+"C3Vector::C3Vector",
+"CWorldScene::BoxNearPoint",
+"CWorldScene::ViewPlane2dDistance",
+"roundf",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0.5f",
+"0x10008",
+"0x400"
+],
+"branches": 3,
+"stub": false,
+"lines": 24,
+"refs": [],
+"line": 1189
+},
+"CWorldScene::BucketMapObjDefGroups": {
+"files": [
+"src/world/cworldscene.cpp"
+],
+"callseq": [
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::Head",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::Next",
+"TSLink<CMapObjDefGroup>::Unlink",
+"C3Vector::C3Vector",
+"CWorldScene::BoxNearPoint",
+"CWorldScene::ViewPlane2dDistance",
+"roundf",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 28,
+"refs": [],
+"line": 1217
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -194592,6 +194724,7 @@
 "src/world/map/cmap.cpp"
 ],
 "callseq": [
+"CWorldScene::BucketMapObjDefGroups",
 "GxRsPush",
 "GxXformPush",
 "CWorldScene::Frustum::SetCorners",
@@ -196782,7 +196915,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 26
+"line": 27
 },
 "CMapChunk::CreateRefs": {
 "files": [
@@ -196805,7 +196938,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 95
+"line": 96
 },
 "BoxDistanceSq": {
 "files": [
@@ -196818,7 +196951,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 128
+"line": 129
 },
 "CMap::CreateDefGroups": {
 "files": [
@@ -196851,7 +196984,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 139
+"line": 140
 },
 "CMap::SetupMapObjDef": {
 "files": [
@@ -196879,7 +197012,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 178
+"line": 179
 },
 "CMap::UpdateMapObjDefs": {
 "files": [
@@ -196899,22 +197032,25 @@
 "CMapObj::ReadGroup",
 "CAaBox::Intersects",
 "CMapObj::WaitForGroup",
-"BoxDistanceSq"
+"BoxDistanceSq",
+"CAaBox::Intersects",
+"CWorldScene::BucketMapObjDefGroup"
 ],
 "strings": [],
 "consts": [
 "0",
 "0x1",
 "0x10",
+"0x20",
 "0x8",
 "0x80",
 "1"
 ],
-"branches": 16,
+"branches": 20,
 "stub": false,
-"lines": 68,
+"lines": 80,
 "refs": [],
-"line": 210
+"line": 211
 },
 "CMapObj::QuerySkipFlags": {
 "files": [

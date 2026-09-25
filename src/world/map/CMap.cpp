@@ -1019,7 +1019,7 @@ void CMap::UpdateFrameLiquids() {
 // liquids, sky and the rest still draw from the stand-in and CGWorldFrame around this call.
 void CMap::Render(const C3Vector& cameraPos, float dt) {
     if (!CWorldScene::s_cameraGroup) {
-        // TODO FUN_00792bd0(): the map object defs into their distance rows
+        CWorldScene::BucketMapObjDefGroups();
     }
 
     // TODO FUN_00790920(): the camera's liquid and height above the ground

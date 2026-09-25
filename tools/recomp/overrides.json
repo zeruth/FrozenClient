@@ -44,6 +44,19 @@
     "status": "excluded",
     "note": "the inner three rows of TransformBox (FUN_007f9430): each axis of the matrix contributes its smaller product to the minimum and its larger to the maximum. frozen writes the whole transform as one function, so there is nothing separate to link"
   },
+  "00790e20": {
+    "frozen": "CWorldScene::SubFrustum",
+    "status": "ported",
+    "note": "the same frustum narrowing as FUN_00790af0, with the corners it interpolates passed in instead of taken from the camera's own. frozen writes one function that takes them either way, so both addresses land on it"
+  },
+  "00791950": {
+    "status": "excluded",
+    "note": "one line: raise the traversal's frustum depth and copy the level below into the new one. frozen writes those two statements at each of the three call sites, as the reference's own inlined copies do elsewhere"
+  },
+  "0078fb50": {
+    "status": "excluded",
+    "note": "one line: lower the traversal's frustum depth again, the partner of 00791950"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

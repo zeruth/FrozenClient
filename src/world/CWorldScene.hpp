@@ -2,6 +2,7 @@
 #define WORLD_C_WORLD_SCENE_HPP
 
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
 #include "gx/Texture.hpp"
 #include <storm/List.hpp>
@@ -13,6 +14,7 @@
 #include <cstdint>
 
 class CGxShader;
+class CMapObjDef;
 
 // The per-frame scene of the world (reference WorldScene.cpp): the camera's view of the map, the
 // distance rows the map's objects are bucketed into, the render lists the visibility traversal
@@ -72,7 +74,7 @@ class CWorldScene {
         // along the view it starts, so the traversal walks near to far
         struct Row {
             STORM_EXPLICIT_LIST(CMapChunk, m_rowLink) chunks;               // +0x00
-            RowListStub mapObjDefs;                                         // +0x0c: CMapObjDef, link +0xa8
+            STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) mapObjDefGroups;      // +0x0c
             RowListStub entities;                                           // +0x18: CMapEntity, link +0xc8
             RowListStub entitiesFar;                                        // +0x24: CMapEntity, link +0xa8
             RowListStub liquids;                                            // +0x30: CChunkLiquid
@@ -151,6 +153,11 @@ class CWorldScene {
         static void* s_cameraGroup;                         // DAT_00cd87a4: the map object group the camera is in (portal mode)
         static float s_cameraGroundHeight;                  // DAT_00cd8790
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
+        // The groups the traversal found, in the order it found them (DAT_00cdb080)
+        static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) s_visibleMapObjGroups;
+        // The groups the def update put in reach of the frame, before the bucketing
+        // spreads them over the distance rows (DAT_00cdaf48)
+        static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) s_mapObjDefGroupCandidates;
         static ViewWindow s_window;                         // DAT_00adf570
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
         static const int32_t s_quadrantVertex[4];           // DAT_00aeee3c: the chunk vertex nearest the camera per quadrant
@@ -175,7 +182,15 @@ class CWorldScene {
         static void ChunkVertexPoint(const CMapChunk* chunk, int32_t vertex, C3Vector* point);
         static float ViewPlane2dDistance(const C3Vector& point);
         static void BucketChunk(CMapChunk* chunk, const C3Vector& point);
-        static void SubFrustum(const ViewWindow* window);
+        static void SubFrustum(const C3Vector* corners, const ViewWindow* window);
+        static void TraverseRowMapObjDefs(Row* row, const ViewWindow* window, int32_t portal);
+        static void BucketMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup);
+        static void BucketMapObjDefGroups();
+        static void MarkMapObjGroupVisible(uint32_t groupIndex, CMapObjDef* def);
+        static void VisitMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup, const ViewWindow* window, int32_t portal);
+        // The def the visible-group callback belongs to while a visit is running
+        // (DAT_00d1c420 with its callback pair at DAT_00d1bed8)
+        static CMapObjDef* s_visibleCallbackDef;
         static void GetFrustumCorners(C3Vector* corners);
         static int32_t ChunkRectInView(const int32_t* rect);
         static void Traverse(const ViewWindow* window, int32_t portal);

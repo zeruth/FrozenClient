@@ -2758,15 +2758,21 @@ addr	how	frozen	evidence
 00790650	annotated	CWorldScene::BoxNearPoint	tag in src/world/CWorldScene.cpp
 007906c0	annotated	CWorldScene::BuildRowPlanes	tag in src/world/CWorldScene.cpp
 00790af0	annotated	CWorldScene::SubFrustum	tag in src/world/CWorldScene.cpp
+00790e20	override	CWorldScene::SubFrustum	
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
+00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
+00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
+007983b0	callgraph	TSBaseArray<CMapObjDefGroup *>::operator[]	only unmatched callee of 00799310=CWorldScene::MarkMapObjGroupVisible
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
+00799310	annotated	CWorldScene::MarkMapObjGroupVisible	tag in src/world/CWorldScene.cpp
 007997d0	annotated	CWorldScene::Initialize	tag in src/world/CWorldScene.cpp
 00799d40	annotated	CWorldScene::TraverseRowChunks	tag in src/world/CWorldScene.cpp
+0079a160	annotated	CWorldScene::TraverseRowMapObjDefs	tag in src/world/CWorldScene.cpp
 0079a790	annotated	CWorldScene::Traverse	tag in src/world/CWorldScene.cpp
 0079a870	annotated	CMap::Render	tag in src/world/map/CMap.cpp
 0079adc0	annotated	CMapObjGroup::SetBsp	tag in src/world/map/CMapObjGroupLoad.cpp
@@ -2796,6 +2802,7 @@ addr	how	frozen	evidence
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
+007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
 007b4830	annotated	CMap::AreaDistanceSq	tag in src/world/map/CMap.cpp
 007b48c0	annotated	BoxDistanceSq	tag in src/world/map/CMapLoad.cpp
