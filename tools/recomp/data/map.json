@@ -11818,7 +11818,7 @@
   ],
   "frozen": "ObjectAllocAddHeap",
   "frozenSize": 344,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "ObjectAlloc.cpp",
   "refSize": 103,
   "status": "ported"
@@ -14803,7 +14803,7 @@
   ],
   "frozen": "CACHEENTRY::CACHEENTRY",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "TextureCache.cpp",
   "refSize": 72,
   "status": "ported"
@@ -15033,7 +15033,7 @@
   ],
   "frozen": "MirrorInitialize",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "TextureCache.cpp",
   "refSize": 287,
   "status": "stub"
@@ -44802,6 +44802,22 @@
   "refSize": 200,
   "status": "ported"
  },
+ "007afee0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::Initialize",
+  "frozenSize": 333,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 348,
+  "status": "ported"
+ },
  "007b0cc0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -50924,7 +50940,7 @@
   ],
   "frozen": "CM2Cache::Initialize",
   "frozenSize": 116,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "XMLTree.cpp",
   "refSize": 441,
   "status": "ported"
@@ -52967,7 +52983,7 @@
   "branchRatio": 0.71,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -52999,7 +53015,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.222,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -57893,6 +57909,38 @@
   "refSize": 591,
   "status": "ported"
  },
+ "00876530": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "CShaderEffectManager::GetEffect",
+  "frozenSize": 171,
+  "how": "override",
+  "module": "OsClipboard.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
+ "00876be0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "CShaderEffectManager::CreateEffect",
+  "frozenSize": 81,
+  "how": "callgraph",
+  "module": "OsClipboard.cpp",
+  "refSize": 183,
+  "status": "ported"
+ },
  "00876ca0": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -57984,7 +58032,7 @@
   ],
   "frozen": "ParseFixedFunc",
   "frozenSize": 1587,
-  "how": "annotated",
+  "how": "override",
   "module": "ShaderEffectManager.cpp",
   "refSize": 409,
   "status": "ported"

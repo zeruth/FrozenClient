@@ -13,6 +13,7 @@
 #include <cstdint>
 
 class CAsyncObject;
+class CShaderEffect;
 
 // MOHD: the WMO root header, 64 bytes, the first chunk after MVER.
 struct SMOHeader {
@@ -109,6 +110,21 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static uint32_t QuerySkipFlags(uint32_t queryFlags);
         static CMapObj* Create(const char* path);
         static void ReadCallback(void* arg);
+        // How many shader ids a WMO material can name. Six draw lit; the seventh is only
+        // in the unlit set, where it composites.
+        static const uint32_t SHADER_COUNT = 7;
+
+        // The effect each material shader id draws through, resolved by name out of the
+        // registry the .wfx files fill. s_effects is the lit set the shader draw paths
+        // use; s_effectsUnlit is the one the lower shader levels take.
+        static CShaderEffect* s_effects[SHADER_COUNT];
+        static CShaderEffect* s_effectsUnlit[SHADER_COUNT];
+
+        // ObjectAlloc heap for the map object occlusion records (0x24 bytes each, 128 to a
+        // block). The record itself is not identified yet, so nothing allocates from it.
+        static uint32_t* s_occlusionHeap;
+        static const size_t OCCLUSION_RECORD_SIZE = 0x24;
+
         // ref: FUN_007afee0
         static void Initialize();
         // ref: FUN_007ad020

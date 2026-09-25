@@ -736,7 +736,7 @@ addr	how	frozen	evidence
 004d1600	string	SI2::RegisterUserCVars	unique "1048576"
 004d3100	override	ObjectFree	
 004d3330	override	ObjectAlloc	
-004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 004f3110=TextureCacheAllocEntry, 0081c6e0=M2Initialize
+004d3650	callgraph	ObjectAllocAddHeap	only unmatched callee of 007afee0=CMapObj::Initialize
 004d3730	annotated	ClntObjMgrGetCurrent	tag in src/object/client/ObjMgr.cpp
 004d3790	override	ClntObjMgrGetActivePlayer	
 004d37c0	annotated	ClntObjMgrGetPlayerType	tag in src/object/client/ObjMgr.cpp
@@ -922,7 +922,7 @@ addr	how	frozen	evidence
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
 004f2d80	annotated	TextureCacheHasMips	tag in src/component/Texture.cpp
-004f2f60	callorder	CACHEENTRY::CACHEENTRY	same slot between linked calls in 004f3110=TextureCacheAllocEntry
+004f2f60	callgraph	CACHEENTRY::CACHEENTRY	only unmatched callee of 004f3110=TextureCacheAllocEntry
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f39a0	annotated	ComponentCheckSectionFlags	tag in src/component/Util.cpp
 004f3a40	annotated	GetSelectionFromContext	tag in src/component/Util.cpp
@@ -936,7 +936,7 @@ addr	how	frozen	evidence
 004f4320	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004f4c50	annotated	CMovementStatus::CMovementStatus	tag in src/object/movement/CMovementStatus.cpp
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
-004f5720	callorder	MirrorInitialize	same slot between linked calls in 004d4ac0=ClntObjMgrInitializeShared
+004f5720	callgraph	MirrorInitialize	only unmatched callee of 004d4ac0=ClntObjMgrInitializeShared
 004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
 004f5de0	annotated	CAaBox::GetCenter	tag in lib/typhoon/tempest/box/CAaBox.cpp
 004f5e20	annotated	CM2Model::GetBoundingBox	tag in src/model/CM2Model.cpp
@@ -2806,6 +2806,7 @@ addr	how	frozen	evidence
 007aea80	annotated	CMapObj::GetGroup	tag in src/world/map/CMapObj.cpp
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
+007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
@@ -3188,7 +3189,7 @@ addr	how	frozen	evidence
 0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
 0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
-0081c0d0	callorder	CM2Cache::Initialize	same slot between linked calls in 0081c6e0=M2Initialize
+0081c0d0	callgraph	CM2Cache::Initialize	only unmatched callee of 0081c6e0=M2Initialize
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
@@ -3641,12 +3642,14 @@ addr	how	frozen	evidence
 008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
+00876530	override	CShaderEffectManager::GetEffect	
+00876be0	callgraph	CShaderEffectManager::CreateEffect	only unmatched callee of 00836600=CM2Shared::CreateSimpleEffect, 00836c90=CM2Shared::GetEffect
 00876ca0	annotated	CShaderEffectManager::RegisterEffect	tag in src/gx/shader/CShaderEffectManager.cpp
 00876d90	annotated	CShaderEffectManager::LoadEffectFile	tag in src/gx/shader/CShaderEffectManager.cpp
 00876e30	annotated	MatchToken	tag in src/gx/shader/CShaderEffectManager.cpp
 00876f10	annotated	FindBraces	tag in src/gx/shader/CShaderEffectManager.cpp
 00876f70	annotated	OpFromName	tag in src/gx/shader/CShaderEffectManager.cpp
-00876fb0	annotated	ParseFixedFunc	tag in src/gx/shader/CShaderEffectManager.cpp
+00876fb0	override	ParseFixedFunc	
 00877150	annotated	ParseShaderBlock	tag in src/gx/shader/CShaderEffectManager.cpp
 00877290	annotated	ParseEffect	tag in src/gx/shader/CShaderEffectManager.cpp
 00877360	annotated	ParseEffects	tag in src/gx/shader/CShaderEffectManager.cpp

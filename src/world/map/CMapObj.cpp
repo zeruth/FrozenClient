@@ -3,6 +3,8 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "gx/shader/CShaderEffectManager.hpp"
+#include <common/ObjectAlloc.hpp>
 #include "async/AsyncFileRead.hpp"
 #include <tempest/Box.hpp>
 #include "async/CAsyncObject.hpp"
@@ -499,4 +501,38 @@ void CMapObj::UpdateAll() {
     if (CMap::s_streamingMode) {
         // TODO FUN_007d9810(): the streaming queue's own pass over the roots still arriving
     }
+}
+
+CShaderEffect* CMapObj::s_effects[CMapObj::SHADER_COUNT];
+CShaderEffect* CMapObj::s_effectsUnlit[CMapObj::SHADER_COUNT];
+uint32_t* CMapObj::s_occlusionHeap;
+
+// ref: FUN_007afee0
+// Once, when the map comes up: bind each material shader id to the effect that draws it.
+// The names are the ones MapObj.wfx and MapObjU.wfx register, and the order is the order
+// the MOMT shader field numbers them.
+void CMapObj::Initialize() {
+    // TODO the reference also reserves 0x400 more entries in the interior walk's frustum
+    // record array (the object at 0x00d1bee8, grown by FUN_004c46c0) and clears its
+    // high-water marks. frozen has no portal walk yet, so there is no array to reserve.
+
+    CMapObj::s_effects[0] = CShaderEffectManager::GetEffect("MapObjDiffuse");
+    CMapObj::s_effects[1] = CShaderEffectManager::GetEffect("MapObjSpecular");
+    CMapObj::s_effects[2] = CShaderEffectManager::GetEffect("MapObjMetal");
+    CMapObj::s_effects[3] = CShaderEffectManager::GetEffect("MapObjEnv");
+    CMapObj::s_effects[4] = CShaderEffectManager::GetEffect("MapObjOpaque");
+    CMapObj::s_effects[5] = CShaderEffectManager::GetEffect("MapObjEnvMetal");
+    CMapObj::s_effects[6] = nullptr;
+
+    CMapObj::s_effectsUnlit[0] = CShaderEffectManager::GetEffect("MapObjUDiffuse");
+    CMapObj::s_effectsUnlit[1] = CShaderEffectManager::GetEffect("MapObjUSpecular");
+    CMapObj::s_effectsUnlit[2] = CShaderEffectManager::GetEffect("MapObjUMetal");
+    CMapObj::s_effectsUnlit[3] = CShaderEffectManager::GetEffect("MapObjUEnv");
+    CMapObj::s_effectsUnlit[4] = CShaderEffectManager::GetEffect("MapObjUOpaque");
+    CMapObj::s_effectsUnlit[5] = CShaderEffectManager::GetEffect("MapObjUEnvMetal");
+    CMapObj::s_effectsUnlit[6] = CShaderEffectManager::GetEffect("MapObjUComposite");
+
+    CMapObj::s_occlusionHeap = STORM_NEW(uint32_t)(
+        ObjectAllocAddHeap(CMapObj::OCCLUSION_RECORD_SIZE, 128, "MAPOBJOCC", true)
+    );
 }

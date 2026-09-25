@@ -65,6 +65,16 @@
     "status": "unlinked",
     "note": "the streaming queue's own pass over the WMO roots still arriving, run from CMapObj::UpdateAll only while SFile is in streaming mode. frozen never is on a local install, so the branch is marked and left"
   },
+  "00876530": {
+    "frozen": "CShaderEffectManager::GetEffect",
+    "status": "ported",
+    "note": "the effect registry's by-name lookup, a thunk onto the Storm hash table's own Ptr. CMapObj::Initialize calls it thirteen times to bind the material shader ids"
+  },
+  "00876fb0": {
+    "frozen": "ParseFixedFunc",
+    "status": "ported",
+    "note": "the FixedFunc block of an effect file. Lives in an anonymous namespace in CShaderEffectManager.cpp, so the PDB carries no qualified name to match on"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"
