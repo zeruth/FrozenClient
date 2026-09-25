@@ -44336,7 +44336,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::AddEntity",
-  "frozenSize": 574,
+  "frozenSize": 594,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 241,
@@ -45728,7 +45728,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 882,
+  "frozenSize": 120,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,

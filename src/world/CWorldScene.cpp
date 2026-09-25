@@ -963,10 +963,10 @@ void CWorldScene::AddLiquid(CChunkLiquid* liquid, const C3Vector& center) {
 void CWorldScene::AddEntity(CMapEntity* entity) {
     uint32_t flags = entity->m_flags7c;
 
-    // TODO the reference lets an entity flagged 0x4000 back in when its model has something at
-    // +0x58, a field frozen's CM2Model has not identified. Frozen treats 0x4000 as final, so
-    // such an entity stays hidden where the reference would show it.
-    if (!(flags & 0x4000)) {
+    // Bit 0x4000 takes an entity out of the scene, but not while it is carrying something: a
+    // model with attachments still has to be placed, or whatever is hanging off it goes with
+    // it. The reference reads the model without checking there is one; frozen checks.
+    if (!(flags & 0x4000) || (entity->m_model && entity->m_model->m_attachList)) {
         C3Vector nearPoint = { 0.0f, 0.0f, 0.0f };
 
         CWorldScene::BoxNearPoint(entity->m_bounds, &nearPoint);
