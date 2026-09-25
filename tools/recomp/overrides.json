@@ -97,8 +97,8 @@
     "note": "CMapDoodadDef::CMapDoodadDef. run 2026-09-25 on map 609 with counters through the whole chain: 3440 doodad defs created, all 3440 placed, the waiting list draining to zero, and 133 doodads drawn a frame out of 798 links walked -- the rest turned away by the distance band (128), by having been reached through another chunk already (494) or by the frustum (21). A sample placement came out with a model box of 38 by 40 by 80 yards, a world box of 30 by 31 by 62, detail band 3 and a sphere radius of 31, which is a large structure doodad. Retiring the stand-in's own copies left the counts identical and dropped the process from 1.15 GB to 1.00 GB"
   },
   "00790920": {
-    "status": "unlinked",
-    "note": "CWorldScene::UpdateCameraLiquid -- what the camera is standing in and how deep, plus the underwater switch. NOT DetailDoodad::CreateBuffers, which the callorder matcher proposed here only because frozen calls CreateBuffers from the spot in CMap::Render where this one's TODO sits. Its own dependencies (FUN_007a0820, FUN_007c8360, FUN_0079b8e0, FUN_0079b360, FUN_008a2aa0, FUN_007f1070) are all unported"
+    "status": "verified",
+    "note": "CWorldScene::UpdateCameraLiquid. Ported 2026-09-25 and verified by moving the camera: the live camera stands on dry land, so it was placed two yards under 20 real liquid surfaces instead. Twelve came back in liquid -- the other eight are chunk centres that are not over a wet tile -- and every one of those twelve reported a depth of exactly 2.0000. The indoor half, the underwater light and particle setters, and the Liquid module tick are marked in place rather than ported"
   },
   "007ad3b0": {
     "status": "verified",

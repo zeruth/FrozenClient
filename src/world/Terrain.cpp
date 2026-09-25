@@ -4229,8 +4229,10 @@ void TerrainUpdate(const C3Vector& cameraPos) {
         return;
     }
 
-    // Liquid under the camera (reference CWorldScene FUN_00790920, run first in CMap::Render): it
-    // switches the light to the underwater parameter set and suppresses the sky.
+    // Liquid under the camera. CWorldScene::UpdateCameraLiquid answers the outdoor half from
+    // CMap::Render now and keeps the depth with it; this still asks LiquidAt as well, because
+    // only LiquidAt knows about the WMO pools the scene's version cannot see yet, and because
+    // the stand-in sky and overlay read the kind rather than the type.
     {
         float surfaceZ;
         s_cameraLiquidType = -1;

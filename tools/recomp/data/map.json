@@ -44182,6 +44182,22 @@
   "refSize": 566,
   "status": "ported"
  },
+ "00790920": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::UpdateCameraLiquid",
+  "frozenSize": 113,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 339,
+  "status": "verified"
+ },
  "00790af0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44650,13 +44666,13 @@
   "branchRatio": 0.292,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.264,
+  "fidelity": 0.283,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 598,
+  "frozenSize": 614,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,

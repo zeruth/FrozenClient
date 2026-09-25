@@ -1239,7 +1239,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // The grass buffers, rebuilt only when something has asked for it.
     DetailDoodad::CreateBuffers();
 
-    // TODO FUN_00790920(): the camera's liquid and height above the ground
+    CWorldScene::UpdateCameraLiquid();
 
     GxRsPush();
     GxXformPush(GxXform_World);

@@ -2767,6 +2767,7 @@ addr	how	frozen	evidence
 00790620	annotated	CWorldScene::ViewPlane2dDistance	tag in src/world/CWorldScene.cpp
 00790650	annotated	CWorldScene::BoxNearPoint	tag in src/world/CWorldScene.cpp
 007906c0	annotated	CWorldScene::BuildRowPlanes	tag in src/world/CWorldScene.cpp
+00790920	annotated	CWorldScene::UpdateCameraLiquid	tag in src/world/CWorldScene.cpp
 00790af0	annotated	CWorldScene::SubFrustum	tag in src/world/CWorldScene.cpp
 00790e20	override	CWorldScene::SubFrustum	
 00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp

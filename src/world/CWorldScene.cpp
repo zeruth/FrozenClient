@@ -3,6 +3,7 @@
 #include "world/CWorld.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
+#include "db/Db.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
@@ -48,6 +49,8 @@ int32_t CWorldScene::s_frustumDepth;
 C3Vector CWorldScene::s_cameraPos;
 C3Vector CWorldScene::s_cameraTarget;
 C3Vector CWorldScene::s_viewDir;
+float CWorldScene::s_cameraLiquidDepth;
+uint32_t CWorldScene::s_cameraLiquidType;
 C4Plane CWorldScene::s_viewPlane;
 C4Plane CWorldScene::s_viewPlane2d;
 CAaBox CWorldScene::s_frustumBounds;
@@ -1728,6 +1731,54 @@ void CWorldScene::TraverseRowEntities(Row* row) {
 
         entity = next;
     }
+}
+
+// ref: FUN_00790920
+// What the camera is standing in. Outdoors the map answers; inside a building the question goes
+// to the group the camera is in, in that group's own space.
+//
+// The depth is what the answer is for: how far under the surface the camera is, which is what
+// decides how dark and how fogged the water looks.
+void CWorldScene::UpdateCameraLiquid() {
+    CWorldScene::s_cameraLiquidDepth = 0.0f;
+
+    uint32_t liquidType = 0;
+    float height = 0.0f;
+
+    if (!CWorldScene::s_cameraGroup) {
+        if (CMap::GetTerrainLiquid(CWorldScene::s_cameraPos, &liquidType, &height, 1)) {
+            CWorldScene::s_cameraLiquidDepth = height - CWorldScene::s_cameraPos.z;
+        }
+    } else {
+        // TODO inside a building the reference moves the camera into the group's space through
+        // the def's inverse placement and asks FUN_007c8360, the group's own liquid query.
+        // Neither that nor the group liquid it reads is ported, so a camera indoors is treated
+        // as being in no liquid at all.
+    }
+
+    bool left = false;
+
+    if (!liquidType) {
+        left = CWorldScene::s_cameraLiquidType != 0;
+    } else if (liquidType != CWorldScene::s_cameraLiquidType) {
+        auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
+
+        // Bit 3 marks the kinds that take the water treatment -- the ones you can be submerged
+        // in rather than merely stand on.
+        if (rec && ((rec->m_flags >> 3) & 1)) {
+            // TODO the reference switches the underwater light set and the bubble particle
+            // scale here (FUN_0079b8e0, FUN_0079b360), and records the bit on the world state.
+            // Neither setter is ported.
+        }
+    }
+
+    CWorldScene::s_cameraLiquidType = liquidType;
+
+    if (left) {
+        // TODO FUN_007f1070(1): what the reference does on coming out of liquid.
+    }
+
+    // TODO FUN_008a2aa0(): the Liquid module's own per-frame tick.
 }
 
 // ref: FUN_00793980

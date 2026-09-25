@@ -126,6 +126,11 @@ class CWorldScene {
         static C3Vector s_cameraPos;                        // DAT_00cd8f5c
         static C3Vector s_cameraTarget;                     // DAT_00cd8f68
         static C3Vector s_viewDir;                          // DAT_00cd8f74: unit camera-to-target
+        // How far the camera is below the liquid it is in, zero when it is in none. What the
+        // underwater darkening reads to decide how deep the water looks.
+        static float s_cameraLiquidDepth;                   // DAT_00cd8790
+        // Which LiquidType the camera was in last frame, so a change can be noticed.
+        static uint32_t s_cameraLiquidType;
         static C4Plane s_viewPlane;                         // DAT_00cd8f80: the plane through the camera facing the view
         static C4Plane s_viewPlane2d;                       // DAT_00cd8f90: the same with the direction flattened
         static CAaBox s_frustumBounds;                      // DAT_00cd8f44
@@ -195,6 +200,8 @@ class CWorldScene {
         // Drain the frame's entity list, casting a blob under each entity that should have one.
         // ref: FUN_00793980
         static void DrawEntityShadows();
+        // What the camera is standing in, and how deep. ref: FUN_00790920
+        static void UpdateCameraLiquid();
         // Every entity the frame found visible, in the order the rows were walked. The row
         // visit hands them over through the same link the row used. DAT_00cdb098
         static STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) s_frameEntityList;
