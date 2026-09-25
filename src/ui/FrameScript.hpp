@@ -76,7 +76,11 @@ void FrameScript_Flush();
 
 void FrameScript_GetColor(lua_State* L, int32_t idx, CImVector& color);
 
+int32_t FrameScript_GetColorNoAlpha(lua_State* L, int32_t idx, CImVector& color);
+
 lua_State* FrameScript_GetContext();
+
+TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>>* FrameScript_GetEventListeners(const char* name);
 
 const char* FrameScript_GetCurrentObject(lua_State* L, int32_t a2);
 

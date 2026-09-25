@@ -99,7 +99,12 @@ void CSimpleCheckbox::SetChecked(int32_t checked, int32_t force) {
     }
 }
 
+// ref: FUN_009623f0
 void CSimpleCheckbox::SetCheckedTexture(CSimpleTexture* texture) {
+    if (texture == this->m_checkedTexture) {
+        return;
+    }
+
     if (this->m_checkedTexture) {
         delete this->m_checkedTexture;
     }
@@ -112,7 +117,12 @@ void CSimpleCheckbox::SetCheckedTexture(CSimpleTexture* texture) {
     this->SetChecked(this->m_checked, 1);
 }
 
+// ref: FUN_00962440
 void CSimpleCheckbox::SetDisabledCheckedTexture(CSimpleTexture* texture) {
+    if (texture == this->m_disabledTexture) {
+        return;
+    }
+
     if (this->m_disabledTexture) {
         delete this->m_disabledTexture;
     }

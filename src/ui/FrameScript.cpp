@@ -465,8 +465,37 @@ void FrameScript_GetColor(lua_State* L, int32_t idx, CImVector& color) {
     color.Set(a, r, g, b);
 }
 
+// ref: FUN_0061be50
+// Three clamped slots from idx with alpha fixed at 1; answers the index after them. The reference
+// takes idx in EAX and hands the result back the same way, which is how callers chain two colours.
+int32_t FrameScript_GetColorNoAlpha(lua_State* L, int32_t idx, CImVector& color) {
+    double r = lua_tonumber(L, idx + 0);
+    r = r < 0.0 ? 0.0 : (r >= 1.0 ? 1.0 : r);
+
+    double g = lua_tonumber(L, idx + 1);
+    g = g >= 0.0 ? (g < 1.0 ? g : 1.0) : 0.0;
+
+    double b = lua_tonumber(L, idx + 2);
+    b = b >= 0.0 ? (b >= 1.0 ? 1.0 : b) : 0.0;
+
+    color.Set(1.0f, static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+
+    return idx + 3;
+}
+
 lua_State* FrameScript_GetContext(void) {
     return FrameScript::s_context;
+}
+
+// ref: FUN_0081b510
+TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>>* FrameScript_GetEventListeners(const char* name) {
+    auto event = FrameScript::s_scriptEventsHash.Ptr(name);
+
+    if (event) {
+        return &event->listeners;
+    }
+
+    return nullptr;
 }
 
 const char* FrameScript_GetCurrentObject(lua_State* L, int32_t a2) {

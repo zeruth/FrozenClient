@@ -144,8 +144,30 @@ int32_t CSimpleTexture_SetVertexColor(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0048c240
+// The helper takes its start index in EAX, which the decompilation drops; 3 and 6 are the minR and
+// maxR slots of the usage string, three apart as the helper's own idx + 3 result says.
 int32_t CSimpleTexture_SetGradient(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleTexture::GetObjectType();
+    auto texture = static_cast<CSimpleTexture*>(FrameScript_GetObjectThis(L, type));
+
+    ORIENTATION orientation;
+
+    if (lua_isstring(L, 2) && StringToOrientation(lua_tostring(L, 2), orientation)) {
+        CImVector minColor = { 0x00, 0x00, 0x00, 0x00 };
+        CImVector maxColor = { 0x00, 0x00, 0x00, 0x00 };
+
+        FrameScript_GetColorNoAlpha(L, 3, minColor);
+        FrameScript_GetColorNoAlpha(L, 6, maxColor);
+
+        texture->SetVertexGradient(orientation, minColor, maxColor);
+
+        return 0;
+    }
+
+    return luaL_error(L,
+                      "Usage: %s:SetGradient(\"orientation\", minR, minG, minB, maxR, maxG, maxB)",
+                      texture->GetDisplayName());
 }
 
 // ref: FUN_0048c310

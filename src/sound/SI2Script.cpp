@@ -1,8 +1,22 @@
 #include "sound/SI2Script.hpp"
 #include "sound/SI2.hpp"
+#include "sound/SOUNDKITOBJECT.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+
+namespace {
+
+// The loopback test sound. Only VoiceChat_PlayLoopbackSound starts it, and that is still a stub.
+// ref: DAT_00dceab4
+SOUNDKITOBJECT s_loopbackSoundObject;
+
+// ref: FUN_00986410
+uint8_t IsPlayingLoopbackSound() {
+    return SI2::IsPlaying(&s_loopbackSoundObject);
+}
+
+} // namespace
 
 int32_t Script_PlaySound(lua_State* L) {
     if (lua_isnumber(L, 1)) {
@@ -166,8 +180,11 @@ int32_t Script_VoiceChat_IsRecordingLoopbackSound(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00985e30
 int32_t Script_VoiceChat_IsPlayingLoopbackSound(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, static_cast<double>(IsPlayingLoopbackSound()));
+
+    return 1;
 }
 
 int32_t Script_VoiceChat_GetCurrentMicrophoneSignalLevel(lua_State* L) {

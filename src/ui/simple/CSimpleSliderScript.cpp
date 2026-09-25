@@ -41,8 +41,26 @@ int32_t CSimpleSlider_GetOrientation(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00971cc0
 int32_t CSimpleSlider_SetOrientation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto slider = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    if (!lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: %s:SetOrientation(\"orientation\")", slider->GetDisplayName());
+        return 0;
+    }
+
+    ORIENTATION orientation;
+
+    if (!StringToOrientation(lua_tostring(L, 2), orientation)) {
+        luaL_error(L, "%s:SetOrientation(): Unknown orientation: %s", slider->GetDisplayName(), lua_tostring(L, 2));
+        return 0;
+    }
+
+    slider->SetOrientation(orientation);
+
+    return 0;
 }
 
 int32_t CSimpleSlider_GetMinMaxValues(lua_State* L) {

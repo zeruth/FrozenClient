@@ -1976,5 +1976,10 @@
     "frozen": "Script_GetReadyCheckStatus",
     "status": "stub",
     "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25."
+  },
+  "0081be70": {
+    "frozen": "Script_GetFramesRegisteredForEvent",
+    "status": "diverged",
+    "note": "Ported from the decompilation 2026-09-25 with one deliberate difference: the reference does not check the listener lookup (FUN_0081b510) and reads through null for an event name nobody registered; frozen returns no frames there instead of crashing."
   }
 }

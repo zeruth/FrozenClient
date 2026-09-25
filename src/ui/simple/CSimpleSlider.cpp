@@ -249,6 +249,7 @@ void CSimpleSlider::SetMinMaxValues(float min, float max) {
     }
 }
 
+// ref: FUN_0096bde0
 void CSimpleSlider::SetOrientation(ORIENTATION orientation) {
     this->m_orientation = orientation;
 
@@ -259,6 +260,7 @@ void CSimpleSlider::SetOrientation(ORIENTATION orientation) {
     this->m_changed = 1;
 }
 
+// ref: FUN_0096bd90
 void CSimpleSlider::SetThumbTexture(CSimpleTexture* texture, int32_t drawLayer) {
     if (this->m_thumbTexture == texture) {
         return;

@@ -3,6 +3,7 @@
 #include "ui/simple/CSimpleMovieFrame.hpp"
 #include "ui/simple/CSimpleScrollingMessageFrame.hpp"
 #include "ui/simple/ScriptMethods.hpp"
+#include "ui/FrameScript.hpp"
 #include "ui/FrameXML.hpp"
 #include "ui/Types.hpp"
 #include "ui/simple/CSimpleButton.hpp"
@@ -66,8 +67,42 @@ int32_t Script_GetNumFrames(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0081b9c0
 int32_t Script_EnumerateFrames(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CSimpleFrame* frame;
+
+    if (lua_type(L, 1) == LUA_TTABLE) {
+        lua_rawgeti(L, 1, 0);
+        auto object = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
+        lua_settop(L, -2);
+
+        if (!object) {
+            luaL_error(L, "EnumerateFrames: Couldn't find 'this' in current object");
+            return 0;
+        }
+
+        if (!object->IsA(CSimpleFrame::GetObjectType())) {
+            luaL_error(L, "EnumerateFrames: Wrong current object type, expected frame");
+            return 0;
+        }
+
+        frame = static_cast<CSimpleFrame*>(object)->m_framesLink.Next();
+    } else {
+        frame = CSimpleTop::s_instance->m_frames.Head();
+    }
+
+    if (!frame) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    if (!frame->lua_registered) {
+        frame->RegisterScriptObject(nullptr);
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, frame->lua_objectRef);
+
+    return 1;
 }
 
 // ref: FUN_0081b7b0
@@ -192,8 +227,42 @@ int32_t Script_CreateFrame(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0081be70
+// DIVERGED: the reference walks the lookup's result without testing it, so an unknown event name
+// faults on a null pointer. Here that answers no frames instead.
 int32_t Script_GetFramesRegisteredForEvent(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        luaL_error(L, "Usage: GetFramesRegisteredForEvent(\"event\")");
+        return 0;
+    }
+
+    int32_t count = 0;
+    auto listeners = FrameScript_GetEventListeners(lua_tostring(L, 1));
+
+    if (!listeners) {
+        return 0;
+    }
+
+    for (auto node = listeners->Head(); node; node = node->Next()) {
+        count++;
+    }
+
+    if (!lua_checkstack(L, count)) {
+        luaL_error(L, "GetFramesRegisteredForEvent(%s): Stack overflow", lua_tostring(L, 1));
+        return 0;
+    }
+
+    for (auto node = listeners->Head(); node; node = node->Next()) {
+        auto listener = node->listener;
+
+        if (!listener->lua_registered) {
+            listener->RegisterScriptObject(nullptr);
+        }
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, listener->lua_objectRef);
+    }
+
+    return count;
 }
 
 // ref: FUN_0081b820
