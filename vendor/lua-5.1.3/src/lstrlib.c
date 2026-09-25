@@ -724,13 +724,52 @@ static void addintlen (char *form) {
 }
 
 
+static int europeannumbers = 0;  /* ref: DAT_00d413b8 */
+
+
+/* ref: FUN_0084f010 */
+LUALIB_API void lua_seteuropeannumbers (int enable) {
+  europeannumbers = enable;
+}
+
+
+/*
+** With European numbers on, swaps the decimal point and the thousands separator inside every
+** run of digits: a '.' followed by a digit becomes ',' and a ',' followed by a digit becomes
+** '.'. Written with the reference's own jumps (ref: FUN_0084f030).
+*/
+static void europeanize (char *s) {
+  char c;
+  char *end;
+  if (!europeannumbers)
+    return;
+  end = s + strlen(s);
+  for (c = *s; c != '\0' && s < end; s++) {
+    if ('/' < c && c < ':') {
+      for (;;) {
+        for (; (c = *s, '/' < c && c < ':') || c == '.'; s++) {
+          if (c != '.' || s[1] < '0' || '9' < s[1]) goto next;
+          *s = ',';
+        }
+        if (c != ',') break;
+        if ('/' < s[1] && s[1] < ':')
+          *s = '.';
+      next:
+        s++;
+      }
+    }
+    c = s[1];
+  }
+}
+
+
 /*
 ** The client's format, not stock 5.1's (ref: FUN_00853c50). It differs in four ways:
 ** - positional arguments: "%1$s" .. "%99$s" select the argument, and the items after one
 **   continue from it (the localized global strings reorder their arguments this way);
 ** - flags, width and precision are read by matching FORMAT_SPEC, at most two digits each and
 **   sixteen characters in all, instead of scanformat's hand-rolled scan;
-** - "%F" is accepted (see below);
+** - "%F" formats as %f, then swaps '.' and ',' when European numbers are on;
 ** - %d/%i/%c truncate to 32 bits, %o/%u/%x/%X round to nearest (the reference converts with
 **   fistp), as the 32-bit client's long does.
 */
@@ -787,8 +826,7 @@ static int str_format (lua_State *L) {
           for (f = form; *f != '\0'; f++)
             if (*f == 'F') *f = 'f';
           sprintf(buff, form, (double)luaL_checknumber(L, arg));
-          /* The reference then passes buff through FUN_0084f030 (150 bytes, not yet
-             decompiled), so %F output may still differ from the client's. */
+          europeanize(buff);
           break;
         }
         case 'o':  case 'u':  case 'x':  case 'X': {

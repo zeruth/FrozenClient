@@ -42,6 +42,9 @@ LUALIB_API int (luaopen_package) (lua_State *L);
 #define LUA_BITLIBNAME "bit"
 LUALIB_API int luaopen_bit(lua_State *L);
 
+/* the client's "European numbers" switch: %F output swaps '.' and ',' inside numbers */
+LUALIB_API void lua_seteuropeannumbers(int enable);
+
 
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L); 
