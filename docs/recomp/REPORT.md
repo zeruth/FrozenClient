@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 12:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 12:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 2040, callgraph 237, callorder 110, cvar 32, handler 2
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 12:09 -- mapped 4235, ported 3573, stub 580, spine mapped 1324.
+Previous run: 2026-09-25 12:13 -- mapped 4235, ported 3573, stub 580, spine mapped 1324.
 
 ## Lua API coverage (binding tables)
 
@@ -622,12 +622,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 00795400 | `CWorldScene::UpdateCamera` | 38% | 19 | 24 | 8 | 7 | 0% | 2291 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
-| 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 60% | 62 | 55 | 53 | 27 | 6% | 2146 |
+| 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 60% | 62 | 55 | 53 | 29 | 6% | 2146 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 76% | 45 | 23 | 21 | 10 | 11% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
 | 004c6a40 | `SI2::PlaySoundKit` | 26% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 00405dd0 | `Sub405DD0` | 22% | 50 | 2 | 59 | 0 | 0% | 1706 |
-| 007ac9f0 | `CMapObjGroup::DrawBatchesSplit` | 76% | 41 | 45 | 37 | 24 | 6% | 1566 |
+| 007ac9f0 | `CMapObjGroup::DrawBatchesSplit` | 76% | 41 | 45 | 37 | 26 | 6% | 1566 |
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 16% | 52 | 32 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
 | 00828a00 | `CM2Model::AnimateST` | 50% | 24 | 8 | 40 | 17 | 0% | 1415 |
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
-| 2026-09-25 10:33 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:34 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:34 | 4180 (15.5%) | 2116 (7.8%) | 580 | 1298/5388 | 2924/2964 | 1380 |
 | 2026-09-25 10:48 | 4194 (15.6%) | 2126 (7.9%) | 580 | 1301/5388 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 12:06 | 4233 (15.7%) | 2144 (8.0%) | 580 | 1322/5388 | 2924/2964 | 1380 |
 | 2026-09-25 12:09 | 4235 (15.7%) | 2144 (8.0%) | 580 | 1324/5388 | 2924/2964 | 1380 |
 | 2026-09-25 12:13 | 4235 (15.7%) | 2144 (8.0%) | 580 | 1324/5388 | 2924/2964 | 1380 |
+| 2026-09-25 12:16 | 4235 (15.7%) | 2144 (8.0%) | 580 | 1324/5388 | 2924/2964 | 1380 |
 
 ## How to move a row
 

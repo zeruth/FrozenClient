@@ -198488,9 +198488,9 @@
 "6",
 "7"
 ],
-"branches": 17,
+"branches": 19,
 "stub": false,
-"lines": 133,
+"lines": 146,
 "refs": [],
 "line": 300
 },
@@ -198562,11 +198562,11 @@
 "6",
 "7"
 ],
-"branches": 24,
+"branches": 26,
 "stub": false,
-"lines": 176,
+"lines": 189,
 "refs": [],
-"line": 440
+"line": 453
 },
 "CMapObj::Render": {
 "files": [
@@ -198592,7 +198592,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 620
+"line": 646
 },
 "CMapObjGroup::DrawBatchesOutdoor": {
 "files": [
@@ -198676,11 +198676,11 @@
 "6",
 "7"
 ],
-"branches": 27,
+"branches": 29,
 "stub": false,
-"lines": 201,
+"lines": 214,
 "refs": [],
-"line": 664
+"line": 690
 },
 "CMapObjGroup::BakePortalLight": {
 "files": [
@@ -198718,7 +198718,7 @@
 "stub": false,
 "lines": 100,
 "refs": [],
-"line": 873
+"line": 912
 },
 "TriangleOutsideHull": {
 "files": [

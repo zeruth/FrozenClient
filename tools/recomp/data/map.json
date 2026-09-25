@@ -44839,7 +44839,7 @@
   "status": "ported"
  },
  "007a9380": {
-  "branchRatio": 0.509,
+  "branchRatio": 0.547,
   "constOverlap": 0.062,
   "faithful": false,
   "fidelity": 0.597,
@@ -44848,7 +44848,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesOutdoor",
-  "frozenSize": 2023,
+  "frozenSize": 2048,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2146,
@@ -44871,7 +44871,7 @@
   "status": "ported"
  },
  "007ac6a0": {
-  "branchRatio": 0.708,
+  "branchRatio": 0.792,
   "constOverlap": 0.083,
   "faithful": true,
   "fidelity": 0.885,
@@ -44880,14 +44880,14 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatches",
-  "frozenSize": 1363,
+  "frozenSize": 1387,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 847,
   "status": "ported"
  },
  "007ac9f0": {
-  "branchRatio": 0.649,
+  "branchRatio": 0.703,
   "constOverlap": 0.062,
   "faithful": false,
   "fidelity": 0.756,
@@ -44896,7 +44896,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesSplit",
-  "frozenSize": 1805,
+  "frozenSize": 1816,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1566,

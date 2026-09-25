@@ -339,6 +339,12 @@ void CMapObjGroup::DrawBatches(int32_t record) {
 
         batch->flags |= 0xf0;
 
+        // Diverged, same reason as the shader id below: the material id is file data and the
+        // reference trusts it.
+        if (batch->materialId >= mapObj->m_materialCount) {
+            continue;
+        }
+
         auto material = &mapObj->m_materials[batch->materialId];
         auto textures = &mapObj->m_materialTextures[batch->materialId];
 
@@ -372,6 +378,13 @@ void CMapObjGroup::DrawBatches(int32_t record) {
 
         if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
             shader = 4;
+        }
+
+        // Diverged: the shader id is file data and the reference indexes its table with it
+        // unchecked. A WMO naming a shader the table has no room for would read past the end,
+        // so it falls back to the plain diffuse one here.
+        if (shader >= CMapObj::SHADER_COUNT) {
+            shader = 0;
         }
 
         CMapObj::SetupFog(~material->flags & 0x2);
@@ -481,6 +494,12 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 
         batch->flags |= 0xf0;
 
+        // Diverged, same reason as the shader id below: the material id is file data and the
+        // reference trusts it.
+        if (batch->materialId >= mapObj->m_materialCount) {
+            continue;
+        }
+
         auto material = &mapObj->m_materials[batch->materialId];
         auto textures = &mapObj->m_materialTextures[batch->materialId];
 
@@ -512,6 +531,13 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 
         if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
             shader = 4;
+        }
+
+        // Diverged: the shader id is file data and the reference indexes its table with it
+        // unchecked. A WMO naming a shader the table has no room for would read past the end,
+        // so it falls back to the plain diffuse one here.
+        if (shader >= CMapObj::SHADER_COUNT) {
+            shader = 0;
         }
 
         GxRsSet(GxRs_Culling, ~(material->flags >> 2) & 0x1);
@@ -696,6 +722,12 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
         batch->flags |= 0xf0;
 
+        // Diverged, same reason as the shader id below: the material id is file data and the
+        // reference trusts it.
+        if (batch->materialId >= mapObj->m_materialCount) {
+            continue;
+        }
+
         auto material = &mapObj->m_materials[batch->materialId];
         auto textures = &mapObj->m_materialTextures[batch->materialId];
 
@@ -727,6 +759,13 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
         if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
             shader = 4;
+        }
+
+        // Diverged: the shader id is file data and the reference indexes its table with it
+        // unchecked. A WMO naming a shader the table has no room for would read past the end,
+        // so it falls back to the plain diffuse one here.
+        if (shader >= CMapObj::SHADER_COUNT) {
+            shader = 0;
         }
 
         GxRsSet(GxRs_Culling, ~(material->flags >> 2) & 0x1);
