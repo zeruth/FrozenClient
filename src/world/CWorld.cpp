@@ -698,6 +698,24 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
 
     // TODO
 
+    // The entity's state word, rearranged out of the caller's flags. The reference writes it as
+    // one expression over a preserved mask; spelled out, the bits move like this:
+    //
+    //   caller 0x01  ->  0x0002   the group list takes it at the head rather than the tail
+    //   caller 0x02  ->  0x0800   INVERTED: clear here means the entity casts a blob shadow,
+    //                             so an object says "no shadow" by setting its own bit 1
+    //   caller 0x04  ->  0x0400   keep animating even when nothing can see it
+    //   caller 0x08  ->  0x2000
+    //   caller 0x10  ->  0x8000
+    //
+    // Everything else the word carries is left alone.
+    uint32_t state = ((((objFlags & 0x10) << 3 | (objFlags & 0x4)) << 7) | (objFlags & 0x1)) << 1;
+
+    state |= ~(objFlags << 10) & 0x800;
+    state |= (objFlags >> 3 & 0x1) << 13;
+
+    entity->m_flags7c = state | (entity->m_flags7c & 0xffff13fd);
+
     entity->m_flags = 0x0;
 
     if (objFlags & 0x20) {

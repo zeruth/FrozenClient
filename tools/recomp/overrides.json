@@ -68,6 +68,18 @@
     "status": "unlinked",
     "note": "Liquid::CMaterialMagmaFFP: the fixed-function implementation for magma and slime (LiquidMaterial 2). Name recovered from the RTTI string at the factory. Liquid::GetMaterial picks between the pair from the device caps; neither is ported, so the bank hands back nothing and no liquid surface draws yet"
   },
+  "00793980": {
+    "status": "verified",
+    "note": "CWorldScene::DrawEntityShadows. run 2026-09-25 on map 609 with counters through the whole chain: 230 entities bucketed a frame, ~65 reaching the shadow pass, 64 of them resolving to no unit and carrying no 0x800, one unit casting. That split is the reference's own rule -- CGObject_C passes bit 1 for game objects and dynamic objects, which inverts into a clear 0x800, and only units come through with it set"
+  },
+  "00792e60": {
+    "status": "verified",
+    "note": "CWorldScene::AddEntity. run 2026-09-25 on map 609 with counters through the whole chain: 230 entities bucketed a frame, ~65 reaching the shadow pass, 64 of them resolving to no unit and carrying no 0x800, one unit casting. That split is the reference's own rule -- CGObject_C passes bit 1 for game objects and dynamic objects, which inverts into a clear 0x800, and only units come through with it set"
+  },
+  "007b5590": {
+    "status": "verified",
+    "note": "CMap::BucketEntities. run 2026-09-25 on map 609 with counters through the whole chain: 230 entities bucketed a frame, ~65 reaching the shadow pass, 64 of them resolving to no unit and carrying no 0x800, one unit casting. That split is the reference's own rule -- CGObject_C passes bit 1 for game objects and dynamic objects, which inverts into a clear 0x800, and only units come through with it set"
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",

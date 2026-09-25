@@ -317,30 +317,15 @@ void CGWorldFrame::OnWorldRender() {
         // creature casts a proportionally larger blob.
         BlobShadowsBegin();
 
-        // The reference's own pass is CWorldScene::DrawEntityShadows, which drains the frame's
-        // entity list. It is ported but NOT called here, and must not be until something sets
-        // the caster bit: it casts only for an entity whose state word has 0x800, and nothing
-        // in frozen writes m_flags7c at all, so calling it would silently remove every unit
-        // shadow. The placement code that sets those bits (FUN_007c23f0 and its neighbours) is
-        // the missing piece.
+        // Units and game objects cast through the reference's own pass, which drains the
+        // frame's entity list -- already reduced to what the traversal could see. It replaces a
+        // walk over the object manager that picked its casters by model flags, which is not how
+        // the reference chooses them.
         //
-        // Until then units cast from the object manager, picked by model flags and sized from
-        // CGUnit_C::GetShadowBox -- the box the reference uses, through the reference's gate,
-        // reached by a walk that is frozen's own.
-        for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
-            if (!object->m_model || !object->IsA(TYPE_UNIT) || !object->m_model->m_flag10000) {
-                continue;
-            }
-
-            if (object->GetGUID() != activePlayer && !object->m_model->m_flag8) {
-                continue;
-            }
-
-            CAaBox shadowBox;
-
-            BlobShadowDrawCaster(object->m_model,
-                                 static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox));
-        }
+        // The reference runs this from CMap::Render, between the sky and the model passes.
+        // Frozen runs it here because the pass state it needs is set up here; moving it belongs
+        // with reducing OnWorldRender to the reference's order.
+        CWorldScene::DrawEntityShadows();
 
         // Doodads cast too: the reference walks every scene entity with a model, not just units
         // (FUN_00793980). Terrain and WMO props are scene models, so they come through here; the

@@ -15231,7 +15231,7 @@
   "status": "ported"
  },
  "004f8ea0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.56,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.224,
@@ -43383,7 +43383,7 @@
  },
  "00781a10": {
   "branchRatio": 0.222,
-  "constOverlap": 0.044,
+  "constOverlap": 0.133,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
@@ -43391,7 +43391,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::AddObject",
-  "frozenSize": 113,
+  "frozenSize": 183,
   "how": "annotated",
   "module": "SEvt.cpp",
   "refSize": 629,
@@ -44340,7 +44340,7 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 241,
-  "status": "ported"
+  "status": "verified"
  },
  "00793060": {
   "branchRatio": 0.167,
@@ -44404,7 +44404,7 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 398,
-  "status": "ported"
+  "status": "verified"
  },
  "00793b10": {
   "branchRatio": 0.357,
@@ -45684,7 +45684,7 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 67,
-  "status": "ported"
+  "status": "verified"
  },
  "007b5950": {
   "branchRatio": 0.372,
