@@ -2542,7 +2542,7 @@ void EnsureShaders() {
         s_useTerrainShader = (s_terrainVS && s_terrainPS);
     } else if (api == GxApi_GLL || api == GxApi_OpenGl) {
         // The same four programs in ARB assembly. Without these the GL backends had no terrain
-        // program at all and every chunk fell through to RenderFallback, which draws the mesh
+        // program at all and every chunk fell through to the fixed-function pass, which drew the mesh
         // untextured -- the flat white ground Android rendered under correctly textured models.
         s_terrainVS = MakeArbShader(GxSh_Vertex, g_terrainVsArb, sizeof(g_terrainVsArb) - 1);
         s_terrainPS = MakeArbShader(GxSh_Pixel, g_terrainPsArb, sizeof(g_terrainPsArb) - 1);
@@ -2563,71 +2563,6 @@ void EnsureShaders() {
     );
 }
 
-// Single-pass per-pixel blend (base + up to 3 overlay layers weighted by the combined alpha map)
-void RenderShaded(const C44Matrix& viewProjT) {
-    GxRsSet(GxRs_DepthTest, 1);
-    GxRsSet(GxRs_DepthWrite, 1);
-    GxRsSet(GxRs_DepthFunc, 0);
-    GxRsSet(GxRs_Culling, 0);
-    GxRsSet(GxRs_BlendingMode, GxBlend_Opaque);
-    GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, s_fogActive ? 1 : 0);
-
-    GxRsSet(GxRs_VertexShader, s_terrainVS);
-    GxRsSet(GxRs_PixelShader, s_terrainPS);
-
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        for (auto& chunk : tile.chunks) {
-            if (!chunk.valid || chunk.nLayers <= 0 || !chunk.alphaTexture) {
-                continue;
-            }
-
-            if (!BoxVisible(chunk.boundsMin, chunk.boundsMax)) {
-                continue;
-            }
-
-            // Bind the four diffuse layers; unused stages reuse the base (their alpha weight is 0)
-            for (int32_t l = 0; l < MAX_LAYERS; l++) {
-                int32_t texId = (l < chunk.nLayers) ? chunk.layerTex[l] : chunk.layerTex[0];
-                HTEXTURE tex = (texId >= 0 && static_cast<uint32_t>(texId) < tile.textureCount) ? tile.textures[texId] : nullptr;
-
-                if (!tex) {
-                    tex = tile.textures[chunk.layerTex[0]];
-                }
-
-                GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + l), tex ? TextureGetGxTex(tex, 0, nullptr) : nullptr);
-            }
-
-            GxRsSet(GxRs_Texture4, TextureGetGxTex(chunk.alphaTexture, 0, nullptr));
-
-            C44Matrix chunkT = ChunkMatrixT(chunk.origin);
-            GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&chunkT), 4);
-
-            GxPrimLockVertexPtrs(
-                145,
-                chunk.localPos, sizeof(C3Vector),
-                nullptr, 0,
-                chunk.color, sizeof(CImVector),
-                nullptr, 0,
-                chunk.texcoord, sizeof(C2Vector),
-                nullptr, 0
-            );
-
-            if (chunk.holes) {
-                uint32_t hcount = BuildHoleIndices(chunk.holes, s_holeIndices);
-                GxDrawLockedElements(GxPrim_Triangles, hcount, s_holeIndices);
-            } else {
-                GxDrawLockedElements(GxPrim_Triangles, 768, s_indices);
-            }
-
-            GxPrimUnlockVertexPtrs();
-        }
-    }
-}
 
 // Fallback for non-D3D backends: base opaque, then each overlay layer alpha-blended by the
 // combined alpha map sampled per vertex, through the UI shaders.
@@ -2646,86 +2581,6 @@ uint8_t SampleCombined(const CImVector* map, float u, float v, int32_t layer) {
     return layer == 1 ? c.r : (layer == 2 ? c.g : c.b);
 }
 
-void RenderFallback(const C44Matrix& viewProjT) {
-    GxRsSet(GxRs_DepthTest, 1);
-    GxRsSet(GxRs_DepthFunc, 0);
-    GxRsSet(GxRs_Culling, 0);
-    GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, s_fogActive ? 1 : 0);
-
-    GxRsSet(GxRs_VertexShader, s_uiVertexShader[0]);
-    GxRsSet(GxRs_PixelShader, s_uiPixelShader);
-    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&viewProjT), 4);
-
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        for (auto& chunk : tile.chunks) {
-            if (!chunk.valid || chunk.nLayers <= 0) {
-                continue;
-            }
-
-            if (!BoxVisible(chunk.boundsMin, chunk.boundsMax)) {
-                continue;
-            }
-
-            for (int32_t l = 0; l < chunk.nLayers; l++) {
-                int32_t texId = chunk.layerTex[l];
-                HTEXTURE tex = (texId >= 0 && static_cast<uint32_t>(texId) < tile.textureCount) ? tile.textures[texId] : nullptr;
-
-                if (!tex) {
-                    continue;
-                }
-
-                if (l == 0) {
-                    GxRsSet(GxRs_BlendingMode, GxBlend_Opaque);
-                    GxRsSet(GxRs_DepthWrite, 1);
-                } else {
-                    GxRsSet(GxRs_BlendingMode, GxBlend_Alpha);
-                    GxRsSet(GxRs_DepthWrite, 0);
-                }
-
-                for (int32_t v = 0; v < 145; v++) {
-                    // The vertex colour is lit WITHOUT the baked shadow (the shaded path applies it
-                    // per pixel from the blend map's alpha). This path has no shader to do that, so
-                    // apply it per vertex here: the colour's own alpha is the ambient ratio, i.e.
-                    // what survives with the sun removed.
-                    uint8_t lit = chunk.color[v].r;
-                    uint8_t shadow = SampleCombined(chunk.alphaCombined, chunk.texcoord[v].x, chunk.texcoord[v].y, 0);
-                    float ratio = chunk.color[v].a / 255.0f;
-                    float f = ratio + (1.0f - ratio) * (shadow / 255.0f);
-                    uint8_t s = static_cast<uint8_t>(lit * f);
-
-                    uint8_t a = (l == 0) ? 0xFF : SampleCombined(chunk.alphaCombined, chunk.texcoord[v].x, chunk.texcoord[v].y, l);
-                    s_colorScratch[v] = { s, s, s, a };
-                }
-
-                GxRsSet(GxRs_Texture0, TextureGetGxTex(tex, 0, nullptr));
-
-                GxPrimLockVertexPtrs(
-                    145,
-                    chunk.position, sizeof(C3Vector),
-                    nullptr, 0,
-                    s_colorScratch, sizeof(CImVector),
-                    nullptr, 0,
-                    chunk.texcoord, sizeof(C2Vector),
-                    nullptr, 0
-                );
-
-                if (chunk.holes) {
-                    uint32_t hcount = BuildHoleIndices(chunk.holes, s_holeIndices);
-                    GxDrawLockedElements(GxPrim_Triangles, hcount, s_holeIndices);
-                } else {
-                    GxDrawLockedElements(GxPrim_Triangles, 768, s_indices);
-                }
-
-                GxPrimUnlockVertexPtrs();
-            }
-        }
-    }
-}
 
 // ------------------------------------------------------------------------------------------------
 // WMO group visibility through portals (the reference's CPortalView walk, FUN_007ad1f0, seeded from
@@ -4782,8 +4637,9 @@ void TerrainRender() {
 
 
     // The terrain chunks draw through the ported map (CMap::Render -> CWorldScene::RenderTerrain)
-    // since 2026-09-25; RenderShaded / RenderFallback stay only for the blob shadow receivers,
-    // which still re-draw this copy of the chunk geometry
+    // since 2026-09-25, and the two stand-in passes that used to draw them are gone. What still
+    // reads this copy of the chunk geometry is the blob shadow receiver walk, which re-draws a
+    // chunk's own triangles under a decal; retiring that is what finally frees the tile data.
     (void)haveShaded;
 
     // The buildings draw through the ported map (CMap::Render -> CWorldScene::RenderMapObjs)
