@@ -439,18 +439,29 @@ void CShaderEffect::UpdateProjMatrix() {
     GxShaderConstantsSet(GxSh_Vertex, 2, reinterpret_cast<float*>(&proj), 4);
 }
 
+// ref: FUN_00872d30
 void CShaderEffect::InitEffect(const char* vsName, const char* psName) {
     memset(this->m_vertexShaders, 0, sizeof(this->m_vertexShaders));
     memset(this->m_pixelShaders, 0, sizeof(this->m_pixelShaders));
 
-    // TODO
-    // this->dword18 = 0;
+    this->m_fixedFuncStages = 0;
 
     if (CShaderEffect::s_enableShaders) {
         if (vsName && psName) {
             g_theGxDevicePtr->ShaderCreate(this->m_vertexShaders, GxSh_Vertex, "Shaders\\Vertex", vsName, 90);
             g_theGxDevicePtr->ShaderCreate(this->m_pixelShaders, GxSh_Pixel, "Shaders\\Pixel", psName, 16);
         }
+    }
+}
+
+// ref: FUN_008728c0
+// The blends one FixedFunc pass of an effect file asked for, one per texture stage.
+void CShaderEffect::SetFixedFunc(const uint32_t* colorOps, const uint32_t* alphaOps, uint32_t stages) {
+    this->m_fixedFuncStages = stages;
+
+    for (uint32_t i = 0; i < stages; i++) {
+        this->m_colorOps[i] = colorOps[i];
+        this->m_alphaOps[i] = alphaOps[i];
     }
 }
 

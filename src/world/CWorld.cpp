@@ -8,6 +8,7 @@
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
+#include "gx/shader/CShaderEffectManager.hpp"
 #include "model/Model2.hpp"
 #include "world/CWorldParam.hpp"
 #include "world/Map.hpp"
@@ -862,6 +863,13 @@ void CWorld::Initialize() {
         (m2Flags & 0x8) != 0,
         (CWorld::s_enables2 & Enables2::Enable_HwPcf) != 0
     );
+
+    // The named effects the world draws through, in the order the reference reads them.
+    CShaderEffectManager::LoadEffectFile("MapObj.wfx");
+    CShaderEffectManager::LoadEffectFile("MapObjU.wfx");
+    CShaderEffectManager::LoadEffectFile("Model2.wfx");
+    CShaderEffectManager::LoadEffectFile("Particle.wfx");
+    CShaderEffectManager::LoadEffectFile("ShadowMap.wfx");
 
     // TODO
 

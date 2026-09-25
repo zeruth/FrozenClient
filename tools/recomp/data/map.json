@@ -1203,6 +1203,19 @@
   "refSize": 44,
   "status": "ported"
  },
+ "00421800": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "sprintf",
+  "frozenSize": 94,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "00421880": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -1230,7 +1243,7 @@
   ],
   "frozen": "SFile::GetFileSize",
   "frozenSize": 17,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "OggDecompress.cpp",
   "refSize": 112,
   "status": "ported"
@@ -10419,7 +10432,7 @@
   ],
   "frozen": "AsyncFileReadAllocObject",
   "frozenSize": 401,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 185,
   "status": "ported"
@@ -21851,7 +21864,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -43240,6 +43253,22 @@
   "refSize": 1135,
   "status": "ported"
  },
+ "00780f50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.419,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::Initialize",
+  "frozenSize": 327,
+  "how": "string",
+  "module": "SEvt.cpp",
+  "refSize": 1247,
+  "status": "ported"
+ },
  "007815c0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -52938,7 +52967,7 @@
   "branchRatio": 0.71,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -57464,6 +57493,22 @@
   "refSize": 15,
   "status": "ported"
  },
+ "008728c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetFixedFunc",
+  "frozenSize": 62,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
  "00872900": {
   "branchRatio": 0.75,
   "constOverlap": 0.043,
@@ -57510,6 +57555,38 @@
   "how": "override",
   "module": "OsClipboard.cpp",
   "refSize": 197,
+  "status": "ported"
+ },
+ "00872ce0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::InitShaderSystem",
+  "frozenSize": 65,
+  "how": "callorder",
+  "module": "OsClipboard.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "00872d30": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::InitEffect",
+  "frozenSize": 203,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 169,
   "status": "ported"
  },
  "00872de0": {
@@ -57814,6 +57891,150 @@
   "how": "string",
   "module": "OsClipboard.cpp",
   "refSize": 591,
+  "status": "ported"
+ },
+ "00876ca0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "CShaderEffectManager::RegisterEffect",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 237,
+  "status": "ported"
+ },
+ "00876d90": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "CShaderEffectManager::LoadEffectFile",
+  "frozenSize": 721,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
+ "00876e30": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "MatchToken",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 219,
+  "status": "ported"
+ },
+ "00876f10": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "FindBraces",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
+ "00876f70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "OpFromName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "00876fb0": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "ParseFixedFunc",
+  "frozenSize": 1587,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 409,
+  "status": "ported"
+ },
+ "00877150": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "ParseShaderBlock",
+  "frozenSize": 973,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 307,
+  "status": "ported"
+ },
+ "00877290": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "ParseEffect",
+  "frozenSize": 655,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 198,
+  "status": "ported"
+ },
+ "00877360": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffectManager.cpp",
+   "src/gx/shader/cshadereffectmanager.cpp"
+  ],
+  "frozen": "ParseEffects",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShaderEffectManager.cpp",
+  "refSize": 130,
   "status": "ported"
  },
  "00877aa0": {

@@ -71,11 +71,19 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static void UpdateProjMatrix();
 
         // Member variables
+        // How many texture stages the effect file's FixedFunc block described, and the
+        // blend each stage applies to colour and to alpha. Only the fixed-function draw
+        // paths read them, and the device always reports the shader level, so nothing in
+        // frozen consumes these yet -- the effect files carry them, so they are parsed.
+        uint32_t m_fixedFuncStages = 0;           // +0x18
+        uint32_t m_colorOps[2] = { 0, 0 };        // +0x1c
+        uint32_t m_alphaOps[2] = { 0, 0 };        // +0x24
         CGxShader* m_vertexShaders[90];
         CGxShader* m_pixelShaders[16];
 
         // Member functions
         void InitEffect(const char* vsName, const char* psName);
+        void SetFixedFunc(const uint32_t* colorOps, const uint32_t* alphaOps, uint32_t stages);
         void SetCurrent();
 };
 

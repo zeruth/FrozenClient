@@ -74,8 +74,9 @@ addr	how	frozen	evidence
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
+00421800	callgraph	sprintf	only unmatched callee of 0053c430=CM2Shared::LoadSkinProfile
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
-004218c0	callorder	SFile::GetFileSize	same slot between linked calls in 004b8910=CreateBlpSync, 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read
+004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 00876d90=CShaderEffectManager::LoadEffectFile
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
 00422130	override	SFile::IsStreamingMode	
@@ -650,7 +651,7 @@ addr	how	frozen	evidence
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callorder	AsyncFileReadAllocObject	same slot between linked calls in 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 007d85e0=CMapObjGroup::Read
+004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 007d85e0=CMapObjGroup::Read
 004bab50	override	AsyncFileReadObject	
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners
@@ -2708,6 +2709,7 @@ addr	how	frozen	evidence
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
 00780860	annotated	CWorld::UpdateWindow	tag in src/world/CWorld.cpp
+00780f50	string	CWorld::Initialize	unique "MapObj.wfx"
 007815c0	annotated	CWorld::UpdateWindowAndMap	tag in src/world/CWorld.cpp
 00781610	annotated	CWorld::SetupFogRenderStates	tag in src/world/CWorld.cpp
 00781a10	annotated	CWorld::AddObject	tag in src/world/CWorld.cpp
@@ -3614,9 +3616,12 @@ addr	how	frozen	evidence
 0086c6a0	annotated	OsGuiGetWindow	tag in src/client/gui/android/OsGui.cpp
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 0086d6d0	annotated	OsTlsGetValue	tag in lib/common/common/thread/OsTls.cpp
+008728c0	annotated	CShaderEffect::SetFixedFunc	tag in src/gx/shader/CShaderEffect.cpp
 00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
 00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
+00872ce0	callorder	CShaderEffect::InitShaderSystem	same slot between linked calls in 00780f50=CWorld::Initialize
+00872d30	annotated	CShaderEffect::InitEffect	tag in src/gx/shader/CShaderEffect.cpp
 00872de0	annotated	CShaderEffect::PixelPermute	tag in src/gx/shader/CShaderEffect.cpp
 00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
 00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp
@@ -3636,6 +3641,15 @@ addr	how	frozen	evidence
 008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
+00876ca0	annotated	CShaderEffectManager::RegisterEffect	tag in src/gx/shader/CShaderEffectManager.cpp
+00876d90	annotated	CShaderEffectManager::LoadEffectFile	tag in src/gx/shader/CShaderEffectManager.cpp
+00876e30	annotated	MatchToken	tag in src/gx/shader/CShaderEffectManager.cpp
+00876f10	annotated	FindBraces	tag in src/gx/shader/CShaderEffectManager.cpp
+00876f70	annotated	OpFromName	tag in src/gx/shader/CShaderEffectManager.cpp
+00876fb0	annotated	ParseFixedFunc	tag in src/gx/shader/CShaderEffectManager.cpp
+00877150	annotated	ParseShaderBlock	tag in src/gx/shader/CShaderEffectManager.cpp
+00877290	annotated	ParseEffect	tag in src/gx/shader/CShaderEffectManager.cpp
+00877360	annotated	ParseEffects	tag in src/gx/shader/CShaderEffectManager.cpp
 00877aa0	string	FMOD_ErrorString	unique "No errors."
 00877e10	callorder	SESound::Log_Write	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
 00878270	annotated	SESound::Detach	tag in src/sound/SESound.cpp
