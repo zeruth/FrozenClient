@@ -7,6 +7,7 @@
 #include "gx/Texture.hpp"
 #include "world/CWFrustum.hpp"
 #include "world/map/CMapBaseObj.hpp"
+#include "world/map/CMapEntity.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -62,8 +63,8 @@ class CWorldScene {
         struct Row {
             STORM_EXPLICIT_LIST(CMapChunk, m_rowLink) chunks;               // +0x00
             STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) mapObjDefGroups;      // +0x0c
-            RowListStub entities;                                           // +0x18: CMapEntity, link +0xc8
-            RowListStub entitiesFar;                                        // +0x24: CMapEntity, link +0xa8
+            STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) entities;      // +0x18
+            STORM_EXPLICIT_LIST(CMapStaticEntity, m_rowLink) staticEntities; // +0x24
             RowListStub liquids;                                            // +0x30: CChunkLiquid
             RowListStub list5;                                              // +0x3c
             RowListStub list6;                                              // +0x48
@@ -170,6 +171,13 @@ class CWorldScene {
         static void VisitStaticEntity(CMapStaticEntity* entity);
         // ref: FUN_00799980
         static void TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand);
+        // ref: FUN_007987a0
+        static void TraverseRowStaticEntities(Row* row, uint32_t detailBand);
+        // ref: FUN_00793060
+        static void TraverseRowEntities(Row* row);
+
+        // What the frame could not see: still animated, never drawn (DAT_00cdb0a4).
+        static STORM_EXPLICIT_LIST(CMapEntity, m_hiddenLink) s_hiddenEntities;
         static int32_t DistanceBand(float distance);
         static uint32_t BoxOccluded(const CAaBox& box, uint32_t flags);
         static uint32_t SphereOccluded(const C3Vector& center, float radius, uint32_t flags);

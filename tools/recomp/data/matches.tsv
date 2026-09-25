@@ -2769,11 +2769,13 @@ addr	how	frozen	evidence
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
+00793060	annotated	CWorldScene::TraverseRowEntities	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	
+007987a0	annotated	CWorldScene::TraverseRowStaticEntities	tag in src/world/CWorldScene.cpp
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
 00799310	annotated	CWorldScene::MarkMapObjGroupVisible	tag in src/world/CWorldScene.cpp

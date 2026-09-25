@@ -44214,6 +44214,22 @@
   "refSize": 111,
   "status": "ported"
  },
+ "00793060": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.033,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseRowEntities",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 521,
+  "status": "ported"
+ },
  "00793b10": {
   "branchRatio": 0.357,
   "constOverlap": 0.0,
@@ -44292,6 +44308,22 @@
   "how": "override",
   "module": "WorldParam.cpp",
   "refSize": 230,
+  "status": "ported"
+ },
+ "007987a0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.061,
+  "faithful": false,
+  "fidelity": 0.625,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseRowStaticEntities",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 533,
   "status": "ported"
  },
  "007989c0": {
@@ -44608,7 +44640,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 199,
+  "frozenSize": 227,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,

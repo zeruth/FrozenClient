@@ -6,6 +6,7 @@
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "model/CM2Model.hpp"
+#include "world/map/CMapEntity.hpp"
 #include "world/map/CMapStaticEntity.hpp"
 #include "world/CWFrustum.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
@@ -67,6 +68,7 @@ CWorldScene::ViewWindow CWorldScene::s_portalWindow;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) CWorldScene::s_visibleMapObjGroups;
 CMapObjDef* CWorldScene::s_visibleCallbackDef;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) CWorldScene::s_mapObjDefGroupCandidates;
+STORM_EXPLICIT_LIST(CMapEntity, m_hiddenLink) CWorldScene::s_hiddenEntities;
 const int32_t CWorldScene::s_quadrantVertex[4] = { 0, 8, 0x88, 0x90 };
 
 // The reference record is 0xfc bytes: 0xf4 of data and an 8-byte link. The link is
@@ -1477,5 +1479,110 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
             || (dx * dx + dy * dy + dz * dz) < ANIMATE_RANGE_SQ;
 
         entity->m_model->SetAnimating(keepAnimating);
+    }
+}
+
+// ref: FUN_007987a0
+// The static things of one distance row: doodads, placed once and never moving. Same test as
+// the per-chunk walk plus the occlusion volumes, which only a row-level walk is coarse enough
+// to bother with.
+void CWorldScene::TraverseRowStaticEntities(Row* row, uint32_t detailBand) {
+    for (auto entity = row->staticEntities.Head(); entity; ) {
+        auto next = row->staticEntities.Next(entity);
+
+        entity->m_rowLink.Unlink();
+
+        if (entity->m_detailLevel < detailBand) {
+            entity = next;
+
+            continue;
+        }
+
+        if (!entity->m_model || !(entity->m_flags & 0x80)) {
+            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f), as in TraverseChunkDoodads.
+            entity = next;
+
+            continue;
+        }
+
+        entity->m_frameStamp = CWorldScene::s_frameStamp;
+        entity->m_visible = 1;
+
+        bool reached = CWorldScene::s_frustums[CWorldScene::s_frustumDepth].SphereInside(entity->m_sphere)
+            && !CWorldScene::SphereOccludedByVolumes(entity->m_sphere);
+
+        if (reached) {
+            entity->m_visible = 0;
+
+            if (CWorldScene::SphereOccluded(entity->m_sphere.c, entity->m_sphere.r, 0x10) < 2) {
+                CWorldScene::VisitStaticEntity(entity);
+
+                CWorldScene::s_visibleEntityCount++;
+
+                entity = next;
+
+                continue;
+            }
+        }
+
+        float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+        float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+        float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+
+        int32_t keepAnimating = (entity->m_flags7c & 0x400)
+            || (dx * dx + dy * dy + dz * dz) < ANIMATE_RANGE_SQ;
+
+        entity->m_model->SetAnimating(keepAnimating);
+
+        entity = next;
+    }
+}
+
+// ref: FUN_00793060
+// The moving things of one distance row: units, game objects, anything the server places. One
+// the frustum, the occlusion volumes or the horizon hides joins the frame's hidden list, which
+// the render pass walks to keep them animating without drawing them.
+void CWorldScene::TraverseRowEntities(Row* row) {
+    // TODO DAT_00adf3f0 = 0: a per-row counter nothing ported reads.
+
+    for (auto entity = row->entities.Head(); entity; ) {
+        auto next = row->entities.Next(entity);
+
+        entity->m_entityRowLink.Unlink();
+
+        entity->m_visible = 1;
+
+        bool hidden = !CWorldScene::s_frustums[CWorldScene::s_frustumDepth].SphereInside(entity->m_sphere)
+            || CWorldScene::SphereOccludedByVolumes(entity->m_sphere)
+            || CWorldScene::SphereOccluded(entity->m_sphere.c, entity->m_sphere.r, 0);
+
+        if (hidden) {
+            CWorldScene::s_hiddenEntities.LinkToTail(entity);
+
+            entity = next;
+
+            continue;
+        }
+
+        entity->m_visible = 0;
+
+        if (entity->m_model) {
+            entity->m_model->SetAnimating(1);
+
+            // Bit 2 of the entity's state word hides it while leaving it animating, so the
+            // draw bits are set from its complement rather than unconditionally.
+            uint32_t draw = ~(entity->m_flags7c >> 2) & 0x1;
+
+            // Diverged, the same field as in VisitStaticEntity: the reference picks between
+            // two pairs of draw bits on a model field at +0x48 that frozen's CM2Model does not
+            // line up with. Every entity takes the first pair.
+            entity->m_model->m_flags = (entity->m_model->m_flags & ~0x8u) | (draw * 0x8);
+            entity->m_model->m_flags = (entity->m_model->m_flags & ~0x10000u) | (draw << 16);
+
+            // TODO the reference also hangs FUN_00780cd0 off the model here, the hook that
+            // lets an entity answer for its own lighting.
+        }
+
+        entity = next;
     }
 }

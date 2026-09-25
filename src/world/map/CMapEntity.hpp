@@ -2,6 +2,7 @@
 #define WORLD_MAP_C_MAP_ENTITY_HPP
 
 #include "world/map/CMapStaticEntity.hpp"
+#include <storm/List.hpp>
 #include <tempest/Vector.hpp>
 
 class CMapObj;
@@ -28,6 +29,11 @@ class CMapEntity : public CMapStaticEntity {
         float m_field80 = 0.0f;
         uint16_t m_fieldBC = 0;
         // TODO
+
+        // Its place in the distance row the traversal put it in (+0xc8), and in the frame's
+        // hidden list when nothing could see it.
+        TSLink<CMapEntity> m_entityRowLink;
+        TSLink<CMapEntity> m_hiddenLink;
 
         // Member functions
         CMapEntity();
