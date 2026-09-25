@@ -92,8 +92,17 @@ int32_t Script_GetSavedAccountList(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004dbf80
 int32_t Script_SetSavedAccountList(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1)) {
+        return luaL_error(L, "Usage: SetSavedAccountList(\"accountList\")");
+    }
+
+    const char* accountList = lua_tostring(L, 1);
+
+    Client::g_accountListVar->Set(accountList, true, false, false, true);
+
+    return 0;
 }
 
 int32_t Script_SetCurrentScreen(lua_State* L) {
@@ -544,12 +553,41 @@ int32_t Script_HideCursor(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004ddbd0
 int32_t Script_GetBillingTimeRemaining(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    uint32_t timeRemaining = ClientServices::Connection()->m_billingTimeRemaining;
+
+    if (ClientServices::Connection()->m_billingFlags & 0x2) {
+        timeRemaining = 0;
+    }
+
+    lua_pushnumber(L, static_cast<double>(timeRemaining));
+
+    return 1;
 }
 
+// ref: FUN_004ddc60
 int32_t Script_GetBillingPlan(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    uint8_t flags = ClientServices::Connection()->m_billingFlags;
+    uint8_t planFlags = flags & 0x16;
+
+    int32_t plan = 0;
+
+    if (planFlags == 0x2) {
+        plan = 1;
+    } else if (planFlags == 0x4) {
+        plan = 2;
+    } else if (planFlags == 0) {
+        plan = 3;
+    } else if (planFlags == 0x10) {
+        plan = 4;
+    }
+
+    lua_pushnumber(L, static_cast<double>(plan));
+    lua_pushnumber(L, static_cast<double>((flags >> 5) & 1));
+    lua_pushnumber(L, static_cast<double>((flags >> 3) & 1));
+
+    return 3;
 }
 
 // The subsystem behind this is not implemented, so the count is genuinely zero -- the same answer

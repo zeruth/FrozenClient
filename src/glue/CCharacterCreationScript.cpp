@@ -431,8 +431,18 @@ int32_t Script_PaidChange_GetCurrentClassIndex(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_004e1b70
 int32_t Script_PaidChange_GetName(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto index = CCharacterCreation::s_existingCharacterIndex;
+
+    if (index >= 0 && index < static_cast<int32_t>(CCharacterSelection::s_characterList.Count())) {
+        lua_pushstring(L, CCharacterSelection::s_characterList[index].m_info.name);
+        return 1;
+    }
+
+    lua_pushstring(L, nullptr);
+
+    return 1;
 }
 
 int32_t Script_IsRaceClassValid(lua_State* L) {
