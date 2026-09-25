@@ -137,11 +137,16 @@ void CMapChunk::CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodad
         // TODO FUN_007b4fa0: a doodad flagged as a building's own joins the map object def group
         // it stands in, so the interior light reaches it.
         //
-        // Note for when the doodads are wired: a def leaves here without bit 7, which is what
-        // the traversal tests before it will draw one, and without a detail level, which is
-        // what decides how far away it survives. Neither is set by the creation or by this
-        // walk, so both must come from the model's own load, and wiring the traversal before
-        // finding where would silently drop every doodad past the nearest band.
+        // Note for when the doodads are wired. A def leaves here with flags 5, or 0x805 when
+        // it belongs to a building, and with no detail level. Both traversal walks test bit 7
+        // before they will draw an entity, and the detail level decides how far away it
+        // survives, so as things stand every doodad would take the other branch and none would
+        // draw.
+        //
+        // Where bit 7 comes from is not established. It is not set here, not in the creation,
+        // and no instruction anywhere in the reference's world module ORs it into a flags
+        // field, so it arrives through a wholesale assignment somewhere else. Find that before
+        // wiring anything: guessing it would look like a tuning problem for a day.
     }
 }
 

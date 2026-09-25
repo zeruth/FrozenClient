@@ -1483,9 +1483,12 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
             // Not drawing, but its box still feeds the horizon buffer.
-            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f): what that object accumulates is not
-            // recovered yet. The reference reads the model's own bounds here without checking
-            // that the model exists; frozen checks.
+            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f): the model's bounds, brought out to
+            // world space, go to the object the occlusion volumes live in -- the ones
+            // SphereOccludedByVolumes tests against. That is item 7's other half.
+            //
+            // The reference reads the model's bounds here without checking it has one; frozen
+            // checks.
             continue;
         }
 
@@ -1538,7 +1541,7 @@ void CWorldScene::TraverseRowStaticEntities(Row* row, uint32_t detailBand) {
         }
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
-            // TODO FUN_007946d0(&DAT_00adf4a0, box, 0.0f), as in TraverseChunkDoodads.
+            // TODO the occlusion volume, as in TraverseChunkDoodads.
             entity = next;
 
             continue;

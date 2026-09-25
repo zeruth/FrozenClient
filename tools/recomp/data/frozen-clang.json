@@ -194214,7 +194214,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 51,
+"lines": 54,
 "refs": [],
 "line": 1472
 },
@@ -194245,7 +194245,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1528
+"line": 1531
 },
 "CWorldScene::TraverseRowEntities": {
 "files": [
@@ -194276,7 +194276,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 1584
+"line": 1587
 },
 "CWorldScene::ShadeHorizon": {
 "files": [
@@ -194309,7 +194309,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 1636
+"line": 1639
 },
 "CWorldScene::TraverseRowOccluders": {
 "files": [
@@ -194334,7 +194334,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 1725
+"line": 1728
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -197691,7 +197691,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 50,
+"lines": 55,
 "refs": [],
 "line": 97
 },
@@ -197706,7 +197706,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 153
+"line": 158
 },
 "CMap::CreateDefGroups": {
 "files": [
@@ -197739,7 +197739,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 164
+"line": 169
 },
 "CMap::SetupMapObjDef": {
 "files": [
@@ -197767,7 +197767,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 203
+"line": 208
 },
 "CMap::UpdateMapObjDefs": {
 "files": [
@@ -197805,7 +197805,7 @@
 "stub": false,
 "lines": 84,
 "refs": [],
-"line": 235
+"line": 240
 },
 "CMap::CreateDoodadDef": {
 "files": [
@@ -197842,7 +197842,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 326
+"line": 331
 },
 "CMapObj::QuerySkipFlags": {
 "files": [
