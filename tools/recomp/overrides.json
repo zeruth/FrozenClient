@@ -1,7 +1,35 @@
 {
   "007c5690": {
     "status": "diverged",
-    "note": "CMapChunk::CreateLiquid. The reference's teardown unlinks a layer, which zeroes the link, and only then reads the next pointer through it, so it stops after the first layer and leaves any others linked into storage it has handed back. Frozen reads the link before unlinking. Everything else matches."
+    "note": "CMapChunk::CreateLiquid. The reference's teardown unlinks a layer, which zeroes the link, and only then reads the next pointer through it, so it stops after the first layer and leaves any others linked into storage it has handed back. Frozen reads the link before unlinking. Everything else matches. Verified: run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give."
+  },
+  "007cdf80": {
+    "status": "verified",
+    "note": "CChunkLiquid::BuildVertices. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "007d4f10": {
+    "status": "verified",
+    "note": "CMapLiquidData::SetBody. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "008a3060": {
+    "status": "verified",
+    "note": "CMapLiquidData::HasLiquid. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "008a3070": {
+    "status": "verified",
+    "note": "CMapLiquidData::Chunk. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "008a3090": {
+    "status": "verified",
+    "note": "CMapLiquidData::Layer. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "008a3130": {
+    "status": "verified",
+    "note": "Liquid::CVertexDataMH2O::GetHeight. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+  },
+  "008a3280": {
+    "status": "verified",
+    "note": "Liquid::CVertexDataMH2O::CVertexDataMH2O. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
   },
   "0084df20": {
     "frozen": "lua_isnumber",
