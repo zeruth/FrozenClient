@@ -168,45 +168,57 @@ to be re-ported against later.
 
 Movement, spells and the UI stubs are not in this plan; they start after the scene matches.
 
-## State of the load chain (2026-09-25)
+## State of the load chain (2026-09-25, end of day)
 
-**Terrain is done and has been seen on screen.** The map memory block, the chunk and tile data
-layers, streaming, the WDT and settings loads, the render chunk with its buffer pools, the chunk
-pass and draws, the scene camera and the chunk visibility traversal, the alpha and shadow texture
-builders and the two-chunk pairing all draw through `CMap::Render` now, and the user confirmed
-the look. `CGWorldFrame::OnWorldRender` calls `CMap::Render` before the stand-in `TerrainRender`,
-whose chunk pass is gone.
+**Terrain draws through the ported map and looks right.** Item 1 of the queue is complete: the
+chunk and tile layers, streaming, the render chunk and its pools, the chunk pass, the scene
+camera and traversal, the alpha and shadow texture builders and the two-chunk pairing.
 
-**Map objects: the whole draw chain is ported, and none of it has been run.** Loaded, culled,
-aged, buffered and drawn; the only thing between here and buildings on screen is the wiring.
-What landed, in order: the load chain and the visibility path, root and group ageing, the named
-shader effect registry (`CShaderEffectManager::LoadEffectFile` parses the five `.wfx` files),
-`CMapObj::Initialize` binding each MOMT shader id to its effect, `VBBList` plus
-`CMapObjGroupBuffers.cpp` for the group's GPU buffers, the per-batch render state in
-`CMapObjDraw.cpp`, all three group draws (flat, three-range, outdoor), `CWFrustum` and the
-per-doorway record list, `CMapObj::Render`, `CWorldScene::RenderMapObjs`, and the portal light
-bake with the five tempest geometry helpers it needed.
-
-Three facts worth not re-deriving: the WMO draw always takes the shader path, because the
-reference's shader-level global reads a constant 5; `VBBList`'s block-sharing mode is dead in
-3.3.5a, both lists being built with the flag clear, so only the one-pool-per-block path needs
-writing; and `CMapObj::Render` transforms each frustum record by the def's inverse placement,
-which is what lets the per-batch cull test a batch's raw group-space box.
-
-**The switch-over has landed and has not been run.** `CMap::Render` calls
+**Map objects draw, are lit, and their interiors are walked.** `CMap::Render` calls
 `CWorldScene::RenderMapObjs` and the stand-in no longer draws buildings; its visibility sweep
 stays because the floor light, the indoor test and the blob shadow receivers read the instance
-list it fills. Commit 91ff8bcd, one revert if the buildings come out wrong. What to look at
-first: whether buildings appear at all, their depth against the terrain, and whether interiors
-are lit or black.
+list it fills. Six faults were found and fixed on the first runs, all recorded in commit
+`8440b6ca`; the one worth remembering is that the vertex program adds constant 29 *after*
+multiplying the baked colour by the light, so a building whose baked colours are zero -- and
+plenty are -- can only be lit by that constant.
 
-What the map object work still needs:
-- The interior path: the portal walk (`FUN_007ac060` and its tree, `FUN_007ad350`,
-  `FUN_007b3b20`) behind `CWorldScene::s_cameraGroup`, which frozen never sets. Only matters
-  with the camera inside a building.
-- The two light gaps `CMapObjDraw.cpp` documents: one fog set where the reference picks between
-  two, and the exterior/interior ambient and diffuse, which the reference reads from two
-  LightParams columns per zone.
+**Occlusion culling behind terrain is live.** Solid chunks raise the skyline along their
+silhouette, chunks with holes reopen what they span, and the buffer is refilled with minus a
+million every frame.
+
+Facts worth not re-deriving:
+
+- The WMO draw always takes the shader path: the reference's shader-level global reads a
+  constant 5.
+- `VisitMapObjDefGroup`'s two branches are the other way round from how they read. Group flag
+  bit 3 is the ordinary exterior group and goes to the portal walk; bit 16 is the shortcut.
+- `CMapObj::Render` transforms each frustum record by the def's inverse placement, which is what
+  lets the per-batch cull test a raw group-space box.
+- The portal rectangle's components are ordered vertical-first, and the window the walk narrows
+  matches, so the overlap test lines up index for index.
+- `VBBList`'s block-sharing mode is dead in 3.3.5a; only the one-pool-per-block path exists.
+- Doodad defs leave the chunk reference walk without flag bit 7, which the traversal tests
+  before it will draw one, and without a detail level, which decides how far away one survives.
+  Neither is set by the creation or the reference walk, so both come from the model's own load.
+  **Wiring the doodad traversal before finding where would silently drop every doodad past the
+  nearest distance band.**
+
+### What each remaining item needs
+
+Every one of these is a module frozen has not started, not a handful of functions. Sizes are the
+reference's, excluding dependencies.
+
+| item | state | what it needs |
+|---|---|---|
+| 3 doodads | placed and visited, not wired | the two flags above, then the swap: the stand-in's own doodad creation and `TerrainForEachDoodad` both have to move at once |
+| 4 liquids | field map only | the liquid mesh module (the reference's 0x008a3xxx block) under `CChunkLiquid` creation |
+| 5 blob shadows | not started | the decal draw (`FUN_007e4480`, 1370 bytes) and its setup; frozen's stand-in versions work and would be retired |
+| 6 detail doodads | not started | `FUN_007d3390` alone is 2662 bytes, plus the buffers |
+| 7 occluders | horizon half done and live | the occlusion volumes, and `CMapAreaLow` needs the whole WDL low-detail module |
+| 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects currently substitute for, and the global dimness against the reference |
+| 9 weather | not started | the MapWeather module: the class plus three emitters |
+| 10 map shadow | not started | the shadow map module (0x00874xxx-0x00875xxx), the render targets and the shadowed terrain shader sets |
+| 11 close out | blocked | items 3 through 10 |
 
 What the reference does on the same path that is still listed as `TODO FUN_...` in place:
 

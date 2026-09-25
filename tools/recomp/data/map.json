@@ -44704,7 +44704,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 227,
+  "frozenSize": 237,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -46738,7 +46738,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocDoodadDef",
-  "frozenSize": 384,
+  "frozenSize": 400,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -47522,7 +47522,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMapChunk::CreateRefs",
-  "frozenSize": 1005,
+  "frozenSize": 1019,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 813,

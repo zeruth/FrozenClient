@@ -131,8 +131,17 @@ void CMapChunk::CreateRefs(CMapArea* area, const uint32_t* refs, uint32_t doodad
         link->ref = this;
         this->m_entityLinkList.LinkToTail(link);
 
+        def->m_opacity = 1.0f;
+        def->m_flags |= 0x4;
+
         // TODO FUN_007b4fa0: a doodad flagged as a building's own joins the map object def group
         // it stands in, so the interior light reaches it.
+        //
+        // Note for when the doodads are wired: a def leaves here without bit 7, which is what
+        // the traversal tests before it will draw one, and without a detail level, which is
+        // what decides how far away it survives. Neither is set by the creation or by this
+        // walk, so both must come from the model's own load, and wiring the traversal before
+        // finding where would silently drop every doodad past the nearest band.
     }
 }
 

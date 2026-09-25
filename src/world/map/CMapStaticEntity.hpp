@@ -25,6 +25,9 @@ class CMapStaticEntity : public CMapBaseObj {
         CAaBox m_bounds;                         // +0x48
         C3Vector m_position = { 0.0f, 0.0f, 0.0f };  // +0x6c
         float m_scale = 1.0f;                    // +0x78
+        // How opaque it draws, before any distance fade. The chunk reference walk sets it to
+        // one; nothing dims it yet.
+        float m_opacity = 1.0f;                  // +0x8c
         // TODO
         CImVector m_ambient = {};
         CImVector m_interiorDirColor = {};

@@ -197685,11 +197685,13 @@
 "0",
 "0.0f",
 "0x1",
-"1"
+"0x4",
+"1",
+"1.0f"
 ],
 "branches": 4,
 "stub": false,
-"lines": 41,
+"lines": 50,
 "refs": [],
 "line": 97
 },
@@ -197704,7 +197706,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 144
+"line": 153
 },
 "CMap::CreateDefGroups": {
 "files": [
@@ -197737,7 +197739,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 155
+"line": 164
 },
 "CMap::SetupMapObjDef": {
 "files": [
@@ -197765,7 +197767,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 194
+"line": 203
 },
 "CMap::UpdateMapObjDefs": {
 "files": [
@@ -197803,7 +197805,7 @@
 "stub": false,
 "lines": 84,
 "refs": [],
-"line": 226
+"line": 235
 },
 "CMap::CreateDoodadDef": {
 "files": [
@@ -197840,7 +197842,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 317
+"line": 326
 },
 "CMapObj::QuerySkipFlags": {
 "files": [
