@@ -2764,7 +2764,7 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 12,
 "refs": [],
 "line": 45
 },
@@ -80449,7 +80449,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 18
+"line": 24
 },
 "CM2Shared::LoadFailedCallback": {
 "files": [
@@ -80464,7 +80464,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 24
+"line": 30
 },
 "CM2Shared::LoadSucceededCallback": {
 "files": [
@@ -80483,7 +80483,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 31
+"line": 37
 },
 "M2AnimFileName": {
 "files": [
@@ -80503,7 +80503,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 59
+"line": 65
 },
 "SequenceBufferAlloc": {
 "files": [
@@ -80523,7 +80523,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 79
+"line": 85
 },
 "SequenceBufferFree": {
 "files": [
@@ -80541,9 +80541,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 10,
+"lines": 21,
 "refs": [],
-"line": 95
+"line": 101
 },
 "CM2Shared::LoadSequence": {
 "files": [
@@ -80584,19 +80584,19 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 74,
+"lines": 87,
 "refs": [],
-"line": 109
+"line": 197
 },
 "CM2Shared::InitSequence": {
 "files": [
 "src/model/cm2shared.cpp"
 ],
 "callseq": [
-"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:189:20)::operator()",
+"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:290:20)::operator()",
 "M2Array<M2Sequence>::operator[]",
 "M2Array<M2Sequence>::operator[]",
-"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:189:20)::operator()"
+"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:290:20)::operator()"
 ],
 "strings": [],
 "consts": [
@@ -80607,7 +80607,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 186
+"line": 287
 },
 "CM2Shared::DestroySequenceLoad": {
 "files": [
@@ -80629,7 +80629,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 223
+"line": 324
 },
 "CM2Shared::SequenceLoadedCallback": {
 "files": [
@@ -80659,7 +80659,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 239
+"line": 340
 },
 "CM2Shared::SequenceLoadFailedCallback": {
 "files": [
@@ -80674,7 +80674,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 278
+"line": 379
 },
 "CM2Shared::SkinProfileLoadedCallback": {
 "files": [
@@ -80690,7 +80690,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 284
+"line": 385
 },
 "CM2Shared::~CM2Shared": {
 "files": [
@@ -80717,7 +80717,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 297
+"line": 398
 },
 "CM2Shared::AddRef": {
 "files": [
@@ -80730,7 +80730,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 346
+"line": 447
 },
 "CM2Shared::CallbackWhenLoaded": {
 "files": [
@@ -80749,7 +80749,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 352
+"line": 453
 },
 "CM2Shared::CreateSimpleEffect": {
 "files": [
@@ -80802,7 +80802,7 @@
 "stub": false,
 "lines": 179,
 "refs": [],
-"line": 368
+"line": 469
 },
 "CM2Shared::FinishLoadingSkinProfile": {
 "files": [
@@ -80823,7 +80823,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 548
+"line": 649
 },
 "CM2Shared::GetEffect": {
 "files": [
@@ -80858,7 +80858,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 578
+"line": 679
 },
 "CM2Shared::Initialize": {
 "files": [
@@ -80898,7 +80898,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 654
+"line": 755
 },
 "CM2Shared::InitializeSkinProfile": {
 "files": [
@@ -80949,7 +80949,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 720
+"line": 821
 },
 "CM2Shared::Load": {
 "files": [
@@ -80973,7 +80973,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 797
+"line": 898
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -81005,7 +81005,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 834
+"line": 935
 },
 "CM2Shared::Release": {
 "files": [
@@ -81020,7 +81020,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 891
+"line": 992
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -81052,7 +81052,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 914
+"line": 1015
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -81084,7 +81084,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 975
+"line": 1076
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -81111,7 +81111,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1041
+"line": 1142
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -81124,7 +81124,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1117
+"line": 1218
 },
 "M2Init": {
 "files": [
@@ -179238,7 +179238,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 49
+"line": 56
 },
 "CMapBaseObj::SelectUnderwater": {
 "files": [
@@ -179251,7 +179251,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 50
+"line": 57
 },
 "InterpBandColor": {
 "files": [
@@ -180865,23 +180865,18 @@
 "refs": [],
 "line": 785
 },
-"CMap::AllocEntity": {
+"CMapBaseObj::~CMapBaseObj": {
 "files": [
-"src/world/map/cmap.cpp"
+"src/world/map/cmapbaseobj.hpp"
 ],
-"callseq": [
-"ObjectAlloc",
-"CMapEntity::CMapEntity",
-"TSList<CMapBaseObj,TSGetExplicitLink<CMapBaseObj> >::LinkToHead",
-"TSList<CMapBaseObj,TSGetExplicitLink<CMapBaseObj> >::LinkToTail"
-],
+"callseq": [],
 "strings": [],
 "consts": [],
-"branches": 2,
+"branches": 0,
 "stub": false,
-"lines": 20,
+"lines": 1,
 "refs": [],
-"line": 36
+"line": 55
 },
 "CMap::Initialize": {
 "files": [
@@ -180896,7 +180891,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 57
+"line": 50
 },
 "CMap::Load": {
 "files": [
@@ -180917,7 +180912,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 65
+"line": 58
 },
 "CMap::MapMemInitialize": {
 "files": [
@@ -180949,11 +180944,14 @@
 "SMemAlloc",
 "ObjectAllocAddHeap",
 "SMemAlloc",
+"ObjectAllocAddHeap",
+"SMemAlloc",
 "ObjectAllocAddHeap"
 ],
 "strings": [
 "WAREA",
 "WAREALOW",
+"WAREAMED",
 "WBASEOBJLINK",
 "WCACHELIGHT",
 "WCHUNK",
@@ -180978,9 +180976,587 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 19,
+"lines": 18,
 "refs": [],
-"line": 82
+"line": 75
+},
+"CMap::MapMemAlloc": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"SMemAlloc"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmap.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 100
+},
+"CMap::MapMemFree": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmap.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 105
+},
+"CMap::UnlinkDoodadDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapDoodadDef>::IsLinked",
+"TSLink<CMapDoodadDef>::Unlink",
+"TSLink<CMapDoodadDef>::Unlink"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 110
+},
+"CMap::AllocMapObj": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapObj::CMapObj"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 118
+},
+"CMap::FreeMapObj": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapObj>::Unlink",
+"CMapObj::~CMapObj",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 133
+},
+"CMap::AllocMapObjGroup": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapObjGroup::CMapObjGroup"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 142
+},
+"CMap::FreeMapObjGroup": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapObjGroup>::Unlink",
+"CMapObjGroup::~CMapObjGroup",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 157
+},
+"CMap::FreeArea": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMapArea::~CMapArea",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 166
+},
+"CMap::FreeAreaMed": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMapAreaMed::~CMapAreaMed",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 175
+},
+"CMap::FreeChunk": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMapChunk::~CMapChunk",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 184
+},
+"CMap::AllocDoodadDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapDoodadDef::CMapDoodadDef"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 193
+},
+"CMap::FreeDoodadDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"SI2::StopOrFadeOut",
+"TSLink<CMapBaseObj>::Unlink",
+"CMap::UnlinkDoodadDef",
+"CMapDoodadDef::~CMapDoodadDef",
+"ObjectFree"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"1.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 208
+},
+"CMap::FreeEntity": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMapEntity::~CMapEntity",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 221
+},
+"CMap::FreeLight": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"CMapLight::~CMapLight",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 231
+},
+"CMap::FreeMapObjDefGroup": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMapObjDefGroup::~CMapObjDefGroup",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 238
+},
+"CMap::AllocMapObjDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapObjDef::CMapObjDef"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 247
+},
+"CMap::FreeMapObjDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObj>::Unlink",
+"CMap::UnlinkMapObjDef",
+"CMapObjDef::~CMapObjDef",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 262
+},
+"CMap::UnlinkMapObjDef": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapObjDef>::IsLinked",
+"TSLink<CMapObjDef>::Unlink",
+"TSLink<CMapObjDef>::Unlink"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 272
+},
+"CMap::FreeChunkLiquid": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CChunkLiquid>::Unlink",
+"CChunkLiquid::~CChunkLiquid",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 280
+},
+"CMap::AllocRenderChunk": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSList<CMapRenderChunk,TSGetExplicitLink<CMapRenderChunk> >::Head",
+"TSLink<CMapRenderChunk>::Unlink",
+"CMapRenderChunk::CMapRenderChunk",
+"SMemAlloc",
+"CMapRenderChunk::CMapRenderChunk"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmap.cpp"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 293
+},
+"CMap::FreeRenderChunk": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapRenderChunk>::Unlink",
+"CMapRenderChunk::~CMapRenderChunk",
+"TSList<CMapRenderChunk,TSGetExplicitLink<CMapRenderChunk> >::LinkToHead"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 312
+},
+"CMap::AllocEntity": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapEntity::CMapEntity",
+"TSList<CMapBaseObj,TSGetExplicitLink<CMapBaseObj> >::LinkToHead",
+"TSList<CMapBaseObj,TSGetExplicitLink<CMapBaseObj> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 3,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 319
+},
+"CMap::AllocBaseObjLink": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSLink<CMapBaseObjLink>::operator=",
+"TSLink<CMapBaseObjLink>::operator=",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 26,
+"refs": [],
+"line": 343
+},
+"CMap::AllocArea": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSList<CMapArea,TSGetExplicitLink<CMapArea> >::LinkToTail",
+"CMapArea::CMapArea",
+"TSList<CMapArea,TSGetExplicitLink<CMapArea> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 371
+},
+"CMap::AllocChunk": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSList<CMapChunk,TSGetExplicitLink<CMapChunk> >::LinkToTail",
+"CMapChunk::CMapChunk",
+"TSList<CMapChunk,TSGetExplicitLink<CMapChunk> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 388
+},
+"CMap::AllocLight": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSList<CMapLight,TSGetExplicitLink<CMapLight> >::LinkToTail",
+"CMapLight::CMapLight",
+"TSList<CMapLight,TSGetExplicitLink<CMapLight> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 405
+},
+"CMap::AllocMapObjDefGroup": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail",
+"CMapObjDefGroup::CMapObjDefGroup",
+"TSList<CMapObjDefGroup,TSGetExplicitLink<CMapObjDefGroup> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 422
+},
+"CMap::AllocChunkLiquid": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::LinkToTail",
+"CChunkLiquid::CChunkLiquid",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::LinkToTail"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 439
+},
+"CMap::FreeBaseObjLink": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapBaseObjLink>::Unlink",
+"TSLink<CMapBaseObjLink>::Unlink",
+"CMapBaseObjLink::~CMapBaseObjLink",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 456
+},
+"CMap::AllocAreaLow": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"ObjectAlloc",
+"CMapAreaLow::CMapAreaLow"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 470
+},
+"CMap::FreeAreaLowObject": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"TSLink<CMapAreaLow>::Unlink",
+"ObjectFree"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 485
+},
+"CMap::FreeAreaLow": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"CMap::FreeAreaLowObject"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 491
+},
+"CMap::LinkToMapObjDefGroup": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"CMap::AllocBaseObjLink",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail"
+],
+"strings": [],
+"consts": [
+"0x2"
+],
+"branches": 3,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 499
 },
 "CMapBaseObj::GetType": {
 "files": [
@@ -180994,19 +181570,6 @@
 "lines": 3,
 "refs": [],
 "line": 3
-},
-"CMapBaseObj::~CMapBaseObj": {
-"files": [
-"src/world/map/cmapbaseobj.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 48
 },
 "CMapEntity::CMapEntity": {
 "files": [

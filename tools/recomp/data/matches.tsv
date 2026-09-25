@@ -645,7 +645,7 @@ addr	how	frozen	evidence
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
 004c5af0	annotated	SI2::GetOutputDriverName	tag in src/sound/SI2.cpp
 004c5be0	callorder	SI2::IsPlaying	same slot between linked calls in 00985fb0=SI2::StartGlueAmbience, 009861c0=SI2::StartGlueMusic
-004c6390	callgraph	SI2::StopOrFadeOut	only unmatched callee of 00985f70=SI2::StopGlueAmbience
+004c6390	callgraph	SI2::StopOrFadeOut	only unmatched callee of 007c0240=CMap::FreeDoodadDef, 00985f70=SI2::StopGlueAmbience
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound
@@ -664,7 +664,8 @@ addr	how	frozen	evidence
 004d1590	override	EnableMusic_CVarCallback	
 004d1600	string	SI2::RegisterUserCVars	unique "1048576"
 004d3100	override	ObjectFree	
-004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 0079e7c0=CMap::MapMemInitialize, 0081c6e0=M2Initialize
+004d3330	override	ObjectAlloc	
+004d3650	callorder	ObjectAllocAddHeap	same slot between linked calls in 004f3110=TextureCacheAllocEntry, 0079e7c0=CMap::MapMemInitialize, 0081c6e0=M2Initialize
 004d3790	override	ClntObjMgrGetActivePlayer	
 004d41c0	annotated	SkipSetOfObjects	tag in src/object/client/MessageHandlers.cpp
 004d4ac0	string	ClntObjMgrInitializeShared	score 0.50 shared ObjUsage
@@ -829,6 +830,7 @@ addr	how	frozen	evidence
 004eacd0	string	CCharacterComponent::AddHandItem	score 0.83 shared Item\ObjectComponents\Shield\; Item\ObjectComponents\Weapon\
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
+004f2f60	callorder	CACHEENTRY::CACHEENTRY	same slot between linked calls in 004f3110=TextureCacheAllocEntry
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f3dd0	annotated	BuildComponentArray	tag in src/component/Util.cpp
 004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
@@ -2209,11 +2211,45 @@ addr	how	frozen	evidence
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
+0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
 0079e7c0	string	CMap::MapMemInitialize	unique "WAREA"
 007a0d60	override	CMapEntity::FloorLight	
+007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007bfce0	string	CMap::Load	unique "%s\%s.wdt"
+007bfe40	annotated	CMap::MapMemAlloc	tag in src/world/map/CMap.cpp
+007bfe60	annotated	CMap::MapMemFree	tag in src/world/map/CMap.cpp
+007bfe80	annotated	CMap::UnlinkDoodadDef	tag in src/world/map/CMap.cpp
+007bff20	annotated	CMap::AllocMapObj	tag in src/world/map/CMap.cpp
+007bff70	annotated	CMap::FreeMapObj	tag in src/world/map/CMap.cpp
+007bffe0	annotated	CMap::AllocMapObjGroup	tag in src/world/map/CMap.cpp
+007c0030	annotated	CMap::FreeMapObjGroup	tag in src/world/map/CMap.cpp
+007c00a0	annotated	CMap::FreeArea	tag in src/world/map/CMap.cpp
+007c0110	annotated	CMap::FreeAreaMed	tag in src/world/map/CMap.cpp
+007c0180	annotated	CMap::FreeChunk	tag in src/world/map/CMap.cpp
+007c01f0	annotated	CMap::AllocDoodadDef	tag in src/world/map/CMap.cpp
+007c0240	annotated	CMap::FreeDoodadDef	tag in src/world/map/CMap.cpp
+007c02d0	annotated	CMap::FreeEntity	tag in src/world/map/CMap.cpp
+007c0340	annotated	CMap::FreeLight	tag in src/world/map/CMap.cpp
+007c0370	annotated	CMap::FreeMapObjDefGroup	tag in src/world/map/CMap.cpp
+007c03e0	annotated	CMap::AllocMapObjDef	tag in src/world/map/CMap.cpp
+007c0430	annotated	CMap::FreeMapObjDef	tag in src/world/map/CMap.cpp
+007c04a0	annotated	CMap::FreeChunkLiquid	tag in src/world/map/CMap.cpp
+007c0500	annotated	CMap::AllocRenderChunk	tag in src/world/map/CMap.cpp
+007c0610	annotated	CMap::FreeRenderChunk	tag in src/world/map/CMap.cpp
+007c0670	annotated	CMap::AllocEntity	tag in src/world/map/CMap.cpp
+007c0750	annotated	CMap::AllocBaseObjLink	tag in src/world/map/CMap.cpp
+007c07c0	annotated	CMap::AllocArea	tag in src/world/map/CMap.cpp
+007c0830	annotated	CMap::AllocChunk	tag in src/world/map/CMap.cpp
+007c08a0	annotated	CMap::AllocLight	tag in src/world/map/CMap.cpp
+007c0910	annotated	CMap::AllocMapObjDefGroup	tag in src/world/map/CMap.cpp
+007c0980	annotated	CMap::AllocChunkLiquid	tag in src/world/map/CMap.cpp
+007c09f0	annotated	CMap::FreeBaseObjLink	tag in src/world/map/CMap.cpp
+007c0a90	annotated	CMap::AllocAreaLow	tag in src/world/map/CMap.cpp
+007c0ae0	annotated	CMap::FreeAreaLowObject	tag in src/world/map/CMap.cpp
+007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
+007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
 007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
@@ -2237,6 +2273,8 @@ addr	how	frozen	evidence
 007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
 007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
+007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
+007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
 007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
 007dc010	override	StringToMouseButton	
@@ -2468,7 +2506,7 @@ addr	how	frozen	evidence
 0083d370	annotated	CM2Shared::DestroySequenceLoad	tag in src/model/CM2Shared.cpp
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
-0083da10	annotated	CM2Shared::LoadSequence	tag in src/model/CM2Shared.cpp
+0083da10	override	CM2Shared::LoadSequence	
 0083dc90	override	CM2Shared::Release	
 0083de50	annotated	SequenceBufferAlloc	tag in src/model/CM2Shared.cpp
 0083de90	annotated	SequenceBufferFree	tag in src/model/CM2Shared.cpp

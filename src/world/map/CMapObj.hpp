@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_HPP
 #define WORLD_MAP_C_MAP_OBJ_HPP
 
+#include <storm/List.hpp>
 #include <tempest/Segment.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
@@ -30,10 +31,12 @@ struct SMOMaterial {
 class CMapObj {
     public:
         // Member variables
+        uint32_t m_memHandle = 0;             // +0: CMap::s_mapObjHeap slot (CMap::AllocMapObj)
         uint32_t m_mohdFlags = 0;             // +0x120 -> +0x3c: the MOHD header's flags
         SMOMaterial* m_materials = nullptr;   // +0x160: MOMT
         uint32_t m_materialCount = 0;
         CImVector m_ambientColor;             // +0x1a0: MOHD ambColor
+        TSLink<CMapObj> m_link;               // +0x1c4: unlinked by CMap::FreeMapObj
 
         // Member functions
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);

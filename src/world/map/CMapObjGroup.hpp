@@ -2,6 +2,7 @@
 #define WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 
 #include "world/map/CMapObj.hpp"
+#include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Plane.hpp>
@@ -147,6 +148,7 @@ class CMapObjGroup {
         static void QueryEnd(SMOPoly* polys);
 
         // Member variables. The reference offsets, for the day the whole class is laid out.
+        uint32_t m_memHandle = 0;                // +0: CMap::s_mapObjGroupHeap slot (CMap::AllocMapObjGroup)
         uint32_t m_flags = 0;                    // +0x30: MOGP flags
         CAaBspNode* m_bspNodes = nullptr;        // +0x68: MOBN
         uint32_t m_bspNodeCount = 0;
@@ -160,6 +162,7 @@ class CMapObjGroup {
         const CImVector* m_colors = nullptr;     // +0x108: MOCV (not owned)
         uint32_t m_faceCount = 0;                // +0x150
         CMapObj* m_mapObj = nullptr;             // +0x18c
+        TSLink<CMapObjGroup> m_link;             // +0x1b4: unlinked by CMap::FreeMapObjGroup
 
         // Member functions
         ~CMapObjGroup();

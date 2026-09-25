@@ -10,6 +10,45 @@
     "status": "ported",
     "note": "frame entry; docs/world-render-inventory.md"
   },
+  "004d3330": {
+    "frozen": "ObjectAlloc",
+    "status": "ported",
+    "note": "lib/common ObjectAlloc(heapId, &memHandle, &obj, zero); the map allocators (MapMem.cpp) call it with the heap handles CMap::MapMemInitialize creates"
+  },
+  "006ded60": {
+    "status": "excluded",
+    "note": "Storm TSList::LinkToTail, one body for every instantiation (COMDAT folded, 251 callers); squall instantiates the template per type"
+  },
+  "007b5020": {
+    "status": "excluded",
+    "note": "Storm TSList::LinkToHead, folded across instantiations (120 callers); squall template"
+  },
+  "007cecd0": {
+    "status": "excluded",
+    "note": "Storm TSList::UnlinkAll (1883 callers): Head() via 006d7ba0 then Unlink until empty; squall template"
+  },
+  "006d7ba0": {
+    "status": "excluded",
+    "note": "Storm TSList::Head, folded across instantiations; squall template"
+  },
+  "006bb6d0": {
+    "status": "excluded",
+    "note": "compiler-generated CMapBaseObjLink::~CMapBaseObjLink (unlinks ownerLink and refLink); frozen gets it implicitly from TSLink's destructor"
+  },
+  "007c0b40": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> clear helper (squall template instantiation)"},
+  "007c0bd0": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> clear helper (squall template instantiation)"},
+  "007c0c80": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> constructor (squall template instantiation)"},
+  "007c0d70": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> constructor (squall template instantiation)"},
+  "007c0e60": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> destructor (squall template instantiation)"},
+  "007c0f00": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> destructor variant (squall template instantiation)"},
+  "007c0f60": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> destructor (squall template instantiation)"},
+  "007c1000": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> destructor variant (squall template instantiation)"},
+  "007c1060": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> deleting destructor (squall template instantiation)"},
+  "007c1090": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> deleting destructor (squall template instantiation)"},
+  "007c0ce0": {"status": "excluded", "note": "CMapDoodadDef scalar delete helper: no callers in the reference"},
+  "007c0dd0": {"status": "excluded", "note": "CMapObjDef scalar delete helper: no callers in the reference"},
+  "007c0d10": {"status": "excluded", "note": "CMapDoodadDef new helper (SMemAlloc + constructor): no callers in the reference"},
+  "007c0e00": {"status": "excluded", "note": "CMapObjDef new helper (SMemAlloc + constructor): no callers in the reference"},
   "004faf90": {
     "frozen": "CGWorldFrame::RenderWorld",
     "status": "ported",

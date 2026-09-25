@@ -1,29 +1,29 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-24 08:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-24 23:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 27156 | 5.39M |
-| mapped to a frozen function | 3232 (+1) (11.9%) | 724.8k (13.1%) |
-| &nbsp;&nbsp;ported | 2489 (+1) | 545.1k |
+| reference (non-thunk) | 27141 | 5.39M |
+| mapped to a frozen function | 3270 (+38) (12.0%) | 728.7k (13.2%) |
+| &nbsp;&nbsp;ported | 2527 (+38) | 548.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 689 (=) | 137.3k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **1294 (+1) (4.8%)** | **175.2k (3.2%)** |
-| unmapped | 23924 | 4.68M |
-| world spine (reachable from OnFrameRender) | 5527, mapped 614 (+1) (11.1%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5795, mapped 624 (+1) (10.8%) | |
-| **render surface** (the modules that draw the world) | **4589, mapped 292 (=) (6.4%)** | |
-| frozen functions (src/, from PDB + source) | 12362, stubs 1818 | |
+| **faithful** (linked, not stub, call order >= 80%) | **1312 (+18) (4.8%)** | **176.7k (3.2%)** |
+| unmapped | 23871 | 4.67M |
+| world spine (reachable from OnFrameRender) | 5526, mapped 646 (+32) (11.7%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5794, mapped 656 (+32) (11.3%) | |
+| **render surface** (the modules that draw the world) | **4575, mapped 329 (+37) (7.2%)** | |
+| frozen functions (src/, from PDB + source) | 12416, stubs 1818 | |
 
-Match evidence: annotated 997, callgraph 187, callorder 127, cvar 32, handler 29, order 150, override 263, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
+Match evidence: annotated 1029, callgraph 190, callorder 128, cvar 32, handler 29, order 150, override 265, sticky 21, string 319, table 1107. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-24 08:06 -- mapped 3231, ported 2488, stub 689, spine mapped 613.
+Previous run: 2026-09-24 08:13 -- mapped 3232, ported 2489, stub 689, spine mapped 614.
 
 ## Lua API coverage (binding tables)
 
@@ -147,9 +147,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | Tooltip.cpp | 151 | 86.0k | 75 (49.7%) | 62.9% | 38 | 1 | 16 |
 | ChatFrame.cpp | 349 | 82.2k | 89 (25.5%) | 14.1% | 50 | 2 | 36 |
 | lmemPool.cpp | 342 | 80.2k | 79 (23.1%) | 32.1% | 0 | 0 | 107 |
-| Map.cpp | 237 | 77.5k | 3 (1.3%) | 3.3% | 0 | 0 | 143 |
+| Map.cpp | 237 | 77.5k | 4 (1.7%) | 3.5% | 0 | 0 | 143 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| WorldParam.cpp | 187 | 64.3k | 7 (3.7%) | 3.5% | 3 | 0 | 118 |
+| WorldParam.cpp | 187 | 64.3k | 8 (4.3%) | 3.7% | 3 | 0 | 118 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 287 | 61.8k | 30 (10.5%) | 18.3% | 11 | 0 | 115 |
 | SoundEngine.cpp | 406 | 59.7k | 15 (3.7%) | 17.5% | 0 | 0 | 58 |
@@ -170,13 +170,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | DetailDoodad.cpp | 162 | 41.3k | 0 (0.0%) | 0.0% | 0 | 0 | 71 |
 | VehicleCamera_C.cpp | 95 | 40.7k | 1 (1.1%) | 0.4% | 0 | 0 | 39 |
-| TextureCache.cpp | 252 | 38.9k | 17 (6.7%) | 12.6% | 6 | 0 | 79 |
+| TextureCache.cpp | 252 | 38.9k | 18 (7.1%) | 12.8% | 6 | 0 | 79 |
 | TradeSkillFrame.cpp | 163 | 38.8k | 3 (1.8%) | 0.5% | 3 | 0 | 23 |
 | framing.c | 125 | 38.8k | 34 (27.2%) | 52.4% | 0 | 0 | 39 |
 | DBCache.cpp | 236 | 38.8k | 36 (15.3%) | 11.2% | 0 | 0 | 83 |
 | GameObject_C.cpp | 285 | 38.0k | 4 (1.4%) | 1.1% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 156 | 37.5k | 6 (3.8%) | 10.2% | 0 | 0 | 86 |
-| MapChunk.cpp | 129 | 37.2k | 23 (17.8%) | 22.9% | 0 | 0 | 85 |
+| MapChunk.cpp | 129 | 37.2k | 25 (19.4%) | 23.8% | 0 | 0 | 85 |
 | ConsoleVar.cpp | 243 | 36.1k | 73 (30.0%) | 29.8% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 10 | 1 | 4 |
 | TextureBlob.cpp | 214 | 34.6k | 32 (15.0%) | 18.6% | 0 | 0 | 84 |
@@ -206,13 +206,13 @@ Module = the source file named by the reference's own assert strings near the fu
 | PetNameCache.cpp | 120 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 38 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 48 (40.0%) | 44.1% | 24 | 0 | 0 |
 | Texture.cpp | 146 | 22.2k | 25 (17.1%) | 24.2% | 5 | 0 | 75 |
-| MapMem.cpp | 101 | 21.3k | 1 (1.0%) | 1.7% | 0 | 0 | 63 |
 | Cursor.cpp | 117 | 20.7k | 3 (2.6%) | 4.5% | 0 | 0 | 19 |
 | ObjectEffect.cpp | 81 | 20.5k | 1 (1.2%) | 0.7% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
+| MapMem.cpp | 87 | 20.1k | 33 (37.9%) | 16.7% | 0 | 0 | 63 |
 | CSimpleMovieFrame.cpp | 128 | 19.6k | 46 (35.9%) | 34.9% | 5 | 1 | 2 |
-| CheckExecutableSignature.cpp | 95 | 19.5k | 3 (3.2%) | 1.9% | 0 | 0 | 29 |
+| CheckExecutableSignature.cpp | 94 | 19.4k | 3 (3.2%) | 1.9% | 0 | 0 | 28 |
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 8 (8.2%) | 9.3% | 8 | 0 | 2 |
 | Profile.cpp | 128 | 19.1k | 7 (5.5%) | 4.6% | 0 | 0 | 28 |
@@ -312,7 +312,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_file.cpp | 44 | 4.8k | 0 (0.0%) | 0.0% | 0 | 0 | 17 |
 | fmod_file_net.cpp | 8 | 4.7k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | ClassTrainerFrame.cpp | 18 | 4.7k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| ObjectAlloc.cpp | 41 | 4.6k | 3 (7.3%) | 4.1% | 0 | 0 | 20 |
+| ObjectAlloc.cpp | 41 | 4.6k | 4 (9.8%) | 7.1% | 0 | 0 | 20 |
 | GruntLogin.cpp | 21 | 4.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | Path.cpp | 41 | 4.6k | 1 (2.4%) | 1.7% | 0 | 0 | 18 |
 | LootRoll.cpp | 30 | 4.6k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
@@ -526,10 +526,10 @@ A reference function that formats, asserts or looks up a string its port does no
 | 004067f0 | `InitializeGlobal` | .PAD; Database compression; Desired method for game timing; Error reported by the timing validation system |
 | 00621070 | `TooltipUnitLevelLine` |  - %s; %s - %s; %s: %s; FACTION_STANDING_LABEL%d |
 | 00405ab0 | `BuildPatchArchiveList` | ..\Data\; ..\Data\%s\; Data\; Data\%s\ |
-| 0079e7c0 | `CMap::MapMemInitialize` | CMap::lowDetailIndexPool; Shaders\Vertex; Terrain; Terrain0 |
 | 0061d3d0 | `CGTooltip_SetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 00405dd0 | `Sub405DD0` | Country; Data\; Failed to open archive %s.; Failed to read data from the network. Please check |
 | 00403910 | `TransferAbortedHandler` | TRANSFER_ABORT_DIFFICULTY%d; TRANSFER_ABORT_ERROR; TRANSFER_ABORT_INSUF_EXPAN_LVL%d; TRANSFER_ABORT_MAP_NOT_ALLOWED |
+| 0079e7c0 | `CMap::MapMemInitialize` | CMap::lowDetailIndexPool; Shaders\Vertex; Terrain; Terrain0 |
 | 006e2e90 | `InventoryChangeFailureHandler` | %d%d%d%d%d%d%d%d%d; %s%s%s%s%s%s; COMPLAINT_ADDED; Godmode disabled |
 | 0061eb40 | `CGTooltip_SetOwner` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
 | 0061d650 | `CGTooltip_GetAnchorType` | ANCHOR_BOTTOM; ANCHOR_BOTTOMLEFT; ANCHOR_BOTTOMRIGHT; ANCHOR_CURSOR |
@@ -578,8 +578,8 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `doContent` | lib/expat-2.0 | 3900 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `CWorld::UpdateOutdoorLight` | world | 3841 | src/world/CWorld.cpp |
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
+| `LoadTile` | world | 3588 | src/world/Terrain.cpp |
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
-| `LoadTile` | world | 3560 | src/world/Terrain.cpp |
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
@@ -624,7 +624,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
-| 0079e7c0 | `CMap::MapMemInitialize` | 62% | 45 | 26 | 21 | 0 | 16% | 2068 |
+| 0079e7c0 | `CMap::MapMemInitialize` | 67% | 45 | 28 | 21 | 0 | 16% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
 | 004c6a40 | `SI2::PlaySoundKit` | 11% | 48 | 28 | 74 | 24 | 17% | 1787 |
 | 00405dd0 | `Sub405DD0` | 22% | 50 | 2 | 59 | 0 | 0% | 1706 |
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-24 06:02 | 3203 (11.8%) | 1270 (4.7%) | 689 | 586/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:06 | 3204 (11.8%) | 1270 (4.7%) | 689 | 586/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:18 | 3205 (11.8%) | 1270 (4.7%) | 689 | 587/5527 | 2924/2964 | 1493 |
 | 2026-09-24 06:29 | 3209 (11.8%) | 1273 (4.7%) | 689 | 591/5527 | 2924/2964 | 1493 |
@@ -754,6 +753,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-24 08:01 | 3228 (11.9%) | 1290 (4.8%) | 689 | 610/5527 | 2924/2964 | 1493 |
 | 2026-09-24 08:06 | 3231 (11.9%) | 1293 (4.8%) | 689 | 613/5527 | 2924/2964 | 1493 |
 | 2026-09-24 08:13 | 3232 (11.9%) | 1294 (4.8%) | 689 | 614/5527 | 2924/2964 | 1493 |
+| 2026-09-24 23:27 | 3270 (12.0%) | 1312 (4.8%) | 689 | 646/5526 | 2924/2964 | 1493 |
 
 ## How to move a row
 
