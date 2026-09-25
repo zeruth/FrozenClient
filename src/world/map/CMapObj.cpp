@@ -428,10 +428,10 @@ void CMapObj::ReadGroup(uint32_t index) {
 // and PoolDestroy, neither of which frozen's device exposes yet, so the buffers are only
 // forgotten here and the pool reclaims them when the map unloads.
 void CMapObjGroup::FreeBuffers() {
-    // TODO FUN_007cb9f0(m_vertexBuf / m_indexBuf / m_colorBuf): give the slots back to the pool
+    // TODO FUN_007cb9f0(m_vertexBuf / m_colorBuf / m_indexBuf): give the slots back to the pool
     this->m_vertexBuf = nullptr;
-    this->m_indexBuf = nullptr;
     this->m_colorBuf = nullptr;
+    this->m_indexBuf = nullptr;
 }
 
 // ref: FUN_007a8520

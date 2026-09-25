@@ -176,9 +176,9 @@ class CMapObjGroup {
 
         // The buffers the group draws from, built on first draw and dropped again once it has
         // gone five seconds without one
-        CGxBuf* m_vertexBuf = nullptr;           // +0x04
-        CGxBuf* m_indexBuf = nullptr;            // +0x08
-        CGxBuf* m_colorBuf = nullptr;            // +0x0c
+        CGxBuf* m_vertexBuf = nullptr;           // +0x04: position, normal, colour, uv
+        CGxBuf* m_colorBuf = nullptr;            // +0x08: a second colour set, outdoor groups only
+        CGxBuf* m_indexBuf = nullptr;            // +0x0c
         float m_bufferIdleTime = 0.0f;           // +0x18
 
         // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a
