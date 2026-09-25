@@ -43,6 +43,10 @@
 #include <cmath>
 #include <ctime>
 
+// The map the game UI believes it is on. Outside the anonymous namespace because RaidInfo reads
+// it too; declared in GameScript.hpp.
+int32_t s_instanceMapID = 0;                         // ref: DAT_00bd088c
+
 namespace {
 
 // ref: FUN_0050f830
@@ -1358,9 +1362,9 @@ bool s_releaseBlocked = false;                       // ref: DAT_00bd084c
 static int32_t s_bindAreaID = 0;                     // the bind point's area, from the player
 static uint32_t s_areaSpiritHealerDeadlineMs = 0;    // ref: DAT_00bd0840
 
-// The map the game UI believes it is on and that map's difficulty, 0-based. Written on world
-// entry by code not ported yet (the writer is not identified), so both read 0 today.
-static int32_t s_instanceMapID = 0;                  // ref: DAT_00bd088c
+// The instance map's difficulty, 0-based (the map itself is s_instanceMapID, above the namespace).
+// Both are written on world entry by code not ported yet (the writer is not identified), so both
+// read 0 today.
 static uint32_t s_instanceDifficulty = 0;            // ref: DAT_00bd0894
 
 // More game UI state whose writers are server handlers not ported yet, so all of it reads 0.

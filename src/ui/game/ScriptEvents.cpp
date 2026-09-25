@@ -83,6 +83,20 @@ static_assert(offsetof(CGPlayerData, modTargetResistance) == 0x105c, "CGPlayerDa
 // frozen does not have yet, so every rune reads as not ready.
 static uint32_t s_runesReady;
 
+// ref: DAT_00c24344
+// When each rune slot last started its cooldown. Written by the same unported handlers.
+static uint32_t s_runeCooldownStart[16];
+
+// ref: FUN_005ee1f0
+// The cooldown start of a rune that is not ready; 0 for a ready one or without a player.
+uint32_t RuneGetCooldownStart(int32_t rune) {
+    if (CGPlayer_C::GetActivePtr() && !(s_runesReady & (1 << rune))) {
+        return s_runeCooldownStart[rune];
+    }
+
+    return 0;
+}
+
 // The player's own data, or null. Every function below answers 0.0 without it, which is what the
 // reference pushes -- the character sheet shows a zero rather than going blank.
 static CGPlayerData* ActivePlayerData() {

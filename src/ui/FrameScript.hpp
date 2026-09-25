@@ -32,7 +32,10 @@ class FrameScript_EventObject : public TSHashObject<FrameScript_EventObject, HAS
         TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>> registerListeners;
         uint32_t signalCount = 0;
         uint32_t pendingSignalCount = 0;
-        // TODO performance counters
+        // Profiling totals, summed over every event by FrameScript_GetEventCPUUsage: a clock
+        // count (reference +0x40) and a count (+0x48). Nothing frozen ports adds to them yet.
+        int64_t timeUsed = 0;
+        uint32_t count48 = 0;
 
         // Member functions
         FrameScript_EventObject() : TSHashObject<FrameScript_EventObject, HASHKEY_STRI>() {};
@@ -81,6 +84,10 @@ void FrameScript_GetColor(lua_State* L, int32_t idx, CImVector& color);
 int32_t FrameScript_GetColorNoAlpha(lua_State* L, int32_t idx, CImVector& color);
 
 lua_State* FrameScript_GetContext();
+
+int32_t FrameScript_GetErrorHandlerRef();
+
+void FrameScript_GetEventCPUUsage(const char* name, double* time, uint32_t* count);
 
 TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>>* FrameScript_GetEventListeners(const char* name);
 

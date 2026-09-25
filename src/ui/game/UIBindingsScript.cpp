@@ -5,6 +5,7 @@
 #include <storm/String.hpp>
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
+#include <vector>
 
 namespace {
 
@@ -79,20 +80,150 @@ int32_t Script_SetBinding(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_005635e0
 int32_t Script_SetBindingSpell(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: SetBindingSpell(\"KEY\", \"spellname\"[, mode])");
+    }
+
+    // The reference reads the optional mode here; frozen keeps a single binding set, so
+    // UIBindingsSetKey takes no mode and the value goes unused.
+    uint32_t mode = 0;
+
+    if (lua_isnumber(L, 3)) {
+        auto value = static_cast<int32_t>(lua_tonumber(L, 3));
+
+        if (static_cast<uint32_t>(value - 1) < 4) {
+            mode = value - 1;
+        }
+    }
+
+    (void)mode;
+
+    auto name = lua_tostring(L, 2);
+    auto size = SStrLen(name) + 7;
+    std::vector<char> command(size);
+    SStrPrintf(command.data(), size, "SPELL %s", name);
+
+    if (UIBindingsSetKey(lua_tostring(L, 1), command.data())) {
+        FrameScript_SignalEvent(375, nullptr);
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00563700
 int32_t Script_SetBindingItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: SetBindingItem(\"KEY\", \"itemname\"[, mode])");
+    }
+
+    // The reference reads the optional mode here; frozen keeps a single binding set, so
+    // UIBindingsSetKey takes no mode and the value goes unused.
+    uint32_t mode = 0;
+
+    if (lua_isnumber(L, 3)) {
+        auto value = static_cast<int32_t>(lua_tonumber(L, 3));
+
+        if (static_cast<uint32_t>(value - 1) < 4) {
+            mode = value - 1;
+        }
+    }
+
+    (void)mode;
+
+    auto name = lua_tostring(L, 2);
+    auto size = SStrLen(name) + 7;
+    std::vector<char> command(size);
+    SStrPrintf(command.data(), size, "ITEM %s", name);
+
+    if (UIBindingsSetKey(lua_tostring(L, 1), command.data())) {
+        FrameScript_SignalEvent(375, nullptr);
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00563820
 int32_t Script_SetBindingMacro(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: SetBindingMacro(\"KEY\", \"macroname\"|macroid[, mode])");
+    }
+
+    // The reference reads the optional mode here; frozen keeps a single binding set, so
+    // UIBindingsSetKey takes no mode and the value goes unused.
+    uint32_t mode = 0;
+
+    if (lua_isnumber(L, 3)) {
+        auto value = static_cast<int32_t>(lua_tonumber(L, 3));
+
+        if (static_cast<uint32_t>(value - 1) < 4) {
+            mode = value - 1;
+        }
+    }
+
+    (void)mode;
+
+    auto name = lua_tostring(L, 2);
+    auto size = SStrLen(name) + 7;
+    std::vector<char> command(size);
+    SStrPrintf(command.data(), size, "MACRO %s", name);
+
+    if (UIBindingsSetKey(lua_tostring(L, 1), command.data())) {
+        FrameScript_SignalEvent(375, nullptr);
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00563940
 int32_t Script_SetBindingClick(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        return luaL_error(L, "Usage: SetBindingClick(\"KEY\", \"buttonName\"[, \"mouseButton\"][, mode])");
+    }
+
+    // The reference reads the optional mode here; frozen keeps a single binding set, so
+    // UIBindingsSetKey takes no mode and the value goes unused.
+    uint32_t mode = 0;
+
+    if (lua_isnumber(L, 4)) {
+        auto value = static_cast<int32_t>(lua_tonumber(L, 4));
+
+        if (static_cast<uint32_t>(value - 1) < 4) {
+            mode = value - 1;
+        }
+    }
+
+    (void)mode;
+
+    auto buttonName = lua_tostring(L, 2);
+    auto mouseButton = lua_tostring(L, 3);
+
+    if (!mouseButton) {
+        mouseButton = "LeftButton";
+    }
+
+    auto size = SStrLen(mouseButton) + 8 + SStrLen(buttonName);
+    std::vector<char> command(size);
+    SStrPrintf(command.data(), size, "CLICK %s:%s", buttonName, mouseButton);
+
+    if (UIBindingsSetKey(lua_tostring(L, 1), command.data())) {
+        FrameScript_SignalEvent(375, nullptr);
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
 }
 
 int32_t Script_SetOverrideBinding(lua_State* L) {

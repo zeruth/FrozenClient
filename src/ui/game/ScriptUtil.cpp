@@ -10,6 +10,7 @@
 #include "object/client/NameCache.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include <storm/Array.hpp>
 #include <storm/String.hpp>
 
 namespace {
@@ -144,6 +145,24 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
     }
 
     return true;
+}
+
+// The units the encounter frames call boss1..bossN, 16 bytes each with the GUID first. Filled by a
+// handler that is not ported, so the list is empty.
+static TSFixedArray<BossUnit> s_bossUnits;     // ref: DAT_00c242f8
+
+// ref: FUN_005ed710
+WOWGUID BossUnitGetGUID(int32_t index) {
+    if (index >= 0 && index < static_cast<int32_t>(s_bossUnits.Count())) {
+        return s_bossUnits[index].m_guid;
+    }
+
+    return 0;
+}
+
+// ref: FUN_005ed740
+uint32_t BossUnitCount() {
+    return s_bossUnits.Count();
 }
 
 // ref: FUN_0060abf0

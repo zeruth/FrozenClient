@@ -4,6 +4,7 @@
 #include <storm/String.hpp>
 #include "object/client/ItemCache.hpp"
 #include "db/Db.hpp"
+#include "object/client/CGBag_C.hpp"
 #include "object/client/CGContainer_C.hpp"
 #include "object/client/CGItem_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -11,6 +12,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/FrameScript_Object.hpp"
+#include "ui/game/Types.hpp"
 #include "ui/simple/CSimpleTexture.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
@@ -547,4 +549,24 @@ CGItem_C* Script_GetContainerItem(lua_State* L, int32_t bagArg, int32_t slotArg)
     }
 
     return ContainerItem(L, bagArg, slotArg);
+}
+
+// The four worn bags then the seven bank bags. Nothing fills it yet: the code that caches the bag
+// guids is not ported, so every entry reads 0.
+static WOWGUID s_bagGuids[11];  // ref: DAT_00c23540
+
+// ref: FUN_005d6f10
+void ContainerSignalBagUpdateCooldown() {
+    FrameScript_SignalEvent(SCRIPT_BAG_UPDATE_COOLDOWN, nullptr);
+}
+
+// ref: FUN_005d6f20
+// The bank bags (4 and up) only while a banker is open.
+WOWGUID ContainerGetBagGuid(uint32_t index) {
+    if (static_cast<int32_t>(index) > -1 && index < 11
+        && (static_cast<int32_t>(index) < 4 || s_bankerGUID != 0)) {
+        return s_bagGuids[index];
+    }
+
+    return 0;
 }

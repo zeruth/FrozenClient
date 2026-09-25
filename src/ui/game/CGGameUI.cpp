@@ -22,6 +22,7 @@
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CalendarScript.hpp"
 #include "ui/game/ChatFrameScript.hpp"
+#include "ui/game/ClassTrainerFrame.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
 #include "ui/game/ContainerFrameScript.hpp"
 #include "ui/game/CGUIBindings.hpp"
@@ -83,6 +84,7 @@ void LoadScriptFunctions() {
     ContainerFrameScriptRegisterFunctions();
     MiscScriptRegisterStubs();
     ChatFrameRegisterScriptFunctions();
+    ClassTrainerFrameRegisterScriptFunctions();
     CalendarRegisterScriptFunctions();
     GuildRegisterScriptFunctions();
     VoiceRegisterScriptFunctions();

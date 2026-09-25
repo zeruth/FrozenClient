@@ -492,6 +492,26 @@ lua_State* FrameScript_GetContext(void) {
     return FrameScript::s_context;
 }
 
+// ref: FUN_008192f0
+int32_t FrameScript_GetErrorHandlerRef() {
+    return FrameScript::s_errorHandlerRef;
+}
+
+// ref: FUN_0081a450
+// The name is not consulted: the totals are always over every event.
+void FrameScript_GetEventCPUUsage(const char* name, double* time, uint32_t* count) {
+    int64_t timeUsed = 0;
+    uint32_t total = 0;
+
+    for (auto event = FrameScript::s_scriptEventsHash.Head(); event; event = FrameScript::s_scriptEventsHash.Next(event)) {
+        timeUsed += event->timeUsed;
+        total += event->count48;
+    }
+
+    *time = static_cast<double>(timeUsed) * FrameScript::s_scriptTimeDivisor;
+    *count = total;
+}
+
 // ref: FUN_0081b510
 TSList<EVENTLISTENERNODE, TSGetLink<EVENTLISTENERNODE>>* FrameScript_GetEventListeners(const char* name) {
     auto event = FrameScript::s_scriptEventsHash.Ptr(name);
@@ -765,6 +785,7 @@ void FrameScript_RegisterFunction(const char* name, int32_t (*function)(struct l
     lua_rawset(L, LUA_GLOBALSINDEX);
 }
 
+// ref: FUN_0081a790
 void FrameScript_RegisterScriptEvent(FrameScript_Object* object, FrameScript_EventObject* event) {
     if (event->pendingSignalCount) {
         auto node = event->registerListeners.Head();

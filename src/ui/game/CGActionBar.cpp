@@ -66,6 +66,24 @@ uint32_t CGActionBar::GetEquipmentSetAction(int32_t slot) {
     return 0xFFFFFFFF;
 }
 
+// ref: FUN_005648a0
+bool CGActionBar::IsMacroAction(int32_t slot) {
+    auto action = CGActionBar::s_actions[slot];
+
+    return action && (action & 0xF0000000) == 0x40000000;
+}
+
+// ref: FUN_005648d0
+uint32_t CGActionBar::GetMacroAction(int32_t slot) {
+    auto action = CGActionBar::s_actions[slot];
+
+    if (action && (action & 0xF0000000) == 0x40000000) {
+        return action & 0xBFFFFFFF;
+    }
+
+    return 0;
+}
+
 // ref: FUN_005a7a70
 void CGActionBar::SignalShowGrid() {
     FrameScript_SignalEvent(SCRIPT_ACTIONBAR_SHOWGRID, nullptr);

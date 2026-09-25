@@ -7,6 +7,9 @@
 
 class AreaTableRec;
 
+// The map the game UI believes it is on (defined in GameScript.cpp).
+extern int32_t s_instanceMapID;
+
 #define NUM_TOTEM_SLOTS 4
 #define NUM_MIRROR_TIMERS 3
 

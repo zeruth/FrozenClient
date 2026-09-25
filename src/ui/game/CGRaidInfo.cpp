@@ -4,6 +4,8 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "db/Db.hpp"
+#include "ui/game/GameScript.hpp"
 
 uint32_t CGRaidInfo::s_numMembers;
 uint32_t CGRaidInfo::s_realNumMembers;
@@ -172,4 +174,21 @@ void CGRaidInfo::SetRoster(const WOWGUID* members, const char* const* names,
     }
 
     CGRaidInfo::s_numMembers = count + 1;
+}
+
+// ref: FUN_00572f50
+// DIVERGENCE: the reference reads the instance type through a null record when the map is unknown
+// or out of range; here that answers 0.
+int32_t InstanceIsBattlegroundOrArena() {
+    auto rec = g_mapDB.GetRecord(s_instanceMapID);
+
+    if (rec && rec->m_instanceType == 3) {
+        return 1;
+    }
+
+    if (rec && rec->m_instanceType == 4) {
+        return 1;
+    }
+
+    return 0;
 }

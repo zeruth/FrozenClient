@@ -49,14 +49,29 @@ struct CalendarEvent {
     uint32_t m_numInvites;              // +0x18
     uint32_t m_unk1C;
     uint64_t m_selectedInviteID;        // +0x20
-    uint8_t m_unk28[0x501 - 0x28];
+    uint64_t m_unk28;                   // +0x28
+    uint8_t m_unk30[0x4b0 - 0x30];
+    int32_t m_type;                     // +0x4b0, CalendarEventSetType
+    int32_t m_repeatOption;             // +0x4b4, CalendarEventSetRepeatOption
+    uint32_t m_size;                    // +0x4b8, CalendarEventSetSize
+    uint8_t m_unk4BC[0x4fc - 0x4bc];
+    uint32_t m_unk4FC;                  // +0x4fc, flags; 0x440 locks the size
+    uint8_t m_unk500;
     uint8_t m_settingsChanged;          // +0x501
-    uint8_t m_unk502[0x514 - 0x502];
+    uint8_t m_unk502[0x508 - 0x502];
+    WOWGUID m_unk508;                   // +0x508
+    int32_t m_unk510;                   // +0x510
     CalendarInviteSortCriterion m_sortCriteria[6]; // +0x514
     uint32_t m_sortCriterion;           // +0x544, index into m_sortCriteria
 
     CalendarInvite* FindInvite(WOWGUID guid);
     uint32_t GetSelectedInviteIndex();
+    int32_t HasUnk28OrActivePlayerGuid();
+    void SelectInvite(uint32_t index);
+    void SetRepeatOption(int32_t repeatOption);
+    void SetSize(uint32_t size);
+    void SetType(int32_t type);
+    void SetUnk510(int32_t value);
 };
 
 extern CalendarEvent* s_calendarEvent;

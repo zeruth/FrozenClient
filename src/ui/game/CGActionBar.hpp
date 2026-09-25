@@ -51,6 +51,11 @@ class CGActionBar {
         // ref: FUN_005a7950
         // The equipment set, or 0xFFFFFFFF when the slot does not hold one.
         static uint32_t GetEquipmentSetAction(int32_t slot);
+        // ref: FUN_005648a0
+        static bool IsMacroAction(int32_t slot);
+        // ref: FUN_005648d0
+        // The macro, or 0 when the slot does not hold one.
+        static uint32_t GetMacroAction(int32_t slot);
 
         // ref: FUN_005a7a70
         static void SignalShowGrid();

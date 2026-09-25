@@ -42,6 +42,7 @@ class FrameScript_Object {
         virtual bool IsA(int32_t type) = 0;
 
         // Member functions
+        FrameScript_Object();
         const char* GetDisplayName();
         int32_t GetLuaObjectRef();
         int32_t GetScript(lua_State* L);

@@ -14,6 +14,14 @@ namespace {
 // is not ported, so every slot is empty for now.
 WOWGUID s_playerTradeItems[7]; // ref: DAT_00bfa620
 
+// Where each of those items came from: the container and the slot in it. Written beside them.
+WOWGUID s_playerTradeItemContainers[7];     // ref: DAT_00bfa5e8
+uint8_t s_playerTradeItemSlots[7];          // ref: DAT_00bfa5dc
+
+// The player being traded with, as the trade frame sees it. Written by the trade open and close
+// handlers, which are not ported.
+WOWGUID s_tradeTarget;                      // ref: DAT_00bfa658
+
 int32_t Script_CloseTrade(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -123,6 +131,38 @@ static FrameScript_Method s_ScriptFunctions[] = {
     { "AddTradeMoney",          &Script_AddTradeMoney },
     { "SetTradeMoney",          &Script_SetTradeMoney },
 };
+
+// ref: FUN_00586010
+void TradeGetPlayerItem(uint32_t slot, WOWGUID* item, WOWGUID* container, uint8_t* containerSlot) {
+    WOWGUID guid = slot < 7 ? s_playerTradeItems[slot] : 0;
+
+    *item = guid;
+
+    if (guid != 0) {
+        *container = s_playerTradeItemContainers[slot];
+        *containerSlot = s_playerTradeItemSlots[slot];
+
+        return;
+    }
+
+    *container = 0;
+    *containerSlot = 0;
+}
+
+// ref: FUN_005864d0
+int32_t TradeIsPlayerItem(WOWGUID guid) {
+    if (s_tradeTarget == 0) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < 7; i++) {
+        if (s_playerTradeItems[i] == guid) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 void TradeInfoRegisterScriptFunctions() {
     for (auto& func : s_ScriptFunctions) {

@@ -31,4 +31,13 @@ bool Script_GetGUIDFromToken(const char* token, WOWGUID& guid, bool defaultToTar
 // the function above, so the two cannot disagree about what a token means.
 const char* Script_GetTokenFromGUID(WOWGUID guid);
 
+struct BossUnit {
+    WOWGUID m_guid;
+    uint8_t m_unk08[8];
+};
+
+WOWGUID BossUnitGetGUID(int32_t index);
+
+uint32_t BossUnitCount();
+
 #endif

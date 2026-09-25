@@ -37,6 +37,23 @@ CGCooldown::CGCooldown(CSimpleFrame* parent) : CSimpleFrame(parent) {
     // TODO
 }
 
+// ref: FUN_005ec790
+void CGCooldown::UpdateColors() {
+    uint32_t alpha = (static_cast<uint32_t>(this->alphaBD) * this->m_alpha) / 0xff;
+
+    if (this->m_unk2a8 == 0) {
+        this->m_color37c.value = ((alpha & 0xff) * 0xa0) / 0xff << 24;
+        this->m_color42c.value = static_cast<uint32_t>(static_cast<uint8_t>(alpha)) << 24 | 0xffffff;
+        this->m_color3d0.value = 0;
+
+        return;
+    }
+
+    this->m_color37c.value = 0;
+    this->m_color42c.value = 0;
+    this->m_color3d0.value = static_cast<uint32_t>(static_cast<uint8_t>(alpha)) << 24 | 0x50a0ff;
+}
+
 int32_t CGCooldown::GetScriptMetaTable() {
     return CGCooldown::s_metatable;
 }

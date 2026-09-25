@@ -1,6 +1,9 @@
 #include "ui/game/MiscScriptStubs.hpp"
 
+#include "object/client/CGUnit_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
+#include "ui/game/CGPetInfo.hpp"
 #include "ui/Types.hpp"
 #include "util/Lua.hpp"
 
@@ -162,10 +165,8 @@ WHOA_LUA_STUB(SetChannelPassword)
 WHOA_LUA_STUB(SetChatColorNameByClass)
 WHOA_LUA_STUB(SetChatWindowAlpha)
 WHOA_LUA_STUB(SetChatWindowColor)
-WHOA_LUA_STUB(SetChatWindowDocked)
 WHOA_LUA_STUB(SetChatWindowLocked)
 WHOA_LUA_STUB(SetChatWindowName)
-WHOA_LUA_STUB(SetChatWindowSavedDimensions)
 WHOA_LUA_STUB(SetChatWindowSavedPosition)
 WHOA_LUA_STUB(SetChatWindowShown)
 WHOA_LUA_STUB(SetChatWindowSize)
@@ -855,16 +856,12 @@ WHOA_LUA_STUB(GetTradeSkillSubClassFilter)
 WHOA_LUA_STUB(GetTradeSkillSubClasses)
 WHOA_LUA_STUB(GetTradeSkillTools)
 WHOA_LUA_STUB(GetTradeskillRepeatCount)
-WHOA_LUA_STUB(GetTrainerGreetingText)
 WHOA_LUA_STUB(GetTrainerSelectionIndex)
 WHOA_LUA_STUB(GetTrainerServiceAbilityReq)
-WHOA_LUA_STUB(GetTrainerServiceCost)
 WHOA_LUA_STUB(GetTrainerServiceDescription)
 WHOA_LUA_STUB(GetTrainerServiceIcon)
 WHOA_LUA_STUB(GetTrainerServiceInfo)
 WHOA_LUA_STUB(GetTrainerServiceItemLink)
-WHOA_LUA_STUB(GetTrainerServiceLevelReq)
-WHOA_LUA_STUB(GetTrainerServiceNumAbilityReq)
 WHOA_LUA_STUB(GetTrainerServiceSkillLine)
 WHOA_LUA_STUB(GetTrainerServiceSkillReq)
 WHOA_LUA_STUB(GetTrainerServiceStepIncrease)
@@ -955,9 +952,25 @@ WHOA_LUA_STUB(PartyLFGStartBackfill)
 WHOA_LUA_STUB(PetAbandon)
 WHOA_LUA_STUB(PetAggressiveMode)
 WHOA_LUA_STUB(PetAttack)
+// ref: FUN_005d3780
+// 1 only for the player's own summoned pet with the can-be-abandoned bit (0x02 of the pet-flags
+// byte of UNIT_FIELD_BYTES_2); nil otherwise.
 int32_t Script_Stub_PetCanBeAbandoned(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
+    auto pet = CGPetInfo::s_numPets ? CGPetInfo::s_pets[0] : WOWGUID(0);
+    auto object = ClntObjMgrObjectPtr(pet, TYPE_UNIT, __FILE__, __LINE__);
+
+    if (object) {
+        auto data = static_cast<CGUnit_C*>(object)->Unit();
+
+        if (data->summonedBy == ClntObjMgrGetActivePlayer()
+            && ((static_cast<CGUnit_C*>(object)->Unit()->bytes2 >> 16) & 0x2)) {
+            lua_pushnumber(L, 1.0);
+
+            return 1;
+        }
+    }
+
+    lua_pushnil(L);
 
     return 1;
 }
@@ -1272,10 +1285,8 @@ const ScriptFunction s_stubs[] = {
     { "SetChatColorNameByClass",                 &Script_Stub_SetChatColorNameByClass },
     { "SetChatWindowAlpha",                      &Script_Stub_SetChatWindowAlpha },
     { "SetChatWindowColor",                      &Script_Stub_SetChatWindowColor },
-    { "SetChatWindowDocked",                     &Script_Stub_SetChatWindowDocked },
     { "SetChatWindowLocked",                     &Script_Stub_SetChatWindowLocked },
     { "SetChatWindowName",                       &Script_Stub_SetChatWindowName },
-    { "SetChatWindowSavedDimensions",            &Script_Stub_SetChatWindowSavedDimensions },
     { "SetChatWindowSavedPosition",              &Script_Stub_SetChatWindowSavedPosition },
     { "SetChatWindowShown",                      &Script_Stub_SetChatWindowShown },
     { "SetChatWindowSize",                       &Script_Stub_SetChatWindowSize },
@@ -1887,16 +1898,12 @@ const ScriptFunction s_stubs[] = {
     { "GetTradeSkillSubClasses",                 &Script_Stub_GetTradeSkillSubClasses },
     { "GetTradeSkillTools",                      &Script_Stub_GetTradeSkillTools },
     { "GetTradeskillRepeatCount",                &Script_Stub_GetTradeskillRepeatCount },
-    { "GetTrainerGreetingText",                  &Script_Stub_GetTrainerGreetingText },
     { "GetTrainerSelectionIndex",                &Script_Stub_GetTrainerSelectionIndex },
     { "GetTrainerServiceAbilityReq",             &Script_Stub_GetTrainerServiceAbilityReq },
-    { "GetTrainerServiceCost",                   &Script_Stub_GetTrainerServiceCost },
     { "GetTrainerServiceDescription",            &Script_Stub_GetTrainerServiceDescription },
     { "GetTrainerServiceIcon",                   &Script_Stub_GetTrainerServiceIcon },
     { "GetTrainerServiceInfo",                   &Script_Stub_GetTrainerServiceInfo },
     { "GetTrainerServiceItemLink",               &Script_Stub_GetTrainerServiceItemLink },
-    { "GetTrainerServiceLevelReq",               &Script_Stub_GetTrainerServiceLevelReq },
-    { "GetTrainerServiceNumAbilityReq",          &Script_Stub_GetTrainerServiceNumAbilityReq },
     { "GetTrainerServiceSkillLine",              &Script_Stub_GetTrainerServiceSkillLine },
     { "GetTrainerServiceSkillReq",               &Script_Stub_GetTrainerServiceSkillReq },
     { "GetTrainerServiceStepIncrease",           &Script_Stub_GetTrainerServiceStepIncrease },

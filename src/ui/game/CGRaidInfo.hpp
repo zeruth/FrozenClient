@@ -7,6 +7,10 @@
 
 #define MAX_RAID_MEMBERS 40
 
+// ref: FUN_00572f50
+// Whether the current map is a battleground or an arena (Map.dbc instance type 3 or 4).
+int32_t InstanceIsBattlegroundOrArena();
+
 class CGRaidInfo {
     public:
         // Public static functions

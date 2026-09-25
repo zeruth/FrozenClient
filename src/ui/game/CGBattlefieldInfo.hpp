@@ -2,6 +2,7 @@
 #define UI_GAME_C_G_BATTLEFIELD_INFO_HPP
 
 #include "util/guid/Types.hpp"
+#include <tempest/Vector.hpp>
 #include <cstdint>
 
 class CGBattlefieldInfo {
@@ -47,8 +48,17 @@ class CGBattlefieldInfo {
         static uint32_t s_numVehicles;
         static uint32_t s_numInstances;
         static int32_t* s_instanceIDs;
+        static uint32_t s_numPlayerPositions;
+        static C2Vector s_playerPositions[40];
+        static C2Vector s_flagPositions[2];
+        static int32_t s_numBattlegrounds;
+        static int32_t* s_battlegroundIDs;
 
         // Static functions
+        static int32_t GetBattlegroundID(int32_t index);
+        static WOWGUID GetFlagCarrier(uint32_t index);
+        static int32_t GetFlagPosition(uint32_t index, C3Vector* position);
+        static int32_t GetPlayerPosition(uint32_t index, C3Vector* position);
         static void RequestPlayerPositions();
         static void SendMgrEntryInviteResponse(uint32_t battleId, int32_t accept);
         static void SendMgrQueueInviteResponse(uint32_t battleId, int32_t accept);

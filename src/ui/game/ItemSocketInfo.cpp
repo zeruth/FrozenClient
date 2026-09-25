@@ -5,8 +5,8 @@
 #include <common/DataStore.hpp>
 
 // Written by the socketing code that is not ported yet; the reference zero-initialises both.
-static WOWGUID s_socketGems[3];             // ref: DAT_00c20fc8
-static WOWGUID s_socketItem;                // ref: DAT_00c20fe0
+WOWGUID s_socketGems[3];                    // ref: DAT_00c20fc8
+WOWGUID s_socketItem;                       // ref: DAT_00c20fe0
 
 // ref: FUN_005c4ff0
 void ItemSocketInfoSendGems() {

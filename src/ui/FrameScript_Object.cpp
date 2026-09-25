@@ -30,6 +30,11 @@ void FrameScript_Object::FillScriptMethodTable(lua_State *L, FrameScript_Method 
     }
 }
 
+// ref: FUN_00819830
+// lua_registered 0, lua_objectRef -2 and an empty m_onEvent, all from the member initializers
+FrameScript_Object::FrameScript_Object() {
+}
+
 const char* FrameScript_Object::GetDisplayName() {
     const char* name = this->GetName();
     return name ? name : "<unnamed>";

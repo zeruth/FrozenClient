@@ -3,4 +3,6 @@
 
 void GuildRegisterScriptFunctions();
 
+bool GuildRankCanCreateEvent();
+
 #endif

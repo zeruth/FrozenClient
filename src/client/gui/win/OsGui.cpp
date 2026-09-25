@@ -1,8 +1,9 @@
 #include "client/gui/OsGui.hpp"
 #include <windows.h>
 
-static void* s_GxDevWindow;
+static void* s_GxDevWindow;  // ref: DAT_00d41620
 
+// ref: FUN_0086c6a0
 void* OsGuiGetWindow(int32_t type) {
     switch (type) {
     case 0:

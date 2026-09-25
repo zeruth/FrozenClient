@@ -5,6 +5,7 @@
 #include "util/Lua.hpp"
 #include <common/DataStore.hpp>
 #include <storm/String.hpp>
+#include <cmath>
 
 namespace {
 
@@ -268,7 +269,151 @@ const char* ChannelListEntryName(uint32_t index, int32_t* type) {
     return nullptr;
 }
 
+// One chat type's settings, 0x4C bytes. Only the colour is read by ported code.
+struct ChatTypeInfo {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t unk03[0x49];
+};
+
+static_assert(sizeof(ChatTypeInfo) == 0x4C, "ChatTypeInfo is 0x4C bytes in the reference");
+
+// Nothing fills these yet: the chat settings and message handlers that do are not ported.
+// ref: DAT_00b74728
+static ChatTypeInfo s_chatTypeInfo[62];
+// ref: DAT_00b75a60
+static ChatLogEntry s_chatLog[60];
+// ref: DAT_00bceff4
+static int32_t s_chatLogStart;
+
+// ref: FUN_004fb1a0
+// The chat types that carry a message someone sent: say, party, raid, guild, whisper, channel and
+// their kin.
+bool ChatTypeIsPlayerMessage(int32_t type) {
+    switch (type) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 9:
+        case 10:
+        case 11:
+        case 17:
+        case 23:
+        case 24:
+        case 39:
+        case 40:
+        case 44:
+        case 45:
+        case 47:
+        case 51:
+        case 53:
+        case 54:
+        case 55:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_004fb210
+// Records are counted from the oldest, which s_chatLogStart marks.
+ChatLogEntry* ChatLogGetEntry(int32_t index) {
+    return &s_chatLog[(index + s_chatLogStart) % 60];
+}
+
+// ref: FUN_004fb9c0
+// Opaque white past the last chat type.
+void ChatTypeGetColor(CImVector* color, int32_t type) {
+    if (type > 61) {
+        color->b = 0xFF;
+        color->g = 0xFF;
+        color->a = 0xFF;
+        color->r = 0xFF;
+
+        return;
+    }
+
+    color->b = s_chatTypeInfo[type].b;
+    color->g = s_chatTypeInfo[type].g;
+    color->a = 0xFF;
+    color->r = s_chatTypeInfo[type].r;
+}
+
+namespace {
+
+// One chat window's settings, 0x100 bytes. Only the fields written by ported code are named.
+struct ChatWindowSettings {
+    uint8_t unk00[0x5C];
+    int32_t docked;         // +0x5C
+    uint8_t unk60[0x18];
+    float savedWidth;       // +0x78
+    float savedHeight;      // +0x7C
+    uint8_t unk80[0x80];
+};
+
+static_assert(sizeof(ChatWindowSettings) == 0x100, "ChatWindowSettings is 0x100 bytes in the reference");
+
+// Nothing fills these yet: the chat settings load that does is not ported, and nothing reads them
+// back (GetChatWindowInfo still answers from constants).
+// ref: DAT_00bcf130
+ChatWindowSettings s_chatWindows[10];
+
+// ref: FUN_004fc760
+int32_t Script_SetChatWindowDocked(lua_State* L) {
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetChatWindowDocked(index, docked)");
+
+        return 0;
+    }
+
+    auto window = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))) - 1);
+
+    if (window < 10) {
+        int32_t docked = 0;
+
+        if (lua_isnumber(L, 2)) {
+            docked = static_cast<int32_t>(llrint(lua_tonumber(L, 2)));
+        }
+
+        s_chatWindows[window].docked = docked;
+    }
+
+    return 0;
+}
+
+// ref: FUN_004fc9a0
+int32_t Script_SetChatWindowSavedDimensions(lua_State* L) {
+    if (lua_isnumber(L, 1) && lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
+        auto window = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))) - 1);
+
+        if (window > 9) {
+            return 0;
+        }
+
+        auto width = lua_tonumber(L, 2);
+        auto height = lua_tonumber(L, 3);
+        s_chatWindows[window].savedWidth = static_cast<float>(width);
+        s_chatWindows[window].savedHeight = static_cast<float>(height);
+
+        return 0;
+    }
+
+    luaL_error(L, "Usage: SetChatWindowSavedDimensions(index, width, height)");
+
+    return 0;
+}
+
+}
+
 static FrameScript_Method s_ScriptFunctions[] = {
+    { "SetChatWindowDocked",          &Script_SetChatWindowDocked },
+    { "SetChatWindowSavedDimensions", &Script_SetChatWindowSavedDimensions },
     { "ListChannelByName",          &Script_ListChannelByName },
     { "SetChannelOwner",            &Script_SetChannelOwner },
     { "DisplayChannelOwner",        &Script_DisplayChannelOwner },

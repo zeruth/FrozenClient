@@ -11,6 +11,9 @@
 #include "object/client/CGItem_C.hpp"
 #include "object/client/ItemCache.hpp"
 #include "ui/game/ContainerFrameScript.hpp"
+#include "ui/game/AuctionHouse.hpp"
+#include "ui/game/ItemSocketInfo.hpp"
+#include "ui/game/MerchantFrame.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/game/CGTooltip.hpp"
@@ -21,6 +24,7 @@
 #include "object/client/AuraCache.hpp"
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
+#include <cmath>
 
 namespace {
 
@@ -1501,8 +1505,29 @@ int32_t CGTooltip_SetTradeSkillItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0062ed70
+// The reference hands TooltipSetItemInfo the entry, the vendor's GUID and a merchant flag; frozen's
+// filler takes the cached record, so the record is looked up here.
 int32_t CGTooltip_SetMerchantItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Invalid merchant slot in SetMerchantItem");
+        return 0;
+    }
+
+    auto index = static_cast<int32_t>(llrint(lua_tonumber(L, 2) - 1.0));
+    auto item = MerchantGetItem(index);
+
+    if (item && item->m_unk04) {
+        auto info = ItemCacheGet(item->m_unk04);
+
+        if (info) {
+            TooltipSetItemInfo(tooltip, info, 0, 0);
+        }
+    }
+
+    return 0;
 }
 
 int32_t CGTooltip_SetMerchantCostItem(lua_State* L) {
@@ -1671,8 +1696,32 @@ int32_t CGTooltip_SetInboxItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0062fc20
 int32_t CGTooltip_SetAuctionSellItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    WOWGUID guid = AuctionHouse::s_sellItem;
+
+    if (guid) {
+        auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
+        auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+        if (info) {
+            auto data = item->Item();
+
+            TooltipSetItemInfo(tooltip, info,
+                               data ? data->durability : 0,
+                               data ? data->maxDurability : 0);
+
+            lua_pushnumber(L, 1.0);
+
+            return 1;
+        }
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t CGTooltip_SetAuctionItem(lua_State* L) {
@@ -1705,12 +1754,48 @@ int32_t CGTooltip_SetLootRollItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_006301a0
 int32_t CGTooltip_SetSocketedItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(s_socketItem, TYPE_ITEM, __FILE__, __LINE__));
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+    if (info) {
+        auto data = item->Item();
+
+        TooltipSetItemInfo(tooltip, info,
+                           data ? data->durability : 0,
+                           data ? data->maxDurability : 0);
+    }
+
+    return 0;
 }
 
+// ref: FUN_00630250
 int32_t CGTooltip_SetSocketGem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: %s:SetSocketGem(index)", tooltip->GetDisplayName());
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 2))) - 1;
+    WOWGUID guid = index < 3 ? s_socketGems[index] : 0;
+
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
+    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+
+    if (info) {
+        auto data = item->Item();
+
+        TooltipSetItemInfo(tooltip, info,
+                           data ? data->durability : 0,
+                           data ? data->maxDurability : 0);
+    }
+
+    return 0;
 }
 
 int32_t CGTooltip_SetExistingSocketGem(lua_State* L) {

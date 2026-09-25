@@ -16,4 +16,8 @@ uint32_t TalentInfoDefaultGroup(int32_t pet);
 // ref: FUN_005c57d0
 uint32_t TalentInfoGroupArg(lua_State* L, int32_t index);
 
+// Frees every talent tab record and empties the tab array.
+// ref: FUN_005c6980
+void TalentInfoDestroyTabs();
+
 #endif

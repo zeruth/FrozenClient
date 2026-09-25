@@ -1,4 +1,6 @@
 #include "ui/game/Calendar.hpp"
+#include "object/client/CGObject_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include <storm/Array.hpp>
 #include <storm/List.hpp>
 #include <cstddef>
@@ -60,6 +62,72 @@ uint32_t CalendarEvent::GetSelectedInviteIndex() {
     }
 
     return 0xFFFFFFFF;
+}
+
+// ref: FUN_005f11d0
+void CalendarEvent::SetType(int32_t type) {
+    if (type < 5 && type != this->m_type) {
+        this->m_type = type;
+        this->m_settingsChanged = 1;
+    }
+}
+
+// ref: FUN_005f1200
+void CalendarEvent::SetRepeatOption(int32_t repeatOption) {
+    if (repeatOption < 4 && repeatOption != this->m_repeatOption) {
+        this->m_repeatOption = repeatOption;
+        this->m_settingsChanged = 1;
+    }
+}
+
+// ref: FUN_005f1230
+void CalendarEvent::SetSize(uint32_t size) {
+    if (!(this->m_unk4FC & 0x440) && size > 1 && size != this->m_size) {
+        this->m_size = size;
+        this->m_settingsChanged = 1;
+    }
+}
+
+// ref: FUN_005f1390
+void CalendarEvent::SetUnk510(int32_t value) {
+    if (value != this->m_unk510) {
+        this->m_unk510 = value;
+        this->m_settingsChanged = 1;
+    }
+}
+
+// ref: FUN_005f1a00
+void CalendarEvent::SelectInvite(uint32_t index) {
+    uint32_t count = this->m_numInvites;
+
+    if (index > count || count == 0) {
+        return;
+    }
+
+    uint32_t i = 0;
+
+    while (i != index) {
+        i++;
+
+        if (i >= count) {
+            return;
+        }
+    }
+
+    this->m_selectedInviteID = this->m_invites[i]->m_inviteID;
+}
+
+// Zero only for an event whose +0x28 is unset and whose +0x508 GUID is not the active player's.
+// ref: FUN_005f1b30
+int32_t CalendarEvent::HasUnk28OrActivePlayerGuid() {
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+    WOWGUID guid = player ? player->GetGUID() : 0;
+
+    if (!this->m_unk28 && guid != this->m_unk508) {
+        return 0;
+    }
+
+    return 1;
 }
 
 // ref: FUN_005b7fd0

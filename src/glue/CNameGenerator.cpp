@@ -15,6 +15,9 @@ static int32_t CompareDictionaryRecords(const void* a, const void* b) {
     return SStrCmp(recordA->key, recordB->key, sizeof(recordA->key));
 }
 
+// ref: FUN_004e6560
+// The reference writes the records into a presized fixed array and keeps its own count; frozen
+// grows the array instead. The walk, the comparisons and the sort are the same.
 void CNameGenerator::BuildDictionary() {
     for (uint32_t i = 0; i < this->m_names.Count(); i++) {
         // Names are prefixed with an underscore so that the trigrams that can start a name

@@ -25,6 +25,83 @@ int32_t CGBattlefieldInfo::s_teamRating[2];                     // ref: DAT_00be
 uint32_t CGBattlefieldInfo::s_numVehicles;                      // ref: DAT_00bea5b8
 uint32_t CGBattlefieldInfo::s_numInstances;                     // ref: DAT_00bea5c0
 int32_t* CGBattlefieldInfo::s_instanceIDs;                      // ref: DAT_00bea5c4
+uint32_t CGBattlefieldInfo::s_numPlayerPositions;               // ref: DAT_00bea5b0
+// The capacity is the gap to the flag positions, not stated by any function.
+C2Vector CGBattlefieldInfo::s_playerPositions[40];              // ref: DAT_00bea5d0
+C2Vector CGBattlefieldInfo::s_flagPositions[2];                 // ref: DAT_00bea710
+int32_t CGBattlefieldInfo::s_numBattlegrounds;                  // ref: DAT_00bea724
+int32_t* CGBattlefieldInfo::s_battlegroundIDs;                  // ref: DAT_00bea728
+
+// ref: FUN_0054a510
+// No lower bound: the caller has already checked the index.
+int32_t CGBattlefieldInfo::GetBattlegroundID(int32_t index) {
+    if (index < CGBattlefieldInfo::s_numBattlegrounds) {
+        return CGBattlefieldInfo::s_battlegroundIDs[index];
+    }
+
+    return 0;
+}
+
+// ref: FUN_005495b0
+// The second carrier only counts when it is set, and the first only when the second is not.
+WOWGUID CGBattlefieldInfo::GetFlagCarrier(uint32_t index) {
+    uint32_t count;
+
+    if (CGBattlefieldInfo::s_flagCarriers[1] == 0) {
+        if (CGBattlefieldInfo::s_flagCarriers[0] == 0) {
+            return 0;
+        }
+
+        count = 1;
+    } else {
+        count = 2;
+    }
+
+    if (index >= count) {
+        return 0;
+    }
+
+    return CGBattlefieldInfo::s_flagCarriers[index];
+}
+
+// ref: FUN_0054a4a0
+// Counted by the carriers, as GetFlagCarrier counts them.
+int32_t CGBattlefieldInfo::GetFlagPosition(uint32_t index, C3Vector* position) {
+    uint32_t count;
+
+    if (CGBattlefieldInfo::s_flagCarriers[1] == 0) {
+        if (CGBattlefieldInfo::s_flagCarriers[0] == 0) {
+            return 0;
+        }
+
+        count = 1;
+    } else {
+        count = 2;
+    }
+
+    if (index >= count) {
+        return 0;
+    }
+
+    position->x = CGBattlefieldInfo::s_flagPositions[index].x;
+    position->y = CGBattlefieldInfo::s_flagPositions[index].y;
+    position->z = 0.0f;
+
+    return 1;
+}
+
+// ref: FUN_0054a450
+int32_t CGBattlefieldInfo::GetPlayerPosition(uint32_t index, C3Vector* position) {
+    if (index < CGBattlefieldInfo::s_numPlayerPositions) {
+        position->x = CGBattlefieldInfo::s_playerPositions[index].x;
+        position->y = CGBattlefieldInfo::s_playerPositions[index].y;
+        position->z = 0.0f;
+
+        return 1;
+    }
+
+    return 0;
+}
 
 void CGBattlefieldInfo::RequestPlayerPositions() {
     // TODO

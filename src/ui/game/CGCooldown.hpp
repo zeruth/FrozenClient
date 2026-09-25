@@ -29,6 +29,14 @@ class CGCooldown : public CSimpleFrame {
         // the neutral reading and not a claim about the original.
         int32_t m_reverse = 0;
         int32_t m_drawEdge = 0;
+        // +0x2a8: selects between the two colour sets UpdateColors writes. Its meaning and writer are
+        // not recovered.
+        int32_t m_unk2a8 = 0;
+        // The three vertex colours UpdateColors writes, at the reference's +0x37c, +0x3d0 and +0x42c.
+        // Nothing draws with them yet.
+        CImVector m_color37c = {};
+        CImVector m_color3d0 = {};
+        CImVector m_color42c = {};
 
         // TODO the rest
 
@@ -37,6 +45,10 @@ class CGCooldown : public CSimpleFrame {
 
         // Member functions
         CGCooldown(CSimpleFrame* parent);
+
+        // ref: FUN_005ec790
+        // Recolour from the frame's effective alpha.
+        void UpdateColors();
 };
 
 #endif

@@ -40,7 +40,11 @@ struct PARTY_MEMBER {
 // is rebuilt. Only the member's pet guid at +0x160 has been identified; the rest is carried as
 // raw bytes until the code that reads it is ported. Nothing fills it yet.
 struct PARTY_MEMBER_RECORD {
-    uint8_t unk000[0x160] = { 0 };
+    uint8_t unk000[0x8] = { 0 };
+    // Bit 0 says the pet guid below is valid; FUN_0052c6e0 falls back to it when the member's
+    // object is not in range.
+    uint32_t flags = 0;
+    uint8_t unk00C[0x160 - 0xC] = { 0 };
     WOWGUID petGuid = 0;
     uint8_t unk168[0x310 - 0x168] = { 0 };
 };
@@ -61,6 +65,15 @@ class CGPartyInfo {
         // ref: FUN_0052bf30
         // The record block of the occupied slot whose member's pet has this guid.
         static PARTY_MEMBER_RECORD* GetMemberRecordByPet(const WOWGUID& pet);
+
+        // ref: FUN_0052c6e0
+        // A member's pet, by 0-based slot: the charm or summon off the member's object when it
+        // is in range, else the pet guid in the member's record when that is flagged valid.
+        static WOWGUID GetMemberPet(uint32_t slot);
+
+        // ref: FUN_0052cb40
+        // Stores the setting and sends CMSG_OPT_OUT_OF_LOOT.
+        static void SetOptOutOfLoot(uint32_t optOut);
 
         // ref: FUN_0052c680
         // The active player or one of the four members. A null guid is neither.
@@ -157,6 +170,7 @@ class CGPartyInfo {
         static uint32_t m_raidDifficulty;
         static uint32_t m_ownDungeonDifficulty;
         static uint32_t m_ownRaidDifficulty;
+        static uint32_t m_optOutOfLoot;  // ref: DAT_00bd19a0
         static uint32_t m_realMemberCount;
         static WOWGUID m_realLeader;
 };

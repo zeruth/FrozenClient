@@ -27,6 +27,7 @@ uint32_t CGPartyInfo::m_dungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_raidDifficulty = 0;
 uint32_t CGPartyInfo::m_ownDungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_ownRaidDifficulty = 0;
+uint32_t CGPartyInfo::m_optOutOfLoot = 0;
 uint32_t CGPartyInfo::m_realMemberCount = 0;
 WOWGUID CGPartyInfo::m_realLeader = 0;
 
@@ -88,6 +89,36 @@ PARTY_MEMBER_RECORD* CGPartyInfo::GetMemberRecordByPet(const WOWGUID& pet) {
     }
 
     return nullptr;
+}
+
+// ref: FUN_0052c6e0
+WOWGUID CGPartyInfo::GetMemberPet(uint32_t slot) {
+    if (slot < 4 && CGPartyInfo::m_members[slot]) {
+        auto object = ClntObjMgrObjectPtr(CGPartyInfo::m_members[slot], TYPE_PLAYER, __FILE__, __LINE__);
+
+        if (object) {
+            auto data = static_cast<CGUnit_C*>(object)->Unit();
+
+            return data->charm ? data->charm : data->summon;
+        }
+
+        if (CGPartyInfo::m_memberRecords[slot].flags & 0x1) {
+            return CGPartyInfo::m_memberRecords[slot].petGuid;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_0052cb40
+void CGPartyInfo::SetOptOutOfLoot(uint32_t optOut) {
+    CGPartyInfo::m_optOutOfLoot = optOut;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_OPT_OUT_OF_LOOT));
+    msg.Put(optOut);
+    msg.Finalize();
+    ClientServices::Send(&msg);
 }
 
 // ref: FUN_0052c680

@@ -301,6 +301,15 @@ int32_t Script_OffhandHasWeapon(lua_State* L) {
 // and ClearInspectPlayer, neither ported yet, so it reads 0.
 uint32_t s_inspectHonorDataValid = 0; // ref: DAT_00c24228
 
+// The inspected player's honor stats and guid, filled by the same unported handler.
+uint32_t s_inspectLifetimeHK = 0;       // ref: DAT_00c24208
+uint32_t s_inspectYesterdayHonor = 0;   // ref: DAT_00c2420c
+uint32_t s_inspectTodayHonor = 0;       // ref: DAT_00c24210
+uint16_t s_inspectYesterdayHK = 0;      // ref: DAT_00c24214
+uint16_t s_inspectLifetimeRank = 0;     // ref: DAT_00c24216
+uint16_t s_inspectTodayHK = 0;          // ref: DAT_00c24218
+WOWGUID s_inspectGUID = 0;              // ref: DAT_00c24220
+
 // ref: FUN_005e7780
 int32_t Script_HasInspectHonorData(lua_State* L) {
     if (s_inspectHonorDataValid) {
@@ -318,8 +327,16 @@ int32_t Script_RequestInspectHonorData(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005e77c0
 int32_t Script_GetInspectHonorData(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, s_inspectTodayHK);
+    lua_pushnumber(L, s_inspectTodayHonor);
+    lua_pushnumber(L, s_inspectYesterdayHK);
+    lua_pushnumber(L, s_inspectYesterdayHonor);
+    lua_pushnumber(L, s_inspectLifetimeHK);
+    lua_pushnumber(L, s_inspectLifetimeRank);
+
+    return 6;
 }
 
 int32_t Script_GetInspectArenaTeamData(lua_State* L) {
@@ -353,6 +370,17 @@ int32_t Script_HasWandEquipped(lua_State* L) {
     return 1;
 }
 
+}
+
+// ref: FUN_005e7a00
+// Whether an object is the player or the player being inspected: the two whose equipment the
+// client is sent.
+int32_t IsActivePlayerOrInspectTarget(CGObject_C* object) {
+    if (object && (object->GetGUID() == ClntObjMgrGetActivePlayer() || object->GetGUID() == s_inspectGUID)) {
+        return 1;
+    }
+
+    return 0;
 }
 
 static FrameScript_Method s_ScriptFunctions[] = {
