@@ -2266,6 +2266,7 @@ addr	how	frozen	evidence
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f20	callorder	GxTexUpdate	same slot between linked calls in 004b7bd0=PumpBlpTextureAsync, 007b9de0=CMapRenderChunk::BuildLayerAlphaTexture, 007b9ee0=CMapRenderChunk::BuildShadowTexture
 00681f60	override	GxXformSetViewport	
+00682130	callgraph	GxXformSet	only unmatched callee of 007a6e00=CMapObj::SetupPortalContext
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682d20	callgraph	GxXformProjNativeTranspose	only unmatched callee of 00872c10=CShaderEffect::UpdateProjMatrix
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
@@ -2803,6 +2804,8 @@ addr	how	frozen	evidence
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a6b40	annotated	CMapObj::SetVisibleCallback	tag in src/world/map/CMapObjDraw.cpp
 007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
+007a6e00	annotated	CMapObj::SetupPortalContext	tag in src/world/map/CMapObjDraw.cpp
+007a7210	annotated	CMapObj::TestCameraInPortal	tag in src/world/map/CMapObjDraw.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs

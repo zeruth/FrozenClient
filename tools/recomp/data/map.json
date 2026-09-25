@@ -36147,6 +36147,22 @@
   "refSize": 452,
   "status": "ported"
  },
+ "00682130": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformSet",
+  "frozenSize": 17,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
  "00682a00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44756,6 +44772,38 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 46,
+  "status": "ported"
+ },
+ "007a6e00": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::SetupPortalContext",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 715,
+  "status": "ported"
+ },
+ "007a7210": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::TestCameraInPortal",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 139,
   "status": "ported"
  },
  "007a7630": {

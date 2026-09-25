@@ -149,6 +149,40 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static void (*s_visibleCallback)(uint32_t groupIndex, CMapObjDef* def);
         static CMapObjDef* s_visibleCallbackArg;
 
+        // --- the space the portal walk works in -------------------------------------------
+        // The walk tests portal planes against the camera, and both the planes and the
+        // building's geometry are in the building's own space. Rather than bring every plane
+        // out to the world, the camera is brought in once per instance and parked here
+        // (DAT_00d1c42c onwards).
+        static C3Vector s_localCameraPos;
+        static C3Vector s_localCameraTarget;
+        static C4Plane s_localViewPlane;
+
+        // What the walk worked out about one portal this frame: the rectangle of the screen
+        // it covers, and how to treat it. Kept per portal rather than per visit, because a
+        // portal reached twice in one frame covers the same rectangle both times
+        // (DAT_00adff54, 28 bytes each).
+        struct PortalRect {
+            // Bit 0: the portal faces away or projects to nothing, so it opens onto nowhere.
+            // Bit 1: the camera is standing in the doorway, so it opens onto everything.
+            // Bit 4: the walk is crossing from lit to unlit, or the other way.
+            uint16_t flags;
+            float minX;
+            float minY;
+            float maxX;
+            float maxY;
+            // The frame this was worked out on; anything older is recomputed.
+            int32_t stamp;
+        };
+
+        // ref: FUN_007a7210
+        // Is the camera standing in this doorway? Then it opens onto everything.
+        static void TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect);
+
+        // ref: FUN_007a6e00
+        static void SetupPortalContext(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                                       const C3Vector& cameraPos, const C3Vector& cameraTarget);
+
         // ref: FUN_007a6b40
         static void SetVisibleCallback(void (*callback)(uint32_t, CMapObjDef*), CMapObjDef* def);
         // Report one group, if its file is in. ref: FUN_007a6b60

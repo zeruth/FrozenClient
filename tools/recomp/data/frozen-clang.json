@@ -198784,6 +198784,55 @@
 "refs": [],
 "line": 1058
 },
+"CMapObj::SetupPortalContext": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::Identity",
+"C3Vector::C3Vector",
+"C44Matrix::Translate",
+"operator*",
+"GxXformSet",
+"operator*",
+"C3Vector::operator=",
+"operator*",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"sqrtf",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.00000011920929f",
+"1.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 39,
+"refs": [],
+"line": 1078
+},
+"CMapObj::TestCameraInPortal": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"DominantAxis",
+"PointInPolygon"
+],
+"strings": [],
+"consts": [
+"0.01f",
+"0x2"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 1123
+},
 "TriangleOutsideHull": {
 "files": [
 "src/world/map/cmapobjgroup.cpp"

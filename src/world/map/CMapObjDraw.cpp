@@ -1066,3 +1066,74 @@ void CMapObj::ReportVisible(uint32_t groupIndex) {
 
     CMapObj::s_visibleCallback(groupIndex, CMapObj::s_visibleCallbackArg);
 }
+
+C3Vector CMapObj::s_localCameraPos;
+C3Vector CMapObj::s_localCameraTarget;
+C4Plane CMapObj::s_localViewPlane;
+
+// ref: FUN_007a6e00
+// Set up one instance for the portal walk: the device draws it in its own space with the
+// camera translation folded out, and the camera itself is brought into that space so every
+// portal plane can be tested against it without leaving it.
+void CMapObj::SetupPortalContext(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                                 const C3Vector& cameraPos, const C3Vector& cameraTarget) {
+    C44Matrix toCamera;
+    toCamera.Identity();
+
+    C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+    toCamera.Translate(back);
+
+    GxXformSet(GxXform_World, placement * toCamera);
+
+    CMapObj::s_localCameraPos = cameraPos * inversePlacement;
+    CMapObj::s_localCameraTarget = cameraTarget * inversePlacement;
+
+    C3Vector dir = {
+        CMapObj::s_localCameraTarget.x - CMapObj::s_localCameraPos.x,
+        CMapObj::s_localCameraTarget.y - CMapObj::s_localCameraPos.y,
+        CMapObj::s_localCameraTarget.z - CMapObj::s_localCameraPos.z
+    };
+
+    float lengthSq = dir.x * dir.x + dir.y * dir.y + dir.z * dir.z;
+
+    // A camera sitting on its own target leaves the direction unnormalised, as the reference
+    // leaves it.
+    if (lengthSq > 0.00000011920929f) {
+        float inv = 1.0f / sqrtf(lengthSq);
+
+        dir.x *= inv;
+        dir.y *= inv;
+        dir.z *= inv;
+    }
+
+    CMapObj::s_localViewPlane.n = dir;
+    CMapObj::s_localViewPlane.d = -(dir.x * CMapObj::s_localCameraPos.x
+                                  + dir.y * CMapObj::s_localCameraPos.y
+                                  + dir.z * CMapObj::s_localCameraPos.z);
+
+    // TODO FUN_00682130(&DAT_00adfe90) and the second matrix block after it: the projection
+    // the walk measures a portal's screen rectangle with. The rectangle itself
+    // (FUN_007a9090 -> FUN_007a85e0) is not ported either, so neither is used yet.
+}
+
+// ref: FUN_007a7210
+// A camera within a centimetre of the portal's plane, and inside the doorway itself, sees
+// straight through: the walk then treats the opening as covering the whole screen rather
+// than a rectangle of it.
+void CMapObj::TestCameraInPortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect* rect) {
+    const C4Plane& plane = portal->plane;
+    const C3Vector& camera = CMapObj::s_localCameraPos;
+
+    float distance = plane.n.x * camera.x + plane.n.y * camera.y + plane.n.z * camera.z + plane.d;
+
+    if (distance <= -0.01f || distance >= 0.01f) {
+        return;
+    }
+
+    auto vertices = &mapObj->m_mopv[portal->startVertex];
+    uint32_t axis = DominantAxis(plane.n);
+
+    if (PointInPolygon(camera, vertices, portal->count, axis)) {
+        rect->flags |= 0x2;
+    }
+}
