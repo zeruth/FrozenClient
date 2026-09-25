@@ -7,6 +7,9 @@
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "model/CM2Model.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "world/Terrain.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapStaticEntity.hpp"
 #include "world/CWFrustum.hpp"
@@ -1722,6 +1725,67 @@ void CWorldScene::TraverseRowEntities(Row* row) {
         // TODO the reference asks the entity's own callback first and keeps it out when the
         // callback refuses; frozen has no entity callbacks yet, so every visible entity joins.
         CWorldScene::s_frameEntityList.LinkToTail(entity);
+
+        entity = next;
+    }
+}
+
+// ref: FUN_00793980
+// The frame's entities, drained. Each one leaves the list as it is handled, so the list is empty
+// again by the time the next frame fills it.
+//
+// An entity that answers to a game object takes its footprint from the object -- for a unit that
+// is the box CreatureModelData gives, shifted for whatever it is riding. One that does not is a
+// scene model in its own right, and its footprint is the box the animation it is playing was
+// authored with, so the shadow follows the animation rather than sitting at a fixed size.
+void CWorldScene::DrawEntityShadows() {
+    // TODO SFile::IsStreamingMode() gates a hint (FUN_00825150) the reference gives the
+    // streamer when a model the frame wants has not arrived. Not ported.
+
+    for (auto entity = CWorldScene::s_frameEntityList.Head(); entity; ) {
+        auto next = CWorldScene::s_frameEntityList.Next(entity);
+
+        entity->m_entityRowLink.Unlink();
+
+        // TODO FUN_00791240(model, bounds, (m_flags7c >> 0xe) & 1): the reference refreshes the
+        // model's out-of-frustum bit and every attachment's here, from bounds that include the
+        // particle emitters (FUN_00825a60). Neither that nor the plain bounds helper is ported.
+
+        if (!entity->m_model
+            || !entity->m_model->IsLoaded(0, 0)
+            || (entity->m_flags7c & 0x4)) {
+            entity = next;
+
+            continue;
+        }
+
+        auto object = ClntObjMgrObjectPtr(entity->m_param64, TYPE_UNIT, __FILE__, __LINE__);
+
+        if (!object) {
+            // Bit 11 is what marks an entity as casting at all.
+            if (entity->m_flags7c & 0x800) {
+                M2SequenceInfo info;
+
+                entity->m_model->GetSequenceInfo(0, 0, info);
+                BlobShadowDrawCaster(entity->m_model, info.extent);
+            }
+
+            entity = next;
+
+            continue;
+        }
+
+        // TODO the reference also skips a unit whose record at +0xd0 reads 9 at +0x110. What
+        // that field is has not been established, so frozen casts for every unit; the effect is
+        // a shadow under one kind of unit that the reference leaves without one.
+        if (entity->m_flags7c & 0x800) {
+            CAaBox shadowBox;
+
+            BlobShadowDrawCaster(entity->m_model,
+                                 static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox));
+        }
+
+        // TODO the object's own per-frame hook, vtable slot 29, runs here.
 
         entity = next;
     }

@@ -7,6 +7,7 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "world/Terrain.hpp"
+#include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"
 #include "gx/Texture.hpp"
@@ -316,6 +317,16 @@ void CGWorldFrame::OnWorldRender() {
         // creature casts a proportionally larger blob.
         BlobShadowsBegin();
 
+        // The reference's own pass is CWorldScene::DrawEntityShadows, which drains the frame's
+        // entity list. It is ported but NOT called here, and must not be until something sets
+        // the caster bit: it casts only for an entity whose state word has 0x800, and nothing
+        // in frozen writes m_flags7c at all, so calling it would silently remove every unit
+        // shadow. The placement code that sets those bits (FUN_007c23f0 and its neighbours) is
+        // the missing piece.
+        //
+        // Until then units cast from the object manager, picked by model flags and sized from
+        // CGUnit_C::GetShadowBox -- the box the reference uses, through the reference's gate,
+        // reached by a walk that is frozen's own.
         for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
             if (!object->m_model || !object->IsA(TYPE_UNIT) || !object->m_model->m_flag10000) {
                 continue;
@@ -325,10 +336,6 @@ void CGWorldFrame::OnWorldRender() {
                 continue;
             }
 
-            // The reference sizes a unit's blob from the box CGUnit_C::GetShadowBox builds out
-            // of CreatureModelData, shifted for whatever the unit is riding -- not from the
-            // model's own bounds, and with no clamps of its own. BlobShadowDrawCaster applies
-            // the rest of the gate.
             CAaBox shadowBox;
 
             BlobShadowDrawCaster(object->m_model,

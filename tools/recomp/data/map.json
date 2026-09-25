@@ -15240,7 +15240,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1985,
+  "frozenSize": 1825,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -44390,6 +44390,22 @@
   "refSize": 526,
   "status": "ported"
  },
+ "00793980": {
+  "branchRatio": 0.294,
+  "constOverlap": 0.053,
+  "faithful": false,
+  "fidelity": 0.364,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::DrawEntityShadows",
+  "frozenSize": 367,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 398,
+  "status": "ported"
+ },
  "00793b10": {
   "branchRatio": 0.357,
   "constOverlap": 0.0,
@@ -53398,7 +53414,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetSequenceInfo",
-  "frozenSize": 0,
+  "frozenSize": 695,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 706,

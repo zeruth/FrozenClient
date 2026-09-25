@@ -192,6 +192,9 @@ class CWorldScene {
         // Move a row's liquid layers to the frame list, testing each on the way.
         // ref: FUN_007935a0
         static void TraverseRowLiquids(Row* row);
+        // Drain the frame's entity list, casting a blob under each entity that should have one.
+        // ref: FUN_00793980
+        static void DrawEntityShadows();
         // Every entity the frame found visible, in the order the rows were walked. The row
         // visit hands them over through the same link the row used. DAT_00cdb098
         static STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) s_frameEntityList;
