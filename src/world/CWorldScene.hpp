@@ -183,6 +183,10 @@ class CWorldScene {
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
         // ref: FUN_00791cb0
         static void VisitStaticEntity(CMapStaticEntity* entity);
+        // The occluders of one distance row: solid chunks raise the horizon, chunks you can
+        // see through reopen it, and the reopening has to come second. ref: FUN_00793760
+        static void TraverseRowOccluders(Row* row);
+
         // ref: FUN_00799980
         static void TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand);
         // ref: FUN_007987a0

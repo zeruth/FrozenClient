@@ -43984,7 +43984,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::ShadeHorizon",
-  "frozenSize": 0,
+  "frozenSize": 792,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 601,
@@ -44278,6 +44278,22 @@
   "refSize": 521,
   "status": "ported"
  },
+ "00793760": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseRowOccluders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 526,
+  "status": "ported"
+ },
  "00793b10": {
   "branchRatio": 0.357,
   "constOverlap": 0.0,
@@ -44490,20 +44506,20 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 264,
+  "frozenSize": 676,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
   "status": "ported"
  },
  "0079a870": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.292,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.264,
@@ -44512,7 +44528,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 467,
+  "frozenSize": 598,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -48162,7 +48178,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::FeedHorizon",
-  "frozenSize": 0,
+  "frozenSize": 546,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 198,

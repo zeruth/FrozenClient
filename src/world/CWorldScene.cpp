@@ -1008,7 +1008,7 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
 
         int32_t band = CWorldScene::DistanceBand(static_cast<float>(i) * CHUNK_SIZE);
         // TODO FUN_007987a0(row, band)
-        // TODO FUN_00793760(row)
+        CWorldScene::TraverseRowOccluders(row);
         (void)band;
     }
 
@@ -1711,4 +1711,50 @@ void CWorldScene::ShadeHorizon(const float (*table)[3], const float* heights,
             }
         }
     }
+}
+
+// ref: FUN_00793760
+// The chunks of one row that stand between the camera and whatever is behind them. A solid
+// chunk raises the skyline along its silhouette; one with holes in it reopens what it spans.
+// Both passes walk the same list, and the order matters: raising first and reopening second is
+// what lets a doorway-shaped gap in a cliff stay see-through.
+//
+// Only chunks between the near and far occluder distances count. Nearer than that the
+// silhouette is too coarse to mean anything, and past the far edge there is nothing left to
+// hide.
+void CWorldScene::TraverseRowOccluders(Row* row) {
+    if (!(CWorld::s_enables & 0x20)) {
+        // Occlusion off: the list still has to be emptied, or next frame's chunks pile onto it.
+        row->occluderChunks.UnlinkAll();
+
+        return;
+    }
+
+    for (auto chunk = row->occluderChunks.Head(); chunk; ) {
+        auto next = row->occluderChunks.Next(chunk);
+
+        if (chunk->m_header && !chunk->m_header->holes) {
+            chunk->m_frameLink.Unlink();
+
+            if (chunk->m_sortDistance < CWorldScene::s_farChunkDistance
+                && CWorldScene::s_nearChunkDistance < chunk->m_sortDistance) {
+                chunk->FeedHorizon();
+            }
+        }
+
+        chunk = next;
+    }
+
+    // What the first pass left behind is the chunks you can see through.
+    for (auto chunk = row->occluderChunks.Head(); chunk; ) {
+        auto next = row->occluderChunks.Next(chunk);
+
+        chunk->m_frameLink.Unlink();
+        chunk->FeedHorizon();
+
+        chunk = next;
+    }
+
+    // TODO the row's second occluder list (+0x3c), which holds the map objects that shade the
+    // horizon. Nothing links into it yet.
 }

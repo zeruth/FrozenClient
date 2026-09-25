@@ -1031,6 +1031,14 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     GxRsPush();
     GxXformPush(GxXform_World);
 
+    // The horizon starts the frame as far below anything as makes no difference, so the first
+    // ridge to shade a column always wins. Without this it would keep the highest skyline it
+    // ever saw and progressively hide the world.
+    for (uint32_t i = 0; i < CWorldScene::HORIZON_COLUMNS; i++) {
+        CWorldScene::s_horizonColumnFlags[i] = 0;
+        CWorldScene::s_horizonBuffer[i] = -1000000.0f;
+    }
+
     CWorldScene::s_visibleMapObjCount = 0;
     CWorldScene::s_visibleChunkCount = 0;
     CWorldScene::s_visibleEntityCount = 0;
