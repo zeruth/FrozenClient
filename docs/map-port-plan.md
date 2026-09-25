@@ -168,20 +168,46 @@ to be re-ported against later.
 
 Movement, spells and the UI stubs are not in this plan; they start after the scene matches.
 
-## State of the load chain (2026-09-25, seven cycles in)
+## State of the load chain (2026-09-25)
 
-Ported and committed, and now the path the terrain chunks draw through: the map memory block,
-the chunk data layer, the tile layer, streaming (`CMap::Update` -> `UpdateAreas` ->
-`CMapArea::CreateChunks`), the WDT and settings loads, the render chunk with its buffer pools
-(`CMapRenderChunk`, commit d86ee654), the chunk pass and the render chunk draws (`CWorldScene`,
-`CMapRenderChunk::DrawWorld` and friends, commit 6f658b56), and the scene camera plus the chunk
-visibility traversal (`CWorldScene::UpdateCamera` / `Traverse` / `TraverseRowChunks`,
-`CMap::Render`, commit 183e0281). `CGWorldFrame::OnWorldRender` calls `CMap::Render` before the
-stand-in `TerrainRender`, whose chunk pass is gone. **Built, not yet seen running.** The first
-run needs to check: chunks appear at all (the traversal, the render lists and
-`s_terrainVertexShaders` from `Terrain.bls` are all first-time code), depth against the
-stand-in's WMOs, and the sun/fog look (the terrain constants take the projection with its z row
-negated, as the reference does; see `CWorldScene::SetupTerrainConstants`).
+**Terrain is done and has been seen on screen.** The map memory block, the chunk and tile data
+layers, streaming, the WDT and settings loads, the render chunk with its buffer pools, the chunk
+pass and draws, the scene camera and the chunk visibility traversal, the alpha and shadow texture
+builders and the two-chunk pairing all draw through `CMap::Render` now, and the user confirmed
+the look. `CGWorldFrame::OnWorldRender` calls `CMap::Render` before the stand-in `TerrainRender`,
+whose chunk pass is gone.
+
+**Map objects are the current item and are most of the way there, none of it run.** Loaded,
+culled, aged and buffered; the draw is written but nothing calls it. What landed, in order:
+the load chain and the visibility path, root and group ageing, the named shader effect registry
+(`CShaderEffectManager::LoadEffectFile` parses the five `.wfx` files), `CMapObj::Initialize`
+binding each MOMT shader id to its effect, `VBBList` plus `CMapObjGroupBuffers.cpp` for the group's
+GPU buffers, the five pieces of per-batch render state in `CMapObjDraw.cpp`, and
+`CMapObjGroup::DrawBatches`.
+
+Two facts worth not re-deriving: the WMO draw always takes the shader path, because the
+reference's shader-level global reads a constant 5; and `VBBList`'s block-sharing mode is dead in
+3.3.5a, both lists being built with the flag clear, so only the one-pool-per-block path needs
+writing.
+
+What the map object work still needs before the stand-in's WMO half can retire:
+
+- `CMapObj::Render` (`FUN_007abf50`), which walks the frustum records and calls `DrawBatches`
+  for each.
+- `CWorldScene::RenderMapObjs` (`FUN_007964a0`), the pass itself, and its wiring into
+  `CMap::Render`. **Turning it on and removing the stand-in's WMO draw is one change that needs
+  one run**, because until then both would draw.
+- The outdoor group draw (`FUN_007a9380`), taken when the root's MOHD is flagged outdoor.
+  `DrawBatches` returns early there today, so those groups draw nothing.
+- The per-vertex portal light bake (`FUN_007d78c0`), which darkens a group's colours where a
+  portal occludes.
+- The portal walk (`FUN_007b3b20` / `FUN_007ad1f0`) and the interior path behind
+  `CWorldScene::s_cameraGroup`.
+- A flat grey fallback texture (the reference's `FUN_004b9550` at startup, kept at 0x00cd8618),
+  without which a batch whose texture is still loading is skipped rather than drawn untextured.
+- The two light gaps `CMapObjDraw.cpp` documents: one fog set where the reference picks between
+  two, and the exterior/interior ambient and diffuse, which the reference reads from two
+  LightParams columns per zone.
 
 What the reference does on the same path that is still listed as `TODO FUN_...` in place:
 
