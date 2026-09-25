@@ -1191,13 +1191,13 @@ void CWorldScene::VisitMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup
                 };
 
                 CMapObj::SetVisibleCallback(&CWorldScene::MarkMapObjGroupVisible, def);
+
+                CMapObj::s_walkDef = def;
                 CMapObj::s_portalPlacement = def->m_placement;
-                CMapObj::s_portalStamp++;
 
-                CMapObj::SetupPortalContext(def->m_placement, def->m_inversePlacement,
-                                            CWorldScene::s_cameraPos, CWorldScene::s_cameraTarget);
-
-                def->m_mapObj->WalkPortals(defGroup->m_groupIndex, 0xffff, ndc, 0, 1);
+                def->m_mapObj->WalkFromOutside(def->m_placement, def->m_inversePlacement,
+                                               CWorldScene::s_cameraPos, CWorldScene::s_cameraTarget,
+                                               ndc, defGroup->m_groupIndex);
             }
         }
     }

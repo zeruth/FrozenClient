@@ -207,12 +207,34 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // it needs them.
         static C44Matrix s_portalPlacement;
         static int32_t s_portalStamp;
+        // Which building the walk is in, and which it was in last. The stamp advances when
+        // these differ, so every group of one building shares one measurement of its doorways
+        // (DAT_00d1c420 and DAT_00d1c41c).
+        static CMapObjDef* s_walkDef;
+        static CMapObjDef* s_lastWalkDef;
+        // Set while the walk is running from inside a building rather than looking in from
+        // outside (DAT_00cfbec0), and set when a walk from inside reached daylight
+        // (DAT_00cd8620).
+        static int32_t s_insideBuilding;
+        static int32_t s_sawExterior;
 
         // Step through every doorway of one group that is still in view, marking each room it
         // reaches and narrowing the view by the doorway it came through. `fromGroup` is where
         // it came from, so it does not go straight back. ref: FUN_007ac060
         void WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* window,
                          uint32_t depth, int32_t interior);
+
+        // Look into a building from outside, through one of its groups. ref: FUN_007ad350
+        void WalkFromOutside(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                             const C3Vector& cameraPos, const C3Vector& cameraTarget,
+                             const float* window, uint32_t groupIndex);
+        // Walk out from the groups the camera is standing in. ref: FUN_007ad1f0
+        void WalkFromInside(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                            const C3Vector& cameraPos, const C3Vector& cameraTarget,
+                            const uint32_t* groups, uint32_t groupCount);
+
+        // ref: FUN_007b3b20
+        static void EnterPortalWalk(CMapObjDef* def, const uint32_t* groups, uint32_t groupCount);
 
         // ref: FUN_007a6e00
         static void SetupPortalContext(const C44Matrix& placement, const C44Matrix& inversePlacement,

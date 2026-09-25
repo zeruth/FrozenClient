@@ -1410,3 +1410,93 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         CWorldScene::s_frustumDepth--;
     }
 }
+
+CMapObjDef* CMapObj::s_walkDef;
+CMapObjDef* CMapObj::s_lastWalkDef;
+int32_t CMapObj::s_insideBuilding;
+int32_t CMapObj::s_sawExterior;
+
+namespace {
+
+// The doorway measurements are cached per frame per building, so the stamp advances when the
+// walk moves to a different building rather than on every group of the same one.
+void AdvancePortalStamp() {
+    if (CMapObj::s_walkDef != CMapObj::s_lastWalkDef) {
+        CMapObj::s_portalStamp++;
+        CMapObj::s_lastWalkDef = CMapObj::s_walkDef;
+    }
+}
+
+}
+
+// ref: FUN_007ad350
+void CMapObj::WalkFromOutside(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                              const C3Vector& cameraPos, const C3Vector& cameraTarget,
+                              const float* window, uint32_t groupIndex) {
+    CMapObj::SetupPortalContext(placement, inversePlacement, cameraPos, cameraTarget);
+
+    CMapObj::s_insideBuilding = 0;
+
+    AdvancePortalStamp();
+
+    this->WalkPortals(groupIndex, 0xffff, window, 0, 0);
+}
+
+// ref: FUN_007ad1f0
+// The camera is standing inside the building, possibly in more than one group at once where
+// they overlap. Each of those starts its own walk with the whole screen to work with.
+void CMapObj::WalkFromInside(const C44Matrix& placement, const C44Matrix& inversePlacement,
+                             const C3Vector& cameraPos, const C3Vector& cameraTarget,
+                             const uint32_t* groups, uint32_t groupCount) {
+    CMapObj::SetupPortalContext(placement, inversePlacement, cameraPos, cameraTarget);
+
+    CMapObj::s_insideBuilding = 1;
+    CMapObj::s_sawExterior = 0;
+
+    AdvancePortalStamp();
+
+    if (CWorldScene::s_frustumDepth + 1 >= static_cast<int32_t>(CWorldScene::FRUSTUM_DEPTH_MAX)) {
+        return;
+    }
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =
+        CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+
+    float window[4] = { -1.0f, -1.0f, 1.0f, 1.0f };
+
+    for (uint32_t i = 0; i < groupCount; i++) {
+        auto group = this->GetGroup(groups[i], 0);
+
+        if (!group) {
+            continue;
+        }
+
+        // Standing in a group that is open to the sky means the walk can see daylight.
+        if (!(group->m_flags & 0x48)) {
+            CMapObj::s_sawExterior = 1;
+        }
+
+        this->WalkPortals(groups[i], 0xffff, window, 0, 1);
+    }
+
+    CWorldScene::s_frustumDepth--;
+
+    // TODO the tail: every group the root flags always-draw (MOGI bit 16) has its box brought
+    // out to world space and is marked visible regardless of the walk. frozen's walk skips
+    // those groups, so nothing marks them yet.
+}
+
+// ref: FUN_007b3b20
+// The camera is inside this building: point the walk's reports at the frame's visible list and
+// start from the groups it is standing in.
+void CMapObj::EnterPortalWalk(CMapObjDef* def, const uint32_t* groups, uint32_t groupCount) {
+    CMapObj::SetVisibleCallback(&CWorldScene::MarkMapObjGroupVisible, def);
+
+    CMapObj::s_walkDef = def;
+    CMapObj::s_portalPlacement = def->m_placement;
+
+    def->m_mapObj->WalkFromInside(def->m_placement, def->m_inversePlacement,
+                                  CWorldScene::s_cameraPos, CWorldScene::s_cameraTarget,
+                                  groups, groupCount);
+}

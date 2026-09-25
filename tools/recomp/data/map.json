@@ -44464,7 +44464,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowMapObjDefs",
-  "frozenSize": 815,
+  "frozenSize": 806,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 243,
@@ -45110,6 +45110,38 @@
   "refSize": 460,
   "status": "ported"
  },
+ "007ad1f0": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::WalkFromInside",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 347,
+  "status": "ported"
+ },
+ "007ad350": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::WalkFromOutside",
+  "frozenSize": 110,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 93,
+  "status": "ported"
+ },
  "007ae140": {
   "branchRatio": 1.0,
   "constOverlap": 0.75,
@@ -45322,7 +45354,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -45332,6 +45364,22 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 266,
+  "status": "ported"
+ },
+ "007b3b20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::EnterPortalWalk",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 67,
   "status": "ported"
  },
  "007b47f0": {

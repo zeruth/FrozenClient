@@ -194000,15 +194000,13 @@
 "CWorldScene::MarkMapObjGroupVisible",
 "CMapObj::SetVisibleCallback",
 "C44Matrix::operator=",
-"CMapObj::SetupPortalContext",
-"CMapObj::WalkPortals"
+"CMapObj::WalkFromOutside"
 ],
 "strings": [],
 "consts": [
 "0",
 "0x10000",
 "0x8",
-"0xffff",
 "1",
 "1.0f",
 "2.0f",
@@ -198982,6 +198980,82 @@
 "lines": 123,
 "refs": [],
 "line": 1289
+},
+"AdvancePortalStamp": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 1423
+},
+"CMapObj::WalkFromOutside": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::SetupPortalContext",
+"AdvancePortalStamp",
+"CMapObj::WalkPortals"
+],
+"strings": [],
+"consts": [
+"0",
+"0xffff"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 1433
+},
+"CMapObj::WalkFromInside": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::SetupPortalContext",
+"AdvancePortalStamp",
+"CWFrustum::operator=",
+"CMapObj::GetGroup",
+"CMapObj::WalkPortals"
+],
+"strings": [],
+"consts": [
+"0",
+"0x48",
+"0xffff",
+"1",
+"1.0f",
+"4"
+],
+"branches": 4,
+"stub": false,
+"lines": 39,
+"refs": [],
+"line": 1448
+},
+"CMapObj::EnterPortalWalk": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::SetVisibleCallback",
+"C44Matrix::operator=",
+"CMapObj::WalkFromInside"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 1493
 },
 "TriangleOutsideHull": {
 "files": [
