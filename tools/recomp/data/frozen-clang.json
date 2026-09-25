@@ -37854,6 +37854,21 @@
 "refs": [],
 "line": 403
 },
+"NearlyEqual": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"fabsf"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 428
+},
 "CMath::cos": {
 "files": [
 "lib/typhoon/tempest/math/cmath.hpp"
@@ -198737,6 +198752,37 @@
 "lines": 100,
 "refs": [],
 "line": 947
+},
+"CMapObj::SetVisibleCallback": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 1052
+},
+"CMapObj::ReportVisible": {
+"files": [
+"src/world/map/cmapobjdraw.cpp"
+],
+"callseq": [
+"CMapObj::GetGroup",
+"?s_visibleCallback"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1058
 },
 "TriangleOutsideHull": {
 "files": [

@@ -158,6 +158,7 @@ addr	how	frozen	evidence
 00482110	callorder	LanguageProcess	same slot between linked calls in 00483910=CSimpleFontString::SetText
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
 00482720	annotated	CSimpleFontString::AddAnimTranslation	tag in src/ui/simple/CSimpleFontString.cpp
+00482870	annotated	NearlyEqual	tag in lib/typhoon/tempest/Intersect.cpp
 00482970	annotated	C3Vector::operator+=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004829a0	annotated	operator-	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 00482aa0	override	FrameScript_Object::GetDisplayName	
@@ -2800,6 +2801,8 @@ addr	how	frozen	evidence
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
+007a6b40	annotated	CMapObj::SetVisibleCallback	tag in src/world/map/CMapObjDraw.cpp
+007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs

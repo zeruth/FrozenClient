@@ -2539,6 +2539,22 @@
   "refSize": 68,
   "status": "ported"
  },
+ "00482870": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "NearlyEqual",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleRender.cpp",
+  "refSize": 32,
+  "status": "ported"
+ },
  "00482970": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -44708,6 +44724,38 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 50,
+  "status": "ported"
+ },
+ "007a6b40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::SetVisibleCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "007a6b60": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::ReportVisible",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 46,
   "status": "ported"
  },
  "007a7630": {

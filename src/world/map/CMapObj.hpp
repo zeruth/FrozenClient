@@ -13,6 +13,7 @@
 #include <cstdint>
 
 class CAsyncObject;
+class CMapObjDef;
 class CMapObjDefGroup;
 class CM2Lighting;
 class CShaderEffect;
@@ -140,6 +141,18 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
 
         // ref: FUN_007abf50
         void Render(uint32_t groupIndex, const C44Matrix& inversePlacement, CMapObjDefGroup* defGroup);
+
+        // --- the portal walk's reporting channel ------------------------------------------
+        // Who to tell about a group the walk reaches, and what to hand them with it. The walk
+        // is several calls deep by the time it decides, so the destination is parked here
+        // rather than threaded through (DAT_00d1bed8 and DAT_00d1bedc).
+        static void (*s_visibleCallback)(uint32_t groupIndex, CMapObjDef* def);
+        static CMapObjDef* s_visibleCallbackArg;
+
+        // ref: FUN_007a6b40
+        static void SetVisibleCallback(void (*callback)(uint32_t, CMapObjDef*), CMapObjDef* def);
+        // Report one group, if its file is in. ref: FUN_007a6b60
+        void ReportVisible(uint32_t groupIndex);
 
         // --- draw state -------------------------------------------------------------------
         // What the draw last set, so a run of batches sharing a setting pushes it once. The

@@ -1044,3 +1044,25 @@ void CMapObjGroup::BakePortalLight() {
         color.a = static_cast<uint8_t>(lroundf(total * 255.0f));
     }
 }
+
+void (*CMapObj::s_visibleCallback)(uint32_t groupIndex, CMapObjDef* def);
+CMapObjDef* CMapObj::s_visibleCallbackArg;
+
+// ref: FUN_007a6b40
+void CMapObj::SetVisibleCallback(void (*callback)(uint32_t, CMapObjDef*), CMapObjDef* def) {
+    CMapObj::s_visibleCallback = callback;
+    CMapObj::s_visibleCallbackArg = def;
+}
+
+// ref: FUN_007a6b60
+void CMapObj::ReportVisible(uint32_t groupIndex) {
+    if (!this->GetGroup(groupIndex, 0)) {
+        return;
+    }
+
+    if (!CMapObj::s_visibleCallback) {
+        return;
+    }
+
+    CMapObj::s_visibleCallback(groupIndex, CMapObj::s_visibleCallbackArg);
+}

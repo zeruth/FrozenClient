@@ -423,3 +423,8 @@ float DistancePointPolygon(const C3Vector& point, const C3Vector* vertices, int3
 
     return nearest;
 }
+
+// ref: FUN_00482870
+bool NearlyEqual(float a, float b, float epsilon) {
+    return fabsf(a - b) < epsilon;
+}

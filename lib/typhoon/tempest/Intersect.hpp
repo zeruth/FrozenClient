@@ -34,6 +34,9 @@ uint32_t DominantAxis(const C3Vector& v);
 uint32_t AaBoxVsPlanes6(const C4Plane* planes, const CAaBox& box);
 uint32_t AaBoxBehindPlanes6(const C4Plane* planes, const CAaBox& box);
 
+// Whether two scalars are within `epsilon` of each other. ref: FUN_00482870
+bool NearlyEqual(float a, float b, float epsilon);
+
 // A ray from `origin` toward `target`. With `normalize` set the direction comes out unit
 // length, so a distance along it is a real distance. ref: FUN_00985200
 void RayFromPoints(C3Ray& out, const C3Vector& origin, const C3Vector& target, bool normalize);
