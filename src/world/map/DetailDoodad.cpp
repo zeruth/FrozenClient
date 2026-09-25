@@ -1,6 +1,9 @@
 #include "world/map/DetailDoodad.hpp"
 #include "world/CWorldParam.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMap.hpp"
+#include "model/CM2Shared.hpp"
+#include "model/M2Data.hpp"
 #include <tempest/Random.hpp>
 #include <cstring>
 #include <cmath>
@@ -179,10 +182,24 @@ bool EnsureModel(CDoodadModel* entry) {
         return false;
     }
 
-    // TODO FUN_007b1b10 as the loaded callback: the reference is told when the model lands so it
-    // can work out the kind's bounds. Not ported, so nothing reacts to the load.
+    entry->m_model->SetLoadedCallback(OnModelLoaded, entry);
 
     return true;
+}
+
+// ref: FUN_007b1b10
+// The reference hangs this off CM2Model::SetLoadedCallback, so the texture is resolved exactly
+// once, when the model arrives. Only the first texture: a detail doodad is one sheet of grass.
+void OnModelLoaded(CM2Model* model, void* param) {
+    auto entry = static_cast<CDoodadModel*>(param);
+
+    if (!entry->m_model->IsLoaded(0, 0)) {
+        entry->m_model->WaitForLoad(0);
+    }
+
+    auto data = entry->m_model->m_shared->m_data;
+
+    entry->m_texture = CMap::LoadTexture(data->textures[0].filename.Data());
 }
 
 // ref: FUN_007b3530
@@ -304,7 +321,7 @@ static float SignedUnit(uint32_t r) {
 // Part of ref: FUN_007d3390
 // The picking and placing half of the scatter, without the instance and batch bookkeeping the
 // reference wraps around it.
-uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut) {
+uint32_t Scatter(CMapChunk* chunk, CInstance* instance) {
     if (!chunk->m_header || !chunk->m_heights || !chunk->m_layers || !chunk->m_header->nLayers) {
         return 0;
     }
@@ -353,7 +370,7 @@ uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut) {
 
     uint32_t placed = 0;
 
-    for (uint32_t i = 0; i < density && placed < maxOut; i++) {
+    for (uint32_t i = 0; i < density; i++) {
         uint32_t col = s_pickCol[i];
         uint32_t row = s_pickRow[i];
 
@@ -411,7 +428,7 @@ uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut) {
 
         const SCell& cell = s_cells[col + row * 8];
 
-        for (uint32_t n = 0; n < perCell && placed < maxOut; n++) {
+        for (uint32_t n = 0; n < perCell; n++) {
             float ja = SignedUnit(CRandom::uint32(seed));
             float jb = SignedUnit(CRandom::uint32(seed));
 
@@ -473,23 +490,91 @@ uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut) {
             }
 
 
-            SPlacement& p = out[placed++];
+            C3Vector position;
 
-            p.doodadId = static_cast<uint32_t>(kind);
-            p.position.x = x;
-            p.position.y = y;
-            p.position.z = z;
-            p.rotation = (SignedUnit(CRandom::uint32(seed)) + 1.0f) * TAU_HALF;
-            p.scale = SignedUnit(CRandom::uint32(seed)) * SCALE_JITTER + 1.0f;
-            p.plane = plane;
-            p.color = 0xff000000u
-                    | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
-                    | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
-                    | static_cast<uint32_t>(c[0] + ROUND_BIAS);
+            position.x = x;
+            position.y = y;
+            position.z = z;
+
+            float rotation = (SignedUnit(CRandom::uint32(seed)) + 1.0f) * TAU_HALF;
+            float scale = SignedUnit(CRandom::uint32(seed)) * SCALE_JITTER + 1.0f;
+
+            uint32_t color = 0xff000000u
+                           | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
+                           | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
+                           | static_cast<uint32_t>(c[0] + ROUND_BIAS);
+
+            AddPlacement(instance, kind, position, rotation, scale, plane.n,
+                         static_cast<uint16_t>(col + row * 8), color);
+
+            placed++;
         }
     }
 
     return placed;
+}
+
+// ref: FUN_007b31e0
+// Batches are keyed by TEXTURE, so grass of several kinds still draws in one call. A placement
+// joins the first batch already on its texture that can still fit the model's vertices and
+// indices inside one buffer of the ring; failing that it opens a free batch, and failing that
+// the chunk is full and the doodad is dropped.
+void AddPlacement(CInstance* instance, int32_t doodadId, const C3Vector& position,
+                  float rotation, float scale, const C3Vector& normal, uint16_t cell,
+                  uint32_t color) {
+    auto entry = s_models[doodadId];
+
+    if (!entry->m_model->IsLoaded(0, 0)) {
+        entry->m_model->WaitForLoad(0);
+    }
+
+    // The SKIN's leading magic is why the counts sit where an M2Array's offsets would.
+    auto skin = entry->m_model->m_shared->skinProfile;
+
+    uint32_t vertexCount = skin->vertices.Count();
+    uint32_t indexCount = skin->indices.Count();
+
+    uint32_t slot = 0;
+
+    for (; slot < 4; slot++) {
+        auto& batch = instance->m_batches[slot];
+
+        if (batch.texture == entry->m_texture &&
+            batch.vertexTotal + vertexCount < s_perChunk &&
+            batch.indexTotal + indexCount < s_indexCount) {
+            break;
+        }
+    }
+
+    if (slot == 4) {
+        for (slot = 0; slot < 4; slot++) {
+            if (!instance->m_batches[slot].texture) {
+                break;
+            }
+        }
+
+        // All four taken and none of them ours: this chunk has no room left.
+        if (slot == 4) {
+            return;
+        }
+
+        instance->m_batches[slot].texture = entry->m_texture;
+    }
+
+    auto& batch = instance->m_batches[slot];
+
+    auto placement = batch.placements.New();
+
+    placement->cell = cell;
+    placement->doodadId = doodadId;
+    placement->position = position;
+    placement->rotation = rotation;
+    placement->scale = scale;
+    placement->normal = normal;
+    placement->color = color;
+
+    batch.vertexTotal += vertexCount;
+    batch.indexTotal += indexCount;
 }
 
 }

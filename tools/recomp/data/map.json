@@ -45558,6 +45558,21 @@
   "refSize": 119,
   "status": "ported"
  },
+ "007b1b10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "OnModelLoaded",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 57,
+  "status": "verified"
+ },
  "007b2760": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45606,8 +45621,8 @@
  "007b3050": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45617,6 +45632,21 @@
   "module": "DetailDoodad.cpp",
   "refSize": 119,
   "status": "ported"
+ },
+ "007b31e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "AddPlacement",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 432,
+  "status": "verified"
  },
  "007b3530": {
   "branchRatio": -1.0,

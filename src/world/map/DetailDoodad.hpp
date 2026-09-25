@@ -3,6 +3,7 @@
 
 #include "db/rec/GroundEffectDoodadRec.hpp"
 #include <storm/Array.hpp>
+#include "gx/Texture.hpp"
 #include <tempest/Vector.hpp>
 #include <tempest/Plane.hpp>
 #include <cstdint>
@@ -139,7 +140,9 @@ class CDoodadModel {
     public:
         GroundEffectDoodadRec* m_rec = nullptr;  // +0x00
         CM2Model* m_model = nullptr;             // +0x04
-        // TODO +0x08
+        // +0x08: the model's first texture, resolved once the model lands. This is the key the
+        // instance batches on, which is why two kinds sharing a texture share a draw.
+        HTEXTURE m_texture = nullptr;
 };
 
 // Static variables
@@ -153,15 +156,39 @@ extern CGxPool* s_indexPool;                   // DAT_00d1c4d4
 extern TSGrowableArray<CGxBuf*> s_buffers;     // DAT_00d1c50c
 extern int32_t s_rebuild;                      // DAT_00d1c4c0
 
-// One scattered doodad, as the builder hands it over. The reference keeps these in a growable
-// array on the chunk's instance, four batches deep, one batch a model.
+// One scattered doodad. 0x2c bytes, laid out as the reference's, which keeps these in a
+// growable array on each of the instance's four batches. Only the triangle's NORMAL is kept,
+// not the whole plane: the plane's job ended when it gave the doodad its height.
 struct SPlacement {
-    uint32_t doodadId;
-    C3Vector position;      // in the chunk's own space, as the terrain's vertices are
-    float rotation;         // 0 .. 2*pi
-    float scale;            // 0.67 .. 1.33
-    C4Plane plane;          // the triangle it stands on
-    uint32_t color;         // 0xAABBGGRR, the interpolated vertex colour
+    uint16_t unk0 = 0;      // +0x00: written by nothing the instance fill touches
+    uint16_t cell = 0;      // +0x02: which of the chunk's 64 cells it stands on
+    int32_t doodadId = 0;   // +0x04
+    C3Vector position;      // +0x08: in the chunk's own space, as the terrain's vertices are
+    float rotation = 0.0f;  // +0x14: 0 .. 2*pi
+    float scale = 0.0f;     // +0x18: 0.67 .. 1.33
+    C3Vector normal;        // +0x1c: the triangle's, normalized and pointing up
+    uint32_t color = 0;     // +0x28: 0xAABBGGRR, the interpolated vertex colour
+};
+
+// One batch: every doodad on this chunk that shares a texture, so grass of several kinds still
+// draws in one call. 0x24 bytes.
+struct SBatch {
+    HTEXTURE texture = nullptr;     // +0x00: the key -- batches are keyed by texture, not model
+    uint32_t vertexTotal = 0;       // +0x04: running, against s_perChunk
+    uint32_t indexTotal = 0;        // +0x08: running, against s_indexCount
+    // TODO +0x0c, +0x10: two words the instance fill never touches, most likely the pair of
+    // buffers out of the ring that this batch ends up drawing from.
+    uint32_t unk0c = 0;
+    uint32_t unk10 = 0;
+    TSGrowableArray<SPlacement> placements;  // +0x14
+};
+
+// One chunk's worth of detail doodads. The reference takes it from the WDETAILDOODADINST heap.
+class CInstance {
+    public:
+        uint32_t unk00 = 0;         // +0x00
+        SBatch m_batches[4];        // +0x04: a chunk draws at most four textures' worth
+        // TODO +0x94 .. +0xa3
 };
 
 // Functions
@@ -169,10 +196,21 @@ struct SPlacement {
 // nothing unless something has asked for a rebuild. ref: FUN_007b2a80
 void CreateBuffers();
 
-// Scatter one chunk's grass into `out`, returning how many were placed. Part of FUN_007d3390:
-// the picking and placing, without the instance and batch bookkeeping the reference wraps it
-// in. Empty when the chunk has no layers or its models have not arrived.
-uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut);
+// Scatter one chunk's grass into `instance`, returning how many were placed. Part of
+// FUN_007d3390: the picking and placing, without the allocation of the instance itself.
+// Places nothing when the chunk has no layers or its models have not arrived.
+uint32_t Scatter(CMapChunk* chunk, CInstance* instance);
+
+// The model has landed, so its first texture can be resolved and kept as the batching key.
+// ref: FUN_007b1b10
+void OnModelLoaded(CM2Model* model, void* param);
+
+// File one placement into the instance: the batch already drawing this texture and still with
+// room in one buffer of the ring, or a free batch, or nowhere if all four are taken.
+// ref: FUN_007b31e0
+void AddPlacement(CInstance* instance, int32_t doodadId, const C3Vector& position,
+                  float rotation, float scale, const C3Vector& normal, uint16_t cell,
+                  uint32_t color);
 
 // Give the pools and every buffer back. ref: FUN_007b29b0
 void ReleaseBuffers();

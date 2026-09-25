@@ -1,4 +1,12 @@
 {
+  "007b1b10": {
+    "status": "verified",
+    "note": "DetailDoodad::OnModelLoaded. run 2026-09-25 on map 609: 164 kinds across 60 chunks all reported loaded, and every one of the 40 scattered chunks came out with exactly one non-null batch texture, which is the value this callback writes. Resolves only the first M2Texture -- a detail doodad is one sheet of grass."
+  },
+  "007b31e0": {
+    "status": "verified",
+    "note": "DetailDoodad::AddPlacement. run 2026-09-25 on map 609, scattering 40 chunks through the ported builder and reading the placements back out of the instance's batches. placed=1875, filed=1875 -- every placement reached a batch and none was dropped; batches=40, one per chunk, so every kind on a chunk shared one texture and therefore one draw; overCap=0, no batch's vertex or index total past one buffer of the ring; badCell=0; and a second scatter of each chunk produced the same batch count, texture and placement count (nonDet=0). Batches are keyed by TEXTURE, not by model: CDoodadModel +0x08 is what FUN_007b1b10 resolves from the model's first M2Texture once it lands. The vertex and index counts come from the skin profile at +0x04 and +0x0c, which are counts rather than M2Array offsets because the SKIN chunk opens with a four-byte magic."
+  },
   "007c5690": {
     "status": "diverged",
     "note": "CMapChunk::CreateLiquid. The reference's teardown unlinks a layer, which zeroes the link, and only then reads the next pointer through it, so it stops after the first layer and leaves any others linked into storage it has handed back. Frozen reads the link before unlinking. Everything else matches. Verified: run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give."
