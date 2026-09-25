@@ -2,23 +2,49 @@
 #include "ui/game/BattlefieldInfoScript.hpp"
 #include "ui/game/CGBattlefieldInfo.hpp"
 #include <common/DataStore.hpp>
+#include <common/Time.hpp>
+#include <cmath>
 #include "client/ClientServices.hpp"
+#include "db/Db.hpp"
 #include "net/Types.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "ui/FrameScript.hpp"
 #include "util/Unimplemented.hpp"
 
 namespace {
 
+// ref: FUN_0054baa0
 int32_t Script_GetNumBattlefields(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, CGBattlefieldInfo::s_numInstances);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0054d8f0
 int32_t Script_GetBattlefieldInstanceInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBattlefieldInfo(index)");
+
+        return 0;
+    }
+
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    if (player) {
+        auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+
+        if (index < CGBattlefieldInfo::s_numInstances) {
+            lua_pushnumber(L, CGBattlefieldInfo::s_instanceIDs[index]);
+
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 int32_t Script_IsBattlefieldArena(lua_State* L) {
@@ -38,12 +64,46 @@ int32_t Script_JoinBattlefield(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0054bb40
 int32_t Script_SetSelectedBattlefield(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: SetSelectedBattlefield(index)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+
+    if (index < CGBattlefieldInfo::s_numInstances) {
+        CGBattlefieldInfo::s_selectedInstance = CGBattlefieldInfo::s_instanceIDs[index];
+
+        return 0;
+    }
+
+    CGBattlefieldInfo::s_selectedInstance = 0;
+
+    return 0;
 }
 
+// ref: FUN_0054bbd0
 int32_t Script_GetSelectedBattlefield(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    uint32_t index = 0;
+
+    while (index < CGBattlefieldInfo::s_numInstances) {
+        if (CGBattlefieldInfo::s_instanceIDs[index] == CGBattlefieldInfo::s_selectedInstance) {
+            break;
+        }
+
+        index++;
+    }
+
+    if (index >= CGBattlefieldInfo::s_numInstances) {
+        index = 0xFFFFFFFF;
+    }
+
+    lua_pushnumber(L, static_cast<int32_t>(index + 1));
+
+    return 1;
 }
 
 int32_t Script_AcceptBattlefieldPort(lua_State* L) {
@@ -56,24 +116,111 @@ int32_t Script_GetBattlefieldStatus(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00549b80
 int32_t Script_GetBattlefieldPortExpiration(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBattlefieldPortExpiration(index)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
+
+    if (slot && slot->m_portExpireTime) {
+        auto now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+        if (now - slot->m_portExpireTime < 0) {
+            lua_pushnumber(L, static_cast<uint32_t>(slot->m_portExpireTime - now) / 1000);
+
+            return 1;
+        }
+    }
+
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
+// ref: FUN_00549c40
+// Milliseconds, unlike the port expiration above: the reference does not divide here.
 int32_t Script_GetBattlefieldInstanceExpiration(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CGBattlefieldInfo::s_instanceExpireTime) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    auto now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+    if (now - CGBattlefieldInfo::s_instanceExpireTime >= 0) {
+        lua_pushnumber(L, 0.0);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, static_cast<uint32_t>(CGBattlefieldInfo::s_instanceExpireTime - now));
+
+    return 1;
 }
 
+// ref: FUN_00549cd0
 int32_t Script_GetBattlefieldInstanceRunTime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto startTime = CGBattlefieldInfo::s_instanceStartTime;
+
+    if (startTime) {
+        auto now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+        lua_pushnumber(L, static_cast<uint32_t>(now - startTime));
+
+        return 1;
+    }
+
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
+// ref: FUN_00549d30
 int32_t Script_GetBattlefieldEstimatedWaitTime(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBattlefieldEstimatedWaitTime(index)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
+
+    if (slot) {
+        lua_pushnumber(L, slot->m_estimatedWaitTime);
+    } else {
+        lua_pushnumber(L, 0.0);
+    }
+
+    return 1;
 }
 
+// ref: FUN_00549dd0
 int32_t Script_GetBattlefieldTimeWaited(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBattlefieldTimeWaited(index)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
+
+    if (slot && slot->m_queueJoinTime) {
+        auto now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+        lua_pushnumber(L, static_cast<uint32_t>(now - slot->m_queueJoinTime));
+    } else {
+        lua_pushnumber(L, 0.0);
+    }
+
+    return 1;
 }
 
 int32_t Script_CloseBattlefield(lua_State* L) {
@@ -84,16 +231,28 @@ int32_t Script_RequestBattlefieldScoreData(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00549e80
 int32_t Script_GetNumBattlefieldScores(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, CGBattlefieldInfo::s_numScores);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldScore(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00549ec0
 int32_t Script_GetBattlefieldWinner(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!CGBattlefieldInfo::s_hasWinner) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, CGBattlefieldInfo::s_winner);
+
+    return 1;
 }
 
 int32_t Script_SetBattlefieldScoreFaction(lua_State* L) {
@@ -116,8 +275,30 @@ int32_t Script_GetBattlefieldStatInfo(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00549f60
 int32_t Script_GetBattlefieldStatData(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: GetBattlefieldStatData(playerIndex, statIndex)");
+
+        return 0;
+    }
+
+    auto playerIndex = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    CGBattlefieldInfo::ScoreEntry* score;
+
+    if (playerIndex < CGBattlefieldInfo::s_scoreListCount && (score = CGBattlefieldInfo::s_scoreList[playerIndex])) {
+        auto statIndex = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 2)))) - 1;
+
+        if (statIndex < 9) {
+            lua_pushnumber(L, score->m_stats[statIndex]);
+
+            return 1;
+        }
+    }
+
+    lua_pushnumber(L, 0.0);
+
+    return 1;
 }
 
 int32_t Script_RequestBattlefieldPositions(lua_State* L) {
@@ -134,16 +315,30 @@ int32_t Script_GetBattlefieldPosition(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0054a0e0
 int32_t Script_GetNumBattlefieldFlagPositions(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    int32_t count;
+
+    if (CGBattlefieldInfo::s_flagCarriers[1] == 0) {
+        count = CGBattlefieldInfo::s_flagCarriers[0] == 0 ? 0 : 1;
+    } else {
+        count = 2;
+    }
+
+    lua_pushnumber(L, count);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldFlagPosition(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0054a140
 int32_t Script_GetNumBattlefieldVehicles(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    lua_pushnumber(L, CGBattlefieldInfo::s_numVehicles);
+
+    return 1;
 }
 
 int32_t Script_GetBattlefieldVehicleInfo(lua_State* L) {
@@ -157,16 +352,51 @@ int32_t Script_CanJoinBattlefieldAsGroup(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0054c740
 int32_t Script_GetBattlefieldMapIconScale(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto mapRec = g_mapDB.GetRecord(CGBattlefieldInfo::s_mapID);
+
+    if (mapRec) {
+        lua_pushnumber(L, mapRec->m_minimapIconScale);
+
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+
+    return 1;
 }
 
+// ref: FUN_0054a180
+// The index is zero-based here, unlike the other battlefield bindings.
 int32_t Script_GetBattlefieldTeamInfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetBattlefieldTeamInfo(index)");
+
+        return 0;
+    }
+
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))));
+
+    lua_pushstring(L, index < 2 ? CGBattlefieldInfo::s_teamNames[index] : nullptr);
+    lua_pushnumber(L, index < 2 ? CGBattlefieldInfo::s_teamOldRating[index] : 0);
+    lua_pushnumber(L, index < 2 ? CGBattlefieldInfo::s_teamNewRating[index] : 0);
+    lua_pushnumber(L, index < 2 ? CGBattlefieldInfo::s_teamRating[index] : 0);
+
+    return 4;
 }
 
+// ref: FUN_0054a280
 int32_t Script_GetBattlefieldArenaFaction(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (CGBattlefieldInfo::s_arenaFactionFlag) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
 }
 
 int32_t Script_SortBattlefieldScoreData(lua_State* L) {
