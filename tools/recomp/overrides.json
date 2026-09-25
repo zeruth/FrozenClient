@@ -535,9 +535,9 @@
     "note": "CVar::Register clears every RCString member through it (Copy(nullptr)) and copies the help text"
   },
   "0076f640": {
-    "frozen": "SStrHash",
+    "frozen": "SStrHashHT",
     "status": "ported",
-    "note": "TSHashTable key hash used by CVar::Register before the bucket insert"
+    "note": "The case-insensitive table hash (GetNextTextUpper then the bob-jenkins mix) CVar::Register uses for its bucket; previously linked to SStrHash, which is 0076f340 (seed 0x7fed7fed, s_hashtable) and is tagged there. Corrected 2026-09-25"
   },
   "006b0b80": {
     "frozen": "ClientServices::SetMessageHandler",
@@ -1981,5 +1981,413 @@
     "frozen": "Script_GetFramesRegisteredForEvent",
     "status": "diverged",
     "note": "Ported from the decompilation 2026-09-25 with one deliberate difference: the reference does not check the listener lookup (FUN_0081b510) and reads through null for an event name nobody registered; frozen returns no frames there instead of crashing."
+  },
+  "004011d0": {
+    "status": "excluded",
+    "note": "MSVC 'vector constructor iterator', a compiler helper (wave 0, 2026-09-25)"
+  },
+  "0088b9f6": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0088cf60": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0088d2e2": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0088d93a": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0088dccf": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0088df06": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00891a79": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "008929a0": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892a00": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892a15": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892a2c": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892a88": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892a9e": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "00892bf0": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "008942be": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0040c932": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "0047bf20": {
+    "status": "excluded",
+    "note": "CRT: _ftol2 core, ceil, _CI* dispatch/_CItan, _localtime32_s, pow, _87except, exp, x87 helpers, asin/acos, _finite, iterator distance (wave 0, 2026-09-25)"
+  },
+  "008960aa": {
+    "status": "excluded",
+    "note": "import thunks (VERSION.DLL, DINPUT8.DLL) (wave 0, 2026-09-25)"
+  },
+  "008960b0": {
+    "status": "excluded",
+    "note": "import thunks (VERSION.DLL, DINPUT8.DLL) (wave 0, 2026-09-25)"
+  },
+  "008960b6": {
+    "status": "excluded",
+    "note": "import thunks (VERSION.DLL, DINPUT8.DLL) (wave 0, 2026-09-25)"
+  },
+  "008a103c": {
+    "status": "excluded",
+    "note": "import thunks (VERSION.DLL, DINPUT8.DLL) (wave 0, 2026-09-25)"
+  },
+  "00653a10": {
+    "status": "excluded",
+    "note": "empty function (wave 0, 2026-09-25)"
+  },
+  "0079f650": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005b8c80": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005f4e30": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005f5180": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005f5b60": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005bdf60": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "004d85a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005014a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005026a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00502800": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00502360": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0056ca00": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00505480": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005b1ef0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006169a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00616c20": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0061bd20": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0061bdb0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00577410": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00617280": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006173e0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066cd10": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066ce70": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066d130": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066d550": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066d6b0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066d810": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066d970": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066dc30": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066def0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0066ff60": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006792e0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00709580": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0055ec30": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0055ed90": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0055f050": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005c58d0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005c5960": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005c5f00": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0055e610": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0058e030": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "005fef70": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0060a1c0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0060a260": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006c26e0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006c2840": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006c9df0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0058eb60": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0058ebd0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006c2b50": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00590ae0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "006c2a50": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00599030": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00514100": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0051a2e0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00525720": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "004807a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0047e8a0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00514030": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "0047c470": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00493a40": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00489ad0": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00408d80": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00409770": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00767000": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00481030": {
+    "status": "excluded",
+    "note": "squall/storm or WowClientDB template instantiation (TSFixedArray/TSGrowableArray/TSList/TSExplicitList/TSHashTable/GetRecordByIndex): frozen has the template, not a linkable instance. Where a wave-0 port changed the template body to the reference's, the tag on the template names the instances (wave 0, 2026-09-25)"
+  },
+  "00990700": {
+    "status": "excluded",
+    "note": "FreeType FT_MulTo64/FT_Div64by32: only in the !FT_LONG64 path, which frozen's FreeType build does not compile (wave 0, 2026-09-25)"
+  },
+  "00990790": {
+    "status": "excluded",
+    "note": "FreeType FT_MulTo64/FT_Div64by32: only in the !FT_LONG64 path, which frozen's FreeType build does not compile (wave 0, 2026-09-25)"
+  },
+  "0079ae80": {
+    "frozen": "CMap::BuildBspLeafCache",
+    "status": "diverged",
+    "note": "Takes the face-ref array directly; the reference reads it from +0x8 of an argument whose type is unknown until its caller FUN_0079b1f0 is ported (wave 0, 2026-09-25)"
+  },
+  "0095d110": {
+    "frozen": "CDataAllocator::GetData",
+    "status": "diverged",
+    "note": "Block header and free-list link are pointer-sized on 64-bit; the reference's are 4 bytes, so m_bytesPerData must be >= sizeof(void*) (wave 0, 2026-09-25)"
+  },
+  "0095d1b0": {
+    "frozen": "CDataAllocator::PutData",
+    "status": "diverged",
+    "note": "Same pointer-sized free-list link as GetData (wave 0, 2026-09-25)"
+  },
+  "0053bd10": {
+    "frozen": "CGMinimapFrame::HasTrackingSpell",
+    "status": "diverged",
+    "note": "Reads frozen's rebuilt tracking list (GetNumTrackingSpells/GetTrackingSpell), not the reference array at 00be8dec (wave 0, 2026-09-25)"
+  },
+  "008279f0": {
+    "frozen": "CM2Model::SetParticleEmission",
+    "status": "diverged",
+    "note": "Skips null emitter slots: frozen leaves emitter types it does not implement null (wave 0, 2026-09-25)"
+  },
+  "006c0af0": {
+    "frozen": "GXUEMBEDDEDTEXTUREINFO::GXUEMBEDDEDTEXTUREINFO",
+    "status": "diverged",
+    "note": "Also zeroes +0x18/+0x1c, which Wrap.cpp reads before the |T parser that fills them is ported (wave 0, 2026-09-25)"
+  },
+  "0055f4d0": {
+    "status": "unlinked",
+    "note": "A generic hash-table lookup, also used on the AddOn table 00c2491c; not CGUIBindings::GetModifiedClick, where the callgraph matcher put it. Corrected 2026-09-25"
+  },
+  "00549ad0": {
+    "frozen": "Script_IsActiveBattlefieldArena",
+    "status": "stub",
+    "note": "The binding link is right, but frozen's body pushes nil. Status corrected from ported 2026-09-25"
+  },
+  "00819880": {
+    "frozen": "FrameScript_Object::RegisterScriptObject",
+    "status": "ported",
+    "note": "By its calls and callers (it registers the object before lua_rawgeti on its ref); the map had it as PushTexture in CSimpleColorSelectScript. Corrected 2026-09-25"
   }
 }
