@@ -168,7 +168,7 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // ref: FUN_00873ee0
         static void SetAlphaRefForBlendMode();
         // ref: FUN_007a8320
-        static void SetInstanceTransform(const C44Matrix& worldView);
+        static void SetInstanceTransform(const C44Matrix& world);
         // ref: FUN_007a9160
         static void SetupLocalLights(CM2Lighting* lighting, const C3Vector& cameraPos);
 

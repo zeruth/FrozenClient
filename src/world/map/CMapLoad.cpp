@@ -229,6 +229,9 @@ void CMap::UpdateMapObjDefs(int32_t update) {
     for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
         auto mapObj = def->m_mapObj;
 
+        if (def->m_flags & 0x80) {
+        }
+
         if (CWorld::s_farBox.Intersects(def->m_bounds)) {
             if (canWait && !mapObj->m_rootLoaded) {
                 mapObj->WaitForRoot();
@@ -289,6 +292,7 @@ void CMap::UpdateMapObjDefs(int32_t update) {
                     // TODO FUN_00794ad0(defGroup, FLT_MAX): the group leaves the collision grid
                     // while its file is still coming
                 } else if (!(def->m_flags & 0x20)) {
+
                     if (CWorldScene::s_frustumBounds.Intersects(defGroup->m_bounds)) {
                         CWorldScene::BucketMapObjDefGroup(def, defGroup);
                     }

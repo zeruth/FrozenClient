@@ -1,4 +1,7 @@
 #include "world/map/CMapObjGroup.hpp"
+
+#include <cstdio>
+#include <cstdlib>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObj.hpp"
 #include "async/AsyncFileRead.hpp"
@@ -279,6 +282,7 @@ void CMapObjGroup::ParseOptionalChunks(const uint8_t* cursor) {
         if (!(this->m_mapObj->m_mohd->flags & 0x8)) {
             this->FixVertexColors();
         }
+
     }
 
     if (this->m_flags & 0x1000) {

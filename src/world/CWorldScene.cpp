@@ -21,6 +21,8 @@
 #include <tempest/Intersect.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
+#include <cstdio>
+#include <cstdlib>
 #include <cmath>
 #include <cstring>
 
@@ -1168,15 +1170,22 @@ void CWorldScene::VisitMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup
 
     if (!CWorldScene::BoxOutsideFrustum(defGroup->m_bounds)) {
         if (portal || !CWorldScene::BoxOccluded(defGroup->m_bounds, 1)) {
+
             if (flags & 0x10000) {
                 // The group draws on its own: hand it over once its file is in
                 if (def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0)) {
                     CWorldScene::MarkMapObjGroupVisible(defGroup->m_groupIndex, def);
                 }
             } else if (flags & 0x8) {
-                // TODO an interior group: the reference narrows the window by a texel either way
-                // and walks into it through FUN_007ad350 -> FUN_007ac060, which is the portal
-                // recursion and the group's own draw
+                // Diverged, and this is the big one. The reference narrows the window by a texel
+                // either way and hands the group to FUN_007ad350 -> FUN_007ac060, the recursive
+                // portal walk, which is what marks an exterior group visible and then walks into
+                // whatever rooms its portals open onto. That walk is not ported. Marking the
+                // group here gets the building itself on screen; what is missing is the geometry
+                // on the far side of its doorways.
+                if (def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0)) {
+                    CWorldScene::MarkMapObjGroupVisible(defGroup->m_groupIndex, def);
+                }
             }
         }
     }
@@ -1191,13 +1200,15 @@ void CWorldScene::TraverseRowMapObjDefs(Row* row, const ViewWindow* window, int3
     for (auto defGroup = row->mapObjDefGroups.Head(); defGroup; ) {
         auto next = row->mapObjDefGroups.Next(defGroup);
 
-        defGroup->m_lameAssLink.Unlink();
+        // The row holds it by m_rowLink, which is the one the bucketing used.
+        defGroup->m_rowLink.Unlink();
 
         CAaSphere sphere = { defGroup->m_center, defGroup->m_radius };
 
         if (AaBoxVsPlanes6(CWorldScene::s_frustums[CWorldScene::s_frustumDepth].planes, defGroup->m_bounds)
             && !CWorldScene::SphereOccludedByVolumes(sphere)
             && !CWorldScene::BoxOccluded(defGroup->m_bounds, 1)) {
+
             auto def = static_cast<CMapObjDef*>(defGroup->m_parentLinkList.Head()->ref);
             CWorldScene::VisitMapObjDefGroup(def, defGroup, window, portal);
             // TODO FUN_007998a0(defGroup->m_doodadDefLinkList, band): the group's own doodads
@@ -1276,6 +1287,8 @@ void CWorldScene::BucketMapObjDefGroups() {
 // portal recursion, sets its instance transform and lighting, hands itself to CMapObj::Render,
 // and gives its frustum records back.
 void CWorldScene::RenderMapObjs() {
+    // is behaving.
+
     GxRsPush();
 
     CWorldScene::s_frustumDepth++;
@@ -1326,8 +1339,21 @@ void CWorldScene::RenderMapObjs() {
 
             CMapObj::SetupLocalLights(&lighting, CWorldScene::s_cameraPos);
 
-            // TODO when the def's own two fog ids match the world's, the reference overrides
-            // the instance colour from the light block. frozen has neither field.
+            // The colour added on top of a group's own baked light. The vertex program adds
+            // constant 29 after multiplying the baked colour by the light, so this is the only
+            // thing that lifts a building whose baked colours are zero -- and plenty are.
+            //
+            // Diverged: the reference takes it from the day/night block (+0x1ac) when the def's
+            // two fog ids match the world's, and frozen has neither field. The zone's own
+            // ambient stands in, so a building picks up the same colour cast as the terrain
+            // around it; the building's declared ambient is a fixed colour and leaves it
+            // looking untinted.
+            const C3Vector& zone = CWorld::GetOutdoorAmbient();
+
+            CMapObj::s_instanceColor.b = static_cast<uint8_t>(zone.z * 255.0f);
+            CMapObj::s_instanceColor.g = static_cast<uint8_t>(zone.y * 255.0f);
+            CMapObj::s_instanceColor.r = static_cast<uint8_t>(zone.x * 255.0f);
+            CMapObj::s_instanceColor.a = 0xff;
 
             CMapObj::s_interiorFog = flipped;
 

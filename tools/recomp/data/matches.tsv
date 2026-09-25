@@ -2802,6 +2802,7 @@ addr	how	frozen	evidence
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
+007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp
 007a84d0	annotated	CMapObj::SelectShaders	tag in src/world/map/CMapObjDraw.cpp
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp

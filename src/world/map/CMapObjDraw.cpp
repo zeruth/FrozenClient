@@ -25,8 +25,11 @@
 #include <tempest/Intersect.hpp>
 #include <tempest/Ray.hpp>
 #include <tempest/Matrix.hpp>
+#include <tempest/Sphere.hpp>
 
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 // The state the draw only touches when it changes. The reference keeps them as MapObj.cpp
 // file statics; every one is reset to its "nothing set" value when a pass starts.
@@ -54,14 +57,19 @@ void ImVectorToFloats(float* out, const CImVector& color) {
 // One instance's transform, with the camera translation already folded in: it goes to the
 // device as the world matrix and, transposed, to the vertex constants the map object programs
 // read their transform from.
-void CMapObj::SetInstanceTransform(const C44Matrix& worldView) {
+void CMapObj::SetInstanceTransform(const C44Matrix& world) {
     if (CShaderEffect::s_enableShaders) {
-        C44Matrix transposed = worldView.Transpose();
+        // The constants carry the whole way from the building's own space to view space; the
+        // device keeps only the world half, the way the terrain pass does.
+        C44Matrix view;
+        GxXformView(view);
 
-        GxShaderConstantsSet(GxSh_Vertex, 0x1f, reinterpret_cast<const float*>(&transposed), 4);
+        C44Matrix worldView = (world * view).Transpose();
+
+        GxShaderConstantsSet(GxSh_Vertex, 0x1f, reinterpret_cast<const float*>(&worldView), 4);
     }
 
-    GxXformSet(GxXform_World, worldView);
+    GxXformSet(GxXform_World, world);
 }
 
 // ref: FUN_007a9160
@@ -170,14 +178,31 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     C3Vector diffuse = { 0.0f, 0.0f, 0.0f };
 
     if (mode == 1 || mode == 2) {
-        ambient = CWorld::GetOutdoorAmbient();
-        diffuse = CShaderEffect::s_sunDiffuse;
+        // Diverged: the reference reads two LightParams columns per zone that frozen has not
+        // ported. Take the sun the same way the terrain pass does instead, including its
+        // fallback -- without that fallback the world's own ambient and diffuse are both zero
+        // and every building draws black, which is exactly what happened the first time this
+        // ran.
+        C3Vector sunDir = { 0.0f, 0.0f, 0.0f };
+        CM2Lighting lighting;
+        CAaSphere origin = { sunDir, 0.0f };
+        lighting.Initialize(nullptr, origin);
+
+        lighting.AddAmbient(CWorld::GetOutdoorAmbient());
+        lighting.AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
+
+        C3Vector specular = { 0.0f, 0.0f, 0.0f };
+
+        if (!lighting.GetSunlight(&sunDir, &ambient, &diffuse, &specular)) {
+            ambient = { 1.0f, 1.0f, 1.0f };
+            diffuse = { 0.0f, 0.0f, 0.0f };
+        }
     } else if (mode == 3) {
         const CImVector& color = group->m_mapObj->m_mohd->ambColor;
 
-        diffuse.x = color.r / 255.0f;
-        diffuse.y = color.g / 255.0f;
-        diffuse.z = color.b / 255.0f;
+        ambient.x = color.r / 255.0f;
+        ambient.y = color.g / 255.0f;
+        ambient.z = color.b / 255.0f;
     }
 
     if (!CShaderEffect::s_enableShaders) {
@@ -202,19 +227,29 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     float ambientConst[4] = { ambient.x, ambient.y, ambient.z, 0.0f };
 
     // The sun arrives in view space, so the vertex program can dot it against a view-space
-    // normal without a matrix of its own.
+    // normal without a matrix of its own. Negated and rotated exactly as the terrain pass does
+    // it, from the same world-level direction.
     C44Matrix view;
     GxXformView(view);
 
-    C3Vector sun = CShaderEffect::s_sunDir;
-    C3Vector viewSun;
-    TransformDirection(viewSun, sun, view);
+    const C3Vector& sun = CWorld::GetOutdoorDirection();
+    float x = -sun.x;
+    float y = -sun.y;
+    float z = -sun.z;
 
-    float dirConst[4] = { viewSun.x, viewSun.y, viewSun.z, 0.0f };
+    float dirConst[4] = {
+        view.a0 * x + view.b0 * y + view.c0 * z,
+        view.a1 * x + view.b1 * y + view.c1 * z,
+        view.a2 * x + view.b2 * y + view.c2 * z,
+        1.0f
+    };
 
-    GxShaderConstantsSet(GxSh_Vertex, 9, diffuseConst, 1);
-    GxShaderConstantsSet(GxSh_Vertex, 10, diffuseConst, 1);
-    GxShaderConstantsSet(GxSh_Vertex, 11, ambientConst, 1);
+    // The map object vertex program (disassembled from MapObjDiffuse_T1) reads c10 as the term
+    // it adds and c11 as the one it scales by the sun angle, so the ambient goes to 9 and 10 and
+    // the diffuse to 11. The reference writes the same registers from the same pair.
+    GxShaderConstantsSet(GxSh_Vertex, 9, ambientConst, 1);
+    GxShaderConstantsSet(GxSh_Vertex, 10, ambientConst, 1);
+    GxShaderConstantsSet(GxSh_Vertex, 11, diffuseConst, 1);
     GxShaderConstantsSet(GxSh_Vertex, 12, dirConst, 1);
 }
 
@@ -591,7 +626,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
             CMapObj::SetAlphaRefForBlendMode();
             CMapObj::SelectShaders();
 
-            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
 
             // Then unlit, adding the interior colours back through the inverse alpha.
             CMapObj::SetupLighting(this, 0);
@@ -610,7 +645,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
             CMapObj::SetAlphaRefForBlendMode();
             CMapObj::SelectShaders();
 
-            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
 
             continue;
         }
@@ -821,7 +856,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
             CMapObj::SetAlphaRefForBlendMode();
             CMapObj::SelectShaders();
 
-            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
 
             CMapObj::SetupLighting(this, 3);
             CMapObj::SetupFog((material->flags & 0x2) ? 0 : fogSet);
@@ -839,7 +874,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
             CMapObj::SetAlphaRefForBlendMode();
             CMapObj::SelectShaders();
 
-            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
 
             continue;
         }

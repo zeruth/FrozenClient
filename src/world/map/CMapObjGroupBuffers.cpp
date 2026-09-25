@@ -12,6 +12,8 @@
 #include "gx/Device.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 EGxVertexBufferFormat CMapObjGroup::VertexFormat() const {
@@ -130,6 +132,14 @@ void CMapObjGroup::FillVertexBuffer(CGxBuf* buf, EGxVertexBufferFormat format) {
         out[5] = *reinterpret_cast<const uint32_t*>(&normal.z);
 
         CImVector color = this->m_colors ? StreamColor(this->m_colors[i]) : StreamColor(baseColor);
+
+        if (i == 0 && false) {
+            printf("[wmo]   fill colors %p base %#x first %#x count %u fmt %d\n",
+                (void*)this->m_colors, baseColor.value, color.value, this->m_vertexCount,
+                (int)g_theGxDevicePtr->Caps().m_colorFormat);
+            fflush(stdout);
+        }
+
         out[6] = *reinterpret_cast<const uint32_t*>(&color);
 
         if (format == GxVBF_PNCT) {

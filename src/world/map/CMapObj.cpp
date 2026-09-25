@@ -530,6 +530,11 @@ void CMapObj::Initialize() {
     CMapObj::s_effectsUnlit[5] = CShaderEffectManager::GetEffect("MapObjUEnvMetal");
     CMapObj::s_effectsUnlit[6] = CShaderEffectManager::GetEffect("MapObjUComposite");
 
+    for (uint32_t i = 0; i < CMapObj::SHADER_COUNT; i++) {
+        if (CMapObj::s_effects[i]) {
+        }
+    }
+
     CMapObj::s_occlusionHeap = STORM_NEW(uint32_t)(
         ObjectAllocAddHeap(CMapObj::OCCLUSION_RECORD_SIZE, 128, "MAPOBJOCC", true)
     );
