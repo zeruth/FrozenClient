@@ -31,7 +31,7 @@ namespace {
                                                                                       \
         if (!reported) {                                                              \
             reported = true;                                                          \
-            fprintf(stderr, "Function not yet implemented: %s (action stub)\\n", #name); \
+            fprintf(stderr, "Function not yet implemented: %s (action stub)\n", #name); \
         }                                                                             \
                                                                                       \
         return 0;                                                                     \
@@ -92,7 +92,6 @@ WHOA_LUA_STUB(CloseTrainer)
 WHOA_LUA_STUB(ConfirmAcceptQuest)
 WHOA_LUA_STUB(ConfirmLootRoll)
 WHOA_LUA_STUB(ConfirmLootSlot)
-WHOA_LUA_STUB(DeclineInvite)
 WHOA_LUA_STUB(DeclineQuest)
 WHOA_LUA_STUB(DescendStop)
 WHOA_LUA_STUB(JumpOrAscendStart)
@@ -159,9 +158,7 @@ WHOA_LUA_STUB(SetActiveVoiceChannelBySessionID)
 WHOA_LUA_STUB(SetArenaTeamRosterSelection)
 WHOA_LUA_STUB(SetArenaTeamRosterShowOffline)
 WHOA_LUA_STUB(SetAuctionsTabShowing)
-WHOA_LUA_STUB(SetChannelOwner)
 WHOA_LUA_STUB(SetChannelPassword)
-WHOA_LUA_STUB(SetChannelWatch)
 WHOA_LUA_STUB(SetChatColorNameByClass)
 WHOA_LUA_STUB(SetChatWindowAlpha)
 WHOA_LUA_STUB(SetChatWindowColor)
@@ -367,7 +364,6 @@ WHOA_LUA_STUB(CalendarGetMonthNames)
 WHOA_LUA_STUB(CalendarGetNumDayEvents)
 WHOA_LUA_STUB(CalendarGetRaidInfo)
 WHOA_LUA_STUB(CalendarGetWeekdayNames)
-WHOA_LUA_STUB(CalendarIsActionPending)
 WHOA_LUA_STUB(CalendarMassInviteArenaTeam)
 WHOA_LUA_STUB(CalendarMassInviteGuild)
 WHOA_LUA_STUB(CalendarNewEvent)
@@ -388,21 +384,10 @@ WHOA_LUA_STUB(CastShapeshiftForm)
 WHOA_LUA_STUB(CastSpellByID)
 WHOA_LUA_STUB(CastSpellByName)
 WHOA_LUA_STUB(ChangeChatColor)
-WHOA_LUA_STUB(ChannelBan)
-WHOA_LUA_STUB(ChannelInvite)
-WHOA_LUA_STUB(ChannelKick)
-WHOA_LUA_STUB(ChannelModerator)
-WHOA_LUA_STUB(ChannelMute)
 WHOA_LUA_STUB(ChannelSilenceAll)
 WHOA_LUA_STUB(ChannelSilenceVoice)
-WHOA_LUA_STUB(ChannelToggleAnnouncements)
 WHOA_LUA_STUB(ChannelUnSilenceAll)
 WHOA_LUA_STUB(ChannelUnSilenceVoice)
-WHOA_LUA_STUB(ChannelUnban)
-WHOA_LUA_STUB(ChannelUnmoderator)
-WHOA_LUA_STUB(ChannelUnmute)
-WHOA_LUA_STUB(ChannelVoiceOff)
-WHOA_LUA_STUB(ChannelVoiceOn)
 WHOA_LUA_STUB(CheckInbox)
 WHOA_LUA_STUB(ClickAuctionSellItemButton)
 WHOA_LUA_STUB(ClickLandmark)
@@ -485,7 +470,6 @@ WHOA_LUA_STUB(DepositGuildBankMoney)
 WHOA_LUA_STUB(DetectWowMouse)
 WHOA_LUA_STUB(DisableSpellAutocast)
 WHOA_LUA_STUB(DismissCompanion)
-WHOA_LUA_STUB(DisplayChannelOwner)
 WHOA_LUA_STUB(DisplayChannelVoiceOff)
 WHOA_LUA_STUB(DisplayChannelVoiceOn)
 WHOA_LUA_STUB(DoEmote)
@@ -902,7 +886,6 @@ WHOA_LUA_STUB(GetWorldStateUIInfo)
 WHOA_LUA_STUB(GiveMasterLoot)
 WHOA_LUA_STUB(GlyphMatchesSocket)
 WHOA_LUA_STUB(GuildControlAddRank)
-WHOA_LUA_STUB(GuildControlDelRank)
 int32_t Script_Stub_GuildControlGetNumRanks(lua_State* L) {
     // The subsystem behind this is not implemented, so the count is genuinely zero. Returning
     // nothing instead raised "attempt to perform arithmetic on a nil value" in the caller.
@@ -949,7 +932,6 @@ WHOA_LUA_STUB(LearnPreviewTalents)
 WHOA_LUA_STUB(LearnTalent)
 WHOA_LUA_STUB(LeaveChannelByName)
 WHOA_LUA_STUB(LeaveLFG)
-WHOA_LUA_STUB(ListChannelByName)
 WHOA_LUA_STUB(ListChannels)
 WHOA_LUA_STUB(LoggingChat)
 WHOA_LUA_STUB(LoggingCombat)
@@ -1160,12 +1142,6 @@ WHOA_LUA_STUB(VoiceEnumerateCaptureDevices)
 WHOA_LUA_STUB(VoiceEnumerateOutputDevices)
 WHOA_LUA_STUB(VoiceGetCurrentCaptureDevice)
 WHOA_LUA_STUB(VoiceGetCurrentOutputDevice)
-int32_t Script_Stub_VoiceIsDisabledByClient(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
-
-    return 1;
-}
 WHOA_LUA_STUB(VoiceSelectCaptureDevice)
 WHOA_LUA_STUB(VoiceSelectOutputDevice)
 WHOA_LUA_STUB(WithdrawGuildBankMoney)
@@ -1232,7 +1208,6 @@ const ScriptFunction s_stubs[] = {
     { "ConfirmAcceptQuest",                      &Script_Stub_ConfirmAcceptQuest },
     { "ConfirmLootRoll",                         &Script_Stub_ConfirmLootRoll },
     { "ConfirmLootSlot",                         &Script_Stub_ConfirmLootSlot },
-    { "DeclineInvite",                           &Script_Stub_DeclineInvite },
     { "DeclineQuest",                            &Script_Stub_DeclineQuest },
     { "DescendStop",                             &Script_Stub_DescendStop },
     { "JumpOrAscendStart",                       &Script_Stub_JumpOrAscendStart },
@@ -1299,9 +1274,7 @@ const ScriptFunction s_stubs[] = {
     { "SetArenaTeamRosterSelection",             &Script_Stub_SetArenaTeamRosterSelection },
     { "SetArenaTeamRosterShowOffline",           &Script_Stub_SetArenaTeamRosterShowOffline },
     { "SetAuctionsTabShowing",                   &Script_Stub_SetAuctionsTabShowing },
-    { "SetChannelOwner",                         &Script_Stub_SetChannelOwner },
     { "SetChannelPassword",                      &Script_Stub_SetChannelPassword },
-    { "SetChannelWatch",                         &Script_Stub_SetChannelWatch },
     { "SetChatColorNameByClass",                 &Script_Stub_SetChatColorNameByClass },
     { "SetChatWindowAlpha",                      &Script_Stub_SetChatWindowAlpha },
     { "SetChatWindowColor",                      &Script_Stub_SetChatWindowColor },
@@ -1501,7 +1474,6 @@ const ScriptFunction s_stubs[] = {
     { "CalendarGetNumDayEvents",                 &Script_Stub_CalendarGetNumDayEvents },
     { "CalendarGetRaidInfo",                     &Script_Stub_CalendarGetRaidInfo },
     { "CalendarGetWeekdayNames",                 &Script_Stub_CalendarGetWeekdayNames },
-    { "CalendarIsActionPending",                 &Script_Stub_CalendarIsActionPending },
     { "CalendarMassInviteArenaTeam",             &Script_Stub_CalendarMassInviteArenaTeam },
     { "CalendarMassInviteGuild",                 &Script_Stub_CalendarMassInviteGuild },
     { "CalendarNewEvent",                        &Script_Stub_CalendarNewEvent },
@@ -1522,21 +1494,10 @@ const ScriptFunction s_stubs[] = {
     { "CastSpellByID",                           &Script_Stub_CastSpellByID },
     { "CastSpellByName",                         &Script_Stub_CastSpellByName },
     { "ChangeChatColor",                         &Script_Stub_ChangeChatColor },
-    { "ChannelBan",                              &Script_Stub_ChannelBan },
-    { "ChannelInvite",                           &Script_Stub_ChannelInvite },
-    { "ChannelKick",                             &Script_Stub_ChannelKick },
-    { "ChannelModerator",                        &Script_Stub_ChannelModerator },
-    { "ChannelMute",                             &Script_Stub_ChannelMute },
     { "ChannelSilenceAll",                       &Script_Stub_ChannelSilenceAll },
     { "ChannelSilenceVoice",                     &Script_Stub_ChannelSilenceVoice },
-    { "ChannelToggleAnnouncements",              &Script_Stub_ChannelToggleAnnouncements },
     { "ChannelUnSilenceAll",                     &Script_Stub_ChannelUnSilenceAll },
     { "ChannelUnSilenceVoice",                   &Script_Stub_ChannelUnSilenceVoice },
-    { "ChannelUnban",                            &Script_Stub_ChannelUnban },
-    { "ChannelUnmoderator",                      &Script_Stub_ChannelUnmoderator },
-    { "ChannelUnmute",                           &Script_Stub_ChannelUnmute },
-    { "ChannelVoiceOff",                         &Script_Stub_ChannelVoiceOff },
-    { "ChannelVoiceOn",                          &Script_Stub_ChannelVoiceOn },
     { "CheckInbox",                              &Script_Stub_CheckInbox },
     { "ClickAuctionSellItemButton",              &Script_Stub_ClickAuctionSellItemButton },
     { "ClickLandmark",                           &Script_Stub_ClickLandmark },
@@ -1612,7 +1573,6 @@ const ScriptFunction s_stubs[] = {
     { "DetectWowMouse",                          &Script_Stub_DetectWowMouse },
     { "DisableSpellAutocast",                    &Script_Stub_DisableSpellAutocast },
     { "DismissCompanion",                        &Script_Stub_DismissCompanion },
-    { "DisplayChannelOwner",                     &Script_Stub_DisplayChannelOwner },
     { "DisplayChannelVoiceOff",                  &Script_Stub_DisplayChannelVoiceOff },
     { "DisplayChannelVoiceOn",                   &Script_Stub_DisplayChannelVoiceOn },
     { "DoEmote",                                 &Script_Stub_DoEmote },
@@ -1964,7 +1924,6 @@ const ScriptFunction s_stubs[] = {
     { "GiveMasterLoot",                          &Script_Stub_GiveMasterLoot },
     { "GlyphMatchesSocket",                      &Script_Stub_GlyphMatchesSocket },
     { "GuildControlAddRank",                     &Script_Stub_GuildControlAddRank },
-    { "GuildControlDelRank",                     &Script_Stub_GuildControlDelRank },
     { "GuildControlGetNumRanks",                 &Script_Stub_GuildControlGetNumRanks },
     { "GuildControlGetRankFlags",                &Script_Stub_GuildControlGetRankFlags },
     { "GuildControlGetRankName",                 &Script_Stub_GuildControlGetRankName },
@@ -1995,7 +1954,6 @@ const ScriptFunction s_stubs[] = {
     { "LearnTalent",                             &Script_Stub_LearnTalent },
     { "LeaveChannelByName",                      &Script_Stub_LeaveChannelByName },
     { "LeaveLFG",                                &Script_Stub_LeaveLFG },
-    { "ListChannelByName",                       &Script_Stub_ListChannelByName },
     { "ListChannels",                            &Script_Stub_ListChannels },
     { "LoggingChat",                             &Script_Stub_LoggingChat },
     { "LoggingCombat",                           &Script_Stub_LoggingCombat },
@@ -2151,7 +2109,6 @@ const ScriptFunction s_stubs[] = {
     { "VoiceEnumerateOutputDevices",             &Script_Stub_VoiceEnumerateOutputDevices },
     { "VoiceGetCurrentCaptureDevice",            &Script_Stub_VoiceGetCurrentCaptureDevice },
     { "VoiceGetCurrentOutputDevice",             &Script_Stub_VoiceGetCurrentOutputDevice },
-    { "VoiceIsDisabledByClient",                 &Script_Stub_VoiceIsDisabledByClient },
     { "VoiceSelectCaptureDevice",                &Script_Stub_VoiceSelectCaptureDevice },
     { "VoiceSelectOutputDevice",                 &Script_Stub_VoiceSelectOutputDevice },
     { "WithdrawGuildBankMoney",                  &Script_Stub_WithdrawGuildBankMoney },

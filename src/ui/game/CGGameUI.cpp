@@ -20,6 +20,8 @@
 #include "ui/game/CGTabardModelFrame.hpp"
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/CalendarScript.hpp"
+#include "ui/game/ChatFrameScript.hpp"
 #include "ui/game/CGMinimapFrameScript.hpp"
 #include "ui/game/ContainerFrameScript.hpp"
 #include "ui/game/CGUIBindings.hpp"
@@ -28,12 +30,14 @@
 #include "ui/game/CharacterInfoScript.hpp"
 #include "ui/game/GMTicketInfoScript.hpp"
 #include "ui/game/GameScript.hpp"
+#include "ui/game/GuildScript.hpp"
 #include "ui/game/PartyInfoScript.hpp"
 #include "ui/game/RaidInfoScript.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include "ui/game/TradeInfoScript.hpp"
 #include "ui/game/Types.hpp"
 #include "ui/game/UIBindingsScript.hpp"
+#include "ui/game/VoiceScript.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "util/CStatus.hpp"
 #include "util/Filesystem.hpp"
@@ -71,6 +75,10 @@ void LoadScriptFunctions() {
     CGMinimapFrameScriptRegisterFunctions();
     ContainerFrameScriptRegisterFunctions();
     MiscScriptRegisterStubs();
+    ChatFrameRegisterScriptFunctions();
+    CalendarRegisterScriptFunctions();
+    GuildRegisterScriptFunctions();
+    VoiceRegisterScriptFunctions();
     UIBindingsRegisterScriptFunctions();
 
     // TODO
