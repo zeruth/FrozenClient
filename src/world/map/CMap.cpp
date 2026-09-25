@@ -1,4 +1,5 @@
 #include "world/map/CMap.hpp"
+#include "world/map/VBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
@@ -397,6 +398,7 @@ void CMap::MapMemInitialize() {
 
 void CMap::MapMemInitializeHeaps() {
     CMapObj::Initialize();
+    VBBList::InitializeLists();
 
     CMap::s_lightHeap           = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapLight),         128,    "WLIGHT",           true));
     CMap::s_cacheLightHeap      = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapCacheLight),    256,    "WCACHELIGHT",      true));

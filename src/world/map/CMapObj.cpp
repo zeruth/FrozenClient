@@ -424,14 +424,12 @@ void CMapObj::ReadGroup(uint32_t index) {
 // What every loaded root does once a frame
 
 // ref: FUN_007cbd70
-// The group gives its buffers back. The reference destroys each through CGxDevice::BufDestroy
-// and PoolDestroy, neither of which frozen's device exposes yet, so the buffers are only
-// forgotten here and the pool reclaims them when the map unloads.
+// The group gives its buffers back. Each block clears the slot that named it, so the next
+// draw builds them again.
 void CMapObjGroup::FreeBuffers() {
-    // TODO FUN_007cb9f0(m_vertexBuf / m_colorBuf / m_indexBuf): give the slots back to the pool
-    this->m_vertexBuf = nullptr;
-    this->m_colorBuf = nullptr;
-    this->m_indexBuf = nullptr;
+    VBBList::s_vertexList.Free(this->m_vertexBuf);
+    VBBList::s_vertexList.Free(this->m_colorBuf);
+    VBBList::s_indexList.Free(this->m_indexBuf);
 }
 
 // ref: FUN_007a8520

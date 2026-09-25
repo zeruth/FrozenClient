@@ -58,8 +58,9 @@
     "note": "one line: lower the traversal's frustum depth again, the partner of 00791950"
   },
   "007cb9f0": {
-    "status": "unlinked",
-    "note": "gives one pooled GPU buffer slot back: destroys the buffer through CGxDevice::BufDestroy and its pool through the device vfunc at +0xd4, then returns the slot to its free list. frozen's device exposes neither call yet, so CMapObjGroup::FreeBuffers only forgets the buffers and the pool reclaims them when the map unloads"
+    "frozen": "VBBList::Free",
+    "status": "ported",
+    "note": "VBBList::Free. The block record, its owner slot and the list link are all handled; the two device destroys (the buffer, then the pool through the vfunc at +0xd4) are not, because frozen's device exposes neither, so the GPU side is reclaimed when the device tears its pools down"
   },
   "007d9810": {
     "status": "unlinked",

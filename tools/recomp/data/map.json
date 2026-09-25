@@ -44620,7 +44620,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::UpdateAll",
-  "frozenSize": 606,
+  "frozenSize": 676,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 460,
@@ -47188,6 +47188,36 @@
   "refSize": 882,
   "status": "ported"
  },
+ "007c8560": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/CMapObjGroupBuffers.cpp"
+  ],
+  "frozen": "CMapObjGroup::FillVertexBuffer",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 1255,
+  "status": "ported"
+ },
+ "007c8b90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupBuffers.cpp"
+  ],
+  "frozen": "CMapObjGroup::FillIndexBuffer",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
  "007c8c60": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
@@ -47266,6 +47296,36 @@
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 83,
+  "status": "ported"
+ },
+ "007c9cb0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupBuffers.cpp"
+  ],
+  "frozen": "CMapObjGroup::BindVertexStream",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "007c9d80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroupBuffers.cpp"
+  ],
+  "frozen": "CMapObjGroup::BindIndexStream",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 75,
   "status": "ported"
  },
  "007ca180": {
@@ -47380,11 +47440,86 @@
   "refSize": 187,
   "status": "ported"
  },
+ "007cb3b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/VBBList.cpp"
+  ],
+  "frozen": "VBBList::NewBlock",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 361,
+  "status": "ported"
+ },
+ "007cb990": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/VBBList.cpp"
+  ],
+  "frozen": "VBBList::InitializeLists",
+  "frozenSize": 60,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "007cb9f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/VBBList.cpp"
+  ],
+  "frozen": "VBBList::Free",
+  "frozenSize": 118,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 317,
+  "status": "ported"
+ },
+ "007cbbc0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/VBBList.cpp"
+  ],
+  "frozen": "VBBList::Alloc",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 236,
+  "status": "ported"
+ },
+ "007cbcb0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/world/map/CMapObjGroupBuffers.cpp"
+  ],
+  "frozen": "CMapObjGroup::CreateBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 180,
+  "status": "ported"
+ },
  "007cbd70": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapObj.cpp",
    "src/world/map/cmapobj.cpp"

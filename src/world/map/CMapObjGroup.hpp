@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 #define WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 
+#include "world/map/VBBList.hpp"
 #include <storm/Array.hpp>
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
@@ -176,9 +177,9 @@ class CMapObjGroup {
 
         // The buffers the group draws from, built on first draw and dropped again once it has
         // gone five seconds without one
-        CGxBuf* m_vertexBuf = nullptr;           // +0x04: position, normal, colour, uv
-        CGxBuf* m_colorBuf = nullptr;            // +0x08: a second colour set, outdoor groups only
-        CGxBuf* m_indexBuf = nullptr;            // +0x0c
+        VBBList::Block* m_vertexBuf = nullptr;   // +0x04: position, normal, colour, uv
+        VBBList::Block* m_colorBuf = nullptr;    // +0x08: a second colour set, outdoor groups only
+        VBBList::Block* m_indexBuf = nullptr;    // +0x0c
         float m_bufferIdleTime = 0.0f;           // +0x18
 
         // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a
@@ -292,6 +293,21 @@ class CMapObjGroup {
         void BuildLiquidVertices();
         void BuildAntiPortals();
         void FreeBuffers();
+
+        // The vertex format this group's geometry needs: two colour sets and two texture
+        // coordinate sets when it carries them, one of each otherwise.
+        EGxVertexBufferFormat VertexFormat() const;
+
+        // Make whichever of the three buffers this group still lacks. ref: FUN_007cbcb0
+        void CreateBuffers();
+        // ref: FUN_007c9cb0
+        void BindVertexStream();
+        // ref: FUN_007c9d80
+        void BindIndexStream();
+        // ref: FUN_007c8560
+        void FillVertexBuffer(CGxBuf* buf, EGxVertexBufferFormat format);
+        // ref: FUN_007c8b90
+        void FillIndexBuffer(CGxBuf* buf);
 };
 
 #endif
