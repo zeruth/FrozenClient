@@ -48721,7 +48721,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::DetailDoodadsReady",
-  "frozenSize": 0,
+  "frozenSize": 320,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 170,

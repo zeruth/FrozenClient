@@ -3,9 +3,12 @@
 
 #include "db/rec/GroundEffectDoodadRec.hpp"
 #include <storm/Array.hpp>
+#include <tempest/Vector.hpp>
+#include <tempest/Plane.hpp>
 #include <cstdint>
 
 class CGxBuf;
+class CMapChunk;
 class CM2Model;
 class CGxPool;
 
@@ -64,6 +67,17 @@ static const float SHADOW_SCALE = 1.9199999570846558f;// DAT_00a4047c: yards to 
 static const float MIN_NORMAL_Z = 0.4000000059604645f;// DAT_009f98d8: steeper than this, no grass
 static const float COLOR_MAX = 255.0f;                // DAT_009e30c0
 static const float ROUND_BIAS = 0.5f;                 // DAT_00af0abc
+static const float CELL_SIZE_POS = 4.166666507720947f;
+static const float CELL_MID = -2.0833332538604736f;   // DAT_00adfc94
+static const float COLOR_DOUBLE = 2.0f;               // DAT_00a4040c
+
+// One bit per 2x2 cell of the chunk's 4x4 hole grid. DAT_00a3faf0
+static const uint16_t HOLE_MASK[16] = {
+    0x0001, 0x0002, 0x0004, 0x0008,
+    0x0010, 0x0020, 0x0040, 0x0080,
+    0x0100, 0x0200, 0x0400, 0x0800,
+    0x1000, 0x2000, 0x4000, 0x8000
+};
 
 // How the scatter works, decoded from FUN_007d3390 end to end. Everything below is established
 // -- no table or constant in it is a guess -- so writing it is transcription.
@@ -78,6 +92,13 @@ static const float ROUND_BIAS = 0.5f;                 // DAT_00af0abc
 //     TRI_CORNER and the matching two heights by TRI_VERTEX, and PlaneFromPoints gives the
 //     plane. Where the chunk has MCCV, the cell also keeps the corner colour and the two colour
 //     deltas along the triangle's edges, all scaled by 2.
+//
+//     The plane must be NORMALIZED AND TURNED UPWARD, which frozen has no PlaneFromPoints to
+//     do for it. The cross product through the cell's centre comes out pointing under the
+//     ground and scaled by twice the triangle's area; CMapChunk::HeightAt can ignore both
+//     because its division cancels them, but MIN_NORMAL_Z is a slope against a unit normal, so
+//     left alone it rejects every placement on every chunk. It did: the first run scattered
+//     nothing at all, on ground that was not steep anywhere.
 //  3. The cell's ground effect comes from the low quality texture map, two bits a column by
 //     TEXMAP_MASK/SHIFT, unless the chunk's predTex bit for that column (PREDTEX_MASK/SHIFT)
 //     says otherwise; a hole in the chunk (s_holeMask) skips the cell outright.
@@ -98,11 +119,19 @@ static const float ROUND_BIAS = 0.5f;                 // DAT_00af0abc
 // position, rotation, scale, plane, colour). A placement joins the batch whose model matches
 // and which still has room in one buffer of the ring, so a chunk draws at most four models.
 //
+// The picking and placing half of that is now ported, as Scatter below, and CHECKED AGAINST A
+// RUN rather than read over: every placement's height was compared with CMapChunk::HeightAt,
+// which is itself verified against the centre-vertex invariant and solves the same cell
+// triangle by a separate path. 1875 placements over 40 chunks, none off by more than 0.00048
+// yards, all inside their chunk, every kind drawn from that chunk's own ground effect table,
+// and each chunk scattering identically twice over.
+//
 // WHAT STANDS BETWEEN HERE AND RETIRING THE STAND-IN, which is more than the builder: frozen's
 // Terrain.cpp already scatters, batches and draws grass today, so porting the builder alone
 // would fill instances nothing renders while the stand-in carried on. The buffer fill and the
 // draw pass have to land with it, the same way the terrain doodads had to move in one change.
-// Until all three are in, this module's value is that none of it needs working out any more.
+// That is why Scatter has no caller yet: FUN_007b31e0 (the instance fill) and FUN_007984a0
+// (the draw) go in with it, and only then does the stand-in come out.
 
 // One kind of detail doodad: the row that names it, and the model once something has asked for
 // it. The model is not opened until a chunk that wants this kind comes into range.
@@ -124,10 +153,26 @@ extern CGxPool* s_indexPool;                   // DAT_00d1c4d4
 extern TSGrowableArray<CGxBuf*> s_buffers;     // DAT_00d1c50c
 extern int32_t s_rebuild;                      // DAT_00d1c4c0
 
+// One scattered doodad, as the builder hands it over. The reference keeps these in a growable
+// array on the chunk's instance, four batches deep, one batch a model.
+struct SPlacement {
+    uint32_t doodadId;
+    C3Vector position;      // in the chunk's own space, as the terrain's vertices are
+    float rotation;         // 0 .. 2*pi
+    float scale;            // 0.67 .. 1.33
+    C4Plane plane;          // the triangle it stands on
+    uint32_t color;         // 0xAABBGGRR, the interpolated vertex colour
+};
+
 // Functions
 // Build the two pools and the ring of buffers, sized from the ground effect density. Does
 // nothing unless something has asked for a rebuild. ref: FUN_007b2a80
 void CreateBuffers();
+
+// Scatter one chunk's grass into `out`, returning how many were placed. Part of FUN_007d3390:
+// the picking and placing, without the instance and batch bookkeeping the reference wraps it
+// in. Empty when the chunk has no layers or its models have not arrived.
+uint32_t Scatter(CMapChunk* chunk, SPlacement* out, uint32_t maxOut);
 
 // Give the pools and every buffer back. ref: FUN_007b29b0
 void ReleaseBuffers();

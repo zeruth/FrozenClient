@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 18:37 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 19:19 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5385, mapped 1385 (=) (25.7%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5652, mapped 1403 (=) (24.8%) | |
 | **render surface** (the modules that draw the world) | **4523, mapped 812 (=) (18.0%)** | |
-| frozen functions (src/, from PDB + source) | 13628, stubs 1700 | |
+| frozen functions (src/, from PDB + source) | 13636, stubs 1700 | |
 
 Match evidence: annotated 2108, callgraph 238, callorder 110, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 18:34 -- mapped 4307, ported 3630, stub 578, spine mapped 1385.
+Previous run: 2026-09-25 18:37 -- mapped 4307, ported 3630, stub 578, spine mapped 1385.
 
 ## Lua API coverage (binding tables)
 
@@ -590,15 +590,15 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `storeAtts` | lib/expat-2.0 | 2588 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `ChrClassesRec::Read` | db | 2561 | src/db/rec/ChrClassesRec.cpp |
 | `luaK_posfix` | lib/lua-5.1 | 2528 | vendor/lua-5.1.3/src/lcode.c |
+| `ScatterSelfTest` | world | 2501 |  |
+| `DetailDoodad::PrepareCell` | world | 2497 |  |
 | `CBackdropGenerator::SetOutput` | ui | 2401 | src/ui/CBackdropGenerator.cpp |
+| `DetailDoodad::Scatter` | world | 2372 |  |
 | `FactionRec::Read` | db | 2368 | src/db/rec/FactionRec.cpp |
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
 | `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
-| `WriteCmpData` | lib/stormlib-9.31 | 2231 | lib/squall/vendor/stormlib-9.31/src/pklib/implode.c |
-| `ltc_ecc_projective_add_point` | lib/stormlib-9.31 | 2210 | lib/squall/vendor/stormlib-9.31/src/libtomcrypt/src/pk/ecc/ltc_ecc_projective_add_point.c |
-| `statement` | lib/lua-5.1 | 2204 | vendor/lua-5.1.3/src/lparser.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 15:43 | 4291 (15.9%) | 2188 (8.1%) | 579 | 1370/5385 | 2924/2964 | 1380 |
 | 2026-09-25 15:55 | 4292 (15.9%) | 2189 (8.1%) | 579 | 1371/5385 | 2924/2964 | 1380 |
 | 2026-09-25 16:07 | 4294 (15.9%) | 2192 (8.1%) | 579 | 1373/5385 | 2924/2964 | 1380 |
 | 2026-09-25 16:09 | 4294 (15.9%) | 2192 (8.1%) | 579 | 1373/5385 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 18:32 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
 | 2026-09-25 18:34 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
 | 2026-09-25 18:37 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
+| 2026-09-25 19:19 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
 
 ## How to move a row
 
