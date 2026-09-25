@@ -38906,6 +38906,31 @@
 "refs": [],
 "line": 421
 },
+"MatrixLookAt": {
+"files": [
+"lib/typhoon/tempest/matrix/c44matrix.cpp"
+],
+"callseq": [
+"C44Matrix::Identity",
+"C3Vector::C3Vector",
+"C3Vector::NormalizeUnchecked",
+"C3Vector::C3Vector",
+"C3Vector::NormalizeUnchecked",
+"C3Vector::C3Vector",
+"C3Vector::NormalizeUnchecked",
+"C3Vector::C3Vector",
+"C44Matrix::Translate"
+],
+"strings": [],
+"consts": [
+"0.01f"
+],
+"branches": 2,
+"stub": false,
+"lines": 48,
+"refs": [],
+"line": 481
+},
 "C4Quaternion::Slerp": {
 "files": [
 "lib/typhoon/tempest/quaternion/c4quaternion.cpp"

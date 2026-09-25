@@ -75,4 +75,9 @@ C44Matrix operator*(const C44Matrix& l, float a);
 
 C44Matrix operator*(const C44Matrix& l, const C44Matrix& r);
 
+// The transform that puts `eye` at the origin looking from it toward `target`, with `up`
+// deciding the roll. An eye sitting on its target, or a degenerate up, leaves the matrix
+// identity rather than producing nonsense. ref: FUN_006bfe60
+void MatrixLookAt(C44Matrix& out, const C3Vector& eye, const C3Vector& target, const C3Vector& up);
+
 #endif

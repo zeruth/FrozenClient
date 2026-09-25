@@ -476,3 +476,53 @@ C44Matrix operator*(const C44Matrix& l, const C44Matrix& r) {
 
     return { a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, d2, d3 };
 }
+
+// ref: FUN_006bfe60
+void MatrixLookAt(C44Matrix& out, const C3Vector& eye, const C3Vector& target, const C3Vector& up) {
+    out.Identity();
+
+    C3Vector forward = {
+        target.x - eye.x,
+        target.y - eye.y,
+        target.z - eye.z
+    };
+
+    if (forward.x * forward.x + forward.y * forward.y + forward.z * forward.z < 0.01f) {
+        return;
+    }
+
+    if (up.x * up.x + up.y * up.y + up.z * up.z < 0.01f) {
+        return;
+    }
+
+    forward.NormalizeUnchecked();
+
+    C3Vector right = {
+        forward.y * up.z - forward.z * up.y,
+        up.x * forward.z - forward.x * up.z,
+        up.y * forward.x - forward.y * up.x
+    };
+
+    right.NormalizeUnchecked();
+
+    C3Vector realUp = {
+        right.y * forward.z - forward.y * right.z,
+        forward.x * right.z - right.x * forward.z,
+        right.x * forward.y - right.y * forward.x
+    };
+
+    realUp.NormalizeUnchecked();
+
+    out.a0 = right.x;
+    out.a1 = realUp.x;
+    out.a2 = forward.x;
+    out.b0 = right.y;
+    out.b1 = realUp.y;
+    out.b2 = forward.y;
+    out.c0 = right.z;
+    out.c1 = realUp.z;
+    out.c2 = forward.z;
+
+    C3Vector back = { -eye.x, -eye.y, -eye.z };
+    out.Translate(back);
+}

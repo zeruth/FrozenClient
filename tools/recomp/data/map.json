@@ -37917,6 +37917,22 @@
   "refSize": 1168,
   "status": "ported"
  },
+ "006bfe60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "MatrixLookAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CheckExecutableSignature.cpp",
+  "refSize": 493,
+  "status": "ported"
+ },
  "006c02f0": {
   "branchRatio": 0.678,
   "constOverlap": 0.667,
