@@ -959,7 +959,7 @@ void CMap::Update(int32_t update) {
 
     // TODO DAT_00ce04c0 = 0; DAT_00ce04bc = 0; DAT_00ce04ac = 0 (per-frame counters)
     // TODO FUN_007cf840(dt): chunk liquid animation
-    // TODO FUN_007ad020(): WMO material shader selection
+    CMapObj::UpdateAll();
     CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
     CMap::UpdateMapObjDefs(update);

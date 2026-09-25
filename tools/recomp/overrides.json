@@ -57,6 +57,14 @@
     "status": "excluded",
     "note": "one line: lower the traversal's frustum depth again, the partner of 00791950"
   },
+  "007cb9f0": {
+    "status": "unlinked",
+    "note": "gives one pooled GPU buffer slot back: destroys the buffer through CGxDevice::BufDestroy and its pool through the device vfunc at +0xd4, then returns the slot to its free list. frozen's device exposes neither call yet, so CMapObjGroup::FreeBuffers only forgets the buffers and the pool reclaims them when the map unloads"
+  },
+  "007d9810": {
+    "status": "unlinked",
+    "note": "the streaming queue's own pass over the WMO roots still arriving, run from CMapObj::UpdateAll only while SFile is in streaming mode. frozen never is on a local install, so the branch is marked and left"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

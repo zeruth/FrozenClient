@@ -12,6 +12,7 @@
 #include <cstdint>
 
 class CAsyncObject;
+class CGxBuf;
 class CMapObj;
 class CMapObjGroup;
 struct SMOMaterial;
@@ -173,6 +174,13 @@ class CMapObjGroup {
         // Member variables, with the reference's offsets.
         uint32_t m_memHandle = 0;                // +0x00: CMap::s_mapObjGroupHeap slot
 
+        // The buffers the group draws from, built on first draw and dropped again once it has
+        // gone five seconds without one
+        CGxBuf* m_vertexBuf = nullptr;           // +0x04
+        CGxBuf* m_indexBuf = nullptr;            // +0x08
+        CGxBuf* m_colorBuf = nullptr;            // +0x0c
+        float m_bufferIdleTime = 0.0f;           // +0x18
+
         // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a
         // pooled VertArray reached through a pointer at +0x1c; frozen owns the array (diverged).
         TSGrowableArray<C3Vector> m_liquidVertices;
@@ -283,6 +291,7 @@ class CMapObjGroup {
         uint8_t FirstLiquidTileType() const;
         void BuildLiquidVertices();
         void BuildAntiPortals();
+        void FreeBuffers();
 };
 
 #endif

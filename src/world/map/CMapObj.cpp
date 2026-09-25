@@ -1,6 +1,8 @@
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObjGroup.hpp"
+#include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
 #include "async/AsyncFileRead.hpp"
 #include <tempest/Box.hpp>
 #include "async/CAsyncObject.hpp"
@@ -414,4 +416,87 @@ void CMapObj::WaitForGroup(uint32_t index) {
 // ref: FUN_007ae1a0
 void CMapObj::ReadGroup(uint32_t index) {
     CMapObjGroup::Read(this, index, 0);
+}
+
+// ----------------------------------------------------------------------------------------------
+// What every loaded root does once a frame
+
+// ref: FUN_007cbd70
+// The group gives its buffers back. The reference destroys each through CGxDevice::BufDestroy
+// and PoolDestroy, neither of which frozen's device exposes yet, so the buffers are only
+// forgotten here and the pool reclaims them when the map unloads.
+void CMapObjGroup::FreeBuffers() {
+    // TODO FUN_007cb9f0(m_vertexBuf / m_indexBuf / m_colorBuf): give the slots back to the pool
+    this->m_vertexBuf = nullptr;
+    this->m_indexBuf = nullptr;
+    this->m_colorBuf = nullptr;
+}
+
+// ref: FUN_007a8520
+// The self-illuminated materials of a root track the day: each keeps its authored colour and
+// draws it scaled by how bright the sun is now.
+void CMapObj::UpdateMaterialColors() {
+    int32_t scale = static_cast<int32_t>(roundf(CWorld::GetSidnScale() * 255.0f - 0.5f));
+
+    for (uint32_t i = 0; i < this->m_materialCount; i++) {
+        auto material = &this->m_materials[i];
+
+        if (!(material->flags & 0x10)) {
+            continue;
+        }
+
+        material->frameSidnColor = material->sidnColor;
+
+        auto color = reinterpret_cast<uint8_t*>(&material->frameSidnColor);
+        color[0] = static_cast<uint8_t>(color[0] * scale >> 8);
+        color[1] = static_cast<uint8_t>(color[1] * scale >> 8);
+        color[2] = static_cast<uint8_t>(color[2] * scale >> 8);
+    }
+}
+
+// ref: FUN_007ad020
+// Every root, once a map update: its self-illuminated colours follow the sun, a group that has
+// not drawn for five seconds gives its buffers back, and a root no def references any more is
+// dropped ten seconds later.
+void CMapObj::UpdateAll() {
+    CWorldScene::s_visibleCallbackDef = nullptr;
+
+    // TODO the reference picks its two WMO draw entry points here by the shader level, which is
+    // always 5: the group draw without vertex colours and the one with them, the second swapped
+    // for a cheaper path when the world's 0x800 or 0x200 enables are off. Neither draw is ported.
+
+    float dt = CWorld::GetTickTimeSec();
+
+    for (auto mapObj = CMapObj::s_cache.Head(); mapObj; ) {
+        auto next = CMapObj::s_cache.Next(mapObj);
+
+        mapObj->UpdateMaterialColors();
+
+        for (auto group = mapObj->m_loadedGroups.Head(); group; ) {
+            auto nextGroup = mapObj->m_loadedGroups.Next(group);
+
+            group->m_bufferIdleTime += dt;
+
+            if (5.0f < group->m_bufferIdleTime) {
+                group->FreeBuffers();
+            }
+
+            group = nextGroup;
+        }
+
+        if (!mapObj->m_refCount) {
+            mapObj->m_idleTime += dt;
+
+            if (10.0f < mapObj->m_idleTime) {
+                CMapObj::s_cache.Unlink(mapObj);
+                CMap::FreeMapObj(mapObj);
+            }
+        }
+
+        mapObj = next;
+    }
+
+    if (CMap::s_streamingMode) {
+        // TODO FUN_007d9810(): the streaming queue's own pass over the roots still arriving
+    }
 }

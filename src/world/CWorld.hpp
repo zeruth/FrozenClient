@@ -114,6 +114,10 @@ class CWorld {
         static float GetFogStart();
         static float GetFogEnd();
         static float GetFogRate();
+        // How bright a self-illuminated surface draws right now. The reference keeps
+        // it in the day/night block (+0x1dc) and rolls it with the sun; nothing in
+        // frozen writes it yet, so it holds at full.
+        static float GetSidnScale();
         static const WorldDetailBands& GetDetailBands();
         static void SetupFogRenderStates();
         static void UpdateOutdoorLight();                  // recompute colours at the current time

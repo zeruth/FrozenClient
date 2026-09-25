@@ -701,6 +701,7 @@ addr	how	frozen	evidence
 004c35d0	annotated	C3Vector::operator/=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3650	annotated	C3Vector::Cross	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c4b80	callorder	CWorld::GetTickTimeSec	same slot between linked calls in 007ad020=CMapObj::UpdateAll
 004c4df0	annotated	C2Vector::operator=	tag in lib/typhoon/tempest/vector/C2Vector.cpp
 004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5230	annotated	C33Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
@@ -2790,6 +2791,8 @@ addr	how	frozen	evidence
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
+007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
+007ad020	annotated	CMapObj::UpdateAll	tag in src/world/map/CMapObj.cpp
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007ae1a0	annotated	CMapObj::ReadGroup	tag in src/world/map/CMapObj.cpp
 007ae1c0	annotated	CMapObj::WaitForRoot	tag in src/world/map/CMapObj.cpp
@@ -2961,6 +2964,7 @@ addr	how	frozen	evidence
 007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
 007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
+007cbd70	annotated	CMapObjGroup::FreeBuffers	tag in src/world/map/CMapObj.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp

@@ -109,6 +109,16 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static uint32_t QuerySkipFlags(uint32_t queryFlags);
         static CMapObj* Create(const char* path);
         static void ReadCallback(void* arg);
+        // ref: FUN_007afee0
+        static void Initialize();
+        // ref: FUN_007ad020
+        static void UpdateAll();
+
+        // Which of the reference's six WMO draw paths the device takes. It reads a
+        // constant 5 there, the shader path, and nothing ever writes it.
+        static const int32_t SHADER_LEVEL = 5;
+
+        void UpdateMaterialColors();
 
         // Member variables
         uint32_t m_memHandle = 0;                 // +0x00: CMap::s_mapObjHeap slot
@@ -157,6 +167,7 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void* m_fileBuffer = nullptr;             // +0x1cc: the whole .wmo root, owned
         uint32_t m_fileSize = 0;                  // +0x1d0
         int32_t m_refCount = 0;                   // +0x1d4: defs sharing this root
+        float m_idleTime = 0.0f;                  // +0x1d8: seconds with none
         CAsyncObject* m_asyncObject = nullptr;    // +0x1dc: the read in flight
         float m_nearestDistanceSq = 0.0f;         // +0x1c0: to the streaming target
         int32_t m_rootLoaded = 0;                 // +0x1e0: the root's chunks are parsed

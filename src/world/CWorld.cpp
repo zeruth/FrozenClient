@@ -645,6 +645,10 @@ float CWorld::GetFogRate() {
     return CWorld::s_fogRate;
 }
 
+float CWorld::GetSidnScale() {
+    return 1.0f;
+}
+
 const C3Vector& CWorld::GetSkyColor(int32_t index) {
     if (index < 0) {
         index = 0;
