@@ -105,9 +105,10 @@ void CMapChunk::Destroy() {
         this->m_renderChunk = nullptr;
     }
 
-    if (this->m_ptrA4) {
-        // TODO FUN_007b3960(m_ptrA4)
-        this->m_ptrA4 = nullptr;
+    if (this->m_detailDoodads) {
+        // TODO FUN_007b3960: give the instance back to the WDETAILDOODADINST heap. That heap is
+        // not created yet either -- it comes with the scatter builder.
+        this->m_detailDoodads = nullptr;
     }
 
     for (auto liquid = this->m_liquidList.Head(); liquid; ) {
@@ -517,6 +518,16 @@ bool CMapChunk::DetailDoodadsReady() {
 // alpha beyond 777 yards or whenever the shadowLevel setting is on, and is built. Then, with detail
 // doodads on and the chunk within 70 yards, its detail doodads are created and queued; that
 // system (FUN_007d3390, FUN_00792fa0) is not ported yet.
+//
+// What is known about the builder so far: it gates on the chunk having layers and on
+// DetailDoodadsReady, seeds a CRndSeed from the chunk's own indices (indexX << 16 | indexY, so
+// the scatter is the same every time the chunk loads), takes an instance from the
+// WDETAILDOODADINST heap into m_detailDoodads, then picks cells of the eight-by-eight grid at
+// random -- one bit a cell so none is used twice -- and for each builds a plane from the
+// chunk's heights with colour and normal deltas from MCCV and MCNR. Holes and the low-quality
+// texture map decide which ground effect a cell takes. It leans on about eight constant tables
+// that still need establishing; getting one of those masks wrong would scatter grass in the
+// wrong places, which is not something a counter would catch.
 void CMapChunk::PrepareRender() {
     if (!this->m_renderChunk) {
         this->EnsureRenderChunk();
@@ -536,7 +547,7 @@ void CMapChunk::PrepareRender() {
     }
 
     if ((CWorld::s_enables & CWorld::Enables::Enable_DetailDoodads) && this->m_sortDistance < 70.0f) {
-        // TODO if (!m_ptrA4) FUN_007d3390(this); if (m_ptrA4) FUN_00792fa0(m_ptrA4)
+        // TODO if (!m_detailDoodads) FUN_007d3390(this); if (m_detailDoodads) FUN_00792fa0(m_detailDoodads)
     }
 }
 

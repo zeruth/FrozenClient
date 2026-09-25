@@ -48801,7 +48801,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::PrepareRender",
-  "frozenSize": 598,
+  "frozenSize": 249,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 177,

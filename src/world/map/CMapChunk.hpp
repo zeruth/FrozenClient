@@ -118,7 +118,10 @@ class CMapChunk : public CMapBaseObj {
         C3Vector m_position;                 // +0x7c: chunk origin; only z is added to heights
         float m_sortDistance = 0.0f;         // +0x88: distance along the camera forward
         CAaBox m_bounds2;                    // +0x8c .. +0xa0: a copy of m_bounds after ComputeBounds
-        void* m_ptrA4 = nullptr;             // +0xa4: released with FUN_007b3960 on destroy
+        // The chunk's scattered grass, taken from the WDETAILDOODADINST heap by the
+        // scatter builder and given back to it on destroy (FUN_007b3960). Null until the
+        // chunk has come near enough to scatter.
+        void* m_detailDoodads = nullptr;     // +0xa4
         CMapRenderChunk* m_renderChunk = nullptr; // +0xa8
         int32_t m_renderChunkReady = 0;      // +0xac
         uint32_t m_areaId = 0;               // +0xb0: the MCNK header's areaId
