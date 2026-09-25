@@ -1,29 +1,29 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 06:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 06:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 26970 | 5.36M |
-| mapped to a frozen function | 4155 (=) (15.4%) | 852.4k (15.5%) |
-| &nbsp;&nbsp;ported | 3493 (=) | 680.1k |
+| reference (non-thunk) | 26966 | 5.35M |
+| mapped to a frozen function | 4169 (=) (15.5%) | 855.0k (15.6%) |
+| &nbsp;&nbsp;ported | 3507 (=) | 682.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 580 (=) | 125.5k |
 | &nbsp;&nbsp;verified (override) | 14 (=) | 3.0k |
-| **faithful** (linked, not stub, call order >= 80%) | **2103 (=) (7.8%)** | **267.1k (4.9%)** |
-| unmapped | 22815 | 4.52M |
-| world spine (reachable from OnFrameRender) | 5394, mapped 1275 (=) (23.6%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5661, mapped 1293 (=) (22.8%) | |
-| **render surface** (the modules that draw the world) | **4531, mapped 704 (=) (15.5%)** | |
-| frozen functions (src/, from PDB + source) | 13372, stubs 1702 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2114 (=) (7.8%)** | **268.1k (4.9%)** |
+| unmapped | 22797 | 4.52M |
+| world spine (reachable from OnFrameRender) | 5390, mapped 1289 (=) (23.9%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5657, mapped 1307 (=) (23.1%) | |
+| **render surface** (the modules that draw the world) | **4528, mapped 717 (=) (15.8%)** | |
+| frozen functions (src/, from PDB + source) | 13397, stubs 1702 | |
 
-Match evidence: annotated 1970, callgraph 229, callorder 114, cvar 32, handler 29, order 140, override 301, sticky 16, string 304, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 1984, callgraph 229, callorder 114, cvar 32, handler 29, order 140, override 301, sticky 16, string 304, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 06:16 -- mapped 4155, ported 3493, stub 580, spine mapped 1275.
+Previous run: 2026-09-25 06:27 -- mapped 4169, ported 3507, stub 580, spine mapped 1289.
 
 ## Lua API coverage (binding tables)
 
@@ -144,9 +144,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
 | ChatFrame.cpp | 344 | 81.0k | 97 (28.2%) | 18.5% | 34 | 2 | 33 |
 | lmemPool.cpp | 342 | 80.2k | 78 (22.8%) | 32.1% | 0 | 0 | 107 |
-| Map.cpp | 230 | 76.6k | 10 (4.3%) | 4.4% | 0 | 0 | 136 |
+| Map.cpp | 230 | 76.6k | 19 (8.3%) | 5.4% | 0 | 0 | 136 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| WorldParam.cpp | 184 | 63.4k | 37 (20.1%) | 21.3% | 3 | 0 | 115 |
+| WorldParam.cpp | 183 | 63.3k | 37 (20.2%) | 21.3% | 3 | 0 | 114 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 284 | 61.3k | 41 (14.4%) | 19.4% | 11 | 0 | 113 |
 | SoundEngine.cpp | 406 | 59.7k | 33 (8.1%) | 18.7% | 0 | 0 | 58 |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
-| DetailDoodad.cpp | 161 | 41.1k | 63 (39.1%) | 34.8% | 2 | 0 | 70 |
+| DetailDoodad.cpp | 159 | 40.8k | 66 (41.5%) | 38.3% | 2 | 0 | 68 |
 | VehicleCamera_C.cpp | 94 | 40.6k | 5 (5.3%) | 1.4% | 0 | 0 | 38 |
 | DBCache.cpp | 236 | 38.8k | 44 (18.6%) | 11.2% | 0 | 0 | 83 |
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
@@ -201,7 +201,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TalentInfo.cpp | 136 | 23.4k | 6 (4.4%) | 3.3% | 3 | 0 | 0 |
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 52 (43.3%) | 46.7% | 15 | 0 | 0 |
-| PetNameCache.cpp | 118 | 22.7k | 1 (0.8%) | 0.4% | 0 | 0 | 36 |
+| PetNameCache.cpp | 117 | 22.5k | 2 (1.7%) | 0.7% | 0 | 0 | 35 |
 | Texture.cpp | 145 | 22.1k | 35 (24.1%) | 28.1% | 5 | 0 | 74 |
 | ObjectEffect.cpp | 81 | 20.5k | 4 (4.9%) | 1.9% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 1 (1.1%) | 0.1% | 0 | 0 | 0 |
@@ -280,7 +280,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ChatBubbleFrame.cpp | 54 | 7.5k | 1 (1.9%) | 1.6% | 1 | 0 | 8 |
 | fmod_sample_openal.cpp | 19 | 7.4k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | RealmList.cpp | 45 | 7.3k | 27 (60.0%) | 58.0% | 2 | 0 | 0 |
-| MapLoad.cpp | 17 | 7.2k | 4 (23.5%) | 33.4% | 0 | 0 | 10 |
+| MapLoad.cpp | 17 | 7.2k | 5 (29.4%) | 38.7% | 0 | 0 | 10 |
 | PetitionVendor.cpp | 38 | 6.9k | 2 (5.3%) | 6.2% | 2 | 0 | 1 |
 | Corpse_C.cpp | 63 | 6.8k | 6 (9.5%) | 6.8% | 0 | 0 | 14 |
 | cmemblock.cpp | 46 | 6.7k | 27 (58.7%) | 56.9% | 5 | 0 | 16 |
@@ -581,7 +581,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
 | `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
-| `RenderWmos` | world | 2898 | src/world/Terrain.cpp |
+| `RenderWmos` | world | 2877 | src/world/Terrain.cpp |
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CGxString::CreateGeometry` | gx | 2696 | src/gx/font/CGxString.cpp |
@@ -593,7 +593,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ChrClassesRec::Read` | db | 2561 | src/db/rec/ChrClassesRec.cpp |
 | `luaK_posfix` | lib/lua-5.1 | 2528 | vendor/lua-5.1.3/src/lcode.c |
 | `CBackdropGenerator::SetOutput` | ui | 2401 | src/ui/CBackdropGenerator.cpp |
-| `FreeTile` | world | 2372 | src/world/Terrain.cpp |
+| `FreeTile` | world | 2384 | src/world/Terrain.cpp |
 | `FactionRec::Read` | db | 2368 | src/db/rec/FactionRec.cpp |
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
@@ -726,31 +726,31 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 05:59 | 4150 (15.4%) | 2099 (7.8%) | 580 | 1271/5397 | 2924/2964 | 1380 |
-| 2026-09-25 05:59 | 4150 (15.4%) | 2099 (7.8%) | 580 | 1271/5397 | 2924/2964 | 1380 |
-| 2026-09-25 05:59 | 4150 (15.4%) | 2099 (7.8%) | 580 | 1271/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:00 | 4150 (15.4%) | 2099 (7.8%) | 580 | 1271/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:01 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:01 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:01 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:01 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:02 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:02 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:03 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:03 | 4151 (15.4%) | 2100 (7.8%) | 580 | 1272/5397 | 2924/2964 | 1380 |
-| 2026-09-25 06:04 | 4150 (15.4%) | 2100 (7.8%) | 580 | 1271/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:04 | 4150 (15.4%) | 2100 (7.8%) | 580 | 1271/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:04 | 4150 (15.4%) | 2100 (7.8%) | 580 | 1271/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:14 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:14 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:15 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:15 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:15 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:15 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
-| 2026-09-25 06:15 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
 | 2026-09-25 06:16 | 4155 (15.4%) | 2102 (7.8%) | 580 | 1275/5396 | 2924/2964 | 1380 |
 | 2026-09-25 06:16 | 4155 (15.4%) | 2103 (7.8%) | 580 | 1275/5394 | 2924/2964 | 1380 |
 | 2026-09-25 06:16 | 4155 (15.4%) | 2103 (7.8%) | 580 | 1275/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:23 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:23 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:23 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:24 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:25 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:25 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:25 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:25 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:25 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:26 | 4168 (15.5%) | 2113 (7.8%) | 580 | 1288/5394 | 2924/2964 | 1380 |
+| 2026-09-25 06:26 | 4169 (15.5%) | 2113 (7.8%) | 580 | 1289/5391 | 2924/2964 | 1380 |
+| 2026-09-25 06:26 | 4169 (15.5%) | 2113 (7.8%) | 580 | 1289/5391 | 2924/2964 | 1380 |
+| 2026-09-25 06:27 | 4169 (15.5%) | 2113 (7.8%) | 580 | 1289/5391 | 2924/2964 | 1380 |
+| 2026-09-25 06:27 | 4169 (15.5%) | 2113 (7.8%) | 580 | 1289/5391 | 2924/2964 | 1380 |
+| 2026-09-25 06:27 | 4169 (15.5%) | 2114 (7.8%) | 580 | 1289/5390 | 2924/2964 | 1380 |
+| 2026-09-25 06:27 | 4169 (15.5%) | 2114 (7.8%) | 580 | 1289/5390 | 2924/2964 | 1380 |
 
 ## How to move a row
 

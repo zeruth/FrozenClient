@@ -2,6 +2,7 @@
 #define WORLD_MAP_C_MAP_OBJ_DEF_HPP
 
 #include "world/map/CMapBaseObj.hpp"
+#include <storm/Array.hpp>
 #include <storm/Hash.hpp>
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
@@ -9,7 +10,9 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CMapLight;
 class CMapObj;
+class CMapObjDefGroup;
 
 // MODF: one WMO placement in an ADT, 64 bytes. The same record shapes the global WMO a WDT can
 // name instead of a terrain grid.
@@ -49,7 +52,16 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         CMapObj* m_mapObj = nullptr;     // +0xf4: the root this places
         uint32_t m_doodadSet = 0;        // +0x100
         uint32_t m_nameSet = 0;          // +0x104
-        uint32_t m_unk138 = 0;           // +0x138: cleared on create, not read by anything ported
+        // The links the def's own groups hold on it (+0x114); each group is the owner
+        STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_defGroupLinkList;
+
+        // One entry per group of the root, and one per MOLT light. The reference keeps the first
+        // four groups inline and spills to the heap past that (+0x120 through +0x130) and grows
+        // the lights by hand (+0x134 through +0x140); both are plain growable arrays here.
+        TSGrowableArray<CMapObjDefGroup*> m_defGroups;
+        TSGrowableArray<CMapLight*> m_lights;
+        CImVector m_ambientColor;        // +0x144: the root's, copied so a def can override it
+        uint32_t m_unk138 = 0;           // cleared on create, not read by anything ported
 };
 
 #endif

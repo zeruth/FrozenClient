@@ -28,6 +28,22 @@
     "status": "excluded",
     "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::MonitorFullness instantiation; squall template"
   },
+  "007b4f10": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMapLight*>::SetCount instantiation (a placed WMO's per-MOLT light slots): SMemReAlloc, or alloc and copy when that fails; squall owns the template"
+  },
+  "00791f30": {
+    "status": "excluded",
+    "note": "the inline-storage growable array's SetCount instantiation, used for a placed WMO's group pointers (four inline, heap past that); frozen uses a plain TSGrowableArray"
+  },
+  "007b3b70": {
+    "status": "excluded",
+    "note": "the same array spilling its four inline slots to the heap; frozen never keeps any inline, so there is nothing to spill"
+  },
+  "007f9320": {
+    "status": "excluded",
+    "note": "the inner three rows of TransformBox (FUN_007f9430): each axis of the matrix contributes its smaller product to the minimum and its larger to the maximum. frozen writes the whole transform as one function, so there is nothing separate to link"
+  },
   "007b0690": {
     "status": "excluded",
     "note": "TSHashTable<CMapObj, HASHKEY_NONE>::Ptr instantiation (the WMO root cache at 0x00d1c428): walks the slot list comparing m_hashval; squall instantiates the template"

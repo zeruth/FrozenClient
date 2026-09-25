@@ -179,6 +179,7 @@ class CMapObjGroup {
 
         uint32_t m_flags = 0;                    // +0x30: MOGP flags
         CAaBox m_mogpBounds;                     // +0x34: the group's own box, from MOGP
+        float m_nearestDistanceSq = 0.0f;        // +0x4c: to the streaming target
         uint32_t m_portalStart = 0;              // +0x50: into the root's MOPR
         uint32_t m_portalCount = 0;              // +0x54
         uint32_t m_fogIds = 0;                   // +0x58: four MFOG indices, one byte each
@@ -244,6 +245,7 @@ class CMapObjGroup {
         uint32_t m_state = 0;                    // +0x198: bit 0 loaded, bit 1 the root attenuates
                                                  //   vertex colour, bit 2 every batch is
                                                  //   untextured, bit 3 a batch blends by mode 6
+        uint32_t m_unk190 = 0;                   // +0x190: cleared every def update
         uint32_t m_minIndex = 0;                 // +0x19c: over the batches
         uint32_t m_maxIndex = 0;                 // +0x1a0
         uint16_t m_minVertex = 0;                // +0x1a4

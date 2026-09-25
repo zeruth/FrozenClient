@@ -52,6 +52,7 @@ int32_t CAaBox::IsPointInside(const C3Vector& p) const {
 }
 
 // ref: FUN_00984860
+// ref: FUN_007f9430
 CAaBox TransformBox(const CAaBox& box, const C44Matrix& m) {
     // The translation row is where a zero-sized box would land, so both corners start there and
     // the rows below only ever widen them.

@@ -2,6 +2,7 @@
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "async/AsyncFileRead.hpp"
+#include <tempest/Box.hpp>
 #include "async/CAsyncObject.hpp"
 #include "util/Log.hpp"
 #include "util/SFile.hpp"
@@ -298,4 +299,119 @@ void CMapObj::ClearMaterialTextures() {
         this->m_materialTextures[i].texture1 = nullptr;
         this->m_materialTextures[i].texture2 = nullptr;
     }
+}
+
+// ----------------------------------------------------------------------------------------------
+// What the streaming and visibility passes ask a root. Every one of these answers nothing until
+// the root's own file has parsed, because until then there are no chunks to read.
+
+// ref: FUN_007ae520
+void CMapObj::BoundingSphere(C3Vector* center, float* radius) {
+    if (!this->m_rootLoaded) {
+        center->x = 0.0f;
+        center->y = 0.0f;
+        center->z = 0.0f;
+        *radius = 0.0f;
+        return;
+    }
+
+    center->x = (this->m_bounds.t.x + this->m_bounds.b.x) * 0.5f;
+    center->y = (this->m_bounds.t.y + this->m_bounds.b.y) * 0.5f;
+    center->z = (this->m_bounds.t.z + this->m_bounds.b.z) * 0.5f;
+
+    float dx = this->m_bounds.t.x - center->x;
+    float dy = this->m_bounds.t.y - center->y;
+    float dz = this->m_bounds.t.z - center->z;
+    *radius = sqrtf(dz * dz + dy * dy + dx * dx);
+}
+
+// ref: FUN_007ae5e0
+void CMapObj::Bounds(CAaBox* bounds) {
+    if (!this->m_rootLoaded) {
+        *bounds = {};
+        return;
+    }
+
+    *bounds = this->m_bounds;
+}
+
+// ref: FUN_007ae670
+void CMapObj::GroupBoundingSphere(uint32_t index, C3Vector* center, float* radius) {
+    if (!this->m_rootLoaded) {
+        center->x = 0.0f;
+        center->y = 0.0f;
+        center->z = 0.0f;
+        *radius = 0.0f;
+        return;
+    }
+
+    const CAaBox& box = this->m_mogi[index].bounds;
+
+    center->x = (box.t.x + box.b.x) * 0.5f;
+    center->y = (box.t.y + box.b.y) * 0.5f;
+    center->z = (box.t.z + box.b.z) * 0.5f;
+
+    float dx = box.t.x - center->x;
+    float dy = box.t.y - center->y;
+    float dz = box.t.z - center->z;
+    *radius = sqrtf(dz * dz + dy * dy + dx * dx);
+}
+
+// ref: FUN_007ae720
+void CMapObj::GroupBounds(uint32_t index, CAaBox* bounds) {
+    if (!this->m_rootLoaded) {
+        *bounds = {};
+        return;
+    }
+
+    *bounds = this->m_mogi[index].bounds;
+}
+
+// ref: FUN_007ae7b0
+uint32_t CMapObj::GroupFlags(uint32_t index) {
+    if (!this->m_rootLoaded) {
+        return 0;
+    }
+
+    return this->m_mogi[index].flags;
+}
+
+// ref: FUN_007aea80
+// The group object for an index, or nothing when the root has not parsed or the group's own file
+// has not; a caller that can cope with an empty group passes allowUnloaded.
+CMapObjGroup* CMapObj::GetGroup(uint32_t index, int32_t allowUnloaded) {
+    if (!this->m_rootLoaded) {
+        return nullptr;
+    }
+
+    auto group = this->m_groups[index];
+
+    if (!(group->m_state & 0x1) && !allowUnloaded) {
+        return nullptr;
+    }
+
+    return group;
+}
+
+// ref: FUN_007ae1c0
+// Blocks until the root's read has landed. The loop re-reads the pointer because the callback
+// that clears it runs inside the wait.
+void CMapObj::WaitForRoot() {
+    while (this->m_asyncObject) {
+        AsyncFileReadWait(this->m_asyncObject);
+    }
+}
+
+// ref: FUN_007aeab0
+void CMapObj::WaitForGroup(uint32_t index) {
+    auto group = this->m_groups[index];
+
+    while (group->m_asyncObject) {
+        AsyncFileReadWait(group->m_asyncObject);
+    }
+}
+
+// ref: FUN_007ae1a0
+void CMapObj::ReadGroup(uint32_t index) {
+    CMapObjGroup::Read(this, index, 0);
 }

@@ -158,6 +158,7 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         uint32_t m_fileSize = 0;                  // +0x1d0
         int32_t m_refCount = 0;                   // +0x1d4: defs sharing this root
         CAsyncObject* m_asyncObject = nullptr;    // +0x1dc: the read in flight
+        float m_nearestDistanceSq = 0.0f;         // +0x1c0: to the streaming target
         int32_t m_rootLoaded = 0;                 // +0x1e0: the root's chunks are parsed
         uint32_t m_groupsToLoad = 0;              // +0x1f4: groups whose files have not arrived
         // The reference sizes its heap record for 512 groups and writes the pointers into the
@@ -174,6 +175,18 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void ClearMaterialTextures();
 
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
+
+        // What the streaming and visibility passes ask a root about itself and its groups. Each
+        // answers nothing at all until the root's own file has parsed.
+        void BoundingSphere(C3Vector* center, float* radius);
+        void Bounds(CAaBox* bounds);
+        void GroupBoundingSphere(uint32_t index, C3Vector* center, float* radius);
+        void GroupBounds(uint32_t index, CAaBox* bounds);
+        uint32_t GroupFlags(uint32_t index);
+        CMapObjGroup* GetGroup(uint32_t index, int32_t allowUnloaded);
+        void WaitForRoot();
+        void WaitForGroup(uint32_t index);
+        void ReadGroup(uint32_t index);
 };
 
 #endif

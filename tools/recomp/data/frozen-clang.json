@@ -37371,7 +37371,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 55
+"line": 56
 },
 "SphereToBox": {
 "files": [
@@ -37384,7 +37384,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 96
+"line": 97
 },
 "AaBoxIsDegenerate": {
 "files": [
@@ -37400,7 +37400,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 106
+"line": 107
 },
 "AaBoxIsInverted": {
 "files": [
@@ -37416,7 +37416,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 115
+"line": 116
 },
 "MinAxis": {
 "files": [
@@ -194523,7 +194523,8 @@
 "callseq": [
 "CMap::UnloadAll",
 "CMap::RecycleBufBlocks",
-"CMap::UpdateAreas"
+"CMap::UpdateAreas",
+"CMap::UpdateMapObjDefs"
 ],
 "strings": [],
 "consts": [
@@ -196781,7 +196782,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 23
+"line": 26
 },
 "CMapChunk::CreateRefs": {
 "files": [
@@ -196804,7 +196805,116 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 92
+"line": 95
+},
+"BoxDistanceSq": {
+"files": [
+"src/world/map/cmapload.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 6,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 128
+},
+"CMap::CreateDefGroups": {
+"files": [
+"src/world/map/cmapload.cpp"
+],
+"callseq": [
+"TSGrowableArray<CMapObjDefGroup *>::SetCount",
+"CMap::AllocMapObjDefGroup",
+"CMap::AllocBaseObjLink",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail",
+"TSBaseArray<CMapObjDefGroup *>::operator[]",
+"C3Vector::C3Vector",
+"CMapObj::GroupBoundingSphere",
+"TransformPointInPlace",
+"CAaBox::CAaBox",
+"CMapObj::GroupBounds",
+"TransformBox",
+"CAaBox::operator=",
+"CImVector::operator=",
+"CMapObj::GroupFlags"
+],
+"strings": [],
+"consts": [
+"0",
+"0x2",
+"0x4",
+"0x48"
+],
+"branches": 2,
+"stub": false,
+"lines": 35,
+"refs": [],
+"line": 139
+},
+"CMap::SetupMapObjDef": {
+"files": [
+"src/world/map/cmapload.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"CMapObj::BoundingSphere",
+"TransformPointInPlace",
+"CAaBox::CAaBox",
+"CMapObj::Bounds",
+"TransformBox",
+"CAaBox::operator=",
+"CImVector::operator=",
+"TSGrowableArray<CMapLight *>::SetCount",
+"TSBaseArray<CMapLight *>::operator[]",
+"CMap::CreateDefGroups"
+],
+"strings": [],
+"consts": [
+"0",
+"0x80"
+],
+"branches": 1,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 178
+},
+"CMap::UpdateMapObjDefs": {
+"files": [
+"src/world/map/cmapload.cpp"
+],
+"callseq": [
+"TSHashTable<CMapObjDef,HASHKEY_NONE>::Head",
+"TSHashTable<CMapObjDef,HASHKEY_NONE>::Next",
+"CAaBox::Intersects",
+"CMapObj::WaitForRoot",
+"CMap::SetupMapObjDef",
+"BoxDistanceSq",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Next",
+"CMapObj::GetGroup",
+"CAaBox::Intersects",
+"CMapObj::ReadGroup",
+"CAaBox::Intersects",
+"CMapObj::WaitForGroup",
+"BoxDistanceSq"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1",
+"0x10",
+"0x8",
+"0x80",
+"1"
+],
+"branches": 16,
+"stub": false,
+"lines": 68,
+"refs": [],
+"line": 210
 },
 "CMapObj::QuerySkipFlags": {
 "files": [
@@ -196833,7 +196943,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 16
+"line": 17
 },
 "CMapObj::GroupFloorColor": {
 "files": [
@@ -196854,7 +196964,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 55
+"line": 56
 },
 "CMapObj::Create": {
 "files": [
@@ -196881,7 +196991,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 91
+"line": 92
 },
 "CMapObj::Read": {
 "files": [
@@ -196912,7 +197022,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 118
+"line": 119
 },
 "CMapObj::ReadCallback": {
 "files": [
@@ -196929,7 +197039,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 149
+"line": 150
 },
 "CMapObj::ReadComplete": {
 "files": [
@@ -196951,7 +197061,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 163
+"line": 164
 },
 "NextChunk": {
 "files": [
@@ -196971,7 +197081,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 185
+"line": 186
 },
 "CMapObj::ParseChunks": {
 "files": [
@@ -197020,7 +197130,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 198
+"line": 199
 },
 "CMapObj::ClearMaterialTextures": {
 "files": [
@@ -197039,7 +197149,152 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 294
+"line": 295
+},
+"CMapObj::BoundingSphere": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0.5f"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 309
+},
+"CMapObj::Bounds": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"CAaBox::operator=",
+"CAaBox::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 329
+},
+"CMapObj::GroupBoundingSphere": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0.5f"
+],
+"branches": 1,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 339
+},
+"CMapObj::GroupBounds": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"CAaBox::operator=",
+"CAaBox::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 361
+},
+"CMapObj::GroupFlags": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 371
+},
+"CMapObj::GetGroup": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x1"
+],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 382
+},
+"CMapObj::WaitForRoot": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"AsyncFileReadWait"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 399
+},
+"CMapObj::WaitForGroup": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"AsyncFileReadWait"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 406
+},
+"CMapObj::ReadGroup": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"CMapObjGroup::Read"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 415
 },
 "TriangleOutsideHull": {
 "files": [

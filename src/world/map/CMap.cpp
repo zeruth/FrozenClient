@@ -962,7 +962,7 @@ void CMap::Update(int32_t update) {
     // TODO FUN_007ad020(): WMO material shader selection
     CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
-    // TODO FUN_007b6110(update): WMO def update
+    CMap::UpdateMapObjDefs(update);
     // TODO FUN_007b5630(): entity update
     // TODO FUN_007b5590(update): entity placement
 
