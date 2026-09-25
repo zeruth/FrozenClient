@@ -48,6 +48,14 @@ class CMap {
         // Render chunks are not pooled through ObjectAlloc: freed ones wait here for reuse
         static STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) s_renderChunkFreeList;        // 0x00aeed74
 
+        // Chunk vertex mode, decided at map load (DAT_00ce049f): non-zero keeps every chunk's
+        // vertices in world space in one shared buffer; zero keeps them chunk-local and folds
+        // the origin into a per-chunk matrix.
+        static uint8_t s_chunkVerticesWorldSpace;
+        // Terrain vertex format (DAT_00d1d06c, set with the terrain shader level): 1 drops the
+        // baked MCCV colour from the vertex.
+        static int32_t s_terrainVertexFormat;
+
         static int32_t s_mapID;
         static char s_mapName[];
         static char s_mapPath[];

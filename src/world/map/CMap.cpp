@@ -42,6 +42,9 @@ STORM_EXPLICIT_LIST(CMapBaseObj, m_lameAssLink) CMap::s_entityList;
 STORM_EXPLICIT_LIST(CMapLight, m_lameAssLink) CMap::s_lightList;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CMap::s_renderChunkFreeList;
 
+uint8_t CMap::s_chunkVerticesWorldSpace;
+int32_t CMap::s_terrainVertexFormat;
+
 int32_t CMap::s_mapID = -1;
 char CMap::s_mapName[256];
 char CMap::s_mapPath[256];

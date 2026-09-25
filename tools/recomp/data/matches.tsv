@@ -2250,6 +2250,18 @@ addr	how	frozen	evidence
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
+007c3a10	annotated	CMapChunk::ParseSubChunks	tag in src/world/map/CMapChunk.cpp
+007c3b60	annotated	CMapChunk::BuildIndices	tag in src/world/map/CMapChunk.cpp
+007c3c60	annotated	CMapChunk::BuildVertexTable	tag in src/world/map/CMapChunk.cpp
+007c3d90	annotated	CMapChunk::Initialize	tag in src/world/map/CMapChunk.cpp
+007c3f30	annotated	CMapChunk::FillVerticesWorld	tag in src/world/map/CMapChunk.cpp
+007c4620	annotated	CMapChunk::FillVerticesWorldColor	tag in src/world/map/CMapChunk.cpp
+007c4960	annotated	CMapChunk::FillVerticesLocal	tag in src/world/map/CMapChunk.cpp
+007c4f10	annotated	CMapChunk::FillVerticesLocalColor	tag in src/world/map/CMapChunk.cpp
+007c51b0	annotated	CMapChunk::AppendIndices	tag in src/world/map/CMapChunk.cpp
+007c5220	annotated	CMapChunk::ComputeBounds	tag in src/world/map/CMapChunk.cpp
+007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
+007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
 007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
