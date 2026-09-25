@@ -17,6 +17,7 @@ TEXTBLOCK::~TEXTBLOCK() {
     GxuFontDestroyString(this->string);
 }
 
+// ref: FUN_004bd870
 uint32_t ConvertStringFlags(uint32_t flags) {
     uint32_t convertedFlags = 0x0;
 

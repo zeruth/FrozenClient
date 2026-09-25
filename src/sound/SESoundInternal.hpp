@@ -2,6 +2,7 @@
 #define SOUND_SE_SOUND_INTERNAL_HPP
 
 #include <storm/List.hpp>
+#include <tempest/Vector.hpp>
 #include <fmod.hpp>
 #include <cstdint>
 
@@ -40,6 +41,8 @@ class SESoundInternal : public TSLinkedNode<SESoundInternal> {
         // TODO
         int32_t m_useCache = 0;
         int32_t m_type = 0;
+        // TODO
+        C3Vector m_position;        // ref +0x50
         // TODO
         int32_t m_channelGroup = 0;
         FMOD_MODE m_fmodMode = FMOD_DEFAULT;

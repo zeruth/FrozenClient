@@ -31,6 +31,8 @@ SCritSect SESound::s_LoadingCritSect;
 FMOD::System* SESound::s_pGameSystem;
 STORM_EXPLICIT_LIST(SEDiskSound, m_readyLink) SESound::s_ReadyDiskSounds;
 uint32_t SESound::s_UniqueID;
+// ref: DAT_00d43810
+float (*SESound::s_VolumeCallback)(SEUserData* userData);
 
 void* FSoundAllocCallback(uint32_t size, FMOD_MEMORY_TYPE type, const char* sourcestr) {
     return SMemAlloc(size, "FMod", 0, 0x8);
@@ -548,8 +550,9 @@ void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32
     LOG_WRITE(FMOD_OK, " ");
 }
 
+// ref: FUN_00878cb0
 int32_t SESound::IsInitialized() {
-    return SESound::s_Initialized == 1;
+    return SESound::s_Initialized;
 }
 
 int32_t SESound::LoadDiskSound(FMOD::System* fmodSystem, const char* filename, FMOD_MODE fmodMode, SESound* sound, FMOD::SoundGroup* fmodSoundGroup1, FMOD::SoundGroup* fmodSoundGroup2, bool a7, int32_t a8, uint32_t a9, int32_t a10, uint32_t decodeBufferSize, int32_t a12, float a13, float a14, float a15, float* a16) {
@@ -913,6 +916,38 @@ void SESound::SetMasterVolume(float volume) {
     masterChannelGroup->m_dirty = true;
 }
 
+// ref: FUN_00878540
+void SESound::LockInternal() {
+    SESound::s_InternalCritSect.Enter();
+}
+
+// ref: FUN_00878550
+void SESound::UnlockInternal() {
+    SESound::s_InternalCritSect.Leave();
+}
+
+// ref: FUN_00879400
+// Flags a fade in without touching the fade volume or the fade time.
+void SESound::BeginFadeIn() {
+    auto internal = this->m_internal;
+
+    if (internal) {
+        internal->m_fadeOut = 0;
+        internal->m_fadeIn = 1;
+    }
+}
+
+// ref: FUN_00879410
+void SESound::BeginFadeOut() {
+    auto internal = this->m_internal;
+
+    if (internal) {
+        internal->m_fadeIn = 0;
+        internal->m_fadeOut = 1;
+    }
+}
+
+// ref: FUN_0087bf00
 void SESound::CompleteLoad() {
     if (!this->m_internal) {
         return;
@@ -923,12 +958,69 @@ void SESound::CompleteLoad() {
     }
 }
 
+// ref: FUN_00878270
+// Lets go of the sound without stopping it: it plays on with no handle pointing at it.
+void SESound::Detach() {
+    if (this->m_internal) {
+        this->m_internal->m_sound = nullptr;
+        this->m_internal = nullptr;
+    }
+}
+
+// ref: FUN_008799e0
+// Lets go of the sound. A one-shot plays on to its end; a looping sound would never end, so it
+// is given half a second to fade out first.
+void SESound::DetachWithLoopFade() {
+    if (!this->m_internal) {
+        return;
+    }
+
+    this->m_internal->m_sound = nullptr;
+
+    if (this->IsLooping()) {
+        this->m_internal->m_fadeOutTime = 0.5f;
+
+        if (this->m_internal->m_fadeOutTime <= 0.0f) {
+            this->m_internal->m_stopped = 1;
+
+            if (this->m_internal->m_fmodChannel) {
+                this->m_internal->m_fmodChannel->stop();
+                this->m_internal->m_fmodChannel = nullptr;
+            }
+        } else {
+            this->BeginFadeOut();
+        }
+
+        this->Detach();
+    }
+
+    this->m_internal = nullptr;
+}
+
 SEUserData* SESound::GetUserData() {
     if (!this->m_internal) {
         return nullptr;
     }
 
     return this->m_internal->m_userData;
+}
+
+// ref: FUN_00879420
+bool SESound::Is3D() {
+    if (!this->m_internal) {
+        return false;
+    }
+
+    return (this->m_internal->m_fmodMode >> 4) & 1;
+}
+
+// ref: FUN_00879440
+bool SESound::IsLooping() {
+    if (!this->m_internal) {
+        return false;
+    }
+
+    return (this->m_internal->m_fmodMode >> 1) & 1;
 }
 
 bool SESound::IsPlaying() {
@@ -945,6 +1037,7 @@ bool SESound::IsPlaying() {
     return isPlaying;
 }
 
+// ref: FUN_0087f7a0
 int32_t SESound::Load(const char* filename, int32_t a3, FMOD::SoundGroup* soundGroup1, FMOD::SoundGroup* soundGroup2, bool a6, bool a7, uint32_t a8, int32_t a9, uint32_t a10) {
     if (!SESound::s_Initialized) {
         return 0;
@@ -1012,6 +1105,7 @@ void SESound::SetFadeInTime(float fadeInTime) {
     this->m_internal->m_fadeInTime = fadeInTime;
 }
 
+// ref: FUN_00878610
 void SESound::SetFadeOutTime(float fadeOutTime) {
     if (!this->m_internal) {
         return;
@@ -1020,6 +1114,24 @@ void SESound::SetFadeOutTime(float fadeOutTime) {
     this->m_internal->m_fadeOutTime = fadeOutTime;
 }
 
+// ref: FUN_008793c0
+void SESound::SetPosition(const C3Vector& position) {
+    auto internal = this->m_internal;
+
+    if (!internal) {
+        return;
+    }
+
+    internal->m_position.x = position.x;
+    internal->m_position.y = position.y;
+    internal->m_position.z = position.z;
+
+    if (internal->m_fmodChannel) {
+        internal->m_fmodChannel->set3DAttributes(reinterpret_cast<const FMOD_VECTOR*>(&position), nullptr);
+    }
+}
+
+// ref: FUN_00878560
 void SESound::SetUserData(SEUserData* userData) {
     if (!this->m_internal) {
         return;

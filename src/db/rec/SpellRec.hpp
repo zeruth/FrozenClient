@@ -27,6 +27,24 @@ class SpellRec {
         // 3.3.5a layout, which the constants either side of it already assume.
         static const int32_t COLUMN_EFFECT_AURA = 95;   // 95, 96, 97
 
+        // The reference's in-memory record is the file row with each 17-column localized string
+        // folded to one pointer, so an offset below the name block (+0x220) is column * 4 and one
+        // past the four strings is (column - 64) * 4. Every column below was located that way from
+        // an offset the reference reads.
+        static const int32_t COLUMN_DISPEL = 2;                     // +0x08
+        static const int32_t COLUMN_MECHANIC = 3;                   // +0x0c
+        static const int32_t COLUMN_ATTRIBUTES_EX = 5;              // +0x14
+        static const int32_t COLUMN_ATTRIBUTES_EX2 = 6;             // +0x18
+        static const int32_t COLUMN_STANCES = 12;                   // +0x30, a 64-bit mask
+        static const int32_t COLUMN_STANCES_NOT = 14;               // +0x38, a 64-bit mask
+        static const int32_t COLUMN_TARGETS = 16;                   // +0x40
+        static const int32_t COLUMN_EFFECT_MECHANIC = 83;           // +0x14c, 3 columns
+        static const int32_t COLUMN_EFFECT_IMPLICIT_TARGET_A = 86;  // +0x158, 3 columns
+        static const int32_t COLUMN_EFFECT_IMPLICIT_TARGET_B = 89;  // +0x164, 3 columns
+        static const int32_t COLUMN_EFFECT_MISC_VALUE = 110;        // +0x1b8, 3 columns
+        static const int32_t COLUMN_EFFECT_SPELL_CLASS_MASK = 122;  // +0x1e8, 3 x 3 columns
+        static const int32_t COLUMN_SCHOOL_MASK = 225;              // +0x284
+
         static const int32_t COLUMN_ICON = 133;
         static const int32_t COLUMN_ACTIVE_ICON = 134;  // immediately after the normal icon
         static const int32_t COLUMN_NAME = 136;       // 17 locale columns, then
@@ -47,6 +65,19 @@ class SpellRec {
         const char* m_rank;
         int32_t m_spellVisualID[2];
         uint32_t m_attributes;
+        int32_t m_dispel;
+        int32_t m_mechanic;
+        uint32_t m_attributesEx;
+        uint32_t m_attributesEx2;
+        uint32_t m_stances[2];
+        uint32_t m_stancesNot[2];
+        uint32_t m_targets;
+        int32_t m_effectMechanic[3];
+        int32_t m_effectImplicitTargetA[3];
+        int32_t m_effectImplicitTargetB[3];
+        int32_t m_effectMiscValue[3];
+        uint32_t m_effectSpellClassMask[3][3];
+        uint32_t m_schoolMask;
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

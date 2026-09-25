@@ -62,6 +62,7 @@ int32_t SI2::CreditsMusicUpdate(const void* data, void* param) {
     return 1;
 }
 
+// ref: FUN_004cc180
 SOUNDKITDEF* SI2::GetSoundKitDef(int32_t id) {
     if (id >= SI2::s_SoundKitDefs.Count() || id <= 0) {
         return nullptr;

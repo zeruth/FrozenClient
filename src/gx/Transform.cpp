@@ -8,10 +8,15 @@
 #include <tempest/Matrix.hpp>
 #include <tempest/Vector.hpp>
 
+// ref: FUN_0057c420
+// The reference inlines the stack pop on g_theGxDevicePtr's m_xforms[xf].
 void GxXformPop(EGxXform xf) {
     g_theGxDevicePtr->XformPop(xf);
 }
 
+// ref: FUN_004bec70
+// The reference copies device + 0xf88 (m_projection) into the caller's matrix, which arrives in
+// ECX and goes straight to the C44Matrix copy (0x00407f80).
 void GxXformProjection(C44Matrix& matrix) {
     g_theGxDevicePtr->XformProjection(matrix);
 }

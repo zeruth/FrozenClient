@@ -75,6 +75,7 @@ void AsyncTextureWait(CTexture* texture) {
     // TODO
 }
 
+// ref: FUN_006ab700
 uint32_t CalcLevelCount(uint32_t width, uint32_t height) {
     uint32_t v2 = width;
     uint32_t v3 = height;
@@ -1287,6 +1288,32 @@ CGxTex* TextureGetGxTex(HTEXTURE handle, int32_t a2, CStatus* status) {
 
 CTexture* TextureGetTexturePtr(HTEXTURE handle) {
     return reinterpret_cast<CTexture*>(handle);
+}
+
+// ref: FUN_004b55e0
+void TextureFreeMem(void* ptr) {
+    if (ptr) {
+        SMemFree(ptr, __FILE__, __LINE__, 0);
+    }
+}
+
+// ref: FUN_004b5750
+void TextureGetTexFlags(HTEXTURE handle, CGxTexFlags* flags) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END_VOID;
+
+    *flags = TextureGetTexturePtr(handle)->gxTexFlags;
+}
+
+// ref: FUN_004b6280
+// How many holders the texture handle has; 1 means the caller's is the only one.
+int32_t TextureGetRefCount(HTEXTURE handle) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END;
+
+    return TextureGetTexturePtr(handle)->m_refcount;
 }
 
 // Promotes a texture's pending async read to the front of the queue. **Still a stub**, with live

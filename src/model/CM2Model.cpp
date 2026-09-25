@@ -223,6 +223,14 @@ float M2BoneBlendWeight(const M2ModelBone& modelBone, uint32_t sceneTime) {
     return weight * modelBone.floatA4;
 }
 
+// ref: FUN_006f1d20
+// scene + 0xc4 is m_viewInv.
+C44Matrix CM2Model::AnimateAndGetWorldMatrix() {
+    this->Animate();
+
+    return this->matrixF4 * this->m_scene->m_viewInv;
+}
+
 // ref: FUN_00830dc0
 // Bring this model's transform and bone matrices up to date for the scene's current frame, on
 // demand rather than from the scene's animate pass. A model attached to another one cannot be
@@ -2038,13 +2046,29 @@ C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     return transform * this->m_scene->m_viewInv;
 }
 
+// ref: FUN_004f5e20
 CAaBox& CM2Model::GetBoundingBox(CAaBox& bounds) {
-    // TODO
-    // WaitForLoad
+    if (!this->m_shared->m_m2DataLoaded) {
+        this->WaitForLoad(nullptr);
+    }
 
     bounds = this->m_shared->m_data->bounds.extent;
 
     return bounds;
+}
+
+// ref: FUN_004f5e80
+// The sphere around the model's authored bounds: the box's midpoint and the authored radius.
+void CM2Model::GetBoundingSphere(CAaSphere& sphere) {
+    if (!this->m_shared->m_m2DataLoaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto& bounds = this->m_shared->m_data->bounds;
+    sphere.c.x = (bounds.extent.b.x + bounds.extent.t.x) * 0.5f;
+    sphere.c.y = (bounds.extent.t.y + bounds.extent.b.y) * 0.5f;
+    sphere.c.z = (bounds.extent.t.z + bounds.extent.b.z) * 0.5f;
+    sphere.r = bounds.radius;
 }
 
 HCAMERA CM2Model::GetCameraByIndex(uint32_t index) {

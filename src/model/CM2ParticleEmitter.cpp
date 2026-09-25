@@ -201,6 +201,7 @@ void M2ParticleToFixed16(fixed16& out, float value) {
     out.n = static_cast<int16_t>(value * 32767.0f);
 }
 
+// ref: FUN_004c15c0
 // See the declaration for why the centre is 2.0 rather than the 1.5 it looks like.
 float M2ParticleRandSigned(CRndSeed& seed) {
     uint32_t u = CRandom::uint32(seed);

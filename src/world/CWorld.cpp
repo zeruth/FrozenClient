@@ -674,6 +674,7 @@ float AdjustFarClip(float farClip, int32_t mapID) {
 
 }
 
+// ref: FUN_00781a10
 HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags) {
     auto entity = CMap::AllocEntity(objFlags & 0x8 ? true : false);
 
@@ -701,6 +702,57 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
     // TODO
 
     return reinterpret_cast<HWORLDOBJECT>(entity);
+}
+
+// ref: FUN_007826e0
+void CWorld::RemoveObject(HWORLDOBJECT object) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    for (auto link = entity->m_parentLinkList.Head(); link; ) {
+        auto next = entity->m_parentLinkList.Next(link);
+        CMap::FreeBaseObjLink(link);
+        link = next;
+    }
+
+    if (entity->m_model && entity->m_model->m_attachParent) {
+        entity->m_model->DetachFromParent();
+    }
+
+    CMap::FreeEntity(entity);
+}
+
+// ref: FUN_0077f2c0
+void CWorld::SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    entity->m_handler = handler;
+    entity->m_handlerParam = handlerParam;
+}
+
+// ref: FUN_0077f1e0
+int32_t CWorld::GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity && (entity->m_flags7c & 0x20)) {
+        *height = entity->m_field80;
+        *fieldBC = entity->m_fieldBC;
+        *a4 = 0;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_007815c0
+void CWorld::UpdateWindowAndMap(const C3Vector& targetPos) {
+    CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;
+    CWorld::s_prevWindowMinY = CMap::s_chunkWindowMinY;
+    CWorld::s_prevWindowMaxY = CMap::s_chunkWindowMaxY;
+    CWorld::s_prevWindowMaxX = CMap::s_chunkWindowMaxX;
+
+    CWorld::UpdateWindow(targetPos);
+    CMap::Update(0);
 }
 
 uint32_t CWorld::GetCurTimeMs() {

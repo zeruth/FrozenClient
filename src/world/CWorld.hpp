@@ -93,6 +93,10 @@ class CWorld {
 
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
+        static void RemoveObject(HWORLDOBJECT object);
+        static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
+        static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
+        static void UpdateWindowAndMap(const C3Vector& targetPos);
         static uint32_t GetCurTimeMs();
         static float GetCurTimeSec();
         static float GetFarClip();

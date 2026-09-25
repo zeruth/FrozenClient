@@ -124,4 +124,6 @@ extern WowClientDB<UnitBloodLevelsRec> g_unitBloodLevelsDB;
 
 void ClientDBInitialize();
 
+void DbUnpackRecord(const char* src, int32_t size, char* dst);
+
 #endif

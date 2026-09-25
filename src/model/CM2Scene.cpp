@@ -1101,6 +1101,12 @@ void CM2Scene::SelectLights(CM2Lighting* lighting) {
     }
 }
 
+// Mark a ray query as active: scene flag 0x2, which RaySetup clears again for a degenerate ray.
+// ref: FUN_0081cac0
+void CM2Scene::BeginRayQuery() {
+    this->m_flags |= 0x2;
+}
+
 // Make room for one candidate per model on the ray list. The capacity only grows, doubling from
 // one, and the old contents are not kept.
 // ref: FUN_0081cad0

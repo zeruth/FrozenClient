@@ -202,6 +202,7 @@ BlpPalPixel* TextureCacheGetPal(void* handle) {
     return blpHeader->extended.palette;
 }
 
+// ref: FUN_004f2d80
 int32_t TextureCacheHasMips(void* handle) {
     auto entry = static_cast<CACHEENTRY*>(handle);
     return entry && entry->m_data && !entry->IsMissing();

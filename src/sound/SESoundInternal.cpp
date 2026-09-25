@@ -13,6 +13,7 @@ SESoundInternal::SESoundInternal() {
     this->m_uniqueID = SESound::s_UniqueID++;
 }
 
+// ref: FUN_00878fd0
 float SESoundInternal::GetVolume() {
     if (!SESound::s_Initialized) {
         return 0.0f;
@@ -26,19 +27,24 @@ float SESoundInternal::GetVolume() {
         volume *= this->m_fadeVolume;
     }
 
-    // Apply channel group volume
+    // Apply channel group volume. With no channel groups at all the sound is silent.
 
     if (SESound::s_ChannelGroups.Count()) {
         auto channelGroupIndex = this->m_channelGroup;
 
         while (channelGroupIndex != -1) {
             auto channelGroup = &SESound::s_ChannelGroups[channelGroupIndex];
-            auto channelGroupVolume = channelGroup->m_volume * channelGroup->m_muteVolume;
 
-            volume *= channelGroupVolume;
+            volume = volume * channelGroup->m_volume * channelGroup->m_muteVolume;
 
             channelGroupIndex = channelGroup->m_parentChannelGroup;
         }
+    } else {
+        volume = 0.0f;
+    }
+
+    if (this->m_type != 3 && SESound::s_VolumeCallback) {
+        return SESound::s_VolumeCallback(this->m_userData) * volume;
     }
 
     return volume;

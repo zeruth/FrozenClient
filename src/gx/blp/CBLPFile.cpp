@@ -12,6 +12,20 @@ TSGrowableArray<unsigned char> CBLPFile::s_blpFileLoadBuffer;
 static int32_t s_ditherErrors1555[2 * 0xC06];  // ref: DAT_00c67580
 static int32_t s_ditherErrors565[2 * 0xC06];   // ref: DAT_00c6d5b0
 
+// ref: FUN_004b58d0
+// An empty BLP2 header: version 1, preferred format 2, bit 4 of the mip byte clear.
+CBLPFile::CBLPFile() {
+    this->m_images = nullptr;
+    this->m_quality = 100;
+    memset(&this->m_header, 0, sizeof(this->m_header));
+    this->m_header.hasMips &= 0xEF;
+    this->m_header.magic = 0x32504C42;
+    this->m_header.formatVersion = 1;
+    this->m_header.preferredFormat = 2;
+    this->m_inMemoryImage = nullptr;
+    this->m_mipMapAlgorithm = MMA_BOX;
+}
+
 // ref: FUN_006ae8b0
 void CBLPFile::Close() {
     this->m_inMemoryImage = nullptr;

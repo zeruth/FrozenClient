@@ -98,6 +98,8 @@ class CM2Scene {
         static void BlendBoneMatrices3x4(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out);
 
         // Member functions
+        // ref: FUN_0081cac0
+        void BeginRayQuery();
         // ref: FUN_0081cad0
         void ReserveRayCandidates();
         // ref: FUN_0081cf20

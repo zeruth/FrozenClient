@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
+#include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
 
 class CAaBox;
@@ -272,6 +273,10 @@ class CM2Model {
         ~CM2Model();
         void AddRef();
         void Animate();
+        // ref: FUN_006f1d20
+        // Animate, then matrixF4 carried through the scene's inverse view: this frame's placement
+        // of the model in world space.
+        C44Matrix AnimateAndGetWorldMatrix();
         void AnimateAttachmentsMT();
         void AnimateCamerasST();
         void AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6);
@@ -297,6 +302,7 @@ class CM2Model {
         void FreeInternalResources();
         C44Matrix GetAttachmentWorldTransform(uint32_t id);
         CAaBox& GetBoundingBox(CAaBox& bounds);
+        void GetBoundingSphere(CAaSphere& sphere);
         HCAMERA GetCameraByIndex(uint32_t index);
         C3Vector GetPosition();
         void GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info);

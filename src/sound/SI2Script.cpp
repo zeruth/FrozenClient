@@ -11,12 +11,27 @@ namespace {
 // ref: DAT_00dceab4
 SOUNDKITOBJECT s_loopbackSoundObject;
 
+// The recorded loopback clip, built as a RIFF/WAVE image, and its size in bytes.
+void* s_loopbackWaveData;       // ref: DAT_00dceaa8
+uint32_t s_loopbackWaveSize;    // ref: DAT_00dceab0
+
 // ref: FUN_00986410
 uint8_t IsPlayingLoopbackSound() {
     return SI2::IsPlaying(&s_loopbackSoundObject);
 }
 
 } // namespace
+
+// ref: FUN_009863a0
+void VoiceChatReleaseLoopbackSound() {
+    SI2::StopOrFadeOut(&s_loopbackSoundObject, 1, -1.0f, 1);
+
+    if (s_loopbackWaveData) {
+        SMemFree(s_loopbackWaveData, __FILE__, __LINE__, 0);
+        s_loopbackWaveData = nullptr;
+        s_loopbackWaveSize = 0;
+    }
+}
 
 int32_t Script_PlaySound(lua_State* L) {
     if (lua_isnumber(L, 1)) {

@@ -27,6 +27,11 @@ class CMapEntity : public CMapStaticEntity {
         // lighting code (FUN_007c23f0, FUN_007c1730 ...) keeps 0x20/0x40/0x80/0x1000/0x2000/0x8000
         // here. Named by offset until those are ported.
         uint32_t m_flags7c = 0;
+        // Reference +0x80 and +0xbc, reported by CWorld::GetObjectFloor while m_flags7c has 0x20
+        // set; +0x80 is a height its callers compare against a z. Named by offset until the
+        // placement code that writes them is ported.
+        float m_field80 = 0.0f;
+        uint16_t m_fieldBC = 0;
         // TODO
 
         // Member functions

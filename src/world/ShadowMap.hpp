@@ -14,6 +14,8 @@ extern int32_t g_shadowMapRealloc;
 // The fog scale the terrain fog constant is multiplied by (DAT_00d4300c)
 extern float g_shadowMapFogScale;
 
+// The quality in effect: 0 while a reallocation is pending
+int32_t ShadowMapGetQuality();
 // The terrain shader permutation for the quality in effect: 0 unshadowed, 1..3 the shadowed sets
 int32_t ShadowMapGetShaderLevel();
 // The shadow map textures and constants a terrain draw samples

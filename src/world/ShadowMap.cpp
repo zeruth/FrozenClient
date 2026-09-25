@@ -7,6 +7,12 @@ float g_shadowMapFogScale = 1.0f;
 // The permutation per quality (DAT_00b1d554)
 static const int32_t s_shaderLevels[7] = { 0, 1, 1, 2, 2, 3, 3 };
 
+// ref: FUN_00873f80
+// The quality in effect: 0 while a reallocation is pending.
+int32_t ShadowMapGetQuality() {
+    return g_shadowMapRealloc ? 0 : g_shadowMapQuality;
+}
+
 // ref: FUN_00873ff0
 int32_t ShadowMapGetShaderLevel() {
     int32_t quality = g_shadowMapRealloc ? 0 : g_shadowMapQuality;

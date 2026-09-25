@@ -63,10 +63,6 @@ void Blit_Argb8888_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
     WHOA_UNIMPLEMENTED();
 }
 
-void Blit_Argb8888_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    Blit_uint32_uint32(size, in, inStride, out, outStride);
-}
-
 // Copies ARGB8888 texels, collapsing alpha to fully opaque or fully transparent
 void Blit_Argb8888_Argb8888_A1(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     auto inRow = static_cast<const uint8_t*>(in);
@@ -211,18 +207,6 @@ void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
     WHOA_UNIMPLEMENTED();
 }
 
-void Blit_Argb4444_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    Blit_uint16_uint16(size, in, inStride, out, outStride);
-}
-
-void Blit_Argb1555_Argb1555(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
-void Blit_Rgb565_Rgb565(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
 void Blit_Dxt1_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
@@ -277,69 +261,35 @@ void Blit_Dxt5_Argb4444(const C2iVector& size, const void* in, uint32_t inStride
     WHOA_UNIMPLEMENTED();
 }
 
-void Blit_Uv88_Uv88(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
-void Blit_Gr1616F_Gr1616F(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
-void Blit_R32F_R32F(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
-void Blit_D24X8_D24X8(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
-}
-
+// Straight copies are shared: every 16-bit format uses Blit_uint16_uint16 and every 32-bit one
+// Blit_uint32_uint32, as the reference points those slots at the same two functions.
+// ref: FUN_006ae6e0
 void InitBlit() {
-    // Source: Argb8888
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Abgr8888]   [BlitAlpha_0]   = &Blit_Argb8888_Abgr8888;
-    s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Argb8888_Argb8888;
+    s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_uint32_uint32;
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb8888]   [BlitAlpha_1]   = &Blit_Argb8888_Argb8888_A1;
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb8888]   [BlitAlpha_8]   = &Blit_Argb8888_Argb8888_A8;
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Argb8888_Argb4444;
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Argb1555]   [BlitAlpha_0]   = &Blit_Argb8888_Argb1555;
     s_blits [BlitFormat_Argb8888]   [BlitFormat_Rgb565]     [BlitAlpha_0]   = &Blit_Argb8888_Rgb565;
-
-    // Source: Argb4444
+    s_blits [BlitFormat_Rgb565]     [BlitFormat_Rgb565]     [BlitAlpha_0]   = &Blit_uint16_uint16;
     s_blits [BlitFormat_Argb4444]   [BlitFormat_Abgr8888]   [BlitAlpha_0]   = &Blit_Argb4444_Abgr8888;
-    s_blits [BlitFormat_Argb4444]   [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Argb4444_Argb4444;
-
-    // Source: Argb1555
-    s_blits [BlitFormat_Argb1555]   [BlitFormat_Argb1555]   [BlitAlpha_0]   = &Blit_Argb1555_Argb1555;
-
-    // Source: Rgb565
-    s_blits [BlitFormat_Rgb565]     [BlitFormat_Rgb565]     [BlitAlpha_0]   = &Blit_Rgb565_Rgb565;
-
-    // Source: Dxt1
-    s_blits [BlitFormat_Dxt1]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt1_Argb8888;
-    s_blits [BlitFormat_Dxt1]       [BlitFormat_Argb1555]   [BlitAlpha_0]   = &Blit_Dxt1_Argb1555;
-    s_blits [BlitFormat_Dxt1]       [BlitFormat_Rgb565]     [BlitAlpha_0]   = &Blit_Dxt1_Rgb565;
+    s_blits [BlitFormat_Argb4444]   [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_uint16_uint16;
+    s_blits [BlitFormat_Argb1555]   [BlitFormat_Argb1555]   [BlitAlpha_0]   = &Blit_uint16_uint16;
     s_blits [BlitFormat_Dxt1]       [BlitFormat_Dxt1]       [BlitAlpha_0]   = &Blit_Dxt1_Dxt1;
-
-    // Source: Dxt3
-    s_blits [BlitFormat_Dxt3]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt3_Argb8888;
-    s_blits [BlitFormat_Dxt3]       [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Dxt3_Argb4444;
     s_blits [BlitFormat_Dxt3]       [BlitFormat_Dxt3]       [BlitAlpha_0]   = &Blit_Dxt35_Dxt35;
-
-    // Source: Dxt5
-    s_blits [BlitFormat_Dxt5]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt5_Argb8888;
-    s_blits [BlitFormat_Dxt5]       [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Dxt5_Argb4444;
     s_blits [BlitFormat_Dxt5]       [BlitFormat_Dxt5]       [BlitAlpha_0]   = &Blit_Dxt35_Dxt35;
-
-    // Source: Uv88
-    s_blits [BlitFormat_Uv88]       [BlitFormat_Uv88]       [BlitAlpha_0]   = &Blit_Uv88_Uv88;
-
-    // Source: Gr1616F
-    s_blits [BlitFormat_Gr1616F]    [BlitFormat_Gr1616F]    [BlitAlpha_0]   = &Blit_Gr1616F_Gr1616F;
-
-    // Source: R32F
-    s_blits [BlitFormat_R32F]       [BlitFormat_R32F]       [BlitAlpha_0]   = &Blit_R32F_R32F;
-
-    // Source: D24X8
-    s_blits [BlitFormat_D24X8]      [BlitFormat_D24X8]      [BlitAlpha_0]   = &Blit_D24X8_D24X8;
+    s_blits [BlitFormat_Dxt1]       [BlitFormat_Rgb565]     [BlitAlpha_0]   = &Blit_Dxt1_Rgb565;
+    s_blits [BlitFormat_Dxt1]       [BlitFormat_Argb1555]   [BlitAlpha_0]   = &Blit_Dxt1_Argb1555;
+    s_blits [BlitFormat_Dxt1]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt1_Argb8888;
+    s_blits [BlitFormat_Dxt3]       [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Dxt3_Argb4444;
+    s_blits [BlitFormat_Dxt3]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt3_Argb8888;
+    s_blits [BlitFormat_Dxt5]       [BlitFormat_Argb4444]   [BlitAlpha_0]   = &Blit_Dxt5_Argb4444;
+    s_blits [BlitFormat_Dxt5]       [BlitFormat_Argb8888]   [BlitAlpha_0]   = &Blit_Dxt5_Argb8888;
+    s_blits [BlitFormat_Uv88]       [BlitFormat_Uv88]       [BlitAlpha_0]   = &Blit_uint16_uint16;
+    s_blits [BlitFormat_Gr1616F]    [BlitFormat_Gr1616F]    [BlitAlpha_0]   = &Blit_uint32_uint32;
+    s_blits [BlitFormat_R32F]       [BlitFormat_R32F]       [BlitAlpha_0]   = &Blit_uint32_uint32;
+    s_blits [BlitFormat_D24X8]      [BlitFormat_D24X8]      [BlitAlpha_0]   = &Blit_uint32_uint32;
 }
 
 void Blit(const C2iVector& size, BlitAlpha alpha, const void* src, uint32_t srcStride, BlitFormat srcFmt, void* dst, uint32_t dstStride, BlitFormat dstFmt) {

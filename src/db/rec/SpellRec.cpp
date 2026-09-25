@@ -48,6 +48,28 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
     this->m_attributes = columns[SpellRec::COLUMN_ATTRIBUTES];
     this->m_spellVisualID[0] = static_cast<int32_t>(columns[SpellRec::COLUMN_VISUAL]);
     this->m_spellVisualID[1] = static_cast<int32_t>(columns[SpellRec::COLUMN_VISUAL + 1]);
+    this->m_dispel = static_cast<int32_t>(columns[SpellRec::COLUMN_DISPEL]);
+    this->m_mechanic = static_cast<int32_t>(columns[SpellRec::COLUMN_MECHANIC]);
+    this->m_attributesEx = columns[SpellRec::COLUMN_ATTRIBUTES_EX];
+    this->m_attributesEx2 = columns[SpellRec::COLUMN_ATTRIBUTES_EX2];
+    this->m_targets = columns[SpellRec::COLUMN_TARGETS];
+    this->m_schoolMask = columns[SpellRec::COLUMN_SCHOOL_MASK];
+
+    for (int32_t i = 0; i < 2; i++) {
+        this->m_stances[i] = columns[SpellRec::COLUMN_STANCES + i];
+        this->m_stancesNot[i] = columns[SpellRec::COLUMN_STANCES_NOT + i];
+    }
+
+    for (int32_t i = 0; i < 3; i++) {
+        this->m_effectMechanic[i] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_MECHANIC + i]);
+        this->m_effectImplicitTargetA[i] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_IMPLICIT_TARGET_A + i]);
+        this->m_effectImplicitTargetB[i] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_IMPLICIT_TARGET_B + i]);
+        this->m_effectMiscValue[i] = static_cast<int32_t>(columns[SpellRec::COLUMN_EFFECT_MISC_VALUE + i]);
+
+        for (int32_t j = 0; j < 3; j++) {
+            this->m_effectSpellClassMask[i][j] = columns[SpellRec::COLUMN_EFFECT_SPELL_CLASS_MASK + i * 3 + j];
+        }
+    }
 
     return true;
 }

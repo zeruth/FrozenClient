@@ -8,6 +8,9 @@
 class CM2Model;
 
 struct ComponentData {
+    // ref: FUN_004dfda0
+    ComponentData();
+
     int32_t raceID = 0;
     int32_t sexID = 0;
     int32_t classID = 0;

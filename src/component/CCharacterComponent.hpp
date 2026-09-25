@@ -159,4 +159,18 @@ class CCharacterComponent {
         int32_t VariationsLoaded(int32_t a2);
 };
 
+// ref: FUN_004e6f90
+// A plain terminated copy that always reports success. The reference takes the source in EAX.
+int32_t ComponentCopyString(char* dst, const char* src);
+
+// ref: FUN_004e7af0
+// The inventory slot an item slot stands for (ITEMSLOT_1, the shoulders, is INVSLOT 2, and so on),
+// or -1 past ITEMSLOT_10.
+int32_t ComponentItemSlotToInvSlot(int32_t itemSlot);
+
+// ref: FUN_004eaf70
+// Detaches every item and effect link a character model can carry and puts its own tint back to
+// neutral.
+void ComponentRemoveAttachments(CM2Model* model);
+
 #endif

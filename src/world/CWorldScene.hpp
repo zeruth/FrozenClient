@@ -176,6 +176,7 @@ class CWorldScene {
         static float ViewPlane2dDistance(const C3Vector& point);
         static void BucketChunk(CMapChunk* chunk, const C3Vector& point);
         static void SubFrustum(const ViewWindow* window);
+        static void GetFrustumCorners(C3Vector* corners);
         static int32_t ChunkRectInView(const int32_t* rect);
         static void Traverse(const ViewWindow* window, int32_t portal);
         static void TraverseRowChunks(Row* row, uint32_t rowIndex);

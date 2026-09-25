@@ -46,6 +46,9 @@ class SESound {
         static void (*s_DeviceListChangedCallback)();
         static STORM_EXPLICIT_LIST(SEDiskSound, m_readyLink) s_ReadyDiskSounds;
         static uint32_t s_UniqueID;
+        // Scales every sound but a type-3 one by a factor chosen from its user data. Nothing
+        // installs it yet.
+        static float (*s_VolumeCallback)(SEUserData* userData);
 
         // Public static functions
         static FMOD::SoundGroup* CreateSoundGroup(const char* name, int32_t maxAudible);
@@ -64,16 +67,25 @@ class SESound {
         static void MuteChannelGroup(const char* name, bool mute);
         static void SetChannelGroupVolume(const char* name, float volume);
         static void SetMasterVolume(float volume);
+        static void LockInternal();
+        static void UnlockInternal();
 
         // Public member functions
+        void BeginFadeIn();
+        void BeginFadeOut();
         void CompleteLoad();
+        void Detach();
+        void DetachWithLoopFade();
         SEUserData* GetUserData();
+        bool Is3D();
+        bool IsLooping();
         bool IsPlaying();
         int32_t Load(const char* filename, int32_t a3, FMOD::SoundGroup* soundGroup1, FMOD::SoundGroup* soundGroup2, bool a6, bool a7, uint32_t a8, int32_t a9, uint32_t a10);
         void Play();
         void SetChannelGroup(const char* name, bool inMaster);
         void SetFadeInTime(float fadeInTime);
         void SetFadeOutTime(float fadeOutTime);
+        void SetPosition(const C3Vector& position);
         void SetUserData(SEUserData* userData);
         void SetVolume(float volume);
         void StopOrFadeOut(int32_t stop, float fadeOutTime);

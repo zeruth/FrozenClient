@@ -900,6 +900,13 @@ void CWorldScene::BucketChunk(CMapChunk* chunk, const C3Vector& point) {
     }
 }
 
+// ref: FUN_0078fae0
+void CWorldScene::GetFrustumCorners(C3Vector* corners) {
+    for (int32_t i = 0; i < 8; i++) {
+        corners[i] = CWorldScene::s_frustumCorners[i];
+    }
+}
+
 // ref: FUN_00790af0
 // Narrows the current frustum to a window of the screen: the near and far faces' corners are
 // interpolated across the window's rectangle

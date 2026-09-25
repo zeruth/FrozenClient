@@ -275,6 +275,7 @@ void CCharacterComponent::ApplyMonsterGeosets(CM2Model* model, const CreatureDis
     model->OptimizeVisibleGeometry();
 }
 
+// ref: FUN_004e7700
 void CCharacterComponent::ComponentCloseFingers(CM2Model* model, COMP_HAND_SLOT handSlot) {
     uint32_t firstBone;
     uint32_t lastBone;
@@ -292,6 +293,7 @@ void CCharacterComponent::ComponentCloseFingers(CM2Model* model, COMP_HAND_SLOT 
     }
 }
 
+// ref: FUN_004e7750
 void CCharacterComponent::ComponentOpenFingers(CM2Model* model, COMP_HAND_SLOT handSlot) {
     uint32_t firstBone;
     uint32_t lastBone;
@@ -309,6 +311,7 @@ void CCharacterComponent::ComponentOpenFingers(CM2Model* model, COMP_HAND_SLOT h
     }
 }
 
+// ref: FUN_004e8d30
 HTEXTURE CCharacterComponent::CreateTexture(const char* fileName, CStatus* status) {
     auto texFlags = CGxTexFlags(GxTex_LinearMipNearest, 0, 0, 0, 0, 0, 1);
     return TextureCreate(fileName, texFlags, status, 0);
@@ -319,6 +322,7 @@ void CCharacterComponent::FreeComponent(CCharacterComponent* component) {
     ObjectFree(*s_componentHeap, component->m_memHandle);
 }
 
+// ref: FUN_004e7940
 GEOCOMPONENTLINKS CCharacterComponent::GetSheatheLink(SHEATHE_TYPE sheatheType, bool a2) {
     switch (sheatheType) {
     case SHEATHE_1:
@@ -1647,6 +1651,8 @@ void CCharacterComponent::RemoveItemByInventoryType(int32_t inventoryType) {
     }
 }
 
+// ref: FUN_004e79a0
+// The reference inlines ComponentOpenFingers here; the unset loops are the same.
 void CCharacterComponent::RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link) {
     if (link == ATTACH_NONE) {
         return;
@@ -3168,4 +3174,73 @@ int32_t CCharacterComponent::VariationsLoaded(int32_t a2) {
     this->m_flags &= ~0x2;
 
     return 1;
+}
+
+// ref: FUN_004e6f90
+int32_t ComponentCopyString(char* dst, const char* src) {
+    char c;
+
+    do {
+        c = *src;
+        *dst = c;
+        src++;
+        dst++;
+    } while (c != '\0');
+
+    return 1;
+}
+
+// ref: FUN_004e7af0
+int32_t ComponentItemSlotToInvSlot(int32_t itemSlot) {
+    switch (itemSlot) {
+    case 0:
+        return 0;
+    case 1:
+        return 2;
+    case 2:
+        return 3;
+    case 3:
+        return 4;
+    case 4:
+        return 5;
+    case 5:
+        return 6;
+    case 6:
+        return 7;
+    case 7:
+        return 8;
+    case 8:
+        return 9;
+    case 9:
+        return 18;
+    case 10:
+        return 14;
+    default:
+        return -1;
+    }
+}
+
+// ref: FUN_004eaf70
+// The alpha scale at +0x17c is the one base value left alone.
+void ComponentRemoveAttachments(CM2Model* model) {
+    model->DetachAllChildrenById(15);
+    model->DetachAllChildrenById(16);
+    model->DetachAllChildrenById(17);
+    model->DetachAllChildrenById(18);
+    model->DetachAllChildrenById(29);
+    model->DetachAllChildrenById(19);
+    model->DetachAllChildrenById(20);
+    model->DetachAllChildrenById(38);
+    model->DetachAllChildrenById(21);
+    model->DetachAllChildrenById(22);
+    model->DetachAllChildrenById(23);
+    model->DetachAllChildrenById(24);
+    model->DetachAllChildrenById(25);
+    model->DetachAllChildrenById(34);
+    model->DetachAllChildrenById(35);
+    model->DetachAllChildrenById(ATTACH_BACK);
+
+    model->m_baseEmissive = { 0.0f, 0.0f, 0.0f };
+    model->m_baseAlpha = 1.0f;
+    model->m_baseDiffuse = { 1.0f, 1.0f, 1.0f };
 }

@@ -132,6 +132,7 @@ int32_t BuildComponentArray(uint32_t varArrayLength, st_race** varArrayPtr) {
     return 1;
 }
 
+// ref: FUN_004f39a0
 bool ComponentCheckSectionFlags(int32_t flags, COMPONENT_SELECTION selection) {
     switch (selection) {
         case SELECTION_0:
@@ -238,9 +239,15 @@ int32_t ComponentGetHairColorByIndex(int32_t raceId, int32_t sexId, int32_t hair
     return -1;
 }
 
+// ref: FUN_004ea000
+// The reference takes data in EDI, and stops at the first missing record.
 CharacterFacialHairStylesRec* ComponentGetFacialHairStyleRecord(ComponentData* data) {
     for (int32_t i = 0; i < g_characterFacialHairStylesDB.GetNumRecords(); i++) {
         auto facialHairStyleRec = g_characterFacialHairStylesDB.GetRecordByIndex(i);
+
+        if (!facialHairStyleRec) {
+            return nullptr;
+        }
 
         if (facialHairStyleRec->m_raceID == data->raceID && facialHairStyleRec->m_sexID == data->sexID && facialHairStyleRec->m_variationID == data->facialHairStyleID) {
             return facialHairStyleRec;
@@ -250,9 +257,15 @@ CharacterFacialHairStylesRec* ComponentGetFacialHairStyleRecord(ComponentData* d
     return nullptr;
 }
 
+// ref: FUN_004ea050
+// The reference takes data in EDI, and answers 1 at the first missing record.
 int32_t ComponentGetHairGeoset(ComponentData* data) {
     for (int32_t i = 0; i < g_charHairGeosetsDB.GetNumRecords(); i++) {
         auto hairGeosetRec = g_charHairGeosetsDB.GetRecordByIndex(i);
+
+        if (!hairGeosetRec) {
+            return 1;
+        }
 
         if (hairGeosetRec->m_raceID == data->raceID && hairGeosetRec->m_sexID == data->sexID && hairGeosetRec->m_variationID == data->hairStyleID) {
             auto geosetId = hairGeosetRec->m_geosetID;
@@ -299,6 +312,7 @@ static bool ComponentValidateRaceSex(st_race* varArray, int32_t raceId, int32_t 
     return index < CCharacterComponent::s_chrVarArrayLength;
 }
 
+// ref: FUN_004f3b10
 int32_t ComponentGetNumColors(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex) {
     if (!ComponentValidateRaceSex(varArray, raceId, sexId)) {
         return 0;
@@ -411,6 +425,7 @@ int32_t ComponentGetNumSkinColors(int32_t raceId, int32_t sexId, int32_t classId
     return count;
 }
 
+// ref: FUN_004f3ae0
 int32_t ComponentGetNumVariations(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex) {
     if (!ComponentValidateRaceSex(varArray, raceId, sexId)) {
         return 0;
@@ -446,6 +461,7 @@ int32_t ComponentGetSkinColorByIndex(int32_t raceId, int32_t sexId, int32_t inde
     return -1;
 }
 
+// ref: FUN_004f3ba0
 CharSectionsRec* ComponentGetSectionsRecord(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex, int32_t colorIndex, bool* found) {
     if (!ComponentValidateBase(varArray, raceId, sexId, sectionIndex, variationIndex, colorIndex)) {
         if (found) {
@@ -464,6 +480,7 @@ CharSectionsRec* ComponentGetSectionsRecord(st_race* varArray, int32_t raceId, i
     return section.variationArray[variationIndex].colorArray[colorIndex].rec;
 }
 
+// ref: FUN_004f3b50
 int32_t ComponentValidateBase(st_race* varArray, int32_t raceId, int32_t sexId, COMPONENT_VARIATIONS sectionIndex, int32_t variationIndex, int32_t colorIndex) {
     if (sectionIndex >= NUM_COMPONENT_VARIATIONS || variationIndex < 0) {
         return 0;
@@ -592,6 +609,7 @@ int32_t CountFacialFeatures(uint32_t varArrayLength, uint32_t** featuresListPtr)
     return 1;
 }
 
+// ref: FUN_004f3a90
 COMPONENT_CONTEXT GetContextFromSelection(COMPONENT_SELECTION selection) {
     switch (selection) {
         case SELECTION_2:
@@ -610,6 +628,7 @@ COMPONENT_CONTEXT GetContextFromSelection(COMPONENT_SELECTION selection) {
     }
 }
 
+// ref: FUN_004f3a40
 COMPONENT_SELECTION GetSelectionFromContext(COMPONENT_CONTEXT context, int32_t classID) {
     switch (context) {
         case CONTEXT_1:

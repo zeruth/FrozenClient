@@ -85,4 +85,10 @@ CGxTex* TextureGetGxTex(HTEXTURE, int32_t, CStatus*);
 
 CTexture* TextureGetTexturePtr(HTEXTURE);
 
+void TextureFreeMem(void* ptr);
+
+void TextureGetTexFlags(HTEXTURE handle, CGxTexFlags* flags);
+
+int32_t TextureGetRefCount(HTEXTURE handle);
+
 #endif

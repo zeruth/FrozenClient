@@ -23,6 +23,7 @@ class CBLPFile {
         char* m_lockDecompMem;
 
         // Member functions
+        CBLPFile();
         void Close();
         void DecompPalARGB8888Alpha8(uint32_t* out, const unsigned char* in, uint32_t count);
         void DecompPalARGB1555DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);

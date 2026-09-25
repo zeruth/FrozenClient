@@ -134,3 +134,30 @@ void ClientDBInitialize() {
 
     // TODO
 }
+
+// ref: FUN_004cfbb0
+// Expands a run-length packed record into size bytes. A byte equal to the one before it starts a
+// run: the byte after it counts further copies, and the byte after that is copied through.
+void DbUnpackRecord(const char* src, int32_t size, char* dst) {
+    *dst = *src;
+    char* out = dst + 1;
+
+    while (out < dst + size) {
+        const char* prev = src;
+        src = prev + 1;
+
+        *out++ = *src;
+
+        if (*src == *prev) {
+            for (uint32_t count = static_cast<uint8_t>(prev[2]); count != 0; count--) {
+                *out++ = *src;
+            }
+
+            src = prev + 3;
+
+            if (out < dst + size) {
+                *out++ = *src;
+            }
+        }
+    }
+}
