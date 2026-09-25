@@ -44224,7 +44224,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOutsideFrustum",
-  "frozenSize": 0,
+  "frozenSize": 370,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 70,

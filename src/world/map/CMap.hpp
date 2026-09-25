@@ -240,6 +240,10 @@ class CMap {
         static CMapDoodadDef* AllocDoodadDef();
         static void FreeDoodadDef(CMapDoodadDef* def);
         static void UnlinkDoodadDef(CMapDoodadDef* def);
+        // The loaded chunk a world point stands on, or null where nothing is loaded.
+        // Addressed the way CMap::GetTerrainLiquid does it: in cells, with the tile's row
+        // coming from x and its column from y.
+        static CMapChunk* ChunkAt(const C3Vector& position);
         static CMapEntity* AllocEntity(int32_t linkToHead);
         // Put every entity the map holds into the distance row it belongs in this frame.
         // ref: FUN_007b5590

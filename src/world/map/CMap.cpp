@@ -769,6 +769,30 @@ CMapObjDefGroup* CMap::AllocMapObjDefGroup() {
     return group;
 }
 
+// How many of the eight-by-eight cells fit in a yard, and the half a cell the rounding wants.
+static const float CELLS_PER_YARD = 0.2399999946355819f;  // DAT_00a3fd6c
+static const float CELL_ROUND_BIAS = 0.5f;                // DAT_00adfd74
+
+// Frozen's own name for addressing the reference already does inside its point queries: a world
+// point resolves to a cell, the cell's high bits pick the tile and the middle bits the chunk.
+// The tile's row comes from x and its column from y, which is the map's own convention and the
+// reason the chunk indices look transposed.
+CMapChunk* CMap::ChunkAt(const C3Vector& position) {
+    float cellFromY = -(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+    float cellFromX = -(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+
+    int32_t col = static_cast<int32_t>(roundf(cellFromY - CELL_ROUND_BIAS));
+    int32_t row = static_cast<int32_t>(roundf(cellFromX - CELL_ROUND_BIAS));
+
+    auto area = CMap::s_areaGrid[((row >> 7) & 0x3f) * 64 + ((col >> 7) & 0x3f)];
+
+    if (!area) {
+        return nullptr;
+    }
+
+    return area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+}
+
 // ref: FUN_007b5630
 // The waiting list, walked once a frame. An entity sits on it from the moment it is created
 // until its model is in; then it is placed, told how big it is, and let go. An entity with no
