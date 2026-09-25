@@ -351,10 +351,10 @@ void CMapRenderChunk::ReleaseBufEntry() {
 }
 
 // ref: FUN_007ba050
-// Rebuilds the alpha and shadow textures when the layer state asks for it. The state machine is
-// ported; the texture builders it drives (FUN_007b9de0 per layer, FUN_007b9ee0 for the shadow,
-// FUN_007b9f90 for the packed alpha, all through the "TerrainBlend" texture callbacks) are not
-// yet, so no alpha texture exists and every draw is the base layer only until they are.
+// Rebuilds the alpha and shadow textures when the layer state asks for it. Which of the two
+// shapes it builds depends on the pass: the fixed-function path wants one small alpha texture a
+// layer plus a separate shadow, the shader path one packed texture carrying every layer's alpha
+// and the shadow together.
 void CMapRenderChunk::UpdateAlphaTextures() {
     if (!this->m_layerCount) {
         this->m_flags10 &= ~0x30;

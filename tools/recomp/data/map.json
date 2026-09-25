@@ -25,7 +25,7 @@
    "lib/squall/storm/memory.cpp"
   ],
   "frozen": "operator delete[]",
-  "frozenSize": 0,
+  "frozenSize": 13,
   "how": "annotated",
   "module": "?",
   "refSize": 27,
@@ -45632,7 +45632,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::UpdateAreas",
-  "frozenSize": 1560,
+  "frozenSize": 1448,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 943,
@@ -46930,7 +46930,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeChunkLiquid",
-  "frozenSize": 263,
+  "frozenSize": 301,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 96,
@@ -47218,7 +47218,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Destroy",
-  "frozenSize": 592,
+  "frozenSize": 608,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 607,
@@ -47554,7 +47554,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::CreateLiquid",
-  "frozenSize": 1313,
+  "frozenSize": 1364,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 1162,
@@ -47570,7 +47570,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::UpdateLiquidVisibility",
-  "frozenSize": 1066,
+  "frozenSize": 332,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 298,
@@ -48376,7 +48376,7 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "CChunkLiquid::CChunkLiquid",
-  "frozenSize": 938,
+  "frozenSize": 976,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 209,
@@ -59738,6 +59738,36 @@
   "refSize": 3,
   "status": "ported"
  },
+ "008a27c0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialSettings::LoadFromDbc",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 304,
+  "status": "ported"
+ },
+ "008a28f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "GetMaterialSettings",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 132,
+  "status": "ported"
+ },
  "008a3050": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -59837,7 +59867,7 @@
    "src/world/map/CMapLiquidData.cpp"
   ],
   "frozen": "CMapLiquidData::ExistsMask",
-  "frozenSize": 0,
+  "frozenSize": 20,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
@@ -61153,7 +61183,7 @@
    "src/util/bitarray.cpp"
   ],
   "frozen": "BitArray::BitArray",
-  "frozenSize": 0,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "DynamicString.cpp",
   "refSize": 13,
@@ -61201,7 +61231,7 @@
    "src/util/bitarray.cpp"
   ],
   "frozen": "BitArray::~BitArray",
-  "frozenSize": 0,
+  "frozenSize": 23,
   "how": "annotated",
   "module": "DynamicString.cpp",
   "refSize": 28,
@@ -61217,7 +61247,7 @@
    "src/util/bitarray.cpp"
   ],
   "frozen": "BitArray::Assign",
-  "frozenSize": 0,
+  "frozenSize": 60,
   "how": "annotated",
   "module": "DynamicString.cpp",
   "refSize": 55,
