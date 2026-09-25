@@ -2389,5 +2389,355 @@
     "frozen": "FrameScript_Object::RegisterScriptObject",
     "status": "ported",
     "note": "By its calls and callers (it registers the object before lua_rawgeti on its ref); the map had it as PushTexture in CSimpleColorSelectScript. Corrected 2026-09-25"
+  },
+  "007917d0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0081a5a0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006fecd0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006ff5c0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006ff630": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00700c80": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00747ca0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "007583d0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0074f5c0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00758340": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00758390": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0075b560": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0077ac60": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0077ac80": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005ef6a0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00565ad0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00734790": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0071c640": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006cf5e0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "007fc070": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004bebb0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004e0ec0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004e6660": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f2280": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f23e0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f2540": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f2d70": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f2e00": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f3e00": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "006f3fc0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004bfee0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004c9520": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005c7320": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005c6dc0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "008107c0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00810370": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005c6800": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00810970": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005c8730": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00548600": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005c73b0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005da3f0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005da480": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005da510": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005f0240": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004c46c0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004c4b10": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004f2fb0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004f71a0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004b6670": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0057e360": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0057e400": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "005eeb80": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004bbd60": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004d4bb0": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004d4770": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004d4820": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "0086e200": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "004d4c20": {
+    "status": "excluded",
+    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+  },
+  "00632050": {
+    "status": "excluded",
+    "note": "empty COMDAT-folded function (wave 0, 2026-09-25)"
+  },
+  "00721ca0": {
+    "frozen": "CGUnit_C::IsInNonStanceForm",
+    "status": "diverged",
+    "note": "Treats the byte at +0x9f4 as clear: that member is not in frozen yet (same as GetCreatureType) (wave 0, 2026-09-25)"
+  },
+  "00572f50": {
+    "frozen": "InstanceIsBattlegroundOrArena",
+    "status": "diverged",
+    "note": "Returns 0 where the reference would read through a null Map record (wave 0, 2026-09-25)"
+  },
+  "007fe4b0": {
+    "frozen": "SpellPowerTypeToken",
+    "status": "diverged",
+    "note": "The reference tests > 7 against a 7-entry array and so reads past its end for 7; frozen returns an empty string (wave 0, 2026-09-25)"
+  },
+  "00805fc0": {
+    "frozen": "SpellCastIsPendingFromItem",
+    "status": "diverged",
+    "note": "CGObject::GetEntryID null-checks m_obj; the reference reads the object data unchecked (wave 0, 2026-09-25)"
+  },
+  "0062ed70": {
+    "frozen": "CGTooltip_SetMerchantItem",
+    "status": "diverged",
+    "note": "Frozen's TooltipSetItemInfo takes (tooltip, ItemInfo*, durability, maxDurability) rather than the reference's 16 arguments; the GUID and flag arguments cannot be passed (wave 0, 2026-09-25)"
+  },
+  "0062fc20": {
+    "frozen": "CGTooltip_SetAuctionSellItem",
+    "status": "diverged",
+    "note": "Same TooltipSetItemInfo signature difference as 0062ed70 (wave 0, 2026-09-25)"
+  },
+  "006301a0": {
+    "frozen": "CGTooltip_SetSocketedItem",
+    "status": "diverged",
+    "note": "Same TooltipSetItemInfo signature difference as 0062ed70 (wave 0, 2026-09-25)"
+  },
+  "00630250": {
+    "frozen": "CGTooltip_SetSocketGem",
+    "status": "diverged",
+    "note": "Same TooltipSetItemInfo signature difference as 0062ed70 (wave 0, 2026-09-25)"
+  },
+  "005635e0": {
+    "frozen": "Script_SetBindingSpell",
+    "status": "diverged",
+    "note": "Frozen's UIBindingsSetKey takes no mode argument; the mode is read from Lua and dropped (wave 0, 2026-09-25)"
+  },
+  "00563700": {
+    "frozen": "Script_SetBindingItem",
+    "status": "diverged",
+    "note": "Same UIBindingsSetKey difference as 005635e0 (wave 0, 2026-09-25)"
+  },
+  "00563820": {
+    "frozen": "Script_SetBindingMacro",
+    "status": "diverged",
+    "note": "Same UIBindingsSetKey difference as 005635e0 (wave 0, 2026-09-25)"
+  },
+  "00563940": {
+    "frozen": "Script_SetBindingClick",
+    "status": "diverged",
+    "note": "Same UIBindingsSetKey difference as 005635e0 (wave 0, 2026-09-25)"
+  },
+  "0086af90": {
+    "frozen": "OsGetCpuidInfo",
+    "status": "diverged",
+    "note": "The ECX sub-leaf of the leaf-4 query is dropped in the decompilation; __cpuid passes 0 (wave 0, 2026-09-25)"
+  },
+  "004f3ae0": {
+    "frozen": "ComponentGetNumVariations",
+    "status": "diverged",
+    "note": "Keeps frozen's ComponentValidateRaceSex bounds guard (the sparse appearance-table crash fix); the reference has none (wave 0, 2026-09-25)"
+  },
+  "004f3b10": {
+    "frozen": "ComponentGetNumColors",
+    "status": "diverged",
+    "note": "Same ComponentValidateRaceSex guard as 004f3ae0 (wave 0, 2026-09-25)"
+  },
+  "004f3b50": {
+    "frozen": "ComponentValidateBase",
+    "status": "diverged",
+    "note": "Same ComponentValidateRaceSex guard as 004f3ae0 (wave 0, 2026-09-25)"
+  },
+  "004f3ba0": {
+    "frozen": "ComponentGetSectionsRecord",
+    "status": "diverged",
+    "note": "Same ComponentValidateRaceSex guard as 004f3ae0 (wave 0, 2026-09-25)"
+  },
+  "0084f7a0": {
+    "frozen": "luaL_unref",
+    "status": "diverged",
+    "note": "The reference saves, clears and restores the taint globals 00d4139c/00d413a0 around the body; frozen's Lua has no taint (wave 0, 2026-09-25)"
+  },
+  "00584d90": {
+    "frozen": "MerchantIsBuybackItem",
+    "status": "diverged",
+    "note": "Reads the descriptor's vendorBuybackSlots[12] instead of slots 74..85 of the player's slot table with its count check (wave 0, 2026-09-25)"
+  },
+  "006f75f0": {
+    "frozen": "CEffect::SetEmittersFlag400000",
+    "status": "diverged",
+    "note": "Skips null emitter slots: frozen leaves emitter types it does not implement null (wave 0, 2026-09-25)"
+  },
+  "004283b0": {
+    "frozen": "SFileCritSectEnter",
+    "status": "diverged",
+    "note": "Takes frozen's SCritSect where the reference takes a raw CRITICAL_SECTION (wave 0, 2026-09-25)"
+  },
+  "004283c0": {
+    "frozen": "SFileCritSectLeave",
+    "status": "diverged",
+    "note": "Same SCritSect difference as 004283b0 (wave 0, 2026-09-25)"
   }
 }
