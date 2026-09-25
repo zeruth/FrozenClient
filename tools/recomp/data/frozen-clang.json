@@ -198937,7 +198937,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 129
+"line": 135
 },
 "CMapObj::SetupLighting": {
 "files": [
@@ -198990,7 +198990,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 170
+"line": 176
 },
 "CMapObj::SetMaterialColor": {
 "files": [
@@ -199018,7 +199018,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 259
+"line": 265
 },
 "CMapObj::SelectShaders": {
 "files": [
@@ -199039,7 +199039,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 293
+"line": 299
 },
 "CMapObj::SetAlphaRefForBlendMode": {
 "files": [
@@ -199058,7 +199058,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 308
+"line": 314
 },
 "AverageColor": {
 "files": [
@@ -199076,7 +199076,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 319
+"line": 325
 },
 "CMapObjGroup::DrawBatches": {
 "files": [
@@ -199135,7 +199135,7 @@
 "stub": false,
 "lines": 146,
 "refs": [],
-"line": 335
+"line": 341
 },
 "CMapObjGroup::DrawBatchesSplit": {
 "files": [
@@ -199209,7 +199209,7 @@
 "stub": false,
 "lines": 189,
 "refs": [],
-"line": 488
+"line": 494
 },
 "CMapObj::Render": {
 "files": [
@@ -199235,7 +199235,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 681
+"line": 687
 },
 "CMapObjGroup::DrawBatchesOutdoor": {
 "files": [
@@ -199323,7 +199323,7 @@
 "stub": false,
 "lines": 214,
 "refs": [],
-"line": 725
+"line": 731
 },
 "CMapObjGroup::BakePortalLight": {
 "files": [
@@ -199361,7 +199361,7 @@
 "stub": false,
 "lines": 100,
 "refs": [],
-"line": 947
+"line": 953
 },
 "CMapObj::SetVisibleCallback": {
 "files": [
@@ -199374,7 +199374,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1052
+"line": 1058
 },
 "CMapObj::ReportVisible": {
 "files": [
@@ -199392,7 +199392,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1058
+"line": 1064
 },
 "CMapObj::SetupPortalContext": {
 "files": [
@@ -199422,7 +199422,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1078
+"line": 1084
 },
 "CMapObj::TestCameraInPortal": {
 "files": [
@@ -199441,7 +199441,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1123
+"line": 1129
 },
 "CMapObj::ProjectPortal": {
 "files": [
@@ -199475,7 +199475,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 1145
+"line": 1151
 },
 "CMapObj::ScreenBounds": {
 "files": [
@@ -199491,7 +199491,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1221
+"line": 1227
 },
 "CMapObj::MeasurePortal": {
 "files": [
@@ -199517,7 +199517,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1250
+"line": 1256
 },
 "CMapObj::WalkPortals": {
 "files": [
@@ -199560,7 +199560,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 1298
+"line": 1304
 },
 "AdvancePortalStamp": {
 "files": [
@@ -199573,7 +199573,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1432
+"line": 1438
 },
 "CMapObj::WalkFromOutside": {
 "files": [
@@ -199593,7 +199593,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1442
+"line": 1448
 },
 "CMapObj::WalkFromInside": {
 "files": [
@@ -199623,7 +199623,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1457
+"line": 1463
 },
 "CMapObj::EnterPortalWalk": {
 "files": [
@@ -199640,7 +199640,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1520
+"line": 1526
 },
 "TriangleOutsideHull": {
 "files": [

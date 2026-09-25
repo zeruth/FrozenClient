@@ -2185,12 +2185,12 @@
   "005156a0": {
     "frozen": "Script_IsInInstance",
     "status": "stub",
-    "note": "The binding link is right, but frozen's body is a fixed nil, \"none\" answer; the reference reads the current map's state at 00bd088c. Status corrected from ported 2026-09-25."
+    "note": "The binding link is right, but frozen's body is a fixed nil, \"none\" answer; the reference reads the current map's state at 00bd088c. Status corrected from ported 2026-09-25. Kept as a stub deliberately. It has a body, which is why recomp.py flags the status as inconsistent, but that body implements only the branch the reference takes when the current map is missing from Map.dbc, so it always reports being in no instance. Marking it ported would move the metric without changing what the function does."
   },
   "00574180": {
     "frozen": "Script_GetReadyCheckStatus",
     "status": "stub",
-    "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25."
+    "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25. Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the no-ready-check-running answer."
   },
   "0081be70": {
     "frozen": "Script_GetFramesRegisteredForEvent",
@@ -2598,7 +2598,7 @@
   "00549ad0": {
     "frozen": "Script_IsActiveBattlefieldArena",
     "status": "stub",
-    "note": "The binding link is right, but frozen's body pushes nil. Status corrected from ported 2026-09-25"
+    "note": "The binding link is right, but frozen's body pushes nil. Status corrected from ported 2026-09-25 Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the not-in-an-arena answer."
   },
   "00819880": {
     "frozen": "FrameScript_Object::RegisterScriptObject",

@@ -125,7 +125,13 @@ bool CMapObjGroup::BatchOutsideFrustum(const SMOBatch* batch) {
 //
 // Diverged: the reference reads two distinct fog sets out of the light block (+0x8c and
 // +0xa0). frozen's CWorld carries one, so both selections read the same start, end, rate
-// and colour. The second set is what a map object under liquid would fog with.
+// and colour.
+//
+// What the second set is, established rather than guessed: the block holds three, and the sky
+// interpolates between the ones at +0x8c and +0xb0 to produce +0xa0 every frame. So +0xa0 is
+// the blended fog the world is actually under and +0x8c an endpoint of that blend -- the
+// selection is between the current fog and one end of the transition, not between an ordinary
+// and an underwater set as a note here previously supposed.
 void CMapObj::SetupFog(uint32_t state) {
     if (CMapObj::s_fogState == state) {
         return;
