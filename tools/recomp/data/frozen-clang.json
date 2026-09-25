@@ -37564,6 +37564,29 @@
 "refs": [],
 "line": 127
 },
+"C3Segment::C3Segment": {
+"files": [
+"lib/typhoon/tempest/segment/c3segment.hpp",
+"lib/typhoon/tempest/segment/c3segment.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 13
+},
 "IntersectRayTriangle": {
 "files": [
 "lib/typhoon/tempest/intersect.cpp"
@@ -37717,6 +37740,119 @@
 "lines": 11,
 "refs": [],
 "line": 242
+},
+"RayFromPoints": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"sqrtf",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"1.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 255
+},
+"IntersectRayPlane": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"fabsf",
+"fabsf",
+"C3Vector::operator=",
+"fabsf"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0000000116860974e-07f"
+],
+"branches": 8,
+"stub": false,
+"lines": 41,
+"refs": [],
+"line": 275
+},
+"PointInPolygon": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()",
+"PointInPolygon::(lambda at c:\\users\\tyler\\runicworld-client\\lib\\typhoon\\tempest\\intersect.cpp:332:22)::operator()"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"3"
+],
+"branches": 4,
+"stub": false,
+"lines": 35,
+"refs": [],
+"line": 324
+},
+"DistancePointSegmentSq": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::C3Vector"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 40,
+"refs": [],
+"line": 361
+},
+"DistancePointPolygon": {
+"files": [
+"lib/typhoon/tempest/intersect.cpp"
+],
+"callseq": [
+"C3Segment::C3Segment",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"DistancePointSegmentSq",
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"3.4028234663852886e+38f"
+],
+"branches": 3,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 403
 },
 "CMath::cos": {
 "files": [
@@ -38907,28 +39043,6 @@
 "lines": 3,
 "refs": [],
 "line": 24
-},
-"C3Segment::C3Segment": {
-"files": [
-"lib/typhoon/tempest/segment/c3segment.cpp"
-],
-"callseq": [
-"C3Vector::C3Vector",
-"C3Vector::operator=",
-"C3Vector::C3Vector",
-"C3Vector::operator=",
-"C3Vector::operator=",
-"C3Vector::operator="
-],
-"strings": [],
-"consts": [
-"0.0f"
-],
-"branches": 0,
-"stub": false,
-"lines": 7,
-"refs": [],
-"line": 4
 },
 "C3Segment::Lerp": {
 "files": [

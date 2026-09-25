@@ -22,7 +22,11 @@
 #include "model/CM2Lighting.hpp"
 
 #include <tempest/Box.hpp>
+#include <tempest/Intersect.hpp>
+#include <tempest/Ray.hpp>
 #include <tempest/Matrix.hpp>
+
+#include <cmath>
 
 // The state the draw only touches when it changes. The reference keeps them as MapObj.cpp
 // file statics; every one is reset to its "nothing set" value when a pass starts.
@@ -621,10 +625,7 @@ void CMapObj::Render(uint32_t groupIndex, const C44Matrix& inversePlacement, CMa
     }
 
     if (!(group->m_state & 0x2)) {
-        // TODO FUN_007d78c0: bake the light coming through this group's portals into its
-        // vertex colours. The state bit is set here either way, as the reference does, so it
-        // is attempted once; until the bake lands the group draws its authored colours.
-        group->m_state |= 0x2;
+        group->BakePortalLight();
     }
 
     // TODO FUN_00872e40: refresh the sun from the shared material block at 0x00ce04a8 + 0x58.
@@ -860,4 +861,112 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
     }
 
     GxRsPop();
+}
+
+// ref: FUN_007d78c0
+// Daylight through a doorway. For every vertex of the group's transition batches, how near it
+// is to each portal it owns decides how far its baked colour is pulled toward mid grey, and
+// the alpha it ends up with is that amount. A vertex right in a doorway whose far side is a
+// lit room gets nothing, because the room lights it already.
+//
+// Runs once per group: CMapObj::Render sets the state bit whether or not this ran.
+void CMapObjGroup::BakePortalLight() {
+    this->m_state |= 0x2;
+
+    if (!this->m_batchCountA || !this->m_colors || !this->m_vertices) {
+        return;
+    }
+
+    auto mapObj = this->m_mapObj;
+    uint32_t lastVertex = this->m_batches[this->m_batchCountA - 1].maxVertex;
+
+    for (uint32_t v = 0; v <= lastVertex; v++) {
+        const C3Vector& position = this->m_vertices[v];
+        float total = 0.0f;
+        bool inDoorway = false;
+
+        for (uint32_t p = 0; p < this->m_portalCount; p++) {
+            auto ref = &mapObj->m_mopr[this->m_portalStart + p];
+            auto portal = &mapObj->m_mopt[ref->portalIndex];
+            const C4Plane& plane = portal->plane;
+
+            float planeDistance = plane.n.x * position.x
+                                + plane.n.y * position.y
+                                + plane.n.z * position.z
+                                + plane.d;
+
+            // Where the vertex lands on the portal's own plane. A vertex already on it stays
+            // put; otherwise it steps along the normal, whichever way it has to.
+            C3Vector hit = position;
+
+            if (planeDistance > 0.001f || planeDistance < -0.001f) {
+                C3Vector toward;
+
+                if (planeDistance > 0.001f) {
+                    toward.x = position.x - plane.n.x;
+                    toward.y = position.y - plane.n.y;
+                    toward.z = position.z - plane.n.z;
+                } else {
+                    toward.x = position.x + plane.n.x;
+                    toward.y = position.y + plane.n.y;
+                    toward.z = position.z + plane.n.z;
+                }
+
+                C3Ray ray;
+                RayFromPoints(ray, position, toward, false);
+                IntersectRayPlane(ray, plane, nullptr, &hit, 0.01f);
+            }
+
+            auto vertices = &mapObj->m_mopv[portal->startVertex];
+            uint32_t axis = DominantAxis(plane.n);
+
+            float reach;
+
+            if (PointInPolygon(hit, vertices, portal->count, axis)) {
+                // Straight through the opening: how far back from it the vertex is, signed so
+                // the room's own side comes out negative.
+                reach = planeDistance;
+
+                if (ref->side != 1) {
+                    reach = -reach;
+                }
+            } else {
+                // Off to the side of the opening: how far round the frame it has to go.
+                reach = DistancePointPolygon(position, vertices, portal->count);
+            }
+
+            if (!(mapObj->m_mogi[ref->groupIndex].flags & 0x48)) {
+                // The far side is a lit room, so a vertex in the doorway takes its light from
+                // there and this bake leaves it alone.
+                if (reach > -1.0f && reach < 1.0f) {
+                    inDoorway = true;
+
+                    break;
+                }
+            } else {
+                if (reach < 0.0f) {
+                    reach = 0.0f;
+                }
+
+                float share = 1.0f - reach * 0.15f;
+
+                if (share > 0.001f) {
+                    total += share;
+                }
+            }
+        }
+
+        if (inDoorway || total <= 0.001f) {
+            total = 0.0f;
+        } else if (total > 1.0f) {
+            total = 1.0f;
+        }
+
+        CImVector& color = this->m_colors[v];
+
+        color.r = static_cast<uint8_t>(lroundf(color.r + (127.0f - color.r) * total));
+        color.g = static_cast<uint8_t>(lroundf(color.g + (127.0f - color.g) * total));
+        color.b = static_cast<uint8_t>(lroundf(color.b + (127.0f - color.b) * total));
+        color.a = static_cast<uint8_t>(lroundf(total * 255.0f));
+    }
 }

@@ -43900,7 +43900,8 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/segment/C3Segment.cpp",
-   "lib/typhoon/tempest/segment/c3segment.cpp"
+   "lib/typhoon/tempest/segment/c3segment.cpp",
+   "lib/typhoon/tempest/segment/c3segment.hpp"
   ],
   "frozen": "C3Segment::C3Segment",
   "frozenSize": 48,
@@ -44768,7 +44769,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.375,
   "files": [
    "src/world/map/CMapObjDraw.cpp"
   ],
@@ -48303,6 +48304,21 @@
   "how": "override",
   "module": "MapArea.cpp",
   "refSize": 146,
+  "status": "ported"
+ },
+ "007d78c0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObjGroup::BakePortalLight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapArea.cpp",
+  "refSize": 861,
   "status": "ported"
  },
  "007d7c30": {
@@ -66174,6 +66190,38 @@
   "refSize": 67,
   "status": "ported"
  },
+ "00982fb0": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "IntersectRayPlane",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 283,
+  "status": "ported"
+ },
+ "009830d0": {
+  "branchRatio": 0.16,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "PointInPolygon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 957,
+  "status": "ported"
+ },
  "00983490": {
   "branchRatio": 0.571,
   "constOverlap": 0.0,
@@ -66382,6 +66430,38 @@
   "refSize": 76,
   "status": "ported"
  },
+ "00984ce0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DistancePointSegmentSq",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 201,
+  "status": "ported"
+ },
+ "00984db0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "DistancePointPolygon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 142,
+  "status": "ported"
+ },
  "00984f60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -66428,6 +66508,22 @@
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 91,
+  "status": "ported"
+ },
+ "00985200": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "RayFromPoints",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 152,
   "status": "ported"
  },
  "009858b0": {

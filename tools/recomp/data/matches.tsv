@@ -3026,6 +3026,7 @@ addr	how	frozen	evidence
 007d7380	annotated	CMapObjGroup::FixVertexColors	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7470	annotated	CMapObj::ParseChunks	tag in src/world/map/CMapObj.cpp
 007d7710	override	CMapObjGroup::LoadMaterialTextures	
+007d78c0	annotated	CMapObjGroup::BakePortalLight	tag in src/world/map/CMapObjDraw.cpp
 007d7c30	annotated	CMapObjGroup::ParseOptionalChunks	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7eb0	annotated	CMapObj::ReadComplete	tag in src/world/map/CMapObj.cpp
 007d7f50	annotated	CMapObjGroup::ParseChunks	tag in src/world/map/CMapObjGroupLoad.cpp
@@ -4160,6 +4161,8 @@ addr	how	frozen	evidence
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
+00982fb0	annotated	IntersectRayPlane	tag in lib/typhoon/tempest/Intersect.cpp
+009830d0	annotated	PointInPolygon	tag in lib/typhoon/tempest/Intersect.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009836b0	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
@@ -4173,9 +4176,12 @@ addr	how	frozen	evidence
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp
+00984ce0	annotated	DistancePointSegmentSq	tag in lib/typhoon/tempest/Intersect.cpp
+00984db0	annotated	DistancePointPolygon	tag in lib/typhoon/tempest/Intersect.cpp
 00984f60	annotated	RgbToHsv	tag in lib/typhoon/tempest/ColorConvert.cpp
 00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
 009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
+00985200	annotated	RayFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928

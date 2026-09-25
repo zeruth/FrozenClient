@@ -250,3 +250,176 @@ uint32_t DominantAxis(const C3Vector& v) {
 
     return 2;
 }
+
+// ref: FUN_00985200
+void RayFromPoints(C3Ray& out, const C3Vector& origin, const C3Vector& target, bool normalize) {
+    C3Vector dir = {
+        target.x - origin.x,
+        target.y - origin.y,
+        target.z - origin.z
+    };
+
+    if (normalize) {
+        float inv = 1.0f / sqrtf(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+
+        dir.x *= inv;
+        dir.y *= inv;
+        dir.z *= inv;
+    }
+
+    out.origin = origin;
+    out.dir = dir;
+}
+
+// ref: FUN_00982fb0
+bool IntersectRayPlane(const C3Ray& ray, const C4Plane& plane, float* t, C3Vector* point, float epsilon) {
+    float along = plane.n.x * ray.dir.x + plane.n.y * ray.dir.y + plane.n.z * ray.dir.z;
+
+    // A ray running along the plane: it either lies in it, or never meets it.
+    if (fabsf(along) < 1.0000000116860974e-07f) {
+        float distance = plane.n.x * ray.origin.x + plane.n.y * ray.origin.y + plane.n.z * ray.origin.z + plane.d;
+
+        if (epsilon <= fabsf(distance)) {
+            return false;
+        }
+
+        if (t) {
+            *t = 0.0f;
+        }
+
+        if (point) {
+            *point = ray.origin;
+        }
+
+        return true;
+    }
+
+    if (!t && !point) {
+        return true;
+    }
+
+    float distance = plane.n.x * ray.origin.x + plane.n.y * ray.origin.y + plane.n.z * ray.origin.z + plane.d;
+    float hit = epsilon <= fabsf(distance) ? -(distance / along) : 0.0f;
+
+    if (t) {
+        *t = hit;
+    }
+
+    if (point) {
+        point->x = ray.origin.x + hit * ray.dir.x;
+        point->y = ray.origin.y + hit * ray.dir.y;
+        point->z = ray.origin.z + hit * ray.dir.z;
+    }
+
+    return true;
+}
+
+// The two components a polygon is judged on once the axis it faces along is dropped
+// (DAT_00b2d6f4 and DAT_00b2d6f8, interleaved in the reference).
+static const uint32_t s_projectAxisA[3] = { 2, 0, 1 };
+static const uint32_t s_projectAxisB[3] = { 1, 2, 0 };
+
+// ref: FUN_009830d0
+// The reference unrolls this four edges at a time; the arithmetic per edge is the same.
+bool PointInPolygon(const C3Vector& point, const C3Vector* vertices, int32_t count, uint32_t dominantAxis) {
+    if (count < 3) {
+        return false;
+    }
+
+    uint32_t a = s_projectAxisA[dominantAxis];
+    uint32_t b = s_projectAxisB[dominantAxis];
+
+    auto component = [](const C3Vector& v, uint32_t i) {
+        return reinterpret_cast<const float*>(&v)[i];
+    };
+
+    bool inside = false;
+    int32_t j = count - 1;
+
+    for (int32_t i = 0; i < count; j = i, i++) {
+        bool aboveI = component(point, a) < component(vertices[i], a);
+        bool aboveJ = component(point, a) < component(vertices[j], a);
+
+        if (aboveI == aboveJ) {
+            continue;
+        }
+
+        float lhs = (component(vertices[i], a) - component(point, a))
+                  * (component(vertices[j], b) - component(vertices[i], b));
+        float rhs = (component(vertices[j], a) - component(vertices[i], a))
+                  * (component(vertices[i], b) - component(point, b));
+
+        if ((rhs < lhs) == aboveI) {
+            inside = !inside;
+        }
+    }
+
+    return inside;
+}
+
+// ref: FUN_00984ce0
+float DistancePointSegmentSq(const C3Segment& segment, const C3Vector& point, float* t) {
+    C3Vector toPoint = {
+        point.x - segment.start.x,
+        point.y - segment.start.y,
+        point.z - segment.start.z
+    };
+
+    C3Vector along = {
+        segment.end.x - segment.start.x,
+        segment.end.y - segment.start.y,
+        segment.end.z - segment.start.z
+    };
+
+    float projected = along.x * toPoint.x + along.y * toPoint.y + along.z * toPoint.z;
+    float where = 0.0f;
+
+    if (projected > 0.0f) {
+        float lengthSq = along.x * along.x + along.y * along.y + along.z * along.z;
+
+        if (projected <= lengthSq) {
+            where = projected / lengthSq;
+
+            along.x *= where;
+            along.y *= where;
+            along.z *= where;
+        } else {
+            where = 1.0f;
+        }
+
+        toPoint.x -= along.x;
+        toPoint.y -= along.y;
+        toPoint.z -= along.z;
+    }
+
+    if (t) {
+        *t = where;
+    }
+
+    return toPoint.x * toPoint.x + toPoint.y * toPoint.y + toPoint.z * toPoint.z;
+}
+
+// ref: FUN_00984db0
+float DistancePointPolygon(const C3Vector& point, const C3Vector* vertices, int32_t count) {
+    float nearest = 3.4028234663852886e+38f;
+
+    if (count <= 0) {
+        return nearest;
+    }
+
+    int32_t previous = count - 1;
+
+    for (int32_t i = 0; i < count; previous = i, i++) {
+        C3Segment edge;
+        edge.start = vertices[previous];
+        edge.end = vertices[i];
+
+        float distance = sqrtf(DistancePointSegmentSq(edge, point, nullptr));
+
+        if (distance < nearest) {
+            nearest = distance;
+        }
+    }
+
+    return nearest;
+}
