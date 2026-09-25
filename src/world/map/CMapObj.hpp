@@ -148,6 +148,9 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Added to every self-illuminated material's colour. The per-instance setup clears
         // it and nothing on the shader path writes it again.
         static CImVector s_instanceColor;       // DAT_00d1befc
+        // Which of the light's two fog sets this instance draws with, from the def's own
+        // flag. The per-instance setup in the map object pass writes it.
+        static int32_t s_interiorFog;           // DAT_00cfbeb8
 
         // ref: FUN_007a8440
         static void SetupFog(uint32_t state);

@@ -30,6 +30,8 @@ uint32_t CMapObj::s_materialColor = 0xffffffff;     // DAT_00d1bef8
 int32_t CMapObj::s_shadowState = -1;                // DAT_00cfbea8
 uint32_t CMapObj::s_vertexPermuteBase = 0;          // DAT_00cfbeb4
 uint32_t CMapObj::s_shadowMode = 0;                 // DAT_00d43010
+CImVector CMapObj::s_instanceColor = { 0 };         // DAT_00d1befc
+int32_t CMapObj::s_interiorFog = 0;                 // DAT_00cfbeb8
 
 namespace {
 
@@ -372,6 +374,187 @@ void CMapObjGroup::DrawBatches(int32_t record) {
         gxBatch.m_count = batch->count;
         gxBatch.m_minIndex = batch->minVertex;
         gxBatch.m_maxIndex = batch->maxVertex;
+
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
+    }
+
+    GxRsPop();
+}
+
+// ref: FUN_007ac9f0
+// The draw a group with vertex colours takes. MOBA is partitioned into three runs -- the
+// transition batches, then the interior ones, then the exterior -- and each run is lit
+// differently: interior geometry draws unlit off its baked colours, exterior geometry under
+// the sun, and a transition batch draws twice, once each way, so a doorway fades between
+// them.
+void CMapObjGroup::DrawBatchesSplit(int32_t record) {
+    auto mapObj = this->m_mapObj;
+
+    if (mapObj->m_mohd->flags & 0x2) {
+        // TODO FUN_007a9380: the outdoor draw.
+        return;
+    }
+
+    this->m_bufferIdleTime = 0.0f;
+
+    this->CreateBuffers();
+    this->BindIndexStream();
+    this->BindVertexStream();
+
+    GxRsPush();
+
+    CMapObj::s_fogState = 0xffffffff;
+    CMapObj::s_lightingMode = -1;
+    CMapObj::s_materialColor = 0xffffffff;
+    CMapObj::s_shadowState = -1;
+
+    // Which of the light's two fog sets this instance asked for.
+    uint32_t fogSet = CMapObj::s_interiorFog ? 1 : 2;
+
+    // TODO the grey fallback texture, as in DrawBatches.
+    CGxTex* fallback = nullptr;
+
+    uint32_t interiorEnd = static_cast<uint32_t>(this->m_batchCountA) + this->m_batchCountB;
+
+    for (uint32_t i = 0; i < this->m_batchCount; i++) {
+        auto batch = &this->m_batches[i];
+
+        if (!record) {
+            batch->flags &= 0x0f;
+        }
+
+        if ((batch->flags & 0xf0) || CMapObjGroup::BatchOutsideFrustum(batch)) {
+            continue;
+        }
+
+        batch->flags |= 0xf0;
+
+        auto material = &mapObj->m_materials[batch->materialId];
+        auto textures = &mapObj->m_materialTextures[batch->materialId];
+
+        CGxTex* tex0 = TextureGetGxTex(textures->texture1, 0, nullptr);
+
+        if (!tex0) {
+            if (!fallback) {
+                continue;
+            }
+
+            tex0 = fallback;
+        }
+
+        CGxTex* tex1 = nullptr;
+
+        if (textures->texture2) {
+            tex1 = TextureGetGxTex(textures->texture2, 0, nullptr);
+
+            if (!tex1) {
+                if (!fallback) {
+                    continue;
+                }
+
+                tex1 = fallback;
+            }
+        }
+
+        uint32_t shader = material->shader;
+
+        if (!shader && !material->blendMode && !TextureHasAlpha(textures->texture1)) {
+            shader = 4;
+        }
+
+        GxRsSet(GxRs_Culling, ~(material->flags >> 2) & 0x1);
+
+        CImVector sidn;
+        sidn.value = (material->flags & 0x10) ? material->frameSidnColor : 0;
+
+        CMapObj::SetMaterialColor(AverageColor(CMapObj::s_instanceColor, sidn));
+
+        GxTexSetWrap(
+            tex0,
+            static_cast<EGxTexWrapMode>(~(material->flags >> 6) & 0x1),
+            static_cast<EGxTexWrapMode>(~(material->flags >> 7) & 0x1)
+        );
+
+        GxRsSet(GxRs_Texture0, tex0);
+        GxRsSet(GxRs_Texture1, tex1);
+
+        auto effect = CMapObj::s_effects[shader];
+
+        if (effect) {
+            effect->SetCurrent();
+        }
+
+        // Which way this material wants the exterior light: bit 5 asks for the interior set.
+        int32_t exteriorMode = (material->flags & 0x20) ? 2 : 1;
+
+        CGxBatch gxBatch;
+        gxBatch.m_primType = GxPrim_Triangles;
+        gxBatch.m_start = batch->startIndex;
+        gxBatch.m_count = batch->count;
+        gxBatch.m_minIndex = batch->minVertex;
+        gxBatch.m_maxIndex = batch->maxVertex;
+
+        if (i < this->m_batchCountA) {
+            // A transition batch, drawn twice. First lit, writing where its alpha says the
+            // exterior wins.
+            if (CMapObj::s_shadowState != 0) {
+                CMapObj::s_shadowState = 0;
+
+                ShadowMapBindMapObj(0);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+            }
+
+            CMapObj::SetupLighting(this, exteriorMode);
+            CMapObj::SetupFog(~material->flags & 0x2);
+
+            GxRsSet(GxRs_BlendingMode, GxBlend_SrcAlphaOpaque);
+
+            CMapObj::SetAlphaRefForBlendMode();
+            CMapObj::SelectShaders();
+
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+
+            // Then unlit, adding the interior colours back through the inverse alpha.
+            CMapObj::SetupLighting(this, 0);
+            CMapObj::SetupFog((material->flags & 0x2) ? 0 : fogSet);
+
+            if (CMapObj::s_shadowState != 1) {
+                CMapObj::s_shadowState = 1;
+
+                ShadowMapBindMapObj(1);
+
+                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+            }
+
+            GxRsSet(GxRs_BlendingMode, GxBlend_InvSrcAlphaAdd);
+
+            CMapObj::SetAlphaRefForBlendMode();
+            CMapObj::SelectShaders();
+
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+
+            continue;
+        }
+
+        CMapObj::SetupFog((material->flags & 0x2) ? 0 : fogSet);
+
+        // Interior geometry carries its light in its vertex colours; exterior geometry takes
+        // the sun.
+        CMapObj::SetupLighting(this, i < interiorEnd ? 0 : exteriorMode);
+
+        if (CMapObj::s_shadowState != 1) {
+            CMapObj::s_shadowState = 1;
+
+            ShadowMapBindMapObj(1);
+
+            CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+        }
+
+        GxRsSet(GxRs_BlendingMode, static_cast<int32_t>(material->blendMode));
+
+        CMapObj::SetAlphaRefForBlendMode();
+        CMapObj::SelectShaders();
 
         g_theGxDevicePtr->Draw(&gxBatch, 1);
     }

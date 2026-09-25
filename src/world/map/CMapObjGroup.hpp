@@ -312,8 +312,11 @@ class CMapObjGroup {
         // ref: FUN_007a7630
         static bool BatchOutsideFrustum(const SMOBatch* batch);
 
-        // ref: FUN_007ac6a0
+        // The draw a group with no vertex colours takes: one lighting mode for every
+        // batch. ref: FUN_007ac6a0
         void DrawBatches(int32_t record);
+        // ref: FUN_007ac9f0
+        void DrawBatchesSplit(int32_t record);
 };
 
 #endif

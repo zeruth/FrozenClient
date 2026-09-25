@@ -44716,6 +44716,21 @@
   "refSize": 847,
   "status": "ported"
  },
+ "007ac9f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.659,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp"
+  ],
+  "frozen": "CMapObjGroup::DrawBatchesSplit",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 1566,
+  "status": "ported"
+ },
  "007ad020": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
