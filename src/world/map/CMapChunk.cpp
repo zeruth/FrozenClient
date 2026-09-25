@@ -455,11 +455,29 @@ void CMapChunk::UpdateLiquidVisibility() {
         CMapChunk::s_vertexTable[vertex][1] + this->m_position.y,
         this->m_heights[vertex] + this->m_position.z
     };
-    (void)point;
 
-    // TODO for each liquid of m_liquidList: FUN_007cde80(liquid, &box); if
-    // !BoxOutsideFrustum(box): point.z = clamp(cameraPos.z, liquid->m_minHeight,
-    // liquid->m_maxHeight); FUN_00792df0(liquid, &point)
+    for (auto liquid = this->m_liquidList.Head(); liquid; liquid = this->m_liquidList.Next(liquid)) {
+        CAaBox box;
+        liquid->GetBounds(&box);
+
+        if (CWorldScene::BoxOutsideFrustum(box)) {
+            continue;
+        }
+
+        // The point the layer is banded by is the chunk's nearest vertex, but at the height the
+        // camera would meet the water at: the camera's own z, held inside the layer's range.
+        // A layer far below the camera bands as if it were at its own surface, not at the
+        // terrain's.
+        float z = CWorldScene::s_cameraPos.z;
+
+        if (liquid->m_maxHeight < z) {
+            z = liquid->m_maxHeight;
+        }
+
+        point.z = liquid->m_minHeight <= z ? z : liquid->m_minHeight;
+
+        CWorldScene::AddLiquid(liquid, point);
+    }
 }
 
 // ref: FUN_007d3fe0

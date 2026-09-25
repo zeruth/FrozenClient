@@ -1,4 +1,5 @@
 #include "world/CWorldScene.hpp"
+#include "world/map/CChunkLiquid.hpp"
 #include "world/CWorld.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
@@ -34,6 +35,7 @@ static const float ANIMATE_RANGE_SQ = 100.0f;
 
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWorldScene::RENDER_LIST_COUNT];
 CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
+STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) CWorldScene::s_frameLiquidList;
 C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
@@ -937,6 +939,49 @@ void CWorldScene::BucketChunk(CMapChunk* chunk, const C3Vector& point) {
     }
 }
 
+// ref: FUN_00792df0
+// The same banding as BucketChunk, for one liquid layer rather than a whole chunk. The caller
+// picks the point: the chunk's nearest vertex, with the height pulled into the layer's own range.
+void CWorldScene::AddLiquid(CChunkLiquid* liquid, const C3Vector& center) {
+    float distance = center.x * CWorldScene::s_viewPlane2d.n.x + center.z * CWorldScene::s_viewPlane2d.n.z + center.y * CWorldScene::s_viewPlane2d.n.y + CWorldScene::s_viewPlane2d.d;
+    int32_t row = 0;
+
+    if (distance <= 0.0f || (row = static_cast<int32_t>(roundf(distance * CHUNKS_PER_UNIT - 0.5f))) < static_cast<int32_t>(ROW_COUNT)) {
+        CWorldScene::s_rows[row].liquids.LinkToTail(liquid);
+    }
+}
+
+// ref: FUN_007935a0
+// Every liquid layer this row collected moves to the frame list, which is what the draw walks
+// later; the row's link and the frame list's are the same one, so the move is a relink and the
+// next pointer has to be read first.
+//
+// On the way, a layer that survives the frustum and both occlusion tests gets its surface woken
+// for the frame. The reference guards that half behind a world flag which is set once at startup
+// and never cleared, so only this path is live and frozen does not carry the flag.
+void CWorldScene::TraverseRowLiquids(Row* row) {
+    auto liquid = row->liquids.Head();
+
+    while (liquid) {
+        auto next = row->liquids.Next(liquid);
+
+        CWorldScene::s_frameLiquidList.LinkToTail(liquid);
+
+        CAaBox box;
+        liquid->GetBounds(&box);
+
+        if (AaBoxVsPlanes6(CWorldScene::s_clipFrustum.planes, box)
+            && !CWorldScene::BoxOccluded(box, 0)) {
+            // TODO FUN_007ce520 (the layer's bounding sphere) then
+            // CWorldScene::SphereOccludedByVolumes on it, then FUN_007cf9a0 (the layer's own
+            // per-frame update) and, when the liquid sound switch is on, FUN_008a20c0 to wake
+            // the surface. None of those three is ported, so nothing is woken yet.
+        }
+
+        liquid = next;
+    }
+}
+
 // ref: FUN_0078fae0
 void CWorldScene::GetFrustumCorners(C3Vector* corners) {
     for (int32_t i = 0; i < 8; i++) {
@@ -1003,7 +1048,7 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
 
         CWorldScene::TraverseRowChunks(row, i);
         CWorldScene::TraverseRowMapObjDefs(row, window, portal);
-        // TODO FUN_007935a0(row)
+        CWorldScene::TraverseRowLiquids(row);
         // TODO FUN_00793060(row)
 
         int32_t band = CWorldScene::DistanceBand(static_cast<float>(i) * CHUNK_SIZE);

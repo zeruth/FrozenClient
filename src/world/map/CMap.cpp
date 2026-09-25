@@ -1012,8 +1012,23 @@ void CMap::ClearFrameChunkList() {
 // ref: FUN_007b5420
 // The liquids animated this frame (DAT_00adfc34, link at CChunkLiquid +0x68); FUN_007cde30
 // per liquid and the fade test on +0x30 are not ported yet
+// Ages every liquid layer the frame reached and lets go of the ones that have been out of
+// sight long enough. A layer only leaves the list here, which is why one that was seen keeps
+// its place for the two seconds its surface lives on.
 void CMap::UpdateFrameLiquids() {
-    // TODO
+    auto liquid = CWorldScene::s_frameLiquidList.Head();
+
+    while (liquid) {
+        auto next = CWorldScene::s_frameLiquidList.Next(liquid);
+
+        liquid->UpdateAnim();
+
+        if (liquid->m_animTime < 0.0f) {
+            liquid->m_frameLink.Unlink();
+        }
+
+        liquid = next;
+    }
 }
 
 // ref: FUN_0079a870

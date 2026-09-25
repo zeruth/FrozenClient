@@ -2,7 +2,11 @@
 #include "world/map/CMapChunk.hpp"
 #include "world/map/LiquidVertexData.hpp"
 
+#include "world/CWorld.hpp"
+
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
+// How long a layer keeps its surface after it was last seen. DAT_00a4040c
+static const float LIQUID_SURFACE_LINGER = 2.0f;
 
 // ref: FUN_007cdf80
 // The layer's vertices, placed under the chunk's own corner rather than out in the world, so
@@ -37,5 +41,33 @@ void CChunkLiquid::ReleaseSurface() {
     if (this->m_surface) {
         // TODO FUN_008a1ac0: the Liquid module hands the drawn surface back to its own pool.
         this->m_surface = nullptr;
+    }
+}
+
+// ref: FUN_007cde80
+// A layer is as wide as its chunk for culling purposes -- the rectangle it actually covers is
+// not narrowed here -- but only as tall as its own water.
+void CChunkLiquid::GetBounds(CAaBox* box) const {
+    *box = this->m_chunk->m_bounds;
+
+    box->b.z = this->m_minHeight;
+    box->t.z = this->m_maxHeight;
+}
+
+// ref: FUN_007cde30
+// A layer out of sight for long enough gives its surface back and marks itself finished with;
+// the frame list drops it on the strength of that. A layer that is still being seen never gets
+// here with a positive clock, because the visit resets it every frame.
+void CChunkLiquid::UpdateAnim() {
+    if (this->m_animTime >= LIQUID_SURFACE_LINGER) {
+        if (this->m_surface) {
+            // TODO FUN_008a1710: hand the drawn surface back to the Liquid module's pool.
+        }
+
+        this->m_animTime = -1.0f;
+    }
+
+    if (this->m_animTime >= 0.0f) {
+        this->m_animTime += CWorld::GetTickTimeSec();
     }
 }

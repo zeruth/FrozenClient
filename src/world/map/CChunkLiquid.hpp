@@ -3,6 +3,7 @@
 
 #include <storm/List.hpp>
 #include <tempest/Vector.hpp>
+#include <tempest/Box.hpp>
 #include <cstdint>
 
 class CMapChunk;
@@ -39,7 +40,10 @@ class CChunkLiquid {
         // TODO +0x18..+0x24
         float m_minHeight = 0.0f;         // +0x28: CMapChunk::GetBounds lowers the box to it
         float m_maxHeight = 0.0f;         // +0x2c: and raises it to this
-        float m_animTime = 0.0f;          // +0x30: the surface's own clock, -1 while it has none
+        // How long the layer has gone unseen, in seconds. Every frame the layer is visible
+        // resets it to zero; two seconds after it stops being so the surface is let go and this
+        // turns negative, which is what drops the layer off the frame list.
+        float m_animTime = 0.0f;          // +0x30
         // The rectangle of the chunk's eight-by-eight tile grid this layer covers. MCLQ layers
         // always cover the whole chunk; an MH2O one can be a corner of it. The two axes are the
         // file's the other way round: "X" here steps along MH2O's y.
@@ -56,7 +60,10 @@ class CChunkLiquid {
         void* m_surface = nullptr;        // +0x58
         CMapChunk* m_chunk = nullptr;     // +0x5c
         TSLink<CChunkLiquid> m_link;      // +0x60
-        // TODO +0x68..+0x6c
+        // The frame's link, used by two lists in turn and never by both: the distance row the
+        // layer lands in when its chunk is found visible, and then the frame-wide list the row
+        // visit moves it to. That is why the visit reads the next pointer before moving a node.
+        TSLink<CChunkLiquid> m_frameLink; // +0x68
         TSLink<CChunkLiquid> m_chunkLink; // +0x70
         // The layer's vertices, in the chunk's own space: x and y step out from the chunk corner
         // by a tile at a time, and z is the height above it.
@@ -69,6 +76,13 @@ class CChunkLiquid {
 
         // Let the surface go, if one was ever built. ref: FUN_007cde10
         void ReleaseSurface();
+
+        // The layer's world box: its chunk's, with the height range narrowed to the layer's own.
+        // ref: FUN_007cde80
+        void GetBounds(CAaBox* box) const;
+
+        // Age the layer by one frame. ref: FUN_007cde30
+        void UpdateAnim();
 };
 
 #endif

@@ -11303,7 +11303,7 @@
   ],
   "frozen": "CWorld::GetTickTimeSec",
   "frozenSize": 9,
-  "how": "callorder",
+  "how": "override",
   "module": "TextureBlob.cpp",
   "refSize": 245,
   "status": "ported"
@@ -44294,6 +44294,22 @@
   "refSize": 111,
   "status": "ported"
  },
+ "00792df0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddLiquid",
+  "frozenSize": 236,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
  "00793060": {
   "branchRatio": 0.167,
   "constOverlap": 0.033,
@@ -44308,6 +44324,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 521,
+  "status": "ported"
+ },
+ "007935a0": {
+  "branchRatio": 0.1,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::TraverseRowLiquids",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 437,
   "status": "ported"
  },
  "00793760": {
@@ -44554,13 +44586,13 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 676,
+  "frozenSize": 886,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -45543,10 +45575,10 @@
   "status": "ported"
  },
  "007b5420": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -45556,7 +45588,7 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 122,
-  "status": "stub"
+  "status": "ported"
  },
  "007b54a0": {
   "branchRatio": 0.0,
@@ -45600,7 +45632,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::UpdateAreas",
-  "frozenSize": 1288,
+  "frozenSize": 1560,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 943,
@@ -46898,7 +46930,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeChunkLiquid",
-  "frozenSize": 197,
+  "frozenSize": 263,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 96,
@@ -47186,7 +47218,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Destroy",
-  "frozenSize": 576,
+  "frozenSize": 592,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 607,
@@ -47522,23 +47554,23 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::CreateLiquid",
-  "frozenSize": 1685,
+  "frozenSize": 1313,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 1162,
   "status": "diverged"
  },
  "007c5b20": {
-  "branchRatio": 0.1,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::UpdateLiquidVisibility",
-  "frozenSize": 27,
+  "frozenSize": 1066,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 298,
@@ -48247,6 +48279,36 @@
   "refSize": 24,
   "status": "ported"
  },
+ "007cde30": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::UpdateAnim",
+  "frozenSize": 79,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
+ "007cde80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::GetBounds",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
  "007cdf80": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -48269,7 +48331,7 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "CChunkLiquid::CChunkLiquid",
-  "frozenSize": 924,
+  "frozenSize": 938,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 209,

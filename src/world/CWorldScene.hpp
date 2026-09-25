@@ -16,6 +16,7 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CChunkLiquid;
 class CGxShader;
 class CMapObjDef;
 class CMapStaticEntity;
@@ -65,7 +66,7 @@ class CWorldScene {
             STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) mapObjDefGroups;      // +0x0c
             STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) entities;      // +0x18
             STORM_EXPLICIT_LIST(CMapStaticEntity, m_rowLink) staticEntities; // +0x24
-            RowListStub liquids;                                            // +0x30: CChunkLiquid
+            STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) liquids;         // +0x30
             RowListStub list5;                                              // +0x3c
             RowListStub list6;                                              // +0x48
             STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) occluderChunks;     // +0x54: chunks that shade the horizon buffer
@@ -111,6 +112,9 @@ class CWorldScene {
         static CGxShader* s_terrain0PixelShaderNoAlpha;     // DAT_00d1d090
 
         static Row s_rows[ROW_COUNT];                       // DAT_00cd9048
+        // Every liquid layer this frame reached, in the order the rows were visited, near to
+        // far. The rows hand their layers over one at a time through the same link.
+        static STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) s_frameLiquidList;  // DAT_00adfc34
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
         static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
@@ -179,6 +183,12 @@ class CWorldScene {
                                  const C3Vector& position, int32_t holes);
 
         static int32_t BoxOutsideFrustum(const CAaBox& box);
+        // File one liquid layer under the distance row its centre falls in, or drop it when
+        // that is past the last row. ref: FUN_00792df0
+        static void AddLiquid(CChunkLiquid* liquid, const C3Vector& center);
+        // Move a row's liquid layers to the frame list, testing each on the way.
+        // ref: FUN_007935a0
+        static void TraverseRowLiquids(Row* row);
         // ref: FUN_00791120
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
         // ref: FUN_00791cb0

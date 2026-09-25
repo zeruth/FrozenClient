@@ -31,6 +31,15 @@
     "status": "verified",
     "note": "Liquid::CVertexDataMH2O::CVertexDataMH2O. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
   },
+  "004c4b80": {
+    "frozen": "CWorld::GetTickTimeSec",
+    "status": "ported",
+    "note": "pinned 2026-09-25: the callgraph re-paired it with FUN_008a1710, the Liquid module's surface release, the moment CChunkLiquid::UpdateAnim started calling the getter"
+  },
+  "008a1710": {
+    "status": "unlinked",
+    "note": "Liquid module: hands a drawn liquid surface back to its pool, called from CChunkLiquid::UpdateAnim when a layer has been out of sight two seconds. The surface objects are not ported, so the call is a TODO in place. NOT CWorld::GetTickTimeSec, which the callgraph matcher proposed here"
+  },
   "0084df20": {
     "frozen": "lua_isnumber",
     "status": "ported",
