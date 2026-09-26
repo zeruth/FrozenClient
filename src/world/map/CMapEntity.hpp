@@ -14,6 +14,11 @@ class CMapEntity : public CMapStaticEntity {
         static void SplitFloorLight(const CImVector& color, CImVector* diffuse, uint8_t diffuseMax, CImVector* ambient, uint8_t ambientMax);
         static bool FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGroup* group, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha);
 
+        // The floor light for a world position: finds the building and room the point stands in and
+        // asks FloorLight above. Lived in the stand-in renderer until 2026-09-26, purely because it
+        // was the thing that owned a list of buildings to search.
+        static bool FloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient);
+
         // Member variables
         void* m_handler = nullptr;
         void* m_handlerParam = nullptr;

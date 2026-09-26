@@ -43,10 +43,6 @@ const C44Matrix& TerrainViewProjT();
 bool TerrainFogActive();
 void TerrainUiShaders(CGxShader*& vs, CGxShader*& ps);
 
-// The light for a unit on a WMO floor: the reference's probe through the interior groups' BSP
-// and MOCV sample (CMapEntity::FloorLight). Fills the entity's diffuse and ambient as bytes.
-class CImVector;
-bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient);
 
 // Is a world position inside an interior WMO room? Answered the reference's way, by dropping a
 // segment and asking whether the surface below belongs to a non-exterior group.

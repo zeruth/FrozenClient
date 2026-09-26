@@ -1,6 +1,7 @@
 #include "model/CM2Lighting.hpp"
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/map/CMapEntity.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
 #include "world/Terrain.hpp"
@@ -1036,7 +1037,7 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
         // into a diffuse and an ambient. The reference function that turns those two colours into
         // the model's lights has not been identified yet, so the diffuse is applied along the
         // outdoor sun direction here; the ambient is exact.
-        if (TerrainWmoFloorLightAt(pos, &diffuse, &ambient)) {
+        if (CMapEntity::FloorLightAt(pos, &diffuse, &ambient)) {
             C3Vector amb;
             C3Vector dif;
             UnpackColor(amb, ambient);

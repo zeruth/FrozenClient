@@ -46302,7 +46302,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "MapObjDoodadLighting",
-  "frozenSize": 0,
+  "frozenSize": 38,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 236,
@@ -47566,7 +47566,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDef",
-  "frozenSize": 397,
+  "frozenSize": 424,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,

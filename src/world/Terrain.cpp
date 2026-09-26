@@ -490,6 +490,12 @@ void ParseChunk(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
 // convention (local X is up; local Y/Z are the horizontal plane rotated by the yaw) was verified
 // against the MODF world-space bounding box.
 
+// Read one ADT and keep only what is still wanted from it: the per-chunk height, colour and
+// texcoord grids the terrain blob-shadow receiver re-draws under a decal.
+//
+// Everything else this used to take out of a tile has moved to the map. MTEX ground textures,
+// MH2O liquid, MDDF doodads and the whole MODF/MWMO/MWID WMO path are all CMapArea's and
+// CMapChunk's now, so the chunk scan looks at MCIN and nothing else.
 void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     tile.x = tileX;
     tile.y = tileY;
@@ -510,69 +516,19 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     }
 
     auto bytes = static_cast<const uint8_t*>(data);
-
-    static const char* textureNames[256];
-    uint32_t textureCount = 0;
     const uint8_t* mcin = nullptr;
-    const char* mmdx = nullptr;
-    const uint32_t* mmid = nullptr;
-    uint32_t mmidCount = 0;
-    const uint8_t* mddf = nullptr;
-    uint32_t mddfCount = 0;
-    const char* mwmo = nullptr;
-    const uint32_t* mwid = nullptr;
-    uint32_t mwidCount = 0;
-    const uint8_t* modf = nullptr;
-    uint32_t modfCount = 0;
-
-    const uint8_t* mh2o = nullptr; // 3.3.5 liquid chunk (per-chunk headers + layer infos)
-    uint32_t mh2oSize = 0;
-
     uint32_t offset = 0;
 
     while (offset + 8 <= size) {
         uint32_t chunkSize;
         uint32_t tag = ReadChunkTag(bytes, offset, chunkSize);
-        const uint8_t* body = bytes + offset + 8;
 
-        if (tag == FourCC("MTEX")) {
-            const char* p = reinterpret_cast<const char*>(body);
-            const char* end = p + chunkSize;
-
-            while (p < end && textureCount < 256) {
-                textureNames[textureCount++] = p;
-                p += SStrLen(p) + 1;
-            }
-        } else if (tag == FourCC("MCIN")) {
-            mcin = body;
-        } else if (tag == FourCC("MMDX")) {
-            mmdx = reinterpret_cast<const char*>(body);
-        } else if (tag == FourCC("MMID")) {
-            mmid = reinterpret_cast<const uint32_t*>(body);
-            mmidCount = chunkSize / 4;
-        } else if (tag == FourCC("MDDF")) {
-            mddf = body;
-            mddfCount = chunkSize / 36;
-        } else if (tag == FourCC("MWMO")) {
-            mwmo = reinterpret_cast<const char*>(body);
-        } else if (tag == FourCC("MWID")) {
-            mwid = reinterpret_cast<const uint32_t*>(body);
-            mwidCount = chunkSize / 4;
-        } else if (tag == FourCC("MODF")) {
-            modf = body;
-            modfCount = chunkSize / 64;
-        } else if (tag == FourCC("MH2O")) {
-            mh2o = body;
-            mh2oSize = chunkSize;
+        if (tag == FourCC("MCIN")) {
+            mcin = bytes + offset + 8;
         }
 
         offset += 8 + chunkSize;
     }
-
-    // The MTEX ground textures used to be loaded here, one HTEXTURE per name per tile. They were
-    // sampled only by RenderShaded and RenderFallback; with those gone nothing read them, and
-    // CMapRenderChunk loads the real ones itself. The names are still collected because the MTEX
-    // walk is part of the chunk scan, but no texture is created from them any more.
 
     if (mcin) {
         for (int32_t i = 0; i < 256; i++) {
@@ -581,31 +537,9 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
             if (mcnkOffset && mcnkOffset + 8 <= size) {
                 uint32_t mcnkSize = *reinterpret_cast<const uint32_t*>(bytes + mcnkOffset + 4);
                 ParseChunk(tile.chunks[i], bytes + mcnkOffset + 8, mcnkSize);
-
-                if (mh2o) {
-                    // MH2O and MCLQ used to be parsed here into the stand-in's own liquid
-                    // layers. They fed only LiquidAt, and the camera-liquid query is the
-                    // reference's now: CMap::GetTerrainLiquid over CMapChunk::CreateLiquid's
-                    // layers outdoors, CMapObjGroup::GetLiquidAt over the group's MLIQ indoors.
-                }
-
             }
         }
     }
-
-    // Place the tile's M2 doodads (MDDF) into the world scene, exactly as the reference client
-    // does: resolve the model path through MMID -> MMDX, convert the corner-relative position to
-    // world coordinates, and apply the stored yaw and scale.
-    CM2Scene* scene = CWorld::GetM2Scene();
-
-    // The tile's own doodads (MDDF) are the map's now, placed by CMap::CreateDoodadDef out of
-    // CMapChunk::CreateRefs. Nothing is read here, so nothing is allocated for them either.
-
-    // The tile's WMO buildings (MODF) used to be loaded here into the stand-in's own
-    // WmoInstance array: the root file, every group file, and a doodad per MODD placement.
-    // CMap::CreateMapObjDef has placed the real defs out of CMapChunk::CreateRefs for a
-    // while, and CMap::CreateMapObjDoodads now builds the props on them, so nothing was
-    // left that read any of it.
 
     SMemFree(data, __FILE__, __LINE__, 0);
 }
@@ -1750,74 +1684,5 @@ bool TerrainPointIsIndoors(const C3Vector& pos) {
     uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
 
     return QuerySegmentMapObjs(start, end, 1.0f, defs, groups) != 0;
-}
-
-// The light for a unit standing on a WMO floor, by the reference's mechanism: a probe from one
-// yard above its feet to twelve below, through the interior groups' BSP, sampling the MOCV at the
-// floor face it lands on (CMapEntity::FloorLight, FUN_007a0d60). The reference reaches the
-// entity's MapObjDef and group through its parent links; without that graph every loaded instance
-// whose box holds the probe is tried, and within it every interior group whose box holds it, first
-// hit wins. Exterior groups never answer, so a unit out on a deck is lit by the sky again.
-bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient) {
-    // Runs on the REFERENCE map objects, not the stand-in's copies. CMapEntity::FloorLight was
-    // always a ported reference function taking a CMapObj and a CMapObjGroup -- the stand-in was
-    // only supplying its own instances of those two, built out of its own arrays. The real ones
-    // carry the same MOBN/MOBR BSP and the same MOCV colours, and the portal walk that reaches
-    // them has worked since the m_portalRects fix, so this is a redirect rather than a rewrite.
-    for (auto def = CMapObjDef::s_uniqueIds.Head(); def;
-         def = CMapObjDef::s_uniqueIds.Next(def)) {
-        if (!def->m_mapObj) {
-            continue;
-        }
-
-        // The whole building first, in world space, with the same asymmetric vertical window the
-        // stand-in used: a probe reaches a little above the unit and well below it, because the
-        // floor being stood on is what is wanted.
-        const CAaBox& box = def->m_bounds;
-
-        if (pos.x < box.b.x || pos.x > box.t.x || pos.y < box.b.y || pos.y > box.t.y
-            || pos.z + 1.0f < box.b.z || pos.z - 12.0f > box.t.z) {
-            continue;
-        }
-
-        // Into the building's own space, where the BSP planes and the group bounds live. The
-        // stand-in undid the placement by hand from a yaw sine and cosine; the def carries the
-        // whole inverse, which also covers the pitch and roll a hand-rolled yaw could not.
-        C3Vector local = pos * def->m_inversePlacement;
-
-        for (auto link = def->m_defGroupLinkList.Head(); link;
-             link = def->m_defGroupLinkList.Next(link)) {
-            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
-
-            if (!defGroup) {
-                continue;
-            }
-
-            uint32_t groupIndex = defGroup->m_groupIndex;
-            CMapObjGroup* group = def->m_mapObj->GetGroup(groupIndex, 0);
-
-            // A group with no BSP or no vertex colours cannot answer the probe.
-            if (!group || !group->m_bspNodes || !group->m_colors) {
-                continue;
-            }
-
-            const CAaBox& gb = group->m_bounds;
-
-            if (local.x < gb.b.x || local.x > gb.t.x || local.y < gb.b.y || local.y > gb.t.y
-                || local.z + 1.0f < gb.b.z || local.z - 12.0f > gb.t.z) {
-                continue;
-            }
-
-            uint32_t flags = 0;
-            uint8_t alpha = 0;
-
-            if (CMapEntity::FloorLight(local, def->m_mapObj, group, diffuse, ambient, &flags,
-                                       &alpha)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 

@@ -1,4 +1,6 @@
 #include "world/map/CMapEntity.hpp"
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/CWorld.hpp"
@@ -122,4 +124,73 @@ bool CMapEntity::FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGr
 
     *flags &= ~0x1000u;
     return true;
+}
+
+// The light for a unit standing on a WMO floor, by the reference's mechanism: a probe from one
+// yard above its feet to twelve below, through the interior groups' BSP, sampling the MOCV at the
+// floor face it lands on (CMapEntity::FloorLight, FUN_007a0d60). The reference reaches the
+// entity's MapObjDef and group through its parent links; without that graph every loaded instance
+// whose box holds the probe is tried, and within it every interior group whose box holds it, first
+// hit wins. Exterior groups never answer, so a unit out on a deck is lit by the sky again.
+bool CMapEntity::FloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient) {
+    // Runs on the REFERENCE map objects, not the stand-in's copies. CMapEntity::FloorLight was
+    // always a ported reference function taking a CMapObj and a CMapObjGroup -- the stand-in was
+    // only supplying its own instances of those two, built out of its own arrays. The real ones
+    // carry the same MOBN/MOBR BSP and the same MOCV colours, and the portal walk that reaches
+    // them has worked since the m_portalRects fix, so this is a redirect rather than a rewrite.
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def;
+         def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (!def->m_mapObj) {
+            continue;
+        }
+
+        // The whole building first, in world space, with the same asymmetric vertical window the
+        // stand-in used: a probe reaches a little above the unit and well below it, because the
+        // floor being stood on is what is wanted.
+        const CAaBox& box = def->m_bounds;
+
+        if (pos.x < box.b.x || pos.x > box.t.x || pos.y < box.b.y || pos.y > box.t.y
+            || pos.z + 1.0f < box.b.z || pos.z - 12.0f > box.t.z) {
+            continue;
+        }
+
+        // Into the building's own space, where the BSP planes and the group bounds live. The
+        // stand-in undid the placement by hand from a yaw sine and cosine; the def carries the
+        // whole inverse, which also covers the pitch and roll a hand-rolled yaw could not.
+        C3Vector local = pos * def->m_inversePlacement;
+
+        for (auto link = def->m_defGroupLinkList.Head(); link;
+             link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+            if (!defGroup) {
+                continue;
+            }
+
+            uint32_t groupIndex = defGroup->m_groupIndex;
+            CMapObjGroup* group = def->m_mapObj->GetGroup(groupIndex, 0);
+
+            // A group with no BSP or no vertex colours cannot answer the probe.
+            if (!group || !group->m_bspNodes || !group->m_colors) {
+                continue;
+            }
+
+            const CAaBox& gb = group->m_bounds;
+
+            if (local.x < gb.b.x || local.x > gb.t.x || local.y < gb.b.y || local.y > gb.t.y
+                || local.z + 1.0f < gb.b.z || local.z - 12.0f > gb.t.z) {
+                continue;
+            }
+
+            uint32_t flags = 0;
+            uint8_t alpha = 0;
+
+            if (CMapEntity::FloorLight(local, def->m_mapObj, group, diffuse, ambient, &flags,
+                                       &alpha)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
