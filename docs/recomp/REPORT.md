@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 00:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 00:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,10 +9,10 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 26961 | 5.35M |
 | mapped to a frozen function | 4333 (=) (16.1%) | 908.8k (16.6%) |
-| &nbsp;&nbsp;ported | 3653 (=) | 730.1k |
+| &nbsp;&nbsp;ported | 3652 (-1) | 730.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
-| &nbsp;&nbsp;verified (override) | 32 (=) | 7.4k |
-| **faithful** (linked, not stub, call order >= 80%) | **2210 (=) (8.2%)** | **284.7k (5.2%)** |
+| &nbsp;&nbsp;verified (override) | 33 (+1) | 7.5k |
+| **faithful** (linked, not stub, call order >= 80%) | **2211 (+1) (8.2%)** | **284.7k (5.2%)** |
 | unmapped | 22628 | 4.47M |
 | world spine (reachable from OnFrameRender) | 5385, mapped 1398 (=) (26.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5652, mapped 1416 (=) (25.1%) | |
@@ -23,7 +23,7 @@ Match evidence: annotated 2131, callgraph 239, callorder 111, cvar 32, handler 2
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 00:12 -- mapped 4333, ported 3653, stub 578, spine mapped 1398.
+Previous run: 2026-09-26 00:36 -- mapped 4333, ported 3653, stub 578, spine mapped 1398.
 
 ## Lua API coverage (binding tables)
 
@@ -181,7 +181,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Calendar.cpp | 108 | 32.1k | 19 (17.6%) | 16.7% | 18 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | XMLTree.cpp | 183 | 31.0k | 86 (47.0%) | 49.9% | 5 | 0 | 30 |
-| MapChunkLiquid.cpp | 77 | 30.9k | 30 (39.0%) | 42.3% | 0 | 1 | 47 |
+| MapChunkLiquid.cpp | 77 | 30.9k | 30 (39.0%) | 42.3% | 0 | 2 | 47 |
 | MinimapFrame.cpp | 76 | 30.8k | 22 (28.9%) | 18.2% | 0 | 0 | 1 |
 | UnitMissileTrajectory_C.cpp | 93 | 30.6k | 4 (4.3%) | 1.4% | 0 | 0 | 57 |
 | Client.cpp | 167 | 30.6k | 59 (35.3%) | 39.5% | 10 | 0 | 30 |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 21:08 | 4323 (16.0%) | 2207 (8.2%) | 578 | 1390/5385 | 2924/2964 | 1380 |
 | 2026-09-25 22:39 | 4330 (16.1%) | 2209 (8.2%) | 578 | 1396/5385 | 2924/2964 | 1380 |
 | 2026-09-25 22:42 | 4330 (16.1%) | 2209 (8.2%) | 578 | 1396/5385 | 2924/2964 | 1380 |
 | 2026-09-25 22:52 | 4330 (16.1%) | 2209 (8.2%) | 578 | 1396/5385 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 00:00 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:12 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:36 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
+| 2026-09-26 00:41 | 4333 (16.1%) | 2211 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 
 ## How to move a row
 
