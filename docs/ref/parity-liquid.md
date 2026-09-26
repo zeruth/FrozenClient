@@ -269,9 +269,73 @@ rather than guessed: porting the value without its writer would bake in whatever
 
 ## Also open in item 4
 
-`FUN_00793d20` queues the **map objects'** liquid into these same buckets, taking the surface from
-the group at `+0x68`. Without it only terrain liquid is queued, so water inside buildings will not
-draw even once the material lands. `FUN_008a2f00` uploads two 64x8 liquid ramp textures once each.
+`FUN_008a2f00` uploads two 64x8 liquid ramp textures once each.
+
+## Map object liquid: water inside buildings
+
+Only terrain liquid is queued, so water inside a WMO does not draw at all. Scoped 2026-09-26; the
+groundwork landed in d467a678 and the rest is ~3,500 bytes across six functions.
+
+**Done:** `Liquid::IGeomFactory`, the polymorphic base both factories sit on. The reference gives
+each a four-slot vtable and stores either in `CInstance`'s `+0x08`:
+
+| class | vtable | slot 0 | slot 1 release | slot 2 build | slot 3 |
+|---|---|---|---|---|---|
+| `CChunkGeomFactory` | `0x00a404c0` | `FUN_007d48c0` | `FUN_007d4760` | `FUN_007d4ab0` | `FUN_007d4390` |
+| `CMeshGeomFactory` | `0x00a404d4` | `FUN_007d4980` | `FUN_007d43b0` | `FUN_007d43f0` | — |
+
+**`Liquid::CMeshGeomFactory`**, allocated by `FUN_007d4920(0)` under the RTTI name
+`.?AVCMeshGeomFactory@Liquid@@`, built by `FUN_007d49b0(mapObj, group)`. Field map read off the
+allocator's zero-fill and the three setters:
+
+| offset | set by | meaning |
+|---|---|---|
+| `+0x00` | allocator | vtable `0x00a404d4` |
+| `+0x04` | allocator = 1 | refcount |
+| `+0x08` | `FUN_007d49b0` | the root `CMapObj` |
+| `+0x0c` | `FUN_007d49b0` | the `CMapObjGroup` |
+| `+0x10` | — | the cached buffer holder, passed to `FUN_007cbdc0` |
+| `+0x14` | `FUN_007d43e0` | texture id, default `0xffffffff`, from `m_materials[group->m_liquidMaterial]` at `+0x1c` via `FUN_007a6d70` |
+| `+0x1c` | `FUN_007d4360` | `materialRec->m_LVF == 1` |
+| `+0x20` | `FUN_007d4370` | fixed light, `1.0f` outdoors and `0.0f` indoors |
+| `+0x28` | — | a block the two writers share |
+| `+0x2c`, `+0x3c` | — | extra grid extents added to the group's vert counts |
+
+**The build, `FUN_007d43f0`** (865 bytes). Fatals with
+`Water in chunk "%s" of object "%s" has no materialId.` when
+`group->m_liquidMaterial >= mapObj->m_materialCount`. Then the vertex count is
+`(m_liquidYVerts + this->+0x3c) * (m_liquidXVerts + this->+0x2c) + FUN_007c8bf0() * 6`, indices
+three times that, through `FUN_007cbdc0(format, verts, indices, &this->+0x10)`. The buffers come
+off the GROUP, at `group->+0x10` and `group->+0x14`, each holding a `CGxBuf` at `+0x18`. It
+early-returns the cached batch when both buffers report ready at `+0x1c`/`+0x1d`. Attribute offsets
+come from `GxVertexAttribOffset` for attrs 0, 3, 4, 6 and 7, each gated on `FUN_00681260(format, n)`.
+
+**The three writers, unsized before 2026-09-26:** `FUN_007a7cc0` (388), `FUN_007a7920` (462) and
+`FUN_007a7f60` (944). These are the real content and are NOT yet read. Both `FUN_007a7cc0` and
+`FUN_007a7f60` take a 16-float identity matrix on the stack plus the factory's `+0x14`, `+0x1c`,
+`+0x20` and the attribute pointer set.
+
+**The queue, `FUN_00793d20`** (679 bytes), called from `CMap::Render` at `0x0079acce`. Walks the
+def-group list at `DAT_00cdb08c`/`DAT_00cdb094`, unlinking each through a link at `+0xb8`/`+0xbc`,
+and for a def group with no surface yet at `+0x68` builds one exactly as `CreateSurface` does for
+terrain, then calls `Liquid::Add`. Gated on `CWorld::s_enables & 0x100` and `DAT_00cd8610`.
+
+Its indoor decision, which is what picks the environment and the fixed light:
+
+```
+indoor = !( (!(group->m_flags & 0x48) || (defGroup->m_flags & 2)) && !(typeRec->flags & 0x200) )
+```
+
+and when NOT indoor, a liquid type under 0x15 with `((type - 1) & 3) == 0` is remapped to `0x11`.
+The surface takes `def->m_placement` (`FUN_00407f80`, from `def + 0x70`) and copies the def group's
+own sphere from `+0x3c..+0x48` straight into `CInstance::m_sphere`.
+
+**Still to identify:** `FUN_007c8bf0` (110) and `FUN_007cbdc0` (109), and who appends to the
+`DAT_00cdb08c` list. **Frozen needs new fields** on `CMapObjDefGroup`: a liquid surface at `+0x68`
+and a list link at `+0xb8`. MLIQ itself is already fully parsed -- `m_liquidXVerts`,
+`m_liquidYVerts`, `m_liquidVerts`, `m_liquidTiles`, `m_liquidMaterial` (`+0x130`) and
+`m_liquidType` (`+0x144`) -- and `mapObj + 0x160` is `m_materials`, so nothing in the group loader
+needs changing.
 
 ## Divergences recorded in code
 
