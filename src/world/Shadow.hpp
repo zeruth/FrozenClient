@@ -4,6 +4,7 @@
 #include "gx/Texture.hpp"
 #include <cstdint>
 
+class C44Matrix;
 class CAaBox;
 class CM2Model;
 class CVar;
@@ -37,6 +38,11 @@ void ShadowDestroy();
 
 // Take a new LOD, regenerating the ramps when it turns blobs on. ref: FUN_007e3980
 void ShadowSetLOD(int32_t lod);
+
+// The two texture transforms a projected decal draws through: the footprint on stage 0 and the
+// fade ramp along the projection axis on stage 1. Shared by several reference decal kinds.
+// ref: FUN_007e2d60
+void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& box, const C44Matrix* extra, float bias, int32_t absolute);
 
 // Draw one caster's blob, if this caster gets one at all. ref: FUN_007e49e0
 void ShadowDrawBlob(CM2Model* model);

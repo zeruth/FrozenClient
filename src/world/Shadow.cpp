@@ -1,4 +1,7 @@
 #include "world/Shadow.hpp"
+#include <tempest/Vector.hpp>
+#include <tempest/Matrix.hpp>
+#include "world/CWorld.hpp"
 #include "console/CVar.hpp"
 #include "console/Console.hpp"
 #include "gx/Texture.hpp"
@@ -32,6 +35,14 @@ const uint32_t RAMP_HEIGHT = 8;
 // serves both ramps because only one of them is ever being latched at a time.
 uint32_t s_rampPixels[RAMP_WIDTH * RAMP_HEIGHT];
 uint32_t s_rampCount = 0;
+
+// DAT_009e1134: a decal whose box is thinner than a millimetre in x or y gets no transforms at all.
+const float DECAL_MIN_EXTENT = 0.001f;
+
+// DAT_009f1ff4, the quarter turn the footprint square is built with. The reference builds it as a
+// rotation about (0, 0, 1) through an arbitrary-axis constructor; on an identity matrix that is
+// exactly a rotation around z.
+const float DECAL_TURN = -1.5707963705062866f;
 
 // The trapezoid both ramps are built from. Along the row, t runs 0 .. RAMP_FULL; it fades up over
 // the first RAMP_RISE, holds at 1 until RAMP_FALL and fades back down. The three constants were
@@ -228,6 +239,89 @@ void ShadowSetLOD(int32_t lod) {
     if (mod) {
         GxTexUpdate(mod, rect, 0);
     }
+}
+
+// ref: FUN_007e2d60
+// The two TEXTURE transforms a projected decal draws through, and the reason the decal never has to
+// reproduce anything about the receiver: the receiver's own vertices are drawn as they are, and
+// these two matrices turn their positions into the decal's texture coordinates. FUN_007e4370 pushes
+// them as GxXform_Tex0 and GxXform_Tex1, so stage 0 gets the blob and stage 1 gets a fade ramp.
+//
+// It was linked to Liquid::IMaterial::Draw by the matcher and it is nothing of the kind -- it sits
+// inside the blob shadow's own module. Three reference decal kinds call it.
+//
+//   stage 0  = Translate(offset) * diag(1/width, 1/height, 1, 1) * RotateZ(-pi/2)
+//              then *= `extra` if one is given, then +0.5 on the translation's x and y
+//   stage 1  = Translate(offset) * a matrix whose only non-zero terms are
+//              c0 = c2 = 1/depth, d0 = d2 = `bias`, d1 = d3 = 1
+//
+// stage 0 is the footprint: the box's own width and height become the 0..1 texture square, turned a
+// quarter turn, and the +0.5 puts the box centre at the middle of the texture. stage 1 is the fade
+// ALONG the projection axis -- it maps the box's depth into u, leaves v at 1, and so reads one row
+// of the 64x8 ShadowAdd / ShadowMod ramp. That is what those two textures are for.
+//
+// `absolute` picks the space: zero makes the offset camera-relative (camera - centre), which is what
+// the decal pass wants because FUN_007e4370 draws with world and view set to identity; non-zero just
+// negates the centre.
+//
+// Does nothing at all when the box is thinner than a millimetre in x or y (DAT_009e1134 is 0.001).
+void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& box, const C44Matrix* extra, float bias, int32_t absolute) {
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+
+    C3Vector centre = {
+        (box.t.x + box.b.x) * 0.5f,
+        (box.t.y + box.b.y) * 0.5f,
+        (box.t.z + box.b.z) * 0.5f
+    };
+
+    C3Vector offset;
+
+    if (absolute == 0) {
+        offset.x = cameraPos.x - centre.x;
+        offset.y = cameraPos.y - centre.y;
+        offset.z = cameraPos.z - centre.z;
+    } else {
+        offset.x = -centre.x;
+        offset.y = -centre.y;
+        offset.z = -centre.z;
+    }
+
+    C44Matrix translate;
+    translate.Identity();
+    translate.Translate(offset);
+
+    float width = box.t.x - box.b.x;
+    float height = box.t.y - box.b.y;
+    float depth = box.t.z - box.b.z;
+
+    if (width < DECAL_MIN_EXTENT || height < DECAL_MIN_EXTENT) {
+        return;
+    }
+
+    // The footprint square, a quarter turn, and the half-texel centring.
+    C44Matrix scale;
+    scale.Identity();
+    scale.a0 = 1.0f / width;
+    scale.b1 = 1.0f / height;
+
+    stage0 = translate * scale * C44Matrix::RotationAroundZ(DECAL_TURN);
+
+    if (extra) {
+        stage0 *= *extra;
+    }
+
+    stage0.d0 += 0.5f;
+    stage0.d1 += 0.5f;
+
+    // The ramp lookup along the projection axis. Every term the reference does not write is zero,
+    // including the whole first two rows, so this is built from scratch rather than from identity.
+    C44Matrix ramp;
+    ramp.a0 = 0.0f; ramp.a1 = 0.0f; ramp.a2 = 0.0f; ramp.a3 = 0.0f;
+    ramp.b0 = 0.0f; ramp.b1 = 0.0f; ramp.b2 = 0.0f; ramp.b3 = 0.0f;
+    ramp.c0 = 1.0f / depth; ramp.c1 = 0.0f; ramp.c2 = 1.0f / depth; ramp.c3 = 0.0f;
+    ramp.d0 = bias; ramp.d1 = 1.0f; ramp.d2 = bias; ramp.d3 = 1.0f;
+
+    stage1 = translate * ramp;
 }
 
 // ref: FUN_007e49e0

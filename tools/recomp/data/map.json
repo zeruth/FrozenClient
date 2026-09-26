@@ -15214,6 +15214,22 @@
   "refSize": 34,
   "status": "ported"
  },
+ "004f6650": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::GetCameraPos",
+  "frozenSize": 8,
+  "how": "callgraph",
+  "module": "TextureCache.cpp",
+  "refSize": 39,
+  "status": "ported"
+ },
  "004f7250": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -19640,7 +19656,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::RegisterGameCVars",
-  "frozenSize": 13207,
+  "frozenSize": 13149,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 6776,
@@ -49474,7 +49490,7 @@
   ],
   "frozen": "DetailDoodad::CreateInstance",
   "frozenSize": 194,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "MapChunkLiquid.cpp",
   "refSize": 2662,
   "status": "ported"
@@ -50613,10 +50629,25 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowDestroy",
-  "frozenSize": 0,
+  "frozenSize": 83,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 85,
+  "status": "ported"
+ },
+ "007e2d60": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.143,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalBuildTransforms",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 623,
   "status": "ported"
  },
  "007e36e0": {
@@ -50628,7 +50659,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowAddCallback",
-  "frozenSize": 0,
+  "frozenSize": 491,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 312,
@@ -50643,7 +50674,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowModCallback",
-  "frozenSize": 0,
+  "frozenSize": 518,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 350,
@@ -50673,7 +50704,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowLODCallback",
-  "frozenSize": 0,
+  "frozenSize": 290,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 117,
@@ -60945,7 +60976,7 @@
   "files": [],
   "frozen": "sscanf",
   "frozenSize": 82,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
   "status": "ported"

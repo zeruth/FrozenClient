@@ -948,6 +948,7 @@ addr	how	frozen	evidence
 004f5f00	annotated	CGUnit::HasCharmer	tag in src/object/client/CGUnit.cpp
 004f5f20	annotated	CGUnit::GetCharmerOrCreator	tag in src/object/client/CGUnit.cpp
 004f5f80	annotated	CGUnit::IsPetitionerAndTabardDesigner	tag in src/object/client/CGUnit.cpp
+004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007e2d60=DecalBuildTransforms
 004f7250	annotated	CGUnit::IsControlledBy	tag in src/object/client/CGUnit.cpp
 004f7310	annotated	CGPlayer_C::GetFarsightObject	tag in src/object/client/CGPlayer_C.cpp
 004f8ea0	override	CGWorldFrame::OnWorldRender	
@@ -1451,7 +1452,7 @@ addr	how	frozen	evidence
 0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054efe0	sticky	TSGrowableArray<C2iVector>::Reserve	held from the previous run, where it was callgraph
+0054efe0	sticky	TSGrowableArray<C2iVector>::Reserve	held from the previous run, where it was sticky
 0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f690=Script_GetRefreshRates
 0054f1b0	callorder	SetupFormats	same slot between linked calls in 0054f8b0=Script_GetCurrentMultisampleFormat, 0054f980=Script_SetMultisampleFormat
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -3099,7 +3100,7 @@ addr	how	frozen	evidence
 007d2d70	annotated	CMapRenderChunk::DrawWorld	tag in src/world/map/CMapRenderChunk.cpp
 007d3010	annotated	CMapRenderChunk::DrawSolidLocal	tag in src/world/map/CMapRenderChunk.cpp
 007d3240	annotated	CMapRenderChunk::DrawSolidWorld	tag in src/world/map/CMapRenderChunk.cpp
-007d3390	callorder	DetailDoodad::CreateInstance	same slot between linked calls in 007d3fe0=CMapChunk::PrepareRender
+007d3390	callgraph	DetailDoodad::CreateInstance	only unmatched callee of 007d3fe0=CMapChunk::PrepareRender
 007d3e10	annotated	CWorldScene::SelectChunkShaders	tag in src/world/CWorldScene.cpp
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
@@ -3172,6 +3173,7 @@ addr	how	frozen	evidence
 007e2c40	annotated	ShadowModGxTex	tag in src/world/Shadow.cpp
 007e2c60	annotated	ShadowAddGxTex	tag in src/world/Shadow.cpp
 007e2c80	annotated	ShadowDestroy	tag in src/world/Shadow.cpp
+007e2d60	annotated	DecalBuildTransforms	tag in src/world/Shadow.cpp
 007e36e0	annotated	ShadowAddCallback	tag in src/world/Shadow.cpp
 007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp
 007e3980	annotated	ShadowSetLOD	tag in src/world/Shadow.cpp
@@ -3822,7 +3824,7 @@ addr	how	frozen	evidence
 0087a6f0	callgraph	SESound::GetChannelGroup	only unmatched callee of 0087a850=SESound::SetChannelGroupVolume
 0087a7e0	callorder	SESound::SetChannelGroup	same slot between linked calls in 004c6a40=SI2::PlaySoundKit
 0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback, 004d0eb0=MusicVolume_CVarCallback, 004d0ef0=AmbienceVolume_CVarCallback
-0087a8e0	sticky	SESound::MuteChannelGroup	held from the previous run, where it was callgraph
+0087a8e0	sticky	SESound::MuteChannelGroup	held from the previous run, where it was sticky
 0087a9b0	annotated	s_SystemCallback	tag in src/sound/SESound.cpp
 0087acc0	annotated	SESound::SetDeviceListChangedCallback	tag in src/sound/SESound.cpp
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound
@@ -3834,7 +3836,7 @@ addr	how	frozen	evidence
 0087f7a0	annotated	SESound::Load	tag in src/sound/SESound.cpp
 00889e50	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
-0088be0d	callgraph	sscanf	only unmatched callee of 007e3a20=ShadowLODCallback
+0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a1700	annotated	CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	CInstance::Release	tag in src/world/map/LiquidSurface.cpp
